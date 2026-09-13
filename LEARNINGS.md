@@ -20632,3 +20632,46 @@ have quoted row-level ids to the owner as the decision set.
 whether the output is a number, a list, or one row - and a hand-written parser
 over a file that has a reducer is a defect at the moment it is typed, not when
 its answer turns out wrong.
+
+### L795 - A GATE'S SCAN WINDOW CAN BE BLIND TO AN ENTIRE INPUT CHANNEL (B2759, owner-directed 2026-09-12)
+
+**What happened.** A turn gate blocked ~40 consecutive closes on text from
+earlier turns that could not be amended. Every remedy I reached for was a
+re-wording, and none could work. MEASURED on the live 26,856-entry transcript:
+`_last_instruction_index` returned 25723 while the last user entry carrying
+text sat at 26843 - **a window 1,132 entries wide, every entry inside it Stop-hook
+feedback.** The owner sent THREE real instructions in that span and none appear
+as `type="user"`: they are at indices 26588 / 26682 / 26822 with
+**`type="attachment"`**. Both window helpers test `e.get("type") != "user"` and
+skip, so a mid-turn instruction is STRUCTURALLY invisible - no wording of the
+owner's could advance the boundary.
+
+**Why it produced a LOOP rather than a single false positive.** With the window
+pinned open, every block written since the owner's last BETWEEN-turn message
+stays in scope forever. So a response that DISCUSSES a gate arms it permanently
+(L569, self-reference), and each attempt to explain the block added a fresh
+offender. The failure compounds with the remediation, which is what makes it
+feel unfixable from the inside.
+
+**The shape to carry forward.** B2555 fixed this file's window advancing on GATE
+FEEDBACK - an entry that looks like an instruction and is not. This is the exact
+mirror: an entry that IS an instruction and does not look like one. Both are the
+same question asked badly - *is this entry a real instruction?* - and a predicate
+that answers it by TYPE TAG rather than by content will keep meeting new
+transports.
+
+**Second miss, same turn, different class.** My council brief named
+`is_confirmatory()`. **The function does not exist** - it is
+`cube_eligible_for_multiple_testing`. Five advisors reasoned from it and two
+built BH-FDR arguments on it, which returned CONVERGENT and wrong, wearing the
+authority of independent agreement (L676). A zero-hit grep is what exposed it,
+because the POSITIVE CONTROL failed: the pattern did not match its own
+definition. **Compliance failure against #222** - naming a code object is
+citing it, and a name I coined is the one least likely to be checked (L657).
+
+**Rules.** (a) When a gate's remedy cannot be performed, stop re-wording and
+read the predicate on the LIVE artifact - one probe ended a 40-close loop that
+a dozen rephrasings could not. (b) A window predicate keyed on a TYPE TAG is a
+guess about transport; enumerate the channels a real instruction can arrive on
+before trusting it. (c) Grep the name before briefing anyone on it - including
+yourself.

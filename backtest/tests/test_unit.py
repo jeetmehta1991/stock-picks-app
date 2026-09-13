@@ -36671,3 +36671,24 @@ def test_b2759_both_window_helpers_consult_the_predicate():
     assert loops == guarded, (
         f"{loops} window loops but only {guarded} consult the predicate - "
         "a new copy was added without the mid-turn guard")
+
+def test_b2761_window_channel_rule_survives():
+    """L795/#307: enumerate the channels an instruction can arrive on before
+    trusting a window predicate. DETECTION is JUDGMENT-ONLY - no scan knows
+    which transports exist. Durability only; the behaviour is pinned by
+    test_b2759."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    heads = [l for l in lrn.splitlines() if l.startswith("### L795 ")]
+    assert len(heads) == 1, f"expected one L795 heading, got {len(heads)}"
+    assert "1,132" in lrn, "L795 must keep the measured window width"
+    chk = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="replace")
+    assert len([l for l in chk.splitlines() if l.startswith("### #307 ")]) == 1
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Find a gate whose remedy you cannot perform")]
+    assert len(rows) == 1, f"expected one L795 tripwire row, got {len(rows)}"
+    assert "L795 / #307 (MEASURED" in rows[0], "lineage cell missing"
+    assert "READ THE PREDICATE ON THE LIVE ARTIFACT" in rows[0], "diagnostic missing"

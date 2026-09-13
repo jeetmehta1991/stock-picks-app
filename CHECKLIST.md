@@ -5939,3 +5939,29 @@ Would have caught: B2754 (this instance). Mechanism:
 `test_b2754_file_type_scoped_gate_blindness_rule_survives` - durability only;
 DETECTION is judgment-only, since no scan reads whether a turn asked a gate's
 reach before trusting it.
+
+### #307 - ENUMERATE THE CHANNELS AN INSTRUCTION CAN ARRIVE ON BEFORE TRUSTING A WINDOW PREDICATE (B2759 / L795, owner-directed 2026-09-12)
+
+A gate that decides "what happened THIS turn" rests on a predicate for *is this
+entry a real instruction*. When that predicate keys on a TYPE TAG rather than on
+content, it is a guess about transport - and a transport it does not know about
+makes real instructions invisible.
+
+MEASURED: mid-turn user messages arrive as `type="attachment"`, not `type="user"`.
+Both window helpers skipped them, so the scan window stood open at **1,132
+entries** and the owner could not advance it by writing anything at all. The
+result was ~40 consecutive blocked closes in which every explanation of the block
+added a new offender to the pinned-open window.
+
+Before trusting such a predicate: list the ways an instruction reaches the
+transcript, and confirm the predicate sees each. Prefer a CONTENT marker over a
+type tag where the transport is not yours to control.
+
+Would have caught: B2759 (this instance). Would NOT have caught B2555, the
+mirror defect, where the window advanced on gate feedback that was not an
+instruction - that needed the opposite question, and the pair together are the
+argument for asking about CONTENT rather than TYPE.
+
+Mechanism: `test_b2759_midturn_instruction_advances_the_window` (both
+directions) and `test_b2759_both_window_helpers_consult_the_predicate` (the site
+count, so a third copy cannot appear unguarded).
