@@ -440,25 +440,30 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
         best[1]["npt_excluded_identity_boundary"] = True
     return best if best else (None, None)
 
-def bh_fdr_report(rows, q: float = 0.10) -> dict:
-    """Benjamini-Hochberg over a grid's GRADED rows. REPORT-ONLY.
+def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
+    """Benjamini-Hochberg over a grid's graded rows, as a COMPLETE PARTITION.
 
-    B2768, owner-approved 2026-09-13. Step 1 is a ranked list with NO gates
-    (B1608), so this rejects nothing and ranks nothing - it makes the trials
-    count visible, which is the one thing a reader of a grid artifact could not
-    previously get.
+    B2768 shipped this report-only; B2775 makes it RECONCILE, after two live
+    runs each lost rows silently:
 
-    THE DENOMINATOR IS THE GRADED SET. A grid row that produced no candidate -
-    verdict NO_EXIT_SELECTABLE, holdout_n None, no p - is a NON-OBSERVATION,
-    not a trial: nothing was selected from it and it cannot win. MEASURED on
-    b1582_cfg1_grid.json, 169 of 200 rows are exactly that, and treating them
-    as trials inflates the null bar from 1.90 to 2.61 standard errors.
+      * BELOW_POWER_FLOOR was folded into an unnamed "ungraded" remainder. A
+        row that SELECTED a candidate and could not price it is not the same as
+        one that produced no candidate. B1701 already solved this shape with a
+        four-bucket partition (producer_variant_table.py:2169) after 31-66 rows
+        per config vanished from a funnel.
+      * A grader using a PERMUTATION NULL rather than per-row p-values reported
+        `graded: 0` while 528 cells had been graded. Correct, and blind.
 
-    `searched` is reported ALONGSIDE `graded` so the distinction is visible
-    rather than buried in a choice of denominator.
+    So every searched row lands in exactly one bucket, the buckets sum to
+    `searched`, and anything unexplained is reported as `unclassified` rather
+    than dropped - because rows leaving the denominator silently IS the defect.
 
-    Returns a dict; callers embed it in the artifact. Never raises on odd
-    input - a report that crashes a grader would cost a run.
+    STILL REPORT-ONLY. No gate, no ranking, no rejection: Step 1 is a ranked
+    list with NO gates (B1608), and a rejection rule here would silently become
+    a gate at the stage the plan says has none.
+
+    `permutation_null` lets a grader that establishes significance that way
+    hand it in, so the artifact never claims nothing was graded when it was.
     """
     import math
 
@@ -466,36 +471,65 @@ def bh_fdr_report(rows, q: float = 0.10) -> dict:
         rows = list(rows or [])
     except TypeError:
         rows = []
+    searched = len(rows)
+
+    def _verdict(r):
+        return (r.get("verdict") or "") if isinstance(r, dict) else ""
+
     ps = sorted(x for x in (r.get("p") for r in rows if isinstance(r, dict))
                 if isinstance(x, (int, float)) and 0.0 <= float(x) <= 1.0)
-    searched = len(rows)
     m = len(ps)
-    if m == 0:
-        return {"method": "benjamini-hochberg", "q": q, "searched": searched,
-                "graded": 0, "rejected": 0, "threshold": None,
-                "expected_best_under_null_se": None,
-                "note": "no graded row carries a p-value; nothing to correct"}
+    no_candidate = sum(1 for r in rows
+                       if _verdict(r) in ("NO_EXIT_SELECTABLE", "ZERO_FIRES"))
+    unpriceable = sum(1 for r in rows if _verdict(r) == "BELOW_POWER_FLOOR"
+                      and not isinstance(r.get("p"), (int, float)))
+    unclassified = searched - m - no_candidate - unpriceable
+
     k = 0
     for i, pv in enumerate(ps, 1):
         if pv <= (i / m) * q:
             k = i
     thr = (k / m) * q if k else None
 
-    def _null_bar(n: int) -> float:
-        # expected maximum of n iid standard normals (Gumbel approximation)
+    def _null_bar(n):
+        if not n or n < 2:
+            return None
         ln = math.log(n)
-        if n < 2 or ln <= 0:
-            return 0.0
+        if ln <= 0:
+            return None
         root = math.sqrt(2 * ln)
-        return root - (math.log(ln) + math.log(4 * math.pi)) / (2 * root)
+        return round(root - (math.log(ln) + math.log(4 * math.pi))
+                     / (2 * root), 2)
 
-    return {"method": "benjamini-hochberg", "q": q,
-            "searched": searched, "graded": m, "rejected": k,
-            "threshold": thr,
-            "smallest_p": ps[0],
-            "uncorrected_p05": sum(1 for x in ps if x < 0.05),
-            "expected_best_under_null_se": round(_null_bar(m), 2),
-            "expected_best_if_all_searched_counted_se": round(_null_bar(searched), 2)
-            if searched > 1 else None,
-            "note": ("denominator is the GRADED set; ungraded rows produced no "
-                     "candidate and are non-observations, not trials")}
+    out = {"method": "benjamini-hochberg", "q": q,
+           # THE PARTITION - these four sum to `searched`, always
+           "searched": searched,
+           "graded": m,
+           "unpriceable": unpriceable,
+           "no_candidate": no_candidate,
+           "unclassified": unclassified,
+           "rejected": k,
+           "threshold": thr,
+           "smallest_p": ps[0] if ps else None,
+           "uncorrected_p05": sum(1 for x in ps if x < 0.05),
+           "expected_best_under_null_se": _null_bar(m),
+           "expected_best_if_all_searched_counted_se": _null_bar(searched),
+           "report_only": True,
+           "note": ("complete partition: graded + unpriceable + no_candidate + "
+                    "unclassified == searched. no_candidate rows produced no "
+                    "candidate to rank and are non-observations; unpriceable "
+                    "rows selected a candidate that could not be scored")}
+    # the reconciliation is asserted in the artifact itself, not just in a test
+    out["reconciles"] = (m + unpriceable + no_candidate + unclassified
+                         == searched)
+    if permutation_null:
+        out["permutation_null"] = permutation_null
+        out["significance_basis"] = "permutation_null"
+    elif m:
+        out["significance_basis"] = "per_row_p"
+    else:
+        out["significance_basis"] = "none_available"
+        out["note"] += ("; NO per-row p-values and no permutation null supplied "
+                        "- this grid's significance is UNPRICED, which is not "
+                        "the same as nothing having been graded")
+    return out

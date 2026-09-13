@@ -253,7 +253,12 @@ def main() -> int:
            "permutation_null": pn,
            # B2768 (owner-approved 2026-09-13): grid-stage BH-FDR,
            # REPORT-ONLY - changes no gate and no ranking (B1608).
-           "multiplicity": rc.bh_fdr_report(rows),
+           # B2775: this grader establishes significance with a
+           # PERMUTATION NULL, not per-row p-values, so hand it in -
+           # otherwise the report says graded=0 while hundreds of cells
+           # were graded, which is the silent-loss shape the partition
+           # exists to stop (S6-B2773, found on its first live run).
+           "multiplicity": rc.bh_fdr_report(rows, permutation_null=pn),
            "step1_ranking": ranked[:80], "rows": rows,
            "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"}
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")

@@ -36774,7 +36774,11 @@ def test_b2768_both_graders_emit_the_multiplicity_report():
     callers = ["tighten_breaker_block.py", "smc_lsr_step1.py"]
     for f in callers:
         src = (root / f).read_text(encoding="utf-8", errors="replace")
-        assert "rc.bh_fdr_report(rows)" in src, f"{f} does not emit the report"
+        # B2775: assert the CONTRACT, not the argument list. This read
+        # "rc.bh_fdr_report(rows)" exactly and broke when the salvage
+        # grader began handing in its permutation null - a pin coupled
+        # to a call signature fails on a correct change.
+        assert "rc.bh_fdr_report(rows" in src, f"{f} does not emit the report"
         assert '"multiplicity"' in src, f"{f} does not key it as multiplicity"
     defn = (root / "roster_core.py").read_text(encoding="utf-8", errors="replace")
     assert defn.count("def bh_fdr_report(") == 1, "exactly one definition"
@@ -36879,3 +36883,64 @@ def test_b2774_generator_stamp_survives_in_the_docs():
             if l.startswith("| Compare a count in one artifact")]
     assert len(rows) == 1, f"expected one L798 tripwire row, got {len(rows)}"
     assert "L798 / #309 (MEASURED" in rows[0], "lineage cell missing"
+
+def test_b2775_multiplicity_report_is_a_complete_partition():
+    """B2775, owner-approved: the grid multiplicity report must RECONCILE.
+
+    Two live runs each lost rows silently before this: BELOW_POWER_FLOOR folded
+    into an unnamed remainder, and a permutation-null grader reported graded=0
+    while 528 cells had been graded. B1701 had already solved this shape with a
+    four-bucket partition; this copies that convention instead of inventing a
+    two-way split.
+    """
+    import sys
+    from pathlib import Path as _P
+    sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import roster_core as rc
+
+    rows = ([{"verdict": "FAIL", "p": 0.0003}]
+            + [{"verdict": "FAIL", "p": 0.5}] * 9          # 10 graded
+            + [{"verdict": "BELOW_POWER_FLOOR"}] * 7        # unpriceable
+            + [{"verdict": "NO_EXIT_SELECTABLE"}] * 5
+            + [{"verdict": "ZERO_FIRES"}] * 3)              # no_candidate = 8
+    r = rc.bh_fdr_report(rows, q=0.10)
+    assert r["searched"] == 25, r
+    assert r["graded"] == 10, r
+    assert r["unpriceable"] == 7, f"BELOW_POWER_FLOOR must be NAMED: {r}"
+    assert r["no_candidate"] == 8, r
+    assert r["unclassified"] == 0, r
+    assert r["reconciles"] is True, r
+    assert (r["graded"] + r["unpriceable"] + r["no_candidate"]
+            + r["unclassified"]) == r["searched"], r
+
+    # an unexplained row is REPORTED, never dropped - rows leaving the
+    # denominator silently is the whole defect
+    odd = rc.bh_fdr_report([{"verdict": "SOMETHING_NEW"}])
+    assert odd["unclassified"] == 1 and odd["reconciles"] is True, odd
+
+    # a permutation-null grader must not read as "nothing was graded"
+    pn = {"p_value_best": 0.83, "best": 0.497}
+    r2 = rc.bh_fdr_report([{"verdict": "RANKED"}] * 528, permutation_null=pn)
+    assert r2["significance_basis"] == "permutation_null", r2
+    assert r2["permutation_null"]["p_value_best"] == 0.83, r2
+    assert r2["reconciles"] is True, r2
+
+    # with neither basis, say so explicitly rather than implying zero evidence
+    r3 = rc.bh_fdr_report([{"verdict": "RANKED"}] * 3)
+    assert r3["significance_basis"] == "none_available", r3
+    assert "UNPRICED" in r3["note"], r3
+
+    # STILL REPORT-ONLY
+    for banned in ("verdict", "gates_passed", "passed", "admit", "rank"):
+        assert banned not in r, f"report must not gate: {banned!r}"
+    assert r["report_only"] is True
+
+
+def test_b2775_salvage_grader_hands_in_its_permutation_null():
+    """L592: the fix is useless unless the caller supplies the null."""
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts" / "smc_lsr_step1.py"
+           ).read_text(encoding="utf-8", errors="replace")
+    assert "rc.bh_fdr_report(rows, permutation_null=pn)" in src, (
+        "the permutation-null grader must hand its null to the report, or it "
+        "will keep claiming graded=0 while hundreds of cells were graded")
