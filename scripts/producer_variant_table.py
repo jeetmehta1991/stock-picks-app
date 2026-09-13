@@ -802,6 +802,11 @@ GATE_ORDER = ("pooled_sharpe", "profit_factor", "sortino", "psr",
               "min_trades_holdout", "min_trades_full_period")
 
 
+FORMULA_SMC_OBB = (
+    "=============================== PRODUCER LAYER ===============================\n\nP1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )\n                   -> feeds ob(); a bar is a swing high if its high is the\n                      highest across swing_length bars BEFORE and AFTER it\n\nP2  ob      =  ob( ohlc, swings, close_mitigation = False )\n                   -> the order-block zones; close_mitigation decides\n                      whether a zone is mitigated on CLOSE or on WICK\n\nP3  tap     =  _ob_tap_scan( ob, ohlc, i, recency, tap_window = 5 )\n                   -> price RETURNING to a zone within tap_window bars.\n                      NOT ENGINE-REACHABLE: the call at smc_ict.py:387\n                      passes no tap_window and no env knob exists, so no\n                      arm can actuate a level (S6-B2752c). Inventoried\n                      here rather than omitted, because an axis left out\n                      of Table A is invisible at close (L785).\n\n============================== STRATEGY LAYER ===============================\n\nP4  long    =  smc_ob_bullish_tap_recent_5d AND rsi_14 < 45\n                                            AND price_above_ema_200\n                   -> rsi_threshold_long is FREE: lowering the ceiling\n                      keeps a strict subset of the recorded fires\n\nP5  short   =  smc_ob_bearish_tap_recent_5d AND rsi_14 > 55\n                                            AND below_ema_200\n                                            AND NOT borrow_trap\n                   -> rsi_threshold_short is FREE: raising the floor\n                      keeps a strict subset\n\nP6  leg     =  {both (production), long, short}\n                   -> FREE depth axis: per-leg grading of the same cube\n"
+)
+
+
 FORMULA_SMC_LSR = (
     "=============================== PRODUCER LAYER ===============================\n\nP1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )\n                   -> a bar is a swing high if its high is the highest\n                      across swing_length bars BEFORE and AFTER it\n\nP2  liq     =  liquidity( ohlc, swings, range_percent = 0.01 )\n                   -> clusters swing highs/lows within range_percent of\n                      each other; a SWEEP is price taking out the cluster\n\nP3  recency =  _most_recent_event_within( <event series>, i,\n                                          event_recency_bars = 90 )\n                   -> the lookback that turns a dated event (sweep, BOS,\n                      CHoCH) into a boolean ACTIVE at bar i\n\n============================== STRATEGY LAYER ===============================\n\nlong   =  smc_liquidity_swept_dn  AND ( smc_choch_bullish OR smc_bos_bullish )\nshort  =  smc_liquidity_swept_up  AND ( smc_choch_bearish OR smc_bos_bearish )\n                                  AND NOT _short_borrow_trap_active\n"
 )
@@ -1343,6 +1348,14 @@ def leverage(spec: dict) -> dict:
     """
     params = spec.get("params") or []
     per_level = any(("free_band" in q or "resim_band" in q) for q in params)
+    # S6-B2752f: an axis the engine cannot REACH costs no engine runs.
+    # MEASURED on hub-2: counting a knob with no env actuator and no
+    # call-site plumbing returned 30 engine runs against a true 10 - the
+    # SAME DIRECTION L796 names as the dangerous one, since an inflated
+    # cost always argues for not running something. Reported, not dropped:
+    # an omitted axis is invisible at close (L785).
+    unreachable = [q for q in params if q.get("engine_implemented") is False]
+    params = [q for q in params if q.get("engine_implemented") is not False]
     engine = free = 1
     for q in params:
         if per_level:
@@ -1359,7 +1372,10 @@ def leverage(spec: dict) -> dict:
             else:
                 engine *= levels
     return {"engine_runs": engine, "free_combos": free,
-            "ratio": free, "basis": "per_level" if per_level else "subset_safe"}
+            "ratio": free,
+            "basis": "per_level" if per_level else "subset_safe",
+            "unreachable_axes": [f"{q['id']} {q['param']}"
+                                 for q in unreachable]}
 
 
 def phase1b_admitted(root: Path | None = None) -> tuple:
@@ -2558,3 +2574,118 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# S6-B2752e: hub-2 registered. S6-B2752 framed this as "the S6-B2732a template
+# applied three more times"; MEASURED at B2752a it is not (L800) - P3 has no env
+# knob, and the gate's PRIMARY key is persisted on 0 of 1340 fires. Both facts
+# are inventoried here rather than smoothed over. FAMILIES is DERIVED from SPECS
+# (run_postconfig.py:732), so this registers the battery family too.
+SPECS["smc_order_block_bounce"] = {
+    "gate": ("(smc_ob_bullish_tap_recent_5d AND rsi_14<45 AND "
+             "price_above_ema_200) | short mirror + borrow gate "
+             "(screener.py:4693 strat_smc_order_block_bounce)"),
+    "formula": FORMULA_SMC_OBB,
+    "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1340,
+                 "tickers": 475, "holdout_n": 352,
+                 "window": "2022-05-05..2026-04-29",
+                 "tickers_basis": ("DISTINCT TICKERS THAT FIRED, measured "
+                                   "S6-B2752e - the universe is 544, and "
+                                   "quoting that here would be a grain error "
+                                   "(L664)")},
+    "params": [
+        {"id": "P1", "producer": "_smc.swing_highs_lows",
+         "param": "swing_length", "env": "SMC_SWING_LENGTH",
+         "consumers": ["backtest/config.py",
+                       "backtest/engine/exit_strategies.py",
+                       "backtest/signals/screener.py"],
+         "production": 20, "type": "int", "band": [5, 10, 20, 30, 50],
+         "derivation": ("library default 50, production 20; band brackets "
+                        "both. SHARED with the breaker and hub-1 families, so "
+                        "hub-2's depth leg grades OFFLINE from the same "
+                        "variant cubes a hub-1 factorial produces - zero "
+                        "additional engine hours (B2735/B2743)"),
+         "subset_safe": False, "status": "UNTESTED",
+         "evidence": "smc_ict.py:194", "engine_implemented": True},
+        {"id": "P2", "producer": "_smc.ob",
+         "param": "close_mitigation", "env": "SMC_OB_CLOSE_MITIGATION",
+         "consumers": ["backtest/config.py",
+                       "backtest/engine/exit_strategies.py",
+                       "backtest/signals/screener.py"],
+         "production": False, "type": "bool", "band": [False, True],
+         "derivation": ("whether an order block is mitigated on CLOSE or on "
+                        "WICK; the breaker family's P2 precedent"),
+         "subset_safe": False, "status": "UNTESTED",
+         "evidence": "smc_ict.py:375 (ob call)", "engine_implemented": True},
+        {"id": "P3", "producer": "_ob_tap_scan",
+         "param": "tap_window", "production": 5, "type": "int",
+         "band": [3, 5, 10],
+         "derivation": ("the bounce-tap lookback. NOT ENGINE-REACHABLE: "
+                        "smc_ict.py:387 calls _ob_tap_scan passing no "
+                        "tap_window and backtest/config.py carries no "
+                        "SMC_OB_TAP_WINDOW, so no arm can actuate a level and "
+                        "a resim_band here would be a promise the engine "
+                        "cannot keep (B2578 class). The persisted key NAME "
+                        "also hardcodes the window, so varying it makes the "
+                        "key lie. Plumbing ticketed S6-B2752c"),
+         "subset_safe": False, "status": "NOT-ENGINE-REACHABLE",
+         "evidence": "smc_ict.py:75 (signature default 5); call site 387 "
+                     "passes none - MEASURED S6-B2752a",
+         "engine_implemented": False},
+        {"id": "P4", "producer": "gate threshold (screener)",
+         "param": "rsi_threshold_long", "production": 45, "type": "int",
+         "band": [45, 40, 35, 30],
+         "derivation": ("FREE - lowering the ceiling keeps a strict SUBSET of "
+                        "recorded fires. MEASURED S6-B2752a: rsi_14 is "
+                        "persisted on 1340 of 1340 fires and gate-consistent "
+                        "per leg (long max 44.99), so it is the AT-ENTRY value "
+                        "and the subset property holds"),
+         "subset_safe": True, "status": "UNTESTED",
+         "evidence": "screener.py:4705 rsi_14<45; rsi_14 persisted",
+         "engine_implemented": True},
+        {"id": "P5", "producer": "gate threshold (screener)",
+         "param": "rsi_threshold_short", "production": 55, "type": "int",
+         "band": [55, 60, 65, 70],
+         "derivation": ("FREE - raising the floor keeps a strict subset; "
+                        "short min 55.04 measured on the same 1340 fires"),
+         "subset_safe": True, "status": "UNTESTED",
+         "evidence": "screener.py:4710 rsi_14>55", "engine_implemented": True},
+        {"id": "P6", "producer": "gate structure (screener)",
+         "param": "leg", "production": "both", "type": "str",
+         "band": ["long", "short"],
+         "derivation": "FREE depth axis: per-leg grading of the same cube",
+         "subset_safe": True, "status": "UNTESTED",
+         "evidence": "dual _strat3 at screener.py:4713",
+         "engine_implemented": True},
+    ],
+    "tools": {
+        # only P1/P2 carry env knobs, so only they identify a CUBE; P4-P6 are
+        # searched OFFLINE inside one and belong to grid_keys
+        "keys": {"P1": "swing", "P2": "close_mitigation"},
+        "grid_keys": ["rsi_threshold", "leg"],
+        "grade": {"script": "smc_obb_step1.py",
+                  "cube": "",                      # the DIRECTORY, not a csv
+                  "flags": {"P1": "--swing-length",
+                            "P2": "--ob-close-mitigation"},
+                  "extra": ["--min-n", "10"],
+                  "pythonpath": ".;scripts",
+                  "note": "AUTO (S6-B2752e)"},
+        "free_levels": None,
+        "spot_check": {"script": "spot_check_smc_obb.py",
+                       "cube": "",
+                       "flags": {"P1": "--swing-length",
+                                 "P2": "--ob-close-mitigation"},
+                       "extra": ["--n", "50"],
+                       "window": False, "precompute_check": False,
+                       "pythonpath": ".",
+                       "note": ("AUTO (S6-B2752e); hub-2 has its OWN checker - "
+                                "pointing it at the breaker or hub-1 checker "
+                                "re-derives a condition this strategy does not "
+                                "read, which is the B2724 defect. Its LEG A is "
+                                "narrower than usual BY MEASUREMENT and says "
+                                "so on the artifact's face: the gate's primary "
+                                "key is persisted on 0 of 1340 fires")},
+        "engine_anchors": {"script": "verify_engine_implemented.py"},
+        "single_combination": False,
+    },
+}
+

@@ -32695,8 +32695,21 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     assert pvt.launch_refusals(x, root) == [], "a plain key of another family's param is ignored"
     x = _copy.deepcopy(smc); x["arms"][0]["swing_length"] = 12
     one(x, "declares swing_length=12 but that is not a level of P1")
-    x = {"strategy_subset": "output_audit/_subset_iso2.txt", "arms": []}   # tracked, 2 strategies
-    r = one(x, "smc_order_block_bounce: no SPECS entry")
+    # S6-B2752g: the subject is DERIVED, not named. This case previously
+    # named smc_order_block_bounce as "an unregistered strategy"; when it
+    # WAS registered the fixture broke, testing nothing about the gate.
+    # A fixture that encodes the world's state expires the moment the
+    # world changes, so pick an unregistered member at runtime and keep a
+    # POSITIVE CONTROL that the pick is genuinely absent (#166).
+    from backtest.signals.screener import ALL_STRATEGIES as _ALL
+    _unreg = sorted(set(_ALL) - set(pvt.SPECS))
+    assert _unreg, "every strategy is registered - this case tests nothing"
+    _pick = _unreg[0]
+    assert _pick not in pvt.SPECS, _pick          # positive control
+    _sub = tmp_path / "b2752g_subset.txt"
+    _sub.write_text(f"{_pick}\nsmc_breaker_block_long\n", encoding="utf-8")
+    x = {"strategy_subset": str(_sub), "arms": []}
+    r = one(x, f"{_pick}: no SPECS entry")
     # B2738: the claim is that the REGISTERED strategy is not blamed FOR THAT
     # CLASS. B2731 does blame it for being ADMITTED, which is a different and
     # correct refusal, so the assertion is narrowed to its actual question
@@ -32898,9 +32911,12 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
     # S6-B2732a: hub-1 registered, so the DERIVED set grew to three. This is
     # a contract change, not a loosening - the assertion stays EXACT so a
     # silent registration still fails here.
+    # S6-B2752g: smc_order_block_bounce added DELIBERATELY at B2752e - a
+    # freeze exists so a new family is a decision, never a side effect.
     assert set(rp.FAMILIES) == {"smc_breaker_block_long",
                                 "institutional_committed_growth_long",
-                                "smc_liquidity_sweep_reversal"}, sorted(rp.FAMILIES)
+                                "smc_liquidity_sweep_reversal",
+                                "smc_order_block_bounce"}, sorted(rp.FAMILIES)
     assert rp.FAMILY_REFUSALS == {}, rp.FAMILY_REFUSALS
     for name, fam in rp.FAMILIES.items():
         assert callable(fam["params"]) and callable(fam["run"]), name
@@ -37128,3 +37144,78 @@ def test_b2800_analogy_scope_rule_survives():
     assert "OPEN THE NEW SUBJECT" in rows[0], "diagnostic missing"
     banner = (root / "CLAUDE.md").read_text(encoding="utf-8", errors="replace")
     assert "LEARNINGS L1-L800" in banner, "banner not synced"
+
+
+def test_b2752e_hub2_is_a_registered_launchable_family():
+    """S6-B2752e: smc_order_block_bounce has a SPECS entry and a complete
+    tools adapter, so launch_refusals no longer refuses it for absence and
+    FAMILIES (derived from SPECS) carries its battery family.
+
+    The blocker this closes, measured at B2737: 1 of 22 smc consumers had a
+    SPECS entry and it was the ADMITTED breaker, so a hub-2 cube would have
+    landed and the battery would have failed CLOSED after the engine spend
+    (S6-B2573b).
+    """
+    import sys
+    from pathlib import Path as _P
+    d = _P(__file__).resolve().parents[2] / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    import producer_variant_table as pvt
+    import run_postconfig as rp
+
+    spec = pvt.SPECS["smc_order_block_bounce"]
+    assert pvt.validate_spec(spec) == [], pvt.validate_spec(spec)
+    assert rp.family_refusal("smc_order_block_bounce") == ""
+    assert "smc_order_block_bounce" in rp.FAMILIES
+    # tools.keys may name ONLY params carrying an env knob - family_refusal
+    # enforces it, and this states the intent so a later edit cannot quietly
+    # promote an offline axis into the cube-identity set
+    by_id = {p["id"]: p for p in spec["params"]}
+    for pid in spec["tools"]["keys"]:
+        assert by_id[pid].get("env"), f"{pid} is in tools.keys with no env knob"
+    # the offline axes stay OFF the identity set
+    assert set(spec["tools"]["keys"]) == {"P1", "P2"}
+    assert spec["tools"]["grid_keys"] == ["rsi_threshold", "leg"]
+
+
+def test_b2752f_leverage_does_not_price_an_unreachable_axis():
+    """S6-B2752f: an axis the engine cannot REACH costs no engine runs.
+
+    B2767 built leverage() because a coarse read inflated an engine-run count
+    8x; L796 names the DIRECTION as what makes that dangerous, since an
+    inflated cost always argues for not running something. On its second
+    subject the helper did it again - 30 engine runs against a true 10,
+    multiplying in a knob with no env actuator and no call-site plumbing.
+    Reported rather than dropped: an omitted axis is invisible at close.
+    """
+    import sys
+    from pathlib import Path as _P
+    d = _P(__file__).resolve().parents[2] / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    import producer_variant_table as pvt
+
+    got = pvt.leverage(pvt.SPECS["smc_order_block_bounce"])
+    assert got["engine_runs"] == 10, got
+    assert got["free_combos"] == 32, got
+    assert got["unreachable_axes"] == ["P3 tap_window"], got
+
+    # a synthetic spec proves the RULE rather than this one entry
+    synthetic = {"params": [
+        {"id": "P1", "param": "a", "band": [1, 2, 3], "subset_safe": False,
+         "engine_implemented": True},
+        {"id": "P2", "param": "b", "band": [1, 2, 3, 4], "subset_safe": False,
+         "engine_implemented": False},
+        {"id": "P3", "param": "c", "band": [1, 2], "subset_safe": True,
+         "engine_implemented": True},
+    ]}
+    s = pvt.leverage(synthetic)
+    assert s["engine_runs"] == 3, s        # 3, not 12
+    assert s["free_combos"] == 2, s
+    assert s["unreachable_axes"] == ["P2 b"], s
+
+    # and every OTHER registered spec is unaffected - the sweep, asserted
+    others = {k: pvt.leverage(v)["unreachable_axes"]
+              for k, v in pvt.SPECS.items() if k != "smc_order_block_bounce"}
+    assert all(v == [] for v in others.values()), others
