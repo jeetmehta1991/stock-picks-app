@@ -18902,6 +18902,22 @@ no scan can tell an estimate's direction from prose - and durability rides
 test_b2526's anchor sweep.
 
 
+**INSTANCE 2 (B2803, 2026-09-13) - the self-disparaging CAVEAT, same direction.**
+Proposing that hub-1's 151 current-gate fires be graded off the existing cube, I
+attached a caveat of my own invention: their exits "were never re-simulated -
+honest about entry, silent about management". **Two file-opens refuted it.**
+`backtest/engine/exit_strategies.py:4` states every exit is applied to each trade
+INDEPENDENTLY, so dropping the other 2,782 trades changes nothing about these
+151; and the pre-B2075 gate, read via `git show`, is strictly LOOSER than the
+current one, so the cube already holds every trade today's rule would take - the
+151 are the COMPLETE set, not a sample. The filter is exact.
+
+**A caveat is an asserted consequence wearing modesty's clothes** - compliance
+failure against `#278`. It makes your own proposal sound weaker, which is
+precisely why nobody challenges it, and understating a result costs what
+overstating one does: this one would have priced a free, exact measurement as a
+compromised one, and the owner would have decided on that price.
+
 ### L746 - A two-arm pin proves TWO ARMS, not two directions
 
 **B2556, 2026-09-02.** I fixed a gate that failed in both directions, pinned
