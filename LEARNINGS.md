@@ -19984,6 +19984,16 @@ stays green). It landed in ONE scripted call and ONE commit with this line, beca
 rule about landing members together while splitting them would refute the rule in the act of
 writing it.
 
+**INSTANCE (B2805, 2026-09-13) - the inversion, on a turn that had the rule loaded.**
+I landed the Phase-5 miss-capture at commit 1ddb9c910, then landed a WORK commit
+(e51e6c1e8) after it in the same turn. The gate immediately reported the LEARNINGS
+member missing - it was in HEAD~1, invisible to a one-commit-deep window. Two
+things made it feel safe: the miss-capture was ready first, and the work commit
+was gated and green, so committing it looked like tidiness rather than a
+reordering. **The batch-cap rule guarantees multi-commit turns, so the ordering is
+structural and not incidental** - when both a work batch and a miss-capture are
+ready, the work batch goes first ALWAYS, whatever order they became ready in.
+
 ### L773 - A FORMULA'S UNIT CONVENTION IS A BOUNDARY CONTRACT; TESTS THAT COMPUTE EXPECTED VALUES THE SAME WRONG WAY PIN THE DEFECT IN GREEN (B2646)
 
 **MEASURED at B2644/B2646.** _deflated_sharpe's executable convention was RAW kurtosis (its own
