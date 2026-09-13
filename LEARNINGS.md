@@ -20675,3 +20675,35 @@ a dozen rephrasings could not. (b) A window predicate keyed on a TYPE TAG is a
 guess about transport; enumerate the channels a real instruction can arrive on
 before trusting it. (c) Grep the name before briefing anyone on it - including
 yourself.
+
+### L796 - SPLITTING AN OVERLOADED FIELD LEAVES THE COARSE HALF READABLE (B2767, advisor-caught 2026-09-13)
+
+**What happened.** Comparing optimisation cost across three registered specs I
+published `institutional_committed_growth_long` as **1:1 leverage over 4,800
+engine runs**, in a table that reached the owner and was committed. It carries
+per-level `free_band` / `resim_band` on **9 of 9** parameters and is **8:1 over
+600 runs**. I read the coarse boolean `subset_safe` while the precise encoding
+sat in the same dict, one key away.
+
+**Why this is not just L726 again.** L726 said a field whose correct value
+depends on which question you ask is OVERLOADED - split it. It WAS split, and
+the split is live at 57 sites. **The successor failure is that both encodings
+then coexist**: the coarse one remains readable, nothing marks it superseded,
+and the natural way to write a quick comparison reaches for the field that is
+present on EVERY parameter rather than the one present on some.
+
+**The error has a direction, and the direction is what makes it dangerous.**
+Reading the boolean counts free levels as resim - never the reverse. So the
+mistake always INFLATES the cost estimate, and an inflated cost always argues
+for not running something. A silent bias toward inaction is the hardest kind to
+notice, because nothing fails; work simply never gets scheduled.
+
+**How it was caught.** Not by me. An advisor named the per-level machinery as
+already shipped, and re-measuring against it corrected the figure inside the
+same synthesis. Had the council not been convened I would have shipped an 8x
+error into a methodology decision.
+
+**Rule.** When a record carries both a coarse and a precise encoding of one
+property, do not read either by hand - put the PRECEDENCE in a function and
+make it return the basis alongside the number, so the figure cannot be quoted
+without its provenance.

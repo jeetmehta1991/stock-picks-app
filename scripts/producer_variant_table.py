@@ -1311,6 +1311,48 @@ def _rider_refusals(doc: dict, root: Path, graded: list[str]) -> list[str]:
     return errs
 
 
+def leverage(spec: dict) -> dict:
+    """Engine runs, free combinations and their ratio for ONE spec.
+
+    B2767. THE PRECEDENCE RULE IS THE POINT: where a parameter carries
+    per-level `free_band` / `resim_band`, those are authoritative and the
+    coarse boolean `subset_safe` is IGNORED. B2467/L726 split the overloaded
+    field because one boolean cannot say "half this band is free"; this
+    helper exists because splitting it was not enough - both encodings then
+    coexist, the coarse one stays readable, and reading it understates in a
+    PREDICTABLE direction (free levels counted as resim).
+
+    MEASURED at B2767: institutional_committed_growth_long read 1:1 over
+    4800 engine runs off the boolean, and 8:1 over 600 off its per-level
+    bands - a 8x error, published in an owner-facing table before it was
+    caught. The error direction always inflates cost, so it always argues
+    for NOT running something.
+
+    Returns {engine_runs, free_combos, ratio, basis} where basis names
+    which encoding was used, so a caller can never quote the number without
+    also being able to quote its provenance.
+    """
+    params = spec.get("params") or []
+    per_level = any(("free_band" in q or "resim_band" in q) for q in params)
+    engine = free = 1
+    for q in params:
+        if per_level:
+            fb = q.get("free_band") or []
+            rb = q.get("resim_band") or []
+            if fb:
+                free *= len(fb)
+            if rb:
+                engine *= len(rb)
+        else:
+            levels = max(len(q.get("band") or []), 1)
+            if q.get("subset_safe") is True:
+                free *= levels
+            else:
+                engine *= levels
+    return {"engine_runs": engine, "free_combos": free,
+            "ratio": free, "basis": "per_level" if per_level else "subset_safe"}
+
+
 def phase1b_admitted(root: Path | None = None) -> tuple:
     """(admitted strategy names, why-unreadable) from the Phase 1B admissions.
 

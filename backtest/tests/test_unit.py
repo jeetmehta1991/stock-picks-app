@@ -36692,3 +36692,39 @@ def test_b2761_window_channel_rule_survives():
     assert len(rows) == 1, f"expected one L795 tripwire row, got {len(rows)}"
     assert "L795 / #307 (MEASURED" in rows[0], "lineage cell missing"
     assert "READ THE PREDICATE ON THE LIVE ARTIFACT" in rows[0], "diagnostic missing"
+
+def test_b2767_leverage_prefers_per_level_bands():
+    """#308/L796: where per-level free_band/resim_band exist they are
+    authoritative and the coarse subset_safe boolean is IGNORED.
+
+    MEASURED at B2767: reading the boolean gave 1:1 over 4800 engine runs for a
+    spec that is 8:1 over 600 - an 8x error published in an owner-facing table.
+    The boolean counts free levels as resim and never the reverse, so the error
+    always inflates cost and always argues for not running something.
+    """
+    import sys
+    from pathlib import Path as _P
+    sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import producer_variant_table as pvt
+
+    # a spec whose halves DISAGREE: the boolean says resim, the bands say free
+    spec = {"params": [
+        {"id": "P1", "band": [1, 2, 3, 4], "subset_safe": False,
+         "free_band": [1, 2, 3], "resim_band": [4]},
+    ]}
+    lev = pvt.leverage(spec)
+    assert lev["basis"] == "per_level", f"per-level bands must win, got {lev}"
+    assert lev["engine_runs"] == 1 and lev["free_combos"] == 3, lev
+    # the coarse reading would have been 4 engine runs and 1 free combination
+    coarse = pvt.leverage({"params": [
+        {"id": "P1", "band": [1, 2, 3, 4], "subset_safe": False}]})
+    assert coarse["basis"] == "subset_safe"
+    assert coarse["engine_runs"] == 4 and coarse["free_combos"] == 1, coarse
+    assert lev["engine_runs"] < coarse["engine_runs"], (
+        "the whole point: the coarse read INFLATES the engine bill")
+
+    # every live spec reports a basis, so no figure can be quoted without it
+    for name, s in pvt.SPECS.items():
+        got = pvt.leverage(s)
+        assert got["basis"] in ("per_level", "subset_safe"), (name, got)
+        assert got["engine_runs"] >= 1 and got["free_combos"] >= 1, (name, got)

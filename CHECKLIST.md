@@ -5965,3 +5965,27 @@ argument for asking about CONTENT rather than TYPE.
 Mechanism: `test_b2759_midturn_instruction_advances_the_window` (both
 directions) and `test_b2759_both_window_helpers_consult_the_predicate` (the site
 count, so a third copy cannot appear unguarded).
+
+### #308 - A SPLIT FIELD'S COARSE HALF IS STILL READABLE - PUT THE PRECEDENCE IN CODE (B2767 / L796, and the first CHECKLIST anchor for B2467 / L726)
+
+When one property is encoded twice - a coarse summary and a precise
+per-level form - reading the coarse one is silently wrong, and wrong in a fixed
+direction. Do not compute such a quantity by hand. Call a function that encodes
+the precedence and returns the BASIS with the number.
+
+MEASURED: `institutional_committed_growth_long` reads **1:1 over 4,800 engine
+runs** from the boolean `subset_safe` and **8:1 over 600** from its per-level
+`free_band` / `resim_band` - an 8x error, published in an owner-facing table.
+The boolean counts free levels as resim and never the reverse, so the error
+always inflates cost and always argues for not running something.
+
+Note what this item is NOT: L726 already said to SPLIT an overloaded field, and
+the split shipped at 57 sites. This covers what happens AFTER the split, when
+both encodings coexist and the coarse one is the more convenient read.
+
+Would have caught: B2767 (this instance). Would NOT have caught B2467, where
+the field had not yet been split and no precise encoding existed to prefer.
+
+Mechanism: `producer_variant_table.leverage()` - one authoritative computation
+preferring per-level bands, returning `basis` so a figure cannot be quoted
+without its provenance; pinned by `test_b2767_leverage_prefers_per_level_bands`.
