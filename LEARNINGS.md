@@ -20771,3 +20771,35 @@ records that it should have.
 GENERATOR, not only its subject. Before comparing two counts, name the
 instrument that produced each - and if the artifact cannot tell you, that is
 the defect to fix first.
+
+### L799 - IF YOUR OUTPUT SUMMARISES A POPULATION, GREP FOR WHO ELSE SUMMARISES IT (B2775, self-caught 2026-09-13)
+
+**What happened.** I wrote `bh_fdr_report` as a NEW function and gave it a
+two-way split: rows with a p-value, and an unnamed remainder. Two live runs
+then each lost rows silently - `BELOW_POWER_FLOOR` vanished into the remainder,
+and a permutation-null grader reported `graded: 0` while 528 cells had been
+graded. **The repo had already solved this**: `producer_variant_table.py:2169`
+partitions the same grid rows FOUR ways, and its comment records why - *31-66
+rows per config vanished from the funnel* until B1701 added the fourth bucket.
+
+**Why I did not find it.** L608 says a new helper starts without its siblings'
+lessons, and that is the mechanism. What was missing was the TRIGGER: nothing
+prompts you to look for a sibling convention when you are writing something
+new, because there is no file open in front of you that already contains it.
+
+**The trigger, stated so it can be used.** If what you are writing SUMMARISES
+or PARTITIONS a population that already exists in the codebase - grid rows,
+cube cells, ledger tickets, test results - then someone has almost certainly
+summarised it before, and their bucket list encodes failures you have not met
+yet. Grep for who else reads that population BEFORE choosing your own buckets.
+
+**And the sweep says it was not one site.** Scanned every script for places
+bucketing one row list two or more ways: **3 sites, and 2 of them still do not
+reconcile** (`tighten_breaker_block.py`, `optimize_strategies_from_cube.py`).
+Mine was the third instance of a class with two live siblings, so the
+convention I failed to copy was also the convention two other call sites lack.
+
+**Rule.** Before inventing a partition, grep for the population's existing
+readers and copy the bucket list you find - the extra buckets are paid-for
+knowledge, and a partition that does not reconcile loses rows in the direction
+nobody checks.

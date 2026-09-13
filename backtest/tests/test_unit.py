@@ -36944,3 +36944,22 @@ def test_b2775_salvage_grader_hands_in_its_permutation_null():
     assert "rc.bh_fdr_report(rows, permutation_null=pn)" in src, (
         "the permutation-null grader must hand its null to the report, or it "
         "will keep claiming graded=0 while hundreds of cells were graded")
+
+def test_b2778_partition_prior_art_rule_survives():
+    """L799/#262: before inventing a partition, grep the population's existing
+    readers and copy their buckets. DETECTION is JUDGMENT-ONLY - no scan knows
+    which new function summarises which existing population."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    assert len([l for l in lrn.splitlines() if l.startswith("### L799 ")]) == 1
+    # L771: a fragment that spans a line wrap can never match. THIRD time
+    # this session - assert a token that cannot be split, not a phrase.
+    assert "31-66" in lrn, "L799 must keep B1701's measured cost"
+    assert "3 sites" in lrn, "L799 must keep the sibling sweep result"
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Write something that SUMMARISES or PARTITIONS")]
+    assert len(rows) == 1, f"expected one L799 tripwire row, got {len(rows)}"
+    assert "L799 / #262 (MEASURED" in rows[0], "lineage cell missing"
