@@ -43,6 +43,11 @@ STRAT = "smc_liquidity_sweep_reversal"
 R5_DIR = ROOT / "output_r5_merged_1_7"
 CUBE = R5_DIR / "trade_exit_detail.csv"
 TRADE_LOG = R5_DIR / "trade_log.csv"
+# S6-B2804: the CURRENT gate's required sweep leg, per direction.
+# B2075 (owner-approved 2026-08-23) restored it as REQUIRED after B1202
+# had let bos alone satisfy both clauses of the old gate.
+SWEEP_KEYS = {"long": "smc_liquidity_swept_dn",
+              "short": "smc_liquidity_swept_up"}
 ARM_KEYS = {"long": ("smc_choch_bullish", "smc_bos_bullish"),
             "short": ("smc_choch_bearish", "smc_bos_bearish")}
 B_AXES = [("monthly_momentum_6m", "ge"), ("bb_20_20_bandwidth", "le"),
@@ -68,8 +73,9 @@ def build(cube_dir: Path | None = None, strat: str = STRAT,
         if not _p.exists():
             raise SystemExit(f"REFUSED: {_p} does not exist (fail closed)")
     if keys is None:
-        keys = [k for k, _ in B_AXES] + [k for pair in ARM_KEYS.values()
-                                         for k in pair]
+        keys = ([k for k, _ in B_AXES]
+                + [k for pair in ARM_KEYS.values() for k in pair]
+                + list(SWEEP_KEYS.values()))
     tl = pd.read_csv(trade_log, low_memory=False,
                      usecols=["strategy", "ticker", "entry_date", "direction",
                               "signals_at_entry"])
@@ -87,6 +93,24 @@ def build(cube_dir: Path | None = None, strat: str = STRAT,
     m = cube.merge(fam, on=["strategy", "ticker", "entry_date"], how="left")
     m["entry_date"] = pd.to_datetime(m["entry_date"], errors="coerce").dt.date
     return m
+
+
+def current_gate_rows(m: pd.DataFrame) -> pd.DataFrame:
+    """The rows the CURRENT gate would fire on - a SELECTION, not an estimate.
+
+    current: swept AND (choch OR bos), per leg (screener.py:4722).
+    Exact on two counts, both READ rather than assumed: exits are per-trade
+    independent (exit_strategies.py:4), so dropping rows changes no survivor;
+    and the pre-B2075 gate was strictly LOOSER, so every trade the current
+    rule would take is already recorded here. Nothing is missing.
+    """
+    parts = []
+    for leg, (ck, bk) in ARM_KEYS.items():
+        sk = SWEEP_KEYS[leg]
+        sub = m[(m.direction == leg) & (m[sk] == 1.0)
+                & ((m[ck] == 1.0) | (m[bk] == 1.0))]
+        parts.append(sub)
+    return pd.concat(parts) if parts else m.iloc[0:0]
 
 
 def grade_cells(m: pd.DataFrame, min_n: int) -> list[dict]:
@@ -179,6 +203,11 @@ def main() -> int:
     ap.add_argument("--min-n", type=int, default=10)
     ap.add_argument("--null-perms", type=int, default=100)
     ap.add_argument("--null-seed", type=int, default=13)
+    ap.add_argument("--current-gate-only", action="store_true",
+                    help="grade only the fires the CURRENT gate would "
+                         "take. The R5 cube predates B2075, so without "
+                         "this the grid ranks an OR-gate population "
+                         "(S6-B2802)")
     ap.add_argument("--out", required=True)
     # S6-B2732a: the cube to grade, and this config's knob IDENTITY.
     # The knobs are NOT search axes here - they are baked into the cube
@@ -217,6 +246,20 @@ def main() -> int:
                   f"event_recency_bars={a.event_recency_bars}, so its fire set "
                   f"DIFFERS from the R5 baseline by design; own fires {len(fires)}")
     print(f"{_repro} ({time.time()-t0:.0f}s)")
+
+    # S6-B2804: applied AFTER the reproduction gate, deliberately - the gate
+    # must still bind against the cube's OWN recorded population, or a
+    # filtered run could pass a gate it never faced.
+    gate_note = "ALL recorded fires (the cube's own population)"
+    if a.current_gate_only:
+        before = len(fires)
+        m = current_gate_rows(m)
+        fires = m.drop_duplicates(["ticker", "entry_date"])
+        gate_note = (f"CURRENT-GATE ONLY: {len(fires)} of {before} recorded "
+                     "fires satisfy swept AND (choch OR bos) per leg. The "
+                     "pre-B2075 gate was strictly looser, so this is the "
+                     "COMPLETE set the current rule would take, not a sample")
+        print(gate_note)
 
     rows = grade_cells(m, a.min_n)
     graded = [r for r in rows if r["is_sharpe"] is not None]
@@ -257,6 +300,8 @@ def main() -> int:
                       "P2_liquidity_range_pct": a.liquidity_range_pct,
                       "P3_event_recency_bars": a.event_recency_bars},
            "reproduction": _repro,
+           "population": gate_note,
+
            "ruling": "owner band word 'Lets proceed with step 1' 2026-09-12 (S6-B2691a)",
            "design": "9 depth cells (leg x arm) + 6 breadth axes one-at-a-time on the "
                      "production base; IS-only; holdout untouched; npt barred from ranking",
