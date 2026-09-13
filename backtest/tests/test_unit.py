@@ -36836,3 +36836,46 @@ def test_b2770_exploratory_promotion_is_complete_and_roster_neutral():
     assert cube_eligible_for_multiple_testing("pead_long") is True, (
         "a non-member must remain confirmatory - the promotion must not "
         "make everything exploratory")
+
+def test_b2774_grader_artifacts_stamp_their_generator():
+    """#309/L798: an artifact names its SUBJECT and must also name its
+    INSTRUMENT, or a reader cannot tell two comparable-looking files apart.
+
+    MEASURED: a grid_auto reporting 0 graded rows was compared against a
+    salvage grader that graded 528 cells on the SAME cube. Both correct,
+    different instruments - and at the time neither file named its generator,
+    so nothing in either could have stopped the comparison.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2] / "scripts"
+    for fname, gen in (("smc_lsr_step1.py", "scripts/smc_lsr_step1.py"),
+                       ("tighten_breaker_block.py",
+                        "scripts/tighten_breaker_block.py")):
+        src = (root / fname).read_text(encoding="utf-8", errors="replace")
+        assert '"generator"' in src, f"{fname} does not stamp a generator"
+        assert gen in src, f"{fname} stamps the wrong generator path"
+    # the grid artifact previously named NO cube at all - that is half the
+    # defect, because a file naming neither subject nor instrument is
+    # uncomparable in both directions
+    tb_src = (root / "tighten_breaker_block.py").read_text(encoding="utf-8",
+                                                           errors="replace")
+    assert '"cube":' in tb_src, (
+        "tighten_breaker_block must stamp the cube it graded")
+
+
+def test_b2774_generator_stamp_survives_in_the_docs():
+    """Durability half: DETECTION of a future unstamped artifact is
+    JUDGMENT-ONLY - no scan knows which dicts become artifacts."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    assert len([l for l in lrn.splitlines() if l.startswith("### L798 ")]) == 1
+    assert "528" in lrn, "L798 must keep the measured contrast"
+    chk = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="replace")
+    assert len([l for l in chk.splitlines() if l.startswith("### #309 ")]) == 1
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Compare a count in one artifact")]
+    assert len(rows) == 1, f"expected one L798 tripwire row, got {len(rows)}"
+    assert "L798 / #309 (MEASURED" in rows[0], "lineage cell missing"

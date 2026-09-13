@@ -20741,3 +20741,33 @@ error. Recorded rather than silently patched.
 **Rule.** On the second revision of any figure, stop revising and open the field
 that classifies its members. If no such field exists, say the figure is a count
 and not a measurement.
+
+### L798 - AN ARTIFACT NAMES ITS SUBJECT, NOT ITS INSTRUMENT (B2774, self-caught 2026-09-13)
+
+**What happened.** I warned the owner that an approved zero-cost salvage would
+yield little, because "that cube's grid shows 0 graded rows". The salvage then
+graded **528 cells**. Both figures were correct. They came from **different
+graders**: `output_b2712_smc_sw10_sw10_grid_auto.json` is written by
+`tighten_breaker_block.py`, the salvage by `smc_lsr_step1.py`, and the two
+score different things.
+
+**Why the comparison looked legitimate.** Both artifacts name the same CUBE and
+use the same vocabulary - rows, graded, verdict, step1_ranking. MEASURED: at the
+time, **neither file named the script that produced it**, and the grid_auto one
+named no cube either. So two JSONs about one cube carried nothing a reader could
+use to tell them apart. The subject was stamped; the instrument was not.
+
+**This is `#271` at one remove.** That item says two numbers for one name means
+diffing the DEFINITIONS. Here the definitions live in different FILES, and
+nothing in either artifact points at them - so the reader cannot diff what the
+artifact does not disclose.
+
+**The direction it pointed.** My wrong figure argued AGAINST running work the
+owner had approved. An error that discourages a cheap experiment is expensive
+in a way a loud error is not: the experiment simply does not happen and nothing
+records that it should have.
+
+**Rule.** Any artifact a reader might compare against a sibling stamps its
+GENERATOR, not only its subject. Before comparing two counts, name the
+instrument that produced each - and if the artifact cannot tell you, that is
+the defect to fix first.

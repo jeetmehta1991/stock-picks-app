@@ -488,6 +488,11 @@ def main() -> int:
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(
         {"strategy": STRATEGY, "r5_baseline_fires": len(fires),
+         # B2774: stamp the generating instrument - see smc_lsr_step1.py.
+         # This artifact also named no cube, so two files about one cube
+         # carried nothing that could tell them apart.
+         "generator": "scripts/tighten_breaker_block.py",
+         "cube": str(Path(a.cube) if a.cube else R5_CUBE),
          # B2768 (owner-approved 2026-09-13): grid-stage BH-FDR, REPORT-ONLY.
          # Changes NO gate and NO ranking - step 1 is a ranked list with no
          # gates (B1608), so a rejection rule here would silently become a

@@ -234,6 +234,12 @@ def main() -> int:
               f"({time.time()-t0:.0f}s)")
 
     rec = {"strategy": STRAT,
+           # B2774: an artifact names its CUBE, not its INSTRUMENT - so two
+           # JSONs about one cube look comparable and are not. I compared a
+           # grid_auto "0 graded" against this grader and warned the owner of
+           # a low yield; this grader then graded 528 cells. Stamp the
+           # generator so the next reader cannot make that comparison blind.
+           "generator": "scripts/smc_lsr_step1.py",
            "cube": str(_cube_dir) if _cube_dir else str(R5_DIR),
            "config": {"P1_swing_length": a.swing_length,
                       "P2_liquidity_range_pct": a.liquidity_range_pct,

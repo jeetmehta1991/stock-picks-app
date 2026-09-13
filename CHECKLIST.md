@@ -5989,3 +5989,28 @@ the field had not yet been split and no precise encoding existed to prefer.
 Mechanism: `producer_variant_table.leverage()` - one authoritative computation
 preferring per-level bands, returning `basis` so a figure cannot be quoted
 without its provenance; pinned by `test_b2767_leverage_prefers_per_level_bands`.
+
+### #309 - STAMP THE GENERATOR, NOT ONLY THE SUBJECT (B2774 / L798, self-caught 2026-09-13)
+
+An artifact that names what it is ABOUT but not what PRODUCED it invites a
+comparison its reader cannot validate. Two files describing one cube, written by
+two graders that score different things, share a vocabulary and look
+interchangeable.
+
+MEASURED: `output_b2712_smc_sw10_sw10_grid_auto.json` (from
+`tighten_breaker_block.py`) reports 0 graded rows; `b2772_hub1_salvage.json`
+(from `smc_lsr_step1.py`) graded 528 cells on the same cube. Both correct. At
+the time neither artifact named its generator and the first named no cube, so
+nothing in either file could have stopped the comparison.
+
+Before comparing two counts, name the instrument behind each. If the artifact
+does not disclose it, fix that first - the comparison is unverifiable until it
+does.
+
+Would have caught: B2774 (this instance). Would NOT have caught #271's original
+instance, where both figures came from ONE reader over one file and the defect
+was the set counted rather than the tool used.
+
+Mechanism: both graders now stamp `generator` (and `tighten_breaker_block.py`
+also stamps `cube`, which it previously omitted); pinned by
+`test_b2774_grader_artifacts_stamp_their_generator`.
