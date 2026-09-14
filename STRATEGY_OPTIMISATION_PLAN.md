@@ -3480,6 +3480,93 @@ the two-layer formula that gives the row ids their meaning.
 9. ADMISSION PROPOSAL - options with labels riding (B2660 doctrine); the ruling is the
    owner's; contained-sibling pre-registered passes ride hub verdicts (B2628).
 
+### 11.2b4 THE 38 STRATEGIES WHOSE ENTRY CONDITION MOVED AFTER R5 (B2806, owner-directed 2026-09-13)
+
+**Why this list exists.** R5 (`output_r5_merged_1_7`, trade_log dated 2026-07-24) is the
+comparison basis for every offline read. A strategy's ENTRY CONDITION - the boolean in
+`screener.py` deciding whether it fires on a bar - may have been edited since. Where it
+was, R5 records a population the current condition would NOT produce, and any figure read
+off those rows describes a strategy that no longer exists in that form.
+
+**MEASURED 2026-09-13** by AST-diffing every `strat_*` function between the R5-era screener
+commit `fee970996` and HEAD:
+
+| | count |
+|---|---|
+| strategy functions at R5 | 219 |
+| strategy functions now | 223 |
+| present in both | 210 |
+| **entry condition CHANGED since R5** | **38 (18.1%)** |
+| added since R5 | 13 |
+| **unchanged - R5 is a clean basis** | **172** |
+
+**THE 38, by family**
+
+- **smc / ICT (4)** - `smc_breaker_block_long`, `smc_breaker_block_short`,
+  `smc_liquidity_sweep_reversal`, `smc_order_block_bounce`
+- **Institutional / smart money (6)** - `institutional_committed_growth_long`,
+  `institutional_insider_combo_long`, `institutional_volume_confirmation_long`,
+  `xs_low_beta_with_smart_money_long`, `xs_momentum_with_smart_money_long`,
+  `52w_high_breakout_with_smart_money_vol_below_long`
+- **Cross-sectional (3)** - `xs_momentum_bottom_decile_short`,
+  `xs_quality_top_quintile_long`, `pairs_mean_reversion_long`
+- **Trend / momentum indicators (9)** - `awesome_oscillator`, `cmf_flip`,
+  `ichimoku_cloud_breakdown`, `ichimoku_tk_cross`, `macd_ichimoku`, `supertrend_macd`,
+  `supertrend_macd_short`, `tema_dema`, `avwap_50_reclaim`
+- **Breakout / retest (7)** - `break_retest_volume`, `dc20_break_retest`,
+  `prev_day_high_break`, `52wl_break_retest_short`, `52w_low_breakdown_pullback_short`,
+  `camarilla_r4_breakout`, `avwap_20high_rejection_short`
+- **Patterns / events / other (9)** - `head_and_shoulders_top_short`, `morning_star`,
+  `news_momentum_long`, `pead_short_negative_yoy_growth`, `m_and_a_target_long`,
+  `risk_off_bond_equity_short`, `simple_below_ema_50_short`,
+  `vol_spike_2x_below_ema_50_short`, `pairs_mean_reversion_short`
+
+**THE 38 IS AN UPPER BOUND ON BEHAVIOURAL CHANGE.** The diff counts any code difference, so
+a rename or a configurable-span swap is included. MEASURED examples of each kind:
+
+- `institutional_committed_growth_long` changed `price_above_ema_200` ->
+  `price_above_ema_{STRAT_EMA_SPAN}`: **identical at the default span 200**, no thesis change.
+- `institutional_insider_combo_long` changed `institutional_buy` **OR**
+  `insider_cluster_active` -> **AND**: a real tightening.
+- `institutional_volume_confirmation_long` gained `stoch_d >= 45.63`: a real tightening.
+
+**ROSTER EXPOSURE: 3 of 14 admitted strategies are in the 38, and 0 of 3 are at risk.** Each
+changed BEFORE its admission was graded, so every admission used the current condition -
+`smc_breaker_block_long` (artifact 2026-08-30), `institutional_committed_growth_long`
+(2026-09-10), `xs_low_beta_with_smart_money_long` (2026-09-11), each with ZERO edits to its
+function after its artifact. The other 11 admitted are unchanged since R5.
+
+**HOW THIS BINDS THE WORKFLOW - it is the STEP 0.6 check, made concrete.** Before reading any
+R5 figure for a strategy, re-evaluate its CURRENT condition against the persisted
+`signals_at_entry` of its recorded fires and state the survival rate. MEASURED for four:
+
+| strategy | R5 fires | still satisfy the current condition |
+|---|---|---|
+| `turtle_soup_short` (not in the 38) | 1,880 | 1,880 (100.0%) |
+| `smc_liquidity_sweep_reversal` | 2,933 | 151 (5.1%) |
+| `smc_order_block_bounce` | 1,340 | 0 - the gate key post-dates the cube |
+| `smc_breaker_block_long` / `_short` | 948 / 1,598 | 0 / 0 - same reason |
+
+**A LOW SURVIVAL RATE IS NOT A VERDICT ON THE STRATEGY (owner ruling 2026-09-13).** Owner,
+verbatim: *"Just because the logic changed for sweep-liquidity strategy and we have just 151
+fires it doesn't mean that the strategy is bad or has no edge. It's simply then a question of
+varying thresholds within producers to find the best combination. That also qualifies it for
+strategy optimization even if it's loosening."*
+
+This corrects a reading filed the same day that called hub-1 "not worth engine hours". The
+OFFLINE path is tightening-only BY CONSTRUCTION - a looser level admits bars the cube never
+recorded - but the ENGINE has no such limit, and DEPTH over all producer bands INCLUDING
+loosening is Priority 1 (11.2b2b). MEASURED on a seeded 120-fire sample of the 2,782
+bos-only R5 fires, re-deriving the liquidity primitive at wider clusters: **0.0% gain a sweep
+at production 0.01 (the control), 4.2% at 0.02, 10.2% at 0.03** - which scales to roughly
++117 and +284 fires against 151 at production. A knob that plausibly triples the fire count
+is a depth axis, not a reason to skip the strategy.
+
+**Rule.** A strategy in the 38 is NOT disqualified and NOT trusted on its R5 numbers. It gets
+the survival check first, the result recorded in its spec `note` and queue row, and - where
+the current condition is rare - the LOOSENING half of its producer bands scheduled as an
+engine depth sweep rather than treated as a dead end.
+
 ### 11.2c APPROVAL FLOW - which word covers which stage (L779, owner-mandated 2026-09-10)
 
 An instruction covers the stages up to the next irreversible or owner-owned gate, NEVER past
