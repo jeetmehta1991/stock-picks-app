@@ -1,0 +1,3191 @@
+{
+  "generator": "scripts/build_strategy_status.py",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
+  "r5_screener_commit": "fee970996",
+  "rules": {
+    "coverage_floor": 0.98,
+    "min_fires_for_grid": 100,
+    "step1_shape": "200 tickers x 1y"
+  },
+  "caveats": [
+    "changed_since_r5 is an UPPER BOUND - any code difference counts",
+    "stream TIGHTEN rests on a source pattern for numeric comparisons, a LOWER BOUND - thresholds via a helper or a config constant are invisible",
+    "survives_pct is populated only for strategies whose current rule is registered in CURRENT_RULES; None means UNMEASURED, never 100pct"
+  ],
+  "rows": [
+    {
+      "strategy": "52w_high_breakout",
+      "family": "breakout",
+      "r5_fires": 33,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 2.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B2033a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "52w_high_breakout_pullback_long",
+      "family": "breakout",
+      "r5_fires": 150,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 11.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 66,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.9,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 203,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 14.9,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B2033a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "52w_low_breakdown",
+      "family": "breakout",
+      "r5_fires": 95,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 7.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "52w_low_breakdown_pullback_short",
+      "family": "breakout",
+      "r5_fires": 427,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 31.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "52wh_break_retest",
+      "family": "breakout",
+      "r5_fires": 18,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 1.3,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "52wl_break_retest_short",
+      "family": "breakout",
+      "r5_fires": 77,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 5.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "activist_13d_long",
+      "family": "sec_edgar_sleeve",
+      "r5_fires": 119,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 8.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "adx_initiation",
+      "family": "trend",
+      "r5_fires": 39,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 2.9,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "avwap_20high_rejection_short",
+      "family": "vwap",
+      "r5_fires": 81,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 6.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "family": "vwap",
+      "r5_fires": 2294,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 168.7,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "avwap_50_reclaim",
+      "family": "vwap",
+      "r5_fires": 1336,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 98.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "family": "momentum",
+      "r5_fires": 1012,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 74.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "bb_squeeze_volume",
+      "family": "confluence",
+      "r5_fires": 1013,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 74.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "bollinger_lower",
+      "family": "mean_reversion",
+      "r5_fires": 1622,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 119.3,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "adx": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "bollinger_tight",
+      "family": "mean_reversion",
+      "r5_fires": 271,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 19.9,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "bollinger_tight_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 840,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 61.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "bollinger_upper_short",
+      "family": "mean_reversion",
+      "r5_fires": 130,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 9.6,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "break_retest_confluence",
+      "family": "confluence",
+      "r5_fires": 1889,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 138.9,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "break_retest_volume",
+      "family": "breakout",
+      "r5_fires": 2164,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 159.1,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "bullish_engulfing_support",
+      "family": "candle",
+      "r5_fires": 991,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 72.9,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "family": "pivot",
+      "r5_fires": 5774,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 424.6,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "camarilla_s3_bounce",
+      "family": "pivot",
+      "r5_fires": 228,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 16.8,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "classification_change_recent_long",
+      "family": "classification_change",
+      "r5_fires": 6,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "cmf_flip",
+      "family": "mean_reversion",
+      "r5_fires": 2994,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 220.1,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "consec_downdays_quality_long",
+      "family": "mean_reversion",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "cpr_narrow_bullish",
+      "family": "pivot",
+      "r5_fires": 1248,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 91.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "cpr_narrow_momentum",
+      "family": "confluence",
+      "r5_fires": 1001,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 73.6,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "cpr_narrow_momentum_short",
+      "family": "confluence",
+      "r5_fires": 1696,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 124.7,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "cup_and_handle_long",
+      "family": "chart_pattern",
+      "r5_fires": 164,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 12.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "cup_and_handle_retest_long",
+      "family": "chart_pattern",
+      "r5_fires": 99,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 7.3,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "family": "breakout",
+      "r5_fires": 2414,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 177.5,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "death_cross_50_200_volume",
+      "family": "trend",
+      "r5_fires": 31,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 2.3,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "doji_at_resistance_short",
+      "family": "candle",
+      "r5_fires": 306,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 22.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "doji_at_support",
+      "family": "candle",
+      "r5_fires": 232,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 17.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "donchian_10_breakout",
+      "family": "breakout",
+      "r5_fires": 966,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 71.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "donchian_breakdown_retest_short",
+      "family": "breakout",
+      "r5_fires": 999,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 73.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "donchian_breakdown_short",
+      "family": "breakout",
+      "r5_fires": 872,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 64.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "donchian_breakout_long",
+      "family": "breakout",
+      "r5_fires": 507,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 37.3,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "donchian_breakout_retest_long",
+      "family": "breakout",
+      "r5_fires": 547,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 40.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "donchian_breakout_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 985,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 72.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "double_bottom_long",
+      "family": "chart_pattern",
+      "r5_fires": 291,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 21.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "earnings_avwap_reclaim_long",
+      "family": "vwap",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "failed_breakout_2b_short",
+      "family": "breakout",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "flag_bear_retest_short",
+      "family": "chart_pattern",
+      "r5_fires": 55,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "flag_bull_long",
+      "family": "chart_pattern",
+      "r5_fires": 63,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.6,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "flag_bull_retest_long",
+      "family": "chart_pattern",
+      "r5_fires": 33,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 2.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "force_index_breakout",
+      "family": "breakout",
+      "r5_fires": 3013,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 221.5,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "gap_and_go_long",
+      "family": "momentum",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "gold_silver_risk_off_long",
+      "family": "cross_asset",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "golden_cross_20_50",
+      "family": "trend",
+      "r5_fires": 413,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 30.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "golden_cross_50_200",
+      "family": "trend",
+      "r5_fires": 109,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 8.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "golden_cross_9_21",
+      "family": "trend",
+      "r5_fires": 889,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 65.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "golden_cross_volume",
+      "family": "confluence",
+      "r5_fires": 43,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 3.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "halloween_seasonal_long",
+      "family": "calendar",
+      "r5_fires": 7,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "hammer_at_support_long",
+      "family": "candle",
+      "r5_fires": 110,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 8.1,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "head_and_shoulders_bottom_long",
+      "family": "chart_pattern",
+      "r5_fires": 146,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 10.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "head_and_shoulders_top_short",
+      "family": "chart_pattern",
+      "r5_fires": 477,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 35.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "htf_aligned_breakout_long",
+      "family": "multi_timeframe",
+      "r5_fires": 326,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 24.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "htf_aligned_breakout_short",
+      "family": "multi_timeframe",
+      "r5_fires": 996,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 73.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "hull_rsi",
+      "family": "momentum",
+      "r5_fires": 1270,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 93.4,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "adx": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "ichimoku_cloud_breakdown",
+      "family": "trend",
+      "r5_fires": 197,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 14.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "ichimoku_cloud_breakout",
+      "family": "trend",
+      "r5_fires": 511,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 37.6,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "ichimoku_tk_cross",
+      "family": "trend",
+      "r5_fires": 1319,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 97.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "inside_bar_breakout",
+      "family": "breakout",
+      "r5_fires": 677,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 49.8,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "adx": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "insider_cluster_concentrated_sell_short",
+      "family": "event_driven",
+      "r5_fires": 269,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 19.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "insider_cluster_long",
+      "family": "event_driven",
+      "r5_fires": 24,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 1.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "insider_cluster_with_director_long",
+      "family": "event_driven",
+      "r5_fires": 24,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 1.8,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "insider_director_buyers_30d": 1.0,
+        "insider_officer_buyers_30d": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "family": "-",
+      "r5_fires": 642,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 47.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "institutional_buy_momentum_long",
+      "family": "-",
+      "r5_fires": 2644,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 194.4,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "institutional_cluster_long",
+      "family": "-",
+      "r5_fires": 2451,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 180.2,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "institutional_committed_growth_long",
+      "family": "institutional_persistence",
+      "r5_fires": 1941,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 142.7,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "institutional_high_conviction_long",
+      "family": "-",
+      "r5_fires": 2473,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 181.8,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "institutional_new_positions": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "institutional_increased_with_directors_long",
+      "family": "institutional_persistence",
+      "r5_fires": 107,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 7.9,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "insider_unique_buyers_30d": 1.0,
+        "institutional_increased": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "institutional_insider_combo_long",
+      "family": "smart_money_combo",
+      "r5_fires": 2751,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 202.3,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "institutional_multi_quarter_persistence_long",
+      "family": "institutional_persistence",
+      "r5_fires": 2516,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 185.0,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "persistent_holders_4q": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "institutional_oversold_long",
+      "family": "-",
+      "r5_fires": 386,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 28.4,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "institutional_persistence_breakout_long",
+      "family": "institutional_persistence",
+      "r5_fires": 532,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 39.1,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "institutional_increased": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "institutional_persistence_momentum_long",
+      "family": "institutional_persistence",
+      "r5_fires": 2324,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 170.9,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "institutional_increased": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "institutional_persistence_oversold_long",
+      "family": "institutional_persistence",
+      "r5_fires": 716,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 52.6,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "institutional_increased": 1.0,
+        "rsi_14": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "institutional_persistence_volume_long",
+      "family": "institutional_persistence",
+      "r5_fires": 1199,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 88.2,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "institutional_increased": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "institutional_persistent_holders_long",
+      "family": "institutional_persistence",
+      "r5_fires": 1955,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 143.8,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "institutional_increased": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "institutional_recent_init_momentum_long",
+      "family": "institutional_persistence",
+      "r5_fires": 2268,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 166.8,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "institutional_new_positions": 1.0
+      },
+      "tickets": [],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "institutional_recent_init_volume_long",
+      "family": "institutional_persistence",
+      "r5_fires": 1075,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 79.0,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "institutional_new_positions": 1.0
+      },
+      "tickets": [],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "institutional_strong_conviction_long",
+      "family": "institutional_persistence",
+      "r5_fires": 1826,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 134.3,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "institutional_increased": 1.0,
+        "institutional_new_positions": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "institutional_volume_confirmation_long",
+      "family": "-",
+      "r5_fires": 1387,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 102.0,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "institutional_with_directors_long",
+      "family": "smart_money_combo",
+      "r5_fires": 115,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 8.5,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "insider_unique_buyers_30d": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "institutional_with_officers_long",
+      "family": "smart_money_combo",
+      "r5_fires": 103,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 7.6,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "insider_director_buyers_30d": 1.0,
+        "insider_officer_buyers_30d": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "inverted_cup_and_handle_short",
+      "family": "chart_pattern",
+      "r5_fires": 366,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 26.9,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "january_effect_small_cap_long",
+      "family": "calendar",
+      "r5_fires": 1,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "judas_swing_long",
+      "family": "ict",
+      "r5_fires": 65,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "judas_swing_short",
+      "family": "ict",
+      "r5_fires": 84,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 6.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "keltner_lower",
+      "family": "mean_reversion",
+      "r5_fires": 41,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 3.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "family": "sec_edgar_sleeve",
+      "r5_fires": 1023,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 75.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "macd_bullish_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 1162,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 85.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "macd_crossover",
+      "family": "momentum",
+      "r5_fires": 2910,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 214.0,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a",
+        "S6-B1483a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "macd_crossover_short",
+      "family": "momentum",
+      "r5_fires": 1524,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 112.1,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1483a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "family": "momentum",
+      "r5_fires": 4070,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 299.3,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "macd_ichimoku",
+      "family": "confluence",
+      "r5_fires": 2907,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 213.8,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a",
+        "S6-B1483a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "mfi_overbought_short",
+      "family": "mean_reversion",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "mfi_oversold",
+      "family": "mean_reversion",
+      "r5_fires": 77,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 5.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "mfi_oversold_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 244,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 17.9,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "mmbm_long",
+      "family": "ict",
+      "r5_fires": 1337,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 98.3,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "mmsm_short",
+      "family": "ict",
+      "r5_fires": 2456,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 180.6,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "monthly_bias_momentum_long",
+      "family": "multi_timeframe",
+      "r5_fires": 37,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 2.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "morning_star",
+      "family": "candle",
+      "r5_fires": 2280,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 167.6,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "family": "volume_profile",
+      "r5_fires": 1788,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 131.5,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "naked_poc_count": 1.0,
+        "naked_poc_nearest_distance_pct": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "news_momentum_long",
+      "family": "news_sentiment",
+      "r5_fires": 113,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 8.3,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "news_sentiment_5d": 1.0,
+        "news_volume_zscore_5d": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "news_momentum_short",
+      "family": "news_sentiment",
+      "r5_fires": 13,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 1.0,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "news_sentiment_5d": 1.0,
+        "news_volume_zscore_5d": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "news_reversal_long",
+      "family": "news_sentiment",
+      "r5_fires": 1,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.1,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "news_count_5d": 1.0,
+        "news_sentiment_5d": 1.0,
+        "news_sentiment_shift": 1.0,
+        "pct_change_5d": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "news_reversal_short",
+      "family": "news_sentiment",
+      "r5_fires": 60,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.4,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "news_count_5d": 1.0,
+        "news_sentiment_5d": 1.0,
+        "news_sentiment_shift": 1.0,
+        "pct_change_5d": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "news_sentiment_long",
+      "family": "news_sentiment",
+      "r5_fires": 906,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 66.6,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "news_article_count": 1.0,
+        "news_sentiment_mean": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "news_sentiment_shift_long",
+      "family": "news_sentiment",
+      "r5_fires": 357,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 26.2,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "news_article_count": 1.0,
+        "news_sentiment_shift": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "news_sentiment_short",
+      "family": "news_sentiment",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "orb_stocks_in_play_long",
+      "family": "orb",
+      "r5_fires": 54,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "orb_stocks_in_play_short",
+      "family": "orb",
+      "r5_fires": 115,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 8.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "family": "pairs",
+      "r5_fires": 5036,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 370.3,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "pair_count_active": 1.0,
+        "pair_half_life": 1.0,
+        "pair_zscore_signed": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pairs_mean_reversion_short",
+      "family": "pairs",
+      "r5_fires": 5698,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 419.0,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "pair_count_active": 1.0,
+        "pair_half_life": 1.0,
+        "pair_zscore_signed": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "parabolic_sar_flip",
+      "family": "trend",
+      "r5_fires": 1618,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 119.0,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "parabolic_sar_flip_short",
+      "family": "trend",
+      "r5_fires": 1672,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 122.9,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pead_long",
+      "family": "event_driven",
+      "r5_fires": 140,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 10.3,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "family": "event_driven",
+      "r5_fires": 2116,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 155.6,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "pead_short",
+      "family": "event_driven",
+      "r5_fires": 872,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 64.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pead_short_negative_yoy_growth",
+      "family": "event_driven",
+      "r5_fires": 2215,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 162.9,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pead_with_insider_confirmation_long",
+      "family": "event_driven",
+      "r5_fires": 10,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 656,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 48.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "pivot_fib_confluence",
+      "family": "confluence",
+      "r5_fires": 91,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 6.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pivot_r1_breakout",
+      "family": "pivot",
+      "r5_fires": 860,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 63.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pivot_r2_continuation",
+      "family": "pivot",
+      "r5_fires": 55,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pivot_r3_blowoff_short",
+      "family": "pivot",
+      "r5_fires": 9,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "pivot_s1_bounce",
+      "family": "pivot",
+      "r5_fires": 458,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 33.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pivot_s2_bounce",
+      "family": "pivot",
+      "r5_fires": 55,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.0,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pivot_s3_capitulation",
+      "family": "pivot",
+      "r5_fires": 3,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "po3_bearish",
+      "family": "-",
+      "r5_fires": 2624,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 192.9,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "po3_bullish",
+      "family": "-",
+      "r5_fires": 731,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 53.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "poc_magnet_long",
+      "family": "volume_profile",
+      "r5_fires": 589,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 43.3,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "vp_close_near_poc_pct": 1.0
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "poc_magnet_short",
+      "family": "volume_profile",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "pocket_pivot_long",
+      "family": "momentum",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "post_deletion_drift_short",
+      "family": "-",
+      "r5_fires": 54,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "post_inclusion_drift_long",
+      "family": "-",
+      "r5_fires": 27,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 2.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "post_inclusion_reversal_short",
+      "family": "-",
+      "r5_fires": 100,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 7.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "ppo_crossover",
+      "family": "momentum",
+      "r5_fires": 1588,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 116.8,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pre_fomc_long_sleeve",
+      "family": "event_driven",
+      "r5_fires": 69,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 5.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pre_fomc_quality_momentum_long",
+      "family": "event_driven",
+      "r5_fires": 25,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 1.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pre_holiday_long",
+      "family": "calendar",
+      "r5_fires": 124,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 9.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "pre_rebalance_long",
+      "family": "-",
+      "r5_fires": 28,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 2.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "prev_day_high_break",
+      "family": "pivot",
+      "r5_fires": 1424,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 104.7,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "family": "pivot",
+      "r5_fires": 577,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 42.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "prev_day_low_breakdown",
+      "family": "breakout",
+      "r5_fires": 800,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 58.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "r1_break_retest",
+      "family": "pivot",
+      "r5_fires": 3371,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 247.9,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "risk_off_bond_equity_short",
+      "family": "cross_asset",
+      "r5_fires": 1895,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 139.3,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "roc_burst",
+      "family": "momentum",
+      "r5_fires": 918,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 67.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "rs_line_sector_leader_long",
+      "family": "momentum",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "rsi21_slow",
+      "family": "mean_reversion",
+      "r5_fires": 9,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.7,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_21": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "rsi9_extreme",
+      "family": "mean_reversion",
+      "r5_fires": 56,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "rsi_overbought_short",
+      "family": "mean_reversion",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "rsi_oversold",
+      "family": "mean_reversion",
+      "r5_fires": 1945,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 143.0,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "rsi_oversold_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 2753,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 202.4,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "rsi_volume_200ema",
+      "family": "confluence",
+      "r5_fires": 548,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 40.3,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "sector_rotation_defensive_long",
+      "family": "cross_asset",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "shooting_star_short",
+      "family": "candle",
+      "r5_fires": 250,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 18.4,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [
+        "S6-B2033a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "short_borrow_trap_avoid",
+      "family": "smart_money_sleeve",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "simple_below_ema_50_short",
+      "family": "momentum_trend",
+      "r5_fires": 3299,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 242.6,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "family": "smc",
+      "r5_fires": 100,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 7.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "family": "smc",
+      "r5_fires": 682,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 50.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_breaker_block_long",
+      "family": "smc",
+      "r5_fires": 948,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 69.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "smc_breaker_block_short",
+      "family": "smc",
+      "r5_fires": 1598,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 117.5,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_choch_reversal",
+      "family": "smc",
+      "r5_fires": 551,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 40.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_discount_long",
+      "family": "smc",
+      "r5_fires": 333,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 24.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_equal_highs_sweep_short",
+      "family": "smc",
+      "r5_fires": 838,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 61.6,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "family": "smc",
+      "r5_fires": 382,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 28.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "smc_fvg_retest_long",
+      "family": "smc",
+      "r5_fires": 66,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 4.9,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_fvg_retest_short",
+      "family": "smc",
+      "r5_fires": 288,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 21.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "family": "smc",
+      "r5_fires": 953,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 70.1,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_liquidity_sweep_reversal",
+      "family": "smc",
+      "r5_fires": 2933,
+      "changed_since_r5": true,
+      "survives_pct": 0.0515,
+      "projected_step1_fires": 215.7,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B2033a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "family": "smc",
+      "r5_fires": 15,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 1.1,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_mitigation_block_short",
+      "family": "smc",
+      "r5_fires": 44,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 3.2,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_order_block_bounce",
+      "family": "smc",
+      "r5_fires": 1340,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 98.5,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_ote_long",
+      "family": "smc",
+      "r5_fires": 231,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 17.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_ote_short",
+      "family": "smc",
+      "r5_fires": 262,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 19.3,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "smc_premium_short",
+      "family": "smc",
+      "r5_fires": 433,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 31.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "family": "breakout",
+      "r5_fires": 1141,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 83.9,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1483a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "squeeze_breakout_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 1139,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 83.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1483a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "squeeze_setup_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "stoch_oversold",
+      "family": "mean_reversion",
+      "r5_fires": 286,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 21.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "stochrsi_overbought_short",
+      "family": "momentum",
+      "r5_fires": 4287,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 315.2,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "stochrsi_oversold",
+      "family": "momentum",
+      "r5_fires": 2433,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 178.9,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "supertrend_ichimoku_adx",
+      "family": "confluence",
+      "r5_fires": 4,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.3,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "supertrend_macd",
+      "family": "trend",
+      "r5_fires": 486,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 35.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "supertrend_macd_short",
+      "family": "trend",
+      "r5_fires": 271,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 19.9,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "adx": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "tema_dema",
+      "family": "trend",
+      "r5_fires": 1876,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 137.9,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "three_black_crows_short",
+      "family": "candle",
+      "r5_fires": 1674,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 123.1,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "family": "candle",
+      "r5_fires": 1596,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 117.4,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "totm_long",
+      "family": "calendar",
+      "r5_fires": 343,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 25.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "totm_short",
+      "family": "calendar",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "triangle_ascending_long",
+      "family": "chart_pattern",
+      "r5_fires": 330,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 24.3,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "triangle_ascending_retest_long",
+      "family": "chart_pattern",
+      "r5_fires": 112,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 8.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "triangle_descending_short",
+      "family": "chart_pattern",
+      "r5_fires": 1064,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 78.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "turtle_soup_long",
+      "family": "ict",
+      "r5_fires": 324,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 23.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "turtle_soup_short",
+      "family": "ict",
+      "r5_fires": 1880,
+      "changed_since_r5": false,
+      "survives_pct": 1.0,
+      "projected_step1_fires": 138.2,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "ultimate_oscillator",
+      "family": "momentum",
+      "r5_fires": 592,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 43.5,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "uo": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "value_area_breakout_long",
+      "family": "volume_profile",
+      "r5_fires": 375,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 27.6,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "vix_backwardation_long",
+      "family": "cross_asset",
+      "r5_fires": 543,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 39.9,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "xs_quality_decile": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "vol_spike_2x_below_ema_50_short",
+      "family": "momentum_trend",
+      "r5_fires": 1140,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 83.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "family": "breakout",
+      "r5_fires": 1500,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 110.3,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "vwap_extension_momentum_long",
+      "family": "momentum",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "vwap_extension_momentum_short",
+      "family": "momentum",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "week_opening_gap_fill_down",
+      "family": "ict",
+      "r5_fires": 633,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 46.5,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "days_since_last_earnings": 0.9842
+      },
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "week_opening_gap_fill_up",
+      "family": "ict",
+      "r5_fires": 834,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 61.3,
+      "stream": "LOOSEN",
+      "tightenable_keys": {
+        "days_since_last_earnings": 0.9628
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "family": "multi_timeframe",
+      "r5_fires": 27,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 2.0,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "rsi_14": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "weekly_bias_pullback_short",
+      "family": "multi_timeframe",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "williams_r_oversold",
+      "family": "momentum",
+      "r5_fires": 2535,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 186.4,
+      "stream": "TIGHTEN",
+      "tightenable_keys": {
+        "williams_r": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "family": "confluence",
+      "r5_fires": 750,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 55.1,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "williams_r": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "xs_combined_momentum_high_ivol_short",
+      "family": "factor",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "xs_combined_momentum_low_ivol",
+      "family": "factor",
+      "r5_fires": 212,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 15.6,
+      "stream": "BOTH",
+      "tightenable_keys": {
+        "xs_ivol_decile": 1.0
+      },
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "xs_low_beta_long",
+      "family": "factor",
+      "r5_fires": 78,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 5.7,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 452,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 33.2,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a"
+      ],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "xs_momentum_bottom_decile_short",
+      "family": "factor",
+      "r5_fires": 1384,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 101.8,
+      "stream": "NONE",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "xs_momentum_quality_combined",
+      "family": "factor",
+      "r5_fires": 163,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 12.0,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
+      "strategy": "xs_momentum_top_decile",
+      "family": "factor",
+      "r5_fires": 255,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 18.8,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": true,
+      "status": "DONE-ADMITTED"
+    },
+    {
+      "strategy": "xs_momentum_with_smart_money_long",
+      "family": "smart_money_sleeve",
+      "r5_fires": 658,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 48.4,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [
+        "S6-B1428a",
+        "S6-B1467a"
+      ],
+      "admitted": false,
+      "status": "IN-CAMPAIGN"
+    },
+    {
+      "strategy": "xs_quality_top_quintile_long",
+      "family": "factor",
+      "r5_fires": 89,
+      "changed_since_r5": true,
+      "survives_pct": null,
+      "projected_step1_fires": 6.5,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    }
+  ]
+}
