@@ -19053,6 +19053,23 @@ no scan knows whether a matched occurrence is the intended one - and durability
 rides test_b2526's anchor sweep.
 
 
+**INSTANCE (B2809, 2026-09-13) - the corpus was an APPEND LOG, and its rows quote
+each other.** Appending a queue row for S6-B2808, my idempotency guard asserted
+`b.count(b"S6-B2808") == 0`. It matched - because the PREVIOUS row's prose said
+*"which lands as S6-B2808"*. The guard concluded the row existed, skipped the
+append, and the commit went ahead with no queue entry until preflight C8 refused
+it. **In a ledger whose entries cross-reference each other by id, the id is the
+one string guaranteed to appear in other rows' prose**, so it is the worst
+possible anchor for a presence check. The fix is the same as L748's: anchor on
+something prose cannot contain - here the ROW MARKER `| **S6-B2808** |`, with its
+pipes and bold, rather than the bare identifier.
+
+Note which direction it failed in. A guard that wrongly says *absent* fires a
+duplicate and is loud; this one wrongly said *present* and SILENTLY SKIPPED the
+work it was guarding. **An idempotency check that fails toward "already done" is
+indistinguishable from success** - only a downstream gate that wanted the missing
+artifact caught it.
+
 ### L749 - A correctly-sourced figure can still be stale: #201 asks WHERE, not WHEN
 
 **B2563, 2026-09-02.** I wrote *"Chain right now: sim-day 144 of 250, 1.81 h
