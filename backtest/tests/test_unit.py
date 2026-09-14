@@ -37374,3 +37374,29 @@ def test_b2769_r5_baseline_is_stale_for_hub1s_current_gate():
     assert 's.get("smc_liquidity_swept_dn", False)' in code
     assert 'and (s.get("smc_choch_bullish", False) or s.get("smc_bos_bullish", False))' in code
     assert 'smc_liquidity_swept_dn", False)\\n        or ' not in code
+
+
+def test_b2807_recommendation_prior_art_rule_survives():
+    """L802/#26: a recommendation to do work asserts the work is outstanding.
+
+    DETECTION is JUDGMENT-ONLY - no scan knows whether a named item has been
+    completed, which is the very gap the entry records. Durability only.
+    """
+    import re as _re
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    heads = [l for l in lrn.splitlines() if l.startswith("### L802 ")]
+    assert len(heads) == 1, f"expected one L802 heading, got {len(heads)}"
+    assert "#26" in lrn, "L802 must keep its compliance-failure citation"
+    assert "13,104" in lrn, "L802 must keep the measured grid size"
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Name a strategy, family, ticket or item as work to START")]
+    assert len(rows) == 1, f"expected one L802 tripwire row, got {len(rows)}"
+    assert "READ ITS COMPLETION RECORD FIRST" in rows[0], "diagnostic missing"
+    banner = (root / "CLAUDE.md").read_text(encoding="utf-8", errors="replace")
+    m = _re.search(r"LEARNINGS L1-L(\d+)", banner)
+    assert m and int(m.group(1)) >= 802, ("banner range does not cover L802",
+                                          m.group(0) if m else None)

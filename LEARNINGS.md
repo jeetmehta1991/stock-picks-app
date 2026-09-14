@@ -20921,3 +20921,45 @@ one at runtime with a control, rather than naming today's example.
 **Mechanism: JUDGMENT-ONLY for detection** - no scan knows which named constant a
 fixture chose because of a world-property. Durability pinned by
 `test_b2801_derived_fixture_rule_survives`.
+
+### L802 - A RECOMMENDATION TO DO WORK ASSERTS THE WORK IS OUTSTANDING (B2807, owner-caught 2026-09-13)
+
+**What happened.** Asked which families to optimise first, I built a screen -
+numeric threshold present, at least 300 R5 fires, entry condition unchanged
+since R5 - ranked the output, and named the institutional family as the place to
+start. **The institutional family was finished.** Nine of the fourteen Phase-1B
+admissions are institutional, all under one ticket from a 13,104-trial grid, and
+**two of the six strategies I named are themselves already admitted**:
+`institutional_multi_quarter_persistence_long` and
+`institutional_high_conviction_long`. The owner's reply - *"We were done with the
+institutional family... Past context and work isn't being carried forward"* - is
+the correction.
+
+**The rule this breaks is #26, applied to a shape it does not name.** `#26` says
+a finding counts as novel only when all four prior-art sources confirm absence.
+A RECOMMENDATION carries the same burden and does not feel like it does: *"start
+with X"* is an implicit claim that X is outstanding, which is a claim about the
+record, not about X. My screen tested three properties of the STRATEGY and zero
+properties of the LEDGER.
+
+**The root cause is structural, and it is worth more than the instance.** There
+is no per-strategy optimisation-status view in this repo. MEASURED: the answer to
+*"has strategy X been optimised?"* requires joining FOUR sources by hand -
+`STRATEGY_ROSTER.md` (223 registered, 1 mention of optimisation, no per-strategy
+status), `PHASE_1B_ROSTER.md` (only what PASSED - silent on attempted-and-failed,
+in-flight and never-started), `phase_1b_step2_admissions.json` (14 admitted rows)
+and `EXECUTION_QUEUE.md` (keyed by TICKET, so it cannot answer a question asked
+about a STRATEGY). A screen cannot consult a view that does not exist, so the
+filter was not forgotten - it was unavailable.
+
+**Why the failure mode is asymmetric.** Recommending work already done wastes a
+campaign and reads as incompetence to the person who commissioned it.
+Recommending work already done is also the EASY direction: the ledger is large,
+the strategy is small, and every property that makes a strategy attractive
+(fires, a clean knob, an unchanged condition) is visible in the code while its
+completion status is not.
+
+**Rule.** Before naming any strategy, family or item as work to START, read the
+completion record for it - admissions, campaign tickets, roster - and say what
+you read. Where no single view answers it, say THAT out loud rather than
+screening on the properties that happen to be queryable.
