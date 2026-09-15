@@ -37936,3 +37936,43 @@ def test_b2824_coordinate_descent_carries_its_interaction_check():
     assert "predicted-vs-measured" in sec
     assert "re-opens the full-grid question" in sec
     assert "sw50sp50" in sec, "the factorial lineage must stay stated"
+
+
+def test_b2825_status_groups_are_mutually_exclusive():
+    """B2825 (owner-directed 2026-09-16): one status per strategy, terminal
+    dispositions out of every work lane, reopen flagged never auto-applied.
+
+    Pinned on the committed artifact: the seven statuses partition all 223
+    exactly; every terminal row's stream is voided; the closed institutional
+    siblings no longer sit in tightening lanes; and the reopen-candidate set
+    is exactly the two pruned duplicates whose entry conditions diverged
+    from their canonicals after the closure evidence (OR->AND, added
+    threshold) - flagged, not reopened.
+    """
+    import json
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    d = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                   .read_text(encoding="utf-8"))
+    rows = d["rows"]
+    TERMINAL = {"DONE-ADMITTED", "DISABLED", "PRUNED-DUPLICATE",
+                "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE"}
+    import collections
+    st = collections.Counter(r["status"] for r in rows)
+    assert sum(st.values()) == len(rows) == 223
+    for r in rows:
+        if r["status"] in TERMINAL:
+            assert r["stream"] == "-", (r["strategy"], "terminal row in a lane")
+        else:
+            assert r["stream"] in ("TIGHTEN", "BOTH", "LOOSEN", "NONE"), r
+    # the closure record's arithmetic: 19 FAIL = 8 later admitted + 8 pruned
+    # + 3 closed-negative (b2628 + phase_1b_step2_admissions.json)
+    assert st["CLOSED-NEGATIVE"] == 3 and st["PRUNED-DUPLICATE"] == 8
+    assert st["CONTAINED-IN-REPRESENTATIVE"] == 1 and st["DISABLED"] == 4
+    ro = sorted(r["strategy"] for r in rows if r["reopen_candidate"])
+    assert ro == ["institutional_insider_combo_long",
+                  "institutional_volume_confirmation_long"], ro
+    for r in rows:
+        if r["reopen_candidate"]:
+            assert r["status"] in TERMINAL and r["status"] != "DONE-ADMITTED"
+    assert any("never auto-reopened" in c for c in d["caveats"])

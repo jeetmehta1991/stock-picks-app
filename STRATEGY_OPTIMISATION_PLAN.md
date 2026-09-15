@@ -3544,14 +3544,19 @@ ticket, status (DONE-ADMITTED / IN-CAMPAIGN / NOT-STARTED).
 | `BOTH` | tightenable AND fire-starved | offline first, engine after |
 | `NONE` | no numeric knob and not starved | a BREADTH candidate (SS11.2b3) |
 
-**MEASURED at B2822 (third build; supersedes B2811 and B2808 - every build now carries an
-L803 stamp so a stale copy names itself):** 223 registered, 14 admitted, 57 in-campaign,
-152 not-started. Of the **209 not admitted** - TIGHTEN 15, BOTH 33, LOOSEN 128, NONE 33.
-**48 tightenable** - invariant across all three builds - and **128 need the engine**. The
-B2822 delta's cause: the LANE now consumes the CURRENT-GATE projection (raw x survives_pct),
-so a changed strategy whose old fires no longer satisfy its gate stops sitting in the wrong
-lane (hub-1: 2,933 raw at 5.15% survival was NONE, is LOOSEN at a ~14-fire honest projection;
-morning_star at 46.2% survival moved TIGHTEN->BOTH).
+**MEASURED at B2825 (fourth build, L803-stamped; supersedes B2822/B2811/B2808):** the seven
+statuses PARTITION all 223 exactly - 14 ADMITTED, 4 DISABLED, 8 PRUNED-DUPLICATE (Jaccard
+>= 0.70 of an admitted canonical, B2666), 3 CLOSED-NEGATIVE (b2628 family-pass FAIL never
+re-admitted), 1 CONTAINED-IN-REPRESENTATIVE (b2647), 51 IN-CAMPAIGN, 142 NOT-STARTED.
+**Terminal rows are OUT of every work lane** (owner ruling 2026-09-16: groups mutually
+exclusive; closed work never re-counted). The OPEN population's lanes: **TIGHTEN 12, BOTH 29
+(41 tightenable), LOOSEN 124, NONE 28**. The B2822->B2825 tightenable drop 48->41 is the
+seven closed institutional siblings leaving lanes they should never have occupied.
+**REOPEN RULE:** a terminal verdict whose entry condition changed since its closure evidence
+(survives < 1.0) is FLAGGED reopen_candidate - exactly 2 today, both pruned duplicates whose
+gates diverged from their canonicals (institutional_insider_combo_long OR->AND;
+institutional_volume_confirmation_long +stoch_d threshold) - and reopening is the OWNER'S
+word, never automatic.
 
 **Tightening candidates by family, largest first:** news_sentiment 6, candle 5, momentum 5,
 institutional_persistence 5, mean_reversion 4, confluence 4, smc 3, then pivot,

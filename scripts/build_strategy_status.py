@@ -227,11 +227,41 @@ def main() -> int:
     by_strat = {k: v for k, v in tl.groupby("strategy")}
 
     admitted = set()
+    pruned = set()
     if ADMISSIONS.exists():
         d = json.loads(ADMISSIONS.read_text(encoding="utf-8"))
         rows = d if isinstance(d, list) else d.get("admissions") or d.get("rows") or []
         admitted = {r.get("strategy") for r in rows
                     if isinstance(r, dict) and r.get("strategy")}
+        # B2825: the Jaccard-0.70 pruned duplicates (B2666) are EVALUATED AND
+        # DISCARDED, not future work
+        pruned = {r.get("strategy")
+                  for r in (d.get("pruned_collinear_b2666") or [])
+                  if isinstance(r, dict) and r.get("strategy")}
+
+    # B2825 (owner-directed 2026-09-16, "groups must be mutually exclusive;
+    # closed strategies must not count toward future work unless genuinely
+    # reopened"): CLOSED populations, each from its committed record -
+    # nothing here is a judgement.
+    closed_neg = set()      # family-pass FAIL, never re-admitted (b2628)
+    contained = set()       # contained in an admitted representative (b2647)
+    p28 = ROOT / "output_audit" / "b2628_institutional_family_grades.json"
+    if p28.exists():
+        sib = json.loads(p28.read_text(encoding="utf-8")).get("siblings") or {}
+        closed_neg = {k for k, v in sib.items()
+                      if isinstance(v, dict)} - admitted - pruned
+    p47 = ROOT / "output_audit" / "b2647_pead_sibling_pass.json"
+    if p47.exists():
+        for r in json.loads(p47.read_text(encoding="utf-8")).get("graded") or []:
+            if isinstance(r, dict) and "CONTAINED" in str(r.get("disposition", "")):
+                if r.get("strategy") not in admitted:
+                    contained.add(r["strategy"])
+    from backtest.config import (STRATEGIES_DISABLED_MISSING_PRODUCER,
+                                 STRATEGIES_DISABLED_DATA_SCARCITY,
+                                 STRATEGIES_DISABLED_DUPLICATE)
+    disabled = (set(STRATEGIES_DISABLED_MISSING_PRODUCER)
+                | set(STRATEGIES_DISABLED_DATA_SCARCITY)
+                | set(STRATEGIES_DISABLED_DUPLICATE))
 
     qtext = QUEUE.read_text(encoding="utf-8", errors="replace") if QUEUE.exists() else ""
 
@@ -277,8 +307,31 @@ def main() -> int:
             survives = round(ok / fires, 4)
 
         tickets, mentions = campaign_tickets(qtext, name)
-        status = ("DONE-ADMITTED" if name in admitted
-                  else "IN-CAMPAIGN" if tickets else "NOT-STARTED")
+        # B2825 status precedence - one status per strategy, MUTUALLY
+        # EXCLUSIVE by construction; a terminal disposition beats a campaign
+        # mention, and the stream lane below is voided for terminal rows.
+        if name in admitted:
+            status = "DONE-ADMITTED"
+        elif name in disabled:
+            status = "DISABLED"
+        elif name in pruned:
+            status = "PRUNED-DUPLICATE"
+        elif name in closed_neg:
+            status = "CLOSED-NEGATIVE"
+        elif name in contained:
+            status = "CONTAINED-IN-REPRESENTATIVE"
+        else:
+            status = "IN-CAMPAIGN" if tickets else "NOT-STARTED"
+        terminal = status in ("DONE-ADMITTED", "DISABLED", "PRUNED-DUPLICATE",
+                              "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE")
+        # REOPEN RULE (owner 2026-09-16, "unless reopened for a genuine
+        # reason"): a terminal verdict was computed on the CLOSURE-TIME gate;
+        # if the entry condition changed since R5 AND the old fires no longer
+        # all satisfy it, the verdict's evidence base has moved - FLAGGED for
+        # the owner, never auto-reopened.
+        reopen = bool(terminal and status != "DONE-ADMITTED"
+                      and name in changed
+                      and (survives is None or survives < 1.0))
         # B2822 (owner-caught: "the counts are all over the place"): the LANE
         # is classified on CURRENT-GATE fires, not raw R5 fires. hub-1 sat at
         # stream NONE off 2,933 raw fires while only 5.15% survive its current
@@ -290,7 +343,9 @@ def main() -> int:
                      "survives_pct": survives,
                      "projected_step1_fires": round(projected, 1),
                      "projected_current_gate": round(eff, 1),
-                     "stream": classify_stream(tightenable, eff),
+                     "reopen_candidate": reopen,
+                     "stream": "-" if terminal
+                     else classify_stream(tightenable, eff),
                      "tightenable_keys": covered, "tickets": tickets,
                      "mention_tickets": mentions,
                      "admitted": name in admitted, "status": status})
@@ -330,14 +385,22 @@ def main() -> int:
              "reading the ticket; mention_tickets keeps the unfiltered list",
              "stream and the proj column use the CURRENT-GATE projection "
              "(raw projection x survives_pct, B2822); projected_step1_fires "
-             "in this JSON keeps the raw figure"],
+             "in this JSON keeps the raw figure",
+             "terminal statuses (ADMITTED / DISABLED / PRUNED-DUPLICATE / "
+             "CLOSED-NEGATIVE / CONTAINED) are MUTUALLY EXCLUSIVE with the "
+             "stream lanes and excluded from every work bucket (B2825); "
+             "reopen_candidate flags a terminal row whose entry condition "
+             "changed since its closure evidence (survives < 1.0) - flagged "
+             "for the owner, never auto-reopened"],
          "rows": recs}, indent=2), encoding="utf-8")
 
     # ---- the markdown view -------------------------------------------------
     import collections
     bystream = collections.Counter(r["stream"] for r in recs)
     bystatus = collections.Counter(r["status"] for r in recs)
-    todo = [r for r in recs if r["status"] != "DONE-ADMITTED"]
+    _TERMINAL = ("DONE-ADMITTED", "DISABLED", "PRUNED-DUPLICATE",
+                 "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE")
+    todo = [r for r in recs if r["status"] not in _TERMINAL]
     famcount = collections.Counter(r["family"] for r in todo
                                    if r["stream"] in ("TIGHTEN", "BOTH"))
 
@@ -361,8 +424,13 @@ def main() -> int:
          f"| registered strategies | {len(recs)} |",
          f"| DONE - admitted to Phase 1B | {bystatus.get('DONE-ADMITTED', 0)} |",
          f"| IN-CAMPAIGN - a campaign-marked ticket names it | {bystatus.get('IN-CAMPAIGN', 0)} |",
-         f"| NOT-STARTED | {bystatus.get('NOT-STARTED', 0)} |", "",
-         "## Stream - of the strategies NOT yet admitted", "",
+         f"| NOT-STARTED | {bystatus.get('NOT-STARTED', 0)} |",
+         f"| CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | {bystatus.get('CLOSED-NEGATIVE', 0)} |",
+         f"| PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | {bystatus.get('PRUNED-DUPLICATE', 0)} |",
+         f"| CONTAINED-IN-REPRESENTATIVE (b2647) | {bystatus.get('CONTAINED-IN-REPRESENTATIVE', 0)} |",
+         f"| DISABLED (backtest.config sets) | {bystatus.get('DISABLED', 0)} |",
+         f"| REOPEN-CANDIDATE flags among the terminal rows | {sum(1 for r in recs if r['reopen_candidate'])} |", "",
+         "## Stream - of the OPEN population only (terminal rows excluded, B2825)", "",
          "| stream | meaning | count |", "|---|---|---|"]
     meanings = {
         "TIGHTEN": "a persisted magnitude can be tightened - OFFLINE, zero engine hours",
