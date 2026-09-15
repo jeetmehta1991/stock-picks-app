@@ -279,17 +279,39 @@ def main() -> int:
         tickets, mentions = campaign_tickets(qtext, name)
         status = ("DONE-ADMITTED" if name in admitted
                   else "IN-CAMPAIGN" if tickets else "NOT-STARTED")
+        # B2822 (owner-caught: "the counts are all over the place"): the LANE
+        # is classified on CURRENT-GATE fires, not raw R5 fires. hub-1 sat at
+        # stream NONE off 2,933 raw fires while only 5.15% survive its current
+        # gate - its honest projection is ~14, which is LOOSEN. Where survival
+        # is unmeasured (zero-fire rows) the raw projection stands.
+        eff = projected if survives is None else projected * survives
         recs.append({"strategy": name, "family": fam, "r5_fires": fires,
                      "changed_since_r5": name in changed,
                      "survives_pct": survives,
                      "projected_step1_fires": round(projected, 1),
-                     "stream": classify_stream(tightenable, projected),
+                     "projected_current_gate": round(eff, 1),
+                     "stream": classify_stream(tightenable, eff),
                      "tightenable_keys": covered, "tickets": tickets,
                      "mention_tickets": mentions,
                      "admitted": name in admitted, "status": status})
 
+    # L803 (B2822): the BUILD STAMP. A regenerated artifact without one
+    # leaves its stale copies indistinguishable from HEAD - the owner quoted
+    # a superseded build's stream counts and nothing on any copy said which
+    # build it was. Batch + source commit + timestamp ride BOTH outputs.
+    import time as _time
+    try:
+        _sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"],
+                              cwd=ROOT, capture_output=True, text=True,
+                              timeout=15).stdout.strip() or "unknown"
+    except Exception:
+        _sha = "unknown"
+    build = {"source_commit": _sha,
+             "generated_at": _time.strftime("%Y-%m-%d %H:%M:%S")}
+
     Path(a.json).write_text(json.dumps(
         {"generator": "scripts/build_strategy_status.py",
+         "build": build,
          "cube": str(R5_DIR), "r5_screener_commit": R5_SCREENER_COMMIT,
          "rules": {"coverage_floor": COVERAGE_FLOOR,
                    "min_fires_for_grid": MIN_FIRES_FOR_GRID,
@@ -305,7 +327,10 @@ def main() -> int:
              "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the "
              "strategy (S6-B2810c; a bare mention is not a campaign) - the "
              "vocabulary is a heuristic, so borderline rows are settled by "
-             "reading the ticket; mention_tickets keeps the unfiltered list"],
+             "reading the ticket; mention_tickets keeps the unfiltered list",
+             "stream and the proj column use the CURRENT-GATE projection "
+             "(raw projection x survives_pct, B2822); projected_step1_fires "
+             "in this JSON keeps the raw figure"],
          "rows": recs}, indent=2), encoding="utf-8")
 
     # ---- the markdown view -------------------------------------------------
@@ -325,6 +350,9 @@ def main() -> int:
          "PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be "
          "asked about a STRATEGY). A ranking built without that join recommended a family "
          "that was already finished.", "",
+         f"**Build:** commit {build['source_commit']} at {build['generated_at']} "
+         "(L803: a copy without this line is a STALE VERSION - trust only the "
+         "build at HEAD)", "",
          f"**Cube:** R5 ({R5_DIR.name}) | **R5-era screener:** {R5_SCREENER_COMMIT} | "
          f"**Step-1 shape:** {STEP1_TICKERS} tickers x {STEP1_YEARS}y | "
          f"**grid floor:** {MIN_FIRES_FOR_GRID} fires", "",
@@ -362,12 +390,12 @@ def main() -> int:
           "is a heuristic; a borderline row is settled by reading the ticket, and "
           "`mention_tickets` in the JSON keeps the unfiltered list.", "",
           "## Per strategy", "",
-          "| strategy | family | R5 fires | proj. Step-1 | chg | survives | stream | status |",
+          "| strategy | family | R5 fires | proj. Step-1 (current-gate) | chg | survives | stream | status |",
           "|---|---|---|---|---|---|---|---|"]
     for r in sorted(recs, key=lambda x: (-x["r5_fires"], x["strategy"])):
         sv = "-" if r["survives_pct"] is None else f"{r['survives_pct']:.1%}"
         L.append(f"| {r['strategy']} | {r['family']} | {r['r5_fires']} | "
-                 f"{r['projected_step1_fires']} | {'YES' if r['changed_since_r5'] else ''} | "
+                 f"{r['projected_current_gate']} | {'YES' if r['changed_since_r5'] else ''} | "
                  f"{sv} | {r['stream']} | {r['status']} |")
     Path(a.out).write_text("\n".join(L) + "\n", encoding="utf-8")
 

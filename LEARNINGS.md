@@ -20980,3 +20980,26 @@ completion status is not.
 completion record for it - admissions, campaign tickets, roster - and say what
 you read. Where no single view answers it, say THAT out loud rather than
 screening on the properties that happen to be queryable.
+
+### L803 - A REGENERATED ARTIFACT WITHOUT A BUILD STAMP LEAVES ITS STALE COPIES SPEAKING FOR IT (B2822, owner-caught 2026-09-16)
+
+**What happened.** STRATEGY_OPTIMISATION_STATUS.md was regenerated twice in
+~24h under audited fixes (B2811 span 5->4y; B2811 mention-test; B2814 live-fn
+survival). The owner then quoted the FIRST build's stream counts (TIGHTEN 14 /
+BOTH 34 / LOOSEN 129 / NONE 32) and asked why the counts were "all over the
+place" - a fair reading, because nothing on the artifact says WHICH build a
+copy is. The header said only AUTO-GENERATED; a stale paste, an old chat
+table and the committed HEAD were indistinguishable on their face.
+
+**The class.** Naming a figure's source file (#201) is not enough for an
+artifact that REGENERATES: the file name stays constant while the numbers
+move, so citing the file cites every version at once. The version identity
+must ride the artifact itself, or every superseded copy keeps speaking with
+the file's authority.
+
+**Rule.** An auto-generated, committed artifact stamps its BUILD IDENTITY in
+its own header - generating batch, source commit, timestamp - so any copy,
+pasted anywhere, names its own vintage. MECHANISM: build_strategy_status.py
+now writes the stamp into both the markdown header and the JSON
+(`build` key); pinned by test_b2822. Compliance failure against item #201
+for the instances already in circulation.

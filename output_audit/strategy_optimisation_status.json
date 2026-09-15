@@ -1,5 +1,9 @@
 {
   "generator": "scripts/build_strategy_status.py",
+  "build": {
+    "source_commit": "4bc97022b",
+    "generated_at": "2026-09-15 14:02:37"
+  },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
   "rules": {
@@ -11,7 +15,8 @@
     "changed_since_r5 is an UPPER BOUND - any code difference counts",
     "stream TIGHTEN rests on a source pattern for numeric comparisons, a LOWER BOUND - thresholds via a helper or a config constant are invisible",
     "survives_pct calls the LIVE strategy function on each fire's persisted signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). A LOWER BOUND where a gate leg reads an unpersisted key (defaults False); an erroring row counts as non-survival; None only for zero-fire strategies",
-    "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the strategy (S6-B2810c; a bare mention is not a campaign) - the vocabulary is a heuristic, so borderline rows are settled by reading the ticket; mention_tickets keeps the unfiltered list"
+    "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the strategy (S6-B2810c; a bare mention is not a campaign) - the vocabulary is a heuristic, so borderline rows are settled by reading the ticket; mention_tickets keeps the unfiltered list",
+    "stream and the proj column use the CURRENT-GATE projection (raw projection x survives_pct, B2822); projected_step1_fires in this JSON keeps the raw figure"
   ],
   "rows": [
     {
@@ -21,6 +26,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 3.0,
+      "projected_current_gate": 3.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -38,6 +44,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 13.8,
+      "projected_current_gate": 13.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -55,6 +62,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 6.1,
+      "projected_current_gate": 6.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -69,6 +77,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 18.7,
+      "projected_current_gate": 18.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -83,6 +92,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 8.7,
+      "projected_current_gate": 8.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -103,6 +113,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 39.2,
+      "projected_current_gate": 39.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -123,6 +134,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 1.7,
+      "projected_current_gate": 1.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -137,6 +149,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.0,
       "projected_step1_fires": 7.1,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -151,6 +164,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 10.9,
+      "projected_current_gate": 10.9,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -165,6 +179,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 3.6,
+      "projected_current_gate": 3.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -179,6 +194,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 7.4,
+      "projected_current_gate": 7.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -193,6 +209,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 210.8,
+      "projected_current_gate": 210.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -211,6 +228,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.8608,
       "projected_step1_fires": 122.8,
+      "projected_current_gate": 105.7,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -229,6 +247,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.7045,
       "projected_step1_fires": 93.0,
+      "projected_current_gate": 65.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -243,6 +262,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 93.1,
+      "projected_current_gate": 93.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -257,6 +277,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 149.1,
+      "projected_current_gate": 149.1,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "adx": 1.0
@@ -277,6 +298,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 24.9,
+      "projected_current_gate": 24.9,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -295,6 +317,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 77.2,
+      "projected_current_gate": 77.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -309,6 +332,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 11.9,
+      "projected_current_gate": 11.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -329,6 +353,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 173.6,
+      "projected_current_gate": 173.6,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -343,7 +368,8 @@
       "changed_since_r5": true,
       "survives_pct": 0.4958,
       "projected_step1_fires": 198.9,
-      "stream": "NONE",
+      "projected_current_gate": 98.6,
+      "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "mention_tickets": [],
@@ -357,6 +383,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 91.1,
+      "projected_current_gate": 91.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -371,6 +398,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.5322,
       "projected_step1_fires": 530.7,
+      "projected_current_gate": 282.4,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -385,6 +413,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 21.0,
+      "projected_current_gate": 21.0,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -401,6 +430,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 0.6,
+      "projected_current_gate": 0.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -415,6 +445,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.7515,
       "projected_step1_fires": 275.2,
+      "projected_current_gate": 206.8,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -431,6 +462,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -445,6 +477,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 114.7,
+      "projected_current_gate": 114.7,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -463,6 +496,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 92.0,
+      "projected_current_gate": 92.0,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -479,6 +513,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 155.9,
+      "projected_current_gate": 155.9,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -495,6 +530,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 15.1,
+      "projected_current_gate": 15.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -509,6 +545,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 9.1,
+      "projected_current_gate": 9.1,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -525,6 +562,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.4942,
       "projected_step1_fires": 221.9,
+      "projected_current_gate": 109.7,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -539,6 +577,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 2.8,
+      "projected_current_gate": 2.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -553,6 +592,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 28.1,
+      "projected_current_gate": 28.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -567,6 +607,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 21.3,
+      "projected_current_gate": 21.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -581,6 +622,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 88.8,
+      "projected_current_gate": 88.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -595,6 +637,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 91.8,
+      "projected_current_gate": 91.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -609,6 +652,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 80.1,
+      "projected_current_gate": 80.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -623,6 +667,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 46.6,
+      "projected_current_gate": 46.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -637,6 +682,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 50.3,
+      "projected_current_gate": 50.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -653,6 +699,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 90.5,
+      "projected_current_gate": 90.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -667,6 +714,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 26.7,
+      "projected_current_gate": 26.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -681,6 +729,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -695,6 +744,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -709,6 +759,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 5.1,
+      "projected_current_gate": 5.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -723,6 +774,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 5.8,
+      "projected_current_gate": 5.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -737,6 +789,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 3.0,
+      "projected_current_gate": 3.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -751,6 +804,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 276.9,
+      "projected_current_gate": 276.9,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -765,6 +819,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -779,6 +834,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -793,6 +849,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 38.0,
+      "projected_current_gate": 38.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -807,6 +864,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 10.0,
+      "projected_current_gate": 10.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -821,6 +879,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 81.7,
+      "projected_current_gate": 81.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -839,6 +898,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 4.0,
+      "projected_current_gate": 4.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -853,6 +913,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 0.6,
+      "projected_current_gate": 0.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -867,6 +928,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 10.1,
+      "projected_current_gate": 10.1,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -883,6 +945,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 13.4,
+      "projected_current_gate": 13.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -897,6 +960,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.0,
       "projected_step1_fires": 43.8,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -911,6 +975,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 30.0,
+      "projected_current_gate": 30.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -925,6 +990,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 91.5,
+      "projected_current_gate": 91.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -939,6 +1005,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 116.7,
+      "projected_current_gate": 116.7,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "adx": 1.0
@@ -961,6 +1028,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.4315,
       "projected_step1_fires": 18.1,
+      "projected_current_gate": 7.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -975,6 +1043,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 47.0,
+      "projected_current_gate": 47.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -989,6 +1058,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.931,
       "projected_step1_fires": 121.2,
+      "projected_current_gate": 112.9,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -1007,6 +1077,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 62.2,
+      "projected_current_gate": 62.2,
       "stream": "BOTH",
       "tightenable_keys": {
         "adx": 1.0
@@ -1023,6 +1094,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 24.7,
+      "projected_current_gate": 24.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1037,6 +1109,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 2.2,
+      "projected_current_gate": 2.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1051,6 +1124,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 2.2,
+      "projected_current_gate": 2.2,
       "stream": "BOTH",
       "tightenable_keys": {
         "insider_director_buyers_30d": 1.0,
@@ -1068,6 +1142,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 59.0,
+      "projected_current_gate": 59.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1082,6 +1157,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 243.0,
+      "projected_current_gate": 243.0,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -1096,6 +1172,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 225.3,
+      "projected_current_gate": 225.3,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -1116,6 +1193,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 178.4,
+      "projected_current_gate": 178.4,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -1138,6 +1216,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 227.3,
+      "projected_current_gate": 227.3,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_new_positions": 1.0
@@ -1158,6 +1237,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 9.8,
+      "projected_current_gate": 9.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "insider_unique_buyers_30d": 1.0,
@@ -1175,7 +1255,8 @@
       "changed_since_r5": true,
       "survives_pct": 0.008,
       "projected_step1_fires": 252.8,
-      "stream": "NONE",
+      "projected_current_gate": 2.0,
+      "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2806"
@@ -1193,6 +1274,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 231.2,
+      "projected_current_gate": 231.2,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "persistent_holders_4q": 1.0
@@ -1215,6 +1297,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 35.5,
+      "projected_current_gate": 35.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -1231,6 +1314,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 48.9,
+      "projected_current_gate": 48.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "institutional_increased": 1.0
@@ -1247,6 +1331,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 213.6,
+      "projected_current_gate": 213.6,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_increased": 1.0
@@ -1263,6 +1348,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 65.8,
+      "projected_current_gate": 65.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "institutional_increased": 1.0,
@@ -1280,6 +1366,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 110.2,
+      "projected_current_gate": 110.2,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_increased": 1.0
@@ -1300,6 +1387,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 179.7,
+      "projected_current_gate": 179.7,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_increased": 1.0
@@ -1316,6 +1404,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 208.5,
+      "projected_current_gate": 208.5,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_new_positions": 1.0
@@ -1332,6 +1421,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 98.8,
+      "projected_current_gate": 98.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "institutional_new_positions": 1.0
@@ -1348,6 +1438,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 167.8,
+      "projected_current_gate": 167.8,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_increased": 1.0,
@@ -1365,7 +1456,8 @@
       "changed_since_r5": true,
       "survives_pct": 0.7707,
       "projected_step1_fires": 127.5,
-      "stream": "NONE",
+      "projected_current_gate": 98.3,
+      "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2806"
@@ -1384,6 +1476,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 10.6,
+      "projected_current_gate": 10.6,
       "stream": "BOTH",
       "tightenable_keys": {
         "insider_unique_buyers_30d": 1.0
@@ -1400,6 +1493,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 9.5,
+      "projected_current_gate": 9.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "insider_director_buyers_30d": 1.0,
@@ -1417,6 +1511,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 33.6,
+      "projected_current_gate": 33.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1431,6 +1526,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 0.1,
+      "projected_current_gate": 0.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1445,6 +1541,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 6.0,
+      "projected_current_gate": 6.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1459,6 +1556,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 7.7,
+      "projected_current_gate": 7.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1473,6 +1571,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 3.8,
+      "projected_current_gate": 3.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1487,6 +1586,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.7341,
       "projected_step1_fires": 94.0,
+      "projected_current_gate": 69.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1501,6 +1601,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 106.8,
+      "projected_current_gate": 106.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -1519,6 +1620,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 267.5,
+      "projected_current_gate": 267.5,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -1533,6 +1635,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 140.1,
+      "projected_current_gate": 140.1,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -1547,6 +1650,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 374.1,
+      "projected_current_gate": 374.1,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -1565,6 +1669,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 267.2,
+      "projected_current_gate": 267.2,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -1579,6 +1684,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1595,6 +1701,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 7.1,
+      "projected_current_gate": 7.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -1617,6 +1724,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 22.4,
+      "projected_current_gate": 22.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -1639,6 +1747,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 122.9,
+      "projected_current_gate": 122.9,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -1657,6 +1766,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 225.7,
+      "projected_current_gate": 225.7,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -1671,6 +1781,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 3.4,
+      "projected_current_gate": 3.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1685,7 +1796,8 @@
       "changed_since_r5": true,
       "survives_pct": 0.4618,
       "projected_step1_fires": 209.6,
-      "stream": "TIGHTEN",
+      "projected_current_gate": 96.8,
+      "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
@@ -1701,6 +1813,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 164.3,
+      "projected_current_gate": 164.3,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "naked_poc_count": 1.0,
@@ -1718,6 +1831,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 10.4,
+      "projected_current_gate": 10.4,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_sentiment_5d": 1.0,
@@ -1735,6 +1849,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 1.2,
+      "projected_current_gate": 1.2,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_sentiment_5d": 1.0,
@@ -1752,6 +1867,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 0.1,
+      "projected_current_gate": 0.1,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_count_5d": 1.0,
@@ -1771,6 +1887,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 5.5,
+      "projected_current_gate": 5.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_count_5d": 1.0,
@@ -1790,6 +1907,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 83.3,
+      "projected_current_gate": 83.3,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_article_count": 1.0,
@@ -1807,6 +1925,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 32.8,
+      "projected_current_gate": 32.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_article_count": 1.0,
@@ -1824,6 +1943,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1838,6 +1958,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 5.0,
+      "projected_current_gate": 5.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1852,6 +1973,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 10.6,
+      "projected_current_gate": 10.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -1866,6 +1988,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 462.9,
+      "projected_current_gate": 462.9,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "pair_count_active": 1.0,
@@ -1884,6 +2007,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.7829,
       "projected_step1_fires": 523.7,
+      "projected_current_gate": 410.0,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "pair_count_active": 1.0,
@@ -1902,6 +2026,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 148.7,
+      "projected_current_gate": 148.7,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -1916,6 +2041,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 153.7,
+      "projected_current_gate": 153.7,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -1930,6 +2056,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 12.9,
+      "projected_current_gate": 12.9,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -1952,6 +2079,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 194.5,
+      "projected_current_gate": 194.5,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -1974,6 +2102,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 80.1,
+      "projected_current_gate": 80.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -1996,6 +2125,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 203.6,
+      "projected_current_gate": 203.6,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -2018,6 +2148,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 0.9,
+      "projected_current_gate": 0.9,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2038,6 +2169,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 60.3,
+      "projected_current_gate": 60.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2060,6 +2192,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 8.4,
+      "projected_current_gate": 8.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2074,6 +2207,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 79.0,
+      "projected_current_gate": 79.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2092,6 +2226,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 5.1,
+      "projected_current_gate": 5.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2110,6 +2245,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 0.8,
+      "projected_current_gate": 0.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2124,6 +2260,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 42.1,
+      "projected_current_gate": 42.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2138,6 +2275,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 5.1,
+      "projected_current_gate": 5.1,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -2154,6 +2292,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 0.3,
+      "projected_current_gate": 0.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2168,6 +2307,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 241.2,
+      "projected_current_gate": 241.2,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -2182,6 +2322,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 67.2,
+      "projected_current_gate": 67.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2196,6 +2337,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 54.1,
+      "projected_current_gate": 54.1,
       "stream": "BOTH",
       "tightenable_keys": {
         "vp_close_near_poc_pct": 1.0
@@ -2216,6 +2358,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2230,6 +2373,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2244,6 +2388,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 5.0,
+      "projected_current_gate": 5.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2258,6 +2403,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 2.5,
+      "projected_current_gate": 2.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2272,6 +2418,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 9.2,
+      "projected_current_gate": 9.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2286,6 +2433,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 146.0,
+      "projected_current_gate": 146.0,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -2300,6 +2448,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 6.3,
+      "projected_current_gate": 6.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2314,6 +2463,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 2.3,
+      "projected_current_gate": 2.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2328,6 +2478,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 11.4,
+      "projected_current_gate": 11.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2342,6 +2493,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 2.6,
+      "projected_current_gate": 2.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2358,7 +2510,8 @@
       "changed_since_r5": true,
       "survives_pct": 0.4466,
       "projected_step1_fires": 130.9,
-      "stream": "NONE",
+      "projected_current_gate": 58.5,
+      "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "mention_tickets": [],
@@ -2372,6 +2525,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 53.0,
+      "projected_current_gate": 53.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2386,6 +2540,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 73.5,
+      "projected_current_gate": 73.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2400,6 +2555,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 309.8,
+      "projected_current_gate": 309.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -2418,7 +2574,8 @@
       "changed_since_r5": true,
       "survives_pct": 0.0,
       "projected_step1_fires": 174.2,
-      "stream": "NONE",
+      "projected_current_gate": 0.0,
+      "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "mention_tickets": [],
@@ -2432,6 +2589,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 84.4,
+      "projected_current_gate": 84.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2446,6 +2604,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2460,6 +2619,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 0.8,
+      "projected_current_gate": 0.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_21": 1.0
@@ -2476,6 +2636,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 5.1,
+      "projected_current_gate": 5.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2490,6 +2651,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2508,6 +2670,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 178.8,
+      "projected_current_gate": 178.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -2530,6 +2693,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 253.0,
+      "projected_current_gate": 253.0,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -2552,6 +2716,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 50.4,
+      "projected_current_gate": 50.4,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -2568,6 +2733,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2582,6 +2748,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 23.0,
+      "projected_current_gate": 23.0,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -2598,6 +2765,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2612,6 +2780,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.5865,
       "projected_step1_fires": 303.2,
+      "projected_current_gate": 177.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -2633,6 +2802,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 9.2,
+      "projected_current_gate": 9.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2651,6 +2821,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 62.7,
+      "projected_current_gate": 62.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2671,6 +2842,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.0,
       "projected_step1_fires": 87.1,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2693,7 +2865,8 @@
       "changed_since_r5": true,
       "survives_pct": 0.0,
       "projected_step1_fires": 146.9,
-      "stream": "NONE",
+      "projected_current_gate": 0.0,
+      "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2413",
@@ -2715,6 +2888,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 50.6,
+      "projected_current_gate": 50.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2735,6 +2909,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 30.6,
+      "projected_current_gate": 30.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2755,6 +2930,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 77.0,
+      "projected_current_gate": 77.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2775,6 +2951,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 35.1,
+      "projected_current_gate": 35.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2795,6 +2972,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 6.1,
+      "projected_current_gate": 6.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2813,6 +2991,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 26.5,
+      "projected_current_gate": 26.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -2827,6 +3006,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 87.6,
+      "projected_current_gate": 87.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2849,7 +3029,8 @@
       "changed_since_r5": true,
       "survives_pct": 0.0515,
       "projected_step1_fires": 269.6,
-      "stream": "NONE",
+      "projected_current_gate": 13.9,
+      "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2692",
@@ -2871,6 +3052,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 1.4,
+      "projected_current_gate": 1.4,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -2889,6 +3071,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 4.0,
+      "projected_current_gate": 4.0,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -2907,7 +3090,8 @@
       "changed_since_r5": true,
       "survives_pct": 0.0,
       "projected_step1_fires": 123.2,
-      "stream": "TIGHTEN",
+      "projected_current_gate": 0.0,
+      "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
@@ -2931,6 +3115,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 21.2,
+      "projected_current_gate": 21.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2950,6 +3135,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 24.1,
+      "projected_current_gate": 24.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2968,6 +3154,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 39.8,
+      "projected_current_gate": 39.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -2988,6 +3175,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 104.9,
+      "projected_current_gate": 104.9,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -3006,6 +3194,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 104.7,
+      "projected_current_gate": 104.7,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -3024,6 +3213,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3038,6 +3228,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 26.3,
+      "projected_current_gate": 26.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3052,6 +3243,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 394.0,
+      "projected_current_gate": 394.0,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -3068,6 +3260,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 223.6,
+      "projected_current_gate": 223.6,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -3084,6 +3277,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 0.4,
+      "projected_current_gate": 0.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3098,6 +3292,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 44.7,
+      "projected_current_gate": 44.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3114,6 +3309,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.8782,
       "projected_step1_fires": 24.9,
+      "projected_current_gate": 21.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "adx": 1.0
@@ -3130,6 +3326,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.7201,
       "projected_step1_fires": 172.4,
+      "projected_current_gate": 124.2,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -3144,6 +3341,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 153.9,
+      "projected_current_gate": 153.9,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -3160,6 +3358,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 146.7,
+      "projected_current_gate": 146.7,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -3176,6 +3375,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 31.5,
+      "projected_current_gate": 31.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -3198,6 +3398,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3214,6 +3415,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 30.3,
+      "projected_current_gate": 30.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3228,6 +3430,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 10.3,
+      "projected_current_gate": 10.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3242,6 +3445,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 97.8,
+      "projected_current_gate": 97.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3256,6 +3460,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 29.8,
+      "projected_current_gate": 29.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3270,6 +3475,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 172.8,
+      "projected_current_gate": 172.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -3290,6 +3496,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 54.4,
+      "projected_current_gate": 54.4,
       "stream": "BOTH",
       "tightenable_keys": {
         "uo": 1.0
@@ -3306,6 +3513,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 34.5,
+      "projected_current_gate": 34.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3320,6 +3528,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 49.9,
+      "projected_current_gate": 49.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "xs_quality_decile": 1.0
@@ -3336,6 +3545,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 104.8,
+      "projected_current_gate": 104.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -3354,6 +3564,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 137.9,
+      "projected_current_gate": 137.9,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
@@ -3368,6 +3579,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -3386,6 +3598,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3400,6 +3613,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 58.2,
+      "projected_current_gate": 58.2,
       "stream": "BOTH",
       "tightenable_keys": {
         "days_since_last_earnings": 0.9842
@@ -3416,6 +3630,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 76.7,
+      "projected_current_gate": 76.7,
       "stream": "LOOSEN",
       "tightenable_keys": {
         "days_since_last_earnings": 0.9628
@@ -3432,6 +3647,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 2.5,
+      "projected_current_gate": 2.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
@@ -3448,6 +3664,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3462,6 +3679,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 233.0,
+      "projected_current_gate": 233.0,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "williams_r": 1.0
@@ -3482,6 +3700,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 68.9,
+      "projected_current_gate": 68.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "williams_r": 1.0
@@ -3498,6 +3717,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -3516,6 +3736,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 19.5,
+      "projected_current_gate": 19.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "xs_ivol_decile": 1.0
@@ -3536,6 +3757,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 7.2,
+      "projected_current_gate": 7.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3550,6 +3772,7 @@
       "changed_since_r5": true,
       "survives_pct": 0.7434,
       "projected_step1_fires": 41.5,
+      "projected_current_gate": 30.9,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -3568,6 +3791,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 127.2,
+      "projected_current_gate": 127.2,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
@@ -3586,6 +3810,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 15.0,
+      "projected_current_gate": 15.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
@@ -3600,6 +3825,7 @@
       "changed_since_r5": false,
       "survives_pct": 1.0,
       "projected_step1_fires": 23.4,
+      "projected_current_gate": 23.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -3622,6 +3848,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 60.5,
+      "projected_current_gate": 60.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
@@ -3642,6 +3869,7 @@
       "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 8.2,
+      "projected_current_gate": 8.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],

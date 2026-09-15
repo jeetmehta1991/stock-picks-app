@@ -37,15 +37,36 @@ sys.path.insert(0, str(ROOT))
 # gate keys per strategy and leg, READ from screener source (B2819), never
 # recalled. The trend legs of smc_inverse_fvg ride ema-200 keys that are
 # persisted technical booleans.
+# A term is a persisted key (AND leg) or a TUPLE of keys (any-of / OR leg).
+# B2822 CORRECTION: the first shipped table omitted inverse_fvg's THIRD leg -
+# vol_spike_2x OR force_index_cross_up (Batch 262's volume confirmation) -
+# because the source read stopped at the base keys. Both vol keys are
+# persisted at 1.000 coverage (measured on 300 R5 rows), so LEG A sights the
+# WHOLE gate once the leg is present; without it cube_would_fire overcounted.
 GATES = {
     "smc_equal_lows_sweep_long": {
         "long": ("smc_equal_lows_swept", "smc_fvg_bullish_active"),
     },
     "smc_inverse_fvg": {
-        "long": ("smc_inverse_fvg_bullish", "price_above_ema_200"),
-        "short": ("smc_inverse_fvg_bearish", "below_ema_200"),
+        "long": ("smc_inverse_fvg_bullish", "price_above_ema_200",
+                 ("vol_spike_2x", "force_index_cross_up")),
+        "short": ("smc_inverse_fvg_bearish", "below_ema_200",
+                  ("vol_spike_2x", "force_index_cross_up")),
     },
 }
+
+
+def _flat(keys):
+    out = []
+    for t in keys:
+        out.extend(t if isinstance(t, tuple) else (t,))
+    return out
+
+
+def _term_fires(vals: dict, term) -> bool:
+    if isinstance(term, tuple):
+        return any(bool(vals.get(k)) for k in term)
+    return bool(vals.get(term))
 # keys the smc producer can recompute; technical keys are cube-only and are
 # COUNTED as such rather than silently compared against a producer that
 # never emits them (the B2724 shape).
@@ -104,18 +125,19 @@ def compare_legs(strat, df, when, direction, persisted, knobs) -> dict:
         v = d.get(k)
         return None if v is None else bool(v)
 
-    a = {k: _b(persisted, k) for k in keys}
-    smc_keys = [k for k in keys if k in SMC_RECOMPUTABLE]
+    flat = _flat(keys)
+    a = {k: _b(persisted, k) for k in flat}
+    smc_keys = [k for k in flat if k in SMC_RECOMPUTABLE]
     b = {k: _b(eng, k) for k in smc_keys}
     disagree = [k for k in smc_keys
                 if a[k] is not None and b[k] is not None and a[k] != b[k]]
-    a_fire = all(bool(a[k]) for k in keys)
+    a_fire = all(_term_fires(a, t) for t in keys)
     return {"ok": err is None, "why": err or "",
             "cube": a, "engine_smc": b,
             "cube_would_fire": a_fire,
             "keys_comparable": len([k for k in smc_keys if a[k] is not None]),
             "keys_disagree": disagree,
-            "technical_keys_cube_only": [k for k in keys
+            "technical_keys_cube_only": [k for k in flat
                                          if k not in SMC_RECOMPUTABLE],
             "bar_index": int(idx)}
 

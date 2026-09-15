@@ -37494,7 +37494,10 @@ def test_b2811_campaign_is_not_a_mention():
     from pathlib import Path as _P
     art = _P(__file__).resolve().parents[2] / "output_audit" / "strategy_optimisation_status.json"
     d = json.loads(art.read_text(encoding="utf-8"))
-    assert len(d["caveats"]) == 4, "the IN-CAMPAIGN heuristic caveat must ride the artifact"
+    # B2822: COVER, not EQUAL - an equality here turns the gate RED on the
+    # next honest caveat (the b2801-banner lesson); the named caveat is the
+    # claim, the count is only a floor.
+    assert len(d["caveats"]) >= 4, "the IN-CAMPAIGN heuristic caveat must ride the artifact"
     assert any("mention is not a campaign" in c for c in d["caveats"])
 
 
@@ -37731,7 +37734,12 @@ def test_b2819_equal_lows_registered_via_the_shared_grader():
         body = src[src.index(f"def strat_{strat}("):]
         body = body[:body.index("\ndef ", 1)]
         for keys in legs.values():
-            for k in keys:
+            # B2822: terms may be OR-groups (tuples) - flatten before the
+            # source anchor. The first shipped arm iterated raw terms and was
+            # completeness-BLIND: it verified listed keys exist but could not
+            # see a missing leg, which is how inverse_fvg shipped without its
+            # volume-confirmation leg for two hours.
+            for k in spot._flat(keys):
                 assert f'"{k}"' in body, (strat, k, "gate key not in source")
 
     art = json.loads((root / "output_audit" / "b2819_els_step1.json")
@@ -37831,3 +37839,79 @@ def test_b2821_midturn_text_reaches_the_command_channels():
                                                     errors="replace")
     n = src.count("_midturn_instruction_text(d)")
     assert n == 2, f"expected the extractor consulted at 2 sites, found {n}"
+
+
+def test_b2822_regenerated_artifact_carries_its_build_stamp():
+    """L803: a regenerated artifact without a build stamp leaves its stale
+    copies speaking for it. Both outputs carry the stamp - the markdown
+    header (so a PASTED copy names its vintage) and the JSON (so a machine
+    reader can refuse a stale build)."""
+    import json
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    md = (root / "STRATEGY_OPTIMISATION_STATUS.md").read_text(
+        encoding="utf-8", errors="replace")
+    head = "\n".join(md.splitlines()[:12])
+    assert re.search(r"\*\*Build:\*\* commit [0-9a-f]{6,} at \d{4}-\d{2}-\d{2}", head), (
+        "the markdown header must carry the build stamp in its first lines")
+    assert "STALE VERSION" in head
+    d = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                   .read_text(encoding="utf-8"))
+    b = d.get("build") or {}
+    assert re.fullmatch(r"[0-9a-f]{6,}|unknown", b.get("source_commit", "")), b
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}",
+                        b.get("generated_at", "")), b
+    # L803 anchored: heading once in LEARNINGS, row once in the skill
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    assert len([l for l in lrn.splitlines() if l.startswith("### L803 ")]) == 1
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Regenerate a committed artifact whose numbers moved")]
+    assert len(rows) == 1 and "L803 / #201" in rows[0]
+
+
+def test_b2823_stream_is_classified_on_current_gate_fires():
+    """B2822 (owner-caught "counts all over the place"): the LANE consumes the
+    CURRENT-GATE projection (raw x survives), not raw R5 fires.
+
+    Pinned on the committed artifact's decisive rows: hub-1 (2,933 raw at
+    5.15% survival) must sit in LOOSEN with a current-gate projection under
+    the 100 floor, not NONE off its stale count; morning_star (46.2% survival)
+    drops below the floor and is BOTH, not TIGHTEN. And the inverse_fvg
+    spot-check GATES table must carry the volume-confirmation OR-leg the
+    first shipped version omitted.
+    """
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    d = root / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+
+    art = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                     .read_text(encoding="utf-8"))
+    rows = {r["strategy"]: r for r in art["rows"]}
+    h = rows["smc_liquidity_sweep_reversal"]
+    assert h["stream"] == "LOOSEN", h["stream"]
+    assert h["projected_current_gate"] < 100 < h["projected_step1_fires"], h
+    m = rows["morning_star"]
+    assert m["stream"] == "BOTH", m["stream"]
+    assert m["projected_current_gate"] < 100, m
+    # unchanged high-survival rows keep their lanes
+    assert rows["turtle_soup_short"]["projected_current_gate"] == \
+        rows["turtle_soup_short"]["projected_step1_fires"]
+    assert any("CURRENT-GATE projection" in c for c in art["caveats"])
+
+    import spot_check_smc_family as spot
+    flat_long = spot._flat(spot.GATES["smc_inverse_fvg"]["long"])
+    assert "vol_spike_2x" in flat_long and "force_index_cross_up" in flat_long, (
+        "the volume-confirmation OR-leg must ride the inverse_fvg gate table")
+    # the OR-leg semantics: either vol key fires the term
+    term = spot.GATES["smc_inverse_fvg"]["long"][2]
+    assert isinstance(term, tuple)
+    assert spot._term_fires({"vol_spike_2x": True}, term) is True
+    assert spot._term_fires({"force_index_cross_up": True}, term) is True
+    assert spot._term_fires({}, term) is False
