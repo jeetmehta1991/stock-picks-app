@@ -211,7 +211,15 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
 
 
 def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
-    out_dir = ROOT / f"output_{spec['wave']}_{arm['tag']}"
+    # S6-B2760 (B2818): the cube base is ENV-injectable so a TEST fixture's
+    # cube routes under tmp_path instead of the repo root. The repo-root
+    # fixture cube blocked SIX consecutive closes while a pyramid ran (the
+    # #223 gate scans repo-root dirs), and both cheap discriminators were
+    # measured dead (61 of 120 real cubes have no manifest; the fixture
+    # writes one). Production behaviour unchanged: the env is unset outside
+    # tests, and the manifest records the real out_dir either way.
+    _base = Path(os.environ.get("RUN_WAVE_OUT_BASE") or ROOT)
+    out_dir = _base / f"output_{spec['wave']}_{arm['tag']}"
     sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(ROOT),
                          capture_output=True, text=True).stdout.strip()
     manifest = build_manifest(spec, arm, out_dir, sha)
@@ -352,7 +360,11 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     # Step-2 validation wave).
     pc = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "postconfig_landing.py"),
-         "--cube", out_dir.name, "--if-not-landed", "--source", "run_wave"]
+         # S6-B2760: the ABSOLUTE path, not the bare name - the landing
+         # resolves a relative cube against ROOT, which re-broke the
+         # tmp_path seam the moment the name left this process. Identical
+         # in production (base == ROOT); the ledger key stays the dir NAME.
+         "--cube", str(out_dir), "--if-not-landed", "--source", "run_wave"]
         + (["--step1-cube"] if spec.get("step1_cube", True) else ["--step2-cube"])
         + (["--no-git", "--no-notify"] if engine_cmd else []),
         cwd=str(ROOT))

@@ -24782,7 +24782,13 @@ def test_b2116_run_wave_resume_loop_both_ways(tmp_path, monkeypatch):
     # function in front of you.
     _ov_b2116 = {"smc_breaker_block_long":
                  "test fixture: run_wave resume loop, not a re-test"}
-    out_dir = root / f"output_{wave}_armx"
+    # S6-B2760 (B2818): the fixture cube routes under tmp_path via the
+    # RUN_WAVE_OUT_BASE seam - the repo-root cube blocked six consecutive
+    # closes while a pyramid ran (#223 scans repo-root dirs), and both cheap
+    # discriminators were measured dead. The ledger key keeps the dir NAME,
+    # so every downstream assertion is unchanged.
+    monkeypatch.setenv("RUN_WAVE_OUT_BASE", str(tmp_path))
+    out_dir = tmp_path / f"output_{wave}_armx"
     # B2277 (S6-B2269, owner-approved option b): this test drives run_wave
     # against the PRODUCTION ledger, and run_arm regenerates the findings doc
     # from the transient 91-entry state before the finally below restores the
@@ -24885,6 +24891,12 @@ if n == 1:
         assert evs[0]["committed"] is False and evs[0]["pushed"] is False
         assert "1_cube_sanity" in evs[0]["blocking"], evs[0]["blocking"]
     finally:
+        # S6-B2760: the ticket's deliverable, asserted where it cannot rot -
+        # the fixture cube must never exist at the REPO ROOT, or the #223
+        # gate blocks every close that overlaps a suite run.
+        assert not (root / f"output_{wave}_armx").exists(), (
+            "fixture cube escaped tmp_path to the repo root - the "
+            "RUN_WAVE_OUT_BASE seam is not being honoured (S6-B2760)")
         shutil.rmtree(out_dir, ignore_errors=True)
         (root / "output_audit" / f"{wave}_wave_summary.json").unlink(missing_ok=True)
         (root / "output_audit" / f"{wave}_summary.log").unlink(missing_ok=True)
