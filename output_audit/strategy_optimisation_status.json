@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "4e9af1620",
-    "generated_at": "2026-09-15 14:43:15"
+    "source_commit": "db3c19610",
+    "generated_at": "2026-09-15 15:36:03"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -15,7 +15,7 @@
     "changed_since_r5 is an UPPER BOUND - any code difference counts",
     "stream TIGHTEN rests on a source pattern for numeric comparisons, a LOWER BOUND - thresholds via a helper or a config constant are invisible",
     "survives_pct calls the LIVE strategy function on each fire's persisted signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). A LOWER BOUND where a gate leg reads an unpersisted key (defaults False); an erroring row counts as non-survival; None only for zero-fire strategies",
-    "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the strategy (S6-B2810c; a bare mention is not a campaign) - the vocabulary is a heuristic, so borderline rows are settled by reading the ticket; mention_tickets keeps the unfiltered list",
+    "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the strategy (S6-B2810c; a bare mention is not a campaign) - the vocabulary is a heuristic, so borderline rows are settled by reading the ticket; mention_tickets keeps the unfiltered list; IN-CAMPAIGN additionally requires a naming ticket whose CURRENT ledger state is non-terminal (B2829) - a concluded campaign does not own a strategy forever",
     "stream and the proj column use the CURRENT-GATE projection (raw projection x survives_pct, B2822); projected_step1_fires in this JSON keeps the raw figure",
     "terminal statuses (ADMITTED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED) are MUTUALLY EXCLUSIVE with the stream lanes and excluded from every work bucket (B2825); reopen_candidate flags a terminal row whose entry condition changed since its closure evidence (survives < 1.0) - flagged for the owner, never auto-reopened"
   ],
@@ -32,6 +32,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1770b",
         "S6-B2014b"
@@ -51,6 +52,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1770b",
         "S6-B2014b"
@@ -70,6 +72,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -86,6 +89,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -103,6 +107,9 @@
       "tightenable_keys": {},
       "tickets": [
         "S6-B2014b",
+        "S6-B2420"
+      ],
+      "live_campaign_tickets": [
         "S6-B2420"
       ],
       "mention_tickets": [
@@ -127,6 +134,9 @@
         "S6-B2014b",
         "S6-B2420"
       ],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
       "mention_tickets": [
         "S6-B2014b",
         "S6-B2420"
@@ -146,6 +156,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -162,6 +173,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -178,6 +190,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -194,6 +207,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -210,6 +224,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -228,11 +243,12 @@
       "tickets": [
         "S6-B2418"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2418"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "avwap_50_reclaim",
@@ -248,11 +264,12 @@
       "tickets": [
         "S6-B2810b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "awesome_oscillator",
@@ -266,6 +283,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -282,6 +300,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -302,11 +321,12 @@
       "tickets": [
         "S6-B2383"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "bollinger_tight",
@@ -322,11 +342,12 @@
       "tickets": [
         "S6-B2383"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "bollinger_tight_with_smart_money_long",
@@ -340,6 +361,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -360,11 +382,12 @@
       "tickets": [
         "S6-B2383"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "break_retest_confluence",
@@ -378,6 +401,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -394,6 +418,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -410,6 +435,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -426,6 +452,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -444,6 +471,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -460,6 +488,7 @@
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "DISABLED"
@@ -478,6 +507,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -494,6 +524,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -512,11 +543,12 @@
       "tickets": [
         "S6-B2810b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "cpr_narrow_momentum",
@@ -532,6 +564,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -550,6 +583,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -566,6 +600,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -584,6 +619,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -600,6 +636,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -616,6 +653,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -632,6 +670,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -648,6 +687,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -664,6 +704,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -680,6 +721,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -696,6 +738,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -712,6 +755,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -728,6 +772,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1901a"
       ],
@@ -746,6 +791,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -762,6 +808,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -778,6 +825,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -794,6 +842,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -810,6 +859,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -826,6 +876,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -842,6 +893,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -858,6 +910,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -874,6 +927,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -890,6 +944,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -906,6 +961,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -922,6 +978,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -940,11 +997,12 @@
       "tickets": [
         "S6-B2477"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2477"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "golden_cross_volume",
@@ -958,6 +1016,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -974,6 +1033,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -992,6 +1052,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1008,6 +1069,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1024,6 +1086,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1040,6 +1103,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1056,6 +1120,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1077,12 +1142,13 @@
         "S6-B2810b",
         "S6-B2810c"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b",
         "S6-B2810c"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "ichimoku_cloud_breakdown",
@@ -1096,6 +1162,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1112,6 +1179,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1130,11 +1198,12 @@
       "tickets": [
         "S6-B2810b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "inside_bar_breakout",
@@ -1150,6 +1219,7 @@
         "adx": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1166,6 +1236,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1182,6 +1253,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1201,6 +1273,7 @@
         "insider_officer_buyers_30d": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1217,6 +1290,7 @@
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1233,6 +1307,7 @@
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "PRUNED-DUPLICATE"
@@ -1252,6 +1327,7 @@
         "S6-B2419",
         "S6-B2425"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2419",
         "S6-B2425"
@@ -1274,6 +1350,9 @@
         "S6-B2178c",
         "S6-B2418",
         "S6-B2435"
+      ],
+      "live_campaign_tickets": [
+        "S6-B2178c"
       ],
       "mention_tickets": [
         "S6-B2178c",
@@ -1299,6 +1378,7 @@
       "tickets": [
         "S6-B2807"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2807"
       ],
@@ -1320,6 +1400,7 @@
         "institutional_increased": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "CLOSED-NEGATIVE"
@@ -1338,6 +1419,7 @@
       "tickets": [
         "S6-B2806"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2806"
       ],
@@ -1360,6 +1442,7 @@
       "tickets": [
         "S6-B2807"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2499b",
         "S6-B2646b",
@@ -1382,6 +1465,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1400,6 +1484,7 @@
         "institutional_increased": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "PRUNED-DUPLICATE"
@@ -1418,7 +1503,10 @@
         "institutional_increased": 1.0
       },
       "tickets": [],
-      "mention_tickets": [],
+      "live_campaign_tickets": [],
+      "mention_tickets": [
+        "S6-B2827"
+      ],
       "admitted": false,
       "status": "PRUNED-DUPLICATE"
     },
@@ -1437,6 +1525,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1457,6 +1546,7 @@
       "tickets": [
         "S6-B2810b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b"
       ],
@@ -1477,6 +1567,7 @@
         "institutional_increased": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "PRUNED-DUPLICATE"
@@ -1495,6 +1586,7 @@
         "institutional_new_positions": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1513,6 +1605,7 @@
         "institutional_new_positions": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1532,6 +1625,7 @@
         "institutional_new_positions": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1550,6 +1644,7 @@
       "tickets": [
         "S6-B2806"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2422",
         "S6-B2806"
@@ -1571,6 +1666,7 @@
         "insider_unique_buyers_30d": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "CLOSED-NEGATIVE"
@@ -1590,6 +1686,7 @@
         "insider_officer_buyers_30d": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "CLOSED-NEGATIVE"
@@ -1606,6 +1703,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1622,6 +1720,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1638,6 +1737,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1654,6 +1754,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1670,6 +1771,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1686,6 +1788,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1704,11 +1807,12 @@
       "tickets": [
         "S6-B2810b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "macd_crossover",
@@ -1722,6 +1826,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1738,6 +1843,7 @@
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "DISABLED"
@@ -1756,11 +1862,12 @@
       "tickets": [
         "S6-B2418"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2418"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "macd_ichimoku",
@@ -1774,6 +1881,7 @@
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "DISABLED"
@@ -1790,6 +1898,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2669"
       ],
@@ -1812,13 +1921,14 @@
         "S6-B2646b",
         "S6-B2651"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2644c",
         "S6-B2646b",
         "S6-B2651"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "mfi_oversold_with_smart_money_long",
@@ -1836,13 +1946,14 @@
         "S6-B2646b",
         "S6-B2651"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2644c",
         "S6-B2646b",
         "S6-B2651"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "mmbm_long",
@@ -1858,11 +1969,12 @@
       "tickets": [
         "S6-B2810b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "mmsm_short",
@@ -1876,6 +1988,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1892,6 +2005,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1910,6 +2024,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2822c"
       ],
@@ -1931,6 +2046,7 @@
         "naked_poc_nearest_distance_pct": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1950,6 +2066,7 @@
         "news_volume_zscore_5d": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1969,6 +2086,7 @@
         "news_volume_zscore_5d": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -1990,6 +2108,7 @@
         "pct_change_5d": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2011,6 +2130,7 @@
         "pct_change_5d": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2030,6 +2150,7 @@
         "news_sentiment_mean": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2049,6 +2170,7 @@
         "news_sentiment_shift": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2065,6 +2187,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2081,6 +2204,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2097,6 +2221,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2117,6 +2242,7 @@
         "pair_zscore_signed": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2137,6 +2263,7 @@
         "pair_zscore_signed": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2153,6 +2280,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2169,6 +2297,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2189,6 +2318,7 @@
         "S6-B2631",
         "S6-B2633"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2418",
         "S6-B2631",
@@ -2213,6 +2343,7 @@
         "S6-B2631",
         "S6-B2633"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2418",
         "S6-B2631",
@@ -2237,13 +2368,14 @@
         "S6-B2644a",
         "S6-B2645b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2633",
         "S6-B2644a",
         "S6-B2645b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "pead_short_negative_yoy_growth",
@@ -2261,13 +2393,14 @@
         "S6-B2644a",
         "S6-B2645b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2633",
         "S6-B2644a",
         "S6-B2645b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "pead_with_insider_confirmation_long",
@@ -2283,13 +2416,14 @@
       "tickets": [
         "S6-B2633"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2633",
         "S6-B2649b",
         "S6-B2649c"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "pead_with_smart_money_long",
@@ -2307,6 +2441,7 @@
         "S6-B2645b",
         "S6-B2649a"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2633",
         "S6-B2645b",
@@ -2327,6 +2462,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2345,11 +2481,12 @@
       "tickets": [
         "S6-B2383"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "pivot_r2_continuation",
@@ -2365,11 +2502,12 @@
       "tickets": [
         "S6-B2383"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "pivot_r3_blowoff_short",
@@ -2383,6 +2521,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2399,6 +2538,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2417,6 +2557,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2433,6 +2574,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2449,6 +2591,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2465,6 +2608,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2485,11 +2629,12 @@
       "tickets": [
         "S6-B2644c"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2644c"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "poc_magnet_short",
@@ -2503,6 +2648,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2519,6 +2665,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2535,6 +2682,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2551,6 +2699,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2567,6 +2716,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2583,6 +2733,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2599,6 +2750,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2615,6 +2767,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2631,6 +2784,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2647,6 +2801,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1617b"
       ],
@@ -2665,6 +2820,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2681,6 +2837,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2697,6 +2854,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2715,11 +2873,12 @@
       "tickets": [
         "S6-B2418"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2418"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "risk_off_bond_equity_short",
@@ -2733,6 +2892,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2749,6 +2909,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2765,6 +2926,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2783,6 +2945,7 @@
         "rsi_21": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2799,6 +2962,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2817,11 +2981,12 @@
       "tickets": [
         "S6-B2383"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "rsi_oversold",
@@ -2839,13 +3004,14 @@
         "S6-B2418",
         "S6-B2421"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383",
         "S6-B2418",
         "S6-B2421"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "rsi_oversold_with_smart_money_long",
@@ -2863,13 +3029,14 @@
         "S6-B2645b",
         "S6-B2649"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2418",
         "S6-B2645b",
         "S6-B2649"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "rsi_volume_200ema",
@@ -2885,6 +3052,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2901,6 +3069,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2919,6 +3088,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2935,6 +3105,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -2954,13 +3125,14 @@
         "S6-B2527",
         "S6-B2573d"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2499b",
         "S6-B2527",
         "S6-B2573d"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_bos_continuation",
@@ -2976,11 +3148,12 @@
       "tickets": [
         "S6-B2756"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_bos_retest_entry",
@@ -2997,12 +3170,13 @@
         "S6-B2644c",
         "S6-B2756"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2644c",
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_breaker_block_long",
@@ -3020,6 +3194,7 @@
         "S6-B1694a",
         "S6-B1918b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1505b",
         "S6-B1518c",
@@ -3044,13 +3219,14 @@
         "S6-B2414",
         "S6-B2417"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2413",
         "S6-B2414",
         "S6-B2417"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_choch_reversal",
@@ -3067,12 +3243,13 @@
         "S6-B2756",
         "S6-B2763"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2756",
         "S6-B2763"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_discount_long",
@@ -3089,12 +3266,13 @@
         "S6-B2756",
         "S6-B2763"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2756",
         "S6-B2763"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_equal_highs_sweep_short",
@@ -3111,12 +3289,13 @@
         "S6-B2756",
         "S6-B2763"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2756",
         "S6-B2763"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_equal_lows_sweep_long",
@@ -3133,12 +3312,13 @@
         "S6-B2752",
         "S6-B2752e"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2752",
         "S6-B2752e"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_fvg_retest_long",
@@ -3154,11 +3334,12 @@
       "tickets": [
         "S6-B2737"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2737"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_fvg_retest_short",
@@ -3172,6 +3353,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3192,13 +3374,14 @@
         "S6-B2752",
         "S6-B2752e"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2737",
         "S6-B2752",
         "S6-B2752e"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_liquidity_sweep_reversal",
@@ -3216,13 +3399,14 @@
         "S6-B2693",
         "S6-B2731"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2033a",
         "S6-B2692",
         "S6-B2693"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_mitigation_block_long",
@@ -3238,6 +3422,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1617b"
       ],
@@ -3258,6 +3443,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1995b"
       ],
@@ -3282,13 +3468,14 @@
         "S6-B2752",
         "S6-B2752e"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1531a",
         "S6-B1617b",
         "S6-B2692"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_ote_long",
@@ -3304,12 +3491,13 @@
       "tickets": [
         "S6-B2756"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1570a",
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_ote_short",
@@ -3325,11 +3513,12 @@
       "tickets": [
         "S6-B2756"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "smc_premium_short",
@@ -3346,12 +3535,13 @@
         "S6-B2756",
         "S6-B2763"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2756",
         "S6-B2763"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "squeeze_breakout",
@@ -3367,11 +3557,12 @@
       "tickets": [
         "S6-B2810b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "squeeze_breakout_with_smart_money_long",
@@ -3387,6 +3578,7 @@
       "tickets": [
         "S6-B2810b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b"
       ],
@@ -3405,6 +3597,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3421,6 +3614,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3439,6 +3633,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3457,6 +3652,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3473,6 +3669,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3489,6 +3686,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2024a"
       ],
@@ -3509,6 +3707,7 @@
         "adx": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3525,6 +3724,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3543,6 +3743,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3561,6 +3762,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3581,13 +3783,14 @@
         "S6-B2646b",
         "S6-B2651"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2644c",
         "S6-B2646b",
         "S6-B2651"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "totm_short",
@@ -3601,6 +3804,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2669"
       ],
@@ -3619,6 +3823,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3635,6 +3840,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3651,6 +3857,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3667,6 +3874,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3686,12 +3894,13 @@
         "S6-B2756",
         "S6-B2810c"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2756",
         "S6-B2810c"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "ultimate_oscillator",
@@ -3707,6 +3916,7 @@
         "uo": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3723,6 +3933,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3741,6 +3952,7 @@
         "xs_quality_decile": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3759,11 +3971,12 @@
       "tickets": [
         "S6-B2810b"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "volume_spike_breakout",
@@ -3777,6 +3990,7 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3795,11 +4009,12 @@
       "tickets": [
         "S6-B2679"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2679"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "vwap_extension_momentum_short",
@@ -3813,6 +4028,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3831,6 +4047,7 @@
         "days_since_last_earnings": 0.9842
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3849,6 +4066,7 @@
         "days_since_last_earnings": 0.9628
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3867,6 +4085,7 @@
         "rsi_14": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3883,6 +4102,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3903,11 +4123,12 @@
       "tickets": [
         "S6-B2383"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "williams_stoch_dual",
@@ -3923,6 +4144,7 @@
         "williams_r": 1.0
       },
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3941,11 +4163,12 @@
       "tickets": [
         "S6-B2649"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2649"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "xs_combined_momentum_low_ivol",
@@ -3963,11 +4186,12 @@
       "tickets": [
         "S6-B2644c"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2644c"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "xs_low_beta_long",
@@ -3981,6 +4205,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3999,6 +4224,7 @@
       "tickets": [
         "S6-B2674a"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2674a"
       ],
@@ -4019,6 +4245,9 @@
       "tickets": [
         "S6-B2420"
       ],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
       "mention_tickets": [
         "S6-B2420"
       ],
@@ -4037,6 +4266,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -4057,6 +4287,7 @@
         "S6-B2649",
         "S6-B2668a"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1589b",
         "S6-B1772b",
@@ -4079,13 +4310,14 @@
       "tickets": [
         "S6-B2418"
       ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1589b",
         "S6-B1593d",
         "S6-B1595c"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "xs_quality_top_quintile_long",
@@ -4099,6 +4331,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"

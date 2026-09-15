@@ -3550,19 +3550,18 @@ ticket, status (DONE-ADMITTED / IN-CAMPAIGN / NOT-STARTED).
 | `BOTH` | tightenable AND fire-starved | offline first, engine after |
 | `NONE` | no numeric knob and not starved | a BREADTH candidate (SS11.2b3) |
 
-**MEASURED at B2825 (fourth build, L803-stamped; supersedes B2822/B2811/B2808):** the seven
-statuses PARTITION all 223 exactly - 14 ADMITTED, 4 DISABLED, 8 PRUNED-DUPLICATE (Jaccard
->= 0.70 of an admitted canonical, B2666), 3 CLOSED-NEGATIVE (b2628 family-pass FAIL never
-re-admitted), 1 CONTAINED-IN-REPRESENTATIVE (b2647), 51 IN-CAMPAIGN, 142 NOT-STARTED.
-**Terminal rows are OUT of every work lane** (owner ruling 2026-09-16: groups mutually
-exclusive; closed work never re-counted). The OPEN population's lanes: **TIGHTEN 12, BOTH 29
-(41 tightenable), LOOSEN 124, NONE 28**. The B2822->B2825 tightenable drop 48->41 is the
-seven closed institutional siblings leaving lanes they should never have occupied.
-**REOPEN RULE:** a terminal verdict whose entry condition changed since its closure evidence
-(survives < 1.0) is FLAGGED reopen_candidate - exactly 2 today, both pruned duplicates whose
-gates diverged from their canonicals (institutional_insider_combo_long OR->AND;
-institutional_volume_confirmation_long +stoch_d threshold) - and reopening is the OWNER'S
-word, never automatic.
+**COUNTS LIVE IN THE STAMPED VIEW, NEVER HERE (B2829; the L639 fix by construction):**
+this section stopped quoting live totals after three builds in two days each left a stale
+snapshot in prose. Read STRATEGY_OPTIMISATION_STATUS.md and trust ONLY a copy whose L803
+build stamp matches HEAD - if it does not, REGENERATE FIRST (scripts/build_strategy_status.py)
+and commit the fresh build. What this section owns is the INVARIANTS, which do not rot:
+the seven statuses partition all registered strategies exactly; terminal statuses
+(ADMITTED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED) are mutually
+exclusive with every work lane; IN-CAMPAIGN requires a campaign-vocabulary ticket whose
+CURRENT ledger state is non-terminal (B2829 - a concluded campaign does not own a strategy
+forever); the lanes classify on the CURRENT-GATE projection (raw x survives); and
+`reopen_candidate` FLAGS a terminal row whose entry condition moved since its closure
+evidence - reopening is the OWNER'S word, never automatic.
 
 **Tightening candidates by family, largest first (re-measured at B2827 on the B2825 build):**
 news_sentiment 6, candle 5, momentum 5, mean_reversion 4, confluence 4, smc 3, then pivot /
@@ -3670,6 +3669,24 @@ is a depth axis, not a reason to skip the strategy.
 the survival check first, the result recorded in its spec `note` and queue row, and - where
 the current condition is rare - the LOOSENING half of its producer bands scheduled as an
 engine depth sweep rather than treated as a dead end.
+
+### 11.2w THE DRIVER LOOP - how Opus picks up work, every session (B2829)
+
+1. **FRESHNESS PRECONDITION:** open STRATEGY_OPTIMISATION_STATUS.md; if its L803 build
+   stamp is not HEAD's commit, regenerate and commit the fresh build BEFORE consuming any
+   number from it. Never plan from a stale stamp, and never from a chat-pasted copy.
+2. **LANE:** take the owner's direction for the session (a named strategy, a family, or a
+   lane); absent one, the default queue is W-T entry order (11.2t), because tightening
+   costs zero engine hours.
+3. **RUN the workflow** - 11.2t for TIGHTEN/BOTH, 11.2l for LOOSEN - step by step; every
+   owner stop inside them is a WAIT, not a skip; every step leaves its named artifact.
+4. **NO SILENT ANYTHING:** an ambiguity that changes the work is a QUESTION to the owner
+   (the B2828 precedent: two forks asked, rulings written into the steps); an assumption
+   that survives is STATED in the campaign row.
+5. **MID-TURN COMPACTION:** if context is compacted mid-turn, re-read the operative
+   sections, the stamped view, and every file about to be edited BEFORE the next
+   substantive action (owner directive 2026-09-16, in durable memory) - never continue
+   on the summary alone.
 
 ### 11.2t THE TIGHTENING WORKFLOW W-T (B2828, owner-directed 2026-09-16) - the mechanical procedure, zero engine hours
 

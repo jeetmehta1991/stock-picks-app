@@ -38005,3 +38005,39 @@ def test_b2828_workflows_are_defined_and_singular():
     assert "persists ONLY on" in plan and "FULL OPEN consumer set" in plan
     assert plan.count("OPERATIVE PROCEDURE SUPERSEDED (B2828)") == 2
     assert "STATED ASSUMPTIONS (none silent" in plan
+
+
+def test_b2829_in_campaign_requires_a_live_ticket():
+    """B2829: a concluded campaign does not own a strategy forever.
+
+    Artifact-level invariant: every IN-CAMPAIGN row carries at least one
+    live_campaign_ticket whose CURRENT ledger state (canonical reducer) is
+    non-terminal. And the plan's status section carries no live totals -
+    counts live only in the stamped view (the L639 fix by construction),
+    with the driver loop's freshness precondition stated once.
+    """
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    d = root / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    import queue_state as qs
+    states = {k: (v.get("state") if isinstance(v, dict) else v)
+              for k, v in qs.tickets().items()}
+    art = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                     .read_text(encoding="utf-8"))
+    LIVE = ("OPEN", "BLOCKED", "DEFERRED", "RUNNING")
+    for r in art["rows"]:
+        if r["status"] == "IN-CAMPAIGN":
+            lv = r.get("live_campaign_tickets") or []
+            assert lv, (r["strategy"], "IN-CAMPAIGN with no live ticket")
+            assert any(states.get(t) in LIVE for t in lv), (r["strategy"], lv)
+    assert any("non-terminal" in c for c in art["caveats"])
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
+        encoding="utf-8", errors="replace")
+    assert "COUNTS LIVE IN THE STAMPED VIEW, NEVER HERE" in plan
+    assert sum(1 for l in plan.splitlines()
+               if l.startswith("### 11.2w THE DRIVER LOOP")) == 1
+    assert "FRESHNESS PRECONDITION" in plan

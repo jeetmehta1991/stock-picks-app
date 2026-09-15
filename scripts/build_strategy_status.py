@@ -264,6 +264,11 @@ def main() -> int:
                 | set(STRATEGIES_DISABLED_DUPLICATE))
 
     qtext = QUEUE.read_text(encoding="utf-8", errors="replace") if QUEUE.exists() else ""
+    # B2829: the canonical last-row-wins reducer - never a hand parser (L695)
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import queue_state as _qs
+    ticket_states = {k: (v.get("state") if isinstance(v, dict) else v)
+                     for k, v in _qs.tickets().items()}
 
     recs = []
     for name in sorted(ALL_STRATEGIES):
@@ -307,6 +312,13 @@ def main() -> int:
             survives = round(ok / fires, 4)
 
         tickets, mentions = campaign_tickets(qtext, name)
+        # B2829 (owner-directed "statuses latest, no misses" 2026-09-16): a
+        # campaign is LIVE only while a naming ticket's CURRENT ledger state
+        # is non-terminal. Before this, a ticket EXECUTED long ago flagged
+        # IN-CAMPAIGN forever - the ticket-state half of L804's class.
+        live_tickets = [t for t in tickets
+                        if ticket_states.get(t) in ("OPEN", "BLOCKED",
+                                                    "DEFERRED", "RUNNING")]
         # B2825 status precedence - one status per strategy, MUTUALLY
         # EXCLUSIVE by construction; a terminal disposition beats a campaign
         # mention, and the stream lane below is voided for terminal rows.
@@ -321,7 +333,7 @@ def main() -> int:
         elif name in contained:
             status = "CONTAINED-IN-REPRESENTATIVE"
         else:
-            status = "IN-CAMPAIGN" if tickets else "NOT-STARTED"
+            status = "IN-CAMPAIGN" if live_tickets else "NOT-STARTED"
         terminal = status in ("DONE-ADMITTED", "DISABLED", "PRUNED-DUPLICATE",
                               "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE")
         # REOPEN RULE (owner 2026-09-16, "unless reopened for a genuine
@@ -347,6 +359,7 @@ def main() -> int:
                      "stream": "-" if terminal
                      else classify_stream(tightenable, eff),
                      "tightenable_keys": covered, "tickets": tickets,
+                     "live_campaign_tickets": live_tickets,
                      "mention_tickets": mentions,
                      "admitted": name in admitted, "status": status})
 
@@ -382,7 +395,10 @@ def main() -> int:
              "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the "
              "strategy (S6-B2810c; a bare mention is not a campaign) - the "
              "vocabulary is a heuristic, so borderline rows are settled by "
-             "reading the ticket; mention_tickets keeps the unfiltered list",
+             "reading the ticket; mention_tickets keeps the unfiltered list; "
+             "IN-CAMPAIGN additionally requires a naming ticket whose CURRENT "
+             "ledger state is non-terminal (B2829) - a concluded campaign does "
+             "not own a strategy forever",
              "stream and the proj column use the CURRENT-GATE projection "
              "(raw projection x survives_pct, B2822); projected_step1_fires "
              "in this JSON keeps the raw figure",
