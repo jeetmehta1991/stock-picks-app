@@ -37504,3 +37504,34 @@ def test_b2812_quoting_the_marker_is_not_an_instruction():
     ]
     assert v._last_instruction_index(ents) == 0, (
         "an assistant entry quoting the marker must not advance the window")
+
+
+def test_b2814_survival_calls_the_live_gate():
+    """S6-B2814 (B2802 successor): survives_pct is the LIVE strategy function
+    evaluated on each fire's persisted signals - the real gate IS the rule.
+
+    Pinned on the committed artifact against the four independently-measured
+    baselines, so a drift in the builder, the parser or the gate itself
+    surfaces as a number moving: hub-1 151/2933=0.0515 (gate-logic change),
+    turtle_soup 1.0 (unchanged since R5), obb 0.0 (key postdates the cube),
+    and the population floor (200+ of 223 populated; None only for zero-fire).
+    """
+    import json
+    from pathlib import Path as _P
+    art = _P(__file__).resolve().parents[2] / "output_audit" / "strategy_optimisation_status.json"
+    d = json.loads(art.read_text(encoding="utf-8"))
+    rows = {r["strategy"]: r for r in d["rows"]}
+    assert rows["smc_liquidity_sweep_reversal"]["survives_pct"] == 0.0515
+    assert rows["turtle_soup_short"]["survives_pct"] == 1.0
+    assert rows["smc_order_block_bounce"]["survives_pct"] == 0.0
+    pop = [r for r in d["rows"] if r["survives_pct"] is not None]
+    assert len(pop) >= 200, f"survival must be near-universal, got {len(pop)}"
+    for r in d["rows"]:
+        if r["survives_pct"] is None:
+            assert r["r5_fires"] == 0, (r["strategy"], "None only for zero-fire")
+    assert any("LIVE strategy function" in c or "live strategy function" in c
+               for c in d["caveats"]), "the live-function caveat must ride"
+    # and the hand-rule registry is retired from the builder
+    src = (_P(__file__).resolve().parents[2] / "scripts"
+           / "build_strategy_status.py").read_text(encoding="utf-8", errors="replace")
+    assert "CURRENT_RULES = {" not in src, "the drift-prone hand registry must stay retired"

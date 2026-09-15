@@ -19,8 +19,8 @@ judgement:
                     one are reported as "-" rather than guessed
   r5_fires          distinct (ticker, entry_date) rows in the R5 trade log
   changed_since_r5  AST diff of the strat_ function against the R5-era screener
-  survives_pct      share of R5 fires still satisfying the CURRENT condition -
-                    only computable where a rule is registered (see CURRENT_RULES)
+  survives_pct      share of R5 fires on which the LIVE strategy function
+                    fires with the recorded direction (S6-B2814)
   stream            TIGHTEN / LOOSEN / BOTH / NONE - see classify_stream
   ticket            campaign tickets naming this strategy in EXECUTION_QUEUE.md
   admitted          present in phase_1b_step2_admissions.json
@@ -76,27 +76,15 @@ R5_UNIVERSE = 544
 R5_SPAN_YEARS = 4.0
 MIN_FIRES_FOR_GRID = 100       # below this a Step-1 grid cannot be populated
 
-# Entry conditions re-expressed for the survival check. Only families whose rule
-# has been READ go here - an unregistered strategy reports survives_pct as None
-# rather than a guess (a wrong survival number is worse than no number, L802).
-CURRENT_RULES = {
-    "smc_liquidity_sweep_reversal": (
-        ["smc_liquidity_swept_dn", "smc_liquidity_swept_up"],
-        lambda s, d: _t(s, "smc_liquidity_swept_dn" if d == "long"
-                        else "smc_liquidity_swept_up")
-        and (_t(s, "smc_choch_bullish") or _t(s, "smc_bos_bullish")) if d == "long"
-        else _t(s, "smc_liquidity_swept_up")
-        and (_t(s, "smc_choch_bearish") or _t(s, "smc_bos_bearish"))),
-    "turtle_soup_short": (
-        ["smc_liquidity_swept_up", "smc_bos_bearish", "below_prev_high",
-         "close_below_open"],
-        lambda s, d: (_t(s, "smc_liquidity_swept_up") or _t(s, "smc_bos_bearish"))
-        and _t(s, "below_prev_high") and _t(s, "close_below_open")),
-}
-
-
-def _t(sig: dict, key: str) -> bool:
-    return sig.get(key) is True
+# S6-B2814 (B2802 successor): survival is measured by calling the LIVE
+# strategy function on each fire's persisted signals - the real gate IS the
+# rule, so there is no hand-written re-expression to drift (the retired
+# CURRENT_RULES map held 2 of 223 and every other row read "-"). VALIDATED
+# before adoption: the live-function path reproduces both measured baselines
+# exactly - smc_liquidity_sweep_reversal 151 of 2933 and turtle_soup_short
+# 1880 of 1880, zero erroring rows. LOWER-BOUND caveat: a gate leg reading a
+# key the cube never persisted defaults False, and an erroring row counts as
+# a non-survival in the denominator.
 
 
 def _parse_signals(raw):
@@ -255,11 +243,15 @@ def main() -> int:
         rate = fires / R5_UNIVERSE / R5_SPAN_YEARS if fires else 0.0
         projected = rate * STEP1_TICKERS * STEP1_YEARS
 
+        sigs, dirs = [], []
+        if frame is not None and fires:
+            sigs = [_parse_signals(x) for x in frame["signals_at_entry"]]
+            dirs = list(frame["direction"].values)
+
         # is any declared numeric threshold backed by a PERSISTED magnitude?
         keys = thresholds.get(name, [])
         tightenable, covered = False, {}
-        if keys and frame is not None and fires:
-            sigs = [_parse_signals(x) for x in frame["signals_at_entry"]]
+        if keys and sigs:
             for k in keys:
                 c = sum(1 for s in sigs
                         if isinstance(s.get(k), (int, float))
@@ -268,13 +260,21 @@ def main() -> int:
                 if c >= COVERAGE_FLOOR:
                     tightenable = True
 
+        # S6-B2814: survival = the LIVE strategy function fires on the
+        # persisted signals with the recorded direction. An erroring row is
+        # a non-survival counted in the denominator, never dropped.
         survives = None
-        rule = CURRENT_RULES.get(name)
-        if rule and frame is not None and fires:
-            _, fn = rule
-            sigs = [_parse_signals(x) for x in frame["signals_at_entry"]]
-            dirs = list(frame["direction"].values)
-            survives = round(sum(1 for s, d in zip(sigs, dirs) if fn(s, d)) / fires, 4)
+        fn = ALL_STRATEGIES.get(name)
+        if callable(fn) and sigs:
+            ok = 0
+            for s_, d_ in zip(sigs, dirs):
+                try:
+                    r_ = fn(s_)
+                except Exception:
+                    continue
+                if r_ and r_.get("fires") and r_.get("direction") == d_:
+                    ok += 1
+            survives = round(ok / fires, 4)
 
         tickets, mentions = campaign_tickets(qtext, name)
         status = ("DONE-ADMITTED" if name in admitted
@@ -298,8 +298,10 @@ def main() -> int:
              "changed_since_r5 is an UPPER BOUND - any code difference counts",
              "stream TIGHTEN rests on a source pattern for numeric comparisons, "
              "a LOWER BOUND - thresholds via a helper or a config constant are invisible",
-             "survives_pct is populated only for strategies whose current rule is "
-             "registered in CURRENT_RULES; None means UNMEASURED, never 100pct",
+             "survives_pct calls the LIVE strategy function on each fire's persisted "
+             "signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). "
+             "A LOWER BOUND where a gate leg reads an unpersisted key (defaults False); "
+             "an erroring row counts as non-survival; None only for zero-fire strategies",
              "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the "
              "strategy (S6-B2810c; a bare mention is not a campaign) - the "
              "vocabulary is a heuristic, so borderline rows are settled by "
@@ -352,8 +354,9 @@ def main() -> int:
           "- `stream = TIGHTEN` rests on a source pattern for numeric comparisons and is "
           "a **lower bound** - a threshold reached through a helper or compared to a "
           "config constant is invisible to it.",
-          "- `survives_pct` is populated only where the current rule is registered in "
-          "`CURRENT_RULES`. **`-` means UNMEASURED, never 100%.**",
+          "- `survives_pct` calls the **live strategy function** on each fire's persisted "
+          "signals (S6-B2814). A **lower bound** where a gate leg reads an unpersisted key; "
+          "an erroring row counts as non-survival; `-` only for zero-fire strategies.",
           "- `IN-CAMPAIGN` requires a campaign-vocabulary token in the row naming the "
           "strategy (S6-B2810c) - **a bare mention is not a campaign**. The vocabulary "
           "is a heuristic; a borderline row is settled by reading the ticket, and "
