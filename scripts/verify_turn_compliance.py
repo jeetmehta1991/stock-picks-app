@@ -1146,6 +1146,45 @@ OBJECTION_MARKERS = ("contrarian", "the case against", "what could make this wro
                      "objection", "argues against", "downside", "risk:")
 
 
+def scan_judgment_only_without_search(entries, *, text=None) -> list[str]:
+    """B2705a (#300 / L786): JUDGMENT-ONLY is EARNED, never declared bare.
+
+    The incident: #299 was labelled JUDGMENT-ONLY while band_coverage_gate.py
+    mechanized its declare-failure slice ~150 lines later the same day - the
+    label was a guess about the search space, stated as its result (L698).
+    Owner, verbatim: "make all things mechanical especially if errors for the
+    class vs keeping it prose or judgement only."
+
+    The check: a paragraph declaring JUDGMENT-ONLY or PROSE-ONLY must carry an
+    ATTEMPTED-MECHANISM clause - words showing the search happened ("no scan
+    knows/measures", "detector", "the durable half", a scan_ name, "grep").
+    Text is read SCRUBBED (_response_text), so a marker inside backticks is a
+    MENTION, not a declaration (B1738), and a compliant closing block - which
+    always carries its rationale - stays quiet (#246 arm, pinned).
+    """
+    t = _response_text(entries, text)
+    if not t:
+        return []
+    EVID = ("no scan", "no mechanism", "cannot be scanned", "scan cannot",
+            "attempted mechanism", "durable half", "detector", "grep",
+            "scan_", "mechanis", "mechaniz", "pin test", "pinned by")
+    out = []
+    for para in t.split("\n\n"):
+        low = para.lower()
+        if "judgment-only" not in low and "prose-only" not in low:
+            continue
+        if any(e in low for e in EVID):
+            continue
+        out.append(
+            "JUDGMENT-ONLY DECLARED WITHOUT ITS SEARCH (B2705a / #300 / L786): "
+            "a paragraph labels something JUDGMENT-ONLY or PROSE-ONLY with no "
+            "attempted-mechanism clause beside it. The label is a claim about "
+            "the SEARCH SPACE and is earned by a NAMED search - say what scan "
+            "was attempted and why it cannot work, or build the mechanizable "
+            "slice in the same batch: " + para.strip()[:120])
+    return out
+
+
 def scan_response_gates(entries, *, queue_touched=None,
                         tree_changed=None, text=None) -> list[str]:
     """The four gates. Each returns a blocking reason or nothing.
@@ -4493,7 +4532,9 @@ def main(argv: list[str] | None = None) -> int:
                 # B2520: a landed cube must be REPORTED before the turn ends.
                 scan_undelivered_landing,
                 # B2577: so must a HALTED serial chain.
-                scan_chain_halt):
+                scan_chain_halt,
+                # B2817 (S6-B2705a): JUDGMENT-ONLY is earned by a named search.
+                scan_judgment_only_without_search):
         _n_gates += 1
         try:
             _r = _sc(_e2)

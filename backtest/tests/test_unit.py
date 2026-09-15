@@ -28290,6 +28290,16 @@ def _b2337_header_substring_asserts(src: str) -> list[str]:
                 body):
             out.append(f'{node.name}: header-like {m.group(1)[:30]!r} asserted '
                        f'against whole output {m.group(2)!r}')
+        # S6-B2729a: the COLUMN-LABEL shape. A P/B-id label ("P4 minq") carries
+        # no pipe, so the arm above stayed quiet on it while it has exactly the
+        # defect L706 records - prose naming the column keeps the substring
+        # green after the column is gone. Widened NARROWLY to the id-label
+        # form, preserving this detector's no-false-positive design.
+        for m in _re.finditer(
+                r"assert\s+[\"']([PB]\d+ [a-z_0-9]+)[\"']\s+in\s+"
+                r"(out|pout|txt|rendered)\b", body):
+            out.append(f'{node.name}: column-label {m.group(1)!r} asserted '
+                       f'against whole output {m.group(2)!r}')
     return out
 
 
@@ -28321,11 +28331,12 @@ def test_b2337_no_header_asserted_by_substring_over_whole_output():
     bad = ("def test_fake_table_d():\n"
            "    out = table_d(grids)\n"
            "    assert '| tier |' in out\n"
-           "    assert '| # | config |' in out\n")
+           "    assert '| # | config |' in out\n"
+           "    assert \"P4 minq\" in out\n")
     hits = _b2337_header_substring_asserts(bad)
-    assert len(hits) == 2, (
-        'the detector must catch a header-like literal asserted against whole '
-        f'output; got {hits}')
+    assert len(hits) == 3, (
+        'the detector must catch header-like AND column-label literals '
+        f'asserted against whole output (S6-B2729a widening); got {hits}')
 
     # (c) must-QUIET on the CORRECT form: a disclosure sentence carries no
     # pipe, so substring is right and must not be flagged. Without this arm
@@ -37601,3 +37612,66 @@ def test_b2816_depth_inventories_for_the_nine():
     # exactly one entry has no per-strategy numeric knob, and says so
     nokey = [n for n in NINE if SPECS_PHASE0[n].get("no_gate_knob")]
     assert nokey == ["institutional_breakout_confirmation_long"], nokey
+
+
+def test_b2817_judgment_only_is_earned():
+    """S6-B2705a: the response-level scan, both arms.
+
+    must-FIRE: a bare JUDGMENT-ONLY declaration with no attempted-mechanism
+    clause. must-QUIET: the compliant closing form this repo already writes
+    ("JUDGMENT-ONLY - no scan knows...", the #246 arm), and a backticked
+    MENTION of the marker (B1738 scrub).
+    """
+    v = _b2759_mod()
+
+    def ents(txt):
+        return [{"type": "assistant",
+                 "message": {"content": [{"type": "text", "text": txt}]}}]
+
+    fire = v.scan_judgment_only_without_search(
+        ents("New rule: this class is JUDGMENT-ONLY.\n\nUnrelated paragraph."))
+    assert len(fire) == 1, fire
+
+    for quiet in (
+        "Mechanism: JUDGMENT-ONLY - no scan knows which transports exist; "
+        "the durable half is the tripwire row.",
+        "DETECTION is JUDGMENT-ONLY because the detector search (grep over "
+        "scripts/) found no anchorable token.",
+        "the marker `JUDGMENT-ONLY` appears here only inside backticks",
+        "nothing about judgment at all",
+    ):
+        got = v.scan_judgment_only_without_search(ents(quiet))
+        assert got == [], (quiet[:50], got)
+
+
+def test_b2817_bucketing_sites_reconcile():
+    """S6-B2776 closure evidence, site A (tighten_breaker_block): every verdict
+    value that grader emits lands in a NAMED bucket of the multiplicity
+    partition and the buckets reconcile - no row leaves the denominator.
+
+    Site B (optimize_strategies_from_cube) was READ and cleared without code:
+    its verdict assignment is unconditional (every cell gets exactly one of
+    INSUFFICIENT_SAMPLE / PASS / FAIL - no filtering split exists), so there
+    is no silent-loss surface to reconcile.
+    """
+    import sys
+    from pathlib import Path as _P
+    d = _P(__file__).resolve().parents[2] / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    import roster_core as rc
+
+    # one row per verdict value tighten_breaker_block emits, plus graded rows
+    rows = [
+        {"verdict": "ZERO_FIRES"},
+        {"verdict": "NO_EXIT_SELECTABLE"},
+        {"verdict": "BELOW_POWER_FLOOR"},
+        {"verdict": "PASS", "is_sharpe": 1.2},
+        {"verdict": "FAIL", "is_sharpe": 0.1},
+        {"is_sharpe": 0.7},
+    ]
+    r = rc.bh_fdr_report(rows)
+    assert r["reconciles"] is True
+    assert r["unclassified"] == 0, r
+    assert r["no_candidate"] == 2 and r["unpriceable"] == 1
+    assert r["scored_unpriced"] == 3, r

@@ -292,6 +292,21 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
                        "committed": False, "pushed": False,
                        "reported_to_owner": False}]},
     ),
+    # B2817 (S6-B2705a): VERBATIM from CHECKLIST.md #299 as shipped at B2702 -
+    # the declaration that drew the owner's mechanize-first mandate (B2705,
+    # owner-caught #6, verbatim: "make all things mechanical especially if
+    # errors for the class vs keeping it prose or judgement only"):
+    # JUDGMENT-ONLY labelled with durability pins named but NO
+    # attempted-mechanism search, while band_coverage_gate.py mechanized the
+    # declare-failure slice of the same class ~150 lines later the same day.
+    # Durability is not detection - the label is earned by naming the SEARCH.
+    "scan_judgment_only_without_search": (
+        "The broader leg-completeness judgment for non-failure closures "
+        "remains JUDGMENT-ONLY; durability via the L785 fragment pin "
+        "(test_b2123) and test_b1486's banner sync.",
+        True,
+        {},
+    ),
     # B2577 (S6-B2573f.a): VERBATIM from output_audit/b2573_optimisation_
     # workflow_portability_audit.md (the B2573 audit, 2026-09-03). The
     # 2026-08-26T02:57:58Z HALT of the chain waiting on b2177_sw50
@@ -903,6 +918,18 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
     "scan_missing_skill_confirmation": [
         # the block present - must be QUIET
         ("SKILLS INVOKED - execution-discipline ALWAYS-ON. Pyramid green.",
+         False, {}),
+    ],
+    "scan_judgment_only_without_search": [
+        # must-QUIET: the compliant form this repo already writes - VERBATIM
+        # from test_b2801's docstring (a real close): the label carries its
+        # attempted-mechanism clause ("no scan knows...") beside it.
+        ("DETECTION is JUDGMENT-ONLY - no scan knows which named constant a "
+         "fixture chose because of a world-property. Durability here; the "
+         "rebuilt case's behaviour is pinned by test_b2578 itself.", False, {}),
+        # must-QUIET: a backticked MENTION of the marker is not a declaration
+        # (B1738 scrub) - quoting the vocabulary must never arm the gate.
+        ("The gate greps for the marker `JUDGMENT-ONLY` in new declarations.",
          False, {}),
     ],
     "scan_response_gates": [
