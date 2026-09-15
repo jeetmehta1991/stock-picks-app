@@ -332,13 +332,21 @@ MIDTURN_MARKER = "sent a new message while you were working"
 def _is_midturn_instruction(entry) -> bool:
     """True when this entry carries a user message sent mid-turn.
 
-    Scans the WHOLE entry, because the marker sits inside an attachment
-    payload whose shape is not part of any contract we control. Fails
-    CLOSED on anything unserialisable: an entry we cannot read is not an
-    instruction, so the window simply does not advance.
+    TRANSPORT **AND** CONTENT (S6-B2810a). The B2759 version scanned the
+    whole entry for the marker with no type check, and any entry QUOTING
+    the phrase counted as an instruction - MEASURED on the live transcript
+    (31,199 entries): the marker sat in 5 assistant + 4 user entries that
+    were not instructions, and the LAST hit was an assistant entry, so the
+    scan window was pinned nearly shut and offenders escaped every scan.
+    That is B2555's class - an entry that is not an instruction but looks
+    like one - reintroduced by the fix for its mirror (L795). A mid-turn
+    instruction arrives ONLY as a type="attachment" entry, so the type is
+    required first; the marker scan then stays whole-entry, because the
+    payload shape inside an attachment is still not ours to contract.
+    Fails CLOSED on anything unserialisable.
     """
     import json as _j
-    if not isinstance(entry, dict):
+    if not isinstance(entry, dict) or entry.get("type") != "attachment":
         return False
     try:
         blob = _j.dumps(entry)

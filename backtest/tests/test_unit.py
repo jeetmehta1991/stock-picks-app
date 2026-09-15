@@ -37461,3 +37461,40 @@ def test_b2811_campaign_is_not_a_mention():
     d = json.loads(art.read_text(encoding="utf-8"))
     assert len(d["caveats"]) == 4, "the IN-CAMPAIGN heuristic caveat must ride the artifact"
     assert any("mention is not a campaign" in c for c in d["caveats"])
+
+
+def test_b2812_quoting_the_marker_is_not_an_instruction():
+    """S6-B2810a: transport AND content, both required.
+
+    B2759's predicate scanned the whole entry with no type check, so any
+    entry QUOTING the marker phrase counted as an instruction - measured
+    live: 5 assistant + 4 user non-instruction hits, the last of them an
+    assistant entry, pinning the scan window nearly shut (under-enforcement,
+    the silent direction). This is B2555's class reintroduced by the fix
+    for its mirror; the pair of pins now covers BOTH directions.
+    """
+    v = _b2759_mod()
+    MARK = "The user sent a new message while you were working: do the thing"
+
+    # an ASSISTANT entry quoting the marker is NOT an instruction
+    assert v._is_midturn_instruction(
+        {"type": "assistant",
+         "message": {"content": [{"type": "text", "text": MARK}]}}) is False
+    # a USER entry quoting the marker (gate feedback citing it) is NOT either
+    assert v._is_midturn_instruction(
+        {"type": "user", "message": {"content": MARK}}) is False
+    # the real channel still advances: attachment + marker
+    assert v._is_midturn_instruction({"type": "attachment", "x": MARK}) is True
+    # an attachment WITHOUT the marker is not an instruction (content half)
+    assert v._is_midturn_instruction(
+        {"type": "attachment", "x": "routine attachment payload"}) is False
+
+    # and the WINDOW no longer advances past a quoting assistant entry
+    ents = [
+        {"type": "user", "message": {"content": "the real instruction"}},
+        {"type": "assistant",
+         "message": {"content": [{"type": "text",
+                                  "text": "discussing: " + MARK}]}},
+    ]
+    assert v._last_instruction_index(ents) == 0, (
+        "an assistant entry quoting the marker must not advance the window")
