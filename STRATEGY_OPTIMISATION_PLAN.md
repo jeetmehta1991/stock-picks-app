@@ -3539,7 +3539,10 @@ strategies named were themselves admitted.
 
 **Columns** - strategy, family (the category the strategy declares in its own `_strat` /
 `_strat3` call), R5 fires, projected Step-1 fires, changed-since-R5, survives_pct, STREAM,
-ticket, status (DONE-ADMITTED / IN-CAMPAIGN / NOT-STARTED).
+ticket, status - one of EIGHT, mutually exclusive (B2825/B2833): five terminal
+(DONE-ADMITTED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE /
+CONTAINED-IN-REPRESENTATIVE) and three in lanes (IN-CAMPAIGN / STALLED-CAMPAIGN /
+NOT-STARTED).
 
 **STREAM is the optimisation lane, and the rule is mechanical:**
 
@@ -3555,13 +3558,15 @@ this section stopped quoting live totals after three builds in two days each lef
 snapshot in prose. Read STRATEGY_OPTIMISATION_STATUS.md and trust ONLY a copy whose L803
 build stamp matches HEAD - if it does not, REGENERATE FIRST (scripts/build_strategy_status.py)
 and commit the fresh build. What this section owns is the INVARIANTS, which do not rot:
-the seven statuses partition all registered strategies exactly; terminal statuses
+the eight statuses partition all registered strategies exactly; terminal statuses
 (ADMITTED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED) are mutually
 exclusive with every work lane; IN-CAMPAIGN requires a campaign-vocabulary ticket whose
 CURRENT ledger state is non-terminal (B2829 - a concluded campaign does not own a strategy
-forever); the lanes classify on the CURRENT-GATE projection (raw x survives); and
-`reopen_candidate` FLAGS a terminal row whose entry condition moved since its closure
-evidence - reopening is the OWNER'S word, never automatic.
+forever); a row whose campaign tickets exist but are ALL terminal is STALLED-CAMPAIGN
+(B2833, owner-approved 2026-09-15) - campaigned, concluded mid-path, KEEPS its stream lane
+and its workflow eligibility; the lanes classify on the CURRENT-GATE projection
+(raw x survives); and `reopen_candidate` FLAGS a terminal row whose entry condition moved
+since its closure evidence - reopening is the OWNER'S word, never automatic.
 
 **Tightening candidates by family, largest first (re-measured at B2827 on the B2825 build):**
 news_sentiment 6, candle 5, momentum 5, mean_reversion 4, confluence 4, smc 3, then pivot /
@@ -3576,12 +3581,15 @@ any tightening lane. The institutional family is DONE: worked, judged, admitted-
 `changed_since_r5` is an UPPER bound (any code difference counts, including a rename);
 `stream = TIGHTEN` rests on a source pattern for numeric comparisons and is a LOWER bound (a
 threshold reached through a helper or compared to a config constant is invisible to it);
-`survives_pct` shows `-` for UNMEASURED, never 100pct - it is populated only for strategies
-whose current entry condition has been READ and registered in the builder; and `IN-CAMPAIGN`
+`survives_pct` calls the LIVE strategy function on each fire's persisted signals (S6-B2814;
+`-` only for zero-fire strategies) and is a LOWER bound where a gate leg reads an unpersisted
+key; and `IN-CAMPAIGN`
 requires a campaign-vocabulary token in the row naming the strategy (S6-B2810c - a bare
 mention is not a campaign), a HEURISTIC with measured misses in both directions, so a
 borderline row is settled by reading the ticket and the JSON's `mention_tickets` keeps the
-unfiltered list.
+unfiltered list - `STALLED-CAMPAIGN` inherits this heuristic WITHOUT the B2829 liveness
+mask, so a builder-audit ticket naming a strategy as an example can stall it falsely
+(9 of 46 at the B2833 build; disclosed in both artifacts, exclusion awaiting the word).
 
 ### 11.2b4 THE 38 STRATEGIES WHOSE ENTRY CONDITION MOVED AFTER R5 (B2806, owner-directed 2026-09-13)
 
@@ -3691,7 +3699,9 @@ engine depth sweep rather than treated as a dead end.
 ### 11.2t THE TIGHTENING WORKFLOW W-T (B2828, owner-directed 2026-09-16) - the mechanical procedure, zero engine hours
 
 **Entry criteria, mechanical (read from the L803-stamped status view, never from memory):**
-`status == NOT-STARTED` AND `stream` in {TIGHTEN, BOTH}. An IN-CAMPAIGN row belongs to its
+`status` in {NOT-STARTED, STALLED-CAMPAIGN} AND `stream` in {TIGHTEN, BOTH} (B2833: a
+stalled row is unfinished work with history - T0 reads its concluded campaign tickets and
+T2/T4 reuse any artifacts they left). An IN-CAMPAIGN row belongs to its
 ticket; a terminal row is out by construction (B2825). Pick order: `projected_current_gate`
 DESCENDING (statistical power first). Every step names its mechanism, its artifact, and its
 gate - a step with all three missing its expected output is a STOP, not a judgment call.
@@ -3706,11 +3716,13 @@ gate - a step with all three missing its expected output is a STOP, not a judgme
 | T5 | BREADTH LEG: run 11.2b3 steps 1-6 (companion screen at two exits, cluster->representatives, B-rows, permutation price) or WAIVE with the reason in the row - never silently skipped (11.2b2) | `institutional_companion_screen.py` + `breadth_step1_grid.py` | the consistent-intersect artifact + B-rows in Table A | ran-or-waived recorded |
 | T6 | STEP-2: ONE pre-registered holdout read of the registered cells, on the owner's EXPLICIT word - the one-way door (11.2c). Six LIVE_GATES; control-family comparison on any all-six qualifier (11.2b3 step 8) | `breadth_step2_read.py` / the family reader, fail-closed --ruling | the Step-2 unified artifact; controls recorded | the owner's Step-2 word, every time |
 | T7 | ADMISSION PROPOSAL with labels riding (B2660 doctrine); Jaccard-0.70 de-dup and mirror resolution at admission | `build_phase_1b_roster.py` funnel | roster diff | the owner's ruling per admission |
-| T8 | CLOSE: if the family has open siblings, the pre-registered sibling containment pass (B2628/B2647 pattern) so siblings ride the verdict instead of getting campaigns; queue row EXECUTED; doc sweep | the sibling-pass instrument | sibling grades artifact; the campaign row | family accounted - every member ends TERMINAL, IN-CAMPAIGN, or explicitly deferred |
+| T8 | CLOSE: if the family has open siblings, the pre-registered sibling containment pass (B2628/B2647 pattern) so siblings ride the verdict instead of getting campaigns; queue row EXECUTED; doc sweep | the sibling-pass instrument | sibling grades artifact; the campaign row | family accounted - every member ends TERMINAL, IN-CAMPAIGN, STALLED-CAMPAIGN (campaign concluded mid-path, B2833 - the view names it), or explicitly deferred |
 
 ### 11.2l THE LOOSENING WORKFLOW W-L (B2828, owner-directed 2026-09-16) - the mechanical procedure, engine hours minimized by construction
 
-**Entry criteria, mechanical:** `status == NOT-STARTED` AND (`stream == LOOSEN`, or `BOTH`
+**Entry criteria, mechanical:** `status` in {NOT-STARTED, STALLED-CAMPAIGN} (B2833, as in
+W-T: a stalled row's concluded tickets are context, its artifacts reusable at L2) AND
+(`stream == LOOSEN`, or `BOTH`
 whose tighten leg T4 graded nothing rankable). Pick order: **shared-producer cluster first**
 (one resim serves every open consumer - 11.2s), then largest fire GAP to the 100 floor.
 
