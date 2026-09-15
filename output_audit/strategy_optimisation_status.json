@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "db3c19610",
-    "generated_at": "2026-09-15 15:36:03"
+    "source_commit": "0db16e253",
+    "generated_at": "2026-09-15 15:44:48"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -33,10 +33,7 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [
-        "S6-B1770b",
-        "S6-B2014b"
-      ],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -105,19 +102,11 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B2014b",
-        "S6-B2420"
-      ],
-      "live_campaign_tickets": [
-        "S6-B2420"
-      ],
-      "mention_tickets": [
-        "S6-B2014b",
-        "S6-B2420"
-      ],
+      "tickets": [],
+      "live_campaign_tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "52w_low_breakdown_pullback_short",
@@ -131,14 +120,12 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B2014b",
         "S6-B2420"
       ],
       "live_campaign_tickets": [
         "S6-B2420"
       ],
       "mention_tickets": [
-        "S6-B2014b",
         "S6-B2420"
       ],
       "admitted": false,
@@ -1444,7 +1431,6 @@
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2499b",
         "S6-B2646b",
         "S6-B2807"
       ],
@@ -1916,17 +1902,9 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B2644c",
-        "S6-B2646b",
-        "S6-B2651"
-      ],
+      "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [
-        "S6-B2644c",
-        "S6-B2646b",
-        "S6-B2651"
-      ],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2314,15 +2292,15 @@
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B2418",
-        "S6-B2631",
-        "S6-B2633"
+        "S6-B2633",
+        "S6-B2634a",
+        "S6-B2645b"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2418",
-        "S6-B2631",
-        "S6-B2633"
+        "S6-B2633",
+        "S6-B2634a",
+        "S6-B2645b"
       ],
       "admitted": false,
       "status": "CONTAINED-IN-REPRESENTATIVE"
@@ -2365,13 +2343,11 @@
       "tightenable_keys": {},
       "tickets": [
         "S6-B2633",
-        "S6-B2644a",
         "S6-B2645b"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2633",
-        "S6-B2644a",
         "S6-B2645b"
       ],
       "admitted": false,
@@ -3001,14 +2977,14 @@
       "tightenable_keys": {},
       "tickets": [
         "S6-B2383",
-        "S6-B2418",
-        "S6-B2421"
+        "S6-B2421",
+        "S6-B2649"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383",
-        "S6-B2418",
-        "S6-B2421"
+        "S6-B2421",
+        "S6-B2422"
       ],
       "admitted": false,
       "status": "NOT-STARTED"
@@ -3121,16 +3097,9 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B2527",
-        "S6-B2573d"
-      ],
+      "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [
-        "S6-B2499b",
-        "S6-B2527",
-        "S6-B2573d"
-      ],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -3191,8 +3160,8 @@
       "tightenable_keys": {},
       "tickets": [
         "S6-B1518c",
-        "S6-B1694a",
-        "S6-B1918b"
+        "S6-B1918b",
+        "S6-B2115a"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
@@ -3687,9 +3656,7 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [
-        "S6-B2024a"
-      ],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -4006,13 +3973,9 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B2679"
-      ],
+      "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [
-        "S6-B2679"
-      ],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },

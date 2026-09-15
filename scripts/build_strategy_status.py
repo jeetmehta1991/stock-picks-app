@@ -186,7 +186,13 @@ def campaign_tickets(qtext: str, name: str) -> tuple:
     camp, ment = set(), set()
     for line in qtext.splitlines():
         m = re.match(r"[|-]\s*\*\*(S6-B\d+[a-z]?(?:\.[a-z0-9]+)?)\*\*", line)
-        if not m or name not in line:
+        # B2830: WORD-BOUNDED name match. Bare `name in line` flagged
+        # 52w_low_breakdown off a ticket naming only
+        # 52w_low_breakdown_pullback_short - a strategy whose name is a
+        # substring of a sibling's inherits the sibling's campaigns
+        # (L748, substring variant; found by the #270 whole-row re-read).
+        if not m or not re.search(
+                r"(?<![a-z0-9_])" + re.escape(name) + r"(?![a-z0-9_])", line):
             continue
         ment.add(m.group(1))
         low = line.lower()

@@ -37489,6 +37489,14 @@ def test_b2811_campaign_is_not_a_mention():
     assert set(ment) == {"S6-B9001", "S6-B9002", "S6-B9003"}, ment
     # a name absent from every row yields nothing, both lists
     assert m.campaign_tickets(q, "nonexistent_strategy") == ([], [])
+    # B2830 (L748 substring variant, found by a #270 whole-row re-read):
+    # a name that is a SUBSTRING of a sibling must not inherit the
+    # sibling's campaigns - 13 of 223 names are substrings of another
+    q2 = ("| **S6-B9005** | **OPEN** | P1 | Step 2 campaign for "
+          "news_sentiment_short_v2 only | _reason:_ OPEN |")
+    assert m.campaign_tickets(q2, "news_sentiment_short") == ([], [])
+    assert m.campaign_tickets(q2, "news_sentiment_short_v2") == (
+        ["S6-B9005"], ["S6-B9005"])
     # and the committed artifact carries the fourth caveat
     import json
     from pathlib import Path as _P

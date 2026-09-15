@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit db3c19610 at 2026-09-15 15:36:03 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 0db16e253 at 2026-09-15 15:44:48 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -15,8 +15,8 @@
 |---|---|
 | registered strategies | 223 |
 | DONE - admitted to Phase 1B | 14 |
-| IN-CAMPAIGN - a campaign-marked ticket names it | 3 |
-| NOT-STARTED | 190 |
+| IN-CAMPAIGN - a campaign-marked ticket names it | 2 |
+| NOT-STARTED | 191 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
 | CONTAINED-IN-REPRESENTATIVE (b2647) | 1 |
@@ -223,7 +223,7 @@
 | post_inclusion_reversal_short | - | 100 | 9.2 |  | 100.0% | LOOSEN | NOT-STARTED |
 | smc_bos_continuation | smc | 100 | 9.2 |  | 100.0% | LOOSEN | NOT-STARTED |
 | cup_and_handle_retest_long | chart_pattern | 99 | 9.1 |  | 100.0% | BOTH | NOT-STARTED |
-| 52w_low_breakdown | breakout | 95 | 8.7 |  | 100.0% | LOOSEN | IN-CAMPAIGN |
+| 52w_low_breakdown | breakout | 95 | 8.7 |  | 100.0% | LOOSEN | NOT-STARTED |
 | pivot_fib_confluence | confluence | 91 | 8.4 |  | 100.0% | LOOSEN | NOT-STARTED |
 | xs_quality_top_quintile_long | factor | 89 | 8.2 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | judas_swing_short | ict | 84 | 7.7 |  | 100.0% | LOOSEN | NOT-STARTED |
