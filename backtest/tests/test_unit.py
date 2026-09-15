@@ -32936,10 +32936,13 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
     # silent registration still fails here.
     # S6-B2752g: smc_order_block_bounce added DELIBERATELY at B2752e - a
     # freeze exists so a new family is a decision, never a side effect.
+    # B2819 (S6-B2752): smc_equal_lows_sweep_long added DELIBERATELY -
+    # subject 2 of 3, registered through the shared no-free-axis grader.
     assert set(rp.FAMILIES) == {"smc_breaker_block_long",
                                 "institutional_committed_growth_long",
                                 "smc_liquidity_sweep_reversal",
-                                "smc_order_block_bounce"}, sorted(rp.FAMILIES)
+                                "smc_order_block_bounce",
+                                "smc_equal_lows_sweep_long"}, sorted(rp.FAMILIES)
     assert rp.FAMILY_REFUSALS == {}, rp.FAMILY_REFUSALS
     for name, fam in rp.FAMILIES.items():
         assert callable(fam["params"]) and callable(fam["run"]), name
@@ -37687,3 +37690,51 @@ def test_b2817_bucketing_sites_reconcile():
     assert r["unclassified"] == 0, r
     assert r["no_candidate"] == 2 and r["unpriceable"] == 1
     assert r["scored_unpriced"] == 3, r
+
+
+def test_b2819_equal_lows_registered_via_the_shared_grader():
+    """S6-B2752 subject 2 of 3: smc_equal_lows_sweep_long is a registered,
+    launch-gateable family through the SHARED no-free-axis grader.
+
+    Pinned: validate_spec clean; battery family derived; the shared FAMILY
+    table holds exactly the two no-free-axis registrations with their leg
+    shapes; the spot-check GATES table matches the screener source (each key
+    read from the strat body, so a gate edit surfaces here); the committed
+    Step-1 artifact reproduces the pre-gate baseline and its multiplicity
+    partition reconciles.
+    """
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    d = root / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    from producer_variant_table import SPECS, validate_spec
+    from run_postconfig import FAMILIES
+    import smc_family_step1 as fam
+    import spot_check_smc_family as spot
+
+    assert validate_spec(SPECS["smc_equal_lows_sweep_long"]) == []
+    assert "smc_equal_lows_sweep_long" in FAMILIES
+
+    assert sorted(fam.FAMILY) == ["smc_equal_lows_sweep_long", "smc_inverse_fvg"]
+    assert fam.FAMILY["smc_equal_lows_sweep_long"]["legs"] == ("long",)
+    assert fam.FAMILY["smc_inverse_fvg"]["legs"] == ("long", "short")
+
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    for strat, legs in spot.GATES.items():
+        body = src[src.index(f"def strat_{strat}("):]
+        body = body[:body.index("\ndef ", 1)]
+        for keys in legs.values():
+            for k in keys:
+                assert f'"{k}"' in body, (strat, k, "gate key not in source")
+
+    art = json.loads((root / "output_audit" / "b2819_els_step1.json")
+                     .read_text(encoding="utf-8"))
+    assert art["reproduction_fires"] == 382
+    assert art["cells_graded"] == 26
+    assert art["multiplicity"]["reconciles"] is True
+    assert art["multiplicity"]["unclassified"] == 0
+    assert art["holdout_read"].startswith("NOT FIRED")

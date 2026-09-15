@@ -894,6 +894,99 @@ SPECS["smc_liquidity_sweep_reversal"] = {
 
 
 
+# B2819 (S6-B2752, owner 'before' ruling + 'implement all' 2026-09-15):
+# smc_equal_lows_sweep_long REGISTERED - subject 2 of 3. NO free numeric axis:
+# both gate legs are persisted BOOLEANS, so Step 1 is legs x exits on the
+# recorded fires (the shared smc_family_step1 grader) and depth lives in the
+# producer knobs. CORRECTION to the B2752 row recorded here: this strategy IS
+# swing-reachable - smc_equal_lows_swept rides the liquidity primitive, which
+# takes swings (smc_ict.py:503) - the row's 'neither is swing-reachable'
+# brushed it with inverse_fvg's fvg-only reach.
+FORMULA_SMC_ELS = (
+    "=============================== PRODUCER LAYER ===============================\n"
+    "\n"
+    "P1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )\n"
+    "                   -> swings feed the liquidity primitive, whose Swept\n"
+    "                      flag is this strategy's primary key\n"
+    "\n"
+    "P2  liq     =  liquidity( ohlc, swings, range_percent = 0.01 )\n"
+    "                   -> clusters swing lows within range_percent; the\n"
+    "                      equal-lows key is a cluster's Swept flag set on a\n"
+    "                      recent bar (last 20 events / 50-bar window, B390)\n"
+    "\n"
+    "P3  recency =  _most_recent_event_within( <fvg events>, i,\n"
+    "                                          event_recency_bars = 90 )\n"
+    "                   -> the recency window on the confluence leg\n"
+    "                      smc_fvg_bullish_active\n"
+    "\n"
+    "============================== STRATEGY LAYER ===============================\n"
+    "\n"
+    "long   =  smc_equal_lows_swept AND smc_fvg_bullish_active\n"
+    "          (both persisted booleans - NO free numeric axis; Step 1 is\n"
+    "          legs x exits via the shared smc_family_step1 grader)\n")
+
+SPECS["smc_equal_lows_sweep_long"] = {
+    "gate": "smc_equal_lows_swept AND smc_fvg_bullish_active",
+    "formula": FORMULA_SMC_ELS,
+    "baseline": {"artifact": "output_r5_merged_1_7", "fires": 382,
+                 "tickers": 544, "holdout_n": 113,
+                 "window": "2022-05-06..2026-05-04"},
+    "params": [
+        {"id": "P1", "producer": "_smc.swing_highs_lows",
+         "param": "swing_length", "env": "SMC_SWING_LENGTH",
+         "consumers": ["backtest/config.py",
+                       "backtest/engine/exit_strategies.py",
+                       "backtest/signals/screener.py"],
+         "production": 20, "type": "int", "band": [5, 10, 20, 30, 50],
+         "derivation": ("shared family knob - swings feed liquidity, whose "
+                        "Swept flag is this strategy's primary key"),
+         "subset_safe": False, "status": "UNTESTED",
+         "evidence": "smc_ict.py:368,503", "engine_implemented": True},
+        {"id": "P2", "producer": "_smc.liquidity",
+         "param": "liquidity_range_pct", "env": "SMC_LIQUIDITY_RANGE_PCT",
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "production": 0.01, "type": "float",
+         "band": [0.005, 0.01, 0.02, 0.03],
+         "derivation": ("cluster width for 'equal' lows; the hub-1 loosening "
+                        "measurement (11.2b4) applies to this key family"),
+         "subset_safe": False, "status": "UNTESTED",
+         "evidence": "smc_ict.py:503,512", "engine_implemented": True},
+        {"id": "P3", "producer": "_most_recent_event_within",
+         "param": "event_recency_bars", "env": "SMC_EVENT_RECENCY_BARS",
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "production": 90, "type": "int", "band": [30, 60, 90, 120, 180],
+         "derivation": "recency window on the fvg_bullish_active confluence leg",
+         "subset_safe": False, "status": "UNTESTED",
+         "evidence": "smc_ict.py:381", "engine_implemented": True},
+    ],
+    "tools": {
+        "keys": {"P1": "swing", "P2": "liq_range", "P3": "recency"},
+        "grid_keys": ["leg"],
+        "grade": {"script": "smc_family_step1.py", "cube": "",
+                  "flags": {"P1": "--swing-length",
+                            "P2": "--liquidity-range-pct",
+                            "P3": "--event-recency-bars"},
+                  "extra": ["--strategy", "smc_equal_lows_sweep_long",
+                            "--min-n", "10"],
+                  "pythonpath": ".;scripts",
+                  "note": "AUTO (S6-B2752/B2819); shared no-free-axis grader"},
+        "free_levels": None,
+        "spot_check": {"script": "spot_check_smc_family.py", "cube": "",
+                       "flags": {"P1": "--swing-length",
+                                 "P2": "--liquidity-range-pct",
+                                 "P3": "--event-recency-bars"},
+                       "extra": ["--strategy", "smc_equal_lows_sweep_long",
+                                 "--n", "50"],
+                       "window": False, "precompute_check": False,
+                       "pythonpath": ".",
+                       "note": "AUTO (B2819); LEG A fully sighted - every "
+                               "gate key persists"},
+        "engine_anchors": {"script": "verify_engine_implemented.py"},
+        "single_combination": False,
+    },
+}
+
+
 # B2816 (S6-B2703, owner-ruled schedule-later 2026-09-15): Table-A depth
 # inventories for the 9 admitted strategies whose depth was never searched
 # (8 institutional + xs_low_beta; top_decile is depth-done via its own

@@ -1,0 +1,498 @@
+{
+  "strategy": "smc_equal_lows_sweep_long",
+  "generator": "scripts/smc_family_step1.py",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
+  "config": {
+    "P1_swing_length": 20,
+    "P2_liquidity_range_pct": 0.01,
+    "P3_event_recency_bars": 90
+  },
+  "reproduction": "R5 BASELINE reproduction OK: 382 fires == 382",
+  "design": "base cell per leg x exits, IS-only; holdout untouched; npt barred; NO free numeric axis - the gate is all persisted booleans, so depth lives in the producer knobs (engine) and breadth in 11.2b3",
+  "reproduction_fires": 382,
+  "cells_graded": 26,
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 26,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 26,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 1.83,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis; NO per-row p-values and no permutation null supplied - this grid's significance is UNPRICED, which is not the same as nothing having been graded",
+    "reconciles": true,
+    "significance_basis": "none_available"
+  },
+  "step1_ranking": [
+    {
+      "is_sharpe": 0.855,
+      "is_ci_lo": 0.25,
+      "cell": "base:long",
+      "exit": "time_stop_10d",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.817,
+      "is_ci_lo": 0.465,
+      "cell": "base:long",
+      "exit": "class_time_stop",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.631,
+      "is_ci_lo": 0.347,
+      "cell": "base:long",
+      "exit": "breakeven_plus_trail",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.614,
+      "is_ci_lo": 0.186,
+      "cell": "base:long",
+      "exit": "regime_flip",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.614,
+      "is_ci_lo": 0.186,
+      "cell": "base:long",
+      "exit": "time_stop_20d",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.592,
+      "is_ci_lo": 0.013,
+      "cell": "base:long",
+      "exit": "r_multiple_3r",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.573,
+      "is_ci_lo": 0.211,
+      "cell": "base:long",
+      "exit": "fixed_4r_2r",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.557,
+      "is_ci_lo": 0.093,
+      "cell": "base:long",
+      "exit": "atr_trail_2x",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.531,
+      "is_ci_lo": 0.284,
+      "cell": "base:long",
+      "exit": "earnings_blackout",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.524,
+      "is_ci_lo": -0.093,
+      "cell": "base:long",
+      "exit": "chandelier_3x",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.461,
+      "is_ci_lo": 0.225,
+      "cell": "base:long",
+      "exit": "hybrid_50pct_target",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.415,
+      "is_ci_lo": -0.317,
+      "cell": "base:long",
+      "exit": "ma_exit_ema9",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.412,
+      "is_ci_lo": -0.29,
+      "cell": "base:long",
+      "exit": "r_multiple_2r",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.368,
+      "is_ci_lo": -0.06,
+      "cell": "base:long",
+      "exit": "break_even_at_1r",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.317,
+      "is_ci_lo": -0.146,
+      "cell": "base:long",
+      "exit": "trailing_5pct",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.313,
+      "is_ci_lo": 0.061,
+      "cell": "base:long",
+      "exit": "trailing_10pct",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.232,
+      "is_ci_lo": 0.056,
+      "cell": "base:long",
+      "exit": "trailing_15pct",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.055,
+      "is_ci_lo": -0.637,
+      "cell": "base:long",
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.351,
+      "is_ci_lo": -1.153,
+      "cell": "base:long",
+      "exit": "smart_money_reversal",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.381,
+      "is_ci_lo": -1.182,
+      "cell": "base:long",
+      "exit": "atr_trail_1x",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.381,
+      "is_ci_lo": -1.182,
+      "cell": "base:long",
+      "exit": "atr_trail_mae_conditional",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.381,
+      "is_ci_lo": -1.182,
+      "cell": "base:long",
+      "exit": "reverse_signal",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.461,
+      "is_ci_lo": -1.274,
+      "cell": "base:long",
+      "exit": "multi_tier_partial",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.562,
+      "is_ci_lo": -1.413,
+      "cell": "base:long",
+      "exit": "mfe_lockin_trail",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -2.63,
+      "is_ci_lo": -4.282,
+      "cell": "base:long",
+      "exit": "smc_mitigation_zone",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    }
+  ],
+  "rows": [
+    {
+      "is_sharpe": -0.381,
+      "is_ci_lo": -1.182,
+      "cell": "base:long",
+      "exit": "atr_trail_1x",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.557,
+      "is_ci_lo": 0.093,
+      "cell": "base:long",
+      "exit": "atr_trail_2x",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.381,
+      "is_ci_lo": -1.182,
+      "cell": "base:long",
+      "exit": "atr_trail_mae_conditional",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.055,
+      "is_ci_lo": -0.637,
+      "cell": "base:long",
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.368,
+      "is_ci_lo": -0.06,
+      "cell": "base:long",
+      "exit": "break_even_at_1r",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.631,
+      "is_ci_lo": 0.347,
+      "cell": "base:long",
+      "exit": "breakeven_plus_trail",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.524,
+      "is_ci_lo": -0.093,
+      "cell": "base:long",
+      "exit": "chandelier_3x",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.817,
+      "is_ci_lo": 0.465,
+      "cell": "base:long",
+      "exit": "class_time_stop",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.531,
+      "is_ci_lo": 0.284,
+      "cell": "base:long",
+      "exit": "earnings_blackout",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.573,
+      "is_ci_lo": 0.211,
+      "cell": "base:long",
+      "exit": "fixed_4r_2r",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.461,
+      "is_ci_lo": 0.225,
+      "cell": "base:long",
+      "exit": "hybrid_50pct_target",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.415,
+      "is_ci_lo": -0.317,
+      "cell": "base:long",
+      "exit": "ma_exit_ema9",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.562,
+      "is_ci_lo": -1.413,
+      "cell": "base:long",
+      "exit": "mfe_lockin_trail",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.461,
+      "is_ci_lo": -1.274,
+      "cell": "base:long",
+      "exit": "multi_tier_partial",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.159,
+      "is_ci_lo": -0.508,
+      "cell": "base:long",
+      "exit": "next_pivot_target",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": true
+    },
+    {
+      "is_sharpe": 0.412,
+      "is_ci_lo": -0.29,
+      "cell": "base:long",
+      "exit": "r_multiple_2r",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.592,
+      "is_ci_lo": 0.013,
+      "cell": "base:long",
+      "exit": "r_multiple_3r",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.614,
+      "is_ci_lo": 0.186,
+      "cell": "base:long",
+      "exit": "regime_flip",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.381,
+      "is_ci_lo": -1.182,
+      "cell": "base:long",
+      "exit": "reverse_signal",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.351,
+      "is_ci_lo": -1.153,
+      "cell": "base:long",
+      "exit": "smart_money_reversal",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -2.63,
+      "is_ci_lo": -4.282,
+      "cell": "base:long",
+      "exit": "smc_mitigation_zone",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.855,
+      "is_ci_lo": 0.25,
+      "cell": "base:long",
+      "exit": "time_stop_10d",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.614,
+      "is_ci_lo": 0.186,
+      "cell": "base:long",
+      "exit": "time_stop_20d",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.313,
+      "is_ci_lo": 0.061,
+      "cell": "base:long",
+      "exit": "trailing_10pct",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.232,
+      "is_ci_lo": 0.056,
+      "cell": "base:long",
+      "exit": "trailing_15pct",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.317,
+      "is_ci_lo": -0.146,
+      "cell": "base:long",
+      "exit": "trailing_5pct",
+      "is_n": 269,
+      "full_n_count_only": 382,
+      "npt_barred": false
+    }
+  ],
+  "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"
+}
