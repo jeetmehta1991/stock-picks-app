@@ -21003,3 +21003,29 @@ pasted anywhere, names its own vintage. MECHANISM: build_strategy_status.py
 now writes the stamp into both the markdown header and the JSON
 (`build` key); pinned by test_b2822. Compliance failure against item #201
 for the instances already in circulation.
+
+### L804 - A STATUS VOCABULARY WITHOUT TERMINAL-NEGATIVE STATES RESURRECTS FINISHED WORK (B2825, owner-caught 2026-09-16)
+
+**What happened.** The status view's vocabulary was DONE-ADMITTED /
+IN-CAMPAIGN / NOT-STARTED - it could say a strategy succeeded or was
+untouched, but had NO state for "evaluated and discarded". MEASURED: 16
+strategies with committed terminal verdicts (8 Jaccard-pruned duplicates, 3
+family-pass FAIL never re-admitted, 1 contained-in-representative, 4
+disabled) sat in work lanes, and 7 of the 48 "tightenable" were closed-FAIL
+institutional siblings. Every regeneration re-laned them, because no code
+path COULD mark them closed - the owner asked why closed strategies "keep
+coming in repeatedly", and that is the whole answer.
+
+**The class.** A vocabulary that only names the states you plan to reach
+cannot represent the states you already reached and rejected. Rejection
+records lived in artifacts (b2628, b2647, pruned_collinear_b2666, the
+disabled sets) that the view never read - so the ledger knew, and the
+instrument that ANSWERS "what should we work on" did not.
+
+**Rule.** A per-item status view carries FIRST-CLASS TERMINAL-NEGATIVE
+states derived from the committed rejection records, mutually exclusive
+with every work lane; reopening is an explicit FLAG (here: entry condition
+changed since the closure evidence, survives < 1.0) that awaits the
+owner's word, never an automatic transition. Mechanism: test_b2825 pins
+the exact partition, the lane voiding, and the exact reopen pair.
+Compliance failure against item #201.
