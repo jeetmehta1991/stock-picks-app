@@ -3558,10 +3558,14 @@ gates diverged from their canonicals (institutional_insider_combo_long OR->AND;
 institutional_volume_confirmation_long +stoch_d threshold) - and reopening is the OWNER'S
 word, never automatic.
 
-**Tightening candidates by family, largest first:** news_sentiment 6, candle 5, momentum 5,
-institutional_persistence 5, mean_reversion 4, confluence 4, smc 3, then pivot,
-smart_money_combo, volume_profile and pairs at 2 each. The institutional_persistence 5 are the
-members NOT admitted - the residue of a finished family, not a re-run of it.
+**Tightening candidates by family, largest first (re-measured at B2827 on the B2825 build):**
+news_sentiment 6, candle 5, momentum 5, mean_reversion 4, confluence 4, smc 3, then pivot /
+volume_profile / pairs at 2 each. **institutional_persistence appears NOWHERE in this table
+any more, deliberately:** the "institutional_persistence 5" the B2808-era sentence carried
+here were closed-family residue sitting in lanes the pre-B2825 vocabulary could not evict -
+measured at B2827, all five are TERMINAL (4 PRUNED-DUPLICATE under the Jaccard-0.70 canonical
+rule, 1 CLOSED-NEGATIVE from the b2628 family pass) and zero members of that family remain in
+any tightening lane. The institutional family is DONE: worked, judged, admitted-or-discarded.
 
 **Four caveats bound every number in it, and are printed in the file itself:**
 `changed_since_r5` is an UPPER bound (any code difference counts, including a rename);
