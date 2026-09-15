@@ -37777,3 +37777,57 @@ def test_b2820_inverse_fvg_registered_with_one_honest_knob():
     assert art["cells_graded"] == 78          # 3 leg cells x 26 exits
     assert art["multiplicity"]["reconciles"] is True
     assert art["holdout_read"].startswith("NOT FIRED")
+
+
+def test_b2821_midturn_text_reaches_the_command_channels():
+    """S6-B2762: the three text-reading siblings, disposed with evidence.
+
+    The extractor rides the MEASURED structural contract (38 of 39 live
+    marker-bearing attachments: attachment.type queued_command, text in
+    .prompt, origin.kind human). Site 1 (_is_real_user) and site 2
+    (_last_user_text) now see it - an owner command sent mid-turn arms the
+    command-scoped checks; site 3 (_skill_context_text) was CLEARED ON READ:
+    it collects skill-body evidence, a channel a queued command never
+    carries, so wiring it would add nothing and was not done.
+    """
+    v = _b2759_mod()
+    QC = {"type": "attachment",
+          "attachment": {"type": "queued_command", "prompt": "Fable mode",
+                         "origin": {"kind": "human"},
+                         "timestamp": "2026-09-15T00:00:00Z"}}
+    assert v._midturn_instruction_text(QC) == "Fable mode"
+    # a FILE attachment is not an instruction (the measured 39th shape)
+    assert v._midturn_instruction_text(
+        {"type": "attachment",
+         "attachment": {"type": "file", "content": "Fable mode"}}) is None
+    # a non-human origin is not an owner command
+    assert v._midturn_instruction_text(
+        {"type": "attachment",
+         "attachment": {"type": "queued_command", "prompt": "x",
+                        "origin": {"kind": "hook"}}}) is None
+    # the type check's OWN discriminating case (the first mutation run was
+    # HOLLOW without it - every other negative was caught by a later check):
+    # an attachment that carries prompt AND human origin but is NOT a
+    # queued_command must stay invisible
+    assert v._midturn_instruction_text(
+        {"type": "attachment",
+         "attachment": {"type": "reminder", "prompt": "Fable mode",
+                        "origin": {"kind": "human"}}}) is None
+    assert v._midturn_instruction_text({"type": "user",
+                                        "message": {"content": "Fable mode"}}) is None
+
+    # site 2 behavioural: the mid-turn command is the LAST user text now
+    ents = [{"type": "user", "message": {"content": "original ask"}},
+            QC]
+    assert v._last_user_text(ents) == "fable mode"
+    # and an ordinary transcript is unchanged
+    assert v._last_user_text(ents[:1]) == "original ask"
+
+    # site 1 is wired at source (nested def - pinned by anchor count): the
+    # extractor is consulted at BOTH wired sites and nowhere silently third
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts"
+           / "verify_turn_compliance.py").read_text(encoding="utf-8",
+                                                    errors="replace")
+    n = src.count("_midturn_instruction_text(d)")
+    assert n == 2, f"expected the extractor consulted at 2 sites, found {n}"

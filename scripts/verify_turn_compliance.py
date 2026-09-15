@@ -1510,6 +1510,12 @@ def scan_uninspected_constant(entries, *, tool_text=None,
     # had in fact touched. A real user turn carries plain string content; a tool
     # result carries a list of tool_result blocks.
     def _is_real_user(d):
+        # B2821 (S6-B2762 site 1): a mid-turn instruction IS real user input
+        # - it arrives as a queued_command attachment (structural contract,
+        # measured 38 of 39), and skipping it by type tag left this window
+        # open across the instruction (the L795 class).
+        if _midturn_instruction_text(d) is not None:
+            return True
         if not isinstance(d, dict) or d.get("type") != "user":
             return False
         c = (d.get("message") or {}).get("content")
@@ -1705,10 +1711,43 @@ SKILL_TRIGGERS = ("fable mode", "think like fable", "use the fable",
                   "run the council", "convene the council", "llm council")
 
 
+def _midturn_instruction_text(entry):
+    """The instruction TEXT a mid-turn user message carries, or None.
+
+    B2821 (S6-B2762): MEASURED on the live transcript - 38 of 39
+    marker-bearing attachment entries share ONE structural shape:
+    attachment.type == "queued_command", the text in attachment.prompt,
+    origin.kind == "human" (the 39th is a file attachment). This is a
+    STRUCTURAL contract, stronger than the marker substring, and it is what
+    lets the three text-reading sites (L795's siblings) finally SEE a
+    mid-turn owner command instead of skipping it by type tag.
+    """
+    if not isinstance(entry, dict) or entry.get("type") != "attachment":
+        return None
+    att = entry.get("attachment")
+    if not isinstance(att, dict) or att.get("type") != "queued_command":
+        return None
+    if not isinstance(att.get("origin"), dict) or \
+            att["origin"].get("kind") != "human":
+        return None
+    p = att.get("prompt")
+    return p if isinstance(p, str) and p.strip() else None
+
+
 def _last_user_text(entries) -> str:
-    """The most recent REAL user message, lowercased."""
+    """The most recent REAL user message, lowercased.
+
+    B2821 (S6-B2762 site 2): a mid-turn instruction now updates this too -
+    an owner command sent while the turn ran ("fable mode", "council this")
+    previously vanished from every command-scoped check because this loop
+    keyed on type == "user" alone (the L795 class, text half).
+    """
     txt = ""
     for d in entries or ():
+        mid = _midturn_instruction_text(d)
+        if mid is not None:
+            txt = mid
+            continue
         if not isinstance(d, dict) or d.get("type") != "user":
             continue
         c = (d.get("message") or {}).get("content")
