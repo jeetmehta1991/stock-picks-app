@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "0db16e253",
-    "generated_at": "2026-09-15 15:44:48"
+    "source_commit": "bdd97f86f",
+    "generated_at": "2026-09-15 16:42:18"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -15,7 +15,7 @@
     "changed_since_r5 is an UPPER BOUND - any code difference counts",
     "stream TIGHTEN rests on a source pattern for numeric comparisons, a LOWER BOUND - thresholds via a helper or a config constant are invisible",
     "survives_pct calls the LIVE strategy function on each fire's persisted signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). A LOWER BOUND where a gate leg reads an unpersisted key (defaults False); an erroring row counts as non-survival; None only for zero-fire strategies",
-    "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the strategy (S6-B2810c; a bare mention is not a campaign) - the vocabulary is a heuristic, so borderline rows are settled by reading the ticket; mention_tickets keeps the unfiltered list; IN-CAMPAIGN additionally requires a naming ticket whose CURRENT ledger state is non-terminal (B2829) - a concluded campaign does not own a strategy forever",
+    "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the strategy (S6-B2810c; a bare mention is not a campaign) - the vocabulary is a heuristic, so borderline rows are settled by reading the ticket; mention_tickets keeps the unfiltered list; IN-CAMPAIGN additionally requires a naming ticket whose CURRENT ledger state is non-terminal (B2829) - a concluded campaign does not own a strategy forever; a row whose campaign tickets exist but are ALL terminal is STALLED-CAMPAIGN (B2833, owner-approved 2026-09-15): campaigned, concluded mid-path, still in its lane. STALLED inherits the vocabulary heuristic WITHOUT the liveness mask, so a builder-audit ticket that names a strategy as an EXAMPLE (the S6-B2810b/c and S6-B2830 rows) can stall it falsely - settle a surprising row by reading its tickets",
     "stream and the proj column use the CURRENT-GATE projection (raw projection x survives_pct, B2822); projected_step1_fires in this JSON keeps the raw figure",
     "terminal statuses (ADMITTED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED) are MUTUALLY EXCLUSIVE with the stream lanes and excluded from every work bucket (B2825); reopen_candidate flags a terminal row whose entry condition changed since its closure evidence (survives < 1.0) - flagged for the owner, never auto-reopened"
   ],
@@ -102,11 +102,15 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2830"
+      ],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B2830"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "52w_low_breakdown_pullback_short",
@@ -120,13 +124,15 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B2420"
+        "S6-B2420",
+        "S6-B2830"
       ],
       "live_campaign_tickets": [
         "S6-B2420"
       ],
       "mention_tickets": [
-        "S6-B2420"
+        "S6-B2420",
+        "S6-B2830"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -235,7 +241,7 @@
         "S6-B2418"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "avwap_50_reclaim",
@@ -256,7 +262,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "awesome_oscillator",
@@ -313,7 +319,7 @@
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "bollinger_tight",
@@ -334,7 +340,7 @@
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "bollinger_tight_with_smart_money_long",
@@ -374,7 +380,7 @@
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "break_retest_confluence",
@@ -535,7 +541,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "cpr_narrow_momentum",
@@ -989,7 +995,7 @@
         "S6-B2477"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "golden_cross_volume",
@@ -1135,7 +1141,7 @@
         "S6-B2810c"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "ichimoku_cloud_breakdown",
@@ -1190,7 +1196,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "inside_bar_breakout",
@@ -1798,7 +1804,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "macd_crossover",
@@ -1853,7 +1859,7 @@
         "S6-B2418"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "macd_ichimoku",
@@ -1931,7 +1937,7 @@
         "S6-B2651"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "mmbm_long",
@@ -1952,7 +1958,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "mmsm_short",
@@ -2351,7 +2357,7 @@
         "S6-B2645b"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "pead_short_negative_yoy_growth",
@@ -2376,7 +2382,7 @@
         "S6-B2645b"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "pead_with_insider_confirmation_long",
@@ -2399,7 +2405,7 @@
         "S6-B2649c"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "pead_with_smart_money_long",
@@ -2462,7 +2468,7 @@
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "pivot_r2_continuation",
@@ -2483,7 +2489,7 @@
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "pivot_r3_blowoff_short",
@@ -2610,7 +2616,7 @@
         "S6-B2644c"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "poc_magnet_short",
@@ -2854,7 +2860,7 @@
         "S6-B2418"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "risk_off_bond_equity_short",
@@ -2962,7 +2968,7 @@
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "rsi_oversold",
@@ -2987,7 +2993,7 @@
         "S6-B2422"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "rsi_oversold_with_smart_money_long",
@@ -3012,7 +3018,7 @@
         "S6-B2649"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "rsi_volume_200ema",
@@ -3122,7 +3128,7 @@
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_bos_retest_entry",
@@ -3145,7 +3151,7 @@
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_breaker_block_long",
@@ -3195,7 +3201,7 @@
         "S6-B2417"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_choch_reversal",
@@ -3218,7 +3224,7 @@
         "S6-B2763"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_discount_long",
@@ -3241,7 +3247,7 @@
         "S6-B2763"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_equal_highs_sweep_short",
@@ -3264,7 +3270,7 @@
         "S6-B2763"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_equal_lows_sweep_long",
@@ -3287,7 +3293,7 @@
         "S6-B2752e"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_fvg_retest_long",
@@ -3308,7 +3314,7 @@
         "S6-B2737"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_fvg_retest_short",
@@ -3350,7 +3356,7 @@
         "S6-B2752e"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_liquidity_sweep_reversal",
@@ -3375,7 +3381,7 @@
         "S6-B2693"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_mitigation_block_long",
@@ -3444,7 +3450,7 @@
         "S6-B2692"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_ote_long",
@@ -3466,7 +3472,7 @@
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_ote_short",
@@ -3487,7 +3493,7 @@
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "smc_premium_short",
@@ -3510,7 +3516,7 @@
         "S6-B2763"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "squeeze_breakout",
@@ -3531,7 +3537,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "squeeze_breakout_with_smart_money_long",
@@ -3757,7 +3763,7 @@
         "S6-B2651"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "totm_short",
@@ -3867,7 +3873,7 @@
         "S6-B2810c"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "ultimate_oscillator",
@@ -3943,7 +3949,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "volume_spike_breakout",
@@ -4091,7 +4097,7 @@
         "S6-B2383"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "williams_stoch_dual",
@@ -4131,7 +4137,7 @@
         "S6-B2649"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "xs_combined_momentum_low_ivol",
@@ -4154,7 +4160,7 @@
         "S6-B2644c"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "xs_low_beta_long",
@@ -4280,7 +4286,7 @@
         "S6-B1595c"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "xs_quality_top_quintile_long",

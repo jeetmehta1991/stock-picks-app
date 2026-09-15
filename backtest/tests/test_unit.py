@@ -38091,3 +38091,52 @@ def test_b2832_skill_gate_echo_and_advertised_escape():
     # one disposed skill does not excuse the OTHER triggered, undisposed one
     assert inv("fable mode and council this", "", disp)
     assert ps("fable mode and council this", "", disp)
+
+
+def test_b2833_stalled_campaign_is_distinguished_and_honest():
+    """B2833 (owner word "STALLED-CAMPAIGN approved", 2026-09-15): a row whose
+    campaign tickets exist but are ALL terminal is STALLED-CAMPAIGN - the
+    B2829 flag, ruled. Invariants, not counts (ticket states move):
+
+    - every STALLED row has tickets and NO live one, and KEEPS its lane
+      (non-terminal - the whole point is that the work is unfinished);
+    - a NOT-STARTED row carries NO campaign tickets (else it belongs to
+      STALLED) and an IN-CAMPAIGN row a live one (B2829, restated);
+    - both artifacts carry the caveat that STALLED inherits the vocabulary
+      heuristic WITHOUT the liveness mask (an audit ticket naming a strategy
+      as an example can stall it falsely - disclosed, not hidden);
+    - one genuine member rides as a concrete anchor: smc_equal_lows_sweep_long
+      stalled on its concluded S6-B2752 registration campaign.
+    """
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    d = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                   .read_text(encoding="utf-8"))
+    sys.path.insert(0, str(root / "scripts")) if str(root / "scripts") not in sys.path else None
+    import queue_state as qs
+    states = {k: (v.get("state") if isinstance(v, dict) else v)
+              for k, v in qs.tickets().items()}
+    LIVE = ("OPEN", "BLOCKED", "DEFERRED", "RUNNING")
+    seen_stalled = 0
+    for r in d["rows"]:
+        if r["status"] == "STALLED-CAMPAIGN":
+            seen_stalled += 1
+            assert r["tickets"] and not r["live_campaign_tickets"], r["strategy"]
+            assert not any(states.get(t) in LIVE for t in r["tickets"]), r
+            assert r["stream"] in ("TIGHTEN", "BOTH", "LOOSEN", "NONE"), (
+                r["strategy"], "STALLED must keep its lane")
+        elif r["status"] == "NOT-STARTED":
+            assert not r["tickets"], (r["strategy"],
+                                      "campaigned rows are never NOT-STARTED")
+    assert seen_stalled >= 1
+    anchor = [r for r in d["rows"]
+              if r["strategy"] == "smc_equal_lows_sweep_long"][0]
+    assert anchor["status"] == "STALLED-CAMPAIGN"
+    assert "S6-B2752" in anchor["tickets"]
+    assert any("STALLED-CAMPAIGN" in c and "liveness mask" in c
+               for c in d["caveats"])
+    md = (root / "STRATEGY_OPTIMISATION_STATUS.md").read_text(
+        encoding="utf-8", errors="replace")
+    assert "STALLED-CAMPAIGN" in md and "liveness mask" in md

@@ -24,7 +24,10 @@ judgement:
   stream            TIGHTEN / LOOSEN / BOTH / NONE - see classify_stream
   ticket            campaign tickets naming this strategy in EXECUTION_QUEUE.md
   admitted          present in phase_1b_step2_admissions.json
-  status            DONE-ADMITTED / IN-CAMPAIGN / NOT-STARTED
+  status            one of eight, mutually exclusive (B2825/B2833):
+                    DONE-ADMITTED / DISABLED / PRUNED-DUPLICATE /
+                    CLOSED-NEGATIVE / CONTAINED-IN-REPRESENTATIVE (terminal)
+                    IN-CAMPAIGN / STALLED-CAMPAIGN / NOT-STARTED (in lanes)
 
 STREAM IS THE HONEST PART, so its rule is stated rather than implied:
   TIGHTEN  the entry condition compares a signal to a NUMBER and that magnitude
@@ -339,7 +342,13 @@ def main() -> int:
         elif name in contained:
             status = "CONTAINED-IN-REPRESENTATIVE"
         else:
-            status = "IN-CAMPAIGN" if live_tickets else "NOT-STARTED"
+            # B2833 (owner word "STALLED-CAMPAIGN approved", 2026-09-15): a
+            # row whose campaign tickets exist but are ALL terminal is
+            # distinguished from a never-campaigned row - Step-1 may be done
+            # with no Step-2 word, and NOT-STARTED erased that history
+            # (flagged at B2829, ruled now). NON-terminal: it keeps its lane.
+            status = ("IN-CAMPAIGN" if live_tickets
+                      else "STALLED-CAMPAIGN" if tickets else "NOT-STARTED")
         terminal = status in ("DONE-ADMITTED", "DISABLED", "PRUNED-DUPLICATE",
                               "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE")
         # REOPEN RULE (owner 2026-09-16, "unless reopened for a genuine
@@ -404,7 +413,13 @@ def main() -> int:
              "reading the ticket; mention_tickets keeps the unfiltered list; "
              "IN-CAMPAIGN additionally requires a naming ticket whose CURRENT "
              "ledger state is non-terminal (B2829) - a concluded campaign does "
-             "not own a strategy forever",
+             "not own a strategy forever; a row whose campaign tickets exist "
+             "but are ALL terminal is STALLED-CAMPAIGN (B2833, owner-approved "
+             "2026-09-15): campaigned, concluded mid-path, still in its lane. "
+             "STALLED inherits the vocabulary heuristic WITHOUT the liveness "
+             "mask, so a builder-audit ticket that names a strategy as an "
+             "EXAMPLE (the S6-B2810b/c and S6-B2830 rows) can stall it "
+             "falsely - settle a surprising row by reading its tickets",
              "stream and the proj column use the CURRENT-GATE projection "
              "(raw projection x survives_pct, B2822); projected_step1_fires "
              "in this JSON keeps the raw figure",
@@ -445,7 +460,8 @@ def main() -> int:
          "| | count |", "|---|---|",
          f"| registered strategies | {len(recs)} |",
          f"| DONE - admitted to Phase 1B | {bystatus.get('DONE-ADMITTED', 0)} |",
-         f"| IN-CAMPAIGN - a campaign-marked ticket names it | {bystatus.get('IN-CAMPAIGN', 0)} |",
+         f"| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | {bystatus.get('IN-CAMPAIGN', 0)} |",
+         f"| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | {bystatus.get('STALLED-CAMPAIGN', 0)} |",
          f"| NOT-STARTED | {bystatus.get('NOT-STARTED', 0)} |",
          f"| CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | {bystatus.get('CLOSED-NEGATIVE', 0)} |",
          f"| PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | {bystatus.get('PRUNED-DUPLICATE', 0)} |",
@@ -476,9 +492,18 @@ def main() -> int:
           "signals (S6-B2814). A **lower bound** where a gate leg reads an unpersisted key; "
           "an erroring row counts as non-survival; `-` only for zero-fire strategies.",
           "- `IN-CAMPAIGN` requires a campaign-vocabulary token in the row naming the "
-          "strategy (S6-B2810c) - **a bare mention is not a campaign**. The vocabulary "
+          "strategy (S6-B2810c) - **a bare mention is not a campaign** - AND a naming "
+          "ticket whose CURRENT ledger state is non-terminal (B2829). The vocabulary "
           "is a heuristic; a borderline row is settled by reading the ticket, and "
-          "`mention_tickets` in the JSON keeps the unfiltered list.", "",
+          "`mention_tickets` in the JSON keeps the unfiltered list.",
+          "- `STALLED-CAMPAIGN` (B2833, owner-approved 2026-09-15): campaign tickets "
+          "exist but every one is terminal - campaigned, concluded mid-path (e.g. "
+          "Step-1 done, no Step-2 word). **Not terminal**: the row keeps its stream "
+          "lane; the history is preserved rather than erased into NOT-STARTED. It "
+          "inherits the vocabulary heuristic WITHOUT the liveness mask, so a "
+          "builder-audit ticket naming a strategy as an EXAMPLE (S6-B2810b/c, "
+          "S6-B2830) can stall it falsely - settle a surprising row by reading "
+          "its tickets.", "",
           "## Per strategy", "",
           "| strategy | family | R5 fires | proj. Step-1 (current-gate) | chg | survives | stream | status |",
           "|---|---|---|---|---|---|---|---|"]
@@ -492,6 +517,7 @@ def main() -> int:
     print(f"wrote {a.out} and {a.json}")
     print(f"  registered {len(recs)} | admitted {bystatus.get('DONE-ADMITTED',0)} | "
           f"in-campaign {bystatus.get('IN-CAMPAIGN',0)} | "
+          f"stalled-campaign {bystatus.get('STALLED-CAMPAIGN',0)} | "
           f"not-started {bystatus.get('NOT-STARTED',0)}")
     print("  NOT-ADMITTED by stream: " + ", ".join(
         f"{k}={tstream.get(k,0)}" for k in ("TIGHTEN", "BOTH", "LOOSEN", "NONE")))
