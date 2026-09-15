@@ -37915,3 +37915,24 @@ def test_b2823_stream_is_classified_on_current_gate_fires():
     assert spot._term_fires({"vol_spike_2x": True}, term) is True
     assert spot._term_fires({"force_index_cross_up": True}, term) is True
     assert spot._term_fires({}, term) is False
+
+
+def test_b2824_coordinate_descent_carries_its_interaction_check():
+    """S6-B2822d (owner-approved 2026-09-16): the adopted CD default gains the
+    one-confirmation-config interaction check. Pinned on unsplittable tokens
+    (L771) inside the 11.2b2d section so the clause cannot silently drop, and
+    on the section heading count so it cannot duplicate.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
+        encoding="utf-8", errors="replace")
+    heads = [l for l in plan.splitlines() if l.startswith("### 11.2b2d ")]
+    assert len(heads) == 1, heads
+    i = plan.index("### 11.2b2d ")
+    j = plan.index("### 11.2b3 ", i)
+    sec = plan[i:j]
+    assert "ONE confirmation config at the predicted joint optimum" in sec
+    assert "predicted-vs-measured" in sec
+    assert "re-opens the full-grid question" in sec
+    assert "sw50sp50" in sec, "the factorial lineage must stay stated"

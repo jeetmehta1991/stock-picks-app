@@ -3457,6 +3457,13 @@ cubes as resim evidence via resim_configs / --resim-evidence.
    strategy has one, so a single cube contains every tightening as a subset.
 4. **Depth by COORDINATE DESCENT, not full grid, as the default design** - 5+7=12 runs
    against 35 for a two-axis case; a full factorial needs a stated reason.
+   **INTERACTION CHECK (B2823, owner-approved 2026-09-16 closing S6-B2822d):** after the
+   CD passes converge, run ONE confirmation config at the predicted joint optimum IF that
+   point differs from every already-run config - cost at most 1 extra run against the ~23
+   a two-axis grid saves - and record predicted-vs-measured in the campaign row. A
+   material gap re-opens the full-grid question FOR THAT FAMILY. Lineage: the programme's
+   one resim success, the breaker's admitted sw50sp50 line, came from a FACTORIAL, and
+   coordinate descent alone cannot see a joint optimum off its axes.
 5. Breadth free on the winning line only (11.2b2 unchanged). 6. One Step-2 read, then the
    campaign closes (11.2c unchanged).
 
