@@ -19070,6 +19070,25 @@ work it was guarding. **An idempotency check that fails toward "already done" is
 indistinguishable from success** - only a downstream gate that wanted the missing
 artifact caught it.
 
+**INSTANCE (B2830/B2831, 2026-09-15) - the SUBSTRING variant: an identifier is
+prose to every LONGER identifier that contains it.** `campaign_tickets` used bare
+`name in line`, so `52w_low_breakdown` inherited the campaigns of
+`52w_low_breakdown_pullback_short` - the row it matched (S6-B2420, read whole at
+560 chars only under #270 force) names the sibling, never the strategy flagged.
+MEASURED class size: 13 of 223 registered names are substrings of another name,
+every one previously exposed. Same rule as L748: the bare name is the worst
+anchor because sibling names are built FROM it; the fix anchors on what a longer
+identifier cannot provide - word boundaries (`(?<![a-z0-9_])name(?![a-z0-9_])`),
+pinned by test_b2811_campaign's must-quiet/must-fire substring arms
+(mutation-proven: boundary-dropped fails). The B2831 retroactive sweep of every
+`scripts/*.py` for `name/strat/strategy in text`-shaped membership tests found
+NO further live site: 2 hits are closed June-era one-off classifiers
+(b949_investigate_evidence_source_buckets.py:54, classify_deferred_140.py:60)
+whose docstrings DECLARE "every-mention permissive cross-reference" as the
+design and whose artifacts are frozen - left untouched, flagged to owner; 1 hit
+is this scanner's own docstring prose, a non-site. The builder's other name
+uses key exact dicts (`ALL_STRATEGIES.get(name)`), which cannot collide.
+
 ### L749 - A correctly-sourced figure can still be stale: #201 asks WHERE, not WHEN
 
 **B2563, 2026-09-02.** I wrote *"Chain right now: sim-day 144 of 250, 1.81 h
