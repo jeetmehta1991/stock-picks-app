@@ -3603,9 +3603,9 @@ This corrects a reading filed the same day that called hub-1 "not worth engine h
 OFFLINE path is tightening-only BY CONSTRUCTION - a looser level admits bars the cube never
 recorded - but the ENGINE has no such limit, and DEPTH over all producer bands INCLUDING
 loosening is Priority 1 (11.2b2b). MEASURED on a seeded 120-fire sample of the 2,782
-bos-only R5 fires, re-deriving the liquidity primitive at wider clusters: **0.0% gain a sweep
+bos-only R5 fires (118 of the 120 were diagnosable; the percentages divide by 118), re-deriving the liquidity primitive at wider clusters: **0.0% gain a sweep
 at production 0.01 (the control), 4.2% at 0.02, 10.2% at 0.03** - which scales to roughly
-+117 and +284 fires against 151 at production. A knob that plausibly triples the fire count
++117 and +284 fires against 151 at production - and those figures are a LOWER BOUND (S6-B2810d): a bar carrying a sweep at 0.02/0.03 plus a CHoCH-only confirmation never fired under the OLD gate, is absent from the cube, and is invisible to this measurement. A knob that plausibly triples the fire count
 is a depth axis, not a reason to skip the strategy.
 
 **Rule.** A strategy in the 38 is NOT disqualified and NOT trusted on its R5 numbers. It gets

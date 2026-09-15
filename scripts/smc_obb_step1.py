@@ -61,8 +61,15 @@ R5_DIR = ROOT / "output_r5_merged_1_7"
 # Table A P4/P5 bands (producer_variant_table SPECS). Production first.
 RSI_BANDS = {"long": [45, 40, 35, 30], "short": [55, 60, 65, 70]}
 GATE_KEYS = ["rsi_14", "price_above_ema_200", "below_ema_200"]
-# the R5 pre-gate fire count for this family, MEASURED this batch
-R5_FIRES = 1340
+# S6-B2810f (L801 applied): the baseline fire count is DERIVED from the
+# committed pre-gate artifact, exactly as the sibling smc_lsr_step1 does -
+# a hardcoded 1340 was a fixture naming a world-fact, and the lesson that
+# says derive-at-runtime (B2801) landed the same day the constant did.
+def _r5_baseline_fires() -> int:
+    import json as _j
+    pre = _j.loads((ROOT / "output_audit" / "b2690_smc_pregate.json")
+                   .read_text(encoding="utf-8"))
+    return int(pre["members"][STRAT]["n_trades"])
 
 
 def _leg_mask(m: pd.DataFrame, leg: str, thr: float) -> pd.Series:
@@ -167,10 +174,11 @@ def main() -> int:
     # count would refuse every config that did what it was asked. Recorded
     # either way; never silent.
     if is_r5:
-        if len(fires) != R5_FIRES:
+        _want = _r5_baseline_fires()
+        if len(fires) != _want:
             raise SystemExit(f"REFUSED: {len(fires)} unique fires != R5 "
-                             f"baseline {R5_FIRES} (fail closed)")
-        repro = f"R5 BASELINE reproduction OK: {len(fires)} fires == {R5_FIRES}"
+                             f"baseline {_want} (fail closed)")
+        repro = f"R5 BASELINE reproduction OK: {len(fires)} fires == {_want}"
     else:
         repro = ("VARIANT-CUBE-NO-R5-REPRODUCTION: this cube was produced at "
                  f"knobs swing_length={a.swing_length} "

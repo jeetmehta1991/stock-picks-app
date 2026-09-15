@@ -37373,7 +37373,13 @@ def test_b2769_r5_baseline_is_stale_for_hub1s_current_gate():
     # the sweep leg is REQUIRED (AND), never an OR-alternative
     assert 's.get("smc_liquidity_swept_dn", False)' in code
     assert 'and (s.get("smc_choch_bullish", False) or s.get("smc_bos_bullish", False))' in code
-    assert 'smc_liquidity_swept_dn", False)\\n        or ' not in code
+    # S6-B2810e: the old third assert here compared a literal backslash-n
+    # sequence against source that carries real newlines - vacuously true
+    # forever. The no-OR-shape claim is now structural: the sweep key
+    # appears exactly once in the gate body, as the AND leg.
+    assert code.count('s.get("smc_liquidity_swept_dn", False)') == 1, (
+        'sweep key appears more than once - re-read the gate for a '
+        'returning OR-alternative shape (B1202)')
 
 
 def test_b2807_recommendation_prior_art_rule_survives():
