@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "bdd97f86f",
-    "generated_at": "2026-09-15 16:42:18"
+    "source_commit": "6c19c4cf9",
+    "generated_at": "2026-09-15 18:55:24"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -103,11 +103,13 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B2830"
+        "S6-B2830",
+        "S6-B2833"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2830"
+        "S6-B2830",
+        "S6-B2833"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -3285,12 +3287,14 @@
       "tightenable_keys": {},
       "tickets": [
         "S6-B2752",
-        "S6-B2752e"
+        "S6-B2752e",
+        "S6-B2833"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2752",
-        "S6-B2752e"
+        "S6-B2752e",
+        "S6-B2833"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
