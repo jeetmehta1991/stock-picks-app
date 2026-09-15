@@ -128,6 +128,9 @@ FORWARD-LOOKING -- Phase 1's 820 candidate configs are the genuine threat, not t
 
 ## 2. PHASE 1 — TIGHTENING (offline for SUBSET-SAFE params only — see §2.3a)
 
+> **OPERATIVE PROCEDURE SUPERSEDED (B2828): follow §11.2t THE TIGHTENING WORKFLOW.**
+> This section stays for design lineage only.
+
 ### 2.1 Why tightening is cheap and loosening is not
 `trade_log.csv` carries a `signals_at_entry` column: the **complete producer signal dict at the
 entry bar**, ~22 KB per trade (verified B1497: `{"pivot": 158.6, "cpr_narrow": true, "cam_r4":
@@ -300,6 +303,9 @@ and Phase 2 or a new strategy class is required.
 ---
 
 ## 3. PHASE 2 — LOOSENING (requires engine runs)
+
+> **OPERATIVE PROCEDURE SUPERSEDED (B2828): follow §11.2l THE LOOSENING WORKFLOW**
+> (shared-producer mechanics in §11.2s). This section stays for design lineage only.
 
 ### 3.1 Population — 108 strategies
 45 with n <= 100, plus 63 with no gradable cell at all. These cannot be tightened -- they do not
@@ -3664,6 +3670,78 @@ is a depth axis, not a reason to skip the strategy.
 the survival check first, the result recorded in its spec `note` and queue row, and - where
 the current condition is rare - the LOOSENING half of its producer bands scheduled as an
 engine depth sweep rather than treated as a dead end.
+
+### 11.2t THE TIGHTENING WORKFLOW W-T (B2828, owner-directed 2026-09-16) - the mechanical procedure, zero engine hours
+
+**Entry criteria, mechanical (read from the L803-stamped status view, never from memory):**
+`status == NOT-STARTED` AND `stream` in {TIGHTEN, BOTH}. An IN-CAMPAIGN row belongs to its
+ticket; a terminal row is out by construction (B2825). Pick order: `projected_current_gate`
+DESCENDING (statistical power first). Every step names its mechanism, its artifact, and its
+gate - a step with all three missing its expected output is a STOP, not a judgment call.
+
+| # | Do | Mechanism | Artifact it must leave | Gate to next |
+|---|---|---|---|---|
+| T0 | CONTEXT: read the strategy block, its producers, its SPECS/SPECS_PHASE0 entry (build the Step-0 inventory if absent, R1); consult the status view row | screener.py read + `producer_variant_table` + STRATEGY_OPTIMISATION_STATUS.md | SPECS entry validate_spec-clean; the row quoted in the campaign ticket | R1 green; 11.2b3a consulted |
+| T1 | SURVIVAL FILTER: if `changed_since_r5`, compute the surviving subset by calling the LIVE strategy function on each fire's persisted signals; ALL later grading runs on the SURVIVING fires only (the 0.6 B2822 branch) | the build_strategy_status survival path / the same call inline | `survives_pct` + surviving-fire count in the spec note | surviving fires >= 10 (rc min_n) or the strategy re-lanes to LOOSEN mechanically |
+| T2 | TABLE A - TIGHTEN BANDS: for each persisted numeric gate magnitude (coverage >= 0.98 on the surviving fires), free-side levels = TIGHTER-ONLY: threshold knobs at their `free_band`; unbanded magnitudes at retention quantiles (QUANTS, breadth_step1_grid.py). Label every knob EXISTING-THRESHOLD or NEW-GATE - **a NEW-GATE is a STOP-AND-ASK, never built silently** (standing owner rule 2026-08-10) | `numeric_thresholds` + coverage measurement + QUANTS | Table A rendered with free/resim split and the coverage figure per key | every level is a SUBSET of surviving fires by construction |
+| T3 | **OWNER BAND REVIEW - PER STRATEGY (ruled 2026-09-16: no standing convention).** Present Table A (depth free rows + any 11.2b3 breadth B-rows together); WAIT | the campaign ticket carries the table | the owner's band word quoted verbatim in the row | no grid runs before the word |
+| T4 | OFFLINE STEP-1 GRID on the surviving fires: every free level x every exit, IS-only, holdout untouched, npt barred, multiplicity block MANDATORY (11.2b2d; permutation null where a numeric search exists). The generic instrument is `offline_level_sweep.py --axes ...`; a family grader (smc_family_step1 / smc_obb_step1 / breadth_step1_grid) where one exists. Its four refusals BIND: reproduction (against the SURVIVING subset, T1), coverage, join, truncation | the named grader | `output_audit/<batch>_<strategy>_step1.json` with generator+cube stamped (#309) and `multiplicity.reconciles == true` | reproduction 1.0 on the surviving subset, else REFUSED |
+| T5 | BREADTH LEG: run 11.2b3 steps 1-6 (companion screen at two exits, cluster->representatives, B-rows, permutation price) or WAIVE with the reason in the row - never silently skipped (11.2b2) | `institutional_companion_screen.py` + `breadth_step1_grid.py` | the consistent-intersect artifact + B-rows in Table A | ran-or-waived recorded |
+| T6 | STEP-2: ONE pre-registered holdout read of the registered cells, on the owner's EXPLICIT word - the one-way door (11.2c). Six LIVE_GATES; control-family comparison on any all-six qualifier (11.2b3 step 8) | `breadth_step2_read.py` / the family reader, fail-closed --ruling | the Step-2 unified artifact; controls recorded | the owner's Step-2 word, every time |
+| T7 | ADMISSION PROPOSAL with labels riding (B2660 doctrine); Jaccard-0.70 de-dup and mirror resolution at admission | `build_phase_1b_roster.py` funnel | roster diff | the owner's ruling per admission |
+| T8 | CLOSE: if the family has open siblings, the pre-registered sibling containment pass (B2628/B2647 pattern) so siblings ride the verdict instead of getting campaigns; queue row EXECUTED; doc sweep | the sibling-pass instrument | sibling grades artifact; the campaign row | family accounted - every member ends TERMINAL, IN-CAMPAIGN, or explicitly deferred |
+
+### 11.2l THE LOOSENING WORKFLOW W-L (B2828, owner-directed 2026-09-16) - the mechanical procedure, engine hours minimized by construction
+
+**Entry criteria, mechanical:** `status == NOT-STARTED` AND (`stream == LOOSEN`, or `BOTH`
+whose tighten leg T4 graded nothing rankable). Pick order: **shared-producer cluster first**
+(one resim serves every open consumer - 11.2s), then largest fire GAP to the 100 floor.
+
+| # | Do | Mechanism | Artifact | Gate to next |
+|---|---|---|---|---|
+| L0 | CONTEXT as T0, plus the BINDING-LEG ATTRIBUTION: for each gate leg, count recorded bars (this strategy's fires-population plus every sibling fire carrying the keys) where ALL OTHER legs pass and this leg fails - the leg with the largest such count is the starving constraint, MEASURED not guessed | persisted-signals leg counting over the R5 trade log | the leg-attribution table in the ticket | the binding leg is NAMED with its count |
+| L1 | CLASSIFY the binding knob: PRODUCER-INTERNAL (band feeds the producer; resim recomputes signals) or SCREENER-THRESHOLD (an env-wired gate constant; still an engine run, but the producer layer is untouched and the resim reuses any existing producer cube). Record which, with the env knob named and `knob_is_read` proven | `producer_variant_table.knob_is_read` / `knob_consumers` | the classification line in Table A | the knob is READ by the engine, else S6-B2136 refusal |
+| L2 | **EXISTING-CUBE LOOKUP - always before proposing engine hours:** scan every `output_*/run_manifest.json` for the wanted knob at the wanted looser level with this strategy in its subset. A hit means the loosening evidence ALREADY EXISTS - skip to L6 and grade offline at zero hours | manifest scan (the resim_configs / --resim-evidence registry the band_coverage_gate reads) | the lookup result (hit list or NONE) recorded in the row | lookup recorded either way |
+| L3 | **RECOVERY PROBE - where feasible (owner-ruled 2026-09-16).** FEASIBLE = the producer recomputes offline from cached OHLCV (the diagnose_* pattern; smc primitives and derived-precompute families qualify). Run the producer at each looser level over the L0 population's bars; measure the share gaining the binding leg; scale to a projected fire count, STATED AS A LOWER BOUND (bars where no consumer fired are invisible). A band whose probe projects BELOW the 100 floor is proposed only with a PROBE-BELOW-FLOOR label. INFEASIBLE producers are labelled PROBE-INFEASIBLE with the reason, and **starvation alone plus the owner's band word suffices** | a diagnose_-family script per producer (diagnose_smc_lsr is the template) | the probe artifact with per-level recovery shares | probe run, or PROBE-INFEASIBLE named |
+| L4 | LOOSEN BANDS + LEVERAGE: loosen-side levels = `resim_band` levels LOOSER than production (the free/resim partition already separates the sides - validate_spec holds it); publish `leverage()` with basis, the engine-hour estimate at the measured rate, AND the per-consumer division from 11.2s (hours / open consumers). Advisory 50:1 floor: below it, the launch needs the owner's explicit word (11.2b2d) | `producer_variant_table.leverage()` + the SPECS entry | Table A loosen rows + the leverage line | bands + leverage published before any word is asked |
+| L5 | **OWNER WORDS: band + venue + launch** (11.2c; B2107 5h-per-leg cap; $100 total; venue ruling precedes non-local). Then the SHARED resim per 11.2s: strategy_subset = the producer's FULL OPEN consumer set, chain-launched (11.2 steps 1.1-1.4), battery per landing, cube registered as resim evidence | `run_wave.py` chain + `launch_refusals` | manifest + gate_receipt + the landed variant cube | COMPLETE landings; HALT protocol otherwise |
+| L6 | GRADE EVERY OPEN CONSUMER from the SAME cube, offline: each family grader in VARIANT mode (own-fire reproduction recorded, no R5 comparison - the L754 contract); coordinate descent across levels with the B2823 interaction check (one confirmation config at the predicted joint optimum if unrun) | family graders + 11.2b2d(4) | one Step-1 artifact PER consumer from one cube | every open consumer graded or its absence explained |
+| L7 | STEP-2 / WATERFALL for qualifiers at the ruled shape (4y x 544, six LIVE_GATES, stop at first qualifier) - the owner's word per read | the Step-2/3 machinery of 11.2 | grid artifacts with `qualifiers` | the owner's word, every read |
+| L8 | ADMISSION + CLOSE as T7/T8, and the variant cube stays in the registry for every FUTURE campaign's L2 lookup | roster funnel + resim registry | roster diff + registry entry | family accounted |
+
+### 11.2s SHARED-PRODUCER RESIM REUSE - the mechanics, and why the full consumer set is FORCED (B2828)
+
+**The physical constraint that decides the design:** `signals_at_entry` persists ONLY on
+trades actually taken. A variant cube run with `strategy_subset = {X}` records nothing for
+X's siblings - there are no rows to grade. Therefore reuse is not an optimisation choice
+bolted on afterwards; it is only possible if the resim run INCLUDES every strategy that
+should later read the cube. Hence the rule (B2707 doctrine, generalized to every family):
+
+1. **CONSUMER SET, measured not asserted:** the producer-reach map lists which strategies'
+   gate keys derive from the producer's outputs (the b2735_smc_producer_map.json pattern).
+   A family without a reach map BUILDS one at L0 - gate keys per strategy grepped against
+   the producer's emitted keys, committed as an artifact. `knob_consumers` proves the env
+   knob's file-level blast radius; the reach map narrows it to strategies.
+2. **OPEN consumers only:** the subset excludes ADMITTED strategies (the launch gate
+   refuses them - B2731, banked lines are closed) and every B2825 terminal status. The
+   smc precedent: 19 of 22 consumers in reach, 17 reachable AND open.
+3. **ONE run, N gradings:** the spec's `strategy_subset` file lists the full open consumer
+   set (riders per B2710 where cube-only members apply); every consumer's Step-1 grading
+   then reads the SAME landed cube offline (W-L L6). The leverage line divides engine
+   hours by open-consumer count so the true per-strategy cost is what the owner sees.
+4. **The registry closes the loop:** every landed variant cube's manifest carries the knob
+   identity; W-L L2's lookup scans manifests BEFORE proposing hours, so a level another
+   family already paid for is never bought twice.
+5. **Bands differ by direction and the schema already encodes it:** tighten-side levels
+   live in `free_band` (subset-safe, offline); loosen-side levels live in `resim_band`
+   (engine); validate_spec enforces that the two partition the band exactly - so W-T and
+   W-L read DIFFERENT halves of the SAME Table A row and can never collide on a level.
+
+**STATED ASSUMPTIONS (none silent - each traceable to a ruling):** windows are the ruled
+shapes (Step-1 200x1y, Step-2/3 4y x 544); IN-CAMPAIGN rows belong to their tickets;
+admitted lines stay banked absent an explicit owner override; the L3 probe's population is
+recorded fire-bars, so every probe figure is a LOWER BOUND and is labelled one; reopening a
+terminal strategy is the owner's word on a `reopen_candidate` flag, never a workflow step.
 
 ### 11.2c APPROVAL FLOW - which word covers which stage (L779, owner-mandated 2026-09-10)
 

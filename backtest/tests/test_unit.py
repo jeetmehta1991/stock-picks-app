@@ -37976,3 +37976,32 @@ def test_b2825_status_groups_are_mutually_exclusive():
         if r["reopen_candidate"]:
             assert r["status"] in TERMINAL and r["status"] != "DONE-ADMITTED"
     assert any("never auto-reopened" in c for c in d["caveats"])
+
+
+def test_b2828_workflows_are_defined_and_singular():
+    """B2828 (owner-directed 2026-09-16): the tightening and loosening
+    workflows exist once each, carry their ruled stops, and the
+    shared-producer section states the forcing constraint.
+
+    Pinned on unsplittable tokens (L771): the per-strategy band review
+    (owner ruled AGAINST a standing convention), the probe-where-feasible
+    ruling with its PROBE-INFEASIBLE escape, the existing-cube lookup that
+    must precede engine proposals, and the persistence constraint that
+    forces the full open consumer set. Old sections 2 and 3 carry their
+    supersession pointers so two operative procedures cannot coexist.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
+        encoding="utf-8", errors="replace")
+    for head in ("### 11.2t THE TIGHTENING WORKFLOW",
+                 "### 11.2l THE LOOSENING WORKFLOW",
+                 "### 11.2s SHARED-PRODUCER RESIM REUSE"):
+        assert sum(1 for l in plan.splitlines() if l.startswith(head)) == 1, head
+    assert "OWNER BAND REVIEW - PER STRATEGY (ruled 2026-09-16" in plan
+    assert "RECOVERY PROBE - where feasible (owner-ruled 2026-09-16)" in plan
+    assert "PROBE-INFEASIBLE" in plan and "PROBE-BELOW-FLOOR" in plan
+    assert "EXISTING-CUBE LOOKUP - always before proposing engine hours" in plan
+    assert "persists ONLY on" in plan and "FULL OPEN consumer set" in plan
+    assert plan.count("OPERATIVE PROCEDURE SUPERSEDED (B2828)") == 2
+    assert "STATED ASSUMPTIONS (none silent" in plan
