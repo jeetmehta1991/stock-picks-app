@@ -32938,11 +32938,14 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
     # freeze exists so a new family is a decision, never a side effect.
     # B2819 (S6-B2752): smc_equal_lows_sweep_long added DELIBERATELY -
     # subject 2 of 3, registered through the shared no-free-axis grader.
+    # B2820 (S6-B2752 CLOSED): smc_inverse_fvg added DELIBERATELY - subject
+    # 3 of 3, one honest knob (STRAT_EMA_SPAN; the fvg internals take none).
     assert set(rp.FAMILIES) == {"smc_breaker_block_long",
                                 "institutional_committed_growth_long",
                                 "smc_liquidity_sweep_reversal",
                                 "smc_order_block_bounce",
-                                "smc_equal_lows_sweep_long"}, sorted(rp.FAMILIES)
+                                "smc_equal_lows_sweep_long",
+                                "smc_inverse_fvg"}, sorted(rp.FAMILIES)
     assert rp.FAMILY_REFUSALS == {}, rp.FAMILY_REFUSALS
     for name, fam in rp.FAMILIES.items():
         assert callable(fam["params"]) and callable(fam["run"]), name
@@ -37737,4 +37740,40 @@ def test_b2819_equal_lows_registered_via_the_shared_grader():
     assert art["cells_graded"] == 26
     assert art["multiplicity"]["reconciles"] is True
     assert art["multiplicity"]["unclassified"] == 0
+    assert art["holdout_read"].startswith("NOT FIRED")
+
+
+def test_b2820_inverse_fvg_registered_with_one_honest_knob():
+    """S6-B2752 subject 3 of 3: smc_inverse_fvg is a registered family whose
+    SPECS entry declares exactly the knob that reaches its keys - and NOT the
+    three smc knobs, which the fvg derivation never reads (smc_ict.py:296-360:
+    fvg() takes no parameters; the inverse logic is a hardcoded 20-event tail
+    with hardcoded 0.20 tolerance). Declaring an unreaching knob is the
+    S6-B2136 manifest lie; the NEGATIVE is pinned so it cannot creep back.
+    """
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    d = root / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    from producer_variant_table import SPECS, validate_spec
+    from run_postconfig import FAMILIES
+
+    spec = SPECS["smc_inverse_fvg"]
+    assert validate_spec(spec) == []
+    assert "smc_inverse_fvg" in FAMILIES
+    envs = [p.get("env") for p in spec["params"]]
+    assert envs == ["STRAT_EMA_SPAN"], envs
+    declared = json.dumps(spec["params"])
+    for k in ("SMC_SWING_LENGTH", "SMC_LIQUIDITY_RANGE_PCT",
+              "SMC_EVENT_RECENCY_BARS"):
+        assert k not in declared, (k, "declared but does not reach the keys")
+
+    art = json.loads((root / "output_audit" / "b2820_ifvg_step1.json")
+                     .read_text(encoding="utf-8"))
+    assert art["reproduction_fires"] == 953
+    assert art["cells_graded"] == 78          # 3 leg cells x 26 exits
+    assert art["multiplicity"]["reconciles"] is True
     assert art["holdout_read"].startswith("NOT FIRED")

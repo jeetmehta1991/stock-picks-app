@@ -987,6 +987,79 @@ SPECS["smc_equal_lows_sweep_long"] = {
 }
 
 
+# B2820 (S6-B2752): smc_inverse_fvg REGISTERED - subject 3 of 3, closing the
+# owner's 'before' ruling. THE HONEST KNOB SET IS ONE: the inverse-fvg keys
+# are derived from _smc.fvg(ohlc) with NO parameter, a hardcoded 20-event
+# tail and a hardcoded 0.20 zone tolerance (smc_ict.py:296-360 READ this
+# batch) - none of SMC_SWING_LENGTH / SMC_LIQUIDITY_RANGE_PCT /
+# SMC_EVENT_RECENCY_BARS reaches them, and declaring them would be the
+# S6-B2136 manifest lie. The one engine lever is the trend legs' span
+# (STRAT_EMA_SPAN, the breaker's P6 pattern); the FVG internals are a
+# candidate future lever, recorded as such rather than invented as knobs.
+FORMULA_SMC_IFVG = (
+    "=============================== PRODUCER LAYER ===============================\n"
+    "\n"
+    "P1  span    =  price_above_ema_{STRAT_EMA_SPAN} / below_ema_{span}\n"
+    "                   -> the trend leg reads the CONFIGURED span (B1519);\n"
+    "                      default 200 reproduces production exactly\n"
+    "\n"
+    "fvg (NO KNOB) =  fvg( ohlc )  - takes no parameters (smc_ict.py:298);\n"
+    "                   inverse keys derive from MITIGATED FVGs with price\n"
+    "                   beyond the flipped zone, over a hardcoded 20-event\n"
+    "                   tail with hardcoded 0.20 tolerance (B1137)\n"
+    "\n"
+    "============================== STRATEGY LAYER ===============================\n"
+    "\n"
+    "long   =  smc_inverse_fvg_bullish AND price_above_ema_{span}\n"
+    "short  =  smc_inverse_fvg_bearish AND below_ema_200 AND borrow_ok\n"
+    "          (all persisted booleans - NO free numeric axis; Step 1 is\n"
+    "          legs x exits via the shared smc_family_step1 grader)\n")
+
+SPECS["smc_inverse_fvg"] = {
+    "gate": ("long: smc_inverse_fvg_bullish AND price_above_ema_{span} | "
+             "short: smc_inverse_fvg_bearish AND below_ema_200 AND borrow_ok"),
+    "formula": FORMULA_SMC_IFVG,
+    "baseline": {"artifact": "output_r5_merged_1_7", "fires": 953,
+                 "tickers": 544, "holdout_n": 231,
+                 "window": "2022-05-06..2026-05-04"},
+    "params": [
+        {"id": "P1", "producer": "ema trend leg (screener)",
+         "param": "span", "env": "STRAT_EMA_SPAN",
+         "consumers": ["backtest/config.py",
+                       "backtest/engine/exit_strategies.py",
+                       "backtest/signals/screener.py"],
+         "production": 200, "type": "int", "band": [9, 20, 21, 50, 200],
+         "derivation": ("the ONLY engine knob reaching this gate - the fvg "
+                        "internals take no parameters (smc_ict.py:296-360); "
+                        "the emitted spans are the breaker P6 set"),
+         "subset_safe": False, "status": "UNTESTED",
+         "evidence": "screener.py strat_smc_inverse_fvg; smc_ict.py:298",
+         "engine_implemented": True},
+    ],
+    "tools": {
+        "keys": {"P1": "span"},
+        "grid_keys": ["leg"],
+        "grade": {"script": "smc_family_step1.py", "cube": "",
+                  "flags": {},
+                  "extra": ["--strategy", "smc_inverse_fvg", "--min-n", "10"],
+                  "pythonpath": ".;scripts",
+                  "note": "AUTO (B2820); shared no-free-axis grader; the smc "
+                          "knob flags are inapplicable - fvg takes none"},
+        "free_levels": None,
+        "spot_check": {"script": "spot_check_smc_family.py", "cube": "",
+                       "flags": {},
+                       "extra": ["--strategy", "smc_inverse_fvg", "--n", "50"],
+                       "window": False, "precompute_check": False,
+                       "pythonpath": ".",
+                       "note": "AUTO (B2820); LEG A fully sighted; knob flags "
+                               "default to production - the keys are "
+                               "knob-independent"},
+        "engine_anchors": {"script": "verify_engine_implemented.py"},
+        "single_combination": False,
+    },
+}
+
+
 # B2816 (S6-B2703, owner-ruled schedule-later 2026-09-15): Table-A depth
 # inventories for the 9 admitted strategies whose depth was never searched
 # (8 institutional + xs_low_beta; top_decile is depth-done via its own

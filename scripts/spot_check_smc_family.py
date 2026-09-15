@@ -140,9 +140,15 @@ def main() -> int:
     ap.add_argument("--cube", required=True)
     ap.add_argument("--n", type=int, default=50)
     ap.add_argument("--seed", type=int, default=20260915)
-    ap.add_argument("--swing-length", type=int, required=True)
-    ap.add_argument("--liquidity-range-pct", type=float, required=True)
-    ap.add_argument("--event-recency-bars", type=int, required=True)
+    # B2820: production defaults rather than required - smc_inverse_fvg's
+    # keys are knob-independent (fvg takes no swings; the inverse logic is
+    # lookback/tolerance-hardcoded, smc_ict.py:296-360), so forcing its
+    # battery call to invent knob values would be the S6-B2136 lie in
+    # reverse. A family whose keys DO ride the knobs passes them via the
+    # tools flags exactly as before.
+    ap.add_argument("--swing-length", type=int, default=20)
+    ap.add_argument("--liquidity-range-pct", type=float, default=0.01)
+    ap.add_argument("--event-recency-bars", type=int, default=90)
     ap.add_argument("--start", default="2024-05-05")
     ap.add_argument("--end", default="2026-05-05")
     ap.add_argument("--out", default=None)
