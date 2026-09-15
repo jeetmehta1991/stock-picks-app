@@ -37562,3 +37562,42 @@ def test_b2815_step1_graders_carry_multiplicity():
     assert "ADVISORY, never auto-refusing" in plan, (
         "the leverage floor's adopted mode must stay stated")
     assert plan.count("50:1 floor is") == 1
+
+
+def test_b2816_depth_inventories_for_the_nine():
+    """S6-B2703 remaining scope: the 9 admitted-but-depth-unsearched
+    strategies carry Table-A inventories, UNSCHEDULED and fail-closed.
+
+    Shape pinned: every entry is DEPTH-NOT-RUN, every candidate band has
+    sweep_levels [] (nothing scheduled without the owner's band word,
+    11.2c), and none is a launchable battery family (no tools block ->
+    B2578/B2579 refuse, the pead inventory precedent). The count is exact
+    so a silent tenth addition or a quiet promotion to SPECS is caught.
+    """
+    import sys
+    from pathlib import Path as _P
+    d = _P(__file__).resolve().parents[2] / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    from producer_variant_table import SPECS_PHASE0
+    from run_postconfig import FAMILIES
+    NINE = ["institutional_oversold_long",
+            "institutional_breakout_confirmation_long",
+            "institutional_persistence_oversold_long",
+            "institutional_recent_init_momentum_long",
+            "institutional_recent_init_volume_long",
+            "institutional_multi_quarter_persistence_long",
+            "institutional_strong_conviction_long",
+            "institutional_high_conviction_long",
+            "xs_low_beta_with_smart_money_long"]
+    for n in NINE:
+        e = SPECS_PHASE0.get(n)
+        assert e is not None, f"{n} inventory missing"
+        assert "DEPTH-NOT-RUN" in e["status"], n
+        assert "SCHEDULE-LATER" in e["status"] or "schedule-later" in e["status"].lower(), n
+        for prm in e["params"]:
+            assert prm["sweep_levels"] == [], (n, prm["id"], "nothing is scheduled")
+        assert n not in FAMILIES, f"{n} must stay launch-refused (no tools block)"
+    # exactly one entry has no per-strategy numeric knob, and says so
+    nokey = [n for n in NINE if SPECS_PHASE0[n].get("no_gate_knob")]
+    assert nokey == ["institutional_breakout_confirmation_long"], nokey

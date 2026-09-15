@@ -892,6 +892,766 @@ SPECS["smc_liquidity_sweep_reversal"] = {
 }
 
 
+
+
+# B2816 (S6-B2703, owner-ruled schedule-later 2026-09-15): Table-A depth
+# inventories for the 9 admitted strategies whose depth was never searched
+# (8 institutional + xs_low_beta; top_decile is depth-done via its own
+# B2667 grid, breaker + icg via engine resim, the pead pair via the
+# offline env-knob route). INVENTORY ONLY: no tools block, so the
+# B2578/B2579 launch gates keep refusing these families - fail closed,
+# the pead precedent. Bands are CANDIDATES; scheduling needs the owner's
+# band word (11.2c). Admitted lines stay BANKED (B2731).
+SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy AND rsi_14 < 40 '
+                                         'AND price_above_ema_200',
+                                 'baseline': {'artifact': 'output_r5_merged_1_7',
+                                              'fires': 386,
+                                              'admitted_via': 'output_audit/b2664_inst_admission_grid.json'},
+                                 'status': 'DEPTH-NOT-RUN (S6-B2703); depth '
+                                           'SCHEDULE-LATER by owner ruling '
+                                           '2026-09-15 (B2810 audit rec 1 '
+                                           'approved); admitted line BANKED '
+                                           '(B2731); band is CANDIDATE only, '
+                                           'sweep needs its own owner band '
+                                           'word (11.2c)',
+                                 'shared_family': 'INST_* producer knobs are '
+                                                  'FAMILY-SHARED and '
+                                                  'inventoried on '
+                                                  "SPECS['institutional_committed_growth_long'] "
+                                                  '(9 params, per-level '
+                                                  'free/resim bands; '
+                                                  'run-producers-once B2633)',
+                                 'params': [{'id': 'P1',
+                                             'producer': 'gate threshold '
+                                                         '(screener)',
+                                             'param': 'rsi_threshold',
+                                             'production': 40,
+                                             'band': [40, 35, 30],
+                                             'sweep_levels': [],
+                                             'subset_safe': None,
+                                             'status': 'UNSCHEDULED',
+                                             'type': 'int',
+                                             'engine_implemented': True,
+                                             'evidence': 'screener.py strat '
+                                                         'source, read B2816',
+                                             'derivation': 'tightening the '
+                                                           'oversold ceiling '
+                                                           'keeps a subset; '
+                                                           'rsi_14 '
+                                                           'persisted. depth '
+                                                           'SCHEDULE-LATER '
+                                                           'by owner ruling '
+                                                           '2026-09-15 '
+                                                           '(B2810 audit rec '
+                                                           '1 approved); '
+                                                           'admitted line '
+                                                           'BANKED (B2731); '
+                                                           'band is '
+                                                           'CANDIDATE only, '
+                                                           'sweep needs its '
+                                                           'own owner band '
+                                                           'word (11.2c)'}]},
+ 'institutional_breakout_confirmation_long': {'gate': 'institutional_buy AND '
+                                                      'resistance_break_retest '
+                                                      'AND '
+                                                      'price_above_ema_200 '
+                                                      'AND close_above_open',
+                                              'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                           'fires': 642,
+                                                           'admitted_via': 'output_audit/b2664_inst_admission_grid.json'},
+                                              'status': 'DEPTH-NOT-RUN '
+                                                        '(S6-B2703); depth '
+                                                        'SCHEDULE-LATER by '
+                                                        'owner ruling '
+                                                        '2026-09-15 (B2810 '
+                                                        'audit rec 1 '
+                                                        'approved); admitted '
+                                                        'line BANKED '
+                                                        '(B2731); band is '
+                                                        'CANDIDATE only, '
+                                                        'sweep needs its own '
+                                                        'owner band word '
+                                                        '(11.2c)',
+                                              'shared_family': 'INST_* '
+                                                               'producer '
+                                                               'knobs are '
+                                                               'FAMILY-SHARED '
+                                                               'and '
+                                                               'inventoried '
+                                                               'on '
+                                                               "SPECS['institutional_committed_growth_long'] "
+                                                               '(9 params, '
+                                                               'per-level '
+                                                               'free/resim '
+                                                               'bands; '
+                                                               'run-producers-once '
+                                                               'B2633)',
+                                              'params': [],
+                                              'no_gate_knob': 'all four gate '
+                                                              'legs are '
+                                                              'booleans - '
+                                                              'depth here is '
+                                                              'the shared '
+                                                              'producer '
+                                                              'family only; '
+                                                              'no '
+                                                              'per-strategy '
+                                                              'numeric knob '
+                                                              'exists'},
+ 'institutional_persistence_oversold_long': {'gate': 'institutional_increased '
+                                                     '>= 3 AND rsi_14 < 45 '
+                                                     'AND '
+                                                     'price_above_ema_200',
+                                             'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                          'fires': 716,
+                                                          'admitted_via': 'output_audit/b2664_inst_admission_grid.json'},
+                                             'status': 'DEPTH-NOT-RUN '
+                                                       '(S6-B2703); depth '
+                                                       'SCHEDULE-LATER by '
+                                                       'owner ruling '
+                                                       '2026-09-15 (B2810 '
+                                                       'audit rec 1 '
+                                                       'approved); admitted '
+                                                       'line BANKED (B2731); '
+                                                       'band is CANDIDATE '
+                                                       'only, sweep needs '
+                                                       'its own owner band '
+                                                       'word (11.2c)',
+                                             'shared_family': 'INST_* '
+                                                              'producer '
+                                                              'knobs are '
+                                                              'FAMILY-SHARED '
+                                                              'and '
+                                                              'inventoried '
+                                                              'on '
+                                                              "SPECS['institutional_committed_growth_long'] "
+                                                              '(9 params, '
+                                                              'per-level '
+                                                              'free/resim '
+                                                              'bands; '
+                                                              'run-producers-once '
+                                                              'B2633)',
+                                             'params': [{'id': 'P1',
+                                                         'producer': 'gate '
+                                                                     'threshold '
+                                                                     '(screener)',
+                                                         'param': 'institutional_increased_min',
+                                                         'production': 3,
+                                                         'band': [3, 4, 5],
+                                                         'sweep_levels': [],
+                                                         'subset_safe': None,
+                                                         'status': 'UNSCHEDULED',
+                                                         'type': 'int',
+                                                         'engine_implemented': True,
+                                                         'evidence': 'screener.py '
+                                                                     'strat '
+                                                                     'source, '
+                                                                     'read '
+                                                                     'B2816',
+                                                         'derivation': 'raising '
+                                                                       'the '
+                                                                       'floor '
+                                                                       'keeps '
+                                                                       'a '
+                                                                       'subset; '
+                                                                       'count '
+                                                                       'persisted. '
+                                                                       'depth '
+                                                                       'SCHEDULE-LATER '
+                                                                       'by '
+                                                                       'owner '
+                                                                       'ruling '
+                                                                       '2026-09-15 '
+                                                                       '(B2810 '
+                                                                       'audit '
+                                                                       'rec '
+                                                                       '1 '
+                                                                       'approved); '
+                                                                       'admitted '
+                                                                       'line '
+                                                                       'BANKED '
+                                                                       '(B2731); '
+                                                                       'band '
+                                                                       'is '
+                                                                       'CANDIDATE '
+                                                                       'only, '
+                                                                       'sweep '
+                                                                       'needs '
+                                                                       'its '
+                                                                       'own '
+                                                                       'owner '
+                                                                       'band '
+                                                                       'word '
+                                                                       '(11.2c)'},
+                                                        {'id': 'P2',
+                                                         'producer': 'gate '
+                                                                     'threshold '
+                                                                     '(screener)',
+                                                         'param': 'rsi_threshold',
+                                                         'production': 45,
+                                                         'band': [45, 40, 35],
+                                                         'sweep_levels': [],
+                                                         'subset_safe': None,
+                                                         'status': 'UNSCHEDULED',
+                                                         'type': 'int',
+                                                         'engine_implemented': True,
+                                                         'evidence': 'screener.py '
+                                                                     'strat '
+                                                                     'source, '
+                                                                     'read '
+                                                                     'B2816',
+                                                         'derivation': 'tightening '
+                                                                       'the '
+                                                                       'ceiling '
+                                                                       'keeps '
+                                                                       'a '
+                                                                       'subset. '
+                                                                       'depth '
+                                                                       'SCHEDULE-LATER '
+                                                                       'by '
+                                                                       'owner '
+                                                                       'ruling '
+                                                                       '2026-09-15 '
+                                                                       '(B2810 '
+                                                                       'audit '
+                                                                       'rec '
+                                                                       '1 '
+                                                                       'approved); '
+                                                                       'admitted '
+                                                                       'line '
+                                                                       'BANKED '
+                                                                       '(B2731); '
+                                                                       'band '
+                                                                       'is '
+                                                                       'CANDIDATE '
+                                                                       'only, '
+                                                                       'sweep '
+                                                                       'needs '
+                                                                       'its '
+                                                                       'own '
+                                                                       'owner '
+                                                                       'band '
+                                                                       'word '
+                                                                       '(11.2c)'}]},
+ 'institutional_recent_init_momentum_long': {'gate': 'institutional_new_positions '
+                                                     '>= 2 AND '
+                                                     'macd_12_26_9_bullish '
+                                                     'AND '
+                                                     '(price_above_ema_200 '
+                                                     'OR price_above_ema_50)',
+                                             'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                          'fires': 2268,
+                                                          'admitted_via': 'output_audit/b2664_inst_admission_grid.json'},
+                                             'status': 'DEPTH-NOT-RUN '
+                                                       '(S6-B2703); depth '
+                                                       'SCHEDULE-LATER by '
+                                                       'owner ruling '
+                                                       '2026-09-15 (B2810 '
+                                                       'audit rec 1 '
+                                                       'approved); admitted '
+                                                       'line BANKED (B2731); '
+                                                       'band is CANDIDATE '
+                                                       'only, sweep needs '
+                                                       'its own owner band '
+                                                       'word (11.2c)',
+                                             'shared_family': 'INST_* '
+                                                              'producer '
+                                                              'knobs are '
+                                                              'FAMILY-SHARED '
+                                                              'and '
+                                                              'inventoried '
+                                                              'on '
+                                                              "SPECS['institutional_committed_growth_long'] "
+                                                              '(9 params, '
+                                                              'per-level '
+                                                              'free/resim '
+                                                              'bands; '
+                                                              'run-producers-once '
+                                                              'B2633)',
+                                             'params': [{'id': 'P1',
+                                                         'producer': 'gate '
+                                                                     'threshold '
+                                                                     '(screener)',
+                                                         'param': 'new_positions_min',
+                                                         'production': 2,
+                                                         'band': [2, 3, 4],
+                                                         'sweep_levels': [],
+                                                         'subset_safe': None,
+                                                         'status': 'UNSCHEDULED',
+                                                         'type': 'int',
+                                                         'engine_implemented': True,
+                                                         'evidence': 'screener.py '
+                                                                     'strat '
+                                                                     'source, '
+                                                                     'read '
+                                                                     'B2816',
+                                                         'derivation': 'raising '
+                                                                       'the '
+                                                                       'floor '
+                                                                       'keeps '
+                                                                       'a '
+                                                                       'subset; '
+                                                                       'count '
+                                                                       'persisted. '
+                                                                       'depth '
+                                                                       'SCHEDULE-LATER '
+                                                                       'by '
+                                                                       'owner '
+                                                                       'ruling '
+                                                                       '2026-09-15 '
+                                                                       '(B2810 '
+                                                                       'audit '
+                                                                       'rec '
+                                                                       '1 '
+                                                                       'approved); '
+                                                                       'admitted '
+                                                                       'line '
+                                                                       'BANKED '
+                                                                       '(B2731); '
+                                                                       'band '
+                                                                       'is '
+                                                                       'CANDIDATE '
+                                                                       'only, '
+                                                                       'sweep '
+                                                                       'needs '
+                                                                       'its '
+                                                                       'own '
+                                                                       'owner '
+                                                                       'band '
+                                                                       'word '
+                                                                       '(11.2c)'}]},
+ 'institutional_recent_init_volume_long': {'gate': 'institutional_new_positions '
+                                                   '>= 2 AND vol_above_avg '
+                                                   'AND price_above_ema_50',
+                                           'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                        'fires': 1075,
+                                                        'admitted_via': 'output_audit/b2664_inst_admission_grid.json'},
+                                           'status': 'DEPTH-NOT-RUN '
+                                                     '(S6-B2703); depth '
+                                                     'SCHEDULE-LATER by '
+                                                     'owner ruling '
+                                                     '2026-09-15 (B2810 '
+                                                     'audit rec 1 approved); '
+                                                     'admitted line BANKED '
+                                                     '(B2731); band is '
+                                                     'CANDIDATE only, sweep '
+                                                     'needs its own owner '
+                                                     'band word (11.2c)',
+                                           'shared_family': 'INST_* producer '
+                                                            'knobs are '
+                                                            'FAMILY-SHARED '
+                                                            'and inventoried '
+                                                            'on '
+                                                            "SPECS['institutional_committed_growth_long'] "
+                                                            '(9 params, '
+                                                            'per-level '
+                                                            'free/resim '
+                                                            'bands; '
+                                                            'run-producers-once '
+                                                            'B2633)',
+                                           'params': [{'id': 'P1',
+                                                       'producer': 'gate '
+                                                                   'threshold '
+                                                                   '(screener)',
+                                                       'param': 'new_positions_min',
+                                                       'production': 2,
+                                                       'band': [2, 3, 4],
+                                                       'sweep_levels': [],
+                                                       'subset_safe': None,
+                                                       'status': 'UNSCHEDULED',
+                                                       'type': 'int',
+                                                       'engine_implemented': True,
+                                                       'evidence': 'screener.py '
+                                                                   'strat '
+                                                                   'source, '
+                                                                   'read '
+                                                                   'B2816',
+                                                       'derivation': 'raising '
+                                                                     'the '
+                                                                     'floor '
+                                                                     'keeps '
+                                                                     'a '
+                                                                     'subset. '
+                                                                     'depth '
+                                                                     'SCHEDULE-LATER '
+                                                                     'by '
+                                                                     'owner '
+                                                                     'ruling '
+                                                                     '2026-09-15 '
+                                                                     '(B2810 '
+                                                                     'audit '
+                                                                     'rec 1 '
+                                                                     'approved); '
+                                                                     'admitted '
+                                                                     'line '
+                                                                     'BANKED '
+                                                                     '(B2731); '
+                                                                     'band '
+                                                                     'is '
+                                                                     'CANDIDATE '
+                                                                     'only, '
+                                                                     'sweep '
+                                                                     'needs '
+                                                                     'its '
+                                                                     'own '
+                                                                     'owner '
+                                                                     'band '
+                                                                     'word '
+                                                                     '(11.2c)'}]},
+ 'institutional_multi_quarter_persistence_long': {'gate': 'persistent_holders_4q '
+                                                          '>= 5 AND '
+                                                          'price_above_ema_200',
+                                                  'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                               'fires': 2516,
+                                                               'admitted_via': 'output_audit/b2664_inst_admission_grid.json'},
+                                                  'status': 'DEPTH-NOT-RUN '
+                                                            '(S6-B2703); '
+                                                            'depth '
+                                                            'SCHEDULE-LATER '
+                                                            'by owner ruling '
+                                                            '2026-09-15 '
+                                                            '(B2810 audit '
+                                                            'rec 1 '
+                                                            'approved); '
+                                                            'admitted line '
+                                                            'BANKED (B2731); '
+                                                            'band is '
+                                                            'CANDIDATE only, '
+                                                            'sweep needs its '
+                                                            'own owner band '
+                                                            'word (11.2c)',
+                                                  'shared_family': 'INST_* '
+                                                                   'producer '
+                                                                   'knobs '
+                                                                   'are '
+                                                                   'FAMILY-SHARED '
+                                                                   'and '
+                                                                   'inventoried '
+                                                                   'on '
+                                                                   "SPECS['institutional_committed_growth_long'] "
+                                                                   '(9 '
+                                                                   'params, '
+                                                                   'per-level '
+                                                                   'free/resim '
+                                                                   'bands; '
+                                                                   'run-producers-once '
+                                                                   'B2633)',
+                                                  'params': [{'id': 'P1',
+                                                              'producer': 'gate '
+                                                                          'threshold '
+                                                                          '(screener)',
+                                                              'param': 'persistent_holders_min',
+                                                              'production': 5,
+                                                              'band': [5,
+                                                                       6,
+                                                                       8],
+                                                              'sweep_levels': [],
+                                                              'subset_safe': None,
+                                                              'status': 'UNSCHEDULED',
+                                                              'type': 'int',
+                                                              'engine_implemented': True,
+                                                              'evidence': 'screener.py '
+                                                                          'strat '
+                                                                          'source, '
+                                                                          'read '
+                                                                          'B2816',
+                                                              'derivation': 'raising '
+                                                                            'the '
+                                                                            'floor '
+                                                                            'keeps '
+                                                                            'a '
+                                                                            'subset; '
+                                                                            'count '
+                                                                            'persisted. '
+                                                                            'depth '
+                                                                            'SCHEDULE-LATER '
+                                                                            'by '
+                                                                            'owner '
+                                                                            'ruling '
+                                                                            '2026-09-15 '
+                                                                            '(B2810 '
+                                                                            'audit '
+                                                                            'rec '
+                                                                            '1 '
+                                                                            'approved); '
+                                                                            'admitted '
+                                                                            'line '
+                                                                            'BANKED '
+                                                                            '(B2731); '
+                                                                            'band '
+                                                                            'is '
+                                                                            'CANDIDATE '
+                                                                            'only, '
+                                                                            'sweep '
+                                                                            'needs '
+                                                                            'its '
+                                                                            'own '
+                                                                            'owner '
+                                                                            'band '
+                                                                            'word '
+                                                                            '(11.2c)'}]},
+ 'institutional_strong_conviction_long': {'gate': 'institutional_increased '
+                                                  '>= 5 AND '
+                                                  'institutional_new_positions '
+                                                  '>= 2 AND '
+                                                  'price_above_ema_200',
+                                          'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                       'fires': 1826,
+                                                       'admitted_via': 'output_audit/b2664_inst_admission_grid.json'},
+                                          'status': 'DEPTH-NOT-RUN '
+                                                    '(S6-B2703); depth '
+                                                    'SCHEDULE-LATER by owner '
+                                                    'ruling 2026-09-15 '
+                                                    '(B2810 audit rec 1 '
+                                                    'approved); admitted '
+                                                    'line BANKED (B2731); '
+                                                    'band is CANDIDATE only, '
+                                                    'sweep needs its own '
+                                                    'owner band word (11.2c)',
+                                          'shared_family': 'INST_* producer '
+                                                           'knobs are '
+                                                           'FAMILY-SHARED '
+                                                           'and inventoried '
+                                                           'on '
+                                                           "SPECS['institutional_committed_growth_long'] "
+                                                           '(9 params, '
+                                                           'per-level '
+                                                           'free/resim '
+                                                           'bands; '
+                                                           'run-producers-once '
+                                                           'B2633)',
+                                          'params': [{'id': 'P1',
+                                                      'producer': 'gate '
+                                                                  'threshold '
+                                                                  '(screener)',
+                                                      'param': 'increased_min',
+                                                      'production': 5,
+                                                      'band': [5, 6, 8],
+                                                      'sweep_levels': [],
+                                                      'subset_safe': None,
+                                                      'status': 'UNSCHEDULED',
+                                                      'type': 'int',
+                                                      'engine_implemented': True,
+                                                      'evidence': 'screener.py '
+                                                                  'strat '
+                                                                  'source, '
+                                                                  'read '
+                                                                  'B2816',
+                                                      'derivation': 'raising '
+                                                                    'the '
+                                                                    'floor '
+                                                                    'keeps a '
+                                                                    'subset. '
+                                                                    'depth '
+                                                                    'SCHEDULE-LATER '
+                                                                    'by '
+                                                                    'owner '
+                                                                    'ruling '
+                                                                    '2026-09-15 '
+                                                                    '(B2810 '
+                                                                    'audit '
+                                                                    'rec 1 '
+                                                                    'approved); '
+                                                                    'admitted '
+                                                                    'line '
+                                                                    'BANKED '
+                                                                    '(B2731); '
+                                                                    'band is '
+                                                                    'CANDIDATE '
+                                                                    'only, '
+                                                                    'sweep '
+                                                                    'needs '
+                                                                    'its own '
+                                                                    'owner '
+                                                                    'band '
+                                                                    'word '
+                                                                    '(11.2c)'},
+                                                     {'id': 'P2',
+                                                      'producer': 'gate '
+                                                                  'threshold '
+                                                                  '(screener)',
+                                                      'param': 'new_positions_min',
+                                                      'production': 2,
+                                                      'band': [2, 3],
+                                                      'sweep_levels': [],
+                                                      'subset_safe': None,
+                                                      'status': 'UNSCHEDULED',
+                                                      'type': 'int',
+                                                      'engine_implemented': True,
+                                                      'evidence': 'screener.py '
+                                                                  'strat '
+                                                                  'source, '
+                                                                  'read '
+                                                                  'B2816',
+                                                      'derivation': 'raising '
+                                                                    'the '
+                                                                    'floor '
+                                                                    'keeps a '
+                                                                    'subset. '
+                                                                    'depth '
+                                                                    'SCHEDULE-LATER '
+                                                                    'by '
+                                                                    'owner '
+                                                                    'ruling '
+                                                                    '2026-09-15 '
+                                                                    '(B2810 '
+                                                                    'audit '
+                                                                    'rec 1 '
+                                                                    'approved); '
+                                                                    'admitted '
+                                                                    'line '
+                                                                    'BANKED '
+                                                                    '(B2731); '
+                                                                    'band is '
+                                                                    'CANDIDATE '
+                                                                    'only, '
+                                                                    'sweep '
+                                                                    'needs '
+                                                                    'its own '
+                                                                    'owner '
+                                                                    'band '
+                                                                    'word '
+                                                                    '(11.2c)'}]},
+ 'institutional_high_conviction_long': {'gate': 'institutional_new_positions '
+                                                '>= 3 AND price_above_ema_50',
+                                        'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                     'fires': 2473,
+                                                     'admitted_via': 'output_audit/b2664_inst_admission_grid.json'},
+                                        'status': 'DEPTH-NOT-RUN (S6-B2703); '
+                                                  'depth SCHEDULE-LATER by '
+                                                  'owner ruling 2026-09-15 '
+                                                  '(B2810 audit rec 1 '
+                                                  'approved); admitted line '
+                                                  'BANKED (B2731); band is '
+                                                  'CANDIDATE only, sweep '
+                                                  'needs its own owner band '
+                                                  'word (11.2c)',
+                                        'shared_family': 'INST_* producer '
+                                                         'knobs are '
+                                                         'FAMILY-SHARED and '
+                                                         'inventoried on '
+                                                         "SPECS['institutional_committed_growth_long'] "
+                                                         '(9 params, '
+                                                         'per-level '
+                                                         'free/resim bands; '
+                                                         'run-producers-once '
+                                                         'B2633)',
+                                        'params': [{'id': 'P1',
+                                                    'producer': 'gate '
+                                                                'threshold '
+                                                                '(screener)',
+                                                    'param': 'new_positions_min',
+                                                    'production': 3,
+                                                    'band': [3, 4, 5],
+                                                    'sweep_levels': [],
+                                                    'subset_safe': None,
+                                                    'status': 'UNSCHEDULED',
+                                                    'type': 'int',
+                                                    'engine_implemented': True,
+                                                    'evidence': 'screener.py '
+                                                                'strat '
+                                                                'source, '
+                                                                'read B2816',
+                                                    'derivation': 'raising '
+                                                                  'the floor '
+                                                                  'keeps a '
+                                                                  'subset. '
+                                                                  'depth '
+                                                                  'SCHEDULE-LATER '
+                                                                  'by owner '
+                                                                  'ruling '
+                                                                  '2026-09-15 '
+                                                                  '(B2810 '
+                                                                  'audit rec '
+                                                                  '1 '
+                                                                  'approved); '
+                                                                  'admitted '
+                                                                  'line '
+                                                                  'BANKED '
+                                                                  '(B2731); '
+                                                                  'band is '
+                                                                  'CANDIDATE '
+                                                                  'only, '
+                                                                  'sweep '
+                                                                  'needs its '
+                                                                  'own owner '
+                                                                  'band word '
+                                                                  '(11.2c)'}]},
+ 'xs_low_beta_with_smart_money_long': {'gate': 'xs_low_beta_top_quintile AND '
+                                               'price_above_ema_200 AND '
+                                               '_has_smart_money_buy(s) AND '
+                                               'pair_half_life >= 6.55',
+                                       'baseline': {'artifact': 'output_r5_merged_1_7',
+                                                    'fires': 452,
+                                                    'admitted_via': 'output_audit/b2685_xslowbeta_admission_grid.json'},
+                                       'status': 'DEPTH-NOT-RUN (S6-B2703; '
+                                                 'admitted at its BASELINE '
+                                                 'ts10 line, B2685 - no knob '
+                                                 'was ever searched); depth '
+                                                 'SCHEDULE-LATER by owner '
+                                                 'ruling 2026-09-15 (B2810 '
+                                                 'audit rec 1 approved); '
+                                                 'admitted line BANKED '
+                                                 '(B2731); band is CANDIDATE '
+                                                 'only, sweep needs its own '
+                                                 'owner band word (11.2c)',
+                                       'shared_family': 'factor producer '
+                                                        '(xs_low_beta '
+                                                        'quintile) + '
+                                                        'smart-money helper; '
+                                                        'no INST_* family '
+                                                        'reference',
+                                       'params': [{'id': 'P1',
+                                                   'producer': 'gate '
+                                                               'threshold '
+                                                               '(screener)',
+                                                   'param': 'pair_half_life_min',
+                                                   'production': 6.55,
+                                                   'band': [6.55, 8.0, 10.0],
+                                                   'sweep_levels': [],
+                                                   'subset_safe': None,
+                                                   'status': 'UNSCHEDULED',
+                                                   'type': 'float',
+                                                   'engine_implemented': True,
+                                                   'evidence': 'screener.py '
+                                                               'strat '
+                                                               'source, read '
+                                                               'B2816',
+                                                   'derivation': 'raising '
+                                                                 'the floor '
+                                                                 'keeps a '
+                                                                 'subset; '
+                                                                 'the 6.55 '
+                                                                 'is the '
+                                                                 'B2678-era '
+                                                                 'companion '
+                                                                 'knob on '
+                                                                 'the '
+                                                                 'admitted '
+                                                                 'line. '
+                                                                 'depth '
+                                                                 'SCHEDULE-LATER '
+                                                                 'by owner '
+                                                                 'ruling '
+                                                                 '2026-09-15 '
+                                                                 '(B2810 '
+                                                                 'audit rec '
+                                                                 '1 '
+                                                                 'approved); '
+                                                                 'admitted '
+                                                                 'line '
+                                                                 'BANKED '
+                                                                 '(B2731); '
+                                                                 'band is '
+                                                                 'CANDIDATE '
+                                                                 'only, '
+                                                                 'sweep '
+                                                                 'needs its '
+                                                                 'own owner '
+                                                                 'band word '
+                                                                 '(11.2c)'}]}})
+
+
 def validate_spec(spec: dict) -> list[str]:
     """Formula and Table A must not drift apart. Every P-id in the formula needs
     a params row and every params row needs a formula step - a mechanical check,
