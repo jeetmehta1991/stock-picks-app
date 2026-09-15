@@ -37535,3 +37535,30 @@ def test_b2814_survival_calls_the_live_gate():
     src = (_P(__file__).resolve().parents[2] / "scripts"
            / "build_strategy_status.py").read_text(encoding="utf-8", errors="replace")
     assert "CURRENT_RULES = {" not in src, "the drift-prone hand registry must stay retired"
+
+
+def test_b2815_step1_graders_carry_multiplicity():
+    """S6-B2766 (adopted B2815): every Step-1 grid artifact carries a
+    multiplicity block - REPORT-ONLY, no gate (B1608 intact).
+
+    The mechanism is the three live Step-1 graders calling
+    roster_core.bh_fdr_report; pinned at source so a fourth grader written
+    without it is caught the day its sibling sweep runs, and so none of the
+    three can drop the call silently. The plan section is pinned by its
+    unsplittable ADVISORY-floor token (S6-B2765).
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for name in ("tighten_breaker_block.py", "smc_lsr_step1.py",
+                 "smc_obb_step1.py"):
+        src = (root / "scripts" / name).read_text(encoding="utf-8",
+                                                  errors="replace")
+        assert "bh_fdr_report(" in src, (
+            f"{name} emits no multiplicity block - S6-B2766 mandates it")
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
+        encoding="utf-8", errors="replace")
+    heads = [l for l in plan.splitlines() if l.startswith("### 11.2b2d ")]
+    assert len(heads) == 1, f"expected one 11.2b2d heading, got {len(heads)}"
+    assert "ADVISORY, never auto-refusing" in plan, (
+        "the leverage floor's adopted mode must stay stated")
+    assert plan.count("50:1 floor is") == 1

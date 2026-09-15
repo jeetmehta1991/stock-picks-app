@@ -3439,6 +3439,40 @@ depth from these 44 cubes with ZERO additional engine hours, the same way
 offline campaigns filter R5 today. The band_coverage_gate accepts these
 cubes as resim evidence via resim_configs / --resim-evidence.
 
+### 11.2b2d LEVERAGE DISCIPLINE + GRID-STAGE MULTIPLICITY - ADOPTED (B2815, owner "Approve all your recommendations" 2026-09-15)
+
+**S6-B2765 adopted - the leverage operating rule, with an ADVISORY floor:**
+
+1. **Classify every parameter against `signals_at_entry` before any launch** - persisted
+   magnitude = FREE, producer-internal = ENGINE. The discriminator is PERSISTENCE, not
+   monotonicity (L726). The machinery is `free_band` / `resim_band`, live at 57 sites.
+2. **Publish leverage BEFORE any launch** via `producer_variant_table.leverage()` - the
+   figure and its `basis` go in the spec note and the launch turn. **The ~50:1 floor is
+   ADVISORY, never auto-refusing**: a launch below it needs the owner's explicit word.
+   Ruled advisory deliberately - the counter-risk of a binding floor is a programme that
+   never runs anything (every strategy deferred as insufficiently leveraged, reproducing
+   the zero-evidence outcome it exists to prevent), and the sweep-liquidity ruling shows
+   low-leverage engine runs are sometimes exactly what the owner wants.
+3. **Site the baseline at the LOOSEST admissible level of every persisted gate** where the
+   strategy has one, so a single cube contains every tightening as a subset.
+4. **Depth by COORDINATE DESCENT, not full grid, as the default design** - 5+7=12 runs
+   against 35 for a two-axis case; a full factorial needs a stated reason.
+5. Breadth free on the winning line only (11.2b2 unchanged). 6. One Step-2 read, then the
+   campaign closes (11.2c unchanged).
+
+**S6-B2766 adopted - grid-stage multiplicity is MANDATORY, report-only:**
+
+Every Step-1 grid artifact MUST carry a `multiplicity` block from
+`roster_core.bh_fdr_report` (permutation null handed in where that is the grader's
+significance basis). REPORT-ONLY stands: no gate, no ranking change - Step 1 remains a
+ranked list with NO gates (B1608). The ticket's measured gap (zero bh_fdr references in
+the graders) was closed by B2768/B2774/B2775 before this adoption; all three live Step-1
+graders now call it, pinned by `test_b2815_step1_graders_carry_multiplicity`. **The
+shared-holdout concern is DEFERRED to Phase-1B forward validation by ruling**, with the
+counter-case recorded rather than smoothed: 29 admissions have all read the same holdout
+year, so the roster's out-of-sample evidence is one correlated draw until paper trading
+provides an independent one.
+
 ### 11.2b3 BREADTH WORKFLOW STANDARD (B2693, owner-ruled 2026-09-12)
 
 The 11.2b2 rule says every campaign has a breadth leg; THIS is the procedure, standard
