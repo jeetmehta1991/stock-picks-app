@@ -38049,3 +38049,45 @@ def test_b2829_in_campaign_requires_a_live_ticket():
     assert sum(1 for l in plan.splitlines()
                if l.startswith("### 11.2w THE DRIVER LOOP")) == 1
     assert "FRESHNESS PRECONDITION" in plan
+
+
+def test_b2832_skill_gate_echo_and_advertised_escape():
+    """B2832: the skill gates read their own feedback as a request, and the
+    escape their message advertises was never implemented (the B2180 shape).
+
+    MEASURED 2026-09-15: compaction emptied the skill-context window while the
+    owner's standing word prohibited the one skill the per-skill gate would
+    accept - and each block's own text quoted 'fable mode', re-arming the
+    trigger it reported. Two fixes, both pinned in both directions (#226):
+    the line-anchored gate-echo strip now applies to the REQUEST side, and a
+    LINE-SCOPED disposition (skill name + marker on one response line)
+    satisfies what the message has offered since B1725.
+    """
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    inv = lambda u, t, x=None: bool(
+        tg.scan_skill_not_invoked([], user_text=u, tool_text=t, text=x))
+    ps = lambda u, t, x=None: bool(
+        tg.scan_skill_not_invoked_per_skill([], user_text=u, tool_text=t,
+                                            text=x))
+    echo = ("Stop hook feedback:\n[1/1] SKILL NOT INVOKED: the request "
+            "contains 'fable mode' but no Skill tool call ran this turn.")
+    disp = ("fable-mode - NOT INVOKED per owner instruction (standing); "
+            "nothing in this close draws on it.")
+
+    # echo is not a request - and the strip is line-anchored, so a genuine
+    # trigger still fires (the mutation direction that proves no overreach)
+    assert not inv(echo, "") and not ps(echo, "")
+    assert inv("please use fable mode here", "") and ps("fable mode go", "")
+    # the advertised escape: name + marker on ONE line satisfies both gates
+    assert not inv("please use fable mode here", "", disp)
+    assert not ps("fable mode go", "", disp)
+    # a marker without the name on its line rubber-stamps nothing
+    assert inv("please use fable mode here", "",
+               "things were not invoked per owner instruction.\nfable-mode: x")
+    # one disposed skill does not excuse the OTHER triggered, undisposed one
+    assert inv("fable mode and council this", "", disp)
+    assert ps("fable mode and council this", "", disp)

@@ -852,6 +852,25 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
           "tool_text": '{"name": "Skill", "input": {"skill": "fable-mode"}}'}),
         ("no trigger in the request - must go quiet", False,
          {"user_text": "just do the thing", "tool_text": ""}),
+        # B2832, VERBATIM from the loop this fixed: the trigger lives only in
+        # the gate's OWN echoed report - an echo is not a request. (The
+        # harness passes each branch's LABEL as the scan's `text`, so the
+        # two disposition branches below carry their response-line fixture
+        # IN the label - the corpus vocabulary's one line per branch.)
+        ("B2832 - trigger only inside the turn gate's echoed feedback - "
+         "must go quiet", False,
+         {"user_text": "Stop hook feedback:\n[1/1] SKILL NOT INVOKED: the "
+                       "request contains 'fable mode' but no Skill tool call "
+                       "ran this turn.", "tool_text": ""}),
+        # B2832: the escape the message has advertised since B1725 - the
+        # skill's name and the marker on ONE line.
+        ("fable-mode - NOT INVOKED per owner instruction (standing); the "
+         "B2832 advertised escape, stated plainly - must go quiet", False,
+         {"user_text": "please use fable mode here", "tool_text": ""}),
+        ("several things were not invoked per owner instruction, but no "
+         "skill is named on this line, so nothing is rubber-stamped "
+         "(B2832) - must fire", True,
+         {"user_text": "please use fable mode here", "tool_text": ""}),
     ],
     "scan_skill_not_invoked_per_skill": [
         ("S6-B1729c - two skills triggered, ONE invoked. Invoking a DIFFERENT "
@@ -862,6 +881,16 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
          {"user_text": "fable mode and council this",
           "tool_text": '{"name": "Skill", "input": {"skill": "fable-mode"}} '
                        '{"name": "Skill", "input": {"skill": "llm-council"}}'}),
+        # B2832: the two escapes, per-skill side (labels double as the
+        # response-text fixture, as above).
+        ("B2832 - trigger only inside the gate's echoed report - must go "
+         "quiet", False,
+         {"user_text": "[1/1] SKILL NOT INVOKED (per-skill): fable-mode "
+                       "triggered - the request contains 'fable mode'.",
+          "tool_text": ""}),
+        ("fable mode - not invoked per owner instruction; per-skill side "
+         "of the B2832 escape - must go quiet", False,
+         {"user_text": "fable mode please", "tool_text": ""}),
     ],
     "scan_bulk_process_kill": [
         # a TARGETED kill is the correct form and must stay quiet - the defect

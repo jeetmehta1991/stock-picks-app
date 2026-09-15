@@ -1759,7 +1759,37 @@ def _last_user_text(entries) -> str:
     return txt.lower()
 
 
-def scan_skill_not_invoked(entries, *, user_text=None, tool_text=None) -> list[str]:
+_SKILL_DISPOSITION_MARKERS = ("applying it from memory",
+                              "not invoked per owner instruction",
+                              "owner instruction prohibits")
+
+
+def _skill_disposed(entries, name: str, text=None) -> bool:
+    """B2832: the advertised escape, implemented (the B2180 contract).
+
+    The gate's message has OFFERED since B1725 - "or say plainly that you
+    are applying it from memory and why that is sufficient" - an escape no
+    code path checked (the exact shape B2180 names: the documented
+    disposition could not satisfy the gate that documents it). MEASURED
+    2026-09-15: after compaction emptied the skill-context window, a
+    session whose owner had PROHIBITED the triggered skill ("Do not invoke
+    fable mode skill") had no compliant exit - the only live satisfier was
+    the invocation the owner forbade, and two consecutive blocks looped on
+    their own echo. The disposition is LINE-SCOPED (B2276's clause rule):
+    one response line must carry BOTH the skill's name and a marker, so a
+    stray marker elsewhere rubber-stamps nothing.
+    """
+    t = _response_text(entries, text, keep_code=True)
+    if not t:
+        return False
+    forms = (name, name.replace("-", " "))
+    return any(any(f in ln for f in forms)
+               and any(m in ln for m in _SKILL_DISPOSITION_MARKERS)
+               for ln in t.splitlines())
+
+
+def scan_skill_not_invoked(entries, *, user_text=None, tool_text=None,
+                           text=None) -> list[str]:
     """A skill TRIGGER in the user's message requires the Skill tool to run.
 
     B1725, owner catch: *"Is the fable mode and council skills not being invoked
@@ -1770,6 +1800,11 @@ def scan_skill_not_invoked(entries, *, user_text=None, tool_text=None) -> list[s
     instance, or narrating an action instead of performing it.
     """
     u = _last_user_text(entries) if user_text is None else user_text.lower()
+    # B2832: a trigger inside the turn gate's OWN feedback is an echo, not a
+    # request - the block message quotes 'fable mode' back at the transcript,
+    # so every block re-armed the trigger it was reporting. _strip_gate_echo
+    # is line-anchored (B1812), so a genuine request line is never touched.
+    u = _strip_gate_echo(u)
     hit = [t for t in SKILL_TRIGGERS if t in u]
     if not hit:
         return []
@@ -1788,6 +1823,14 @@ def scan_skill_not_invoked(entries, *, user_text=None, tool_text=None) -> list[s
                 or "SKILL_INVOKED" in tt):
             return []
     elif tt.strip():
+        return []
+    # B2832: the advertised escape (see _skill_disposed) - honoured only when
+    # EVERY triggered skill carries its own disposition line; an undisposed
+    # trigger still fires. `named` maps the hit phrases back to skill names
+    # (SKILL_TRIGGERS is a subset of the map's union, so a hit always names).
+    named = [n for n, trigs in SKILL_TRIGGER_MAP.items()
+             if any(t in u for t in trigs)]
+    if named and all(_skill_disposed(entries, n, text) for n in named):
         return []
     return [f"SKILL NOT INVOKED: the request contains {hit[0]!r} but no Skill "
             "tool call ran this turn. Saying the name of a skill is not loading "
@@ -1857,9 +1900,10 @@ ALL_SKILLS = tuple(SKILL_TRIGGER_MAP)
 
 
 def scan_skill_not_invoked_per_skill(entries, *, user_text=None,
-                                     tool_text=None) -> list[str]:
+                                     tool_text=None, text=None) -> list[str]:
     """EACH triggered skill requires ITS OWN invocation."""
     u = _last_user_text(entries) if user_text is None else user_text.lower()
+    u = _strip_gate_echo(u)   # B2832: same echo rule as the ANY-gate above
     # B1984: same session window as the generic gate above (B1983's straddle).
     # A skill's NAME appears in both evidence shapes the collector gathers -
     # a call's input json and a body's base-directory line - so the per-skill
@@ -1867,7 +1911,8 @@ def scan_skill_not_invoked_per_skill(entries, *, user_text=None,
     tt = (_strip_gate_echo(tool_text).lower() if tool_text is not None
           else _skill_context_text(entries).lower())
     missing = [name for name, trigs in SKILL_TRIGGER_MAP.items()
-               if any(t in u for t in trigs) and name not in tt]
+               if any(t in u for t in trigs) and name not in tt
+               and not _skill_disposed(entries, name, text)]   # B2832
     if not missing:
         return []
     return [f"SKILL NOT INVOKED (per-skill): {', '.join(missing)} "
