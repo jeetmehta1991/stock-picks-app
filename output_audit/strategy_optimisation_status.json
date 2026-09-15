@@ -10,7 +10,8 @@
   "caveats": [
     "changed_since_r5 is an UPPER BOUND - any code difference counts",
     "stream TIGHTEN rests on a source pattern for numeric comparisons, a LOWER BOUND - thresholds via a helper or a config constant are invisible",
-    "survives_pct is populated only for strategies whose current rule is registered in CURRENT_RULES; None means UNMEASURED, never 100pct"
+    "survives_pct is populated only for strategies whose current rule is registered in CURRENT_RULES; None means UNMEASURED, never 100pct",
+    "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the strategy (S6-B2810c; a bare mention is not a campaign) - the vocabulary is a heuristic, so borderline rows are settled by reading the ticket; mention_tickets keeps the unfiltered list"
   ],
   "rows": [
     {
@@ -19,14 +20,16 @@
       "r5_fires": 33,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 2.4,
+      "projected_step1_fires": 3.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B2033a"
+      "tickets": [],
+      "mention_tickets": [
+        "S6-B1770b",
+        "S6-B2014b"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "52w_high_breakout_pullback_long",
@@ -34,10 +37,14 @@
       "r5_fires": 150,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 11.0,
+      "projected_step1_fires": 13.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [
+        "S6-B1770b",
+        "S6-B2014b"
+      ],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -47,10 +54,11 @@
       "r5_fires": 66,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.9,
+      "projected_step1_fires": 6.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -60,14 +68,13 @@
       "r5_fires": 203,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 14.9,
+      "projected_step1_fires": 18.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B2033a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "52w_low_breakdown",
@@ -75,12 +82,19 @@
       "r5_fires": 95,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 7.0,
+      "projected_step1_fires": 8.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2014b",
+        "S6-B2420"
+      ],
+      "mention_tickets": [
+        "S6-B2014b",
+        "S6-B2420"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "52w_low_breakdown_pullback_short",
@@ -88,12 +102,19 @@
       "r5_fires": 427,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 31.4,
+      "projected_step1_fires": 39.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2014b",
+        "S6-B2420"
+      ],
+      "mention_tickets": [
+        "S6-B2014b",
+        "S6-B2420"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "52wh_break_retest",
@@ -101,10 +122,11 @@
       "r5_fires": 18,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 1.3,
+      "projected_step1_fires": 1.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -114,10 +136,11 @@
       "r5_fires": 77,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 5.7,
+      "projected_step1_fires": 7.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -127,10 +150,11 @@
       "r5_fires": 119,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 8.8,
+      "projected_step1_fires": 10.9,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -140,10 +164,11 @@
       "r5_fires": 39,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 2.9,
+      "projected_step1_fires": 3.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -153,10 +178,11 @@
       "r5_fires": 81,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 6.0,
+      "projected_step1_fires": 7.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -166,11 +192,14 @@
       "r5_fires": 2294,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 168.7,
+      "projected_step1_fires": 210.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2418"
+      ],
+      "mention_tickets": [
+        "S6-B2418"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -181,12 +210,17 @@
       "r5_fires": 1336,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 98.2,
-      "stream": "LOOSEN",
+      "projected_step1_fires": 122.8,
+      "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "awesome_oscillator",
@@ -194,14 +228,13 @@
       "r5_fires": 1012,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 74.4,
+      "projected_step1_fires": 93.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "bb_squeeze_volume",
@@ -209,10 +242,11 @@
       "r5_fires": 1013,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 74.5,
+      "projected_step1_fires": 93.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -222,13 +256,16 @@
       "r5_fires": 1622,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 119.3,
+      "projected_step1_fires": 149.1,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "adx": 1.0
       },
       "tickets": [
-        "S6-B1428a"
+        "S6-B2383"
+      ],
+      "mention_tickets": [
+        "S6-B2383"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -239,12 +276,17 @@
       "r5_fires": 271,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 19.9,
+      "projected_step1_fires": 24.9,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2383"
+      ],
+      "mention_tickets": [
+        "S6-B2383"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "bollinger_tight_with_smart_money_long",
@@ -252,10 +294,11 @@
       "r5_fires": 840,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 61.8,
+      "projected_step1_fires": 77.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -265,14 +308,19 @@
       "r5_fires": 130,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 9.6,
+      "projected_step1_fires": 11.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2383"
+      ],
+      "mention_tickets": [
+        "S6-B2383"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "break_retest_confluence",
@@ -280,10 +328,11 @@
       "r5_fires": 1889,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 138.9,
+      "projected_step1_fires": 173.6,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -293,14 +342,13 @@
       "r5_fires": 2164,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 159.1,
+      "projected_step1_fires": 198.9,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "bullish_engulfing_support",
@@ -308,10 +356,11 @@
       "r5_fires": 991,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 72.9,
+      "projected_step1_fires": 91.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -321,14 +370,13 @@
       "r5_fires": 5774,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 424.6,
+      "projected_step1_fires": 530.7,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "camarilla_s3_bounce",
@@ -336,12 +384,13 @@
       "r5_fires": 228,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 16.8,
+      "projected_step1_fires": 21.0,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -351,10 +400,11 @@
       "r5_fires": 6,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 0.4,
+      "projected_step1_fires": 0.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -364,16 +414,15 @@
       "r5_fires": 2994,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 220.1,
+      "projected_step1_fires": 275.2,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "consec_downdays_quality_long",
@@ -385,6 +434,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -394,12 +444,17 @@
       "r5_fires": 1248,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 91.8,
-      "stream": "LOOSEN",
+      "projected_step1_fires": 114.7,
+      "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "cpr_narrow_momentum",
@@ -407,12 +462,13 @@
       "r5_fires": 1001,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 73.6,
+      "projected_step1_fires": 92.0,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -422,12 +478,13 @@
       "r5_fires": 1696,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 124.7,
+      "projected_step1_fires": 155.9,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -437,10 +494,11 @@
       "r5_fires": 164,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 12.1,
+      "projected_step1_fires": 15.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -450,12 +508,13 @@
       "r5_fires": 99,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 7.3,
+      "projected_step1_fires": 9.1,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -465,14 +524,13 @@
       "r5_fires": 2414,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 177.5,
+      "projected_step1_fires": 221.9,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "death_cross_50_200_volume",
@@ -480,10 +538,11 @@
       "r5_fires": 31,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 2.3,
+      "projected_step1_fires": 2.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -493,10 +552,11 @@
       "r5_fires": 306,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 22.5,
+      "projected_step1_fires": 28.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -506,10 +566,11 @@
       "r5_fires": 232,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 17.1,
+      "projected_step1_fires": 21.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -519,10 +580,11 @@
       "r5_fires": 966,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 71.0,
+      "projected_step1_fires": 88.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -532,10 +594,11 @@
       "r5_fires": 999,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 73.5,
+      "projected_step1_fires": 91.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -545,10 +608,11 @@
       "r5_fires": 872,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 64.1,
+      "projected_step1_fires": 80.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -558,10 +622,11 @@
       "r5_fires": 507,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 37.3,
+      "projected_step1_fires": 46.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -571,10 +636,13 @@
       "r5_fires": 547,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 40.2,
+      "projected_step1_fires": 50.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [
+        "S6-B1901a"
+      ],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -584,10 +652,11 @@
       "r5_fires": 985,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 72.4,
+      "projected_step1_fires": 90.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -597,10 +666,11 @@
       "r5_fires": 291,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 21.4,
+      "projected_step1_fires": 26.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -614,6 +684,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -627,6 +698,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -636,10 +708,11 @@
       "r5_fires": 55,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.0,
+      "projected_step1_fires": 5.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -649,10 +722,11 @@
       "r5_fires": 63,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.6,
+      "projected_step1_fires": 5.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -662,10 +736,11 @@
       "r5_fires": 33,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 2.4,
+      "projected_step1_fires": 3.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -675,14 +750,13 @@
       "r5_fires": 3013,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 221.5,
+      "projected_step1_fires": 276.9,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "gap_and_go_long",
@@ -694,6 +768,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -706,11 +781,10 @@
       "projected_step1_fires": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "golden_cross_20_50",
@@ -718,10 +792,11 @@
       "r5_fires": 413,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 30.4,
+      "projected_step1_fires": 38.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -731,10 +806,11 @@
       "r5_fires": 109,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 8.0,
+      "projected_step1_fires": 10.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -744,12 +820,17 @@
       "r5_fires": 889,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 65.4,
+      "projected_step1_fires": 81.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2477"
+      ],
+      "mention_tickets": [
+        "S6-B2477"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "golden_cross_volume",
@@ -757,10 +838,11 @@
       "r5_fires": 43,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 3.2,
+      "projected_step1_fires": 4.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -770,14 +852,13 @@
       "r5_fires": 7,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 0.5,
+      "projected_step1_fires": 0.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "hammer_at_support_long",
@@ -785,12 +866,13 @@
       "r5_fires": 110,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 8.1,
+      "projected_step1_fires": 10.1,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -800,10 +882,11 @@
       "r5_fires": 146,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 10.7,
+      "projected_step1_fires": 13.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -813,10 +896,11 @@
       "r5_fires": 477,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 35.1,
+      "projected_step1_fires": 43.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -826,10 +910,11 @@
       "r5_fires": 326,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 24.0,
+      "projected_step1_fires": 30.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -839,10 +924,11 @@
       "r5_fires": 996,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 73.2,
+      "projected_step1_fires": 91.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -852,14 +938,19 @@
       "r5_fires": 1270,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 93.4,
-      "stream": "BOTH",
+      "projected_step1_fires": 116.7,
+      "stream": "TIGHTEN",
       "tightenable_keys": {
         "adx": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "ichimoku_cloud_breakdown",
@@ -867,10 +958,11 @@
       "r5_fires": 197,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 14.5,
+      "projected_step1_fires": 18.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -880,10 +972,11 @@
       "r5_fires": 511,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 37.6,
+      "projected_step1_fires": 47.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -893,11 +986,14 @@
       "r5_fires": 1319,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 97.0,
-      "stream": "LOOSEN",
+      "projected_step1_fires": 121.2,
+      "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -908,12 +1004,13 @@
       "r5_fires": 677,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 49.8,
+      "projected_step1_fires": 62.2,
       "stream": "BOTH",
       "tightenable_keys": {
         "adx": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -923,10 +1020,11 @@
       "r5_fires": 269,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 19.8,
+      "projected_step1_fires": 24.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -936,10 +1034,11 @@
       "r5_fires": 24,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 1.8,
+      "projected_step1_fires": 2.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -949,13 +1048,14 @@
       "r5_fires": 24,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 1.8,
+      "projected_step1_fires": 2.2,
       "stream": "BOTH",
       "tightenable_keys": {
         "insider_director_buyers_30d": 1.0,
         "insider_officer_buyers_30d": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -965,12 +1065,11 @@
       "r5_fires": 642,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 47.2,
+      "projected_step1_fires": 59.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -980,10 +1079,11 @@
       "r5_fires": 2644,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 194.4,
+      "projected_step1_fires": 243.0,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -993,11 +1093,16 @@
       "r5_fires": 2451,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 180.2,
+      "projected_step1_fires": 225.3,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2419",
+        "S6-B2425"
+      ],
+      "mention_tickets": [
+        "S6-B2419",
+        "S6-B2425"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -1008,11 +1113,18 @@
       "r5_fires": 1941,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 142.7,
+      "projected_step1_fires": 178.4,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2178c",
+        "S6-B2418",
+        "S6-B2435"
+      ],
+      "mention_tickets": [
+        "S6-B2178c",
+        "S6-B2418",
+        "S6-B2435"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1023,13 +1135,16 @@
       "r5_fires": 2473,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 181.8,
+      "projected_step1_fires": 227.3,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_new_positions": 1.0
       },
       "tickets": [
-        "S6-B1428a"
+        "S6-B2807"
+      ],
+      "mention_tickets": [
+        "S6-B2807"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1040,13 +1155,14 @@
       "r5_fires": 107,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 7.9,
+      "projected_step1_fires": 9.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "insider_unique_buyers_30d": 1.0,
         "institutional_increased": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1056,11 +1172,14 @@
       "r5_fires": 2751,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 202.3,
+      "projected_step1_fires": 252.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2806"
+      ],
+      "mention_tickets": [
+        "S6-B2806"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -1071,13 +1190,18 @@
       "r5_fires": 2516,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 185.0,
+      "projected_step1_fires": 231.2,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "persistent_holders_4q": 1.0
       },
       "tickets": [
-        "S6-B1428a"
+        "S6-B2807"
+      ],
+      "mention_tickets": [
+        "S6-B2499b",
+        "S6-B2646b",
+        "S6-B2807"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1088,12 +1212,13 @@
       "r5_fires": 386,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 28.4,
+      "projected_step1_fires": 35.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -1103,16 +1228,15 @@
       "r5_fires": 532,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 39.1,
+      "projected_step1_fires": 48.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "institutional_increased": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "institutional_persistence_momentum_long",
@@ -1120,12 +1244,13 @@
       "r5_fires": 2324,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 170.9,
+      "projected_step1_fires": 213.6,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_increased": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1135,15 +1260,14 @@
       "r5_fires": 716,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 52.6,
+      "projected_step1_fires": 65.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "institutional_increased": 1.0,
         "rsi_14": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -1153,14 +1277,19 @@
       "r5_fires": 1199,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 88.2,
-      "stream": "BOTH",
+      "projected_step1_fires": 110.2,
+      "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_increased": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "institutional_persistent_holders_long",
@@ -1168,16 +1297,15 @@
       "r5_fires": 1955,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 143.8,
+      "projected_step1_fires": 179.7,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_increased": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "institutional_recent_init_momentum_long",
@@ -1185,12 +1313,13 @@
       "r5_fires": 2268,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 166.8,
+      "projected_step1_fires": 208.5,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_new_positions": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -1200,12 +1329,13 @@
       "r5_fires": 1075,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 79.0,
+      "projected_step1_fires": 98.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "institutional_new_positions": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -1215,15 +1345,14 @@
       "r5_fires": 1826,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 134.3,
+      "projected_step1_fires": 167.8,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "institutional_increased": 1.0,
         "institutional_new_positions": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -1233,11 +1362,15 @@
       "r5_fires": 1387,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 102.0,
+      "projected_step1_fires": 127.5,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2806"
+      ],
+      "mention_tickets": [
+        "S6-B2422",
+        "S6-B2806"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -1248,12 +1381,13 @@
       "r5_fires": 115,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 8.5,
+      "projected_step1_fires": 10.6,
       "stream": "BOTH",
       "tightenable_keys": {
         "insider_unique_buyers_30d": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1263,13 +1397,14 @@
       "r5_fires": 103,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 7.6,
+      "projected_step1_fires": 9.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "insider_director_buyers_30d": 1.0,
         "insider_officer_buyers_30d": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1279,10 +1414,11 @@
       "r5_fires": 366,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 26.9,
+      "projected_step1_fires": 33.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1295,11 +1431,10 @@
       "projected_step1_fires": 0.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "judas_swing_long",
@@ -1307,10 +1442,11 @@
       "r5_fires": 65,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.8,
+      "projected_step1_fires": 6.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1320,10 +1456,11 @@
       "r5_fires": 84,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 6.2,
+      "projected_step1_fires": 7.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1333,10 +1470,11 @@
       "r5_fires": 41,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 3.0,
+      "projected_step1_fires": 3.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1346,14 +1484,13 @@
       "r5_fires": 1023,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 75.2,
+      "projected_step1_fires": 94.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "macd_bullish_with_smart_money_long",
@@ -1361,11 +1498,14 @@
       "r5_fires": 1162,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 85.4,
-      "stream": "LOOSEN",
+      "projected_step1_fires": 106.8,
+      "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -1376,15 +1516,13 @@
       "r5_fires": 2910,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 214.0,
+      "projected_step1_fires": 267.5,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a",
-        "S6-B1483a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "macd_crossover_short",
@@ -1392,14 +1530,13 @@
       "r5_fires": 1524,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 112.1,
+      "projected_step1_fires": 140.1,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1483a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "macd_fast_crossover",
@@ -1407,11 +1544,14 @@
       "r5_fires": 4070,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 299.3,
+      "projected_step1_fires": 374.1,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2418"
+      ],
+      "mention_tickets": [
+        "S6-B2418"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -1422,15 +1562,13 @@
       "r5_fires": 2907,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 213.8,
+      "projected_step1_fires": 267.2,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a",
-        "S6-B1483a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "mfi_overbought_short",
@@ -1442,6 +1580,9 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [
+        "S6-B2669"
+      ],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1451,12 +1592,21 @@
       "r5_fires": 77,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 5.7,
+      "projected_step1_fires": 7.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2644c",
+        "S6-B2646b",
+        "S6-B2651"
+      ],
+      "mention_tickets": [
+        "S6-B2644c",
+        "S6-B2646b",
+        "S6-B2651"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "mfi_oversold_with_smart_money_long",
@@ -1464,12 +1614,21 @@
       "r5_fires": 244,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 17.9,
+      "projected_step1_fires": 22.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2644c",
+        "S6-B2646b",
+        "S6-B2651"
+      ],
+      "mention_tickets": [
+        "S6-B2644c",
+        "S6-B2646b",
+        "S6-B2651"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "mmbm_long",
@@ -1477,12 +1636,17 @@
       "r5_fires": 1337,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 98.3,
-      "stream": "LOOSEN",
+      "projected_step1_fires": 122.9,
+      "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "mmsm_short",
@@ -1490,10 +1654,11 @@
       "r5_fires": 2456,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 180.6,
+      "projected_step1_fires": 225.7,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1503,10 +1668,11 @@
       "r5_fires": 37,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 2.7,
+      "projected_step1_fires": 3.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1516,16 +1682,15 @@
       "r5_fires": 2280,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 167.6,
+      "projected_step1_fires": 209.6,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "naked_poc_retest_long",
@@ -1533,13 +1698,14 @@
       "r5_fires": 1788,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 131.5,
+      "projected_step1_fires": 164.3,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "naked_poc_count": 1.0,
         "naked_poc_nearest_distance_pct": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1549,17 +1715,16 @@
       "r5_fires": 113,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 8.3,
+      "projected_step1_fires": 10.4,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_sentiment_5d": 1.0,
         "news_volume_zscore_5d": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "news_momentum_short",
@@ -1567,17 +1732,16 @@
       "r5_fires": 13,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 1.0,
+      "projected_step1_fires": 1.2,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_sentiment_5d": 1.0,
         "news_volume_zscore_5d": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "news_reversal_long",
@@ -1593,11 +1757,10 @@
         "news_sentiment_shift": 1.0,
         "pct_change_5d": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "news_reversal_short",
@@ -1605,7 +1768,7 @@
       "r5_fires": 60,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.4,
+      "projected_step1_fires": 5.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_count_5d": 1.0,
@@ -1614,6 +1777,7 @@
         "pct_change_5d": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1623,13 +1787,14 @@
       "r5_fires": 906,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 66.6,
+      "projected_step1_fires": 83.3,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_article_count": 1.0,
         "news_sentiment_mean": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1639,13 +1804,14 @@
       "r5_fires": 357,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 26.2,
+      "projected_step1_fires": 32.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "news_article_count": 1.0,
         "news_sentiment_shift": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1658,11 +1824,10 @@
       "projected_step1_fires": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "orb_stocks_in_play_long",
@@ -1670,10 +1835,11 @@
       "r5_fires": 54,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.0,
+      "projected_step1_fires": 5.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1683,10 +1849,11 @@
       "r5_fires": 115,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 8.5,
+      "projected_step1_fires": 10.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1696,7 +1863,7 @@
       "r5_fires": 5036,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 370.3,
+      "projected_step1_fires": 462.9,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "pair_count_active": 1.0,
@@ -1704,6 +1871,7 @@
         "pair_zscore_signed": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1713,18 +1881,17 @@
       "r5_fires": 5698,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 419.0,
+      "projected_step1_fires": 523.7,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "pair_count_active": 1.0,
         "pair_half_life": 1.0,
         "pair_zscore_signed": 1.0
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "parabolic_sar_flip",
@@ -1732,14 +1899,13 @@
       "r5_fires": 1618,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 119.0,
+      "projected_step1_fires": 148.7,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "parabolic_sar_flip_short",
@@ -1747,10 +1913,11 @@
       "r5_fires": 1672,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 122.9,
+      "projected_step1_fires": 153.7,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1760,11 +1927,18 @@
       "r5_fires": 140,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 10.3,
+      "projected_step1_fires": 12.9,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2418",
+        "S6-B2631",
+        "S6-B2633"
+      ],
+      "mention_tickets": [
+        "S6-B2418",
+        "S6-B2631",
+        "S6-B2633"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -1775,11 +1949,18 @@
       "r5_fires": 2116,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 155.6,
+      "projected_step1_fires": 194.5,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2418",
+        "S6-B2631",
+        "S6-B2633"
+      ],
+      "mention_tickets": [
+        "S6-B2418",
+        "S6-B2631",
+        "S6-B2633"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1790,12 +1971,21 @@
       "r5_fires": 872,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 64.1,
+      "projected_step1_fires": 80.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2633",
+        "S6-B2644a",
+        "S6-B2645b"
+      ],
+      "mention_tickets": [
+        "S6-B2633",
+        "S6-B2644a",
+        "S6-B2645b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "pead_short_negative_yoy_growth",
@@ -1803,12 +1993,21 @@
       "r5_fires": 2215,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 162.9,
+      "projected_step1_fires": 203.6,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2633",
+        "S6-B2644a",
+        "S6-B2645b"
+      ],
+      "mention_tickets": [
+        "S6-B2633",
+        "S6-B2644a",
+        "S6-B2645b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "pead_with_insider_confirmation_long",
@@ -1816,11 +2015,16 @@
       "r5_fires": 10,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 0.7,
+      "projected_step1_fires": 0.9,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2633"
+      ],
+      "mention_tickets": [
+        "S6-B2633",
+        "S6-B2649b",
+        "S6-B2649c"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -1831,11 +2035,18 @@
       "r5_fires": 656,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 48.2,
+      "projected_step1_fires": 60.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2633",
+        "S6-B2645b",
+        "S6-B2649a"
+      ],
+      "mention_tickets": [
+        "S6-B2633",
+        "S6-B2645b",
+        "S6-B2646b"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1846,10 +2057,11 @@
       "r5_fires": 91,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 6.7,
+      "projected_step1_fires": 8.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1859,12 +2071,17 @@
       "r5_fires": 860,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 63.2,
+      "projected_step1_fires": 79.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2383"
+      ],
+      "mention_tickets": [
+        "S6-B2383"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "pivot_r2_continuation",
@@ -1872,12 +2089,17 @@
       "r5_fires": 55,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.0,
+      "projected_step1_fires": 5.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2383"
+      ],
+      "mention_tickets": [
+        "S6-B2383"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "pivot_r3_blowoff_short",
@@ -1885,14 +2107,13 @@
       "r5_fires": 9,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 0.7,
+      "projected_step1_fires": 0.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "pivot_s1_bounce",
@@ -1900,10 +2121,11 @@
       "r5_fires": 458,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 33.7,
+      "projected_step1_fires": 42.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1913,12 +2135,13 @@
       "r5_fires": 55,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.0,
+      "projected_step1_fires": 5.1,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1928,14 +2151,13 @@
       "r5_fires": 3,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 0.2,
+      "projected_step1_fires": 0.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "po3_bearish",
@@ -1943,10 +2165,11 @@
       "r5_fires": 2624,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 192.9,
+      "projected_step1_fires": 241.2,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1956,10 +2179,11 @@
       "r5_fires": 731,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 53.8,
+      "projected_step1_fires": 67.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -1969,13 +2193,16 @@
       "r5_fires": 589,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 43.3,
+      "projected_step1_fires": 54.1,
       "stream": "BOTH",
       "tightenable_keys": {
         "vp_close_near_poc_pct": 1.0
       },
       "tickets": [
-        "S6-B1428a"
+        "S6-B2644c"
+      ],
+      "mention_tickets": [
+        "S6-B2644c"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -1989,11 +2216,10 @@
       "projected_step1_fires": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "pocket_pivot_long",
@@ -2005,6 +2231,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2014,10 +2241,11 @@
       "r5_fires": 54,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.0,
+      "projected_step1_fires": 5.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2027,10 +2255,11 @@
       "r5_fires": 27,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 2.0,
+      "projected_step1_fires": 2.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2040,10 +2269,11 @@
       "r5_fires": 100,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 7.4,
+      "projected_step1_fires": 9.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2053,10 +2283,11 @@
       "r5_fires": 1588,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 116.8,
+      "projected_step1_fires": 146.0,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2066,10 +2297,11 @@
       "r5_fires": 69,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 5.1,
+      "projected_step1_fires": 6.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2079,10 +2311,11 @@
       "r5_fires": 25,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 1.8,
+      "projected_step1_fires": 2.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2092,10 +2325,11 @@
       "r5_fires": 124,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 9.1,
+      "projected_step1_fires": 11.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2105,10 +2339,13 @@
       "r5_fires": 28,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 2.1,
+      "projected_step1_fires": 2.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [
+        "S6-B1617b"
+      ],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2118,14 +2355,13 @@
       "r5_fires": 1424,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 104.7,
+      "projected_step1_fires": 130.9,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "prev_day_low_bounce",
@@ -2133,10 +2369,11 @@
       "r5_fires": 577,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 42.4,
+      "projected_step1_fires": 53.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2146,10 +2383,11 @@
       "r5_fires": 800,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 58.8,
+      "projected_step1_fires": 73.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2159,11 +2397,14 @@
       "r5_fires": 3371,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 247.9,
+      "projected_step1_fires": 309.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2418"
+      ],
+      "mention_tickets": [
+        "S6-B2418"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2174,10 +2415,11 @@
       "r5_fires": 1895,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 139.3,
+      "projected_step1_fires": 174.2,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2187,10 +2429,11 @@
       "r5_fires": 918,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 67.5,
+      "projected_step1_fires": 84.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2204,6 +2447,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2213,12 +2457,13 @@
       "r5_fires": 9,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 0.7,
+      "projected_step1_fires": 0.8,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_21": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2228,10 +2473,11 @@
       "r5_fires": 56,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.1,
+      "projected_step1_fires": 5.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2245,7 +2491,10 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2383"
+      ],
+      "mention_tickets": [
+        "S6-B2383"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2256,11 +2505,18 @@
       "r5_fires": 1945,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 143.0,
+      "projected_step1_fires": 178.8,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2383",
+        "S6-B2418",
+        "S6-B2421"
+      ],
+      "mention_tickets": [
+        "S6-B2383",
+        "S6-B2418",
+        "S6-B2421"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2271,11 +2527,18 @@
       "r5_fires": 2753,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 202.4,
+      "projected_step1_fires": 253.0,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2418",
+        "S6-B2645b",
+        "S6-B2649"
+      ],
+      "mention_tickets": [
+        "S6-B2418",
+        "S6-B2645b",
+        "S6-B2649"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2286,12 +2549,13 @@
       "r5_fires": 548,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 40.3,
+      "projected_step1_fires": 50.4,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2304,11 +2568,10 @@
       "projected_step1_fires": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "shooting_star_short",
@@ -2316,16 +2579,15 @@
       "r5_fires": 250,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 18.4,
+      "projected_step1_fires": 23.0,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [
-        "S6-B2033a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "short_borrow_trap_avoid",
@@ -2336,11 +2598,10 @@
       "projected_step1_fires": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "simple_below_ema_50_short",
@@ -2348,11 +2609,17 @@
       "r5_fires": 3299,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 242.6,
+      "projected_step1_fires": 303.2,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2527",
+        "S6-B2573d"
+      ],
+      "mention_tickets": [
+        "S6-B2499b",
+        "S6-B2527",
+        "S6-B2573d"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2363,12 +2630,17 @@
       "r5_fires": 100,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 7.4,
+      "projected_step1_fires": 9.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2756"
+      ],
+      "mention_tickets": [
+        "S6-B2756"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_bos_retest_entry",
@@ -2376,12 +2648,19 @@
       "r5_fires": 682,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 50.1,
+      "projected_step1_fires": 62.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2644c",
+        "S6-B2756"
+      ],
+      "mention_tickets": [
+        "S6-B2644c",
+        "S6-B2756"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_breaker_block_long",
@@ -2389,11 +2668,18 @@
       "r5_fires": 948,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 69.7,
+      "projected_step1_fires": 87.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B1518c",
+        "S6-B1694a",
+        "S6-B1918b"
+      ],
+      "mention_tickets": [
+        "S6-B1505b",
+        "S6-B1518c",
+        "S6-B1531a"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -2404,12 +2690,21 @@
       "r5_fires": 1598,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 117.5,
+      "projected_step1_fires": 146.9,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2413",
+        "S6-B2414",
+        "S6-B2417"
+      ],
+      "mention_tickets": [
+        "S6-B2413",
+        "S6-B2414",
+        "S6-B2417"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_choch_reversal",
@@ -2417,12 +2712,19 @@
       "r5_fires": 551,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 40.5,
+      "projected_step1_fires": 50.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2756",
+        "S6-B2763"
+      ],
+      "mention_tickets": [
+        "S6-B2756",
+        "S6-B2763"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_discount_long",
@@ -2430,12 +2732,19 @@
       "r5_fires": 333,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 24.5,
+      "projected_step1_fires": 30.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2756",
+        "S6-B2763"
+      ],
+      "mention_tickets": [
+        "S6-B2756",
+        "S6-B2763"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_equal_highs_sweep_short",
@@ -2443,12 +2752,19 @@
       "r5_fires": 838,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 61.6,
+      "projected_step1_fires": 77.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2756",
+        "S6-B2763"
+      ],
+      "mention_tickets": [
+        "S6-B2756",
+        "S6-B2763"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_equal_lows_sweep_long",
@@ -2456,11 +2772,16 @@
       "r5_fires": 382,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 28.1,
+      "projected_step1_fires": 35.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2752",
+        "S6-B2752e"
+      ],
+      "mention_tickets": [
+        "S6-B2752",
+        "S6-B2752e"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2471,12 +2792,17 @@
       "r5_fires": 66,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 4.9,
+      "projected_step1_fires": 6.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2737"
+      ],
+      "mention_tickets": [
+        "S6-B2737"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_fvg_retest_short",
@@ -2484,10 +2810,11 @@
       "r5_fires": 288,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 21.2,
+      "projected_step1_fires": 26.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2497,12 +2824,21 @@
       "r5_fires": 953,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 70.1,
+      "projected_step1_fires": 87.6,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2737",
+        "S6-B2752",
+        "S6-B2752e"
+      ],
+      "mention_tickets": [
+        "S6-B2737",
+        "S6-B2752",
+        "S6-B2752e"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_liquidity_sweep_reversal",
@@ -2510,11 +2846,18 @@
       "r5_fires": 2933,
       "changed_since_r5": true,
       "survives_pct": 0.0515,
-      "projected_step1_fires": 215.7,
+      "projected_step1_fires": 269.6,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B2033a"
+        "S6-B2692",
+        "S6-B2693",
+        "S6-B2731"
+      ],
+      "mention_tickets": [
+        "S6-B2033a",
+        "S6-B2692",
+        "S6-B2693"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2525,12 +2868,15 @@
       "r5_fires": 15,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 1.1,
+      "projected_step1_fires": 1.4,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [
+        "S6-B1617b"
+      ],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2540,12 +2886,15 @@
       "r5_fires": 44,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 3.2,
+      "projected_step1_fires": 4.0,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [
+        "S6-B1995b"
+      ],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2555,14 +2904,23 @@
       "r5_fires": 1340,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 98.5,
-      "stream": "BOTH",
+      "projected_step1_fires": 123.2,
+      "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2692",
+        "S6-B2752",
+        "S6-B2752e"
+      ],
+      "mention_tickets": [
+        "S6-B1531a",
+        "S6-B1617b",
+        "S6-B2692"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_ote_long",
@@ -2570,12 +2928,18 @@
       "r5_fires": 231,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 17.0,
+      "projected_step1_fires": 21.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2756"
+      ],
+      "mention_tickets": [
+        "S6-B1570a",
+        "S6-B2756"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_ote_short",
@@ -2583,12 +2947,17 @@
       "r5_fires": 262,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 19.3,
+      "projected_step1_fires": 24.1,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2756"
+      ],
+      "mention_tickets": [
+        "S6-B2756"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_premium_short",
@@ -2596,12 +2965,19 @@
       "r5_fires": 433,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 31.8,
+      "projected_step1_fires": 39.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2756",
+        "S6-B2763"
+      ],
+      "mention_tickets": [
+        "S6-B2756",
+        "S6-B2763"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "squeeze_breakout",
@@ -2609,11 +2985,14 @@
       "r5_fires": 1141,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 83.9,
-      "stream": "LOOSEN",
+      "projected_step1_fires": 104.9,
+      "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1483a"
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2624,11 +3003,14 @@
       "r5_fires": 1139,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 83.8,
-      "stream": "LOOSEN",
+      "projected_step1_fires": 104.7,
+      "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1483a"
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2642,11 +3024,10 @@
       "projected_step1_fires": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "stoch_oversold",
@@ -2654,10 +3035,11 @@
       "r5_fires": 286,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 21.0,
+      "projected_step1_fires": 26.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2667,12 +3049,13 @@
       "r5_fires": 4287,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 315.2,
+      "projected_step1_fires": 394.0,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2682,12 +3065,13 @@
       "r5_fires": 2433,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 178.9,
+      "projected_step1_fires": 223.6,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2697,14 +3081,13 @@
       "r5_fires": 4,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 0.3,
+      "projected_step1_fires": 0.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "supertrend_macd",
@@ -2712,10 +3095,13 @@
       "r5_fires": 486,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 35.7,
+      "projected_step1_fires": 44.7,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [
+        "S6-B2024a"
+      ],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2725,12 +3111,13 @@
       "r5_fires": 271,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 19.9,
+      "projected_step1_fires": 24.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "adx": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2740,14 +3127,13 @@
       "r5_fires": 1876,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 137.9,
+      "projected_step1_fires": 172.4,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "three_black_crows_short",
@@ -2755,12 +3141,13 @@
       "r5_fires": 1674,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 123.1,
+      "projected_step1_fires": 153.9,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2770,12 +3157,13 @@
       "r5_fires": 1596,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 117.4,
+      "projected_step1_fires": 146.7,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2785,11 +3173,18 @@
       "r5_fires": 343,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 25.2,
+      "projected_step1_fires": 31.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2644c",
+        "S6-B2646b",
+        "S6-B2651"
+      ],
+      "mention_tickets": [
+        "S6-B2644c",
+        "S6-B2646b",
+        "S6-B2651"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -2804,6 +3199,9 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [
+        "S6-B2669"
+      ],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2813,10 +3211,11 @@
       "r5_fires": 330,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 24.3,
+      "projected_step1_fires": 30.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2826,10 +3225,11 @@
       "r5_fires": 112,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 8.2,
+      "projected_step1_fires": 10.3,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2839,10 +3239,11 @@
       "r5_fires": 1064,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 78.2,
+      "projected_step1_fires": 97.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2852,10 +3253,11 @@
       "r5_fires": 324,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 23.8,
+      "projected_step1_fires": 29.8,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2865,12 +3267,17 @@
       "r5_fires": 1880,
       "changed_since_r5": false,
       "survives_pct": 1.0,
-      "projected_step1_fires": 138.2,
+      "projected_step1_fires": 172.8,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2756"
+      ],
+      "mention_tickets": [
+        "S6-B2756"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "ultimate_oscillator",
@@ -2878,12 +3285,13 @@
       "r5_fires": 592,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 43.5,
+      "projected_step1_fires": 54.4,
       "stream": "BOTH",
       "tightenable_keys": {
         "uo": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2893,10 +3301,11 @@
       "r5_fires": 375,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 27.6,
+      "projected_step1_fires": 34.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2906,12 +3315,13 @@
       "r5_fires": 543,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 39.9,
+      "projected_step1_fires": 49.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "xs_quality_decile": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2921,12 +3331,17 @@
       "r5_fires": 1140,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 83.8,
-      "stream": "LOOSEN",
+      "projected_step1_fires": 104.8,
+      "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2810b"
+      ],
+      "mention_tickets": [
+        "S6-B2810b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "volume_spike_breakout",
@@ -2934,14 +3349,13 @@
       "r5_fires": 1500,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 110.3,
+      "projected_step1_fires": 137.9,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "vwap_extension_momentum_long",
@@ -2952,9 +3366,14 @@
       "projected_step1_fires": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2679"
+      ],
+      "mention_tickets": [
+        "S6-B2679"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "vwap_extension_momentum_short",
@@ -2966,6 +3385,7 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -2975,16 +3395,15 @@
       "r5_fires": 633,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 46.5,
+      "projected_step1_fires": 58.2,
       "stream": "BOTH",
       "tightenable_keys": {
         "days_since_last_earnings": 0.9842
       },
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "week_opening_gap_fill_up",
@@ -2992,12 +3411,13 @@
       "r5_fires": 834,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 61.3,
+      "projected_step1_fires": 76.7,
       "stream": "LOOSEN",
       "tightenable_keys": {
         "days_since_last_earnings": 0.9628
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -3007,12 +3427,13 @@
       "r5_fires": 27,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 2.0,
+      "projected_step1_fires": 2.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -3025,11 +3446,10 @@
       "projected_step1_fires": 0.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [
-        "S6-B1428a"
-      ],
+      "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "status": "NOT-STARTED"
     },
     {
       "strategy": "williams_r_oversold",
@@ -3037,14 +3457,19 @@
       "r5_fires": 2535,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 186.4,
+      "projected_step1_fires": 233.0,
       "stream": "TIGHTEN",
       "tightenable_keys": {
         "williams_r": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2383"
+      ],
+      "mention_tickets": [
+        "S6-B2383"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "williams_stoch_dual",
@@ -3052,12 +3477,13 @@
       "r5_fires": 750,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 55.1,
+      "projected_step1_fires": 68.9,
       "stream": "BOTH",
       "tightenable_keys": {
         "williams_r": 1.0
       },
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -3071,7 +3497,10 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2649"
+      ],
+      "mention_tickets": [
+        "S6-B2649"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -3082,14 +3511,19 @@
       "r5_fires": 212,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 15.6,
+      "projected_step1_fires": 19.5,
       "stream": "BOTH",
       "tightenable_keys": {
         "xs_ivol_decile": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2644c"
+      ],
+      "mention_tickets": [
+        "S6-B2644c"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "xs_low_beta_long",
@@ -3097,10 +3531,11 @@
       "r5_fires": 78,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 5.7,
+      "projected_step1_fires": 7.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -3110,11 +3545,14 @@
       "r5_fires": 452,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 33.2,
+      "projected_step1_fires": 41.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a"
+        "S6-B2674a"
+      ],
+      "mention_tickets": [
+        "S6-B2674a"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -3125,12 +3563,17 @@
       "r5_fires": 1384,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 101.8,
+      "projected_step1_fires": 127.2,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2420"
+      ],
+      "mention_tickets": [
+        "S6-B2420"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "xs_momentum_quality_combined",
@@ -3138,10 +3581,11 @@
       "r5_fires": 163,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 12.0,
+      "projected_step1_fires": 15.0,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     },
@@ -3151,10 +3595,19 @@
       "r5_fires": 255,
       "changed_since_r5": false,
       "survives_pct": null,
-      "projected_step1_fires": 18.8,
+      "projected_step1_fires": 23.4,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B2644c",
+        "S6-B2649",
+        "S6-B2668a"
+      ],
+      "mention_tickets": [
+        "S6-B1589b",
+        "S6-B1772b",
+        "S6-B2644c"
+      ],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -3164,12 +3617,16 @@
       "r5_fires": 658,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 48.4,
+      "projected_step1_fires": 60.5,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B1428a",
-        "S6-B1467a"
+        "S6-B2418"
+      ],
+      "mention_tickets": [
+        "S6-B1589b",
+        "S6-B1593d",
+        "S6-B1595c"
       ],
       "admitted": false,
       "status": "IN-CAMPAIGN"
@@ -3180,10 +3637,11 @@
       "r5_fires": 89,
       "changed_since_r5": true,
       "survives_pct": null,
-      "projected_step1_fires": 6.5,
+      "projected_step1_fires": 8.2,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
+      "mention_tickets": [],
       "admitted": false,
       "status": "NOT-STARTED"
     }

@@ -67,7 +67,13 @@ COVERAGE_FLOOR = 0.98          # a magnitude present on fewer rows is not usable
 STEP1_TICKERS = 200            # the plan's Step-1 shape
 STEP1_YEARS = 1
 R5_UNIVERSE = 544
-R5_SPAN_YEARS = 5
+# S6-B2810b: the R5 window is 4 YEARS (2022-05-06 .. 2026-05-04, plan 11.0 /
+# PROJECT_PLAN spec). The first build shipped 5 - a calendar-year max-min+1
+# over entry dates - which deflated every projection x0.8 AND biased
+# classify_stream toward starved: 11 rows sat in the [80,100) band and
+# carried the wrong stream. A span is a WINDOW LENGTH, not a count of
+# calendar years touched.
+R5_SPAN_YEARS = 4.0
 MIN_FIRES_FOR_GRID = 100       # below this a Step-1 grid cannot be populated
 
 # Entry conditions re-expressed for the survival check. Only families whose rule
@@ -168,6 +174,39 @@ def changed_since_r5(src_now: str) -> set:
     return {k[len("strat_"):] for k in set(a) & set(b) if a[k] != b[k]}
 
 
+# S6-B2810c: a MENTION is not a campaign. The first build flagged IN-CAMPAIGN
+# when any ticket id preceded the strategy name anywhere in a queue cell - and
+# all four news-family flags traced to S6-B1428a, an exit-reassignment ticket
+# that campaigns nothing (L748: an identifier matched in prose). A row now
+# counts as a CAMPAIGN only when it also carries campaign vocabulary. The
+# vocabulary is a HEURISTIC and is caveated as such (caveat 4): a borderline
+# row is settled by reading the ticket, never by this list.
+CAMPAIGN_VOCAB = ("campaign", "step 1", "step-1", "step 2", "step-2",
+                  "depth", "breadth", "band", "register", "specs",
+                  "grader", "admission")
+
+
+def campaign_tickets(qtext: str, name: str) -> tuple:
+    """(campaign_ids, mention_ids) for `name`, ROW-scoped.
+
+    A ledger row opens with its ticket id (table `| **id**` or legacy
+    `- **id**` form) - the structural anchor L748 requires - and the name
+    must appear in THAT row. campaign_ids additionally require a
+    CAMPAIGN_VOCAB token in the row; mention_ids do not, and are kept so a
+    reader can still ask "who talks about this strategy".
+    """
+    camp, ment = set(), set()
+    for line in qtext.splitlines():
+        m = re.match(r"[|-]\s*\*\*(S6-B\d+[a-z]?(?:\.[a-z0-9]+)?)\*\*", line)
+        if not m or name not in line:
+            continue
+        ment.add(m.group(1))
+        low = line.lower()
+        if any(v in low for v in CAMPAIGN_VOCAB):
+            camp.add(m.group(1))
+    return sorted(camp)[:3], sorted(ment)[:3]
+
+
 def classify_stream(tightenable: bool, projected: float) -> str:
     starved = projected < MIN_FIRES_FOR_GRID
     if tightenable and starved:
@@ -237,8 +276,7 @@ def main() -> int:
             dirs = list(frame["direction"].values)
             survives = round(sum(1 for s, d in zip(sigs, dirs) if fn(s, d)) / fires, 4)
 
-        tickets = sorted(set(re.findall(r"\*\*(S6-B\d+[a-z]?)\*\*[^|]*" + re.escape(name),
-                                        qtext)))[:3]
+        tickets, mentions = campaign_tickets(qtext, name)
         status = ("DONE-ADMITTED" if name in admitted
                   else "IN-CAMPAIGN" if tickets else "NOT-STARTED")
         recs.append({"strategy": name, "family": fam, "r5_fires": fires,
@@ -247,6 +285,7 @@ def main() -> int:
                      "projected_step1_fires": round(projected, 1),
                      "stream": classify_stream(tightenable, projected),
                      "tightenable_keys": covered, "tickets": tickets,
+                     "mention_tickets": mentions,
                      "admitted": name in admitted, "status": status})
 
     Path(a.json).write_text(json.dumps(
@@ -260,7 +299,11 @@ def main() -> int:
              "stream TIGHTEN rests on a source pattern for numeric comparisons, "
              "a LOWER BOUND - thresholds via a helper or a config constant are invisible",
              "survives_pct is populated only for strategies whose current rule is "
-             "registered in CURRENT_RULES; None means UNMEASURED, never 100pct"],
+             "registered in CURRENT_RULES; None means UNMEASURED, never 100pct",
+             "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the "
+             "strategy (S6-B2810c; a bare mention is not a campaign) - the "
+             "vocabulary is a heuristic, so borderline rows are settled by "
+             "reading the ticket; mention_tickets keeps the unfiltered list"],
          "rows": recs}, indent=2), encoding="utf-8")
 
     # ---- the markdown view -------------------------------------------------
@@ -287,7 +330,7 @@ def main() -> int:
          "| | count |", "|---|---|",
          f"| registered strategies | {len(recs)} |",
          f"| DONE - admitted to Phase 1B | {bystatus.get('DONE-ADMITTED', 0)} |",
-         f"| IN-CAMPAIGN - a ticket names it | {bystatus.get('IN-CAMPAIGN', 0)} |",
+         f"| IN-CAMPAIGN - a campaign-marked ticket names it | {bystatus.get('IN-CAMPAIGN', 0)} |",
          f"| NOT-STARTED | {bystatus.get('NOT-STARTED', 0)} |", "",
          "## Stream - of the strategies NOT yet admitted", "",
          "| stream | meaning | count |", "|---|---|---|"]
@@ -310,7 +353,11 @@ def main() -> int:
           "a **lower bound** - a threshold reached through a helper or compared to a "
           "config constant is invisible to it.",
           "- `survives_pct` is populated only where the current rule is registered in "
-          "`CURRENT_RULES`. **`-` means UNMEASURED, never 100%.**", "",
+          "`CURRENT_RULES`. **`-` means UNMEASURED, never 100%.**",
+          "- `IN-CAMPAIGN` requires a campaign-vocabulary token in the row naming the "
+          "strategy (S6-B2810c) - **a bare mention is not a campaign**. The vocabulary "
+          "is a heuristic; a borderline row is settled by reading the ticket, and "
+          "`mention_tickets` in the JSON keeps the unfiltered list.", "",
           "## Per strategy", "",
           "| strategy | family | R5 fires | proj. Step-1 | chg | survives | stream | status |",
           "|---|---|---|---|---|---|---|---|"]

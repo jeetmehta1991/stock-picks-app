@@ -37400,3 +37400,64 @@ def test_b2807_recommendation_prior_art_rule_survives():
     m = _re.search(r"LEARNINGS L1-L(\d+)", banner)
     assert m and int(m.group(1)) >= 802, ("banner range does not cover L802",
                                           m.group(0) if m else None)
+
+
+def _b2811_mod():
+    import importlib.util
+    from pathlib import Path as _P
+    p = _P(__file__).resolve().parents[2] / "scripts" / "build_strategy_status.py"
+    spec = importlib.util.spec_from_file_location("b2811_bss", p)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_b2811_span_is_the_window_not_a_calendar_count():
+    """S6-B2810b: the R5 window is 4 years (2022-05-06..2026-05-04).
+
+    The first build shipped 5 - max-min+1 over calendar years - deflating
+    every projection x0.8 and biasing classify_stream toward starved; 11
+    rows sat in the [80,100) band with the wrong stream. A span is a WINDOW
+    LENGTH. The projection arithmetic is pinned on turtle_soup_short's
+    measured figures so the constant cannot silently regress.
+    """
+    m = _b2811_mod()
+    assert m.R5_SPAN_YEARS == 4.0, "the R5 window is 4 years, not 5"
+    # 1,880 fires / 544 tickers / 4y * 200 tickers * 1y = 172.79...
+    proj = 1880 / m.R5_UNIVERSE / m.R5_SPAN_YEARS * m.STEP1_TICKERS * m.STEP1_YEARS
+    assert abs(proj - 172.8) < 0.1, proj
+    # and the boundary row that motivated the fix clears the floor now
+    obb = 1340 / m.R5_UNIVERSE / m.R5_SPAN_YEARS * m.STEP1_TICKERS * m.STEP1_YEARS
+    assert obb > m.MIN_FIRES_FOR_GRID, (
+        "smc_order_block_bounce's corrected projection must clear the grid floor")
+
+
+def test_b2811_campaign_is_not_a_mention():
+    """S6-B2810c: a row naming a strategy flags IN-CAMPAIGN only with campaign
+    vocabulary in the SAME row. Both arms pinned, and the row anchor is
+    structural (the id opens the row - L748), so prose in other rows can
+    neither flag nor unflag a strategy.
+    """
+    m = _b2811_mod()
+    q = "\n".join([
+        "| **S6-B9001** | **OPEN** | P1 | exit-reassignment guards touch "
+        "news_sentiment_short margins | _reason:_ OPEN |",
+        "| **S6-B9002** | **OPEN** | P1 | Step 1 campaign for "
+        "news_sentiment_short - band proposal pending | _reason:_ OPEN |",
+        "- **S6-B9003** - legacy bulleted row mentioning news_sentiment_short "
+        "with none of the qualifying vocabulary",
+        "| **S6-B9004** | **OPEN** | P1 | a campaign row for a DIFFERENT "
+        "strategy entirely | _reason:_ OPEN |",
+    ])
+    camp, ment = m.campaign_tickets(q, "news_sentiment_short")
+    assert camp == ["S6-B9002"], f"only the campaign-worded row flags: {camp}"
+    assert set(ment) == {"S6-B9001", "S6-B9002", "S6-B9003"}, ment
+    # a name absent from every row yields nothing, both lists
+    assert m.campaign_tickets(q, "nonexistent_strategy") == ([], [])
+    # and the committed artifact carries the fourth caveat
+    import json
+    from pathlib import Path as _P
+    art = _P(__file__).resolve().parents[2] / "output_audit" / "strategy_optimisation_status.json"
+    d = json.loads(art.read_text(encoding="utf-8"))
+    assert len(d["caveats"]) == 4, "the IN-CAMPAIGN heuristic caveat must ride the artifact"
+    assert any("mention is not a campaign" in c for c in d["caveats"])
