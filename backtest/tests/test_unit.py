@@ -38184,8 +38184,14 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     tbc = (d / "three_black_crows_short.md").read_text(encoding="utf-8")
     assert "| P1 | PRODUCER | three_black_crows" in tbc
     assert "INVENTORY-PENDING-R1" in tbc
-    assert "_short_borrow_trap_active" in tbc
     assert "_three_black_crows_short" not in tbc, "def-signature phantom helper"
+    # B2840 (owner question): the shared borrow helper's row carries its
+    # UNDERLYING condition and its offline tighter side - the boolean's
+    # internals are bandable, and where the magnitude is persisted
+    # (days_to_cover, 99.6% here) the tighter side is offline today
+    assert "days_to_cover > 5.0" in tbc
+    assert "B718a owner-ruled risk guard" in tbc
+    assert "BANDABLE-OWNER-GATED" in tbc
 
     # depth extraction: (key, op, literal) - and quiet on no numeric compare
     src = ("def strat_x(s):\n    return s.get('rsi_14', 50) <= 30\n"

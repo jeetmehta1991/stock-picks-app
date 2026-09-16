@@ -231,10 +231,15 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     pid = 0
     for leg in legs:
         pid += 1
+        # B2840: a boolean's UNDERLYING condition is bandable (owner point).
+        # OFFLINE only where its input magnitudes are persisted on the fires;
+        # a variant needing unpersisted bars is RESIM by construction.
         L.append(f"| P{pid} | PRODUCER | {leg} - emitted by {attribute(leg, idx)}; "
-                 f"its tunables live inside that producer | leg required True | "
-                 f"- (a boolean leg has no offline tighter level) | producer "
-                 f"knobs - {'see SPECS entry' if in_specs else 'INVENTORY-PENDING-R1 (SPECS)'} | "
+                 f"the boolean's UNDERLYING condition is bandable through its "
+                 f"producer's internals | leg required True | only where the "
+                 f"condition's input magnitudes are persisted on the fires - "
+                 f"else none | variants over unpersisted bars/inputs - RESIM; "
+                 f"knobs {'in the SPECS entry' if in_specs else 'INVENTORY-PENDING-R1 (SPECS)'} | "
                  f"{'SPECS-REGISTERED' if in_specs else 'INVENTORY-PENDING-R1'} |")
     for key, op, prod in sorted(set(comparisons)):
         pid += 1
@@ -244,6 +249,23 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"- band at R1 | MEASURED-PRE-R1 |")
     for h in helpers:
         pid += 1
+        if h == "_short_borrow_trap_active":
+            # B2840 (owner question): a boolean's UNDERLYING condition is
+            # bandable, and this shared helper's is days_to_cover > 5.0
+            # (screener.py) with days_to_cover PERSISTED - so the tighter
+            # side is offline TODAY. The 5.0 is an owner-ruled risk guard
+            # (B718a, GME pre-squeeze calibration) shared by every short
+            # strategy: any band is per-strategy-override scope, on the
+            # owner's word only.
+            L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - underlying "
+                     f"condition: days_to_cover > 5.0 (blocks the fire) | "
+                     f"cap 5.0 (B718a owner-ruled risk guard) | tighter = "
+                     f"LOWER cap on persisted days_to_cover - OFFLINE subset "
+                     f"| raising the cap admits engine-blocked fires - RESIM; "
+                     f"shared helper (6 consumers) so any band is a "
+                     f"per-strategy override on the owner's word | "
+                     f"BANDABLE-OWNER-GATED |")
+            continue
         L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - a helper gate; its "
                  f"internals are outside the source pattern (lower bound) | "
                  f"required | - | inspect at R1 | INVENTORY-PENDING-R1 |")
