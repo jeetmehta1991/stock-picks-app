@@ -38140,3 +38140,64 @@ def test_b2833_stalled_campaign_is_distinguished_and_honest():
     md = (root / "STRATEGY_OPTIMISATION_STATUS.md").read_text(
         encoding="utf-8", errors="replace")
     assert "STALLED-CAMPAIGN" in md and "liveness mask" in md
+
+
+def test_b2836_table_a_directory_is_complete_and_honest():
+    """B2836 (owner-directed 2026-09-16): the strategy_optimisation/ Table A
+    charter. The expected roster is DERIVED from the stamped status view (the
+    defining source, L697), never hand-listed; the generator's two judgment
+    mechanisms are pinned in both directions (#226)."""
+    import json
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_table_a as bta
+
+    view = json.loads((root / "output_audit" /
+                       "strategy_optimisation_status.json")
+                      .read_text(encoding="utf-8"))
+    tighten = {r["strategy"] for r in view["rows"] if r["stream"] == "TIGHTEN"}
+    d = root / "strategy_optimisation" / "tighten"
+    files = {p.stem for p in d.glob("*.md")}
+    assert files == tighten, (files ^ tighten,
+                              "one Table A file per TIGHTEN row, exactly")
+    for p in d.glob("*.md"):
+        t = p.read_text(encoding="utf-8")
+        assert "Build (L803/#309)" in t, p.name
+        assert "## Table A (depth)" in t and "## Table A (breadth)" in t, p.name
+        assert "EXISTING-THRESHOLD" in t and "NEW-GATE" in t, p.name
+        assert "OFFLINE" in t and "RESIM" in t, p.name
+    # anchor a depth row to source truth: the naked_poc gate literal
+    npr = (d / "naked_poc_retest_long.md").read_text(encoding="utf-8")
+    assert "`< 0.02`" in npr and "naked_poc_nearest_distance_pct" in npr
+
+    # depth extraction: (key, op, literal) - and quiet on no numeric compare
+    src = ("def strat_x(s):\n    return s.get('rsi_14', 50) <= 30\n"
+           "def strat_y(s):\n    return bool(s.get('flag'))\n")
+    got = bta.depth_comparisons(src)
+    assert got == {"x": [("rsi_14", "<=", 30.0)]}, got
+
+    # price-denominated split: monotone-with-proxy excluded, noise kept,
+    # and NO split when no proxy is persisted
+    import numpy as np
+    rng = pd.Series(range(200), dtype=float)   # SYNTHETIC fixture (structure)
+    noise = pd.Series(np.sin(np.arange(200)))
+    series = {"bb_20_20_mid": ("numeric", rng),
+              "cam_r1": ("numeric", rng * 3 + 1),
+              "atr_pct": ("numeric", noise)}
+    priced, proxy = bta.price_denominated(series)
+    assert proxy == "bb_20_20_mid"
+    assert "cam_r1" in priced and "atr_pct" not in priced
+    none, why = bta.price_denominated({"atr_pct": ("numeric", noise)})
+    assert none == {} and "no persisted price proxy" in why
+
+    # README carries the offline-only Step-2 ruling, its price, and the gap
+    readme = " ".join((root / "strategy_optimisation" / "README.md")
+                      .read_text(encoding="utf-8").split())
+    assert "OFFLINE-ONLY STEP 2" in readme
+    assert "NO pruning of combinations" in readme
+    assert "the FULL number of combinations read" in readme
+    assert "S6-B2836a" in readme, "the Step-2 multiplicity gap stays named"
