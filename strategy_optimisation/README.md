@@ -9,6 +9,14 @@ or **RESIM** (an engine leg). The workflow that consumes these tables is
 STRATEGY_OPTIMISATION_PLAN.md SS11.2t (W-T) / SS11.2l (W-L); this directory is
 the T2/L2 "Table A rendered" artifact, pre-built.
 
+**Shape (B2838, owner-caught conformance):** each file leads with the plan's
+CANONICAL Table A - the SS6/#183 parameter inventory, one row per parameter
+across BOTH layers (producer booleans with their knob disposition, strategy
+numeric thresholds, helper gates, B-rows) - followed by the MEASURED input
+sections (free-band quantiles, B-row candidate census). The R1 SPECS entry
+(`producer_variant_table.py`) absorbs and supersedes the pre-R1 inventory;
+`validate_spec` then owns the formula <-> Table A cross-check.
+
 **Generated, never hand-edited.** Regenerate with:
 
     python scripts/build_table_a.py --lane TIGHTEN     # tighten/ (12 files)

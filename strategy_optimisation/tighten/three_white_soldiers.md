@@ -1,12 +1,25 @@
 # Table A - three_white_soldiers
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 4af0c76b7 at 2026-09-16 13:11:43 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit a8a3061da at 2026-09-16 16:05:40 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 1596 | **surviving fires (T1):** 1596 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
 
-## Table A (depth) - own-gate persisted magnitudes [EXISTING-THRESHOLD]
+## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
+
+One row per parameter the entry condition touches, BOTH layers, nothing
+omitted (L785: an axis left out of Table A is invisible at close). The
+R1 SPECS entry absorbs and supersedes this pre-R1 inventory - producer
+knob rows below are placeholders it must fill.
+
+| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|
+| P1 | PRODUCER | three_white_soldiers - emitted by backtest/signals/screener.py +2; its tunables live inside that producer | leg required True | - (a boolean leg has no offline tighter level) | producer knobs - INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P2 | STRATEGY | rsi_14 `< 60` [EXISTING-THRESHOLD] | `< 60` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+
+### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
 Tighter side = OFFLINE free_band (a SUBSET of the recorded fires, zero engine
 hours). Looser side = RESIM (engine) by construction - a looser level admits
@@ -17,7 +30,7 @@ STRICTLY tighter than production enter the free band.
 |---|---|---|---|---|---|
 | rsi_14 | backtest/signals/screener.py | `< 60` | 100.0% | 41.97 -> 320 (20%); 46.31 -> 641 (40%); 50.16 -> 960 (60%); 54.42 -> 1277 (80%) | looser (raise the threshold): RESIM - band from the SPECS entry (to be built) |
 
-## Table A (breadth) - companion producers persisted on the fires [NEW-GATE]
+### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
 **Every row here is a NEW-GATE** (standing owner rule 2026-08-10): adding a
 companion threshold is an AND-leg the strategy does not currently have -

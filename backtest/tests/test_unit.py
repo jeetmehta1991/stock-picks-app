@@ -38167,18 +38167,39 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     for p in d.glob("*.md"):
         t = p.read_text(encoding="utf-8")
         assert "Build (L803/#309)" in t, p.name
-        assert "## Table A (depth)" in t and "## Table A (breadth)" in t, p.name
+        # B2838 (owner-caught): the canonical SS6 shape leads - one row per
+        # parameter, BOTH layers - with the measured sections as its inputs
+        assert "## Table A - parameter inventory" in t, p.name
+        assert "| id | layer | producer / parameter | production | " \
+               "free_band (OFFLINE) | resim_band (RESIM) | status |" in t, p.name
+        assert "### Measured free-band levels" in t, p.name
+        assert "### B-row candidate census" in t, p.name
         assert "EXISTING-THRESHOLD" in t and "NEW-GATE" in t, p.name
         assert "OFFLINE" in t and "RESIM" in t, p.name
     # anchor a depth row to source truth: the naked_poc gate literal
     npr = (d / "naked_poc_retest_long.md").read_text(encoding="utf-8")
     assert "`< 0.02`" in npr and "naked_poc_nearest_distance_pct" in npr
+    # and the owner's question made concrete: the candle strategy's inventory
+    # carries its PRODUCER boolean and its helper gate, not just the rsi row
+    tbc = (d / "three_black_crows_short.md").read_text(encoding="utf-8")
+    assert "| P1 | PRODUCER | three_black_crows" in tbc
+    assert "INVENTORY-PENDING-R1" in tbc
+    assert "_short_borrow_trap_active" in tbc
+    assert "_three_black_crows_short" not in tbc, "def-signature phantom helper"
 
     # depth extraction: (key, op, literal) - and quiet on no numeric compare
     src = ("def strat_x(s):\n    return s.get('rsi_14', 50) <= 30\n"
            "def strat_y(s):\n    return bool(s.get('flag'))\n")
     got = bta.depth_comparisons(src)
     assert got == {"x": [("rsi_14", "<=", 30.0)]}, got
+
+    # gate_legs: boolean legs + helpers split from numeric gates, and the def
+    # signature's own name never becomes a helper (the left-boundary arm)
+    src2 = ("def strat_zz_short(s):\n"
+            "    return s.get('pat') and s.get('rsi_14', 50) > 40 "
+            "and (not _trap(s))\n")
+    lg = bta.gate_legs(src2)["zz_short"]
+    assert lg == (["pat"], ["_trap"]), lg
 
     # price-denominated split: monotone-with-proxy excluded, noise kept,
     # and NO split when no proxy is persisted

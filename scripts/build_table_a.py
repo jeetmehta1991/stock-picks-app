@@ -72,6 +72,35 @@ def depth_comparisons(src: str) -> dict:
     return out
 
 
+def gate_legs(src: str) -> dict:
+    """(strategy) -> (boolean_legs, helper_gates): the NON-numeric members of
+    the entry condition. B2838, owner-caught: the first render's depth table
+    held only numeric-literal gates, so a strategy like three_black_crows_short
+    showed ONE row while its gate reads a candle-pattern PRODUCER boolean and a
+    borrow-trap helper - and an axis left out of Table A is invisible at close
+    (L785). Boolean legs carry their tunables in the PRODUCER layer; those
+    knobs are inventoried at R1 (the SPECS entry), so the pre-R1 row marks
+    them INVENTORY-PENDING-R1 rather than omitting them. Helper-gate detection
+    is a source pattern - a lower bound, like every extraction here.
+    """
+    out = {}
+    for n in ast.walk(ast.parse(src)):
+        if not (isinstance(n, ast.FunctionDef) and n.name.startswith("strat_")):
+            continue
+        body = ast.unparse(n)
+        all_keys = re.findall(r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"]", body)
+        numeric = {k for k, _, _ in re.findall(
+            r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"][^)]*\)\s*([<>]=?)\s*(-?[0-9.]+)",
+            body)}
+        legs = sorted({k for k in all_keys if k not in numeric})
+        # left boundary required: without it the DEF SIGNATURE's own name
+        # matched ("...crows_short(s)" yielded a phantom helper _crows_short)
+        helpers = sorted(set(re.findall(
+            r"(?<![a-z0-9_])(_[a-z0-9_]+)\(s[,)]", body)) - {"_strat", "_strat3"})
+        out[n.name[len("strat_"):]] = (legs, helpers)
+    return out
+
+
 def _module_index() -> list[tuple[str, str]]:
     idx = []
     for d in _ATTR_DIRS:
@@ -175,10 +204,12 @@ def price_denominated(series: dict) -> tuple[dict, str]:
 
 
 def render(name: str, row: dict, frame, sigs, filtered: bool,
-           comparisons, idx, specs_names, stamp: str) -> str:
+           comparisons, legs_helpers, idx, specs_names, stamp: str) -> str:
     n_all = len(frame)
     series = key_series(sigs)
     depth_keys = sorted({k for k, _, _ in comparisons})
+    legs, helpers = legs_helpers
+    in_specs = name in specs_names
     L = [f"# Table A - {name}", "",
          stamp, "",
          f"**Lane:** {row['stream']} | **family:** {row['family']} | "
@@ -187,15 +218,47 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
          + (f" (survives_pct {row['survives_pct']})" if filtered else
             " (unchanged since R5 - filter is identity)"),
          "",
-         f"**SPECS entry:** {'registered in producer_variant_table' if name in specs_names else 'NONE - build at R1 before any engine leg (W-T T0)'}",
+         f"**SPECS entry:** {'registered in producer_variant_table' if in_specs else 'NONE - build at R1 before any engine leg (W-T T0)'}",
          "",
-         "## Table A (depth) - own-gate persisted magnitudes [EXISTING-THRESHOLD]",
+         "## Table A - parameter inventory (the SS6 canonical shape, pre-R1)",
          "",
-         "Tighter side = OFFLINE free_band (a SUBSET of the recorded fires, zero engine",
-         "hours). Looser side = RESIM (engine) by construction - a looser level admits",
-         "bars the cube never recorded. Levels are QUANTS quantiles "
-         f"{list(QUANTS)} of the key's values on the surviving fires; only levels",
-         "STRICTLY tighter than production enter the free band.", "",
+         "One row per parameter the entry condition touches, BOTH layers, nothing",
+         "omitted (L785: an axis left out of Table A is invisible at close). The",
+         "R1 SPECS entry absorbs and supersedes this pre-R1 inventory - producer",
+         "knob rows below are placeholders it must fill.", "",
+         "| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |",
+         "|---|---|---|---|---|---|---|"]
+    pid = 0
+    for leg in legs:
+        pid += 1
+        L.append(f"| P{pid} | PRODUCER | {leg} - emitted by {attribute(leg, idx)}; "
+                 f"its tunables live inside that producer | leg required True | "
+                 f"- (a boolean leg has no offline tighter level) | producer "
+                 f"knobs - {'see SPECS entry' if in_specs else 'INVENTORY-PENDING-R1 (SPECS)'} | "
+                 f"{'SPECS-REGISTERED' if in_specs else 'INVENTORY-PENDING-R1'} |")
+    for key, op, prod in sorted(set(comparisons)):
+        pid += 1
+        L.append(f"| P{pid} | STRATEGY | {key} `{op} {_fmt(prod)}` "
+                 f"[EXISTING-THRESHOLD] | `{op} {_fmt(prod)}` | measured tighter "
+                 f"QUANTS levels - see the free-band section below | looser side "
+                 f"- band at R1 | MEASURED-PRE-R1 |")
+    for h in helpers:
+        pid += 1
+        L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - a helper gate; its "
+                 f"internals are outside the source pattern (lower bound) | "
+                 f"required | - | inspect at R1 | INVENTORY-PENDING-R1 |")
+    L += ["| B-rows | BREADTH | every companion in the B-row candidate census "
+          "below is Table A inventory once REGISTERED at the T3 band review "
+          "(11.2b3; B-rows are Table A members by owner ruling) | - | census "
+          "levels below | sub-floor / unpersisted producers | CANDIDATE |",
+          "",
+          "### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]",
+          "",
+          "Tighter side = OFFLINE free_band (a SUBSET of the recorded fires, zero engine",
+          "hours). Looser side = RESIM (engine) by construction - a looser level admits",
+          "bars the cube never recorded. Levels are QUANTS quantiles "
+          f"{list(QUANTS)} of the key's values on the surviving fires; only levels",
+          "STRICTLY tighter than production enter the free band.", "",
          "| key | source (literal grep) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |",
          "|---|---|---|---|---|---|"]
     for key, op, prod in sorted(set(comparisons)):
@@ -224,7 +287,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
 
     # ---- breadth ----------------------------------------------------------
     L += ["",
-          "## Table A (breadth) - companion producers persisted on the fires [NEW-GATE]",
+          "### B-row candidate census - companion producers persisted on the fires [NEW-GATE]",
           "",
           "**Every row here is a NEW-GATE** (standing owner rule 2026-08-10): adding a",
           "companion threshold is an AND-leg the strategy does not currently have -",
@@ -310,6 +373,7 @@ def main() -> int:
     src = (ROOT / "backtest" / "signals" / "screener.py").read_text(
         encoding="utf-8", errors="replace")
     comps = depth_comparisons(src)
+    legs = gate_legs(src)
     idx = _module_index()
     try:
         from producer_variant_table import SPECS
@@ -332,7 +396,7 @@ def main() -> int:
             raise SystemExit(f"REFUSED: no R5 fires for {name} (fail closed)")
         kept, sigs, filtered = surviving_fires(name, frame, r["survives_pct"])
         md = render(name, r, kept, sigs, filtered, comps.get(name, []),
-                    idx, specs_names, stamp)
+                    legs.get(name, ([], [])), idx, specs_names, stamp)
         p = sub / f"{name}.md"
         p.write_text(md, encoding="utf-8", newline="\n")
         written.append(p)
