@@ -38201,3 +38201,13 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     assert "NO pruning of combinations" in readme
     assert "the FULL number of combinations read" in readme
     assert "S6-B2836a" in readme, "the Step-2 multiplicity gap stays named"
+
+    # B2837: the plan's workflows consume the directory - T2 names it as the
+    # pre-built artifact, T6 carries the offline-only Step-2 ruling with its
+    # price, and W-L prices the RESIM sides from the same file
+    plan = " ".join((root / "STRATEGY_OPTIMISATION_PLAN.md")
+                    .read_text(encoding="utf-8", errors="replace").split())
+    assert "THE TABLE IS PRE-BUILT (B2836)" in plan
+    assert "OFFLINE-ONLY STEP 2 (owner ruling 2026-09-16, B2836)" in plan
+    assert "the holdout is SPENT" in plan
+    assert plan.count("strategy_optimisation/") >= 3
