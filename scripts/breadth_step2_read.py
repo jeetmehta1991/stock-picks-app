@@ -45,6 +45,28 @@ def grade_holdout(sub) -> dict | None:
                        full_period_n=len(sub))
 
 
+def require_multiplicity(art: dict, source: str) -> None:
+    """S6-B2836a (B2839): a Step-2 holdout read may only follow a Step-1 whose
+    MULTIPLICITY BLOCK RECONCILED. Under the B2836 no-pruning ruling the full
+    combination population touches the holdout, so the trials-count honesty
+    lives entirely in Step-1's multiplicity instrument - and this reader
+    previously never looked (found by the B2836 enforcement-map grep).
+    FAIL CLOSED on the absent key (L642: the absent case is the case the
+    guard exists for), and on any value other than True.
+    """
+    mult = art.get("multiplicity")
+    if not isinstance(mult, dict) or "reconciles" not in mult:
+        raise SystemExit(
+            f"REFUSED: {source} carries NO multiplicity block - Step-1 must "
+            "run the 11.2b2d multiplicity instrument before any holdout read "
+            "(S6-B2836a; fail closed on absence)")
+    if mult.get("reconciles") is not True:
+        raise SystemExit(
+            f"REFUSED: {source} multiplicity.reconciles = "
+            f"{mult.get('reconciles')!r} - a non-reconciled Step-1 cannot "
+            "feed a holdout read (S6-B2836a)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--step1-artifact", required=True)
@@ -59,6 +81,7 @@ def main() -> int:
     t0 = time.time()
 
     art = json.loads(Path(a.step1_artifact).read_text(encoding="utf-8"))
+    require_multiplicity(art, a.step1_artifact)   # S6-B2836a, fail closed
     strategy = art["strategy"]
     depth = art["depth_base"]
     cells = sorted({(r["axis"], r["op"], r["level"]) for r in art["rows"]})

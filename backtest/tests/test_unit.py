@@ -38232,3 +38232,31 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     assert "OFFLINE-ONLY STEP 2 (owner ruling 2026-09-16, B2836)" in plan
     assert "the holdout is SPENT" in plan
     assert plan.count("strategy_optimisation/") >= 3
+
+
+def test_b2839_step2_refuses_unreconciled_multiplicity():
+    """B2839 closes S6-B2836a: the Step-2 holdout reader is fail-closed on the
+    Step-1 multiplicity block - absent key REFUSED (L642), reconciles False
+    REFUSED, reconciles True passes. Both directions per #226, plus the wiring
+    direction: the check is CALLED from main() before any frame is built."""
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import breadth_step2_read as s2
+
+    with pytest.raises(SystemExit) as e:
+        s2.require_multiplicity({"strategy": "x", "rows": []}, "a.json")
+    assert "NO multiplicity block" in str(e.value)
+    with pytest.raises(SystemExit) as e:
+        s2.require_multiplicity({"multiplicity": {"reconciles": False}}, "a.json")
+    assert "reconciles = False" in str(e.value)
+    s2.require_multiplicity({"multiplicity": {"reconciles": True}}, "a.json")
+    # wiring, not just the callee (L732/#224): main() reaches the check
+    # before build_frame, on the line after the artifact load
+    src = (root / "scripts" / "breadth_step2_read.py").read_text(
+        encoding="utf-8")
+    body = src.split("def main(", 1)[1]
+    assert body.index("require_multiplicity(art") < body.index("build_frame(")
