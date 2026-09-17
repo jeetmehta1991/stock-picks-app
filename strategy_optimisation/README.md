@@ -30,8 +30,21 @@ before any campaign reads it (the SS11.2w freshness precondition).
 
 | Wave | Tables by | Execution by | Scope |
 |---|---|---|---|
-| 1 - `tighten/` (12 strategies) | Fable | **Fable, end to end** | entirely offline (exceptions below) |
+| 1 - `tighten/` (12 strategies) | Fable | **Fable, end to end** | offline legs FIRST; producer-band resim legs IN-MANDATE after them |
 | 2 - `both/` (29 strategies) | Fable | **Opus** (per W-T/W-L, mechanical) | offline first, engine after |
+
+**OFFLINE DESCRIBES A LEG'S COST, NEVER A STRATEGY'S SCOPE (owner-corrected
+2026-09-16, B2843).** An earlier revision called wave 1 "entirely offline" -
+that narrows the mandate, the exact class B2702/L785 forbids: the depth leg
+covers ALL Table A producer bands, resim included, and an untested axis is
+resim-scheduled or owner-waived in words, never silently dropped. Wave 1 runs
+the free legs first because they cost nothing; the P1-band SIMULATIONS then
+run as in-mandate engine legs, gated on three things: the T3 band words, the
+actuator plumbing for DEFINED-NO-ACTUATOR knobs, and the engine approvals
+(11.2c words; B2107 caps; venue ruling S6-B2107a precedes Step-1 launches).
+A shared producer's resim runs the FULL OPEN consumer set and its one cube is
+graded offline per consumer (11.2s) - simulation results are reused by
+construction, and admitted strategies stay banked (B2731).
 
 ## What OFFLINE and RESIM mean here
 

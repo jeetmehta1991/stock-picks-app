@@ -1,6 +1,6 @@
 # Table A - three_black_crows_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 1eb36feb8 at 2026-09-16 23:10:14 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 1674 | **surviving fires (T1):** 1674 (unchanged since R5 - filter is identity)
 
@@ -15,7 +15,7 @@ knob rows below are placeholders it must fill.
 
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
-| P1 | PRODUCER | three_black_crows - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P1 | PRODUCER | three_black_crows - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
 | P1.1 | BAND | n_bars (pattern length) - backtest/signals/technical.py:2108-2111 | 3 | none - pattern bars' OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | CANON (Nison 1991: three); 4 as the strict extension; T3 review before any grid |
 | P1.2 | BAND | min_body_pct_of_range per candle - technical.py:2109 (c<o only - no magnitude) | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | CANON (Nison long-body crows); production accepts ANY body; T3 review before any grid |
 | P1.3 | BAND | min_step_down_pct (close[i] below close[i-1] by) - technical.py:2110 | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET zero upward; strict < today; T3 review before any grid |
@@ -33,7 +33,7 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (literal grep) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| rsi_14 | backtest/signals/screener.py | `> 40` | 100.0% | 45.094 -> 1339 (80%); 50.132 -> 1004 (60%); 54.066 -> 670 (40%); 58.812 -> 335 (20%) | looser (lower the threshold): RESIM - band from the SPECS entry (to be built) |
+| rsi_14 | backtest/signals/screener.py | `> 40` | 100.0% | TIGHTER = RAISE the floor: 45.094 -> 1339 (80%); 50.132 -> 1004 (60%); 54.066 -> 670 (40%); 58.812 -> 335 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 

@@ -1,6 +1,6 @@
 # Table A - cpr_narrow_momentum_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 1eb36feb8 at 2026-09-16 23:10:14 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** confluence | **status:** NOT-STARTED | **R5 fires:** 1696 | **surviving fires (T1):** 1696 (unchanged since R5 - filter is identity)
 
@@ -15,11 +15,11 @@ knob rows below are placeholders it must fill.
 
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
-| P1 | PRODUCER | below_cpr - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P1 | PRODUCER | below_cpr - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
 | P1.1 | BAND | buffer pct (price below cpr_bottom by) - backtest/signals/technical.py:146 | 0.0 | none - entry price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | BRACKET zero; T3 review before any grid |
-| P2 | PRODUCER | cpr_narrow_tight - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P2 | PRODUCER | cpr_narrow_tight - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
 | P2.1 | BAND | width threshold (cpr_width < rng * X) - backtest/signals/technical.py:103 | 0.05 | none - cpr_width IS persisted but the denominator (prior-day range) is not | the whole band; DEFINED-NO-ACTUATOR | BRACKET production (B654 local 0.05; the family's 0.15 stays with its own consumers); T3 review before any grid |
-| P3 | PRODUCER | macd_12_26_9_bearish - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P3 | PRODUCER | macd_12_26_9_bearish - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
 | P3.1 | BAND | span triple (fast, slow, signal) - backtest/signals/technical.py:634-648 | (12,26,9) | the (8,21,5) SWAP - re-evaluate on persisted macd_8_21_5 keys | any third triple; DEFINED-NO-ACTUATOR | MEASURED availability - both triples are emitted and macd_8_21_5_* IS persisted; T3 review before any grid |
 | P4 | STRATEGY | rsi_14 `< 50` [EXISTING-THRESHOLD] | `< 50` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P5 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
@@ -34,7 +34,7 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (literal grep) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| rsi_14 | backtest/signals/screener.py | `< 50` | 100.0% | 34.98 -> 340 (20%); 39.97 -> 679 (40%); 44.03 -> 1019 (60%); 47.31 -> 1358 (80%) | looser (raise the threshold): RESIM - band from the SPECS entry (to be built) |
+| rsi_14 | backtest/signals/screener.py | `< 50` | 100.0% | TIGHTER = LOWER the ceiling: 34.98 -> 340 (20%); 39.97 -> 679 (40%); 44.03 -> 1019 (60%); 47.31 -> 1358 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 

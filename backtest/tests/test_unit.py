@@ -38223,6 +38223,15 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     assert tws.count("| BAND |") >= 4, "soldiers must carry explicit knobs"
     assert "min_step_up_pct" in tws and "max_upper_wick_pct" in tws
     assert "as three_black_crows, mirrored" not in tws, "stub returned"
+    # B2843 (owner Q1-Q3): direction in words per depth row, both operators;
+    # shared-producer reuse on producer rows; the charter de-narrowed
+    assert "TIGHTER = LOWER the ceiling" in tws     # rsi_14 < 60
+    assert "TIGHTER = RAISE the floor" in tbc       # rsi_14 > 40
+    assert "FULL OPEN consumer set" in tws
+    readme2 = " ".join((root / "strategy_optimisation" / "README.md")
+                       .read_text(encoding="utf-8").split())
+    assert "OFFLINE DESCRIBES A LEG'S COST, NEVER A STRATEGY'S SCOPE" in readme2
+    assert "entirely offline (exceptions below)" not in readme2
 
     # gate_legs: boolean legs + helpers split from numeric gates, and the def
     # signature's own name never becomes a helper (the left-boundary arm)

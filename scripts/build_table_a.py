@@ -264,6 +264,9 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"producer's internals | leg required True | only where the "
                  f"condition's input magnitudes are persisted on the fires - "
                  f"else none | variants over unpersisted bars/inputs - RESIM; "
+                 f"a shared producer's resim runs the FULL OPEN consumer set "
+                 f"and its one cube is graded per consumer (11.2s - results "
+                 f"reused by construction); "
                  f"knobs {'in the SPECS entry' if in_specs else 'INVENTORY-PENDING-R1 (SPECS)'} | "
                  f"{'SPECS-REGISTERED' if in_specs else 'INVENTORY-PENDING-R1'} |")
         L += _band_rows(pid, leg, PRODUCER_BANDS.get(leg, []))
@@ -331,10 +334,14 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                 continue
             kept = int((ser >= lv).sum() if tighter_hi else (ser <= lv).sum())
             cells.append(f"{_fmt(lv)} -> {kept} ({kept / n_all:.0%})")
-        free = "; ".join(cells) if cells else \
-            "(no QUANTS level sits tighter than production - band at T3)"
-        loose = ("looser (" + ("lower" if tighter_hi else "raise") +
-                 " the threshold): RESIM - band from the SPECS entry"
+        # B2843 (owner question "are we raising the threshold or making it
+        # tighter?"): say the direction in words, per row, both sides.
+        tdir = ("TIGHTER = RAISE the floor: " if tighter_hi
+                else "TIGHTER = LOWER the ceiling: ")
+        free = tdir + ("; ".join(cells) if cells else
+                       "(no QUANTS level sits tighter than production - band at T3)")
+        loose = ("LOOSER = " + ("LOWER" if tighter_hi else "RAISE") +
+                 " the threshold: RESIM - band from the SPECS entry"
                  + ("" if name in specs_names else " (to be built)"))
         L.append(f"| {key} | {attribute(key, idx)} | `{op} {_fmt(prod)}` | "
                  f"{cov:.1%} | {free} | {loose} |")

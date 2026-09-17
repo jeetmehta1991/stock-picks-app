@@ -3707,7 +3707,9 @@ DESCENDING (statistical power first).
 **Band inventory (B2836):** every entrant's Table A (depth + breadth) is pre-built in
 `strategy_optimisation/` (see its README - the charter, the offline-only Step-2 ruling
 with its risks, and the enforcement map). **Owner-ruled division of labour: wave 1 =
-the TIGHTEN lane, tables AND execution by Fable, offline end to end; wave 2 = the BOTH
+the TIGHTEN lane, tables AND execution by Fable - offline legs FIRST, then the
+producer-band resim legs, which are IN-MANDATE (owner-corrected 2026-09-16, B2843:
+"offline" is a leg's cost, never a strategy's scope - B2702/L785); wave 2 = the BOTH
 lane, tables by Fable, execution by Opus under this workflow.** Every step names its mechanism, its artifact, and its
 gate - a step with all three missing its expected output is a STOP, not a judgment call.
 

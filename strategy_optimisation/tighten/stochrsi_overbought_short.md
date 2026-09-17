@@ -1,6 +1,6 @@
 # Table A - stochrsi_overbought_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 1eb36feb8 at 2026-09-16 23:10:14 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 4287 | **surviving fires (T1):** 4287 (unchanged since R5 - filter is identity)
 
@@ -15,9 +15,9 @@ knob rows below are placeholders it must fill.
 
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
-| P1 | PRODUCER | stochrsi_cross_dn - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P1 | PRODUCER | stochrsi_cross_dn - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
 | P1.1 | BAND | cross guard band (k > 20 on cross_dn) - backtest/signals/technical.py:600 | 20 | TIGHTER (k > 30) on persisted k/d | none needed - k and d both persisted | BRACKET production guard; T3 review before any grid |
-| P2 | PRODUCER | stochrsi_overbought - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P2 | PRODUCER | stochrsi_overbought - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
 | P2.1 | BAND | overbought threshold on k - backtest/signals/technical.py:598 | 80 | TIGHTER (k > 85, k > 90) - subset on persisted stochrsi_k | LOOSER (k > 75); DEFINED-NO-ACTUATOR | BRACKET canon 80; stochrsi_k IS persisted; T3 review before any grid |
 | P2.2 | BAND | period (rsi+stoch length) - technical.py:574 | 14 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
 | P3 | STRATEGY | rsi_14 `> 45` [EXISTING-THRESHOLD] | `> 45` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
@@ -33,7 +33,7 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (literal grep) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| rsi_14 | backtest/signals/screener.py | `> 45` | 100.0% | 51.72 -> 3430 (80%); 56.94 -> 2573 (60%); 62.132 -> 1715 (40%); 68.178 -> 858 (20%) | looser (lower the threshold): RESIM - band from the SPECS entry (to be built) |
+| rsi_14 | backtest/signals/screener.py | `> 45` | 100.0% | TIGHTER = RAISE the floor: 51.72 -> 3430 (80%); 56.94 -> 2573 (60%); 62.132 -> 1715 (40%); 68.178 -> 858 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
