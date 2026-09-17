@@ -1,6 +1,6 @@
 # Table A - pairs_mean_reversion_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0065a0651 at 2026-09-16 19:05:58 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 763ca5a1a at 2026-09-16 21:26:22 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** pairs | **status:** NOT-STARTED | **R5 fires:** 5036 | **surviving fires (T1):** 5036 (unchanged since R5 - filter is identity)
 
@@ -17,6 +17,9 @@ knob rows below are placeholders it must fill.
 |---|---|---|---|---|---|---|
 | P1 | PRODUCER | pair_counterparty - emitted by backtest/signals/pairs_trading.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
 | P2 | STRATEGY | pair_count_active `> 0` [EXISTING-THRESHOLD] | `> 0` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P2.1 | BAND | EG cointegration significance - backtest/signals/pairs_trading.py:46 | 0.05 | none - pair set is a PRECOMPUTE | the whole band (re-run pairs precompute + engine); DEFINED-NO-ACTUATOR | BRACKET production toward strict (precompute-side); T3 review before any grid |
+| P2.2 | BAND | zscore rolling window (bars) - pairs_trading.py:147-170 | 60 | none - z at other windows unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
+| P2.3 | BAND | half-life admission bounds (days) - pairs_trading.py:191, :216 | 5-30 | TIGHTER inner cuts via the persisted pair_half_life (the strategy-layer hl gate already bands it offline) | WIDER bounds (admit pairs the precompute excluded); DEFINED-NO-ACTUATOR | BRACKET production (post-HFT-survival window); T3 review before any grid |
 | P3 | STRATEGY | pair_half_life `>= 5` [EXISTING-THRESHOLD] | `>= 5` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P4 | STRATEGY | pair_zscore_signed `< -2` [EXISTING-THRESHOLD] | `< -2` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |

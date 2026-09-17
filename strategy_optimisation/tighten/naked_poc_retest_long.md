@@ -1,6 +1,6 @@
 # Table A - naked_poc_retest_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0065a0651 at 2026-09-16 19:05:58 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 763ca5a1a at 2026-09-16 21:26:22 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** volume_profile | **status:** NOT-STARTED | **R5 fires:** 1788 | **surviving fires (T1):** 1788 (unchanged since R5 - filter is identity)
 
@@ -16,7 +16,12 @@ knob rows below are placeholders it must fill.
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
 | P1 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P1.1 | BAND | ema span (the 200 in above/below_ema_200) - backtest/signals/technical.py compute_ema_sma | 200 | none - other spans' values are unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; 150/250 are the adjacent canon spans; T3 review before any grid |
 | P2 | STRATEGY | naked_poc_count `> 0` [EXISTING-THRESHOLD] | `> 0` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P2.1 | BAND | period_lookback (bars) - backtest/signals/volume_profile.py:152-168 | 252 | none - POC set at other windows unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production (1y; half-year alt); T3 review before any grid |
+| P2.2 | BAND | n_periods (POC chunks) - volume_profile.py:155 | 6 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
+| P2.3 | BAND | n_bins (price bins) - volume_profile.py:156 | 40 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
+| P2.4 | BAND | count floor (> N naked POCs) - backtest/signals/screener.py:7004 | 0 | TIGHTER floors (> 1, > 2) - subset on the persisted count | none on this knob | BRACKET production; naked_poc_count IS persisted; T3 review before any grid |
 | P3 | STRATEGY | naked_poc_nearest_distance_pct `< 0.02` [EXISTING-THRESHOLD] | `< 0.02` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 

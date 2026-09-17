@@ -1,6 +1,6 @@
 # Table A - cmf_flip
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0065a0651 at 2026-09-16 19:05:58 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 763ca5a1a at 2026-09-16 21:26:22 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** mean_reversion | **status:** NOT-STARTED | **R5 fires:** 2994 | **surviving fires (T1):** 2250 (survives_pct 0.7515)
 
@@ -16,8 +16,11 @@ knob rows below are placeholders it must fill.
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
 | P1 | PRODUCER | cmf_cross_dn - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P1.1 | BAND | as cmf_cross_up, mirrored - backtest/signals/technical.py:1707 | 0.0 | level side on persisted cmf | freshness; DEFINED-NO-ACTUATOR | mirror; T3 review before any grid |
 | P2 | PRODUCER | cmf_cross_up - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
-| P3 | PRODUCER | po3_accum_range_pct - emitted by backtest/signals/ict_producers.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P2.1 | BAND | cmf window - backtest/signals/technical.py:1695 | 20 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
+| P2.2 | BAND | cross level (zero line) - technical.py:1706 | 0.0 | LEVEL side (cmf > 0.02/0.05) - persisted cmf; the FRESHNESS (prior bar <= level) needs the unpersisted prior cmf | freshness at any non-production level; DEFINED-NO-ACTUATOR | BRACKET zero upward (require conviction, not a graze); T3 review before any grid |
+| P3 | STRATEGY | po3_accum_range_pct `>= 0.0458` [EXISTING-THRESHOLD] | `>= 0.0458` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P4 | STRATEGY | rsi_14 `< 50` [EXISTING-THRESHOLD] | `< 50` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P5 | STRATEGY | rsi_14 `> 50` [EXISTING-THRESHOLD] | `> 50` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P6 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
@@ -32,6 +35,7 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (literal grep) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
+| po3_accum_range_pct | backtest/signals/ict_producers.py +1 | `>= 0.0458` | 100.0% | 0.0561 -> 1801 (80%); 0.0693 -> 1351 (60%); 0.0867 -> 903 (40%); 0.1203 -> 452 (20%) | looser (lower the threshold): RESIM - band from the SPECS entry (to be built) |
 | rsi_14 | backtest/signals/screener.py | `< 50` | 100.0% | 38.624 -> 450 (20%); 44.24 -> 901 (40%); 49.234 -> 1350 (60%) | looser (raise the threshold): RESIM - band from the SPECS entry (to be built) |
 | rsi_14 | backtest/signals/screener.py | `> 50` | 100.0% | 57.128 -> 450 (20%) | looser (lower the threshold): RESIM - band from the SPECS entry (to be built) |
 
@@ -125,7 +129,6 @@ RESIM-ONLY - offline grading would silently drop their absent rows.
 | pct_change_20d | (not found by literal grep) | 100.0% | -0.08, -0.0386, -0, 0.0469 | -0.08: 1800 (80%); -0.0386: 1350 (60%); -0: 900 (40%); 0.0469: 452 (20%) | -0.08: 450 (20%); -0.0386: 900 (40%); -0: 1351 (60%); 0.0469: 1798 (80%) | OFFLINE |
 | pct_change_5d | backtest/signals/screener.py | 100.0% | -0.0484, -0.0188, 0.0088, 0.0383 | -0.0484: 1799 (80%); -0.0188: 1351 (60%); 0.0088: 899 (40%); 0.0383: 451 (20%) | -0.0484: 451 (20%); -0.0188: 899 (40%); 0.0088: 1351 (60%); 0.0383: 1799 (80%) | OFFLINE |
 | pct_from_vwap | backtest/signals/screener.py +1 | 100.0% | -24.1438, -10.7462, 1.0658, 23.1282 | -24.1438: 1800 (80%); -10.7462: 1350 (60%); 1.0658: 900 (40%); 23.1282: 450 (20%) | -24.1438: 450 (20%); -10.7462: 900 (40%); 1.0658: 1350 (60%); 23.1282: 1800 (80%) | OFFLINE |
-| po3_accum_range_pct | backtest/signals/ict_producers.py +1 | 100.0% | 0.0561, 0.0693, 0.0867, 0.1203 | 0.0561: 1801 (80%); 0.0693: 1351 (60%); 0.0867: 903 (40%); 0.1203: 452 (20%) | 0.0561: 454 (20%); 0.0693: 903 (40%); 0.0867: 1350 (60%); 0.1203: 1801 (80%) | OFFLINE |
 | po3_close_position | backtest/signals/multi_timeframe.py | 100.0% | 0.1765, 0.4531, 0.7264, 0.8957 | 0.1765: 1801 (80%); 0.4531: 1350 (60%); 0.7264: 900 (40%); 0.8957: 451 (20%) | 0.1765: 451 (20%); 0.4531: 900 (40%); 0.7264: 1350 (60%); 0.8957: 1800 (80%) | OFFLINE |
 | ppo | backtest/signals/technical.py | 100.0% | -2.7919, -1.5224, -0.2289, 1.2824 | -2.7919: 1800 (80%); -1.5224: 1350 (60%); -0.2289: 900 (40%); 1.2824: 450 (20%) | -2.7919: 450 (20%); -1.5224: 900 (40%); -0.2289: 1350 (60%); 1.2824: 1800 (80%) | OFFLINE |
 | ppo_hist | backtest/signals/screener.py +1 | 100.0% | -0.7302, -0.2663, 0.1392, 0.6002 | -0.7302: 1800 (80%); -0.2663: 1350 (60%); 0.1392: 900 (40%); 0.6002: 450 (20%) | -0.7302: 450 (20%); -0.2663: 900 (40%); 0.1392: 1350 (60%); 0.6002: 1800 (80%) | OFFLINE |

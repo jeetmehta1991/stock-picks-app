@@ -44,6 +44,16 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_strategy_status as bss                      # noqa: E402
 from breadth_step1_grid import MIN_COVERAGE, QUANTS      # noqa: E402
+from table_a_bands import PRODUCER_BANDS, STRATEGY_EXTRAS  # noqa: E402
+
+# B2841: one numeric-compare pattern for BOTH extractors. The first cut used
+# [^)]* for the s.get(...) argument span, which cannot cross the ')' of a
+# nested call - so a default like float('-inf') broke the match and TWO LIVE
+# production gates were missing from Table A depth (cmf_flip's
+# po3_accum_range_pct >= 0.0458, pairs_short's ppo_signal >= -0.858). One
+# nested-paren level is now allowed.
+_NUM_CMP = (r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"]"
+            r"(?:[^()]|\([^()]*\))*\)\s*([<>]=?)\s*(-?[0-9.]+)")
 
 OUT_DIR = ROOT / "strategy_optimisation"
 STATUS_JSON = ROOT / "output_audit" / "strategy_optimisation_status.json"
@@ -64,9 +74,7 @@ def depth_comparisons(src: str) -> dict:
         if not (isinstance(n, ast.FunctionDef) and n.name.startswith("strat_")):
             continue
         body = ast.unparse(n)
-        rows = re.findall(
-            r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"][^)]*\)\s*([<>]=?)\s*(-?[0-9.]+)",
-            body)
+        rows = re.findall(_NUM_CMP, body)
         if rows:
             out[n.name[len("strat_"):]] = [(k, op, float(v)) for k, op, v in rows]
     return out
@@ -89,9 +97,7 @@ def gate_legs(src: str) -> dict:
             continue
         body = ast.unparse(n)
         all_keys = re.findall(r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"]", body)
-        numeric = {k for k, _, _ in re.findall(
-            r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"][^)]*\)\s*([<>]=?)\s*(-?[0-9.]+)",
-            body)}
+        numeric = {k for k, _, _ in re.findall(_NUM_CMP, body)}
         legs = sorted({k for k in all_keys if k not in numeric})
         # left boundary required: without it the DEF SIGNATURE's own name
         # matched ("...crows_short(s)" yielded a phantom helper _crows_short)
@@ -203,6 +209,25 @@ def price_denominated(series: dict) -> tuple[dict, str]:
     return out, proxy
 
 
+
+def _band_rows(pid: int, subject: str, knobs) -> list:
+    """B2841: the R1 band definitions (table_a_bands.py) as sub-rows under a
+    P-row. env None on a resim-bearing knob renders DEFINED-NO-ACTUATOR - the
+    band exists, the engine plumbing is follow-up (validate_spec refuses an
+    actuatorless resim level, S6-B2569a)."""
+    out = []
+    for j, k in enumerate(knobs, 1):
+        env = k.get("env")
+        resim = k.get("resim", "-")
+        needs_act = resim not in ("-", "", None) and "none" not in str(resim).lower()[:4]
+        act = ("" if not needs_act else
+               (f"; env {env}" if env else "; DEFINED-NO-ACTUATOR"))
+        out.append(
+            f"| P{pid}.{j} | BAND | {k['param']} - {k['evidence']} | "
+            f"{k['production']} | {k.get('offline', '-')} | {resim}{act} | "
+            f"{k['basis']}; T3 review before any grid |")
+    return out
+
 def render(name: str, row: dict, frame, sigs, filtered: bool,
            comparisons, legs_helpers, idx, specs_names, stamp: str) -> str:
     n_all = len(frame)
@@ -241,12 +266,14 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"else none | variants over unpersisted bars/inputs - RESIM; "
                  f"knobs {'in the SPECS entry' if in_specs else 'INVENTORY-PENDING-R1 (SPECS)'} | "
                  f"{'SPECS-REGISTERED' if in_specs else 'INVENTORY-PENDING-R1'} |")
+        L += _band_rows(pid, leg, PRODUCER_BANDS.get(leg, []))
     for key, op, prod in sorted(set(comparisons)):
         pid += 1
         L.append(f"| P{pid} | STRATEGY | {key} `{op} {_fmt(prod)}` "
                  f"[EXISTING-THRESHOLD] | `{op} {_fmt(prod)}` | measured tighter "
                  f"QUANTS levels - see the free-band section below | looser side "
                  f"- band at R1 | MEASURED-PRE-R1 |")
+        L += _band_rows(pid, key, PRODUCER_BANDS.get(key, []))
     for h in helpers:
         pid += 1
         if h == "_short_borrow_trap_active":
@@ -269,6 +296,11 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
         L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - a helper gate; its "
                  f"internals are outside the source pattern (lower bound) | "
                  f"required | - | inspect at R1 | INVENTORY-PENDING-R1 |")
+    for k in STRATEGY_EXTRAS.get(name, []):
+        pid += 1
+        L.append(f"| P{pid} | STRATEGY | {k['param']} - {k['evidence']} | "
+                 f"{k['production']} | {k.get('offline', '-')} | "
+                 f"{k.get('resim', '-')} | {k['basis']}; T3 review |")
     L += ["| B-rows | BREADTH | every companion in the B-row candidate census "
           "below is Table A inventory once REGISTERED at the T3 band review "
           "(11.2b3; B-rows are Table A members by owner ruling) | - | census "

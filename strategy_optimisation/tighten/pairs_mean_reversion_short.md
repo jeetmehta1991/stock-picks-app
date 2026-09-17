@@ -1,6 +1,6 @@
 # Table A - pairs_mean_reversion_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0065a0651 at 2026-09-16 19:05:58 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 763ca5a1a at 2026-09-16 21:26:22 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** pairs | **status:** NOT-STARTED | **R5 fires:** 5698 | **surviving fires (T1):** 4461 (survives_pct 0.7829)
 
@@ -16,10 +16,13 @@ knob rows below are placeholders it must fill.
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
 | P1 | PRODUCER | pair_counterparty - emitted by backtest/signals/pairs_trading.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
-| P2 | PRODUCER | ppo_signal - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
-| P3 | STRATEGY | pair_count_active `> 0` [EXISTING-THRESHOLD] | `> 0` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P4 | STRATEGY | pair_half_life `>= 5` [EXISTING-THRESHOLD] | `>= 5` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P5 | STRATEGY | pair_zscore_signed `> 2` [EXISTING-THRESHOLD] | `> 2` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P2 | STRATEGY | pair_count_active `> 0` [EXISTING-THRESHOLD] | `> 0` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P2.1 | BAND | EG cointegration significance - backtest/signals/pairs_trading.py:46 | 0.05 | none - pair set is a PRECOMPUTE | the whole band (re-run pairs precompute + engine); DEFINED-NO-ACTUATOR | BRACKET production toward strict (precompute-side); T3 review before any grid |
+| P2.2 | BAND | zscore rolling window (bars) - pairs_trading.py:147-170 | 60 | none - z at other windows unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
+| P2.3 | BAND | half-life admission bounds (days) - pairs_trading.py:191, :216 | 5-30 | TIGHTER inner cuts via the persisted pair_half_life (the strategy-layer hl gate already bands it offline) | WIDER bounds (admit pairs the precompute excluded); DEFINED-NO-ACTUATOR | BRACKET production (post-HFT-survival window); T3 review before any grid |
+| P3 | STRATEGY | pair_half_life `>= 5` [EXISTING-THRESHOLD] | `>= 5` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P4 | STRATEGY | pair_zscore_signed `> 2` [EXISTING-THRESHOLD] | `> 2` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P5 | STRATEGY | ppo_signal `>= -0.858` [EXISTING-THRESHOLD] | `>= -0.858` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P6 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
@@ -35,6 +38,7 @@ STRICTLY tighter than production enter the free band.
 | pair_count_active | backtest/signals/pairs_trading.py +1 | `> 0` | 100.0% | 4 -> 3685 (83%); 6 -> 2991 (67%); 9 -> 1992 (45%); 14 -> 927 (21%) | looser (lower the threshold): RESIM - band from the SPECS entry (to be built) |
 | pair_half_life | backtest/signals/pairs_trading.py +1 | `>= 5` | 100.0% | 7.12 -> 3569 (80%); 8.81 -> 2686 (60%); 10.27 -> 1788 (40%); 11.99 -> 899 (20%) | looser (lower the threshold): RESIM - band from the SPECS entry (to be built) |
 | pair_zscore_signed | backtest/signals/pairs_trading.py +1 | `> 2` | 100.0% | 2.184 -> 3569 (80%); 2.3779 -> 2677 (60%); 2.6388 -> 1785 (40%); 3.0148 -> 893 (20%) | looser (lower the threshold): RESIM - band from the SPECS entry (to be built) |
+| ppo_signal | backtest/signals/screener.py +1 | `>= -0.858` | 100.0% | 0.322 -> 3569 (80%); 1.0953 -> 2677 (60%); 1.7374 -> 1785 (40%); 2.6271 -> 893 (20%) | looser (lower the threshold): RESIM - band from the SPECS entry (to be built) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
@@ -130,7 +134,6 @@ RESIM-ONLY - offline grading would silently drop their absent rows.
 | po3_close_position | backtest/signals/multi_timeframe.py | 100.0% | 0.1241, 0.2561, 0.407, 0.6111 | 0.1241: 3570 (80%); 0.2561: 2677 (60%); 0.407: 1785 (40%); 0.6111: 893 (20%) | 0.1241: 893 (20%); 0.2561: 1786 (40%); 0.407: 2677 (60%); 0.6111: 3569 (80%) | OFFLINE |
 | ppo | backtest/signals/technical.py | 100.0% | 0.6193, 1.5628, 2.2772, 3.3269 | 0.6193: 3569 (80%); 1.5628: 2677 (60%); 2.2772: 1785 (40%); 3.3269: 893 (20%) | 0.6193: 893 (20%); 1.5628: 1785 (40%); 2.2772: 2677 (60%); 3.3269: 3569 (80%) | OFFLINE |
 | ppo_hist | backtest/signals/screener.py +1 | 100.0% | -0.1644, 0.3007, 0.6395, 1.0822 | -0.1644: 3569 (80%); 0.3007: 2677 (60%); 0.6395: 1785 (40%); 1.0822: 893 (20%) | -0.1644: 893 (20%); 0.3007: 1785 (40%); 0.6395: 2677 (60%); 1.0822: 3569 (80%) | OFFLINE |
-| ppo_signal | backtest/signals/screener.py +1 | 100.0% | 0.322, 1.0953, 1.7374, 2.6271 | 0.322: 3569 (80%); 1.0953: 2677 (60%); 1.7374: 1785 (40%); 2.6271: 893 (20%) | 0.322: 893 (20%); 1.0953: 1786 (40%); 1.7374: 2677 (60%); 2.6271: 3569 (80%) | OFFLINE |
 | roc_12 | backtest/signals/technical.py | 100.0% | 0.367, 4.62, 7.968, 12.201 | 0.367: 3569 (80%); 4.62: 2677 (60%); 7.968: 1785 (40%); 12.201: 893 (20%) | 0.367: 893 (20%); 4.62: 1785 (40%); 7.968: 2678 (60%); 12.201: 3569 (80%) | OFFLINE |
 | rsi_14 | backtest/signals/screener.py | 100.0% | 52.96, 61.87, 67.33, 72.39 | 52.96: 3569 (80%); 61.87: 2677 (60%); 67.33: 1787 (40%); 72.39: 894 (20%) | 52.96: 895 (20%); 61.87: 1785 (40%); 67.33: 2677 (60%); 72.39: 3569 (80%) | OFFLINE |
 | rsi_2 | backtest/signals/screener.py | 100.0% | 32.32, 54.83, 73.59, 91.84 | 32.32: 3569 (80%); 54.83: 2678 (60%); 73.59: 1786 (40%); 91.84: 894 (20%) | 32.32: 893 (20%); 54.83: 1785 (40%); 73.59: 2677 (60%); 91.84: 3570 (80%) | OFFLINE |

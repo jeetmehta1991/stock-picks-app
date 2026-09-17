@@ -38198,6 +38198,25 @@ def test_b2836_table_a_directory_is_complete_and_honest():
            "def strat_y(s):\n    return bool(s.get('flag'))\n")
     got = bta.depth_comparisons(src)
     assert got == {"x": [("rsi_14", "<=", 30.0)]}, got
+    # B2841: a NESTED-CALL default must not break the match - float('-inf')
+    # hid two LIVE production gates from the first renders
+    srcn = ("def strat_n(s):\n"
+            "    return s.get('po3_accum_range_pct', float('-inf')) >= 0.0458\n")
+    assert bta.depth_comparisons(srcn) == {
+        "n": [("po3_accum_range_pct", ">=", 0.0458)]}
+    # ... and the recovered gates are IN the committed artifacts, with the
+    # R1 band sub-rows present in every file (>= 1 '| BAND |' row each)
+    cmf = (d / "cmf_flip.md").read_text(encoding="utf-8")
+    assert "po3_accum_range_pct `>= 0.0458`" in cmf
+    prs = (d / "pairs_mean_reversion_short.md").read_text(encoding="utf-8")
+    assert "ppo_signal `>= -0.858`" in prs
+    for p in d.glob("*.md"):
+        assert "| BAND |" in p.read_text(encoding="utf-8"), (
+            p.name, "R1 band sub-rows missing")
+    wro = (d / "williams_r_oversold.md").read_text(encoding="utf-8")
+    assert "rsi_2 escape-hatch thresholds" in wro, "STRATEGY_EXTRAS row"
+    assert "DEFINED-NO-ACTUATOR" in tbc, (
+        "an actuatorless resim band must say so (S6-B2569a class)")
 
     # gate_legs: boolean legs + helpers split from numeric gates, and the def
     # signature's own name never becomes a helper (the left-boundary arm)

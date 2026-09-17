@@ -1,6 +1,6 @@
 # Table A - cpr_narrow_momentum_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0065a0651 at 2026-09-16 19:05:58 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 763ca5a1a at 2026-09-16 21:26:22 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** confluence | **status:** NOT-STARTED | **R5 fires:** 1696 | **surviving fires (T1):** 1696 (unchanged since R5 - filter is identity)
 
@@ -16,8 +16,11 @@ knob rows below are placeholders it must fill.
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
 | P1 | PRODUCER | below_cpr - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P1.1 | BAND | buffer pct (price below cpr_bottom by) - backtest/signals/technical.py:146 | 0.0 | none - entry price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | BRACKET zero; T3 review before any grid |
 | P2 | PRODUCER | cpr_narrow_tight - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P2.1 | BAND | width threshold (cpr_width < rng * X) - backtest/signals/technical.py:103 | 0.05 | none - cpr_width IS persisted but the denominator (prior-day range) is not | the whole band; DEFINED-NO-ACTUATOR | BRACKET production (B654 local 0.05; the family's 0.15 stays with its own consumers); T3 review before any grid |
 | P3 | PRODUCER | macd_12_26_9_bearish - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P3.1 | BAND | span triple (fast, slow, signal) - backtest/signals/technical.py:634-648 | (12,26,9) | the (8,21,5) SWAP - re-evaluate on persisted macd_8_21_5 keys | any third triple; DEFINED-NO-ACTUATOR | MEASURED availability - both triples are emitted and macd_8_21_5_* IS persisted; T3 review before any grid |
 | P4 | STRATEGY | rsi_14 `< 50` [EXISTING-THRESHOLD] | `< 50` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P5 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
