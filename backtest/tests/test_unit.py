@@ -24140,6 +24140,8 @@ def test_b2082_launch_sweep_refuses_without_a_passing_gate():
         _m["owner_override_retest_admitted"] = {
             "smc_breaker_block_long":
                 "test fixture: exercising the launch path, not a real re-test"}
+        # B2849 (S6-B2848c): a compliant manifest records the 0.5 smoke
+        _m["fires_at_production"] = 12
         good = str(td / "good_manifest.json")
         (td / "good_manifest.json").write_text(_bj.dumps(_m), encoding="utf-8")
         r = subprocess.run(
@@ -24823,6 +24825,7 @@ if n == 1:
     sub.write_text("smc_breaker_block_long\n", encoding="utf-8")
     spec = {"wave": wave, "tickers_file": str(tick),
             "strategy_subset": str(sub),
+            "fires_at_production": 7,   # B2849: the 0.5 smoke, spec-carried
             "owner_override_retest_admitted": _ov_b2116,
             "window": {"start": "2024-05-05", "end": "2025-05-05"},
             # B2714: synthetic resume-loop fixture on its own 2-ticker
@@ -26197,7 +26200,8 @@ def test_b2149_prerun_gate_refuses_without_the_supervisor(tmp_path, monkeypatch)
     assert g.OWNER_LOCAL_CAP_HOURS == 5.0
 
     # (1) must-be-QUIET: the live engine carries the supervisor
-    assert g.check_supervisor_and_cap({"leg_cap_hours": 2.5}) == []
+    assert g.check_supervisor_and_cap(
+        {"leg_cap_hours": 2.5, "fires_at_production": 12}) == []   # B2849
 
     # (2) a cap above the owner's ruling must REFUSE
     over = g.check_supervisor_and_cap({"leg_cap_hours": 6.0})
@@ -26213,7 +26217,8 @@ def test_b2149_prerun_gate_refuses_without_the_supervisor(tmp_path, monkeypatch)
     tmp_eng.mkdir(parents=True)
     (tmp_eng / "backtest.py").write_text(gutted, encoding="utf-8")
     monkeypatch.setattr(g, "__file__", str(tmp_path / "scripts" / "prelaunch_gate.py"))
-    probs = g.check_supervisor_and_cap({"leg_cap_hours": 2.5})
+    probs = g.check_supervisor_and_cap(
+        {"leg_cap_hours": 2.5, "fires_at_production": 12})   # B2849
     assert any("NO out-of-loop supervisor" in p for p in probs), probs
     assert any("no run_heartbeat.json" in p for p in probs), probs
 
@@ -26282,6 +26287,10 @@ def _b2159_ok_manifest():
         "spent_usd": 0, "projected_batch_usd": 0, "execution": "LOCAL",
         "obsolescence_risks": [{"risk": "r", "status": "s"}],
         "wall_clock_projection_hours": 1.0, "leg_cap_hours": 2.5,
+        # B2849 (S6-B2848c): a COMPLIANT manifest now records the 0.5 smoke
+        # - the stricter gate re-judged this baseline, correctly (its RED is
+        # in the S6-B2848c closure row)
+        "fires_at_production": 12,
     }
 
 
@@ -32692,6 +32701,7 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     # it - one fixture edit instead of eight per-assertion filters (L592:
     # count the sites, fix the feeder).
     smc = {"wave": "b2578t", "strategy_subset": str(sub_smc),
+           "fires_at_production": 7,   # B2849: the 0.5 smoke, spec-carried
            "owner_override_retest_admitted": _ov_smc,
            "shape_waiver": ("test fixture: synthetic smc doc exercising "
                             "the adapter refusals, not a campaign step"),
@@ -38385,3 +38395,42 @@ def test_b2848_step1_instruments_are_ruling_and_freshness_gated():
         assert "require_fresh_status()" in body.split("\n", 3)[2], name
         assert 'rec["band_ruling_verbatim"] = _ruling' in src, name
         assert '"--band-ruling", required=True' in src, name
+
+
+def test_b2849_smoke_and_breadth_disposition_are_refusals():
+    """B2849 closes S6-B2848c/d (owner-approved): prelaunch refuses a
+    manifest without a positive fires_at_production (absent = refusal, L642);
+    the Step-2 reader refuses a waived breadth leg with no reason and records
+    the disposition into its artifact. Both directions per #226."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import prelaunch_gate as pg
+
+    base = {"leg_cap_hours": 4.0, "code_sha": "x", "isolation": "copy",
+            "calendar": "y", "universe": "z", "wall_clock_projection": "4h"}
+    # drive through the real check function - locate it structurally
+    import inspect
+    fns = [f for n, f in inspect.getmembers(pg, inspect.isfunction)
+           if "fires_at_production" in inspect.getsource(f)]
+    assert len(fns) == 1, [f.__name__ for f in fns]
+    check = fns[0]
+    absent = [p for p in check(dict(base)) if "fires_at_production" in p]
+    assert absent, "absent field must refuse (L642)"
+    zero = [p for p in check(dict(base, fires_at_production=0))
+            if "PRODUCER DEFECT" in p]
+    assert zero, "zero fires must refuse"
+    ok = [p for p in check(dict(base, fires_at_production=37))
+          if "fires_at_production" in p or "PRODUCER DEFECT" in p]
+    assert not ok, "a positive recorded smoke must pass this check"
+
+    # step-2 breadth disposition: flag required, waived needs a reason,
+    # and the artifact carries the record
+    src = (root / "scripts" / "breadth_step2_read.py").read_text(
+        encoding="utf-8")
+    assert '"--breadth-disposition", required=True' in src
+    assert 'choices=("ran", "waived")' in src
+    assert "waiver without its reason is a silent skip" in src
+    assert '"breadth_leg": {"disposition": a.breadth_disposition' in src

@@ -74,10 +74,22 @@ def main() -> int:
                     help="the owner's Step-2 word, verbatim (11.2c fail-closed)")
     ap.add_argument("--control", default="pead_long_high_yoy_growth_only",
                     help="control strategy for the B2658 comparison")
+    # B2849 (S6-B2848d, owner-approved): T5's ran-or-waived stops being
+    # prose - the Step-2 read refuses unless the breadth leg's disposition
+    # is stated, and a waiver carries a non-empty reason, both recorded
+    # into the artifact.
+    ap.add_argument("--breadth-disposition", required=True,
+                    choices=("ran", "waived"))
+    ap.add_argument("--breadth-reason", default="",
+                    help="required non-empty when --breadth-disposition=waived")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
     if not a.ruling.strip():
         raise SystemExit("REFUSED: empty --ruling")
+    if a.breadth_disposition == "waived" and not a.breadth_reason.strip():
+        raise SystemExit(
+            "REFUSED: --breadth-disposition=waived with no --breadth-reason "
+            "- a waiver without its reason is a silent skip (S6-B2848d)")
     t0 = time.time()
 
     art = json.loads(Path(a.step1_artifact).read_text(encoding="utf-8"))
@@ -161,6 +173,8 @@ def main() -> int:
                     "b2673 cell (S6-B2671c) + B2658 control comparison; "
                     "DISCLOSED-RE-READ provenance travels with any admission"),
            "ruling_verbatim": a.ruling,
+           "breadth_leg": {"disposition": a.breadth_disposition,
+                           "reason": a.breadth_reason.strip()},
            "strategy": strategy, "depth_base": depth,
            "step1_artifact": a.step1_artifact,
            "provenance": {

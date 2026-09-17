@@ -21061,3 +21061,16 @@ corrective is the same re-read rule: a sequence quoted to the owner is read
 from the doc IN THAT TURN, or labeled as recall. Compliance failure against
 item #270 - no new item warranted; detection stays with the #270 gate, which
 fired.
+
+**INSTANCE (B2849, 2026-09-17) - a reader requirement shipped without its
+writer is a contract with one side.** The approved 0.5-smoke refusal landed in
+prelaunch_gate demanding fires_at_production while run_wave's manifest writer
+never emitted it - every future real launch would have refused with no
+compliant path, and five test fixtures representing compliant launches went
+RED in two waves (one fixed on the first failure, four siblings found only by
+the full-suite list - the L732 fix-where-you-experienced-it shape inside the
+L790 writer-reader class). Closed at the root: spec -> run_wave manifest ->
+prelaunch, writer carrying what the reader demands. Compliance failure against
+item #196 - the post-fix re-check should have enumerated the field's WRITERS
+and every fixture consumer before the reader shipped; detection stays with the
+pyramid, which fired twice.

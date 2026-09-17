@@ -194,6 +194,12 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
         # explicit and recorded HERE, in the manifest the receipt hashes; the
         # no-engine-commits-mid-wave discipline carries the real safety.
         "allow_engine_drift": bool(spec.get("allow_engine_drift", False)),
+        # B2849 (S6-B2848c): the 0.5 smoke rides spec -> manifest so the
+        # prelaunch refusal has a compliant path - the WRITER carries what
+        # the READER demands (the L790 writer-reader contract). Absent in
+        # the spec stays absent here, and prelaunch then refuses.
+        **({"fires_at_production": spec["fires_at_production"]}
+           if "fires_at_production" in spec else {}),
         "obsolescence_risks": [
             {"risk": "open trades dropped at chunk boundaries (B1076)",
              "status": "DISCLOSED - leg count recorded per arm; the auction "

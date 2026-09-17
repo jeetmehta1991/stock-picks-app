@@ -236,6 +236,30 @@ def check_supervisor_and_cap(manifest: dict) -> list[str]:
         probs.append(
             f"leg cap {cap}h exceeds the owner's standing local cap of "
             f"{OWNER_LOCAL_CAP_HOURS}h (ruling 2026-08-24). Refusing to launch.")
+
+    # (d) B2849 (S6-B2848c, owner-approved 2026-09-17): the ladder's 0.5
+    # smoke made mechanical - the manifest must RECORD that fires exist at
+    # the production parameters (fires_at_production > 0). A zero is a
+    # producer defect, not a search (SS11.2 step 0.5); an ABSENT field is a
+    # refusal, not a pass (L642: the absent case is the case the guard
+    # exists for).
+    fires = manifest.get("fires_at_production")
+    if fires is None:
+        probs.append(
+            "manifest records NO fires_at_production - run the 0.5 smoke "
+            "(fires at PRODUCTION params on live data) and record the count "
+            "before launch (S6-B2848c; fail closed on the absent field). "
+            "Refusing to launch.")
+    else:
+        try:
+            ok = float(fires) > 0
+        except (TypeError, ValueError):
+            ok = False
+        if not ok:
+            probs.append(
+                f"fires_at_production = {fires!r} - a zero or non-numeric "
+                "smoke is a PRODUCER DEFECT, not a search (SS11.2 step 0.5). "
+                "Refusing to launch.")
     return probs
 
 
