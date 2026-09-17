@@ -711,6 +711,105 @@ def check_pyramid_artifact_has_verdict(read=None) -> list[str]:
     return out
 
 
+# ---------------------------------------------------------------------------
+# C15 (B2852, owner-approved 2026-09-17 / L805): a generated locked-format
+# artifact is never hand-edited - the generator owns the bytes. Any staged
+# strategy_optimisation .md (README excluded) must match a FRESH regeneration
+# into a temp root, compared with the L803 build-stamp line excluded (the one
+# line that is nondeterministic BY DESIGN - measured B2852: 41 of 41 files
+# regenerate byte-identical except that line). A mismatch, a staged file the
+# generator does not produce, or a failed regeneration all REFUSE (L642:
+# fail closed - the absent case is the case the guard exists for). The
+# regeneration runs ONLY when such files are staged, so other commits pay
+# nothing.
+_C15_STAMP_PREFIX = "**Build (L803/#309):**"
+_C15_LANES = (
+    # (posix dir prefix, generator args) - most specific FIRST, since
+    # tighten/both/ sits under tighten/.
+    ("strategy_optimisation/tighten/both/",
+     ["--lane", "BOTH", "--subdir", "tighten/both"]),
+    ("strategy_optimisation/tighten/",
+     ["--lane", "TIGHTEN"]),
+)
+
+
+def _c15_normalise(text: str) -> str:
+    """Endings unified and the by-design-nondeterministic stamp line dropped."""
+    return "\n".join(
+        ln for ln in text.replace("\r\n", "\n").split("\n")
+        if not ln.startswith(_C15_STAMP_PREFIX))
+
+
+def _c15_regenerate(lane_args: list[list[str]]) -> Path:
+    import tempfile
+    tmp = Path(tempfile.mkdtemp(prefix="c15_table_a_"))
+    for extra in lane_args:
+        r = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "scripts" / "build_table_a.py"),
+             "--out-root", str(tmp)] + extra,
+            capture_output=True, text=True, cwd=str(REPO_ROOT), timeout=1200)
+        if r.returncode != 0:
+            raise RuntimeError(
+                f"build_table_a {' '.join(extra)} exited {r.returncode}: "
+                f"{(r.stdout or '')[-300:]} {(r.stderr or '')[-300:]}")
+    return tmp
+
+
+def check_generated_artifact_matches_generator(paths, *, regenerate=None,
+                                               staged_text=None) -> list[str]:
+    """C15: staged generated artifacts must byte-match a fresh regeneration."""
+    targets = []
+    for p in paths:
+        pos = str(p).replace("\\", "/")
+        if (pos.startswith("strategy_optimisation/") and pos.endswith(".md")
+                and not pos.endswith("README.md")):
+            targets.append(pos)
+    if not targets:
+        return []
+    lane_args, seen = [], set()
+    for pos in targets:
+        for prefix, args_ in _C15_LANES:
+            if pos.startswith(prefix):
+                if prefix not in seen:
+                    seen.add(prefix)
+                    lane_args.append(args_)
+                break
+    regenerate = regenerate or _c15_regenerate
+    try:
+        tmp = regenerate(lane_args)
+    except Exception as e:
+        return [f"C15: regeneration FAILED, refusing the staged generated "
+                f"artifacts (fail closed): {e!r}"]
+    if staged_text is None:
+        def staged_text(pos: str) -> str:
+            r = subprocess.run(["git", "show", f":{pos}"], capture_output=True,
+                               text=True, cwd=str(REPO_ROOT), timeout=60)
+            if r.returncode != 0:
+                raise RuntimeError(f"git show :{pos} exited {r.returncode}")
+            return r.stdout
+    bad = []
+    for pos in targets:
+        rel = pos[len("strategy_optimisation/"):]
+        gen_p = Path(tmp) / rel
+        if not gen_p.is_file():
+            bad.append(f"C15: {pos} is staged but the generator does not "
+                       f"produce it - a hand-authored file in the generated "
+                       f"tree; add it to the generator or move it out")
+            continue
+        try:
+            staged = staged_text(pos)
+        except Exception as e:
+            bad.append(f"C15: could not read staged content of {pos}: {e!r}")
+            continue
+        if (_c15_normalise(staged)
+                != _c15_normalise(gen_p.read_text(encoding="utf-8"))):
+            bad.append(f"C15: {pos} differs from a fresh regeneration - a "
+                       f"generated artifact is never hand-edited; change "
+                       f"scripts/build_table_a.py / scripts/table_a_bands.py "
+                       f"and regenerate (L805)")
+    return bad
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--staged", action="store_true", help="check git-staged files only")
@@ -760,6 +859,8 @@ def main() -> int:
         # C14 (B2608 / L765): no drafting marker in an append-only ledger row
         all_violations += check_queue_row_is_not_a_draft()
         all_violations += check_pyramid_artifact_has_verdict()
+        # C15 (B2852 / L805): generated artifacts never hand-edited
+        all_violations += check_generated_artifact_matches_generator(files)
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

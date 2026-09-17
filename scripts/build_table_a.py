@@ -551,6 +551,10 @@ def main() -> int:
     ap.add_argument("--lane", default="TIGHTEN", choices=("TIGHTEN", "BOTH"))
     ap.add_argument("--subdir", default=None,
                     help="output folder under strategy_optimisation/ (default: the lane name; owner-directed tighten/both for the BOTH wave)")
+    # C15 (B2852, owner-approved): the preflight regenerate-and-diff gate
+    # rebuilds into a temp root so a pre-commit check never writes the tree.
+    ap.add_argument("--out-root", default=None,
+                    help="write under this root instead of strategy_optimisation/ (C15 regeneration)")
     a = ap.parse_args()
 
     view = json.loads(STATUS_JSON.read_text(encoding="utf-8"))
@@ -588,7 +592,8 @@ def main() -> int:
                               "signals_at_entry"])
     tl = tl.drop_duplicates(["strategy", "ticker", "entry_date"])
 
-    sub = OUT_DIR / (a.subdir if a.subdir else a.lane.lower())
+    out_base = Path(a.out_root) if a.out_root else OUT_DIR
+    sub = out_base / (a.subdir if a.subdir else a.lane.lower())
     sub.mkdir(parents=True, exist_ok=True)
     written = []
     for r in sorted(rows, key=lambda x: -x["projected_current_gate"]):
@@ -603,8 +608,10 @@ def main() -> int:
         p = sub / f"{name}.md"
         p.write_text(md, encoding="utf-8", newline="\n")
         written.append(p)
-        print(f"  wrote {p.relative_to(ROOT)}  (fires {len(frame)} -> {len(kept)})")
-    print(f"{len(written)} Table A file(s) under {sub.relative_to(ROOT)}")
+        _rel = p.relative_to(ROOT) if p.is_relative_to(ROOT) else p
+        print(f"  wrote {_rel}  (fires {len(frame)} -> {len(kept)})")
+    _srel = sub.relative_to(ROOT) if sub.is_relative_to(ROOT) else sub
+    print(f"{len(written)} Table A file(s) under {_srel}")
     return 0
 
 

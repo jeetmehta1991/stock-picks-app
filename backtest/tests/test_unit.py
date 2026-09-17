@@ -38481,3 +38481,65 @@ def test_b2849_smoke_and_breadth_disposition_are_refusals():
     assert 'choices=("ran", "waived")' in src
     assert "waiver without its reason is a silent skip" in src
     assert '"breadth_leg": {"disposition": a.breadth_disposition' in src
+
+
+def test_b2852_generated_artifact_gate_fires_and_stays_quiet(tmp_path):
+    """B2852 (owner-approved plank 1 / L805): preflight C15 - a staged
+    strategy_optimisation generated .md must match a fresh regeneration with
+    the L803 stamp line excluded (the one by-design-nondeterministic line;
+    MEASURED at build time: 41 of 41 files regenerate 1/1-line-identical).
+    Both directions per #226, plus the wiring direction (#224)."""
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import preflight as pf
+
+    gen = tmp_path / "gen"
+    (gen / "tighten").mkdir(parents=True)
+    body = ("# Table A - x\n\n**Build (L803/#309):** generator g | commit "
+            "aaaa at t1 - stamp\n\ncontent line\n")
+    (gen / "tighten" / "x.md").write_text(body, encoding="utf-8")
+
+    # must-QUIET: staged == regenerated up to the stamp (stamps differ)
+    quiet = pf.check_generated_artifact_matches_generator(
+        ["strategy_optimisation/tighten/x.md"],
+        regenerate=lambda lanes: gen,
+        staged_text=lambda pos: body.replace("aaaa at t1", "bbbb at t2"))
+    assert quiet == [], quiet
+
+    # must-FIRE: hand-edited content
+    fired = pf.check_generated_artifact_matches_generator(
+        ["strategy_optimisation/tighten/x.md"],
+        regenerate=lambda lanes: gen,
+        staged_text=lambda pos: body + "hand edit\n")
+    assert fired and "never hand-edited" in fired[0], fired
+
+    # must-FIRE: a staged file the generator does not produce
+    ghost = pf.check_generated_artifact_matches_generator(
+        ["strategy_optimisation/tighten/handmade.md"],
+        regenerate=lambda lanes: gen,
+        staged_text=lambda pos: "x")
+    assert ghost and "does not produce it" in ghost[0], ghost
+
+    # must-FIRE: regeneration failure refuses (L642 - fail closed on the
+    # absent input; the gate must not wave work through on its own error)
+    def _boom(lanes):
+        raise RuntimeError("cube unreadable")
+    closed = pf.check_generated_artifact_matches_generator(
+        ["strategy_optimisation/tighten/x.md"], regenerate=_boom)
+    assert closed and "fail closed" in closed[0], closed
+
+    # must-QUIET: off-trigger commits pay nothing (README exempt by design) -
+    # _boom proves regeneration is never even attempted without a target
+    assert pf.check_generated_artifact_matches_generator(
+        ["scripts/foo.py", "strategy_optimisation/README.md"],
+        regenerate=_boom) == []
+
+    # wiring (#224): the check is CALLED from main's staged block, and the
+    # generator carries the --out-root the default regeneration uses
+    src = (root / "scripts" / "preflight.py").read_text(encoding="utf-8")
+    assert src.count("check_generated_artifact_matches_generator(files)") == 1
+    bta = (root / "scripts" / "build_table_a.py").read_text(encoding="utf-8")
+    assert '"--out-root"' in bta
