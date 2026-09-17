@@ -1,10 +1,30 @@
 # Table A - stochrsi_overbought_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 4287 | **surviving fires (T1):** 4287 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+
+## Formula (Section 1 of the SS6/#183 locked artifact)
+
+=============================== PRODUCER LAYER ===============================
+
+P1  stochrsi_cross_dn  <- backtest/signals/screener.py +1
+       knobs P1.1-P1.1 (band rows in Table A)
+P2  stochrsi_overbought  <- backtest/signals/screener.py +1
+       knobs P2.1-P2.2 (band rows in Table A)
+
+============================== STRATEGY LAYER ==============================
+
+P3  rsi_14 > 45   [EXISTING-THRESHOLD]
+P4  _short_borrow_trap_active(s)   [helper gate]
+
+Gate body, VERBATIM from backtest/signals/screener.py strat_stochrsi_overbought_short (docstring and return dropped):
+
+```python
+fires = s.get('stochrsi_overbought') and s.get('stochrsi_cross_dn') and (s.get('rsi_14', 50) > 45) and (not _short_borrow_trap_active(s))
+```
 
 ## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
 

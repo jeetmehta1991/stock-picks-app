@@ -1,10 +1,35 @@
 # Table A - cmf_flip
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** mean_reversion | **status:** NOT-STARTED | **R5 fires:** 2994 | **surviving fires (T1):** 2250 (survives_pct 0.7515)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+
+## Formula (Section 1 of the SS6/#183 locked artifact)
+
+=============================== PRODUCER LAYER ===============================
+
+P1  cmf_cross_dn  <- backtest/signals/screener.py +1
+       knobs P1.1-P1.1 (band rows in Table A)
+P2  cmf_cross_up  <- backtest/signals/screener.py +1
+       knobs P2.1-P2.2 (band rows in Table A)
+
+============================== STRATEGY LAYER ==============================
+
+P3  po3_accum_range_pct >= 0.0458   [EXISTING-THRESHOLD]
+P4  rsi_14 < 50   [EXISTING-THRESHOLD]
+P5  rsi_14 > 50   [EXISTING-THRESHOLD]
+P6  _short_borrow_trap_active(s)   [helper gate]
+
+Gate body, VERBATIM from backtest/signals/screener.py strat_cmf_flip (docstring and return dropped):
+
+```python
+fl = s.get('cmf_cross_up') and s.get('rsi_14', 50) < 50
+fl = fl and s.get('po3_accum_range_pct', float('-inf')) >= 0.0458
+fs = (s.get('cmf_cross_dn') and s.get('rsi_14', 50) > 50) and (not _short_borrow_trap_active(s))
+fs = fs and s.get('po3_accum_range_pct', float('-inf')) >= 0.0458
+```
 
 ## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
 

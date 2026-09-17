@@ -38184,7 +38184,12 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     tbc = (d / "three_black_crows_short.md").read_text(encoding="utf-8")
     assert "| P1 | PRODUCER | three_black_crows" in tbc
     assert "INVENTORY-PENDING-R1" in tbc
-    assert "_three_black_crows_short" not in tbc, "def-signature phantom helper"
+    # B2844 re-anchor (the L748 class, caught by this pin's own RED): the
+    # bare name now legitimately appears in the Formula section's prose
+    # ("strat_three_black_crows_short"), so the phantom-helper arm anchors
+    # on the STRUCTURAL form prose cannot contain - the helper P-row cell
+    assert "| STRATEGY-HELPER | _three_black_crows_short(s)" not in tbc, (
+        "def-signature phantom helper row")
     # B2840 (owner question): the shared borrow helper's row carries its
     # UNDERLYING condition and its offline tighter side - the boolean's
     # internals are bandable, and where the magnitude is persisted
@@ -38228,6 +38233,20 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     assert "TIGHTER = LOWER the ceiling" in tws     # rsi_14 < 60
     assert "TIGHTER = RAISE the floor" in tbc       # rsi_14 > 40
     assert "FULL OPEN consumer set" in tws
+    # B2844 (owner: 'format does not show formula'): Section 1 present in
+    # every file, gate body verbatim, and the TWO VIEWS carry the SAME P-ids
+    # (the validate_spec cross-check, pre-R1)
+    import re as _re
+    for p in d.glob("*.md"):
+        t2 = p.read_text(encoding="utf-8")
+        assert "## Formula (Section 1" in t2, p.name
+        assert "PRODUCER LAYER" in t2 and "STRATEGY LAYER" in t2, p.name
+        assert "```python" in t2, (p.name, "gate body missing")
+        formula, _, rest = t2.partition("## Table A - parameter inventory")
+        f_ids = set(_re.findall(r"(?m)^P(\d+) ", formula))
+        t_ids = set(_re.findall(r"(?m)^\| P(\d+) \|", rest))
+        assert f_ids == t_ids and f_ids, (p.name, f_ids ^ t_ids)
+    assert "fires = s.get('three_white_soldiers')" in tws
     readme2 = " ".join((root / "strategy_optimisation" / "README.md")
                        .read_text(encoding="utf-8").split())
     assert "OFFLINE DESCRIBES A LEG'S COST, NEVER A STRATEGY'S SCOPE" in readme2

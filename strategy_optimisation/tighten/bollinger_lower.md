@@ -1,10 +1,57 @@
 # Table A - bollinger_lower
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** mean_reversion | **status:** STALLED-CAMPAIGN | **R5 fires:** 1622 | **surviving fires (T1):** 1622 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+
+## Formula (Section 1 of the SS6/#183 locked artifact)
+
+=============================== PRODUCER LAYER ===============================
+
+P1  bb_20_20_reclaim_from_lower_recent_3d  <- backtest/signals/screener.py
+       knobs P1.1-P1.2 (band rows in Table A)
+P2  bb_20_20_reclaim_from_upper_recent_3d  <- backtest/signals/screener.py
+       knobs INVENTORY-PENDING-R1 (SPECS)
+P3  below_ema_200  <- backtest/signals/screener.py
+       knobs P3.1-P3.1 (band rows in Table A)
+P4  price_above_ema_200  <- backtest/signals/index_rebalance.py +1
+       knobs P4.1-P4.1 (band rows in Table A)
+P5  rsi_14  <- backtest/signals/screener.py
+       knobs INVENTORY-PENDING-R1 (SPECS)
+P6  rsi_2  <- backtest/signals/screener.py
+       knobs INVENTORY-PENDING-R1 (SPECS)
+P7  vix_band_high  <- backtest/signals/screener.py +2
+       knobs P7.1-P7.1 (band rows in Table A)
+P8  vix_band_low  <- backtest/signals/screener.py +2
+       knobs P8.1-P8.1 (band rows in Table A)
+
+============================== STRATEGY LAYER ==============================
+
+P9  adx < 35   [EXISTING-THRESHOLD]
+P10  _short_borrow_trap_active(s)   [helper gate]
+P11  VIX-conditional RSI thresholds (low 40/60, mid 45/55, high 50/50)   [local-variable gate]
+
+Gate body, VERBATIM from backtest/signals/screener.py strat_bollinger_lower (docstring and return dropped):
+
+```python
+rsi_2 = s.get('rsi_2', 50)
+rsi_14 = s.get('rsi_14', 50)
+above_200 = s.get('price_above_ema_200', False)
+below_200 = s.get('below_ema_200', False)
+adx_ok = s.get('adx', 30) < 35
+if s.get('vix_band_low'):
+    rsi_thr_long, rsi_thr_short = (40, 60)
+elif s.get('vix_band_high'):
+    rsi_thr_long, rsi_thr_short = (50, 50)
+else:
+    rsi_thr_long, rsi_thr_short = (45, 55)
+rsi_long_ok = rsi_2 < 5 or rsi_14 < rsi_thr_long
+fl = s.get('bb_20_20_reclaim_from_lower_recent_3d') and rsi_long_ok and above_200 and adx_ok
+rsi_short_ok = rsi_2 > 95 or rsi_14 > rsi_thr_short
+fs = (s.get('bb_20_20_reclaim_from_upper_recent_3d') and rsi_short_ok and below_200 and adx_ok) and (not _short_borrow_trap_active(s))
+```
 
 ## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
 

@@ -107,6 +107,26 @@ def gate_legs(src: str) -> dict:
     return out
 
 
+def gate_bodies(src: str) -> dict:
+    """B2844 (owner: 'Table A format does not show formula'): the SS6/#183
+    locked artifact is FORMULA + Table A + Table B, and 'Section 1 and Table A
+    are two views of one' (plan:637) - the generated files carried no Section 1.
+    This returns each strategy's executable gate body VERBATIM from the AST
+    (docstring and the return statement dropped; the fires expression is the
+    formula's strategy layer, unparaphrased)."""
+    out = {}
+    for n in ast.walk(ast.parse(src)):
+        if not (isinstance(n, ast.FunctionDef) and n.name.startswith("strat_")):
+            continue
+        stmts = n.body
+        if stmts and isinstance(stmts[0], ast.Expr) \
+                and isinstance(stmts[0].value, ast.Constant):
+            stmts = stmts[1:]
+        stmts = [s for s in stmts if not isinstance(s, ast.Return)]
+        out[n.name[len("strat_"):]] = "\n".join(ast.unparse(s) for s in stmts)
+    return out
+
+
 def _module_index() -> list[tuple[str, str]]:
     idx = []
     for d in _ATTR_DIRS:
@@ -229,7 +249,8 @@ def _band_rows(pid: int, subject: str, knobs) -> list:
     return out
 
 def render(name: str, row: dict, frame, sigs, filtered: bool,
-           comparisons, legs_helpers, idx, specs_names, stamp: str) -> str:
+           comparisons, legs_helpers, idx, specs_names, stamp: str,
+           body: str = "") -> str:
     n_all = len(frame)
     series = key_series(sigs)
     depth_keys = sorted({k for k, _, _ in comparisons})
@@ -245,6 +266,34 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
          "",
          f"**SPECS entry:** {'registered in producer_variant_table' if in_specs else 'NONE - build at R1 before any engine leg (W-T T0)'}",
          "",
+         # B2844 (owner-caught): the SS6/#183 locked artifact is FORMULA +
+         # Table A + Table B - Section 1 and Table A are two views of one
+         # (plan:637). Same id sequence as the inventory below, so the two
+         # views cannot drift (pinned: identical P-id sets).
+         "## Formula (Section 1 of the SS6/#183 locked artifact)", ""]
+    _p = 0
+    L.append("=============================== PRODUCER LAYER ===============================")
+    L.append("")
+    for leg in legs:
+        _p += 1
+        kn = PRODUCER_BANDS.get(leg, [])
+        note = (f"knobs P{_p}.1-P{_p}.{len(kn)} (band rows in Table A)"
+                if kn else "knobs INVENTORY-PENDING-R1 (SPECS)")
+        L.append(f"P{_p}  {leg}  <- {attribute(leg, idx)}")
+        L.append(f"       {note}")
+    L += ["", "============================== STRATEGY LAYER ==============================", ""]
+    for key, op, prod in sorted(set(comparisons)):
+        _p += 1
+        L.append(f"P{_p}  {key} {op} {_fmt(prod)}   [EXISTING-THRESHOLD]")
+    for h in helpers:
+        _p += 1
+        L.append(f"P{_p}  {h}(s)   [helper gate]")
+    for k in STRATEGY_EXTRAS.get(name, []):
+        _p += 1
+        L.append(f"P{_p}  {k['param']}   [local-variable gate]")
+    L += ["", "Gate body, VERBATIM from backtest/signals/screener.py "
+          f"strat_{name} (docstring and return dropped):", "",
+          "```python", body or "(no body extracted)", "```", "",
          "## Table A - parameter inventory (the SS6 canonical shape, pre-R1)",
          "",
          "One row per parameter the entry condition touches, BOTH layers, nothing",
@@ -435,6 +484,7 @@ def main() -> int:
         encoding="utf-8", errors="replace")
     comps = depth_comparisons(src)
     legs = gate_legs(src)
+    bodies = gate_bodies(src)
     idx = _module_index()
     try:
         from producer_variant_table import SPECS
@@ -457,7 +507,8 @@ def main() -> int:
             raise SystemExit(f"REFUSED: no R5 fires for {name} (fail closed)")
         kept, sigs, filtered = surviving_fires(name, frame, r["survives_pct"])
         md = render(name, r, kept, sigs, filtered, comps.get(name, []),
-                    legs.get(name, ([], [])), idx, specs_names, stamp)
+                    legs.get(name, ([], [])), idx, specs_names, stamp,
+                    body=bodies.get(name, ""))
         p = sub / f"{name}.md"
         p.write_text(md, encoding="utf-8", newline="\n")
         written.append(p)

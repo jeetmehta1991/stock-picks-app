@@ -1,10 +1,28 @@
 # Table A - naked_poc_retest_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** volume_profile | **status:** NOT-STARTED | **R5 fires:** 1788 | **surviving fires (T1):** 1788 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+
+## Formula (Section 1 of the SS6/#183 locked artifact)
+
+=============================== PRODUCER LAYER ===============================
+
+P1  price_above_ema_200  <- backtest/signals/index_rebalance.py +1
+       knobs P1.1-P1.1 (band rows in Table A)
+
+============================== STRATEGY LAYER ==============================
+
+P2  naked_poc_count > 0   [EXISTING-THRESHOLD]
+P3  naked_poc_nearest_distance_pct < 0.02   [EXISTING-THRESHOLD]
+
+Gate body, VERBATIM from backtest/signals/screener.py strat_naked_poc_retest_long (docstring and return dropped):
+
+```python
+fires = s.get('naked_poc_count', 0) > 0 and s.get('naked_poc_nearest_distance_pct', 1.0) < 0.02 and s.get('price_above_ema_200', False)
+```
 
 ## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
 

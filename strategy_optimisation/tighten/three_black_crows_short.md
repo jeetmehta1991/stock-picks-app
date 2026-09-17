@@ -1,10 +1,28 @@
 # Table A - three_black_crows_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 1674 | **surviving fires (T1):** 1674 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+
+## Formula (Section 1 of the SS6/#183 locked artifact)
+
+=============================== PRODUCER LAYER ===============================
+
+P1  three_black_crows  <- backtest/signals/screener.py +1
+       knobs P1.1-P1.4 (band rows in Table A)
+
+============================== STRATEGY LAYER ==============================
+
+P2  rsi_14 > 40   [EXISTING-THRESHOLD]
+P3  _short_borrow_trap_active(s)   [helper gate]
+
+Gate body, VERBATIM from backtest/signals/screener.py strat_three_black_crows_short (docstring and return dropped):
+
+```python
+fires = s.get('three_black_crows') and s.get('rsi_14', 50) > 40 and (not _short_borrow_trap_active(s))
+```
 
 ## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
 

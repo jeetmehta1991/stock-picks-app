@@ -1,10 +1,43 @@
 # Table A - williams_r_oversold
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** STALLED-CAMPAIGN | **R5 fires:** 2535 | **surviving fires (T1):** 2535 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+
+## Formula (Section 1 of the SS6/#183 locked artifact)
+
+=============================== PRODUCER LAYER ===============================
+
+P1  below_ema_200  <- backtest/signals/screener.py
+       knobs P1.1-P1.1 (band rows in Table A)
+P2  cmf_negative  <- backtest/signals/screener.py +1
+       knobs P2.1-P2.1 (band rows in Table A)
+P3  cmf_positive  <- backtest/signals/screener.py +1
+       knobs P3.1-P3.1 (band rows in Table A)
+P4  price_above_ema_200  <- backtest/signals/index_rebalance.py +1
+       knobs P4.1-P4.1 (band rows in Table A)
+P5  rsi_2  <- backtest/signals/screener.py
+       knobs INVENTORY-PENDING-R1 (SPECS)
+P6  williams_r_oversold  <- backtest/signals/screener.py +3
+       knobs P6.1-P6.2 (band rows in Table A)
+
+============================== STRATEGY LAYER ==============================
+
+P7  williams_r > -20   [EXISTING-THRESHOLD]
+P8  _short_borrow_trap_active(s)   [helper gate]
+P9  rsi_2 escape-hatch thresholds (long < 5, short > 95)   [local-variable gate]
+
+Gate body, VERBATIM from backtest/signals/screener.py strat_williams_r_oversold (docstring and return dropped):
+
+```python
+rsi_2 = s.get('rsi_2', 50)
+above_200 = s.get('price_above_ema_200', False)
+below_200 = s.get('below_ema_200', False)
+fl = (s.get('williams_r_oversold') or rsi_2 < 5) and above_200 and s.get('cmf_positive')
+fs = (s.get('williams_r', 0) > -20 or rsi_2 > 95) and below_200 and s.get('cmf_negative') and (not _short_borrow_trap_active(s))
+```
 
 ## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
 

@@ -1,10 +1,44 @@
 # Table A - hull_rsi
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 0e03ef3bd at 2026-09-16 23:26:15 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** STALLED-CAMPAIGN | **R5 fires:** 1270 | **surviving fires (T1):** 1270 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+
+## Formula (Section 1 of the SS6/#183 locked artifact)
+
+=============================== PRODUCER LAYER ===============================
+
+P1  adx_trending  <- backtest/signals/screener.py +1
+       knobs P1.1-P1.1 (band rows in Table A)
+P2  below_ema_200_break_recent_5d  <- backtest/signals/screener.py
+       knobs P2.1-P2.1 (band rows in Table A)
+P3  hull_bearish  <- backtest/signals/screener.py +1
+       knobs P3.1-P3.1 (band rows in Table A)
+P4  hull_bullish  <- backtest/signals/screener.py +1
+       knobs P4.1-P4.1 (band rows in Table A)
+P5  price_above_ema_200_break_recent_5d  <- backtest/signals/screener.py
+       knobs P5.1-P5.2 (band rows in Table A)
+P6  price_above_hull  <- backtest/signals/screener.py +1
+       knobs P6.1-P6.1 (band rows in Table A)
+P7  price_below_hull  <- backtest/signals/screener.py +1
+       knobs P7.1-P7.1 (band rows in Table A)
+
+============================== STRATEGY LAYER ==============================
+
+P8  adx > 20   [EXISTING-THRESHOLD]
+P9  _short_borrow_trap_active(s)   [helper gate]
+
+Gate body, VERBATIM from backtest/signals/screener.py strat_hull_rsi (docstring and return dropped):
+
+```python
+adx_trend_ok = s.get('adx', 0) > 20 or s.get('adx_trending', False)
+above_200_fresh = s.get('price_above_ema_200_break_recent_5d', False)
+below_200_fresh = s.get('below_ema_200_break_recent_5d', False)
+fl = s.get('hull_bullish') and s.get('price_above_hull') and adx_trend_ok and above_200_fresh
+fs = s.get('hull_bearish') and s.get('price_below_hull') and adx_trend_ok and below_200_fresh and (not _short_borrow_trap_active(s))
+```
 
 ## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
 
