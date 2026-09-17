@@ -38342,3 +38342,46 @@ def test_b2839_step2_refuses_unreconciled_multiplicity():
         encoding="utf-8")
     body = src.split("def main(", 1)[1]
     assert body.index("require_multiplicity(art") < body.index("build_frame(")
+
+
+def test_b2848_step1_instruments_are_ruling_and_freshness_gated():
+    """B2848 closes S6-B2848a/b (owner-approved): BOTH Step-1 instruments
+    refuse without the owner's T3 band words and refuse a stale status
+    stamp. Both directions per #226, plus the wiring (the calls sit right
+    after parse_args in each main - a pinned callee is not a pinned call
+    site, #224)."""
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import step1_gates as g
+
+    # ruling: empty/None refused, real words returned verbatim
+    for bad in (None, "", "   "):
+        with pytest.raises(SystemExit) as e:
+            g.require_band_ruling(bad)
+        assert "no --band-ruling" in str(e.value)
+    assert g.require_band_ruling(" tighten rsi to 55 ") == "tighten rsi to 55"
+
+    # freshness: matching head passes; mismatched head refused with the
+    # regenerate instruction; the stamp itself read from the live artifact
+    import json
+    stamp = json.loads((root / "output_audit" /
+                        "strategy_optimisation_status.json")
+                       .read_text(encoding="utf-8"))["build"]["source_commit"]
+    assert g.require_fresh_status(head=stamp) == stamp
+    with pytest.raises(SystemExit) as e:
+        g.require_fresh_status(head="0000000ff")
+    assert "REGENERATE FIRST" in str(e.value)
+
+    # wiring: each instrument calls both gates immediately after parse_args,
+    # and each records the ruling verbatim into its artifact
+    for name in ("offline_level_sweep.py", "breadth_step1_grid.py"):
+        src = (root / "scripts" / name).read_text(encoding="utf-8")
+        body = src.split("    a = ap.parse_args()", 1)[1]
+        assert body.lstrip().startswith("_ruling = require_band_ruling"), name
+        assert "require_fresh_status()" in body.split("\n", 3)[2], name
+        assert 'rec["band_ruling_verbatim"] = _ruling' in src, name
+        assert '"--band-ruling", required=True' in src, name

@@ -95,6 +95,9 @@ def build_frame(strategy: str, depth: str | None, axis_keys: list[str]):
     return m, dep
 
 
+from step1_gates import require_band_ruling, require_fresh_status  # noqa: E402  (B2848)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--strategy", required=True)
@@ -106,7 +109,11 @@ def main() -> int:
     ap.add_argument("--repro-artifact", default=None,
                     help="admission artifact whose is_sharpe the base must reproduce")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--band-ruling", required=True,
+                    help="the owner's T3 band words, verbatim (S6-B2848a)")
     a = ap.parse_args()
+    _ruling = require_band_ruling(a.band_ruling)   # S6-B2848a
+    _stamp = require_fresh_status()                # S6-B2848b
     t0 = time.time()
     axes = [_axis_spec(x) for x in a.axes.split(",")]
 
@@ -176,6 +183,8 @@ def main() -> int:
            "reproduction": repro, "trials": trials, "graded": len(rows),
            "skipped_axes": skips,
            "step1_ranking": ranked[:60], "rows": rows}
+    rec["band_ruling_verbatim"] = _ruling
+    rec["status_stamp_at_run"] = _stamp
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     print(f"{trials:,} trials | {len(rows):,} graded | ranked head "
           f"{[round(r['is_sharpe'], 3) for r in ranked[:5]]} -> {a.out} "

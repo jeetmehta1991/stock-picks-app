@@ -267,6 +267,9 @@ def render_table(rec: dict) -> str:
     return head + "\n".join(lines) + "\n"
 
 
+from step1_gates import require_band_ruling, require_fresh_status  # noqa: E402  (B2848)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--strategy", required=True)
@@ -275,6 +278,9 @@ def main() -> int:
     ap.add_argument("--production", required=True,
                     help="comma-separated production level per axis, in order")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--band-ruling", required=True,
+                    help="the owner's T3 band words, verbatim (S6-B2848a; "
+                         "refused empty; recorded into the artifact)")
     ap.add_argument("--coverage-min", type=float, default=0.99)
     ap.add_argument("--repro-min", type=float, default=0.999)
     ap.add_argument("--min-n", type=int, default=30)
@@ -283,6 +289,8 @@ def main() -> int:
                          "multiplicity price; 0 = off")
     ap.add_argument("--null-seed", type=int, default=13)
     a = ap.parse_args()
+    _ruling = require_band_ruling(a.band_ruling)   # S6-B2848a
+    _stamp = require_fresh_status()                # S6-B2848b
 
     axes = [parse_axis(s) for s in a.axes]
     production = tuple(float(v) for v in a.production.split(","))
@@ -296,6 +304,8 @@ def main() -> int:
         print(f"permutation null ({pn['n_perms']} perms): observed best "
               f"{pn['observed_best_is_sharpe']} | null q95 "
               f"{pn['null_max_is_sharpe_quantiles'].get('0.95')} | p {pn['p_value_best']}")
+    rec["band_ruling_verbatim"] = _ruling
+    rec["status_stamp_at_run"] = _stamp
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     # B2643: the offline Table D ships WITH the artifact, unconditionally.
     table_path = Path(a.out).with_suffix(".md")
