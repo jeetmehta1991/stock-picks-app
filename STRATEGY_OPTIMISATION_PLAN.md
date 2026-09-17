@@ -3709,10 +3709,10 @@ this") - what runs, in order, before any Step-1 grid, with its enforcement state
 
 | # | Step | What it does | Enforced by (B2848+ close the PROSE rows) |
 |---|---|---|---|
-| 1 | SPECS (R1) | register the Table A bands as the machine-checked engine spec | `validate_spec` blocks generation; `launch_refusals` at run_wave refuses undeclared knobs |
-| 2 | 0.5 smoke | fires exist at PRODUCTION params on live data (a zero = producer defect, not a search) | PROSE until S6-B2848c (prelaunch check, approved) |
-| 3 | 0.6 branch | per level: offline (persisted-magnitude tightening) or engine | `offline_level_sweep`'s four refusals confirm mechanically at grid time |
-| 4 | T3 band words | the OWNER's per-strategy review of the Table A file - no grid before the word | PROSE until S6-B2848a (--band-ruling on Step-1 instruments, approved) |
+| 1 | SPECS (R1) | register the Table A bands as the machine-checked engine spec | `validate_spec` blocks generation; `launch_refusals` at run_wave refuses undeclared knobs; a T3 ruling is only CONSUMABLE for a registered strategy (B2855) |
+| 2 | T3 band words | the OWNER's per-strategy review of the Table A file - no grid before the word | `--band-ruling` REQUIRED verbatim on both Step-1 instruments + status stamp == HEAD (B2848); refused outright for a strategy absent from SPECS/SPECS_PHASE0 (B2855 - R1 mandatory before the ruling is usable, owner-directed 2026-09-17) |
+| 3 | 0.5 smoke | fires exist at PRODUCTION params on live data, measured on the formula the T3 words RATIFIED (owner-corrected 2026-09-17: the smoke runs AFTER the review - a pre-review smoke measures an unratified formula and its count decays silently the moment the words change a leg) | `prelaunch_gate` refuses a manifest without a positive `fires_at_production` (B2849); the count rides spec -> run_wave manifest |
+| 4 | 0.6 branch | per level: offline (persisted-magnitude tightening) or engine | `offline_level_sweep`'s four refusals confirm mechanically at grid time |
 | 5 | Step-1 grid | offline: full grid, IS-only, multiplicity mandatory; engine: the 11.2 ladder with its launch gates | grader refusals + multiplicity; Step-2 refuses unreconciled Step-1 (B2839) |
 
 **Band inventory (B2836):** every entrant's Table A (depth + breadth) is pre-built in

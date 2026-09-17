@@ -289,7 +289,7 @@ def main() -> int:
                          "multiplicity price; 0 = off")
     ap.add_argument("--null-seed", type=int, default=13)
     a = ap.parse_args()
-    _ruling = require_band_ruling(a.band_ruling)   # S6-B2848a
+    _ruling = require_band_ruling(a.band_ruling, a.strategy)   # S6-B2848a + B2855
     _stamp = require_fresh_status()                # S6-B2848b
 
     axes = [parse_axis(s) for s in a.axes]

@@ -38333,9 +38333,17 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     assert "the holdout is SPENT" in plan
     assert plan.count("strategy_optimisation/") >= 3
     # B2847 (owner-directed): the pre-Step-1 sequence is tabulated in the
-    # plan, each row carrying its enforcement state honestly
+    # plan; B2855 (owner-corrected 2026-09-17): T3 PRECEDES the 0.5 smoke -
+    # the smoke measures the formula the review RATIFIED - and a ruling is
+    # refused outright for an unregistered strategy (R1 mandatory first).
+    # The B2848/B2849 enforcement landed, so the PROSE-until cells are gone.
     assert "THE PRE-STEP-1 SEQUENCE (B2847" in plan
-    assert "PROSE until S6-B2848a" in plan and "PROSE until S6-B2848c" in plan
+    seq = plan[plan.index("THE PRE-STEP-1 SEQUENCE"):]
+    assert seq.index("T3 band words") < seq.index("0.5 smoke"), (
+        "owner-directed order: the review precedes the smoke")
+    assert "AFTER the review" in seq
+    assert "absent from SPECS/SPECS_PHASE0" in seq
+    assert "PROSE until" not in seq.split("Band inventory")[0]
 
     # B2851 (owner-caught conformance to the SS6/#183 locked standard): every
     # file in BOTH lanes carries (a) the boolean's defining condition inline
@@ -38420,7 +38428,18 @@ def test_b2848_step1_instruments_are_ruling_and_freshness_gated():
         with pytest.raises(SystemExit) as e:
             g.require_band_ruling(bad)
         assert "no --band-ruling" in str(e.value)
-    assert g.require_band_ruling(" tighten rsi to 55 ") == "tighten rsi to 55"
+    # B2855 (owner-directed): a ruling binds a STRATEGY, and only a
+    # REGISTERED one - R1 is mandatory before the T3 words are usable.
+    assert g.require_band_ruling(" tighten rsi to 55 ", "s1",
+                                 registry={"s1"}) == "tighten rsi to 55"
+    with pytest.raises(SystemExit) as e:
+        g.require_band_ruling("tighten rsi to 55")
+    assert "binds a STRATEGY" in str(e.value)
+    with pytest.raises(SystemExit) as e:
+        g.require_band_ruling("tighten rsi to 55", "ghost", registry={"s1"})
+    assert "R1 registration is MANDATORY" in str(e.value)
+    # live registry: the candle pair's PHASE0 entries are consumable today
+    assert g.require_band_ruling("words", "three_white_soldiers") == "words"
 
     # freshness: matching head passes; mismatched head refused with the
     # regenerate instruction; the stamp itself read from the live artifact

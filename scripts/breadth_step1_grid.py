@@ -112,7 +112,7 @@ def main() -> int:
     ap.add_argument("--band-ruling", required=True,
                     help="the owner's T3 band words, verbatim (S6-B2848a)")
     a = ap.parse_args()
-    _ruling = require_band_ruling(a.band_ruling)   # S6-B2848a
+    _ruling = require_band_ruling(a.band_ruling, a.strategy)   # S6-B2848a + B2855
     _stamp = require_fresh_status()                # S6-B2848b
     t0 = time.time()
     axes = [_axis_spec(x) for x in a.axes.split(",")]
