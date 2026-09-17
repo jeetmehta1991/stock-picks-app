@@ -1,6 +1,6 @@
 # Table A - stochrsi_oversold
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:24:46 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 2433 | **surviving fires (T1):** 2433 (unchanged since R5 - filter is identity)
 
@@ -15,7 +15,7 @@ P1  below_ema_200  <- backtest/signals/screener.py
 P2  price_above_ema_200  <- backtest/signals/index_rebalance.py +1
        knobs P2.1-P2.1 (band rows in Table A)
 P3  rsi_2  <- backtest/signals/screener.py
-       knobs INVENTORY-PENDING-R1 (SPECS)
+       knobs P3.1-P3.1 (band rows in Table A)
 P4  stochrsi_cross_dn  <- backtest/signals/screener.py +1
        knobs P4.1-P4.1 (band rows in Table A)
 P5  stochrsi_cross_up  <- backtest/signals/screener.py +1
@@ -41,32 +41,37 @@ fl = s.get('stochrsi_oversold') and s.get('stochrsi_cross_up') and (s.get('rsi_1
 fs = s.get('stochrsi_overbought') and s.get('stochrsi_cross_dn') and (s.get('rsi_14', 50) > 45) and below_200 and (not _short_borrow_trap_active(s))
 ```
 
-## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
+## Table A - parameter inventory (canonical shape - READY FOR OWNER BAND REVIEW)
 
 One row per parameter the entry condition touches, BOTH layers, nothing
-omitted (L785: an axis left out of Table A is invisible at close). The
-R1 SPECS entry absorbs and supersedes this pre-R1 inventory - producer
-knob rows below are placeholders it must fill.
+omitted (L785: an axis left out of Table A is invisible at close).
+Every producer row carries its DEFINED BANDS in the P<n>.x rows beneath
+it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
+the engine-spec (SPECS) entry is built from these before any engine
+leg runs.
 
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
-| P1 | PRODUCER | below_ema_200 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P1 | PRODUCER | below_ema_200 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
 | P1.1 | BAND | ema span (the 200 in above/below_ema_200) - backtest/signals/technical.py compute_ema_sma | 200 | none - other spans' values are unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; 150/250 are the adjacent canon spans; T3 review before any grid |
-| P2 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P2 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
 | P2.1 | BAND | ema span (the 200 in above/below_ema_200) - backtest/signals/technical.py compute_ema_sma | 200 | none - other spans' values are unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; 150/250 are the adjacent canon spans; T3 review before any grid |
-| P3 | PRODUCER | rsi_2 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
-| P4 | PRODUCER | stochrsi_cross_dn - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P3 | PRODUCER | rsi_2 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
+| P3.1 | BAND | rsi (fast escape-hatch) span - backtest/signals/technical.py rsi block | 2 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
+| P4 | PRODUCER | stochrsi_cross_dn - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
 | P4.1 | BAND | cross guard band (k > 20 on cross_dn) - backtest/signals/technical.py:600 | 20 | TIGHTER (k > 30) on persisted k/d | none needed - k and d both persisted | BRACKET production guard; T3 review before any grid |
-| P5 | PRODUCER | stochrsi_cross_up - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P5 | PRODUCER | stochrsi_cross_up - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P5.x) | BANDS-DEFINED |
 | P5.1 | BAND | cross guard band (k < 80 on cross_up) - backtest/signals/technical.py:599 | 80 | TIGHTER (k < 70) on persisted k/d | freshness itself (k vs d needs both persisted - both ARE); DEFINED-NO-ACTUATOR | BRACKET production guard; T3 review before any grid |
-| P6 | PRODUCER | stochrsi_overbought - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P6 | PRODUCER | stochrsi_overbought - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P6.x) | BANDS-DEFINED |
 | P6.1 | BAND | overbought threshold on k - backtest/signals/technical.py:598 | 80 | TIGHTER (k > 85, k > 90) - subset on persisted stochrsi_k | LOOSER (k > 75); DEFINED-NO-ACTUATOR | BRACKET canon 80; stochrsi_k IS persisted; T3 review before any grid |
 | P6.2 | BAND | period (rsi+stoch length) - technical.py:574 | 14 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
-| P7 | PRODUCER | stochrsi_oversold - emitted by backtest/signals/screener.py +2; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P7 | PRODUCER | stochrsi_oversold - emitted by backtest/signals/screener.py +2; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P7.x) | BANDS-DEFINED |
 | P7.1 | BAND | period (rsi+stoch length) - backtest/signals/technical.py:574-600 | 14 | none - k/d at other periods unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with the adjacent canon spans; T3 review before any grid |
 | P7.2 | BAND | oversold threshold on k - technical.py:597 | 20 | TIGHTER (k < 15, k < 10) - subset on persisted stochrsi_k | LOOSER (k < 25); DEFINED-NO-ACTUATOR | BRACKET canon 20; stochrsi_k IS persisted; T3 review before any grid |
 | P8 | STRATEGY | rsi_14 `< 55` [EXISTING-THRESHOLD] | `< 55` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P8.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
 | P9 | STRATEGY | rsi_14 `> 45` [EXISTING-THRESHOLD] | `> 45` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P9.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
 | P10 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 

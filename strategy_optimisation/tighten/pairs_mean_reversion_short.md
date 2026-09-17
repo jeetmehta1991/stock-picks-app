@@ -1,6 +1,6 @@
 # Table A - pairs_mean_reversion_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:24:46 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** pairs | **status:** NOT-STARTED | **R5 fires:** 5698 | **surviving fires (T1):** 4461 (survives_pct 0.7829)
 
@@ -11,7 +11,7 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  pair_counterparty  <- backtest/signals/pairs_trading.py +1
-       knobs INVENTORY-PENDING-R1 (SPECS)
+       knobs P1.1-P1.1 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
 
@@ -30,16 +30,19 @@ z = s.get('pair_zscore_signed', 0.0)
 peer = s.get('pair_counterparty', '')
 ```
 
-## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
+## Table A - parameter inventory (canonical shape - READY FOR OWNER BAND REVIEW)
 
 One row per parameter the entry condition touches, BOTH layers, nothing
-omitted (L785: an axis left out of Table A is invisible at close). The
-R1 SPECS entry absorbs and supersedes this pre-R1 inventory - producer
-knob rows below are placeholders it must fill.
+omitted (L785: an axis left out of Table A is invisible at close).
+Every producer row carries its DEFINED BANDS in the P<n>.x rows beneath
+it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
+the engine-spec (SPECS) entry is built from these before any engine
+leg runs.
 
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
-| P1 | PRODUCER | pair_counterparty - emitted by backtest/signals/pairs_trading.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P1 | PRODUCER | pair_counterparty - emitted by backtest/signals/pairs_trading.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | (not a gate) display field naming the paired ticker - backtest/signals/pairs_trading.py:377 region | - | - | - | no band - rationale text only; T3 review before any grid |
 | P2 | STRATEGY | pair_count_active `> 0` [EXISTING-THRESHOLD] | `> 0` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P2.1 | BAND | EG cointegration significance - backtest/signals/pairs_trading.py:46 | 0.05 | none - pair set is a PRECOMPUTE | the whole band (re-run pairs precompute + engine); DEFINED-NO-ACTUATOR | BRACKET production toward strict (precompute-side); T3 review before any grid |
 | P2.2 | BAND | zscore rolling window (bars) - pairs_trading.py:147-170 | 60 | none - z at other windows unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |

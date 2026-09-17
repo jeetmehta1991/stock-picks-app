@@ -1,6 +1,6 @@
 # Table A - three_black_crows_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 7be42d989 at 2026-09-16 23:53:21 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:24:46 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 1674 | **surviving fires (T1):** 1674 (unchanged since R5 - filter is identity)
 
@@ -24,21 +24,24 @@ Gate body, VERBATIM from backtest/signals/screener.py strat_three_black_crows_sh
 fires = s.get('three_black_crows') and s.get('rsi_14', 50) > 40 and (not _short_borrow_trap_active(s))
 ```
 
-## Table A - parameter inventory (the SS6 canonical shape, pre-R1)
+## Table A - parameter inventory (canonical shape - READY FOR OWNER BAND REVIEW)
 
 One row per parameter the entry condition touches, BOTH layers, nothing
-omitted (L785: an axis left out of Table A is invisible at close). The
-R1 SPECS entry absorbs and supersedes this pre-R1 inventory - producer
-knob rows below are placeholders it must fill.
+omitted (L785: an axis left out of Table A is invisible at close).
+Every producer row carries its DEFINED BANDS in the P<n>.x rows beneath
+it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
+the engine-spec (SPECS) entry is built from these before any engine
+leg runs.
 
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
-| P1 | PRODUCER | three_black_crows - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
+| P1 | PRODUCER | three_black_crows - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
 | P1.1 | BAND | n_bars (pattern length) - backtest/signals/technical.py:2108-2111 | 3 | none - pattern bars' OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | CANON (Nison 1991: three); 4 as the strict extension; T3 review before any grid |
 | P1.2 | BAND | min_body_pct_of_range per candle - technical.py:2109 (c<o only - no magnitude) | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | CANON (Nison long-body crows); production accepts ANY body; T3 review before any grid |
 | P1.3 | BAND | min_step_down_pct (close[i] below close[i-1] by) - technical.py:2110 | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET zero upward; strict < today; T3 review before any grid |
 | P1.4 | BAND | max_lower_wick_pct (close near low) - technical.py:2108-2111 (absent today) | None | none | the whole band; DEFINED-NO-ACTUATOR | CANON (crows close at/near lows); production unenforced; T3 review before any grid |
 | P2 | STRATEGY | rsi_14 `> 40` [EXISTING-THRESHOLD] | `> 40` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P2.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
 | P3 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 

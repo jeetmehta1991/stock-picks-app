@@ -38183,7 +38183,9 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     # carries its PRODUCER boolean and its helper gate, not just the rsi row
     tbc = (d / "three_black_crows_short.md").read_text(encoding="utf-8")
     assert "| P1 | PRODUCER | three_black_crows" in tbc
-    assert "INVENTORY-PENDING-R1" in tbc
+    # B2845 (owner: "R1 is confusing ... ready and final"): the jargon is
+    # gone and every producer row's bands are DEFINED - nothing pending
+    assert "BANDS-DEFINED" in tbc and "INVENTORY-PENDING-R1" not in tbc
     # B2844 re-anchor (the L748 class, caught by this pin's own RED): the
     # bare name now legitimately appears in the Formula section's prose
     # ("strat_three_black_crows_short"), so the phantom-helper arm anchors
@@ -38247,6 +38249,23 @@ def test_b2836_table_a_directory_is_complete_and_honest():
         t_ids = set(_re.findall(r"(?m)^\| P(\d+) \|", rest))
         assert f_ids == t_ids and f_ids, (p.name, f_ids ^ t_ids)
     assert "fires = s.get('three_white_soldiers')" in tws
+
+    # B2845: the BOTH wave - 29 final files in the owner-directed placement
+    # (tighten/both/), file-set == lane exactly, ZERO undefined bands across
+    # the WHOLE directory, and the zero-survivor file carries its T1 verdict
+    both_dir = root / "strategy_optimisation" / "tighten" / "both"
+    both_lane = {r["strategy"] for r in view["rows"] if r["stream"] == "BOTH"}
+    both_files = {p.stem for p in both_dir.glob("*.md")}
+    assert both_files == both_lane, (both_files ^ both_lane)
+    for p in (root / "strategy_optimisation").rglob("*.md"):
+        assert "BANDS-TO-DEFINE" not in p.read_text(encoding="utf-8"), (
+            p.name, "an undefined band survived the B2845 curation")
+    obb = (both_dir / "smc_order_block_bounce.md").read_text(encoding="utf-8")
+    assert "T1 VERDICT: 0 of the R5 fires survive" in obb
+    assert "RE-LANES TO W-L" in obb
+    ms = (both_dir / "morning_star.md").read_text(encoding="utf-8")
+    assert "## Formula (Section 1" in ms
+    assert "mid-candle small-body ratio" in ms      # the explicit 0.3 knob
     readme2 = " ".join((root / "strategy_optimisation" / "README.md")
                        .read_text(encoding="utf-8").split())
     assert "OFFLINE DESCRIBES A LEG'S COST, NEVER A STRATEGY'S SCOPE" in readme2

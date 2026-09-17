@@ -324,6 +324,295 @@ PRODUCER_BANDS = {
     ],
 }
 
+# ---------------------------------------------------------------------------
+# B2845 (owner-corrected scope 2026-09-17: "i want r1 to be executed for each
+# of the tighten n both strategies ... a ready and final table a for review
+# for each strategy"): band definitions for EVERY distinct producer leg the
+# 41 TIGHTEN+BOTH strategies touch - 61 further legs beyond the B2841 set,
+# enumerated mechanically (gate_legs census) so none is silent. Compact
+# factories keep one definition per shape; every entry still carries its
+# production value, band, basis, offline/resim split and evidence line.
+# ---------------------------------------------------------------------------
+
+def _K(param, production, band, basis, offline, resim, evidence, env=None):
+    return {"param": param, "production": production, "band": band,
+            "basis": basis, "offline": offline, "resim": resim,
+            "env": env, "evidence": evidence}
+
+
+def _candle(name, line, extra=""):
+    """A single-candle/multi-candle pattern with NO explicit magnitude today:
+    the implicit anatomy knobs (min body / wick / step pct) are the band."""
+    return [_K(f"implicit anatomy knobs (min body/wick/step pct){extra}",
+               "0 / absent (any magnitude counts)", "[0, 0.3, 0.5] per knob",
+               "CANON candle anatomy (Nison); production accepts any magnitude",
+               "none - pattern bars' OHLC unpersisted", "the whole band",
+               f"backtest/signals/technical.py:{line} (compute_candle_signals)")]
+
+
+def _near(level_key):
+    return [_K(f"proximity tolerance to {level_key} (abs dist/level)", 0.003,
+               "[0.002, 0.003, 0.005, 0.015 (the _wide variant)]",
+               "BRACKET production 0.003; 0.015 is the shipped near_*_wide",
+               "none - the level is persisted but today's price is not a signal key",
+               "the whole band",
+               "backtest/signals/technical.py:76 (near), :81 (near_wide)")]
+
+
+def _span(what, production, band, evidence):
+    return [_K(f"{what} span", production, band,
+               "BRACKET production with adjacent canon spans",
+               "none - values at other spans unpersisted", "the whole band",
+               evidence)]
+
+
+def _price_vs_level(what, evidence, note=""):
+    return [_K(f"buffer pct (price vs {what}){note}", 0.0, "[0, 0.25, 0.5]",
+               "BRACKET zero; strict inequality today",
+               "none - today's price is not a signal key", "the whole band",
+               evidence)]
+
+
+PRODUCER_BANDS.update({
+    # ---- candle patterns (structural today; anatomy knobs are the band) ---
+    "hammer": _candle("hammer", "candle block"),
+    "shooting_star": _candle("shooting_star", "candle block"),
+    "hanging_man": _candle("hanging_man", "candle block"),
+    "dark_cloud_cover": _candle("dark_cloud_cover", "candle block"),
+    "bearish_pin_bar": _candle("bearish_pin_bar", "candle block (B641 W3)"),
+    "bullish_engulfing": _candle("bullish_engulfing", "candle block"),
+    "bearish_engulfing": _candle("bearish_engulfing", "candle block"),
+    "inside_bar": [_K("(structural) h[-1]<h[-2] and l[-1]>l[-2] - no parameter",
+                      "-", "optional containment-margin pct [0, 0.1, 0.25]",
+                      "BRACKET zero; strict containment today",
+                      "none - bar OHLC unpersisted", "the whole band",
+                      "backtest/signals/technical.py:2027")],
+    "morning_star": [
+        _K("mid-candle small-body ratio (body < X * range)", 0.3,
+           "[0.2, 0.3, 0.4]", "BRACKET production (the one EXPLICIT candle knob)",
+           "none - the mid bar's body/range unpersisted", "the whole band",
+           "backtest/signals/technical.py:2088"),
+        _K("recovery rule (close above midpoint of bar-3)", "structural",
+           "midpoint vs [0.382, 0.5, 0.618] retrace", "BRACKET the midpoint rule",
+           "none", "the whole band", "technical.py:2093")],
+    "evening_star": [_K("mirror of morning_star's two knobs", "0.3 / midpoint",
+                        "as morning_star, mirrored", "mirror",
+                        "none", "the whole band",
+                        "backtest/signals/technical.py:2095-2100")],
+    # ---- oscillators ------------------------------------------------------
+    "uo_oversold": [
+        _K("oversold threshold", 30, "[20, 25, 30]",
+           "BRACKET canon 30; the uo value itself is persisted where emitted",
+           "TIGHTER (< 25, < 20) where `uo` is persisted on the fires",
+           "LOOSER; and the (7,14,28) period triple", None,
+           "backtest/signals/technical.py:751"),
+        _K("period triple", "(7, 14, 28)", "[(7,14,28), (5,10,20), (14,28,56)]",
+           "BRACKET canon triple", "none - other triples unpersisted",
+           "the whole band", "backtest/signals/technical.py:738-750")],
+    "uo_overbought": [_K("overbought threshold", 70, "[70, 75, 80]",
+                         "BRACKET canon 70 (mirror of oversold)",
+                         "TIGHTER (> 75, > 80) where `uo` is persisted",
+                         "LOOSER", "backtest/signals/technical.py:752")],
+    "stoch_bullish_cross": [
+        _K("stochastic (k, smooth, d)", "(14, 3, 3)", "[(14,3,3), (5,3,3), (21,5,5)]",
+           "BRACKET canon", "none - other spans unpersisted", "the whole band",
+           "backtest/signals/technical.py:604-624"),
+        _K("cross freshness (k over d today)", "structural",
+           "add guard band: k below [20, 30] at cross",
+           "BRACKET the oversold zone",
+           "guard-band side on persisted stoch_k/stoch_d",
+           "the freshness itself (prior k/d unpersisted)",
+           "technical.py:629")],
+    "stoch_bearish_cross": [_K("mirror of stoch_bullish_cross", "(14,3,3)",
+                               "as bullish, mirrored (guard k above [70, 80])",
+                               "mirror", "guard-band side on persisted k/d",
+                               "freshness", "backtest/signals/technical.py:604-630")],
+    "rsi_14": _span("rsi", 14, "[9, 14, 21]",
+                    "backtest/signals/technical.py rsi block"),
+    "rsi_2": _span("rsi (fast escape-hatch)", 2, "[2, 3, 5]",
+                   "backtest/signals/technical.py rsi block"),
+    "obv_bullish": [
+        _K("obv vs its moving average", "obv > obv_ma", "MA span [10, 20, 50]",
+           "BRACKET the shipped span", "none - obv_ma at other spans unpersisted",
+           "the whole band", "backtest/signals/technical.py:1570"),
+        _K("margin pct over the MA", 0.0, "[0, 1, 2] pct",
+           "BRACKET zero", "TIGHTER margins where obv and obv_ma are persisted",
+           "LOOSER", "technical.py:1570")],
+    "obv_bearish": [_K("mirror of obv_bullish", "obv < obv_ma",
+                       "as obv_bullish, mirrored", "mirror",
+                       "tighter margins on persisted obv/obv_ma", "looser",
+                       "backtest/signals/technical.py obv block")],
+    # ---- pivots / levels proximity ---------------------------------------
+    "near_s1": _near("S1"), "near_s2": _near("S2"), "near_s3": _near("S3"),
+    "near_r1": _near("R1"), "near_r2": _near("R2"),
+    "near_cam_s3": _near("Camarilla S3"), "near_cam_r3": _near("Camarilla R3"),
+    "near_wood_s1": _near("Woodie S1"), "near_wood_r1": _near("Woodie R1"),
+    "above_cpr": _price_vs_level("cpr_top",
+                                 "backtest/signals/technical.py:146 region"),
+    "above_vwap": _price_vs_level("vwap", "backtest/signals/technical.py vwap block"),
+    "below_avwap_20high": _price_vs_level(
+        "avwap anchored at 20d high",
+        "backtest/signals/technical.py avwap block",
+        " + anchor choice [20high, 50high, 252high]"),
+    "price_above_sma_50": _span("sma", 50, "[20, 50, 100]",
+                                "backtest/signals/technical.py sma block"),
+    "price_above_sma_200": _span("sma", 200, "[150, 200, 250]",
+                                 "backtest/signals/technical.py sma block"),
+    "below_sma_50": _span("sma", 50, "[20, 50, 100]",
+                          "backtest/signals/technical.py sma block"),
+    "below_sma_200": _span("sma", 200, "[150, 200, 250]",
+                           "backtest/signals/technical.py sma block"),
+    "price_above_ema_50": _span("ema", 50, "[20, 50, 100]",
+                                "backtest/signals/technical.py compute_ema_sma"),
+    # ---- channels / bands -------------------------------------------------
+    "dc20_breakout_up": [_K("breakout tolerance (close >= upper * (1-t))",
+                            0.002, "[0, 0.002, 0.005, 0.01]",
+                            "BRACKET production 0.2pct (B591 1pct variant exists "
+                            "for dc10 only)",
+                            "none - close unpersisted",
+                            "the whole band",
+                            "backtest/signals/technical.py:1470 region")],
+    "dc20_breakout_dn": [_K("mirror of dc20_breakout_up", 0.002,
+                            "[0, 0.002, 0.005, 0.01]", "mirror", "none",
+                            "the whole band",
+                            "backtest/signals/technical.py:1470 region")],
+    "bb_20_20_touch_lower": [
+        _K("bb (period, k)", "(20, 2.0)", "k [1.5, 2.0, 2.5]; period [20]",
+           "BRACKET canon k", "none - bands at other k unpersisted for the touch",
+           "the whole band", "backtest/signals/technical.py bb block")],
+    "bb_20_20_touch_upper": [_K("mirror of touch_lower", "(20, 2.0)",
+                                "k [1.5, 2.0, 2.5]", "mirror", "none",
+                                "the whole band",
+                                "backtest/signals/technical.py bb block")],
+    "bb_20_20_reclaim_from_upper_recent_3d": [
+        _K("reclaim recency (bars) + (period, k)", "3 / (20, 2.0)",
+           "recency [1, 3, 5]; k [1.5, 2.0, 2.5]",
+           "BRACKET production (B800 EVENT conversion, upper mirror)",
+           "none - reclaim history unpersisted", "the whole band",
+           "backtest/signals/technical.py:1402 region")],
+    # ---- bar anatomy ------------------------------------------------------
+    "close_above_open": [_K("(structural) c > o - optional min body pct",
+                            0.0, "[0, 0.2, 0.5] pct",
+                            "BRACKET zero", "none - bar OHLC unpersisted",
+                            "the whole band",
+                            "backtest/signals/technical.py bar-anatomy block")],
+    "close_below_open": [_K("mirror of close_above_open", 0.0,
+                            "[0, 0.2, 0.5] pct", "mirror", "none",
+                            "the whole band", "technical.py bar-anatomy block")],
+    "close_in_top_40pct_of_range": [
+        _K("range-position cutoff", 0.40, "[0.25, 0.40, 0.50]",
+           "BRACKET production 0.40", "none - bar OHLC unpersisted",
+           "the whole band", "backtest/signals/technical.py:1682")],
+    "close_in_bottom_40pct_of_range": [
+        _K("mirror of top_40pct", 0.40, "[0.25, 0.40, 0.50]", "mirror",
+           "none", "the whole band", "backtest/signals/technical.py:1682 region")],
+    "vol_above_avg": [_K("volume ratio floor (vol / avg)", 1.0,
+                         "[1.0, 1.2, 1.5, 2.0]",
+                         "BRACKET production 1.0; avg window is the second knob "
+                         "[10, 20, 50]",
+                         "TIGHTER floors where the vol ratio key is persisted "
+                         "on the fires; else none",
+                         "LOOSER, and any window change",
+                         "backtest/signals/technical.py:1600")],
+    # ---- trend / regime ---------------------------------------------------
+    "supertrend_flip_recent_short_5d": [
+        _K("(period, multiplier) + flip lookback", "(7, 3.0) + 5d",
+           "period/mult [(7,3),(10,3),(7,2)]; lookback [3, 5, 10]",
+           "BRACKET canon (B655 EVENT conversion)",
+           "none - flip history unpersisted", "the whole band",
+           "backtest/signals/technical.py:1179 + flip block")],
+    "vix_term_backwardation": [
+        _K("backwardation margin (VIX over VIX3M)", 0.0, "[0, 2, 5] pct",
+           "BRACKET zero (strict > today)",
+           "none - vix3m is not persisted per-fire", "the whole band",
+           "backtest/signals/cross_asset.py:216-231")],
+    "weekly_bias_bull": [
+        _K("weekly ema pair", "(10, 20)", "[(5,10), (10,20), (20,40)]",
+           "BRACKET production", "none - weekly emas unpersisted",
+           "the whole band", "backtest/signals/multi_timeframe.py:45-90")],
+    # ---- ict / gaps -------------------------------------------------------
+    "week_open_gap_up_15pct": [
+        _K("gap threshold pct (NAME IS DECIMAL-SHIFTED: 15pct = 1.5pct, the "
+           "vol_spike naming convention)", 1.5, "[1.0, 1.5, 2.0, 3.0]",
+           "BRACKET production 1.5",
+           "none - the gap pct is not persisted", "the whole band",
+           "backtest/signals/ict_producers.py:147-149")],
+    # ---- volume profile / smc / patterns ----------------------------------
+    "vp_close_above_poc": [
+        _K("profile (lookback_days, n_bins) + side rule", "(60, 40)",
+           "lookback [30, 60, 120]; bins [30, 40, 50]",
+           "BRACKET production", "none - POC at other params unpersisted",
+           "the whole band", "backtest/signals/volume_profile.py:46-58")],
+    "smc_mitigation_block_long": [
+        _K("smc family knobs (swing_length, event_recency_bars)", "(20, 90)",
+           "swing [5, 10, 20, 30, 50]; recency [45, 90, 180]",
+           "the smc SPECS family bands (producer_variant_table)",
+           "none - other-knob values unpersisted",
+           "the whole band", "backtest/signals/smc_ict.py mitigation block",
+           env="SMC_SWING_LENGTH / SMC_EVENT_RECENCY_BARS")],
+    "smc_mitigation_block_short": [
+        _K("mirror of mitigation_long", "(20, 90)", "as long, mirrored",
+           "mirror", "none", "the whole band",
+           "backtest/signals/smc_ict.py mitigation block",
+           env="SMC_SWING_LENGTH / SMC_EVENT_RECENCY_BARS")],
+    "smc_ob_bullish_tap_recent_5d": [
+        _K("obb SPECS knobs (swing, close_mitigation, tail_n, age, break_pct, "
+           "tap lookback 5d)", "SPECS production line",
+           "the registered SPECS bands (P1-P6)",
+           "SPECS-REGISTERED (producer_variant_table smc_breaker/ob family)",
+           "none beyond persisted keys", "the SPECS resim bands",
+           "scripts/producer_variant_table.py SPECS + smc_ict.py:387",
+           env="SMC_* (registered)")],
+    "smc_ob_bearish_tap_recent_5d": [
+        _K("mirror of ob_bullish_tap", "SPECS production line",
+           "the registered SPECS bands", "SPECS-REGISTERED", "none",
+           "the SPECS resim bands",
+           "scripts/producer_variant_table.py SPECS",
+           env="SMC_* (registered)")],
+    "cup_handle_detected": [
+        _K("detector tolerances (rim match, depth, handle pullback)",
+           "detect_cup_and_handle defaults",
+           "each tolerance bracketed [0.5x, 1x, 1.5x] of production",
+           "BRACKET the detector's shipped tolerances",
+           "none - pattern geometry unpersisted", "the whole band",
+           "backtest/signals/chart_patterns.py detect_cup_and_handle")],
+    "cup_handle_neckline_break_retest_long": [
+        _K("retest window + neckline tolerance", "producer defaults",
+           "window [3, 5, 10]; tolerance [0, 0.2, 0.5] pct",
+           "BRACKET production (B685 producer)",
+           "none", "the whole band",
+           "backtest/signals/chart_patterns.py "
+           "compute_cup_handle_neckline_break_retest_signals")],
+    # ---- events / smart money / factor ------------------------------------
+    "insider_cluster_active": [
+        _K("cluster rule (unique buyers >= N in window)", "N in 30d",
+           "N [2, 3, 5]; window [14, 30, 60] days",
+           "BRACKET the shipped cluster rule",
+           "N-side TIGHTER via persisted insider_unique_buyers_30d",
+           "window changes", "backtest/data/smart_money.py cluster block")],
+    "insider_unique_buyers_30d": [
+        _K("count window (days)", 30, "[14, 30, 60]",
+           "BRACKET production", "count floors via the persisted count",
+           "window changes", "backtest/data/smart_money.py:433-439 region")],
+    "xs_momentum_top_quintile": [
+        _K("quantile cut (quintile)", "top 20pct", "[decile, quintile, tercile]",
+           "BRACKET the cut; the underlying 12-1 momentum and decile keys are "
+           "persisted", "re-cuts via persisted xs decile/raw keys - OFFLINE",
+           "recompute at other formation windows",
+           "backtest/signals cross-sectional factor block")],
+    "macd_12_26_9_bullish": [
+        _K("span triple (mirror of the bearish entry)", "(12,26,9)",
+           "[(8,21,5), (12,26,9)] both computed; others new",
+           "MEASURED availability (both persisted)",
+           "the (8,21,5) swap on persisted keys", "any third triple",
+           "backtest/signals/technical.py:634-648")],
+    # ---- non-gate display key ---------------------------------------------
+    "pair_counterparty": [
+        _K("(not a gate) display field naming the paired ticker", "-", "-",
+           "no band - rationale text only", "-", "-",
+           "backtest/signals/pairs_trading.py:377 region")],
+})
+
 # strategy-layer gates the source pattern cannot see (local-variable compares)
 # - each IS a persisted magnitude, so tighter sides are OFFLINE today.
 STRATEGY_EXTRAS = {
@@ -334,6 +623,15 @@ STRATEGY_EXTRAS = {
          "offline": "TIGHTER (< 3, > 97) - subset on persisted rsi_2",
          "resim": "LOOSER", "env": None,
          "evidence": "backtest/signals/screener.py strat_williams_r_oversold "
+                     "(local rsi_2 compare - invisible to the extractor)"},
+    ],
+    "ultimate_oscillator": [
+        {"param": "rsi_2 escape-hatch thresholds (long < 5, short > 95)",
+         "production": "5 / 95", "band": "[3, 5] / [95, 97]",
+         "basis": "BRACKET production (Connors RSI-2 canon); rsi_2 persisted",
+         "offline": "TIGHTER (< 3, > 97) - subset on persisted rsi_2",
+         "resim": "LOOSER", "env": None,
+         "evidence": "backtest/signals/screener.py strat_ultimate_oscillator "
                      "(local rsi_2 compare - invisible to the extractor)"},
     ],
     "bollinger_lower": [

@@ -88,7 +88,7 @@ def gate_legs(src: str) -> dict:
     borrow-trap helper - and an axis left out of Table A is invisible at close
     (L785). Boolean legs carry their tunables in the PRODUCER layer; those
     knobs are inventoried at R1 (the SPECS entry), so the pre-R1 row marks
-    them INVENTORY-PENDING-R1 rather than omitting them. Helper-gate detection
+    them with their bands to define rather than omitting them. Helper-gate detection
     is a source pattern - a lower bound, like every extraction here.
     """
     out = {}
@@ -252,6 +252,30 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
            comparisons, legs_helpers, idx, specs_names, stamp: str,
            body: str = "") -> str:
     n_all = len(frame)
+    # B2845 zero-survivor guard: smc_order_block_bounce survives 0.0 - the T1
+    # filter keeps NOTHING, so no offline level is measurable and every
+    # retention division below would be 0/0. Emit the honest short form: the
+    # formula and inventory stand; the measured sections are replaced by the
+    # workflow's own verdict (W-T T1: surviving fires below the floor
+    # re-lanes the campaign to W-L - the engine, not the cube, must speak).
+    if n_all == 0:
+        return "\n".join([
+            f"# Table A - {name}", "", stamp, "",
+            f"**Lane:** {row['stream']} | **family:** {row['family']} | "
+            f"**status:** {row['status']} | **R5 fires:** {row['r5_fires']} | "
+            f"**surviving fires (T1): 0** (survives_pct {row['survives_pct']})",
+            "",
+            "**T1 VERDICT: 0 of the R5 fires survive the CURRENT gate - no "
+            "offline band level is measurable from this cube. Per the "
+            "workflow's T1 gate the campaign RE-LANES TO W-L (engine): the "
+            "producer bands below are the resim inventory it prices.**", "",
+            "## Formula (Section 1 of the SS6/#183 locked artifact)", "",
+            "```python", body or "(no body extracted)", "```", "",
+            "## Producer bands (resim inventory for the W-L campaign)", "",
+            "The gate's parameters and their defined bands are those of the "
+            "shared producers - see the smc SPECS family "
+            "(producer_variant_table) and table_a_bands.py entries for: "
+            + ", ".join(sorted(set(legs_helpers[0]))) + ".", ""])
     series = key_series(sigs)
     depth_keys = sorted({k for k, _, _ in comparisons})
     legs, helpers = legs_helpers
@@ -278,7 +302,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
         _p += 1
         kn = PRODUCER_BANDS.get(leg, [])
         note = (f"knobs P{_p}.1-P{_p}.{len(kn)} (band rows in Table A)"
-                if kn else "knobs INVENTORY-PENDING-R1 (SPECS)")
+                if kn else "knobs bands to define")
         L.append(f"P{_p}  {leg}  <- {attribute(leg, idx)}")
         L.append(f"       {note}")
     L += ["", "============================== STRATEGY LAYER ==============================", ""]
@@ -294,12 +318,14 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     L += ["", "Gate body, VERBATIM from backtest/signals/screener.py "
           f"strat_{name} (docstring and return dropped):", "",
           "```python", body or "(no body extracted)", "```", "",
-         "## Table A - parameter inventory (the SS6 canonical shape, pre-R1)",
+         "## Table A - parameter inventory (canonical shape - READY FOR OWNER BAND REVIEW)",
          "",
          "One row per parameter the entry condition touches, BOTH layers, nothing",
-         "omitted (L785: an axis left out of Table A is invisible at close). The",
-         "R1 SPECS entry absorbs and supersedes this pre-R1 inventory - producer",
-         "knob rows below are placeholders it must fill.", "",
+         "omitted (L785: an axis left out of Table A is invisible at close).",
+         "Every producer row carries its DEFINED BANDS in the P<n>.x rows beneath",
+         "it (B2845, owner-corrected: a ready and FINAL Table A per strategy);",
+         "the engine-spec (SPECS) entry is built from these before any engine",
+         "leg runs.", "",
          "| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |",
          "|---|---|---|---|---|---|---|"]
     pid = 0
@@ -316,8 +342,8 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"a shared producer's resim runs the FULL OPEN consumer set "
                  f"and its one cube is graded per consumer (11.2s - results "
                  f"reused by construction); "
-                 f"knobs {'in the SPECS entry' if in_specs else 'INVENTORY-PENDING-R1 (SPECS)'} | "
-                 f"{'SPECS-REGISTERED' if in_specs else 'INVENTORY-PENDING-R1'} |")
+                 f"knobs {'in the SPECS entry' if in_specs else ('DEFINED below (P' + str(pid) + '.x)' if PRODUCER_BANDS.get(leg) else 'to define')} | "
+                 f"{'SPECS-REGISTERED' if in_specs else ('BANDS-DEFINED' if PRODUCER_BANDS.get(leg) else 'BANDS-TO-DEFINE')} |")
         L += _band_rows(pid, leg, PRODUCER_BANDS.get(leg, []))
     for key, op, prod in sorted(set(comparisons)):
         pid += 1
@@ -347,7 +373,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             continue
         L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - a helper gate; its "
                  f"internals are outside the source pattern (lower bound) | "
-                 f"required | - | inspect at R1 | INVENTORY-PENDING-R1 |")
+                 f"required | - | inspect before any engine leg | BANDS-TO-DEFINE |")
     for k in STRATEGY_EXTRAS.get(name, []):
         pid += 1
         L.append(f"| P{pid} | STRATEGY | {k['param']} - {k['evidence']} | "
@@ -463,6 +489,8 @@ def main() -> int:
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--lane", default="TIGHTEN", choices=("TIGHTEN", "BOTH"))
+    ap.add_argument("--subdir", default=None,
+                    help="output folder under strategy_optimisation/ (default: the lane name; owner-directed tighten/both for the BOTH wave)")
     a = ap.parse_args()
 
     view = json.loads(STATUS_JSON.read_text(encoding="utf-8"))
@@ -497,7 +525,7 @@ def main() -> int:
                               "signals_at_entry"])
     tl = tl.drop_duplicates(["strategy", "ticker", "entry_date"])
 
-    sub = OUT_DIR / a.lane.lower()
+    sub = OUT_DIR / (a.subdir if a.subdir else a.lane.lower())
     sub.mkdir(parents=True, exist_ok=True)
     written = []
     for r in sorted(rows, key=lambda x: -x["projected_current_gate"]):

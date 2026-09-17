@@ -11,16 +11,18 @@ the T2/L2 "Table A rendered" artifact, pre-built.
 
 **Shape (B2838, owner-caught conformance):** each file leads with the plan's
 CANONICAL Table A - the SS6/#183 parameter inventory, one row per parameter
-across BOTH layers (producer booleans with their knob disposition, strategy
-numeric thresholds, helper gates, B-rows) - followed by the MEASURED input
-sections (free-band quantiles, B-row candidate census). The R1 SPECS entry
-(`producer_variant_table.py`) absorbs and supersedes the pre-R1 inventory;
-`validate_spec` then owns the formula <-> Table A cross-check.
+across BOTH layers (producer booleans WITH THEIR DEFINED BANDS in P<n>.x
+rows - B2845, owner-corrected: a ready and FINAL Table A per strategy, no
+pending placeholders - strategy numeric thresholds, helper gates, B-rows),
+preceded by the Formula (Section 1) and followed by the MEASURED input
+sections. The engine-spec (SPECS) entry in `producer_variant_table.py` is
+built FROM these bands before any engine leg; `validate_spec` then owns
+the formula <-> Table A cross-check.
 
 **Generated, never hand-edited.** Regenerate with:
 
-    python scripts/build_table_a.py --lane TIGHTEN     # tighten/ (12 files)
-    python scripts/build_table_a.py --lane BOTH        # both/    (29 files, next wave)
+    python scripts/build_table_a.py --lane TIGHTEN                      # tighten/ (12 files)
+    python scripts/build_table_a.py --lane BOTH --subdir tighten/both   # tighten/both/ (29 files, owner-directed placement)
 
 Each file carries an L803/#309 build stamp (generator + cube + status build +
 commit + timestamp). A file whose stamp is stale against HEAD is regenerated
@@ -118,7 +120,7 @@ Step 2; offline reads are free, so the full combination population is read.
 | Engine config lands | `run_phase1a.py::_postconfig_landing_hook` (line 181, invoked line 713) -> B2520 battery, all nine steps; Stop-hook LANDING REPORT gate | WIRED (grep this batch) |
 | Offline Step-1 grid | grader-internal fail-closed refusals (reproduction / coverage / join / truncation) + multiplicity block (`offline_level_sweep.py`, `breadth_step1_grid.py`) with `multiplicity.reconciles` required by the T4 gate | WIRED (in-process) |
 | Step-2 read | `breadth_step2_read.py` REFUSES without `--ruling` (the 11.2c word recorded verbatim) | WIRED |
-| Step-2 vs Step-1 multiplicity | **GAP: the Step-2 reader does not check that Step-1's multiplicity block reconciled** | TICKETED S6-B2836a (OPEN) |
+| Step-2 vs Step-1 multiplicity | `breadth_step2_read.require_multiplicity()` REFUSES an absent or non-reconciled Step-1 multiplicity block, before any frame is built (pin test_b2839) | WIRED (B2839 closed S6-B2836a) |
 
 ## Roster - wave 1 (12 TIGHTEN, from the stamped status view)
 
