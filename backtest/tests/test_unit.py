@@ -38310,6 +38310,10 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     assert "OFFLINE-ONLY STEP 2 (owner ruling 2026-09-16, B2836)" in plan
     assert "the holdout is SPENT" in plan
     assert plan.count("strategy_optimisation/") >= 3
+    # B2847 (owner-directed): the pre-Step-1 sequence is tabulated in the
+    # plan, each row carrying its enforcement state honestly
+    assert "THE PRE-STEP-1 SEQUENCE (B2847" in plan
+    assert "PROSE until S6-B2848a" in plan and "PROSE until S6-B2848c" in plan
 
 
 def test_b2839_step2_refuses_unreconciled_multiplicity():

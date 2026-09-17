@@ -3704,6 +3704,17 @@ stalled row is unfinished work with history - T0 reads its concluded campaign ti
 T2/T4 reuse any artifacts they left). An IN-CAMPAIGN row belongs to its
 ticket; a terminal row is out by construction (B2825). Pick order: `projected_current_gate`
 DESCENDING (statistical power first).
+**THE PRE-STEP-1 SEQUENCE (B2847, owner-directed 2026-09-17: "Tabulate and capture
+this") - what runs, in order, before any Step-1 grid, with its enforcement state:**
+
+| # | Step | What it does | Enforced by (B2848+ close the PROSE rows) |
+|---|---|---|---|
+| 1 | SPECS (R1) | register the Table A bands as the machine-checked engine spec | `validate_spec` blocks generation; `launch_refusals` at run_wave refuses undeclared knobs |
+| 2 | 0.5 smoke | fires exist at PRODUCTION params on live data (a zero = producer defect, not a search) | PROSE until S6-B2848c (prelaunch check, approved) |
+| 3 | 0.6 branch | per level: offline (persisted-magnitude tightening) or engine | `offline_level_sweep`'s four refusals confirm mechanically at grid time |
+| 4 | T3 band words | the OWNER's per-strategy review of the Table A file - no grid before the word | PROSE until S6-B2848a (--band-ruling on Step-1 instruments, approved) |
+| 5 | Step-1 grid | offline: full grid, IS-only, multiplicity mandatory; engine: the 11.2 ladder with its launch gates | grader refusals + multiplicity; Step-2 refuses unreconciled Step-1 (B2839) |
+
 **Band inventory (B2836):** every entrant's Table A (depth + breadth) is pre-built in
 `strategy_optimisation/` (see its README - the charter, the offline-only Step-2 ruling
 with its risks, and the enforcement map). **Owner-ruled division of labour: wave 1 =
