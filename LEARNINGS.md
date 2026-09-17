@@ -21048,3 +21048,16 @@ changed since the closure evidence, survives < 1.0) that awaits the
 owner's word, never an automatic transition. Mechanism: test_b2825 pins
 the exact partition, the lane voiding, and the exact reopen pair.
 Compliance failure against item #201.
+
+**INSTANCE (B2846, 2026-09-17) - answering ABOUT a ladder from memory is
+executing it from memory.** Two owner-caught defects in one Q&A arc, neither
+in any artifact: a step table in chat inverted the plan's own Step-0-before-
+review order, and a follow-up summary dropped steps 0.5/0.6 entirely - both
+because the answer was composed from recall of SS11.2 and the ladder was only
+re-read AFTER the owner asked. L780's class (a spec consulted from memory
+repeats its drift on the next use), arriving through an ANSWER rather than an
+execution; the L634/B2134 predicate says answer-turns bind the same. The
+corrective is the same re-read rule: a sequence quoted to the owner is read
+from the doc IN THAT TURN, or labeled as recall. Compliance failure against
+item #270 - no new item warranted; detection stays with the #270 gate, which
+fired.
