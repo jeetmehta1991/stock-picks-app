@@ -3870,6 +3870,78 @@ def scan_retroactive_sweep(entries, *, text=None) -> list[str]:
             "you scanned and what you found, even if the answer is none.")
 
 
+# ---------------------------------------------------------------------------
+# B2853 (owner-approved plank 2 / L805): the memory-rendering class. 5 of 7
+# owner catches on the Table A charter were ONE defect - the locked standard
+# reconstructed from memory while its renderer was edited - surfaced one
+# element per catch. ACCEPTED LIMIT, stated at approval: this proves the
+# defining source was OPENED this turn, not read with comprehension; the
+# reflexive Read that satisfies it still puts the exemplar in context, which
+# was the missing ingredient.
+LOCKED_FORMAT_OWNERS = {
+    # owner file -> tokens (lowercase), ANY of which counts as its defining
+    # source opened this turn. Table A's standard lives in the plan and its
+    # exemplars under strategy_optimisation/; Tables C and D derive from the
+    # producer_variant_table inventory.
+    "scripts/build_table_a.py": ("strategy_optimisation_plan.md",
+                                 "strategy_optimisation/"),
+    "scripts/table_a_bands.py": ("strategy_optimisation_plan.md",
+                                 "strategy_optimisation/"),
+    "scripts/table_d_render.py": ("producer_variant_table",),
+    "scripts/show_table_c.py": ("producer_variant_table",),
+    "scripts/show_table_d.py": ("producer_variant_table", "table_d_render"),
+}
+
+
+def _written_file_paths(entries) -> list[str]:
+    """Targets of this turn's Write/Edit calls - the PATH only, never the
+    payload (B1774: a written path is not evidence of reading, but it IS
+    evidence of authoring, which is what this gate's trigger needs)."""
+    import json as _j  # noqa: F401  (parity with the sibling collectors)
+    out = []
+    for d in _turn_entries(entries):
+        if not isinstance(d, dict) or d.get("type") != "assistant":
+            continue
+        for blk in (d.get("message") or {}).get("content") or ():
+            if not (isinstance(blk, dict) and blk.get("type") == "tool_use"):
+                continue
+            if str(blk.get("name") or "").lower() not in ("write", "edit"):
+                continue
+            fp = str((blk.get("input") or {}).get("file_path") or "")
+            if fp:
+                out.append(fp.replace("\\", "/").lower())
+    return out
+
+
+def scan_locked_format_edit_without_source_open(entries, *, text=None,
+                                                written=None,
+                                                opened=None) -> list[str]:
+    """B2853: a turn that EDITS a locked-format owner must OPEN its defining
+    source in the same turn. The pre-action half of L471/L805 made
+    scannable: the edit is the trigger, the Read/grep is the evidence."""
+    w = ([str(x).replace("\\", "/").lower() for x in written]
+         if written is not None else _written_file_paths(entries))
+    if not w:
+        return []
+    if opened is None:
+        opened = (_executed_tool_text(entries) + " "
+                  + _inspecting_tool_text(entries))
+    opened = str(opened).lower()
+    bad = []
+    for owner, tokens in LOCKED_FORMAT_OWNERS.items():
+        if not any(p.endswith(owner) for p in w):
+            continue
+        if any(tok in opened for tok in tokens):
+            continue
+        bad.append(
+            f"LOCKED-FORMAT EDIT WITHOUT ITS SOURCE (B2853 / L805): this "
+            f"turn edits {owner} with no tool call opening its defining "
+            f"source ({' or '.join(tokens)}). A locked format reconstructed "
+            f"from memory drifts one element at a time - open the standard "
+            f"or an exemplar FIRST, then edit the renderer.")
+    return bad
+
+
 def scan_compliance_is_content(entries, *, text=None) -> list[str]:
     """B1758 / #238: the compliance statement must CITE ITEMS, not merely exist.
 
@@ -4618,7 +4690,10 @@ def main(argv: list[str] | None = None) -> int:
                 # B2577: so must a HALTED serial chain.
                 scan_chain_halt,
                 # B2817 (S6-B2705a): JUDGMENT-ONLY is earned by a named search.
-                scan_judgment_only_without_search):
+                scan_judgment_only_without_search,
+                # B2853 (plank 2): a locked-format owner edited without its
+                # defining source opened in the same turn is blocked.
+                scan_locked_format_edit_without_source_open):
         _n_gates += 1
         try:
             _r = _sc(_e2)

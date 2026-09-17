@@ -38543,3 +38543,51 @@ def test_b2852_generated_artifact_gate_fires_and_stays_quiet(tmp_path):
     assert src.count("check_generated_artifact_matches_generator(files)") == 1
     bta = (root / "scripts" / "build_table_a.py").read_text(encoding="utf-8")
     assert '"--out-root"' in bta
+
+
+def test_b2853_locked_format_edit_demands_its_source_opened():
+    """B2853 (owner-approved plank 2 / L805): the pre-action half of the
+    memory-rendering class made scannable - editing a locked-format owner
+    with no tool call opening its defining source is blocked. Both
+    directions per #226, wiring per #224, and the no-write turn is quiet
+    (the negative-control shape)."""
+    import importlib.util as ilu
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    spec = ilu.spec_from_file_location(
+        "vtc_b2853", root / "scripts" / "verify_turn_compliance.py")
+    tg = ilu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    g = tg.scan_locked_format_edit_without_source_open
+
+    # must-FIRE: renderer edited, nothing opened
+    fired = g([], written=["scripts/build_table_a.py"], opened="")
+    assert fired and "LOCKED-FORMAT EDIT" in fired[0], fired
+    assert "strategy_optimisation" in fired[0], "remedy names the source"
+
+    # must-QUIET: same edit with the plan opened (either token suffices)
+    assert g([], written=["scripts/build_table_a.py"],
+             opened="read STRATEGY_OPTIMISATION_PLAN.md") == []
+    assert g([], written=["scripts/table_a_bands.py"],
+             opened="cat strategy_optimisation/tighten/hull_rsi.md") == []
+
+    # must-QUIET: non-owner writes never trigger; no writes never trigger
+    assert g([], written=["scripts/queue_state.py"], opened="") == []
+    assert g([], written=[], opened="") == []
+
+    # every owner in the map is reachable: each fires alone with nothing
+    # opened (the map is data - a member nothing can fire on is dead weight)
+    for owner in tg.LOCKED_FORMAT_OWNERS:
+        got = g([], written=[owner], opened="")
+        assert got and owner in got[0], (owner, got)
+
+    # wiring (#224): defined once, registered once in the _sc tuple
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert src.count("def scan_locked_format_edit_without_source_open") == 1
+    assert src.count("scan_locked_format_edit_without_source_open)") == 1, (
+        "the gate must be REGISTERED (a defined-never-wired gate is the "
+        "B1751 instance-5 class)")

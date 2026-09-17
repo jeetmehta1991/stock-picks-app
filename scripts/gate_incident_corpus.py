@@ -121,6 +121,16 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {},
     ),
+    # B2853: VERBATIM the owner's B2851 catch - the fifth single-element catch
+    # on one memory-rendered standard. The state is the turn's shape: the
+    # renderer edited, nothing opening the plan or an exemplar.
+    "scan_locked_format_edit_without_source_open": (
+        "Going through the doc. Still cant see the bands. Boolean formula is "
+        "missing. As per table A standards, there is a missing column that "
+        "explains what each producer does.",
+        True,
+        {"written": ["scripts/build_table_a.py"], "opened": ""},
+    ),
     "scan_compliance_is_content": (
         "CHECKLIST compliance statement: all items applied and satisfied.",
         True,
@@ -674,6 +684,17 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
         ("Fixed by stemming the verbs. Retroactive sweep: scanned all 6 sibling "
          "call sites, 1 shared the defect and is fixed, 5 were already correct.",
          False, {}),
+    ],
+    "scan_locked_format_edit_without_source_open": [
+        # must-QUIET 1: the same edit WITH the plan opened in the same turn -
+        # the compliant form the gate exists to require.
+        ("edited the renderer after re-reading the standard", False,
+         {"written": ["scripts/build_table_a.py"],
+          "opened": "read strategy_optimisation_plan.md section 6 table a"}),
+        # must-QUIET 2: a turn writing only non-owner files never triggers,
+        # whatever it opened - the trigger is the OWNER edit, not authoring.
+        ("edited an unrelated script", False,
+         {"written": ["scripts/queue_state.py"], "opened": ""}),
     ],
     "scan_shell_substitution": [
         # the SAME shape as the must-FIRE incident with the substitution removed:
