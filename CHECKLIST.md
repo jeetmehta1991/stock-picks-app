@@ -4191,6 +4191,8 @@ it** - which is why `#237` is a gate now and not a paragraph.
 
 **EXTENSION (B1805 / L552) - ONE INCIDENT PROVES ONE PATH.**
 
+**Instance L806 (B2854, record-of-fact): a corpus arm without its TRIGGER sentence never reaches the members - the must-fire failed test_b1805 (correctly) and the sibling must-quiet was hollow the same way; both repaired in one edit. The mechanism is test_b1805 itself.**
+
 **MEASURED: `scan_response_gates` passed this sweep every run of the session on one sentence -
 *"Reverting."* - while 5 of 12 tense variants went unmatched.** `revert` is the only one of its six
 verbs not ending in `e`, so it is the only one for which the naive `stem + "ing"` produced a real

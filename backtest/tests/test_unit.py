@@ -38591,3 +38591,50 @@ def test_b2853_locked_format_edit_demands_its_source_opened():
     assert src.count("scan_locked_format_edit_without_source_open)") == 1, (
         "the gate must be REGISTERED (a defined-never-wired gate is the "
         "B1751 instance-5 class)")
+
+
+def test_b2854_a_sweep_names_its_instrument():
+    """B2854 (owner-approved plank 3 / L781): a sweep statement must name the
+    instrument that produced its population - a population nobody can
+    re-derive is a count, not a sweep. Both directions per #226."""
+    import importlib.util as ilu
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    spec = ilu.spec_from_file_location(
+        "vtc_b2854", root / "scripts" / "verify_turn_compliance.py")
+    tg = ilu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    g = tg.scan_retroactive_sweep
+
+    # must-FIRE: a sweep stated with NO instrument
+    bare = ("This class is now closed.\n\nRetroactive sweep: scanned the "
+            "sibling call sites, none shared the defect.")
+    fired = g([], text=bare)
+    assert fired and any("enumeration instrument" in v for v in fired), fired
+
+    # must-QUIET: the same sweep naming its grep in the same paragraph
+    named = ("This class is now closed.\n\nRetroactive sweep: scanned the "
+             "sibling call sites (grep -n scripts/preflight.py), none "
+             "shared the defect.")
+    assert g([], text=named) == [], g([], text=named)
+
+    # must-QUIET: an instrument in a DIFFERENT paragraph does not satisfy
+    # the sweep's own paragraph (proximity scoped per B1762)
+    apart = ("This class is now closed. I also ran queue_state.py "
+             "for the counts.\n\nRetroactive sweep: scanned the sibling "
+             "call sites, none shared the defect.")
+    fired2 = g([], text=apart)
+    assert fired2 and any("enumeration instrument" in v for v in fired2), (
+        "an instrument outside the sweep paragraph must not satisfy it")
+
+    # must-QUIET: no sweep trigger at all
+    assert g([], text="ordinary reporting prose about results") == []
+
+    # wiring: the marker list and the member survive in the source
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert "RETRO_INSTRUMENT = (" in src
+    assert "names its enumeration instrument" in src

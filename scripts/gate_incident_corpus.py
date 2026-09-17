@@ -679,11 +679,23 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
          False, {}),
     ],
     "scan_retroactive_sweep": [
-        # a class closed WITH a sweep stated. The must-FIRE case declares a class
-        # closed with no statement of what else was scanned.
-        ("Fixed by stemming the verbs. Retroactive sweep: scanned all 6 sibling "
-         "call sites, 1 shared the defect and is fixed, 5 were already correct.",
+        # a class closed WITH a sweep stated AND its instrument named (B2854:
+        # the population is re-derivable from the grep in the sentence). The
+        # trigger sentence rides along so the arm REACHES the members and is
+        # quiet BECAUSE instrumented, not because untriggered (L703 - the
+        # prior form of this arm carried no trigger and was hollow).
+        ("This class is now closed. Fixed by stemming the verbs.\n\n"
+         "Retroactive sweep: scanned all 6 sibling call sites (grep -n across "
+         "scripts/preflight.py), 1 shared the defect and is fixed, 5 were "
+         "already correct.",
          False, {}),
+        # B2854 must-FIRE: the same sweep with NO instrument - a population
+        # nobody can re-derive is a count, not a sweep (L781). The trigger
+        # sentence rides along, as in the primary incident.
+        ("This class is now closed. Fixed by stemming the verbs.\n\n"
+         "Retroactive sweep: scanned the sibling call sites, one shared the "
+         "defect, the rest were already correct.",
+         True, {}),
     ],
     "scan_locked_format_edit_without_source_open": [
         # must-QUIET 1: the same edit WITH the plan opened in the same turn -

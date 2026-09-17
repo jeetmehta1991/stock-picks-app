@@ -21094,3 +21094,15 @@ item #196 - each fix owed a re-check of every sibling element of the same
 standard; no new checklist item, the class mechanism is B2851's per-file
 per-element pins in test_b2836 (format drift now fails the pyramid instead of
 waiting for an owner catch).
+
+### L806 - B2854 CORPUS-ARM INSTANCE, record-of-fact (2026-09-17)
+
+**record-of-fact** - an event record, not a new rule; the rule is L703's
+(a must-quiet case that never reaches the gate is hollow) and the class
+mechanism already existed and worked. MEASURED: the first cut of B2854's
+must-fire corpus arm omitted the trigger sentence, so the gate exited before
+its members; test_b1805 caught it before anything shipped, and the sibling
+must-quiet arm was found hollow the same way (quiet because untriggered,
+not because instrumented) and repaired in the same edit. Compliance failure
+against item #240 - a corpus entry is the text AS THE GATE SEES IT, trigger
+included; no new checklist item, detection is test_b1805 doing its job.

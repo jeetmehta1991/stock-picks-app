@@ -3835,6 +3835,13 @@ RETRO_TRIGGERS = ("new rule", "added a rule", "new checklist item",
 RETRO_EVIDENCE = ("retroactive", "re-scan", "rescan", "prior instances",
                   "would have caught", "swept the last", "no siblings",
                   "other instances", "same class elsewhere")
+# B2854 (owner-approved plank 3): a sweep names its enumeration INSTRUMENT -
+# the script, grep or file:line that produced its population - so the reader
+# can falsify the population in one glance (L781: a sweep over an adjacent
+# population reads as compliance). Tokens are plain-prose (B1738 strips
+# backticked spans, so a source in backticks is invisible - L705).
+RETRO_INSTRUMENT = (".py", "grep", "queue_state", "git log", "git diff",
+                    "git ls-files", "sed -n", "file:")
 
 
 def scan_retroactive_sweep(entries, *, text=None) -> list[str]:
@@ -3861,13 +3868,27 @@ def scan_retroactive_sweep(entries, *, text=None) -> list[str]:
     t = _response_text(entries, text)
     if not t or not any(k in t for k in RETRO_TRIGGERS):
         return []
+    # B2854: the instrument member is scoped to the sweep's own PARAGRAPH
+    # (proximity is not attribution - B1762), and satisfied by ANY
+    # evidence-bearing paragraph naming one. CRITERION for any() over all()
+    # (#165): a close usually carries ONE sweep statement, and the stricter
+    # all() would fire on incidental evidence vocabulary in unrelated
+    # paragraphs - the L586 treadmill direction, chosen against.
+    sweep_paras = [p for p in t.split("\n\n")
+                   if any(k in p for k in RETRO_EVIDENCE)]
+    instrumented = any(any(tok in p for tok in RETRO_INSTRUMENT)
+                       for p in sweep_paras)
     return require_each(
         "RETROACTIVE SWEEP MISSING (B1757 / #237)",
         {"a statement of what ELSE was scanned for this class, and what it found":
-             any(k in t for k in RETRO_EVIDENCE)},
+             any(k in t for k in RETRO_EVIDENCE),
+         "the sweep names its enumeration instrument - the script, grep or "
+         "file:line that produced its population (B2854)":
+             instrumented},
         why="A rule added without sweeping for existing instances leaves the "
             "siblings the GENERALIZATION MANDATE calls non-compliant. Say what "
-            "you scanned and what you found, even if the answer is none.")
+            "you scanned WITH WHAT, and what it found, even if the answer is "
+            "none - a population nobody can re-derive is a count, not a sweep.")
 
 
 # ---------------------------------------------------------------------------
