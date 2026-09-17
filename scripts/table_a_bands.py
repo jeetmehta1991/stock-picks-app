@@ -54,14 +54,31 @@ PRODUCER_BANDS = {
          "offline": "none", "resim": "the whole band", "env": None,
          "evidence": "technical.py:2108-2111 (absent today)"},
     ],
-    # mirror: same producer block, bullish inequalities
+    # mirror: same producer block, bullish inequalities. B2842 (owner
+    # screenshot): a one-line "as the sibling, mirrored" stub is an axis
+    # REFERENCED, not inventoried - each file stands alone at its own T3
+    # review, so the four knobs are explicit here too.
     "three_white_soldiers": [
-        {"param": "n_bars / min_body / min_step_up / max_upper_wick "
-                  "(the bearish rows mirrored)", "production": "3 / 0 / 0 / -",
-         "band": "as three_black_crows, mirrored",
-         "basis": "CANON (Nison soldiers)", "offline": "none",
+        {"param": "n_bars (pattern length)", "production": 3, "band": [3, 4],
+         "basis": "CANON (Nison 1991: three); 4 as the strict extension",
+         "offline": "none - pattern bars' OHLC unpersisted",
          "resim": "the whole band", "env": None,
          "evidence": "backtest/signals/technical.py:2104-2107"},
+        {"param": "min_body_pct_of_range per candle", "production": 0.0,
+         "band": [0.0, 0.3, 0.5],
+         "basis": "CANON (Nison long-body soldiers); production accepts ANY body",
+         "offline": "none", "resim": "the whole band", "env": None,
+         "evidence": "technical.py:2105 (c>o only - no magnitude)"},
+        {"param": "min_step_up_pct (close[i] above close[i-1] by)",
+         "production": 0.0, "band": [0.0, 0.1, 0.25],
+         "basis": "BRACKET zero upward; strict > today",
+         "offline": "none", "resim": "the whole band", "env": None,
+         "evidence": "technical.py:2106"},
+        {"param": "max_upper_wick_pct (close near high)", "production": None,
+         "band": [None, 0.3, 0.2],
+         "basis": "CANON (soldiers close at/near highs); production unenforced",
+         "offline": "none", "resim": "the whole band", "env": None,
+         "evidence": "technical.py:2104-2107 (absent today)"},
     ],
     # ---- stochrsi family --------------------------------------------------
     "stochrsi_oversold": [

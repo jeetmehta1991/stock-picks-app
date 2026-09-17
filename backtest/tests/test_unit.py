@@ -38217,6 +38217,12 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     assert "rsi_2 escape-hatch thresholds" in wro, "STRATEGY_EXTRAS row"
     assert "DEFINED-NO-ACTUATOR" in tbc, (
         "an actuatorless resim band must say so (S6-B2569a class)")
+    # B2842 (owner screenshot): no mirror STUBS - the soldiers file carries
+    # its own four explicit knob rows, standalone at its own T3 review
+    tws = (d / "three_white_soldiers.md").read_text(encoding="utf-8")
+    assert tws.count("| BAND |") >= 4, "soldiers must carry explicit knobs"
+    assert "min_step_up_pct" in tws and "max_upper_wick_pct" in tws
+    assert "as three_black_crows, mirrored" not in tws, "stub returned"
 
     # gate_legs: boolean legs + helpers split from numeric gates, and the def
     # signature's own name never becomes a helper (the left-boundary arm)

@@ -1,6 +1,6 @@
 # Table A - pairs_mean_reversion_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 763ca5a1a at 2026-09-16 21:26:22 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 1eb36feb8 at 2026-09-16 23:10:14 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** pairs | **status:** NOT-STARTED | **R5 fires:** 5698 | **surviving fires (T1):** 4461 (survives_pct 0.7829)
 

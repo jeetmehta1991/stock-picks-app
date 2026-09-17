@@ -1,6 +1,6 @@
 # Table A - three_white_soldiers
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 763ca5a1a at 2026-09-16 21:26:22 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 1eb36feb8 at 2026-09-16 23:10:14 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 1596 | **surviving fires (T1):** 1596 (unchanged since R5 - filter is identity)
 
@@ -16,7 +16,10 @@ knob rows below are placeholders it must fill.
 | id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|
 | P1 | PRODUCER | three_white_soldiers - emitted by backtest/signals/screener.py +2; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; knobs INVENTORY-PENDING-R1 (SPECS) | INVENTORY-PENDING-R1 |
-| P1.1 | BAND | n_bars / min_body / min_step_up / max_upper_wick (the bearish rows mirrored) - backtest/signals/technical.py:2104-2107 | 3 / 0 / 0 / - | none | the whole band; DEFINED-NO-ACTUATOR | CANON (Nison soldiers); T3 review before any grid |
+| P1.1 | BAND | n_bars (pattern length) - backtest/signals/technical.py:2104-2107 | 3 | none - pattern bars' OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | CANON (Nison 1991: three); 4 as the strict extension; T3 review before any grid |
+| P1.2 | BAND | min_body_pct_of_range per candle - technical.py:2105 (c>o only - no magnitude) | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | CANON (Nison long-body soldiers); production accepts ANY body; T3 review before any grid |
+| P1.3 | BAND | min_step_up_pct (close[i] above close[i-1] by) - technical.py:2106 | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET zero upward; strict > today; T3 review before any grid |
+| P1.4 | BAND | max_upper_wick_pct (close near high) - technical.py:2104-2107 (absent today) | None | none | the whole band; DEFINED-NO-ACTUATOR | CANON (soldiers close at/near highs); production unenforced; T3 review before any grid |
 | P2 | STRATEGY | rsi_14 `< 60` [EXISTING-THRESHOLD] | `< 60` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
