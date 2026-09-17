@@ -1818,6 +1818,203 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                                  '(11.2c)'}]}})
 
 
+
+# ---------------------------------------------------------------------------
+# B2850 (owner word "do SPECS + the 0.5 smoke" 2026-09-17): the candle pair.
+# Producer anatomy knobs are DEFINED in strategy_optimisation Table A with
+# candidate bands but have NO env actuators yet - so each SPECS band here is
+# PRODUCTION-ONLY (validate_spec S6-B2569a: a resim level beyond production
+# without an env knob is unrunnable and refused); candidates live in the
+# derivation text until actuators are built. The rsi_14 free band carries the
+# MEASURED tighter quantile levels from the Table A build. 0.5 smoke
+# (output_audit/b2850_candle_step05_smoke.json, 6 megacaps, 4y): soldiers
+# pattern 479 / gate 199; crows pattern 302 / gate 165 (upper bound - the
+# borrow leg is data-dependent, unevaluated in the smoke).
+# ---------------------------------------------------------------------------
+
+FORMULA_TWS = (
+    "=============================== PRODUCER LAYER ===============================\n"
+    "\n"
+    "P1  pattern  =  three_white_soldiers (compute_candle_signals,\n"
+    "                technical.py:2104-2107): three consecutive bullish\n"
+    "                bodies, each close and open above the prior bar\n"
+    "                   -> strict inequalities; anatomy knobs P2-P4 are the\n"
+    "                      implicit magnitudes (all zero/absent today)\n"
+    "\n"
+    "P2  min_body_pct_of_range = 0.0   (candidates [0, 0.3, 0.5] - no env yet)\n"
+    "P3  min_step_up_pct       = 0.0   (candidates [0, 0.1, 0.25] - no env yet)\n"
+    "P4  max_upper_wick_pct    = None  (candidates [0.3, 0.2] - no env yet)\n"
+    "\n"
+    "============================== STRATEGY LAYER ===============================\n"
+    "\n"
+    "P5  long  =  three_white_soldiers AND rsi_14 < 60\n"
+    "             (rsi_14 TIGHTER = LOWER the ceiling: free levels are the\n"
+    "              measured retention quantiles on the 1,596 R5 fires)\n")
+
+SPECS_PHASE0["three_white_soldiers"] = {  # B2850: pre-engine inventory - not a battery family (L754 adapters come with the first engine campaign)
+    "gate": "three_white_soldiers AND rsi_14 < 60",
+    "formula": FORMULA_TWS,
+    "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1596,
+                 "tickers": 544, "holdout_n": 321,
+                 "window": "2022-05-05..2026-04-28"},
+    "params": [
+        {"id": "P1", "producer": "compute_candle_signals",
+         "param": "three_white_soldiers (boolean leg)", "env": None,
+         "consumers": ["backtest/signals/screener.py"],
+         "production": True, "type": "bool", "band": [True],
+         "free_band": [], "resim_band": [True],
+         "derivation": "the pattern leg itself; its magnitudes are P2-P4",
+         "subset_safe": False,
+         "status": "SMOKED-0.5 (479 pattern fires, 6 megacaps 4y)",
+         "evidence": "technical.py:2104-2107", "engine_implemented": True},
+        {"id": "P2", "producer": "compute_candle_signals",
+         "param": "min_body_pct_of_range", "env": None,
+         "consumers": ["backtest/signals/screener.py"],
+         "production": 0.0, "type": "float", "band": [0.0],
+         "free_band": [], "resim_band": [0.0],
+         "derivation": ("candidates [0, 0.3, 0.5] (CANON long-body soldiers); "
+                        "DEFINED-NO-ACTUATOR - band widens when the env knob "
+                        "is built"),
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
+         "evidence": "technical.py:2105", "engine_implemented": True},
+        {"id": "P3", "producer": "compute_candle_signals",
+         "param": "min_step_up_pct", "env": None,
+         "consumers": ["backtest/signals/screener.py"],
+         "production": 0.0, "type": "float", "band": [0.0],
+         "free_band": [], "resim_band": [0.0],
+         "derivation": "candidates [0, 0.1, 0.25]; DEFINED-NO-ACTUATOR",
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
+         "evidence": "technical.py:2106", "engine_implemented": True},
+        {"id": "P4", "producer": "compute_candle_signals",
+         "param": "max_upper_wick_pct", "env": None,
+         "consumers": ["backtest/signals/screener.py"],
+         "production": None, "type": "float|None", "band": [None],
+         "free_band": [], "resim_band": [None],
+         "derivation": ("candidates [0.3, 0.2] (close near high); "
+                        "DEFINED-NO-ACTUATOR"),
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
+         "evidence": "technical.py:2104-2107 (absent today)",
+         "engine_implemented": True},
+        {"id": "P5", "producer": "strategy gate", "param": "rsi_14 ceiling",
+         "env": None, "consumers": ["backtest/signals/screener.py"],
+         "production": 60, "type": "float",
+         "band": [41.97, 46.31, 50.16, 54.42, 60],
+         "free_band": [41.97, 46.31, 50.16, 54.42], "resim_band": [60],
+         "derivation": ("MEASURED retention quantiles on the 1,596 surviving "
+                        "R5 fires (Table A build): 54.42 keeps 80pct, 50.16 "
+                        "60pct, 46.31 40pct, 41.97 20pct; TIGHTER = LOWER "
+                        "the ceiling; looser needs an env knob"),
+         "subset_safe": True, "status": "MEASURED",
+         "evidence": "strategy_optimisation/tighten/three_white_soldiers.md",
+         "engine_implemented": True},
+    ],
+    "tools": {
+        "keys": {"P5": "rsi14_max"},
+        "grade": {"script": "offline_level_sweep.py",
+                  "flags": {"P5": "--axes rsi_14:le:<levels>"},
+                  "extra": ["--strategy", "three_white_soldiers",
+                            "--production", "rsi_14=60"],
+                  "note": ("offline free-band grader; --band-ruling REQUIRED "
+                           "(B2848) - the owner T3 words gate the grid")},
+    },
+}
+
+FORMULA_TBC = (
+    "=============================== PRODUCER LAYER ===============================\n"
+    "\n"
+    "P1  pattern  =  three_black_crows (compute_candle_signals,\n"
+    "                technical.py:2108-2111): the soldiers pattern mirrored\n"
+    "                   -> anatomy knobs P2-P4 mirror the soldiers knobs\n"
+    "\n"
+    "P2  min_body_pct_of_range = 0.0   (candidates [0, 0.3, 0.5] - no env yet)\n"
+    "P3  min_step_down_pct     = 0.0   (candidates [0, 0.1, 0.25] - no env yet)\n"
+    "P4  max_lower_wick_pct    = None  (candidates [0.3, 0.2] - no env yet)\n"
+    "\n"
+    "============================== STRATEGY LAYER ===============================\n"
+    "\n"
+    "P5  short =  three_black_crows AND rsi_14 > 40\n"
+    "             (TIGHTER = RAISE the floor; measured quantiles on the\n"
+    "              1,674 R5 fires)\n"
+    "P6  guard =  NOT _short_borrow_trap_active  (days_to_cover cap 5.0,\n"
+    "             B718a owner-ruled risk guard - BANDABLE-OWNER-GATED)\n")
+
+SPECS_PHASE0["three_black_crows_short"] = {  # B2850: pre-engine inventory - not a battery family (L754 adapters come with the first engine campaign)
+    "gate": ("three_black_crows AND rsi_14 > 40 "
+             "AND NOT _short_borrow_trap_active"),
+    "formula": FORMULA_TBC,
+    "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1674,
+                 "tickers": 544, "holdout_n": 470,
+                 "window": "2022-05-06..2026-04-29"},
+    "params": [
+        {"id": "P1", "producer": "compute_candle_signals",
+         "param": "three_black_crows (boolean leg)", "env": None,
+         "consumers": ["backtest/signals/screener.py"],
+         "production": True, "type": "bool", "band": [True],
+         "free_band": [], "resim_band": [True],
+         "derivation": "the pattern leg; magnitudes are P2-P4",
+         "subset_safe": False,
+         "status": "SMOKED-0.5 (302 pattern fires, 6 megacaps 4y)",
+         "evidence": "technical.py:2108-2111", "engine_implemented": True},
+        {"id": "P2", "producer": "compute_candle_signals",
+         "param": "min_body_pct_of_range", "env": None,
+         "consumers": ["backtest/signals/screener.py"],
+         "production": 0.0, "type": "float", "band": [0.0],
+         "free_band": [], "resim_band": [0.0],
+         "derivation": "candidates [0, 0.3, 0.5]; DEFINED-NO-ACTUATOR",
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
+         "evidence": "technical.py:2109", "engine_implemented": True},
+        {"id": "P3", "producer": "compute_candle_signals",
+         "param": "min_step_down_pct", "env": None,
+         "consumers": ["backtest/signals/screener.py"],
+         "production": 0.0, "type": "float", "band": [0.0],
+         "free_band": [], "resim_band": [0.0],
+         "derivation": "candidates [0, 0.1, 0.25]; DEFINED-NO-ACTUATOR",
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
+         "evidence": "technical.py:2110", "engine_implemented": True},
+        {"id": "P4", "producer": "compute_candle_signals",
+         "param": "max_lower_wick_pct", "env": None,
+         "consumers": ["backtest/signals/screener.py"],
+         "production": None, "type": "float|None", "band": [None],
+         "free_band": [], "resim_band": [None],
+         "derivation": "candidates [0.3, 0.2]; DEFINED-NO-ACTUATOR",
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
+         "evidence": "technical.py:2108-2111 (absent today)",
+         "engine_implemented": True},
+        {"id": "P5", "producer": "strategy gate", "param": "rsi_14 floor",
+         "env": None, "consumers": ["backtest/signals/screener.py"],
+         "production": 40, "type": "float",
+         "band": [40, 45.094, 50.132, 54.066, 58.812],
+         "free_band": [45.094, 50.132, 54.066, 58.812], "resim_band": [40],
+         "derivation": ("MEASURED retention quantiles on the 1,674 surviving "
+                        "R5 fires: 45.094 keeps 80pct ... 58.812 keeps "
+                        "20pct; TIGHTER = RAISE the floor"),
+         "subset_safe": True, "status": "MEASURED",
+         "evidence": "strategy_optimisation/tighten/three_black_crows_short.md",
+         "engine_implemented": True},
+        {"id": "P6", "producer": "_short_borrow_trap_active",
+         "param": "days_to_cover cap", "env": None,
+         "consumers": ["backtest/signals/screener.py (6 short consumers)"],
+         "production": 5.0, "type": "float", "band": [5.0],
+         "free_band": [], "resim_band": [5.0],
+         "derivation": ("B718a owner-ruled risk guard; tighter caps offline "
+                        "via persisted days_to_cover but shared by 6 "
+                        "consumers - BANDABLE-OWNER-GATED, per-strategy "
+                        "override on the owner word only"),
+         "subset_safe": False, "status": "BANDABLE-OWNER-GATED",
+         "evidence": "screener.py:148 (B718a)", "engine_implemented": True},
+    ],
+    "tools": {
+        "keys": {"P5": "rsi14_min"},
+        "grade": {"script": "offline_level_sweep.py",
+                  "flags": {"P5": "--axes rsi_14:ge:<levels>"},
+                  "extra": ["--strategy", "three_black_crows_short",
+                            "--production", "rsi_14=40"],
+                  "note": ("offline free-band grader; --band-ruling REQUIRED "
+                           "(B2848)")},
+    },
+}
+
+
 def validate_spec(spec: dict) -> list[str]:
     """Formula and Table A must not drift apart. Every P-id in the formula needs
     a params row and every params row needs a formula step - a mechanical check,

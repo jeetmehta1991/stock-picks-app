@@ -1,6 +1,6 @@
 # Table A - camarilla_s3_bounce
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:26:53 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:07:43 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** pivot | **status:** NOT-STARTED | **R5 fires:** 228 | **surviving fires (T1):** 228 (unchanged since R5 - filter is identity)
 
@@ -11,12 +11,16 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  near_cam_r3  <- backtest/signals/screener.py +1
+       DEFN: price within 0.3pct of the named pivot level (near(); technical.py:76)
        knobs P1.1-P1.1 (band rows in Table A)
 P2  near_cam_s3  <- backtest/signals/screener.py +1
+       DEFN: price within 0.3pct of the named pivot level (near(); technical.py:76)
        knobs P2.1-P2.1 (band rows in Table A)
 P3  obv_bearish  <- backtest/signals/screener.py +1
+       DEFN: OBV vs its moving average (technical.py:1570)
        knobs P3.1-P3.1 (band rows in Table A)
 P4  obv_bullish  <- backtest/signals/screener.py +1
+       DEFN: OBV vs its moving average (technical.py:1570)
        knobs P4.1-P4.2 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -41,23 +45,23 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | near_cam_r3 - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | proximity tolerance to Camarilla R3 (abs dist/level) - backtest/signals/technical.py:76 (near), :81 (near_wide) | 0.003 | none - the level is persisted but today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | BRACKET production 0.003; 0.015 is the shipped near_*_wide; T3 review before any grid |
-| P2 | PRODUCER | near_cam_s3 - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
-| P2.1 | BAND | proximity tolerance to Camarilla S3 (abs dist/level) - backtest/signals/technical.py:76 (near), :81 (near_wide) | 0.003 | none - the level is persisted but today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | BRACKET production 0.003; 0.015 is the shipped near_*_wide; T3 review before any grid |
-| P3 | PRODUCER | obv_bearish - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
-| P3.1 | BAND | mirror of obv_bullish - backtest/signals/technical.py obv block | obv < obv_ma | tighter margins on persisted obv/obv_ma | looser; DEFINED-NO-ACTUATOR | mirror; T3 review before any grid |
-| P4 | PRODUCER | obv_bullish - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
-| P4.1 | BAND | obv vs its moving average - backtest/signals/technical.py:1570 | obv > obv_ma | none - obv_ma at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET the shipped span; T3 review before any grid |
-| P4.2 | BAND | margin pct over the MA - technical.py:1570 | 0.0 | TIGHTER margins where obv and obv_ma are persisted | LOOSER; DEFINED-NO-ACTUATOR | BRACKET zero; T3 review before any grid |
-| P5 | STRATEGY | rsi_14 `< 40` [EXISTING-THRESHOLD] | `< 40` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P5.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
-| P6 | STRATEGY | rsi_14 `> 60` [EXISTING-THRESHOLD] | `> 60` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P6.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
-| P7 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | near_cam_r3 - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | price within 0.3pct of the named pivot level (near(); technical.py:76) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | proximity tolerance to Camarilla R3 (abs dist/level) - backtest/signals/technical.py:76 (near), :81 (near_wide) | BRACKET production 0.003; 0.015 is the shipped near_*_wide | 0.003 | [0.002, 0.003, 0.005, 0.015 (the _wide variant)] | none - the level is persisted but today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | PRODUCER | near_cam_s3 - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | price within 0.3pct of the named pivot level (near(); technical.py:76) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2.1 | BAND | proximity tolerance to Camarilla S3 (abs dist/level) - backtest/signals/technical.py:76 (near), :81 (near_wide) | BRACKET production 0.003; 0.015 is the shipped near_*_wide | 0.003 | [0.002, 0.003, 0.005, 0.015 (the _wide variant)] | none - the level is persisted but today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P3 | PRODUCER | obv_bearish - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | OBV vs its moving average (technical.py:1570) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
+| P3.1 | BAND | mirror of obv_bullish - backtest/signals/technical.py obv block | mirror | obv < obv_ma | as obv_bullish, mirrored | tighter margins on persisted obv/obv_ma | looser; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P4 | PRODUCER | obv_bullish - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | OBV vs its moving average (technical.py:1570) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
+| P4.1 | BAND | obv vs its moving average - backtest/signals/technical.py:1570 | BRACKET the shipped span | obv > obv_ma | MA span [10, 20, 50] | none - obv_ma at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P4.2 | BAND | margin pct over the MA - technical.py:1570 | BRACKET zero | 0.0 | [0, 1, 2] pct | TIGHTER margins where obv and obv_ma are persisted | LOOSER; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P5 | STRATEGY | rsi_14 `< 40` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 40` | production + 2 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P5.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P6 | STRATEGY | rsi_14 `> 60` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `> 60` | production + 1 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P6.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P7 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -781,3 +785,25 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | proximity tolerance to Camarilla R3 (abs | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.1 | proximity tolerance to Camarilla S3 (abs | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P3.1 | mirror of obv_bullish | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P4.1 | obv vs its moving average | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P4.2 | margin pct over the MA | 1 | subset-safe | no - derives offline |
+| P5 | rsi_14 < 40 | 3 | subset-safe | no - derives offline |
+| P6 | rsi_14 > 60 | 2 | subset-safe | no - derives offline |
+| P7 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+
+```
+FULL FACTORIAL     1 x 1 x 1 x 1 x 1 x 3 x 2 x 1 = 6
+offline gradings   6 level-combinations x 24 exits = 144
+ENGINE RUNS        1 (every fire-adding axis sits at production-only until its env actuator exists)
+check              1 x 6 = 6
+```
+
+B-row candidates NOT in this factorial: 618 census axes join it only when REGISTERED at the T3 band review.

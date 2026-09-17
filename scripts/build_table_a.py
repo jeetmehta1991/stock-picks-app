@@ -44,7 +44,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_strategy_status as bss                      # noqa: E402
 from breadth_step1_grid import MIN_COVERAGE, QUANTS      # noqa: E402
-from table_a_bands import PRODUCER_BANDS, STRATEGY_EXTRAS  # noqa: E402
+from table_a_bands import LEG_DEFN, PRODUCER_BANDS, STRATEGY_EXTRAS  # noqa: E402
 
 # B2841: one numeric-compare pattern for BOTH extractors. The first cut used
 # [^)]* for the s.get(...) argument span, which cannot cross the ')' of a
@@ -242,10 +242,15 @@ def _band_rows(pid: int, subject: str, knobs) -> list:
         needs_act = resim not in ("-", "", None) and "none" not in str(resim).lower()[:4]
         act = ("" if not needs_act else
                (f"; env {env}" if env else "; DEFINED-NO-ACTUATOR"))
+        vals = k.get("band")
+        vals_s = (", ".join(_fmt(v) if isinstance(v, float) else str(v)
+                            for v in vals) if isinstance(vals, list)
+                  else str(vals))
         out.append(
             f"| P{pid}.{j} | BAND | {k['param']} - {k['evidence']} | "
-            f"{k['production']} | {k.get('offline', '-')} | {resim}{act} | "
-            f"{k['basis']}; T3 review before any grid |")
+            f"{k['basis']} | "
+            f"{k['production']} | {vals_s} | {k.get('offline', '-')} | "
+            f"{resim}{act} | T3 review before any grid |")
     return out
 
 def render(name: str, row: dict, frame, sigs, filtered: bool,
@@ -304,6 +309,9 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
         note = (f"knobs P{_p}.1-P{_p}.{len(kn)} (band rows in Table A)"
                 if kn else "knobs bands to define")
         L.append(f"P{_p}  {leg}  <- {attribute(leg, idx)}")
+        # B2851 (owner-caught): the boolean's defining condition belongs IN
+        # the Formula, not behind an evidence pointer.
+        L.append(f"       DEFN: {LEG_DEFN.get(leg, 'read the producer source (evidence column)')}")
         L.append(f"       {note}")
     L += ["", "============================== STRATEGY LAYER ==============================", ""]
     for key, op, prod in sorted(set(comparisons)):
@@ -326,8 +334,9 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
          "it (B2845, owner-corrected: a ready and FINAL Table A per strategy);",
          "the engine-spec (SPECS) entry is built from these before any engine",
          "leg runs.", "",
-         "| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |",
-         "|---|---|---|---|---|---|---|"]
+         "| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |",
+         "|---|---|---|---|---|---|---|---|---|"]
+    axes = []   # (id, param, n_levels, subset_safe) for the factorial footer
     pid = 0
     for leg in legs:
         pid += 1
@@ -336,7 +345,8 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
         # a variant needing unpersisted bars is RESIM by construction.
         L.append(f"| P{pid} | PRODUCER | {leg} - emitted by {attribute(leg, idx)}; "
                  f"the boolean's UNDERLYING condition is bandable through its "
-                 f"producer's internals | leg required True | only where the "
+                 f"producer's internals | {LEG_DEFN.get(leg, 'see evidence')} "
+                 f"| leg required True | - (knobs below) | only where the "
                  f"condition's input magnitudes are persisted on the fires - "
                  f"else none | variants over unpersisted bars/inputs - RESIM; "
                  f"a shared producer's resim runs the FULL OPEN consumer set "
@@ -344,11 +354,24 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"reused by construction); "
                  f"knobs {'in the SPECS entry' if in_specs else ('DEFINED below (P' + str(pid) + '.x)' if PRODUCER_BANDS.get(leg) else 'to define')} | "
                  f"{'SPECS-REGISTERED' if in_specs else ('BANDS-DEFINED' if PRODUCER_BANDS.get(leg) else 'BANDS-TO-DEFINE')} |")
+        for _j, _k in enumerate(PRODUCER_BANDS.get(leg, []), 1):
+            _b = _k.get("band")
+            _n = len(_b) if isinstance(_b, list) else 1
+            _sub = str(_k.get("offline", "")).startswith("TIGHTER")
+            axes.append((f"P{pid}.{_j}", _k["param"][:40], _n, _sub))
         L += _band_rows(pid, leg, PRODUCER_BANDS.get(leg, []))
     for key, op, prod in sorted(set(comparisons)):
         pid += 1
+        _kind, _ser = series.get(key, ("missing", None))
+        _nfree = 0
+        if _kind == "numeric":
+            _qs = sorted(set(round(float(q), 4) for q in _ser.quantile(QUANTS)))
+            _hi = op in (">", ">=")
+            _nfree = sum(1 for lv in _qs if (lv > prod if _hi else lv < prod))
+        axes.append((f"P{pid}", f"{key} {op} {_fmt(prod)}", _nfree + 1, True))
         L.append(f"| P{pid} | STRATEGY | {key} `{op} {_fmt(prod)}` "
-                 f"[EXISTING-THRESHOLD] | `{op} {_fmt(prod)}` | measured tighter "
+                 f"[EXISTING-THRESHOLD] | {LEG_DEFN.get(key, 'gate threshold on the persisted magnitude')} "
+                 f"| `{op} {_fmt(prod)}` | production + {_nfree} tighter measured levels | measured tighter "
                  f"QUANTS levels - see the free-band section below | looser side "
                  f"- band at R1 | MEASURED-PRE-R1 |")
         L += _band_rows(pid, key, PRODUCER_BANDS.get(key, []))
@@ -362,8 +385,10 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             # (B718a, GME pre-squeeze calibration) shared by every short
             # strategy: any band is per-strategy-override scope, on the
             # owner's word only.
+            axes.append((f"P{pid}", "days_to_cover cap 5.0", 1, False))
             L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - underlying "
                      f"condition: days_to_cover > 5.0 (blocks the fire) | "
+                     f"blocks SHORT fires when days_to_cover > 5.0 (B718a) | "
                      f"cap 5.0 (B718a owner-ruled risk guard) | tighter = "
                      f"LOWER cap on persisted days_to_cover - OFFLINE subset "
                      f"| raising the cap admits engine-blocked fires - RESIM; "
@@ -373,15 +398,19 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             continue
         L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - a helper gate; its "
                  f"internals are outside the source pattern (lower bound) | "
-                 f"required | - | inspect before any engine leg | BANDS-TO-DEFINE |")
+                 f"see the helper's own source | required | - | - | "
+                 f"inspect before any engine leg | BANDS-TO-DEFINE |")
     for k in STRATEGY_EXTRAS.get(name, []):
         pid += 1
+        axes.append((f"P{pid}", k["param"][:40], 1, True))
         L.append(f"| P{pid} | STRATEGY | {k['param']} - {k['evidence']} | "
-                 f"{k['production']} | {k.get('offline', '-')} | "
-                 f"{k.get('resim', '-')} | {k['basis']}; T3 review |")
+                 f"{k['basis']} | {k['production']} | {k.get('band', '-')} | "
+                 f"{k.get('offline', '-')} | "
+                 f"{k.get('resim', '-')} | T3 review |")
     L += ["| B-rows | BREADTH | every companion in the B-row candidate census "
           "below is Table A inventory once REGISTERED at the T3 band review "
-          "(11.2b3; B-rows are Table A members by owner ruling) | - | census "
+          "(11.2b3; B-rows are Table A members by owner ruling) | AND-leg "
+          "companions on persisted keys | - | census levels below | census "
           "levels below | sub-floor / unpersisted producers | CANDIDATE |",
           "",
           "### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]",
@@ -435,6 +464,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
           "|---|---|---|---|---|---|---|"]
     priced, proxy = price_denominated(series)
     low_cov, binaries = [], []
+    census_n = 0   # B-row candidate axes counted for the factorial footer
     for key, (kind, ser) in series.items():
         if key in depth_keys or key in priced:
             continue
@@ -456,12 +486,14 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                        f"({int((ser <= lv).sum()) / n_all:.0%})" for lv in qs)
         L.append(f"| {key} | {attribute(key, idx)} | {cov:.1%} | "
                  f"{', '.join(_fmt(q) for q in qs)} | {hi} | {lo} | OFFLINE |")
+        census_n += 1
     L += ["", "### Binary companions (offline AND-able; no band - a boolean has no threshold)", ""]
     if binaries:
         L += ["| key | fire-rate on surviving fires |", "|---|---|"] + [
             f"| {k} | {r:.1%} |" for k, r in sorted(binaries)]
     else:
         L.append("(none with a non-degenerate rate)")
+    census_n += len(binaries)
     L += ["", f"### Below the {MIN_COVERAGE} coverage floor - RESIM-ONLY", ""]
     if low_cov:
         L += ["| key | coverage |", "|---|---|"] + [
@@ -482,6 +514,34 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
           "**Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is",
           "invisible to this table and to every offline instrument - genuinely new",
           "breadth producers are an engine-side design act, never an offline sweep.", ""]
+
+    # B2851 (owner-caught): the locked standard's FACTORIAL, computed from
+    # THIS table's axes (plan:1211 - computed, never hand-counted), paired
+    # with the Formula section above (B1523: never shown apart).
+    import math
+    fact = math.prod(n for _, _, n, _ in axes) if axes else 0
+    free = math.prod(n for _, _, n, s in axes if s) if axes else 0
+    runs = math.prod(n for _, _, n, s in axes if not s) if axes else 0
+    L += ["## Factorial - configs this table implies (computed from the "
+          "rows above; pairs with the Formula in Section 1)", "",
+          "| axis | parameter | n levels | class | own engine run? |",
+          "|---|---|---|---|---|"]
+    for aid, prm, n, sub in axes:
+        cls = "subset-safe" if sub else "**FIRE-ADDING**"
+        need = "no - derives offline" if sub else \
+            ("no - production only (DEFINED-NO-ACTUATOR)" if n == 1
+             else "**YES**")
+        L.append(f"| {aid} | {prm} | {n} | {cls} | {need} |")
+    expr = " x ".join(str(n) for _, _, n, _ in axes) or "0"
+    L += ["", "```",
+          f"FULL FACTORIAL     {expr} = {fact}",
+          f"offline gradings   {free} level-combinations x 24 exits = {free * 24}",
+          f"ENGINE RUNS        {runs} (every fire-adding axis sits at "
+          "production-only until its env actuator exists)",
+          f"check              {runs} x {free} = {runs * free}",
+          "```", "",
+          f"B-row candidates NOT in this factorial: {census_n} census axes "
+          "join it only when REGISTERED at the T3 band review.", ""]
     return "\n".join(L)
 
 
@@ -515,8 +575,11 @@ def main() -> int:
     bodies = gate_bodies(src)
     idx = _module_index()
     try:
-        from producer_variant_table import SPECS
-        specs_names = set(SPECS)
+        # B2850: PHASE0 entries are validated inventories awaiting their
+        # first engine campaign (battery adapters come with it, L754) -
+        # REGISTERED for Table A purposes, same as full SPECS families.
+        from producer_variant_table import SPECS, SPECS_PHASE0
+        specs_names = set(SPECS) | set(SPECS_PHASE0)
     except Exception:
         specs_names = set()
 

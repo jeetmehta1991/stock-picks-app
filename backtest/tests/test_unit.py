@@ -25044,6 +25044,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # checked. Dropped from the skill, the third strategy inherits two copies.
         ("A SCRIPT WITH A STRAT CONSTANT IS THE FIRST INSTANCE OF A PORTABILITY CLASS, NOT A TOOL",
          "B2573/L754: extract the contract at the second family; check registration at launch"),
+        # B2851: the L805 tripwire row - an owner catch on a locked
+        # format is evidence the WHOLE rendering drifted; pins the
+        # remedy, not the heading (L548).
+        ("DIFF THE WHOLE ARTIFACT AGAINST THE STANDARD'S EXEMPLAR IN THE CATCH'S OWN TURN",
+         "B2851/L805: restoring only the named element ships the next catch"),
         # B2580: the L755 tripwire row - a pyramid measures ONE tree. Pins
         # the DIAGNOSTIC (a GREEN run over a moving tree reads exactly like
         # a real one), not the heading (L548).
@@ -25725,7 +25730,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 261 -> 262 at B2719 (the L789 enumerate-the-callers fragment).
     # 262 -> 263 at B2726 (the L790 every-renderer-of-the-format fragment).
     # 263 -> 264 at B2741 (the L792 which-tree-does-this-fact-belong-to).
-    assert len(gutted) == 264, gutted
+    # 264 -> 265 at B2851 (the L805 locked-format-diff fragment; same-call
+    # with its tripwire row per B2130).
+    assert len(gutted) == 265, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -38180,8 +38187,11 @@ def test_b2836_table_a_directory_is_complete_and_honest():
         # B2838 (owner-caught): the canonical SS6 shape leads - one row per
         # parameter, BOTH layers - with the measured sections as its inputs
         assert "## Table A - parameter inventory" in t, p.name
-        assert "| id | layer | producer / parameter | production | " \
-               "free_band (OFFLINE) | resim_band (RESIM) | status |" in t, p.name
+        # B2851 (owner-caught): the locked-standard columns - what-it-does
+        # and the band VALUES themselves - are IN the header, per file
+        assert "| id | layer | producer / parameter | what it does | " \
+               "production | band VALUES | free_band (OFFLINE) | " \
+               "resim_band (RESIM) | status |" in t, p.name
         assert "### Measured free-band levels" in t, p.name
         assert "### B-row candidate census" in t, p.name
         assert "EXISTING-THRESHOLD" in t and "NEW-GATE" in t, p.name
@@ -38194,8 +38204,10 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     tbc = (d / "three_black_crows_short.md").read_text(encoding="utf-8")
     assert "| P1 | PRODUCER | three_black_crows" in tbc
     # B2845 (owner: "R1 is confusing ... ready and final"): the jargon is
-    # gone and every producer row's bands are DEFINED - nothing pending
-    assert "BANDS-DEFINED" in tbc and "INVENTORY-PENDING-R1" not in tbc
+    # gone and every producer row is either bands-defined or, post-B2850,
+    # SPECS-REGISTERED (the candle pair now carries PHASE0 SPECS entries)
+    assert ("BANDS-DEFINED" in tbc or "SPECS-REGISTERED" in tbc)
+    assert "INVENTORY-PENDING-R1" not in tbc
     # B2844 re-anchor (the L748 class, caught by this pin's own RED): the
     # bare name now legitimately appears in the Formula section's prose
     # ("strat_three_black_crows_short"), so the phantom-helper arm anchors
@@ -38324,6 +38336,41 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     # plan, each row carrying its enforcement state honestly
     assert "THE PRE-STEP-1 SEQUENCE (B2847" in plan
     assert "PROSE until S6-B2848a" in plan and "PROSE until S6-B2848c" in plan
+
+    # B2851 (owner-caught conformance to the SS6/#183 locked standard): every
+    # file in BOTH lanes carries (a) the boolean's defining condition inline
+    # in the Formula (DEFN lines), (b) the factorial footer computed from the
+    # table's own axes - FULL FACTORIAL expr, ENGINE RUNS, the x-24-exits
+    # offline line, the arithmetic check - and (c) the census count of B-row
+    # candidates excluded from it. Values, not pointers (owner: "Still cant
+    # see the bands").
+    for p in (root / "strategy_optimisation").rglob("*.md"):
+        if p.name == "README.md":
+            continue
+        t3 = p.read_text(encoding="utf-8")
+        if "T1 VERDICT: 0 of the R5 fires survive" in t3:
+            continue   # zero-survivor short form (re-laned to W-L) - no
+            # bands or factorial exist for a table with nothing to band
+        assert "DEFN:" in t3, (p.name, "Formula DEFN lines missing")
+        assert "## Factorial - configs this table implies" in t3, p.name
+        assert "FULL FACTORIAL" in t3 and "ENGINE RUNS" in t3, p.name
+        assert "x 24 exits" in t3, (p.name, "offline gradings line")
+        assert "B-row candidates NOT in this factorial:" in t3, p.name
+        assert "| axis | parameter | n levels | class | own engine run? |" \
+            in t3, p.name
+    # the owner's concrete example: soldiers P1.1 shows its band VALUES
+    # ("3, 4"), and the factorial's arithmetic check line is self-consistent
+    tws3 = (d / "three_white_soldiers.md").read_text(encoding="utf-8")
+    assert "| 3 | 3, 4 |" in tws3, "P1.1 band VALUES not visible"
+    m = _re.search(r"check\s+(\d+) x (\d+) = (\d+)", tws3)
+    assert m and int(m.group(1)) * int(m.group(2)) == int(m.group(3)), (
+        "factorial check line absent or wrong")
+    fm = _re.search(r"FULL FACTORIAL\s+([\dx ]+)= (\d+)", tws3)
+    assert fm and int(fm.group(2)) == int(m.group(3)), (
+        "FULL FACTORIAL total must equal the R x F check")
+    # cross-view: the footer's leg-knob axis ids (P1.1 ...) exist as
+    # inventory BAND rows - the two views cannot drift (B2844 class)
+    assert "| P1.1 |" in tws3.partition("## Factorial")[2]
 
 
 def test_b2839_step2_refuses_unreconciled_multiplicity():

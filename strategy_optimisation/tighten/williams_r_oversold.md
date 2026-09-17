@@ -1,6 +1,6 @@
 # Table A - williams_r_oversold
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:24:46 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:05:47 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** STALLED-CAMPAIGN | **R5 fires:** 2535 | **surviving fires (T1):** 2535 (unchanged since R5 - filter is identity)
 
@@ -11,16 +11,22 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  below_ema_200  <- backtest/signals/screener.py
+       DEFN: close vs the named SMA/EMA span (compute_ema_sma family)
        knobs P1.1-P1.1 (band rows in Table A)
 P2  cmf_negative  <- backtest/signals/screener.py +1
+       DEFN: Chaikin Money Flow, 20-bar rolling (technical.py:1695-1699)
        knobs P2.1-P2.1 (band rows in Table A)
 P3  cmf_positive  <- backtest/signals/screener.py +1
+       DEFN: Chaikin Money Flow, 20-bar rolling (technical.py:1695-1699)
        knobs P3.1-P3.1 (band rows in Table A)
 P4  price_above_ema_200  <- backtest/signals/index_rebalance.py +1
+       DEFN: close vs the named SMA/EMA span (compute_ema_sma family)
        knobs P4.1-P4.1 (band rows in Table A)
 P5  rsi_2  <- backtest/signals/screener.py
+       DEFN: Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540)
        knobs P5.1-P5.1 (band rows in Table A)
 P6  williams_r_oversold  <- backtest/signals/screener.py +3
+       DEFN: Williams %R(14) < -80 (technical.py:702)
        knobs P6.1-P6.2 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -48,25 +54,25 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | below_ema_200 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | ema span (the 200 in above/below_ema_200) - backtest/signals/technical.py compute_ema_sma | 200 | none - other spans' values are unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; 150/250 are the adjacent canon spans; T3 review before any grid |
-| P2 | PRODUCER | cmf_negative - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
-| P2.1 | BAND | level (cmf < 0) - technical.py cmf block | 0.0 | TIGHTER levels on persisted cmf | LOOSER; DEFINED-NO-ACTUATOR | mirror of cmf_positive; T3 review before any grid |
-| P3 | PRODUCER | cmf_positive - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
-| P3.1 | BAND | level (cmf > 0) - backtest/signals/technical.py:1699 | 0.0 | TIGHTER levels on persisted cmf | LOOSER (cmf > -0.02); DEFINED-NO-ACTUATOR | BRACKET zero; T3 review before any grid |
-| P4 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
-| P4.1 | BAND | ema span (the 200 in above/below_ema_200) - backtest/signals/technical.py compute_ema_sma | 200 | none - other spans' values are unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; 150/250 are the adjacent canon spans; T3 review before any grid |
-| P5 | PRODUCER | rsi_2 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P5.x) | BANDS-DEFINED |
-| P5.1 | BAND | rsi (fast escape-hatch) span - backtest/signals/technical.py rsi block | 2 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
-| P6 | PRODUCER | williams_r_oversold - emitted by backtest/signals/screener.py +3; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P6.x) | BANDS-DEFINED |
-| P6.1 | BAND | period - backtest/signals/technical.py:692 | 14 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
-| P6.2 | BAND | oversold threshold - technical.py:702 | -80 | TIGHTER (< -85, < -90) - subset on persisted williams_r | LOOSER (> -80); DEFINED-NO-ACTUATOR | BRACKET canon -80; williams_r IS persisted; T3 review before any grid |
-| P7 | STRATEGY | williams_r `> -20` [EXISTING-THRESHOLD] | `> -20` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P8 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| P9 | STRATEGY | rsi_2 escape-hatch thresholds (long < 5, short > 95) - backtest/signals/screener.py strat_williams_r_oversold (local rsi_2 compare - invisible to the extractor) | 5 / 95 | TIGHTER (< 3, > 97) - subset on persisted rsi_2 | LOOSER | BRACKET production (Connors RSI-2 canon); rsi_2 persisted; T3 review |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | below_ema_200 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | ema span (the 200 in above/below_ema_200) - backtest/signals/technical.py compute_ema_sma | BRACKET production; 150/250 are the adjacent canon spans | 200 | 150, 200, 250 | none - other spans' values are unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | PRODUCER | cmf_negative - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | Chaikin Money Flow, 20-bar rolling (technical.py:1695-1699) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2.1 | BAND | level (cmf < 0) - technical.py cmf block | mirror of cmf_positive | 0.0 | 0, -0.02, -0.05 | TIGHTER levels on persisted cmf | LOOSER; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P3 | PRODUCER | cmf_positive - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | Chaikin Money Flow, 20-bar rolling (technical.py:1695-1699) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
+| P3.1 | BAND | level (cmf > 0) - backtest/signals/technical.py:1699 | BRACKET zero | 0.0 | 0, 0.02, 0.05 | TIGHTER levels on persisted cmf | LOOSER (cmf > -0.02); DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P4 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
+| P4.1 | BAND | ema span (the 200 in above/below_ema_200) - backtest/signals/technical.py compute_ema_sma | BRACKET production; 150/250 are the adjacent canon spans | 200 | 150, 200, 250 | none - other spans' values are unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P5 | PRODUCER | rsi_2 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P5.x) | BANDS-DEFINED |
+| P5.1 | BAND | rsi (fast escape-hatch) span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 2 | [2, 3, 5] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P6 | PRODUCER | williams_r_oversold - emitted by backtest/signals/screener.py +3; the boolean's UNDERLYING condition is bandable through its producer's internals | Williams %R(14) < -80 (technical.py:702) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P6.x) | BANDS-DEFINED |
+| P6.1 | BAND | period - backtest/signals/technical.py:692 | BRACKET production | 14 | 10, 14, 20 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P6.2 | BAND | oversold threshold - technical.py:702 | BRACKET canon -80; williams_r IS persisted | -80 | -90, -85, -80 | TIGHTER (< -85, < -90) - subset on persisted williams_r | LOOSER (> -80); DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P7 | STRATEGY | williams_r `> -20` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> -20` | production + 2 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P8 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
+| P9 | STRATEGY | rsi_2 escape-hatch thresholds (long < 5, short > 95) - backtest/signals/screener.py strat_williams_r_oversold (local rsi_2 compare - invisible to the extractor) | BRACKET production (Connors RSI-2 canon); rsi_2 persisted | 5 / 95 | [3, 5] / [95, 97] | TIGHTER (< 3, > 97) - subset on persisted rsi_2 | LOOSER | T3 review |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -815,3 +821,27 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | ema span (the 200 in above/below_ema_200 | 3 | **FIRE-ADDING** | **YES** |
+| P2.1 | level (cmf < 0) | 3 | subset-safe | no - derives offline |
+| P3.1 | level (cmf > 0) | 3 | subset-safe | no - derives offline |
+| P4.1 | ema span (the 200 in above/below_ema_200 | 3 | **FIRE-ADDING** | **YES** |
+| P5.1 | rsi (fast escape-hatch) span | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P6.1 | period | 3 | **FIRE-ADDING** | **YES** |
+| P6.2 | oversold threshold | 3 | subset-safe | no - derives offline |
+| P7 | williams_r > -20 | 3 | subset-safe | no - derives offline |
+| P8 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P9 | rsi_2 escape-hatch thresholds (long < 5, | 1 | subset-safe | no - derives offline |
+
+```
+FULL FACTORIAL     3 x 3 x 3 x 3 x 1 x 3 x 3 x 3 x 1 x 1 = 2187
+offline gradings   81 level-combinations x 24 exits = 1944
+ENGINE RUNS        27 (every fire-adding axis sits at production-only until its env actuator exists)
+check              27 x 81 = 2187
+```
+
+B-row candidates NOT in this factorial: 651 census axes join it only when REGISTERED at the T3 band review.

@@ -1,6 +1,6 @@
 # Table A - news_sentiment_shift_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:26:53 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:07:43 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 357 | **surviving fires (T1):** 357 (unchanged since R5 - filter is identity)
 
@@ -11,6 +11,7 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  price_above_ema_200  <- backtest/signals/index_rebalance.py +1
+       DEFN: close vs the named SMA/EMA span (compute_ema_sma family)
        knobs P1.1-P1.1 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -34,13 +35,13 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | ema span (the 200 in above/below_ema_200) - backtest/signals/technical.py compute_ema_sma | 200 | none - other spans' values are unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; 150/250 are the adjacent canon spans; T3 review before any grid |
-| P2 | STRATEGY | news_article_count `>= 2` [EXISTING-THRESHOLD] | `>= 2` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P3 | STRATEGY | news_sentiment_shift `> 0.3` [EXISTING-THRESHOLD] | `> 0.3` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | ema span (the 200 in above/below_ema_200) - backtest/signals/technical.py compute_ema_sma | BRACKET production; 150/250 are the adjacent canon spans | 200 | 150, 200, 250 | none - other spans' values are unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | STRATEGY | news_article_count `>= 2` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 2` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P3 | STRATEGY | news_sentiment_shift `> 0.3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 0.3` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -751,3 +752,20 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | ema span (the 200 in above/below_ema_200 | 3 | **FIRE-ADDING** | **YES** |
+| P2 | news_article_count >= 2 | 5 | subset-safe | no - derives offline |
+| P3 | news_sentiment_shift > 0.3 | 5 | subset-safe | no - derives offline |
+
+```
+FULL FACTORIAL     3 x 5 x 5 = 75
+offline gradings   25 level-combinations x 24 exits = 600
+ENGINE RUNS        3 (every fire-adding axis sits at production-only until its env actuator exists)
+check              3 x 25 = 75
+```
+
+B-row candidates NOT in this factorial: 613 census axes join it only when REGISTERED at the T3 band review.

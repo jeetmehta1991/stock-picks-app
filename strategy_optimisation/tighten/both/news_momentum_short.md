@@ -1,6 +1,6 @@
 # Table A - news_momentum_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:26:53 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:07:43 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 13 | **surviving fires (T1):** 13 (unchanged since R5 - filter is identity)
 
@@ -11,14 +11,19 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  below_avwap_20high  <- backtest/signals/screener.py
+       DEFN: close below the anchored-VWAP from the 20d high (avwap block)
        knobs P1.1-P1.1 (band rows in Table A)
 P2  close_below_open  <- backtest/signals/screener.py +1
+       DEFN: bar direction: close vs open (bar-anatomy block)
        knobs P2.1-P2.1 (band rows in Table A)
 P3  close_in_bottom_40pct_of_range  <- backtest/signals/screener.py +1
+       DEFN: close inside the top/bottom 40pct of the bar's range (technical.py:1682)
        knobs P3.1-P3.1 (band rows in Table A)
 P4  dc20_breakout_dn  <- backtest/signals/screener.py
+       DEFN: close beyond the prior-20d extreme with 0.2pct tolerance (technical.py:1470 region)
        knobs P4.1-P4.1 (band rows in Table A)
 P5  vol_above_avg  <- backtest/signals/screener.py +1
+       DEFN: volume / 20d average >= 1.0 (technical.py:1600)
        knobs P5.1-P5.1 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -44,22 +49,22 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | below_avwap_20high - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | buffer pct (price vs avwap anchored at 20d high) + anchor choice [20high, 50high, 252high] - backtest/signals/technical.py avwap block | 0.0 | none - today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | BRACKET zero; strict inequality today; T3 review before any grid |
-| P2 | PRODUCER | close_below_open - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
-| P2.1 | BAND | mirror of close_above_open - technical.py bar-anatomy block | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | mirror; T3 review before any grid |
-| P3 | PRODUCER | close_in_bottom_40pct_of_range - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
-| P3.1 | BAND | mirror of top_40pct - backtest/signals/technical.py:1682 region | 0.4 | none | the whole band; DEFINED-NO-ACTUATOR | mirror; T3 review before any grid |
-| P4 | PRODUCER | dc20_breakout_dn - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
-| P4.1 | BAND | mirror of dc20_breakout_up - backtest/signals/technical.py:1470 region | 0.002 | none | the whole band; DEFINED-NO-ACTUATOR | mirror; T3 review before any grid |
-| P5 | PRODUCER | vol_above_avg - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P5.x) | BANDS-DEFINED |
-| P5.1 | BAND | volume ratio floor (vol / avg) - backtest/signals/technical.py:1600 | 1.0 | TIGHTER floors where the vol ratio key is persisted on the fires; else none | LOOSER, and any window change; DEFINED-NO-ACTUATOR | BRACKET production 1.0; avg window is the second knob [10, 20, 50]; T3 review before any grid |
-| P6 | STRATEGY | news_sentiment_5d `<= -0.3` [EXISTING-THRESHOLD] | `<= -0.3` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P7 | STRATEGY | news_volume_zscore_5d `>= 1.5` [EXISTING-THRESHOLD] | `>= 1.5` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P8 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | below_avwap_20high - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close below the anchored-VWAP from the 20d high (avwap block) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | buffer pct (price vs avwap anchored at 20d high) + anchor choice [20high, 50high, 252high] - backtest/signals/technical.py avwap block | BRACKET zero; strict inequality today | 0.0 | [0, 0.25, 0.5] | none - today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | PRODUCER | close_below_open - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | bar direction: close vs open (bar-anatomy block) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2.1 | BAND | mirror of close_above_open - technical.py bar-anatomy block | mirror | 0.0 | [0, 0.2, 0.5] pct | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P3 | PRODUCER | close_in_bottom_40pct_of_range - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close inside the top/bottom 40pct of the bar's range (technical.py:1682) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
+| P3.1 | BAND | mirror of top_40pct - backtest/signals/technical.py:1682 region | mirror | 0.4 | [0.25, 0.40, 0.50] | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P4 | PRODUCER | dc20_breakout_dn - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close beyond the prior-20d extreme with 0.2pct tolerance (technical.py:1470 region) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
+| P4.1 | BAND | mirror of dc20_breakout_up - backtest/signals/technical.py:1470 region | mirror | 0.002 | [0, 0.002, 0.005, 0.01] | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P5 | PRODUCER | vol_above_avg - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | volume / 20d average >= 1.0 (technical.py:1600) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P5.x) | BANDS-DEFINED |
+| P5.1 | BAND | volume ratio floor (vol / avg) - backtest/signals/technical.py:1600 | BRACKET production 1.0; avg window is the second knob [10, 20, 50] | 1.0 | [1.0, 1.2, 1.5, 2.0] | TIGHTER floors where the vol ratio key is persisted on the fires; else none | LOOSER, and any window change; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P6 | STRATEGY | news_sentiment_5d `<= -0.3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `<= -0.3` | production + 3 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P7 | STRATEGY | news_volume_zscore_5d `>= 1.5` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 1.5` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P8 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -463,3 +468,25 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | buffer pct (price vs avwap anchored at 2 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.1 | mirror of close_above_open | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P3.1 | mirror of top_40pct | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P4.1 | mirror of dc20_breakout_up | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P5.1 | volume ratio floor (vol / avg) | 1 | subset-safe | no - derives offline |
+| P6 | news_sentiment_5d <= -0.3 | 4 | subset-safe | no - derives offline |
+| P7 | news_volume_zscore_5d >= 1.5 | 5 | subset-safe | no - derives offline |
+| P8 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+
+```
+FULL FACTORIAL     1 x 1 x 1 x 1 x 1 x 4 x 5 x 1 = 20
+offline gradings   20 level-combinations x 24 exits = 480
+ENGINE RUNS        1 (every fire-adding axis sits at production-only until its env actuator exists)
+check              1 x 20 = 20
+```
+
+B-row candidates NOT in this factorial: 331 census axes join it only when REGISTERED at the T3 band review.

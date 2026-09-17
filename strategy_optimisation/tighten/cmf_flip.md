@@ -1,6 +1,6 @@
 # Table A - cmf_flip
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:24:46 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:05:47 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** mean_reversion | **status:** NOT-STARTED | **R5 fires:** 2994 | **surviving fires (T1):** 2250 (survives_pct 0.7515)
 
@@ -11,8 +11,10 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  cmf_cross_dn  <- backtest/signals/screener.py +1
+       DEFN: CMF crosses the zero line vs the prior bar (technical.py:1706-1707)
        knobs P1.1-P1.1 (band rows in Table A)
 P2  cmf_cross_up  <- backtest/signals/screener.py +1
+       DEFN: CMF crosses the zero line vs the prior bar (technical.py:1706-1707)
        knobs P2.1-P2.2 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -40,20 +42,20 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | cmf_cross_dn - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | as cmf_cross_up, mirrored - backtest/signals/technical.py:1707 | 0.0 | level side on persisted cmf | freshness; DEFINED-NO-ACTUATOR | mirror; T3 review before any grid |
-| P2 | PRODUCER | cmf_cross_up - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
-| P2.1 | BAND | cmf window - backtest/signals/technical.py:1695 | 20 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
-| P2.2 | BAND | cross level (zero line) - technical.py:1706 | 0.0 | LEVEL side (cmf > 0.02/0.05) - persisted cmf; the FRESHNESS (prior bar <= level) needs the unpersisted prior cmf | freshness at any non-production level; DEFINED-NO-ACTUATOR | BRACKET zero upward (require conviction, not a graze); T3 review before any grid |
-| P3 | STRATEGY | po3_accum_range_pct `>= 0.0458` [EXISTING-THRESHOLD] | `>= 0.0458` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P4 | STRATEGY | rsi_14 `< 50` [EXISTING-THRESHOLD] | `< 50` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P4.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
-| P5 | STRATEGY | rsi_14 `> 50` [EXISTING-THRESHOLD] | `> 50` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P5.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
-| P6 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | cmf_cross_dn - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | CMF crosses the zero line vs the prior bar (technical.py:1706-1707) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | as cmf_cross_up, mirrored - backtest/signals/technical.py:1707 | mirror | 0.0 | 0, -0.02, -0.05 | level side on persisted cmf | freshness; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | PRODUCER | cmf_cross_up - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | CMF crosses the zero line vs the prior bar (technical.py:1706-1707) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2.1 | BAND | cmf window - backtest/signals/technical.py:1695 | BRACKET production | 20 | 14, 20, 30 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2.2 | BAND | cross level (zero line) - technical.py:1706 | BRACKET zero upward (require conviction, not a graze) | 0.0 | 0, 0.02, 0.05 | LEVEL side (cmf > 0.02/0.05) - persisted cmf; the FRESHNESS (prior bar <= level) needs the unpersisted prior cmf | freshness at any non-production level; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P3 | STRATEGY | po3_accum_range_pct `>= 0.0458` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 0.0458` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P4 | STRATEGY | rsi_14 `< 50` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 50` | production + 3 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P4.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P5 | STRATEGY | rsi_14 `> 50` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `> 50` | production + 1 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P5.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P6 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -808,3 +810,24 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | as cmf_cross_up, mirrored | 3 | **FIRE-ADDING** | **YES** |
+| P2.1 | cmf window | 3 | **FIRE-ADDING** | **YES** |
+| P2.2 | cross level (zero line) | 3 | **FIRE-ADDING** | **YES** |
+| P3 | po3_accum_range_pct >= 0.0458 | 5 | subset-safe | no - derives offline |
+| P4 | rsi_14 < 50 | 4 | subset-safe | no - derives offline |
+| P5 | rsi_14 > 50 | 2 | subset-safe | no - derives offline |
+| P6 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+
+```
+FULL FACTORIAL     3 x 3 x 3 x 5 x 4 x 2 x 1 = 1080
+offline gradings   40 level-combinations x 24 exits = 960
+ENGINE RUNS        27 (every fire-adding axis sits at production-only until its env actuator exists)
+check              27 x 40 = 1080
+```
+
+B-row candidates NOT in this factorial: 655 census axes join it only when REGISTERED at the T3 band review.

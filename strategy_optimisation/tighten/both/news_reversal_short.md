@@ -1,6 +1,6 @@
 # Table A - news_reversal_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:26:53 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:07:43 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 60 | **surviving fires (T1):** 60 (unchanged since R5 - filter is identity)
 
@@ -11,8 +11,10 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  close_below_open  <- backtest/signals/screener.py +1
+       DEFN: bar direction: close vs open (bar-anatomy block)
        knobs P1.1-P1.1 (band rows in Table A)
 P2  close_in_bottom_40pct_of_range  <- backtest/signals/screener.py +1
+       DEFN: close inside the top/bottom 40pct of the bar's range (technical.py:1682)
        knobs P2.1-P2.1 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -41,18 +43,18 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | close_below_open - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | mirror of close_above_open - technical.py bar-anatomy block | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | mirror; T3 review before any grid |
-| P2 | PRODUCER | close_in_bottom_40pct_of_range - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
-| P2.1 | BAND | mirror of top_40pct - backtest/signals/technical.py:1682 region | 0.4 | none | the whole band; DEFINED-NO-ACTUATOR | mirror; T3 review before any grid |
-| P3 | STRATEGY | news_count_5d `>= 3` [EXISTING-THRESHOLD] | `>= 3` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P4 | STRATEGY | news_sentiment_5d `>= 0.3` [EXISTING-THRESHOLD] | `>= 0.3` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P5 | STRATEGY | news_sentiment_shift `< -0.2` [EXISTING-THRESHOLD] | `< -0.2` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P6 | STRATEGY | pct_change_5d `> 0.08` [EXISTING-THRESHOLD] | `> 0.08` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P7 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | close_below_open - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | bar direction: close vs open (bar-anatomy block) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | mirror of close_above_open - technical.py bar-anatomy block | mirror | 0.0 | [0, 0.2, 0.5] pct | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | PRODUCER | close_in_bottom_40pct_of_range - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close inside the top/bottom 40pct of the bar's range (technical.py:1682) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2.1 | BAND | mirror of top_40pct - backtest/signals/technical.py:1682 region | mirror | 0.4 | [0.25, 0.40, 0.50] | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P3 | STRATEGY | news_count_5d `>= 3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 3` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P4 | STRATEGY | news_sentiment_5d `>= 0.3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 0.3` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P5 | STRATEGY | news_sentiment_shift `< -0.2` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `< -0.2` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P6 | STRATEGY | pct_change_5d `> 0.08` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 0.08` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P7 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -621,3 +623,24 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | mirror of close_above_open | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.1 | mirror of top_40pct | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P3 | news_count_5d >= 3 | 5 | subset-safe | no - derives offline |
+| P4 | news_sentiment_5d >= 0.3 | 5 | subset-safe | no - derives offline |
+| P5 | news_sentiment_shift < -0.2 | 5 | subset-safe | no - derives offline |
+| P6 | pct_change_5d > 0.08 | 5 | subset-safe | no - derives offline |
+| P7 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+
+```
+FULL FACTORIAL     1 x 1 x 5 x 5 x 5 x 5 x 1 = 625
+offline gradings   625 level-combinations x 24 exits = 15000
+ENGINE RUNS        1 (every fire-adding axis sits at production-only until its env actuator exists)
+check              1 x 625 = 625
+```
+
+B-row candidates NOT in this factorial: 477 census axes join it only when REGISTERED at the T3 band review.

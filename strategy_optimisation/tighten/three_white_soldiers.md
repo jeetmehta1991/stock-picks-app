@@ -1,16 +1,17 @@
 # Table A - three_white_soldiers
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:24:46 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:05:47 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 1596 | **surviving fires (T1):** 1596 (unchanged since R5 - filter is identity)
 
-**SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+**SPECS entry:** registered in producer_variant_table
 
 ## Formula (Section 1 of the SS6/#183 locked artifact)
 
 =============================== PRODUCER LAYER ===============================
 
 P1  three_white_soldiers  <- backtest/signals/screener.py +2
+       DEFN: 3 consecutive bullish bodies, each close AND open above the prior bar's (strict; technical.py:2104-2107)
        knobs P1.1-P1.4 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -32,16 +33,16 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | three_white_soldiers - emitted by backtest/signals/screener.py +2; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | n_bars (pattern length) - backtest/signals/technical.py:2104-2107 | 3 | none - pattern bars' OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | CANON (Nison 1991: three); 4 as the strict extension; T3 review before any grid |
-| P1.2 | BAND | min_body_pct_of_range per candle - technical.py:2105 (c>o only - no magnitude) | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | CANON (Nison long-body soldiers); production accepts ANY body; T3 review before any grid |
-| P1.3 | BAND | min_step_up_pct (close[i] above close[i-1] by) - technical.py:2106 | 0.0 | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET zero upward; strict > today; T3 review before any grid |
-| P1.4 | BAND | max_upper_wick_pct (close near high) - technical.py:2104-2107 (absent today) | None | none | the whole band; DEFINED-NO-ACTUATOR | CANON (soldiers close at/near highs); production unenforced; T3 review before any grid |
-| P2 | STRATEGY | rsi_14 `< 60` [EXISTING-THRESHOLD] | `< 60` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P2.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | three_white_soldiers - emitted by backtest/signals/screener.py +2; the boolean's UNDERLYING condition is bandable through its producer's internals | 3 consecutive bullish bodies, each close AND open above the prior bar's (strict; technical.py:2104-2107) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
+| P1.1 | BAND | n_bars (pattern length) - backtest/signals/technical.py:2104-2107 | CANON (Nison 1991: three); 4 as the strict extension | 3 | 3, 4 | none - pattern bars' OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P1.2 | BAND | min_body_pct_of_range per candle - technical.py:2105 (c>o only - no magnitude) | CANON (Nison long-body soldiers); production accepts ANY body | 0.0 | 0, 0.3, 0.5 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P1.3 | BAND | min_step_up_pct (close[i] above close[i-1] by) - technical.py:2106 | BRACKET zero upward; strict > today | 0.0 | 0, 0.1, 0.25 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P1.4 | BAND | max_upper_wick_pct (close near high) - technical.py:2104-2107 (absent today) | CANON (soldiers close at/near highs); production unenforced | None | None, 0.3, 0.2 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | STRATEGY | rsi_14 `< 60` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 60` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P2.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -52,7 +53,7 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (literal grep) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| rsi_14 | backtest/signals/screener.py | `< 60` | 100.0% | TIGHTER = LOWER the ceiling: 41.97 -> 320 (20%); 46.31 -> 641 (40%); 50.16 -> 960 (60%); 54.42 -> 1277 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
+| rsi_14 | backtest/signals/screener.py | `< 60` | 100.0% | TIGHTER = LOWER the ceiling: 41.97 -> 320 (20%); 46.31 -> 641 (40%); 50.16 -> 960 (60%); 54.42 -> 1277 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
@@ -718,3 +719,22 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | n_bars (pattern length) | 2 | **FIRE-ADDING** | **YES** |
+| P1.2 | min_body_pct_of_range per candle | 3 | **FIRE-ADDING** | **YES** |
+| P1.3 | min_step_up_pct (close[i] above close[i- | 3 | **FIRE-ADDING** | **YES** |
+| P1.4 | max_upper_wick_pct (close near high) | 3 | **FIRE-ADDING** | **YES** |
+| P2 | rsi_14 < 60 | 5 | subset-safe | no - derives offline |
+
+```
+FULL FACTORIAL     2 x 3 x 3 x 3 x 5 = 270
+offline gradings   5 level-combinations x 24 exits = 120
+ENGINE RUNS        54 (every fire-adding axis sits at production-only until its env actuator exists)
+check              54 x 5 = 270
+```
+
+B-row candidates NOT in this factorial: 583 census axes join it only when REGISTERED at the T3 band review.

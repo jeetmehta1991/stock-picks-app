@@ -645,3 +645,66 @@ STRATEGY_EXTRAS = {
          "evidence": "backtest/signals/screener.py:1855-1863"},
     ],
 }
+
+
+# ---------------------------------------------------------------------------
+# B2851 (owner-caught format conformance): WHAT EACH PRODUCER DOES - the
+# per-leg defining condition for the Table A "what it does" column and the
+# Formula's producer lines. NUMERIC definitions only where the source was
+# READ this arc (evidence beside each group); canon-level wording elsewhere,
+# never an invented magnitude.
+# ---------------------------------------------------------------------------
+def _same(defn, *keys):
+    return {k: defn for k in keys}
+
+
+LEG_DEFN = {}
+LEG_DEFN.update(_same("3 consecutive bullish bodies, each close AND open above the prior bar's (strict; technical.py:2104-2107)", "three_white_soldiers"))
+LEG_DEFN.update(_same("3 consecutive bearish bodies, each close AND open below the prior bar's (strict; technical.py:2108-2111)", "three_black_crows"))
+LEG_DEFN.update(_same("3-bar reversal: bar-3 bearish, mid body < 0.3x its range, bar-1 bullish closing above bar-3's midpoint (technical.py:2085-2094)", "morning_star"))
+LEG_DEFN.update(_same("mirror of morning_star (technical.py:2095-2100)", "evening_star"))
+LEG_DEFN.update(_same("inside bar: high < prior high AND low > prior low (technical.py:2027)", "inside_bar"))
+LEG_DEFN.update(_same("canonical single/two-candle reversal pattern (Nison; compute_candle_signals - geometry in producer)", "hammer", "shooting_star", "hanging_man", "dark_cloud_cover", "bearish_pin_bar", "bullish_engulfing", "bearish_engulfing"))
+LEG_DEFN.update(_same("stochastic-RSI k over period 14; oversold = k < 20 (technical.py:597)", "stochrsi_oversold"))
+LEG_DEFN.update(_same("stochastic-RSI overbought = k > 80 (technical.py:598)", "stochrsi_overbought"))
+LEG_DEFN.update(_same("k crosses above d while k < 80 (technical.py:599)", "stochrsi_cross_up"))
+LEG_DEFN.update(_same("k crosses below d while k > 20 (technical.py:600)", "stochrsi_cross_dn"))
+LEG_DEFN.update(_same("Williams %R(14) < -80 (technical.py:702)", "williams_r_oversold"))
+LEG_DEFN.update(_same("Chaikin Money Flow, 20-bar rolling (technical.py:1695-1699)", "cmf_positive", "cmf_negative"))
+LEG_DEFN.update(_same("CMF crosses the zero line vs the prior bar (technical.py:1706-1707)", "cmf_cross_up", "cmf_cross_dn"))
+LEG_DEFN.update(_same("Hull MA(20) rising/falling vs prior bar (technical.py:1304-1327)", "hull_bullish", "hull_bearish"))
+LEG_DEFN.update(_same("close vs the Hull MA level (technical.py:1330)", "price_above_hull", "price_below_hull"))
+LEG_DEFN.update(_same("ADX(14) > 25 (technical.py:915)", "adx_trending"))
+LEG_DEFN.update(_same("Ultimate Oscillator (7,14,28) < 30 / > 70 (technical.py:738-752)", "uo_oversold", "uo_overbought"))
+LEG_DEFN.update(_same("stochastic (14,3,3) k/d cross with prior-bar confirmation (technical.py:604-630)", "stoch_bullish_cross", "stoch_bearish_cross"))
+LEG_DEFN.update(_same("price within 0.3pct of the named pivot level (near(); technical.py:76)", "near_s1", "near_s2", "near_s3", "near_r1", "near_r2", "near_cam_s3", "near_cam_r3", "near_wood_s1", "near_wood_r1"))
+LEG_DEFN.update(_same("today's price above cpr_top / below cpr_bottom (technical.py:146 region)", "above_cpr"))
+LEG_DEFN.update(_same("CPR width < 0.05 x prior range - the B654 tight local variant (technical.py:103)", "cpr_narrow_tight"))
+LEG_DEFN.update(_same("MACD(12,26,9) line vs signal, bearish/bullish state (technical.py:634-648)", "macd_12_26_9_bearish", "macd_12_26_9_bullish"))
+LEG_DEFN.update(_same("close beyond the prior-20d extreme with 0.2pct tolerance (technical.py:1470 region)", "dc20_breakout_up", "dc20_breakout_dn"))
+LEG_DEFN.update(_same("close at/beyond the Bollinger(20, 2.0) band (bb block)", "bb_20_20_touch_lower", "bb_20_20_touch_upper"))
+LEG_DEFN.update(_same("close back inside the band within the last 3 bars after being outside (technical.py:1402 region)", "bb_20_20_reclaim_from_upper_recent_3d"))
+LEG_DEFN.update(_same("bar direction: close vs open (bar-anatomy block)", "close_above_open", "close_below_open"))
+LEG_DEFN.update(_same("close inside the top/bottom 40pct of the bar's range (technical.py:1682)", "close_in_top_40pct_of_range", "close_in_bottom_40pct_of_range"))
+LEG_DEFN.update(_same("volume / 20d average >= 1.0 (technical.py:1600)", "vol_above_avg"))
+LEG_DEFN.update(_same("Supertrend(7, 3.0) flipped short within the last 5 bars (B655 EVENT form; technical.py:1179+)", "supertrend_flip_recent_short_5d"))
+LEG_DEFN.update(_same("Monday-equivalent open gapped up >= 1.5pct vs prior close (ict_producers.py:147-149; DECIMAL-SHIFTED name)", "week_open_gap_up_15pct"))
+LEG_DEFN.update(_same("today's close above the 60d/40-bin volume-profile POC (volume_profile.py:140)", "vp_close_above_poc"))
+LEG_DEFN.update(_same("VIX close above VIX3M close - term-structure stress (cross_asset.py:216-231)", "vix_term_backwardation"))
+LEG_DEFN.update(_same("weekly close above weekly EMA(10) AND EMA(20) (multi_timeframe.py:45-90)", "weekly_bias_bull"))
+LEG_DEFN.update(_same("insider buy cluster active in the 30d window (smart_money.py cluster block)", "insider_cluster_active"))
+LEG_DEFN.update(_same("count of unique insider buyers in 30d (smart_money.py)", "insider_unique_buyers_30d"))
+LEG_DEFN.update(_same("OBV vs its moving average (technical.py:1570)", "obv_bullish", "obv_bearish"))
+LEG_DEFN.update(_same("close vs the named SMA/EMA span (compute_ema_sma family)", "price_above_sma_50", "price_above_sma_200", "below_sma_50", "below_sma_200", "price_above_ema_50", "price_above_ema_200", "below_ema_200"))
+LEG_DEFN.update(_same("close vs session VWAP (vwap block)", "above_vwap"))
+LEG_DEFN.update(_same("close below the anchored-VWAP from the 20d high (avwap block)", "below_avwap_20high"))
+LEG_DEFN.update(_same("EMA-200 cross within the last 5 bars (B722 EVENT form; technical.py:814-825)", "price_above_ema_200_break_recent_5d", "below_ema_200_break_recent_5d"))
+LEG_DEFN.update(_same("smc mitigation-block signal at production knobs (smc_ict.py; SPECS family)", "smc_mitigation_block_long", "smc_mitigation_block_short"))
+LEG_DEFN.update(_same("order-block tap within 5 bars at the registered SPECS knobs (smc_ict.py:387)", "smc_ob_bullish_tap_recent_5d", "smc_ob_bearish_tap_recent_5d"))
+LEG_DEFN.update(_same("cup-and-handle geometry detected / neckline break-retest (chart_patterns.py)", "cup_handle_detected", "cup_handle_neckline_break_retest_long"))
+LEG_DEFN.update(_same("cross-sectional 12-1 momentum in the top quintile (factor block)", "xs_momentum_top_quintile"))
+LEG_DEFN.update(_same("display field naming the paired ticker - not a gate (pairs_trading.py:377)", "pair_counterparty"))
+LEG_DEFN.update(_same("close back inside the LOWER band within 3 bars after being outside (technical.py:1402)", "bb_20_20_reclaim_from_lower_recent_3d"))
+LEG_DEFN.update(_same("today's price below cpr_bottom (technical.py:146)", "below_cpr"))
+LEG_DEFN.update(_same("Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540)", "rsi_14", "rsi_2"))
+LEG_DEFN.update(_same("VIX percentile tercile flag: low < 1/3, high > 2/3 (technical.py:2690-2702)", "vix_band_low", "vix_band_high"))

@@ -1,6 +1,6 @@
 # Table A - hammer_at_support_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:26:53 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:07:43 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 110 | **surviving fires (T1):** 110 (unchanged since R5 - filter is identity)
 
@@ -11,12 +11,16 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  bb_20_20_touch_lower  <- backtest/signals/screener.py
+       DEFN: close at/beyond the Bollinger(20, 2.0) band (bb block)
        knobs P1.1-P1.1 (band rows in Table A)
 P2  hammer  <- backtest/signals/screener.py +1
+       DEFN: canonical single/two-candle reversal pattern (Nison; compute_candle_signals - geometry in producer)
        knobs P2.1-P2.1 (band rows in Table A)
 P3  near_s1  <- backtest/signals/screener.py +2
+       DEFN: price within 0.3pct of the named pivot level (near(); technical.py:76)
        knobs P3.1-P3.1 (band rows in Table A)
 P4  near_s2  <- backtest/signals/screener.py +1
+       DEFN: price within 0.3pct of the named pivot level (near(); technical.py:76)
        knobs P4.1-P4.1 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -38,19 +42,19 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | bb_20_20_touch_lower - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | bb (period, k) - backtest/signals/technical.py bb block | (20, 2.0) | none - bands at other k unpersisted for the touch | the whole band; DEFINED-NO-ACTUATOR | BRACKET canon k; T3 review before any grid |
-| P2 | PRODUCER | hammer - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
-| P2.1 | BAND | implicit anatomy knobs (min body/wick/step pct) - backtest/signals/technical.py:candle block (compute_candle_signals) | 0 / absent (any magnitude counts) | none - pattern bars' OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | CANON candle anatomy (Nison); production accepts any magnitude; T3 review before any grid |
-| P3 | PRODUCER | near_s1 - emitted by backtest/signals/screener.py +2; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
-| P3.1 | BAND | proximity tolerance to S1 (abs dist/level) - backtest/signals/technical.py:76 (near), :81 (near_wide) | 0.003 | none - the level is persisted but today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | BRACKET production 0.003; 0.015 is the shipped near_*_wide; T3 review before any grid |
-| P4 | PRODUCER | near_s2 - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
-| P4.1 | BAND | proximity tolerance to S2 (abs dist/level) - backtest/signals/technical.py:76 (near), :81 (near_wide) | 0.003 | none - the level is persisted but today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | BRACKET production 0.003; 0.015 is the shipped near_*_wide; T3 review before any grid |
-| P5 | STRATEGY | rsi_14 `< 35` [EXISTING-THRESHOLD] | `< 35` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P5.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | bb_20_20_touch_lower - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close at/beyond the Bollinger(20, 2.0) band (bb block) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | bb (period, k) - backtest/signals/technical.py bb block | BRACKET canon k | (20, 2.0) | k [1.5, 2.0, 2.5]; period [20] | none - bands at other k unpersisted for the touch | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | PRODUCER | hammer - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | canonical single/two-candle reversal pattern (Nison; compute_candle_signals - geometry in producer) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2.1 | BAND | implicit anatomy knobs (min body/wick/step pct) - backtest/signals/technical.py:candle block (compute_candle_signals) | CANON candle anatomy (Nison); production accepts any magnitude | 0 / absent (any magnitude counts) | [0, 0.3, 0.5] per knob | none - pattern bars' OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P3 | PRODUCER | near_s1 - emitted by backtest/signals/screener.py +2; the boolean's UNDERLYING condition is bandable through its producer's internals | price within 0.3pct of the named pivot level (near(); technical.py:76) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
+| P3.1 | BAND | proximity tolerance to S1 (abs dist/level) - backtest/signals/technical.py:76 (near), :81 (near_wide) | BRACKET production 0.003; 0.015 is the shipped near_*_wide | 0.003 | [0.002, 0.003, 0.005, 0.015 (the _wide variant)] | none - the level is persisted but today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P4 | PRODUCER | near_s2 - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | price within 0.3pct of the named pivot level (near(); technical.py:76) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
+| P4.1 | BAND | proximity tolerance to S2 (abs dist/level) - backtest/signals/technical.py:76 (near), :81 (near_wide) | BRACKET production 0.003; 0.015 is the shipped near_*_wide | 0.003 | [0.002, 0.003, 0.005, 0.015 (the _wide variant)] | none - the level is persisted but today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P5 | STRATEGY | rsi_14 `< 35` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 35` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P5.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -612,3 +616,22 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | bb (period, k) | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.1 | implicit anatomy knobs (min body/wick/st | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P3.1 | proximity tolerance to S1 (abs dist/leve | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P4.1 | proximity tolerance to S2 (abs dist/leve | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P5 | rsi_14 < 35 | 5 | subset-safe | no - derives offline |
+
+```
+FULL FACTORIAL     1 x 1 x 1 x 1 x 5 = 5
+offline gradings   5 level-combinations x 24 exits = 120
+ENGINE RUNS        1 (every fire-adding axis sits at production-only until its env actuator exists)
+check              1 x 5 = 5
+```
+
+B-row candidates NOT in this factorial: 473 census axes join it only when REGISTERED at the T3 band review.

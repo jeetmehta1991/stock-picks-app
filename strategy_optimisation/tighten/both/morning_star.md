@@ -1,6 +1,6 @@
 # Table A - morning_star
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:26:53 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:07:43 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 2280 | **surviving fires (T1):** 1053 (survives_pct 0.4618)
 
@@ -11,8 +11,10 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  evening_star  <- backtest/signals/screener.py +1
+       DEFN: mirror of morning_star (technical.py:2095-2100)
        knobs P1.1-P1.1 (band rows in Table A)
 P2  morning_star  <- backtest/signals/screener.py +1
+       DEFN: 3-bar reversal: bar-3 bearish, mid body < 0.3x its range, bar-1 bullish closing above bar-3's midpoint (technical.py:2085-2094)
        knobs P2.1-P2.2 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -40,20 +42,20 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | evening_star - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | mirror of morning_star's two knobs - backtest/signals/technical.py:2095-2100 | 0.3 / midpoint | none | the whole band; DEFINED-NO-ACTUATOR | mirror; T3 review before any grid |
-| P2 | PRODUCER | morning_star - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
-| P2.1 | BAND | mid-candle small-body ratio (body < X * range) - backtest/signals/technical.py:2088 | 0.3 | none - the mid bar's body/range unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production (the one EXPLICIT candle knob); T3 review before any grid |
-| P2.2 | BAND | recovery rule (close above midpoint of bar-3) - technical.py:2093 | structural | none | the whole band; DEFINED-NO-ACTUATOR | BRACKET the midpoint rule; T3 review before any grid |
-| P3 | STRATEGY | rsi_14 `< 45` [EXISTING-THRESHOLD] | `< 45` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P3.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
-| P4 | STRATEGY | rsi_14 `> 55` [EXISTING-THRESHOLD] | `> 55` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P4.1 | BAND | rsi span - backtest/signals/technical.py rsi block | 14 | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production with adjacent canon spans; T3 review before any grid |
-| P5 | STRATEGY | squeeze_momentum `<= 0.0096` [EXISTING-THRESHOLD] | `<= 0.0096` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P6 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | evening_star - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | mirror of morning_star (technical.py:2095-2100) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | mirror of morning_star's two knobs - backtest/signals/technical.py:2095-2100 | mirror | 0.3 / midpoint | as morning_star, mirrored | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | PRODUCER | morning_star - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | 3-bar reversal: bar-3 bearish, mid body < 0.3x its range, bar-1 bullish closing above bar-3's midpoint (technical.py:2085-2094) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2.1 | BAND | mid-candle small-body ratio (body < X * range) - backtest/signals/technical.py:2088 | BRACKET production (the one EXPLICIT candle knob) | 0.3 | [0.2, 0.3, 0.4] | none - the mid bar's body/range unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2.2 | BAND | recovery rule (close above midpoint of bar-3) - technical.py:2093 | BRACKET the midpoint rule | structural | midpoint vs [0.382, 0.5, 0.618] retrace | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P3 | STRATEGY | rsi_14 `< 45` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 45` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P3.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P4 | STRATEGY | rsi_14 `> 55` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `> 55` | production + 0 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P4.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P5 | STRATEGY | squeeze_momentum `<= 0.0096` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `<= 0.0096` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P6 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -748,3 +750,24 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | mirror of morning_star's two knobs | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.1 | mid-candle small-body ratio (body < X *  | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.2 | recovery rule (close above midpoint of b | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P3 | rsi_14 < 45 | 5 | subset-safe | no - derives offline |
+| P4 | rsi_14 > 55 | 1 | subset-safe | no - derives offline |
+| P5 | squeeze_momentum <= 0.0096 | 5 | subset-safe | no - derives offline |
+| P6 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+
+```
+FULL FACTORIAL     1 x 1 x 1 x 5 x 1 x 5 x 1 = 25
+offline gradings   25 level-combinations x 24 exits = 600
+ENGINE RUNS        1 (every fire-adding axis sits at production-only until its env actuator exists)
+check              1 x 25 = 25
+```
+
+B-row candidates NOT in this factorial: 595 census axes join it only when REGISTERED at the T3 band review.

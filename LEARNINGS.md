@@ -21074,3 +21074,23 @@ prelaunch, writer carrying what the reader demands. Compliance failure against
 item #196 - the post-fix re-check should have enumerated the field's WRITERS
 and every fixture consumer before the reader shipped; detection stays with the
 pyramid, which fired twice.
+
+### L805 - AN OWNER CATCH AGAINST A LOCKED FORMAT REMEDIATES BY FULL DIFF, NEVER BY THE NAMED ELEMENT (B2851, owner-asked 2026-09-17)
+
+MEASURED across one arc: 5 of the owner's last 7 catches on the Table A charter
+(B2838 canonical shape, B2842 mirror stub, B2844 missing Formula, B2845 final
+bands, B2851 bands visible + what-it-does + factorial) were ONE defect - the
+artifact conformed to my memory of the locked standard, not to the standard -
+surfaced one element at a time because each fix restored only the element the
+catch named. The under-generalization rule was applied to code fixes all
+session and never to my own remediation loop: an owner catch on a LOCKED
+format is evidence the whole rendering drifted, so the remedy is a side-by-side
+diff of the artifact against the standard's exemplar, all elements, in the
+catch's own turn. Retro sweep of the other locked formats (READ, session
+record): Table C has show_table_c.py + its pin, Table D has table_d_render.py
++ its pins - both mechanized; Table A was the one locked format with no
+per-element pin until B2851's sweep pins landed. Compliance failure against
+item #196 - each fix owed a re-check of every sibling element of the same
+standard; no new checklist item, the class mechanism is B2851's per-file
+per-element pins in test_b2836 (format drift now fails the pyramid instead of
+waiting for an owner catch).

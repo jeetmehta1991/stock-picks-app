@@ -1,6 +1,6 @@
 # Table A - pairs_mean_reversion_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit 8233e68a5 at 2026-09-17 00:24:46 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:05:47 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** pairs | **status:** NOT-STARTED | **R5 fires:** 5036 | **surviving fires (T1):** 5036 (unchanged since R5 - filter is identity)
 
@@ -11,6 +11,7 @@
 =============================== PRODUCER LAYER ===============================
 
 P1  pair_counterparty  <- backtest/signals/pairs_trading.py +1
+       DEFN: display field naming the paired ticker - not a gate (pairs_trading.py:377)
        knobs P1.1-P1.1 (band rows in Table A)
 
 ============================== STRATEGY LAYER ==============================
@@ -36,17 +37,17 @@ it (B2845, owner-corrected: a ready and FINAL Table A per strategy);
 the engine-spec (SPECS) entry is built from these before any engine
 leg runs.
 
-| id | layer | producer / parameter | production | free_band (OFFLINE) | resim_band (RESIM) | status |
-|---|---|---|---|---|---|---|
-| P1 | PRODUCER | pair_counterparty - emitted by backtest/signals/pairs_trading.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | leg required True | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | (not a gate) display field naming the paired ticker - backtest/signals/pairs_trading.py:377 region | - | - | - | no band - rationale text only; T3 review before any grid |
-| P2 | STRATEGY | pair_count_active `> 0` [EXISTING-THRESHOLD] | `> 0` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P2.1 | BAND | EG cointegration significance - backtest/signals/pairs_trading.py:46 | 0.05 | none - pair set is a PRECOMPUTE | the whole band (re-run pairs precompute + engine); DEFINED-NO-ACTUATOR | BRACKET production toward strict (precompute-side); T3 review before any grid |
-| P2.2 | BAND | zscore rolling window (bars) - pairs_trading.py:147-170 | 60 | none - z at other windows unpersisted | the whole band; DEFINED-NO-ACTUATOR | BRACKET production; T3 review before any grid |
-| P2.3 | BAND | half-life admission bounds (days) - pairs_trading.py:191, :216 | 5-30 | TIGHTER inner cuts via the persisted pair_half_life (the strategy-layer hl gate already bands it offline) | WIDER bounds (admit pairs the precompute excluded); DEFINED-NO-ACTUATOR | BRACKET production (post-HFT-survival window); T3 review before any grid |
-| P3 | STRATEGY | pair_half_life `>= 5` [EXISTING-THRESHOLD] | `>= 5` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P4 | STRATEGY | pair_zscore_signed `< -2` [EXISTING-THRESHOLD] | `< -2` | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | - | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
+|---|---|---|---|---|---|---|---|---|
+| P1 | PRODUCER | pair_counterparty - emitted by backtest/signals/pairs_trading.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | display field naming the paired ticker - not a gate (pairs_trading.py:377) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | (not a gate) display field naming the paired ticker - backtest/signals/pairs_trading.py:377 region | no band - rationale text only | - | - | - | - | T3 review before any grid |
+| P2 | STRATEGY | pair_count_active `> 0` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 0` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P2.1 | BAND | EG cointegration significance - backtest/signals/pairs_trading.py:46 | BRACKET production toward strict (precompute-side) | 0.05 | 0.01, 0.05 | none - pair set is a PRECOMPUTE | the whole band (re-run pairs precompute + engine); DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2.2 | BAND | zscore rolling window (bars) - pairs_trading.py:147-170 | BRACKET production | 60 | 40, 60, 90 | none - z at other windows unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2.3 | BAND | half-life admission bounds (days) - pairs_trading.py:191, :216 | BRACKET production (post-HFT-survival window) | 5-30 | [5-30] and [3-45] | TIGHTER inner cuts via the persisted pair_half_life (the strategy-layer hl gate already bands it offline) | WIDER bounds (admit pairs the precompute excluded); DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P3 | STRATEGY | pair_half_life `>= 5` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 5` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P4 | STRATEGY | pair_zscore_signed `< -2` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `< -2` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -801,3 +802,21 @@ producer work, i.e. RESIM, never an offline band.
 **Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
+
+## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
+
+| axis | parameter | n levels | class | own engine run? |
+|---|---|---|---|---|
+| P1.1 | (not a gate) display field naming the pa | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2 | pair_count_active > 0 | 5 | subset-safe | no - derives offline |
+| P3 | pair_half_life >= 5 | 5 | subset-safe | no - derives offline |
+| P4 | pair_zscore_signed < -2 | 5 | subset-safe | no - derives offline |
+
+```
+FULL FACTORIAL     1 x 5 x 5 x 5 = 125
+offline gradings   125 level-combinations x 24 exits = 3000
+ENGINE RUNS        1 (every fire-adding axis sits at production-only until its env actuator exists)
+check              1 x 125 = 125
+```
+
+B-row candidates NOT in this factorial: 655 census axes join it only when REGISTERED at the T3 band review.
