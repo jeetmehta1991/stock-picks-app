@@ -107,16 +107,29 @@ def verdict_line(diff: list[str]) -> str:
 def run(out: Path, root: Path, pytest_args: list[str]) -> int:
     before = fingerprint(root)
     t0 = time.time()
-    with open(out, "w", encoding="utf-8") as fh:
-        rc = subprocess.call([sys.executable, "-m", "pytest", *pytest_args],
-                             stdout=fh, stderr=subprocess.STDOUT, cwd=str(root))
-    diff = changed(before, fingerprint(root))
-    final = 4 if diff else rc
-    with open(out, "a", encoding="utf-8") as fh:
-        fh.write(f"\npytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
-                 f"elapsed_s={time.time() - t0:.0f}\n")
-    print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
-    return final
+    # B2856 (S6-B2854b): a stopper needs the TREE, not the wrapper. TaskStop
+    # on the launching shell orphans this process and its pytest child (four
+    # processes were hand-killed at B2854, two racing on one artifact). The
+    # pidfile beside the artifact lets kill_gate_tree.py find the tree root;
+    # removed on normal completion, so a LEFTOVER pidfile marks a killed or
+    # crashed gate - and its PID is re-verified by command line before any
+    # kill, because PIDs are reused.
+    import os
+    pidfile = Path(str(out) + ".pid")
+    pidfile.write_text(str(os.getpid()), encoding="utf-8")
+    try:
+        with open(out, "w", encoding="utf-8") as fh:
+            rc = subprocess.call([sys.executable, "-m", "pytest", *pytest_args],
+                                 stdout=fh, stderr=subprocess.STDOUT, cwd=str(root))
+        diff = changed(before, fingerprint(root))
+        final = 4 if diff else rc
+        with open(out, "a", encoding="utf-8") as fh:
+            fh.write(f"\npytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
+                     f"elapsed_s={time.time() - t0:.0f}\n")
+        print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
+        return final
+    finally:
+        pidfile.unlink(missing_ok=True)
 
 
 def main(argv=None) -> int:

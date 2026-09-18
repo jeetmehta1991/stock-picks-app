@@ -31437,8 +31437,33 @@ def test_b2526_recent_learnings_are_anchored_and_l735_is_not_an_orphan():
         f"expected at least 13 entries from L725, found {len(recent)} - if the "
         "heading format changed, fix the PARSER (#199), not this floor")
 
+    # B2857 (S6-B2854c): ONE escape vocabulary across both enforcement
+    # layers - this pin now honours the SAME strict record-of-fact escape
+    # the turn gate uses (shared definition, L593: the code that measures
+    # and the pin that holds share one function).
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location(
+        "vtc_b2857", root / "scripts" / "verify_turn_compliance.py")
+    _vtc = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_vtc)
+
+    def _body(n):
+        m = re.search(rf"\n### L{n}\b(.*?)(?=\n### L|\Z)", ln, re.S)
+        return m.group(1) if m else ""
+
     orphans = [f"L{n}" for n in recent
-               if not re.search(rf"\bL{n}\b", ck) and not re.search(rf"\bL{n}\b", sk)]
+               if not re.search(rf"\bL{n}\b", ck)
+               and not re.search(rf"\bL{n}\b", sk)
+               and not _vtc.record_of_fact_escape(_body(n), ck, sk)]
+
+    # the shared escape, both directions (#226), on the B1626 contract that
+    # test_b1948 holds: a DECLARED marker suffices; no marker never escapes;
+    # a marker shown only inside code is a mention, not a declaration
+    esc = _vtc.record_of_fact_escape
+    assert esc("x **record-of-fact** - an event happened", ck, sk)
+    assert not esc("states a rule with no marker at all", ck, sk)
+    assert not esc("shows the marker only in code: `**record-of-fact**`",
+                   ck, sk)
     assert not orphans, (
         f"L-entries stating a rule but referenced in NEITHER anchor file "
         f"(#197): {orphans}. A rule recorded only in LEARNINGS is a story - "
@@ -38657,3 +38682,76 @@ def test_b2854_a_sweep_names_its_instrument():
         encoding="utf-8")
     assert "RETRO_INSTRUMENT = (" in src
     assert "names its enumeration instrument" in src
+
+
+def test_b2856_gate_pidfile_and_tree_stopper(tmp_path, monkeypatch):
+    """B2856 (S6-B2854b): TaskStop orphans a gate's subprocess tree - the
+    gate now writes a pidfile beside its artifact (removed on completion)
+    and kill_gate_tree addresses the TREE, dry-run by default, refusing an
+    absent pidfile and an unverified PID. Both directions per #226."""
+    import importlib.util as ilu
+    import os
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+
+    def _load(stem):
+        spec = ilu.spec_from_file_location(
+            stem + "_b2856", root / "scripts" / f"{stem}.py")
+        mod = ilu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    pg = _load("pyramid_gate")
+    kt = _load("kill_gate_tree")
+
+    # pidfile lifecycle: exists (with this process's pid) WHILE pytest runs,
+    # gone after - proven by observing it from inside a stubbed call
+    out = tmp_path / "g.json"
+    pidfile = _P(str(out) + ".pid")
+    seen = {}
+
+    def fake_call(cmd, **kw):
+        seen["existed"] = pidfile.is_file()
+        seen["pid"] = pidfile.read_text(encoding="utf-8").strip()
+        return 0
+
+    monkeypatch.setattr(pg.subprocess, "call", fake_call)
+    empty_root = tmp_path / "r"
+    empty_root.mkdir()
+    rc = pg.run(out, empty_root, ["-q"])
+    assert rc == 0
+    assert seen["existed"] and int(seen["pid"]) == os.getpid()
+    assert not pidfile.exists(), "pidfile must be removed on completion"
+
+    # stopper: absent pidfile refuses (fail closed)
+    with pytest.raises(SystemExit) as e:
+        kt.stop_tree(str(out))
+    assert "no pidfile" in str(e.value)
+
+    # stopper: PID whose command line is NOT a pyramid_gate refuses -
+    # the reused-PID case (L658)
+    pidfile.write_text("12345", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        kt.stop_tree(str(out), probe=lambda p: "notepad.exe something")
+    assert "not a live pyramid_gate" in str(e.value)
+
+    # stopper: dry-run by default - killer NEVER invoked
+    calls = []
+    got = kt.stop_tree(str(out),
+                       probe=lambda p: "python scripts/pyramid_gate.py --out x",
+                       killer=lambda p: calls.append(p))
+    assert got.startswith("DRY-RUN") and calls == []
+
+    # stopper: --force kills exactly the verified pid, via taskkill-shaped
+    # killer, and reports it
+    class _R:
+        returncode = 0
+    got2 = kt.stop_tree(str(out), force=True,
+                        probe=lambda p: "python scripts/pyramid_gate.py --out x",
+                        killer=lambda p: (calls.append(p), _R())[1])
+    assert calls == [12345] and "KILLED the tree" in got2
+    pidfile.unlink()

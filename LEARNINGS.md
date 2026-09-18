@@ -21106,3 +21106,19 @@ must-quiet arm was found hollow the same way (quiet because untriggered,
 not because instrumented) and repaired in the same edit. Compliance failure
 against item #240 - a corpus entry is the text AS THE GATE SEES IT, trigger
 included; no new checklist item, detection is test_b1805 doing its job.
+
+### L807 - B2856/B2857 MID-GATE EDIT, record-of-fact (2026-09-17)
+
+**record-of-fact** - the rule is L755's (a pyramid is a measurement of ONE
+tree; edits while it runs void it), already carried by the skill's tripwire
+row and enforced by pyramid_gate's own tree=CHANGED verdict. MEASURED: with
+the B2856 gate in flight I edited verify_turn_compliance.py and
+test_unit.py for B2857, voiding the run by construction; the mechanism
+would have caught it (exit 4) had the run completed. Disposition: void gate
+stopped, B2856+B2857 re-measured as ONE tree under one gate and closed in
+one two-ticket commit (within the 3-fix batch cap; the per-addressal
+isolation evidence is each batch's own targeted pin runs, which both
+passed before bundling). Compliance failure against item #292. Bonus
+finding recorded here: TaskStop's orphaning is NONDETERMINISTIC - this
+stop killed the whole tree while B2854's left survivors - and
+kill_gate_tree's stale-pidfile refusal arm validated live on the leftover.

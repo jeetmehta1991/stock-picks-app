@@ -545,6 +545,28 @@ RULE_MARKERS = ("generalised rule", "generalized rule", "**rule:**")
 RECORD_ONLY_MARKERS = ("**record-of-fact**", "**no rule**", "(no rule)")
 
 
+def record_of_fact_escape(body: str, checklist_text: str,
+                          skill_text: str) -> bool:
+    """B2857 (S6-B2854c): ONE definition of the record-of-fact escape,
+    shared by scan_orphan_rule and test_b2526 - the two layers had two
+    vocabularies (the gate accepted a bare marker, the pin accepted
+    nothing), and the workaround was an anchor citation the escape should
+    have made unnecessary. THE VOCABULARY IS THE B1626 CONTRACT, held by
+    test_b1948: a declared marker suffices - the marker IS the decision
+    written down, and the gate's own message promises it will be honoured.
+    (A stricter marker+covering-rule form was built first and correctly
+    REFUSED by test_b1948's contract arm - that strictness was scope creep
+    past the approved 'one vocabulary'.) Fences and inline code stripped
+    first (a marker SHOWN is not a marker DECLARED, B1948); the
+    checklist/skill texts stay in the signature so a future covering-rule
+    tightening is a one-function change for both layers."""
+    import re
+    _ = (checklist_text, skill_text)   # reserved for a future tightening
+    low = re.sub(r"```.*?```", " ", body, flags=re.S)
+    low = re.sub(r"`[^`]*`", " ", low).lower()
+    return any(k in low for k in RECORD_ONLY_MARKERS)
+
+
 def scan_orphan_rule(learnings_text, checklist_text, skill_text, new_entries):
     import re
     """Flag L-entries added THIS TURN that state a rule but are anchored nowhere.
@@ -569,12 +591,11 @@ def scan_orphan_rule(learnings_text, checklist_text, skill_text, new_entries):
         # An entry SHOWING the marker is not an entry DECLARING itself a
         # record of fact - and the exemption is the side that lets a turn
         # through, so it is the side worth hardening.
-        body = re.sub(r"```.*?```", " ", body, flags=re.S)
-        body = re.sub(r"`[^`]*`", " ", body)
-        # B1626: fail CLOSED. Previously this skipped anything not containing
-        # one of three exact phrases; now only an EXPLICIT opt-out skips.
-        if any(k in body for k in RECORD_ONLY_MARKERS):
-            continue                      # declared a pure record, not a rule
+        # B1626: fail CLOSED - only an EXPLICIT opt-out skips. B2857: the
+        # opt-out is the SHARED strict escape (marker + a named, anchored
+        # covering rule), one definition for this gate and test_b2526.
+        if record_of_fact_escape(m.group(1), checklist_text, skill_text):
+            continue                      # declared record, chain anchored
         if ln in checklist_text or ln in skill_text:
             continue                      # anchored
         orphans.append(ln)
