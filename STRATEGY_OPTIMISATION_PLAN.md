@@ -3246,6 +3246,39 @@ Sections above remain the authority for WHY; this section is the authority for W
 - Step-1 universe = the 200 tickers of APPENDIX S1-200 (`output_audit/_sweep_200.txt`); window
   2024-05-05 -> 2025-05-05 (SS10.1). Step 2/3 = 4 years, all 544 tickers (STEP 3).
 
+### 11.0b ACTUATION - A BAND WHOSE PARAMETER DOES NOT EXIST IS NOT A BAND (B2866, owner-directed 2026-09-19)
+
+**THE CLASS.** Table A may define a band for a producer parameter that the producer does not
+contain. MEASURED at S6-B2860: the candle anatomy bands P1.1-P1.4 named n_bars, a body
+percentage, a step magnitude and a wick cap; `compute_candles` had the literal 3 inside
+`range(1,4)` and NO body, step or wick test at all. Three of the four parameters did not exist
+in any form. The ruled Step-1 SEARCH is *all fire-adding configs*, so with no actuator the
+search had nothing to vary and 54 configs would have produced 54 BYTE-IDENTICAL runs.
+
+**WHY IT SURVIVED.** `validate_spec` refused a resim level with no env NAME, and offered the
+escape *strike them or add the knob*. It never checked that a declared name is READ: a spec
+declaring `CANDLE_TOTALLY_FAKE_KNOB_NOBODY_READS` validated CLEAN (measured B2866). So the
+escape could be satisfied by typing a name - the L751 class, where a flag accepted, stamped
+into the artifact and never applied is worse than one that errors.
+
+**THE WORKFLOW - a band reaches Step 1 only through these four states, in order:**
+
+| # | state | what makes it true | who checks |
+|---|---|---|---|
+| 1 | DEFINED | the band exists in Table A with its basis (CANON / BRACKET / MEASURED) | `table_a_bands.py` + the T3 review |
+| 2 | IMPLEMENTED | the PARAMETER exists in the producer - not a knob, the feature itself | code read; a missing one is a producer-work ticket, never a launch |
+| 3 | ACTUATED | an env knob in `config.py` reaches it, and DEFAULTS REPRODUCE PRODUCTION EXACTLY (proved bar-for-bar against the pre-change expression on real data) | `unactuated_knobs` + a defaults-identity pin |
+| 4 | DECLARED | the SPECS entry carries the env name and the band, `validate_spec` CLEAN | `validate_spec` + `launch_refusals` |
+
+**A band stuck at state 1 or 2 is a STOP, not a note.** It produces a producer-work ticket and
+the campaign's Step-1 scope shrinks to the axes that are actuated - stated on the disposition,
+never silently. A strategy whose FIRE-ADDING axes are all unactuated cannot run Step 1 at all.
+
+**MECHANICALLY ENFORCED (B2866):** `validate_spec` now refuses a declared knob that no file
+under `backtest/` reads, and `unactuated_knobs(SPECS | SPECS_PHASE0)` is asserted empty by
+`test_b2866_a_declared_knob_must_be_read_by_the_engine` on every pyramid run - so a band can
+never again name a parameter that does not exist.
+
 ### 11.1 ON-RAMP - what must exist BEFORE the first spec of a new strategy launches
 
 Run each probe; every one must print the expected line. A missing item is a STOP, not a note - **but R3-R7 are LANDING-TIME contracts, so they gate only a campaign that LAUNCHES THE ENGINE.** MEASURED at B2638: the battery fires solely from the engine's landing hook (`run_phase1a.py:713`), so with no engine run there is no landing and the family adapter cannot fire at all; requiring it before an OFFLINE-FREE Step 1 (SS11.2b) would have stopped a Step-1 that completed correctly. R1/R2 still bind every campaign - the SPECS entry is what makes the parameter surface auditable - and R3-R9 bind the moment a spec is written.

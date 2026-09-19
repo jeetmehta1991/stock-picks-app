@@ -1841,13 +1841,14 @@ FORMULA_TWS = (
     "                   -> strict inequalities; anatomy knobs P2-P4 are the\n"
     "                      implicit magnitudes (all zero/absent today)\n"
     "\n"
-    "P2  min_body_pct_of_range = 0.0   (candidates [0, 0.3, 0.5] - no env yet)\n"
-    "P3  min_step_up_pct       = 0.0   (candidates [0, 0.1, 0.25] - no env yet)\n"
-    "P4  max_upper_wick_pct    = None  (candidates [0.3, 0.2] - no env yet)\n"
+    "P2  n_bars                = 3     (band [3, 4]; env CANDLE_N_BARS)\n"
+    "P3  min_body_pct_of_range = 0.0   (band [0, 0.3, 0.5]; env CANDLE_MIN_BODY_PCT)\n"
+    "P4  min_step_up_pct       = 0.0   (band [0, 0.1, 0.25]; env CANDLE_MIN_STEP_PCT)\n"
+    "P5  max_upper_wick_pct    = None  (band [None, 0.3, 0.2]; env CANDLE_MAX_WICK_PCT)\n"
     "\n"
     "============================== STRATEGY LAYER ===============================\n"
     "\n"
-    "P5  long  =  three_white_soldiers AND rsi_14 < 60\n"
+    "P6  long  =  three_white_soldiers AND rsi_14 < 60\n"
     "             (rsi_14 TIGHTER = LOWER the ceiling: free levels are the\n"
     "              measured retention quantiles on the 1,596 R5 fires)\n")
 
@@ -1867,35 +1868,43 @@ SPECS_PHASE0["three_white_soldiers"] = {  # B2850: pre-engine inventory - not a 
          "subset_safe": False,
          "status": "SMOKED-0.5 (479 pattern fires, 6 megacaps 4y)",
          "evidence": "technical.py:2104-2107", "engine_implemented": True},
-        {"id": "P2", "producer": "compute_candle_signals",
-         "param": "min_body_pct_of_range", "env": None,
+        {"id": "P2", "producer": "compute_candles",
+         "param": "n_bars (pattern length)", "env": "CANDLE_N_BARS",
          "consumers": ["backtest/signals/screener.py"],
-         "production": 0.0, "type": "float", "band": [0.0],
-         "free_band": [], "resim_band": [0.0],
-         "derivation": ("candidates [0, 0.3, 0.5] (CANON long-body soldiers); "
-                        "DEFINED-NO-ACTUATOR - band widens when the env knob "
-                        "is built"),
-         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
-         "evidence": "technical.py:2105", "engine_implemented": True},
-        {"id": "P3", "producer": "compute_candle_signals",
-         "param": "min_step_up_pct", "env": None,
-         "consumers": ["backtest/signals/screener.py"],
-         "production": 0.0, "type": "float", "band": [0.0],
-         "free_band": [], "resim_band": [0.0],
-         "derivation": "candidates [0, 0.1, 0.25]; DEFINED-NO-ACTUATOR",
-         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
-         "evidence": "technical.py:2106", "engine_implemented": True},
-        {"id": "P4", "producer": "compute_candle_signals",
-         "param": "max_upper_wick_pct", "env": None,
-         "consumers": ["backtest/signals/screener.py"],
-         "production": None, "type": "float|None", "band": [None],
-         "free_band": [], "resim_band": [None],
-         "derivation": ("candidates [0.3, 0.2] (close near high); "
-                        "DEFINED-NO-ACTUATOR"),
-         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
-         "evidence": "technical.py:2104-2107 (absent today)",
+         "production": 3, "type": "int", "band": [3, 4],
+         "free_band": [], "resim_band": [3, 4],
+         "derivation": ("CANON Nison 1991 three; 4 the strict extension. "
+                        "B2865: ACTUATED - the literal range(1,4) became a "
+                        "knob; measured bite 1175 -> 466 soldiers fires on "
+                        "25 tickers x 600 bars"),
+         "subset_safe": False, "status": "ACTUATED-B2865",
+         "evidence": "technical.py five-bar block; config.py CANDLE_N_BARS",
          "engine_implemented": True},
-        {"id": "P5", "producer": "strategy gate", "param": "rsi_14 ceiling",
+        {"id": "P3", "producer": "compute_candles",
+         "param": "min_body_pct_of_range", "env": "CANDLE_MIN_BODY_PCT",
+         "consumers": ["backtest/signals/screener.py"],
+         "production": 0.0, "type": "float", "band": [0.0, 0.3, 0.5],
+         "free_band": [], "resim_band": [0.0, 0.3, 0.5],
+         "derivation": ("CANON long-body soldiers, as a FRACTION OF THE BAR RANGE (#165 scale criterion). B2865 ACTUATED; measured bite at 0.5: 1175 -> 153 fires"),
+         "subset_safe": False, "status": "ACTUATED-B2865",
+         "evidence": "technical.py five-bar block; config.py CANDLE_MIN_BODY_PCT", "engine_implemented": True},
+        {"id": "P4", "producer": "compute_candles",
+         "param": "min_step_up_pct", "env": "CANDLE_MIN_STEP_PCT",
+         "consumers": ["backtest/signals/screener.py"],
+         "production": 0.0, "type": "float", "band": [0.0, 0.1, 0.25],
+         "free_band": [], "resim_band": [0.0, 0.1, 0.25],
+         "derivation": ("BRACKET zero upward, as a fraction of the PRIOR bar's range; 0.0 preserves production's strict >. B2865 ACTUATED; measured bite at 0.25: 1175 -> 688 fires"),
+         "subset_safe": False, "status": "ACTUATED-B2865",
+         "evidence": "technical.py five-bar block; config.py CANDLE_MIN_STEP_PCT", "engine_implemented": True},
+        {"id": "P5", "producer": "compute_candles",
+         "param": "max_upper_wick_pct", "env": "CANDLE_MAX_WICK_PCT",
+         "consumers": ["backtest/signals/screener.py"],
+         "production": None, "type": "float", "band": [None, 0.3, 0.2],
+         "free_band": [], "resim_band": [None, 0.3, 0.2],
+         "derivation": ("CANON soldiers close at/near highs; unset = unenforced. B2865 ACTUATED; measured bite at 0.2: 1175 -> 138 fires"),
+         "subset_safe": False, "status": "ACTUATED-B2865",
+         "evidence": "technical.py five-bar block; config.py CANDLE_MAX_WICK_PCT", "engine_implemented": True},
+        {"id": "P6", "producer": "strategy gate", "param": "rsi_14 ceiling",
          "env": None, "consumers": ["backtest/signals/screener.py"],
          "production": 60, "type": "float",
          "band": [41.97, 46.31, 50.16, 54.42, 60],
@@ -1909,9 +1918,9 @@ SPECS_PHASE0["three_white_soldiers"] = {  # B2850: pre-engine inventory - not a 
          "engine_implemented": True},
     ],
     "tools": {
-        "keys": {"P5": "rsi14_max"},
+        "keys": {"P6": "rsi14_max"},
         "grade": {"script": "offline_level_sweep.py",
-                  "flags": {"P5": "--axes rsi_14:le:<levels>"},
+                  "flags": {"P6": "--axes rsi_14:le:<levels>"},
                   "extra": ["--strategy", "three_white_soldiers",
                             "--production", "rsi_14=60"],
                   "note": ("offline free-band grader; --band-ruling REQUIRED "
@@ -1926,16 +1935,17 @@ FORMULA_TBC = (
     "                technical.py:2108-2111): the soldiers pattern mirrored\n"
     "                   -> anatomy knobs P2-P4 mirror the soldiers knobs\n"
     "\n"
-    "P2  min_body_pct_of_range = 0.0   (candidates [0, 0.3, 0.5] - no env yet)\n"
-    "P3  min_step_down_pct     = 0.0   (candidates [0, 0.1, 0.25] - no env yet)\n"
-    "P4  max_lower_wick_pct    = None  (candidates [0.3, 0.2] - no env yet)\n"
+    "P2  n_bars                = 3     (band [3, 4]; env CANDLE_N_BARS)\n"
+    "P3  min_body_pct_of_range = 0.0   (band [0, 0.3, 0.5]; env CANDLE_MIN_BODY_PCT)\n"
+    "P4  min_step_down_pct     = 0.0   (band [0, 0.1, 0.25]; env CANDLE_MIN_STEP_PCT)\n"
+    "P5  max_lower_wick_pct    = None  (band [None, 0.3, 0.2]; env CANDLE_MAX_WICK_PCT)\n"
     "\n"
     "============================== STRATEGY LAYER ===============================\n"
     "\n"
-    "P5  short =  three_black_crows AND rsi_14 > 40\n"
+    "P6  short =  three_black_crows AND rsi_14 > 40\n"
     "             (TIGHTER = RAISE the floor; measured quantiles on the\n"
     "              1,674 R5 fires)\n"
-    "P6  guard =  NOT _short_borrow_trap_active  (days_to_cover cap 5.0,\n"
+    "P7  guard =  NOT _short_borrow_trap_active  (days_to_cover cap 5.0,\n"
     "             B718a owner-ruled risk guard - BANDABLE-OWNER-GATED)\n")
 
 SPECS_PHASE0["three_black_crows_short"] = {  # B2850: pre-engine inventory - not a battery family (L754 adapters come with the first engine campaign)
@@ -1955,32 +1965,43 @@ SPECS_PHASE0["three_black_crows_short"] = {  # B2850: pre-engine inventory - not
          "subset_safe": False,
          "status": "SMOKED-0.5 (302 pattern fires, 6 megacaps 4y)",
          "evidence": "technical.py:2108-2111", "engine_implemented": True},
-        {"id": "P2", "producer": "compute_candle_signals",
-         "param": "min_body_pct_of_range", "env": None,
+        {"id": "P2", "producer": "compute_candles",
+         "param": "n_bars (pattern length)", "env": "CANDLE_N_BARS",
          "consumers": ["backtest/signals/screener.py"],
-         "production": 0.0, "type": "float", "band": [0.0],
-         "free_band": [], "resim_band": [0.0],
-         "derivation": "candidates [0, 0.3, 0.5]; DEFINED-NO-ACTUATOR",
-         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
-         "evidence": "technical.py:2109", "engine_implemented": True},
-        {"id": "P3", "producer": "compute_candle_signals",
-         "param": "min_step_down_pct", "env": None,
-         "consumers": ["backtest/signals/screener.py"],
-         "production": 0.0, "type": "float", "band": [0.0],
-         "free_band": [], "resim_band": [0.0],
-         "derivation": "candidates [0, 0.1, 0.25]; DEFINED-NO-ACTUATOR",
-         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
-         "evidence": "technical.py:2110", "engine_implemented": True},
-        {"id": "P4", "producer": "compute_candle_signals",
-         "param": "max_lower_wick_pct", "env": None,
-         "consumers": ["backtest/signals/screener.py"],
-         "production": None, "type": "float|None", "band": [None],
-         "free_band": [], "resim_band": [None],
-         "derivation": "candidates [0.3, 0.2]; DEFINED-NO-ACTUATOR",
-         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
-         "evidence": "technical.py:2108-2111 (absent today)",
+         "production": 3, "type": "int", "band": [3, 4],
+         "free_band": [], "resim_band": [3, 4],
+         "derivation": ("CANON Nison 1991 three; 4 the strict extension. "
+                        "B2865: ACTUATED - the literal range(1,4) became a "
+                        "knob; measured bite 1175 -> 466 soldiers fires on "
+                        "25 tickers x 600 bars"),
+         "subset_safe": False, "status": "ACTUATED-B2865",
+         "evidence": "technical.py five-bar block; config.py CANDLE_N_BARS",
          "engine_implemented": True},
-        {"id": "P5", "producer": "strategy gate", "param": "rsi_14 floor",
+        {"id": "P3", "producer": "compute_candles",
+         "param": "min_body_pct_of_range", "env": "CANDLE_MIN_BODY_PCT",
+         "consumers": ["backtest/signals/screener.py"],
+         "production": 0.0, "type": "float", "band": [0.0, 0.3, 0.5],
+         "free_band": [], "resim_band": [0.0, 0.3, 0.5],
+         "derivation": ("mirror of the soldiers body band, fraction of the bar range. B2865 ACTUATED; measured bite at 0.5: 920 -> 97 crows fires"),
+         "subset_safe": False, "status": "ACTUATED-B2865",
+         "evidence": "technical.py five-bar block; config.py CANDLE_MIN_BODY_PCT", "engine_implemented": True},
+        {"id": "P4", "producer": "compute_candles",
+         "param": "min_step_down_pct", "env": "CANDLE_MIN_STEP_PCT",
+         "consumers": ["backtest/signals/screener.py"],
+         "production": 0.0, "type": "float", "band": [0.0, 0.1, 0.25],
+         "free_band": [], "resim_band": [0.0, 0.1, 0.25],
+         "derivation": ("mirror: each close BELOW the prior by a fraction of the prior bar's range. B2865 ACTUATED; measured bite at 0.25: 920 -> 508"),
+         "subset_safe": False, "status": "ACTUATED-B2865",
+         "evidence": "technical.py five-bar block; config.py CANDLE_MIN_STEP_PCT", "engine_implemented": True},
+        {"id": "P5", "producer": "compute_candles",
+         "param": "max_lower_wick_pct", "env": "CANDLE_MAX_WICK_PCT",
+         "consumers": ["backtest/signals/screener.py"],
+         "production": None, "type": "float", "band": [None, 0.3, 0.2],
+         "free_band": [], "resim_band": [None, 0.3, 0.2],
+         "derivation": ("mirror: crows close at/near lows. B2865 ACTUATED; measured bite at 0.2: 920 -> 66 fires"),
+         "subset_safe": False, "status": "ACTUATED-B2865",
+         "evidence": "technical.py five-bar block; config.py CANDLE_MAX_WICK_PCT", "engine_implemented": True},
+        {"id": "P6", "producer": "strategy gate", "param": "rsi_14 floor",
          "env": None, "consumers": ["backtest/signals/screener.py"],
          "production": 40, "type": "float",
          "band": [40, 45.094, 50.132, 54.066, 58.812],
@@ -1991,7 +2012,7 @@ SPECS_PHASE0["three_black_crows_short"] = {  # B2850: pre-engine inventory - not
          "subset_safe": True, "status": "MEASURED",
          "evidence": "strategy_optimisation/tighten/three_black_crows_short.md",
          "engine_implemented": True},
-        {"id": "P6", "producer": "_short_borrow_trap_active",
+        {"id": "P7", "producer": "_short_borrow_trap_active",
          "param": "days_to_cover cap", "env": None,
          "consumers": ["backtest/signals/screener.py (6 short consumers)"],
          "production": 5.0, "type": "float", "band": [5.0],
@@ -2004,9 +2025,9 @@ SPECS_PHASE0["three_black_crows_short"] = {  # B2850: pre-engine inventory - not
          "evidence": "screener.py:148 (B718a)", "engine_implemented": True},
     ],
     "tools": {
-        "keys": {"P5": "rsi14_min"},
+        "keys": {"P6": "rsi14_min"},
         "grade": {"script": "offline_level_sweep.py",
-                  "flags": {"P5": "--axes rsi_14:ge:<levels>"},
+                  "flags": {"P6": "--axes rsi_14:ge:<levels>"},
                   "extra": ["--strategy", "three_black_crows_short",
                             "--production", "rsi_14=40"],
                   "note": ("offline free-band grader; --band-ruling REQUIRED "
@@ -2074,6 +2095,20 @@ def validate_spec(spec: dict) -> list[str]:
             errs.append(f"{_p['id']} {_p['param']}: resim levels {_extra} "
                         "have no env knob - unrunnable by design "
                         "(S6-B2569a class): strike them or add the knob")
+    # B2866 (owner-directed 2026-09-19): THE SECOND HALF OF THE SAME RULE.
+    # The check above accepts any env NAME - MEASURED this turn, a spec
+    # declaring CANDLE_TOTALLY_FAKE_KNOB_NOBODY_READS validated CLEAN. So the
+    # escape it offers (add the knob) could be satisfied by TYPING one, which
+    # is exactly the class that blocked Step 1: the candle anatomy bands named
+    # parameters compute_candles did not contain (S6-B2860). A declared knob
+    # that no ENGINE file reads is a name, not an actuator.
+    for _p in spec["params"]:
+        _k = _p.get("env")
+        if _k and not _engine_reads_knob(_k):
+            errs.append(f"{_p['id']} {_p['param']}: env knob {_k} is declared "
+                        "but NO file under backtest/ reads it - a band whose "
+                        "parameter does not exist in the producer is a FEATURE "
+                        "REQUEST, not a band (B2866; implement it, then band it)")
     b = spec.get("baseline")
     if not isinstance(b, dict):
         errs.append("SPEC has no `baseline` block - main() reads it for the "
@@ -2227,6 +2262,64 @@ def _env_reads(path: Path) -> frozenset:
 
 
 _CONSUMERS: dict[tuple, list[str]] = {}
+
+
+_ENGINE_BLOB: dict = {}
+
+
+def _engine_tree_text(code_root=None) -> str:
+    """B2866: every non-test engine source, concatenated ONCE and memoised.
+    knob_consumers is per-knob and re-reads the tree each time (its docstring
+    records 61 specs taking over two minutes); this answers the cheaper
+    question - does ANY engine file mention this name at all - in one pass."""
+    root = Path(code_root) if code_root is not None else CODE_ROOT
+    key = str(root)
+    if key not in _ENGINE_BLOB:
+        parts = []
+        for p in sorted((root / "backtest").rglob("*.py")):
+            if "tests" in p.parts:
+                continue
+            try:
+                parts.append(p.read_text(encoding="utf-8", errors="replace"))
+            except OSError:
+                continue
+        _ENGINE_BLOB[key] = chr(10).join(parts)
+    return _ENGINE_BLOB[key]
+
+
+def _engine_reads_knob(knob: str, code_root=None) -> bool:
+    """B2866: is this knob READ anywhere that can actuate a run?
+
+    Cheap path first - any mention in the engine tree. MEASURED when this
+    shipped: that alone flagged the three INST_* knobs, which are NOT a
+    defect - their SPECS rows say `read at precompute build time`, i.e. a
+    script consumes them before the engine ever starts. A sweep must
+    CLASSIFY, not count (L643), so a miss falls through to knob_consumers,
+    which reads scripts/ env accesses from the AST. Only a genuinely
+    unread name pays that cost."""
+    if not knob:
+        return False
+    if knob in _engine_tree_text(code_root):
+        return True
+    try:
+        return bool(knob_consumers(knob, code_root))
+    except Exception:
+        return False
+
+
+def unactuated_knobs(specs: dict, code_root=None) -> dict:
+    """B2866: {strategy: [(param id, knob)]} for every DECLARED env knob no
+    engine file reads. Empty dict = every band in these specs names a
+    parameter that exists. This is the mechanised form of the S6-B2860 class:
+    Table A carried four candle anatomy bands whose parameters were absent
+    from compute_candles, so the ruled Step-1 SEARCH had nothing to vary."""
+    bad: dict = {}
+    for name, spec in (specs or {}).items():
+        for prm in (spec.get("params") or []):
+            k = prm.get("env")
+            if k and not _engine_reads_knob(k, code_root):
+                bad.setdefault(name, []).append((prm.get("id"), k))
+    return bad
 
 
 def knob_consumers(knob: str, code_root: Path | None = None) -> list[str]:

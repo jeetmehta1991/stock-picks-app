@@ -21161,3 +21161,23 @@ The correction strengthened rather than weakened the underlying concern: plan
 line 53 records that at the FULL sample --min-n 10 STILL leaves 32-60 pct of a
 grid NO_EXIT_SELECTABLE, and plan line 716 instructs measuring the retention
 ratio BEFORE running under any universe restriction - a step I had not applied.
+
+### L810 - HEREDOC BACKSLASH MANGLING, TWICE IN ONE BATCH (B2865/B2866, record-of-fact, 2026-09-19)
+
+**record-of-fact** - the rule is L638's (never pass a backslash-bearing
+payload through a heredoc; after ONE failed exact-match edit change route),
+already anchored in CHECKLIST and in the skill. Compliance failure against
+item #245, no new checklist item warranted.
+
+MEASURED: two patcher scripts written through a QUOTED bash heredoc both had
+their escaped newline collapse into a REAL line break, producing an
+unterminated string literal in the target file each time - once in a formula
+string in producer_variant_table.py, once in a join expression. Quoting the
+heredoc did not protect the payload. Both were caught immediately because the
+patchers were followed by a parse check in the same command, so nothing
+shipped broken; the cost was two repair cycles.
+
+THE ROUTE THAT WORKED both times: build the backslash inside the patcher with
+chr(92), or avoid it entirely (chr(10).join instead of a newline literal).
+A payload that needs an escape should construct it in Python, never carry it
+through the shell.

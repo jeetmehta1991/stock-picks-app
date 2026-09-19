@@ -1,8 +1,8 @@
 # Table A - three_black_crows_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6c19c4cf9 | commit e29a15af2 at 2026-09-17 17:05:47 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit fa06ebf3e at 2026-09-19 13:06:49 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** TIGHTEN | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 1674 | **surviving fires (T1):** 1674 (unchanged since R5 - filter is identity)
+**Lane:** TIGHTEN | **family:** candle | **status:** STALLED-CAMPAIGN | **R5 fires:** 1674 | **surviving fires (T1):** 1674 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** registered in producer_variant_table
 
@@ -37,10 +37,10 @@ leg runs.
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
 | P1 | PRODUCER | three_black_crows - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | 3 consecutive bearish bodies, each close AND open below the prior bar's (strict; technical.py:2108-2111) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
-| P1.1 | BAND | n_bars (pattern length) - backtest/signals/technical.py:2108-2111 | CANON (Nison 1991: three); 4 as the strict extension | 3 | 3, 4 | none - pattern bars' OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P1.2 | BAND | min_body_pct_of_range per candle - technical.py:2109 (c<o only - no magnitude) | CANON (Nison long-body crows); production accepts ANY body | 0.0 | 0, 0.3, 0.5 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P1.3 | BAND | min_step_down_pct (close[i] below close[i-1] by) - technical.py:2110 | BRACKET zero upward; strict < today | 0.0 | 0, 0.1, 0.25 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P1.4 | BAND | max_lower_wick_pct (close near low) - technical.py:2108-2111 (absent today) | CANON (crows close at/near lows); production unenforced | None | None, 0.3, 0.2 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P1.1 | BAND | n_bars (pattern length) - backtest/signals/technical.py:2108-2111 | CANON (Nison 1991: three); 4 as the strict extension | 3 | 3, 4 | none - pattern bars' OHLC unpersisted | the whole band; env CANDLE_N_BARS | T3 review before any grid |
+| P1.2 | BAND | min_body_pct_of_range per candle - technical.py:2109 (c<o only - no magnitude) | CANON (Nison long-body crows); production accepts ANY body | 0.0 | 0, 0.3, 0.5 | none | the whole band; env CANDLE_MIN_BODY_PCT | T3 review before any grid |
+| P1.3 | BAND | min_step_down_pct (close[i] below close[i-1] by) - technical.py:2110 | BRACKET zero upward; strict < today | 0.0 | 0, 0.1, 0.25 | none | the whole band; env CANDLE_MIN_STEP_PCT | T3 review before any grid |
+| P1.4 | BAND | max_lower_wick_pct (close near low) - technical.py:2108-2111 (absent today) | CANON (crows close at/near lows); production unenforced | None | None, 0.3, 0.2 | none | the whole band; env CANDLE_MAX_WICK_PCT | T3 review before any grid |
 | P2 | STRATEGY | rsi_14 `> 40` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `> 40` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P2.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |

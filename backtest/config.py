@@ -2472,6 +2472,23 @@ STAGE2_NO_LIVE_FETCH: bool = os.environ.get("STAGE2_NO_LIVE_FETCH", "1") == "1"
 
 SMC_SWING_LENGTH: int = int(os.environ.get("SMC_SWING_LENGTH", "20"))
 
+# B2865 (owner-approved 2026-09-19 'Write knobs and bands'): the CANDLE
+# ANATOMY actuators. Table A P1.1-P1.4 carried DEFINED-NO-ACTUATOR because
+# these parameters did not exist in compute_candles AT ALL - n_bars was the
+# literal 3 inside range(1,4) and there was no body, step or wick test - so
+# the ruled Step-1 SEARCH over fire-adding configs had nothing to vary
+# (S6-B2860). Same pattern as SMC_SWING_LENGTH above (B1616 lineage).
+# DEFAULTS REPRODUCE CURRENT BEHAVIOUR EXACTLY: an unset env is a no-op -
+# n_bars 3, body 0.0, step 0.0 (the strict > is preserved at 0.0) and wick
+# None (unenforced). Magnitudes are FRACTIONS OF THE BAR'S RANGE so every
+# knob is dimensionless across tickers and price levels (#165 criterion,
+# stated at compute_candles). Pinned by test_b2865.
+CANDLE_N_BARS: int = int(os.environ.get("CANDLE_N_BARS", "3"))
+CANDLE_MIN_BODY_PCT: float = float(os.environ.get("CANDLE_MIN_BODY_PCT", "0.0"))
+CANDLE_MIN_STEP_PCT: float = float(os.environ.get("CANDLE_MIN_STEP_PCT", "0.0"))
+_candle_wick_raw = os.environ.get("CANDLE_MAX_WICK_PCT", "").strip()
+CANDLE_MAX_WICK_PCT = float(_candle_wick_raw) if _candle_wick_raw else None
+
 # B2706 / S6-B2702a STEP 0 (owner-armed depth campaign, option (b) full
 # factorial, 2026-09-12): the two remaining hub-1 producer knobs reach the
 # engine through the same pattern as SMC_SWING_LENGTH (B1616 lineage).

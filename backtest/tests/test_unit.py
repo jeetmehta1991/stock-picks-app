@@ -38755,3 +38755,132 @@ def test_b2856_gate_pidfile_and_tree_stopper(tmp_path, monkeypatch):
                         killer=lambda p: (calls.append(p), _R())[1])
     assert calls == [12345] and "KILLED the tree" in got2
     pidfile.unlink()
+
+
+def test_b2865_candle_anatomy_knobs_reach_the_engine_and_bite(monkeypatch):
+    """B2865 (owner-approved 2026-09-19 "Write knobs and bands"): the four
+    candle anatomy parameters now EXIST in compute_candles behind config
+    actuators. Two directions per #226: at defaults the producer reproduces
+    the pre-change expression bar-for-bar, and every knob changes the output
+    when set. The defaults arm is the load-bearing one - S6-B2860's whole
+    point is that a band whose parameter is absent cannot be searched, and
+    adding the parameter must not move production."""
+    import math
+    import pandas as pd
+    from backtest import config as _cfg
+    from backtest.signals import technical as T
+
+    # deterministic bars - no rng (B1801: a synthetic fixture says so), shaped
+    # to contain real runs of rising and falling closes
+    rows = []
+    for i in range(240):
+        base = 100 + 10 * math.sin(i / 7.0) + 0.05 * i
+        op = base + 0.4 * math.cos(i / 3.0)
+        cl = base + 0.6 * math.sin(i / 2.0)
+        hi = max(op, cl) + 0.3 + 0.2 * abs(math.sin(i / 5.0))
+        lo = min(op, cl) - 0.3 - 0.2 * abs(math.cos(i / 4.0))
+        rows.append((op, hi, lo, cl))
+    df = pd.DataFrame(rows, columns=["open", "high", "low", "close"])
+
+    fires_s = fires_c = compared = 0
+    for end in range(5, len(df)):
+        w = df.iloc[:end + 1]
+        res = T.compute_candles(w)
+        assert res, "producer returned nothing on a 5+ bar window"
+        o, c = w["open"].values, w["close"].values
+        # the ORIGINAL expression, verbatim from the pre-B2865 source
+        old_s = (all(c[-i] > o[-i] for i in range(1, 4)) and
+                 all(c[-i] > c[-i - 1] for i in range(1, 3)) and
+                 all(o[-i] > o[-i - 1] for i in range(1, 3)))
+        old_c = (all(c[-i] < o[-i] for i in range(1, 4)) and
+                 all(c[-i] < c[-i - 1] for i in range(1, 3)) and
+                 all(o[-i] < o[-i - 1] for i in range(1, 3)))
+        assert bool(res["three_white_soldiers"]) == bool(old_s), end
+        assert bool(res["three_black_crows"]) == bool(old_c), end
+        compared += 1
+        fires_s += bool(old_s)
+        fires_c += bool(old_c)
+    # a comparison that never saw a True would pass vacuously (#226 / L703)
+    assert compared > 200, compared
+    assert fires_s > 0 and fires_c > 0, (fires_s, fires_c)
+
+    def _count():
+        s = c2 = 0
+        for end in range(5, len(df)):
+            r = T.compute_candles(df.iloc[:end + 1])
+            s += bool(r["three_white_soldiers"])
+            c2 += bool(r["three_black_crows"])
+        return s, c2
+
+    base_s, base_c = _count()
+    assert (base_s, base_c) == (fires_s, fires_c)
+
+    # each knob BITES - a knob that parses and changes nothing is the L751
+    # class (accepted, stamped, never applied)
+    for attr, value in (("CANDLE_N_BARS", 4),
+                        ("CANDLE_MIN_BODY_PCT", 0.5),
+                        ("CANDLE_MIN_STEP_PCT", 0.25),
+                        ("CANDLE_MAX_WICK_PCT", 0.2)):
+        monkeypatch.setattr(_cfg, attr, value, raising=False)
+        got_s, got_c = _count()
+        assert (got_s, got_c) != (base_s, base_c), (attr, got_s, got_c)
+        assert got_s <= base_s and got_c <= base_c, (attr, "must only tighten")
+        monkeypatch.undo()
+
+    # config carries all four with production-preserving defaults
+    import os
+    assert int(os.environ.get("CANDLE_N_BARS", "3")) == 3
+    src = (pathlib_Path_b2865() / "backtest" / "config.py").read_text(encoding="utf-8")
+    for knob in ("CANDLE_N_BARS", "CANDLE_MIN_BODY_PCT",
+                 "CANDLE_MIN_STEP_PCT", "CANDLE_MAX_WICK_PCT"):
+        assert 'os.environ.get("%s"' % knob in src, knob
+
+
+def pathlib_Path_b2865():
+    from pathlib import Path
+    return Path(__file__).resolve().parents[2]
+
+
+def test_b2866_a_declared_knob_must_be_read_by_the_engine():
+    """B2866 (owner-directed 2026-09-19): a band whose parameter does not
+    exist is a FEATURE REQUEST, not a band. validate_spec refused a resim
+    level with no env NAME and offered "add the knob" - MEASURED, that escape
+    was satisfiable by TYPING a name, which is the S6-B2860 class. Both
+    directions per #226, plus the doc rule's durability."""
+    import copy
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    # every live spec's declared knobs are READ somewhere that can actuate
+    both = dict(pvt.SPECS)
+    both.update(pvt.SPECS_PHASE0)
+    assert pvt.unactuated_knobs(both) == {}, pvt.unactuated_knobs(both)
+
+    # must-FIRE: a fabricated knob
+    spec = copy.deepcopy(pvt.SPECS_PHASE0["three_white_soldiers"])
+    for p in spec["params"]:
+        if p.get("env"):
+            p["env"] = "CANDLE_TOTALLY_FAKE_KNOB_NOBODY_READS"
+            break
+    errs = pvt.validate_spec(spec)
+    assert any("FEATURE REQUEST" in e for e in errs), errs
+
+    # must-QUIET: the real entries
+    for k in ("three_white_soldiers", "three_black_crows_short"):
+        assert pvt.validate_spec(pvt.SPECS_PHASE0[k]) == [], k
+        ids = [p["id"] for p in pvt.SPECS_PHASE0[k]["params"]]
+        assert ids == sorted(ids, key=lambda x: int(x[1:])), (k, ids)
+
+    # a precompute-time knob is NOT unactuated - the sweep classifies (L643)
+    assert pvt._engine_reads_knob("INST_MIN_CONSECUTIVE_QUARTERS")
+
+    # the class and its four-state workflow survive in the plan
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
+        encoding="utf-8", errors="replace")
+    assert "A BAND WHOSE PARAMETER DOES NOT EXIST IS NOT A BAND" in plan
+    for state in ("DEFINED", "IMPLEMENTED", "ACTUATED", "DECLARED"):
+        assert "| %s |" % state in plan, state

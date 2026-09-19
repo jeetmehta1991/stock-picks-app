@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 6c19c4cf9 at 2026-09-15 18:55:24 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 72739db05 at 2026-09-18 20:29:24 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -16,8 +16,8 @@
 | registered strategies | 223 |
 | DONE - admitted to Phase 1B | 14 |
 | IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 2 |
-| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 46 |
-| NOT-STARTED | 145 |
+| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 50 |
+| NOT-STARTED | 141 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
 | CONTAINED-IN-REPRESENTATIVE (b2647) | 1 |
@@ -75,7 +75,7 @@
 | r1_break_retest | pivot | 3371 | 309.8 |  | 100.0% | NONE | STALLED-CAMPAIGN |
 | simple_below_ema_50_short | momentum_trend | 3299 | 177.8 | YES | 58.7% | NONE | NOT-STARTED |
 | force_index_breakout | breakout | 3013 | 276.9 |  | 100.0% | NONE | NOT-STARTED |
-| cmf_flip | mean_reversion | 2994 | 206.8 | YES | 75.1% | TIGHTEN | NOT-STARTED |
+| cmf_flip | mean_reversion | 2994 | 206.8 | YES | 75.1% | TIGHTEN | STALLED-CAMPAIGN |
 | smc_liquidity_sweep_reversal | smc | 2933 | 13.9 | YES | 5.1% | LOOSEN | STALLED-CAMPAIGN |
 | macd_crossover | momentum | 2910 | 267.5 |  | 100.0% | NONE | NOT-STARTED |
 | macd_ichimoku | confluence | 2907 | 267.2 | YES | 100.0% | - | DISABLED |
@@ -92,7 +92,7 @@
 | dc20_break_retest | breakout | 2414 | 109.7 | YES | 49.4% | NONE | NOT-STARTED |
 | institutional_persistence_momentum_long | institutional_persistence | 2324 | 213.6 |  | 100.0% | - | PRUNED-DUPLICATE |
 | avwap_252_breakout | vwap | 2294 | 210.8 |  | 100.0% | NONE | STALLED-CAMPAIGN |
-| morning_star | candle | 2280 | 96.8 | YES | 46.2% | BOTH | NOT-STARTED |
+| morning_star | candle | 2280 | 96.8 | YES | 46.2% | BOTH | STALLED-CAMPAIGN |
 | institutional_recent_init_momentum_long | institutional_persistence | 2268 | 208.5 |  | 100.0% | - | DONE-ADMITTED |
 | pead_short_negative_yoy_growth | event_driven | 2215 | 203.6 | YES | 100.0% | NONE | STALLED-CAMPAIGN |
 | break_retest_volume | breakout | 2164 | 98.6 | YES | 49.6% | LOOSEN | NOT-STARTED |
@@ -107,12 +107,12 @@
 | institutional_strong_conviction_long | institutional_persistence | 1826 | 167.8 |  | 100.0% | - | DONE-ADMITTED |
 | naked_poc_retest_long | volume_profile | 1788 | 164.3 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | cpr_narrow_momentum_short | confluence | 1696 | 155.9 |  | 100.0% | TIGHTEN | NOT-STARTED |
-| three_black_crows_short | candle | 1674 | 153.9 |  | 100.0% | TIGHTEN | NOT-STARTED |
+| three_black_crows_short | candle | 1674 | 153.9 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | parabolic_sar_flip_short | trend | 1672 | 153.7 |  | 100.0% | NONE | NOT-STARTED |
 | bollinger_lower | mean_reversion | 1622 | 149.1 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | parabolic_sar_flip | trend | 1618 | 148.7 |  | 100.0% | NONE | NOT-STARTED |
 | smc_breaker_block_short | smc | 1598 | 0.0 | YES | 0.0% | LOOSEN | STALLED-CAMPAIGN |
-| three_white_soldiers | candle | 1596 | 146.7 |  | 100.0% | TIGHTEN | NOT-STARTED |
+| three_white_soldiers | candle | 1596 | 146.7 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | ppo_crossover | momentum | 1588 | 146.0 |  | 100.0% | NONE | NOT-STARTED |
 | macd_crossover_short | momentum | 1524 | 140.1 |  | 100.0% | - | DISABLED |
 | volume_spike_breakout | breakout | 1500 | 137.9 |  | 100.0% | NONE | NOT-STARTED |

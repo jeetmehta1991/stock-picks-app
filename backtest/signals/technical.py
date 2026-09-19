@@ -2100,15 +2100,52 @@ def compute_candles(df: pd.DataFrame) -> dict:
         )
 
     # -- Five-bar patterns --
-    if n >= 5:
+    # B2865 (owner-approved 2026-09-19): the anatomy magnitudes Table A
+    # bands as P1.2/P1.3/P1.4 did not exist here - n_bars was the literal 3
+    # in range(1,4) and there was NO body, step or wick test, so a band on
+    # them could never be searched (S6-B2860). Knobs come from config.py
+    # (CANDLE_*), defaults reproduce the previous behaviour EXACTLY.
+    #
+    # SCALE CRITERION (#165 - stated, not assumed): body, step and wick are
+    # each a FRACTION OF THE BAR'S RANGE, so the knobs are dimensionless and
+    # comparable across tickers and price levels. Reading min_step as a raw
+    # PRICE percentage would make 0.1 mean a 10 pct close gap on three
+    # consecutive bars - which fires almost never and would leave two of
+    # that band's three levels dead on arrival.
+    _nb = max(2, int(getattr(_cfg, "CANDLE_N_BARS", 3)))
+    _mb = float(getattr(_cfg, "CANDLE_MIN_BODY_PCT", 0.0))
+    _ms = float(getattr(_cfg, "CANDLE_MIN_STEP_PCT", 0.0))
+    _mw = getattr(_cfg, "CANDLE_MAX_WICK_PCT", None)
+
+    def _bar_ok(i, bullish):
+        rng_i = h[-i] - l[-i]
+        if bullish and not (c[-i] > o[-i]):
+            return False
+        if (not bullish) and not (c[-i] < o[-i]):
+            return False
+        if abs(c[-i] - o[-i]) < _mb * rng_i:
+            return False
+        if _mw is not None:
+            wick = ((h[-i] - max(c[-i], o[-i])) if bullish
+                    else (min(c[-i], o[-i]) - l[-i]))
+            if wick > float(_mw) * rng_i:
+                return False
+        return True
+
+    def _step_ok(i, up):
+        prev_rng = h[-i-1] - l[-i-1]
+        step = (c[-i] - c[-i-1]) if up else (c[-i-1] - c[-i])
+        if not (step > _ms * prev_rng):
+            return False
+        return (o[-i] > o[-i-1]) if up else (o[-i] < o[-i-1])
+
+    if n >= max(5, _nb + 1):
         result["three_white_soldiers"] = (
-            all(c[-i]>o[-i] for i in range(1,4)) and
-            all(c[-i]>c[-i-1] for i in range(1,3)) and
-            all(o[-i]>o[-i-1] for i in range(1,3)))
+            all(_bar_ok(i, True) for i in range(1, _nb + 1)) and
+            all(_step_ok(i, True) for i in range(1, _nb)))
         result["three_black_crows"] = (
-            all(c[-i]<o[-i] for i in range(1,4)) and
-            all(c[-i]<c[-i-1] for i in range(1,3)) and
-            all(o[-i]<o[-i-1] for i in range(1,3)))
+            all(_bar_ok(i, False) for i in range(1, _nb + 1)) and
+            all(_step_ok(i, False) for i in range(1, _nb)))
     else:
         result["three_white_soldiers"] = result["three_black_crows"] = False
 
