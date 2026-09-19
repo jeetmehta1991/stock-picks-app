@@ -21122,3 +21122,16 @@ passed before bundling). Compliance failure against item #292. Bonus
 finding recorded here: TaskStop's orphaning is NONDETERMINISTIC - this
 stop killed the whole tree while B2854's left survivors - and
 kill_gate_tree's stale-pidfile refusal arm validated live on the leftover.
+
+### L808 - STEP-1 READINGS MUST NOT NARROW STEP-2'S MANDATE, record-of-fact (B2859, owner-caught 2026-09-18)
+
+**record-of-fact** - the rule is L785's (the mandate never narrows on an
+interim reading; a leg's disposition is never a strategy verdict), with the
+Step-1 half owner-ruled at B1608: Step-1 is a ranked list with NO gates.
+MEASURED: after the candle pair's Step-1 grids I recommended holding one
+Step-2 and skipping the other FROM the Step-1 numbers - re-imposing a gate
+at a boundary the design rules gateless; the owner corrected in one line
+("step 2 is compusory. Step 1 objective is just to create a ranked list").
+Compliance failure against item #202 - the spec says Step-2 runs on the
+ranked list unconditionally, and the recommendation drifted from the read
+spec toward re-derived judgment. Both Step-2 one-shots then fired same turn.
