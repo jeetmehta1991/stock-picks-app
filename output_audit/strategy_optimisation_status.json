@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "6c19c4cf9",
-    "generated_at": "2026-09-15 18:55:24"
+    "source_commit": "72739db05",
+    "generated_at": "2026-09-18 20:29:24"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -104,12 +104,14 @@
       "tightenable_keys": {},
       "tickets": [
         "S6-B2830",
-        "S6-B2833"
+        "S6-B2833",
+        "S6-B2835"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2830",
-        "S6-B2833"
+        "S6-B2833",
+        "S6-B2835"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -501,11 +503,17 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2836",
+        "S6-B2841"
+      ],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B2836",
+        "S6-B2841"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "consec_downdays_quality_long",
@@ -2009,13 +2017,16 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2845"
+      ],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2822c"
+        "S6-B2822c",
+        "S6-B2845"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "naked_poc_retest_long",
@@ -3719,11 +3730,17 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2838",
+        "S6-B2850"
+      ],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B2838",
+        "S6-B2850"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "three_white_soldiers",
@@ -3738,11 +3755,17 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2842",
+        "S6-B2850"
+      ],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B2842",
+        "S6-B2850"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "totm_long",

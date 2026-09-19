@@ -1,0 +1,117 @@
+{
+  "strategy": "three_white_soldiers",
+  "axes": [
+    {
+      "key": "rsi_14",
+      "op": "le",
+      "levels": [
+        41.97,
+        46.31,
+        50.16,
+        54.42,
+        60.0
+      ]
+    }
+  ],
+  "production_levels": [
+    60.0
+  ],
+  "evidence": {
+    "landed_fires": 1596,
+    "coverage": 1.0,
+    "cube_rows": 41496,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 45,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": true
+  },
+  "reproduction": 1.0,
+  "cells_total": 5,
+  "cells_graded": 5,
+  "trials_searched": 130,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        41.97
+      ],
+      "is_trades": 247,
+      "is_cube_rows": 6422,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 0.426,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        46.31
+      ],
+      "is_trades": 500,
+      "is_cube_rows": 13000,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 0.334,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        50.16
+      ],
+      "is_trades": 759,
+      "is_cube_rows": 19734,
+      "best_exit": "r_multiple_2r",
+      "is_sharpe": 0.257,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        54.42
+      ],
+      "is_trades": 1011,
+      "is_cube_rows": 26286,
+      "best_exit": "r_multiple_2r",
+      "is_sharpe": 0.216,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0
+      ],
+      "is_trades": 1275,
+      "is_cube_rows": 33150,
+      "best_exit": "r_multiple_2r",
+      "is_sharpe": 0.208,
+      "exits_evaluated": 26
+    }
+  ],
+  "preregistration_candidate": {
+    "levels": [
+      41.97
+    ],
+    "is_trades": 247,
+    "is_cube_rows": 6422,
+    "best_exit": "next_pivot_target",
+    "is_sharpe": 0.426,
+    "exits_evaluated": 26
+  },
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above",
+  "permutation_null": {
+    "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+    "n_perms": 200,
+    "seed": 13,
+    "null_none_count": 0,
+    "null_max_is_sharpe_quantiles": {
+      "0.5": 0.342,
+      "0.9": 0.419,
+      "0.95": 0.454,
+      "0.99": 0.496
+    },
+    "observed_best_is_sharpe": 0.426,
+    "p_value_best": 0.0995
+  },
+  "band_ruling_verbatim": "T3 approved - Proceed (owner verbatim 2026-09-18; bands as defined in Table A)",
+  "status_stamp_at_run": "72739db05"
+}

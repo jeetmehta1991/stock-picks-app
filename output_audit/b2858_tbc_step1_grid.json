@@ -1,0 +1,118 @@
+{
+  "strategy": "three_black_crows_short",
+  "axes": [
+    {
+      "key": "rsi_14",
+      "op": "ge",
+      "levels": [
+        40.0,
+        45.094,
+        50.132,
+        54.066,
+        58.812
+      ]
+    }
+  ],
+  "production_levels": [
+    40.0
+  ],
+  "evidence": {
+    "landed_fires": 1674,
+    "coverage": 1.0,
+    "cube_rows": 43524,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 24,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": false,
+    "truncation_note": "max fires/day 24 <= cap 30: no positive evidence the cap was bypassed. Subsetting is exact only if the cube ran under isolation (backtest.py:2417)."
+  },
+  "reproduction": 1.0,
+  "cells_total": 5,
+  "cells_graded": 5,
+  "trials_searched": 130,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        40.0
+      ],
+      "is_trades": 1204,
+      "is_cube_rows": 31304,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.213,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        45.094
+      ],
+      "is_trades": 953,
+      "is_cube_rows": 24778,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.197,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        58.812
+      ],
+      "is_trades": 234,
+      "is_cube_rows": 6084,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.186,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        50.132
+      ],
+      "is_trades": 717,
+      "is_cube_rows": 18642,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.182,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        54.066
+      ],
+      "is_trades": 483,
+      "is_cube_rows": 12558,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.145,
+      "exits_evaluated": 26
+    }
+  ],
+  "preregistration_candidate": {
+    "levels": [
+      40.0
+    ],
+    "is_trades": 1204,
+    "is_cube_rows": 31304,
+    "best_exit": "breakeven_plus_trail",
+    "is_sharpe": 0.213,
+    "exits_evaluated": 26
+  },
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above",
+  "permutation_null": {
+    "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+    "n_perms": 200,
+    "seed": 13,
+    "null_none_count": 0,
+    "null_max_is_sharpe_quantiles": {
+      "0.5": 0.283,
+      "0.9": 0.442,
+      "0.95": 0.499,
+      "0.99": 0.596
+    },
+    "observed_best_is_sharpe": 0.213,
+    "p_value_best": 1.0
+  },
+  "band_ruling_verbatim": "T3 approved - Proceed (owner verbatim 2026-09-18; bands as defined in Table A)",
+  "status_stamp_at_run": "72739db05"
+}
