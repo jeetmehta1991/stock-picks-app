@@ -21135,3 +21135,29 @@ at a boundary the design rules gateless; the owner corrected in one line
 Compliance failure against item #202 - the spec says Step-2 runs on the
 ranked list unconditionally, and the recommendation drifted from the read
 spec toward re-derived judgment. Both Step-2 one-shots then fired same turn.
+
+### L809 - I QUOTED A POWER FLOOR FROM THE WRONG INSTRUMENT (B2864, record-of-fact, 2026-09-19)
+
+**record-of-fact** - the rule is #222's (a constant you have not read carries
+its neighbourhood unread), already anchored in CHECKLIST and enforced by
+scan_uninspected_constant, which CAUGHT THIS ONE. Compliance failure against
+item #222, no new checklist item warranted.
+
+MEASURED: arguing that a 1-year Step-1 window would leave a fire-adding search
+ungradable, I wrote "the grading floor is 30 trades". 30 is offline_level_sweep's
+--min-n default (line 286). The ENGINE Step-1 path is breadth_step1_grid, which
+passes min_n=10 (lines 126, 166), and grade_institutional_config:16 names 10 as
+the RANKED / BELOW_POWER_FLOOR boundary. I overstated the floor by 3x - the
+gate's own docstring example is verbatim this mistake.
+
+SWEEP (instrument: grep -rhn for min_n= and the --min-n argparse default across
+scripts/*.py): 23 instruments carry a power floor across FIVE distinct values -
+min_n=10 at 16 sites, default=10 at 7, default=30 at 6, min_n=15 at 4, min_n=1
+at 3, one default=500 and one default=15. So there is no such thing as "the
+floor" in this codebase; the number is a property of the instrument, and any
+sentence saying "the floor" without naming the instrument is wrong somewhere.
+
+The correction strengthened rather than weakened the underlying concern: plan
+line 53 records that at the FULL sample --min-n 10 STILL leaves 32-60 pct of a
+grid NO_EXIT_SELECTABLE, and plan line 716 instructs measuring the retention
+ratio BEFORE running under any universe restriction - a step I had not applied.
