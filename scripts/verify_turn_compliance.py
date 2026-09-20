@@ -208,18 +208,11 @@ def scan_verdict_denominators(entries: list[dict]) -> list[str]:
     # owner actually reads as the answer - and let a corrected claim be
     # corrected. The superseded block is still in the record; it is simply no
     # longer the claim being made.
-    _start = last_user
-    for _i in range(len(entries) - 1, last_user, -1):
-        _d = entries[_i]
-        if not isinstance(_d, dict) or _d.get("type") != "user":
-            continue
-        _c = (_d.get("message") or {}).get("content")
-        _t = _c if isinstance(_c, str) else " ".join(
-            b.get("text", "") for b in (_c or ())
-            if isinstance(b, dict) and b.get("type") == "text")
-        if _t and _is_gate_feedback(_t):
-            _start = _i          # judge only what came after the last block
-            break
+    # S6-B2909: this inline copy is now the shared _claim_window_start -
+    # it was the ONE gate of five that had the fix, which is how the class
+    # survived in four siblings (the council Outsider: "five near-copies,
+    # one correct - that is not four bugs, it is one").
+    _start = _claim_window_start(entries)
     offenders = []
     for e in entries[_start + 1:]:
         if e.get("type") != "assistant":
@@ -379,6 +372,53 @@ def _is_midturn_instruction(entry) -> bool:
     return MIDTURN_MARKER in blob
 
 
+def _claim_window_start(entries) -> int:
+    """Index after which the CURRENT claim lives (S6-B2909).
+
+    EVIDENCE ACCUMULATES ACROSS A TURN; A CLAIM IS SUPERSEDED (L818).
+    _last_instruction_index deliberately does not reset on the Stop
+    hook's own block (B2555) - right for EVIDENCE, because an inspection
+    done three closes ago is still true. It is wrong for a CLAIM: a
+    sentence written in close 1 and corrected in close 5 can be reached
+    by no wording in the current response, so the turn can never close.
+
+    B2889 fixed this for scan_verdict_denominators by hand. MEASURED at
+    B2890: 1 of 5 claim-reading gates carried the fix and 4 did not, which
+    is copy-paste with no shared implementation - so the window lives HERE
+    now and the gates call it.
+    """
+    last_user = _last_instruction_index(entries)
+    start = last_user
+    for i in range(len(entries) - 1, last_user, -1):
+        d = entries[i]
+        if not isinstance(d, dict) or d.get("type") != "user":
+            continue
+        c = (d.get("message") or {}).get("content")
+        t = c if isinstance(c, str) else " ".join(
+            b.get("text", "") for b in (c or ())
+            if isinstance(b, dict) and b.get("type") == "text")
+        if t and _is_gate_feedback(t):
+            start = i        # judge only what came after the last block
+            break
+    return start
+
+
+def _assistant_blob(entries, start: int) -> str:
+    """Lowercased assistant text after `start`. One text collector, so a
+    claim blob and an evidence blob differ only in their WINDOW."""
+    out = []
+    for e in entries[start + 1:]:
+        if (e or {}).get("type") != "assistant":
+            continue
+        content = (e.get("message") or {}).get("content")
+        if isinstance(content, str):
+            out.append(content)
+        elif isinstance(content, list):
+            out.extend(c.get("text", "") for c in content
+                       if isinstance(c, dict) and c.get("type") == "text")
+    return " ".join(out).lower()
+
+
 def _last_instruction_index(entries) -> int:
     """Index of the last REAL user instruction, ignoring gate feedback.
 
@@ -530,27 +570,20 @@ def scan_unverified_cause(entries):
     # B2636 (S6-B2555a): ONE definition. The hand-written copy here
     # did not skip gate feedback, so a Stop-hook block reset the
     # window and this gate judged a truncated turn.
+    # S6-B2909: TWO windows. The CAUSE is a claim - judged on the current
+    # close, so a cause corrected in a later close is corrected. The PROOF
+    # is evidence - it accumulates, because a probe run three closes ago
+    # was still run (L818).
     last_user = _last_instruction_index(entries)
-    entries = entries[last_user + 1:] if last_user >= 0 else entries
-
-    blob = []
-    for e in entries:
-        if (e or {}).get("type") != "assistant":
-            continue
-        content = ((e.get("message") or {}).get("content"))
-        if isinstance(content, str):
-            blob.append(content)
-        elif isinstance(content, list):
-            blob.extend(c.get("text", "") for c in content
-                        if isinstance(c, dict) and c.get("type") == "text")
-    low = " ".join(blob).lower()
-    if not low:
+    claim_low = _assistant_blob(entries, _claim_window_start(entries))
+    evidence_low = _assistant_blob(entries, last_user)
+    if not claim_low:
         return []
-    causes = [c for c in CAUSE_PHRASES if c in low]
+    causes = [c for c in CAUSE_PHRASES if c in claim_low]
     if not causes:
         return []
     # B1773: negation-aware. `in low` accepted 'never executed' as proof.
-    if _affirms(low, PROOF_PHRASES):
+    if _affirms(evidence_low, PROOF_PHRASES):
         return []
     return [("TURN-GATE BLOCK (CHECKLIST #195 / L455): this turn states a CAUSE "
              f"({sorted(set(causes))[:3]}) with no evidence it was TESTED. "
@@ -875,20 +908,17 @@ def scan_unmeasured_quantity(entries, *, text=None):
     # B2636 (S6-B2555a): ONE definition. The hand-written copy here
     # did not skip gate feedback, so a Stop-hook block reset the
     # window and this gate judged a truncated turn.
+    # S6-B2909: TWO windows. The QUANTITY claim is judged on the CURRENT
+    # close; the evidence it was COMPUTED accumulates across the turn,
+    # because arithmetic shown three closes ago was still shown (L818).
+    # The text= seam feeds BOTH, so an injected fixture behaves exactly
+    # as it did before (#241 - the gate must stay askable).
     last_user = _last_instruction_index(entries)
-    entries = entries[last_user + 1:] if last_user >= 0 else entries
-
-    blob = []
-    for e in entries:
-        if (e or {}).get("type") != "assistant":
-            continue
-        content = ((e.get("message") or {}).get("content"))
-        if isinstance(content, str):
-            blob.append(content)
-        elif isinstance(content, list):
-            blob.extend(c.get("text", "") for c in content
-                        if isinstance(c, dict) and c.get("type") == "text")
-    low = (" ".join(blob).lower() if text is None else text.lower())
+    if text is None:
+        low = _assistant_blob(entries, _claim_window_start(entries))
+        proof_low = _assistant_blob(entries, last_user)
+    else:
+        low = proof_low = text.lower()
     # B1738: strip BACKTICK-QUOTED spans before matching. A response that
     # DESCRIBES a gate by listing its trigger vocabulary was firing the gate -
     # this one blocked a turn whose only "costs nothing" was inside a list of
@@ -903,7 +933,7 @@ def scan_unmeasured_quantity(entries, *, text=None):
     if not hits:
         return []
     # B1773: negation-aware. `in low` accepted 'unmeasured' as proof.
-    if _affirms(low, QUANT_PROOF):
+    if _affirms(proof_low, QUANT_PROOF):
         return []
     return [("TURN-GATE BLOCK (CHECKLIST #201 / L470): this turn makes a COST or "
              f"QUANTITY claim ({sorted(set(hits))[:3]}) with no evidence it was "
@@ -941,23 +971,19 @@ def scan_unverified_structure(entries):
     # B2636 (S6-B2555a): ONE definition. The hand-written copy here
     # did not skip gate feedback, so a Stop-hook block reset the
     # window and this gate judged a truncated turn.
+    # S6-B2909: TWO windows. The STRUCTURAL claim is judged on the
+    # CURRENT close; the tools that OPENED a file are EVIDENCE and
+    # accumulate across the whole turn - a file opened three closes ago
+    # was still opened (L818).
     last_user = _last_instruction_index(entries)
-    entries = entries[last_user + 1:] if last_user >= 0 else entries
-
-    text, used_tools = [], set()
-    for e in entries:
+    used_tools = set()
+    for e in entries[last_user + 1:]:
         content = ((e.get("message") or {}).get("content"))
-        if isinstance(content, str):
-            text.append(content)
-        elif isinstance(content, list):
+        if isinstance(content, list):
             for c in content:
-                if not isinstance(c, dict):
-                    continue
-                if c.get("type") == "text":
-                    text.append(c.get("text", ""))
-                elif c.get("type") == "tool_use":
+                if isinstance(c, dict) and c.get("type") == "tool_use":
                     used_tools.add(str(c.get("name", "")))
-    low = " ".join(text).lower()
+    low = _assistant_blob(entries, _claim_window_start(entries))
     if not low:
         return []
     hits = [k for k in STRUCTURAL_CLAIMS if k in low]
@@ -4691,8 +4717,11 @@ def scan_unrecorded_miss(entries, learnings_modified: bool):
     # B2636 (S6-B2555a): ONE definition. The hand-written copy here
     # did not skip gate feedback, so a Stop-hook block reset the
     # window and this gate judged a truncated turn.
-    last_user = _last_instruction_index(entries)
-    entries = entries[last_user + 1:] if last_user >= 0 else entries
+    # S6-B2909: the ACKNOWLEDGEMENT is a CLAIM - judged on the current
+    # close, so a miss acknowledged in close 1 and recorded in close 5
+    # stops firing. The evidence half is the learnings_modified BOOLEAN,
+    # which the caller already scopes to the turn (L818).
+    entries = entries[_claim_window_start(entries) + 1:]
 
     hits = []
     for e in entries:

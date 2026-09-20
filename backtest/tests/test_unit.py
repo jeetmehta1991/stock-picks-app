@@ -40097,3 +40097,101 @@ def test_b2907_both_free_level_legs_disclose_the_occupancy_correction():
         assert "occupancy_disclosure(" in txt, leg.name
         assert "def occupancy_note" not in txt, (
             leg.name, "a local copy of the helper defeats the trunk fix")
+
+
+def test_b2909_claim_gates_judge_the_current_close_evidence_accumulates():
+    """S6-B2909: the claim window, extracted once and routed to five gates.
+
+    EVIDENCE ACCUMULATES ACROSS A TURN; A CLAIM IS SUPERSEDED (L818). A gate
+    that scopes BOTH halves to the whole turn keeps firing on a sentence
+    corrected three closes ago, and no wording in the current response can
+    reach it - so the turn can never close. MEASURED at B2890: 1 of 5
+    claim-reading gates had the fix and 4 did not, which is copy-paste with no
+    shared implementation.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as v
+
+    def user(t):
+        return {"type": "user", "message": {"content": t}}
+
+    def bot(t):
+        return {"type": "assistant",
+                "message": {"content": [{"type": "text", "text": t}]}}
+
+    BLOCK = ("TURN-GATE BLOCK - 1 violation(s), ALL listed:\n"
+             "  [1/1] something was wrong")
+    assert v._is_gate_feedback(BLOCK), "fixture stale: not gate feedback"
+
+    # ---- the window helper itself ---------------------------------------
+    plain = [user("do the work"), bot("a"), bot("b")]
+    assert v._claim_window_start(plain) == 0, "no block -> the instruction"
+    blocked = [user("do the work"), bot("a"), user(BLOCK), bot("b")]
+    assert v._claim_window_start(blocked) == 2, (
+        "after a block the CLAIM window starts at the block")
+    # ...while the EVIDENCE window deliberately does NOT move
+    assert v._last_instruction_index(blocked) == 0, (
+        "the evidence window must still span the turn (B2555)")
+
+    # ---- the text collector differs ONLY in its window -------------------
+    assert v._assistant_blob(blocked, 0) == "a b"
+    assert v._assistant_blob(blocked, 2) == "b"
+
+    # ---- scan_unverified_cause: must FIRE on an uncorrected claim --------
+    fire = [user("go"), bot("the probable cause is the warmup guard")]
+    assert v.scan_unverified_cause(fire), "an untested cause must fire"
+
+    # ---- must QUIET once the claim is corrected in a later close ---------
+    # This is the defect: before B2909 the cause sentence from close 1 stayed
+    # in the blob forever and no later wording could reach it.
+    corrected = [user("go"),
+                 bot("the probable cause is the warmup guard"),
+                 user(BLOCK),
+                 bot("Retracted. The bars sit at 799-1158, so that is not it.")]
+    assert v.scan_unverified_cause(corrected) == [], (
+        "a cause corrected in a later close must stop firing - this is the "
+        "whole point of the claim window")
+
+    # ---- and EVIDENCE must still accumulate ACROSS the block -------------
+    # proof given in close 1, cause restated in close 2: still quiet, because
+    # a probe that ran is still run.
+    spanning = [user("go"),
+                bot("I executed the probe and confirmed by running it"),
+                user(BLOCK),
+                bot("so the probable cause is the warmup guard")]
+    assert v.scan_unverified_cause(spanning) == [], (
+        "evidence from an earlier close must still count - if this fires, the "
+        "evidence half was wrongly narrowed too")
+
+    # ---- the same two properties on the quantity gate --------------------
+    q_fire = [user("go"), bot("this costs nothing, same runtime")]
+    assert v.scan_unmeasured_quantity(q_fire), "an uncomputed cost must fire"
+    q_corrected = [user("go"),
+                   bot("this costs nothing, same runtime"),
+                   user(BLOCK),
+                   bot("Withdrawn - it is 50pct more, 5.00h against 3.33h.")]
+    assert v.scan_unmeasured_quantity(q_corrected) == [], (
+        "a withdrawn cost claim must stop firing")
+
+    # the text= seam still feeds BOTH halves, so an injected fixture behaves
+    # exactly as before (#241 - the gate that misfires must stay askable)
+    assert v.scan_unmeasured_quantity([], text="this costs nothing")
+    assert v.scan_unmeasured_quantity(
+        [], text="I computed it: 5.00h vs 3.33h, so it costs nothing") == []
+
+    # ---- ONE implementation, not five copies ----------------------------
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert src.count("def _claim_window_start(") == 1
+    # 5 gates + the definition line itself
+    assert src.count("_claim_window_start(entries)") >= 6, (
+        src.count("_claim_window_start(entries)"),
+        "every claim-reading gate must call the shared window")
+    # the hand-rolled copy must not come back
+    assert "_start = last_user" not in src, (
+        "an inline copy of the claim window has returned - that is how this "
+        "class survived in four siblings (S6-B2909)")
