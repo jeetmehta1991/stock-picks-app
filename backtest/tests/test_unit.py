@@ -25052,6 +25052,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2888: the L817 tripwire row - blast radius and coverage are
+        # the same number. Pins the SPLITTING QUESTION, not the heading.
+        ("OF THOSE IT DID NOT REFUSE, HOW MANY WERE EXPLICITLY EXEMPT VERSUS SILENTLY UNCLASSIFIABLE",
+         "B2888/L817: a low refusal count reads as precision whether the "
+         "rule is targeted or blind"),
         # B2883: the L816 tripwire row - a completeness claim decays when
         # the parameter space grows. Pins the SCOPING rule, not the
         # heading (L548).
@@ -25767,7 +25772,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # its tripwire row per B2130).
     # 269 -> 270 at B2883 (the L816 search-completeness fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 270, gutted
+    # 270 -> 271 at B2888 (the L817 blast-radius-vs-coverage fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 271, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

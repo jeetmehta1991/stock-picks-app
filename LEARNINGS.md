@@ -21514,3 +21514,5 @@ fails the pyramid instead of quietly joining the exempt set; widening the rule
 to refuse the legacy shape outright would refuse all five smc entries today,
 which is the refuse-everything failure, so the migration stays backlogged at
 S6-B2885 with its population now counted rather than estimated.
+
+**Promoted (B2888):** the generalised half of this entry - that a low refusal count is what a PRECISE rule gives you and what a BLIND one gives you, so the splitting question is how many of the UNREFUSED were explicitly exempt versus silently unclassifiable - is now a tripwire row in the execution-discipline skill, pinned by its test_b2123 fragment. The MEASUREMENT (3 of 3 blind, 0 of 3 exempt) stays here, because a tripwire row carrying a count decays. L642 already carried the GUARD form (a check conditioned on presence converts undeclared into approved); what was missing is the MEASUREMENT form - how the same defect looks when you audit your own gate and read its small blast radius as precision.
