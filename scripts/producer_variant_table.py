@@ -1947,12 +1947,26 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
                        "window": False, "precompute_check": False,
                        "pythonpath": None,
                        "note": "AUTO (S6-B2899)"},
-        "grade": {"script": "offline_level_sweep.py",
-                  "flags": {"P6": "--axes rsi_14:le:<levels>"},
-                  "extra": ["--strategy", "three_white_soldiers",
-                            "--production", "rsi_14=60"],
-                  "note": ("offline free-band grader; --band-ruling REQUIRED "
-                           "(B2848) - the owner T3 words gate the grid")},
+        "grade": {"script": "grade_candle_config.py",
+                  "cube": "",
+                  # S6-B2900: the ENGINE axes P2-P5, which are what the
+                  # 54-config campaign sweeps. The previous block named P6
+                  # (rsi_14, env=None) - the OFFLINE axis - through an
+                  # unsubstituted argv token "--axes rsi_14:le:<levels>",
+                  # and pointed at offline_level_sweep.py, which has no
+                  # --cube flag at all, pins its cube as a MODULE CONSTANT,
+                  # and is in-sample by construction so it can never emit
+                  # the Step-2 gate verdict the battery fails closed
+                  # without. P6 FREE levels are a SEPARATE leg, ticketed
+                  # S6-B2904 - not silently dropped (B2569 / #290).
+                  "flags": {"P2": "--n-bars", "P3": "--min-body-pct",
+                            "P4": "--min-step-pct",
+                            "P5": "--max-wick-pct"},
+                  "extra": [],
+                  "step2_flag": "--step2",
+                  "preregistered_flag": "--preregistered-exit",
+                  "pythonpath": None,
+                  "note": "AUTO (S6-B2900)"},
     },
 }
 
@@ -2079,12 +2093,26 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
                        "window": False, "precompute_check": False,
                        "pythonpath": None,
                        "note": "AUTO (S6-B2899)"},
-        "grade": {"script": "offline_level_sweep.py",
-                  "flags": {"P6": "--axes rsi_14:ge:<levels>"},
-                  "extra": ["--strategy", "three_black_crows_short",
-                            "--production", "rsi_14=40"],
-                  "note": ("offline free-band grader; --band-ruling REQUIRED "
-                           "(B2848)")},
+        "grade": {"script": "grade_candle_config.py",
+                  "cube": "",
+                  # S6-B2900: the ENGINE axes P2-P5, which are what the
+                  # 54-config campaign sweeps. The previous block named P6
+                  # (rsi_14, env=None) - the OFFLINE axis - through an
+                  # unsubstituted argv token "--axes rsi_14:le:<levels>",
+                  # and pointed at offline_level_sweep.py, which has no
+                  # --cube flag at all, pins its cube as a MODULE CONSTANT,
+                  # and is in-sample by construction so it can never emit
+                  # the Step-2 gate verdict the battery fails closed
+                  # without. P6 FREE levels are a SEPARATE leg, ticketed
+                  # S6-B2904 - not silently dropped (B2569 / #290).
+                  "flags": {"P2": "--n-bars", "P3": "--min-body-pct",
+                            "P4": "--min-step-pct",
+                            "P5": "--max-wick-pct"},
+                  "extra": [],
+                  "step2_flag": "--step2",
+                  "preregistered_flag": "--preregistered-exit",
+                  "pythonpath": None,
+                  "note": "AUTO (S6-B2900)"},
     },
 }
 

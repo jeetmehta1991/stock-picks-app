@@ -32773,13 +32773,20 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     # cannot be forgotten. Every OTHER error on every entry still fails.
     _B2861b = {"three_white_soldiers", "three_black_crows_short"}
     for k, v in pvt.SPECS.items():
-        _e = [x for x in pvt.validate_spec(v)
-              if not (k in _B2861b and "S6-B2883" in x)]
+        # B2900: the adapter LANDED, so no entry needs an exemption -
+        # every SPECS member must validate clean, the pair included.
+        _e = list(pvt.validate_spec(v))
         assert _e == [], (k, _e)
-    # and the known gap must STILL be reported - if it goes quiet either
-    # S6-B2861 landed (update this) or the gate died
+    # B2900: the gap CLOSED. grade_candle_config.py landed and
+    # tools.grade points at it, so family_refusal returns "" for both and
+    # the R1 adapter refusal must now be SILENT on them. This is the
+    # must-QUIET direction of the same pin - it bites if the adapter is
+    # ever half-written again.
     for k in _B2861b:
-        assert any("S6-B2883" in x for x in pvt.validate_spec(pvt.SPECS[k]))
+        assert not any("S6-B2883" in x for x in pvt.validate_spec(pvt.SPECS[k])), (
+            k, "the adapter is complete - this refusal must not fire")
+        import run_postconfig as _rp2900
+        assert _rp2900.family_refusal(k) == "", (k, _rp2900.family_refusal(k))
     # the rule behind the strike: a resim level with no knob is unrunnable
     bad = _copy.deepcopy(icg)
     p7 = next(p for p in bad["params"] if p["id"] == "P7")
@@ -33100,20 +33107,29 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
                                 "smc_liquidity_sweep_reversal",
                                 "smc_order_block_bounce",
                                 "smc_equal_lows_sweep_long",
-                                "smc_inverse_fvg"}, sorted(rp.FAMILIES)
+                                "smc_inverse_fvg",
+                                # B2900: the candle pair completed its
+                                # adapter (grade_candle_config.py) and
+                                # is DELIBERATELY registered - owner
+                                # ruling "Candle goes first".
+                                "three_white_soldiers",
+                                "three_black_crows_short"}, sorted(rp.FAMILIES)
     # B2897: FAMILY_REFUSALS was EMPTY for its whole life - every SPECS
     # member was already a family, so the ledger of "why this is not a
     # family" named nobody. Promoting the candle pair with an incomplete
     # adapter gives it its first two rows, each naming the exact gap.
-    assert (set(rp.FAMILY_REFUSALS)
-            == {"three_white_soldiers", "three_black_crows_short"}), (
-        rp.FAMILY_REFUSALS)
+    # B2900: and back to EMPTY, because the pair completed its adapter.
+    # The ledger is empty for the RIGHT reason now - every SPECS member is
+    # a family - which is the same observation B2897 found it making for
+    # the WRONG reason. A non-empty refusals map means someone registered
+    # a half-written adapter.
+    assert set(rp.FAMILY_REFUSALS) == set(), rp.FAMILY_REFUSALS
+    # B2899/B2900: whatever IS refused must say which part of `tools` is
+    # short - never the specific key, because the refusal ADVANCES as each
+    # gap closes (it read spot_check, then grade.cube) and naming one key
+    # makes the pin fail on progress. Vacuous today by construction, which
+    # is why the emptiness is asserted separately above.
     for _k, _why in rp.FAMILY_REFUSALS.items():
-        # B2899: do NOT pin the specific missing key. The refusal
-        # ADVANCES as each gap closes - it read spot_check, then
-        # grade.cube - so naming one key makes this pin fail on
-        # progress. What must hold is that the entry is refused and
-        # says which part of `tools` is short.
         assert "tools" in _why and "lacks" in _why, (_k, _why)
     for name, fam in rp.FAMILIES.items():
         assert callable(fam["params"]) and callable(fam["run"]), name
@@ -39017,16 +39033,12 @@ def test_b2866_a_declared_knob_must_be_read_by_the_engine():
     # open S6-B2861 work; it must be the ONLY thing they fail on, so this
     # assertion still bites on any actuation regression.
     for k in ("three_white_soldiers", "three_black_crows_short"):
-        _spec = pvt.SPECS.get(k) or pvt.SPECS_PHASE0[k]   # B2897: moved
+        _spec = pvt.SPECS[k]              # B2897 promoted, B2900 completed
         _errs = pvt.validate_spec(_spec)
-        _other = [e for e in _errs if "S6-B2883" not in e]
-        assert _other == [], (k, _other)
-        assert any("S6-B2883" in e for e in _errs), (
-            k, "the adapter refusal must still fire until the tools "
-            "block is complete - it now lacks spot_check only "
-            "(S6-B2897 promoted the pair and repointed keys to P2-P5) "
-            "the tools block - if it stopped firing, either the adapter "
-            "landed (update this pin) or the gate went silent")
+        # B2900: the adapter is COMPLETE, so "clean" means clean - no
+        # carve-out for the R1 refusal any more. This is now the
+        # strongest form of the must-QUIET arm.
+        assert _errs == [], (k, _errs)
         ids = [p["id"] for p in (pvt.SPECS.get(k)
                                  or pvt.SPECS_PHASE0[k])["params"]]
         assert ids == sorted(ids, key=lambda x: int(x[1:])), (k, ids)
@@ -39347,9 +39359,23 @@ def test_b2883_r1_refuses_a_band_inventory_with_an_incomplete_adapter():
         return [e for e in pvt.validate_spec(spec) if "S6-B2883" in e]
 
     # must-FIRE: an engine-requiring band with a HALF-WRITTEN adapter
-    spec = copy.deepcopy(pvt.SPECS.get("three_white_soldiers")
-                         or pvt.SPECS_PHASE0["three_white_soldiers"])
+    spec = copy.deepcopy(pvt.SPECS["three_white_soldiers"])
     assert pvt.engine_requiring_params(spec), "fixture stale: no engine band"
+    # B2900 (L801): the REAL entry is COMPLETE now, so the half-written
+    # case is DERIVED rather than borrowed from whichever registry member
+    # happens to be unfinished today. Naming today's example buys exactly
+    # one change of runway; deriving it keeps the gate pinned forever.
+    assert _b2883(spec) == [], "the real entry must validate clean now"
+    for _drop in ("spot_check", "grid_keys", "single_combination",
+                  "grade", "keys"):
+        _half = copy.deepcopy(spec)
+        _half["tools"] = {k: v for k, v in _half["tools"].items()
+                          if k != _drop}
+        assert _b2883(_half), (
+            _drop, "an adapter missing this key must be refused")
+    spec = copy.deepcopy(spec)
+    spec["tools"] = {k: v for k, v in spec["tools"].items()
+                     if k != "spot_check"}
     assert _b2883(spec), "a half-written adapter must be refused"
 
     # must-FIRE: an engine-requiring band with NO adapter block at all
@@ -39419,8 +39445,15 @@ def test_b2883_launch_refusals_reports_every_reason_not_the_first():
     joined = " | ".join(errs)
     # must-FIRE: more than one reason, and the adapter reason among them
     assert len(errs) >= 3, (len(errs), joined[:400])
-    assert any("S6-B2883" in e for e in errs), "the adapter reason must appear"
-    assert any("battery family" in e for e in errs), "the family reason too"
+    # B2900: the adapter LANDED, so these two reasons are correctly gone.
+    # The must-FIRE property that remains is that launch_refusals reports
+    # EVERY reason rather than stopping at the first - which the >= 3
+    # assertion above still holds against the consumer-drift errors this
+    # fixture provokes by pointing root at an empty temp dir.
+    assert not any("S6-B2883" in e for e in errs), (
+        "the adapter is complete - its refusal must not fire", joined[:300])
+    assert not any("battery family" in e for e in errs), (
+        "the pair IS a battery family now", joined[:300])
     # must-QUIET: the FALSE message is gone
     assert "no SPECS entry in producer_variant_table" not in joined, (
         "a strategy with an entry in EITHER registry must not be told it has none")
@@ -39669,3 +39702,131 @@ def test_b2899_candle_spot_check_is_independent_and_keyed_correctly():
         assert (root / "scripts" / sc["script"]).exists(), sc["script"]
         # the flags must name the ENGINE axes, not the offline one
         assert set(sc["flags"]) == {"P2", "P3", "P4", "P5"}, sc["flags"]
+
+
+def test_b2900_candle_grade_leg_is_wired_and_its_refusals_bite():
+    """S6-B2900: the grade leg that made the candle pair a battery family.
+
+    The incumbent (offline_level_sweep.py) could not take --cube at all and
+    pinned its cube as a MODULE CONSTANT, so wiring it would have graded
+    output_r5_merged_1_7 under a candle config's name. Each arm below holds
+    one property that failure needed.
+    """
+    import sys
+    import json as _j
+    import copy as _c
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import pandas as _pd
+    import producer_variant_table as pvt
+    import run_postconfig as rp
+    import grade_candle_config as gcc
+
+    # ---- the wiring: both legs are families, on the ENGINE axes ----------
+    for k in ("three_white_soldiers", "three_black_crows_short"):
+        assert rp.family_refusal(k) == "", (k, rp.family_refusal(k))
+        gb = pvt.SPECS[k]["tools"]["grade"]
+        assert gb["script"] == "grade_candle_config.py", gb
+        assert (root / "scripts" / gb["script"]).exists()
+        # the ENGINE axes, not the offline rsi axis the old block named
+        assert set(gb["flags"]) == {"P2", "P3", "P4", "P5"}, gb["flags"]
+        assert "P6" not in gb["flags"], (
+            "P6 is the OFFLINE rsi axis with env=None - grading it here is "
+            "what made the old block unrunnable")
+        # every flagged id must be a real param carrying an env knob
+        _by = {p["id"]: p for p in pvt.SPECS[k]["params"]}
+        for pid in gb["flags"]:
+            assert _by[pid].get("env"), (k, pid)
+        # the escape hatch must NEVER be baked into the registry - it would
+        # turn a red landing green by disabling the stamp check (B2900)
+        assert "--no-manifest-check" not in list(gb.get("extra") or []), gb
+
+    # ---- the three-state trap that killed the incumbent ------------------
+    # "" (NO BOUND) and 0.0 (refuse any wick at all) are OPPOSITE levels.
+    assert gcc._norm("") == gcc._norm(None) == ""
+    assert gcc._norm("") != gcc._norm(0.0), (
+        "the empty string is the NO-BOUND level and must not collapse to 0.0")
+    assert gcc._norm("3") == gcc._norm(3) == gcc._norm(3.0)
+    assert gcc._norm("0.30") == gcc._norm(0.3)
+
+    # ---- verify_manifest: must-QUIET on a match, must-FIRE otherwise -----
+    import tempfile
+    d = _P(tempfile.mkdtemp())
+    good = {"CANDLE_N_BARS": "3", "CANDLE_MIN_BODY_PCT": "0.0",
+            "CANDLE_MIN_STEP_PCT": "0.0", "CANDLE_MAX_WICK_PCT": ""}
+    flags = {"n_bars": 3, "min_body_pct": 0.0, "min_step_pct": 0.0,
+             "max_wick_pct": ""}
+
+    def _write(env, extra=None):
+        man = {"arms": [{"env": env}]}
+        if extra:
+            man.update(extra)
+        (d / "run_manifest.json").write_text(_j.dumps(man), encoding="utf-8")
+
+    _write(good)
+    refusal, disclosure = gcc.verify_manifest(d, flags)
+    assert refusal is None, refusal
+    assert "verified" in disclosure
+
+    # must-FIRE: a value mismatch names the offending knob
+    bad = dict(good, CANDLE_N_BARS="4")
+    _write(bad)
+    refusal, _ = gcc.verify_manifest(d, flags)
+    assert refusal and "CANDLE_N_BARS" in refusal, refusal
+
+    # must-FIRE: 0.0 landed where the flag says unbounded - the SAME trap,
+    # now at the artifact boundary rather than in the parser
+    _write(dict(good, CANDLE_MAX_WICK_PCT="0.0"))
+    refusal, _ = gcc.verify_manifest(d, flags)
+    assert refusal and "CANDLE_MAX_WICK_PCT" in refusal, refusal
+
+    # must-FIRE: no env block at all fails CLOSED (L642) - the absent case is
+    # the case the guard exists for, not the safe one
+    _write({})
+    refusal, _ = gcc.verify_manifest(d, flags)
+    assert refusal and "no `env` block" in refusal, refusal
+
+    # must-FIRE: no manifest at all
+    (d / "run_manifest.json").unlink()
+    refusal, _ = gcc.verify_manifest(d, flags)
+    assert refusal and "run_manifest" in refusal, refusal
+
+    # ---- resolve_strategy: a RIDER-BEARING cube is the campaign's shape --
+    # B2721: a long/short pair run in one engine pass puts BOTH legs in one
+    # cube. Counting distinct strategies would refuse it on config 1 of 54.
+    cube = _pd.DataFrame({"strategy": ["three_white_soldiers"] * 3
+                          + ["three_black_crows_short"] * 2})
+    (d / "sub.txt").write_text("three_white_soldiers\n", encoding="utf-8")
+    (d / "rid.txt").write_text("three_black_crows_short\n", encoding="utf-8")
+    _write(good, {"strategy_subset": str(d / "sub.txt"),
+                  "cube_riders": str(d / "rid.txt")})
+    graded, riders = gcc.resolve_strategy(cube, d)
+    assert graded == "three_white_soldiers", graded
+    assert riders == ["three_black_crows_short"], riders
+
+    # must-FIRE: a manifest grading something outside the family
+    (d / "bad.txt").write_text("smc_breaker_block_long\n", encoding="utf-8")
+    _write(good, {"strategy_subset": str(d / "bad.txt")})
+    try:
+        gcc.resolve_strategy(cube, d)
+        raise AssertionError("a non-family graded strategy must be refused")
+    except SystemExit as exc:
+        assert "not one of" in str(exc), exc
+
+    # must-FIRE: nothing declared AND a multi-strategy cube -> fail closed,
+    # which is the pre-B2721 rule and must survive
+    _write(good)
+    try:
+        gcc.resolve_strategy(cube, d)
+        raise AssertionError("undeclared + multi-strategy must be refused")
+    except SystemExit as exc:
+        assert "declares no strategy_subset" in str(exc), exc
+
+    # ---- the artifact shape the battery fails closed without -------------
+    doc = {"step2": {"gates": {"pooled_sharpe": False}, "verdict": "FAIL"}}
+    ok, _why = rp.grid_step2_graded(doc)
+    assert ok, "a step2 block carrying a gates dict must satisfy the battery"
+    ok, _why = rp.grid_step2_graded({"step2": {"verdict": "NOT_GRADED"}})
+    assert not ok, "a step2 block with NO gates dict must fail closed (L642)"
