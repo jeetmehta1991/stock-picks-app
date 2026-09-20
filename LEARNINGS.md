@@ -21674,3 +21674,52 @@ answer here was 1 versus 3.
 Compliance failure against the GENERALIZATION MANDATE. The tempting fix was the
 declaration in my own file, which turns the gate green and leaves two siblings
 undeclared - textbook "a patch that leaves siblings of the same class open".
+
+### L822 - A SIBLING ENCODES WHAT WAS TRUE WHEN IT WAS WRITTEN (B2906, council-caught 2026-09-20)
+
+Building the candle grade leg, I did the right thing: modelled it on
+`grade_institutional_config.py`, the sibling with the same `cube: ""` shape,
+and reused `roster_core` for every statistic so the numbers stay comparable
+with every admitted strategy. MEASURED: zero self-computed statistics, 12
+delegations.
+
+And I inherited a rule that was no longer true. The sibling pins one `STRAT`
+and refuses a cube carrying anything else:
+
+    if strategies != [STRAT]:
+        raise SystemExit(...)
+
+That was CORRECT when it was written. **B2721 then established that a cube
+legitimately carries a graded strategy PLUS declared riders** - one engine run
+serving a whole consumer set - and added `graded_and_riders()`, which reads the
+manifest's `strategy_subset`, for exactly this question. `run_postconfig`'s own
+integrity check says it in words: *"the check is not 'one strategy' but 'the
+graded strategy plus EXACTLY the declared riders'"*.
+
+A long/short PAIR run in one engine pass puts BOTH legs in one cube. So my
+draft would have refused the candle campaign's own shape **on config 1 of 54**,
+as a refusal rather than a bug report. A council advisor asked what happens
+when the cube holds both legs. Nothing in my own process asked.
+
+**The general shape: a sibling is ONE IMPLEMENTATION of a contract, not the
+contract.** Its assumptions were true on the day it was written, and the
+CONSUMER that invokes both - the battery, the framework, the caller - is where
+the current contract lives. The consumer moves, and neither the sibling nor the
+copy records that it moved. Copying gives you the sibling's answer to a
+question the consumer has since re-answered.
+
+So: **when modelling on a sibling, read the CONSUMER'S contract first and only
+then the sibling's code.** Concretely here, one read of `run_postconfig.
+run_family` and `graded_and_riders` - both of which I had already opened for
+the invocation contract - and the defect could not have been written.
+
+REDUNDANCY CHECK PER L720, naming the candidates compared. L613 says a copy is
+a fresh shipment of old code - but that is about copied DEFECTS, and this
+sibling had none; its rule was right for its own cube shape. L799 says grep the
+population's existing readers and copy their bucket list - about reusing an
+existing partition, not about an assumption that has been superseded. Neither
+carries the remedy: read the consumer, not the sibling, for what is true NOW.
+
+The tell, in hindsight: I was writing the SECOND member of a family and
+reasoning from the FIRST member's source instead of from the contract they both
+answer to.

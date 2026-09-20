@@ -25071,6 +25071,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2906: the L822 tripwire row - a sibling encodes what was true
+        # when it was written.
+        ("A SIBLING ENCODES WHAT WAS TRUE WHEN IT WAS WRITTEN - READ THE CONSUMER'S CONTRACT BEFORE INHERITING ITS ASSUMPTIONS",
+         "B2906/L822: read the consumer's contract before inheriting a sibling's assumptions"),
         # B2901: the L821 tripwire row - a detector's pattern is a claim
         # about every spelling of what it detects.
         ("A DETECTOR'S PATTERN IS A CLAIM ABOUT EVERY SPELLING OF THE THING IT DETECTS - AND IT IS BLINDEST ON THE IDIOM ITS OWN NEIGHBOURS USE",
@@ -25817,7 +25821,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 274 -> 275 at B2901 (the L821 detector-spelling fragment; same-call
     # with its tripwire row per B2130).
-    assert len(gutted) == 275, gutted
+    # 275 -> 276 at B2906 (the L822 sibling-assumption fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 276, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
