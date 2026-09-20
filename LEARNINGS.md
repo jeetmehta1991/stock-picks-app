@@ -21389,3 +21389,5 @@ which situation you are in, and that is the half that fires at the moment of
 choosing. Promoted to the skill's tripwire table rather than left here, because
 LEARNINGS is read when someone goes looking and the tripwire table is read
 every turn.
+
+**Anchored (B2879):** CHECKLIST instance L814-addendum-3, citing existing item #262 rather than a new item - #262 already carries the REMEDY (carry the rule to the trunk), and what this adds is the DIAGNOSTIC. Durability pinned by the test_b2123 fragment; detection stays JUDGMENT-ONLY, since no scan reads whether a persisting symptom was diagnosed as a second consumer or as a bad patch.
