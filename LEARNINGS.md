@@ -21723,3 +21723,46 @@ carries the remedy: read the consumer, not the sibling, for what is true NOW.
 The tell, in hindsight: I was writing the SECOND member of a family and
 reasoning from the FIRST member's source instead of from the contract they both
 answer to.
+
+### L823 - A DETECTOR TESTS THE PROPERTY YOU ENCODED, NOT THE ONE THE RULE REQUIRES (B2908, 2026-09-20)
+
+I sized a backlog: **109 of 213 JUDGMENT-ONLY declarations name no search.** It
+was a real regex over three real files, the population was read complete, and I
+recorded the limit honestly - *the detector NARROWED the field and did not
+verify anything*.
+
+Then I hand-read 10 of the flagged set. **10 of 10 are false positives.**
+
+  * five STATE A REASON - *"no scan can know which returned keys a caller ought
+    to carry"* - which is exactly what L548 requires of a JUDGMENT-ONLY;
+  * one says *"this is NOT judgment-only"* - a NEGATION counted as a
+    declaration, the L528 class;
+  * two QUOTE the rule while describing a violation of it - mention, not use,
+    which B1738 has a convention for;
+  * one names *"the #230 scan"*, which my pattern could not see because it
+    required `scan_` with an underscore.
+
+**The detector tested for a named SEARCH. The rule requires a REASON.** Those
+are different properties, and nothing about running the regex could reveal the
+gap - the count was a measurement of my own encoding, presented as a
+measurement of the corpus.
+
+This is L644's warning arriving in its most expensive form. There it was *a new
+detector's first number is a hypothesis*; here the number had a DENOMINATOR, a
+named instrument, a stated limit and a complete population read - every marker
+of a sound measurement - and it was still meaningless, because the predicate
+was aimed at the wrong property. **Rigour about the measurement cannot correct
+an error in what is being measured.**
+
+And note the direction, per L559: the error made the backlog look large and my
+new rule look necessary. A figure that flatters the thing you just built is the
+one to hand-read first.
+
+So: **before quoting any backlog figure, write down what a COMPLIANT instance
+looks like and confirm the matcher would recognise one.** Not a sample of what
+it FLAGGED - a sample of what it PASSED, and one constructed compliant case.
+L701 says sample the MISSES; this says construct the PASS.
+
+The figure is RETIRED, not re-measured. On this sample the true backlog is
+plausibly near zero, and re-running a differently-wrong regex would only
+produce a differently-wrong number.
