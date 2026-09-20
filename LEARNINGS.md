@@ -21474,3 +21474,43 @@ work permanently and quietly, while a false OPEN merely spends a measurement.
 Compliance failure against item #182, whose denominator rule covers this and
 whose examples are all about populations of ROWS rather than DIMENSIONS of a
 search - which is why it did not fire for me here.
+
+### L817 - A DISCRIMINATOR KEYED ON AN OPTIONAL FIELD IS BLIND WHERE THE FIELD IS ABSENT, AND THE BLINDNESS MEASURES AS PRECISION (B2887, council-caught 2026-09-20)
+
+I shipped an R1 refusal keyed on "an env knob PLUS a resim_band level away from
+production", measured its blast radius at 2 of 18 entries, and reported that to
+the owner as evidence the gate was precise - "exactly the incident, zero
+collateral". The advisor who proposed the rule then raised the objection I had
+not: smc_breaker_block_long carries resim_band None on all six params, so it
+registers ZERO engine axes and the most-run engine family in the repo evades
+the gate entirely.
+
+MEASURED afterwards, and worse than the single instance: of the entries that
+carry env knobs but no engine-requiring band, 3 of 3 are blind and 0 of 3 are
+genuinely exempt. smc_breaker_block_long (6 env params), smc_equal_lows_sweep_
+long (3) and smc_inverse_fvg (1) all have resim_band ABSENT. Not one of them
+says "production only". So every entry my measurement counted as correctly
+unaffected was unaffected because the discriminating field was missing.
+
+This is L642's class arriving through a DISCRIMINATOR rather than a guard.
+L642 says a check conditioned on the presence of the thing it guards converts
+UNDECLARED into APPROVED. Here the conversion is quieter still: absence of
+resim_band converts "this entry has not declared its engine intent" into "this
+entry has no engine work", and the result is not an error - it is a smaller
+refusal count, which reads as a well-targeted rule.
+
+**The blast-radius measurement and the coverage measurement are the same
+number, and they mean opposite things.** A low count is what you want from a
+precise rule and what you get from a blind one, and nothing in the figure
+separates them. The separating question is not "how many did it refuse" but
+"of those it did NOT refuse, how many were EXPLICITLY exempt versus silently
+unclassifiable" - and that second question takes one pass over the same data I
+already had open.
+
+Compliance failure against the L642 rule in the skill's B1335 section, not a
+new class. The mechanism is that the blind population is now ENUMERATED and
+frozen shrink-only by test_b2887, so a new entry written in the legacy shape
+fails the pyramid instead of quietly joining the exempt set; widening the rule
+to refuse the legacy shape outright would refuse all five smc entries today,
+which is the refuse-everything failure, so the migration stays backlogged at
+S6-B2885 with its population now counted rather than estimated.

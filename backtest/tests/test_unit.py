@@ -39331,3 +39331,62 @@ def test_b2883_launch_refusals_reports_every_reason_not_the_first():
         "a strategy with a SPECS_PHASE0 entry must not be told it has no entry")
     # and the message must steer AWAY from the duplicate-registry repair
     assert "Do NOT fix this by copying the entry into SPECS" in joined
+
+
+
+def test_b2887_the_legacy_shape_blind_spot_is_enumerated_not_silent():
+    """L817 / S6-B2885: the B2883 R1 refusal keys on an env knob PLUS a
+    resim_band level away from production, so it is BLIND on any entry whose
+    resim_band is absent - the pre-B2467 shape that never split free from
+    resim.
+
+    MEASURED: of the entries carrying env knobs but no engine-requiring band,
+    3 of 3 are blind and 0 of 3 are explicitly production-only. A low refusal
+    count is what a PRECISE rule gives you and what a BLIND one gives you, so
+    the population is frozen here: a new entry written in the legacy shape
+    fails this pin rather than quietly joining the exempt set.
+
+    Shrink-only. Fixing an entry (giving it an explicit resim_band) removes it
+    from the set and the assertion below gets tighter, which is the direction
+    S6-B2885's migration moves."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    BLIND_LEGACY = {
+        "smc_breaker_block_long",        # 6 env params, resim_band None
+        "smc_equal_lows_sweep_long",     # 3
+        "smc_inverse_fvg",               # 1
+    }
+
+    both = dict(pvt.SPECS)
+    both.update(pvt.SPECS_PHASE0)
+    blind = set()
+    for name, spec in both.items():
+        if pvt.engine_requiring_params(spec):
+            continue                      # the rule can see these
+        envs = [p for p in (spec.get("params") or []) if p.get("env")]
+        if not envs:
+            continue                      # no knobs at all - nothing to miss
+        if any(p.get("resim_band") in (None, [], "") for p in envs):
+            blind.add(name)
+
+    new = blind - BLIND_LEGACY
+    assert not new, (
+        f"{sorted(new)} carry env knobs with NO resim_band, so the B2883 R1 "
+        "adapter refusal cannot see them. Either declare an explicit "
+        "resim_band (production-only is fine and makes the exemption VISIBLE) "
+        "or add them here with a reason - silently joining the exempt set is "
+        "the L817 defect this pin exists to stop")
+
+    # must-QUIET on the direction that matters: the set may only SHRINK, and
+    # the assertion above already allows that. Prove the pin is not vacuous -
+    # the blind set must be non-empty today, or this test asserts nothing.
+    assert blind, (
+        "the blind population is empty - if S6-B2885's migration completed, "
+        "delete this pin and the BLIND_LEGACY register with it; if it did "
+        "not, this pin has gone vacuous and is asserting nothing")
+    assert blind <= BLIND_LEGACY, sorted(blind - BLIND_LEGACY)
