@@ -21434,3 +21434,43 @@ reasons, so it needs a narrower trigger such as an L-number being added, and
 that design is the work rather than a line of code.
 
 **Promoted (B2882):** the generalised half of this entry - that a check proving its members from recent HISTORY makes commit ORDER part of what is checked - is now a tripwire row in the execution-discipline skill, pinned by its test_b2123 fragment. The MEASUREMENT (9 of 12 commits, 2 of 9 whole, 7 of 9 partial) stays here, per the split the skill prescribes: a tripwire row carrying a count is a row that decays. L628 already carried the INSTRUCTION to land members together; what was missing, and is now promoted, is the REASON, which is the half that generalises past Phase 5 to any history-reading gate.
+
+### L816 - A COMPLETENESS CLAIM ABOUT A SEARCH DECAYS WHEN THE PARAMETER SPACE GROWS (B2883, owner-overruled 2026-09-20)
+
+I told the owner that both candle strategies had "already had their full Step-2
+holdout read - 130 graded (cell, exit) lines each, both FAIL", and recommended
+that the anatomy campaign not run without a ruling. The owner overruled it:
+"the holdout read was incomplete and on partial specs amongst all bands so we
+cant really rely on it."
+
+MEASURED on the artifact I was quoting: output_audit/b2859_tws_step2_holdout.md
+contains the axis name "levels" and contains NO n_bars, body, step or wick. The
+130 lines are ONE axis - the RSI threshold - crossed with exits. The four
+anatomy parameters did not exist when that read was taken; B2865 wrote them in
+the same session in which I cited the read. Against the corrected Table A
+footer (FULL FACTORIAL 810 = offline 5 x ENGINE RUNS 54 x PENDING 3), the read
+covers the "offline 5" and the 54 engine configs are an entirely unread space.
+True scope: 1 of 5 axes. I claimed 5 of 5.
+
+The failure is #182 - an EXECUTED claim reaching past what was measured - but
+the mechanism is specific enough to name on its own. **A read that was complete
+on the day it ran covers only the axes that existed then.** Adding a parameter
+later silently voids it, and NOTHING in the system re-opens the old conclusion,
+because nothing links a new knob to the reads it invalidated. The artifact is
+unchanged: same authoritative header, same line count, same FAIL verdict, same
+"all cells x exits, one read" phrasing in its own preamble - which is what made
+it feel like a complete answer. That preamble was TRUE when written.
+
+The tell I should have caught: I had spent the same session WRITING four new
+parameters for this pair, and then quoted a read that predated them as proof
+the pair was exhausted. The two facts sat in one context window.
+
+So: before citing any prior search, grid, holdout or sweep as evidence that a
+subject is settled, LIST THE AXES IT COVERS AND THE AXES THAT EXIST NOW, and
+state the verdict with that denominator - "1 of 5 axes read", never "it failed".
+The cost of getting it wrong is asymmetric: a false EXHAUSTED closes a line of
+work permanently and quietly, while a false OPEN merely spends a measurement.
+
+Compliance failure against item #182, whose denominator rule covers this and
+whose examples are all about populations of ROWS rather than DIMENSIONS of a
+search - which is why it did not fire for me here.

@@ -25052,6 +25052,12 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2883: the L816 tripwire row - a completeness claim decays when
+        # the parameter space grows. Pins the SCOPING rule, not the
+        # heading (L548).
+        ("A COMPLETENESS CLAIM ABOUT A SEARCH IS SCOPED TO THE PARAMETER SPACE THAT EXISTED WHEN THE READ WAS TAKEN",
+         "B2883/L816: a prior search covers only the axes that existed "
+         "then"),
         # B2882: the L815 tripwire row - a history-reading check makes
         # commit ORDER part of what it checks. Pins the QUESTION to ask
         # before splitting, not the heading (L548).
@@ -25759,7 +25765,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # its tripwire row per B2130).
     # 268 -> 269 at B2882 (the L815 commit-order fragment; same-call with
     # its tripwire row per B2130).
-    assert len(gutted) == 269, gutted
+    # 269 -> 270 at B2883 (the L816 search-completeness fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 270, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -32797,11 +32805,18 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     _unreg = sorted(set(_ALL) - set(pvt.SPECS))
     assert _unreg, "every strategy is registered - this case tests nothing"
     _pick = _unreg[0]
+    # B2883: the positive control must cover BOTH registries now. The gate used
+    # to read SPECS alone, so a strategy present only in SPECS_PHASE0 was told
+    # it had "no SPECS entry" - a false message about a complete entry sitting
+    # in the same file. This case wants a strategy in NEITHER registry.
     assert _pick not in pvt.SPECS, _pick          # positive control
+    assert _pick not in pvt.SPECS_PHASE0, _pick   # positive control (B2883)
     _sub = tmp_path / "b2752g_subset.txt"
     _sub.write_text(f"{_pick}\nsmc_breaker_block_long\n", encoding="utf-8")
     x = {"strategy_subset": str(_sub), "arms": []}
-    r = one(x, f"{_pick}: no SPECS entry")
+    # the message is more precise since B2883; the BEHAVIOUR is unchanged -
+    # a strategy in neither registry is still refused before the engine.
+    r = one(x, f"{_pick}: no entry in producer_variant_table")
     # B2738: the claim is that the REGISTERED strategy is not blamed FOR THAT
     # CLASS. B2731 does blame it for being ADMITTED, which is a different and
     # correct refusal, so the assertion is narrowed to its actual question
@@ -38906,9 +38921,21 @@ def test_b2866_a_declared_knob_must_be_read_by_the_engine():
     errs = pvt.validate_spec(spec)
     assert any("FEATURE REQUEST" in e for e in errs), errs
 
-    # must-QUIET: the real entries
+    # must-QUIET: the real entries carry no ACTUATION error. B2883 changed
+    # what "clean" means for them: R1 now refuses a band inventory whose
+    # battery adapter is incomplete, and these two carry 4 engine-requiring
+    # bands against a tools block of {grade, keys} that lacks grid_keys,
+    # single_combination and spot_check. That refusal is CORRECT and is the
+    # open S6-B2861 work; it must be the ONLY thing they fail on, so this
+    # assertion still bites on any actuation regression.
     for k in ("three_white_soldiers", "three_black_crows_short"):
-        assert pvt.validate_spec(pvt.SPECS_PHASE0[k]) == [], k
+        _errs = pvt.validate_spec(pvt.SPECS_PHASE0[k])
+        _other = [e for e in _errs if "S6-B2883" not in e]
+        assert _other == [], (k, _other)
+        assert any("S6-B2883" in e for e in _errs), (
+            k, "the adapter refusal must still fire until S6-B2861 completes "
+            "the tools block - if it stopped firing, either the adapter "
+            "landed (update this pin) or the gate went silent")
         ids = [p["id"] for p in pvt.SPECS_PHASE0[k]["params"]]
         assert ids == sorted(ids, key=lambda x: int(x[1:])), (k, ids)
 
@@ -39196,3 +39223,111 @@ def test_b2876_monitor_gate_uses_the_trunk_launch_classifier():
     assert "_segment_is_launch(_cmd)" in body, (
         "the monitor gate must ask the launch question through the shared "
         "classifier (L608) - a private regex inherits no later fix")
+
+
+
+def test_b2883_r1_refuses_a_band_inventory_with_an_incomplete_adapter():
+    """S6-B2883 (owner-directed 2026-09-20): "ensure this class of error
+    doesnt happen again ... the r1 step of the workflow is modified in the code
+    base as well as the strategy optimization doc".
+
+    MEASURED, and NOT what the incident's own comment claims: the candle pair
+    carry a tools block of {grade, keys} lacking {grid_keys, single_combination,
+    spot_check}. The adapters were HALF-WRITTEN, not deferred, and validate_spec
+    contained no `tools` check at all - so both entries validated CLEAN while
+    being unrunnable, and the refusal arrived only at launch after the band work
+    was sunk.
+
+    Both directions per #226, and the must-QUIET arms are the load-bearing ones:
+    a gate that refuses every spec would pass every must-fire test written for
+    it (L686)."""
+    import copy
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    def _b2883(spec):
+        return [e for e in pvt.validate_spec(spec) if "S6-B2883" in e]
+
+    # must-FIRE: an engine-requiring band with a HALF-WRITTEN adapter
+    spec = copy.deepcopy(pvt.SPECS_PHASE0["three_white_soldiers"])
+    assert pvt.engine_requiring_params(spec), "fixture stale: no engine band"
+    assert _b2883(spec), "a half-written adapter must be refused"
+
+    # must-FIRE: an engine-requiring band with NO adapter block at all
+    spec_none = copy.deepcopy(spec)
+    spec_none.pop("tools", None)
+    assert any("has NO `tools` adapter block" in e for e in _b2883(spec_none))
+
+    # must-QUIET 1: a COMPLETE adapter passes even with engine-requiring bands.
+    # institutional_committed_growth_long carries 4 of them and is family-ready.
+    ready = pvt.SPECS["institutional_committed_growth_long"]
+    assert pvt.engine_requiring_params(ready), "fixture stale: expected bands"
+    assert _b2883(ready) == [], _b2883(ready)
+
+    # must-QUIET 2: NO engine-requiring band means no adapter is owed. This is
+    # the 10-of-18 population that must stay allowed - a pre-engine offline
+    # draft is legitimate (plan 3284 / B2638).
+    draft = copy.deepcopy(spec)
+    draft.pop("tools", None)
+    for p in draft["params"]:
+        p["resim_band"] = [p.get("production")]
+    assert not pvt.engine_requiring_params(draft)
+    assert _b2883(draft) == [], _b2883(draft)
+
+    # the discriminator is the RESIM level, not band-presence
+    assert pvt.engine_requiring_params({"params": [
+        {"id": "P1", "param": "x", "env": "X", "production": 3,
+         "resim_band": [3, 4]}]})
+    assert not pvt.engine_requiring_params({"params": [
+        {"id": "P1", "param": "x", "env": "X", "production": 3,
+         "resim_band": [3]}]})
+    assert not pvt.engine_requiring_params({"params": [
+        {"id": "P1", "param": "x", "production": 3, "resim_band": [3, 4]}]}), (
+        "no env knob means no engine run is possible - not our refusal")
+
+    # the PLAN carries the modified R1 step (the owner asked for both halves)
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
+        encoding="utf-8", errors="replace")
+    assert "R1 NOW ALSO REFUSES A BAND INVENTORY WHOSE BATTERY ADAPTER IS " \
+           "INCOMPLETE" in plan, "the R1 row must state the new refusal"
+    assert "SPECS_PHASE0['<strategy>']" in plan, (
+        "the documented R1 probe must resolve BOTH registries - the old one "
+        "raised KeyError on the population it gates")
+
+
+def test_b2883_launch_refusals_reports_every_reason_not_the_first():
+    """S6-B2883: the launch gate read SPECS alone and `continue`d, so a
+    PHASE0-only strategy earned ONE refusal and skipped nine checks below it.
+    MEASURED before the fix: 1 refusal; after: 3 against the real tree, and the
+    suppressed ones include the adapter and the family-registration reasons.
+
+    It also emitted a FALSE message - "no SPECS entry" for a strategy whose
+    complete entry sits in SPECS_PHASE0 in the same file - which invites the
+    repair that manufactures another duplicate-registry instance (S6-B2874)."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    import tempfile
+    d = _P(tempfile.mkdtemp())
+    (d / "sub.txt").write_text("three_white_soldiers", encoding="utf-8")
+    doc = {"strategy_subset": "sub.txt", "arms": [{"tag": "a", "env": {}}]}
+    errs = pvt.launch_refusals(doc, root=d)
+
+    joined = " | ".join(errs)
+    # must-FIRE: more than one reason, and the adapter reason among them
+    assert len(errs) >= 3, (len(errs), joined[:400])
+    assert any("S6-B2883" in e for e in errs), "the adapter reason must appear"
+    assert any("battery family" in e for e in errs), "the family reason too"
+    # must-QUIET: the FALSE message is gone
+    assert "no SPECS entry in producer_variant_table" not in joined, (
+        "a strategy with a SPECS_PHASE0 entry must not be told it has no entry")
+    # and the message must steer AWAY from the duplicate-registry repair
+    assert "Do NOT fix this by copying the entry into SPECS" in joined

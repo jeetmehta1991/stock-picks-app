@@ -2138,6 +2138,61 @@ def validate_spec(spec: dict) -> list[str]:
             errs.append(f"knob {_k} consumer DRIFT - the entry declares {_dec} "
                         f"but the tree reads it in {_got} (S6-B2573d/B2870; "
                         "re-measure with knob_consumers and update the entry)")
+    # B2883 (owner-directed 2026-09-20): R1 REFUSES A BAND INVENTORY WHOSE
+    # BATTERY ADAPTER IS INCOMPLETE.
+    #
+    # Owner: "Neither strategy is a registered battery family ensure this class
+    # of error doesnt happen again ... the r1 step of the workflow is modified
+    # in the code base as well as the strategy optimization doc."
+    #
+    # MEASURED, and NOT what the incident's own comment claims: the candle pair
+    # carry a tools block of {grade, keys} and lack {grid_keys,
+    # single_combination, spot_check}. The adapters were HALF-WRITTEN, not
+    # deferred - and `'tools' in getsource(validate_spec)` was False, so no
+    # check anywhere in the tree could see a half-written adapter. Both entries
+    # validated CLEAN (0 errors) while being unrunnable, which is precisely how
+    # a complete-looking band inventory reached a launch that then refused it.
+    #
+    # The discriminator is ENGINE-REQUIRING bands, not band-presence: measured
+    # across both registries, this refuses 2 of 18 entries - exactly the two of
+    # the incident - leaves the 6 family-ready entries passing on their complete
+    # tools block, and does not touch the 10 that carry no resim level beyond
+    # production. There is therefore no historical backlog to disposal-plan
+    # (the L721 class, checked rather than assumed).
+    _eng = engine_requiring_params(spec)
+    if _eng:
+        _req, _greq, _cerr = _adapter_contract()
+        _ids = ", ".join(f"{p['id']} {p['param']}" for p in _eng[:4])
+        if _cerr:
+            errs.append("the battery adapter contract could not be read "
+                        f"({_cerr}) - refusing rather than certifying this "
+                        "spec adapter-complete (L642, fail CLOSED)")
+        else:
+            _tools = spec.get("tools")
+            if not isinstance(_tools, dict):
+                errs.append(
+                    f"carries {len(_eng)} ENGINE-REQUIRING band(s) ({_ids}) "
+                    "but has NO `tools` adapter block - the landing would fail "
+                    "closed AFTER the engine spend, and the refusal would "
+                    "arrive at launch instead of here (S6-B2883; write the "
+                    "adapter with the band, or drop the resim levels)")
+            else:
+                _miss = [k for k in _req if k not in _tools]
+                _gmiss = sorted({f"{sec}.{k}" for sec in ("grade", "spot_check")
+                                 if isinstance(_tools.get(sec), dict)
+                                 for k in _greq
+                                 if k not in (_tools.get(sec) or {})})
+                if _miss:
+                    errs.append(
+                        f"carries {len(_eng)} ENGINE-REQUIRING band(s) ({_ids}) "
+                        f"but its `tools` adapter block lacks {_miss} - a "
+                        "HALF-WRITTEN adapter is what made this spec validate "
+                        "clean while being unrunnable (S6-B2883)")
+                elif _gmiss:
+                    errs.append(
+                        f"carries {len(_eng)} ENGINE-REQUIRING band(s) but its "
+                        f"adapter sections lack {_gmiss} - the battery leg "
+                        "would fail closed at landing (S6-B2883)")
     b = spec.get("baseline")
     if not isinstance(b, dict):
         errs.append("SPEC has no `baseline` block - main() reads it for the "
@@ -2409,6 +2464,38 @@ def _battery_families() -> tuple[set | None, str]:
         return set(_rp.FAMILIES), ""
     except Exception as exc:                       # noqa: BLE001 - report ANY
         return None, f"{type(exc).__name__}: {exc}"
+
+
+def _adapter_contract() -> tuple[tuple, tuple, str]:
+    """The battery's ADAPTER contract (_TOOLS_REQUIRED / _GRADE_REQUIRED),
+    imported from run_postconfig rather than retyped - same lazy-import shape
+    as _battery_families, so there is no import cycle (run_postconfig imports
+    SPECS from here at module scope). An import failure is REPORTED, never
+    swallowed: a missing contract must fail CLOSED (L642), because the
+    alternative is silently certifying every spec as adapter-complete."""
+    try:
+        import run_postconfig as _rp
+        return tuple(_rp._TOOLS_REQUIRED), tuple(_rp._GRADE_REQUIRED), ""
+    except Exception as exc:                       # noqa: BLE001 - report ANY
+        return (), (), f"{type(exc).__name__}: {exc}"
+
+
+def engine_requiring_params(spec: dict) -> list[dict]:
+    """Params whose band implies an ENGINE RUN: an env knob PLUS at least one
+    resim level away from production. This is the band work whose grading needs
+    a battery adapter, and it is the discriminator R1 refuses on (B2883).
+
+    Deliberately NOT 'has any band' - MEASURED across both registries, 10 of 18
+    entries carry no such param and must stay allowed; the 6 family-ready
+    entries carry them and pass on their complete tools block."""
+    out = []
+    for p in spec.get("params") or []:
+        if not p.get("env"):
+            continue
+        if any(str(x) != str(p.get("production"))
+               for x in (p.get("resim_band") or [])):
+            out.append(p)
+    return out
 
 
 def _level_in_band(value, row: dict) -> bool:
@@ -2775,17 +2862,49 @@ def launch_refusals(doc: dict, root: Path | None = None,
         errs.append(f"phase_table resolver unavailable ({_e}) - refusing "
                     "rather than launching on typed scope (B2713)")
     for s in strats:
+        # B2883: RESOLVE BOTH REGISTRIES, AND DO NOT SUPPRESS THE REST.
+        # MEASURED: this read SPECS alone and `continue`d, so a PHASE0-only
+        # strategy earned ONE refusal and skipped every check below it -
+        # FAMILIES, validate_spec, knob_is_read, consumer drift and band
+        # membership, nine checks in all. A probe setting a knob named in no
+        # spec anywhere drew no complaint. So the gate looked like it caught
+        # B2850 when it caught one reason of five.
+        #
+        # The old message was also FALSE: it said "no SPECS entry" for a pair
+        # that has a complete, validate_spec-clean entry in SPECS_PHASE0 in
+        # THIS FILE. That wording invites exactly one repair - copy it into
+        # SPECS - which manufactures another duplicate-registry instance
+        # (S6-B2874: 4 consumers resolve the two registries in 3 different
+        # precedence orders).
         spec = SPECS.get(s)
+        _phase0_only = False
         if spec is None:
-            errs.append(f"{s}: no SPECS entry in producer_variant_table - the "
-                        "post-config battery would FAIL closed at landing AFTER "
-                        "the engine spend (S6-B2573b; fail CLOSED at launch)")
+            spec = SPECS_PHASE0.get(s)
+            _phase0_only = spec is not None
+        if spec is None:
+            errs.append(f"{s}: no entry in producer_variant_table (neither "
+                        "SPECS nor SPECS_PHASE0) - the post-config battery "
+                        "would FAIL closed at landing AFTER the engine spend "
+                        "(S6-B2573b; fail CLOSED at launch)")
             continue
+        if _phase0_only:
+            errs.append(f"{s}: its entry is in SPECS_PHASE0 (pre-engine "
+                        "inventory), not SPECS - so it is not a registered "
+                        "post-config battery family and the landing would FAIL "
+                        "closed. Do NOT fix this by copying the entry into "
+                        "SPECS; complete its `tools` adapter block, which is "
+                        "what run_postconfig derives family readiness from "
+                        "(S6-B2883). Every further refusal below is now "
+                        "reported too, instead of being suppressed.")
         if fams is None:
             errs.append(f"{s}: the battery registry could not be read ({why}) "
                         "- refusing rather than guessing (L642)")
         elif s not in fams:
-            errs.append(f"{s}: has a SPECS entry but is NOT a registered "
+            # B2883: say WHICH registry the entry is in. Saying "has a SPECS
+            # entry" about a PHASE0-only strategy is the same false-message
+            # class this batch is fixing one line above.
+            _where = "SPECS_PHASE0" if _phase0_only else "SPECS"
+            errs.append(f"{s}: has a {_where} entry but is NOT a registered "
                         "post-config battery family (run_postconfig.FAMILIES) - "
                         "the landing would FAIL closed (S6-B2573b)")
         errs += [f"{s}: {e}" for e in validate_spec(spec)]

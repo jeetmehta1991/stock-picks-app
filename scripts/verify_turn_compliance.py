@@ -1553,13 +1553,36 @@ def scan_uninspected_constant(entries, *, tool_text=None,
         if not isinstance(d, dict) or d.get("type") != "user":
             return False
         c = (d.get("message") or {}).get("content")
+        # B2883: THE GATE'S OWN BLOCK MESSAGE IS NOT A NEW INSTRUCTION.
+        # _last_instruction_index has excluded it since B2555 via
+        # _is_gate_feedback; this private helper never inherited that, so every
+        # block RESET this window and discarded the inspection it was about to
+        # demand. MEASURED on the live transcript: private window 32 entries,
+        # trunk window 69, and exactly 1 of the 37 discarded entries was the
+        # Grep inspecting the constant the gate then flagged as uninspected.
+        # Third instance this turn of the leaf-vs-trunk class (L608), and the
+        # tell was the L814 diagnostic - the symptom persisting after an
+        # inspection meant another consumer, not a bad inspection.
+        _txt = c if isinstance(c, str) else None
+        if _txt is None and isinstance(c, list):
+            _txt = " ".join(b.get("text", "") for b in c
+                            if isinstance(b, dict) and b.get("type") == "text")
+        if _txt and _is_gate_feedback(_txt):
+            return False
         if isinstance(c, str):
             return True
         return not any(isinstance(b, dict) and b.get("type") == "tool_result"
                        for b in (c or ()))
 
-    last_user = max((i for i, d in enumerate(entries or ()) if _is_real_user(d)),
-                    default=-1)
+    # B2883: route through the TRUNK. S6-B2555a's EXECUTED row claims all 10
+    # hand-written windows were replaced by _last_instruction_index; MEASURED
+    # this turn, 9 of 10 were and THIS was the survivor - the one gate whose
+    # private helper still reset on the Stop hook's own block message. Calling
+    # the trunk closes the class (0 private helpers remain) and makes this site
+    # inherit every future window fix instead of needing its own (L608).
+    # _is_real_user is retained above only as the local predicate the early
+    # return and the injected-text seam read; the WINDOW is the trunk's.
+    last_user = _last_instruction_index(entries)
     entries = list(entries or ())[last_user + 1:]
     # B1760b: the EARLY RETURN read entries too, so injected text never got
     # past it. TWO ignored-parameter bugs in one function - both invisible to
