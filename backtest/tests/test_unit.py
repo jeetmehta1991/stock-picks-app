@@ -39892,3 +39892,99 @@ def test_b2905_skip_rows_name_the_strategy_they_blocked():
     occ = src[src.index("_bug61_mode == \"ticker_strategy\""):]
     occ = occ[:occ.index("else:  # default")]
     assert "continue" in occ, "the occupancy branch must still skip the trade"
+
+
+def test_b2904_candle_free_levels_leg_mirrors_the_gate_and_discloses_occupancy():
+    """S6-B2904: the free-levels leg B2569/#290 requires on every landing.
+
+    A missing leg produces no row and no FAIL, so the axis would have gone
+    ungraded across 54 configs. Each arm below holds one property that
+    silence depended on.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import run_postconfig as rp
+    import grade_free_levels_candle as fl
+
+    # ---- the leg is wired and the pair is still a family -----------------
+    for k in ("three_white_soldiers", "three_black_crows_short"):
+        assert rp.family_refusal(k) == "", (k, rp.family_refusal(k))
+        blk = pvt.SPECS[k]["tools"]["free_levels"]
+        assert blk["script"] == "grade_free_levels_candle.py", blk
+        assert (root / "scripts" / blk["script"]).exists()
+
+    # ---- the gate constants match the PRODUCER, not my memory ------------
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert '"three_white_soldiers","rsi_14<60"' in src, (
+        "the soldiers gate moved - the mirrored bound is now wrong")
+    assert '"three_black_crows","rsi_14>40"' in src, (
+        "the crows gate moved - the mirrored bound is now wrong")
+    assert fl.GATE["three_white_soldiers"] == ("lt", 60.0)
+    assert fl.GATE["three_black_crows_short"] == ("gt", 40.0)
+
+    # ---- STRICT comparison: the bound itself is EXCLUDED -----------------
+    # the producer uses < and >, never <= and >=; the wrong one silently
+    # moves every boundary trade
+    assert fl.keep_row(59.9, "lt", 60.0) is True
+    assert fl.keep_row(60.0, "lt", 60.0) is False, "the ceiling is STRICT"
+    assert fl.keep_row(60.1, "lt", 60.0) is False
+    assert fl.keep_row(40.1, "gt", 40.0) is True
+    assert fl.keep_row(40.0, "gt", 40.0) is False, "the floor is STRICT"
+    assert fl.keep_row(39.9, "gt", 40.0) is False
+
+    # ---- unverifiable is its own state, never "failing" ------------------
+    assert fl.parse_signals(None) is None
+    assert fl.parse_signals("") is None
+    assert fl.parse_signals("   ") is None
+    assert fl.parse_signals("{not python or json") is None
+    assert fl.parse_signals("{}") is None, "an empty dict is unverifiable"
+    assert fl.parse_signals("{'rsi_14': 51.2}") == {"rsi_14": 51.2}
+    assert fl.parse_signals('{"rsi_14": 51.2}') == {"rsi_14": 51.2}
+
+    # ---- levels come from SPECS, never hand-typed ------------------------
+    for k, n_free in (("three_white_soldiers", 4),
+                      ("three_black_crows_short", 4)):
+        p6 = [x for x in pvt.SPECS[k]["params"] if x["id"] == "P6"][0]
+        assert len(p6["free_band"]) == n_free, (k, p6["free_band"])
+        # every free level must TIGHTEN, or it is not offline-gradable
+        d, bound = fl.GATE[k]
+        for lvl in p6["free_band"]:
+            if d == "lt":
+                assert float(lvl) < bound, (k, lvl, "a ceiling level must drop")
+            else:
+                assert float(lvl) > bound, (k, lvl, "a floor level must rise")
+
+    # ---- the occupancy disclosure: the honest limit of the whole method --
+    import tempfile
+    import pandas as _pd
+    d = _P(tempfile.mkdtemp())
+
+    # a PRE-B2905 cube: literal stamps -> UNQUANTIFIABLE, and it says so
+    _pd.DataFrame({"strategy": ["(same-strategy)"] * 5,
+                   "reason": ["ticker_already_open_same_strategy_bug61_mode_c"] * 5
+                   }).to_csv(d / "skipped_trades.csv", index=False)
+    note = fl.occupancy_note(d, "three_white_soldiers")
+    assert note["attribution_available"] is False
+    assert note["blocked_rows_attributable"] is None
+    assert "UNQUANTIFIABLE" in note["note"], note["note"]
+
+    # a POST-B2905 cube: real names -> a number
+    _pd.DataFrame({
+        "strategy": ["three_white_soldiers", "smc_breaker_block_long",
+                     "three_white_soldiers,three_black_crows_short"],
+        "reason": ["ticker_already_open_same_strategy_bug61_mode_c"] * 3
+    }).to_csv(d / "skipped_trades.csv", index=False)
+    note = fl.occupancy_note(d, "three_white_soldiers")
+    assert note["attribution_available"] is True, note
+    assert note["blocked_rows_attributable"] == 2, note
+
+    # no artifact at all is disclosed, never assumed zero
+    (d / "skipped_trades.csv").unlink()
+    note = fl.occupancy_note(d, "three_white_soldiers")
+    assert note["attribution_available"] is False
+    assert "cannot be bounded" in note["note"], note["note"]

@@ -1967,6 +1967,16 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
                   "preregistered_flag": "--preregistered-exit",
                   "pythonpath": None,
                   "note": "AUTO (S6-B2900)"},
+        # S6-B2904: P6 carries FREE levels on both legs and B2569/#290
+        # requires them graded on EVERY landing - a missing leg produces no
+        # row and no FAIL, so 54 configs would have landed with the axis
+        # silently ungraded. Offline, zero engine hours: rsi_14 sits in
+        # signals_at_entry for 1596 of 1596 soldiers and 1674 of 1674 crows
+        # rows of output_r5_merged_1_7/trade_log.csv - coverage 1.0000.
+        "free_levels": {"script": "grade_free_levels_candle.py",
+                        "note": "AUTO (S6-B2904); reproduction-gated, and "
+                                "the occupancy correction is DISCLOSED "
+                                "rather than simulated (L812)"},
     },
 }
 
@@ -2113,6 +2123,16 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
                   "preregistered_flag": "--preregistered-exit",
                   "pythonpath": None,
                   "note": "AUTO (S6-B2900)"},
+        # S6-B2904: P6 carries FREE levels on both legs and B2569/#290
+        # requires them graded on EVERY landing - a missing leg produces no
+        # row and no FAIL, so 54 configs would have landed with the axis
+        # silently ungraded. Offline, zero engine hours: rsi_14 sits in
+        # signals_at_entry for 1596 of 1596 soldiers and 1674 of 1674 crows
+        # rows of output_r5_merged_1_7/trade_log.csv - coverage 1.0000.
+        "free_levels": {"script": "grade_free_levels_candle.py",
+                        "note": "AUTO (S6-B2904); reproduction-gated, and "
+                                "the occupancy correction is DISCLOSED "
+                                "rather than simulated (L812)"},
     },
 }
 
