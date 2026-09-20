@@ -456,7 +456,20 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
             # discussing a launch is not launching (B1603's rule, applied to
             # Write payloads but never to Bash commands - my own diagnostic
             # probe tripped the old gate exactly that way).
-            _launching = bool(_re_launch.search(_cmd)) if _cmd else False
+            # B2876: route through the TRUNK classifier instead of this leaf's
+            # own regex. _re_launch guards `python -c` with a lookahead at the
+            # FIRST position only, so a runner path appearing later in the -c
+            # PAYLOAD still matched - MEASURED, this gate fired on the probes
+            # verifying its sibling's fix, whose bodies carry
+            # 'python backtest/run_phase1a.py' as a test STRING. The comment
+            # eight lines above already claims -c bodies are excluded; it was
+            # true of the position it was written for. _segment_is_launch
+            # blanks quoted spans (B2028b/B2875/B2876) and asks the same
+            # question this line asks - "does a SEGMENT execute a runner, or
+            # merely name one" - so the leaf inherits every fix the trunk gets
+            # (L608: move the lesson to the trunk the first time a second leaf
+            # needs it).
+            _launching = _segment_is_launch(_cmd) if _cmd else False
             if _launching:
                 launches.append(_cmd[:140])
     return [] if (armed or not launches) else launches
@@ -4166,7 +4179,14 @@ def _segment_is_launch(cmd: str) -> bool:
     # rule learned on one form does not reach the other). The single-quoted arm
     # stays line-scoped on purpose - prose apostrophes ("the gate's") would open
     # a span that swallows the rest of a multi-line blob.
-    cmd = _re3.sub(r'"[^"]*"|\'[^\'\n]*\'', " ", cmd)
+    # B2876: and a BACKSLASH ESCAPES THE NEXT CHARACTER inside that span.
+    # [^"]* stops at ANY quote, including an ESCAPED one, so a
+    # `python -c "... \"runner.py\" ..."` probe ended its span early and
+    # the remainder tokenized as a launch - MEASURED, this gate fired on
+    # the verification probes for its OWN previous fix. Same class as
+    # B2875 one commit earlier (L814): the blanker was written for the
+    # simple shape in front of its author and inherits nothing else.
+    cmd = _re3.sub(r'"(?:[^"\\]|\\.)*"|\'[^\'\n]*\'', " ", cmd)
     for seg in _re3.split(r"&&|\|\||[;|\n]", cmd):
         toks = seg.split()
         if not toks:

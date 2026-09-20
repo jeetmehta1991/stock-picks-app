@@ -21340,3 +21340,38 @@ named for the lane, so 29 freshly-corrected files landed in a NEW untracked
 directory while the 29 COMMITTED ones stayed stale - and the regeneration
 reported success. Compliance failure against item 222: checking what a flag
 does is reading the code, and a one-line help string was the whole cost.
+
+**ADDENDUM (B2876, same turn, same class one level down):** the fix above
+widened the double-quoted span to cross newlines, and the gate then fired on
+the VERIFICATION PROBES FOR THAT VERY FIX. `[^"]*` stops at any quote
+including an ESCAPED one, so a `python -c "... \"runner.py\" ..."` command
+ended its span at the inner quote and the remainder tokenized as a launch.
+**Two consecutive fixes to one expression, each written for the shape in front
+of me** - B2028b for a single-line message, B2875 for a multi-line one, and
+neither for shell escaping. The rule is the same one this entry already
+states, applied to the fix rather than to the measurement: a blanker's job is
+to model the SHELL, and each patch modelled one example of it. The repair is
+the shell's actual rule - a backslash escapes the next character - verified in
+both directions, including a real launch sitting AFTER an escaped-quote probe,
+which is the direction where an over-wide escape fails open and silently
+(L528). And the second-order reading: my probes put runner filenames inside a
+double-quoted `-c` body, which is the shape L759 already forbids; the gate was
+reporting a genuine instance of that class through a different message.
+
+**ADDENDUM 2 (B2876b, third patch of the same turn):** fixing the trunk did
+not clear the block, because a SECOND detector never used the trunk.
+`scan_unmonitored_launch` - the #185 monitor gate - carried its own
+`_re_launch` regex whose `python -c` guard is a lookahead at the FIRST
+position, so a runner path appearing later in the `-c` PAYLOAD still matched;
+it fired on the very probes verifying the sibling fix, whose bodies carry a
+runner path as a test string. Its own comment claimed `-c` bodies were
+excluded, and that claim was true of the position it was written for - a
+docstring's NEGATIVE claim believed rather than checked (L733). The leaf now
+calls `_segment_is_launch`, which asks the identical question its comment
+states, so it inherits every quoted-span fix the trunk has had and every one
+it will get (L608: move the lesson to the trunk the first time a SECOND leaf
+needs it). **Three patches to one question in one turn, on two different
+detectors** - and the count is the finding: a class fixed twice without
+sweeping its siblings has measured nothing about itself (L710). The sweep
+that mattered was one grep for the other consumers of the launch question,
+and it was available before any of the three.

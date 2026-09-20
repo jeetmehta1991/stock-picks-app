@@ -39111,6 +39111,19 @@ def test_b2875_a_multiline_quoted_message_is_not_a_launch():
         "a real launch after a multi-line message must still fire - a blanker "
         "that swallows the rest of the blob would exempt it silently")
 
+    # B2876: an ESCAPED inner quote must not end the span. This fired on the
+    # verification probes for the multi-line fix itself - two patches to one
+    # expression, each modelling the example in front of its author.
+    esc = ('python -c "print(f(' + chr(92) + chr(34) + 'python '
+           'backtest/run_phase1a.py --phase 4' + chr(92) + chr(34) + '))"')
+    assert not seg(esc), (
+        "a runner NAMED inside escaped quotes is data, not a launch")
+    # must-FIRE: the escape must not swallow a real launch after it (L528 -
+    # an over-wide escape fails OPEN, which nobody investigates)
+    assert seg('python -c "print(' + chr(92) + chr(34) + 'x' + chr(92)
+               + chr(34) + ')" && python backtest/run_phase1a.py --phase 4'), (
+        "a real launch after an escaped-quote probe must still fire")
+
     # the single-quoted arm stays LINE-scoped on purpose: prose apostrophes
     # would otherwise open a span that eats the remainder of a multi-line blob
     src = (root / "scripts" / "verify_turn_compliance.py").read_text(
@@ -39119,3 +39132,54 @@ def test_b2875_a_multiline_quoted_message_is_not_a_launch():
         "the single-quoted arm must remain newline-scoped - only that "
         "arm still excludes the newline, so this backslash-n is its "
         "fingerprint once the double-quoted arm stopped excluding it")
+
+
+
+def test_b2876_monitor_gate_uses_the_trunk_launch_classifier():
+    """B2876b: the #185 monitor gate must ask the launch question through the
+    SHARED classifier, not a private regex.
+
+    MEASURED: scan_unmonitored_launch used _re_launch, whose `python -c` guard
+    is a lookahead at the FIRST position - so a runner path later in the -c
+    PAYLOAD matched, and the gate fired on the probes verifying its sibling's
+    fix. Both directions per #226: the canonical bare launch B2555 exists for
+    must still be flagged, and a command merely NAMING a runner must not be."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as vtc
+
+    def _entries(cmd):
+        return [{"type": "user", "message": {"content": "go"}},
+                {"type": "assistant", "message": {"content": [
+                    {"type": "tool_use", "name": "Bash",
+                     "input": {"command": cmd}}]}}]
+
+    runner = "backtest/run_phase1a.py"
+    # must-FIRE: the canonical bare launch (B2555's incident) and a
+    # backgrounded one. If these go quiet the gate has been disarmed, which is
+    # the expensive direction - an escape that fails open (L596).
+    assert vtc.scan_unmonitored_launch(
+        _entries("python " + runner + " --phase 1a-beta"))
+    assert vtc.scan_unmonitored_launch(
+        _entries("nohup python " + runner + " --phase 4 &"))
+
+    # must-QUIET: a runner NAMED inside a -c payload is discussion, not a launch
+    probe = ('python -c "print(f(' + chr(92) + chr(34) + "python " + runner
+             + chr(92) + chr(34) + '))"')
+    assert not vtc.scan_unmonitored_launch(_entries(probe)), (
+        "a runner named in a -c payload is data, not a launch")
+    # and the pyramid gate CHECKLIST #292 mandates is not an engine launch
+    assert not vtc.scan_unmonitored_launch(_entries(
+        "python scripts/pyramid_gate.py -- backtest/tests/test_unit.py -q"))
+
+    # the leaf must CALL the trunk, so it inherits future quoted-span fixes
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8", errors="replace")
+    body = src[src.index("def scan_unmonitored_launch"):]
+    body = body[:body.index(chr(10) + "def ")]
+    assert "_segment_is_launch(_cmd)" in body, (
+        "the monitor gate must ask the launch question through the shared "
+        "classifier (L608) - a private regex inherits no later fix")
