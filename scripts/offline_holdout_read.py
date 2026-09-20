@@ -44,13 +44,64 @@ import roster_core as rc           # noqa: E402
 
 
 def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
-               min_n: int) -> dict:
+               min_n: int, *, band_coverage=None) -> dict:
     rec1 = json.loads(sweep_artifact.read_text(encoding="utf-8"))
     axes = [{"key": a["key"], "op": a["op"], "levels": a["levels"]}
             for a in rec1["axes"]]
     production = tuple(rec1["production_levels"])
     prereg = rec1["preregistration_candidate"]
     strategy = rec1["strategy"]
+
+    # ---- S6-B2886: THE BAND-COVERAGE REFUSAL -----------------------
+    # THIS SCRIPT SPENDS THE PRE-REGISTRATION - a one-way door. The
+    # refusals below it all ask whether the DATA is sound; this one asks
+    # whether the QUESTION is whole, which is the thing that actually
+    # went wrong. MEASURED at B2859: a 130-trial read was taken covering
+    # ONE axis of five and the owner had to overrule relying on it. No R1
+    # gate would have touched that - the inventory was clean and the read
+    # was pre-registered. So the durable question is not how to stop a
+    # band inventory being written; it is what must be true before a read
+    # is PERMITTED to spend the door (S6-B2886, council First Principles).
+    #
+    # The three ways to satisfy it are all MACHINE-CHECKABLE fields of
+    # the Step-1 artifact, never prose: a level is GRADED (a row carrying
+    # axis/level with a non-null is_sharpe), or listed in
+    # `discarded_levels`, or named in `resim_configs`. A gate whose exit
+    # is an argument is not a gate (council Outsider).
+    if band_coverage is None:
+        from band_coverage_gate import coverage_report
+        try:
+            band_coverage = coverage_report(strategy, [str(sweep_artifact)])
+        except SystemExit as exc:
+            # the helper exits hard when a strategy has no Table A spec;
+            # translate it into THIS script's refusal rather than
+            # inheriting a crash that reads like a bug
+            raise SystemExit(
+                f"REFUSED (S6-B2886): {exc}. A holdout read spends a "
+                "one-way door, and a strategy with no band inventory has "
+                "no way to show the door is being spent on the whole "
+                "question. Write the Table A entry first.") from None
+    if not band_coverage.get("evaluable", False):
+        raise SystemExit(
+            "REFUSED (S6-B2886): band coverage is NOT EVALUABLE for "
+            f"{strategy} - {band_coverage.get('reason', 'no reason given')}. "
+            "Fail closed: an unevaluable coverage report is not a clean "
+            "one (L642).")
+    if not band_coverage.get("complete", False):
+        gaps = [(p.get("param"), p.get("untested"))
+                for p in band_coverage.get("params", [])
+                if p.get("untested")]
+        detail = "; ".join(f"{k}={v}" for k, v in gaps[:6])
+        raise SystemExit(
+            f"REFUSED (S6-B2886): {len(gaps)} of "
+            f"{len(band_coverage.get('params', []))} banded parameters "
+            f"carry UNTESTED levels, so this read would spend the "
+            "pre-registration on part of the question: " + detail +
+            ". Each level must be GRADED in the cited Step-1 artifact, "
+            "listed in its `discarded_levels`, or named in its "
+            "`resim_configs` - all three are fields, not prose. B2859 "
+            "spent a 130-trial read on 1 of 5 axes and the owner "
+            "overruled relying on it; that is the outcome this refuses.")
 
     m, ev = ols.load(strategy, axes)
     if ev["coverage"] < coverage_min:

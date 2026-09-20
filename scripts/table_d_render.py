@@ -30,7 +30,41 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
-from producer_variant_table import SPECS_PHASE0  # noqa: E402
+from producer_variant_table import (  # noqa: E402
+    SPECS, SPECS_PHASE0)
+
+
+def _spec(strategy: str) -> dict:
+    """S6-B2874 (scoped): resolve from EITHER registry.
+
+    This module read SPECS_PHASE0[strategy] as a bare subscript. MEASURED
+    at B2874: that raises KeyError for 6 of 8 registered families -
+    including the most-run family in the repo and the candle pair
+    registered this session - because a promoted entry MOVES from
+    SPECS_PHASE0 into SPECS and nothing here followed it.
+
+    The council cut the full registry MERGE from this fix: reconciling
+    three precedence orders across four consumers is a refactor no
+    measured caller demands, and every order flattened is an undocumented
+    behavioural decision. The crash is the bug; the merge stays ticketed.
+
+    PHASE0 FIRST, DELIBERATELY - this PRESERVES existing behaviour rather
+    than improving it. MEASURED: flipping to SPECS-first changed what the 2
+    both-registry names render (smc_liquidity_sweep_reversal lost its
+    confirmation_arm column) and test_b2699 caught it. Every precedence
+    order flattened here would be an undocumented behavioural decision, so
+    this fix adds a FALLBACK and changes no existing resolution: names that
+    resolved before resolve identically, and the 6 that CRASHED now work.
+    Reconciling the orders across all four consumers is the merge, and the
+    merge stays ticketed (S6-B2874).
+    """
+    spec = SPECS_PHASE0.get(strategy) or SPECS.get(strategy)
+    if spec is None:
+        raise SystemExit(
+            f"no Table A spec for {strategy!r} in EITHER registry - "
+            f"SPECS has {len(SPECS)} entries, SPECS_PHASE0 has "
+            f"{len(SPECS_PHASE0)} (S6-B2874)")
+    return spec
 
 
 def load(paths: list) -> tuple[list, list, list]:
@@ -71,7 +105,7 @@ def _row_cells(r: dict, params: list) -> dict:
 
 def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
     arts, rows, skips = load(artifact_paths)
-    params = SPECS_PHASE0[strategy]["params"]
+    params = _spec(strategy)["params"]
     # B2708: Table D renders the LIVE Table A inventory - artifact rows for
     # axes an owner ruling has since pruned from the band drop out of the
     # view (their tested history stays in the committed artifacts).
@@ -92,7 +126,12 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
 
     inv = []
     for p in params:
-        if p["free_band"]:
+        # S6-B2874: `.get`, not a subscript. MEASURED at B2874: 29 of 70
+        # params across both registries carry NO free_band, and this line
+        # only ever met the 41 that do because the resolver above it
+        # KeyErrored before reaching them. Fixing the first crash unmasked
+        # the second - the defect was hiding behind the defect (L814).
+        if p.get("free_band"):
             levs = tested_levels.get(p["param"])
             shown = (", ".join(str(x) for x in sorted(levs, key=str)) if levs
                      else ", ".join(str(x) for x in p["free_band"]))

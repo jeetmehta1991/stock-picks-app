@@ -40195,3 +40195,135 @@ def test_b2909_claim_gates_judge_the_current_close_evidence_accumulates():
     assert "_start = last_user" not in src, (
         "an inline copy of the claim window has returned - that is how this "
         "class survived in four siblings (S6-B2909)")
+
+
+def test_b2886_holdout_read_refuses_an_uncovered_band():
+    """S6-B2886: a holdout read spends a ONE-WAY DOOR, so the question must be
+    whole before it opens.
+
+    MEASURED at B2859: a 130-trial pre-registered read was taken covering ONE
+    axis of five, and the owner later overruled relying on it. No R1 gate
+    would have touched it - the inventory was clean and the read WAS
+    pre-registered. The refusals already in that script all ask whether the
+    DATA is sound; this asks whether the QUESTION is whole.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import offline_holdout_read as ohr
+
+    art = root / "output_audit" / "b2638_pead_step1_is_surface.json"
+    if not art.exists():                     # artifact-dependent arm
+        import pytest
+        pytest.skip("b2638 step-1 artifact absent")
+
+    # must-FIRE on the REAL artifact: 5 of 7 params carry untested levels
+    try:
+        ohr.read_step2(art, 0.99, 0.99, 10)
+        raise AssertionError("an uncovered band must refuse the holdout read")
+    except SystemExit as exc:
+        msg = str(exc)
+        assert "S6-B2886" in msg, msg
+        assert "UNTESTED" in msg, msg
+        # the message names the gaps AND the three machine-checkable ways to
+        # close them - a refusal whose remedy is unexecutable is L820
+        assert "discarded_levels" in msg and "resim_configs" in msg, msg
+
+    # must-QUIET: complete coverage passes THIS gate. It may hit a later,
+    # pre-existing refusal - that still proves it got past B2886, which is
+    # the property under test (a gate that refuses everything is useless).
+    try:
+        ohr.read_step2(art, 0.99, 0.99, 10,
+                       band_coverage={"evaluable": True, "complete": True,
+                                      "params": []})
+    except SystemExit as exc:
+        assert "S6-B2886" not in str(exc), (
+            "complete coverage must pass the band gate", str(exc)[:200])
+
+    # must-FIRE: NOT EVALUABLE fails CLOSED - the absent case is the case the
+    # guard exists for, never the safe one (L642)
+    try:
+        ohr.read_step2(art, 0.99, 0.99, 10,
+                       band_coverage={"evaluable": False, "reason": "no spec"})
+        raise AssertionError("an unevaluable coverage report must refuse")
+    except SystemExit as exc:
+        assert "NOT EVALUABLE" in str(exc), str(exc)
+
+    # the gate is ASKABLE (#241) - a seamless gate cannot be proven at all
+    import inspect
+    assert "band_coverage" in inspect.signature(ohr.read_step2).parameters
+
+
+def test_b2874_table_d_resolves_from_either_registry():
+    """S6-B2874 (scoped): the bare subscript that KeyErrored on 6 of 8 families.
+
+    A promoted entry MOVES from SPECS_PHASE0 into SPECS; this module followed
+    it nowhere, so it raised KeyError for every real family. The council cut
+    the full registry MERGE from the fix - reconciling three precedence orders
+    across four consumers is a refactor no measured caller demands - so this
+    pins the RESOLVER, and the merge stays ticketed.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import table_d_render as tdr
+
+    names = sorted(set(pvt.SPECS) | set(pvt.SPECS_PHASE0))
+    assert len(names) >= 8, names
+    # EVERY entry in EITHER registry resolves - this is the assertion that
+    # fails the moment someone reinstates a single-registry subscript
+    for n in names:
+        spec = tdr._spec(n)
+        assert "params" in spec, n
+        # B2874: an EMPTY inventory is legitimate ONLY when the entry says
+        # so. MEASURED: 1 of 18 entries is empty
+        # (institutional_breakout_confirmation_long) and it declares
+        # `no_gate_knob` - there is nothing to sweep. Asserting mere
+        # non-emptiness would have banned that; asserting nothing would let
+        # an ACCIDENTALLY empty inventory pass as covered.
+        if not spec["params"]:
+            assert spec.get("no_gate_knob") is not None, (
+                n, "an empty band inventory must DECLARE why it is empty")
+
+    # PHASE0 wins where a name is in BOTH - deliberately, because this fix
+    # adds a FALLBACK and changes no existing resolution. MEASURED: flipping
+    # to SPECS-first dropped confirmation_arm from Table D for
+    # smc_liquidity_sweep_reversal, which test_b2699 caught. A crash fix must
+    # not smuggle in a precedence decision (S6-B2874 keeps the merge).
+    both = sorted(set(pvt.SPECS) & set(pvt.SPECS_PHASE0))
+    assert both, "fixture stale: no name is in both registries"
+    for n in both:
+        assert tdr._spec(n) is pvt.SPECS_PHASE0[n], n
+
+    # a genuinely absent strategy REFUSES with a reason, rather than raising
+    # a bare KeyError that reads like a crash
+    try:
+        tdr._spec("no_such_strategy_anywhere")
+        raise AssertionError("an absent strategy must refuse")
+    except SystemExit as exc:
+        assert "EITHER registry" in str(exc), str(exc)
+
+    # the defect must not return
+    src = (root / "scripts" / "table_d_render.py").read_text(
+        encoding="utf-8", errors="replace")
+    # B2874/L748: anchor on EXECUTABLE lines. The first version of this
+    # assertion matched _spec's own docstring, which names the defect it
+    # fixed - a source-text grep cannot tell prose from code, and the better
+    # the comment the more reliably it poisons the match.
+    code_lines = [ln for ln in src.splitlines()
+                  if not ln.lstrip().startswith("#")
+                  and "SPECS_PHASE0[strategy]" in ln
+                  and "=" in ln.split("SPECS_PHASE0[strategy]")[0]]
+    assert code_lines == [], (
+        "a bare single-registry subscript is back in EXECUTABLE code - it "
+        "KeyErrored for 6 of 8 registered families (S6-B2874): " +
+        str(code_lines))
+    # and prove the anchor can FAIL: the defective line must be detected
+    _probe = '    params = SPECS_PHASE0[strategy]["params"]'
+    assert "SPECS_PHASE0[strategy]" in _probe and "=" in _probe.split(
+        "SPECS_PHASE0[strategy]")[0], "the detector cannot see the defect"
