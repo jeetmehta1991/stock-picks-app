@@ -21391,3 +21391,44 @@ LEARNINGS is read when someone goes looking and the tripwire table is read
 every turn.
 
 **Anchored (B2879):** CHECKLIST instance L814-addendum-3, citing existing item #262 rather than a new item - #262 already carries the REMEDY (carry the rule to the trunk), and what this adds is the DIAGNOSTIC. Durability pinned by the test_b2123 fragment; detection stays JUDGMENT-ONLY, since no scan reads whether a persisting symptom was diagnosed as a second consumer or as a bad patch.
+
+### L815 - A REMEDIATION SPLIT ACROSS COMMITS MAKES ITS OWN GATES ALTERNATE, AND THE RULE AGAINST IT HAS BEEN PROSE (B2881, gate-caught 2026-09-19)
+
+MEASURED with git log --name-only over the last 12 commits, counting those
+touching LEARNINGS.md, CHECKLIST.md or the execution-discipline SKILL.md: 9 of
+12 carry at least one Phase-5 member, 2 of 9 carry ALL THREE, and 7 of 9 are
+PARTIAL - four of those seven predating this turn. So this is the repository's
+standing pattern, not one turn's lapse.
+
+The cost is not untidiness, it is a LOOP. Each Phase-5 member is proved by
+_artifact_touched, which reads one commit deep, so a correctly-written entry
+goes invisible the moment any later commit lands. Five consecutive closes this
+turn were blocked, each on a DIFFERENT member, each satisfying the one the
+previous close had missed: LEARNINGS without SKILL, then SKILL without
+CHECKLIST, then CHECKLIST without a mechanism, then a queue-only commit
+without LEARNINGS. **The gates were correct every time.** Nothing was wrong
+with the content; the ORDER of the commits was the whole defect.
+
+L628 already states the remedy - land every member in ONE commit - and it was
+in context, auto-injected, for all five closes. **That is the finding.** The
+rule being known is not the bottleneck, so writing it again would be theatre
+(item 136); what is missing is a mechanism, and this entry exists to record
+the compliance RATE that proves the prose is not working. The rule stays where
+it is and this measurement stays here, per the split the skill itself
+prescribes: the RULE belongs in the file read every turn, the MEASUREMENT in
+the incident record, because a tripwire row carrying a count is a row that
+decays.
+
+The general shape, worth carrying beyond Phase 5: **when a check proves its
+members by inspecting recent history rather than the working tree, the ORDER
+of your commits becomes part of the thing being checked.** Any such gate turns
+a multi-commit arc into a sequence of partial states, each of which it will
+correctly refuse. Ask, before splitting any remediation: does anything verify
+these pieces TOGETHER, and how far back can it see?
+
+Compliance failure against item 231 - the rule was recorded and never given a
+mechanism - and against item 628's own instruction, which I had read. The
+preventive gate is designed and filed PROPOSED-NOT-BUILT at S6-B2880: keyed on
+file-touch it would refuse legitimate commits editing LEARNINGS for unrelated
+reasons, so it needs a narrower trigger such as an L-number being added, and
+that design is the work rather than a line of code.
