@@ -160,6 +160,31 @@ def _b1070_starmap_wrapper(args):
     return _pool_cube_replay_worker(*args)
 
 
+def _skip_strategy_names(cand, blocking=None) -> str:
+    """B2905 (S6-B2871): the REAL strategy names on a skipped-trade row.
+
+    MEASURED on output_r5_merged_1_7: 391,782 of 444,226 skip rows - 88.2
+    pct - carried the literal "(same-strategy)", and occupancy blocks
+    outnumber landed trades 2.07x (391,782 vs 189,471). The literal
+    destroys the only thing the row exists to record, and it is exactly
+    the number an offline free-level re-score needs: a TIGHTER level frees
+    occupancy and admits trades present in NO cube (L812), so the
+    correction term is per-strategy or it is nothing.
+
+    `blocking` is the already-computed intersection at the occupancy
+    sites; elsewhere the candidate's own declared strategies are used.
+    Returns "(unknown)" rather than guessing when the candidate carries
+    no names - an honest gap, not a silent default.
+    """
+    if blocking:
+        names = sorted({str(s) for s in blocking if s})
+    else:
+        names = sorted({str(s.get("strategy"))
+                        for s in (cand.get("strategies") or [])
+                        if s.get("strategy")})
+    return ",".join(names) if names else "(unknown)"
+
+
 class BacktestEngine:
 
     def __init__(
@@ -2490,7 +2515,7 @@ class BacktestEngine:
                 if _open_dirs & _cand_dirs:
                     self.skipped_trades.append({
                         "ticker": ticker, "date": as_of,
-                        "strategy": "(any-same-direction)",
+                        "strategy": _skip_strategy_names(cand),
                         "reason": "ticker_already_open_same_direction_bug61_mode_b",
                     })
                     continue
@@ -2506,7 +2531,8 @@ class BacktestEngine:
                 if _open_strats & _cand_strats:
                     self.skipped_trades.append({
                         "ticker": ticker, "date": as_of,
-                        "strategy": "(same-strategy)",
+                        "strategy": _skip_strategy_names(
+                            cand, _open_strats & _cand_strats),
                         "reason": "ticker_already_open_same_strategy_bug61_mode_c",
                     })
                     continue
@@ -2514,7 +2540,7 @@ class BacktestEngine:
                 if ticker in open_tickers:
                     self.skipped_trades.append({
                         "ticker": ticker, "date": as_of,
-                        "strategy": "(any)",
+                        "strategy": _skip_strategy_names(cand),
                         "reason": "ticker_already_open_concurrent_block_bug61",
                     })
                     continue
@@ -2548,7 +2574,7 @@ class BacktestEngine:
             if cooldown_breach and not self.cube_isolation:
                 self.skipped_trades.append({
                     "ticker": ticker, "date": as_of,
-                    "strategy": "(any)",
+                    "strategy": _skip_strategy_names(cand),
                     "reason": (
                         f"stopout_cooldown_active_{TICKER_STOPOUT_COOLDOWN_DAYS}d_dec018"
                     ),
@@ -2576,7 +2602,7 @@ class BacktestEngine:
             if _cum_pnl <= _cap_pct and not self.cube_isolation:
                 self.skipped_trades.append({
                     "ticker": ticker, "date": as_of,
-                    "strategy": "(any)",
+                    "strategy": _skip_strategy_names(cand),
                     "reason": (
                         f"max_loss_cap_breach_dec135_{round(_cum_pnl, 2)}pct"
                     ),
@@ -2606,7 +2632,7 @@ class BacktestEngine:
                     if cand_sector in _conc.get("sector_breaches", []):
                         self.skipped_trades.append({
                             "ticker": ticker, "date": as_of,
-                            "strategy": "(any)",
+                            "strategy": _skip_strategy_names(cand),
                             "reason": (
                                 f"factor_concentration_breach_dec076_"
                                 f"{cand_sector}_{_conc['max_sector'][1]:.0f}pct"
@@ -2638,7 +2664,7 @@ class BacktestEngine:
                     if _corr_mult == 0.0:
                         self.skipped_trades.append({
                             "ticker": ticker, "date": as_of,
-                            "strategy": "(any)",
+                            "strategy": _skip_strategy_names(cand),
                             "reason": (
                                 f"correlation_cap_batch223_"
                                 f"corr_{_corr_max:.2f}_with_"

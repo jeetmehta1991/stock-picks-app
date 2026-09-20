@@ -39830,3 +39830,65 @@ def test_b2900_candle_grade_leg_is_wired_and_its_refusals_bite():
     assert ok, "a step2 block carrying a gates dict must satisfy the battery"
     ok, _why = rp.grid_step2_graded({"step2": {"verdict": "NOT_GRADED"}})
     assert not ok, "a step2 block with NO gates dict must fail closed (L642)"
+
+
+def test_b2905_skip_rows_name_the_strategy_they_blocked():
+    """S6-B2871/B2905: a skipped-trade row attributes itself.
+
+    MEASURED on output_r5_merged_1_7: 391,782 of 444,226 skip rows (88.2 pct)
+    carried the literal "(same-strategy)", and occupancy blocks outnumber
+    landed trades 2.07x. The literal destroyed the only thing the row records,
+    and it is precisely the number an offline free-level re-score needs: a
+    TIGHTER level frees occupancy and admits trades present in NO cube (L812),
+    so the correction term is per-strategy or it does not exist.
+
+    This pin holds the ATTRIBUTION, and separately holds that no literal stamp
+    creeps back - a ratchet at zero, because the defect returns one copied
+    block at a time (L613/L799).
+    """
+    import re
+    from pathlib import Path as _P
+    from backtest.engine.backtest import _skip_strategy_names
+
+    # must-FIRE: the candidate's own declared strategies
+    cand = {"strategies": [{"strategy": "three_white_soldiers"},
+                           {"strategy": "smc_breaker_block_long"}]}
+    got = _skip_strategy_names(cand)
+    assert got == "smc_breaker_block_long,three_white_soldiers", got
+
+    # the occupancy site passes the INTERSECTION - only the blocking name
+    got = _skip_strategy_names(cand, {"three_white_soldiers"})
+    assert got == "three_white_soldiers", got
+
+    # de-duplicated and ordered, so the field is groupable
+    dup = {"strategies": [{"strategy": "b"}, {"strategy": "a"},
+                          {"strategy": "b"}]}
+    assert _skip_strategy_names(dup) == "a,b", _skip_strategy_names(dup)
+
+    # must-QUIET on guessing: an empty candidate is an HONEST gap, never a
+    # silent default to some plausible name
+    assert _skip_strategy_names({}) == "(unknown)"
+    assert _skip_strategy_names({"strategies": []}) == "(unknown)"
+    assert _skip_strategy_names({"strategies": [{}]}) == "(unknown)"
+
+    # ---- the ratchet: zero literal strategy stamps on skip rows ----------
+    src = (_P(__file__).resolve().parents[2]
+           / "backtest" / "engine" / "backtest.py").read_text(
+        encoding="utf-8", errors="replace")
+    literals = re.findall(r'"strategy":\s*"\([a-z-]+\)"', src)
+    assert literals == [], (
+        "a skip row is stamping a literal instead of naming the strategy it "
+        "blocked - the B2905 class, which cost 391,782 unattributable rows: "
+        + str(literals))
+
+    # and the helper is actually REACHED from the skip paths (a pin on the
+    # callee is not a pin on the wiring, L654)
+    assert src.count("_skip_strategy_names(") >= 8, (
+        "expected the helper's definition plus 7 call sites, found "
+        + str(src.count("_skip_strategy_names(")))
+
+    # the control flow is NOT this change's business: every occupancy branch
+    # still ends in `continue`, so the trade set is unchanged
+    occ = src[src.index("_bug61_mode == \"ticker_strategy\""):]
+    occ = occ[:occ.index("else:  # default")]
+    assert "continue" in occ, "the occupancy branch must still skip the trade"
