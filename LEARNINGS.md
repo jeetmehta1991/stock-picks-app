@@ -21287,3 +21287,56 @@ is JUDGMENT-ONLY: no scan can tell that two floats named alike denote
 different quantities, so the durable half is this entry plus the corrected
 S6-B2868 row, and the enforcement that does exist is the habit of citing the
 threshold by its expression rather than by its noun.
+
+### L814 - FIXING A MEASUREMENT BREAKS EVERY INFERENCE THAT WAS KEYED ON THE DEFECT'S ARTIFACT (B2875, self-caught 2026-09-19)
+
+S6-B2862 corrected a band counter that scored any non-list band as one level.
+The correction was right, and it immediately made a SECOND number wrong. The
+factorial footer decided whether an axis needed an engine run by reading
+`n == 1` as "this axis has no env actuator" - and that proxy held ONLY because
+prose bands silently scored 1. With bands counted properly the proxy broke in
+the expensive direction: unactuated axes began counting toward ENGINE RUNS, and
+one file rendered FULL FACTORIAL 382,637,520. The defect and the inference had
+been consistent with each other for as long as both existed, which is why
+nothing anywhere failed.
+
+POST-FIX RE-CHECK (L462, item 196) already says a fix can invalidate a
+conclusion the defect left intact - but its subject is SHIPPED CONCLUSIONS,
+things already reported, found by grepping for them. This is nearer and
+cheaper to miss: the invalidated inference was SEVEN LINES BELOW THE LINE I
+CHANGED, in the same function, and it was not a conclusion anybody had
+published - it was a live branch deciding what to print. A grep for shipped
+claims would not have looked there.
+
+The general shape: a defect produces a CHARACTERISTIC ARTIFACT (here, the
+value 1), and nearby code comes to depend on that artifact as a signal. The
+dependency is invisible because it is correct in the defective world. So after
+correcting any measurement, READ THE CODE THAT CONSUMES IT and ask of each
+consumer: was this reading a real property, or was it reading a side-effect of
+the bug? The tell is a consumer that tests the measurement for a SPECIFIC
+VALUE rather than using it as a magnitude - `n == 1`, `== 0`, `is None`,
+`== ""` - because a sentinel comparison is where a proxy hides.
+
+And the remedy is to DELETE THE DEGREE OF FREEDOM, not to document the proxy
+(item 788): the fix carries an explicit actuator flag on every axis, so the
+footer can no longer infer actuation from a count at all. The three buckets it
+now prints - subset-safe, actuated fire-adding, unactuated fire-adding - are
+selected by three different predicates and must multiply to the factorial,
+which is a check that CAN fail; the line it replaced, labelled "check", could
+not, because two complementary buckets multiply to the whole by construction
+on 40 of 40 files.
+
+Compliance failure against item 196, whose class this is and whose scope did
+not reach a consumer inside the edited function. Detection is JUDGMENT-ONLY -
+no scan knows which nearby comparison encodes a proxy for a value the fix
+changed - but the durable half is mechanical: test_b2862 asserts the three
+rendered buckets tile FULL FACTORIAL, so an axis silently changing bucket
+fails the pyramid instead of waiting for a reader.
+
+SECOND MISS, SAME TURN, DIFFERENT CLASS: I ran the Table A generator for its
+BOTH lane without reading its own help text, which records that the lane's
+owner-directed output subdir is tighten/both. The default writes to a subdir
+named for the lane, so 29 freshly-corrected files landed in a NEW untracked
+directory while the 29 COMMITTED ones stayed stale - and the regeneration
+reported success. Compliance failure against item 222: checking what a flag
+does is reading the code, and a one-line help string was the whole cost.

@@ -25052,6 +25052,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2875: the L814 tripwire row - a fix invalidates inferences
+        # keyed on the defect's artifact. Pins the DISCRIMINATOR (real
+        # property vs side-effect), not the heading (L548).
+        ("READING A REAL PROPERTY, OR A SIDE-EFFECT OF THE BUG",
+         "B2875/L814: a consumer testing for a specific value hides a proxy"),
         ("READ THE ENTRY PATH FOR POSITION-DEPENDENT SUPPRESSION BEFORE CALLING ANY AXIS OFFLINE-GRADABLE",
          "B2871/L812: signal-subset is not trade-subset - read the entry path"),
         # B2580: the L755 tripwire row - a pyramid measures ONE tree. Pins
@@ -25739,7 +25744,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 265 -> 266 at B2871 (the L812 entry-path fragment; same-call with
     # its tripwire row per B2130).
-    assert len(gutted) == 266, gutted
+    # 266 -> 267 at B2875 (the L814 proxy-keyed-on-the-defect fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 267, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -39069,3 +39076,46 @@ def test_b2862_table_a_factorial_counts_every_band_axis():
             if "DEFINED-NO-ACTUATOR" in _row:
                 assert "**YES**" not in _row, (f.name, _row[:120])
     assert checked >= 30, checked
+
+
+
+def test_b2875_a_multiline_quoted_message_is_not_a_launch():
+    """B2875: _segment_is_launch blanks quoted spans so a commit message
+    NAMING a runner is not judged a launch (B2028b). That fix excluded the
+    newline from both character classes, so a MULTI-LINE `git commit -m` body
+    was never blanked and every runner name inside it tokenized as a launch -
+    MEASURED, a message quoting run_phase1a.py:648 was reported as a launch
+    missing --screen-pool-workers. B2028b's own incident was single-line and
+    the fix inherited that shape (the L536 class).
+
+    Both directions per #226: the quiet arm must stay quiet, and a REAL launch
+    sharing the command with a multi-line message must still fire - otherwise
+    the widened blanker would be a silent exemption (L528)."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    from verify_turn_compliance import _segment_is_launch as seg
+
+    nl = chr(10)
+    multi = 'git commit -m "first line' + nl + nl + 'run_phase1a.py:648 here"'
+    # must-QUIET: the message is DATA the command carries, not a token it runs
+    assert not seg(multi), "a multi-line commit message is not a launch"
+    assert not seg('git commit -m "a note about run_phase1a.py"'), "single-line"
+
+    # must-FIRE: a real launch, alone and after a multi-line message
+    assert seg("python backtest/run_phase1a.py --phase 4")
+    assert seg('git commit -m "a' + nl + 'b" && '
+               "python backtest/run_phase1a.py --phase 4"), (
+        "a real launch after a multi-line message must still fire - a blanker "
+        "that swallows the rest of the blob would exempt it silently")
+
+    # the single-quoted arm stays LINE-scoped on purpose: prose apostrophes
+    # would otherwise open a span that eats the remainder of a multi-line blob
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert chr(92) + "n]*" in src, (
+        "the single-quoted arm must remain newline-scoped - only that "
+        "arm still excludes the newline, so this backslash-n is its "
+        "fingerprint once the double-quoted arm stopped excluding it")

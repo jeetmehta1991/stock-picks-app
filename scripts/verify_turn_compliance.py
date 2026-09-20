@@ -4157,7 +4157,16 @@ def _segment_is_launch(cmd: str) -> bool:
     # place (B1906: never rebuild a haystack) before tokenizing. Residual
     # accepted: a runner invoked THROUGH a quoted path would be missed here;
     # no launch in this repo's history is written that way.
-    cmd = _re3.sub(r'"[^"\n]*"|\'[^\'\n]*\'', " ", cmd)
+    # B2875: the double-quoted span may SPAN NEWLINES. B2028b excluded \n from
+    # both character classes, so a MULTI-LINE `git commit -m "..."` message was
+    # never blanked and every runner name inside it tokenized as a launch -
+    # MEASURED, a commit message quoting run_phase1a.py:648 was reported as a
+    # launch missing --screen-pool-workers. B2028b's own incident was a
+    # single-line message, and the fix inherited that shape (the L536 class: a
+    # rule learned on one form does not reach the other). The single-quoted arm
+    # stays line-scoped on purpose - prose apostrophes ("the gate's") would open
+    # a span that swallows the rest of a multi-line blob.
+    cmd = _re3.sub(r'"[^"]*"|\'[^\'\n]*\'', " ", cmd)
     for seg in _re3.split(r"&&|\|\||[;|\n]", cmd):
         toks = seg.split()
         if not toks:
