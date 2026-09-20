@@ -39466,3 +39466,54 @@ def test_b2889_a_claim_gate_judges_the_current_close_not_a_superseded_one():
         encoding="utf-8", errors="replace")
     assert "_last_instruction_index(entries)" in src, (
         "evidence-reading gates must still span the whole turn (B2555)")
+
+
+def test_b2891_closure_claim_auditor_is_a_real_instrument():
+    """S6-B2891 / L819: the closure-claim sweep must be a NAMED, committed,
+    re-runnable instrument - B2854's rule that a population nobody can
+    re-derive is a count, not a sweep.
+
+    Both directions per #226: it must FIND a row asserting closure and stay
+    QUIET on one that does not, and it must flag the absence of a denominator
+    rather than pretending to judge whether the figure is true (L819's own
+    limit: a measured closure figure and an assumed one are both integers)."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import audit_closure_claims as acc
+
+    # must-FIRE: a closure phrase with NO denominator is flagged as no-scope
+    bad = "| **S6-B9001** | **EXECUTED** | P1 | **this closes the class.** |"
+    hits = acc.closure_claims(bad)
+    assert len(hits) == 1, hits
+    assert hits[0]["ticket"] == "S6-B9001"
+    assert hits[0]["has_denominator"] is False
+
+    # must-FIRE: the same claim WITH a scope is still found, but not no-scope
+    good = ("| **S6-B9002** | **EXECUTED** | P1 | **this closes the class: "
+            "2 of 18 entries refused.** |")
+    hits = acc.closure_claims(good)
+    assert len(hits) == 1 and hits[0]["has_denominator"] is True, hits
+
+    # must-QUIET: an ordinary row asserting no closure
+    plain = "| **S6-B9003** | **OPEN** | P2 | **measure the thing.** |"
+    assert acc.closure_claims(plain) == []
+
+    # bold-independent row id (L603/B1969: requiring bold drops 48 real rows)
+    unbold = "| S6-B9004 | EXECUTED | P1 | this closes the class. |"
+    assert [h["ticket"] for h in acc.closure_claims(unbold)] == ["S6-B9004"]
+
+    # the live ledger: every closure claim in it must name a scope. This is
+    # the assertion that bites going forward - a new unscoped closure row
+    # fails the pyramid instead of being found by the next owner question.
+    text = (root / "EXECUTION_QUEUE.md").read_text(
+        encoding="utf-8", errors="replace")
+    live = acc.closure_claims(text, since="S6-B2850")
+    unscoped = [h["ticket"] for h in live if not h["has_denominator"]]
+    assert not unscoped, (
+        f"{unscoped} assert a class is closed and name no N of M. A closure "
+        "figure is the least-verified number there is (L819) - give it its "
+        "denominator or drop the claim")
+    assert live, "no closure claims found - the pin would assert nothing"
