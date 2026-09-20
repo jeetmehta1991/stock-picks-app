@@ -33091,7 +33091,12 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
             == {"three_white_soldiers", "three_black_crows_short"}), (
         rp.FAMILY_REFUSALS)
     for _k, _why in rp.FAMILY_REFUSALS.items():
-        assert "spot_check" in _why, (_k, _why)
+        # B2899: do NOT pin the specific missing key. The refusal
+        # ADVANCES as each gap closes - it read spot_check, then
+        # grade.cube - so naming one key makes this pin fail on
+        # progress. What must hold is that the entry is refused and
+        # says which part of `tools` is short.
+        assert "tools" in _why and "lacks" in _why, (_k, _why)
     for name, fam in rp.FAMILIES.items():
         assert callable(fam["params"]) and callable(fam["run"]), name
         assert isinstance(fam["single_combination"], bool), name
@@ -39579,3 +39584,70 @@ def test_b2891_closure_claim_auditor_is_a_real_instrument():
         "figure is the least-verified number there is (L819) - give it its "
         "denominator or drop the claim")
     assert live, "no closure claims found - the pin would assert nothing"
+
+
+def test_b2899_candle_spot_check_is_independent_and_keyed_correctly():
+    """S6-B2899: the spot_check leg that completes the candle adapter.
+
+    Its first live run found a bug in ITSELF: leg B asked compute_candles for
+    the STRATEGY name three_black_crows_short, but the producer emits the
+    SIGNAL key three_black_crows - so it returned False for 40 of 40 rows
+    while leg A returned True. Soldiers agreed only because its two names
+    coincide, which is the L699 near-identical-name trap.
+
+    Both directions per #226, and the sensitivity arm is what stops leg A
+    being a constant that agrees with everything (L684)."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import pandas as _pd
+    import spot_check_candle as scc
+
+    # the mapping the first run got wrong
+    assert scc.SIGNAL_KEY["three_black_crows_short"] == "three_black_crows"
+    assert scc.SIGNAL_KEY["three_white_soldiers"] == "three_white_soldiers"
+    from backtest.signals.technical import compute_candles as _cc
+    import inspect as _i
+    _src = _i.getsource(_cc)
+    for _k in set(scc.SIGNAL_KEY.values()):
+        assert f'"{_k}"' in _src, (
+            f"{_k} is not a key compute_candles emits - the mapping has "
+            "drifted from the producer (S6-B2899)")
+
+    # a clean three-bar bullish staircase: rising closes, rising opens, each
+    # bar a solid green body
+    df = _pd.DataFrame({
+        "open":  [10.0, 10.0, 11.0, 12.0, 13.0, 14.0],
+        "high":  [10.5, 11.2, 12.2, 13.2, 14.2, 15.2],
+        "low":   [ 9.5,  9.9, 10.9, 11.9, 12.9, 13.9],
+        "close": [10.2, 11.0, 12.0, 13.0, 14.0, 15.0],
+    })
+    i = len(df) - 1
+
+    # must-FIRE: the pattern is present at loose settings
+    assert scc._leg_a(df, i, True, 3, 0.0, 0.0, None) is True
+
+    # SENSITIVITY: leg A must respond to each knob, or it is a constant
+    assert scc._leg_a(df, i, True, 3, 0.95, 0.0, None) is False, (
+        "an impossible body floor must refuse - leg A ignores min_body")
+    assert scc._leg_a(df, i, True, 3, 0.0, 5.0, None) is False, (
+        "an impossible step floor must refuse - leg A ignores min_step")
+    assert scc._leg_a(df, i, True, 3, 0.0, 0.0, 0.0) is False, (
+        "a zero wick bound must refuse - leg A ignores max_wick")
+
+    # direction: the same bullish staircase is NOT three black crows
+    assert scc._leg_a(df, i, False, 3, 0.0, 0.0, None) is False
+
+    # too short to decide is SKIPPED, never guessed
+    assert scc._leg_a(df, 1, True, 3, 0.0, 0.0, None) is None
+
+    # the adapter names it, and the script exists where the adapter says
+    import producer_variant_table as pvt
+    for k in ("three_white_soldiers", "three_black_crows_short"):
+        sc = pvt.SPECS[k]["tools"]["spot_check"]
+        assert sc["script"] == "spot_check_candle.py", sc
+        assert (root / "scripts" / sc["script"]).exists(), sc["script"]
+        # the flags must name the ENGINE axes, not the offline one
+        assert set(sc["flags"]) == {"P2", "P3", "P4", "P5"}, sc["flags"]
