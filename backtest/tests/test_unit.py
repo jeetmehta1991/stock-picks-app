@@ -25071,6 +25071,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2911: the L824 tripwire row - a probe reporting absence must
+        # prove it can see presence.
+        ("A PROBE THAT REPORTS ABSENCE MUST PROVE IT CAN SEE PRESENCE - RUN IT AGAINST A KNOWN-PRESENT CASE BEFORE BELIEVING THE ZERO",
+         "B2911/L824: a zero from a parser that cannot read the format looks exactly like absence"),
         # B2908: the L823 tripwire row - a detector tests the property
         # you encoded, not the one the rule requires.
         ("A DETECTOR TESTS THE PROPERTY YOU ENCODED, NOT THE ONE THE RULE REQUIRES - READ THE RULE'S OWN COMPLIANT FORM BEFORE SIZING A BACKLOG",
@@ -25829,7 +25833,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 276 -> 277 at B2908 (the L823 detector-property fragment; same-call
     # with its tripwire row per B2130).
-    assert len(gutted) == 277, gutted
+    # 277 -> 278 at B2911 (the L824 absence-probe fragment; same-call
+    # with its tripwire row per B2130).
+    assert len(gutted) == 278, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

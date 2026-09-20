@@ -21766,3 +21766,37 @@ L701 says sample the MISSES; this says construct the PASS.
 The figure is RETIRED, not re-measured. On this sample the true backlog is
 plausibly near zero, and re-running a differently-wrong regex would only
 produce a differently-wrong number.
+
+### L824 - A PROBE THAT REPORTS ABSENCE MUST PROVE IT CAN SEE PRESENCE (B2911, 2026-09-20)
+
+Migrating the legacy smc band inventory turns on one question: can a knob's
+levels be graded OFFLINE from the landed cube, or does each need an engine run?
+That is decided by what the cube PERSISTS.
+
+So I probed it, and the probe said: **`persisted keys resembling the knobs:
+NONE`, `total persisted signal keys: 0`.** Which would mean nothing about that
+family is reconstructible offline, and every level of every knob is
+engine-only. I was one sentence from writing that into a band inventory that
+governs engine spend for the most-run family in the repo.
+
+Re-measured across ALL rows instead of a 200-row slice, with a json fallback
+beside `ast.literal_eval`: **948 of 948 rows carry a non-empty signal dict, and
+833 distinct keys.** The column holds JSON-style values - `true`, `false`,
+`null` - which `ast.literal_eval` refuses. **The first probe failed on every
+single row and reported that as absence.**
+
+**A zero from a parser that cannot read the format is byte-identical to a zero
+that means the data is not there.** Both print `0`. Both look like a finding.
+And the absence reading is the dangerous one, because absence ENDS an
+investigation while presence continues it - so the broken parser's answer is
+the one you act on.
+
+`#166` says prove the PATTERN can match before reporting a zero-hit grep. This
+is its sibling one layer down: **prove the READER can PARSE.** Run the
+extractor against a row you know carries the field, and print that row's value,
+before believing any count of zero.
+
+The tell here was available and I nearly walked past it: a column that exists,
+is populated, and yields NOTHING on every row is not a finding about the data,
+it is a finding about the reader (L724 - a uniform value from a new extractor
+is a parser hypothesis, and this is its loudest case).
