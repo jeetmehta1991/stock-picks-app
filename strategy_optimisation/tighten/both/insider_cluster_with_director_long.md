@@ -1,6 +1,6 @@
 # Table A - insider_cluster_with_director_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit fa06ebf3e at 2026-09-19 13:07:41 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit f55b7c1e7 at 2026-09-19 23:26:39 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** event_driven | **status:** NOT-STARTED | **R5 fires:** 24 | **surviving fires (T1):** 24 (unchanged since R5 - filter is identity)
 
@@ -641,17 +641,20 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 | axis | parameter | n levels | class | own engine run? |
 |---|---|---|---|---|
-| P1.1 | cluster rule (unique buyers >= N in wind | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.1 | count window (days) | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P3.1 | ema span (the 200 in above/below_ema_200 | 3 | **FIRE-ADDING** | **YES** |
+| P1.1.1 | cluster rule (unique buyers >= N in wind | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P1.1.2 | cluster rule (unique buyers >= N in wind | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.1 | count window (days) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P3.1 | ema span (the 200 in above/below_ema_200 | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
 | P4 | insider_director_buyers_30d >= 1 | 2 | subset-safe | no - derives offline |
 | P5 | insider_officer_buyers_30d >= 1 | 2 | subset-safe | no - derives offline |
 
 ```
-FULL FACTORIAL     1 x 1 x 3 x 2 x 2 = 12
+FULL FACTORIAL     3 x 3 x 3 x 3 x 2 x 2 = 324
 offline gradings   4 level-combinations x 24 exits = 96
-ENGINE RUNS        3 (every fire-adding axis sits at production-only until its env actuator exists)
-check              3 x 4 = 12
+ENGINE RUNS        1 (actuated fire-adding axes only)
+PENDING ACTUATION  81 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (plan 11.0b state 1; B2866)
+STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
+                   per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 
 B-row candidates NOT in this factorial: 517 census axes join it only when REGISTERED at the T3 band review.

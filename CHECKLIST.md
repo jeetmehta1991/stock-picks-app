@@ -4191,6 +4191,10 @@ it** - which is why `#237` is a gate now and not a paragraph.
 
 **EXTENSION (B1805 / L552) - ONE INCIDENT PROVES ONE PATH.**
 
+**Instance L813 (B2870): A FLOOR AND A MEASUREMENT MUST MEASURE THE SAME QUANTITY BEFORE THEY CAN BE COMPARED. I reported OHLCV coverage 0.846 as "below the 0.99 coverage floor"; that floor reads the fraction of trade-log rows whose signals_at_entry is non-empty (offline_level_sweep.py:106, enforced at :167), an entirely different quantity. Both numbers were soundly sourced - one EXECUTED, one READ - and the sentence joining them was still false, so the four evidence classes do not catch this. Before comparing any measurement to any threshold, open the code that enforces the threshold and read the EXPRESSION it compares, then cite the threshold by that expression rather than by its noun.**
+
+**Instance L812 (B2871): SIGNAL-SUBSET IS NOT TRADE-SUBSET. A recomputable magnitude proves a CONDITION can be evaluated offline; it says nothing about whether the TRADE SET is derivable. Read the ENTRY PATH for position-dependent suppression - concurrency blocks, cooldowns, candidate caps - before calling any axis offline-gradable. MEASURED: backtest.py:2474-2511 blocks a fire while the same strategy holds the ticker, so a TIGHTER config unblocks later fires and creates trades no cube contains.**
+
 **Instance L811 (B2867): a CONVERSION FACTOR is a projection, so the two-concordant-points rule binds it. I derived a signal-bar-to-trade ratio from the PRODUCTION cell alone and applied it to all 54 grid cells; it is config-dependent (clustering falls as a config tightens), and the error ran toward the conclusion I had already drawn. Derive a factor from at least two cells that differ along the dimension being extrapolated, or state it as a bound rather than a point.**
 
 **Instance L806 (B2854, record-of-fact): a corpus arm without its TRIGGER sentence never reaches the members - the must-fire failed test_b1805 (correctly) and the sibling must-quiet was hollow the same way; both repaired in one edit. The mechanism is test_b1805 itself.**

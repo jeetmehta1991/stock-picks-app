@@ -1,6 +1,6 @@
 # Table A - news_reversal_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit fa06ebf3e at 2026-09-19 13:07:41 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit f55b7c1e7 at 2026-09-19 23:26:39 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 60 | **surviving fires (T1):** 60 (unchanged since R5 - filter is identity)
 
@@ -628,8 +628,8 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 | axis | parameter | n levels | class | own engine run? |
 |---|---|---|---|---|
-| P1.1 | mirror of close_above_open | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.1 | mirror of top_40pct | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P1.1 | mirror of close_above_open | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.1 | mirror of top_40pct | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
 | P3 | news_count_5d >= 3 | 5 | subset-safe | no - derives offline |
 | P4 | news_sentiment_5d >= 0.3 | 5 | subset-safe | no - derives offline |
 | P5 | news_sentiment_shift < -0.2 | 5 | subset-safe | no - derives offline |
@@ -637,10 +637,12 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P7 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
 
 ```
-FULL FACTORIAL     1 x 1 x 5 x 5 x 5 x 5 x 1 = 625
+FULL FACTORIAL     3 x 3 x 5 x 5 x 5 x 5 x 1 = 5625
 offline gradings   625 level-combinations x 24 exits = 15000
-ENGINE RUNS        1 (every fire-adding axis sits at production-only until its env actuator exists)
-check              1 x 625 = 625
+ENGINE RUNS        1 (actuated fire-adding axes only)
+PENDING ACTUATION  9 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (plan 11.0b state 1; B2866)
+STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
+                   per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 
 B-row candidates NOT in this factorial: 477 census axes join it only when REGISTERED at the T3 band review.

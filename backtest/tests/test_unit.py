@@ -25049,6 +25049,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # remedy, not the heading (L548).
         ("DIFF THE WHOLE ARTIFACT AGAINST THE STANDARD'S EXEMPLAR IN THE CATCH'S OWN TURN",
          "B2851/L805: restoring only the named element ships the next catch"),
+        # B2871: the L812 tripwire row - a recomputable magnitude does
+        # not make a TRADE SET derivable. Pins the discriminator, not
+        # the heading (L548).
+        ("READ THE ENTRY PATH FOR POSITION-DEPENDENT SUPPRESSION BEFORE CALLING ANY AXIS OFFLINE-GRADABLE",
+         "B2871/L812: signal-subset is not trade-subset - read the entry path"),
         # B2580: the L755 tripwire row - a pyramid measures ONE tree. Pins
         # the DIAGNOSTIC (a GREEN run over a moving tree reads exactly like
         # a real one), not the heading (L548).
@@ -25732,7 +25737,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 263 -> 264 at B2741 (the L792 which-tree-does-this-fact-belong-to).
     # 264 -> 265 at B2851 (the L805 locked-format-diff fragment; same-call
     # with its tripwire row per B2130).
-    assert len(gutted) == 265, gutted
+    # 265 -> 266 at B2871 (the L812 entry-path fragment; same-call with
+    # its tripwire row per B2130).
+    assert len(gutted) == 266, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -38395,12 +38402,22 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     # ("3, 4"), and the factorial's arithmetic check line is self-consistent
     tws3 = (d / "three_white_soldiers.md").read_text(encoding="utf-8")
     assert "| 3 | 3, 4 |" in tws3, "P1.1 band VALUES not visible"
-    m = _re.search(r"check\s+(\d+) x (\d+) = (\d+)", tws3)
-    assert m and int(m.group(1)) * int(m.group(2)) == int(m.group(3)), (
-        "factorial check line absent or wrong")
+    # S6-B2862: this used to assert the footer's "check R x F = RF" line. That
+    # line could not fail - every axis sat in exactly one of two buckets, so
+    # the product equalled FULL FACTORIAL by construction on 40 of 40 files,
+    # and the pin therefore pinned a tautology. The footer now carries THREE
+    # buckets selected by three different predicates (subset-safe, actuated
+    # fire-adding, unactuated fire-adding), so this assertion can fail.
     fm = _re.search(r"FULL FACTORIAL\s+([\dx ]+)= (\d+)", tws3)
-    assert fm and int(fm.group(2)) == int(m.group(3)), (
-        "FULL FACTORIAL total must equal the R x F check")
+    _mf = _re.search(r"offline gradings\s+(\d+) level-combinations", tws3)
+    _mr = _re.search(r"ENGINE RUNS\s+([\d,]+)", tws3)
+    _mp = _re.search(r"PENDING ACTUATION\s+([\d,]+)", tws3)
+    assert fm and _mf and _mr and _mp, "factorial footer bucket lines absent"
+    _f, _r, _p = (int(_mf.group(1)),
+                  int(_mr.group(1).replace(",", "")),
+                  int(_mp.group(1).replace(",", "")))
+    assert _f * _r * _p == int(fm.group(2)), (
+        f"buckets must tile FULL FACTORIAL: {_f} x {_r} x {_p} != {fm.group(2)}")
     # cross-view: the footer's leg-knob axis ids (P1.1 ...) exist as
     # inventory BAND rows - the two views cannot drift (B2844 class)
     assert "| P1.1 |" in tws3.partition("## Factorial")[2]
@@ -38884,3 +38901,171 @@ def test_b2866_a_declared_knob_must_be_read_by_the_engine():
     assert "A BAND WHOSE PARAMETER DOES NOT EXIST IS NOT A BAND" in plan
     for state in ("DEFINED", "IMPLEMENTED", "ACTUATED", "DECLARED"):
         assert "| %s |" % state in plan, state
+
+
+def test_b2870_consumer_drift_is_checked_on_both_registries():
+    """S6-B2870 (council-directed 2026-09-19): the consumer-drift refusal lived
+    in launch_refusals, which enumerates SPECS alone, so a SPECS_PHASE0 entry
+    could declare a blast radius that is fiction - or declare NONE at all - and
+    validate_spec still returned CLEAN. MEASURED before the fix: three live
+    rows (smc_liquidity_sweep_reversal's SMC_SWING_LENGTH,
+    SMC_LIQUIDITY_RANGE_PCT, SMC_EVENT_RECENCY_BARS) declared no consumers
+    list and validated clean. The fix MOVES the check into validate_spec, which
+    is called on both registries, so coverage is structural rather than a
+    second pin population somebody must remember to widen. Both directions
+    per #226.
+
+    SCOPE, stated explicitly: this pins the consumer/drift class ONLY. PHASE0
+    entries legitimately lack `baseline` and `formula` blocks (they are
+    pre-engine inventory), and 59 such errors stand across the 14 PHASE0
+    entries by design - making PHASE0 strict wholesale is a different decision
+    and is not taken here."""
+    import copy
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    def _drift_errs(spec):
+        return [e for e in pvt.validate_spec(spec)
+                if "consumers" in e or "DRIFT" in e]
+
+    # must-QUIET: no live entry in EITHER registry declares a fictional or
+    # absent blast radius. This is the state the backfill established.
+    both = dict(pvt.SPECS)
+    both.update(pvt.SPECS_PHASE0)
+    live = {s: _drift_errs(spec) for s, spec in both.items()}
+    assert not any(live.values()), {k: v for k, v in live.items() if v}
+
+    # the registries genuinely differ in population - if PHASE0 ever empties,
+    # this pin stops proving anything and should be re-read.
+    assert len(pvt.SPECS_PHASE0) >= 10, len(pvt.SPECS_PHASE0)
+
+    # must-FIRE 1: a PHASE0 entry declaring a knob with NO consumers list.
+    # Declaring nothing has to fail exactly as declaring fiction does, or the
+    # class escapes by omission - which is how the three live rows survived.
+    spec = copy.deepcopy(pvt.SPECS_PHASE0["three_white_soldiers"])
+    hit = False
+    for p in spec["params"]:
+        if p.get("env") and "consumers" in p:
+            del p["consumers"]
+            hit = True
+            break
+    assert hit, "fixture stale: no PHASE0 param declares env + consumers"
+    errs = _drift_errs(spec)
+    assert any("declares no `consumers` list" in e for e in errs), errs
+
+    # must-FIRE 2: a PHASE0 entry declaring a blast radius that is fiction.
+    spec2 = copy.deepcopy(pvt.SPECS_PHASE0["three_white_soldiers"])
+    hit = False
+    for p in spec2["params"]:
+        if p.get("env") and "consumers" in p:
+            p["consumers"] = ["backtest/signals/screener.py"]
+            hit = True
+            break
+    assert hit
+    errs2 = _drift_errs(spec2)
+    assert any("consumer DRIFT" in e for e in errs2), errs2
+
+    # the check must be SITED in validate_spec, not re-added to launch_refusals
+    # (re-adding it there would double-report and would still miss PHASE0).
+    src = (root / "scripts" / "producer_variant_table.py").read_text(
+        encoding="utf-8", errors="replace")
+    vs = src.index("def validate_spec")
+    nxt = src.index("\ndef ", vs + 10)
+    assert "consumer DRIFT" in src[vs:nxt], (
+        "the drift refusal must live inside validate_spec so it reaches "
+        "SPECS_PHASE0 by construction (S6-B2870)")
+    assert src.count("consumer DRIFT") == 1, (
+        "exactly one drift-refusal site - a second one means launch_refusals "
+        "regrew its copy and errors will double-report")
+
+
+def test_b2862_table_a_factorial_counts_every_band_axis():
+    """S6-B2862 (council-directed 2026-09-19): the Table A factorial footer
+    under-counted on two independent grounds, and the factorial is the element
+    the owner specifically asked for at B2851.
+
+    (1) OMITTED AXES - build_table_a appended axes in the PRODUCER loop only;
+        the STRATEGY-row call site rendered band sub-rows and appended nothing,
+        so 35 axes vanished from footers across 21 of 41 files.
+    (2) SILENT COLLAPSE - 70 of 110 PRODUCER_BANDS entries hold `band` as a
+        string, and the footer did `len(b) if isinstance(b, list) else 1`, so a
+        band cell visibly listing three values printed n=1. MEASURED: 62 of 110
+        rows counted wrong; the seven 'implicit anatomy knobs' rows are three
+        knobs at three levels each = 27, not 1.
+
+    The pin is a BIJECTION, not a number - numbers drift, the correspondence
+    cannot. Both directions per #226."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import re
+    import math
+    import table_a_bands as tb
+
+    # --- the data layer refuses an uncountable band, at import -------------
+    with pytest.raises(ValueError):
+        tb.band_axes({"param": "fabricated",
+                      "band": "no such band was ever decomposed by hand"})
+    # a hand-split multi-knob band is NOT one axis
+    assert tb.band_axes({"param": "x", "band": "[0, 0.3, 0.5] per knob"}) == [3, 3, 3]
+    # a mirror contributes NO independent axis - its axes live on the leg it
+    # mirrors, and counting them twice would inflate every factorial
+    assert tb.band_axes({"param": "x", "band": "as long, mirrored"}) == []
+    # an explicit per-row override wins
+    assert tb.band_axes({"param": "x", "band": "anything", "axes": [7]}) == [7]
+
+    # --- the render layer: every band row appears in its own footer --------
+    files = sorted((root / "strategy_optimisation").rglob("*.md"))
+    assert len(files) >= 30, len(files)
+    checked = 0
+    for f in files:
+        txt = f.read_text(encoding="utf-8", errors="replace")
+        m = re.search(r"FULL FACTORIAL\s+(.+?) = ([0-9,]+)", txt)
+        if not m:
+            continue
+        checked += 1
+        # the printed expression must multiply out to the printed product
+        ns = [int(x) for x in re.findall(r"\d+", m.group(1))]
+        assert math.prod(ns) == int(m.group(2).replace(",", "")), (
+            f.name, m.group(0))
+        # BIJECTION: every rendered band sub-row owns at least one footer axis
+        band_ids = set(re.findall(r"^\| (P\d+\.\d+) \| BAND \|", txt, re.M))
+        axis_ids = set(re.findall(r"^\| (P\d+(?:\.\d+)*) \| ", txt, re.M))
+        missing = {b for b in band_ids
+                   if not any(a == b or a.startswith(b + ".") for a in axis_ids)}
+        assert not missing, (
+            f"{f.name}: band rows absent from the factorial footer: "
+            f"{sorted(missing)} (S6-B2862 - the STRATEGY-row call site used to "
+            "render without counting)")
+        # the tautological 'check' line must be gone: every axis sat in exactly
+        # one bucket, so runs x free equalled FULL FACTORIAL on 40 of 40 files
+        assert not re.search(r"^check\s+\d+ x \d+ =", txt, re.M), (
+            f"{f.name}: the 'check' line cannot fail by construction - it is "
+            "decoration reading as verification (S6-B2862)")
+        # THREE-BUCKET INVARIANT, read back off the RENDERED footer: subset-safe
+        # x actuated-fire-adding x unactuated-fire-adding must tile the axis
+        # set. Unlike the old 'check' line this CAN fail, because the buckets
+        # are selected by three different predicates rather than by negation.
+        mf = re.search(r"offline gradings\s+(\d+) level-combinations", txt)
+        mr = re.search(r"ENGINE RUNS\s+([\d,]+)", txt)
+        mp = re.search(r"PENDING ACTUATION\s+([\d,]+)", txt)
+        assert mf and mr and mp, f"{f.name}: footer missing a bucket line"
+        _free = int(mf.group(1))
+        _runs = int(mr.group(1).replace(",", ""))
+        _pend = int(mp.group(1).replace(",", ""))
+        assert _free * _runs * _pend == int(m.group(2).replace(",", "")), (
+            f"{f.name}: buckets do not tile the factorial - free={_free} "
+            f"runs={_runs} pending={_pend} vs {m.group(2)}")
+        # an axis with NO actuator must never be sold as an engine run. Before
+        # S6-B2862 the footer inferred "no actuator" from n == 1, which held
+        # only because a prose band silently scored 1.
+        for _row in re.findall(r"^\| P[\d.]+ \| .*$", txt, re.M):
+            if "DEFINED-NO-ACTUATOR" in _row:
+                assert "**YES**" not in _row, (f.name, _row[:120])
+    assert checked >= 30, checked

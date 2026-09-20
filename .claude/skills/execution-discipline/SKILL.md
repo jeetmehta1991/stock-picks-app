@@ -4133,6 +4133,8 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 
 | Remediate an owner catch against a LOCKED format - a table shape, a spec layout, a report standard | DIFF THE WHOLE ARTIFACT AGAINST THE STANDARD'S EXEMPLAR IN THE CATCH'S OWN TURN - a catch names ONE element but is evidence the whole rendering drifted, so restoring only the named element ships the next catch; land per-element pins so drift fails the pyramid instead of waiting for the owner | L805 / #196 (B2838-B2851: 5 of 7 owner catches on Table A were ONE defect - a memory-rendered standard - surfaced one element per catch) |
 
+| Call an axis, band or parameter OFFLINE-GRADABLE - "every config is a subset", "the magnitude is persisted", "we can recompute the condition" | READ THE ENTRY PATH FOR POSITION-DEPENDENT SUPPRESSION BEFORE CALLING ANY AXIS OFFLINE-GRADABLE - concurrency blocks, cooldowns, candidate caps, per-ticker limits. A recomputable magnitude proves a CONDITION can be evaluated offline and says NOTHING about whether the TRADE SET is derivable: if an open position suppresses a later fire, a TIGHTER config UNBLOCKS trades that exist in no cube. Signal-subset is not trade-subset | L812 / #202 (MEASURED 2026-09-19: production fires are a strict superset and recomputation reproduced them 1350/1350, yet backtest.py:2474-2511 blocks a fire while the same strategy holds the ticker - only ~60.7 pct of signals could open a position, so the offline claim was retracted after the owner asked one question) |
+
 ## Quick-reference: the five commitments
 
 | # | Commitment | Enforced by |

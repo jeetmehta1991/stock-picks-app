@@ -499,6 +499,7 @@ B1  monthly_momentum_6m       >= q   (momentum cluster rep - the ONE
              "param": "swing_length", "production": 20,
              "band": [5, 10, 20, 30, 50], "free_band": [],
              "resim_band": [5, 10, 20, 30, 50], "env": "SMC_SWING_LENGTH",
+             "consumers": ["backtest/config.py", "backtest/engine/exit_strategies.py", "backtest/signals/screener.py"],
              "sweep_levels": [], "subset_safe": False,
              "status": "UNTESTED", "type": "int", "engine_implemented": True,
              "evidence": "smc_ict.py:194 (default 20); band CHOSEN = the "
@@ -510,6 +511,7 @@ B1  monthly_momentum_6m       >= q   (momentum cluster rep - the ONE
              "band": [0.005, 0.01, 0.02], "free_band": [],
              "resim_band": [0.005, 0.01, 0.02],
              "env": "SMC_LIQUIDITY_RANGE_PCT",
+             "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
              "sweep_levels": [], "subset_safe": False,
              "status": "UNTESTED", "type": "float", "engine_implemented": True,
              "evidence": "smc_ict.py:196 + :503 (range_percent); band CHOSEN "
@@ -520,6 +522,7 @@ B1  monthly_momentum_6m       >= q   (momentum cluster rep - the ONE
              "band": [20, 45, 90], "free_band": [],
              "resim_band": [20, 45, 90],
              "env": "SMC_EVENT_RECENCY_BARS",
+             "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
              "sweep_levels": [], "subset_safe": False,
              "status": "UNTESTED", "type": "int", "engine_implemented": True,
              "evidence": "smc_ict.py:198 + :507-509 (Batch 273 lag fix); band "
@@ -2109,6 +2112,32 @@ def validate_spec(spec: dict) -> list[str]:
                         "but NO file under backtest/ reads it - a band whose "
                         "parameter does not exist in the producer is a FEATURE "
                         "REQUEST, not a band (B2866; implement it, then band it)")
+    # B2870 (council-directed 2026-09-19): THE THIRD HALF OF THE SAME RULE.
+    # B2866 proves the knob EXISTS; this proves the entry knows WHERE it bites.
+    # The drift refusal used to live in launch_refusals, which enumerates SPECS
+    # alone - so a SPECS_PHASE0 entry could declare a blast radius that is
+    # fiction and validate_spec still returned CLEAN, which is exactly what
+    # happened to the candle pair between B2865 and B2869. validate_spec is
+    # called on BOTH registries, so siting the check here covers PHASE0 by
+    # construction instead of by remembering to widen a second pin population.
+    # MEASURED this turn: 16 distinct knobs across both registries, 2.91 s cold
+    # / 0.0000 s warm - the "61 specs, over two minutes" note on knob_consumers
+    # describes a larger population, not this one.
+    _drift_knobs = [_p.get("env") for _p in spec["params"] if _p.get("env")]
+    _drift_knobs += list(spec.get("env_actuators") or {})
+    for _k in _drift_knobs:
+        _dec = declared_consumers(spec, _k)
+        _got = knob_consumers(_k)
+        if _dec is None:
+            errs.append(f"knob {_k} declares no `consumers` list - its blast "
+                        "radius is unknown (S6-B2573d/B2870; the tree reads it "
+                        f"in {_got}). Declaring NOTHING must fail exactly as "
+                        "declaring fiction does, or the class escapes by "
+                        "omission")
+        elif _dec != _got:
+            errs.append(f"knob {_k} consumer DRIFT - the entry declares {_dec} "
+                        f"but the tree reads it in {_got} (S6-B2573d/B2870; "
+                        "re-measure with knob_consumers and update the entry)")
     b = spec.get("baseline")
     if not isinstance(b, dict):
         errs.append("SPEC has no `baseline` block - main() reads it for the "
@@ -2771,17 +2800,11 @@ def launch_refusals(doc: dict, root: Path | None = None,
         # B2579 (S6-B2573d): the declared blast radius must equal the tree's.
         # Measured against THIS repo's code (CODE_ROOT) - `root` is where the
         # spec's files live, which a test may relocate; the code tree is not.
-        for k in list(knobs) + list(actuators):
-            dec = declared_consumers(spec, k)
-            got = knob_consumers(k)
-            if dec is None:
-                errs.append(f"{s}: knob {k} declares no `consumers` list - its "
-                            "blast radius is unknown (S6-B2573d; the tree reads "
-                            f"it in {got})")
-            elif dec != got:
-                errs.append(f"{s}: knob {k} consumer DRIFT - SPECS declares "
-                            f"{dec} but the tree reads it in {got} (S6-B2573d; "
-                            "re-measure with knob_consumers and update the entry)")
+        # B2870: the consumer-drift loop that stood here MOVED into
+        # validate_spec (called just above at the `errs +=` line), because this
+        # function enumerates SPECS alone and the check has to reach
+        # SPECS_PHASE0 too. Siting it in validate_spec covers both registries by
+        # construction; re-adding it here would double-report every error.
         by_param = {p["param"]: p for p in spec["params"]}
         for arm in (doc.get("arms") or []):
             tag = arm.get("tag", "?")

@@ -708,3 +708,116 @@ LEG_DEFN.update(_same("close back inside the LOWER band within 3 bars after bein
 LEG_DEFN.update(_same("today's price below cpr_bottom (technical.py:146)", "below_cpr"))
 LEG_DEFN.update(_same("Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540)", "rsi_14", "rsi_2"))
 LEG_DEFN.update(_same("VIX percentile tercile flag: low < 1/3, high > 2/3 (technical.py:2690-2702)", "vix_band_low", "vix_band_high"))
+
+
+# ---------------------------------------------------------------------------
+# S6-B2862 (council-directed 2026-09-19): AXIS DECOMPOSITION FOR NON-LIST BANDS
+#
+# build_table_a computed a band's level count as `len(b) if isinstance(b, list)
+# else 1`, and 70 of 110 PRODUCER_BANDS entries hold `band` as prose - so 89
+# factorial rows across 30 of 41 files printed n=1 beside a band cell that
+# visibly listed several values.
+#
+# This is a HAND-AUTHORED table, deliberately NOT a parser. A regex over
+# brackets gets at least six of these wrong, and wrong in the confident
+# direction that produced the bug:
+#   '[0, 0.3, 0.5] per knob'  is THREE knobs (min body / wick / step pct) at
+#       three levels each = 27, not 3. It appears in 7 files.
+#   'period [20]; k [1.5, 2.0, 2.5]'  is TWO axes (1 x 3), not one axis of 3.
+#   'swing [5, 10, 20, 30, 50]; recency [45, 90, 180]'  is 5 x 3 = 15.
+#   'as morning_star, mirrored'  carries no countable band at all - it mirrors
+#       another leg, whose axes are already counted there. [] means "contributes
+#       no INDEPENDENT axis", which is not the same as "one axis of one level".
+#   'the registered SPECS bands'  defers to the SPECS entry, counted there.
+#   '[5-30] and [3-45]'  are CONTINUOUS admission bounds with no discrete level
+#       set; [1] records that it is a single un-swept axis, not 2 ranges.
+#
+# An entry may also carry its own "axes" key, which wins over this table.
+BAND_AXES: dict[str, list[int]] = {
+    "[0.002, 0.003, 0.005, 0.015 (the _wide variant)]": [4],
+    "[0, 0.3, 0.5] per knob": [3, 3, 3],
+    "[0, 0.25, 0.5]": [3],
+    "[20, 50, 100]": [3],
+    "[150, 200, 250]": [3],
+    "[0, 0.002, 0.005, 0.01]": [4],
+    "[0, 0.2, 0.5] pct": [3],
+    "[0.25, 0.40, 0.50]": [3],
+    "period [20]; k [1.5, 2.0, 2.5]": [1, 3],
+    "k [1.5, 2.0, 2.5]; period [20]": [3, 1],
+    "k [1.5, 2.0, 2.5]": [3],
+    "recency [1, 3, 5]; k [1.5, 2.0, 2.5]": [3, 3],
+    "[0.25/0.75] and [1/3, 2/3]": [2],
+    "[0.75] alternative": [1],
+    "[(8,21,5), (12,26,9)] both computed in production; other triples are new": [2],
+    "[5-30] and [3-45]": [1],
+    "optional containment-margin pct [0, 0.1, 0.25]": [3],
+    "[0.2, 0.3, 0.4]": [3],
+    "midpoint vs [0.382, 0.5, 0.618] retrace": [4],
+    "as morning_star, mirrored": [],
+    "as bullish, mirrored (guard k above [70, 80])": [2],
+    "as obv_bullish, mirrored": [],
+    "as long, mirrored": [],
+    "the registered SPECS bands (P1-P6)": [],
+    "the registered SPECS bands": [],
+    "[20, 25, 30]": [3],
+    "[(7,14,28), (5,10,20), (14,28,56)]": [3],
+    "[70, 75, 80]": [3],
+    "[(14,3,3), (5,3,3), (21,5,5)]": [3],
+    "add guard band: k below [20, 30] at cross": [2],
+    "[9, 14, 21]": [3],
+    "[2, 3, 5]": [3],
+    "MA span [10, 20, 50]": [3],
+    "[0, 1, 2] pct": [3],
+    "[1.0, 1.2, 1.5, 2.0]": [4],
+    "period/mult [(7,3),(10,3),(7,2)]; lookback [3, 5, 10]": [3, 3],
+    "[0, 2, 5] pct": [3],
+    "[(5,10), (10,20), (20,40)]": [3],
+    "[1.0, 1.5, 2.0, 3.0]": [4],
+    "lookback [30, 60, 120]; bins [30, 40, 50]": [3, 3],
+    "swing [5, 10, 20, 30, 50]; recency [45, 90, 180]": [5, 3],
+    "each tolerance bracketed [0.5x, 1x, 1.5x] of production": [3],
+    "window [3, 5, 10]; tolerance [0, 0.2, 0.5] pct": [3, 3],
+    "N [2, 3, 5]; window [14, 30, 60] days": [3, 3],
+    "[14, 30, 60]": [3],
+    "[decile, quintile, tercile]": [3],
+    "[(8,21,5), (12,26,9)] both computed; others new": [2],
+    # a display-only field: not a gate, carries no swept axis
+    "-": [],
+}
+
+
+def band_axes(row: dict) -> list[int]:
+    """The INDEPENDENT axes a band row contributes, as level counts.
+
+    A list band is one axis of len(band). A non-list band must be declared -
+    either on the row ("axes") or in BAND_AXES. Anything else raises, because
+    the alternative is the silent n=1 that S6-B2862 is about."""
+    if "axes" in row:
+        return [int(x) for x in row["axes"]]
+    b = row.get("band")
+    if isinstance(b, list):
+        return [len(b)]
+    key = str(b)
+    if key in BAND_AXES:
+        return list(BAND_AXES[key])
+    raise ValueError(
+        "table_a_bands: band %r on param %r has no axis decomposition. A "
+        "non-list band cannot be counted by len() - add it to BAND_AXES (by "
+        "hand, having read what it means) or give the row an explicit 'axes' "
+        "key. S6-B2862." % (b, row.get("param")))
+
+
+def _b2862_validate_every_band_is_countable() -> None:
+    """Runs at import: no PRODUCER_BANDS row may carry an uncountable band."""
+    bad = []
+    for leg, rows in PRODUCER_BANDS.items():
+        for r in rows:
+            try:
+                band_axes(r)
+            except ValueError as e:
+                bad.append("%s/%s: %s" % (leg, r.get("param"), e))
+    if bad:
+        raise ValueError("S6-B2862 - uncountable bands:\n  " + "\n  ".join(bad))
+
+
+_b2862_validate_every_band_is_countable()

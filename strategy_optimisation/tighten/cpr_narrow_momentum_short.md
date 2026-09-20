@@ -1,6 +1,6 @@
 # Table A - cpr_narrow_momentum_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit fa06ebf3e at 2026-09-19 13:06:49 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit f55b7c1e7 at 2026-09-19 23:25:29 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** confluence | **status:** NOT-STARTED | **R5 fires:** 1696 | **surviving fires (T1):** 1696 (unchanged since R5 - filter is identity)
 
@@ -732,17 +732,20 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 | axis | parameter | n levels | class | own engine run? |
 |---|---|---|---|---|
-| P1.1 | buffer pct (price below cpr_bottom by) | 2 | **FIRE-ADDING** | **YES** |
-| P2.1 | width threshold (cpr_width < rng * X) | 3 | **FIRE-ADDING** | **YES** |
-| P3.1 | span triple (fast, slow, signal) | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P1.1 | buffer pct (price below cpr_bottom by) | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.1 | width threshold (cpr_width < rng * X) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P3.1 | span triple (fast, slow, signal) | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
 | P4 | rsi_14 < 50 | 5 | subset-safe | no - derives offline |
+| P4.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
 | P5 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
 
 ```
-FULL FACTORIAL     2 x 3 x 1 x 5 x 1 = 30
+FULL FACTORIAL     2 x 3 x 2 x 5 x 3 x 1 = 180
 offline gradings   5 level-combinations x 24 exits = 120
-ENGINE RUNS        6 (every fire-adding axis sits at production-only until its env actuator exists)
-check              6 x 5 = 30
+ENGINE RUNS        1 (actuated fire-adding axes only)
+PENDING ACTUATION  36 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (plan 11.0b state 1; B2866)
+STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
+                   per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 
 B-row candidates NOT in this factorial: 578 census axes join it only when REGISTERED at the T3 band review.

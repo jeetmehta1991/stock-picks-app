@@ -44,7 +44,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_strategy_status as bss                      # noqa: E402
 from breadth_step1_grid import MIN_COVERAGE, QUANTS      # noqa: E402
-from table_a_bands import LEG_DEFN, PRODUCER_BANDS, STRATEGY_EXTRAS  # noqa: E402
+from table_a_bands import (LEG_DEFN, PRODUCER_BANDS, STRATEGY_EXTRAS,  # noqa: E402
+                           band_axes)
 
 # B2841: one numeric-compare pattern for BOTH extractors. The first cut used
 # [^)]* for the s.get(...) argument span, which cannot cross the ')' of a
@@ -230,7 +231,7 @@ def price_denominated(series: dict) -> tuple[dict, str]:
 
 
 
-def _band_rows(pid: int, subject: str, knobs) -> list:
+def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
     """B2841: the R1 band definitions (table_a_bands.py) as sub-rows under a
     P-row. env None on a resim-bearing knob renders DEFINED-NO-ACTUATOR - the
     band exists, the engine plumbing is follow-up (validate_spec refuses an
@@ -246,6 +247,30 @@ def _band_rows(pid: int, subject: str, knobs) -> list:
         vals_s = (", ".join(_fmt(v) if isinstance(v, float) else str(v)
                             for v in vals) if isinstance(vals, list)
                   else str(vals))
+        # S6-B2862: RENDER AND COUNT FROM ONE SITE. The caller used to append
+        # axes in a separate loop, and the STRATEGY-row call site simply did
+        # not have one - so 35 axes went unrendered in the footer across 21 of
+        # 41 files. Emitting both here makes that omission unexpressible.
+        # band_axes is a hand-authored decomposition, never a parse of the
+        # band text: a multi-axis band contributes several axes, and a mirror
+        # ("as morning_star, mirrored") contributes none, because its axes are
+        # already counted on the leg it mirrors.
+        if axes is not None:
+            _cnts = band_axes(k)
+            _sub = str(k.get("offline", "")).startswith("TIGHTER")
+            # S6-B2862: the ACTUATOR flag must be carried, not inferred. The
+            # footer used to read n == 1 as "DEFINED-NO-ACTUATOR", which was
+            # only ever true because a prose band silently scored 1. Counting
+            # bands correctly breaks that proxy, and an unactuated axis would
+            # start inflating ENGINE RUNS - the exact class B2866 refuses.
+            _act = bool(env)
+            if len(_cnts) == 1:
+                axes.append((f"P{pid}.{j}", k["param"][:40], _cnts[0], _sub,
+                             _act))
+            else:
+                for _ai, _c in enumerate(_cnts, 1):
+                    axes.append((f"P{pid}.{j}.{_ai}", k["param"][:40],
+                                 _c, _sub, _act))
         out.append(
             f"| P{pid}.{j} | BAND | {k['param']} - {k['evidence']} | "
             f"{k['basis']} | "
@@ -336,7 +361,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
          "leg runs.", "",
          "| id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |",
          "|---|---|---|---|---|---|---|---|---|"]
-    axes = []   # (id, param, n_levels, subset_safe) for the factorial footer
+    axes = []   # (id, param, n_levels, subset_safe, actuated) - footer
     pid = 0
     for leg in legs:
         pid += 1
@@ -354,12 +379,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"reused by construction); "
                  f"knobs {'in the SPECS entry' if in_specs else ('DEFINED below (P' + str(pid) + '.x)' if PRODUCER_BANDS.get(leg) else 'to define')} | "
                  f"{'SPECS-REGISTERED' if in_specs else ('BANDS-DEFINED' if PRODUCER_BANDS.get(leg) else 'BANDS-TO-DEFINE')} |")
-        for _j, _k in enumerate(PRODUCER_BANDS.get(leg, []), 1):
-            _b = _k.get("band")
-            _n = len(_b) if isinstance(_b, list) else 1
-            _sub = str(_k.get("offline", "")).startswith("TIGHTER")
-            axes.append((f"P{pid}.{_j}", _k["param"][:40], _n, _sub))
-        L += _band_rows(pid, leg, PRODUCER_BANDS.get(leg, []))
+        L += _band_rows(pid, leg, PRODUCER_BANDS.get(leg, []), axes)
     for key, op, prod in sorted(set(comparisons)):
         pid += 1
         _kind, _ser = series.get(key, ("missing", None))
@@ -368,13 +388,13 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             _qs = sorted(set(round(float(q), 4) for q in _ser.quantile(QUANTS)))
             _hi = op in (">", ">=")
             _nfree = sum(1 for lv in _qs if (lv > prod if _hi else lv < prod))
-        axes.append((f"P{pid}", f"{key} {op} {_fmt(prod)}", _nfree + 1, True))
+        axes.append((f"P{pid}", f"{key} {op} {_fmt(prod)}", _nfree + 1, True, True))
         L.append(f"| P{pid} | STRATEGY | {key} `{op} {_fmt(prod)}` "
                  f"[EXISTING-THRESHOLD] | {LEG_DEFN.get(key, 'gate threshold on the persisted magnitude')} "
                  f"| `{op} {_fmt(prod)}` | production + {_nfree} tighter measured levels | measured tighter "
                  f"QUANTS levels - see the free-band section below | looser side "
                  f"- band at R1 | MEASURED-PRE-R1 |")
-        L += _band_rows(pid, key, PRODUCER_BANDS.get(key, []))
+        L += _band_rows(pid, key, PRODUCER_BANDS.get(key, []), axes)
     for h in helpers:
         pid += 1
         if h == "_short_borrow_trap_active":
@@ -385,7 +405,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             # (B718a, GME pre-squeeze calibration) shared by every short
             # strategy: any band is per-strategy-override scope, on the
             # owner's word only.
-            axes.append((f"P{pid}", "days_to_cover cap 5.0", 1, False))
+            axes.append((f"P{pid}", "days_to_cover cap 5.0", 1, False, False))
             L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - underlying "
                      f"condition: days_to_cover > 5.0 (blocks the fire) | "
                      f"blocks SHORT fires when days_to_cover > 5.0 (B718a) | "
@@ -402,7 +422,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"inspect before any engine leg | BANDS-TO-DEFINE |")
     for k in STRATEGY_EXTRAS.get(name, []):
         pid += 1
-        axes.append((f"P{pid}", k["param"][:40], 1, True))
+        axes.append((f"P{pid}", k["param"][:40], 1, True, True))
         L.append(f"| P{pid} | STRATEGY | {k['param']} - {k['evidence']} | "
                  f"{k['basis']} | {k['production']} | {k.get('band', '-')} | "
                  f"{k.get('offline', '-')} | "
@@ -519,26 +539,53 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     # THIS table's axes (plan:1211 - computed, never hand-counted), paired
     # with the Formula section above (B1523: never shown apart).
     import math
-    fact = math.prod(n for _, _, n, _ in axes) if axes else 0
-    free = math.prod(n for _, _, n, s in axes if s) if axes else 0
-    runs = math.prod(n for _, _, n, s in axes if not s) if axes else 0
+    fact = math.prod(n for _, _, n, _, _ in axes) if axes else 0
+    free = math.prod(n for _, _, n, s, _ in axes if s) if axes else 0
+    # THREE buckets, not two (S6-B2862). A fire-adding axis whose env actuator
+    # does not exist cannot be run, so counting it in ENGINE RUNS would promise
+    # engine hours for a band that is DEFINED but not IMPLEMENTED - state 1 of
+    # the four-state workflow in plan 11.0b. The old code got this right only
+    # by accident: a prose band scored n=1, and n==1 was read as "no actuator".
+    runs = math.prod(n for _, _, n, s, a in axes if not s and a) if axes else 0
+    pend = math.prod(n for _, _, n, s, a in axes
+                     if not s and not a) if axes else 0
+    # S6-B2862: the rendered line here used to read "check {runs} x {free} =
+    # {runs*free}". Every axis is in exactly ONE of the two buckets, so that
+    # product equals FULL FACTORIAL identically - MEASURED, the "check" line
+    # matched its own factorial on 40 of 40 files. A check that cannot fail is
+    # decoration, and it reads to a non-author as "someone verified this".
+    # The invariant it gestured at is real, so it becomes an ASSERT (which can
+    # stop the build), and the rendered line becomes a cost the owner can act
+    # on. Per-run and cap figures: plan:861 and the B2107 owner ruling.
+    _STEP1_H = 3.66
+    _CAP_H = 5
+    assert fact == runs * free * pend, (
+        "axis partition broken: subset-safe, actuated fire-adding and "
+        "unactuated fire-adding must tile the axis set exactly "
+        f"(fact={fact} free={free} runs={runs} pending={pend})")
     L += ["## Factorial - configs this table implies (computed from the "
           "rows above; pairs with the Formula in Section 1)", "",
           "| axis | parameter | n levels | class | own engine run? |",
           "|---|---|---|---|---|"]
-    for aid, prm, n, sub in axes:
+    for aid, prm, n, sub, act in axes:
         cls = "subset-safe" if sub else "**FIRE-ADDING**"
         need = "no - derives offline" if sub else \
-            ("no - production only (DEFINED-NO-ACTUATOR)" if n == 1
+            ("no - production only (DEFINED-NO-ACTUATOR)" if not act
              else "**YES**")
         L.append(f"| {aid} | {prm} | {n} | {cls} | {need} |")
-    expr = " x ".join(str(n) for _, _, n, _ in axes) or "0"
+    expr = " x ".join(str(n) for _, _, n, _, _ in axes) or "0"
     L += ["", "```",
           f"FULL FACTORIAL     {expr} = {fact}",
           f"offline gradings   {free} level-combinations x 24 exits = {free * 24}",
-          f"ENGINE RUNS        {runs} (every fire-adding axis sits at "
-          "production-only until its env actuator exists)",
-          f"check              {runs} x {free} = {runs * free}",
+          f"ENGINE RUNS        {runs} (actuated fire-adding axes only)",
+          f"PENDING ACTUATION  {pend} level-combinations are DEFINED but have "
+          "no env knob - they are a FEATURE REQUEST, not a runnable band "
+          "(plan 11.0b state 1; B2866)",
+          f"STEP-1 SERIAL COST {runs} x {_STEP1_H} h = {runs * _STEP1_H:,.0f} h "
+          f"at the ruled 1y x 200-ticker shape",
+          f"                   per-run {_STEP1_H} h is within the {_CAP_H} h "
+          "local cap (B2107); the TOTAL is not a plan until the owner rules a "
+          "budget on it",
           "```", "",
           f"B-row candidates NOT in this factorial: {census_n} census axes "
           "join it only when REGISTERED at the T3 band review.", ""]

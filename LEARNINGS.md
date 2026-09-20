@@ -21211,3 +21211,79 @@ No new checklist item warranted. Mechanism for the class: JUDGMENT-ONLY for
 detection - no scan can tell how many cells a ratio was derived from - with the
 durable half being this entry plus the estimator's basis and residual
 assumption now written into the S6-B2867 row where the next reader meets it.
+
+### L812 - SIGNAL-SUBSET DOES NOT IMPLY TRADE-SUBSET (B2871, owner-caught 2026-09-19)
+
+The owner asked "what has changed? Is p1 bands not resim?" and the question
+killed a reclassification I had already published and recommended they confirm.
+
+WHAT I CLAIMED: the candle anatomy grid could be graded OFFLINE against the
+landed cube, because production is the loosest corner (every knob only ADDS a
+conjunctive condition, so each config's FIRES are a strict subset) and because
+recomputing the pattern from cached OHLCV reproduces the landed fire set
+exactly - 1350/1350 soldiers, 1535/1535 crows.
+
+WHY IT IS WRONG: both halves are true and the conclusion still does not
+follow. backtest/engine/backtest.py:2474-2511 forces _bug61_mode to
+"ticker_strategy" under cube isolation, so a fire is BLOCKED when the same
+strategy already holds an open position on that ticker. Removing an earlier
+fire UNBLOCKS a later one, so a TIGHTER config can produce trades that exist
+in no cube - no entry, no exit, no pnl to grade. Suppression is not marginal:
+only ~60.7 pct of production signals could open a position on my own
+measurement. The bands remain RESIM exactly as Table A said.
+
+THE RULE: a magnitude being recomputable tells you a CONDITION can be
+evaluated offline. It says nothing about whether the TRADE SET is derivable.
+Before calling any axis offline-gradable, read the ENTRY PATH for
+position-dependent suppression - concurrency blocks, cooldowns, candidate
+caps, per-ticker limits - because any of them makes the trade set a function
+of the whole history rather than of the bar. The tell is that my own earlier
+clustering measurement had already quantified the suppression; I used it to
+build a conversion factor and never asked what it implied about subsetting.
+
+Compliance failure against item #202 - I reported an artifact of the wrong
+KIND (a signal subset) as though it answered the question the phase asks (a
+trade set). Mechanism for the class: JUDGMENT-ONLY for detection, since no
+scan can tell which derivation a claim rests on; the durable half is this
+entry plus the corrected S6-B2868 row, which now states the blocker in the
+place the next reader meets it.
+
+### L813 - A FLOOR AND A MEASUREMENT MUST MEASURE THE SAME QUANTITY BEFORE THEY CAN BE COMPARED (B2870, council-caught 2026-09-19)
+
+I reported to the owner that OHLCV coverage was 0.846 soldiers / 0.917 crows,
+"both BELOW the 0.99 coverage floor offline_level_sweep enforces", and filed
+the gap as the remaining work before grading. The two numbers measure
+different things. The floor at scripts/offline_level_sweep.py:167 reads
+ev["coverage"], which is built at :106 as the fraction of trade-log rows whose
+signals_at_entry dict PARSES AND IS NON-EMPTY - it guards against silently
+dropping rows that cannot be levelled. My 0.846 was the fraction of landed
+fires for which the OHLCV CACHE HAS BARS. Same word, different quantity, and
+the comparison was therefore meaningless in both directions: closing the cache
+gap would not have moved the floor's number, and the floor was never the thing
+my measurement was failing.
+
+The failure is not arithmetic, it is that a THRESHOLD ARRIVES WITH A NAME AND
+THE NAME IS NOT THE DEFINITION. "Coverage", "completeness", "hit rate",
+"fill", "n" - each is a word several quantities answer to in one codebase, and
+the one you measured is the one already in your hand, so the match feels like
+agreement rather than a coincidence of vocabulary. Nothing in the four
+evidence classes catches it: my 0.846 was genuinely EXECUTED and the 0.99 was
+genuinely READ. Both provenances were sound and the sentence joining them was
+still false.
+
+So: before comparing any measurement to any threshold, OPEN THE CODE THAT
+ENFORCES THE THRESHOLD and read the expression it compares - not the constant,
+the expression. Name the quantity in the same sentence as the number
+("signals_at_entry non-empty fraction 0.99", not "the coverage floor"), which
+makes a mismatch visible at the point of writing rather than at the point a
+reviewer opens the file. This is the schema/population rule of CHECKLIST #230
+turned on the COMPARISON rather than on the artifact: #230a asks whether the
+field exists and #230a2 asks whether the population exists, and neither asks
+whether two quantities that share a word are the same quantity.
+
+Compliance failure against item #222 - a number was carried into an
+owner-facing disposition without re-deriving what it was a number OF. Detection
+is JUDGMENT-ONLY: no scan can tell that two floats named alike denote
+different quantities, so the durable half is this entry plus the corrected
+S6-B2868 row, and the enforcement that does exist is the habit of citing the
+threshold by its expression rather than by its noun.

@@ -1,6 +1,6 @@
 # Table A - week_opening_gap_fill_down
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit fa06ebf3e at 2026-09-19 13:07:41 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit f55b7c1e7 at 2026-09-19 23:26:39 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** ict | **status:** NOT-STARTED | **R5 fires:** 633 | **surviving fires (T1):** 633 (unchanged since R5 - filter is identity)
 
@@ -770,15 +770,17 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 | axis | parameter | n levels | class | own engine run? |
 |---|---|---|---|---|
-| P1.1 | gap threshold pct (NAME IS DECIMAL-SHIFT | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P1.1 | gap threshold pct (NAME IS DECIMAL-SHIFT | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
 | P2 | days_since_last_earnings > 2 | 5 | subset-safe | no - derives offline |
 | P3 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
 
 ```
-FULL FACTORIAL     1 x 5 x 1 = 5
+FULL FACTORIAL     4 x 5 x 1 = 20
 offline gradings   5 level-combinations x 24 exits = 120
-ENGINE RUNS        1 (every fire-adding axis sits at production-only until its env actuator exists)
-check              1 x 5 = 5
+ENGINE RUNS        1 (actuated fire-adding axes only)
+PENDING ACTUATION  4 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (plan 11.0b state 1; B2866)
+STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
+                   per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 
 B-row candidates NOT in this factorial: 630 census axes join it only when REGISTERED at the T3 band review.
