@@ -21800,3 +21800,43 @@ The tell here was available and I nearly walked past it: a column that exists,
 is populated, and yields NOTHING on every row is not a finding about the data,
 it is a finding about the reader (L724 - a uniform value from a new extractor
 is a parser hypothesis, and this is its loudest case).
+
+### L825 - MIGRATING HALF A RECORD FLIPS ITS READER AND HIDES THE REST (B2912, 2026-09-20)
+
+S6-B2885 asked for the 5 legacy smc entries to be migrated to the free/resim
+split. The ticket is about ENV KNOBS - they are what the R1 adapter refusal is
+blind to - so I migrated the 15 env params and ran the pyramid.
+
+**Two tests failed, and one of them was a 32x leverage claim disappearing.**
+
+`leverage()` picks its encoding like this:
+
+    per_level = any(("free_band" in q or "resim_band" in q) for q in params)
+
+**ANY.** So the moment ONE param carries the new fields the WHOLE entry is read
+per-level, and `smc_order_block_bounce`'s four OFFLINE params - which I had not
+migrated, because they carry no env knob - contributed nothing. Its
+`free_combos` went from **32 to 1**: the entry's declared economics changed
+from "32 free combinations against 10 engine runs" to "no free leverage at
+all", out of a change that looked purely additive.
+
+**The direction is the dangerous one** (L796): losing free leverage inflates
+apparent cost, and an inflated cost always argues for not running something. I
+would have published worse economics for that family with a measured-looking
+basis.
+
+What caught it was a pin that had FROZEN the number - `test_b2752f` asserts
+`free_combos == 32`. Nothing about the change was visibly wrong; only a
+previously-recorded value disagreed.
+
+**So: before migrating part of a record, find the READER and ask what it does
+with a half-migrated one.** Readers that select an encoding with `any(...)` are
+the trap. B2767's own docstring predicted exactly this - *"both encodings then
+coexist, the coarse one stays readable, and reading it understates in a
+PREDICTABLE direction"* - and I read that docstring while DIAGNOSING, not
+before editing.
+
+The fix was to migrate the entry WHOLE: the 4 offline params take
+`free_band = band, resim_band = []`, because an offline axis is graded from the
+landed cube. `free_combos` returns to 32, now on the authoritative per-level
+basis rather than the coarse boolean - the same number with better provenance.

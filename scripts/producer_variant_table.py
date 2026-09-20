@@ -121,6 +121,21 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
         "params": [
             {"id": "P1", "producer": "_smc.swing_highs_lows", "param": "swing_length",
              "env": "SMC_SWING_LENGTH",   # B2578: the knob the engine reads (config.py)
+             # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+             # A level is FREE only if it selects a strict SUBSET of the landed
+             # fires AND its discriminating quantity is PERSISTED per trade so the
+             # subset can be identified. Across ALL rows of this strategy in
+             # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+             # BOOLEAN keys computed AT the production setting, and this knob's
+             # discriminator is not among them - so no level is identifiable
+             # offline and every one needs the engine. (P6 span looked gradable:
+             # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+             # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+             # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+             # production is untouched and no run is scheduled, so no landed grade
+             # is recomputed. L726 / L812 / L824.
+             "free_band": [],
+             "resim_band": [5, 10, 20, 30, 50],
              "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
@@ -138,6 +153,21 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P2", "producer": "_smc.ob", "param": "close_mitigation",
              "env": "SMC_OB_CLOSE_MITIGATION",
+             # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+             # A level is FREE only if it selects a strict SUBSET of the landed
+             # fires AND its discriminating quantity is PERSISTED per trade so the
+             # subset can be identified. Across ALL rows of this strategy in
+             # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+             # BOOLEAN keys computed AT the production setting, and this knob's
+             # discriminator is not among them - so no level is identifiable
+             # offline and every one needs the engine. (P6 span looked gradable:
+             # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+             # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+             # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+             # production is untouched and no run is scheduled, so no landed grade
+             # is recomputed. L726 / L812 / L824.
+             "free_band": [],
+             "resim_band": [False, True],
              "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
@@ -149,6 +179,21 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P3", "producer": "ob_events.tail(N)", "param": "tail_n",
              "env": "SMC_OB_TAIL_N",
+             # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+             # A level is FREE only if it selects a strict SUBSET of the landed
+             # fires AND its discriminating quantity is PERSISTED per trade so the
+             # subset can be identified. Across ALL rows of this strategy in
+             # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+             # BOOLEAN keys computed AT the production setting, and this knob's
+             # discriminator is not among them - so no level is identifiable
+             # offline and every one needs the engine. (P6 span looked gradable:
+             # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+             # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+             # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+             # production is untouched and no run is scheduled, so no landed grade
+             # is recomputed. L726 / L812 / L824.
+             "free_band": [],
+             "resim_band": [1, 2, 3, 5, 10, 20],
              "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
@@ -166,6 +211,21 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P4", "producer": "recency filter on OB age", "param": "age_bars_max",
              "env": "SMC_BREAKER_AGE_BARS_MAX",
+             # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+             # A level is FREE only if it selects a strict SUBSET of the landed
+             # fires AND its discriminating quantity is PERSISTED per trade so the
+             # subset can be identified. Across ALL rows of this strategy in
+             # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+             # BOOLEAN keys computed AT the production setting, and this knob's
+             # discriminator is not among them - so no level is identifiable
+             # offline and every one needs the engine. (P6 span looked gradable:
+             # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+             # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+             # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+             # production is untouched and no run is scheduled, so no landed grade
+             # is recomputed. L726 / L812 / L824.
+             "free_band": [],
+             "resim_band": [60, 120, 180, 250, None],
              "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
@@ -183,6 +243,21 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P5", "producer": "break test (close > top)", "param": "break_pct_max",
              "env": "SMC_BREAKER_BREAK_PCT_MAX",
+             # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+             # A level is FREE only if it selects a strict SUBSET of the landed
+             # fires AND its discriminating quantity is PERSISTED per trade so the
+             # subset can be identified. Across ALL rows of this strategy in
+             # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+             # BOOLEAN keys computed AT the production setting, and this knob's
+             # discriminator is not among them - so no level is identifiable
+             # offline and every one needs the engine. (P6 span looked gradable:
+             # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+             # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+             # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+             # production is untouched and no run is scheduled, so no landed grade
+             # is recomputed. L726 / L812 / L824.
+             "free_band": [],
+             "resim_band": [0.01, 0.02, 0.03, 0.05, None],
              "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
@@ -200,6 +275,21 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P6", "producer": "compute_ema_sma", "param": "span",
              "env": "STRAT_EMA_SPAN",
+             # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+             # A level is FREE only if it selects a strict SUBSET of the landed
+             # fires AND its discriminating quantity is PERSISTED per trade so the
+             # subset can be identified. Across ALL rows of this strategy in
+             # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+             # BOOLEAN keys computed AT the production setting, and this knob's
+             # discriminator is not among them - so no level is identifiable
+             # offline and every one needs the engine. (P6 span looked gradable:
+             # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+             # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+             # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+             # production is untouched and no run is scheduled, so no landed grade
+             # is recomputed. L726 / L812 / L824.
+             "free_band": [],
+             "resim_band": [9, 20, 21, 50, 100, 150, 200],
              "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
@@ -831,6 +921,21 @@ SPECS["smc_liquidity_sweep_reversal"] = {
     "params": [
         {"id": "P1", "producer": "_smc.swing_highs_lows",
          "param": "swing_length", "env": "SMC_SWING_LENGTH",
+         # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+         # A level is FREE only if it selects a strict SUBSET of the landed
+         # fires AND its discriminating quantity is PERSISTED per trade so the
+         # subset can be identified. Across ALL rows of this strategy in
+         # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+         # BOOLEAN keys computed AT the production setting, and this knob's
+         # discriminator is not among them - so no level is identifiable
+         # offline and every one needs the engine. (P6 span looked gradable:
+         # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+         # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+         # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+         # production is untouched and no run is scheduled, so no landed grade
+         # is recomputed. L726 / L812 / L824.
+         "free_band": [],
+         "resim_band": [5, 10, 20, 30, 50],
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
                        "backtest/signals/screener.py"],
@@ -842,6 +947,21 @@ SPECS["smc_liquidity_sweep_reversal"] = {
          "evidence": "smc_ict.py:368", "engine_implemented": True},
         {"id": "P2", "producer": "_smc.liquidity",
          "param": "liquidity_range_pct", "env": "SMC_LIQUIDITY_RANGE_PCT",
+         # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+         # A level is FREE only if it selects a strict SUBSET of the landed
+         # fires AND its discriminating quantity is PERSISTED per trade so the
+         # subset can be identified. Across ALL rows of this strategy in
+         # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+         # BOOLEAN keys computed AT the production setting, and this knob's
+         # discriminator is not among them - so no level is identifiable
+         # offline and every one needs the engine. (P6 span looked gradable:
+         # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+         # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+         # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+         # production is untouched and no run is scheduled, so no landed grade
+         # is recomputed. L726 / L812 / L824.
+         "free_band": [],
+         "resim_band": [0.005, 0.01, 0.02, 0.03],
          "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
          "production": 0.01, "type": "float",
          "band": [0.005, 0.01, 0.02, 0.03],
@@ -853,6 +973,21 @@ SPECS["smc_liquidity_sweep_reversal"] = {
          "evidence": "smc_ict.py:503", "engine_implemented": True},
         {"id": "P3", "producer": "_most_recent_event_within",
          "param": "event_recency_bars", "env": "SMC_EVENT_RECENCY_BARS",
+         # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+         # A level is FREE only if it selects a strict SUBSET of the landed
+         # fires AND its discriminating quantity is PERSISTED per trade so the
+         # subset can be identified. Across ALL rows of this strategy in
+         # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+         # BOOLEAN keys computed AT the production setting, and this knob's
+         # discriminator is not among them - so no level is identifiable
+         # offline and every one needs the engine. (P6 span looked gradable:
+         # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+         # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+         # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+         # production is untouched and no run is scheduled, so no landed grade
+         # is recomputed. L726 / L812 / L824.
+         "free_band": [],
+         "resim_band": [30, 60, 90, 120, 180],
          "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
          "production": 90, "type": "int", "band": [30, 60, 90, 120, 180],
          "derivation": ("the lookback turning a dated sweep/BOS/CHoCH into an "
@@ -937,6 +1072,21 @@ SPECS["smc_equal_lows_sweep_long"] = {
     "params": [
         {"id": "P1", "producer": "_smc.swing_highs_lows",
          "param": "swing_length", "env": "SMC_SWING_LENGTH",
+         # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+         # A level is FREE only if it selects a strict SUBSET of the landed
+         # fires AND its discriminating quantity is PERSISTED per trade so the
+         # subset can be identified. Across ALL rows of this strategy in
+         # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+         # BOOLEAN keys computed AT the production setting, and this knob's
+         # discriminator is not among them - so no level is identifiable
+         # offline and every one needs the engine. (P6 span looked gradable:
+         # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+         # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+         # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+         # production is untouched and no run is scheduled, so no landed grade
+         # is recomputed. L726 / L812 / L824.
+         "free_band": [],
+         "resim_band": [5, 10, 20, 30, 50],
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
                        "backtest/signals/screener.py"],
@@ -947,6 +1097,21 @@ SPECS["smc_equal_lows_sweep_long"] = {
          "evidence": "smc_ict.py:368,503", "engine_implemented": True},
         {"id": "P2", "producer": "_smc.liquidity",
          "param": "liquidity_range_pct", "env": "SMC_LIQUIDITY_RANGE_PCT",
+         # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+         # A level is FREE only if it selects a strict SUBSET of the landed
+         # fires AND its discriminating quantity is PERSISTED per trade so the
+         # subset can be identified. Across ALL rows of this strategy in
+         # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+         # BOOLEAN keys computed AT the production setting, and this knob's
+         # discriminator is not among them - so no level is identifiable
+         # offline and every one needs the engine. (P6 span looked gradable:
+         # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+         # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+         # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+         # production is untouched and no run is scheduled, so no landed grade
+         # is recomputed. L726 / L812 / L824.
+         "free_band": [],
+         "resim_band": [0.005, 0.01, 0.02, 0.03],
          "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
          "production": 0.01, "type": "float",
          "band": [0.005, 0.01, 0.02, 0.03],
@@ -956,6 +1121,21 @@ SPECS["smc_equal_lows_sweep_long"] = {
          "evidence": "smc_ict.py:503,512", "engine_implemented": True},
         {"id": "P3", "producer": "_most_recent_event_within",
          "param": "event_recency_bars", "env": "SMC_EVENT_RECENCY_BARS",
+         # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+         # A level is FREE only if it selects a strict SUBSET of the landed
+         # fires AND its discriminating quantity is PERSISTED per trade so the
+         # subset can be identified. Across ALL rows of this strategy in
+         # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+         # BOOLEAN keys computed AT the production setting, and this knob's
+         # discriminator is not among them - so no level is identifiable
+         # offline and every one needs the engine. (P6 span looked gradable:
+         # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+         # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+         # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+         # production is untouched and no run is scheduled, so no landed grade
+         # is recomputed. L726 / L812 / L824.
+         "free_band": [],
+         "resim_band": [30, 60, 90, 120, 180],
          "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
          "production": 90, "type": "int", "band": [30, 60, 90, 120, 180],
          "derivation": "recency window on the fvg_bullish_active confluence leg",
@@ -1028,6 +1208,21 @@ SPECS["smc_inverse_fvg"] = {
     "params": [
         {"id": "P1", "producer": "ema trend leg (screener)",
          "param": "span", "env": "STRAT_EMA_SPAN",
+         # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+         # A level is FREE only if it selects a strict SUBSET of the landed
+         # fires AND its discriminating quantity is PERSISTED per trade so the
+         # subset can be identified. Across ALL rows of this strategy in
+         # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+         # BOOLEAN keys computed AT the production setting, and this knob's
+         # discriminator is not among them - so no level is identifiable
+         # offline and every one needs the engine. (P6 span looked gradable:
+         # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+         # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+         # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+         # production is untouched and no run is scheduled, so no landed grade
+         # is recomputed. L726 / L812 / L824.
+         "free_band": [],
+         "resim_band": [9, 20, 21, 50, 200],
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
                        "backtest/signals/screener.py"],
@@ -4057,6 +4252,21 @@ SPECS["smc_order_block_bounce"] = {
     "params": [
         {"id": "P1", "producer": "_smc.swing_highs_lows",
          "param": "swing_length", "env": "SMC_SWING_LENGTH",
+         # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+         # A level is FREE only if it selects a strict SUBSET of the landed
+         # fires AND its discriminating quantity is PERSISTED per trade so the
+         # subset can be identified. Across ALL rows of this strategy in
+         # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+         # BOOLEAN keys computed AT the production setting, and this knob's
+         # discriminator is not among them - so no level is identifiable
+         # offline and every one needs the engine. (P6 span looked gradable:
+         # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+         # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+         # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+         # production is untouched and no run is scheduled, so no landed grade
+         # is recomputed. L726 / L812 / L824.
+         "free_band": [],
+         "resim_band": [5, 10, 20, 30, 50],
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
                        "backtest/signals/screener.py"],
@@ -4070,6 +4280,21 @@ SPECS["smc_order_block_bounce"] = {
          "evidence": "smc_ict.py:194", "engine_implemented": True},
         {"id": "P2", "producer": "_smc.ob",
          "param": "close_mitigation", "env": "SMC_OB_CLOSE_MITIGATION",
+         # S6-B2885 (owner ruling "Migrate them"): FREE vs RESIM, MEASURED.
+         # A level is FREE only if it selects a strict SUBSET of the landed
+         # fires AND its discriminating quantity is PERSISTED per trade so the
+         # subset can be identified. Across ALL rows of this strategy in
+         # output_r5_merged_1_7/trade_log.csv the signal dicts carry 833-837
+         # BOOLEAN keys computed AT the production setting, and this knob's
+         # discriminator is not among them - so no level is identifiable
+         # offline and every one needs the engine. (P6 span looked gradable:
+         # below_ema_9/20/21/50/200 ARE persisted, but price_above_ema_200 does
+         # not imply price_above_ema_50, so a different span is a DIFFERENT set,
+         # not a subset - evaluable is not subset-safe.) METADATA ONLY:
+         # production is untouched and no run is scheduled, so no landed grade
+         # is recomputed. L726 / L812 / L824.
+         "free_band": [],
+         "resim_band": [False, True],
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
                        "backtest/signals/screener.py"],
@@ -4079,6 +4304,14 @@ SPECS["smc_order_block_bounce"] = {
          "subset_safe": False, "status": "UNTESTED",
          "evidence": "smc_ict.py:375 (ob call)", "engine_implemented": True},
         {"id": "P3", "producer": "_ob_tap_scan",
+        # S6-B2885: an OFFLINE axis (no env knob) is graded from the landed
+        # cube, so every level is FREE. Migrated in the SAME pass as this
+        # entry's env knobs because leverage() switches encoding on whether ANY
+        # param carries free_band/resim_band - migrating half an entry flips it
+        # to per-level while leaving the rest invisible, which collapsed this
+        # entry's free_combos from 32 to 1 (the B2767 both-encodings hazard).
+        "free_band": [3, 5, 10],
+        "resim_band": [],
          "param": "tap_window", "production": 5, "type": "int",
          "band": [3, 5, 10],
          "derivation": ("the bounce-tap lookback. NOT ENGINE-REACHABLE: "
@@ -4094,6 +4327,14 @@ SPECS["smc_order_block_bounce"] = {
                      "passes none - MEASURED S6-B2752a",
          "engine_implemented": False},
         {"id": "P4", "producer": "gate threshold (screener)",
+        # S6-B2885: an OFFLINE axis (no env knob) is graded from the landed
+        # cube, so every level is FREE. Migrated in the SAME pass as this
+        # entry's env knobs because leverage() switches encoding on whether ANY
+        # param carries free_band/resim_band - migrating half an entry flips it
+        # to per-level while leaving the rest invisible, which collapsed this
+        # entry's free_combos from 32 to 1 (the B2767 both-encodings hazard).
+        "free_band": [45, 40, 35, 30],
+        "resim_band": [],
          "param": "rsi_threshold_long", "production": 45, "type": "int",
          "band": [45, 40, 35, 30],
          "derivation": ("FREE - lowering the ceiling keeps a strict SUBSET of "
@@ -4105,6 +4346,14 @@ SPECS["smc_order_block_bounce"] = {
          "evidence": "screener.py:4705 rsi_14<45; rsi_14 persisted",
          "engine_implemented": True},
         {"id": "P5", "producer": "gate threshold (screener)",
+        # S6-B2885: an OFFLINE axis (no env knob) is graded from the landed
+        # cube, so every level is FREE. Migrated in the SAME pass as this
+        # entry's env knobs because leverage() switches encoding on whether ANY
+        # param carries free_band/resim_band - migrating half an entry flips it
+        # to per-level while leaving the rest invisible, which collapsed this
+        # entry's free_combos from 32 to 1 (the B2767 both-encodings hazard).
+        "free_band": [55, 60, 65, 70],
+        "resim_band": [],
          "param": "rsi_threshold_short", "production": 55, "type": "int",
          "band": [55, 60, 65, 70],
          "derivation": ("FREE - raising the floor keeps a strict subset; "
@@ -4112,6 +4361,14 @@ SPECS["smc_order_block_bounce"] = {
          "subset_safe": True, "status": "UNTESTED",
          "evidence": "screener.py:4710 rsi_14>55", "engine_implemented": True},
         {"id": "P6", "producer": "gate structure (screener)",
+        # S6-B2885: an OFFLINE axis (no env knob) is graded from the landed
+        # cube, so every level is FREE. Migrated in the SAME pass as this
+        # entry's env knobs because leverage() switches encoding on whether ANY
+        # param carries free_band/resim_band - migrating half an entry flips it
+        # to per-level while leaving the rest invisible, which collapsed this
+        # entry's free_combos from 32 to 1 (the B2767 both-encodings hazard).
+        "free_band": ['long', 'short'],
+        "resim_band": [],
          "param": "leg", "production": "both", "type": "str",
          "band": ["long", "short"],
          "derivation": "FREE depth axis: per-leg grading of the same cube",

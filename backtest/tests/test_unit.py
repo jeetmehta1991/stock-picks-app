@@ -25071,6 +25071,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2912: the L825 tripwire row - migrating half a record flips
+        # its reader and hides the unmigrated half.
+        ("MIGRATING HALF A RECORD FLIPS ITS READER TO THE NEW ENCODING AND MAKES THE UNMIGRATED HALF INVISIBLE - MIGRATE THE WHOLE ENTRY",
+         "B2912/L825: find the READER and ask what it does with a half-migrated record"),
         # B2911: the L824 tripwire row - a probe reporting absence must
         # prove it can see presence.
         ("A PROBE THAT REPORTS ABSENCE MUST PROVE IT CAN SEE PRESENCE - RUN IT AGAINST A KNOWN-PRESENT CASE BEFORE BELIEVING THE ZERO",
@@ -25835,7 +25839,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 277 -> 278 at B2911 (the L824 absence-probe fragment; same-call
     # with its tripwire row per B2130).
-    assert len(gutted) == 278, gutted
+    # 278 -> 279 at B2912 (the L825 half-migration fragment; same-call
+    # with its tripwire row per B2130).
+    assert len(gutted) == 279, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -39489,62 +39495,19 @@ def test_b2883_launch_refusals_reports_every_reason_not_the_first():
 
 
 
-def test_b2887_the_legacy_shape_blind_spot_is_enumerated_not_silent():
-    """L817 / S6-B2885: the B2883 R1 refusal keys on an env knob PLUS a
-    resim_band level away from production, so it is BLIND on any entry whose
-    resim_band is absent - the pre-B2467 shape that never split free from
-    resim.
-
-    MEASURED: of the entries carrying env knobs but no engine-requiring band,
-    3 of 3 are blind and 0 of 3 are explicitly production-only. A low refusal
-    count is what a PRECISE rule gives you and what a BLIND one gives you, so
-    the population is frozen here: a new entry written in the legacy shape
-    fails this pin rather than quietly joining the exempt set.
-
-    Shrink-only. Fixing an entry (giving it an explicit resim_band) removes it
-    from the set and the assertion below gets tighter, which is the direction
-    S6-B2885's migration moves."""
-    import sys
-    from pathlib import Path as _P
-    root = _P(__file__).resolve().parents[2]
-    if str(root / "scripts") not in sys.path:
-        sys.path.insert(0, str(root / "scripts"))
-    import producer_variant_table as pvt
-
-    BLIND_LEGACY = {
-        "smc_breaker_block_long",        # 6 env params, resim_band None
-        "smc_equal_lows_sweep_long",     # 3
-        "smc_inverse_fvg",               # 1
-    }
-
-    both = dict(pvt.SPECS)
-    both.update(pvt.SPECS_PHASE0)
-    blind = set()
-    for name, spec in both.items():
-        if pvt.engine_requiring_params(spec):
-            continue                      # the rule can see these
-        envs = [p for p in (spec.get("params") or []) if p.get("env")]
-        if not envs:
-            continue                      # no knobs at all - nothing to miss
-        if any(p.get("resim_band") in (None, [], "") for p in envs):
-            blind.add(name)
-
-    new = blind - BLIND_LEGACY
-    assert not new, (
-        f"{sorted(new)} carry env knobs with NO resim_band, so the B2883 R1 "
-        "adapter refusal cannot see them. Either declare an explicit "
-        "resim_band (production-only is fine and makes the exemption VISIBLE) "
-        "or add them here with a reason - silently joining the exempt set is "
-        "the L817 defect this pin exists to stop")
-
-    # must-QUIET on the direction that matters: the set may only SHRINK, and
-    # the assertion above already allows that. Prove the pin is not vacuous -
-    # the blind set must be non-empty today, or this test asserts nothing.
-    assert blind, (
-        "the blind population is empty - if S6-B2885's migration completed, "
-        "delete this pin and the BLIND_LEGACY register with it; if it did "
-        "not, this pin has gone vacuous and is asserting nothing")
-    assert blind <= BLIND_LEGACY, sorted(blind - BLIND_LEGACY)
+# S6-B2885/B2887: test_b2887_the_legacy_shape_blind_spot_is_enumerated_not_silent
+# was DELETED here, on its own instruction. It enumerated the 5 entries the
+# B2883 R1 adapter refusal was structurally blind to - env knobs with
+# resim_band None - and froze them in a BLIND_LEGACY register so the
+# population could not grow silently. Its failure message read: 'the blind
+# population is empty - if S6-B2885's migration completed, delete this pin
+# and the BLIND_LEGACY register with it'. B2885 migrated all 15 env params
+# plus the 4 offline params of smc_order_block_bounce, the blind set is now
+# empty, and the pin went vacuous by construction. Its replacement is
+# test_b2885_legacy_smc_entries_carry_a_measured_free_resim_split, which
+# asserts the POSITIVE property (every env knob carries a partitioning
+# free/resim split and every entry registers engine axes) rather than
+# freezing a backlog that no longer exists.
 
 
 
@@ -40333,3 +40296,69 @@ def test_b2874_table_d_resolves_from_either_registry():
     _probe = '    params = SPECS_PHASE0[strategy]["params"]'
     assert "SPECS_PHASE0[strategy]" in _probe and "=" in _probe.split(
         "SPECS_PHASE0[strategy]")[0], "the detector cannot see the defect"
+
+
+def test_b2885_legacy_smc_entries_carry_a_measured_free_resim_split():
+    """S6-B2885 (owner ruling "Migrate them"): the pre-B2467 shape is gone.
+
+    All 5 entries carried env knobs with resim_band None, and the B2883 R1
+    adapter refusal keys on "an env knob PLUS a level away from production" -
+    so it was structurally BLIND to every one of them, which is what the
+    ticket was about.
+
+    The split is MEASURED: a level is FREE only if it selects a strict SUBSET
+    of the landed fires AND its discriminator is PERSISTED per trade. Across
+    all rows of each strategy the signal dicts carry 833-837 BOOLEAN keys
+    computed AT production, and no knob's discriminator is among them - so
+    free_band is empty for all 15 and every level needs the engine.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    FAM = ["smc_breaker_block_long", "smc_equal_lows_sweep_long",
+           "smc_inverse_fvg", "smc_liquidity_sweep_reversal",
+           "smc_order_block_bounce"]
+
+    n_env = 0
+    for name in FAM:
+        spec = pvt.SPECS[name]
+        for p in spec["params"]:
+            if not p.get("env"):
+                continue
+            n_env += 1
+            # the legacy shape is GONE - this is the defect the R1 gate
+            # could not see
+            assert p.get("resim_band") is not None, (name, p["id"])
+            assert p.get("free_band") is not None, (name, p["id"])
+            # free + resim must PARTITION band exactly (validate_spec's rule)
+            assert (sorted(map(repr, p["free_band"]))
+                    + sorted(map(repr, p["resim_band"]))
+                    == sorted(map(repr, p["band"]))), (name, p["id"])
+            # and free is EMPTY, because no discriminator is persisted
+            assert p["free_band"] == [], (
+                name, p["id"], "a non-empty free_band claims a level is "
+                "gradable offline - that needs the discriminating quantity "
+                "PERSISTED per trade, which was measured absent (S6-B2885)")
+        # the R1 blind spot is CLOSED: each entry now registers engine axes,
+        # so the adapter refusal can see it
+        assert pvt.engine_requiring_params(spec), (
+            name, "an entry with no engine-requiring band is invisible to the "
+            "B2883 R1 adapter refusal - that blindness is the ticket")
+        # and every one still validates
+        assert pvt.validate_spec(spec) == [], (name, pvt.validate_spec(spec))
+
+    assert n_env == 15, n_env
+
+    # production is UNTOUCHED - this migration is metadata, not a re-test.
+    # smc_breaker_block_long is an ADMITTED Phase-1B line and re-testing it
+    # needs an explicit owner override; declaring which levels would need an
+    # engine run does not re-grade anything.
+    by = {p["id"]: p for p in pvt.SPECS["smc_breaker_block_long"]["params"]}
+    assert by["P1"]["production"] == 20, by["P1"]["production"]
+    assert by["P3"]["production"] == 20, by["P3"]["production"]
+    assert by["P6"]["production"] == 200, by["P6"]["production"]
+    assert by["P4"]["production"] is None and by["P5"]["production"] is None
