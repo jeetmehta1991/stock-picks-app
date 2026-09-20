@@ -4,6 +4,13 @@ Owner directive: verify a random sample of trades independently - did every
 producer actually fire against its threshold, and did the trade execute
 correctly?
 
+PROVENANCE: RANDOM-SAMPLING-OF-REAL-DATA. The seeded RNG picks WHICH landed
+trades to re-derive; it generates no number. Every figure reported here is
+computed from a real cube and real parquet bars, so a value quoted from it is
+a measurement. Declared at B2901, when the B1719b detector was widened to see
+the module-level random.seed/random.sample idiom this file uses - it had been
+invisible to that gate since the gate was written.
+
 METHOD (deliberately independent of the engine)
 For each sampled (ticker, entry_date) this re-derives, from the parquet alone:
 

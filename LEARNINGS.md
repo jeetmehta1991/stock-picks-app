@@ -21636,3 +21636,41 @@ its other face: run the PATH a string recommends before calling it right.
 Compliance failure against the MECHANISM-EXISTENCE rule in the skill's B1335
 section - it demands executed evidence for a mechanism CITED in a plan, and a
 remedy naming an action is the same claim wearing an imperative.
+
+### L821 - A DETECTOR'S PATTERN IS A CLAIM ABOUT EVERY SPELLING OF WHAT IT DETECTS (B2901, 2026-09-20)
+
+B1719b exists so that any file drawing numbers from a random source DECLARES
+that, and a figure lifted out of it carries its provenance. It enumerated three
+spellings: `default_rng(`, `np.random.`, `random.Random(`.
+
+MEASURED at B2901: of the **3** files under `scripts/` that draw from an RNG,
+**2 were invisible to it** - `spot_check_institutional.py` and
+`spot_check_trades.py` both sample with module-level `random.seed(...)` plus
+`random.sample(...)`, which none of the three patterns match. Both carried no
+declaration. The gate's real hit rate was 1 of 3, and it reported clean.
+
+**It fired on the third only by accident.** I wrote `random.Random(seed)`
+because I wanted an instance rather than the module's global state - a STYLE
+choice with no semantic content. Had I copied the idiom of the two sibling spot
+checks, which is what writing a third sibling normally means, the check would
+have stayed silent and a third undeclared sampler would have shipped.
+
+That is the sharp edge, and it generalises past regexes: **a detector is
+blindest exactly where new files are most likely to land - on the idiom its own
+neighbours already use.** New code is usually written by copying the nearest
+working example. So a pattern that misses the neighbours does not merely have a
+gap; it has a gap positioned precisely where the next instance will appear.
+
+Same family as B2578, where a literal needle spanning two lines refused a knob
+the engine really reads - there the needle was too narrow across LINES, here
+across IDIOMS. Both are the same claim: *this pattern is every way of writing
+the thing.* It almost never is.
+
+So: **when a detector fires on ONE file, measure its hit rate on the class
+before shipping the one-line fix that makes that file pass.** One query -
+narrow-pattern hits versus wide-pattern hits over the same tree - and the
+answer here was 1 versus 3.
+
+Compliance failure against the GENERALIZATION MANDATE. The tempting fix was the
+declaration in my own file, which turns the gate green and leaves two siblings
+undeclared - textbook "a patch that leaves siblings of the same class open".

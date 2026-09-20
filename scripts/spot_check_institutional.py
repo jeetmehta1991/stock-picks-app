@@ -6,6 +6,13 @@ so step 4 was recorded SKIPPED on every institutional cube. This is the
 family's counterpart, same artifact contract (agree / disagree / skipped /
 execution_failures / seed / ema_span), so postconfig_doc renders it unchanged.
 
+PROVENANCE: RANDOM-SAMPLING-OF-REAL-DATA. The seeded RNG picks WHICH landed
+trades to re-derive; it generates no number. Every figure reported here is
+computed from a real cube, so a value quoted from it is a measurement. Declared
+at B2901, when the B1719b detector was widened to see the module-level
+random.seed/random.sample idiom this file uses - it had been invisible to that
+gate since the gate was written.
+
 THREE LEGS per sampled (ticker, entry_date):
   leg A  RAW ARTIFACT  - the persistence-precompute parquet is read directly
          (own snapshot selection: newest snapshot dated <= entry_date) for

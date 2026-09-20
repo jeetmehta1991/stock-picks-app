@@ -16045,7 +16045,19 @@ def test_b1719_synthetic_probes_are_labelled():
             txt = f.read_text(encoding="utf-8", errors="replace")
         except Exception:
             continue
-        uses_rng = _re.search(r"default_rng\(|np\.random\.|random\.Random\(", txt)
+        # B2901: the pattern named THREE spellings and missed the most
+        # common one. MEASURED: of the 3 files under scripts/ that draw
+        # from an RNG, TWO were invisible here - spot_check_institutional
+        # and spot_check_trades both sample with module-level
+        # random.seed(...) + random.sample(...), which no pattern matched.
+        # The gate fired on the third only because it happened to use
+        # random.Random( - a style choice, not a semantic one. A new
+        # script is usually written by copying its neighbour, so a
+        # detector blind to the neighbours is blind to the future.
+        uses_rng = _re.search(
+            r"default_rng\(|np\.random\.|random\.Random\(|"
+            r"random\.(seed|sample|shuffle|choice|choices|randint|"
+            r"uniform|random)\(", txt)
         # B1719b: require a DECLARATION, not one fixed word. Generating fake
         # numbers and randomly SAMPLING real rows are different provenances, and
         # forcing "SYNTHETIC" onto a sampler would itself be a false label - the
@@ -25059,6 +25071,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2901: the L821 tripwire row - a detector's pattern is a claim
+        # about every spelling of what it detects.
+        ("A DETECTOR'S PATTERN IS A CLAIM ABOUT EVERY SPELLING OF THE THING IT DETECTS - AND IT IS BLINDEST ON THE IDIOM ITS OWN NEIGHBOURS USE",
+         "B2901/L821: measure a detector's hit rate on the class before shipping the one-file fix"),
         # B2898: the L820 tripwire row - the fix half of a message is
         # never exercised. Pins the instruction, not the heading.
         ("A REMEDIATION INSTRUCTION IS A CLAIM ABOUT WHAT HAPPENS IF SOMEONE FOLLOWS IT - EXECUTE THE FIX PATH, NOT JUST THE DIAGNOSIS",
@@ -25799,7 +25815,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 273 -> 274 at B2898 (the L820 remediation-is-a-claim fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 274, gutted
+    # 274 -> 275 at B2901 (the L821 detector-spelling fragment; same-call
+    # with its tripwire row per B2130).
+    assert len(gutted) == 275, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
