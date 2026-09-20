@@ -25052,6 +25052,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2891: the L819 tripwire row - a closure claim ends the work
+        # and so escapes scrutiny. Pins the incentive, not the heading.
+        ("A SWEEP THAT REPORTS A CLASS CLOSED IS THE ONE LEAST LIKELY TO BE VERIFIED, BECAUSE CLOSURE ENDS THE WORK",
+         "B2891/L819: the figure that closes the work is the one nobody checks"),
         # B2889: the L818 tripwire row - evidence and claims need
         # OPPOSITE windows. Pins the discriminator, not the heading.
         ("A GATE OVER EVIDENCE MUST SPAN THE TURN; A GATE OVER A CLAIM MUST JUDGE THE LATEST BLOCK",
@@ -25780,7 +25784,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 271 -> 272 at B2889 (the L818 evidence-vs-claim window fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 272, gutted
+    # 272 -> 273 at B2891 (the L819 closure-claim fragment; same-call
+    # with its tripwire row per B2130).
+    assert len(gutted) == 273, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

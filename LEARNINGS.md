@@ -21554,3 +21554,42 @@ followed by another bad one still fires.
 Before choosing any turn-end gate's window, ask which KIND it reads. The
 question has a one-word answer and it decides the window; asking it late costs
 a block loop that no amount of careful wording can escape.
+
+### L819 - A SWEEP THAT REPORTS A CLASS CLOSED IS THE ONE LEAST LIKELY TO BE VERIFIED (B2891, gate-caught 2026-09-20)
+
+Twice in one session I reported a gate's blast radius as "exactly the incident"
+and "zero collateral", and once I reported a window class as "closed at 1 of 1".
+All three were assertions. The first two were the SAME claim repeated, and it
+was wrong: of the entries my gate left alone, 3 of 3 were BLIND on an absent
+field and 0 of 3 were explicitly exempt. The third was wrong too: I had counted
+12 call sites and classified one.
+
+MEASURED by regex over the 58 ticket rows written this session: 3 assert class
+closure or zero collateral, 2 of the 3 are that one repeated claim, and 1 is
+the row recording the overclaim. So every genuine closure assertion I made was
+wrong, and they cluster on a single sentence I found comfortable to repeat.
+
+**The asymmetry is an incentive, not an accident.** A figure that CONTINUES the
+work - "3 of 12 remain" - will be acted on by someone, so it invites scrutiny
+before it is written. A figure that ENDS the work - "1 of 1", "no siblings",
+"exactly the incident" - invites none, because nothing downstream depends on it
+and no one is waiting for it. It is the same arithmetic in both directions, and
+only one of them gets checked. This is L679's rule (a probe measuring your own
+compliance gets more validation, not less) in its strongest form: a closure
+claim is a self-measurement whose whole content is "I am finished".
+
+The tell is that the number arrives at the END of a piece of work rather than
+inside it, and that writing it feels like tidying rather than claiming.
+
+So: before writing a closure figure, state WHAT YOU WOULD HAVE TO READ TO BE
+WRONG, then read it. For a blast radius that is the UNREFUSED population split
+by whether each member is explicitly exempt or silently unclassifiable (L817).
+For a class sweep it is every member of the population, not its cardinality.
+
+Compliance failure against item #270 (a verdict over a population from a
+partial read) and against L679, not a new class in either case - but the
+INCENTIVE half is not recorded anywhere and is what made both instances feel
+safe, so it is promoted to the skill's tripwire table. Detection is
+JUDGMENT-ONLY: no scan can tell a closure figure that was measured from one
+that was assumed, since both are integers. Durability is pinned by the
+test_b2123 fragment.
