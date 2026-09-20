@@ -21595,3 +21595,44 @@ that was assumed, since both are integers. Durability is pinned by the
 test_b2123 fragment.
 
 **Mechanised, and this REFINES the entry's own claim (B2892):** L819 above says "Detection is JUDGMENT-ONLY: a measured closure figure and an assumed one are both integers". Half of that is now false. Verifying a SCOPED closure figure is still judgment - the script cannot know whether 2 of 18 was measured or assumed. But detecting an UNSCOPED one is mechanical, and that is the cheaper and more common defect: scripts/audit_closure_claims.py enumerates every ledger row asserting a class is closed and flags those naming no denominator, pinned by test_b2891_closure_claim_auditor_is_a_real_instrument with a live-ledger assertion that none exist. MEASURED at B2892 over 2,840 ledger rows: 4 closure claims, 0 unscoped. So the honest form is "detection of an unscoped claim is MECHANISED; verification of a scoped one is JUDGMENT-ONLY" - and I record the correction because writing JUDGMENT-ONLY is exactly the move L698 warns about, a claim about the search space made before searching it.
+
+### L820 - A REMEDIATION INSTRUCTION IS A CLAIM, AND ITS FIX HALF SHIPS UNVERIFIED (B2898, council-caught 2026-09-20)
+
+B2883 existed to stop a FALSE MESSAGE. The launch gate had been telling
+operators "no SPECS entry in producer_variant_table" about a pair whose
+complete entry sat in SPECS_PHASE0 in that same file. I rewrote it to say the
+true thing and added a remedy: "Do NOT fix this by copying the entry into
+SPECS; complete its `tools` adapter block, which is what run_postconfig derives
+family readiness from."
+
+The diagnosis was right. The remedy could not work. MEASURED by probe: with a
+COMPLETE tools block still in SPECS_PHASE0, family_refusal returns "no SPECS
+entry in producer_variant_table", because run_postconfig.py:448 reads
+SPECS.get(fam_name). Following my instruction to the letter changes nothing,
+and the operator ends up back at the same refusal having done real work.
+
+**The two halves of a gate message have completely different exposure.** The
+DIAGNOSIS fires on real input, so someone sees it and it gets corrected if it
+is wrong - that is exactly how B2883 came to exist. The REMEDY fires on nobody.
+It is inert text until a reader acts on it, and by then the author is gone. So
+the fix half is unverified BY CONSTRUCTION, and it is trusted precisely because
+the gate was demonstrably right about the problem: a correct diagnosis buys
+credibility that the untested remedy then spends.
+
+Worse, I wrote it while fixing this exact class. The message that shipped an
+unexecutable instruction was the message written to stop an untrue one, one
+commit apart.
+
+So: **before shipping any remediation text, EXECUTE THE PATH IT RECOMMENDS.**
+Not read it, not reason about it - run it, on a copy if need be. Here that was
+one probe: patch a completed tools block into the PHASE0 entry and call
+family_refusal. Thirty seconds, and it would have turned the remedy from
+"complete the block" into "MOVE the entry into SPECS and complete the block, in
+one change", which is what B2897 shipped.
+
+L688 says find the BRANCH that emits a string before calling it wrong. This is
+its other face: run the PATH a string recommends before calling it right.
+
+Compliance failure against the MECHANISM-EXISTENCE rule in the skill's B1335
+section - it demands executed evidence for a mechanism CITED in a plan, and a
+remedy naming an action is the same claim wearing an imperative.

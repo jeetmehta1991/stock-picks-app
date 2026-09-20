@@ -25059,6 +25059,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2898: the L820 tripwire row - the fix half of a message is
+        # never exercised. Pins the instruction, not the heading.
+        ("A REMEDIATION INSTRUCTION IS A CLAIM ABOUT WHAT HAPPENS IF SOMEONE FOLLOWS IT - EXECUTE THE FIX PATH, NOT JUST THE DIAGNOSIS",
+         "B2898/L820: the remedy half of a gate message ships unverified"),
         # B2891: the L819 tripwire row - a closure claim ends the work
         # and so escapes scrutiny. Pins the incentive, not the heading.
         ("A SWEEP THAT REPORTS A CLASS CLOSED IS THE ONE LEAST LIKELY TO BE VERIFIED, BECAUSE CLOSURE ENDS THE WORK",
@@ -25793,7 +25797,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 272 -> 273 at B2891 (the L819 closure-claim fragment; same-call
     # with its tripwire row per B2130).
-    assert len(gutted) == 273, gutted
+    # 273 -> 274 at B2898 (the L820 remediation-is-a-claim fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 274, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
