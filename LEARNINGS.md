@@ -21181,3 +21181,33 @@ THE ROUTE THAT WORKED both times: build the backslash inside the patcher with
 chr(92), or avoid it entirely (chr(10).join instead of a newline literal).
 A payload that needs an escape should construct it in Python, never carry it
 through the shell.
+
+### L811 - A CONVERSION FACTOR MEASURED ON ONE CELL AND APPLIED TO A WHOLE GRID (B2867, owner-caught 2026-09-19)
+
+The owner asked "How are you measuring if configs are dead?" and the question
+found the defect: I was not measuring, I was estimating, and the estimator
+applied a conversion derived from a SINGLE cell to all 54.
+
+MEASURED: signal bars per config were real (the numpy re-implementation
+verified identical to compute_candles - soldiers 380/380, crows 270/270,
+delta 0 on 19 tickers). Trades were not. I converted bars to trades using the
+production cell's ratio against R5 ground truth - 8.8pct - and applied that
+one number to every config. It is config-DEPENDENT: under a one-position
+rule only 60.7pct of production signals could open a position, and tighter
+configs cluster less, so they convert BETTER. The config-aware estimator gives
+0.145/0.170 and 29 of 54 configs worth running, not 25 - my published figure
+was wrong by four configs and 14 hours in the direction that argued for MORE
+pruning, i.e. for the conclusion I had already drawn.
+
+THE RULE, which the plan already carries at SS10.2: never extrapolate from one
+point; two concordant measurements minimum before any projection. A ratio is a
+projection. When a factor will be applied across a grid, derive it from at
+least two cells that differ in the dimension you are extrapolating along - here,
+tightness - or state it as bounded-above/below rather than as a point estimate.
+
+Compliance failure against item #201 (a quantity must name what it was computed
+FROM, and a single-cell basis applied grid-wide is the provenance half failing).
+No new checklist item warranted. Mechanism for the class: JUDGMENT-ONLY for
+detection - no scan can tell how many cells a ratio was derived from - with the
+durable half being this entry plus the estimator's basis and residual
+assumption now written into the S6-B2867 row where the next reader meets it.

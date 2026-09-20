@@ -4191,6 +4191,8 @@ it** - which is why `#237` is a gate now and not a paragraph.
 
 **EXTENSION (B1805 / L552) - ONE INCIDENT PROVES ONE PATH.**
 
+**Instance L811 (B2867): a CONVERSION FACTOR is a projection, so the two-concordant-points rule binds it. I derived a signal-bar-to-trade ratio from the PRODUCTION cell alone and applied it to all 54 grid cells; it is config-dependent (clustering falls as a config tightens), and the error ran toward the conclusion I had already drawn. Derive a factor from at least two cells that differ along the dimension being extrapolated, or state it as a bound rather than a point.**
+
 **Instance L806 (B2854, record-of-fact): a corpus arm without its TRIGGER sentence never reaches the members - the must-fire failed test_b1805 (correctly) and the sibling must-quiet was hollow the same way; both repaired in one edit. The mechanism is test_b1805 itself.**
 
 **MEASURED: `scan_response_gates` passed this sweep every run of the session on one sentence -
