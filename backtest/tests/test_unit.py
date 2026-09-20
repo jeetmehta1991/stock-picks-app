@@ -25052,6 +25052,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2882: the L815 tripwire row - a history-reading check makes
+        # commit ORDER part of what it checks. Pins the QUESTION to ask
+        # before splitting, not the heading (L548).
+        ("ASK WHETHER ANY CHECK PROVES THOSE PARTS TOGETHER, AND HOW FAR BACK IT CAN SEE",
+         "B2882/L815: a multi-commit arc is a sequence of partial states"),
         # B2878: the second-consumer diagnostic. Pins the TELL (what a
         # persisting symptom MEANS), not the heading (L548).
         ("A FIX THAT DOES NOT CLEAR THE SYMPTOM IS EVIDENCE OF A SECOND CONSUMER",
@@ -25752,7 +25757,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 267 -> 268 at B2878 (the second-consumer diagnostic; same-call with
     # its tripwire row per B2130).
-    assert len(gutted) == 268, gutted
+    # 268 -> 269 at B2882 (the L815 commit-order fragment; same-call with
+    # its tripwire row per B2130).
+    assert len(gutted) == 269, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

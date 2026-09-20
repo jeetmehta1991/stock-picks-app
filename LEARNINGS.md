@@ -21432,3 +21432,5 @@ preventive gate is designed and filed PROPOSED-NOT-BUILT at S6-B2880: keyed on
 file-touch it would refuse legitimate commits editing LEARNINGS for unrelated
 reasons, so it needs a narrower trigger such as an L-number being added, and
 that design is the work rather than a line of code.
+
+**Promoted (B2882):** the generalised half of this entry - that a check proving its members from recent HISTORY makes commit ORDER part of what is checked - is now a tripwire row in the execution-discipline skill, pinned by its test_b2123 fragment. The MEASUREMENT (9 of 12 commits, 2 of 9 whole, 7 of 9 partial) stays here, per the split the skill prescribes: a tripwire row carrying a count is a row that decays. L628 already carried the INSTRUCTION to land members together; what was missing, and is now promoted, is the REASON, which is the half that generalises past Phase 5 to any history-reading gate.
