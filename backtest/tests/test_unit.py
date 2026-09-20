@@ -25052,6 +25052,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2889: the L818 tripwire row - evidence and claims need
+        # OPPOSITE windows. Pins the discriminator, not the heading.
+        ("A GATE OVER EVIDENCE MUST SPAN THE TURN; A GATE OVER A CLAIM MUST JUDGE THE LATEST BLOCK",
+         "B2889/L818: a corrected claim must not be judged forever"),
         # B2888: the L817 tripwire row - blast radius and coverage are
         # the same number. Pins the SPLITTING QUESTION, not the heading.
         ("OF THOSE IT DID NOT REFUSE, HOW MANY WERE EXPLICITLY EXEMPT VERSUS SILENTLY UNCLASSIFIABLE",
@@ -25774,7 +25778,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 270 -> 271 at B2888 (the L817 blast-radius-vs-coverage fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 271, gutted
+    # 271 -> 272 at B2889 (the L818 evidence-vs-claim window fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 272, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -39397,3 +39403,60 @@ def test_b2887_the_legacy_shape_blind_spot_is_enumerated_not_silent():
         "delete this pin and the BLIND_LEGACY register with it; if it did "
         "not, this pin has gone vacuous and is asserting nothing")
     assert blind <= BLIND_LEGACY, sorted(blind - BLIND_LEGACY)
+
+
+
+def test_b2889_a_claim_gate_judges_the_current_close_not_a_superseded_one():
+    """L818 / B2889: evidence and claims need OPPOSITE windows.
+
+    B2555 stopped turn-end gates resetting on the Stop hook's own block, which
+    is right for EVIDENCE - an inspection three closes ago is still true. It is
+    wrong for a CLAIM: an undenominated verdict written in close 1 and
+    corrected in close 5 kept firing, and since the denominator must appear in
+    the SAME text block as the verdict, and that block is already in the
+    transcript, no wording in the current response could reach it.
+
+    Both directions per #226. The must-FIRE arms are what keep this from being
+    a weakening: a bad claim in the CURRENT close must still be caught."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as vtc
+
+    BAD = ("The producer cannot clear the Sharpe bar and the strategy fails "
+           "outright, so it is dead.")
+    GOOD = ("The producer clears 0 of 20 combinations across 2 of 6 "
+            "producers, so it cannot clear the Sharpe bar on that scope.")
+    BLOCK = ("TURN-GATE BLOCK (CHECKLIST #182, B1504): a VERDICT was stated "
+             "without its denominator.")
+
+    def _u(t):
+        return {"type": "user", "message": {"content": t}}
+
+    def _a(t):
+        return {"type": "assistant",
+                "message": {"content": [{"type": "text", "text": t}]}}
+
+    # must-FIRE: an undenominated verdict in the CURRENT close
+    assert vtc.scan_verdict_denominators([_u("go"), _a(BAD)])
+    # must-FIRE: bad in a superseded close AND bad again in the current one
+    assert vtc.scan_verdict_denominators(
+        [_u("go"), _a(BAD), _u(BLOCK), _a(BAD)])
+    # must-QUIET: a denominated verdict
+    assert not vtc.scan_verdict_denominators([_u("go"), _a(GOOD)])
+    # must-QUIET: bad in a SUPERSEDED close, current close clean - the defect
+    assert not vtc.scan_verdict_denominators(
+        [_u("go"), _a(BAD), _u(BLOCK), _a(GOOD)]), (
+        "a claim corrected in a later close must not be judged forever - the "
+        "superseded block cannot be edited, so this is an unclosable turn")
+    # must-QUIET: two blocks deep
+    assert not vtc.scan_verdict_denominators(
+        [_u("go"), _a(BAD), _u(BLOCK), _a(BAD), _u(BLOCK), _a(GOOD)])
+
+    # the EVIDENCE window must NOT have been narrowed with it
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert "_last_instruction_index(entries)" in src, (
+        "evidence-reading gates must still span the whole turn (B2555)")

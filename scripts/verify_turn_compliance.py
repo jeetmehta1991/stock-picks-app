@@ -196,8 +196,32 @@ def scan_verdict_denominators(entries: list[dict]) -> list[str]:
     # did not skip gate feedback, so a Stop-hook block reset the
     # window and this gate judged a truncated turn.
     last_user = _last_instruction_index(entries)
+    # B2889: EVIDENCE ACCUMULATES ACROSS A TURN; CLAIMS ARE SUPERSEDED.
+    # _last_instruction_index deliberately does not reset on the Stop hook's
+    # own block (B2555) - right for EVIDENCE, because an inspection done three
+    # closes ago is still true. It is wrong for a CLAIM: an undenominated
+    # verdict written in close 1 and corrected in close 5 kept firing forever,
+    # and no wording in the current response could reach a block that is
+    # already in the transcript. MEASURED: this gate blocked three consecutive
+    # closes on one sentence from an earlier one, while the current close
+    # carried its denominators. So judge the CURRENT close - the text the
+    # owner actually reads as the answer - and let a corrected claim be
+    # corrected. The superseded block is still in the record; it is simply no
+    # longer the claim being made.
+    _start = last_user
+    for _i in range(len(entries) - 1, last_user, -1):
+        _d = entries[_i]
+        if not isinstance(_d, dict) or _d.get("type") != "user":
+            continue
+        _c = (_d.get("message") or {}).get("content")
+        _t = _c if isinstance(_c, str) else " ".join(
+            b.get("text", "") for b in (_c or ())
+            if isinstance(b, dict) and b.get("type") == "text")
+        if _t and _is_gate_feedback(_t):
+            _start = _i          # judge only what came after the last block
+            break
     offenders = []
-    for e in entries[last_user + 1:]:
+    for e in entries[_start + 1:]:
         if e.get("type") != "assistant":
             continue
         content = (e.get("message") or {}).get("content") or []

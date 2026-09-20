@@ -21516,3 +21516,41 @@ which is the refuse-everything failure, so the migration stays backlogged at
 S6-B2885 with its population now counted rather than estimated.
 
 **Promoted (B2888):** the generalised half of this entry - that a low refusal count is what a PRECISE rule gives you and what a BLIND one gives you, so the splitting question is how many of the UNREFUSED were explicitly exempt versus silently unclassifiable - is now a tripwire row in the execution-discipline skill, pinned by its test_b2123 fragment. The MEASUREMENT (3 of 3 blind, 0 of 3 exempt) stays here, because a tripwire row carrying a count decays. L642 already carried the GUARD form (a check conditioned on presence converts undeclared into approved); what was missing is the MEASUREMENT form - how the same defect looks when you audit your own gate and read its small blast radius as precision.
+
+### L818 - EVIDENCE ACCUMULATES ACROSS A TURN; A CLAIM IS SUPERSEDED BY THE LATEST BLOCK (B2889, self-caught 2026-09-20)
+
+B2555 established that a turn-end gate must not reset its window on the Stop
+hook's own block message, because doing so discards work done earlier in the
+same turn. That is correct for EVIDENCE. I routed a second gate through the
+same helper this session (B2883, the uninspected-constant window) and it fixed
+a real loop.
+
+Then the verdict-denominator gate blocked three consecutive closes on ONE
+sentence written several closes earlier - "the pin asserts non-vacuity as well
+as the bound" - while the close in front of the owner carried its denominators
+in a table. MEASURED on the predicate: the gate iterates every assistant text
+block since the last real instruction, and requires the denominator to appear
+INSIDE THE SAME BLOCK as the verdict. A block already in the transcript cannot
+be edited, so no wording in the current response could ever clear it, and
+restating the claim correctly did not help because the old block was still
+there.
+
+**The two kinds of thing a turn-end gate reads need OPPOSITE windows.**
+EVIDENCE is cumulative and durable: an inspection performed three closes ago is
+still true, and forgetting it produces the B2555 defect where a gate demands
+work that was already done. A CLAIM is neither: it is superseded the moment a
+later block corrects it, and judging the superseded version forever converts a
+correctable mistake into an unclosable turn. One helper served both because the
+distinction had never been named.
+
+The fix scopes the claim-reading gate to the CURRENT close - the text after the
+last gate-feedback entry - while leaving every evidence-reading gate spanning
+the whole turn. The superseded block is still in the record; it is simply no
+longer the claim being made. Proven both directions on five constructed cases:
+an undenominated verdict in the current close still FIRES, a denominated one
+does not, a bad block superseded by a clean one goes quiet, and a bad block
+followed by another bad one still fires.
+
+Before choosing any turn-end gate's window, ask which KIND it reads. The
+question has a one-word answer and it decides the window; asking it late costs
+a block loop that no amount of careful wording can escape.
