@@ -1855,7 +1855,7 @@ FORMULA_TWS = (
     "             (rsi_14 TIGHTER = LOWER the ceiling: free levels are the\n"
     "              measured retention quantiles on the 1,596 R5 fires)\n")
 
-SPECS_PHASE0["three_white_soldiers"] = {  # B2850: pre-engine inventory - not a battery family (L754 adapters come with the first engine campaign)
+SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes first"): PROMOTED from SPECS_PHASE0 to SPECS. It is no longer pre-engine inventory - the 54-config anatomy campaign runs, so the battery adapter is owed NOW. Moved, never copied: the two names that sit in BOTH registries carry tools={} in PHASE0 and a complete block in SPECS, so duplication is what makes a family droppable.
     "gate": "three_white_soldiers AND rsi_14 < 60",
     "formula": FORMULA_TWS,
     "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1596,
@@ -1921,7 +1921,16 @@ SPECS_PHASE0["three_white_soldiers"] = {  # B2850: pre-engine inventory - not a 
          "engine_implemented": True},
     ],
     "tools": {
-        "keys": {"P6": "rsi14_max"},
+        "keys": {"P2": "n_bars", "P3": "min_body_pct",
+                 "P4": "min_step_pct", "P5": "max_wick_pct"},
+        # B2897: the ENGINE axes (CANDLE_N_BARS / MIN_BODY_PCT /
+        # MIN_STEP_PCT / MAX_WICK_PCT) - what the 54-config campaign
+        # sweeps. P6 (the rsi_14 bound) has env=None and a
+        # production-only band: it is the OFFLINE axis and belongs in the
+        # free_levels leg. Naming it here made family_refusal refuse
+        # outright on the missing env knob (MEASURED).
+        "grid_keys": ["combo"],
+        "single_combination": False,
         "grade": {"script": "offline_level_sweep.py",
                   "flags": {"P6": "--axes rsi_14:le:<levels>"},
                   "extra": ["--strategy", "three_white_soldiers",
@@ -1951,7 +1960,7 @@ FORMULA_TBC = (
     "P7  guard =  NOT _short_borrow_trap_active  (days_to_cover cap 5.0,\n"
     "             B718a owner-ruled risk guard - BANDABLE-OWNER-GATED)\n")
 
-SPECS_PHASE0["three_black_crows_short"] = {  # B2850: pre-engine inventory - not a battery family (L754 adapters come with the first engine campaign)
+SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes first"): PROMOTED from SPECS_PHASE0 to SPECS. It is no longer pre-engine inventory - the 54-config anatomy campaign runs, so the battery adapter is owed NOW. Moved, never copied: the two names that sit in BOTH registries carry tools={} in PHASE0 and a complete block in SPECS, so duplication is what makes a family droppable.
     "gate": ("three_black_crows AND rsi_14 > 40 "
              "AND NOT _short_borrow_trap_active"),
     "formula": FORMULA_TBC,
@@ -2028,7 +2037,16 @@ SPECS_PHASE0["three_black_crows_short"] = {  # B2850: pre-engine inventory - not
          "evidence": "screener.py:148 (B718a)", "engine_implemented": True},
     ],
     "tools": {
-        "keys": {"P6": "rsi14_min"},
+        "keys": {"P2": "n_bars", "P3": "min_body_pct",
+                 "P4": "min_step_pct", "P5": "max_wick_pct"},
+        # B2897: the ENGINE axes (CANDLE_N_BARS / MIN_BODY_PCT /
+        # MIN_STEP_PCT / MAX_WICK_PCT) - what the 54-config campaign
+        # sweeps. P6 (the rsi_14 bound) has env=None and a
+        # production-only band: it is the OFFLINE axis and belongs in the
+        # free_levels leg. Naming it here made family_refusal refuse
+        # outright on the missing env knob (MEASURED).
+        "grid_keys": ["combo"],
+        "single_combination": False,
         "grade": {"script": "offline_level_sweep.py",
                   "flags": {"P6": "--axes rsi_14:ge:<levels>"},
                   "extra": ["--strategy", "three_black_crows_short",
@@ -2891,11 +2909,17 @@ def launch_refusals(doc: dict, root: Path | None = None,
             errs.append(f"{s}: its entry is in SPECS_PHASE0 (pre-engine "
                         "inventory), not SPECS - so it is not a registered "
                         "post-config battery family and the landing would FAIL "
-                        "closed. Do NOT fix this by copying the entry into "
-                        "SPECS; complete its `tools` adapter block, which is "
-                        "what run_postconfig derives family readiness from "
-                        "(S6-B2883). Every further refusal below is now "
-                        "reported too, instead of being suppressed.")
+                        "closed. A PHASE0 entry cannot become a family by "
+                        "completing its `tools` block alone - MEASURED, "
+                        "run_postconfig.family_refusal reads SPECS.get(name), "
+                        "so a COMPLETE block left in SPECS_PHASE0 still "
+                        "returns 'no SPECS entry'. MOVE the entry into SPECS "
+                        "(never COPY - duplication across the two registries "
+                        "is what makes a live family droppable) AND complete "
+                        "its `tools` block, in ONE change (S6-B2897; the "
+                        "B2883 wording here was unexecutable). Every further "
+                        "refusal below is now reported too, instead of being "
+                        "suppressed.")
         if fams is None:
             errs.append(f"{s}: the battery registry could not be read ({why}) "
                         "- refusing rather than guessing (L642)")

@@ -13713,9 +13713,16 @@ def test_b1510_producer_artifact_standard():
     _spec.loader.exec_module(_m)
 
     assert _m.SPECS, "SPECS must not be empty"
+    # B2897: the candle pair was PROMOTED into SPECS (owner ruling 'Candle
+    # goes first'). Its adapter is KNOWN incomplete - lacks spot_check -
+    # and that refusal is the live S6-B2861 work, asserted below so it
+    # cannot be forgotten. Every OTHER error on every entry still fails.
+    _B2861 = {"three_white_soldiers", "three_black_crows_short"}
     for name, spec in _m.SPECS.items():
         # every shipped SPEC is self-consistent
-        assert _m.validate_spec(spec) == [], f"{name} SPEC drift: {_m.validate_spec(spec)}"
+        _e = [x for x in _m.validate_spec(spec)
+              if not (name in _B2861 and "S6-B2883" in x)]
+        assert _e == [], f"{name} SPEC drift: {_e}"
         assert spec.get("formula"), f"{name} missing REQUIRED formula section"
         assert "PRODUCER LAYER" in spec["formula"], f"{name} formula missing PRODUCER LAYER"
         assert "STRATEGY LAYER" in spec["formula"], f"{name} formula missing STRATEGY LAYER"
@@ -32736,8 +32743,19 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     assert by["P8"]["band"] == [5, 6] == by["P8"]["free_band"]
     assert by["P8"]["resim_band"] == [] and by["P8"].get("env") is None
     assert len(by["P7"]["free_band"]) * len(by["P8"]["free_band"]) == 8, "free product unchanged"
+    # B2897: the candle pair was PROMOTED into SPECS (owner ruling 'Candle
+    # goes first'). Its adapter is KNOWN incomplete - lacks spot_check -
+    # and that refusal is the live S6-B2861 work, asserted below so it
+    # cannot be forgotten. Every OTHER error on every entry still fails.
+    _B2861b = {"three_white_soldiers", "three_black_crows_short"}
     for k, v in pvt.SPECS.items():
-        assert pvt.validate_spec(v) == [], (k, pvt.validate_spec(v))
+        _e = [x for x in pvt.validate_spec(v)
+              if not (k in _B2861b and "S6-B2883" in x)]
+        assert _e == [], (k, _e)
+    # and the known gap must STILL be reported - if it goes quiet either
+    # S6-B2861 landed (update this) or the gate died
+    for k in _B2861b:
+        assert any("S6-B2883" in x for x in pvt.validate_spec(pvt.SPECS[k]))
     # the rule behind the strike: a resim level with no knob is unrunnable
     bad = _copy.deepcopy(icg)
     p7 = next(p for p in bad["params"] if p["id"] == "P7")
@@ -32856,7 +32874,17 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     # the registry is imported, and an unreadable or incomplete one refuses
     orig = pvt._battery_families
     fams, why = orig()
-    assert fams == set(pvt.SPECS) and why == "", (fams, why)
+    # B2897: FAMILIES is a SUBSET of SPECS, not equal to it. That held
+    # only while every SPECS member already had a complete adapter. The
+    # candle pair is now a SPECS entry whose tools block lacks
+    # spot_check, so it is registered but not yet a family - and the
+    # difference must be exactly what FAMILY_REFUSALS names.
+    import run_postconfig as _rp_b2897
+    assert why == "", why
+    assert fams <= set(pvt.SPECS), fams - set(pvt.SPECS)
+    assert set(pvt.SPECS) - fams == set(_rp_b2897.FAMILY_REFUSALS), (
+        "every SPECS entry that is not a family must say why",
+        set(pvt.SPECS) - fams, set(_rp_b2897.FAMILY_REFUSALS))
     monkeypatch.setattr(pvt, "_battery_families", lambda: (None, "ImportError: boom"))
     one(smc, "battery registry could not be read (ImportError: boom)")
     monkeypatch.setattr(pvt, "_battery_families",
@@ -33049,7 +33077,15 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
                                 "smc_order_block_bounce",
                                 "smc_equal_lows_sweep_long",
                                 "smc_inverse_fvg"}, sorted(rp.FAMILIES)
-    assert rp.FAMILY_REFUSALS == {}, rp.FAMILY_REFUSALS
+    # B2897: FAMILY_REFUSALS was EMPTY for its whole life - every SPECS
+    # member was already a family, so the ledger of "why this is not a
+    # family" named nobody. Promoting the candle pair with an incomplete
+    # adapter gives it its first two rows, each naming the exact gap.
+    assert (set(rp.FAMILY_REFUSALS)
+            == {"three_white_soldiers", "three_black_crows_short"}), (
+        rp.FAMILY_REFUSALS)
+    for _k, _why in rp.FAMILY_REFUSALS.items():
+        assert "spot_check" in _why, (_k, _why)
     for name, fam in rp.FAMILIES.items():
         assert callable(fam["params"]) and callable(fam["run"]), name
         assert isinstance(fam["single_combination"], bool), name
@@ -38932,7 +38968,11 @@ def test_b2866_a_declared_knob_must_be_read_by_the_engine():
     assert pvt.unactuated_knobs(both) == {}, pvt.unactuated_knobs(both)
 
     # must-FIRE: a fabricated knob
-    spec = copy.deepcopy(pvt.SPECS_PHASE0["three_white_soldiers"])
+    # B2897: the pair was PROMOTED to SPECS (owner ruling "Candle goes
+    # first"), so resolve from either registry rather than assuming one.
+    _src = (pvt.SPECS.get("three_white_soldiers")
+            or pvt.SPECS_PHASE0["three_white_soldiers"])
+    spec = copy.deepcopy(_src)
     for p in spec["params"]:
         if p.get("env"):
             p["env"] = "CANDLE_TOTALLY_FAKE_KNOB_NOBODY_READS"
@@ -38948,14 +38988,18 @@ def test_b2866_a_declared_knob_must_be_read_by_the_engine():
     # open S6-B2861 work; it must be the ONLY thing they fail on, so this
     # assertion still bites on any actuation regression.
     for k in ("three_white_soldiers", "three_black_crows_short"):
-        _errs = pvt.validate_spec(pvt.SPECS_PHASE0[k])
+        _spec = pvt.SPECS.get(k) or pvt.SPECS_PHASE0[k]   # B2897: moved
+        _errs = pvt.validate_spec(_spec)
         _other = [e for e in _errs if "S6-B2883" not in e]
         assert _other == [], (k, _other)
         assert any("S6-B2883" in e for e in _errs), (
-            k, "the adapter refusal must still fire until S6-B2861 completes "
+            k, "the adapter refusal must still fire until the tools "
+            "block is complete - it now lacks spot_check only "
+            "(S6-B2897 promoted the pair and repointed keys to P2-P5) "
             "the tools block - if it stopped firing, either the adapter "
             "landed (update this pin) or the gate went silent")
-        ids = [p["id"] for p in pvt.SPECS_PHASE0[k]["params"]]
+        ids = [p["id"] for p in (pvt.SPECS.get(k)
+                                 or pvt.SPECS_PHASE0[k])["params"]]
         assert ids == sorted(ids, key=lambda x: int(x[1:])), (k, ids)
 
     # a precompute-time knob is NOT unactuated - the sweep classifies (L643)
@@ -39012,7 +39056,8 @@ def test_b2870_consumer_drift_is_checked_on_both_registries():
     # must-FIRE 1: a PHASE0 entry declaring a knob with NO consumers list.
     # Declaring nothing has to fail exactly as declaring fiction does, or the
     # class escapes by omission - which is how the three live rows survived.
-    spec = copy.deepcopy(pvt.SPECS_PHASE0["three_white_soldiers"])
+    spec = copy.deepcopy(pvt.SPECS.get("three_white_soldiers")
+                         or pvt.SPECS_PHASE0["three_white_soldiers"])
     hit = False
     for p in spec["params"]:
         if p.get("env") and "consumers" in p:
@@ -39024,7 +39069,8 @@ def test_b2870_consumer_drift_is_checked_on_both_registries():
     assert any("declares no `consumers` list" in e for e in errs), errs
 
     # must-FIRE 2: a PHASE0 entry declaring a blast radius that is fiction.
-    spec2 = copy.deepcopy(pvt.SPECS_PHASE0["three_white_soldiers"])
+    spec2 = copy.deepcopy(pvt.SPECS.get("three_white_soldiers")
+                          or pvt.SPECS_PHASE0["three_white_soldiers"])
     hit = False
     for p in spec2["params"]:
         if p.get("env") and "consumers" in p:
@@ -39272,7 +39318,8 @@ def test_b2883_r1_refuses_a_band_inventory_with_an_incomplete_adapter():
         return [e for e in pvt.validate_spec(spec) if "S6-B2883" in e]
 
     # must-FIRE: an engine-requiring band with a HALF-WRITTEN adapter
-    spec = copy.deepcopy(pvt.SPECS_PHASE0["three_white_soldiers"])
+    spec = copy.deepcopy(pvt.SPECS.get("three_white_soldiers")
+                         or pvt.SPECS_PHASE0["three_white_soldiers"])
     assert pvt.engine_requiring_params(spec), "fixture stale: no engine band"
     assert _b2883(spec), "a half-written adapter must be refused"
 
@@ -39347,9 +39394,18 @@ def test_b2883_launch_refusals_reports_every_reason_not_the_first():
     assert any("battery family" in e for e in errs), "the family reason too"
     # must-QUIET: the FALSE message is gone
     assert "no SPECS entry in producer_variant_table" not in joined, (
-        "a strategy with a SPECS_PHASE0 entry must not be told it has no entry")
+        "a strategy with an entry in EITHER registry must not be told it has none")
     # and the message must steer AWAY from the duplicate-registry repair
-    assert "Do NOT fix this by copying the entry into SPECS" in joined
+    # B2897: the pair is in SPECS now, so the PHASE0-only branch does not
+    # fire for it. The branch and its corrected wording are asserted at
+    # the source instead - the old text told the operator to complete a
+    # tools block in PHASE0, which MEASURABLY cannot make a family.
+    _src_pvt = (root / "scripts" / "producer_variant_table.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert "cannot become a family by" in _src_pvt, (
+        "the PHASE0 refusal must say that completing tools alone is not "
+        "enough - B2883s wording was unexecutable (S6-B2897)")
+    assert "Do NOT fix this by copying the entry into SPECS" not in _src_pvt
 
 
 
