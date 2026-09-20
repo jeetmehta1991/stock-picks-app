@@ -25052,6 +25052,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2878: the second-consumer diagnostic. Pins the TELL (what a
+        # persisting symptom MEANS), not the heading (L548).
+        ("A FIX THAT DOES NOT CLEAR THE SYMPTOM IS EVIDENCE OF A SECOND CONSUMER",
+         "B2878/L814: a persisting symptom means a second consumer, not a bad fix"),
         # B2875: the L814 tripwire row - a fix invalidates inferences
         # keyed on the defect's artifact. Pins the DISCRIMINATOR (real
         # property vs side-effect), not the heading (L548).
@@ -25746,7 +25750,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # its tripwire row per B2130).
     # 266 -> 267 at B2875 (the L814 proxy-keyed-on-the-defect fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 267, gutted
+    # 267 -> 268 at B2878 (the second-consumer diagnostic; same-call with
+    # its tripwire row per B2130).
+    assert len(gutted) == 268, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

@@ -21375,3 +21375,17 @@ detectors** - and the count is the finding: a class fixed twice without
 sweeping its siblings has measured nothing about itself (L710). The sweep
 that mattered was one grep for the other consumers of the launch question,
 and it was available before any of the three.
+
+**ADDENDUM 3 (B2878) - THE TELL, PROMOTED:** the operative mistake in the two
+addenda above was not either patch, it was the INFERENCE between them. After
+the trunk fix the gate still fired, and the reflex was to doubt the patch and
+widen it further - which is exactly how an escape gets over-widened until it
+fails open (L528), the expensive direction. **A fix that does not clear the
+symptom is evidence of a SECOND CONSUMER, not evidence the fix was wrong.**
+The cheaper question is which other code asks the same question, and it is one
+grep. L608 already carries the REMEDY (move the lesson to the trunk the first
+time a second leaf needs it); what was missing is the DIAGNOSTIC that tells you
+which situation you are in, and that is the half that fires at the moment of
+choosing. Promoted to the skill's tripwire table rather than left here, because
+LEARNINGS is read when someone goes looking and the tripwire table is read
+every turn.
