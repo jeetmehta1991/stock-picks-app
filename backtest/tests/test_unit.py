@@ -39970,11 +39970,14 @@ def test_b2904_candle_free_levels_leg_mirrors_the_gate_and_discloses_occupancy()
     import pandas as _pd
     d = _P(tempfile.mkdtemp())
 
+    # B2871b: the helper moved to the shared trunk (occupancy_disclosure)
+    # so BOTH free-level legs disclose it; the leg re-exports it by
+    # importing it, and these arms assert the leg still reaches it.
     # a PRE-B2905 cube: literal stamps -> UNQUANTIFIABLE, and it says so
     _pd.DataFrame({"strategy": ["(same-strategy)"] * 5,
                    "reason": ["ticker_already_open_same_strategy_bug61_mode_c"] * 5
                    }).to_csv(d / "skipped_trades.csv", index=False)
-    note = fl.occupancy_note(d, "three_white_soldiers")
+    note = fl.occupancy_disclosure(d, "three_white_soldiers")
     assert note["attribution_available"] is False
     assert note["blocked_rows_attributable"] is None
     assert "UNQUANTIFIABLE" in note["note"], note["note"]
@@ -39985,12 +39988,106 @@ def test_b2904_candle_free_levels_leg_mirrors_the_gate_and_discloses_occupancy()
                      "three_white_soldiers,three_black_crows_short"],
         "reason": ["ticker_already_open_same_strategy_bug61_mode_c"] * 3
     }).to_csv(d / "skipped_trades.csv", index=False)
-    note = fl.occupancy_note(d, "three_white_soldiers")
+    note = fl.occupancy_disclosure(d, "three_white_soldiers")
     assert note["attribution_available"] is True, note
     assert note["blocked_rows_attributable"] == 2, note
 
     # no artifact at all is disclosed, never assumed zero
     (d / "skipped_trades.csv").unlink()
-    note = fl.occupancy_note(d, "three_white_soldiers")
+    note = fl.occupancy_disclosure(d, "three_white_soldiers")
     assert note["attribution_available"] is False
     assert "cannot be bounded" in note["note"], note["note"]
+
+
+def test_b2907_both_free_level_legs_disclose_the_occupancy_correction():
+    """S6-B2871 part B: the correction an offline re-score cannot compute.
+
+    Every free-level re-scorer rests on the premise that a tighter threshold
+    selects a strict SUBSET of the cube. MEASURED, it is false in one
+    direction: removing trades frees occupancy, and fires the engine blocked
+    while a position was open would then be taken (L812). The institutional
+    leg had shipped that re-score on every landing since B2569 with no
+    disclosure at all - MEASURED 5,733 occupancy blocks against 373 landed
+    fires on output_icg_cfg1_rerun_cfg1_rerun, 15.4x.
+
+    It DISCLOSES rather than refuses: a refusal would fail a live battery leg
+    on every landing over a backlog nothing can fix retroactively (L721), and
+    the owner's ruling is forward-only.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import pandas as _pd
+    from occupancy_disclosure import occupancy_disclosure, LOWER_BOUND_NOTE
+
+    import tempfile
+    d = _P(tempfile.mkdtemp())
+    REASON = "ticker_already_open_same_strategy_bug61_mode_c"
+
+    def _write(rows):
+        _pd.DataFrame(rows).to_csv(d / "skipped_trades.csv", index=False)
+
+    # the disclosure is STRUCTURAL - a caller cannot omit it by forgetting a
+    # key, because every branch returns the same required fields
+    REQUIRED = {"attribution_available", "lower_bound_note", "note",
+                "blocked_rows_total", "blocked_rows_attributable", "artifact"}
+
+    # branch 1: no artifact at all -> unknown slack, disclosed not assumed
+    note = occupancy_disclosure(d, "three_white_soldiers")
+    assert REQUIRED <= set(note), sorted(note)
+    assert note["attribution_available"] is False
+    assert "UNKNOWN slack" in note["note"], note["note"]
+
+    # branch 2: an artifact with NO occupancy rows -> the premise HOLDS here,
+    # and saying so is as important as the warning (a gate that only ever
+    # warns teaches nothing)
+    _write([{"strategy": "x", "reason": "no_next_bar"}])
+    note = occupancy_disclosure(d, "three_white_soldiers")
+    assert REQUIRED <= set(note), sorted(note)
+    assert note["attribution_available"] is True
+    assert note["blocked_rows_attributable"] == 0
+    assert "counts are exact" in note["note"], note["note"]
+
+    # branch 3: pre-B2905 literal stamps -> UNQUANTIFIABLE
+    _write([{"strategy": "(same-strategy)", "reason": REASON}] * 4)
+    note = occupancy_disclosure(d, "three_white_soldiers")
+    assert REQUIRED <= set(note), sorted(note)
+    assert note["attribution_available"] is False
+    assert note["blocked_rows_total"] == 4
+    assert note["blocked_rows_attributable"] is None
+    assert "UNQUANTIFIABLE" in note["note"]
+
+    # branch 4: post-B2905 real names -> a number, and multi-name rows count
+    _write([{"strategy": "three_white_soldiers", "reason": REASON},
+            {"strategy": "smc_breaker_block_long", "reason": REASON},
+            {"strategy": "three_white_soldiers,three_black_crows_short",
+             "reason": REASON}])
+    note = occupancy_disclosure(d, "three_white_soldiers")
+    assert note["attribution_available"] is True
+    assert note["blocked_rows_total"] == 3
+    assert note["blocked_rows_attributable"] == 2, note
+    # a strategy named in NO row gets zero, not the total
+    other = occupancy_disclosure(d, "some_other_strategy")
+    assert other["blocked_rows_attributable"] == 0, other
+
+    # the lower-bound sentence rides on every branch that reports a count
+    for n in (note, other):
+        assert n["lower_bound_note"] == LOWER_BOUND_NOTE
+        assert "LOWER BOUND" in n["lower_bound_note"]
+
+    # ---- BOTH legs route through the trunk, structurally ----------------
+    # a leaf-by-leaf fix is how this class survives (L608/L814), so assert
+    # every free-level grader imports the shared helper rather than carrying
+    # its own copy
+    legs = sorted((root / "scripts").glob("grade_free_levels_*.py"))
+    assert len(legs) >= 2, [p.name for p in legs]
+    for leg in legs:
+        txt = leg.read_text(encoding="utf-8", errors="replace")
+        assert "from occupancy_disclosure import" in txt, (
+            leg.name, "a free-levels leg that does not disclose the occupancy "
+            "correction is asserting a subset premise that is false")
+        assert "occupancy_disclosure(" in txt, leg.name
+        assert "def occupancy_note" not in txt, (
+            leg.name, "a local copy of the helper defeats the trunk fix")

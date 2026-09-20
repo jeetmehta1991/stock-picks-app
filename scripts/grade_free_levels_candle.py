@@ -61,6 +61,8 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import roster_core as rc  # noqa: E402
+from occupancy_disclosure import (  # noqa: E402
+    occupancy_disclosure)
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -89,47 +91,6 @@ def parse_signals(raw):
         except Exception:                               # noqa: BLE001
             return None
     return d if isinstance(d, dict) and d else None
-
-
-def occupancy_note(cube_dir: Path, strategy: str) -> dict:
-    """The correction term this tool cannot compute - reported, not assumed.
-
-    A tighter level frees occupancy and admits trades present in no cube
-    (L812). Returns a quantified count where B2905's attribution exists, and
-    says UNQUANTIFIED where the pre-B2905 literal destroyed it."""
-    f = cube_dir / "skipped_trades.csv"
-    out = {"artifact": f.name, "blocked_rows_attributable": None,
-           "attribution_available": False}
-    if not f.exists():
-        out["note"] = ("no skipped_trades.csv in the cube - the occupancy "
-                       "correction cannot be bounded at all")
-        return out
-    try:
-        sk = pd.read_csv(f, usecols=["strategy", "reason"], low_memory=False)
-    except (OSError, ValueError) as exc:
-        out["note"] = f"skipped_trades.csv unreadable: {exc!r}"
-        return out
-    occ = sk[sk["reason"].astype(str).str.contains("already_open", na=False)]
-    out["blocked_rows_total"] = int(len(occ))
-    names = occ["strategy"].astype(str)
-    literal = int(names.str.startswith("(").sum())
-    if literal:
-        out["note"] = (
-            f"{literal} of {len(occ)} occupancy rows carry a LITERAL stamp "
-            "instead of a strategy name (the pre-B2905 writer), so the "
-            "per-strategy correction is UNQUANTIFIABLE on this cube. Every "
-            "count below is a LOWER BOUND on the level's trade set: a tighter "
-            "bound frees occupancy and admits trades present in no cube "
-            "(L812). B2905 fixed the stamp forward-only.")
-        return out
-    out["attribution_available"] = True
-    out["blocked_rows_attributable"] = int(
-        names.str.split(",").apply(lambda xs: strategy in xs).sum())
-    out["note"] = (
-        f"{out['blocked_rows_attributable']} occupancy blocks name this "
-        "strategy. A tighter bound frees some of them, so each level's trade "
-        "count below is a LOWER BOUND by at most that many (L812).")
-    return out
 
 
 def main() -> int:
@@ -242,8 +203,17 @@ def main() -> int:
         "gate_mirrored": f"{KEY} {direction} <level> (strict, per screener.py)",
         "levels_searched": [production] + [float(x) for x in levels],
         "reproduction": repro,
-        "occupancy": occupancy_note(cube_dir, strat),
+        "occupancy": occupancy_disclosure(cube_dir, strat),
         "results": results,
+        # S6-B2871b: the shape producer_variant_table.free_band_levels_graded
+        # reads - a dict keyed by level name, matching the institutional
+        # leg. That reader has no caller today, but an artifact owes its
+        # consumer's fields (L741) and two legs of one contract should not
+        # disagree about their own schema.
+        "levels": {str(r["level"]): {"p6": r["level"],
+                                     "is_fires": r["trades_kept"],
+                                     "per_exit_ranked_by_ci_lo": r["per_exit"]}
+                   for r in results},
         "multiplicity_exposure": (
             f"{len(levels)} free levels searched on this axis, each a max over "
             f"{max((r['exits_evaluable'] for r in results), default=0)} exits, "

@@ -53,6 +53,8 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import roster_core as rc  # noqa: E402
+from occupancy_disclosure import (  # noqa: E402
+    occupancy_disclosure)
 from producer_variant_table import SPECS  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -215,6 +217,14 @@ def grade_levels(cube_csv: Path, flags: pd.DataFrame, *, min_n: int = 10,
 
     doc = {"ticket": ticket, "strategy": STRAT, "cube": str(cube_csv),
            "method": method,
+           # S6-B2871 part B: this leg has shipped a
+           # strict-subset re-score on every landing since
+           # B2569 while the subset premise is false in one
+           # direction (L812). The correction is DISCLOSED,
+           # never simulated - only the engine can produce
+           # the trades a freed slot would have taken.
+           "occupancy": occupancy_disclosure(
+               Path(cube_csv).parent, STRAT),
            "multiplicity_exposure": {
                "levels_searched_this_pass": len(levels) - 1,
                "note": ("S6-B2444 recording rule; each level's headline is a "
