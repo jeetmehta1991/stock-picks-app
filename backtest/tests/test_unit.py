@@ -25071,6 +25071,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2913: the L826 tripwire row - a gate that defines its own
+        # population always reports full coverage.
+        ("A GATE THAT DEFINES ITS OWN POPULATION WILL ALWAYS REPORT FULL COVERAGE - TAKE THE DENOMINATOR FROM A SOURCE THE GATE DOES NOT OWN",
+         "B2913/L826: take the denominator from a source the gate does not own"),
         # B2912: the L825 tripwire row - migrating half a record flips
         # its reader and hides the unmigrated half.
         ("MIGRATING HALF A RECORD FLIPS ITS READER TO THE NEW ENCODING AND MAKES THE UNMIGRATED HALF INVISIBLE - MIGRATE THE WHOLE ENTRY",
@@ -25841,7 +25845,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 278 -> 279 at B2912 (the L825 half-migration fragment; same-call
     # with its tripwire row per B2130).
-    assert len(gutted) == 279, gutted
+    # 279 -> 280 at B2913 (the L826 self-denominator fragment; same-call
+    # with its tripwire row per B2130).
+    assert len(gutted) == 280, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

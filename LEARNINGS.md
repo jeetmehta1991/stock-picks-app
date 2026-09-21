@@ -21840,3 +21840,40 @@ The fix was to migrate the entry WHOLE: the 4 offline params take
 `free_band = band, resim_band = []`, because an offline axis is graded from the
 landed cube. `free_combos` returns to 32, now on the authoritative per-level
 basis rather than the coarse boolean - the same number with better provenance.
+
+### L826 - A GATE THAT DEFINES ITS OWN POPULATION ALWAYS REPORTS FULL COVERAGE (B2913, council-caught 2026-09-20)
+
+Asked whether the workflow has a gap, I measured the R1 adapter refusal's
+coverage and reported: **8 of 8 engine-bound entries covered, 0 blind.**
+
+A council Contrarian refused it in one line: *"The adapter is not closed - the
+DENOMINATOR is."*
+
+The number came from `engine_requiring_params`, whose first statement inside
+the loop is `if not p.get("env"): continue`. So a parameter with no env field
+is not counted as engine-bound, is therefore not in the population the gate is
+responsible for, and cannot appear as a gap. **The coverage figure and the
+gate's scope are computed by the same predicate.**
+
+Taking the denominator from the BAND REGISTRY instead - every parameter
+carrying a band and marked `engine_implemented: true` - the picture inverts:
+**13 entries carrying 30 such parameters have no env field and are invisible to
+the refusal. 9 of the 13 are not battery families at all**, and several are
+tagged *DEPTH-NOT-RUN; depth SCHEDULE-LATER*. The candle pair I had just
+declared ready contributes 5 of the 30.
+
+**This is L817 recurring inside the session that recorded it.** L817 says a
+discriminator keyed on an OPTIONAL field is blind where the field is absent; I
+wrote it about `resim_band`, fixed that shape at B2885, and then read coverage
+off `env` - the optional field sitting beside it in the same dict, in the same
+function, guarded by the same idiom.
+
+So the rule is not "check optional fields". It is about WHERE A DENOMINATOR
+COMES FROM: **a gate may compute its verdict, never its population.** Source
+the denominator from a registry, a plan table, an artifact inventory - anything
+the gate does not own - and the blind cases become visible as gaps instead of
+silently leaving the set.
+
+A swept audit of 7 readiness gates found 1 skipping on an absent field, this
+one. That figure is a LOWER bound: the detector recognises a single spelling of
+self-scoping, which is L821's own limit applied to this audit.
