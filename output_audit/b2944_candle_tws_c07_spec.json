@@ -25,5 +25,7 @@
    "note": "S6-B2944 Option C cell 7 of 18. A TIGHTENING of production on body/step/wick; n_bars stays at 3 (n_bars=4 deprioritised, B2939). Offline feasibility says this cell clears the 15-trade holdout floor, and that count is a LOWER bound - a tighter config frees occupancy (L812), so the engine may land MORE.",
    "env_note": "CANDLE_MAX_WICK_PCT='' is the None level, not zero (config.py:2490 reads falsy as None)"
   }
- ]
+ ],
+ "fires_at_production": 199,
+ "_fires_basis": "output_audit/b2850_candle_step05_smoke.json - SS11.2 step 0.5 at PRODUCTION params on 6 megacaps 2022-05-05..2026-05-05: pattern 479, pattern_and_rsi 199. 199 is the count at the FULL production gate (pattern AND rsi_14<60), which is what this run launches. Corroborated at full-universe scale by the R5 baseline in the same artifact: 1,596 fires, holdout_n 321. The smoke's scope is 6 tickers and this run is 200, so 199 is a FLOOR on what to expect, not a projection of it."
 }

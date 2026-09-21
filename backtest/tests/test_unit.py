@@ -25071,6 +25071,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2945: the L835 tripwire row - one gate's silence is not
+        # launch readiness.
+        ("ONE GATE'S SILENCE IS NOT LAUNCH READINESS - A SPEC-TIME VALIDATOR THAT DOES NOT ENFORCE WHAT THE LAUNCH-TIME GATE REQUIRES JUST MOVES THE REFUSAL DOWNSTREAM",
+         "B2945/L835: name the other gates between you and the run"),
         # B2942: the L834 tripwire row - a patcher can comment out
         # what it meant to add.
         ("A PATCHER THAT BUILDS CODE FROM STRING LITERALS CAN COMMENT OUT WHAT IT MEANT TO ADD - AN ANCHOR COUNT CANNOT SEE THAT ITS MATCH SITS INSIDE A COMMENT",
@@ -25895,7 +25899,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # swallowed-code fragments; same-call with their tripwire rows per
     # B2130). NOTE: 280 -> 286 did NOT hold between B2917 and B2942 -
     # the rows were inside a comment and this assert was too (L834).
-    assert len(gutted) == 288, gutted
+    # 288 -> 289 at B2945 (the L835 gate-scope fragment; same-call with
+    # its tripwire row per B2130).
+    assert len(gutted) == 289, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -36291,8 +36297,18 @@ def test_b2713_ruled_scope_is_resolved_not_typed():
     # be refused today, correctly. That refusal is orthogonal to what this
     # pin proves, so it is filtered by name rather than weakening the gate.
     _adm = "ALREADY ADMITTED"
-    _r = [x for x in launch_refusals(spec, root) if _adm not in x]
+    # S6-B2945: a SECOND retroactive refusal of the same shape against
+    # the same artifact. b2712 is the one modern-shape spec on disk
+    # carrying no fires_at_production (1 of 37, measured) - it ran to
+    # COMPLETE on 2026-09-12, BEFORE B2848c made the field required.
+    # Filtered by name on the same B2738 rationale, and asserted
+    # present below rather than wished away.
+    _fap = "fires_at_production"
+    _r = [x for x in launch_refusals(spec, root)
+          if _adm not in x and _fap not in x]
     assert _r == [], _r
+    assert any(_fap in x for x in launch_refusals(spec, root)), (
+        "b2712 predates B2848c; relaunching it today must refuse")
     # and the admitted-retest refusal IS present, because b2712 graded a
     # banked strategy - the B2731 incident, pinned here as a fact
     assert any(_adm in x for x in launch_refusals(spec, root))
@@ -36713,7 +36729,11 @@ def test_b2732a_hub1_is_a_registered_launchable_family(tmp_path):
     # (c) a hub-1 Step-1 spec passes the launch gate
     sub = tmp_path / "hub1.txt"
     sub.write_text(HUB + "\n", encoding="utf-8")
-    spec = {"wave": "b2732a_pin", "step": 1, "strategy_subset": str(sub),
+    # S6-B2945: a MODERN-shape spec must carry fires_at_production; this
+    # fixture predates the requirement and probes family registration,
+    # which the field does not touch.
+    spec = {"wave": "b2732a_pin", "step": 1, "fires_at_production": 199,
+            "strategy_subset": str(sub),
             "arms": [{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}]}
     assert pvt.launch_refusals(spec, root) == [], pvt.launch_refusals(spec, root)
 
@@ -38734,8 +38754,13 @@ def test_b2849_smoke_and_breadth_disposition_are_refusals():
             "calendar": "y", "universe": "z", "wall_clock_projection": "4h"}
     # drive through the real check function - locate it structurally
     import inspect
+    # S6-B2945: restrict to functions DEFINED here. launch_refusals is
+    # IMPORTED into this namespace and now mentions the field too (it
+    # enforces the same requirement at SPEC time), which took this count
+    # to 2. The locator always meant "prelaunch_gate's OWN check".
     fns = [f for n, f in inspect.getmembers(pg, inspect.isfunction)
-           if "fires_at_production" in inspect.getsource(f)]
+           if getattr(f, "__module__", None) == pg.__name__
+           and "fires_at_production" in inspect.getsource(f)]
     assert len(fns) == 1, [f.__name__ for f in fns]
     check = fns[0]
     absent = [p for p in check(dict(base)) if "fires_at_production" in p]
@@ -41287,3 +41312,61 @@ def test_b2942_no_comment_line_swallowed_code():
             line = src[:m.start()].split(chr(10))[-1]
             assert not line.lstrip().startswith("#"), (
                 needle[:40] + " is still inside a comment")
+
+
+
+def test_b2945_spec_gate_enforces_what_the_launch_gate_requires():
+    """S6-B2945 / L835: 36 specs passed launch_refusals at 0 refusals, and
+    the chain HALTED on spec 1 because prelaunch_gate - reading the MANIFEST
+    derived from the spec - fails closed on an absent fires_at_production.
+
+    A spec-time validator that does not enforce the launch-time requirement
+    converts a seconds-long refusal into a task registration and a HALT.
+    """
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    from producer_variant_table import launch_refusals
+
+    spec = {
+        "wave": "probe_wave",
+        "strategy_subset": "output_audit/_subset_three_white_soldiers.txt",
+        "step": 1,
+        "leg_cap_hours": 4.5,
+        "arms": [{"tag": "t",
+                  "env": {"CANDLE_N_BARS": "3", "CANDLE_MIN_BODY_PCT": "0.0",
+                          "CANDLE_MIN_STEP_PCT": "0.0",
+                          "CANDLE_MAX_WICK_PCT": ""},
+                  "n_bars": 3, "min_body_pct": 0.0,
+                  "min_step_pct": 0.0, "max_wick_pct": None}],
+    }
+    if not (root / spec["strategy_subset"]).exists():
+        return  # subset absent in this checkout; the refusal below is moot
+
+    # MUST REFUSE without the field
+    errs = launch_refusals(spec, root=root)
+    assert any("fires_at_production" in str(e) for e in errs), errs
+
+    # MUST STAY QUIET with it
+    ok = dict(spec, fires_at_production=199)
+    assert launch_refusals(ok, root=root) == [], launch_refusals(ok, root=root)
+
+    # a MANIFEST (keyed `sequence`, not `wave`) is NOT subject to this check -
+    # prelaunch_gate owns manifests, and double-refusing them would block the
+    # full-roster shape that legitimately carries no wave
+    man = {k: v for k, v in ok.items() if k != "wave"}
+    man["sequence"] = "probe"
+    del man["fires_at_production"]
+    assert not any("fires_at_production" in str(e)
+                   for e in launch_refusals(man, root=root))
+
+    # and every b2944 campaign spec on disk must satisfy BOTH gates
+    for f in sorted((root / "output_audit").glob("b2944_candle_*_spec.json")):
+        d = json.loads(f.read_text(encoding="utf-8"))
+        assert launch_refusals(d, root=root) == [], (f.name,
+                                                     launch_refusals(d, root=root))
+        assert int(d["fires_at_production"]) > 0, f.name

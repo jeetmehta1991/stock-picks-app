@@ -3177,6 +3177,27 @@ def launch_refusals(doc: dict, root: Path | None = None,
     errs += _admitted_retest_refusals(doc, root, strats)
     # B2711: the ruled Step-1 search shape (holdout reach is absolute)
     errs += _step1_shape_refusals(doc)
+    # S6-B2945 (L835): enforce at SPEC time what prelaunch_gate enforces
+    # at LAUNCH time. A wave spec (keyed on `wave`; manifests carry
+    # `sequence`) in the MODERN shape (`step` declared, window and
+    # universe resolver-owned per B2713) that omits fires_at_production
+    # produces a manifest the gate refuses - MEASURED, a 36-spec chain
+    # HALTED on spec 1 after registering a task and writing a wave
+    # summary, for a field knowable in seconds. Same reason string as
+    # the gate, so the two cannot drift apart.
+    #
+    # APPENDED, never returned early: B2883 above records what an early
+    # exit here costs - one refusal earned, every check below it
+    # skipped. The first draft of THIS check returned, and test_b2713
+    # caught the admitted-retest refusal going missing.
+    if ("wave" in doc and "step" in doc
+            and "fires_at_production" not in doc):
+        errs.append(
+            "spec carries no fires_at_production - run the 0.5 smoke "
+            "(fires at PRODUCTION params on live data) and record the "
+            "count in the spec before launch (S6-B2848c; fail closed on "
+            "the absent field). prelaunch_gate refuses the derived "
+            "manifest otherwise (S6-B2945)")
     # B2713 (council verdict): resolver-owned fields are not typeable
     try:
         from phase_table import spec_refusals as _pt_spec_refusals

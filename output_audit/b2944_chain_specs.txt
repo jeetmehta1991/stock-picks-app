@@ -1,4 +1,5 @@
 output_audit/b2944_candle_tws_c01_spec.json
+output_audit/b2944_candle_tbc_c01_spec.json
 output_audit/b2944_candle_tws_c02_spec.json
 output_audit/b2944_candle_tws_c03_spec.json
 output_audit/b2944_candle_tws_c04_spec.json
@@ -16,7 +17,6 @@ output_audit/b2944_candle_tws_c15_spec.json
 output_audit/b2944_candle_tws_c16_spec.json
 output_audit/b2944_candle_tws_c17_spec.json
 output_audit/b2944_candle_tws_c18_spec.json
-output_audit/b2944_candle_tbc_c01_spec.json
 output_audit/b2944_candle_tbc_c02_spec.json
 output_audit/b2944_candle_tbc_c03_spec.json
 output_audit/b2944_candle_tbc_c04_spec.json

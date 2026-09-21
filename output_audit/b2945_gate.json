@@ -1,0 +1,473 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 24%]
+........................................................................ [ 29%]
+........................................................................ [ 34%]
+........................................................................ [ 39%]
+..............................................s......................... [ 44%]
+....................s.................................................s. [ 49%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+.........................................................FF............. [ 79%]
+...................................................F.FF.......F......... [ 84%]
+...........................................F............................ [ 89%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+...............                                                          [100%]
+================================== FAILURES ===================================
+____ test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck ____
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-1778/test_b2578_launch_gate_refuses0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002D351D24210>
+
+    def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_path, monkeypatch):
+        """B2578 (S6-B2573b launch gate + S6-B2569a P7/P8 STRIKE).
+    
+        Until B2578 nothing between a spec file and the engine asked whether the
+        strategy was registered with the post-config battery or whether an arm's
+        env values were knobs the engine reads: four institutional configs landed
+        ungraded pre-B2520, and the P7/P8 resim levels sat in Table A for 11
+        configs with no knob that could ever run them. The gate fails CLOSED at
+        launch (L642) - in run_wave.main BEFORE run_arm, and in prelaunch_gate for
+        every LOCAL manifest (the launch_sweep route) - and validate_spec refuses a
+        resim level that has no env knob, which is the rule the STRIKE applies.
+        """
+        import copy as _copy
+        import glob as _glob
+        import json as _json
+        import sys as _sys
+        from pathlib import Path as _P
+    
+        root = _P(__file__).resolve().parents[2]
+        sp = str(root / "scripts")
+        if sp not in _sys.path:
+            _sys.path.insert(0, sp)
+        import producer_variant_table as pvt
+        import run_wave as rw
+        import prelaunch_gate as pg
+        import run_serial_chain as rsc
+    
+        # ---- S6-B2569a STRIKE: P7/P8 carry only the levels the cube can grade
+        icg = pvt.SPECS["institutional_committed_growth_long"]
+        by = {p["id"]: p for p in icg["params"]}
+        assert by["P7"]["band"] == [3, 5, 11, 14] == by["P7"]["free_band"]
+        assert by["P7"]["resim_band"] == [] and by["P7"].get("env") is None
+        assert by["P8"]["band"] == [5, 6] == by["P8"]["free_band"]
+        assert by["P8"]["resim_band"] == [] and by["P8"].get("env") is None
+        assert len(by["P7"]["free_band"]) * len(by["P8"]["free_band"]) == 8, "free product unchanged"
+        # B2897: the candle pair was PROMOTED into SPECS (owner ruling 'Candle
+        # goes first'). Its adapter is KNOWN incomplete - lacks spot_check -
+        # and that refusal is the live S6-B2861 work, asserted below so it
+        # cannot be forgotten. Every OTHER error on every entry still fails.
+        _B2861b = {"three_white_soldiers", "three_black_crows_short"}
+        for k, v in pvt.SPECS.items():
+            # B2900: the adapter LANDED, so no entry needs an exemption -
+            # every SPECS member must validate clean, the pair included.
+            _e = list(pvt.validate_spec(v))
+            assert _e == [], (k, _e)
+        # B2900: the gap CLOSED. grade_candle_config.py landed and
+        # tools.grade points at it, so family_refusal returns "" for both and
+        # the R1 adapter refusal must now be SILENT on them. This is the
+        # must-QUIET direction of the same pin - it bites if the adapter is
+        # ever half-written again.
+        for k in _B2861b:
+            assert not any("S6-B2883" in x for x in pvt.validate_spec(pvt.SPECS[k])), (
+                k, "the adapter is complete - this refusal must not fire")
+            import run_postconfig as _rp2900
+            assert _rp2900.family_refusal(k) == "", (k, _rp2900.family_refusal(k))
+        # the rule behind the strike: a resim level with no knob is unrunnable
+        bad = _copy.deepcopy(icg)
+        p7 = next(p for p in bad["params"] if p["id"] == "P7")
+        p7["band"] = [1, 2, 3, 5, 11, 14]
+        p7["resim_band"] = [1, 2]
+        errs = pvt.validate_spec(bad)
+        assert any("P7" in e and "no env knob" in e and "[1, 2]" in e for e in errs), errs
+    
+        # ---- every declared knob is one the engine/precompute actually reads
+        for k, v in pvt.SPECS.items():
+            for p in v["params"]:
+                if p.get("env"):
+                    assert pvt.knob_is_read(p["env"], root), (k, p["id"], p["env"])
+        assert not pvt.knob_is_read("SMC_SWING_LEN", root), "a typo proves nothing"
+        assert pvt.knob_is_read("SMC_OB_CLOSE_MITIGATION", root), (
+            "config.py:2511 wraps the read across two lines - a literal needle "
+            "refused a knob the engine reads (measured at B2578)")
+    
+        # ---- every live spec of the running chain passes (no self-inflicted HALT)
+        live = sorted(_glob.glob(str(root / "output_audit" / "b2527_icg_*_spec.json")))
+        live.append(str(root / "output_audit" / "b2574_icg_span100_rerun_spec.json"))
+        assert len(live) >= 17, live
+        for f in live:
+            d = _json.loads(_P(f).read_text(encoding="utf-8"))
+            # B2717: identity is EXACT, so a spec loaded from disk carries
+            # its own basename - what run_wave.main stamps. (Before B2717 a
+            # substring match let a short wave name grandfather itself.)
+            d["_spec_path"] = _P(f).name
+            # B2738 (B2450/L721 disposal): see test_b2714 - icg is admitted, so
+            # B2731 refuses these historical specs; this pin is about the
+            # pre-engine refusal classes, not admission.
+            _r = [x for x in pvt.launch_refusals(d, root)
+                  if "ALREADY ADMITTED" not in x]
+>           assert _r == [], (f, _r)
+E           AssertionError: ('C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\b2527_icg_lookback2_spec.json', ['spec carries no fires_at_...aunch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)'])
+E           assert ['spec carrie...e (S6-B2945)'] == []
+E             
+E             Left contains one more item: 'spec carries no fires_at_production - run the 0.5 smoke (fires at PRODUCTION params on live data) and record the coun... launch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)'
+E             Use -v to get more diff
+
+backtest\tests\test_unit.py:32907: AssertionError
+_ test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten _
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-1778/test_b2579_battery_families_an0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002D328D8F540>
+
+    def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten(
+            tmp_path, monkeypatch):
+        """B2579 (S6-B2573a/c/d): the post-config battery's per-family plumbing is
+        DERIVED from one declaration, and a knob's blast radius is MEASURED.
+    
+        Before this, `run_postconfig.FAMILIES` held two hand-written closures and
+        every grader flag, cube path, PYTHONPATH and window rule was typed twice
+        (once per family); a third strategy meant six more hand-written pieces,
+        and the four institutional configs that landed ungraded pre-B2520 are what
+        a missing piece costs. Now each SPECS entry carries a `tools` adapter
+        block, `family_entry` builds the row from it, `family_refusal` says why an
+        incomplete block is NOT a family (fail closed, L642), and R8's consumer
+        half is a measurement (`knob_consumers` tokenizes the tree) pinned equal
+        to the declaration - drift refuses at launch AND fails step 7 at landing.
+        """
+        import copy
+        import importlib.util
+        import json
+        import types
+        from pathlib import Path
+    
+        root = Path(__file__).resolve().parents[2]
+    
+        def load(name, rel):
+            spec = importlib.util.spec_from_file_location(name, root / rel)
+            m = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(m)
+            return m
+    
+        pvt = load("pvt_b2579", "scripts/producer_variant_table.py")
+    
+        # ---- (1) S6-B2573d: declared consumer list == the measured one, for
+        # every env knob AND every env actuator in every SPECS entry.
+        n_knobs = 0
+        for sname, spec in pvt.SPECS.items():
+            for row in spec["params"]:
+                if row.get("env"):
+                    dec = pvt.declared_consumers(spec, row["env"])
+                    got = pvt.knob_consumers(row["env"])
+                    assert dec == got, (sname, row["env"], dec, got)
+                    assert got, (sname, row["env"], "a declared knob nothing reads")
+                    n_knobs += 1
+            for k in (spec.get("env_actuators") or {}):
+                dec, got = pvt.declared_consumers(spec, k), pvt.knob_consumers(k)
+                assert dec == got, (sname, k, dec, got)
+                n_knobs += 1
+        assert n_knobs >= 11, n_knobs
+        # A mention inside a module docstring is prose, not a consumer. MEASURED
+        # instances: demand_pruning.py:13 names STRAT_EMA_SPAN in its docstring
+        # (a hand-written list had it as a consumer - the tokenizer caught it),
+        # spot_check_institutional.py names INST_PERSIST_CACHE_TAG in its.
+        assert "backtest/signals/demand_pruning.py" not in pvt.knob_consumers("STRAT_EMA_SPAN")
+        assert "scripts/spot_check_institutional.py" not in pvt.knob_consumers("INST_PERSIST_CACHE_TAG")
+        assert pvt.knob_consumers("NO_SUCH_KNOB_XYZ") == []
+        assert pvt.declared_consumers(pvt.SPECS["smc_breaker_block_long"],
+                                      "NO_SUCH_KNOB_XYZ") is None
+        # B2579b: the scripts/ half reads the AST, not the file's text. MEASURED
+        # the moment B2579 landed - knob_consumers' own docstring names
+        # `environ.get("SMC_SWING_LENGTH")` as its example, and the regex version
+        # made THIS module report itself as a consumer (L748: a good comment names
+        # the exact token your matcher greps). A docstring is not a read; a real
+        # os.environ access is, whatever spelling it uses.
+        assert "scripts/producer_variant_table.py" not in pvt.knob_consumers("SMC_SWING_LENGTH")
+        assert pvt._env_reads(
+            root / "scripts" / "build_institutional_persistence_precompute.py") >= {
+            "INST_MIN_CONSECUTIVE_QUARTERS", "INST_GROWTH_LOOKBACK_QUARTERS",
+            "INST_GROWTH_MULTIPLE", "INST_PERSIST_CACHE_TAG"}
+        fake_script = tmp_path / "fake_env_script.py"
+        fake_script.write_text(
+            '"""doc example: os.environ.get(\'DOC_ONLY_KNOB\')"""\n'
+            "import os\n"
+            "a = os.environ.get('GET_KNOB')\n"
+            "b = os.environ['SUB_KNOB']\n"
+            "c = os.getenv('GETENV_KNOB')\n"
+            "d = os.environ.pop('POP_KNOB', None)\n"
+            "e = 'MENTIONED_KNOB'\n", encoding="utf-8")
+        assert pvt._env_reads(fake_script) == {
+            "GET_KNOB", "SUB_KNOB", "GETENV_KNOB", "POP_KNOB"}, pvt._env_reads(fake_script)
+        unparseable = tmp_path / "broken.py"
+        unparseable.write_text("def (:\n", encoding="utf-8")
+        assert pvt._env_reads(unparseable) == frozenset()
+    
+        # ---- (2) the launch gate refuses DRIFT and an undeclared list
+        good = json.loads((root / "output_audit" / "b2527_icg_span50_spec.json")
+                          .read_text(encoding="utf-8"))
+        # B2717: identity is EXACT - a spec loaded from disk carries its own
+        # basename, which run_wave.main stamps on the live path.
+        good["_spec_path"] = "b2527_icg_span50_spec.json"
+        # B2738 (B2450/L721 disposal): icg is ADMITTED since 2026-09-10, so
+        # B2731 refuses this historical spec. This block tests consumer DRIFT,
+        # so the override rides the fixture and the drift assertions stay exact.
+        good["owner_override_retest_admitted"] = {
+            "institutional_committed_growth_long": "test fixture: drift cases"}
+>       assert pvt.launch_refusals(good, root) == []
+E       AssertionError: assert ['spec carrie...e (S6-B2945)'] == []
+E         
+E         Left contains one more item: 'spec carries no fires_at_production - run the 0.5 smoke (fires at PRODUCTION params on live data) and record the coun... launch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)'
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:33152: AssertionError
+___________ test_b2710_cube_riders_are_validated_and_battery_exempt ___________
+
+    def test_b2710_cube_riders_are_validated_and_battery_exempt():
+        """B2710: riders (B2707 reuse doctrine) - the gate passes a valid rider
+        set, refuses an unregistered rider and a graded/rider overlap; the
+        engine set merges graded-first with no duplicates."""
+        import sys as _sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        sp = str(root / "scripts")
+        if sp not in _sys.path:
+            _sys.path.insert(0, sp)
+        from producer_variant_table import launch_refusals
+        doc = {"wave": "t", "strategy_subset": "output_audit/_subset_one.txt",
+               "cube_riders": "output_audit/_subset_smc_riders.txt", "arms": []}
+        errs = launch_refusals(doc, root)
+        assert not any("cube rider" in e.lower() for e in errs), errs
+        tmp = root / "output_audit" / "_tmp_test_b2710_riders.txt"
+        tmp.write_text("not_a_real_strategy_xyz\n", encoding="utf-8")
+        try:
+            e2 = launch_refusals({**doc, "cube_riders":
+                                  "output_audit/_tmp_test_b2710_riders.txt"}, root)
+>           assert any("not a registered strategy" in x for x in e2), e2
+E           AssertionError: ['spec carries no fires_at_production - run the 0.5 smoke (fires at PRODUCTION params on live data) and record the cou...launch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)']
+E           assert False
+E            +  where False = any(<generator object test_b2710_cube_riders_are_validated_and_battery_exempt.<locals>.<genexpr> at 0x000002D328A94BA0>)
+
+backtest\tests\test_unit.py:36167: AssertionError
+________________ test_b2713_ruled_scope_is_resolved_not_typed _________________
+
+    def test_b2713_ruled_scope_is_resolved_not_typed():
+        """L788/#302 (LLM-council verdict): the phase table is PARSED, the ruled
+        Step-1 row resolves to 200 tickers x 2024-05-05..2025-05-05, a spec
+        declaring `step` may not type the resolver-owned fields, and run_wave
+        injects them. MUST-FIRE cases: the killed b2709 shape is now
+        unrepresentable (typed window + no step), and a step-declaring spec that
+        types a window is refused."""
+        import sys as _sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        sp = str(root / "scripts")
+        if sp not in _sys.path:
+            _sys.path.insert(0, sp)
+        import phase_table as pt
+    
+        # (a) the table parses and the ruled row resolves - no typed numbers
+        ruled = pt.resolve(1)
+        assert ruled["window"] == {"start": "2024-05-05", "end": "2025-05-05"}, ruled
+        assert ruled["universe_n"] == 200 and ruled["tickers_file"].endswith("_sweep_200.txt")
+        assert ruled["window"]["end"] == pt.IS_HO_BOUNDARY
+        assert len(ruled["phase_table_sha256"]) == 16
+        step2 = pt.resolve(2)
+        assert step2["window"]["start"] == "2022-05-05" and step2["window"]["end"] == "2026-05-05"
+    
+        # (b) authoring surface: typed fields refused
+        assert pt.spec_refusals({"step": 1}) == []
+        e1 = pt.spec_refusals({"step": 1, "window": {"start": "2022-05-05",
+                                                     "end": "2026-05-05"}})
+        assert any("phase table owns those fields" in x for x in e1), e1
+        e2 = pt.spec_refusals({"window": {"start": "2022-05-05", "end": "2026-05-05"},
+                               "tickers_file": "output_audit/_sweep_200.txt"})
+        assert any("declares no `step`" in x for x in e2), e2
+        assert pt.spec_refusals({
+            "window": {"start": "2024-05-05", "end": "2025-05-05"},
+            "shape_waiver": "owner said keep the legacy typed shape for this replay"}) == []
+    
+        # (c) the live spec is in pointer form and run_wave injects the ruled row
+        import json as _json
+        import run_wave as rw
+        spec = _json.loads((root / "output_audit" / "b2712_smc_sw10_spec.json")
+                           .read_text(encoding="utf-8"))
+        assert spec.get("step") == 1
+        assert not any(k in spec for k in pt.RESOLVER_OWNED), spec.keys()
+        filled = rw.resolve_ruled_scope(spec)
+        assert filled["window"] == {"start": "2024-05-05", "end": "2025-05-05"}
+        assert filled["tickers_file"].endswith("_sweep_200.txt")
+        assert filled["_resolved_scope"]["phase_table_sha256"] == ruled["phase_table_sha256"]
+    
+        # (d) reachable from the launch gate
+        from producer_variant_table import launch_refusals
+        # B2738 (B2450/L721 disposal): B2731 made an ADMITTED graded strategy a
+        # launch refusal, which is RETROACTIVE - this historical artifact would
+        # be refused today, correctly. That refusal is orthogonal to what this
+        # pin proves, so it is filtered by name rather than weakening the gate.
+        _adm = "ALREADY ADMITTED"
+        _r = [x for x in launch_refusals(spec, root) if _adm not in x]
+>       assert _r == [], _r
+E       AssertionError: ['spec carries no fires_at_production - run the 0.5 smoke (fires at PRODUCTION params on live data) and record the cou...launch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)']
+E       assert ['spec carrie...e (S6-B2945)'] == []
+E         
+E         Left contains one more item: 'spec carries no fires_at_production - run the 0.5 smoke (fires at PRODUCTION params on live data) and record the coun... launch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)'
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:36301: AssertionError
+---------------------------- Captured stdout call -----------------------------
+phase table step 1: window 2024-05-05..2025-05-05, universe 200 (table sha 2618c72515527bc3)
+_______ test_b2714_legacy_typed_spec_register_is_named_and_shrink_only ________
+
+    def test_b2714_legacy_typed_spec_register_is_named_and_shrink_only():
+        """B2714 (#279 + L747): the B2713 rule's backlog is disposed of by a
+        NAMED register, not a bare count, and it can only shrink. The first
+        pointer-form spec is deliberately absent, and every live icg spec the
+        running chain uses still passes the launch gate."""
+        import glob as _glob
+        import json as _json
+        import sys as _sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        sp = str(root / "scripts")
+        if sp not in _sys.path:
+            _sys.path.insert(0, sp)
+        import phase_table as pt
+        reg = _json.loads((root / "output_audit" / "_legacy_typed_specs.json")
+                          .read_text(encoding="utf-8"))
+        names = reg["names"]
+        assert names, "an empty register would make the rule retroactive"
+        assert len(names) == len(set(names)), "duplicate names"
+        assert len(names) <= 66, (
+            f"register GREW to {len(names)} - it is shrink-only (B2714)")
+        assert "b2712_smc_sw10_spec.json" not in names, (
+            "the first pointer-form spec must never be grandfathered")
+        assert reg["count"] == len(names)
+        assert pt.legacy_typed_specs() == frozenset(names)
+        # B2714c: a GENERATED manifest is exempt - run_wave builds it FROM a
+        # spec the gate already judged, so re-judging it refused a correct
+        # launch (caught by test_b2116 driving the real run_wave path).
+        gen = {"_derived_from_spec": "w", "window": {"start": "2022-05-05",
+               "end": "2026-05-05"}, "tickers_file": "x.txt"}
+        assert pt.spec_refusals(gen) == []
+        import producer_variant_table as _pvt
+        assert _pvt._step1_shape_refusals(gen) == []
+        import producer_variant_table as pvt
+        # MEASURED: the b2527 glob returns 16; the 17th live spec is the
+        # b2574 rerun, exactly as test_b2578 assembles it (my first version
+        # asserted >= 17 on the glob alone - a count I assumed).
+        live = sorted(_glob.glob(str(root / "output_audit" / "b2527_icg_*_spec.json")))
+        assert len(live) == 16, live
+        live.append(str(root / "output_audit" / "b2574_icg_span100_rerun_spec.json"))
+        for f in live:
+            d = _json.loads(_P(f).read_text(encoding="utf-8"))
+            d["_spec_path"] = _P(f).name
+            # B2738 (B2450/L721 disposal): icg is ADMITTED since 2026-09-10, so
+            # B2731 refuses these historical specs - correctly. Filter that one
+            # refusal; this pin is about the legacy typed register.
+            _r = [x for x in pvt.launch_refusals(d, root)
+                  if "ALREADY ADMITTED" not in x]
+>           assert _r == [], (f, _r)
+E           AssertionError: ('C:\\Users\\jeetm\\Github\\stock-picks-app\\output_audit\\b2527_icg_lookback2_spec.json', ['spec carries no fires_at_...aunch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)'])
+E           assert ['spec carrie...e (S6-B2945)'] == []
+E             
+E             Left contains one more item: 'spec carries no fires_at_production - run the 0.5 smoke (fires at PRODUCTION params on live data) and record the coun... launch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)'
+E             Use -v to get more diff
+
+backtest\tests\test_unit.py:36355: AssertionError
+_____________ test_b2732a_hub1_is_a_registered_launchable_family ______________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-1778/test_b2732a_hub1_is_a_register0')
+
+    def test_b2732a_hub1_is_a_registered_launchable_family(tmp_path):
+        """S6-B2732a (owner "Step 1 code change approved" 2026-09-12): hub-1 -
+        smc_liquidity_sweep_reversal - is registered, so its depth campaign can
+        launch.
+    
+        MEASURED BLOCKER this closes: 1 of 22 smc consumers had a SPECS entry and
+        it was the ADMITTED smc_breaker_block_long, so launch_refusals refused
+        hub-1 (no SPECS entry means the battery fails closed at landing AFTER the
+        engine spend, S6-B2573b) while the only launchable smc strategy was the one
+        B2731 refuses as banked. The campaign was unlaunchable in both directions.
+    
+        Five arms: the entry validates; the battery family is DERIVED and present;
+        a hub-1 Step-1 spec passes the launch gate; an OUT-OF-BAND level is still
+        refused (the gate kept its teeth); and hub-1's own spot checker is wired
+        rather than the breaker's, which is the B2724 defect this avoids."""
+        import sys as _sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        sp = str(root / "scripts")
+        if sp not in _sys.path:
+            _sys.path.insert(0, sp)
+        import producer_variant_table as pvt
+        import run_postconfig as rp
+    
+        HUB = "smc_liquidity_sweep_reversal"
+    
+        # (a) the entry exists and validates
+        assert HUB in pvt.SPECS, "hub-1 has no SPECS entry"
+        assert pvt.validate_spec(pvt.SPECS[HUB]) == [], pvt.validate_spec(pvt.SPECS[HUB])
+    
+        # (b) FAMILIES is DERIVED from SPECS, so registration is automatic
+        assert rp.family_refusal(HUB) == "", rp.family_refusal(HUB)
+        assert HUB in rp.FAMILIES, sorted(rp.FAMILIES)
+    
+        # (c) a hub-1 Step-1 spec passes the launch gate
+        sub = tmp_path / "hub1.txt"
+        sub.write_text(HUB + "\n", encoding="utf-8")
+        spec = {"wave": "b2732a_pin", "step": 1, "strategy_subset": str(sub),
+                "arms": [{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}]}
+>       assert pvt.launch_refusals(spec, root) == [], pvt.launch_refusals(spec, root)
+E       AssertionError: ['spec carries no fires_at_production - run the 0.5 smoke (fires at PRODUCTION params on live data) and record the cou...launch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)']
+E       assert ['spec carrie...e (S6-B2945)'] == []
+E         
+E         Left contains one more item: 'spec carries no fires_at_production - run the 0.5 smoke (fires at PRODUCTION params on live data) and record the coun... launch (S6-B2848c; fail closed on the absent field). prelaunch_gate refuses the derived manifest otherwise (S6-B2945)'
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:36724: AssertionError
+____________ test_b2849_smoke_and_breadth_disposition_are_refusals ____________
+
+    def test_b2849_smoke_and_breadth_disposition_are_refusals():
+        """B2849 closes S6-B2848c/d (owner-approved): prelaunch refuses a
+        manifest without a positive fires_at_production (absent = refusal, L642);
+        the Step-2 reader refuses a waived breadth leg with no reason and records
+        the disposition into its artifact. Both directions per #226."""
+        import sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import prelaunch_gate as pg
+    
+        base = {"leg_cap_hours": 4.0, "code_sha": "x", "isolation": "copy",
+                "calendar": "y", "universe": "z", "wall_clock_projection": "4h"}
+        # drive through the real check function - locate it structurally
+        import inspect
+        fns = [f for n, f in inspect.getmembers(pg, inspect.isfunction)
+               if "fires_at_production" in inspect.getsource(f)]
+>       assert len(fns) == 1, [f.__name__ for f in fns]
+E       AssertionError: ['check_supervisor_and_cap', 'launch_refusals']
+E       assert 2 == 1
+E        +  where 2 = len([<function check_supervisor_and_cap at 0x000002D48FF224B0>, <function launch_refusals at 0x000002D328B44460>])
+
+backtest\tests\test_unit.py:38745: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck
+FAILED backtest/tests/test_unit.py::test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten
+FAILED backtest/tests/test_unit.py::test_b2710_cube_riders_are_validated_and_battery_exempt
+FAILED backtest/tests/test_unit.py::test_b2713_ruled_scope_is_resolved_not_typed
+FAILED backtest/tests/test_unit.py::test_b2714_legacy_typed_spec_register_is_named_and_shrink_only
+FAILED backtest/tests/test_unit.py::test_b2732a_hub1_is_a_registered_launchable_family
+FAILED backtest/tests/test_unit.py::test_b2849_smoke_and_breadth_disposition_are_refusals
+7 failed, 1445 passed, 3 skipped in 1446.54s (0:24:06)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1475

@@ -22189,3 +22189,77 @@ on the turn it happened.
 **Mechanism:** `test_b2942_no_comment_line_swallowed_code` over test_unit,
 test_integration and every script, with the two benign prose comments pinned
 as must-stay-quiet cases.
+
+### L835 - ONE GATE'S SILENCE IS NOT LAUNCH READINESS (B2945, 2026-09-21)
+
+I built 36 campaign specs and validated every one through `launch_refusals`.
+All 36 returned **0 refusals**, and I read that as launch-ready. The chain
+**HALTED on spec 1**: `prelaunch_gate` - a DIFFERENT gate, reading the
+MANIFEST `run_wave` derives from the spec - fails closed on an absent
+`fires_at_production` (S6-B2848c).
+
+**The refusal was correct and cost far more than it needed to.** The field
+was knowable at spec-build time, in seconds. Instead it surfaced after a
+chain registration, a Task Scheduler task, a manifest, a wave summary, a
+toast and a HALT record - and it would have done that once per relaunch.
+
+**WHY I MISREAD IT.** `launch_refusals` is thorough - riders, admitted
+retests, Step-1 shape, resolver-owned fields, band membership, consumer
+drift, nine checks per strategy. Thoroughness in one gate reads as coverage
+of the whole question. **It is not a launch gate; it is a SPEC gate**, and
+nothing said so at the call site.
+
+**This is L499's shape from the other side.** There, a capability was
+asserted in the enforcement layer's own description and contradicted by grep.
+Here, a validator's thoroughness implied an authority it never claimed. Both
+times the error was reading a gate's SCOPE off its apparent completeness.
+
+**THE RULE: before launching on a validator's silence, name the OTHER gates
+between you and the thing you are about to start, and run them.** The chain
+was: `launch_refusals` (spec) -> `run_wave` (writes the manifest) ->
+`prelaunch_gate` (manifest) -> engine. I ran the first and the last-but-one
+refused.
+
+**And the cheap probe existed the whole time:** take the manifest the halted
+run already produced, add the field, run `prelaunch_gate` on it directly.
+That is what finally confirmed there was no SECOND hidden refusal behind the
+first - which mattered, because B2937's gate refused THREE times, once per
+absent field, one relaunch each.
+
+**Mechanism:** `launch_refusals` now refuses a WAVE SPEC (keyed on the `wave`
+field; manifests carry `sequence` and stay exempt because `prelaunch_gate`
+owns them) that omits `fires_at_production`, using the gate's own reason
+string so the two cannot drift. Pinned by
+`test_b2945_spec_gate_enforces_what_the_launch_gate_requires`, which checks
+both directions plus every b2944 spec on disk against BOTH gates.
+
+**ADDENDUM - THE FIX ITSELF FAILED TWICE, AND THE PYRAMID CAUGHT BOTH.**
+
+*(1) Too broad.* The first check refused ANY wave spec without the field. The
+pyramid went RED on **7 launch-gate tests**. MEASURED across the 102 wave
+specs on disk: **65 legacy** (no `step`) carry the field 0 of 65; **37
+modern** (`step` declared) carry it 36 of 37. The unconditional check
+retroactively refused every historical spec, and the test that asserts "every
+live spec of the running chain passes" reads exactly the legacy
+`b2527_icg_*` set. Narrowed to the MODERN shape - `step` is the marker of the
+post-B2713 generation where window and universe are resolver-owned, and
+B2848c's requirement belongs to that same generation.
+
+*(2) It suppressed every check below it.* The check `return`ed instead of
+appending, so a spec missing the field earned ONE refusal and skipped the
+rest. **This is precisely what the function's own source documents at B2883**
+- *"RESOLVE BOTH REGISTRIES, AND DO NOT SUPPRESS THE REST ... a PHASE0-only
+strategy earned ONE refusal and skipped every check below it, nine checks in
+all."* I wrote the same bug directly beneath the comment describing it.
+`test_b2713` caught it: the admitted-retest refusal on `b2712` vanished.
+
+**The lesson under the lesson: a gate that reports the FIRST reason is a
+different instrument from one that reports ALL of them,** and the difference
+only shows on an artifact carrying more than one fault. Append; never return.
+
+**And the one surviving modern spec tells the truth about the cut:**
+`b2712_smc_sw10` is the 1 of 37 with no `fires_at_production`. It ran to
+COMPLETE on 2026-09-12, BEFORE B2848c made the field required, so relaunching
+it today would halt. That is now ASSERTED in `test_b2713` rather than
+filtered away - the spec is a landed record and was not edited to suit the
+check.

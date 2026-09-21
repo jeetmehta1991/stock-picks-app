@@ -25,5 +25,7 @@
    "note": "PRODUCTION CORNER - config 1. Not a new grid verdict: R5 already holds this cell. It runs FIRST to measure candle wall-clock (never measured; every 3.3h figure is borrowed from smc), to reproduce R5's landed set end to end, and to write post-B2905 occupancy stamps R5 cannot provide. Owner-approved at B2937.",
    "env_note": "CANDLE_MAX_WICK_PCT='' is the None level, not zero (config.py:2490 reads falsy as None)"
   }
- ]
+ ],
+ "fires_at_production": 165,
+ "_fires_basis": "output_audit/b2850_candle_step05_smoke.json - SS11.2 step 0.5 at PRODUCTION params on 6 megacaps 2022-05-05..2026-05-05: pattern 302, pattern_and_rsi 165. THE ARTIFACT'S OWN CAVEAT RIDES: the BORROW leg was not evaluated (data-dependent), so 165 is an UPPER BOUND on the short's gate count. Corroborated at full-universe scale by the R5 baseline in the same artifact: 1,674 fires, holdout_n 470. Smoke scope is 6 tickers against this run's 200."
 }
