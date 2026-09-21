@@ -563,6 +563,40 @@ def grid_step2_graded(grid: dict) -> tuple[bool, str]:
                    "grader has no Step-2 leg, or nothing reached the holdout floor")
 
 
+_KEY_UNSET = object()
+
+
+def artifact_key(cube_dir: Path, graded=_KEY_UNSET,
+                 riders=_KEY_UNSET) -> str:
+    """S6-B2918: the battery artifact PREFIX and the ledger KEY, which
+    are one contract - postconfig_doc.build() derives every artifact path
+    from the ledger key.
+
+    A cube that declares RIDERS carries more than one strategy and is
+    graded ONE LEG AT A TIME, so a bare cube-name key makes the second
+    grading overwrite the first leg's artifacts and verdict - and
+    merge_row never downgrades, so the second leg's FAIL lands under the
+    first leg's DONE.
+
+    MEASURED at B2923: 1 of 120 completed cubes declares riders and 0 of
+    127 ledger keys contain "__", so gating the per-leg key on riders
+    leaves 119 of 120 on their historical bare key and every existing
+    artifact valid. A cube with no riders, or whose manifest names no
+    single graded strategy, keeps the bare key (L642 - fall back to the
+    historical behaviour, never to an invented key)."""
+    # S6-B2918 (L728): a SENTINEL, not None. `graded=None` is a real
+    # answer - "the manifest names no single graded strategy" - and
+    # overloading it with "caller supplied nothing" sent that case to
+    # the filesystem instead of falling back to the bare key.
+    if graded is _KEY_UNSET or riders is _KEY_UNSET:
+        _g, _r = graded_and_riders(cube_dir)
+        graded = _g if graded is _KEY_UNSET else graded
+        riders = _r if riders is _KEY_UNSET else riders
+    if riders and graded:
+        return "%s__%s" % (cube_dir.name, graded)
+    return cube_dir.name
+
+
 def run_family(fam_name: str, cube_dir: Path, p: dict,
                manifest: dict, step: int | None = None) -> tuple[list, dict, Path, Path]:
     """Steps 2 (grade + optional reproduction-gated free levels), 4 (spot
@@ -573,8 +607,12 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
     spec, tools = SPECS[fam_name], _tools(fam_name)
     results, notes = [], {}
     arm_env = _arm_env(manifest)          # B2576: every subprocess runs armed
-    grid_out = ROOT / "output_audit" / f"{cube_dir.name}_grid_auto.json"
-    spot_out = ROOT / "output_audit" / f"{cube_dir.name}_spot_check.json"
+    # S6-B2918: per-LEG key on a cube that carries a pair (see
+    # artifact_key) - a bare cube key lets the second leg overwrite the
+    # first leg's verdict.
+    _key = artifact_key(cube_dir, fam_name)
+    grid_out = ROOT / "output_audit" / f"{_key}_grid_auto.json"
+    spot_out = ROOT / "output_audit" / f"{_key}_spot_check.json"
     label = " ".join(f"{k}={p[k]}" for k in tools["keys"].values())
     if step is None:
         step, _ = derive_step(manifest, step1_flag=False, step2_flag=False)
@@ -620,7 +658,7 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
     fb = tools.get("free_levels")
     okf, free_out, fl = True, None, None
     if fb:
-        free_out = ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json"
+        free_out = ROOT / "output_audit" / f"{_key}_free_levels.json"
         fl = _run([sys.executable, str(ROOT / "scripts" / fb["script"]),
                    "--cube", str(cube_dir), "--out", str(free_out)],
                   _sub_env(arm_env, fb))
@@ -1170,7 +1208,9 @@ def main() -> int:
         lens_rows = lenses(cube_dir, step, grid, spot_out)
     except Exception as exc:
         lens_rows = [("lenses_crashed", "FAIL", repr(exc))]
-    lens_out = ROOT / "output_audit" / f"{cube_dir.name}_lenses.json"
+    # S6-B2918: same per-leg key as the grid/spot/free artifacts.
+    _lkey = artifact_key(cube_dir, fam_name, _declared_riders)
+    lens_out = ROOT / "output_audit" / f"{_lkey}_lenses.json"
     try:
         lens_out.parent.mkdir(parents=True, exist_ok=True)
         lens_out.write_text(json.dumps(
@@ -1323,10 +1363,14 @@ def main() -> int:
         ts = _dt.datetime.now().strftime("%Y-%m-%d %H:%M")
 
         def _upgrade(ledger: dict) -> dict:
-            entry = ledger.get(cube_dir.name) or {}
+            # S6-B2918: the ledger key is the artifact prefix, so it
+            # carries the leg too - otherwise the second leg of a pair
+            # merges into the first leg's row and a FAIL hides under DONE.
+            _ekey = artifact_key(cube_dir, fam_name, _declared_riders)
+            entry = ledger.get(_ekey) or {}
             for step_name, ev in auto_notes:
                 entry = merge_row(entry, step_name, ev["status"], ev["evidence"], ts)
-            ledger[cube_dir.name] = entry
+            ledger[_ekey] = entry
             return ledger
         locked_ledger_update(_upgrade)
         print(f"[OK] ledger: all {len(STEPS)} steps recorded for {cube_dir.name}"

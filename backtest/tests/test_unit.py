@@ -40589,3 +40589,72 @@ def test_b2921_canonical_doc_eol_state_is_pinned():
         "CHECKLIST.md is stored as %r. Renormalising it may well be correct, "
         "but it is the S6-B2921 owner decision and must not land silently "
         "inside an unrelated commit (L828)" % idx.get("CHECKLIST.md"))
+
+
+
+def test_b2918_paired_cube_records_both_legs():
+    """S6-B2918: every battery artifact and the ledger entry were keyed by
+    cube DIRECTORY NAME alone, so a cube carrying a long/short PAIR - graded
+    one leg at a time - had its first leg's verdict OVERWRITTEN by the second,
+    and merge_row never downgrades, so the second leg's FAIL landed under the
+    first leg's DONE.
+
+    The ticket named 3 sites; there are 5 (grid, spot, free, lenses, and the
+    LEDGER KEY, which postconfig_doc.build() uses as the artifact prefix).
+
+    MEASURED at B2923: 1 of 120 completed cubes declares riders and 0 of 127
+    ledger keys contained "__", so gating the per-leg key on riders leaves
+    119 of 120 cubes on their historical bare key.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    import run_postconfig as rp
+    import verify_postconfig_complete as vpc
+
+    class _Cube:
+        def __init__(self, name):
+            self.name = name
+
+    # the two legs of ONE directory must receive DIFFERENT keys - this is the
+    # whole defect. Pass riders explicitly so the test does not depend on a
+    # manifest existing on disk.
+    cube = _Cube("output_pair")
+    a = rp.artifact_key(cube, "three_white_soldiers", ["three_black_crows_short"])
+    b = rp.artifact_key(cube, "three_black_crows_short", ["three_white_soldiers"])
+    assert a != b, (a, b, "both legs of a pair still collide on one key")
+    assert "three_white_soldiers" in a and "three_black_crows_short" in b
+    # the cube name must stay the PREFIX - postconfig_doc derives artifact
+    # paths from the ledger key
+    assert a.startswith("output_pair") and b.startswith("output_pair")
+
+    # BACKWARD COMPAT: no riders -> the historical bare key, unchanged. 119 of
+    # 120 real cubes take this path, and every existing artifact depends on it.
+    assert rp.artifact_key(cube, "three_white_soldiers", []) == "output_pair"
+    # and a manifest naming no single graded strategy also falls back (L642)
+    assert rp.artifact_key(cube, None, ["x"]) == "output_pair"
+
+    # THE GATE must resolve legs, or a re-keyed ledger makes it report every
+    # step missing for a paired cube and exit 2 - blocking the turn gate on
+    # the owner-mandatory landing path (B2520).
+    led = {"output_x": {}, "output_p__leg_a": {}, "output_p__leg_b": {}}
+    assert vpc.leg_keys(led, "output_x") == ["output_x"]
+    assert len(vpc.leg_keys(led, "output_p")) == 2, vpc.leg_keys(led, "output_p")
+    assert vpc.leg_keys(led, "output_absent") == ["output_absent"]
+    # a shared stem must not leak legs between cubes
+    assert vpc.leg_keys({"output_p2__x": {}, "output_p__y": {}},
+                        "output_p") == ["output_p__y"]
+
+    # MUST-FIRE: a COMPLETE leg must not hide an EMPTY one. Before the fix the
+    # two shared a single entry and exactly this hiding is what happened.
+    done = {s: {"status": "DONE", "evidence": "x"} for s in vpc.STEPS}
+    led2 = {"output_p__leg_a": done, "output_p__leg_b": {}}
+    bad = []
+    for k in vpc.leg_keys(led2, "output_p"):
+        e = led2.get(k, {})
+        if [s for s in vpc.STEPS if not vpc.is_closed(e.get(s))]:
+            bad.append(k)
+    assert bad == ["output_p__leg_b"], (bad, "the empty leg is still hidden")

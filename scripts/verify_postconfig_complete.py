@@ -121,6 +121,21 @@ def completed_cubes() -> list[str]:
     return out
 
 
+def leg_keys(ledger: dict, cube: str) -> list:
+    """S6-B2918: the ledger keys a PAIRED cube per graded leg
+    ("<cube>__<strategy>"), because one directory can carry a long/short
+    pair graded one leg at a time. This gate enumerates cubes from the
+    FILESYSTEM, so without this it would look up the bare directory name,
+    find nothing, report every step missing and exit 2 - blocking the turn
+    gate on the owner-mandatory landing path (B2520).
+
+    Returns every leg key present, or the bare cube name when there are
+    none - so the 119 of 120 cubes that carry no riders are unaffected."""
+    legs = sorted(k for k in ledger
+                  if isinstance(k, str) and k.startswith(cube + "__"))
+    return legs or [cube]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -143,10 +158,13 @@ def main() -> int:
 
     incomplete = []
     for c in cubes:
-        entry = ledger.get(c, {})
-        missing = [s for s in STEPS if not is_closed(entry.get(s))]
-        if missing:
-            incomplete.append((c, missing))
+        # S6-B2918: EVERY graded leg of a paired cube must be complete -
+        # checking one leg would let the other ship ungraded.
+        for k in leg_keys(ledger, c):
+            entry = ledger.get(k, {})
+            missing = [s for s in STEPS if not is_closed(entry.get(s))]
+            if missing:
+                incomplete.append((k, missing))
 
     if not a.quiet:
         print("=== POST-CONFIG LEDGER (B1699) ===")
@@ -157,7 +175,7 @@ def main() -> int:
         # asked: 4 of 36 step-instances across the sweep configs were SKIPPED,
         # all of them step 6, and nothing in this output said so.
         total_skipped = 0
-        for c in cubes:
+        for c in [k for c0 in cubes for k in leg_keys(ledger, c0)]:
             e = ledger.get(c, {})
             ran = sum(1 for s in STEPS if e.get(s, {}).get("status") == "DONE")
             # S6-B2443: SKIPPED and N/A are DIFFERENT facts and the gate already
