@@ -1,0 +1,79 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 24%]
+........................................................................ [ 29%]
+........................................................................ [ 34%]
+........................................................................ [ 39%]
+..............................................s......................... [ 44%]
+....................s.................................................s. [ 49%]
+........................................................................ [ 54%]
+...................................F.................................... [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 93%]
+........................................................................ [ 98%]
+................                                                         [100%]
+================================== FAILURES ===================================
+_________________ test_b1761_new_scan_gates_have_a_text_seam __________________
+
+    def test_b1761_new_scan_gates_have_a_text_seam():
+        """B1761 (#241): a gate with no injectable text can only ever be pinned as
+        `gate([]) == []`, which passes for a gate wired to nothing.
+    
+        This pins the KNOWN seamless set so it cannot GROW. Shrinking it is the
+        goal (S6-B1761b); adding to it must be a deliberate act.
+        """
+        import importlib.util
+        import inspect
+        import pathlib
+    
+        root = pathlib.Path(__file__).resolve().parents[2]
+        spec = importlib.util.spec_from_file_location(
+            "verify_turn_compliance", root / "scripts" / "verify_turn_compliance.py")
+        tg = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(tg)
+    
+        KNOWN_SEAMLESS = {
+            "scan_discipline_not_loaded", "scan_orphan_rule", "scan_postfix_recheck",
+            "scan_skill_not_invoked", "scan_skill_not_invoked_per_skill",
+            "scan_skill_not_updated", "scan_transcript_entries",
+            "scan_unmonitored_launch",
+            "scan_unrecorded_miss", "scan_unverified_cause",
+            "scan_unverified_structure", "scan_unverified_universe",
+            "scan_verdict_denominators",
+        }
+        seamless = set()
+        for name, fn in vars(tg).items():
+            if not (name.startswith("scan_") and callable(fn)
+                    and hasattr(fn, "__code__") and fn.__module__ == tg.__name__):
+                continue
+            try:
+                # B1765: text= OR tool_text= - see the note in test_b1760.
+                ps = inspect.signature(fn).parameters
+                if not [k for k in ps if k != "entries"
+                        and ps[k].kind == inspect.Parameter.KEYWORD_ONLY]:
+                    seamless.add(name)
+            except (TypeError, ValueError):
+                pass
+        new = seamless - KNOWN_SEAMLESS
+>       assert not new, (
+            f"NEW scan_ gate(s) with no injectable text seam (#241): {sorted(new)}. "
+            "A gate that cannot be asked a question cannot be proven.")
+E       AssertionError: NEW scan_ gate(s) with no injectable text seam (#241): ['scan_rate_comparison_without_denominators']. A gate that cannot be asked a question cannot be proven.
+E       assert not {'scan_rate_comparison_without_denominators'}
+
+backtest\tests\test_unit.py:16531: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b1761_new_scan_gates_have_a_text_seam
+1 failed, 1452 passed, 3 skipped in 918.31s (0:15:18)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=940

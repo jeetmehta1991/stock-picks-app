@@ -22263,3 +22263,43 @@ COMPLETE on 2026-09-12, BEFORE B2848c made the field required, so relaunching
 it today would halt. That is now ASSERTED in `test_b2713` rather than
 filtered away - the spec is a landed record and was not edited to suit the
 check.
+
+### L836 - TWO RATES LOOK COMMENSURABLE BECAUSE BOTH ARE PERCENTAGES (B2955, council-caught 2026-09-21)
+
+**I wrote the correction and then committed the same class two rows later.**
+
+S6-B2949 retracts a comparison of this run's 560 landed trades against R5's
+full 1,596, on the ground that 1,596 is 4 years x 544 tickers and the run is
+1 year x 200 - **a grain mismatch, named as such, in my own words**. Two rows
+later I set this run's **36.0 pct conversion** against R5's **8.8 pct** and
+drew a conclusion from the gap.
+
+**They are computed over different populations.** 36.0 pct is landed divided
+by landed-plus-occupancy-blocked - a figure taken AFTER screening, PIT
+filtering, liquidity and earnings blackout have already removed candidates.
+S6-B2867's 8.8 pct is signal BARS to trades, taken BEFORE all of that. The
+ratio between them is not a fact about the engine.
+
+**WHY THE FIRST ONE WAS CAUGHT AND THE SECOND WAS NOT.** The counts were
+obviously incommensurable - 1,596 against 560 invites the question *over what
+window?*. **Two percentages invite no question at all.** They are already
+normalised, already unitless, already the same SHAPE - and that shape is what
+makes the denominator invisible. `#182` disciplines the denominator of a
+VERDICT and says nothing about a RATE, which is exactly where the denominator
+does the most damage.
+
+**The counts survive; the rates do not.** 560 against 137 and 531 against 157
+are like-for-like (same window, same universe, both landed) and stand. The
+36.0-versus-8.8 comparison is retracted, and with it the phrase *the engine
+converts 3-4x better* - the landed difference is real, the attribution to
+conversion was not measured.
+
+**Caught by two council advisors independently**, from different lenses, one
+of whom had no domain context at all and simply said *that is a units
+mismatch, stop counting and diff thirty rows*. **Nothing in a 44-gate suite
+could see it**, because every gate was watching verdicts and counts.
+
+**Mechanism:** `scan_rate_comparison_without_denominators` fires on two
+percentages joined by a comparison connective in one sentence with no
+denominator named in it, and stays quiet when either is named. Pinned both
+directions by `test_b2955_rate_comparison_needs_both_denominators`.

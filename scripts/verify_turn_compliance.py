@@ -185,6 +185,45 @@ VERDICT_PATTERNS = [
 DENOMINATOR_RE = r"\b\d+\s+of\s+\d+\b"
 
 
+def scan_rate_comparison_without_denominators(entries: list[dict], *,
+                                              text: str | None = None
+                                              ) -> list[str]:
+    """S6-B2955 (L836): two percentages compared with neither denominator named.
+
+    #182 disciplines a VERDICT's denominator. A RATE escapes it entirely, and
+    a rate is where the mismatch is most invisible: both sides are already
+    percentages, so they LOOK commensurable and the reader has no cue that
+    one counts a different population than the other.
+
+    MEASURED: 36.0 pct (landed / entry-stage signals, post-screening) was set
+    against 8.8 pct (signal bars -> trades, pre-screening) in a ticket whose
+    OWN preceding row retracted a grain mismatch. Two council advisors caught
+    it; no gate could.
+
+    Fires ONLY on the narrow, decidable shape: two percentages joined by a
+    comparison connective inside one sentence, with no "N of M" or "of N"
+    denominator anywhere in that sentence. Quiet when either denominator is
+    named, which is the compliant form.
+    """
+    import re as _re
+    blob = text if text is not None else _response_text(entries)
+    if not blob:
+        return []
+    connectives = ("against", " vs ", "versus", "compared to", "compared with")
+    offenders = []
+    for sentence in _re.split(r"(?<=[.!?])\s+", blob):
+        pcts = _re.findall(r"\d+(?:\.\d+)?\s*(?:pct|%)", sentence)
+        if len(pcts) < 2:
+            continue
+        low = sentence.lower()
+        if not any(c in low for c in connectives):
+            continue
+        # a denominator anywhere in the sentence clears it
+        if _re.search(r"\bof\s+[\d,]+", low) or _re.search(r"\d+\s+of\s+\d+", low):
+            continue
+        offenders.append(sentence.strip()[:200])
+    return offenders
+
 def scan_verdict_denominators(entries: list[dict]) -> list[str]:
     """Return assistant text blocks stating a VERDICT with no denominator.
 
@@ -245,6 +284,24 @@ def scan_verdict_denominators(entries: list[dict]) -> list[str]:
                     break
     return offenders
 
+
+def check_rate_comparison_denominators() -> str | None:
+    """Stop-hook wrapper: block two rates compared with neither denominator.
+
+    S6-B2955 / L836. #224 - the scan existed for one commit and nothing
+    called it; this wrapper is what makes it enforcement rather than a
+    library function.
+    """
+    bad = scan_rate_comparison_without_denominators(_read_entries())
+    if not bad:
+        return None
+    out = ["TURN-GATE BLOCK (L836 / #182 extended): two RATES were compared "
+           "with neither denominator named. Two percentages look "
+           "commensurable because both are normalised - say what each is a "
+           "share OF (e.g. '560 of 1,554 entry-stage signals against 8.8 "
+           "pct of 18,140 signal bars'):"]
+    out += [f"  ...{b}..." for b in bad[:3]]
+    return chr(10).join(out)
 
 def check_verdict_denominator() -> str | None:
     """Stop-hook wrapper: block a turn that states a verdict without its scope."""
@@ -4877,7 +4934,7 @@ def main(argv: list[str] | None = None) -> int:
     _v: list[str] = []
     _raised: list[str] = []
     _n_gates = 0
-    for _fn in (check_compliance_marker, check_verdict_denominator, check_unverified_structure, check_describing_artifact_drift, check_skill_gates, check_uninspected_constant, check_response_gates, check_postconfig_complete, check_unmeasured_quantity, check_unverified_universe, check_postfix_recheck, check_orphan_rule, check_unrecorded_miss, check_monitor_armed):
+    for _fn in (check_compliance_marker, check_verdict_denominator, check_rate_comparison_denominators, check_unverified_structure, check_describing_artifact_drift, check_skill_gates, check_uninspected_constant, check_response_gates, check_postconfig_complete, check_unmeasured_quantity, check_unverified_universe, check_postfix_recheck, check_orphan_rule, check_unrecorded_miss, check_monitor_armed):
         _n_gates += 1
         try:
             _r = _fn()

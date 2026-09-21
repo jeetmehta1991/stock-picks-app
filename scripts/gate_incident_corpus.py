@@ -409,6 +409,25 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
     # B1931: VERDICT_PATTERNS is the trigger, not the docstring's prose.
     # "cannot clear" / "no combination passes" fire; a literal `N of M`
     # anywhere in the same text block clears them.
+    # S6-B2955 / L836: the VERBATIM incident. I retracted a grain mismatch
+    # in my own words at S6-B2949 and committed the same class two rows
+    # later - two percentages over different populations, set against each
+    # other. Caught by two council advisors, by no gate.
+    "scan_rate_comparison_without_denominators": [
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "This engine run converts at 36.0 pct against the "
+                     "8.8 pct recorded for R5."}]}}],), True,
+         "the verbatim incident - 36.0 pct is landed over entry-stage "
+         "signals (post-screening), 8.8 pct is signal bars to trades "
+         "(pre-screening); neither denominator named"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "This run converts 560 of 1,554 entry-stage signals "
+                     "at 36.0 pct against 8.8 pct of 18,140 signal bars "
+                     "for R5."}]}}],), False,
+         "the same comparison WITH both denominators - must go quiet"),
+    ],
     "scan_verdict_denominators": [
         (([{"type": "assistant", "message": {"content": [
             {"type": "text",

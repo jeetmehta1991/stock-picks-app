@@ -25071,6 +25071,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2955: the L836 tripwire row - two rates look commensurable
+        # because both are percentages.
+        ("TWO RATES ARE NOT COMPARABLE BECAUSE BOTH ARE PERCENTAGES - NAME THE DENOMINATOR OF EACH BEFORE PUTTING THEM IN ONE SENTENCE",
+         "B2955/L836: name the denominator of each rate"),
         # B2945: the L835 tripwire row - one gate's silence is not
         # launch readiness.
         ("ONE GATE'S SILENCE IS NOT LAUNCH READINESS - A SPEC-TIME VALIDATOR THAT DOES NOT ENFORCE WHAT THE LAUNCH-TIME GATE REQUIRES JUST MOVES THE REFUSAL DOWNSTREAM",
@@ -25901,7 +25905,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # the rows were inside a comment and this assert was too (L834).
     # 288 -> 289 at B2945 (the L835 gate-scope fragment; same-call with
     # its tripwire row per B2130).
-    assert len(gutted) == 289, gutted
+    # 289 -> 290 at B2955 (the L836 rate-denominator fragment; same-call
+    # with its tripwire row per B2130).
+    assert len(gutted) == 290, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41370,3 +41376,43 @@ def test_b2945_spec_gate_enforces_what_the_launch_gate_requires():
         assert launch_refusals(d, root=root) == [], (f.name,
                                                      launch_refusals(d, root=root))
         assert int(d["fires_at_production"]) > 0, f.name
+
+
+
+def test_b2955_rate_comparison_needs_both_denominators():
+    """S6-B2955 / L836: #182 covers a VERDICT's denominator, not a RATE's.
+
+    MEASURED 2026-09-21: 36.0 pct (landed / entry-stage signals) was set
+    against 8.8 pct (signal bars -> trades) in a ticket whose own preceding
+    row retracted a grain mismatch. Two percentages look commensurable by
+    construction, which is exactly why this needs a gate rather than care.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as v
+
+    scan = v.scan_rate_comparison_without_denominators
+
+    # MUST FIRE - the verbatim shape of the incident
+    bad = ("This engine run converts at 36.0 pct against the 8.8 pct "
+           "recorded for R5.")
+    assert scan([], text=bad), bad
+
+    # MUST STAY QUIET - denominators named, which is the compliant form
+    ok = ("This run converts 560 of 1,554 entry-stage signals at 36.0 pct "
+          "against 8.8 pct of 18,140 signal bars for R5.")
+    assert scan([], text=ok) == [], scan([], text=ok)
+
+    # MUST STAY QUIET - a single rate makes no comparison
+    assert scan([], text="Coverage is 84.6 pct on this cube.") == []
+
+    # MUST STAY QUIET - two rates with no comparison connective
+    assert scan([], text="Soldiers 36.0 pct. Crows 43.8 pct.") == []
+
+    # the rule survives in the durable docs
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8")
+    assert "NAME THE DENOMINATOR OF EACH" in skill
