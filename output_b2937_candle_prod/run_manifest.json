@@ -1,0 +1,62 @@
+{
+ "sequence": "b2937_candle_prod",
+ "batch": "B2937_CANDLE_PROD",
+ "execution": "LOCAL",
+ "frozen_sha": "ae46da709e39125e1042bb1b38b24fb9cbd9f3aa",
+ "isolation": true,
+ "calendar": "nyse_mcal",
+ "tickers": {
+  "file": "output_audit/_sweep_200.txt",
+  "n": 200,
+  "sha256": "cc988b89a3ac967f1d8942bdec38e9396ccfbb948272c420d2625a2c8749eb4c"
+ },
+ "strategy_subset": "output_audit/_subset_candle_long.txt",
+ "cube_riders": null,
+ "step": 1,
+ "arms": [
+  {
+   "tag": "prod",
+   "env": {
+    "CANDLE_N_BARS": "3",
+    "CANDLE_MIN_BODY_PCT": "0.0",
+    "CANDLE_MIN_STEP_PCT": "0.0",
+    "CANDLE_MAX_WICK_PCT": ""
+   },
+   "note": "the LOOSEST corner = production. Empty string is the no-wick-bound level: config.py:2490 reads a falsy raw value as None, so '' is None and NOT 0.0"
+  }
+ ],
+ "concurrency": "solo - one arm, one leg",
+ "budget_cap_usd": 0,
+ "spent_usd": 0,
+ "projected_batch_usd": 0,
+ "wall_clock_projection_hours": 3.64,
+ "wall_clock_projection_basis": "BORROWED AND UNVERIFIED FOR THIS FAMILY - that is what the run exists to fix. 0.2613 s/ticker-day is the smc pooled rate; x 200 tickers x 251 trading days = 13,117 s = 3.64 h. Candle grades ONE strategy against smc's 22, but per-bar signal computation is shared and dominates, so this is an estimate of the right order and not a measurement. The owner's 5 h local cap is the hard stop and the in-engine supervisor enforces it.",
+ "allow_engine_drift": false,
+ "obsolescence_risks": [
+  {
+   "risk": "candle wall-clock has never been measured, so the projection is borrowed from smc",
+   "status": "ACCEPTED - measuring it is the run's primary purpose; the 5h cap bounds the downside"
+  },
+  {
+   "risk": "the loosest corner equals production and R5 already holds it (1,596 landed, offline re-derivation recovers 1,596 of 1,596), so this run yields NO new grid verdicts",
+   "status": "DISCLOSED to the owner before launch - both approved reasons (runtime, occupancy attribution) survive; the grid question is answered offline already"
+  },
+  {
+   "risk": "occupancy attribution requires a POST-B2905 writer; if this cube's skipped rows carry the old literal stamp the run fails its second purpose",
+   "status": "GATED AFTER LANDING - count distinct strategy stamps on ticker_already_open rows; >1 means attribution works, ==1 means it does not and the correction stays unquantifiable"
+  },
+  {
+   "risk": "engine code changes mid-run",
+   "status": "BLOCKED - allow_engine_drift is false and frozen_sha pins ae46da709e39"
+  },
+  {
+   "risk": "a paired long/short cube would hit the S6-B2918 keying question, still an open owner decision",
+   "status": "AVOIDED BY CONSTRUCTION - cube_riders is null and the subset names one strategy, so no second leg exists"
+  }
+ ],
+ "leg_cap_hours": 4.5,
+ "_leg_cap_basis": "owner hard cap is 5.0h per local run (B2107); legs are capped at 4.5h so the in-engine supervisor kills before the owner bound rather than at it. A cap the manifest does not declare cannot be enforced (L637: a guard must not share the control flow it guards).",
+ "fires_at_production": 199,
+ "_fires_basis": "output_audit/b2850_candle_step05_smoke.json - SS11.2 step 0.5 at PRODUCTION params on 6 megacaps 2022-05-05..2026-05-05: pattern 479, pattern_and_rsi 199 for three_white_soldiers. 199 is the count at the FULL production gate (pattern AND rsi_14<60), which is what this run launches. CORROBORATED at full-universe scale by the R5 baseline in the same artifact: 1,596 fires, holdout_n 321. The smoke's scope is 6 tickers and this run is 200, so 199 is a floor on what to expect, not a projection of it.",
+ "_window_note": "DELIBERATELY ABSENT. The phase table owns the window for a declared step and phase_table.resolve injects it (B2713); a hand-typed window is how a Step-1 run once received Step-2's 4-year span, so the gate refuses any spec that declares both a step and a window. Step 1 resolves to 1 year ending AT the IS/HO boundary 2025-05-05."
+}

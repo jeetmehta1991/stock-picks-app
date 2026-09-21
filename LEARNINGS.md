@@ -22071,3 +22071,44 @@ had just written.
 join in BOTH directions - four real dependency phrasings match, and the two
 real citations that fooled it do not - because a matcher that flags everything
 and one that flags nothing are indistinguishable from the count alone.
+
+### L832 - A FIGURE THAT DRIVES A DECISION NEEDS A PERSISTED ARTIFACT (B2937, owner-caught 2026-09-21)
+
+The owner asked, of the claim that half the candle grid cannot produce a
+verdict: **"how are you determining this? On what basis?"**
+
+The honest answer was that there was no basis he could check. **27 of 54** had
+been computed once, in conversation, and **never written to disk**. I had
+quoted it across many turns - in ticket rows, in commit messages, in
+recommendations about spending 227 engine hours - and nothing on disk carried
+it. Re-deriving it reproduced 27 exactly, so the number was right; **that is
+not the point.** A figure nobody else can re-derive is an assertion wearing a
+measurement's clothes, and the owner had to ask before anyone could tell.
+
+**#201 requires a figure to NAME ITS SOURCE, and it passed here every time** -
+the source I named was a computation I had run. The gap is that a computation
+which left no trace is not a source anyone can return to. **Compliance failure
+against item #201**, and no new CHECKLIST item is warranted: the item is right
+and the reading of it was too weak.
+
+**The sweep found the class is not one instance.** Of four load-bearing
+figures quoted this session, **three had no artifact**: `28 of 54` for the
+crows leg had never actually been computed at all, only assumed symmetric with
+soldiers; the `82.1 pct of 17,927 cells` base rate has no persisted source;
+and the `2.07x` occupancy ratio has none either. A grep appeared to find the
+last two, and reading the hits showed they were **coincidental digit
+substrings inside unrelated p-values** - the L644 trap, one batch after L831
+recorded it.
+
+**So: when a figure will be quoted more than once, write it to an artifact the
+first time.** The test is not *did I measure it* but *can the owner re-derive
+it without me*. Both candle legs now run from
+`scripts/candle_grid_feasibility.py`, which checks its own premise - the
+production corner must recover the landed set exactly (1,596 of 1,596 and
+1,674 of 1,674) and it REFUSES to report cell counts otherwise.
+
+**Mechanism: JUDGMENT-ONLY for detection** - no scan can tell a figure that
+needs a persisted artifact from one that does not, and `#201`'s gate already
+fires on the narrower question it can decide. **Durability is pinned** by the
+tripwire row and its `test_b2123` fragment, and the two candle figures now
+have artifacts rather than a habit.
