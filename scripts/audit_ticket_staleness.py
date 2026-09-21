@@ -231,9 +231,17 @@ def _learnings():
 
 
 BLOCKER_KINDS = (
+    # S6-B2936: STEM, not collocation. 3 of 9 live rows said "the
+    # methodology ruling", "a disposition rule is needed" and
+    # "blocked on the ruling" and all three read as UNCLASSIFIED -
+    # which is precisely what a reader scans for when hunting work
+    # that is NOT owner-gated (L515: enumerating remembered phrasings
+    # is the bottom rung; stem the root instead).
     ("owner-decision", ("owner decision", "owner ruling", "needs the owner",
                         "owner-gated", "needs a ruling", "owner approval",
-                        "awaiting an owner", "owner's")),
+                        "awaiting an owner", "owner's", "ruling",
+                        "rule is needed", "decision is needed",
+                        "needs a decision", "sign-off", "signoff")),
     ("needs-elevation", ("elevated", "elevation", "access is denied",
                          "administrator")),
     ("depends-on-run", ("batch b", "until its input exists", "needs the run",

@@ -41068,3 +41068,55 @@ def test_b2580a_plan_lineage_is_generated_and_idempotent():
     assert "_strip_appendix(" in src.split("def build_appendix")[1][:400], (
         "build_appendix no longer strips a prior appendix - the table will "
         "grow by a row about the generator on every run")
+
+
+
+def test_b2936_blocker_classifier_stems_the_ruling_root():
+    """S6-B2936: the classifier's vocabulary was narrower than its class.
+
+    MEASURED on the live ledger: 3 of 9 OPEN/BLOCKED rows read `unclassified`
+    while all three stated an owner blocker plainly - "the methodology
+    RULING", "a disposition RULE IS NEEDED", "blocked on THE RULING". The
+    patterns required two-word collocations, so the three most clearly
+    owner-gated rows were the three that looked available. L515: enumerating
+    remembered phrasings is the bottom rung; stem the root.
+
+    Note what this pin does NOT claim. It asserts the MATCHER sees the
+    phrasings, not that the classification is CORRECT - the labels come from
+    reason cells I wrote, scanned by patterns I wrote, so the tool confirms
+    my phrasing is consistent and cannot confirm my judgment (L826: a gate
+    that defines its own population always reports full coverage).
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import audit_ticket_staleness as ats
+
+    kinds = dict(ats.BLOCKER_KINDS)
+    owner = kinds["owner-decision"]
+
+    # the three real phrasings that were missed must now match
+    for phrase in ("the methodology ruling is the only outstanding part",
+                   "a disposition rule is needed, not code",
+                   "blocked on the ruling only"):
+        assert any(p in phrase for p in owner), phrase
+
+    # and the collocations that already worked must keep working
+    for phrase in ("needs an owner decision between (a) and (b)",
+                   "blocked on an owner ruling",
+                   "requires sign-off"):
+        assert any(p in phrase for p in owner), phrase
+
+    # MUST NOT collapse: a row with a purely mechanical blocker stays out of
+    # the owner bucket, or the label stops carrying information
+    for phrase in ("blocked on batch b - nothing executable until its input "
+                   "exists",
+                   "access is denied from the non-elevated session"):
+        assert not any(p in phrase for p in owner), phrase
+
+    # the classifier must still produce more than one bucket on the live set
+    rows = ats.blocker_audit()
+    seen = {k for _t, _s, k, _st, _r in rows}
+    assert len(seen) >= 2, seen
