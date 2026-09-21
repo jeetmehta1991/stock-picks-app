@@ -22303,3 +22303,42 @@ could see it**, because every gate was watching verdicts and counts.
 percentages joined by a comparison connective in one sentence with no
 denominator named in it, and stays quiet when either is named. Pinned both
 directions by `test_b2955_rate_comparison_needs_both_denominators`.
+
+**COUNCIL ADDENDUM (B2956) - WHAT ELSE THE FIVE LENSES CAUGHT.**
+
+The rate-denominator miss above was caught by TWO advisors independently -
+the First Principles lens (*"8.8 pct vs 36 pct is a ratio comparison, and
+entry-stage signals may not be the same population R5 divided by"*) and the
+Outsider (*"it's a units mismatch... stop counting, diff thirty rows"*).
+Neither had seen the other's answer. **Convergence from disjoint lenses is
+the signal the anonymised cross-evaluation exists to produce**, and it is
+worth more than either answer alone.
+
+Three further catches, none of which any gate could have made:
+
+1. **The Executor alone noticed a hard constraint nobody had named: a config
+   imports whatever engine code is on disk when it STARTS.** So editing
+   engine, screener or config modules mid-chain means configs 1-3 and 4-36
+   ran different code and nothing records which. That makes two open tickets
+   (the paired-cube keying fix, the OHLCV bar gate) **blocked by the running
+   chain, not by the owner** - a completely different disposition from the
+   one they carry.
+
+2. **The Contrarian named the pessimistic reading nobody had written down:**
+   more trades from the same signal stream, with occupancy dominating the
+   skips, is also the signature of *positions being opened that should have
+   been blocked*. Under that reading the extra trades are not evidence of a
+   better engine but of an inflated n - and n is exactly what the min-trades
+   admission gates read. It is untested either way, which is the point.
+
+3. **The Expansionist observed that R5 is the measuring stick for 207 other
+   strategies**, 108 classified *needs loosening* and 63 *no gradable cell*
+   on trade counts. If the landed discrepancy generalises, those buckets were
+   mis-partitioned. That is a large claim resting on a comparison the same
+   council just weakened, so it is recorded as a QUESTION, not a finding.
+
+**The chairman sided against the Contrarian's halt** - the retraction above
+shrinks the alarm, the cubes are valid simulations of the current code
+either way, and the Executor's read-only RCA costs no engine time - **but
+adopted its quarantine in substance: nothing this campaign produces reaches
+the roster until S6-B2949 closes.**
