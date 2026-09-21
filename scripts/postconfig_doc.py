@@ -246,14 +246,33 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
     free = art.get("free")
     if free and isinstance(free.get("levels"), dict) and free["levels"]:
         rep = free.get("reproduction") or {}
+        # S6-B2920: NAME THE GRADER THAT ACTUALLY RAN. This prose
+        # hardcoded the institutional leg, so every candle cube was
+        # reported as graded by a script that never touched it. Both
+        # graders now stamp `grader`; the fallback covers the 21
+        # artifacts written before the stamp existed.
+        _grader = str(free.get("grader")
+                      or "grade_free_levels_institutional")
+        # And the last three columns read ONLY the institutional leg's
+        # sharpe_selected_* keys, so a candle level - which carries a
+        # ci_lo-ranked per_exit and no explicit pick - rendered three
+        # dashes where the verdict belongs. Fall back to the top-ranked
+        # entry, and LABEL WHICH SELECTION IT IS: rc.select_exit picks on
+        # sharpe with a min_n floor while per_exit is ordered by ci_lo,
+        # so calling the latter "sharpe-selected" would be a fabrication.
+        _has_pick = any("sharpe_selected_exit" in lv
+                        for lv in free["levels"].values()
+                        if isinstance(lv, dict))
+        _pick_col = ("selected exit" if _has_pick
+                     else "top exit (ranked by ci_lo)")
         _metric = {"is_fires", "is_rows_all_exits", "sharpe_selected_exit",
                    "sharpe_selected_stats", "per_exit_ranked_by_ci_lo"}
         lines += [f"**FREE-LEVEL GRADES (B2569, reproduction-gated every "
                   f"landing):** reproduction {rep.get('covered', '-')} of "
                   f"{rep.get('landed_fires', '-')} landed fires covered "
                   f"(coverage {rep.get('coverage', '-')}); IS window only, "
-                  f"holdout never read (grade_free_levels_institutional).", "",
-                  "| level | knobs | IS fires | selected exit | is_sharpe "
+                  f"holdout never read ({_grader}).", "",
+                  f"| level | knobs | IS fires | {_pick_col} | is_sharpe "
                   "| is_ci_lo |", "|---|---|---|---|---|---|"]
         def _lv_key(item):
             name = item[0]
@@ -262,9 +281,20 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
             knobs = " ".join(f"{k}={lv[k]}" for k in sorted(lv)
                              if k not in _metric)
             st = lv.get("sharpe_selected_stats") or {}
+            pick = lv.get("sharpe_selected_exit")
+            if pick is None and not _has_pick:
+                # S6-B2920: no explicit pick on this family - show the
+                # grader's OWN top-ranked exit rather than a dash. The
+                # header says which ranking this is.
+                _ranked = lv.get("per_exit_ranked_by_ci_lo") or []
+                _top = _ranked[0] if _ranked else {}
+                if isinstance(_top, dict):
+                    pick = _top.get("exit")
+                    st = {"sharpe": _top.get("is_sharpe"),
+                          "ci_lo": _top.get("is_ci_lo")}
             lines.append(
                 f"| {name} | {knobs or '-'} | {lv.get('is_fires', '-')} | "
-                f"{lv.get('sharpe_selected_exit', '-')} | "
+                f"{pick if pick is not None else '-'} | "
                 f"{st.get('sharpe', '-')} | {st.get('ci_lo', '-')} |")
         lines.append("")
 

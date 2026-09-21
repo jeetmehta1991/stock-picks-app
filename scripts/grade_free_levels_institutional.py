@@ -192,6 +192,7 @@ def not_comparable_doc(repro: dict, *, ticket: str, cube_name: str) -> dict:
     """B2574: the artifact written when coverage is below the floor - the
     reproduction record, no graded level, and the reason in words."""
     return {"ticket": ticket, "strategy": STRAT, "cube": cube_name,
+            "grader": "scripts/grade_free_levels_institutional.py (S6-B2569)",
             "method": "NOT GRADED: covered population below COVERAGE_FLOOR",
             "levels": [], "reproduction": repro,
             "not_comparable": (
@@ -217,6 +218,12 @@ def grade_levels(cube_csv: Path, flags: pd.DataFrame, *, min_n: int = 10,
 
     doc = {"ticket": ticket, "strategy": STRAT, "cube": str(cube_csv),
            "method": method,
+           # S6-B2920: the RENDERER used to hardcode this leg's name into
+           # the owner-facing prose, so a candle cube was reported as
+           # having been graded by THIS script. An artifact owes its
+           # consumer the field the consumer needs (L741) - the candle
+           # leg already stamped one; this side did not.
+           "grader": "scripts/grade_free_levels_institutional.py (S6-B2569)",
            # S6-B2871 part B: this leg has shipped a
            # strict-subset re-score on every landing since
            # B2569 while the subset premise is false in one

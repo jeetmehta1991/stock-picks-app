@@ -21911,3 +21911,41 @@ neither flag nor manifest it REFUSES rather than picking a leg (L642).
 
 Related but distinct: L654 says a pin on the callee is not a pin on the wiring.
 That is about whether the call happens. This is about what the call CARRIES.
+
+### L828 - A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT (B2920, 2026-09-20)
+
+S6-B2533 sat BLOCKED asking the owner to choose: renormalise LEARNINGS.md and
+CHECKLIST.md in one deliberate disclosed diff, or accept the CRLF status quo.
+It priced the work at **19,659 staged lines** and warned that *the status quo is
+what produced the 36k-line surprise diff*.
+
+**Half of it had already happened, ten days earlier, by accident.** Commit
+`0334d98fc` (2026-09-10) carries subject *"B2666a: banner roster split corrected
+18+7 -> 19 long + 6 short"* and a **19,926/19,923-line whole-file diff on
+LEARNINGS.md**. MEASURED now: LEARNINGS.md is `i/lf`, CRLF 0, lone CR 0. The
+byte the RCA blamed - one lone CR at offset 1,319,999 - **does not exist.**
+
+So the ticket kept asking for approval to do work that was done, and its RCA
+kept naming a cause that was gone. Nothing told it, because **nothing watches a
+ticket's CAUSE - only its STATUS**, and its status was still honestly BLOCKED.
+
+L639 is the neighbour: *a NUMBER inside an open ticket decays silently.* This is
+worse, because what decayed was the **ACTION**. A stale number makes a ticket
+misleading; a silently-executed decision makes it **request permission for the
+past**, and the owner's answer would have been applied to a world that no longer
+existed.
+
+The tell was available and cheap: the ticket named an exact byte at an exact
+offset. **One `git ls-files --eol` and one byte count - four seconds - settled
+it.** I had re-read that row several times without ever running the check it
+handed me.
+
+So: **before re-raising any BLOCKED ticket, execute its own cited evidence.** A
+row that names a file, an offset, a classification or a count has already
+written its verification command; run it before quoting it, and if the cause is
+gone, say so before asking for the decision.
+
+And the other half: **CHECKLIST.md is still CRLF (6,036) and there is still no
+`.gitattributes`,** so the LF that LEARNINGS.md now has is unpinned and can flip
+back as silently as it flipped forward. `test_b2921_canonical_doc_eol_state_is_pinned`
+pins the character in both directions; the remainder is S6-B2921.

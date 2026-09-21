@@ -25071,7 +25071,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
-        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
+        # B2920: the L828 tripwire row - a blocked ticket's decision\n        # can be executed by accident.\n        ("A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT, AND NOTHING TELLS THE TICKET",\n         "B2920/L828: execute a blocked row's own cited evidence before quoting it"),\n        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
         # population always reports full coverage.
         ("A GATE THAT DEFINES ITS OWN POPULATION WILL ALWAYS REPORT FULL COVERAGE - TAKE THE DENOMINATOR FROM A SOURCE THE GATE DOES NOT OWN",
          "B2913/L826: take the denominator from a source the gate does not own"),
@@ -25847,7 +25847,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 279 -> 280 at B2913 (the L826 self-denominator fragment; same-call
     # with its tripwire row per B2130).
-    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    assert len(gutted) == 281, gutted
+    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call\n    # with its tripwire row per B2130).\n    assert len(gutted) == 282, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -40447,3 +40447,145 @@ def test_b2917_battery_tells_the_spot_check_which_leg_it_is_grading():
         encoding="utf-8", errors="replace")
     assert 'add_argument("--strategy", default=None' in chk, (
         "spot_check_candle defaults to a leg again - that is the defect")
+
+
+def test_b2920_free_levels_section_is_not_wired_to_one_family():
+    """S6-B2920: the owner-facing free-levels section hardcoded ONE grader's
+    name and read ONLY that grader's selection keys.
+
+    MEASURED: a candle level carries {p6, is_fires,
+    per_exit_ranked_by_ci_lo}; the institutional one also carries
+    sharpe_selected_exit / sharpe_selected_stats. The table's last three
+    columns read only the latter, so every candle cube rendered three dashes
+    where the verdict belongs, under prose naming a script that never ran.
+
+    The ticket ALSO claimed the knob column came out blank. It did not - the
+    knob sweep was already family-generic. This pin records the corrected
+    scope so the wrong claim is not re-fixed later.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    import postconfig_doc as pdoc
+
+    entry = {s: {"status": "N/A", "reason": "n/a"} for s in pdoc.STEPS}
+
+    def render(free):
+        return "\n".join(pdoc.config_section("cube_x", entry, {"free": free}))
+
+    candle = {
+        "grader": "scripts/grade_free_levels_candle.py (S6-B2904)",
+        "reproduction": {"covered": 10, "landed_fires": 10, "coverage": 1.0},
+        "levels": {"0.0": {"p6": 0.0, "is_fires": 99,
+                           "per_exit_ranked_by_ci_lo": [
+                               {"exit": "time_stop_10d", "n": 50,
+                                "is_sharpe": 0.81, "is_ci_lo": 0.22}]},
+                   "0.25": {"p6": 0.25, "is_fires": 7,
+                            "per_exit_ranked_by_ci_lo": []}},
+    }
+    out = render(candle)
+    assert "grade_free_levels_candle.py" in out, out[:400]
+    assert "grade_free_levels_institutional" not in out, (
+        "the candle cube is still reported as graded by the institutional "
+        "leg - that is the S6-B2920 mis-attribution")
+    # the verdict columns must be FILLED from the grader's own ranking...
+    assert "time_stop_10d" in out and "0.81" in out and "0.22" in out, out[:600]
+    # ...and LABELLED as the ranking it actually is. per_exit is ordered by
+    # ci_lo; the institutional pick is rc.select_exit(objective="sharpe").
+    # Calling the first the second would be a fabrication.
+    assert "top exit (ranked by ci_lo)" in out, out[:600]
+    assert "| selected exit |" not in out, (
+        "a ci_lo-ranked top is being presented as a sharpe selection")
+    # the knob column was NEVER blank - the ticket was wrong on this point
+    assert "p6=0.0" in out, out[:600]
+    # a level with no ranked exits must still render, not crash
+    assert "| 0.25 |" in out, out[:600]
+
+    # BACKWARD COMPAT: an institutional artifact keeps its own header and
+    # its explicit pick, and carries no `grader` stamp on the 21 files
+    # written before the stamp existed - the fallback must cover them.
+    inst = {
+        "reproduction": {"covered": 10, "landed_fires": 10, "coverage": 1.0},
+        "levels": {"baseline_p7_3": {
+            "p7": 3, "p8": 5, "is_fires": 1275,
+            "sharpe_selected_exit": "breakeven_plus_trail",
+            "sharpe_selected_stats": {"sharpe": 0.497, "ci_lo": 0.351},
+            "per_exit_ranked_by_ci_lo": []}},
+    }
+    oi = render(inst)
+    assert "grade_free_levels_institutional" in oi, oi[:400]
+    assert "| selected exit |" in oi, oi[:400]
+    assert "breakeven_plus_trail" in oi and "0.497" in oi, oi[:600]
+
+    # and BOTH graders must stamp their name, or the fallback silently
+    # becomes the only path again (L741)
+    for f in ("grade_free_levels_candle.py",
+              "grade_free_levels_institutional.py"):
+        src = (root / "scripts" / f).read_text(encoding="utf-8",
+                                               errors="replace")
+        assert '"grader"' in src, ("%s no longer stamps its own name" % f)
+
+
+def test_b2921_canonical_doc_eol_state_is_pinned():
+    """S6-B2921 / L828: a 19,926-line whole-file EOL renormalisation of
+    LEARNINGS.md landed inside commit 0334d98fc, whose subject is a roster
+    split correction. It was never disclosed, and it silently executed half
+    of what S6-B2533 was still BLOCKED on an owner decision for.
+
+    ASSERTS THE INDEX, NOT THE WORKING COPY. core.autocrlf is true here, so
+    `git add` warns that LEARNINGS.md's LF "will be replaced by CRLF the next
+    time Git touches it" - a working-copy assertion would therefore go RED on
+    a correct repo as soon as anyone checks the file out. The STORED form is
+    what S6-B2533 was about and what a diff actually shows.
+
+    MEASURED this turn: LEARNINGS.md i/lf (blob CRLF 0, bare LF 21,913);
+    CHECKLIST.md i/mixed (6,036 CRLF). Pin the CHARACTER, not a count -
+    CHECKLIST.md gains CRLF lines every batch - so a silent flip in EITHER
+    direction fails the pyramid instead of riding an unrelated commit.
+    """
+    import subprocess
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    try:
+        out = subprocess.run(
+            ["git", "ls-files", "--eol", "--", "LEARNINGS.md", "CHECKLIST.md"],
+            cwd=str(root), capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):          # noqa: BLE001
+        import pytest
+        pytest.skip("git unavailable")
+    if out.returncode != 0 or not out.stdout.strip():
+        import pytest
+        pytest.skip("git ls-files --eol returned nothing")
+
+    # rows look like: "i/lf    w/lf    attr/                \tLEARNINGS.md"
+    idx = {}
+    for line in out.stdout.splitlines():
+        if "\t" not in line:
+            continue
+        fields, name = line.split("\t", 1)
+        for tok in fields.split():
+            if tok.startswith("i/"):
+                idx[name.strip()] = tok[2:]
+                break
+
+    assert idx.get("LEARNINGS.md") == "lf", (
+        "LEARNINGS.md is stored as %r, not lf - it was renormalised to pure "
+        "LF at 0334d98fc (undisclosed, inside an unrelated commit) and "
+        "nothing pins it; see S6-B2921 / L828" % idx.get("LEARNINGS.md"))
+
+    # the lone CR that S6-B2533's RCA blamed must not come back - it is what
+    # made git classify the ledger -text in the first place
+    blob = subprocess.run(["git", "show", "HEAD:LEARNINGS.md"], cwd=str(root),
+                          capture_output=True, timeout=60)
+    if blob.returncode == 0 and blob.stdout:
+        b = blob.stdout
+        assert b.count(b"\r") - b.count(b"\r\n") == 0, (
+            "LEARNINGS.md carries a lone CR again - the S6-B2533 byte")
+
+    assert idx.get("CHECKLIST.md") in ("mixed", "crlf"), (
+        "CHECKLIST.md is stored as %r. Renormalising it may well be correct, "
+        "but it is the S6-B2921 owner decision and must not land silently "
+        "inside an unrelated commit (L828)" % idx.get("CHECKLIST.md"))
