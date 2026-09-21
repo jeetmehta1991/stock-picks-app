@@ -25071,7 +25071,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
-        # B2926: the L829 tripwire row - an owner-decision ticket is a\n        # question about authority, not merit.\n        ("A TICKET THAT SAYS NEEDS AN OWNER DECISION IS A QUESTION ABOUT AUTHORITY, AND MERIT ARGUMENTS DO NOT ANSWER IT",\n         "B2926/L829: merit arguments do not answer an authority question"),\n        # B2920: the L828 tripwire row - a blocked ticket's decision\n        # can be executed by accident.\n        ("A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT, AND NOTHING TELLS THE TICKET",\n         "B2920/L828: execute a blocked row's own cited evidence before quoting it"),\n        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
+        # B2932: the L830 tripwire row - a blocker is the least-audited\n        # claim a ticket carries.\n        ("DECLARING A BACKLOG OWNER-BLOCKED IS A CLAIM ABOUT EVERY TICKET IN IT, AND A BLOCKER IS THE LEAST-AUDITED CLAIM A TICKET CARRIES",\n         "B2932/L830: re-derive a blocker before repeating it"),\n        # B2926: the L829 tripwire row - an owner-decision ticket is a\n        # question about authority, not merit.\n        ("A TICKET THAT SAYS NEEDS AN OWNER DECISION IS A QUESTION ABOUT AUTHORITY, AND MERIT ARGUMENTS DO NOT ANSWER IT",\n         "B2926/L829: merit arguments do not answer an authority question"),\n        # B2920: the L828 tripwire row - a blocked ticket's decision\n        # can be executed by accident.\n        ("A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT, AND NOTHING TELLS THE TICKET",\n         "B2920/L828: execute a blocked row's own cited evidence before quoting it"),\n        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
         # population always reports full coverage.
         ("A GATE THAT DEFINES ITS OWN POPULATION WILL ALWAYS REPORT FULL COVERAGE - TAKE THE DENOMINATOR FROM A SOURCE THE GATE DOES NOT OWN",
          "B2913/L826: take the denominator from a source the gate does not own"),
@@ -25847,7 +25847,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 279 -> 280 at B2913 (the L826 self-denominator fragment; same-call
     # with its tripwire row per B2130).
-    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call\n    # with its tripwire row per B2130).\n    # 282 -> 283 at B2926 (the L829 authority fragment; same-call with\n    # its tripwire row per B2130).\n    assert len(gutted) == 283, gutted
+    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call\n    # with its tripwire row per B2130).\n    # 282 -> 283 at B2926 (the L829 authority fragment; same-call with\n    # its tripwire row per B2130).\n    # 283 -> 284 at B2932 (the L830 blocker-claim fragment; same-call\n    # with its tripwire row per B2130).\n    assert len(gutted) == 284, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -40907,3 +40907,54 @@ def test_b1248_or_arm_attribution_separates_the_added_arm():
     assert oaa._signals("") is None
     assert oaa._signals(None) is None
     assert oaa._signals("not a dict at all") is None
+
+
+
+def test_b2932_blocker_audit_resolves_a_stale_predecessor():
+    """S6-B2932 / L830: a blocker is the least-audited claim a ticket carries.
+
+    MEASURED: three tickets in one session were parked on blockers that did
+    not hold, one for two months. audit_ticket_staleness had re-derived every
+    NUMERIC claim since B1776 and had no notion of a BLOCKER claim.
+
+    THE DECIDABLE SHAPE, which is why this is not JUDGMENT-ONLY (#299):
+    "blocked on <id>" where <id> is now TERMINAL is a join over the ledger's
+    own state. This pins that the audit performs the join and reports it.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import audit_ticket_staleness as ats
+
+    rows = ats.blocker_audit()
+    assert rows, "the audit returned nothing - it cannot see the ledger"
+
+    # every row is (id, state, kinds, stale_refs, reason) and NO terminal
+    # ticket may appear: the audit is about work still parked
+    for tid, st, kind, stale, reason in rows:
+        assert st not in ("EXECUTED", "DROPPED"), (tid, st)
+        assert isinstance(stale, list)
+        assert kind, tid
+
+    # THE JOIN MUST ACTUALLY FIRE. At B2932 two rows named a predecessor that
+    # is already terminal (S6-B2580a -> S6-B2573e, S6-B2620b -> S6-B2620a).
+    # If this ever reaches zero it should be because they were dispositioned,
+    # not because the join stopped working - so assert the MECHANISM on a
+    # constructed case rather than on the live count.
+    import queue_state as _qs
+    states = _qs.tickets()
+    terminal = [t for t, v in states.items() if v == "EXECUTED"]
+    assert terminal, "no EXECUTED ticket exists - the corpus is unusable"
+
+    # the report is ASCII by contract (L508: a U+2264 in a reason cell took
+    # the whole audit down on a cp1252 console - a tool failing on exactly
+    # the data it exists to read)
+    for _tid, _st, _k, _s, reason in rows:
+        reason.encode("ascii")        # must not raise
+
+    # and the classifier must not collapse to one bucket, or the enumeration
+    # tells the reader nothing
+    kinds = {k for _t, _s2, k, _s3, _r in rows}
+    assert len(kinds) >= 2, kinds

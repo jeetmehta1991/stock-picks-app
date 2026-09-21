@@ -230,11 +230,102 @@ def _learnings():
     return len(nums), [f"L{n}" for n in nums]
 
 
+BLOCKER_KINDS = (
+    ("owner-decision", ("owner decision", "owner ruling", "needs the owner",
+                        "owner-gated", "needs a ruling", "owner approval",
+                        "awaiting an owner", "owner's")),
+    ("needs-elevation", ("elevated", "elevation", "access is denied",
+                         "administrator")),
+    ("depends-on-run", ("batch b", "until its input exists", "needs the run",
+                        "after the run", "launch")),
+    ("depends-on-ticket", ("blocked on s6-", "do it after", "after s6-")),
+)
+
+
+def _ascii(reason):
+    """L508: the blocker report prints ticket prose to a cp1252 console
+    on Windows, where one U+2264 raises UnicodeEncodeError and takes the
+    whole audit down - a tool failing on exactly the data it exists to
+    read. The report is ASCII by contract; sanitize at the source rather
+    than wrapping every print."""
+    import re
+    r = re.sub(r"\s+", " ", (reason or "")).strip()[:150]
+    return r.encode("ascii", "replace").decode("ascii")
+
+
+def blocker_audit():
+    """S6-B2932: re-derive every NON-TERMINAL ticket's BLOCKER.
+
+    A ticket's STATUS rots slower than its CAUSE and only the status is
+    watched, so a blocker that stopped holding keeps the row parked
+    (L828). MEASURED: three tickets in one session were BLOCKED on
+    conditions that no longer held, one of them for two months.
+
+    DECIDABLE SHAPE: "blocked on <id>" where <id> is now terminal. That
+    is a join over the ledger's own state and needs no judgment - it
+    would have caught S6-B2861. Every other shape is CLASSIFIED and
+    LISTED, so a backlog cannot be called owner-blocked without naming
+    what each row rests on."""
+    import re
+    import queue_state as _qs
+    states = _qs.tickets()
+    q = (ROOT / "EXECUTION_QUEUE.md").read_text(encoding="utf-8",
+                                                errors="replace")
+    last = {}
+    for ln in q.splitlines():
+        if not ln.strip().startswith("|"):
+            continue
+        c = ln.split("|")
+        if len(c) < 4:
+            continue
+        tid = re.sub(r"[*\s]", "", c[1])
+        if tid in states:
+            last[tid] = ln
+
+    TERMINAL = ("EXECUTED", "DROPPED")
+    out = []
+    for tid, st in sorted(states.items()):
+        if st in TERMINAL:
+            continue
+        row = last.get(tid, "")
+        cells = row.split("|")
+        reason = cells[5] if len(cells) > 5 else ""
+        low = (reason or row).lower()
+        kinds = [k for k, pats in BLOCKER_KINDS
+                 if any(p in low for p in pats)] or ["unclassified"]
+        # THE DECIDABLE PART: a named predecessor that is now terminal
+        stale = []
+        for ref in set(re.findall(r"S6-B[0-9]+[a-zA-Z-]*", reason or "")):
+            if ref != tid and states.get(ref) in TERMINAL:
+                stale.append(f"{ref}={states[ref]}")
+        out.append((tid, st, ",".join(kinds), sorted(stale),
+                    _ascii(reason)))
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true",
                     help="list every open ticket carrying a number")
+    ap.add_argument("--blockers", action="store_true",
+                    help="S6-B2932: re-derive every non-terminal ticket's BLOCKER")
     a = ap.parse_args()
+
+    if a.blockers:
+        rows = blocker_audit()
+        print("NON-TERMINAL TICKETS AND WHAT EACH BLOCKER RESTS ON\n")
+        stale_n = 0
+        for tid, st, kind, stale, reason in rows:
+            mark = "  <== STALE: " + ", ".join(stale) if stale else ""
+            stale_n += bool(stale)
+            print(f"  {tid:<32} {st:<9} {kind}{mark}")
+            if reason:
+                print(f"        {reason}")
+        print(f"\n  {len(rows)} non-terminal; {stale_n} name a predecessor that is now TERMINAL.")
+        print("  A stale predecessor is DECIDABLE. Every other kind is "
+              "listed so the backlog cannot be called owner-blocked "
+              "without naming what each row waits on (S6-B2932 / L828).")
+        return 0
 
     print("FRESHLY MEASURED VALUES (what the world says today)\n")
     for label, fn in PROBES.items():

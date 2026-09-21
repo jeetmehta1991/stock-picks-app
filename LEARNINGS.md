@@ -21993,3 +21993,46 @@ anyway. Both come from the same missing definition, now asked as S6-B2925.
 phrase would fire on every row quoting it. **That is true of PROSE and false of the LEDGER.** A ticket's own PRIOR rows are a fact, and a transition to a terminal state THIS TURN is a fact, so the pair is checkable without reading anyone's intent - the detection is a STATE DIFF, not a phrase match. The gate keys on DECISION-PENDING forms (*needs an owner decision*) and never on CITATIONS (*owner ruling B1608*), and any acknowledgement clears it - including an open statement that you are proceeding without the ruling (L633). PROVEN BOTH WAYS: fires on the real S6-B2918 incident, silent on five compliant shapes including the citation trap that had made this look impossible. **Compliance failure against #299** - MECHANIZE FIRST says to build any mechanizable SLICE in the same batch, and I wrote JUDGMENT-ONLY without attempting the design. **Durability is also pinned** by the
 tripwire row and its `test_b2123` fragment, so the rule cannot vanish from the
 file that is read every turn.
+
+### L830 - A BLOCKER IS THE LEAST-AUDITED CLAIM A TICKET CARRIES (B2932, 2026-09-20)
+
+**THREE TIMES IN ONE SESSION I told the owner the remaining backlog was his to
+decide, and three times that was wrong.**
+
+| ticket | its stated blocker | what was true |
+|---|---|---|
+| S6-B2861 | *DO IT AFTER S6-B2874* | S6-B2874 was already EXECUTED |
+| S6-B2533 | *ONE lone CR byte at offset 1,319,999* | measured **zero**; fixed 10 days earlier |
+| S6-B1248 | *needs the Batch B trade log* | **25 cubes on disk** answer the question |
+
+S6-B1248 had waited **two months** for a launch it never needed.
+
+**Why this class survives.** L828 says a ticket's STATUS and its CAUSE rot at
+different rates and only STATUS is watched. This is the consequence at BACKLOG
+scale: a blocker is prose in a `_reason:_` cell, it is never re-derived, and
+the row's status stays honestly non-terminal the whole time - so nothing ever
+looks wrong. `audit_ticket_staleness.py` had re-derived every NUMERIC claim in
+an open ticket since B1776 and **had no notion of a blocker claim at all.**
+
+**And the failure compounds at the summary layer.** *"All nine are yours"* is
+one sentence asserting nine separate unexamined facts, and it is the sentence
+the owner acts on. The convenient reading is that the backlog is finished; the
+expensive one is that it is not. **I made the convenient claim three times and
+it was wrong every time.**
+
+**The mechanizable slice, and why this is not JUDGMENT-ONLY (#299).** One
+blocker shape is DECIDABLE with no reading of intent: *blocked on <ticket id>*
+where that id is now TERMINAL. That is a join over the ledger's own state.
+`--blockers` does it, and **on its first run it found two more** - S6-B2580a
+waiting on S6-B2573e and S6-B2620b on S6-B2620a, both EXECUTED. Every other
+blocker is CLASSIFIED and LISTED, so calling a backlog owner-blocked now
+requires naming what each row waits on rather than asserting it.
+
+**The rule: re-derive a blocker before repeating it, and never summarise a
+backlog as blocked without having done so for every member.** A blocker that
+names a file, an offset, a predecessor or an artifact has already written its
+own check - the same tell as L828, one level up.
+
+**Mechanism: `audit_ticket_staleness.py --blockers`** for the decidable shape,
+plus its enumeration for the rest; durability pinned by
+`test_b2932_blocker_audit_resolves_a_stale_predecessor`.
