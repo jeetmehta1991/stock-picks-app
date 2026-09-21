@@ -294,10 +294,20 @@ def blocker_audit():
         kinds = [k for k, pats in BLOCKER_KINDS
                  if any(p in low for p in pats)] or ["unclassified"]
         # THE DECIDABLE PART: a named predecessor that is now terminal
+        # S6-B2934: a terminal id in the cell is NOT automatically a
+        # dependency. A reason may CITE a shipped mechanism ("the
+        # S6-B2620a sweep already exists"), and flagging those makes the
+        # audit noise - which is how a control dies (L586). Require
+        # DEPENDENCY PHRASING immediately before the id, and report the
+        # phrase so a reader can judge the match.
         stale = []
-        for ref in set(re.findall(r"S6-B[0-9]+[a-zA-Z-]*", reason or "")):
+        DEP = (r"(?:blocked\s+on|do\s+it\s+after|after|depends?\s+on|"
+               r"needs|pending|waiting\s+on|once|until)")
+        for m in re.finditer(DEP + r"\s+\**(S6-B[0-9]+[a-zA-Z-]*)",
+                             reason or "", re.I):
+            ref = m.group(1)
             if ref != tid and states.get(ref) in TERMINAL:
-                stale.append(f"{ref}={states[ref]}")
+                stale.append(f"{ref}={states[ref]} via {m.group(0)[:28]!r}")
         out.append((tid, st, ",".join(kinds), sorted(stale),
                     _ascii(reason)))
     return out

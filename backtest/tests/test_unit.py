@@ -40958,3 +40958,61 @@ def test_b2932_blocker_audit_resolves_a_stale_predecessor():
     # tells the reader nothing
     kinds = {k for _t, _s2, k, _s3, _r in rows}
     assert len(kinds) >= 2, kinds
+
+
+
+def test_b2934_blocker_join_requires_dependency_phrasing():
+    """S6-B2934: the blocker audit counted a CITATION as a dependency.
+
+    MEASURED: its first run reported 2 stale predecessors and I quoted that as
+    the tool's validation. Hand-reading both showed 2 of 2 were CITATIONS -
+    "item (3) of S6-B2573e" identifies which item a row is, and "the S6-B2620a
+    sweep already exists" cites a shipped mechanism. True count: 0. That is
+    L644 - a new detector's first number is a hypothesis - and the error ran
+    in the direction that made my new tool look necessary.
+
+    The join now requires DEPENDENCY PHRASING before the id. This pins both
+    directions, because a matcher that flags everything and one that flags
+    nothing are equally useless and look identical from the count alone.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import audit_ticket_staleness as ats
+    import re
+
+    src = (root / "scripts" / "audit_ticket_staleness.py").read_text(
+        encoding="utf-8", errors="replace")
+    i = src.index("def blocker_audit(")
+    body = src[i:i + 4000]
+    m = re.search(r'DEP = \(([^)]*)\)', body, re.S)
+    assert m, "the dependency-phrasing pattern is gone - the join would "\
+              "flag every citation again"
+    dep = re.sub(r'["\s]|r"', "", m.group(1))
+    # assert the PROPERTY, not a mangled normalisation: the pattern
+    # must name dependency verbs. Stripping escapes to compare whole
+    # phrases is brittle and was wrong on the first attempt.
+    for verb in ("blocked", "depends", "pending", "after"):
+        assert verb in dep, (verb, dep)
+
+    # MUST MATCH a real dependency
+    for phrase in ("blocked on S6-B2874", "DO IT AFTER S6-B2874",
+                   "depends on S6-B2874", "pending S6-B2874"):
+        assert re.search(r"(?:blocked\s+on|do\s+it\s+after|after|"
+                         r"depends?\s+on|needs|pending|waiting\s+on|once|"
+                         r"until)\s+\**(S6-B[0-9]+[a-zA-Z-]*)", phrase,
+                         re.I), phrase
+
+    # MUST NOT MATCH the two real citations that fooled it
+    for phrase in ("item (3) of S6-B2573e",
+                   "the S6-B2620a sweep already exists"):
+        assert not re.search(r"(?:blocked\s+on|do\s+it\s+after|"
+                             r"depends?\s+on|pending|waiting\s+on)"
+                             r"\s+\**(S6-B[0-9]+)", phrase, re.I), phrase
+
+    rows = ats.blocker_audit()
+    assert rows, "the audit sees nothing"
+    for tid, st, kind, stale, reason in rows:
+        assert st not in ("EXECUTED", "DROPPED"), (tid, st)
