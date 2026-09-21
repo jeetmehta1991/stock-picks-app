@@ -76,7 +76,10 @@ def graded_and_riders(cube_dir: Path) -> tuple:
     B2710 runs the whole smc consumer set per variant cube so one engine run
     serves every family member's offline depth (B2707). The BATTERY still
     grades exactly one strategy - the manifest's `strategy_subset` - and the
-    others are declared `cube_riders`. Returns (None, []) when the manifest
+    others are declared `cube_riders`. S6-B2924: a rider can now be
+    graded as its own leg via `--grade-rider`, which is OPT-IN - no
+    automatic path passes it, so the default remains exactly one.
+    Returns (None, []) when the manifest
     declares nothing, so the pre-B2721 one-strategy rule stands (L642)."""
     import json as _json
     m = cube_dir / "run_manifest.json"
@@ -1128,6 +1131,13 @@ def main() -> int:
     ap.add_argument("--step1-cube", action="store_true")
     ap.add_argument("--step2-cube", action="store_true")
     ap.add_argument("--write-ledger", action="store_true")
+    # S6-B2924: grade a DECLARED RIDER as its own leg. Absent from every
+    # automatic path - the engine landing hook passes no such flag - so
+    # the default behaviour of every landing is unchanged. With it, the
+    # rider is graded and written to its own per-leg key (S6-B2918), so
+    # both legs of a pair land side by side instead of overwriting.
+    ap.add_argument("--grade-rider", default=None,
+                    help="grade this DECLARED rider as the leg; refused if it is not declared by the cube manifest")
     a = ap.parse_args()
     cube_dir = Path(a.cube)
     if not cube_dir.is_absolute():
@@ -1172,6 +1182,17 @@ def main() -> int:
     _graded_name, _declared_riders = graded_and_riders(cube_dir)
     fam_name = (_graded_name if (_graded_name and _declared_riders)
                 else (strategies[0] if len(strategies) == 1 else None))
+    # S6-B2924: an explicit rider becomes the graded leg. REFUSED unless
+    # the manifest DECLARES it - grading an undeclared strategy would
+    # record a verdict for a leg the cube never said was present, and
+    # the absent case is the case the guard exists for (L642).
+    if a.grade_rider:
+        if a.grade_rider not in (_declared_riders or []):
+            print(f"REFUSED: {a.grade_rider!r} is not a declared rider of "
+                  f"{cube_dir.name} (declared: {sorted(_declared_riders or [])}) "
+                  f"- refusing rather than grading an undeclared leg (S6-B2924)")
+            return 2
+        fam_name = a.grade_rider
     fam = FAMILIES.get(fam_name) if fam_name else None
     notes: dict = {}
     grid_out = spot_out = None

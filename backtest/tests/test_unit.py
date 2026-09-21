@@ -40717,3 +40717,59 @@ def test_b2914_feasibility_rung_ranks_and_admits_but_never_rejects():
     assert r.returncode == 0, (
         r.returncode, r.stdout[-300:], r.stderr[-300:],
         "the rung refused instead of reporting NOT_COMPARABLE")
+
+
+
+def test_b2924_a_declared_rider_can_be_graded_as_its_own_leg():
+    """S6-B2924: S6-B2918 made the second leg of a paired cube RECORDABLE;
+    nothing GRADED it. `riders` appeared in exactly two places - the sanity
+    check, which only counts them, and artifact_key.
+
+    `--grade-rider` supplies the capability OPT-IN. It is absent from every
+    automatic path (the engine landing hook passes no such flag), so the
+    default disposition of riders is unchanged and whether the battery SHOULD
+    grade them on every landing remains an owner decision.
+
+    FAIL CLOSED: a name that is not a DECLARED rider is refused, because
+    grading an undeclared strategy records a verdict for a leg the manifest
+    never said was present (L642 - the absent case is the case the guard
+    exists for).
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    import run_postconfig as rp
+
+    src = (root / "scripts" / "run_postconfig.py").read_text(
+        encoding="utf-8", errors="replace")
+    # the flag exists and defaults to OFF - a default of anything else would
+    # silently change every automatic landing
+    assert 'ap.add_argument("--grade-rider", default=None' in src, (
+        "--grade-rider is missing or no longer defaults to None")
+    # and it must refuse an undeclared name rather than grade it
+    assert "is not a declared rider" in src
+
+    # NO AUTOMATIC PATH MAY PASS IT. If one ever does, the opt-in property is
+    # gone and every landing's behaviour changes - which is the owner
+    # decision this ticket deliberately did NOT make.
+    for rel in ("scripts/postconfig_landing.py", "backtest/run_phase1a.py"):
+        p = root / rel
+        if p.exists():
+            t = p.read_text(encoding="utf-8", errors="replace")
+            assert "grade-rider" not in t and "grade_rider" not in t, (
+                "%s now passes --grade-rider; the flag is no longer opt-in "
+                "and every automatic landing changed behaviour" % rel)
+
+    # the graded leg and a rider must resolve to DIFFERENT per-leg keys, or
+    # grading the rider would overwrite the graded leg (the S6-B2918 defect)
+    class _C:
+        name = "output_pair"
+    riders = ["smc_breaker_block_short"]
+    a = rp.artifact_key(_C(), "smc_breaker_block_long", riders)
+    b = rp.artifact_key(_C(), "smc_breaker_block_short", riders)
+    assert a != b, (a, b, "rider and graded leg still share one key")
+    assert a.endswith("smc_breaker_block_long")
+    assert b.endswith("smc_breaker_block_short")
