@@ -25071,7 +25071,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
-        # B2920: the L828 tripwire row - a blocked ticket's decision\n        # can be executed by accident.\n        ("A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT, AND NOTHING TELLS THE TICKET",\n         "B2920/L828: execute a blocked row's own cited evidence before quoting it"),\n        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
+        # B2926: the L829 tripwire row - an owner-decision ticket is a\n        # question about authority, not merit.\n        ("A TICKET THAT SAYS NEEDS AN OWNER DECISION IS A QUESTION ABOUT AUTHORITY, AND MERIT ARGUMENTS DO NOT ANSWER IT",\n         "B2926/L829: merit arguments do not answer an authority question"),\n        # B2920: the L828 tripwire row - a blocked ticket's decision\n        # can be executed by accident.\n        ("A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT, AND NOTHING TELLS THE TICKET",\n         "B2920/L828: execute a blocked row's own cited evidence before quoting it"),\n        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
         # population always reports full coverage.
         ("A GATE THAT DEFINES ITS OWN POPULATION WILL ALWAYS REPORT FULL COVERAGE - TAKE THE DENOMINATOR FROM A SOURCE THE GATE DOES NOT OWN",
          "B2913/L826: take the denominator from a source the gate does not own"),
@@ -25847,7 +25847,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 279 -> 280 at B2913 (the L826 self-denominator fragment; same-call
     # with its tripwire row per B2130).
-    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call\n    # with its tripwire row per B2130).\n    assert len(gutted) == 282, gutted
+    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call\n    # with its tripwire row per B2130).\n    # 282 -> 283 at B2926 (the L829 authority fragment; same-call with\n    # its tripwire row per B2130).\n    assert len(gutted) == 283, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -40658,3 +40658,62 @@ def test_b2918_paired_cube_records_both_legs():
         if [s for s in vpc.STEPS if not vpc.is_closed(e.get(s))]:
             bad.append(k)
     assert bad == ["output_p__leg_b"], (bad, "the empty leg is still hidden")
+
+
+
+def test_b2914_feasibility_rung_ranks_and_admits_but_never_rejects():
+    """S6-B2914 (R10): R1-R9 all ask CAN WE RUN AND GRADE IT; none asked WILL
+    THE GRADE BE EVALUABLE, and 82.1 pct of 17,927 cells ever computed died on
+    sample size - each after a full engine run.
+
+    THE PROPERTY THIS PINS is the one the ticket's correction turns on: the
+    rung may RANK and ADMIT, never REJECT. Its input is a LOWER bound on
+    trades (a tighter config frees occupancy and can admit trades present in
+    no cube, L812), so the count of below-floor cells is an UPPER bound and
+    rejecting on it would kill cells that clear the floor live.
+
+    Enforced BY CONSTRUCTION rather than by prose, and asserted over the AST
+    rather than the source text - a grep for "reject" matches the docstring
+    that explains the rule (L748).
+    """
+    import ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    src_path = root / "scripts" / "feasibility_rung.py"
+    src = src_path.read_text(encoding="utf-8", errors="replace")
+    tree = ast.parse(src)
+
+    mains = [n for n in tree.body
+             if isinstance(n, ast.FunctionDef) and n.name == "main"]
+    assert len(mains) == 1, "expected exactly one main()"
+    rets = [ast.unparse(n).strip() for n in ast.walk(mains[0])
+            if isinstance(n, ast.Return)]
+    assert rets, "main() has no return at all - the exit code is unpinned"
+    bad = [r for r in rets if r != "return 0"]
+    assert not bad, (
+        bad, "the R10 rung has grown a non-zero exit - it must RANK and "
+        "ADMIT, never REJECT, because its input is a lower bound (S6-B2914)")
+
+    # and it must not offer a flag that turns it into a gate
+    for flag in ('"--strict"', "'--strict'", '"--reject"', "'--reject'"):
+        assert flag not in src, ("%s would make the rung a gate" % flag)
+
+    # the artifact must STAMP the bound, or a reader takes the count as exact
+    assert "LOWER" in src and "lower bound" in src.lower()
+
+    # it must read the floor from the live gate rather than restating it
+    assert 'rc.PC["min_trades_holdout"]' in src, (
+        "the rung restates the holdout floor instead of reading the live "
+        "gate - it would drift from the gate it projects against")
+
+    # BEHAVIOUR: an absent strategy must report, not refuse
+    import subprocess
+    r = subprocess.run(
+        [sys.executable, str(src_path), "--cube", str(root),
+         "--strategy", "no_such_strategy_xyz", "--signal-key", "rsi_14",
+         "--comparator", "lt", "--levels", "50"],
+        capture_output=True, text=True, timeout=300)
+    assert r.returncode == 0, (
+        r.returncode, r.stdout[-300:], r.stderr[-300:],
+        "the rung refused instead of reporting NOT_COMPARABLE")
