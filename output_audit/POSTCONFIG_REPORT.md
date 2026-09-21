@@ -6,11 +6,36 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (128 entries), 956 named checks have run and 12 have ever returned non-PASS.**
+**Across the entire ledger (128 entries), 970 named checks have run and 9 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-_no landings recorded yet (record starts at B2520; every cube landed before it was dispositioned by hand)_
+22 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+
+| cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
+|---|---|---|---|---|---|---|---|---|
+| output_b2712_smc_sw10_sw10 | 2026-09-12T15:00:10 | manual | 2 | none | 0 | 4e376ad94 | True | yes 2026-09-12T15:00:46 |
+| output_icg_step2_span9_step2_span9 | 2026-09-06T18:55:21 | engine-hook | 0 | none | 0 | adfba9d5d | True | yes 2026-09-06T19:01:07 |
+| output_icg_cfg1_rerun_cfg1_rerun | 2026-09-05T01:17:34 | engine-hook | 0 | none | 0 | d85126201 | True | yes 2026-09-06T05:40:01 |
+| output_icg_span100_rerun_span100 | 2026-09-04T12:26:03 | engine-hook | 0 | none | 0 | 0f0e440e6 | True | yes 2026-09-04T12:27:40 |
+| output_icg_minq2_minq2 | 2026-09-04T10:54:23 | engine-hook | 0 | none | 0 | f9f2331c9 | True | yes 2026-09-04T11:28:26 |
+| output_icg_minq3_minq3 | 2026-09-04T08:07:23 | engine-hook | 0 | none | 0 | 2e85e7d9e | True | yes 2026-09-04T08:28:13 |
+| output_icg_minq6_minq6 | 2026-09-04T05:12:47 | engine-hook | 0 | none | 0 | eff36c19b | True | yes 2026-09-04T05:27:31 |
+| output_icg_lookback8_lookback8 | 2026-09-04T02:57:37 | engine-hook | 0 | none | 0 | e6ee52ce0 | True | yes 2026-09-04T03:26:39 |
+| output_icg_lookback6_lookback6 | 2026-09-04T00:23:35 | engine-hook | 0 | none | 0 | 6425598fb | True | yes 2026-09-04T00:26:36 |
+| output_icg_lookback3_lookback3 | 2026-09-03T19:11:37 | engine-hook | 0 | none | 0 | 50257e198 | True | yes 2026-09-03T19:38:59 |
+| output_icg_mult1.25_mult1.25 | 2026-09-03T12:49:03 | engine-hook | 0 | 6_post_fix_recheck | 1: selection_margin WARN: rank-1 [breakeven_plus_trail] is_ci_lo -0.297 vs rank-2 [hybrid_50pct_target] -0.297: margin 0.000 between exits; WARN < 0.05 (selection at noise level) | False | False | yes 2026-09-03T14:52:20 |
+| output_icg_mult1.0_mult1.0 | 2026-09-03T09:41:39 | engine-hook | 0 | none | 0 | 388db03c0 | True | yes 2026-09-03T14:52:20 |
+| output_icg_minq8_minq8 | 2026-09-03T06:13:18 | engine-hook | 0 | none | 0 | 47363d1e7 | True | yes 2026-09-03T14:52:20 |
+| output_icg_lookback2_lookback2 | 2026-09-03T04:00:41 | engine-hook | 0 | none | 0 | f1861a9a4 | True | yes 2026-09-03T14:52:20 |
+| output_icg_mult1.5_mult1.5 | 2026-09-03T01:45:20 | engine-hook | 0 | none | 0 | 5b3e3c8fa | True | yes 2026-09-03T14:52:20 |
+| output_icg_span150_span150 | 2026-09-02T23:31:07 | engine-hook | 0 | none | 0 | 1946b3605 | True | yes 2026-09-03T14:52:20 |
+| output_icg_span100_span100 | 2026-09-02T21:16:40 | engine-hook | 0 | 6_post_fix_recheck | 1: empty_signals_share WARN: 313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class) | 7c20103da | True | yes 2026-09-03T14:52:19 |
+| output_icg_span50_span50 | 2026-09-02T16:46:26 | engine-hook | 0 | none | 0 | bafb5118e | True | yes 2026-09-02T17:08:14 |
+| output_icg_span20_span20 | 2026-09-02T12:46:15 | engine-hook | 2 | 1_cube_sanity | 0 | fb885e91e | True | yes 2026-09-02T13:04:31 |
+| output_icg_span9_span9 | 2026-09-02T10:38:38 | engine-hook | 2 | 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 1: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 3745e05dc | True | yes 2026-09-02T11:23:02 |
+| output_icg_cfg1 | 2026-09-02T07:45:46 | manual | 0 | none | 1: empty_signals_share WARN: 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class) | 42ca9c20f | True | yes 2026-09-02T07:47:02 |
+| output_b2174_sw20_sw20 | 2026-09-01T20:08:36 | manual | 0 | none | 1: selection_margin WARN: rank-1 [close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 -> hybrid_50pct_target] is_ci_lo -0.196 vs rank-2 [close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 -> hybrid_50pct_target] -0.198: margin 0.002 between outcome classes; WARN < 0.05 (selection at noise level) | False | False | yes 2026-09-02T02:27:00 |
 
 
 ## TABLE C - POST-RUN CONFIG FUNNEL (one row per config)
@@ -72,6 +97,7 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | `icg_cfg1_rerun_cfg1_rerun` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.643 | 0.241 | -0.106 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
 | `icg_step2_span9_step2_span9` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=9(fixed) | 0.214 | 0.516 | 0.428 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=9 / breakeven_plus_trail | 2022-05-05..2026-05-04 |
 | `b2712_smc_sw10_sw10` | 300 | 44 | 0 | 241 | 113 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.649 | 2.221 | 0.803 | cm=True brk=0.010 age=180 tail=3 / earnings_blackout | - |
+| `candle_tws_c01_b0.0_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.228 | 0.308 | 0.048 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
 
 **Parameters tested** - distinct values each config exercised per axis, read from the result rows themselves. `1 value` = the axis was PINNED and contributed no search; an axis absent from the artifact reads `not recorded`, never `1`. **P1 `swing_length` and P6 `span` are the CROSS-CONFIG axes** - they define which config a cube IS and are held FIXED within it, so they show a value rather than a count. Recorded in the artifact since B2138; anything graded before that reads `not recorded`, which is what let a swing-10 cube be re-graded as swing-20 (S6-B2136).
 
@@ -136,6 +162,10 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | `icg_cfg1_rerun_cfg1_rerun` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
 | `icg_step2_span9_step2_span9` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 9(fixed) |
 
+| config | P1 three_white_soldiers (boolean leg) | P2 n_bars (pattern length) | P3 min_body_pct_of_range | P4 min_step_up_pct | P5 max_upper_wick_pct | P6 rsi_14 ceiling |
+|---|---|---|---|---|---|---|
+| `candle_tws_c01_b0.0_s0.0_wNone` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
+
 ## TABLE D - STEP-1 RANKED LIST (top 25)
 
 _Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admission is min-trades >= 10 plus this list, with NO gates applied (owner ruling B1608). `n` = fires in-sample, placed beside the sort key on purpose. `tier` = DEEP n>=100 / MID 30-99 / THIN 10-29. `dup` = this row's (ci_lo, sharpe, n, exit) signature appears in more than one config - one discovery, several parameter pairs, NOT independent confirmations. `cls` = equivalence-class size. Nothing here is filtered._
@@ -174,20 +204,21 @@ _**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one unified table, no s
 | 24 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 120 | 0.03 | 20 | earnings_blackout | +0.604 | 15 | THIN | 1 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 | 25 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 120 | 0.03 | 50 | earnings_blackout | +0.604 | 15 | THIN | 2 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 
-_530 ranked outcomes across 53 graded configs; 504 distinct signatures._
+_540 ranked outcomes across 54 graded configs; 514 distinct signatures._
 
 **Best within each depth tier** (the comparison a rank order hides):
 
 | tier | best is_ci_lo | at n | rows |
 |---|---|---|---|
-| DEEP | +0.428 | 3509 | 308 |
+| DEEP | +0.428 | 3509 | 318 |
 | MID | +0.656 | 33 | 141 |
 | THIN | +1.250 | 14 | 81 |
 
-## Index - 53 graded config(s), newest first
+## Index - 54 graded config(s), newest first
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_candle_tws_c01_b0.0_s0.0_wNone | 0.048 | 560 | 0/24 exits | 9/9 |
 | output_b2712_smc_sw10_sw10 | 0.803 | 13 | 44/300 combinations | 9/9 |
 | output_icg_step2_span9_step2_span9 | 0.428 | 3509 | 0/24 exits | 9/9 |
 | output_icg_cfg1_rerun_cfg1_rerun | -0.106 | 373 | 0/24 exits | 9/9 |
@@ -243,6 +274,103 @@ _530 ranked outcomes across 53 graded configs; 504 distinct signatures._
 | output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 combinations | 9/9 |
 
 ## Per-config findings
+
+### output_candle_tws_c01_b0.0_s0.0_wNone
+
+**Configuration:** P2_n_bars=3, P3_min_body_pct=0.0, P4_min_step_pct=0.0, P5_max_wick_pct=None
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.048** (is_sharpe 0.308, 560 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, holdout never read (scripts/grade_free_levels_candle.py (S6-B2904)).
+
+| level | knobs | IS fires | top exit (ranked by ci_lo) | is_sharpe | is_ci_lo |
+|---|---|---|---|---|---|
+| 41.97 | p6=41.97 | 115 | earnings_blackout | None | None |
+| 46.31 | p6=46.31 | 209 | class_time_stop | None | None |
+| 50.16 | p6=50.16 | 308 | breakeven_plus_trail | None | None |
+| 54.42 | p6=54.42 | 414 | breakeven_plus_trail | None | None |
+| 60.0 | p6=60.0 | 560 | breakeven_plus_trail | None | None |
+
+**Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | AUTO (S6-B2900): grade_candle_config at manifest n_bars=3 min_body_pct=0.0 min_step_pct=0.0 max_wick_pct= -> output_candle_tws_c01_b0.0_s0.0_wNone_grid_auto.json; free levels reproduction-gated -> output_candle_tws_c01_b0.0_s0.0_wNone_free_levels.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B2899): spot_check_candle at manifest n_bars=3 min_body_pct=0.0 min_step_pct=0.0 max_wick_pct=; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_candle_tws_c01_b0.0_s0.0_wNone_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 9 run: 0 WARN / 0 FAIL / 9 INFO -> output_candle_tws_c01_b0.0_s0.0_wNone_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (9 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | DONE | AUTO (B2192): the grader collapses identical outcomes - 10 ranked outcome classes carry 1 parameter combinations; 1 distinct outcome classes among 1 combinations enumerated in output_candle_tws_c01_b0.0_s0.0_wNone_grid_auto.json |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 declared knobs read from the environment + consumer lists match the tree |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_candle_tws_c01_b0.0_s0.0_wNone_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 13440 IS rows (13440 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.048 is_sharpe 0.308 fires 560 - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 13440 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | 18df4aa9a93b2313 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha cce6018d8a63 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_candle_tws_c01_b0.0_s0.0_wNone_spot_check.json.
+
+**Adversarial lenses (step 5) - 9 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family three_white_soldiers)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 560 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.27 (2024Q2) over 5 quarters of 560 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.06 of 560 entries across 185 tickers; WARN > 0.30 |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.048 vs rank-2 [earnings_blackout] -0.045: margin 0.093 between exits; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a) |
+| empty_signals_share | INFO | 0 of 560 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/560 (0.0%) from replay_atr_fallback.json) |
+| direction_consistency | INFO | directions ['long'] (one strategy, one direction expected) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_candle_tws_c01_b0.0_s0.0_wNone_spot_check.json |
+| min_trades_floor | INFO | 560 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 24 exits enumerated (population field `per_exit`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | 0.048 | 0.308 | 560 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.045 | 0.143 | 560 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.106 | 0.099 | 560 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.157 | 0.174 | 560 | regime_flip | 1 | (no knobs recorded) |
+| 5 | -0.267 | -0.058 | 560 | trailing_10pct | 1 | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c01_b0.0_s0.0_wNone_grid_auto.json._
 
 ### output_b2712_smc_sw10_sw10
 
