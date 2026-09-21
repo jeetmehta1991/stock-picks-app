@@ -22036,3 +22036,38 @@ own check - the same tell as L828, one level up.
 **Mechanism: `audit_ticket_staleness.py --blockers`** for the decidable shape,
 plus its enumeration for the rest; durability pinned by
 `test_b2932_blocker_audit_resolves_a_stale_predecessor`.
+
+### L831 - A NEW DETECTOR'S FIRST OUTPUT IS NOT ITS VALIDATION (B2935, 2026-09-21)
+
+**This is an INSTANCE of L644, not a new class**, recorded because it recurred
+in the batch that shipped the detector and because the instance is instructive.
+
+B2932 shipped a blocker-staleness audit. Its first run reported **two** rows
+naming an already-terminal predecessor, and I quoted that as evidence the tool
+works - in the response, in the `S6-B2933` row, and in the commit message.
+Hand-reading both, which is the step I skipped, **2 of 2 were CITATIONS**:
+*"item (3) of S6-B2573e"* identifies which item a row is, and *"the S6-B2620a
+sweep already exists"* cites a shipped mechanism. **True count: zero.**
+
+**The error ran in the direction that made my own new tool look necessary** -
+which L644 names as the direction you are least likely to check - and it
+arrived wearing a measurement's clothes, because the detector genuinely ran
+over real data and returned a real number.
+
+**What makes this one worth its own line:** the discriminator that would have
+prevented it was written by me ONE BATCH EARLIER, into
+`scan_owner_decision_taken`, which deliberately keys on decision-PENDING
+phrasing and never on citations. I did not carry it across. That is L608 - a
+new helper starts without its siblings' lessons - and the pairing is the
+lesson: **when you ship a second detector over the same corpus, diff it
+against the first one's exclusions before trusting its output.**
+
+**Compliance failure against item #201.** No new CHECKLIST item is warranted;
+`#201` already requires a figure to name its source, and L644 already states
+the rule. What was missing was applying them to a number produced by a tool I
+had just written.
+
+**Mechanism:** `test_b2934_blocker_join_requires_dependency_phrasing` pins the
+join in BOTH directions - four real dependency phrasings match, and the two
+real citations that fooled it do not - because a matcher that flags everything
+and one that flags nothing are indistinguishable from the count alone.

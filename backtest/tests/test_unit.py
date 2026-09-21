@@ -25071,7 +25071,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
-        # B2932: the L830 tripwire row - a blocker is the least-audited\n        # claim a ticket carries.\n        ("DECLARING A BACKLOG OWNER-BLOCKED IS A CLAIM ABOUT EVERY TICKET IN IT, AND A BLOCKER IS THE LEAST-AUDITED CLAIM A TICKET CARRIES",\n         "B2932/L830: re-derive a blocker before repeating it"),\n        # B2926: the L829 tripwire row - an owner-decision ticket is a\n        # question about authority, not merit.\n        ("A TICKET THAT SAYS NEEDS AN OWNER DECISION IS A QUESTION ABOUT AUTHORITY, AND MERIT ARGUMENTS DO NOT ANSWER IT",\n         "B2926/L829: merit arguments do not answer an authority question"),\n        # B2920: the L828 tripwire row - a blocked ticket's decision\n        # can be executed by accident.\n        ("A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT, AND NOTHING TELLS THE TICKET",\n         "B2920/L828: execute a blocked row's own cited evidence before quoting it"),\n        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
+        # B2935: the L831 tripwire row - a new detector's first output\n        # is not its validation.\n        ("A NEW DETECTOR'S FIRST OUTPUT IS NOT ITS VALIDATION - HAND-READ WHAT IT FLAGGED BEFORE QUOTING IT AS PROOF THE TOOL WORKS",\n         "B2935/L831: hand-read what a new detector flagged"),\n        # B2932: the L830 tripwire row - a blocker is the least-audited\n        # claim a ticket carries.\n        ("DECLARING A BACKLOG OWNER-BLOCKED IS A CLAIM ABOUT EVERY TICKET IN IT, AND A BLOCKER IS THE LEAST-AUDITED CLAIM A TICKET CARRIES",\n         "B2932/L830: re-derive a blocker before repeating it"),\n        # B2926: the L829 tripwire row - an owner-decision ticket is a\n        # question about authority, not merit.\n        ("A TICKET THAT SAYS NEEDS AN OWNER DECISION IS A QUESTION ABOUT AUTHORITY, AND MERIT ARGUMENTS DO NOT ANSWER IT",\n         "B2926/L829: merit arguments do not answer an authority question"),\n        # B2920: the L828 tripwire row - a blocked ticket's decision\n        # can be executed by accident.\n        ("A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT, AND NOTHING TELLS THE TICKET",\n         "B2920/L828: execute a blocked row's own cited evidence before quoting it"),\n        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
         # population always reports full coverage.
         ("A GATE THAT DEFINES ITS OWN POPULATION WILL ALWAYS REPORT FULL COVERAGE - TAKE THE DENOMINATOR FROM A SOURCE THE GATE DOES NOT OWN",
          "B2913/L826: take the denominator from a source the gate does not own"),
@@ -25847,7 +25847,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 279 -> 280 at B2913 (the L826 self-denominator fragment; same-call
     # with its tripwire row per B2130).
-    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call\n    # with its tripwire row per B2130).\n    # 282 -> 283 at B2926 (the L829 authority fragment; same-call with\n    # its tripwire row per B2130).\n    # 283 -> 284 at B2932 (the L830 blocker-claim fragment; same-call\n    # with its tripwire row per B2130).\n    assert len(gutted) == 284, gutted
+    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call\n    # with its tripwire row per B2130).\n    # 282 -> 283 at B2926 (the L829 authority fragment; same-call with\n    # its tripwire row per B2130).\n    # 283 -> 284 at B2932 (the L830 blocker-claim fragment; same-call\n    # with its tripwire row per B2130).\n    # 284 -> 285 at B2935 (the L831 detector-validation fragment;\n    # same-call with its tripwire row per B2130).\n    assert len(gutted) == 285, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41016,3 +41016,55 @@ def test_b2934_blocker_join_requires_dependency_phrasing():
     assert rows, "the audit sees nothing"
     for tid, st, kind, stale, reason in rows:
         assert st not in ("EXECUTED", "DROPPED"), (tid, st)
+
+
+
+def test_b2580a_plan_lineage_is_generated_and_idempotent():
+    """S6-B2580a: STRATEGY_OPTIMISATION_PLAN.md had no per-section
+    provenance, so a reader could not tell a CURRENT rule from a SUPERSEDED
+    one without git archaeology.
+
+    IT IS A GENERATOR, not a hand-written appendix: a hand-written one is
+    stale the next time anyone edits the plan, which is the failure being
+    fixed, reproduced in the fix (#281).
+
+    THE DEFECT THIS PINS. The generator reads the document it writes, so its
+    own `## APPENDIX L` header was parsed as a plan section and the table grew
+    by one row per regeneration - MEASURED as 156 insertions on the first
+    write and 157 on the second. Self-reference has hit this repo ~13 times;
+    the exclusion must exist before the first write or it ships inside the
+    artifact.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import plan_lineage as pl
+
+    # the appendix must not count ITSELF - strip, then confirm the header is
+    # gone while the LINE COUNT is preserved (L582: a strip that rebuilds its
+    # haystack shifts every offset, and offsets are what join a section to
+    # its blame)
+    fake = ("## Real Section\nbody\n" + pl.MARK_START +
+            "\n## APPENDIX L - PER-SECTION LINEAGE\n| a | b |\n" +
+            pl.MARK_END + "\n## Another Real\n")
+    stripped = pl._strip_appendix(fake)
+    assert stripped.count("\n") == fake.count("\n"), (
+        "the strip changed the line count - blame offsets would misalign")
+    assert "APPENDIX L" not in stripped
+    secs = [t for _l, t, _a, _b in pl.sections(stripped)]
+    assert "Real Section" in secs and "Another Real" in secs
+    assert not any("APPENDIX L" in t for t in secs), secs
+
+    # a document with no appendix yet must pass through untouched
+    plain = "## A\nx\n## B\ny\n"
+    assert pl._strip_appendix(plain) == plain
+
+    # the markers must stay paired, or --write cannot find its own block
+    assert pl.MARK_START != pl.MARK_END
+    src = (root / "scripts" / "plan_lineage.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert "_strip_appendix(" in src.split("def build_appendix")[1][:400], (
+        "build_appendix no longer strips a prior appendix - the table will "
+        "grow by a row about the generator on every run")
