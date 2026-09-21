@@ -2072,6 +2072,11 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
                            "scripts/spot_check_candle.py"],
          "production": 3, "type": "int", "band": [3, 4],
          "free_band": [], "resim_band": [3, 4],
+         "sweep_levels": [],
+         "sweep_skip_reason": ("n_bars stays at production 3. Level 4 clears the holdout floor in only 4 of 27 cel"
+                               "ls on EACH leg (B2937 feasibility) - rare by construction, not bad luck. DEPRIORIT"
+                               "ISED not rejected; the count is a LOWER bound (L812) so it returns if the occupanc"
+                               "y correction proves large"),
          "derivation": ("CANON Nison 1991 three; 4 the strict extension. "
                         "B2865: ACTUATED - the literal range(1,4) became a "
                         "knob; measured bite 1175 -> 466 soldiers fires on "
@@ -2085,6 +2090,7 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
                            "scripts/spot_check_candle.py"],
          "production": 0.0, "type": "float", "band": [0.0, 0.3, 0.5],
          "free_band": [], "resim_band": [0.0, 0.3, 0.5],
+         "sweep_levels": [0.3, 0.5],
          "derivation": ("CANON long-body soldiers, as a FRACTION OF THE BAR RANGE (#165 scale criterion). B2865 ACTUATED; measured bite at 0.5: 1175 -> 153 fires"),
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MIN_BODY_PCT", "engine_implemented": True},
@@ -2094,6 +2100,7 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
                            "scripts/spot_check_candle.py"],
          "production": 0.0, "type": "float", "band": [0.0, 0.1, 0.25],
          "free_band": [], "resim_band": [0.0, 0.1, 0.25],
+         "sweep_levels": [0.1, 0.25],
          "derivation": ("BRACKET zero upward, as a fraction of the PRIOR bar's range; 0.0 preserves production's strict >. B2865 ACTUATED; measured bite at 0.25: 1175 -> 688 fires"),
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MIN_STEP_PCT", "engine_implemented": True},
@@ -2103,6 +2110,10 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
                            "scripts/spot_check_candle.py"],
          "production": None, "type": "float", "band": [None, 0.3, 0.2],
          "free_band": [], "resim_band": [None, 0.3, 0.2],
+         "sweep_levels": [0.3],
+         "sweep_skip_reason": ("max_wick 0.2 dropped: clears in 5 of 18 (soldiers) and 4 of 18 (crows), the tighte"
+                               "st bound and the second-largest source of unevaluable cells. DEPRIORITISED not rej"
+                               "ected (L812)"),
          "derivation": ("CANON soldiers close at/near highs; unset = unenforced. B2865 ACTUATED; measured bite at 0.2: 1175 -> 138 fires"),
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MAX_WICK_PCT", "engine_implemented": True},
@@ -2222,6 +2233,11 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
                            "scripts/spot_check_candle.py"],
          "production": 3, "type": "int", "band": [3, 4],
          "free_band": [], "resim_band": [3, 4],
+         "sweep_levels": [],
+         "sweep_skip_reason": ("n_bars stays at production 3. Level 4 clears the holdout floor in only 4 of 27 cel"
+                               "ls on EACH leg (B2937 feasibility) - rare by construction, not bad luck. DEPRIORIT"
+                               "ISED not rejected; the count is a LOWER bound (L812) so it returns if the occupanc"
+                               "y correction proves large"),
          "derivation": ("CANON Nison 1991 three; 4 the strict extension. "
                         "B2865: ACTUATED - the literal range(1,4) became a "
                         "knob; measured bite 1175 -> 466 soldiers fires on "
@@ -2235,6 +2251,7 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
                            "scripts/spot_check_candle.py"],
          "production": 0.0, "type": "float", "band": [0.0, 0.3, 0.5],
          "free_band": [], "resim_band": [0.0, 0.3, 0.5],
+         "sweep_levels": [0.3, 0.5],
          "derivation": ("mirror of the soldiers body band, fraction of the bar range. B2865 ACTUATED; measured bite at 0.5: 920 -> 97 crows fires"),
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MIN_BODY_PCT", "engine_implemented": True},
@@ -2244,6 +2261,7 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
                            "scripts/spot_check_candle.py"],
          "production": 0.0, "type": "float", "band": [0.0, 0.1, 0.25],
          "free_band": [], "resim_band": [0.0, 0.1, 0.25],
+         "sweep_levels": [0.1, 0.25],
          "derivation": ("mirror: each close BELOW the prior by a fraction of the prior bar's range. B2865 ACTUATED; measured bite at 0.25: 920 -> 508"),
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MIN_STEP_PCT", "engine_implemented": True},
@@ -2253,6 +2271,10 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
                            "scripts/spot_check_candle.py"],
          "production": None, "type": "float", "band": [None, 0.3, 0.2],
          "free_band": [], "resim_band": [None, 0.3, 0.2],
+         "sweep_levels": [0.3],
+         "sweep_skip_reason": ("max_wick 0.2 dropped: clears in 5 of 18 (soldiers) and 4 of 18 (crows), the tighte"
+                               "st bound and the second-largest source of unevaluable cells. DEPRIORITISED not rej"
+                               "ected (L812)"),
          "derivation": ("mirror: crows close at/near lows. B2865 ACTUATED; measured bite at 0.2: 920 -> 66 fires"),
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MAX_WICK_PCT", "engine_implemented": True},
@@ -3428,6 +3450,26 @@ def _d_tier(n) -> str:
 # grader MUST emit (pinned by test_b2505) - defining the schema now beats
 # guessing it later (L722).
 D_AXIS_FAMILIES = {
+    # S6-B2940: the candle pair. WITHOUT this a candle cfg falls through
+    # _d_family to smc's columns and Table D renders P1 swing / P2
+    # close_mit / P3 tail_n / P4 age_bars / P5 break_pct / P6 span as six
+    # dashes, with all four candle knobs invisible - the L790 class (a
+    # locked format wired to one family), caught by the R2 rung BEFORE
+    # the 18-config campaign rather than after it.
+    #
+    # BOTH LEGS share ONE entry because they share one producer and the
+    # same four env knobs (technical.py:2143-2150), so `detect` keys on
+    # P2_n_bars, which only the candle grader emits. It is listed FIRST
+    # so its detect key is tested before smc's catch-all default.
+    "candle_anatomy": {
+        "detect": "P2_n_bars",
+        "d1": (("body", "cfg", "P3_min_body_pct"),
+               ("step", "cfg", "P4_min_step_pct")),
+        "d2": (("P2 n_bars", "cfg", "P2_n_bars"),
+               ("P3 body", "cfg", "P3_min_body_pct"),
+               ("P4 step", "cfg", "P4_min_step_pct"),
+               ("P5 wick", "cfg", "P5_max_wick_pct")),
+    },
     "smc_breaker_block": {
         "detect": "P1_swing_length",
         "d1": (("sw", "cfg", "P1_swing_length"), ("sp", "cfg", "P6_span")),
