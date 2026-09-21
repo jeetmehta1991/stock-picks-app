@@ -1,0 +1,29 @@
+{
+ "wave": "candle_tbc_c08",
+ "strategy_subset": "output_audit/_subset_three_black_crows_short.txt",
+ "step": 1,
+ "leg_cap_hours": 4.5,
+ "max_legs": 3,
+ "step1_cube": true,
+ "pool_workers": 4,
+ "allow_engine_drift": false,
+ "resume": true,
+ "cube_riders": null,
+ "arms": [
+  {
+   "tag": "b0.3_s0.0_w0.3",
+   "env": {
+    "CANDLE_N_BARS": "3",
+    "CANDLE_MIN_BODY_PCT": "0.3",
+    "CANDLE_MIN_STEP_PCT": "0.0",
+    "CANDLE_MAX_WICK_PCT": "0.3"
+   },
+   "n_bars": 3,
+   "min_body_pct": 0.3,
+   "min_step_pct": 0.0,
+   "max_wick_pct": 0.3,
+   "note": "S6-B2944 Option C cell 8 of 18. A TIGHTENING of production on body/step/wick; n_bars stays at 3 (n_bars=4 deprioritised, B2939). Offline feasibility says this cell clears the 15-trade holdout floor, and that count is a LOWER bound - a tighter config frees occupancy (L812), so the engine may land MORE.",
+   "env_note": "CANDLE_MAX_WICK_PCT='' is the None level, not zero (config.py:2490 reads falsy as None)"
+  }
+ ]
+}

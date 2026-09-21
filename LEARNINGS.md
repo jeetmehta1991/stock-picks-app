@@ -22112,3 +22112,80 @@ needs a persisted artifact from one that does not, and `#201`'s gate already
 fires on the narrower question it can decide. **Durability is pinned** by the
 tripwire row and its `test_b2123` fragment, and the two candle figures now
 have artifacts rather than a habit.
+
+### L833 - A LADDER RUNG WITH NO ENFORCEMENT IS A CHECKLIST ITEM (B2941, 2026-09-21)
+
+The R1-R9 on-ramp exists so a new strategy cannot reach a campaign
+half-wired. **R1 was MECHANIZED at B2883** - `validate_spec` refuses an
+engine-bound band whose `tools` adapter is incomplete, and it fired on this
+very pair. **R2 never was**, and that is where the candle pair walked
+through: it passed every launch-readiness probe while having NO Table D axis
+family, so a candle cfg fell through `_d_family` to smc's catch-all and would
+have rendered six columns of dashes with all four candle knobs invisible -
+**after 18 engine runs**.
+
+**No check COULD have caught it.** 8 battery families, 3 axis entries, and
+nothing declared which strategies an entry serves. The fallback is
+deliberately *visible, never silent* - right for an UNKNOWN family, and the
+wrong sole signal for a REGISTERED one.
+
+**And the rung's own probe was loose**, which is why this hid: the runbook
+tests `'<strategy>' in D_AXIS_FAMILIES`, which returns False for
+`smc_breaker_block_long` too, because the registry is keyed by FAMILY. A probe
+that fails on a working family teaches everyone to read past it - so checking
+smc BEFORE concluding candle was uniquely broken is what located the real
+test, the `_d_family` dispatch rather than the key.
+
+**The rule: when one rung of a ladder gets mechanized, ask which of its
+siblings did not.** The unenforced rung is where the next family walks
+through, and its looseness is invisible precisely because the enforced rungs
+are doing their job loudly.
+
+**Mechanism:** `serves` on each axis entry turns the fallback into a coverage
+statement, pinned by
+`test_b2941_every_battery_family_has_a_table_d_axis_entry`. **Honest limit:**
+`serves` on smc records the CURRENT fallback for the four non-breaker smc
+families - whether smc's six columns are RIGHT for `smc_inverse_fvg` is a
+separate question this makes visible and testable, not true.
+
+### L834 - A PATCHER CAN COMMENT OUT WHAT IT MEANT TO ADD (B2942, 2026-09-21)
+
+Found while verifying B2941's anchors, not by any gate.
+
+**My own patchers wrote a literal backslash-n inside non-raw Python string
+literals.** In `"# a" + backslash-n + "# b"` the escape is two characters, not
+a newline, so the whole insert landed as ONE physical line. Where that line
+began with `#`, **everything after it became comment text**.
+
+**MEASURED:** six tripwire rows (L827, L828, L829, L830, L831, L832) and the
+`assert len(gutted) == N` ratchet were all inside a single 1,976-character
+comment. It stood for **10 commits, B2917 through B2937**.
+
+**THE TWO FAILURES HID EACH OTHER PERFECTLY.** The fragment count stopped
+rising because the rows never landed; the check that would have said so
+stopped running because it was commented out by the same bug. The test stayed
+GREEN the whole time - this is the *fixtures rot toward passing* shape, where
+green means the check evaporated rather than that the property holds.
+
+**WHY EVERY GUARD MISSED IT.** Each patcher asserted `s.count(anchor) == 1`,
+and that was TRUE - as a substring. **A substring count cannot see that its
+match sits inside a comment.** The guard measured presence, and the thing that
+had gone wrong was *context*.
+
+**And the repair's own first detector was wrong too:** it flagged any comment
+mentioning the escape, which caught two innocent prose comments in
+`verify_turn_compliance.py`. A sentence that mentions backslash-n continues as
+prose, and prose starts with neither `#` nor code. The property that matters
+is **the swallowed piece is CODE** - the L823 class, a detector keyed on a
+property adjacent to the one that matters.
+
+**The rule: after a patcher runs, re-read the region it wrote as the PARSER
+sees it, not as the diff reads.** Never build multi-line inserts from escape
+sequences - take the newline from the target file. Counterfactual EXECUTED:
+the detector is quiet at B2913 (last clean commit) and fires at B2917 naming
+both the swallowed row and the swallowed assert, so it would have caught this
+on the turn it happened.
+
+**Mechanism:** `test_b2942_no_comment_line_swallowed_code` over test_unit,
+test_integration and every script, with the two benign prose comments pinned
+as must-stay-quiet cases.

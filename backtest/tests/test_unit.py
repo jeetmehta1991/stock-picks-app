@@ -25071,7 +25071,39 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
-        # B2937: the L832 tripwire row - a figure that drives a\n        # decision needs a persisted artifact.\n        ("A FIGURE THAT DRIVES A DECISION NEEDS A PERSISTED ARTIFACT, NOT JUST A COMPUTATION THAT ONCE RAN",\n         "B2937/L832: a computation that left no trace is not a source"),\n        # B2935: the L831 tripwire row - a new detector's first output\n        # is not its validation.\n        ("A NEW DETECTOR'S FIRST OUTPUT IS NOT ITS VALIDATION - HAND-READ WHAT IT FLAGGED BEFORE QUOTING IT AS PROOF THE TOOL WORKS",\n         "B2935/L831: hand-read what a new detector flagged"),\n        # B2932: the L830 tripwire row - a blocker is the least-audited\n        # claim a ticket carries.\n        ("DECLARING A BACKLOG OWNER-BLOCKED IS A CLAIM ABOUT EVERY TICKET IN IT, AND A BLOCKER IS THE LEAST-AUDITED CLAIM A TICKET CARRIES",\n         "B2932/L830: re-derive a blocker before repeating it"),\n        # B2926: the L829 tripwire row - an owner-decision ticket is a\n        # question about authority, not merit.\n        ("A TICKET THAT SAYS NEEDS AN OWNER DECISION IS A QUESTION ABOUT AUTHORITY, AND MERIT ARGUMENTS DO NOT ANSWER IT",\n         "B2926/L829: merit arguments do not answer an authority question"),\n        # B2920: the L828 tripwire row - a blocked ticket's decision\n        # can be executed by accident.\n        ("A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT, AND NOTHING TELLS THE TICKET",\n         "B2920/L828: execute a blocked row's own cited evidence before quoting it"),\n        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
+        # B2942: the L834 tripwire row - a patcher can comment out
+        # what it meant to add.
+        ("A PATCHER THAT BUILDS CODE FROM STRING LITERALS CAN COMMENT OUT WHAT IT MEANT TO ADD - AN ANCHOR COUNT CANNOT SEE THAT ITS MATCH SITS INSIDE A COMMENT",
+         "B2942/L834: a substring count cannot see a comment"),
+        # B2941: the L833 tripwire row - an unenforced ladder rung is
+        # where the next family walks through.
+        ("A LADDER RUNG WITH NO ENFORCEMENT IS A CHECKLIST ITEM, NOT A GATE - AND THE UNENFORCED RUNG IS WHERE THE NEXT FAMILY WALKS THROUGH",
+         "B2941/L833: ask which sibling rungs are still prose"),
+        # B2937: the L832 tripwire row - a figure that drives a
+        # decision needs a persisted artifact.
+        ("A FIGURE THAT DRIVES A DECISION NEEDS A PERSISTED ARTIFACT, NOT JUST A COMPUTATION THAT ONCE RAN",
+         "B2937/L832: a computation that left no trace is not a source"),
+        # B2935: the L831 tripwire row - a new detector's first output
+        # is not its validation.
+        ("A NEW DETECTOR'S FIRST OUTPUT IS NOT ITS VALIDATION - HAND-READ WHAT IT FLAGGED BEFORE QUOTING IT AS PROOF THE TOOL WORKS",
+         "B2935/L831: hand-read what a new detector flagged"),
+        # B2932: the L830 tripwire row - a blocker is the least-audited
+        # claim a ticket carries.
+        ("DECLARING A BACKLOG OWNER-BLOCKED IS A CLAIM ABOUT EVERY TICKET IN IT, AND A BLOCKER IS THE LEAST-AUDITED CLAIM A TICKET CARRIES",
+         "B2932/L830: re-derive a blocker before repeating it"),
+        # B2926: the L829 tripwire row - an owner-decision ticket is a
+        # question about authority, not merit.
+        ("A TICKET THAT SAYS NEEDS AN OWNER DECISION IS A QUESTION ABOUT AUTHORITY, AND MERIT ARGUMENTS DO NOT ANSWER IT",
+         "B2926/L829: merit arguments do not answer an authority question"),
+        # B2920: the L828 tripwire row - a blocked ticket's decision
+        # can be executed by accident.
+        ("A TICKET BLOCKED ON AN OWNER DECISION CAN HAVE THAT DECISION EXECUTED BY ACCIDENT, AND NOTHING TELLS THE TICKET",
+         "B2920/L828: execute a blocked row's own cited evidence before quoting it"),
+        # B2917: the L827 tripwire row - validate through the argv a
+        # caller builds, not the one you type.
+        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",
+         "B2917/L827: a defaulted argument is invisible from the command line"),
+        # B2913: the L826 tripwire row - a gate that defines its own
         # population always reports full coverage.
         ("A GATE THAT DEFINES ITS OWN POPULATION WILL ALWAYS REPORT FULL COVERAGE - TAKE THE DENOMINATOR FROM A SOURCE THE GATE DOES NOT OWN",
          "B2913/L826: take the denominator from a source the gate does not own"),
@@ -25847,7 +25879,23 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 279 -> 280 at B2913 (the L826 self-denominator fragment; same-call
     # with its tripwire row per B2130).
-    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call\n    # with its tripwire row per B2130).\n    # 282 -> 283 at B2926 (the L829 authority fragment; same-call with\n    # its tripwire row per B2130).\n    # 283 -> 284 at B2932 (the L830 blocker-claim fragment; same-call\n    # with its tripwire row per B2130).\n    # 284 -> 285 at B2935 (the L831 detector-validation fragment;\n    # same-call with its tripwire row per B2130).\n    # 285 -> 286 at B2937 (the L832 artifact fragment; same-call with\n    # its tripwire row per B2130).\n    assert len(gutted) == 286, gutted
+    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with
+    # its tripwire row per B2130).
+    # 281 -> 282 at B2920 (the L828 decayed-action fragment; same-call
+    # with its tripwire row per B2130).
+    # 282 -> 283 at B2926 (the L829 authority fragment; same-call with
+    # its tripwire row per B2130).
+    # 283 -> 284 at B2932 (the L830 blocker-claim fragment; same-call
+    # with its tripwire row per B2130).
+    # 284 -> 285 at B2935 (the L831 detector-validation fragment;
+    # same-call with its tripwire row per B2130).
+    # 285 -> 286 at B2937 (the L832 artifact fragment; same-call with
+    # its tripwire row per B2130).
+    # 286 -> 288 at B2941/B2942 (the L833 unenforced-rung and L834
+    # swallowed-code fragments; same-call with their tripwire rows per
+    # B2130). NOTE: 280 -> 286 did NOT hold between B2917 and B2942 -
+    # the rows were inside a comment and this assert was too (L834).
+    assert len(gutted) == 288, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41120,3 +41168,122 @@ def test_b2936_blocker_classifier_stems_the_ruling_root():
     rows = ats.blocker_audit()
     seen = {k for _t, _s, k, _st, _r in rows}
     assert len(seen) >= 2, seen
+
+
+
+def test_b2941_every_battery_family_has_a_table_d_axis_entry():
+    """S6-B2941 / L833: R1 was mechanized at B2883 and R2 never was.
+
+    MEASURED: the candle pair passed every launch-readiness probe while
+    having NO Table D axis family, so a candle cfg fell through _d_family to
+    smc's catch-all and would have rendered six columns of dashes with all
+    four candle knobs invisible - after 18 engine runs.
+
+    No check could have caught it: 8 battery families, 3 axis entries, and
+    nothing declared which strategies an entry serves. `serves` makes the
+    coverage a statement a test can read.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    from producer_variant_table import D_AXIS_FAMILIES as D, _d_family
+    from run_postconfig import FAMILIES
+
+    claimed = {}
+    for name, fam in D.items():
+        for s in fam.get("serves", ()):
+            assert s not in claimed, (s, name, claimed[s],
+                                      "claimed by two axis entries")
+            claimed[s] = name
+
+    missing = sorted(set(FAMILIES) - set(claimed))
+    assert not missing, (
+        missing, "battery families with NO Table D axis entry - their configs "
+        "fall through _d_family to smc's columns and render dashes (L833)")
+
+    stray = sorted(set(claimed) - set(FAMILIES))
+    assert not stray, (stray, "axis entry serves a non-battery family")
+
+    # the candle pair must resolve to its OWN columns, not smc's
+    cfg = {"P2_n_bars": 3, "P3_min_body_pct": 0.0,
+           "P4_min_step_pct": 0.0, "P5_max_wick_pct": None}
+    assert _d_family(cfg)["detect"] == "P2_n_bars", _d_family(cfg)["detect"]
+    assert _d_family({"P1_swing_length": 10})["detect"] == "P1_swing_length"
+    assert _d_family({"P4_min_consecutive_quarters": 4})["detect"] == \
+        "P4_min_consecutive_quarters"
+
+
+def test_b2942_no_comment_line_swallowed_code():
+    """S6-B2942 / L834: a patcher that builds code from string literals.
+
+    MEASURED 2026-09-21: my own patchers wrote a literal backslash-n inside
+    non-raw Python literals, so multi-line inserts landed as ONE physical
+    line. Where that line began with '#', the rest became comment text -
+    SIX tripwire rows (L827-L832) and the `assert len(gutted) == N` ratchet
+    that existed to catch exactly this. The two failures hid each other: the
+    count stopped rising because rows never landed, and the check stopped
+    running because it was commented out. It stood for 10 commits.
+
+    THE DISCRIMINATOR is not "a comment mentions backslash-n" - `# split on
+    "\n"` is fine and must stay quiet. It is that splitting the comment on
+    the literal yields a piece that is CODE rather than another comment.
+    """
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    lit = chr(92) + "n"
+
+    targets = [root / "backtest" / "tests" / "test_unit.py",
+               root / "backtest" / "tests" / "test_integration.py"]
+    targets += sorted((root / "scripts").glob("*.py"))
+
+    bad = []
+    for f in targets:
+        try:
+            text = f.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        for i, line in enumerate(text.split(chr(10)), 1):
+            if lit not in line or not line.lstrip().startswith("#"):
+                continue
+            for piece in line.split(lit)[1:]:
+                p = piece.strip()
+                # THE PROPERTY IS "this piece is CODE", not "this piece is
+                # not a comment" - a prose sentence that merely mentions the
+                # escape continues as prose, and prose starts with neither.
+                # These three shapes are what the real damage took.
+                is_code = (p.startswith("assert ")
+                           or (p.startswith("(") and '"' in p)
+                           or (p.startswith('"') and p.endswith("),")))
+                if is_code:
+                    bad.append("%s:%d swallowed %r" % (f.name, i, p[:60]))
+                    break
+    assert not bad, (
+        "a patcher commented out code it meant to add (L834): " + str(bad))
+    # MUST STAY QUIET (B1944): these two real comment lines mention the
+    # escape in prose and are NOT damage. The detector flagged both on its
+    # first run, which is how the discriminator got tightened (L831).
+    for benign in (
+            '    # text is ONE line - json.dumps(input) joined by spaces',
+            '    # B2875: the double-quoted span may SPAN NEWLINES.'):
+        assert not any(benign.strip()[:40] in b for b in bad), benign
+
+
+    # the six rows this found must be REGISTERED, not merely un-swallowed
+    src = targets[0].read_text(encoding="utf-8")
+    for needle in (
+            "VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS",
+            "A TICKET BLOCKED ON AN OWNER DECISION",
+            "A TICKET THAT SAYS NEEDS AN OWNER DECISION",
+            "DECLARING A BACKLOG OWNER-BLOCKED IS A CLAIM",
+            "A NEW DETECTOR'S FIRST OUTPUT IS NOT ITS VALIDATION",
+            "A FIGURE THAT DRIVES A DECISION NEEDS A PERSISTED ARTIFACT"):
+        hits = [m for m in re.finditer(re.escape(needle), src)]
+        assert hits, needle
+        for m in hits:
+            line = src[:m.start()].split(chr(10))[-1]
+            assert not line.lstrip().startswith("#"), (
+                needle[:40] + " is still inside a comment")

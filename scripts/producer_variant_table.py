@@ -3462,6 +3462,7 @@ D_AXIS_FAMILIES = {
     # P2_n_bars, which only the candle grader emits. It is listed FIRST
     # so its detect key is tested before smc's catch-all default.
     "candle_anatomy": {
+        "serves": ("three_white_soldiers", "three_black_crows_short"),
         "detect": "P2_n_bars",
         "d1": (("body", "cfg", "P3_min_body_pct"),
                ("step", "cfg", "P4_min_step_pct")),
@@ -3471,6 +3472,13 @@ D_AXIS_FAMILIES = {
                ("P5 wick", "cfg", "P5_max_wick_pct")),
     },
     "smc_breaker_block": {
+        # S6-B2941: records the CURRENT fallback for the four non-breaker
+        # smc families. Whether these six columns are RIGHT for
+        # smc_inverse_fvg or smc_liquidity_sweep_reversal is a separate
+        # question - this makes the claim visible and testable, not true.
+        "serves": ("smc_breaker_block_long", "smc_equal_lows_sweep_long",
+                   "smc_inverse_fvg", "smc_liquidity_sweep_reversal",
+                   "smc_order_block_bounce"),
         "detect": "P1_swing_length",
         "d1": (("sw", "cfg", "P1_swing_length"), ("sp", "cfg", "P6_span")),
         "d2": (("P1 swing", "cfg", "P1_swing_length"),
@@ -3481,6 +3489,7 @@ D_AXIS_FAMILIES = {
                ("P6 span", "cfg", "P6_span")),
     },
     "institutional_committed_growth_long": {
+        "serves": ("institutional_committed_growth_long",),
         "detect": "P4_min_consecutive_quarters",
         "d1": (("sw", "cfg", "P4_min_consecutive_quarters"),
                ("sp", "cfg", "P9_span")),

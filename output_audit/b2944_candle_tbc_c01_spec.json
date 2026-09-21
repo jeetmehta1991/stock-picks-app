@@ -1,0 +1,29 @@
+{
+ "wave": "candle_tbc_c01",
+ "strategy_subset": "output_audit/_subset_three_black_crows_short.txt",
+ "step": 1,
+ "leg_cap_hours": 4.5,
+ "max_legs": 3,
+ "step1_cube": true,
+ "pool_workers": 4,
+ "allow_engine_drift": false,
+ "resume": true,
+ "cube_riders": null,
+ "arms": [
+  {
+   "tag": "b0.0_s0.0_wNone",
+   "env": {
+    "CANDLE_N_BARS": "3",
+    "CANDLE_MIN_BODY_PCT": "0.0",
+    "CANDLE_MIN_STEP_PCT": "0.0",
+    "CANDLE_MAX_WICK_PCT": ""
+   },
+   "n_bars": 3,
+   "min_body_pct": 0.0,
+   "min_step_pct": 0.0,
+   "max_wick_pct": null,
+   "note": "PRODUCTION CORNER - config 1. Not a new grid verdict: R5 already holds this cell. It runs FIRST to measure candle wall-clock (never measured; every 3.3h figure is borrowed from smc), to reproduce R5's landed set end to end, and to write post-B2905 occupancy stamps R5 cannot provide. Owner-approved at B2937.",
+   "env_note": "CANDLE_MAX_WICK_PCT='' is the None level, not zero (config.py:2490 reads falsy as None)"
+  }
+ ]
+}
