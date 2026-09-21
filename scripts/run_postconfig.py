@@ -646,6 +646,15 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
     cmd = [sys.executable, str(ROOT / "scripts" / sb["script"]),
            "--cube", _cube_arg(cube_dir, sb), *list(sb.get("extra") or []),
            *_flag_args(sb, tools, p), "--out", str(spot_out)]
+    # S6-B2917: a FAMILY can be a long/short PAIR, and a spot checker that
+    # defaults to one leg will silently check the wrong one. MEASURED: the
+    # candle blocks passed no --strategy, so grading the short leg ran the
+    # check on the long leg and recorded step 4 DONE against it. A block
+    # that declares `strategy_flag` is TOLD which leg it is grading;
+    # families whose checker takes no such flag declare none and are
+    # unchanged.
+    if sb.get("strategy_flag"):
+        cmd += [str(sb["strategy_flag"]), fam_name]
     if sb.get("window"):
         win = manifest.get("window") or {}
         if win.get("start"):

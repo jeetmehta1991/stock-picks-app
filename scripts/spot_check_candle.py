@@ -144,7 +144,11 @@ def main() -> int:
     global _KEY
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--cube", required=True, help="cube dir (trade_log.csv)")
-    ap.add_argument("--strategy", default=BULLISH,
+    # S6-B2917: NO DEFAULT. Defaulting to a leg is how the battery ran the
+    # long-leg check while grading the short one. With no --strategy the
+    # graded strategy is resolved from the cube manifest, exactly as
+    # grade_candle_config does; with neither, it refuses (L642).
+    ap.add_argument("--strategy", default=None,
                     choices=[BULLISH, BEARISH])
     ap.add_argument("--n", type=int, default=50)
     ap.add_argument("--seed", type=int, default=42)
@@ -156,6 +160,20 @@ def main() -> int:
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
+    strat = a.strategy
+    if strat is None:
+        try:
+            import run_postconfig as _rp
+            strat, _riders = _rp.graded_and_riders(Path(a.cube))
+        except Exception:                               # noqa: BLE001
+            strat = None
+    if strat not in SIGNAL_KEY:
+        print(json.dumps({"verdict": "NOT_COMPARABLE",
+                          "reason": ("no --strategy given and the cube manifest "
+                                     "declares no graded candle strategy; refusing "
+                                     "rather than defaulting to a leg (S6-B2917)")}))
+        return 2
+    a.strategy = strat
     _KEY = SIGNAL_KEY[a.strategy]
     bullish = a.strategy == BULLISH
     wick = None if str(a.max_wick_pct).strip() == "" else float(a.max_wick_pct)

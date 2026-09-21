@@ -2134,6 +2134,10 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
         # family_refusal named. Three legs: raw bar arithmetic,
         # compute_candles on the same PIT slice, and the cube record.
         "spot_check": {"script": "spot_check_candle.py", "cube": "",
+                       # S6-B2917: the family is a long/short PAIR, so the
+                       # checker must be TOLD the leg - it no longer
+                       # defaults to one.
+                       "strategy_flag": "--strategy",
                        "flags": {"P2": "--n-bars",
                                  "P3": "--min-body-pct",
                                  "P4": "--min-step-pct",
@@ -2290,6 +2294,10 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
         # family_refusal named. Three legs: raw bar arithmetic,
         # compute_candles on the same PIT slice, and the cube record.
         "spot_check": {"script": "spot_check_candle.py", "cube": "",
+                       # S6-B2917: the family is a long/short PAIR, so the
+                       # checker must be TOLD the leg - it no longer
+                       # defaults to one.
+                       "strategy_flag": "--strategy",
                        "flags": {"P2": "--n-bars",
                                  "P3": "--min-body-pct",
                                  "P4": "--min-step-pct",

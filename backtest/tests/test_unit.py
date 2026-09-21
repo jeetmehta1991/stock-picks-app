@@ -25071,7 +25071,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
-        # B2913: the L826 tripwire row - a gate that defines its own
+        # B2917: the L827 tripwire row - validate through the argv a\n        # caller builds, not the one you type.\n        ("VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS, NOT THE ARGV YOU TYPE - A DEFAULTED ARGUMENT IS INVISIBLE FROM THE COMMAND LINE",\n         "B2917/L827: a defaulted argument is invisible from the command line"),\n        # B2913: the L826 tripwire row - a gate that defines its own
         # population always reports full coverage.
         ("A GATE THAT DEFINES ITS OWN POPULATION WILL ALWAYS REPORT FULL COVERAGE - TAKE THE DENOMINATOR FROM A SOURCE THE GATE DOES NOT OWN",
          "B2913/L826: take the denominator from a source the gate does not own"),
@@ -25847,7 +25847,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 279 -> 280 at B2913 (the L826 self-denominator fragment; same-call
     # with its tripwire row per B2130).
-    assert len(gutted) == 280, gutted
+    # 280 -> 281 at B2917 (the L827 caller-argv fragment; same-call with\n    # its tripwire row per B2130).\n    assert len(gutted) == 281, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -40368,3 +40368,82 @@ def test_b2885_legacy_smc_entries_carry_a_measured_free_resim_split():
     assert by["P3"]["production"] == 20, by["P3"]["production"]
     assert by["P6"]["production"] == 200, by["P6"]["production"]
     assert by["P4"]["production"] is None and by["P5"]["production"] is None
+
+
+def test_b2917_battery_tells_the_spot_check_which_leg_it_is_grading():
+    """S6-B2917: a family can be a long/short PAIR, and a checker that
+    DEFAULTS to one leg silently checks the wrong one.
+
+    MEASURED: both candle tools.spot_check blocks carried extra ["--n","50"]
+    and no --strategy; run_family builds the spot argv from script + --cube +
+    extra + _flag_args + --out; spot_check_candle defaulted --strategy to the
+    LONG leg. So grading the SHORT leg ran the long-leg check and recorded
+    step 4 DONE against it, and on a crows-only cube it exited 2 with "no
+    three_white_soldiers rows".
+
+    The B2899 validation reported 120 of 120 agreement while passing
+    --strategy explicitly on the command line - a path the battery never
+    takes (#276b). THIS PIN THEREFORE EXERCISES THE CALLER'S ARGV, not the
+    CLI, which is the only way the original would have failed.
+    """
+    import sys
+    import subprocess
+    import tempfile
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import run_postconfig as rp
+
+    def spot_argv(fam):
+        """Rebuild EXACTLY what run_family passes to the spot leg."""
+        tools = pvt.SPECS[fam]["tools"]
+        sb = tools["spot_check"]
+        p = {v: "X" for v in tools["keys"].values()}
+        cmd = ["py", sb["script"], "--cube", "CUBE",
+               *list(sb.get("extra") or []),
+               *rp._flag_args(sb, tools, p), "--out", "OUT"]
+        if sb.get("strategy_flag"):
+            cmd += [str(sb["strategy_flag"]), fam]
+        return cmd
+
+    PAIR = ("three_white_soldiers", "three_black_crows_short")
+    for fam in PAIR:
+        argv = spot_argv(fam)
+        assert "--strategy" in argv, (
+            fam, "the battery must NAME the leg - without it the checker "
+            "defaults and silently checks the other one (S6-B2917)", argv)
+        assert argv[argv.index("--strategy") + 1] == fam, (fam, argv)
+
+    # the two legs must receive DIFFERENT names - the defect was that both
+    # resolved to the same one
+    a = spot_argv(PAIR[0]); b = spot_argv(PAIR[1])
+    assert a[a.index("--strategy") + 1] != b[b.index("--strategy") + 1]
+
+    # and run_family must actually honour strategy_flag (a pin on the block
+    # alone would not prove the wiring - L654)
+    src = (root / "scripts" / "run_postconfig.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert 'sb.get("strategy_flag")' in src, (
+        "run_family no longer passes the declared strategy flag")
+
+    # must-FIRE: with neither the flag nor a manifest, the checker REFUSES
+    # rather than defaulting to a leg (L642 - the absent case is the case the
+    # guard exists for)
+    d = _P(tempfile.mkdtemp())
+    (d / "trade_log.csv").write_text("ticker,entry_date,strategy\n",
+                                     encoding="utf-8")
+    r = subprocess.run(
+        [sys.executable, str(root / "scripts" / "spot_check_candle.py"),
+         "--cube", str(d), "--n-bars", "3", "--min-body-pct", "0.0",
+         "--min-step-pct", "0.0", "--max-wick-pct", ""],
+        capture_output=True, text=True)
+    assert r.returncode == 2, (r.returncode, r.stdout[-300:], r.stderr[-300:])
+    assert "refusing" in (r.stdout + r.stderr), (r.stdout[-300:])
+
+    # and the silent default must not come back
+    chk = (root / "scripts" / "spot_check_candle.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert 'add_argument("--strategy", default=None' in chk, (
+        "spot_check_candle defaults to a leg again - that is the defect")

@@ -21877,3 +21877,37 @@ silently leaving the set.
 A swept audit of 7 readiness gates found 1 skipping on an absent field, this
 one. That figure is a LOWER bound: the detector recognises a single spelling of
 self-scoping, which is L821's own limit applied to this audit.
+
+### L827 - VALIDATE A TOOL THROUGH THE ARGV ITS CALLER BUILDS (B2917, workflow-caught 2026-09-20)
+
+B2899 shipped a three-leg spot check for a long/short candle PAIR and reported
+it validated: **120 of 120 sampled rows agreeing, across three configs and both
+directions.** Every one of those runs was mine, typed at a shell, and every one
+passed `--strategy` explicitly.
+
+**The battery never passes it.** `run_family` builds the spot argv from
+`script + --cube + extra + _flag_args + --out`; the tools block carried
+`extra ["--n","50"]` and no strategy; and `spot_check_candle` DEFAULTED
+`--strategy` to the LONG leg. So grading the SHORT leg ran the LONG-leg check
+and recorded step 4 DONE against the wrong strategy - and on a short-only cube
+it exits 2 with *no three_white_soldiers rows*, taking step 4 to FAIL.
+
+**A defaulted argument is invisible from the command line and load-bearing in
+the caller's invocation.** I supplied the value every time I looked, so the
+default never ran while I was watching; it ran only where nobody was.
+
+This is `#276b` - a control must take the same path as the claim - and its cost
+here is that "120 of 120" measured the leg I named, not the leg the battery
+grades. The number was true and answered a question nobody had asked.
+
+So: **when a framework invokes a tool for you, rebuild the CALLER'S argv in the
+test and assert on that.** The pin for this does exactly that - it reconstructs
+what `run_family` passes and asserts the two legs receive DIFFERENT names - and
+it is the only shape that would have failed before the fix.
+
+Two-sided remedy, because either half alone leaves the silent path: the battery
+now passes a declared `strategy_flag`, and the checker no longer defaults - with
+neither flag nor manifest it REFUSES rather than picking a leg (L642).
+
+Related but distinct: L654 says a pin on the callee is not a pin on the wiring.
+That is about whether the call happens. This is about what the call CARRIES.
