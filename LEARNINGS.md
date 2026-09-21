@@ -21988,8 +21988,8 @@ Distinct from L619, which is about wrongly LABELLING work as owner-gated when
 it is not. This is the mirror: work correctly labelled owner-gated, done
 anyway. Both come from the same missing definition, now asked as S6-B2925.
 
-**Mechanism: JUDGMENT-ONLY for DETECTION** - no scan can read whether a ticket's
+**Mechanism: MECHANIZED at B2929 - `scan_owner_decision_taken`.** This line first read *JUDGMENT-ONLY for DETECTION* and that was WRONG, which is itself the lesson's second half. The argument was that no scan can read whether a ticket's
 "owner decision" language is load-bearing or vestigial, and a scan keyed on the
-phrase would fire on every row quoting it. **Durability is pinned** by the
+phrase would fire on every row quoting it. **That is true of PROSE and false of the LEDGER.** A ticket's own PRIOR rows are a fact, and a transition to a terminal state THIS TURN is a fact, so the pair is checkable without reading anyone's intent - the detection is a STATE DIFF, not a phrase match. The gate keys on DECISION-PENDING forms (*needs an owner decision*) and never on CITATIONS (*owner ruling B1608*), and any acknowledgement clears it - including an open statement that you are proceeding without the ruling (L633). PROVEN BOTH WAYS: fires on the real S6-B2918 incident, silent on five compliant shapes including the citation trap that had made this look impossible. **Compliance failure against #299** - MECHANIZE FIRST says to build any mechanizable SLICE in the same batch, and I wrote JUDGMENT-ONLY without attempting the design. **Durability is also pinned** by the
 tripwire row and its `test_b2123` fragment, so the rule cannot vanish from the
 file that is read every turn.

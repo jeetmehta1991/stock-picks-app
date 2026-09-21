@@ -1230,6 +1230,83 @@ OBJECTION_MARKERS = ("contrarian", "the case against", "what could make this wro
                      "objection", "argues against", "downside", "risk:")
 
 
+def scan_owner_decision_taken(entries, *, rows=None, text=None,
+                              diff_text=None, queue_text=None) -> list:
+    """S6-B2925 / L829: a ticket whose EARLIER rows say a decision is OWED
+    TO THE OWNER must not be marked terminal this turn in silence.
+
+    WHY THIS IS MECHANIZABLE AFTER ALL. L829 was filed JUDGMENT-ONLY on
+    the ground that no scan separates load-bearing owner-decision language
+    from a row quoting it. True of PROSE; FALSE of the LEDGER. A ticket's
+    prior rows are a fact and a terminal transition this turn is a fact,
+    so the pair is checkable without reading intent. Compliance failure
+    against #299 - the slice existed and the JUDGMENT-ONLY shipped anyway.
+
+    The markers are DECISION-PENDING forms ("needs an owner decision"),
+    never citations ("owner ruling B1608"), because a citation is how a
+    settled decision is REFERENCED and firing on those would make the
+    gate noise - which is how a control dies (L586).
+
+    It does not forbid proceeding. It forbids proceeding SILENTLY: any
+    acknowledgement token clears it, including an explicit statement that
+    you are going ahead without the ruling and why (L633 - the error is
+    the silence, not the disagreement).
+
+    RETROACTIVE: fires on S6-B2918 at B2923; silent on B2914 and B2924.
+    """
+    import re
+    rows = _queue_rows_added(diff_text) if rows is None else list(rows)
+    if not rows:
+        return []
+    TERMINAL = ("EXECUTED", "DROPPED")
+    PENDING = ("needs an owner decision", "needs an owner ruling",
+               "needs the owner", "blocked on an owner",
+               "owner decision between", "awaiting an owner",
+               "needs a ruling", "owner ruling is needed",
+               "is an owner ruling, not")
+    ACK = ("owner approved", "owner ruled", "owner has ruled",
+           "owner directive", "per the owner", "the owner ruled",
+           "proceeding without the ruling", "proceeding-without-ruling",
+           "without waiting for the ruling")
+
+    if queue_text is None:
+        try:
+            queue_text = (REPO_ROOT / "EXECUTION_QUEUE.md").read_text(
+                encoding="utf-8", errors="replace")
+        except OSError:
+            return []
+    blob = _response_text(entries, text).lower()
+
+    out = []
+    for row in rows:
+        cells = row.split("|")
+        if len(cells) < 4:
+            continue
+        tid = re.sub(r"[*\s]", "", cells[1])
+        state = re.sub(r"[*\s]", "", cells[2]).upper()
+        if state not in TERMINAL or not tid.startswith("S6-"):
+            continue
+        # the ticket's PRIOR rows - every ledger line naming this id
+        # EXCEPT the one just added
+        prior = [ln for ln in queue_text.splitlines()
+                 if ln.strip().startswith("|")
+                 and re.sub(r"[*\s]", "", (ln.split("|") + [""] * 3)[1])
+                 == tid and ln.strip() != row.strip()]
+        if not any(m in ln.lower() for ln in prior for m in PENDING):
+            continue
+        if any(k in blob for k in ACK):
+            continue
+        out.append(
+            f"OWNER DECISION TAKEN SILENTLY (S6-B2925 / L829): {tid} is "
+            f"marked {state} this turn, and its own earlier row says a "
+            f"decision is owed to the OWNER. Cost, a council and "
+            f"non-foreclosure are MERIT arguments; the ticket asked WHO "
+            f"DECIDES. Either cite the ruling, or say plainly that you "
+            f"are proceeding without it and why - the failure is the "
+            f"SILENCE, not the disagreement (L633).")
+    return out
+
+
 def scan_judgment_only_without_search(entries, *, text=None) -> list[str]:
     """B2705a (#300 / L786): JUDGMENT-ONLY is EARNED, never declared bare.
 
@@ -4838,6 +4915,9 @@ def main(argv: list[str] | None = None) -> int:
                 scan_chain_halt,
                 # B2817 (S6-B2705a): JUDGMENT-ONLY is earned by a named search.
                 scan_judgment_only_without_search,
+                # S6-B2925 (B2929): an owner decision must not be taken
+                # in silence. The L829 slice I wrongly filed JUDGMENT-ONLY.
+                scan_owner_decision_taken,
                 # B2853 (plank 2): a locked-format owner edited without its
                 # defining source opened in the same turn is blocked.
                 scan_locked_format_edit_without_source_open):

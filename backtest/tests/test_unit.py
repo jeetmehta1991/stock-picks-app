@@ -40773,3 +40773,88 @@ def test_b2924_a_declared_rider_can_be_graded_as_its_own_leg():
     assert a != b, (a, b, "rider and graded leg still share one key")
     assert a.endswith("smc_breaker_block_long")
     assert b.endswith("smc_breaker_block_short")
+
+
+
+def test_b2925_owner_decision_cannot_be_taken_in_silence():
+    """S6-B2925 / L829: a ticket whose EARLIER rows say a decision is owed to
+    the OWNER must not be marked terminal in silence.
+
+    This pin exists because L829 shipped its mechanism line as JUDGMENT-ONLY
+    and that was wrong - a compliance failure against #299 (MECHANIZE FIRST).
+    The detection is a LEDGER STATE DIFF, not a prose scan: prior rows are a
+    fact and a terminal transition is a fact.
+
+    BOTH ARMS. A fire-only corpus never proves a gate can stay quiet (L594),
+    and a false negative looks like a working gate to everyone except the
+    person doing it right.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as v
+
+    prior = ("| **S6-B2918** | **BLOCKED** | P0 | **two ways out.** | "
+             "_reason:_ BLOCKED - needs an owner decision between per-leg "
+             "keying and per-leg cubes. |")
+    closed = ("| **S6-B2918** | **EXECUTED** | P0 | **done.** | _reason:_ "
+              "EXECUTED - verified. |")
+
+    # MUST FIRE - the real incident
+    hit = v.scan_owner_decision_taken(
+        [], rows=[closed], text="Shipped it; the council was unanimous.",
+        queue_text=prior)
+    assert len(hit) == 1, (hit, "the gate is silent on its own incident")
+    assert "S6-B2918" in hit[0]
+
+    # MUST STAY QUIET - FIVE DISTINCT SHAPES, each its own assertion.
+    # A loop would drive all five and still read as ONE negative arm to
+    # test_b2557, whose count is a textual proxy and says so. The shapes
+    # are real; expressing them separately makes the real property
+    # visible to the checker, and names WHICH shape broke on failure.
+    _q = lambda rows, text, qt: v.scan_owner_decision_taken(
+        [], rows=rows, text=text, queue_text=qt)
+
+    # 1. the owner actually ruled
+    assert not _q([closed], "The owner ruled option (a).", prior), (
+        "fires although the ruling is cited")
+
+    # 2. proceeding OPENLY, which L633 explicitly permits
+    assert not _q([closed], "I am proceeding without the ruling because "
+                  "the alternative is budget-infeasible.", prior), (
+        "punishes the honest path - L633 permits disagreeing out loud")
+
+    # 3. prior rows state NO pending decision
+    assert not _q([closed], "done.",
+                  "| **S6-B2918** | **OPEN** | P0 | **a defect.** | "
+                  "_reason:_ OPEN. |"), (
+        "fires on a ticket nobody owed a decision on")
+
+    # 4. a CITATION of a SETTLED ruling is not a pending one - this is
+    #    the shape that made the detection look impossible
+    assert not _q([closed], "done.",
+                  "| **S6-B2918** | **OPEN** | P0 | **min-trades >= 10 "
+                  "plus a ranked list, no gates, owner ruling B1608.** "
+                  "| _reason:_ OPEN. |"), (
+        "fires on a citation - that is how a control becomes noise")
+
+    # 5. the row stays NON-TERMINAL
+    assert not _q([prior], "still waiting.", prior), (
+        "fires although nothing was closed")
+
+    # THE PRODUCTION PATH. Every case above supplies queue_text, so the
+    # `if queue_text is None` branch - the one the runner ALWAYS takes,
+    # since it calls the gate with no kwargs - went unexercised, and a
+    # NameError on ROOT survived a green pin (#276b / L684). Call it the
+    # way production does.
+    v.scan_owner_decision_taken([])          # must not raise
+    v.scan_owner_decision_taken([], rows=[closed], text='done.')
+
+    # WIRED, not merely defined - one occurrence is the definition alone and
+    # means the gate has never run (B1751, instance 5 of any-vs-each)
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert src.count("scan_owner_decision_taken") >= 2, (
+        "scan_owner_decision_taken is defined and never wired")
