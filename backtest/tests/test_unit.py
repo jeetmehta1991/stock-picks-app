@@ -25071,6 +25071,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
+        # B2957: the L836-addendum tripwire row - a live run pins the
+        # code it loaded, so a fix to it is blocked by the RUN.
+        ("A LONG RUN PINS THE CODE IT LOADED AT START - A FIX TO THAT CODE IS BLOCKED BY THE RUN, NOT BY THE OWNER, AND SHIPS THE HOUR IT LANDS",
+         "B2957: ask what is RUNNING before routing a code ticket"),
         # B2955: the L836 tripwire row - two rates look commensurable
         # because both are percentages.
         ("TWO RATES ARE NOT COMPARABLE BECAUSE BOTH ARE PERCENTAGES - NAME THE DENOMINATOR OF EACH BEFORE PUTTING THEM IN ONE SENTENCE",
@@ -25907,7 +25911,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # its tripwire row per B2130).
     # 289 -> 290 at B2955 (the L836 rate-denominator fragment; same-call
     # with its tripwire row per B2130).
-    assert len(gutted) == 290, gutted
+    # 290 -> 291 at B2957 (the live-run-pins-its-code fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 291, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
