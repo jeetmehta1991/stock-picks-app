@@ -40858,3 +40858,52 @@ def test_b2925_owner_decision_cannot_be_taken_in_silence():
         encoding="utf-8", errors="replace")
     assert src.count("scan_owner_decision_taken") >= 2, (
         "scan_owner_decision_taken is defined and never wired")
+
+
+
+def test_b1248_or_arm_attribution_separates_the_added_arm():
+    """S6-B1248: B1202 added smc_bos_bearish as an OR-alternative on two
+    SHORT strategies. The dilution question is how many LANDED trades rest on
+    the ADDED arm alone - those the pre-B1202 thesis would never have taken.
+
+    The ticket sat BLOCKED for two months reading "the analysis slices the
+    BATCH B trade log, and Batch B is owner-gated". The question is about the
+    STRATEGIES, not about Batch B: 25 cubes on disk carry them. That is the
+    S6-B2533 class - a stated blocker that does not hold.
+
+    This pins the ARITHMETIC (a trade true on both arms is not added-only) and
+    the GATE PAIRS the attribution reads, because the pairs are the claim: if
+    a future edit changes an arm, the recorded shares stop describing the
+    code.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import or_arm_attribution as oaa
+
+    # the pairs must match the live screener gates, or the shares describe
+    # a strategy that no longer exists
+    assert oaa.GATES["turtle_soup_short"] == (
+        "smc_liquidity_swept_up", "smc_bos_bearish")
+    assert oaa.GATES["smc_equal_highs_sweep_short"] == (
+        "smc_equal_highs_swept", "smc_bos_bearish")
+
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    for strat, (thesis, added) in oaa.GATES.items():
+        i = src.index("def strat_%s(" % strat)
+        body = src[i:i + 1400]
+        assert thesis in body, (strat, thesis, "thesis arm not in the gate")
+        assert added in body, (strat, added, "added arm not in the gate")
+        # it must still be an OR of the two, not an AND - the whole question
+        assert " or " in body, (strat, "the OR gate is gone")
+
+    # the signal parser must read BOTH dialects; literal_eval alone fails on
+    # every JSON-style row, which reads identically to the field being absent
+    assert oaa._signals("{'a': True}") == {"a": True}
+    assert oaa._signals('{"a": true}') == {"a": True}
+    assert oaa._signals("") is None
+    assert oaa._signals(None) is None
+    assert oaa._signals("not a dict at all") is None

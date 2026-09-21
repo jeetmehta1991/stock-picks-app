@@ -1,0 +1,35 @@
+{
+ "ticket": "S6-B1248-OR-ARM-ATTRIBUTION",
+ "question": "B1202 added smc_bos_bearish as an OR-alternative on two SHORT strategies. Does the added arm dominate the landed population - i.e. is the thesis diluted?",
+ "cube": "output_r5_merged_1_7",
+ "rows": [
+  {
+   "strategy": "smc_equal_highs_sweep_short",
+   "thesis_arm": "smc_equal_highs_swept",
+   "added_arm_b1202": "smc_bos_bearish",
+   "landed": 838,
+   "readable": 838,
+   "unparsed_or_missing_keys": 0,
+   "both_arms": 2,
+   "thesis_arm_only": 304,
+   "added_arm_only": 532,
+   "neither_arm": 0,
+   "added_arm_only_share": 0.6348
+  },
+  {
+   "strategy": "turtle_soup_short",
+   "thesis_arm": "smc_liquidity_swept_up",
+   "added_arm_b1202": "smc_bos_bearish",
+   "landed": 1880,
+   "readable": 1880,
+   "unparsed_or_missing_keys": 0,
+   "both_arms": 58,
+   "thesis_arm_only": 253,
+   "added_arm_only": 1569,
+   "neither_arm": 0,
+   "added_arm_only_share": 0.8346
+  }
+ ],
+ "scope": "LANDED TRADES, not signal fires. Occupancy and the candidate cap sit between a fire and a trade (L812), so this attributes the traded population only.",
+ "neither_arm_note": "A `neither` row means the gate fired on a signal dict where both arms read False - which should be impossible and, if non-zero, is a finding about persistence, not about the thesis."
+}
