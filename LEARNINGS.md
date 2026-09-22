@@ -22414,3 +22414,18 @@ predicted a median holdout count of 17 and the first tightening cell landed
 on the observable property (a single-literal strategy column) rather than a
 hand-maintained list of cubes, pinned by
 `test_b2962_extract_refuses_an_unpopulatable_bucket`.
+
+**SWEEP FOR THE CLASS (B2964).** INSTRUMENT: grep -rln for readers of
+skipped_trades across scripts, then grep each for a strategy-equality filter
+and for attribution awareness. POPULATION 8 readers. Seven are clean - five
+never filter skip rows by strategy at all, and the extract itself now guards.
+**ONE REAL SIBLING**, and its failure mode is worse than mine:
+`optimize_strategies_from_cube.py:642` computes `dominant_skip_reason` by
+filtering skip rows on strategy name. MEASURED on R5: the filter sees 77 rows
+for soldiers and 113 for crows and would report
+`avoid_tier_long_blocked_batch190` / `avoid_tier_short_blocked_batch190`,
+while the true dominant reason is occupancy at 391,782 rows - **all invisible
+to it**. Mine produced a zero; this produces a PLAUSIBLE WRONG ANSWER, which
+no reader would question. Ticketed S6-B2964 rather than fixed in this turn's
+final commit, because that file is a Step-2 consumer and changing it needs
+its own batch.
