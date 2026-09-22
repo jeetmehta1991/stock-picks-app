@@ -2682,8 +2682,10 @@ def _queue_rows_added(diff_text=None) -> list[str]:
     # was fixed this turn still fails.
     out: list[str] = []
     seen: set[str] = set()
-    for cmd in (["git", "diff", "HEAD", "--unified=0", "--", "EXECUTION_QUEUE.md"],
-                ["git", "diff", "HEAD~1", "HEAD", "--unified=0",
+    # B3005: CR-blind for the same reason as the rule-addition reader.
+    for cmd in (["git", "diff", "HEAD", "--unified=0", "--ignore-cr-at-eol",
+                 "--", "EXECUTION_QUEUE.md"],
+                ["git", "diff", "HEAD~1", "HEAD", "--unified=0", "--ignore-cr-at-eol",
                  "--", "EXECUTION_QUEUE.md"]):
         try:
             d = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
@@ -3583,7 +3585,14 @@ def scan_ungated_addition(entries, *, text=None, added_rules=None) -> list[str]:
         added_rules = []
         try:
             for path in ("CHECKLIST.md", ".claude/skills/execution-discipline/SKILL.md"):
-                d = subprocess.run(["git", "diff", "HEAD", "--unified=0", "--", path],
+                # B3005: CR-BLIND, or an approved line-ending renormalisation
+                # makes every rule in the file read as ADDED this turn - the
+                # gate then demanded mechanisms for 124 pre-existing items
+                # (the L756 consequence its sibling at the doc-drift reader
+                # already guards against; L814 - fix the trunk, sweep the
+                # leaves).
+                d = subprocess.run(["git", "diff", "HEAD", "--unified=0",
+                                    "--ignore-cr-at-eol", "--", path],
                                    capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=20).stdout
                 added_rules += re.findall(r"^\+#{2,3} #(\d+)", d or "", re.M)
         except Exception:

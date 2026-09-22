@@ -40752,10 +40752,21 @@ def test_b2921_canonical_doc_eol_state_is_pinned():
         assert b.count(b"\r") - b.count(b"\r\n") == 0, (
             "LEARNINGS.md carries a lone CR again - the S6-B2533 byte")
 
-    assert idx.get("CHECKLIST.md") in ("mixed", "crlf"), (
-        "CHECKLIST.md is stored as %r. Renormalising it may well be correct, "
-        "but it is the S6-B2921 owner decision and must not land silently "
-        "inside an unrelated commit (L828)" % idx.get("CHECKLIST.md"))
+    # S6-B2921 rec (a), owner approved 2026-09-22 and executed at B3005:
+    # CHECKLIST.md renormalised to stored LF beside LEARNINGS.md, both
+    # pinned by the scoped .gitattributes; a flip in EITHER direction now
+    # fails here AND is blocked at checkout by the attribute.
+    assert idx.get("CHECKLIST.md") == "lf", (
+        "CHECKLIST.md is stored as %r, not lf - the S6-B2921 rec (a) "
+        "renormalisation (B3005) has been reverted or bypassed"
+        % idx.get("CHECKLIST.md"))
+    attrs = subprocess.run(["git", "check-attr", "text", "--",
+                            "LEARNINGS.md", "CHECKLIST.md"],
+                           cwd=str(root), capture_output=True, text=True,
+                           timeout=30)
+    if attrs.returncode == 0 and attrs.stdout.strip():
+        assert attrs.stdout.count(": text: set") == 2, (
+            "the scoped .gitattributes pin is gone: %r" % attrs.stdout)
 
 
 
@@ -41986,6 +41997,11 @@ def test_b2993_newly_fired_trigger_blocks_once(monkeypatch, tmp_path):
 
     # 6. PRODUCTION path: registry monkeypatched to a deterministic entry;
     #    first call fires AND records, second call is quiet on the record
+    import sys as _sys2
+    from pathlib import Path as _P2
+    _scr = str(_P2(__file__).resolve().parents[2] / "scripts")
+    if _scr not in _sys2.path:
+        _sys2.path.insert(0, _scr)   # self-sufficient (B3005 flake fix)
     import deferral_trigger_audit as dta
     monkeypatch.setattr(dta, "REGISTERED", {
         "S6-TEST2": {"trigger": "planted count exceeds 1", "threshold": 1,

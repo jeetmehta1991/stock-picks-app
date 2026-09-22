@@ -1,0 +1,7 @@
+# S6-B2921 rec (a), owner approved 2026-09-22: pin the two canonical
+# append-log ledgers to text (stored LF), scoped to exactly these two
+# files - a bare *.md rule would roll renormalisation diffs across every
+# CRLF-stored doc as each is next touched (the L739 storm), so the pin
+# matches the ticket scope, not the extension.
+LEARNINGS.md text
+CHECKLIST.md text
