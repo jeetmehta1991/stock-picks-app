@@ -22658,7 +22658,40 @@ hypothesis-as-finding class this file already carries.
 
 **WHAT CHANGES:** every finish projection names the sim-day its rate came
 from, and an early-day extrapolation is labelled biased high rather than
-offered as a midpoint. **Mechanism: JUDGMENT-ONLY for detection** - the
+offered as a midpoint. 
+**B2978 CORRECTION, THE SAME HOUR, AND IT IS THE THIRD INSTANCE OF THIS
+ENTRY'S OWN CLASS.** The table above calls 1.9291 h the actual. **It is
+not.** That reading was itself taken while the run was still working:
+`sim_day_index` had reached 249, the last simulated day, and `open_trades`
+was still non-zero. The final value in the same file is **1.9708 h**.
+
+| claim | as published | corrected |
+|---|---|---|
+| c07's actual | 1.9291 h | **1.9708 h** |
+| the sim-day-117 extrapolation's excess | 15.8 pct of the actual | **13.3 pct** (0.2623 h over 1.9708) |
+| c07 against the 1.9322 h seven-config mean | 0.2 pct BELOW | **2.0 pct ABOVE** (0.0386 h) |
+
+**So the retraction over-corrected.** My original claim - that the first
+body-axis config runs slower than the landed mean - was wrong in MAGNITUDE
+(I said 15.6 pct); my retraction was wrong in SIGN. The truth is 2.0 pct
+slower. **Three readings, three wrong statements, each confidently made.**
+
+**The discriminator I did not have, and now do: a run at its last sim-day
+is not finished.** `sim_day_index` reaches its final value while positions
+are still closing and the cube is still being written - precisely the
+window where `elapsed_hours` is still moving, and precisely the moment the
+run LOOKS done. Terminality is `open_trades == 0` AND a *finished* line for
+that wave in `output_audit/serial_chain.log`.
+
+**Mechanism, and this half IS mechanizable** - which is why the original
+JUDGMENT-ONLY label was right about detecting drift and too quick about the
+rest. `scripts/candle_runtime_table.py` derives the landed-runtime table
+and REFUSES, by name and with the reason, any run failing either terminal
+test; on the run that produced this correction it refuses candle_tws_c08
+with both reasons stated. Pinned by
+`test_b2978_runtime_table_refuses_a_run_that_is_not_terminal`.
+
+**Mechanism: JUDGMENT-ONLY for detection** - the
 search was run, and `scan_unmeasured_quantity` in
 `scripts/verify_turn_compliance.py` catches a figure with no named source
 but passed here because the projection DID name its file; nothing in that

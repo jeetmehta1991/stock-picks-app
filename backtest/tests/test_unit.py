@@ -25075,6 +25075,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # code it loaded, so a fix to it is blocked by the RUN.
         ("A LONG RUN PINS THE CODE IT LOADED AT START - A FIX TO THAT CODE IS BLOCKED BY THE RUN, NOT BY THE OWNER, AND SHIPS THE HOUR IT LANDS",
          "B2957: ask what is RUNNING before routing a code ticket"),
+        # B2978: the L840b tripwire row - a run at its last sim-day
+        # is not finished.
+        ("A RUN AT ITS LAST SIM-DAY IS NOT FINISHED - PROVE TERMINALITY BY ZERO OPEN TRADES PLUS A FINISHED LINE IN THE CHAIN LOG, NEVER BY THE SIM-DAY INDEX",
+         "B2978/L840b: prove terminality, do not read the counter"),
         # B2977: the L841 tripwire row - predicting your own gate's
         # verdict without reading its scope.
         ("A CLAIM ABOUT WHAT YOUR OWN GATE MEASURES IS A CAPABILITY CLAIM - OPEN THE FILE THAT DEFINES ITS SCOPE BEFORE PREDICTING ITS VERDICT",
@@ -25953,7 +25957,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 297 -> 298 at B2977 (the L841 gate-scope fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 298, gutted
+    # 298 -> 299 at B2978 (the L840b terminality fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 299, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41618,3 +41624,78 @@ def test_b2973_baseline_artifact_carries_both_grains_with_their_scope():
     full_src = inspect.getsource(mod._full_window)
     assert "not comparable" in full_src
     assert "comparable" in matched_src
+
+
+
+def test_b2978_runtime_table_refuses_a_run_that_is_not_terminal():
+    """S6-B2978 / L840b: a run at its last sim-day is not finished.
+
+    MEASURED 2026-09-22: candle_tws_c07's heartbeat read sim_day_index 249
+    - the last simulated day - with elapsed_hours 1.9291 and open_trades
+    still non-zero. The final value is 1.9708. Those 0.0417 h flipped a
+    published conclusion's SIGN.
+
+    The table must therefore REFUSE a run that fails either terminal test,
+    by name and with the reason, rather than quietly averaging a figure
+    that is still moving.
+    """
+    import importlib.util
+    import io as _io
+    import json as _json
+    import tempfile
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    src = root / "scripts" / "candle_runtime_table.py"
+    spec = importlib.util.spec_from_file_location("_crt", src)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    def _hb(d, **kw):
+        d.mkdir(parents=True, exist_ok=True)
+        base = {"elapsed_hours": 2.0, "sim_day_index": 249, "open_trades": 0}
+        base.update(kw)
+        _io.open(d / "run_heartbeat.json", "w", encoding="utf-8").write(
+            _json.dumps(base))
+
+    with tempfile.TemporaryDirectory() as td:
+        fake = _P(td)
+        # one genuinely terminal run, one at the last sim-day with an open
+        # book, one terminal-looking run the chain log never finished
+        _hb(fake / "output_candle_tws_c01_x", elapsed_hours=2.0)
+        _hb(fake / "output_candle_tws_c02_x", elapsed_hours=1.5,
+            open_trades=42)
+        _hb(fake / "output_candle_tws_c03_x", elapsed_hours=9.9)
+
+        log = fake / "output_audit" / "serial_chain.log"
+        log.parent.mkdir(parents=True, exist_ok=True)
+        _io.open(log, "w", encoding="utf-8").write(
+            "candle_tws_c01 finished: run_wave exit 0, summary COMPLETE\n"
+            "candle_tws_c02 finished: run_wave exit 0, summary COMPLETE\n")
+
+        real_log = mod.CHAIN_LOG
+        try:
+            mod.CHAIN_LOG = log
+            doc = mod.collect(fake)
+        finally:
+            mod.CHAIN_LOG = real_log
+
+    names = {r["dir"]: r for r in doc["terminal"]}
+    refused = {r["dir"]: r for r in doc["not_terminal"]}
+
+    # the genuinely terminal run counts
+    assert "output_candle_tws_c01_x" in names, doc
+
+    # the one at the last sim-day with an open book is REFUSED, and the
+    # reason names the open book rather than being a bare rejection
+    assert "output_candle_tws_c02_x" in refused, doc
+    assert "open_trades" in refused["output_candle_tws_c02_x"]["refused"]
+
+    # the one with no finished line is REFUSED even though it looks done
+    assert "output_candle_tws_c03_x" in refused, doc
+    assert "finished line" in refused["output_candle_tws_c03_x"]["refused"]
+
+    # and the mean EXCLUDES both - this is the whole point: 9.9 would have
+    # dominated any average that quietly included it
+    assert doc["n_terminal"] == 1, doc
+    assert abs(doc["mean_hours"] - 2.0) < 1e-9, doc

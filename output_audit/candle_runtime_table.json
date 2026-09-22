@@ -1,0 +1,75 @@
+{
+ "ticket": "S6-B2978 (L840 correction)",
+ "rule": "a run at its last sim-day is NOT finished - terminality is open_trades == 0 AND a finished line in the chain log",
+ "terminal": [
+  {
+   "dir": "output_candle_tbc_c01_b0.0_s0.0_wNone",
+   "wave": "candle_tbc_c01",
+   "elapsed_hours": 2.1063,
+   "sim_day_index": 249,
+   "open_trades": 0
+  },
+  {
+   "dir": "output_candle_tws_c01_b0.0_s0.0_wNone",
+   "wave": "candle_tws_c01",
+   "elapsed_hours": 1.9097,
+   "sim_day_index": 249,
+   "open_trades": 0
+  },
+  {
+   "dir": "output_candle_tws_c02_b0.0_s0.0_w0.3",
+   "wave": "candle_tws_c02",
+   "elapsed_hours": 2.1381,
+   "sim_day_index": 249,
+   "open_trades": 0
+  },
+  {
+   "dir": "output_candle_tws_c03_b0.0_s0.1_wNone",
+   "wave": "candle_tws_c03",
+   "elapsed_hours": 1.6935,
+   "sim_day_index": 249,
+   "open_trades": 0
+  },
+  {
+   "dir": "output_candle_tws_c04_b0.0_s0.1_w0.3",
+   "wave": "candle_tws_c04",
+   "elapsed_hours": 2.1429,
+   "sim_day_index": 249,
+   "open_trades": 0
+  },
+  {
+   "dir": "output_candle_tws_c05_b0.0_s0.25_wNone",
+   "wave": "candle_tws_c05",
+   "elapsed_hours": 1.6675,
+   "sim_day_index": 249,
+   "open_trades": 0
+  },
+  {
+   "dir": "output_candle_tws_c06_b0.0_s0.25_w0.3",
+   "wave": "candle_tws_c06",
+   "elapsed_hours": 1.8677,
+   "sim_day_index": 249,
+   "open_trades": 0
+  },
+  {
+   "dir": "output_candle_tws_c07_b0.3_s0.0_wNone",
+   "wave": "candle_tws_c07",
+   "elapsed_hours": 1.9708,
+   "sim_day_index": 249,
+   "open_trades": 0
+  }
+ ],
+ "not_terminal": [
+  {
+   "dir": "output_candle_tws_c08_b0.3_s0.0_w0.3",
+   "wave": "candle_tws_c08",
+   "elapsed_hours": 0.9088,
+   "sim_day_index": 97,
+   "open_trades": 42,
+   "refused": "open_trades 42 is not 0; no finished line for candle_tws_c08 in serial_chain.log"
+  }
+ ],
+ "n_terminal": 8,
+ "sum_hours": 15.4965,
+ "mean_hours": 1.9371
+}
