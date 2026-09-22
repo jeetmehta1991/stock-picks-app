@@ -22667,3 +22667,52 @@ property of the world rather than of the text. **Durability** rides on
 S6-B2972's rewrite of the hourly monitor prompt at CHAIN DONE, since
 S6-B2973 established a cron prompt sits outside every repo sweep, plus the
 tripwire row pinned by `test_b2123`.
+
+### L841 - I PREDICTED MY OWN GATE'S VERDICT WITHOUT READING ITS SCOPE (B2977, 2026-09-22)
+
+The engine's landing hook committed while my pyramid gate was running, and
+it regenerated several files under output_audit. I told the owner, in
+writing, that I **expected the gate to return tree=CHANGED** and would
+re-run rather than commit against a voided verdict.
+
+It returned **tree=SAME**. The answer was written down the whole time, in a
+comment at the top of the file I was predicting about -
+`scripts/pyramid_gate.py` lines 40-42:
+
+> *"data_prefetch/ are NOT in scope: a landing or a heartbeat during the
+> run is not an edit to the thing being measured."*
+> `SCOPE_DIRS = ("scripts", "backtest", ".claude/skills")`, `ROOT_GLOBS =
+> ("*.md",)`
+
+**output_audit is not in scope by design**, for exactly the situation I was
+in. And the file goes further: `EXECUTION_QUEUE.md` IS fingerprinted, but
+with an `APPEND_TOLERANT` carve-out for landing rows, added after a real
+incident where an unattended landing voided a settled tree.
+
+**This is the capability-claim class (#230 / L505) aimed at my own
+enforcement layer.** That rule's examples are about what a TOOL can load or
+a FORMAT permits; nothing in it suggested *what my own gate fingerprints*
+is the same kind of claim. It is: I asserted a mechanism's behaviour in an
+owner-facing message with zero evidence, when one command would have
+settled it.
+
+**Why this one was cheap to get wrong and easy to miss.** The prediction
+was CAUTIOUS - I was promising to re-run rather than to proceed - so it
+read as diligence, and a cautious error is the one nobody re-derives
+(L559, the second time this session the error pointed that way). And
+because the gate came back green, the wrong prediction cost nothing
+operationally; only the claim was false.
+
+**The general form, and it is narrower than it looks:** before saying what
+any gate, hook or check WILL do, open the file that defines its scope. The
+tell is a sentence of the form *"I expect X to fire/void/pass"* about
+machinery in this repo, which is always one grep from being known.
+
+**Mechanism: JUDGMENT-ONLY for detection, search named.** I looked for a
+gate that could catch this: `scan_unverified_cause` in
+`scripts/verify_turn_compliance.py` fires on cause language without
+evidence language, and a PREDICTION carries neither; `#230`'s own
+enforcement is the four evidence classes, which are applied by hand. No
+scan can tell a prediction about code from a statement about it without
+reading the code itself. **Durability** is the tripwire row pinned by
+`test_b2123`.

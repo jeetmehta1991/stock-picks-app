@@ -25075,6 +25075,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # code it loaded, so a fix to it is blocked by the RUN.
         ("A LONG RUN PINS THE CODE IT LOADED AT START - A FIX TO THAT CODE IS BLOCKED BY THE RUN, NOT BY THE OWNER, AND SHIPS THE HOUR IT LANDS",
          "B2957: ask what is RUNNING before routing a code ticket"),
+        # B2977: the L841 tripwire row - predicting your own gate's
+        # verdict without reading its scope.
+        ("A CLAIM ABOUT WHAT YOUR OWN GATE MEASURES IS A CAPABILITY CLAIM - OPEN THE FILE THAT DEFINES ITS SCOPE BEFORE PREDICTING ITS VERDICT",
+         "B2977/L841: open the file that defines the gate's scope"),
         # B2976: the L840 tripwire row - a rate read mid-run is not
         # stationary, so an early extrapolation is biased.
         ("A RATE READ MID-RUN IS NOT STATIONARY - NAME THE SIM-DAY AN EXTRAPOLATION CAME FROM AND LABEL AN EARLY-DAY PROJECTION BIASED HIGH",
@@ -25947,7 +25951,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 296 -> 297 at B2976 (the L840 drifting-rate fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 297, gutted
+    # 297 -> 298 at B2977 (the L841 gate-scope fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 298, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
