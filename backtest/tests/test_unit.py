@@ -25079,6 +25079,14 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # is not finished.
         ("A RUN AT ITS LAST SIM-DAY IS NOT FINISHED - PROVE TERMINALITY BY ZERO OPEN TRADES PLUS A FINISHED LINE IN THE CHAIN LOG, NEVER BY THE SIM-DAY INDEX",
          "B2978/L840b: prove terminality, do not read the counter"),
+        # B2981: the L843 tripwire row - a gate's own scaffolding is
+        # the least verified part of it.
+        ("A GATE'S OWN SCAFFOLDING IS THE LEAST VERIFIED PART OF IT - A NEGATIVE CONTROL THAT READS LIVE REPO STATE MEASURES THE REPO, AND A GATE OVER AN ARTIFACT JUDGES ONE THAT NO LONGER EXISTS",
+         "B2981/L843: suspect the window, the control, the neutraliser"),
+        # B2980: the L842 tripwire row - a rewrite carries forward
+        # every defect it was not sent to fix.
+        ("REWRITING AN INSTRUMENT IS THE MOMENT TO SWEEP ITS KNOWN DEFECTS - A REWRITE THAT FIXES ONLY THE FAULT YOU WERE SENT FOR CARRIES EVERY OTHER ONE FORWARD WITH A FRESH TIMESTAMP",
+         "B2980/L842: sweep the instrument's class before replacing it"),
         # B2977: the L841 tripwire row - predicting your own gate's
         # verdict without reading its scope.
         ("A CLAIM ABOUT WHAT YOUR OWN GATE MEASURES IS A CAPABILITY CLAIM - OPEN THE FILE THAT DEFINES ITS SCOPE BEFORE PREDICTING ITS VERDICT",
@@ -25959,7 +25967,11 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 298 -> 299 at B2978 (the L840b terminality fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 299, gutted
+    # 299 -> 300 at B2980 (the L842 rewrite-carries-defects fragment;
+    # same-call with its tripwire row per B2130).
+    # 300 -> 301 at B2981 (the L843 gate-scaffolding fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 301, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41699,3 +41711,103 @@ def test_b2978_runtime_table_refuses_a_run_that_is_not_terminal():
     # dominated any average that quietly included it
     assert doc["n_terminal"] == 1, doc
     assert abs(doc["mean_hours"] - 2.0) < 1e-9, doc
+
+
+
+def test_b2979_projector_does_not_carry_warmup_forward():
+    """S6-B2975 RCA (owner approved): warm-up makes a naive projection high.
+
+    MEASURED across 9 of 9 runs in the b2944b chain: sim-days 0..20 cost
+    0.01494 h/day against 0.00692 for every later block, a ratio of 2.16x,
+    and the open-book hypothesis is refuted in the opposite direction.
+
+    So a projection that divides elapsed by sim_day spreads a FIXED cost
+    over only the elapsed days and over-predicts. This pins the corrected
+    form: it must NOT do that division, and at an early sim-day it must
+    land below the naive form and near the measured landed mean.
+    """
+    import importlib.util
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    src = root / "scripts" / "candle_runtime_table.py"
+    spec = importlib.util.spec_from_file_location("_crt2", src)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    # the real reading that started this: candle_tws_c07 at sim-day 117
+    out = mod.project(1.0451, 117)
+
+    # the naive form is reported so a reader can see the gap, and it is the
+    # LARGER of the two - that direction is the whole finding
+    assert out["naive_hours"] > out["projected_hours"], out
+
+    # the corrected projection lands near the measured landed mean (1.9371 h
+    # over 8 terminal configs); the naive one does not
+    assert abs(out["projected_hours"] - 1.9371) < 0.10, out
+    assert abs(out["naive_hours"] - 1.9371) > 0.20, out
+
+    # and the caveat travels with the number rather than living in a comment
+    assert "biased" in out["caveat"].lower(), out
+    assert "warm-up" in out["caveat"].lower(), out
+
+    # at the very end of a run the projection collapses to the measurement
+    done = mod.project(1.9708, 250)
+    assert abs(done["projected_hours"] - 1.9708) < 1e-9, done
+
+
+
+def test_b2981_stall_gate_does_not_judge_a_retired_monitor():
+    """S6-B2981 / L843: a gate over an ARTIFACT must not judge a retired one.
+
+    MEASURED 2026-09-22: told to fix a monitor, I armed a replacement with
+    no stall clause, the gate correctly caught it, I deleted that job and
+    armed a compliant one - and the gate kept firing on the DELETED job
+    because its window holds every CronCreate since the last user message.
+    A monitor that was deleted monitors nothing, so that is a false
+    positive no rewording can clear.
+
+    The exemption is keyed on the OBSERVABLE sequence - a later delete
+    followed by a later compliant create - never on intent (L528).
+    """
+    import scripts.verify_turn_compliance as vtc
+
+    def arm(txt):
+        return {"type": "tool_use", "name": "CronCreate",
+                "input": {"prompt": txt}}
+
+    def drop():
+        return {"type": "tool_use", "name": "CronDelete",
+                "input": {"id": "abc123"}}
+
+    def turn(*calls):
+        return [{"type": "user", "message": {"content": "go"}},
+                {"type": "assistant", "message": {"content": list(calls)}}]
+
+    BAD = "PERIODIC REPORT. Report progress every hour, always."
+    GOOD = ("PERIODIC REPORT. STALL CHECK: if the log mtime has not advanced "
+            "while the process lives, say STALLED rather than slow.")
+
+    # 1. a lone bad arm still fires - the gate is not weakened
+    assert vtc.scan_monitor_without_stall_check(turn(arm(BAD)))
+
+    # 2. a lone good arm stays quiet
+    assert not vtc.scan_monitor_without_stall_check(turn(arm(GOOD)))
+
+    # 3. THE INCIDENT: bad arm, delete, good arm -> quiet, because the
+    #    defective job no longer exists
+    assert not vtc.scan_monitor_without_stall_check(
+        turn(arm(BAD), drop(), arm(GOOD)))
+
+    # 4. bad arm followed by a delete but NO compliant replacement still
+    #    fires - deleting alone does not earn the exemption
+    assert vtc.scan_monitor_without_stall_check(turn(arm(BAD), drop()))
+
+    # 5. ORDER IS NOT SYMMETRIC: good first, then bad, still fires - the bad
+    #    arm has no compliant successor, so it is the live one
+    assert vtc.scan_monitor_without_stall_check(
+        turn(arm(GOOD), drop(), arm(BAD)))
+
+    # 6. bad, good, but NO delete between them -> still fires, because both
+    #    jobs are live and one of them cannot see a hang
+    assert vtc.scan_monitor_without_stall_check(turn(arm(BAD), arm(GOOD)))

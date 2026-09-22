@@ -22749,3 +22749,113 @@ enforcement is the four evidence classes, which are applied by hand. No
 scan can tell a prediction about code from a statement about it without
 reading the code itself. **Durability** is the tripwire row pinned by
 `test_b2123`.
+
+### L842 - A REWRITE CARRIES FORWARD EVERY DEFECT IT WAS NOT SENT TO FIX (B2980, 2026-09-22)
+
+The owner told me to fix one thing in the hourly monitor: it compared
+Step-1 cubes against full-window baselines. I did not patch that line - I
+rewrote the whole prompt, taking the council's better fix (derive the
+baseline, never type it) and folding in three other corrections from the
+same session.
+
+**And I reproduced a defect the repo had already recorded.** The new prompt
+reported progress and could not report a HANG, so a dead run would read as
+a slow one. That is `L420` / `S6-B1555a` verbatim, a lesson whose own text
+says THREE ticks called a hung run healthy. The turn gate caught it
+seconds after I created the job.
+
+**The mechanism of the miss is the interesting part.** I was in FIX mode on
+one named fault, so the rewrite inherited the old prompt's structure -
+including its blind spots - while looking like a fresh artifact. A patch
+declares what it changes; **a rewrite silently re-asserts everything it
+does not change, with a new timestamp that makes it all look freshly
+considered.** Three corrections I deliberately added made it look MORE
+reviewed, not less.
+
+**What it cost, stated honestly: nothing operationally.** The defective job
+existed for about four minutes and no tick fired against it, so this is a
+near miss rather than an incident. The reason to record it is that the near
+miss was caught by a gate, not by me, and the same shape applies to every
+instrument rewrite - a runbook step, a spec template, a report format.
+
+**THE RULE:** before replacing an instrument, grep the lesson record for
+the instrument's CLASS (here: monitor, cron, report) and check the
+replacement against each hit. Not the fault you were sent for - the others.
+
+**Mechanism: the existing gate is the mechanism and it worked.**
+`scan_monitor_no_stall_check` in `scripts/verify_turn_compliance.py` fires
+on a monitor prompt that cannot report a hang, and it is what caught this
+within one close. No new detector is warranted - this is a COMPLIANCE
+FAILURE AGAINST ITEM #420, not a new class, and adding a second gate over
+ground the first one already covers is the `#136` theatre the anti-audit
+guard rejects. Durability is the tripwire row pinned by `test_b2123`.
+
+**Two smaller misses from the same turn, recorded here rather than given
+their own entries because both are known classes with live gates:**
+
+- I read process CPU to judge whether a run was alive, saw zero movement
+  across 20 seconds on three PIDs, and was heading toward a stall call. The
+  chain log said a battery was executing and the heartbeat was 0.3 minutes
+  old. COMPLIANCE FAILURE AGAINST ITEM #656 - read the log and the
+  directory, never process CPU (L660).
+- I ran a diagnostic pytest through `| tail -15`, so the reported exit code
+  was tail's and the failed-test summary was truncated away - I spent a
+  full run and learned nothing. COMPLIANCE FAILURE AGAINST L753: a
+  pipeline's exit status is its LAST command's; write to a file and read
+  the file.
+
+### L843 - TWO DEFECTS IN THE GATES' OWN SCAFFOLDING, FOUND IN ONE TURN (B2981, 2026-09-22)
+
+Ordinary compliant work exposed two latent defects, both in the machinery
+that audits me rather than in the code being audited. **L599 predicted
+exactly this**: the layer reporting my own compliance is the least verified
+in the system, because its subject is the same text that would report its
+failure.
+
+**DEFECT 1 - A GATE OVER AN ARTIFACT JUDGED A RETIRED ONE, FOREVER.**
+`scan_monitor_without_stall_check` collects every `CronCreate` since the
+last user message. Told to fix the monitor, I armed a replacement with no
+stall clause; the gate CORRECTLY caught it; I deleted that job and armed a
+compliant one. **The gate kept firing on the deleted job** - its window
+still held that arm, and nothing in it could see supersession. A monitor
+that has been deleted monitors nothing, so this is a false positive no
+rewording can clear, and I spent three closes rewording before reading the
+predicate (L750, again).
+
+FIXED by collecting deletes alongside creates and exempting an arm that a
+later delete plus a later COMPLIANT create supersede. **Keyed on the
+observable sequence, never on intent (L528)**, and deliberately NOT
+symmetric: arming a good job and then a bad one still fires, because the
+bad arm has no compliant successor and is therefore the live one.
+
+**DEFECT 2 - A NEGATIVE CONTROL THAT READ THE LIVE REPO.**
+`scan_owner_decision_taken` reads `EXECUTION_QUEUE.md` from disk when no
+`queue_text` is injected, and it was added with no `NEUTRAL` entry. So the
+corpus's negative control - which exists to ask *does ordinary prose trip
+this?* - was instead asking *what does the working tree look like?*
+
+**It stayed green only while no owner-gated ticket had ever been closed.**
+The first legitimate closure of one, which happened this turn when the
+owner ruled on three tickets at once, turned `test_b1760` red. The gate was
+right about the repo and wrong about the control, and the failure looked
+like a mystery regression in an unrelated test.
+
+**That is L517's shape for the fourth time**, and it is the reason B1762c
+created the `NEUTRAL` dict in the first place - a gate reading non-text
+input must have that input neutralised or the control measures the world.
+The dict already carries entries for git state, tool text and queue rows;
+this gate simply never got one.
+
+**THE COMMON RULE, and it is about WHEN these surface:** neither defect was
+reachable by writing tests for the gates. Both needed a REAL state change -
+a monitor actually replaced, an owner-gated ticket actually closed - and
+until then each gate looked correct and passed its own suite. **So when a
+gate fires on work you are confident is right, or an unrelated test goes
+red the first time some state occurs, suspect the gate's SCAFFOLDING before
+the work**: its window, its control, its neutralisation.
+
+**Mechanism:** both fixes are mechanised, not remembered -
+`test_b2981_stall_gate_does_not_judge_a_retired_monitor` pins the
+supersession rule in SIX arms including the two directions that must still
+fire, and the `NEUTRAL` entry restores the negative control, which
+`test_b1760` exercises every run.

@@ -4460,6 +4460,12 @@ def scan_monitor_without_stall_check(entries, *, blobs=None) -> list[str]:
     import json as _json
 
     arms = []
+    # B2981 (L843): deletes are collected ALONGSIDE creates, in order, so
+    # a defective arm RETIRED inside the same window can be told from one
+    # still live. Without this the gate judges a job that no longer
+    # exists, forever - a monitor that was deleted monitors nothing, so
+    # firing on it is a false positive no rewording can clear.
+    events = []   # ("create", blob) | ("delete", None), in order
     # B2636 (S6-B2555a): ONE definition. The hand-written copy here
     # did not skip gate feedback, so a Stop-hook block reset the
     # window and this gate judged a truncated turn.
@@ -4471,11 +4477,18 @@ def scan_monitor_without_stall_check(entries, *, blobs=None) -> list[str]:
             # B1880: only an ARMING call carries a prompt. `CronDelete` and
             # `CronList` carry an id or nothing, so judging them as monitors
             # with no stall clause is a guaranteed false positive.
-            if isinstance(c, dict) and c.get("type") == "tool_use" and \
-                    "croncreate" in str(c.get("name", "")).lower():
-                arms.append(_json.dumps(c.get("input", {})).lower())
+            if not (isinstance(c, dict) and c.get("type") == "tool_use"):
+                continue
+            _nm = str(c.get("name", "")).lower()
+            if "croncreate" in _nm:
+                _blob = _json.dumps(c.get("input", {})).lower()
+                arms.append(_blob)
+                events.append(("create", _blob))
+            elif "crondelete" in _nm:
+                events.append(("delete", None))
     if blobs is not None:
         arms = [b.lower() for b in blobs]
+        events = [("create", b) for b in arms]
     # B1866 (#246 - substring vs whole word): raw `in` made this INERT.
     # "hang" is a substring of "changed", and every unconditional monitor
     # prompt says "do not withhold because nothing changed" - so the most
@@ -4489,7 +4502,25 @@ def scan_monitor_without_stall_check(entries, *, blobs=None) -> list[str]:
         return any(_re2.search(r"(?<![a-z0-9_])" + _re2.escape(m)
                                + r"(?![a-z0-9_])", a) for m in STALL_MARKERS)
 
-    bad = [a for a in arms if not _has_stall(a)]
+    # B2981 (L843): an arm is SUPERSEDED when a later CronDelete is
+    # followed by a later CronCreate that DOES carry a stall clause -
+    # i.e. the defective job was retired and a compliant one replaced it.
+    # Keyed on the OBSERVABLE sequence, never on the author's intent
+    # (L528: harden the exemption, not just the trigger). Note the
+    # ordering matters and is not symmetric: arming a GOOD job and then a
+    # BAD one still fires, because the bad arm has no compliant successor.
+    def _superseded(i: int) -> bool:
+        seen_delete = False
+        for kind, blob in events[i + 1:]:
+            if kind == "delete":
+                seen_delete = True
+            elif kind == "create" and seen_delete and _has_stall(blob):
+                return True
+        return False
+
+    bad = [b for i, (kind, b) in enumerate(events)
+           if kind == "create" and not _has_stall(b)
+           and not _superseded(i)]
     if not bad:
         return []
     return ["MONITOR WITH NO STALL CHECK (S6-B1555a / L420): the prompt reports "

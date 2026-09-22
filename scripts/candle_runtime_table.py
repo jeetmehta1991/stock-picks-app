@@ -94,6 +94,53 @@ def collect(root: Path | None = None) -> dict:
     }
 
 
+# MEASURED 2026-09-22 across all 9 runs in this chain (S6-B2975 RCA, owner
+# approved). Marginal cost per simulated day, by block between consecutive
+# progress lines:
+#
+#   first block, sim-days 0..20 : n=9   mean 0.01494 h/day  median 0.01550
+#   every later block           : n=97  mean 0.00692 h/day  median 0.00650
+#                                 ratio of means 2.16x
+#
+# The first block is the most expensive in 9 of 9 runs. THE OPEN-BOOK
+# HYPOTHESIS IS REFUTED: restricted to later blocks so warm-up cannot
+# confound, blocks carrying <=40 open positions cost 0.00733 h/day and those
+# carrying >=60 cost 0.00686 - slightly CHEAPER with more open positions,
+# the opposite of the hypothesis and a small difference either way.
+#
+# So the cause is WARM-UP, and the defect in a naive projection follows from
+# it: dividing elapsed by sim-day spreads a FIXED warm-up cost over only the
+# days elapsed so far, so it over-predicts, and the over-prediction shrinks
+# as the run proceeds. That is exactly the 2.2331 -> 1.8752 -> 1.9708 arc
+# that made me publish, retract and re-retract one conclusion.
+STEADY_RATE_H_PER_SIM_DAY = 0.00692
+WARMUP_BLOCK_RATE_H_PER_SIM_DAY = 0.01494
+
+
+def project(elapsed_hours: float, sim_day: int, total_days: int = 250,
+            steady_rate: float | None = None) -> dict:
+    """Project a run's finish WITHOUT carrying its warm-up cost forward.
+
+    Keeps the elapsed time as measured and extrapolates only the REMAINING
+    days at the post-warm-up rate. Validated against the 8 landed runs at an
+    early checkpoint (sim-day 100..120): mean absolute error 0.1220 h,
+    against 0.2955 h for the naive elapsed/sim_day form - the naive
+    projector is wrong by 2.4x as much and over-predicts in 7 of 8 runs.
+    """
+    rate = STEADY_RATE_H_PER_SIM_DAY if steady_rate is None else steady_rate
+    remaining = max(0, total_days - sim_day)
+    return {
+        "projected_hours": round(elapsed_hours + rate * remaining, 4),
+        "naive_hours": round(elapsed_hours / sim_day * total_days, 4)
+                       if sim_day else None,
+        "basis": ("elapsed as measured plus %d remaining sim-days at the "
+                  "post-warm-up rate %.5f h/day" % (remaining, rate)),
+        "caveat": ("a NAIVE elapsed/sim_day projection carries the fixed "
+                   "warm-up cost forward and is biased HIGH, most at an "
+                   "early sim-day"),
+    }
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__,

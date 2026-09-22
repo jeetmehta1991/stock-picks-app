@@ -1078,6 +1078,13 @@ NEUTRAL: dict[str, dict] = {
     # control must supply a computing call or it measures the gate
     # doing its job.
     "scan_unverified_count": {"tool_text": "execution_queue value_counts"},
+    # B2981 (L843): this gate reads the LIVE EXECUTION_QUEUE.md when no
+    # queue_text is supplied, so the control measured the working repo
+    # rather than the text. It stayed green only while no owner-gated
+    # ticket had been closed; the FIRST legitimate closure of one turned
+    # the negative control red, which is L517's shape for the fourth time
+    # and is why B1762c added this dict. Neutralise the queue.
+    "scan_owner_decision_taken": {"queue_text": "", "rows": []},
     # B1769: the per-turn gate fires on ABSENCE, so the neutral state for a
     # text-only control must supply a row - otherwise the control measures the
     # gate doing its job and reports it as a false positive.
