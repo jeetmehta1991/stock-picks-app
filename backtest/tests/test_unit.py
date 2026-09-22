@@ -25079,6 +25079,14 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # is not finished.
         ("A RUN AT ITS LAST SIM-DAY IS NOT FINISHED - PROVE TERMINALITY BY ZERO OPEN TRADES PLUS A FINISHED LINE IN THE CHAIN LOG, NEVER BY THE SIM-DAY INDEX",
          "B2978/L840b: prove terminality, do not read the counter"),
+        # B2986: the L845 tripwire row - a defect's location is a
+        # claim, and the ticket that named it right was overridden.
+        ("A DEFECT'S LOCATION IS A CLAIM - THE HONEST PRODUCER THAT REPORTS A CONDITION AND THE CONSUMER THAT FAILS CLOSED ON IT ARE DIFFERENT FILES, AND THE TICKET THAT NAMED IT RIGHT IS THE ONE I OVERRODE",
+         "B2986/L845: read the ticket's location claim, open THAT file"),
+        # B2985: the L844 tripwire row - a provenance gate over half
+        # the code a run depends on.
+        ("A PROVENANCE GATE THAT COVERS ONE HALF OF THE CODE A RUN DEPENDS ON IS A GATE THAT REPORTS CLEAN WHILE THE OTHER HALF DRIFTS - ASK WHICH DIRECTORIES THE HASH ACTUALLY WALKS",
+         "B2985/L844: ask which directories the hash walks"),
         # B2981: the L843 tripwire row - a gate's own scaffolding is
         # the least verified part of it.
         ("A GATE'S OWN SCAFFOLDING IS THE LEAST VERIFIED PART OF IT - A NEGATIVE CONTROL THAT READS LIVE REPO STATE MEASURES THE REPO, AND A GATE OVER AN ARTIFACT JUDGES ONE THAT NO LONGER EXISTS",
@@ -25971,7 +25979,11 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 300 -> 301 at B2981 (the L843 gate-scaffolding fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 301, gutted
+    # 301 -> 302 at B2985 (the L844 half-covered-gate fragment;
+    # same-call with its tripwire row per B2130).
+    # 302 -> 303 at B2986 (the L845 defect-location fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 303, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41811,3 +41823,96 @@ def test_b2981_stall_gate_does_not_judge_a_retired_monitor():
     # 6. bad, good, but NO delete between them -> still fires, because both
     #    jobs are live and one of them cannot see a hang
     assert vtc.scan_monitor_without_stall_check(turn(arm(BAD), arm(GOOD)))
+
+
+
+def test_b2985_battery_path_is_fingerprinted_beside_the_engine():
+    """S6-B2985 / L844: the engine hash covers backtest/ and nothing else.
+
+    MEASURED 2026-09-22: engine_path_hash returned one identical digest
+    across every launch of the b2944b chain - the engine freeze is real -
+    while scripts/grade_candle_config.py, the candle family's registered
+    landing adapter, sits outside it entirely and was editable with nothing
+    recording the change.
+
+    This pins the ASYMMETRY as intended, not as an accident: the battery
+    path is RECORDED, the engine path is GATED.
+    """
+    import importlib.util
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    src = root / "scripts" / "run_serial_chain.py"
+    spec = importlib.util.spec_from_file_location("_rsc", src)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    # the grading path is enumerated, and the adapter that started this is in it
+    assert "scripts/grade_candle_config.py" in mod.BATTERY_PATHS
+    assert "scripts/run_postconfig.py" in mod.BATTERY_PATHS
+    assert "scripts/producer_variant_table.py" in mod.BATTERY_PATHS
+
+    # it hashes real files and reports how many it walked
+    digest, n = mod.battery_path_hash()
+    assert isinstance(digest, str) and len(digest) == 16, digest
+    assert n >= 5, n
+
+    # the two hashes are DIFFERENT functions over DIFFERENT trees - if they
+    # ever agreed, one of them would be walking the wrong thing
+    edigest, en = mod.engine_path_hash()
+    assert digest != edigest, (digest, edigest)
+    assert en > n, (en, n)
+
+    # and the engine hash still excludes the tests tree, which is what makes
+    # it stable while this very file changes
+    body = src.read_text(encoding="utf-8")
+    assert 'rel.startswith("backtest/tests/")' in body
+
+
+
+def test_b2986_the_honest_producer_and_the_closing_consumer_are_different_files():
+    """S6-B2986 / L845: a defect's LOCATION is a claim, pinned as a split.
+
+    MEASURED 2026-09-22. S6-B2919 names its defect correctly in its own
+    first sentence: the grader is honest and exits 0, and
+    run_postconfig.grid_step2_graded is what demands a gates dict and so
+    fails closed. I overrode that twice - first placing the closed path in
+    the honest producer, then, after the gate forced me to open it, in a
+    third file that is declared report-only and cannot set an exit code.
+
+    A behaviour pin for the true location was already green in this suite
+    (the B2612 call asserting grid_step2_graded returns False on a
+    BELOW_POWER_FLOOR row) and did not help, because a pin asserts
+    BEHAVIOUR and nothing makes a PROSE location claim match it. So this
+    pin asserts the SPLIT ITSELF - which file reports the condition, and
+    which file closes on it.
+    """
+    import inspect
+    import io as _io
+    from pathlib import Path
+
+    import scripts.run_postconfig as rp
+
+    root = Path(__file__).parent.parent.parent
+    src = _io.open(root / "scripts" / "grade_candle_config.py",
+                   encoding="utf-8").read()
+
+    # (a) THE PRODUCER IS HONEST. It assigns BELOW_POWER_FLOOR and RETURNS
+    #     before the single line in the file that can ever assign FAIL, so
+    #     no below-power cell is marked FAIL by the grader.
+    i_bpf = src.index('out["verdict"] = "BELOW_POWER_FLOOR"')
+    i_fail = src.index(
+        'out["verdict"] = "PASS" if all(gates.values()) else "FAIL"')
+    assert i_bpf < i_fail, "BELOW_POWER_FLOOR must precede the FAIL line"
+    assert "return out" in src[i_bpf:i_fail], (
+        "the grader must RETURN between BELOW_POWER_FLOOR and the FAIL line")
+    assert src.count('else "FAIL"') == 1, (
+        "more than one FAIL assignment - re-read which one this pin means")
+
+    # (b) THE CONSUMER IS WHERE IT CLOSES, and it is a DIFFERENT FILE.
+    ok, why = rp.grid_step2_graded(
+        {"results": [{"verdict": "BELOW_POWER_FLOOR"}]})
+    assert not ok, why
+    where = inspect.getsourcefile(rp.grid_step2_graded) or ""
+    assert "run_postconfig" in where, where
+    assert "grade_candle_config" not in where, where

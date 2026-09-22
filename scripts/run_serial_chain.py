@@ -188,11 +188,53 @@ def engine_path_hash() -> tuple[str, int]:
     return h.hexdigest()[:16], n
 
 
+# S6-B2985 (L844): the engine hash walks backtest/ and NOTHING ELSE, so
+# it reports a clean, identical digest while the GRADING path drifts.
+# MEASURED 2026-09-22: b9bfcf115410ae77 / 128 files is identical across
+# all 12 launches of the b2944b chain - the engine genuinely did not
+# move - and in the same window scripts/ was edited repeatedly with
+# nothing recording it. scripts/grade_candle_config.py is the candle
+# family's registered landing adapter, so a change there re-grades later
+# configs against earlier ones and the artifacts cannot say so.
+#
+# RECORDED, NOT GATED, and that asymmetry is deliberate: a refusal over
+# scripts/ would block a launch for editing an unrelated helper, which is
+# the over-tight gate that trains people to bypass it (L586). Recording
+# makes the drift ANSWERABLE after the fact, which is the thing that was
+# missing; tightening to a refusal is a separate owner decision.
+BATTERY_PATHS = (
+    "scripts/run_postconfig.py",
+    "scripts/postconfig_landing.py",
+    "scripts/producer_variant_table.py",
+    "scripts/grade_candle_config.py",
+    "scripts/grade_institutional_config.py",
+    "scripts/grade_free_levels_institutional.py",
+    "scripts/roster_core.py",
+)
+
+
+def battery_path_hash() -> tuple[str, int]:
+    """Content hash of the GRADING path - the scripts the post-config"""
+    import hashlib
+    h = hashlib.sha256()
+    n = 0
+    for rel in sorted(BATTERY_PATHS):
+        f = ROOT / rel
+        if not f.exists():
+            continue
+        h.update(rel.encode())
+        h.update(f.read_bytes())
+        n += 1
+    return h.hexdigest()[:16], n
+
+
 def engine_hash_gate(wave: str, prev: dict | None, accepted: bool) -> tuple[bool, dict]:
     """Record this wave's engine hash; refuse (False) when it differs from
     the previous launch's hash and the change is not accepted."""
     digest, n = engine_path_hash()
+    bdigest, bn = battery_path_hash()
     rec = {"wave": wave, "engine_hash": digest, "files": n,
+           "battery_hash": bdigest, "battery_files": bn,
            "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     try:
         book = json.loads(ENGINE_HASH_RECORD.read_text(encoding="utf-8"))

@@ -22859,3 +22859,102 @@ the work**: its window, its control, its neutralisation.
 supersession rule in SIX arms including the two directions that must still
 fire, and the `NEUTRAL` entry restores the negative control, which
 `test_b1760` exercises every run.
+
+### L844 - A PROVENANCE GATE OVER HALF THE CODE (B2985, council-prompted 2026-09-22)
+
+A council advisor told me the mid-chain code freeze "was never real" and that
+battery-adjacent code had been changing while the instrument read. **I checked
+before relaying it, and it is half wrong - but the surviving half is the
+better finding.**
+
+**WRONG ABOUT THE ENGINE.** `engine_path_hash()` at
+`scripts/run_serial_chain.py:175` walks every `backtest/**/*.py` except the
+tests tree, and `engine_hash_gate()` REFUSES a launch when the digest changes
+unaccepted. MEASURED: `output_audit/serial_chain_engine_hash.json` records 15
+waves and every launch of this chain carries **b9bfcf115410ae77, 128 files** -
+one distinct digest. The 36 configs run byte-identical engine code and a gate
+would have stopped them otherwise. The freeze is real and enforced.
+
+**RIGHT ABOUT THE OTHER HALF.** That hash walks `backtest/` and nothing else.
+The GRADING path lives in `scripts/`: `grade_candle_config.py` is the candle
+family's registered landing adapter at `producer_variant_table.py:2160` and
+`:2331`, and the battery invokes it on every landing. **Nothing hashes it,
+nothing records it, and nothing would have stopped me changing it mid-chain.**
+In the same window I edited `scripts/` repeatedly.
+
+**Why the gate reads as complete when it is half.** It is NAMED for the thing
+it protects - "engine hash" - and the engine is what everyone pictures when
+they think about a backtest's code. The grader is downstream of the run and
+feels like reporting rather than apparatus, right up until you notice the
+verdict it writes is the deliverable.
+
+**The tell, and it generalises past this repo:** a digest that has never
+changed across many runs is evidence about its COVERAGE at least as much as
+about the code. Before trusting one, ask which directories it walks - one
+grep of its own function settled this in seconds.
+
+**Mechanism: `battery_path_hash()` records the grading path's digest beside
+the engine's, per wave.** RECORDED, NOT GATED, deliberately: a refusal over
+`scripts/` would block a launch for editing an unrelated helper, which is the
+over-tight control that trains people to bypass it (L586). Recording makes the
+drift ANSWERABLE after the fact, which is exactly what was missing; tightening
+it to a refusal is a separate owner decision. Pinned by
+`test_b2985_battery_path_is_fingerprinted_beside_the_engine`.
+
+### L845 - I NAMED THREE LOCATIONS FOR ONE DEFECT AND THE TICKET HAD IT RIGHT ALL ALONG (B2986, 2026-09-22)
+
+S6-B2919 describes a defect in ONE sentence, correctly, in its own first
+line: *the grader is honest and exits 0 - grade_candle_config.py returns
+BELOW_POWER_FLOOR with gates None - but run_postconfig.grid_step2_graded
+demands an actual gates dict*. That sentence names the producer, the
+consumer, and which of the two closes. It has been in the ledger since the
+ticket was opened.
+
+**I then named the location twice more, and was wrong both times.**
+
+1. In the S6-B2984 sequencing row I wrote *the closed FAIL path is at
+   scripts/grade_candle_config.py:243*. MEASURED: line 243 assigns
+   BELOW_POWER_FLOOR and line 246 RETURNS, three lines before the single
+   line in that file that can ever assign FAIL, at 253. The grader cannot
+   reach FAIL on this path. I had grepped the file and not opened it.
+
+2. Forced by the gate to open it, I retracted - and retracted TO A THIRD
+   WRONG PLACE, telling the owner the real question was downstream
+   disposition at roster_core.py:455 and :490. MEASURED: that is the
+   BH-FDR partition report, which its own docstring at :470-472 declares
+   REPORT-ONLY - no gate, no ranking, no rejection. It cannot set an exit
+   code, so it cannot be the closed path either.
+
+**The truth, EXECUTED this turn:** run_postconfig.py:546
+grid_step2_graded returns False when no row carries a gates dict; the
+caller at :649 turns that into ok2 False, step2_grade_auto FAIL, battery
+exit 2, hand disposition. Exactly the ticket's sentence.
+
+**THE PIN ALREADY EXISTED AND DID NOT HELP**, which is the part worth
+keeping. test_unit.py:34306 asserts
+`rp.grid_step2_graded({"results": [{"verdict": "BELOW_POWER_FLOOR"}]})`
+returns False. The location was already executable, already green, already
+run on every pyramid. **A pin asserts BEHAVIOUR, and nothing anywhere makes
+a PROSE location claim match the pin that contradicts it.** So "add a test"
+was not available as a fix here - the test was there.
+
+**AND THE CONSEQUENCE INVERTED, which is how it reached the owner.** On the
+strength of the second wrong location I told the owner my chain-blocking
+argument for this ticket was WEAKENED. It is strengthened:
+run_postconfig.py is the battery supervisor invoked on every landing, so
+changing the closed path mid-chain splits the campaign's disposition record
+more cleanly than a grader change would - configs 1-10 hand-disposed, 11-36
+terminal. I published a softened blocker off a location I had not opened.
+
+**THE CLASS, and it is not "read the file" - I read files all turn.** When
+a ticket ALREADY NAMES a location, re-deriving it is not verification; it
+is a second guess competing with a recorded answer, and the recorded answer
+was written when someone had the code open. **Read the ticket's own
+location claim first and open THAT file.** The failure mode is silent
+because re-deriving FEELS like the more rigorous move.
+
+**Mechanism:** test_b2986_the_honest_producer_and_the_closing_consumer_are_different_files
+pins the two-file split itself - that the grader returns before it can
+assign FAIL, and that the function which fails closed lives in a different
+file - so the split is executable rather than prose, and the tripwire
+fragment carries the rule.
