@@ -25075,6 +25075,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # code it loaded, so a fix to it is blocked by the RUN.
         ("A LONG RUN PINS THE CODE IT LOADED AT START - A FIX TO THAT CODE IS BLOCKED BY THE RUN, NOT BY THE OWNER, AND SHIPS THE HOUR IT LANDS",
          "B2957: ask what is RUNNING before routing a code ticket"),
+        # B2971: the L838 tripwire row - a named trigger that nothing
+        # evaluates is a reminder, not a gate.
+        ("A NAMED TRIGGER THAT NOTHING EVALUATES IS A REMINDER, NOT A GATE - REGISTER AN EVALUATOR OR DISCLOSE THE TRIGGER AS UNEVALUATED",
+         "B2971/L838: register an evaluator or disclose it"),
         # B2968: another process may commit while you gate.
         ("ANOTHER PROCESS MAY COMMIT TO THIS REPO WHILE YOU GATE - ASK WHAT ELSE COMMITS BEFORE RELYING ON ONE COMMIT TO CARRY A MEMBER SET",
          "B2968: ask what else commits to these paths"),
@@ -25929,7 +25933,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # its tripwire row per B2130).
     # 293 -> 294 at B2968 (the concurrent-committer fragment; same-call
     # with its tripwire row per B2130).
-    assert len(gutted) == 294, gutted
+    # 294 -> 295 at B2971 (the L838 unevaluated-trigger fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 295, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41470,3 +41476,79 @@ def test_b2962_extract_refuses_an_unpopulatable_bucket():
         assert "_attributable" in window, src[i:i + 120]
     # and the refusal says WHY, so a reader is not left with a blank
     assert "decidable by construction" in src
+
+
+
+def test_b2971_deferral_audit_discloses_what_it_cannot_evaluate():
+    """S6-B2971 / L838: a named trigger that nothing evaluates.
+
+    MEASURED 2026-09-22: S6-B2620b's trigger reads "exceeds 5"; the count
+    was 8 and had been over the line for three commits. Nothing evaluated
+    it, and it surfaced through an unrelated turn-gate violation.
+
+    The audit must do TWO things, and the second is the load-bearing one:
+    evaluate what it can, and DISCLOSE BY ID what it cannot. An audit that
+    printed a clean zero while blind to eleven triggers would reproduce
+    L837's decidable-by-construction zero inside the instrument built to
+    catch it.
+    """
+    import importlib.util
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    src = root / "scripts" / "deferral_trigger_audit.py"
+    spec = importlib.util.spec_from_file_location("_dta", src)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    doc = mod.audit()
+
+    # (a) the disclosure half exists and is non-empty - a zero here would
+    # mean the tool had gone blind, not that the ledger had been cleaned
+    assert doc["unevaluated"], (
+        "the audit must DISCLOSE the deferrals it cannot evaluate; an "
+        "empty list is the clean-zero failure this tool exists to avoid")
+    for row in doc["unevaluated"]:
+        assert row["ticket"].startswith("S6-"), row
+        assert row["excerpt"].strip(), row
+
+    # (b) the count carries its own error rate and recall bound, in the
+    # artifact rather than in a commit message nobody reads
+    caveat = doc["recall_caveat"].lower()
+    assert "lower bound" in caveat
+    assert "false positive" in caveat
+
+    # (c) every registered trigger DERIVES its value - a stored number is
+    # exactly what went stale. Calling the evaluator twice against a log
+    # we control must track the file, not a constant.
+    assert mod.REGISTERED, "at least one trigger must be registered"
+    for tid, entry in mod.REGISTERED.items():
+        assert callable(entry["value"]), tid
+        assert isinstance(entry["threshold"], int), tid
+        assert entry["source"], tid
+
+    # (d) the S6-B2620b evaluator reads the log, not a literal: point it at
+    # an empty file and the count must fall to zero
+    import io as _io
+    import tempfile
+    from pathlib import Path as _PP
+
+    real = mod.EXEMPT_LOG
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            empty = _PP(td) / "empty_log"
+            _io.open(empty, "w", encoding="utf-8").write("")
+            mod.EXEMPT_LOG = empty
+            assert mod._flip_exempt_commits() == 0
+
+            planted = _PP(td) / "planted_log"
+            _io.open(planted, "w", encoding="utf-8").write(
+                "2026-01-01T00:00:00 exempt commit staging: "
+                "['output_audit/postconfig_landings.jsonl']\n"
+                "2026-01-02T00:00:00 exempt commit staging: "
+                "['LEARNINGS.md']\n")
+            mod.EXEMPT_LOG = planted
+            assert mod._flip_exempt_commits() == 1, (
+                "the evaluator must count only the ledger-flip commits")
+    finally:
+        mod.EXEMPT_LOG = real

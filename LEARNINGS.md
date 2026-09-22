@@ -22483,3 +22483,57 @@ symptom looks like a phantom: an edit you made, present on disk, absent from
 your own commit. **Before a commit that must carry a set, ask what else
 writes to those paths and verify with `git log` which commit holds each
 member.** Promoted to the skill with a fragment pin.
+
+### L838 - A NAMED TRIGGER THAT NOTHING EVALUATES (B2971, surfaced by accident 2026-09-22)
+
+The rule that a deferral without a named trigger is a silent drop made every
+deferral in this ledger honest. It stopped one step short. **It says the
+trigger must be WRITTEN. Nothing says anything must READ it.**
+
+**MEASURED.** S6-B2620b's trigger is *the logged exempt-commit count for
+ledger flips exceeds 5*. S6-B2933 measured 5 on 2026-09-14 and recorded, in
+the row itself, that it *sat exactly ONE landing-flip away*. The count on
+2026-09-22 is **8** - dated 09-02, 09-04, three on 09-06, 09-21, and two on
+09-22. It crossed on 2026-09-21 and stood over the line for three commits
+with nothing to announce it.
+
+**How it surfaced is the whole lesson.** Not a sweep, not a review: the turn
+gate refused a close for naming the identifier GIT_QUEUE_EXEMPT without
+inspecting it, the forced grep landed in `.queue_exempt_log`, and the number
+was sitting there. **A threshold crossed yesterday was found today by an
+unrelated compliance failure.** Had that gate not fired, nothing in the
+system would have looked.
+
+**S6-B2933 already recorded the sibling half** - the trigger names a token
+the log never writes (`GIT_QUEUE_EXEMPT` appears in that log ZERO times;
+preflight writes *exempt commit staging*), so anyone counting by the token
+the trigger names gets 0 and concludes the hatch was never used. That half
+is about a trigger being UNCOUNTABLE. This half is about a COUNTABLE one
+with no evaluator, and it is the weaker-looking of the two precisely because
+nothing about the row looks wrong.
+
+**The population, hand-read rather than asserted.** 17 tickets are DEFERRED.
+A re-open-language pattern flags 9; hand-reading all 9 gives **8 genuine and
+1 false positive** (S6-B2420 matches the word *trigger* inside a sentence
+denying it has one - the negation class a keyword matcher cannot see). A
+control over the 8 rows the pattern did NOT flag found **3 more** carrying a
+re-open condition in wording it cannot match - *hold until Phase 1B*, *waits
+for the optimisation program to finish*, *revisit only if profiling re-ranks
+the panel pre-pass*. So at least 11 of 17 deferrals carry a re-open
+condition and, before this batch, **0 of them had an evaluator**.
+
+**Of those 11, three are cheaply countable** - a Windows event-log
+recurrence (S6-B2202a), any pead engine launch (S6-B2638d), a spec wanting a
+tap_window level other than 5 (S6-B2752c). The rest turn on human judgment
+or a programme milestone. **That split is the design constraint: a tool here
+cannot evaluate most triggers, and the failure mode to avoid is a clean
+"0 fired" that hides the ones it cannot read** - which would reproduce
+L837's decidable-by-construction zero inside the instrument built to catch
+it.
+
+**Mechanism:** `scripts/deferral_trigger_audit.py` - a REGISTRY of triggers
+with evaluators that read real artifacts (S6-B2620b's derives its count from
+the log, never stores it), plus a disclosure half that lists every DEFERRED
+row carrying re-open language and no evaluator, BY ID, with the detector's
+own measured precision and its lower-bound recall printed beside the count.
+Pinned by `test_b2971_deferral_audit_discloses_what_it_cannot_evaluate`.
