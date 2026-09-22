@@ -131,12 +131,12 @@ REGISTERED = {
         # landing by design and had fired at 11). Baseline of 2 mixed-
         # class flips dispositioned in the S6-B2620b closing row -
         # 2026-09-22T00:19:10 and T06:01:28, both this session's gate-
-        # storm closes, content verified benign in HEAD - so the
-        # tripwire re-arms on the THIRD.
+        # storm closes, plus 1339b9d70 itself (flip 3, dispositioned
+        # in its own row) - so the tripwire re-arms on the FOURTH.
         "trigger": ("exempt commits staging the landings jsonl beside "
                     "non-landing files exceed the dispositioned "
-                    "baseline of 2"),
-        "threshold": 2,
+                    "baseline of 3"),
+        "threshold": 3,
         "value": _mixed_class_ledger_flips,
         "fired": lambda v, t: v > t,
         "source": ".queue_exempt_log",

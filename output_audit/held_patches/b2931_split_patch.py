@@ -9,6 +9,10 @@ The chain-done checklist runs:
     python output_audit/held_patches/b2931_split_patch.py
     python -m pytest backtest/tests/test_unit.py -q -k "b2931 or f_002 or 15457"
     python scripts/build_strategy_status.py     # regenerate the 223-row doc
+    python scripts/drift_audit_pre_phase_1a_beta.py   # snapshot strategy_total
+                       # 223 -> 225 (worktree validation 2026-09-22 found
+                       # test_batch373_e1_drift reading this snapshot; with it
+                       # regenerated, 7 of 7 targeted pins pass)
     python scripts/pyramid_gate.py --out output_audit/b2931_apply_gate.json \
         -- backtest/tests/test_unit.py backtest/tests/test_integration.py -q
 

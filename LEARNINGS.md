@@ -22980,3 +22980,5 @@ assert REFUSES any resolution the marker does not confirm - the wrong
 tree is now a loud stop instead of a wrong artifact (the L642 fail-closed
 shape). No scan can know a draft's intended home, so detection stays with
 the refusal.
+
+**L836/B2974 FIGURE CORRECTED (B3004, the S6-B2988 classified re-sweep):** the retraction's '43 files, 42 sound' does not re-derive from its named bare instrument, which returns 79 tracked files at B2974's own commit and at HEAD alike. The stable classified population is 42 REAL mentions (4 canonical docs, 36 b2944 campaign spec jsons each pairing both scopes in-sentence, 2 scripts) plus 37 coincidental digit-substring files (19 archive CSVs, 17 data_prefetch/output CSVs, 1 vendored test CSV) - enumerated in full in the session transcript of 2026-09-22 and re-derivable from git grep -l -E over the two comma-formatted figures. So B2974's count was approximately the classified population with neither the filter nor the noise named (L678's scope-of-scan omission), its soundness conclusion survives, and the one then-unfixed real defect (this file's own sweep sentence and the baselines script docstring) closed at S6-B2989.

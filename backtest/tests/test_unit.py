@@ -42096,3 +42096,67 @@ def test_b2964_dominant_skip_reason_refuses_unattributable_occupancy():
     src = (__import__("pathlib").Path(opt.__file__)
            .read_text(encoding="utf-8"))
     assert "dominant_skip_reason(skipped, strat)" in src
+
+
+
+def test_b2990_promotion_bar_is_in_code_and_the_artifact_names_spent():
+    """S6-B2990 (owner ruled 2026-09-22): the 24-cell factorial's promotion
+    bar lives in code - decide_promotable admits only the priced argmax -
+    and both the refusal and the spent-holdout note are source-pinned."""
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("smc_lsr_factorial24")
+
+    rows = [{"cell": "long/either/q40", "is_ci_lo": 0.279},
+            {"cell": "long/bos_only/q40", "is_ci_lo": 0.271},
+            {"cell": "short/either/q20", "is_ci_lo": None}]
+    # unpriced or unconvincing nulls promote nothing
+    assert m.decide_promotable(rows, None) == []
+    assert m.decide_promotable(rows, 0.165) == []
+    # a cleared null promotes exactly the argmax
+    assert m.decide_promotable(rows, 0.04) == ["long/either/q40"]
+    # a cleared null over a non-positive top still promotes nothing
+    neg = [{"cell": "x", "is_ci_lo": -0.1}]
+    assert m.decide_promotable(neg, 0.01) == []
+
+    src = (root / "scripts" / "smc_lsr_factorial24.py").read_text(
+        encoding="utf-8")
+    assert "REFUSED: --null-perms" in src
+    assert "HOLDOUT SPENT for this campaign" in src
+    assert "b2701_smc_lsr_step2.json" in src
+    # the artifact of the ruled run exists and refused promotion
+    import json as _json
+    doc = _json.loads((root / "output_audit" /
+                       "b2990_smc_lsr_factorial24.json").read_text(
+        encoding="utf-8"))
+    assert doc["trials_priced"] == 24
+    assert doc["promotable_for_future_prereg"] == []
+    assert len(doc["results"]) == 24
+
+
+def test_b2938_figures_artifact_names_its_members():
+    """S6-B2938 / S6-B2995: the two load-bearing figures live in a
+    persisted artifact whose population names all four members."""
+    import json as _json
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    doc = _json.loads((root / "output_audit" / "b2938_figures.json")
+                      .read_text(encoding="utf-8"))
+    mem = doc["members"]
+    assert set(mem) == {"1_soldiers_below_floor", "2_crows_below_floor",
+                        "3_grid_cells_sample_size", "4_occupancy_ratio"}
+    g = mem["3_grid_cells_sample_size"]
+    assert g["cells"] > 0 and g["pct"] is not None
+    assert isinstance(g["per_file"], list) and g["per_file"], (
+        "the population must be re-derivable per file, not a bare count")
+    o = mem["4_occupancy_ratio"]
+    assert o["occupancy_skip_rows"] == 391782
+    assert o["landed_trades"] == 189471
+    assert o["ratio"] == 2.07
