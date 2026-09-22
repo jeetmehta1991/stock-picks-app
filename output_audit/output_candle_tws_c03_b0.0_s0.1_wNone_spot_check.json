@@ -1,0 +1,18 @@
+{
+  "strategy": "three_white_soldiers",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_candle_tws_c03_b0.0_s0.1_wNone",
+  "seed": 42,
+  "sampled": 50,
+  "agree": 50,
+  "disagree": 0,
+  "skipped": 0,
+  "execution_failures": 0,
+  "config": {
+    "n_bars": 3,
+    "min_body_pct": 0.0,
+    "min_step_pct": 0.1,
+    "max_wick_pct": null
+  },
+  "detail": [],
+  "note": "leg A is raw bar arithmetic, independent of the producer; leg B is compute_candles on the same PIT slice; a DISAGREE is a finding about either side and is not a cause without a probe (#189)"
+}
