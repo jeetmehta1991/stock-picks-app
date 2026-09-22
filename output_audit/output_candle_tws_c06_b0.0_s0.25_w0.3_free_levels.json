@@ -1,0 +1,506 @@
+{
+ "strategy": "three_white_soldiers",
+ "axis": "P6 rsi_14 ceiling",
+ "grader": "scripts/grade_free_levels_candle.py (S6-B2904)",
+ "cube": "C:/Users/jeetm/Github/stock-picks-app/output_candle_tws_c06_b0.0_s0.25_w0.3",
+ "gate_mirrored": "rsi_14 lt <level> (strict, per screener.py)",
+ "levels_searched": [
+  60.0,
+  41.97,
+  46.31,
+  50.16,
+  54.42
+ ],
+ "reproduction": {
+  "covered_rows": 186,
+  "unverifiable_rows": 0,
+  "rows_total": 186,
+  "production_bound": 60.0,
+  "direction": "lt",
+  "failed_reproduction": 0
+ },
+ "occupancy": {
+  "artifact": "skipped_trades.csv",
+  "attribution_available": true,
+  "blocked_rows_total": 74,
+  "blocked_rows_attributable": 74,
+  "lower_bound_note": "Every trade count for a TIGHTER level is a LOWER BOUND: removing trades frees occupancy, and fires the engine blocked while a position was open would then be taken. Those trades exist in no cube and only the engine can produce them (L812).",
+  "note": "74 of 74 occupancy blocks name three_white_soldiers. A tighter level frees some of them, so each count below is short by at most that many. Every trade count for a TIGHTER level is a LOWER BOUND: removing trades frees occupancy, and fires the engine blocked while a position was open would then be taken. Those trades exist in no cube and only the engine can produce them (L812)."
+ },
+ "results": [
+  {
+   "level": 60.0,
+   "is_production": true,
+   "trades_kept": 186,
+   "trades_kept_is_a_lower_bound": true,
+   "exit_rows": 4464,
+   "exits_evaluable": 24,
+   "best": {
+    "exit": "earnings_blackout",
+    "n": 186,
+    "sharpe": 0.344,
+    "ci_lo": 0.024
+   },
+   "per_exit": [
+    {
+     "exit": "earnings_blackout",
+     "n": 186,
+     "sharpe": 0.344,
+     "ci_lo": 0.024
+    },
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 186,
+     "sharpe": 0.304,
+     "ci_lo": -0.036
+    },
+    {
+     "exit": "regime_flip",
+     "n": 186,
+     "sharpe": 0.484,
+     "ci_lo": -0.078
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 186,
+     "sharpe": 0.327,
+     "ci_lo": -0.247
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 186,
+     "sharpe": 0.201,
+     "ci_lo": -0.251
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 186,
+     "sharpe": 0.255,
+     "ci_lo": -0.267
+    }
+   ]
+  },
+  {
+   "level": 41.97,
+   "is_production": false,
+   "trades_kept": 24,
+   "trades_kept_is_a_lower_bound": true,
+   "exit_rows": 576,
+   "exits_evaluable": 24,
+   "best": {
+    "exit": "hybrid_50pct_target",
+    "n": 24,
+    "sharpe": 0.016,
+    "ci_lo": -1.005
+   },
+   "per_exit": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 24,
+     "sharpe": 0.016,
+     "ci_lo": -1.005
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 24,
+     "sharpe": -0.204,
+     "ci_lo": -1.076
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 24,
+     "sharpe": 0.386,
+     "ci_lo": -1.213
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 24,
+     "sharpe": 0.225,
+     "ci_lo": -1.226
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 24,
+     "sharpe": -0.244,
+     "ci_lo": -1.286
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 24,
+     "sharpe": -0.203,
+     "ci_lo": -1.572
+    }
+   ]
+  },
+  {
+   "level": 46.31,
+   "is_production": false,
+   "trades_kept": 49,
+   "trades_kept_is_a_lower_bound": true,
+   "exit_rows": 1176,
+   "exits_evaluable": 24,
+   "best": {
+    "exit": "hybrid_50pct_target",
+    "n": 49,
+    "sharpe": 0.359,
+    "ci_lo": -0.277
+   },
+   "per_exit": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 49,
+     "sharpe": 0.359,
+     "ci_lo": -0.277
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 49,
+     "sharpe": 0.375,
+     "ci_lo": -0.464
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 49,
+     "sharpe": 0.598,
+     "ci_lo": -0.485
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 49,
+     "sharpe": 0.128,
+     "ci_lo": -0.49
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 49,
+     "sharpe": 0.471,
+     "ci_lo": -0.555
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 49,
+     "sharpe": 0.102,
+     "ci_lo": -0.56
+    }
+   ]
+  },
+  {
+   "level": 50.16,
+   "is_production": false,
+   "trades_kept": 75,
+   "trades_kept_is_a_lower_bound": true,
+   "exit_rows": 1800,
+   "exits_evaluable": 24,
+   "best": {
+    "exit": "earnings_blackout",
+    "n": 75,
+    "sharpe": 0.169,
+    "ci_lo": -0.34
+   },
+   "per_exit": [
+    {
+     "exit": "earnings_blackout",
+     "n": 75,
+     "sharpe": 0.169,
+     "ci_lo": -0.34
+    },
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 75,
+     "sharpe": 0.056,
+     "ci_lo": -0.485
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 75,
+     "sharpe": 0.09,
+     "ci_lo": -0.626
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 75,
+     "sharpe": 0.181,
+     "ci_lo": -0.708
+    },
+    {
+     "exit": "regime_flip",
+     "n": 75,
+     "sharpe": 0.194,
+     "ci_lo": -0.71
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 75,
+     "sharpe": 0.023,
+     "ci_lo": -0.805
+    }
+   ]
+  },
+  {
+   "level": 54.42,
+   "is_production": false,
+   "trades_kept": 120,
+   "trades_kept_is_a_lower_bound": true,
+   "exit_rows": 2880,
+   "exits_evaluable": 24,
+   "best": {
+    "exit": "hybrid_50pct_target",
+    "n": 120,
+    "sharpe": 0.237,
+    "ci_lo": -0.186
+   },
+   "per_exit": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 120,
+     "sharpe": 0.237,
+     "ci_lo": -0.186
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 120,
+     "sharpe": 0.167,
+     "ci_lo": -0.229
+    },
+    {
+     "exit": "regime_flip",
+     "n": 120,
+     "sharpe": 0.416,
+     "ci_lo": -0.287
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 120,
+     "sharpe": 0.13,
+     "ci_lo": -0.43
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 120,
+     "sharpe": 0.21,
+     "ci_lo": -0.437
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 120,
+     "sharpe": 0.171,
+     "ci_lo": -0.538
+    }
+   ]
+  }
+ ],
+ "levels": {
+  "60.0": {
+   "p6": 60.0,
+   "is_fires": 186,
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "earnings_blackout",
+     "n": 186,
+     "sharpe": 0.344,
+     "ci_lo": 0.024
+    },
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 186,
+     "sharpe": 0.304,
+     "ci_lo": -0.036
+    },
+    {
+     "exit": "regime_flip",
+     "n": 186,
+     "sharpe": 0.484,
+     "ci_lo": -0.078
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 186,
+     "sharpe": 0.327,
+     "ci_lo": -0.247
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 186,
+     "sharpe": 0.201,
+     "ci_lo": -0.251
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 186,
+     "sharpe": 0.255,
+     "ci_lo": -0.267
+    }
+   ]
+  },
+  "41.97": {
+   "p6": 41.97,
+   "is_fires": 24,
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 24,
+     "sharpe": 0.016,
+     "ci_lo": -1.005
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 24,
+     "sharpe": -0.204,
+     "ci_lo": -1.076
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 24,
+     "sharpe": 0.386,
+     "ci_lo": -1.213
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 24,
+     "sharpe": 0.225,
+     "ci_lo": -1.226
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 24,
+     "sharpe": -0.244,
+     "ci_lo": -1.286
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 24,
+     "sharpe": -0.203,
+     "ci_lo": -1.572
+    }
+   ]
+  },
+  "46.31": {
+   "p6": 46.31,
+   "is_fires": 49,
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 49,
+     "sharpe": 0.359,
+     "ci_lo": -0.277
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 49,
+     "sharpe": 0.375,
+     "ci_lo": -0.464
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 49,
+     "sharpe": 0.598,
+     "ci_lo": -0.485
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 49,
+     "sharpe": 0.128,
+     "ci_lo": -0.49
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 49,
+     "sharpe": 0.471,
+     "ci_lo": -0.555
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 49,
+     "sharpe": 0.102,
+     "ci_lo": -0.56
+    }
+   ]
+  },
+  "50.16": {
+   "p6": 50.16,
+   "is_fires": 75,
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "earnings_blackout",
+     "n": 75,
+     "sharpe": 0.169,
+     "ci_lo": -0.34
+    },
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 75,
+     "sharpe": 0.056,
+     "ci_lo": -0.485
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 75,
+     "sharpe": 0.09,
+     "ci_lo": -0.626
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 75,
+     "sharpe": 0.181,
+     "ci_lo": -0.708
+    },
+    {
+     "exit": "regime_flip",
+     "n": 75,
+     "sharpe": 0.194,
+     "ci_lo": -0.71
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 75,
+     "sharpe": 0.023,
+     "ci_lo": -0.805
+    }
+   ]
+  },
+  "54.42": {
+   "p6": 54.42,
+   "is_fires": 120,
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 120,
+     "sharpe": 0.237,
+     "ci_lo": -0.186
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 120,
+     "sharpe": 0.167,
+     "ci_lo": -0.229
+    },
+    {
+     "exit": "regime_flip",
+     "n": 120,
+     "sharpe": 0.416,
+     "ci_lo": -0.287
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 120,
+     "sharpe": 0.13,
+     "ci_lo": -0.43
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 120,
+     "sharpe": 0.21,
+     "ci_lo": -0.437
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 120,
+     "sharpe": 0.171,
+     "ci_lo": -0.538
+    }
+   ]
+  }
+ },
+ "multiplicity_exposure": "4 free levels searched on this axis, each a max over 24 exits, nested inside ONE engine run - the levels are not independent trials and no correction is applied here (S6-B2444 recording rule)",
+ "verdict_status": "CANDIDATES, never admissions - every trade count is a lower bound while the occupancy correction is unsimulated (L812)"
+}
