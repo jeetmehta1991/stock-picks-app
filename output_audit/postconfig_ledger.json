@@ -5168,5 +5168,43 @@
    "status": "DONE",
    "evidence": "AUTO (B2520) VERDICT (denominators from output_candle_tws_c08_b0.3_s0.0_w0.3_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 4344 IS rows (4344 cube rows, 0 holdout rows); rank-1 [regime_flip] is_ci_lo 0.075 is_sharpe 0.63 fires 181 - Step-1: ranking only, no admission (B1608)"
   }
+ },
+ "output_candle_tws_c09_b0.3_s0.1_wNone": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(7296 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, TSLA, AAPL); M1_content_sha=PASS(16fe522acf42f201); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha e91f391fcc33); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=PASS(three_white_soldiers: manifest arms[0] n_bars=3 min_body_pct); step2_grade_auto=PASS(exit 0; n_bars=3 min_body_pct=0.3 min_step_pct=0.1 max_wick_); step2_free_levels=PASS(exit 0; reproduction-gated free levels -> output_candle_tws_); step4_spot_check_auto=PASS(exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk); step7_engine_implemented=PASS(4 of 4 declared knobs read from the environment + consumer l); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (S6-B2900): grade_candle_config at manifest n_bars=3 min_body_pct=0.3 min_step_pct=0.1 max_wick_pct= -> output_candle_tws_c09_b0.3_s0.1_wNone_grid_auto.json; free levels reproduction-gated -> output_candle_tws_c09_b0.3_s0.1_wNone_free_levels.json"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "AUTO (S6-B2899): spot_check_candle at manifest n_bars=3 min_body_pct=0.3 min_step_pct=0.1 max_wick_pct=; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_candle_tws_c09_b0.3_s0.1_wNone_spot_check.json"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520): lenses 9 run: 0 WARN / 0 FAIL / 9 INFO -> output_candle_tws_c09_b0.3_s0.1_wNone_lenses.json"
+  },
+  "6_post_fix_recheck": {
+   "status": "N/A",
+   "evidence": "no lens finding (9 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence"
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 10 ranked outcome classes carry 1 parameter combinations; 1 distinct outcome classes among 1 combinations enumerated in output_candle_tws_c09_b0.3_s0.1_wNone_grid_auto.json"
+  },
+  "7_implement_in_engine": {
+   "status": "N/A",
+   "evidence": "Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 declared knobs read from the environment + consumer lists match the tree"
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520) VERDICT (denominators from output_candle_tws_c09_b0.3_s0.1_wNone_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 7296 IS rows (7296 cube rows, 0 holdout rows); rank-1 [regime_flip] is_ci_lo -0.074 is_sharpe 0.364 fires 304 - Step-1: ranking only, no admission (B1608)"
+  }
  }
 }
