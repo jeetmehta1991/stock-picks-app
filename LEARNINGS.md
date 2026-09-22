@@ -22269,7 +22269,10 @@ check.
 **I wrote the correction and then committed the same class two rows later.**
 
 S6-B2949 retracts a comparison of this run's 560 landed trades against R5's
-full 1,596, on the ground that 1,596 is 4 years x 544 tickers and the run is
+full 1,596, on the ground that 1,596 is 4 years x 481 tickers (B2974
+correction: this read 544, the R5 cube's overall universe; the landed
+soldiers set spans 481 distinct tickers, measured by
+scripts/candle_r5_baselines.py) and the run is
 1 year x 200 - **a grain mismatch, named as such, in my own words**. Two rows
 later I set this run's **36.0 pct conversion** against R5's **8.8 pct** and
 drew a conclusion from the gap.
@@ -22563,11 +22566,30 @@ sits in a CRON PROMPT that re-states it every hour, and **repetition reads
 as corroboration** - the same number arriving on a schedule looks
 established rather than unexamined.
 
-**THE SWEEP RESULT IS THE POINT.** Grepping the whole tree for those two
-numbers returns exactly **ONE** hit - the skill's own L836 tripwire row,
-where the figure is used correctly as an example of the class. So **1 of 1
-repo instance is sound and the live defect is in an artifact no repo sweep
-can reach.** A scheduled prompt is not a file in the working tree; the
+**THE SWEEP RESULT IS THE POINT - AND MY FIRST ONE WAS WRONG (B2974,
+RETRACTED WITHIN THE HOUR).** I published *"grepping the whole tree
+returns exactly ONE hit"*. It does not. That number came from a grep
+whose output I read only the HEAD of, so the first non-vendor line became
+the whole population - the L714 element-zero class, committed to a lesson
+and to a commit message.
+
+**RE-MEASURED with the enumeration instrument named:** `git grep -n -E
+"1,596|1,674"` restricted to tracked `*.md *.py *.json` returns **43
+files**. Hand-reading every category:
+
+| site | reading |
+|---|---|
+| 37 candle spec JSONs + run_manifest `_fires_basis` | **SOUND, and exemplary** - the field states BOTH scopes and refuses the comparison: *"the smoke's scope is 6 tickers and this run is 200, so 199 is a FLOOR on what to expect, not a projection of it"* |
+| `scripts/producer_variant_table.py` x4 | **SOUND** - retention QUANTILES over the 1,596 / 1,674 R5 fires; a quantile wants the producer's whole population, so full-window is the right grain for that use |
+| `run_manifest.json` obsolescence risk | **SOUND** - *"offline re-derivation recovers 1,596 of 1,596"*, both sides R5 |
+| `LEARNINGS.md` L832 | **DEFECT** - said 1,596 is *4 years x 544 tickers*; the soldiers set spans **481**. Corrected in this batch |
+| skill row, checklist instance, ledger rows | records OF the class |
+
+**So the honest result is 1 defect in 43 files, not 1 correct hit in 1** -
+and the defect was IN the tree, which is the half my false sweep denied.
+The rule above still holds: the cron prompt genuinely is outside every
+repo sweep. What was false was the claim that the repo therefore had
+nothing to fix. A scheduled prompt is not a file in the working tree; the
 generalisation mandate's usual question, *what else breaks the same way*,
 has an answer the usual method cannot find. Every cron prompt, every
 runbook step quoted from memory, every template carrying a number is in
