@@ -22958,3 +22958,25 @@ pins the two-file split itself - that the grader returns before it can
 assign FAIL, and that the function which fails closed lives in a different
 file - so the split is executable rather than prose, and the tripwire
 fragment carries the rule.
+
+### L846 - A DRAFT CARRIES ITS DESTINATION'S PATH ASSUMPTIONS (B2999, self-caught by the failure 2026-09-22)
+
+Two analysis scripts drafted for scripts/ but EXECUTED from the session
+scratchpad resolved their repo ROOT from their own file location and read
+a tree that does not exist - the first died on a missing cube path before
+computing anything. COMPLIANCE FAILURE AGAINST ITEM #305: a script reading
+a repo fact must ask which TREE that fact belongs to, and mine derived the
+tree from where the DRAFT happened to live rather than from what the fact
+belongs to.
+
+CLASS SWEPT in the same close: 2 of 2 draft analysis scripts carried the
+defect (both fixed); 0 of 6 patcher drafts, which are cwd-relative by
+design and invoked from the repo root; 2 of 2 held patches document that
+same cwd contract in their apply checklists.
+
+MECHANISM, in both fixed scripts rather than in prose: ROOT resolves by
+MARKER (scripts/roster_core.py beside it) with a cwd fallback, and an
+assert REFUSES any resolution the marker does not confirm - the wrong
+tree is now a loud stop instead of a wrong artifact (the L642 fail-closed
+shape). No scan can know a draft's intended home, so detection stays with
+the refusal.

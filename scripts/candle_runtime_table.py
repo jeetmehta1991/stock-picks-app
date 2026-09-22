@@ -129,15 +129,25 @@ def project(elapsed_hours: float, sim_day: int, total_days: int = 250,
     """
     rate = STEADY_RATE_H_PER_SIM_DAY if steady_rate is None else steady_rate
     remaining = max(0, total_days - sim_day)
+    # S6-B2991: a call INSIDE the warm-up window must price the un-run
+    # remainder of that window at the warm-up rate, or the projection
+    # is biased LOW by up to (0.01494-0.00692)*20 = 0.1604 h at sim-day
+    # 0 - the mirror of the naive form's high bias.
+    warm_left = max(0, 20 - sim_day) if steady_rate is None else 0
+    warm_left = min(warm_left, remaining)
+    warm_extra = warm_left * (WARMUP_BLOCK_RATE_H_PER_SIM_DAY - rate)
     return {
-        "projected_hours": round(elapsed_hours + rate * remaining, 4),
+        "projected_hours": round(
+            elapsed_hours + rate * remaining + warm_extra, 4),
         "naive_hours": round(elapsed_hours / sim_day * total_days, 4)
                        if sim_day else None,
         "basis": ("elapsed as measured plus %d remaining sim-days at the "
                   "post-warm-up rate %.5f h/day" % (remaining, rate)),
         "caveat": ("a NAIVE elapsed/sim_day projection carries the fixed "
                    "warm-up cost forward and is biased HIGH, most at an "
-                   "early sim-day"),
+                   "early sim-day; inside the warm-up window this "
+                   "projection prices the un-run warm-up days at the "
+                   "warm-up rate (S6-B2991)"),
     }
 
 

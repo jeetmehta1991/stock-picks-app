@@ -25079,6 +25079,14 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # is not finished.
         ("A RUN AT ITS LAST SIM-DAY IS NOT FINISHED - PROVE TERMINALITY BY ZERO OPEN TRADES PLUS A FINISHED LINE IN THE CHAIN LOG, NEVER BY THE SIM-DAY INDEX",
          "B2978/L840b: prove terminality, do not read the counter"),
+        # B2999: the L846 tripwire row - a draft carries its
+        # destination's path assumptions.
+        ("A DRAFT CARRIES ITS DESTINATION'S PATH ASSUMPTIONS - A SCRIPT WRITTEN FOR THE REPO BUT RUN FROM A DRAFT LOCATION RESOLVES REPO FACTS FROM WHERE IT LIVES, SO RESOLVE BY MARKER AND REFUSE A TREE THE MARKER DOES NOT CONFIRM",
+         "B2999/L846: resolve by marker, refuse an unconfirmed tree"),
+        # B2925 batch-3: the #310 ship-vs-ask verdict test, owner
+        # approved 2026-09-22.
+        ("THE SHIP-VS-ASK LINE IS THE VERDICT TEST - DOES THE CHANGE ALTER AN OWNER-VISIBLE VERDICT OR THE SET OF CELLS THAT RECEIVE ONE; IF YES ASK, IF IT ONLY CHANGES WHAT IS LOOKED AT OR CORRECTS A PROVEN DEFECT BYTE-IDENTICALLY ELSEWHERE, SHIP",
+         "S6-B2925/#310: the verdict test decides ship vs ask"),
         # B2986: the L845 tripwire row - a defect's location is a
         # claim, and the ticket that named it right was overridden.
         ("A DEFECT'S LOCATION IS A CLAIM - THE HONEST PRODUCER THAT REPORTS A CONDITION AND THE CONSUMER THAT FAILS CLOSED ON IT ARE DIFFERENT FILES, AND THE TICKET THAT NAMED IT RIGHT IS THE ONE I OVERRODE",
@@ -25983,7 +25991,11 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 302 -> 303 at B2986 (the L845 defect-location fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 303, gutted
+    # 303 -> 304 at B2999 (the L846 draft-path fragment;
+    # same-call with its tripwire row per B2130).
+    # 304 -> 305 at batch-3 (the #310 ship-vs-ask fragment;
+    # same-call with its skill bullet per B2130).
+    assert len(gutted) == 305, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41847,10 +41859,18 @@ def test_b2985_battery_path_is_fingerprinted_beside_the_engine():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
 
-    # the grading path is enumerated, and the adapter that started this is in it
-    assert "scripts/grade_candle_config.py" in mod.BATTERY_PATHS
-    assert "scripts/run_postconfig.py" in mod.BATTERY_PATHS
-    assert "scripts/producer_variant_table.py" in mod.BATTERY_PATHS
+    # S6-B2994: the set is enumerable, so the pin names EVERY member
+    # (L747) - dropping any one of the seven now fails here, where the
+    # original three-name floor let four members vanish unpinned.
+    assert set(mod.BATTERY_PATHS) == {
+        "scripts/run_postconfig.py",
+        "scripts/postconfig_landing.py",
+        "scripts/producer_variant_table.py",
+        "scripts/grade_candle_config.py",
+        "scripts/grade_institutional_config.py",
+        "scripts/grade_free_levels_institutional.py",
+        "scripts/roster_core.py",
+    }, mod.BATTERY_PATHS
 
     # it hashes real files and reports how many it walked
     digest, n = mod.battery_path_hash()
@@ -41916,3 +41936,163 @@ def test_b2986_the_honest_producer_and_the_closing_consumer_are_different_files(
     where = inspect.getsourcefile(rp.grid_step2_graded) or ""
     assert "run_postconfig" in where, where
     assert "grade_candle_config" not in where, where
+
+
+
+def test_b2993_newly_fired_trigger_blocks_once(monkeypatch, tmp_path):
+    """S6-B2993 (owner approved 2026-09-22): the FIRED half of the trigger
+    evaluator is wired into the turn gate, blocking once per NEW firing.
+
+    The evaluator existed (B2971) and had no invoker, so S6-B2620b's count
+    moved 8 -> 10 with its FIRED state visible to nobody until an audit ran
+    the tool by hand. Arms 1-4 pin the once-per-firing contract on the
+    in-memory seams; arm 5 pins that seams never write state; arm 6 proves
+    the PRODUCTION write path round-trips against a monkeypatched registry,
+    so the determinism does not depend on the live exempt log.
+    """
+    import json as _json
+
+    import scripts.verify_turn_compliance as vtc
+
+    FIRED = [{"ticket": "S6-TEST1", "value": 8, "threshold": 5,
+              "trigger": "count exceeds 5"}]
+
+    # 1. a firing not in the state blocks, naming ticket, value, threshold
+    out = vtc.scan_deferral_trigger_fired([], audit_doc=FIRED,
+                                          state={"fired": []})
+    assert out and "S6-TEST1" in out[0] and "8" in out[0] and "5" in out[0]
+    assert "blocks once" in out[0]
+
+    # 2. the SAME firing already recorded stays quiet - no blockade (L721)
+    assert not vtc.scan_deferral_trigger_fired(
+        [], audit_doc=FIRED, state={"fired": ["S6-TEST1"]})
+
+    # 3. nothing fired, nothing blocks
+    assert not vtc.scan_deferral_trigger_fired(
+        [], audit_doc=[], state={"fired": []})
+
+    # 4. a DIFFERENT recorded firing does not shadow a new one - and a
+    #    trigger that un-fired (left the doc) and re-fires blocks again
+    out4 = vtc.scan_deferral_trigger_fired(
+        [], audit_doc=FIRED, state={"fired": ["S6-OTHER"]})
+    assert out4 and "S6-TEST1" in out4[0]
+
+    # 5. an in-memory seam NEVER writes the state file
+    sp = tmp_path / "state.json"
+    vtc.scan_deferral_trigger_fired([], audit_doc=FIRED,
+                                    state={"fired": []},
+                                    state_path=str(sp))
+    assert not sp.exists(), "seam call must not persist state"
+
+    # 6. PRODUCTION path: registry monkeypatched to a deterministic entry;
+    #    first call fires AND records, second call is quiet on the record
+    import deferral_trigger_audit as dta
+    monkeypatch.setattr(dta, "REGISTERED", {
+        "S6-TEST2": {"trigger": "planted count exceeds 1", "threshold": 1,
+                     "value": lambda: 3, "fired": lambda v, t: v > t,
+                     "source": "planted"}})
+    first = vtc.scan_deferral_trigger_fired([], state_path=str(sp))
+    assert first and "S6-TEST2" in first[0]
+    assert _json.loads(sp.read_text(encoding="utf-8")) == {
+        "fired": ["S6-TEST2"]}
+    assert not vtc.scan_deferral_trigger_fired([], state_path=str(sp))
+
+
+
+def test_b2991_projection_prices_the_warmup_window():
+    """S6-B2991: inside the warm-up window project() charges the un-run
+    warm-up days at the warm-up rate, so an early-day projection is no
+    longer biased low; at and past sim-day 20 nothing changes."""
+    import importlib.util
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "_crt3", root / "scripts" / "candle_runtime_table.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    # at sim-day 0 the projection carries the whole warm-up premium
+    p0 = mod.project(0.0, 0)
+    flat = mod.STEADY_RATE_H_PER_SIM_DAY * 250
+    prem = 20 * (mod.WARMUP_BLOCK_RATE_H_PER_SIM_DAY
+                 - mod.STEADY_RATE_H_PER_SIM_DAY)
+    assert abs(p0["projected_hours"] - (flat + prem)) < 1e-3, p0
+
+    # at sim-day 20 and beyond, the premium is zero - unchanged behaviour
+    p20 = mod.project(1.0, 20)
+    assert abs(p20["projected_hours"]
+               - (1.0 + mod.STEADY_RATE_H_PER_SIM_DAY * 230)) < 1e-3, p20
+    p117 = mod.project(1.0451, 117)
+    assert abs(p117["projected_hours"]
+               - (1.0451 + mod.STEADY_RATE_H_PER_SIM_DAY * 133)) < 1e-3, p117
+
+    # the caveat now names the warm-up pricing
+    assert "warm-up rate" in p0["caveat"], p0["caveat"]
+
+
+def test_b2992_baseline_stamps_name_universe_and_traded_separately():
+    """S6-B2992: the grain stamps carry universe_file_tickers AND
+    distinct_traded_tickers as distinct keys on BOTH grains - one key no
+    longer means two things (the L728 overloaded-field class)."""
+    import importlib.util
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "_crb2", root / "scripts" / "candle_r5_baselines.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    src = (root / "scripts" / "candle_r5_baselines.py").read_text(
+        encoding="utf-8")
+    # the matched grain maps the artifact's universe-file count to the
+    # universe key, never to the traded key
+    assert '"universe_file_tickers": d["tickers_in_file"]' in src
+    assert '"distinct_traded_tickers": None' in src
+    # the full-window grain emits the traded cardinality under the traded
+    # key and the run universe under the universe key
+    assert '"distinct_traded_tickers": int(df["ticker"].nunique())' in src
+    assert '"universe_file_tickers": 544' in src
+    # and the refuted one-hit sweep claim is gone from the docstring
+    assert "returns exactly ONE hit" not in (mod.__doc__ or "")
+
+
+
+def test_b2964_dominant_skip_reason_refuses_unattributable_occupancy():
+    """S6-B2964: on a cube whose occupancy rows carry one literal strategy
+    value, dominant_skip_reason REFUSES with the reason named - never a
+    mode over the leftovers the name-filter can see; on an attributable
+    cube it computes as before. Drives the module-level helper the
+    analysis loop itself calls (#276b - same path as the claim)."""
+    import importlib
+
+    import pandas as pd
+
+    opt = importlib.import_module("optimize_strategies_from_cube")
+
+    unatt = pd.DataFrame({
+        "strategy": ["(same-strategy)"] * 5 + ["s1"] * 2,
+        "reason": ["ticker_already_open_same_strategy_bug61_mode_c"] * 5
+                  + ["avoid_tier_long_blocked"] * 2})
+    att = pd.DataFrame({
+        "strategy": ["s2", "s2", "s3", "s3", "s3"] + ["s1"] * 2,
+        "reason": ["ticker_already_open_same_strategy"] * 5
+                  + ["avoid_tier_long_blocked"] * 2})
+
+    out = opt.dominant_skip_reason(unatt, "s1")
+    assert isinstance(out, str) and out.startswith("REFUSED"), out
+    assert "S6-B2964" in out
+
+    # attributable: occupancy rows carry MORE THAN ONE real name, so the
+    # per-strategy mode computes (a single-name occupancy set is
+    # indistinguishable from the placeholder era and stays refused - the
+    # B2963 predicate, accepted deliberately)
+    assert opt.dominant_skip_reason(att, "s1") == "avoid_tier_long_blocked"
+    assert opt.dominant_skip_reason(att, "s3") == (
+        "ticker_already_open_same_strategy")
+
+    # and the loop's call site consumes the helper, not an inline mode
+    src = (__import__("pathlib").Path(opt.__file__)
+           .read_text(encoding="utf-8"))
+    assert "dominant_skip_reason(skipped, strat)" in src

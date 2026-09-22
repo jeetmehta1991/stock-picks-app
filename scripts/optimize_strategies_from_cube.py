@@ -550,6 +550,27 @@ def optimize_strategy(strategy: str, trade_log: pd.DataFrame,
     }
 
 
+def dominant_skip_reason(skipped, strat):
+    """S6-B2964 (L837 sibling): the per-strategy dominant skip reason,
+    REFUSED when the cube cannot attribute occupancy rows.
+
+    On a pre-B2905 cube every occupancy row carries ONE literal strategy
+    value, so filtering skips by strategy name EXCLUDES the dominant
+    class and mode() returns a plausible wrong reason from the leftovers
+    (77 rows for three_white_soldiers on output_r5_merged_1_7, against
+    391,782 occupancy rows the filter cannot see). A bucket the filter
+    cannot populate is REFUSED, not computed - S6-B2963's guard,
+    mirrored; module-level so the pin drives THIS path (#276b)."""
+    mine = skipped[skipped["strategy"] == strat]
+    occ = skipped[skipped["reason"].astype(str)
+                  .str.contains("ticker_already_open", na=False)]
+    if len(occ) > 0 and occ["strategy"].nunique() <= 1:
+        return ("REFUSED - occupancy rows are unattributable on this "
+                "cube (pre-B2905 literal), so a per-strategy mode would "
+                "report the leftovers (S6-B2964)")
+    return mine["reason"].mode().iloc[0] if not mine.empty else None
+
+
 def producer_zero_reaudit(trade_log: pd.DataFrame,
                            skipped: pd.DataFrame,
                            screener_source: str) -> dict:
@@ -638,11 +659,10 @@ def producer_zero_reaudit(trade_log: pd.DataFrame,
             "n_keys_present": n_present,
             "n_keys_truthy":  n_truthy,
             "gate_keys":      gate_keys[:10],
+            # S6-B2964: refused-or-computed by the module-level helper
             "dominant_skip_reason": (
-                skipped[skipped["strategy"] == strat]["reason"].mode().iloc[0]
-                if strat in skipped_set and not skipped[skipped["strategy"] == strat].empty
-                else None
-            ),
+                dominant_skip_reason(skipped, strat)
+                if strat in skipped_set else None),
         }
 
     # Family clustering of PRODUCER_LAYER_ZERO_LIKELY by shared missing key

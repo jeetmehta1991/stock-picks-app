@@ -214,7 +214,11 @@ BATTERY_PATHS = (
 
 
 def battery_path_hash() -> tuple[str, int]:
-    """Content hash of the GRADING path - the scripts the post-config"""
+    """Content hash of the GRADING path - the scripts the post-config
+    battery loads at every landing (BATTERY_PATHS). Recorded beside
+    engine_hash in each per-wave record from the next chain onward;
+    recorded, never gated (L844).
+    """
     import hashlib
     h = hashlib.sha256()
     n = 0

@@ -284,6 +284,12 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
     # mechanical could tell the landing had reached the owner - the sixth
     # ask about the same mechanism (L736). The state is the landing event as
     # the supervisor writes it; the gate reads the LAST event per cube.
+    "scan_deferral_trigger_fired": (
+        "MEASURED 2026-09-22: S6-B2620b's trigger reads 'exceeds 5' and the count is 8 - it crossed on 2026-09-21 and stood over the line for three commits, while S6-B2933 had measured 5 on 09-14 and written into the row that it sat ONE landing away. HOW IT SURFACED IS THE LESSON: not a sweep, but the turn gate refusing a close for naming GIT_QUEUE_EXEMPT without inspecting it.",
+        True,
+        {"audit_doc": [{"ticket": "S6-B2620b", "value": 8, "threshold": 5, "trigger": "the logged exempt-commit count for ledger flips exceeds 5"}],
+         "state": {"fired": []}},
+    ),
     "scan_undelivered_landing": (
         "**No \u2014 not for config 1. I ran it by hand, and that was a gap in how "
         "I launched, not in the machinery.** The automation exists and is real: "
@@ -605,6 +611,15 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
                         "findings": ["empty_signals_share WARN: 23 of 373"],
                         "committed": False, "pushed": False,
                         "reported_to_owner": False}]}),
+    ],
+    "scan_deferral_trigger_fired": [
+        ("The S6-B2620b firing is already recorded in the state file; this close does unrelated work.",
+         False,
+         {"audit_doc": [{"ticket": "S6-B2620b", "value": 8, "threshold": 5, "trigger": "the logged exempt-commit count for ledger flips exceeds 5"}],
+          "state": {"fired": ["S6-B2620b"]}}),
+        ("No registered trigger is over its line this close.",
+         False,
+         {"audit_doc": [], "state": {"fired": []}}),
     ],
     # ---- S6-B2263 batch 1 (B2291): must-QUIET cases for FIRE_ONLY_LEGACY gates.
     # A gate that refuses EVERYTHING satisfies every must-FIRE case ever written
@@ -1111,6 +1126,11 @@ NEUTRAL: dict[str, dict] = {
     # B2577: reads the LIVE chain_halts.jsonl; an empty event list is the
     # neutral state (same reason as scan_undelivered_landing).
     "scan_chain_halt": {"halts": []},
+    # S6-B2993: evaluates the LIVE trigger registry and reads a state
+    # file; both are neutralised here or the negative control measures
+    # whatever fired today rather than the gate (the L843 class).
+    "scan_deferral_trigger_fired": {"audit_doc": [],
+                                    "state": {"fired": []}},
 }
 
 

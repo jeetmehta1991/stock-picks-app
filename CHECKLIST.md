@@ -5992,6 +5992,8 @@ arms. L792's other two rules are COMPLIANCE FAILURES against existing rules -
 the disposal-plan half against B2450/L721, the count-the-sites half against
 L592/B1936 - and warrant no new items.
 
+**#305 EXTENSION (L846 / B2999): the tree question binds YOUR OWN DRAFTS. A script written for scripts/ but executed from a draft location resolves repo facts relative to where the DRAFT lives - two analysis drafts did exactly that in one close, and the first died on a missing cube path. Resolve ROOT by MARKER (a file that only the right tree contains) with a cwd fallback, and assert-refuse a tree the marker does not confirm; the refusal is the mechanism, since no scan can know a draft's intended home.**
+
 ### #306 - ASK WHAT PROPORTION OF COMMITS A FILE-TYPE-SCOPED GATE CAN EVEN FIRE ON (B2754 / L793, gate-caught 2026-09-12; mechanism: `test_b2754_file_type_scoped_gate_blindness_rule_survives` for durability, DETECTION is JUDGMENT-ONLY because no scan reads whether a turn measured a gate's reach before trusting it)
 
 A gate keyed on a FILE TYPE is structurally blind to a commit class that by
@@ -6094,3 +6096,13 @@ was the set counted rather than the tool used.
 Mechanism: both graders now stamp `generator` (and `tighten_breaker_block.py`
 also stamps `cube`, which it previously omitted); pinned by
 `test_b2774_grader_artifacts_stamp_their_generator`.
+
+### #310 - THE SHIP-VS-ASK LINE: THE VERDICT TEST (S6-B2925, owner approved 2026-09-22)
+
+CLAUDE.md's 'Never change rules, filters, thresholds, or parameters without approval' and the standing 'address and implement ALL open tickets' collide on every defect fix, and the wording does not distinguish CHANGING WHAT WE BELIEVE from FIXING A BROKEN FILING CABINET - so the line got applied by feel (S6-B2918 shipped an owner-decision ticket on merit arguments answering an authority question; L829).
+
+THE RULED TEST, from the B2923 council's First Principles lens, owner approved as rec A: **does this change an owner-visible VERDICT, or the SET OF CELLS that receive one? If yes, ASK. If it only changes which cells are LOOKED AT, or is byte-identical on existing artifacts except where it corrects a proven defect, SHIP.** The owner-approval classes in CLAUDE.md are unchanged; this item decides which side a borderline change is on, so the question stops being re-litigated per ticket.
+
+THE RECORDED SPLIT CASE, kept visible on purpose: the council could not agree whether a RANKING rung is a gate (the Contrarian: ranking determines what runs, what runs determines what is admitted) or a scheduler (First Principles: a rank-and-admit rung cannot manufacture a pass). A change of that shape is on the ASK side until the owner rules the sub-question - the test's else-branch does not cover it.
+
+Mechanism: JUDGMENT-ONLY for detection - no scan reads whether a change alters a verdict; durability is pinned by the execution-discipline fragment (test_b2123) carrying the test's wording, and scan_owner_decision_taken already blocks the silent-taking half (L829/#299).

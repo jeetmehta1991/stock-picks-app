@@ -44,6 +44,7 @@ claim safe. So the count this prints is reported as AT LEAST N.
 from __future__ import annotations
 
 import argparse
+import ast
 import io
 import re
 import sys
@@ -61,6 +62,49 @@ EXEMPT_LOG = ROOT / ".queue_exempt_log"
 # an unevaluated trigger" trains the reader to skim the disclosure.
 _REOPEN_LANGUAGE = re.compile(
     r"re-?open when|re-?open if|named trigger|trigger[: =]|exceeds", re.I)
+
+
+SANCTIONED_LANDING_FILES = ("output_audit/postconfig_landings.jsonl",
+                            "output_audit/postconfig_ledger.json",
+                            "output_audit/POSTCONFIG_REPORT.md")
+
+
+def _mixed_class_ledger_flips() -> int:
+    """S6-B2620b REFINED (B2999): count only the SUSPICIOUS class.
+
+    The raw count of exempt commits staging the landings jsonl grows by
+    ONE PER LANDING by design - the engine hook and the landing-report
+    stamp are the sanctioned automation (B2520), so a static threshold
+    over the raw count re-fires forever and trains the reader to ignore
+    it (L721). The deferral's actual worry was ledger flips OUTSIDE the
+    sanctioned shape: an exempt commit that stages the landings jsonl
+    BESIDE files that are not landing bookkeeping - canonical docs,
+    tests, code - which is a doc batch borrowing the exemption.
+
+    The log records each exempt commit's full staged list, so the
+    discriminator is derivable per line: sanctioned = every staged file
+    is a landing artifact (the three fixed names plus any
+    output_audit/*_gate.json); mixed = anything else beside the jsonl."""
+    if not EXEMPT_LOG.exists():
+        return 0
+    mixed = 0
+    for line in io.open(EXEMPT_LOG, encoding="utf-8",
+                        errors="replace").read().splitlines():
+        if ("exempt commit staging" not in line
+                or "postconfig_landings.jsonl" not in line):
+            continue
+        try:
+            staged = ast.literal_eval(line.split("staging:", 1)[1].strip())
+        except (ValueError, SyntaxError, IndexError):
+            mixed += 1          # an unparseable flip line counts as mixed
+            continue
+        extra = [f for f in staged
+                 if f not in SANCTIONED_LANDING_FILES
+                 and not (f.startswith("output_audit/")
+                          and f.endswith("_gate.json"))]
+        if extra:
+            mixed += 1
+    return mixed
 
 
 def _flip_exempt_commits() -> int:
@@ -83,10 +127,17 @@ def _flip_exempt_commits() -> int:
 # ticket id -> (what the trigger says, threshold, evaluator, comparison)
 REGISTERED = {
     "S6-B2620b": {
-        "trigger": ("the logged exempt-commit count for ledger flips "
-                    "exceeds 5"),
-        "threshold": 5,
-        "value": _flip_exempt_commits,
+        # B2999: REFINED from the raw flip count (which grows one per
+        # landing by design and had fired at 11). Baseline of 2 mixed-
+        # class flips dispositioned in the S6-B2620b closing row -
+        # 2026-09-22T00:19:10 and T06:01:28, both this session's gate-
+        # storm closes, content verified benign in HEAD - so the
+        # tripwire re-arms on the THIRD.
+        "trigger": ("exempt commits staging the landings jsonl beside "
+                    "non-landing files exceed the dispositioned "
+                    "baseline of 2"),
+        "threshold": 2,
+        "value": _mixed_class_ledger_flips,
         "fired": lambda v, t: v > t,
         "source": ".queue_exempt_log",
     },

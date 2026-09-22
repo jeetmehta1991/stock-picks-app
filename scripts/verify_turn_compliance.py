@@ -4939,6 +4939,94 @@ def synthetic_transcript() -> list[dict]:
     ]
 
 
+
+def scan_deferral_trigger_fired(entries, *, audit_doc=None, state=None,
+                                state_path=None) -> list[str]:
+    """S6-B2993 (owner approved 2026-09-22): a NEWLY-fired registered
+    deferral trigger blocks the close that first observes it.
+
+    L838 made a deferral's trigger honest; nothing made anyone READ it.
+    S6-B2620b's count crossed its threshold and sat over the line for three
+    commits, surfacing only through an unrelated forced grep - and then
+    moved 8 -> 10 with the FIRED state visible to nobody, because the
+    evaluator built for it (scripts/deferral_trigger_audit.py) had no
+    invoker and ran only when the fresh-eyes audit called it BY HAND.
+
+    This gate evaluates the REGISTERED half every close and blocks ONCE per
+    firing: the fired set is persisted to a state file, so a standing FIRED
+    state cannot blockade later turns (L721 - a gate tightened over a
+    backlog must not fire on every close), while a trigger that un-fires
+    and later re-fires blocks again. The disclosure half (unevaluated
+    deferrals) stays with the hand-run tool - it is a report, not a gate.
+
+    Seams (#241): `audit_doc` is the fired list in the production shape and
+    `state` the last-seen dict; supplying EITHER in memory disables the
+    write-back, so corpus cases are stateless (the B2520 statefulness
+    lesson on scan_undelivered_landing).
+    """
+    in_memory = audit_doc is not None or state is not None
+    if audit_doc is None:
+        try:
+            _here = str(Path(__file__).resolve().parent)
+            if _here not in sys.path:
+                sys.path.insert(0, _here)
+            import deferral_trigger_audit as _dta
+        except Exception as _exc:          # a BROKEN gate is itself a finding
+            return [f"DEFERRAL-TRIGGER GATE BROKEN: deferral_trigger_audit "
+                    f"import failed ({_exc!r}) - fail CLOSED"]
+        fired = []
+        for _tid, _spec in sorted(_dta.REGISTERED.items()):
+            try:
+                _val = _spec["value"]()
+                if _spec["fired"](_val, _spec["threshold"]):
+                    fired.append({"ticket": _tid, "value": _val,
+                                  "threshold": _spec["threshold"],
+                                  "trigger": _spec["trigger"]})
+            except Exception as _exc:
+                return [f"DEFERRAL-TRIGGER GATE BROKEN: evaluator for "
+                        f"{_tid} raised ({_exc!r}) - fail CLOSED"]
+    else:
+        fired = list(audit_doc)
+    _sp = Path(state_path) if state_path else (
+        Path(__file__).resolve().parent.parent / "output_audit" /
+        "deferral_trigger_state.json")
+    if state is None:
+        try:
+            _seen = json.loads(_sp.read_text(encoding="utf-8"))
+        except Exception:
+            _seen = {}
+    else:
+        _seen = dict(state)
+    _known = set(_seen.get("fired") or [])
+    _now = sorted(f["ticket"] for f in fired)
+    newly = [f for f in fired if f["ticket"] not in _known]
+    if not in_memory and set(_now) != _known:
+        try:
+            _sp.write_text(json.dumps({"fired": _now}, indent=1),
+                           encoding="utf-8")
+        except Exception as _exc:
+            # a failed state write must not mask the finding - and must
+            # not be silent either (#122): say so, and the un-recorded
+            # firing simply re-fires next close.
+            print(f"deferral-trigger state not persisted: {_exc!r}",
+                  file=sys.stderr)
+    if not newly:
+        return []
+    _extra = ""
+    if len(newly) > 1:
+        _extra = (" (%d newly fired in all: %s)"
+                  % (len(newly), ", ".join(x["ticket"] for x in newly)))
+    _f = newly[0]
+    return [("DEFERRAL TRIGGER NEWLY FIRED (S6-B2993, owner approved "
+             "2026-09-22): %s reads '%s' and measures %s against its "
+             "threshold of %s. Work the ticket, or re-defer it with a NEW "
+             "trigger, in this close or a ticketed follow-up; this blocks "
+             "once - the firing is now recorded, and only a fresh firing "
+             "blocks again.%s"
+             % (_f["ticket"], _f["trigger"], _f["value"], _f["threshold"],
+                _extra))]
+
+
 def main(argv: list[str] | None = None) -> int:
     # B1746: RUN EVERY GATE, REPORT EVERY VIOLATION.
     #
@@ -5006,8 +5094,11 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B2925 (B2929): an owner decision must not be taken
                 # in silence. The L829 slice I wrongly filed JUDGMENT-ONLY.
                 scan_owner_decision_taken,
-                # B2853 (plank 2): a locked-format owner edited without its
-                # defining source opened in the same turn is blocked.
+                # S6-B2993 (owner approved 2026-09-22): a registered
+                # deferral trigger that NEWLY fires blocks one close.
+                scan_deferral_trigger_fired,
+                # B2853 (plank 2) - stays tuple-final; its pin anchors on
+                # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):
         _n_gates += 1
         try:

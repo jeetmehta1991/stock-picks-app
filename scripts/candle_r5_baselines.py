@@ -7,8 +7,10 @@
 
 WHY THIS EXISTS. The hourly chain monitor's prompt told me to check landed
 trades against "the R5 baselines: 1,596 for three_white_soldiers, 1,674 for
-three_black_crows_short". Those are FULL-WINDOW figures - 4 years across
-544 tickers. Every Step-1 candle config runs 1 year across 200 tickers, so
+three_black_crows_short". Those are FULL-WINDOW figures - 4 years over a
+544-ticker run universe, of which the strategies' trades touch 481 and
+474 distinct tickers (the stamps below; L832's own defect was quoting
+544 as the traded count). Every Step-1 candle config runs 1 year across 200 tickers, so
 setting a landed count against them compares populations differing by about
 4x in window and 2.7x in universe. On that comparison a run landing 4.09x
 the matched baseline reads as landing 0.35x of it.
@@ -16,12 +18,15 @@ the matched baseline reads as landing 0.35x of it.
 The figure was not wrong. Its GRAIN was unstated, and a count carries no
 unit to betray the omission (L836, L664).
 
-THE PART A REPO SWEEP CANNOT REACH. Sweeping the tree for those two numbers
-returns exactly ONE hit, in the skill's own tripwire row, where the figure
-is used correctly as an example. The live wrong-grain instance lives in a
-CRON PROMPT - a scheduled artifact outside the working tree - so no grep
-over the repo could ever have found it, and the schedule re-asserts it every
-hour.
+THE PART A REPO SWEEP CANNOT REACH. The live wrong-grain instance lived
+in a CRON PROMPT - a scheduled artifact outside the working tree - so no
+grep over the repo could have found it, and the schedule re-asserted it
+every hour. (An earlier revision of this docstring claimed the tree-wide
+sweep had a single hit; B2974 retracted that - the bare
+instrument returns 79 tracked files, of which the S6-B2988 classification
+finds ~42 real mentions and 36-37 coincidental digit substrings in
+archived CSVs and vendored test data. This file was the retraction's
+missed fifth artifact, S6-B2989.)
 
 SO THE MECHANISM IS AN ARTIFACT TO QUOTE FROM, not a detector. Any
 instrument that needs a candle baseline takes it from here, where each
@@ -60,6 +65,12 @@ def _full_window(strategy: str) -> dict:
         "count": int(len(df)),
         "window_start": str(dates.min().date()) if len(df) else None,
         "window_end": str(dates.max().date()) if len(df) else None,
+        # S6-B2992: one key carried two meanings (traded-ticker
+        # cardinality here, universe-file size on the matched grain).
+        # Both grains now emit BOTH, distinctly named; the old key is
+        # kept one release for readers and mirrors distinct_traded.
+        "distinct_traded_tickers": int(df["ticker"].nunique()),
+        "universe_file_tickers": 544,
         "universe_distinct_tickers": int(df["ticker"].nunique()),
         "grain": "R5 FULL WINDOW - not comparable to a Step-1 cube",
     }
@@ -76,6 +87,10 @@ def _matched(strategy: str, fname: str) -> dict:
         "count": d["counts"]["r5_landed_in_scope"],
         "window_start": d["window"]["start"],
         "window_end": d["window"]["end"],
+        # S6-B2992: tickers_in_file counts the UNIVERSE FILE, not the
+        # tickers the matched trades touch - named as exactly that.
+        "universe_file_tickers": d["tickers_in_file"],
+        "distinct_traded_tickers": None,
         "universe_distinct_tickers": d["tickers_in_file"],
         "grain": "MATCHED to a Step-1 cube - this is the comparable figure",
         "source": fname,
@@ -116,10 +131,11 @@ def main() -> int:
         print(f"  {strategy}")
         print(f"    full window   {f['count']} over "
               f"{f['window_start']}..{f['window_end']}, "
-              f"{f['universe_distinct_tickers']} tickers")
+              f"{f['distinct_traded_tickers']} traded of "
+              f"{f['universe_file_tickers']}-ticker universe")
         print(f"    matched       {m['count']} over "
               f"{m['window_start']}..{m['window_end']}, "
-              f"{m['universe_distinct_tickers']} tickers")
+              f"{m['universe_file_tickers']}-ticker universe file")
     print(f"  -> {p}")
     return 0
 
