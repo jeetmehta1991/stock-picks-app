@@ -22342,3 +22342,15 @@ shrinks the alarm, the cubes are valid simulations of the current code
 either way, and the Executor's read-only RCA costs no engine time - **but
 adopted its quarantine in substance: nothing this campaign produces reaches
 the roster until S6-B2949 closes.**
+
+**PROMOTED TO THE LOADED FILE (B2957).** The addendum above landed in
+LEARNINGS with SKILL.md untouched - the B1723 class in its purest form, and
+the gate caught it on the same turn. Its most reusable catch was never about
+councils: **a long run pins the code it loaded at start, so a fix to that
+code is blocked BY THE RUN, not by the owner, and ships the hour it lands.**
+That is a DISPOSITION rule, it reclassified two live tickets from
+owner-gated to chain-gated, and it is the mirror of L619 - which covers
+wrongly labelling work owner-gated because the approval classes were never
+checked, where this covers labelling it owner-gated when the blocker is
+mechanical and temporary. It now carries a tripwire row and a test_b2123
+fragment, ratchet 290 to 291.
