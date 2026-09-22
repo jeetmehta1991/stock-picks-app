@@ -22444,3 +22444,29 @@ them to add a severity ordering would falsify the record and produce exactly
 the decayed-number class L639 names. The rule binds sweeps from here forward,
 which is the same line B2450/L721 draws for a tightened gate over an existing
 population.
+
+**L815 INSTANCE, MEASURED (B2967).** INSTRUMENT: `git log --format=%H -40`,
+then `git show --name-only` per commit, counting those touching all four
+Phase-5 artifacts (LEARNINGS, CHECKLIST, the skill, the queue). **MEASURED
+this session: 42 commits carrying a B29xx subject, of which only 15 touched
+all four together - so 27 landed a PARTIAL member set.**
+
+That is the whole mechanism behind this session's block treadmill. The
+Phase-5 gate proves each member through a one-commit-deep window, so a turn
+whose work legitimately spans many commits presents the gate with a sequence
+of partial states it correctly refuses - one block per missing member, and
+each close re-emits the mandatory blocks to the owner. **The content was
+right every time; only the ORDERING was wrong.**
+
+**The rules already exist and are already in the loaded file** - L815 (ask
+what proves the parts together and how far back it can see), L628 (run the
+gate yourself after the first block), B2132/L632 (stage the members in ONE
+scripted call so they cannot separate). Nothing new to promote. What was
+missing is this count, and a count belongs here rather than in the skill,
+because it is true of this session and not of the next one (L639).
+
+**The operational reading for a long turn: land the four artifacts together
+or expect one block per member.** A batch cap of three fixes per batch
+guarantees multi-commit turns, so on any turn with more than one miss the
+right move is to hold the Phase-5 set until the last commit and stage all
+four in a single call.
