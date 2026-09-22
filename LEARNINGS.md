@@ -22429,3 +22429,18 @@ to it**. Mine produced a zero; this produces a PLAUSIBLE WRONG ANSWER, which
 no reader would question. Ticketed S6-B2964 rather than fixed in this turn's
 final commit, because that file is a Step-2 consumer and changing it needs
 its own batch.
+
+**SWEEP FOR THE B2965 RULE (the ordering half).** INSTRUMENT: a regex over
+every row in `EXECUTION_QUEUE.md` - population **3,084 rows**, read whole.
+**223 rows report a sweep or name an instrument; 15 rank their siblings by
+harm; 208 only count them.** So the ordering rule describes a habit present
+in roughly 7 pct of the sweeps already on the record - a genuine gap rather
+than a restatement of L643, whose subject is classification rather than
+order. The two most recent of the 15 are this turn's own.
+
+**The 208 are NOT retro-fitted, and that is deliberate.** Their counts are
+historical records of what each sweep reported on its own date; rewriting
+them to add a severity ordering would falsify the record and produce exactly
+the decayed-number class L639 names. The rule binds sweeps from here forward,
+which is the same line B2450/L721 draws for a tightened gate over an existing
+population.
