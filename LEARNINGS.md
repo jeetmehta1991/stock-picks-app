@@ -22611,3 +22611,59 @@ monitoring instrument while a 36-config chain runs, and a
 CronDelete/CronCreate cycle risks losing the job. S6-B2972 carries it with
 CHAIN DONE as the trigger, where the monitor is deleted anyway. Until then
 each hourly report carries the correction in its own text.
+
+### L840 - A DRIFTING RATE EXTRAPOLATED AS A CONSTANT (B2976, closed on the final reading 2026-09-22)
+
+I published an objection built on a rate I had read once, mid-run, and
+treated as stationary. It is not.
+
+**MEASURED on candle_tws_c07, three readings of its own run_heartbeat.json
+across two monitor ticks and its landing:**
+
+| read at | rate, h per sim-day | extrapolated total |
+|---|---|---|
+| sim_day_index 117 | 0.008932 | 2.2331 h |
+| sim_day_index 206 | 0.007501 | 1.8752 h |
+| sim_day_index 249, the run's end | - | **1.9291 h actual** |
+
+The sim-day-117 extrapolation stands at 2.2331 h against the 1.9291 h
+actual - **high by 15.8 pct of the actual**.
+
+**THE CONSEQUENCE WAS A PUBLISHED OBJECTION, NOT JUST A NUMBER.** I argued
+to the owner that the first body-axis config runs slower than the 1.9322 h
+mean of the seven landed run_heartbeat.json files, and used it to bracket
+the 36-config campaign at 69.6 to 78.3 h. The actual 1.9291 h sits 0.2 pct
+BELOW that mean - the config landed on the average. The objection and the
+bracket's pessimistic arm were both artifacts of when I happened to look.
+
+**DISTINCT FROM L749, WHICH I DID COMPLY WITH.** L749 says carry a moving
+reading's AGE, and I did - every figure named its file and its sim-day.
+**The age was right and the MODEL was wrong**: a rate is not a constant you
+can carry forward, and nothing about stating the age warns you of that.
+A projection built from an honest, correctly-dated reading is still a
+claim about a function you have not characterised.
+
+**Why the reassurance is the dangerous half.** The early reading made the
+run look SLOW, which fed an objection - so the error worked against my own
+recommendation and therefore felt like rigour. L559's rule is to check
+which way an error points; here it pointed at extra caution, which is
+exactly the direction nobody re-derives.
+
+**CAUSE UNKNOWN - RCA NEEDED.** The rate fell as the run progressed and I
+have NOT established why. Warm-up or cache-cold cost in the first sim-days,
+and an open book that builds before it drains (83 open at sim-day 117
+against 75 open with 169 closed at sim-day 206 and 290 closed at the end),
+are both visible candidates; naming either untested would be the
+hypothesis-as-finding class this file already carries.
+
+**WHAT CHANGES:** every finish projection names the sim-day its rate came
+from, and an early-day extrapolation is labelled biased high rather than
+offered as a midpoint. **Mechanism: JUDGMENT-ONLY for detection** - the
+search was run, and `scan_unmeasured_quantity` in
+`scripts/verify_turn_compliance.py` catches a figure with no named source
+but passed here because the projection DID name its file; nothing in that
+module can tell a stationary rate from a drifting one, because that is a
+property of the world rather than of the text. **Durability** rides on
+S6-B2972's rewrite of the hourly monitor prompt at CHAIN DONE, since
+S6-B2973 established a cron prompt sits outside every repo sweep, plus the
+tripwire row pinned by `test_b2123`.

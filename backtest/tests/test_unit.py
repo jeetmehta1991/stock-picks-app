@@ -25075,6 +25075,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # code it loaded, so a fix to it is blocked by the RUN.
         ("A LONG RUN PINS THE CODE IT LOADED AT START - A FIX TO THAT CODE IS BLOCKED BY THE RUN, NOT BY THE OWNER, AND SHIPS THE HOUR IT LANDS",
          "B2957: ask what is RUNNING before routing a code ticket"),
+        # B2976: the L840 tripwire row - a rate read mid-run is not
+        # stationary, so an early extrapolation is biased.
+        ("A RATE READ MID-RUN IS NOT STATIONARY - NAME THE SIM-DAY AN EXTRAPOLATION CAME FROM AND LABEL AN EARLY-DAY PROJECTION BIASED HIGH",
+         "B2976/L840: name the sim-day an extrapolation came from"),
         # B2973: the L839 tripwire row - a figure in a scheduled
         # instrument is outside every repo sweep.
         ("A FIGURE INSIDE A SCHEDULED INSTRUMENT IS OUTSIDE EVERY REPO SWEEP AND RE-ASSERTS ITSELF ON A TIMER - GIVE THE BASELINE AN ARTIFACT TO BE QUOTED FROM, STAMPED WITH ITS WINDOW AND UNIVERSE",
@@ -25941,7 +25945,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 295 -> 296 at B2973 (the L839 scheduled-instrument fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 296, gutted
+    # 296 -> 297 at B2976 (the L840 drifting-rate fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 297, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
