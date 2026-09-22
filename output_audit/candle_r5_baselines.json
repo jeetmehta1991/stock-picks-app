@@ -7,6 +7,8 @@
     "count": 1596,
     "window_start": "2022-05-05",
     "window_end": "2026-04-28",
+    "distinct_traded_tickers": 481,
+    "universe_file_tickers": 544,
     "universe_distinct_tickers": 481,
     "grain": "R5 FULL WINDOW - not comparable to a Step-1 cube"
    },
@@ -14,6 +16,8 @@
     "count": 137,
     "window_start": "2024-05-05",
     "window_end": "2025-05-05",
+    "universe_file_tickers": 200,
+    "distinct_traded_tickers": null,
     "universe_distinct_tickers": 200,
     "grain": "MATCHED to a Step-1 cube - this is the comparable figure",
     "source": "b2960_three_white_soldiers_date_diff.json"
@@ -24,6 +28,8 @@
     "count": 1674,
     "window_start": "2022-05-06",
     "window_end": "2026-04-29",
+    "distinct_traded_tickers": 474,
+    "universe_file_tickers": 544,
     "universe_distinct_tickers": 474,
     "grain": "R5 FULL WINDOW - not comparable to a Step-1 cube"
    },
@@ -31,6 +37,8 @@
     "count": 157,
     "window_start": "2024-05-05",
     "window_end": "2025-05-05",
+    "universe_file_tickers": 200,
+    "distinct_traded_tickers": null,
     "universe_distinct_tickers": 200,
     "grain": "MATCHED to a Step-1 cube - this is the comparable figure",
     "source": "b2960_three_black_crows_short_date_diff.json"
