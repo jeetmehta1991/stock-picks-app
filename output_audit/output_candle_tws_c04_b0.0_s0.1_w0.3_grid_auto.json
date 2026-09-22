@@ -1,0 +1,505 @@
+{
+ "config": {
+  "P2_n_bars": 3,
+  "P3_min_body_pct": 0.0,
+  "P4_min_step_pct": 0.1,
+  "P5_max_wick_pct": 0.3
+ },
+ "strategy": "three_white_soldiers",
+ "cube_riders": [],
+ "grader": "scripts/grade_candle_config.py (S6-B2900)",
+ "cube": "C:/Users/jeetm/Github/stock-picks-app/output_candle_tws_c04_b0.0_s0.1_w0.3/trade_exit_detail.csv",
+ "manifest_check": "flags verified against arms[0].env: CANDLE_N_BARS='3' CANDLE_MIN_BODY_PCT='0.0' CANDLE_MIN_STEP_PCT='0.1' CANDLE_MAX_WICK_PCT='0.3'",
+ "note": "S6-B2900: Step-1 ranking via roster_core.evaluate per exit on the IS rows - the SAME code every admitted strategy was graded by; is_ci_lo is the ranking key, not a gate (B1608); the holdout is counted and read only under --step2.",
+ "window": {
+  "is": [
+   "2022-05-05",
+   "2025-05-05"
+  ],
+  "holdout": [
+   "2025-05-05",
+   "2026-05-05"
+  ],
+  "cube_entry_min": "2024-05-06",
+  "cube_entry_max": "2025-05-02"
+ },
+ "rows": 5760,
+ "rows_all_strategies": 5760,
+ "is_rows": 5760,
+ "holdout_rows": 0,
+ "min_n": 10,
+ "results": [
+  {
+   "combo": {
+    "P2_n_bars": 3,
+    "P3_min_body_pct": 0.0,
+    "P4_min_step_pct": 0.1,
+    "P5_max_wick_pct": 0.3
+   },
+   "verdict": "RANKED",
+   "n_exits_graded": 24,
+   "n_exits_ranked": 24
+  }
+ ],
+ "step1_combinations_carried": 1,
+ "step1_distinct_outcomes": 1,
+ "step1_ranking": [
+  {
+   "exit": "regime_flip",
+   "fires": 240,
+   "is_sharpe": 0.535,
+   "is_ci_lo": 0.04,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 1
+  },
+  {
+   "exit": "earnings_blackout",
+   "fires": 240,
+   "is_sharpe": 0.291,
+   "is_ci_lo": 0.011,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 2
+  },
+  {
+   "exit": "hybrid_50pct_target",
+   "fires": 240,
+   "is_sharpe": 0.215,
+   "is_ci_lo": -0.081,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 3
+  },
+  {
+   "exit": "time_stop_20d",
+   "fires": 240,
+   "is_sharpe": 0.248,
+   "is_ci_lo": -0.21,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 4
+  },
+  {
+   "exit": "fixed_4r_2r",
+   "fires": 240,
+   "is_sharpe": 0.273,
+   "is_ci_lo": -0.233,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 5
+  },
+  {
+   "exit": "breakeven_plus_trail",
+   "fires": 240,
+   "is_sharpe": 0.149,
+   "is_ci_lo": -0.245,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 6
+  },
+  {
+   "exit": "trailing_10pct",
+   "fires": 240,
+   "is_sharpe": -0.017,
+   "is_ci_lo": -0.317,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 7
+  },
+  {
+   "exit": "trailing_15pct",
+   "fires": 240,
+   "is_sharpe": -0.173,
+   "is_ci_lo": -0.411,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 8
+  },
+  {
+   "exit": "trailing_5pct",
+   "fires": 240,
+   "is_sharpe": -0.11,
+   "is_ci_lo": -0.619,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 9
+  },
+  {
+   "exit": "next_pivot_target",
+   "fires": 240,
+   "is_sharpe": -0.046,
+   "is_ci_lo": -0.76,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 10
+  }
+ ],
+ "per_exit": [
+  {
+   "exit": "regime_flip",
+   "fires": 240,
+   "is_sharpe": 0.535,
+   "is_ci_lo": 0.04,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 1
+  },
+  {
+   "exit": "earnings_blackout",
+   "fires": 240,
+   "is_sharpe": 0.291,
+   "is_ci_lo": 0.011,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 2
+  },
+  {
+   "exit": "hybrid_50pct_target",
+   "fires": 240,
+   "is_sharpe": 0.215,
+   "is_ci_lo": -0.081,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 3
+  },
+  {
+   "exit": "time_stop_20d",
+   "fires": 240,
+   "is_sharpe": 0.248,
+   "is_ci_lo": -0.21,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 4
+  },
+  {
+   "exit": "fixed_4r_2r",
+   "fires": 240,
+   "is_sharpe": 0.273,
+   "is_ci_lo": -0.233,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 5
+  },
+  {
+   "exit": "breakeven_plus_trail",
+   "fires": 240,
+   "is_sharpe": 0.149,
+   "is_ci_lo": -0.245,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 6
+  },
+  {
+   "exit": "trailing_10pct",
+   "fires": 240,
+   "is_sharpe": -0.017,
+   "is_ci_lo": -0.317,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 7
+  },
+  {
+   "exit": "trailing_15pct",
+   "fires": 240,
+   "is_sharpe": -0.173,
+   "is_ci_lo": -0.411,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 8
+  },
+  {
+   "exit": "trailing_5pct",
+   "fires": 240,
+   "is_sharpe": -0.11,
+   "is_ci_lo": -0.619,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 9
+  },
+  {
+   "exit": "next_pivot_target",
+   "fires": 240,
+   "is_sharpe": -0.046,
+   "is_ci_lo": -0.76,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 10
+  },
+  {
+   "exit": "atr_trail_2x",
+   "fires": 240,
+   "is_sharpe": -0.22,
+   "is_ci_lo": -0.786,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 11
+  },
+  {
+   "exit": "r_multiple_3r",
+   "fires": 240,
+   "is_sharpe": -0.07,
+   "is_ci_lo": -0.814,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 12
+  },
+  {
+   "exit": "break_even_at_1r",
+   "fires": 240,
+   "is_sharpe": -0.34,
+   "is_ci_lo": -0.905,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 13
+  },
+  {
+   "exit": "class_time_stop",
+   "fires": 240,
+   "is_sharpe": -0.321,
+   "is_ci_lo": -1.079,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 14
+  },
+  {
+   "exit": "time_stop_10d",
+   "fires": 240,
+   "is_sharpe": -0.468,
+   "is_ci_lo": -1.109,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 15
+  },
+  {
+   "exit": "r_multiple_2r",
+   "fires": 240,
+   "is_sharpe": -0.465,
+   "is_ci_lo": -1.311,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 16
+  },
+  {
+   "exit": "chandelier_3x",
+   "fires": 240,
+   "is_sharpe": -0.637,
+   "is_ci_lo": -1.378,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 17
+  },
+  {
+   "exit": "ma_exit_ema9",
+   "fires": 240,
+   "is_sharpe": -0.939,
+   "is_ci_lo": -1.812,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 18
+  },
+  {
+   "exit": "atr_trail_vix_conditional",
+   "fires": 240,
+   "is_sharpe": -2.158,
+   "is_ci_lo": -3.085,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 19
+  },
+  {
+   "exit": "multi_tier_partial",
+   "fires": 240,
+   "is_sharpe": -2.172,
+   "is_ci_lo": -3.185,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 20
+  },
+  {
+   "exit": "atr_trail_1x",
+   "fires": 240,
+   "is_sharpe": -2.703,
+   "is_ci_lo": -3.713,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 21
+  },
+  {
+   "exit": "reverse_signal",
+   "fires": 240,
+   "is_sharpe": -2.703,
+   "is_ci_lo": -3.713,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 22
+  },
+  {
+   "exit": "mfe_lockin_trail",
+   "fires": 240,
+   "is_sharpe": -3.114,
+   "is_ci_lo": -4.16,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 23
+  },
+  {
+   "exit": "smc_mitigation_zone",
+   "fires": 240,
+   "is_sharpe": -5.064,
+   "is_ci_lo": -6.454,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 240,
+    "verdict": "RANKED"
+   },
+   "rank": 24
+  }
+ ],
+ "results_n_exits": 24,
+ "step2": {
+  "holdout_read": false,
+  "holdout_rows": 0,
+  "selected_exit": null,
+  "selection": null,
+  "preregistered_exit": null,
+  "mismatch": null,
+  "gates": null,
+  "verdict": "NOT_GRADED",
+  "rule": "S6-B2409: PASS = all six LIVE_GATES clear on the holdout of the IS-selected exit; FAIL otherwise; margin is a number, not a gate",
+  "reason": "cube not declared Step-2 (--step2 absent) - the holdout (0 rows) is not read; a Step-1 cube with holdout rows is M4_holdout_touch's finding"
+ }
+}
