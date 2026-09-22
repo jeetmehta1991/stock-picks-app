@@ -1,0 +1,94 @@
+{
+ "ticket": "S6-B2961 (evidence for S6-B2949 / S6-B2950)",
+ "strategy": "three_white_soldiers",
+ "question": "does today's producer fire at the bars only R5 landed?",
+ "production_params": {
+  "n_bars": 3,
+  "body": 0.0,
+  "step": 0.0,
+  "wick": null
+ },
+ "sample_size": 15,
+ "sample_is_a_sample": "the b2960 artifact stores the FIRST 15 R5-only pairs, so this is a SAMPLE of the 58 / 63 population, not the population - the verdict below is scoped to it",
+ "tally": {
+  "FIRES_TODAY": 15
+ },
+ "reading": "FIRES_TODAY dominant -> the condition is unchanged and the run lost these DOWNSTREAM; an accounting difference. DOES_NOT_FIRE_TODAY dominant -> the CONDITION MOVED since R5 and every R5-derived figure for this strategy is scoped to the old condition.",
+ "rows": [
+  {
+   "ticker": "AAL",
+   "date": "2025-04-28",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "ABT",
+   "date": "2024-06-04",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "AMAT",
+   "date": "2024-12-24",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "AMT",
+   "date": "2024-11-27",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "AXP",
+   "date": "2025-04-02",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "BA",
+   "date": "2025-03-20",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CI",
+   "date": "2024-11-27",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CI",
+   "date": "2025-01-23",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CMCSA",
+   "date": "2025-01-24",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "COF",
+   "date": "2025-03-21",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "COP",
+   "date": "2024-07-18",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "COP",
+   "date": "2024-11-29",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CRM",
+   "date": "2024-06-21",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CSCO",
+   "date": "2025-04-30",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CSX",
+   "date": "2024-06-20",
+   "verdict": "FIRES_TODAY"
+  }
+ ]
+}

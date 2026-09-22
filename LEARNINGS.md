@@ -22354,3 +22354,63 @@ wrongly labelling work owner-gated because the approval classes were never
 checked, where this covers labelling it owner-gated when the blocker is
 mechanical and temporary. It now carries a tripwire row and a test_b2123
 fragment, ratchet 290 to 291.
+
+### L837 - A ZERO THAT IS DECIDABLE BY CONSTRUCTION (B2963, council-caught 2026-09-21)
+
+Investigating why a fresh run lands 3-4x what the R5 baseline holds, I built a
+per-(ticker, date) diff and reported **run_only_that_R5_BLOCKED = 0**, reading
+it as evidence that R5 never saw 481 fires. I published that as the decisive
+result.
+
+**The bucket could only ever be zero.** All **391,782 of 391,782** occupancy
+rows in `output_r5_merged_1_7` carry the literal string `(same-strategy)` in
+the strategy column, so filtering them by strategy NAME returns nothing for
+any strategy, always. **S6-B2904 - a row I READ EARLIER IN THIS SAME TURN -
+records exactly that as UNQUANTIFIABLE.** I had the prior art in front of me
+and built the probe anyway.
+
+**Why it read as a measurement.** Every other bucket in the same table was
+real: 79 in both, 481 run-only, 58 R5-only, 0 coverage gaps - each a genuine
+count from an attributed column. **A fabricated zero sitting in a row of
+honest numbers inherits their credibility**, and nothing about the output
+distinguishes *the filter found nothing* from *the filter cannot find
+anything*. Two council advisors named it independently - one as *"0 BLOCKED
+is evidence about the logger's coverage, not about signals"*, the other, with
+no domain context at all, as *"zero ignored-records is being read as proof of
+suppression"*.
+
+**The rule: before filtering on a column, check what that column actually
+contains.** One `nunique()` would have shown 1. And in an instrument, the
+fix is not care - it is a REFUSAL: the tool now detects a single-literal
+strategy column on the baseline's occupancy rows and refuses both dependent
+buckets with the reason, rather than reporting a zero.
+
+**What the investigation then established, with the retraction applied:**
+
+| claim | status |
+|---|---|
+| landed 560 vs 137 and 531 vs 157 in the same window and universe | **STANDS** - both sides attributed |
+| the producer's condition moved since R5 | **REFUTED** - today's producer fires at 15 of 15 R5-only bars, both legs |
+| coverage gap | **REFUTED** - 0 run-only fires on tickers R5 never ran |
+| R5 never saw the 481 | **RETRACTED** - filter artifact |
+| R5 under-fired ~11x at the SIGNAL level | **RETRACTED** - rested on an implied-signal figure that assumed 9 blocked |
+| the run lost the R5-only fires to its OWN occupancy | **STANDS** - 14 of 15 and 15 of 15 appear in the run's skip file as same-strategy blocks |
+
+**So both runs see the same signals and differ in which ones occupancy
+admits** - and the run's median hold is shorter (32 d against R5's 50 d for
+soldiers, 42 against 54 for crows), which frees slots sooner and lands more.
+**The honest limit: the run's 1-year window truncates long holds, so its
+median is biased DOWN and part of that gap is windowing rather than policy.**
+And R5's own block count for a single strategy stays unrecoverable, so the
+arithmetic cannot be closed from R5's records at all.
+
+**The consequence that matters more than the cause:** any figure derived from
+R5's LANDED fires understates the producer's signal set by a factor that
+R5's own records cannot reveal. That is why the offline feasibility model
+predicted a median holdout count of 17 and the first tightening cell landed
+261.
+
+**Mechanism:** the refusal in `scripts/b2960_discrepancy_extract.py`, keyed
+on the observable property (a single-literal strategy column) rather than a
+hand-maintained list of cubes, pinned by
+`test_b2962_extract_refuses_an_unpopulatable_bucket`.

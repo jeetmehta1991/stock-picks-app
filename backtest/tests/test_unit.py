@@ -25075,6 +25075,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # code it loaded, so a fix to it is blocked by the RUN.
         ("A LONG RUN PINS THE CODE IT LOADED AT START - A FIX TO THAT CODE IS BLOCKED BY THE RUN, NOT BY THE OWNER, AND SHIPS THE HOUR IT LANDS",
          "B2957: ask what is RUNNING before routing a code ticket"),
+        # B2963: the L837 tripwire row - a zero that is decidable by
+        # construction inherits the credibility of honest counts.
+        ("A BUCKET A FILTER CANNOT POPULATE MUST BE REFUSED, NOT REPORTED AS ZERO - CHECK THE COLUMN'S ATTRIBUTION BEFORE FILTERING ON IT",
+         "B2963/L837: check the column before filtering on it"),
         # B2955: the L836 tripwire row - two rates look commensurable
         # because both are percentages.
         ("TWO RATES ARE NOT COMPARABLE BECAUSE BOTH ARE PERCENTAGES - NAME THE DENOMINATOR OF EACH BEFORE PUTTING THEM IN ONE SENTENCE",
@@ -25913,7 +25917,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 290 -> 291 at B2957 (the live-run-pins-its-code fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 291, gutted
+    # 291 -> 292 at B2963 (the L837 unpopulatable-bucket fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 292, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41422,3 +41428,35 @@ def test_b2955_rate_comparison_needs_both_denominators():
     skill = (root / ".claude" / "skills" / "execution-discipline"
              / "SKILL.md").read_text(encoding="utf-8")
     assert "NAME THE DENOMINATOR OF EACH" in skill
+
+
+
+def test_b2962_extract_refuses_an_unpopulatable_bucket():
+    """S6-B2962 / L837: a zero that is decidable by construction.
+
+    MEASURED 2026-09-21: b2960 reported run_only_that_R5_BLOCKED = 0 and I
+    published it as evidence that the baseline never saw 481 fires. All
+    391,782 occupancy rows in output_r5_merged_1_7 carry the literal
+    '(same-strategy)', so filtering them by strategy NAME can only ever
+    return zero - S6-B2904 had already recorded that as UNQUANTIFIABLE.
+
+    The tool must now REFUSE the bucket rather than report the zero.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    src = (root / "scripts" / "b2960_discrepancy_extract.py").read_text(
+        encoding="utf-8")
+
+    # the refusal exists and is keyed on ATTRIBUTION, not on a count
+    assert "_attributable" in src
+    assert "nunique() <= 1" in src, (
+        "the guard must detect a single-literal strategy column, which is "
+        "the observable property - not a hand-maintained list of cubes")
+    # both buckets are gated on it, not just the one I noticed
+    blocked = src.index("run_only_that_R5_BLOCKED")
+    never = src.index("run_only_that_R5_NEVER_SAW")
+    for i in (blocked, never):
+        window = src[i:i + 400]
+        assert "_attributable" in window, src[i:i + 120]
+    # and the refusal says WHY, so a reader is not left with a blank
+    assert "decidable by construction" in src

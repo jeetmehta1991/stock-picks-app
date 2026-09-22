@@ -1,0 +1,94 @@
+{
+ "ticket": "S6-B2961 (evidence for S6-B2949 / S6-B2950)",
+ "strategy": "three_black_crows_short",
+ "question": "does today's producer fire at the bars only R5 landed?",
+ "production_params": {
+  "n_bars": 3,
+  "body": 0.0,
+  "step": 0.0,
+  "wick": null
+ },
+ "sample_size": 15,
+ "sample_is_a_sample": "the b2960 artifact stores the FIRST 15 R5-only pairs, so this is a SAMPLE of the 58 / 63 population, not the population - the verdict below is scoped to it",
+ "tally": {
+  "FIRES_TODAY": 15
+ },
+ "reading": "FIRES_TODAY dominant -> the condition is unchanged and the run lost these DOWNSTREAM; an accounting difference. DOES_NOT_FIRE_TODAY dominant -> the CONDITION MOVED since R5 and every R5-derived figure for this strategy is scoped to the old condition.",
+ "rows": [
+  {
+   "ticker": "ABBV",
+   "date": "2024-10-08",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "ABNB",
+   "date": "2025-02-25",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "ABT",
+   "date": "2024-12-04",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "ADI",
+   "date": "2024-07-25",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "ALGN",
+   "date": "2024-10-10",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "BKNG",
+   "date": "2024-12-31",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "BLK",
+   "date": "2024-11-27",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "BRK-B",
+   "date": "2024-09-23",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CAT",
+   "date": "2024-07-19",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CB",
+   "date": "2024-10-31",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CCI",
+   "date": "2024-10-03",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CL",
+   "date": "2024-09-10",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "COF",
+   "date": "2024-10-03",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "COST",
+   "date": "2024-10-30",
+   "verdict": "FIRES_TODAY"
+  },
+  {
+   "ticker": "CRWD",
+   "date": "2025-02-24",
+   "verdict": "FIRES_TODAY"
+  }
+ ]
+}

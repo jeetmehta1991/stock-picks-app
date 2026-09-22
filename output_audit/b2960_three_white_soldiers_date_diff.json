@@ -1,0 +1,211 @@
+{
+ "ticket": "S6-B2960 (evidence for S6-B2949 / S6-B2950)",
+ "strategy": "three_white_soldiers",
+ "run": "output_candle_tws_c01_b0.0_s0.0_wNone",
+ "baseline": "output_r5_merged_1_7",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "ticker_file": "output_audit/_sweep_200.txt",
+ "tickers_in_file": 200,
+ "counts": {
+  "run_landed": 560,
+  "r5_landed_in_scope": 137,
+  "run_skipped_rows": 1014,
+  "r5_skipped_rows_in_scope": 9,
+  "r5_skipped_rows_any_strategy_in_window": 111307
+ },
+ "date_level_diff": {
+  "in_both": 79,
+  "run_only": 481,
+  "r5_only": 58,
+  "run_only_that_R5_BLOCKED": "REFUSED - the baseline's occupancy rows carry ONE literal strategy value, so a strategy-name filter cannot populate this bucket and a zero here would be decidable by construction (S6-B2904 / L837)",
+  "run_only_that_R5_NEVER_SAW": "REFUSED - same reason; absence from an unattributable record is not evidence of absence",
+  "baseline_occupancy_attributable": false
+ },
+ "coverage": {
+  "r5_distinct_tickets_in_window_any_strategy": 500,
+  "run_distinct_tickers": 185,
+  "run_only_fires_on_tickers_R5_NEVER_RAN_in_window": 0,
+  "examples": []
+ },
+ "r5_block_reasons_in_scope": {
+  "avoid_tier_long_blocked_batch190": 8,
+  "gap_up_3.6pct_exceeds_1.0x_atr_limit": 1
+ },
+ "run_block_reasons": {
+  "ticker_already_open_same_strategy_bug61_mode_c": 994,
+  "avoid_tier_long_blocked_batch190": 15,
+  "gap_up_3.8pct_exceeds_1.0x_atr_limit": 1,
+  "gap_up_5.8pct_exceeds_1.0x_atr_limit": 1,
+  "gap_up_3.1pct_exceeds_1.0x_atr_limit": 1,
+  "gap_up_1.9pct_exceeds_1.0x_atr_limit": 1,
+  "gap_up_3.6pct_exceeds_1.0x_atr_limit": 1
+ },
+ "sample_run_only_never_seen": [
+  [
+   "AAL",
+   "2024-06-28"
+  ],
+  [
+   "AAPL",
+   "2024-08-08"
+  ],
+  [
+   "AAPL",
+   "2025-04-28"
+  ],
+  [
+   "ABBV",
+   "2024-05-17"
+  ],
+  [
+   "ABNB",
+   "2024-06-28"
+  ],
+  [
+   "ABNB",
+   "2024-12-11"
+  ],
+  [
+   "ABNB",
+   "2025-04-28"
+  ],
+  [
+   "ABT",
+   "2024-06-03"
+  ],
+  [
+   "ACN",
+   "2024-05-07"
+  ],
+  [
+   "ACN",
+   "2024-06-06"
+  ],
+  [
+   "ADBE",
+   "2024-05-06"
+  ],
+  [
+   "ADBE",
+   "2024-11-06"
+  ],
+  [
+   "ADBE",
+   "2025-04-28"
+  ],
+  [
+   "ADI",
+   "2024-05-06"
+  ],
+  [
+   "ADI",
+   "2024-09-11"
+  ],
+  [
+   "ADI",
+   "2025-02-14"
+  ],
+  [
+   "ADI",
+   "2025-03-25"
+  ],
+  [
+   "ADP",
+   "2024-05-13"
+  ],
+  [
+   "ADSK",
+   "2024-05-16"
+  ],
+  [
+   "ADSK",
+   "2024-06-13"
+  ],
+  [
+   "ADSK",
+   "2024-08-15"
+  ],
+  [
+   "ALGN",
+   "2024-11-18"
+  ],
+  [
+   "ALGN",
+   "2025-01-17"
+  ],
+  [
+   "ALGN",
+   "2025-04-21"
+  ],
+  [
+   "AMAT",
+   "2024-05-06"
+  ]
+ ],
+ "sample_r5_only": [
+  [
+   "AAL",
+   "2025-04-28"
+  ],
+  [
+   "ABT",
+   "2024-06-04"
+  ],
+  [
+   "AMAT",
+   "2024-12-24"
+  ],
+  [
+   "AMT",
+   "2024-11-27"
+  ],
+  [
+   "AXP",
+   "2025-04-02"
+  ],
+  [
+   "BA",
+   "2025-03-20"
+  ],
+  [
+   "CI",
+   "2024-11-27"
+  ],
+  [
+   "CI",
+   "2025-01-23"
+  ],
+  [
+   "CMCSA",
+   "2025-01-24"
+  ],
+  [
+   "COF",
+   "2025-03-21"
+  ],
+  [
+   "COP",
+   "2024-07-18"
+  ],
+  [
+   "COP",
+   "2024-11-29"
+  ],
+  [
+   "CRM",
+   "2024-06-21"
+  ],
+  [
+   "CSCO",
+   "2025-04-30"
+  ],
+  [
+   "CSX",
+   "2024-06-20"
+  ]
+ ],
+ "interpretation": "DELIBERATELY ABSENT - this artifact is evidence, not a verdict. See S6-B2949 for the hypotheses."
+}

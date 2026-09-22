@@ -1,0 +1,212 @@
+{
+ "ticket": "S6-B2960 (evidence for S6-B2949 / S6-B2950)",
+ "strategy": "three_black_crows_short",
+ "run": "output_candle_tbc_c01_b0.0_s0.0_wNone",
+ "baseline": "output_r5_merged_1_7",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "ticker_file": "output_audit/_sweep_200.txt",
+ "tickers_in_file": 200,
+ "counts": {
+  "run_landed": 531,
+  "r5_landed_in_scope": 157,
+  "run_skipped_rows": 716,
+  "r5_skipped_rows_in_scope": 16,
+  "r5_skipped_rows_any_strategy_in_window": 111307
+ },
+ "date_level_diff": {
+  "in_both": 94,
+  "run_only": 437,
+  "r5_only": 63,
+  "run_only_that_R5_BLOCKED": 0,
+  "run_only_that_R5_NEVER_SAW": 437
+ },
+ "coverage": {
+  "r5_distinct_tickets_in_window_any_strategy": 500,
+  "run_distinct_tickers": 182,
+  "run_only_fires_on_tickers_R5_NEVER_RAN_in_window": 0,
+  "examples": []
+ },
+ "r5_block_reasons_in_scope": {
+  "avoid_tier_short_blocked_batch190": 14,
+  "short_adverse_gap_up_2.2pct_exceeds_1.0x_atr_limit": 1,
+  "short_adverse_gap_up_7.2pct_exceeds_1.0x_atr_limit": 1
+ },
+ "run_block_reasons": {
+  "ticker_already_open_same_strategy_bug61_mode_c": 680,
+  "avoid_tier_short_blocked_batch190": 26,
+  "short_adverse_gap_up_5.6pct_exceeds_1.0x_atr_limit": 2,
+  "short_adverse_gap_up_3.9pct_exceeds_1.0x_atr_limit": 1,
+  "short_adverse_gap_up_12.2pct_exceeds_1.0x_atr_limit": 1,
+  "short_adverse_gap_up_4.1pct_exceeds_1.0x_atr_limit": 1,
+  "short_adverse_gap_up_2.2pct_exceeds_1.0x_atr_limit": 1,
+  "short_adverse_gap_up_4.6pct_exceeds_1.0x_atr_limit": 1
+ },
+ "sample_run_only_never_seen": [
+  [
+   "AAL",
+   "2024-05-17"
+  ],
+  [
+   "AAL",
+   "2024-09-23"
+  ],
+  [
+   "AAPL",
+   "2025-02-27"
+  ],
+  [
+   "ABBV",
+   "2024-07-03"
+  ],
+  [
+   "ABBV",
+   "2024-09-18"
+  ],
+  [
+   "ABNB",
+   "2024-09-30"
+  ],
+  [
+   "ABNB",
+   "2024-11-29"
+  ],
+  [
+   "ABNB",
+   "2025-02-24"
+  ],
+  [
+   "ABT",
+   "2024-06-12"
+  ],
+  [
+   "ABT",
+   "2024-09-20"
+  ],
+  [
+   "ABT",
+   "2025-03-13"
+  ],
+  [
+   "ACN",
+   "2024-07-10"
+  ],
+  [
+   "ACN",
+   "2024-10-24"
+  ],
+  [
+   "ADBE",
+   "2024-05-09"
+  ],
+  [
+   "ADBE",
+   "2024-11-18"
+  ],
+  [
+   "ADBE",
+   "2025-02-07"
+  ],
+  [
+   "ADI",
+   "2024-06-27"
+  ],
+  [
+   "ADI",
+   "2024-11-11"
+  ],
+  [
+   "ADI",
+   "2025-02-25"
+  ],
+  [
+   "ADP",
+   "2024-05-28"
+  ],
+  [
+   "ADP",
+   "2024-09-26"
+  ],
+  [
+   "ADP",
+   "2025-04-17"
+  ],
+  [
+   "ADSK",
+   "2024-09-04"
+  ],
+  [
+   "ADSK",
+   "2024-11-27"
+  ],
+  [
+   "ALGN",
+   "2024-10-03"
+  ]
+ ],
+ "sample_r5_only": [
+  [
+   "ABBV",
+   "2024-10-08"
+  ],
+  [
+   "ABNB",
+   "2025-02-25"
+  ],
+  [
+   "ABT",
+   "2024-12-04"
+  ],
+  [
+   "ADI",
+   "2024-07-25"
+  ],
+  [
+   "ALGN",
+   "2024-10-10"
+  ],
+  [
+   "BKNG",
+   "2024-12-31"
+  ],
+  [
+   "BLK",
+   "2024-11-27"
+  ],
+  [
+   "BRK-B",
+   "2024-09-23"
+  ],
+  [
+   "CAT",
+   "2024-07-19"
+  ],
+  [
+   "CB",
+   "2024-10-31"
+  ],
+  [
+   "CCI",
+   "2024-10-03"
+  ],
+  [
+   "CL",
+   "2024-09-10"
+  ],
+  [
+   "COF",
+   "2024-10-03"
+  ],
+  [
+   "COST",
+   "2024-10-30"
+  ],
+  [
+   "CRWD",
+   "2025-02-24"
+  ]
+ ],
+ "interpretation": "DELIBERATELY ABSENT - this artifact is evidence, not a verdict. See S6-B2949 for the hypotheses."
+}
