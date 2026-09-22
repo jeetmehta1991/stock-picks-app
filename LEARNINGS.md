@@ -22470,3 +22470,16 @@ or expect one block per member.** A batch cap of three fixes per batch
 guarantees multi-commit turns, so on any turn with more than one miss the
 right move is to hold the Phase-5 set until the last commit and stage all
 four in a single call.
+
+**ADDENDUM (B2968) - THE OTHER SOURCE OF A SPLIT MEMBER SET.** L815 and the
+B2967 count above both blame MY batching. This session produced a second
+source I had not considered: **an automated committer in the same repo.** The
+engine's landing hook stages `EXECUTION_QUEUE.md` beside its own ledger row,
+and while my pyramid ran it swept a queue row I had just appended into ITS
+commit. The file then read clean, `git status` showed nothing, and the
+one-commit-deep gate correctly reported the member missing - **the member was
+in the record and not in my commit.** Neither side warns the other, and the
+symptom looks like a phantom: an edit you made, present on disk, absent from
+your own commit. **Before a commit that must carry a set, ask what else
+writes to those paths and verify with `git log` which commit holds each
+member.** Promoted to the skill with a fragment pin.

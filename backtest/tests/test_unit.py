@@ -25075,6 +25075,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # code it loaded, so a fix to it is blocked by the RUN.
         ("A LONG RUN PINS THE CODE IT LOADED AT START - A FIX TO THAT CODE IS BLOCKED BY THE RUN, NOT BY THE OWNER, AND SHIPS THE HOUR IT LANDS",
          "B2957: ask what is RUNNING before routing a code ticket"),
+        # B2968: another process may commit while you gate.
+        ("ANOTHER PROCESS MAY COMMIT TO THIS REPO WHILE YOU GATE - ASK WHAT ELSE COMMITS BEFORE RELYING ON ONE COMMIT TO CARRY A MEMBER SET",
+         "B2968: ask what else commits to these paths"),
         # B2965: rank a sweep's siblings by how confidently they lie.
         ("RANK A SWEEP'S SIBLINGS BY HOW CONFIDENTLY THEY LIE, NOT BY HOW CLOSELY THEY RESEMBLE THE INSTANCE YOU FOUND",
          "B2965/L837: order siblings by harm, not resemblance"),
@@ -25924,7 +25927,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 292 -> 293 at B2965 (the sibling-ranking fragment; same-call with
     # its tripwire row per B2130).
-    assert len(gutted) == 293, gutted
+    # 293 -> 294 at B2968 (the concurrent-committer fragment; same-call
+    # with its tripwire row per B2130).
+    assert len(gutted) == 294, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
