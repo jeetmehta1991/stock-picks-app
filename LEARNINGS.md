@@ -22537,3 +22537,55 @@ the log, never stores it), plus a disclosure half that lists every DEFERRED
 row carrying re-open language and no evaluator, BY ID, with the detector's
 own measured precision and its lower-bound recall printed beside the count.
 Pinned by `test_b2971_deferral_audit_discloses_what_it_cannot_evaluate`.
+
+### L839 - A WRONG-GRAIN FIGURE INSIDE A SCHEDULED INSTRUMENT (B2973, 2026-09-22)
+
+The hourly chain monitor's own prompt instructs me to check landed trades
+against *"the R5 baselines: 1,596 for three_white_soldiers, 1,674 for
+three_black_crows_short"*. **Those are FULL-WINDOW figures.** Derived this turn by
+scripts/candle_r5_baselines.py: 1596 soldiers over 2022-05-05..2026-04-28
+across **481** distinct tickers, 1674 crows over 2022-05-06..2026-04-29
+across **474**. The numbers are RIGHT; their grain was unstated. Every Step-1 candle config runs **1 year across 200
+tickers**, so the comparison sets a landed count against a baseline drawn
+from about four times the window and 2.4 times the universe.
+
+**MEASURED, matched on both axes** (output_audit/
+b2960_three_white_soldiers_date_diff.json and its crows sibling, window
+2024-05-05..2025-05-05, tickers_in_file 200): R5 holds **137** soldiers and
+**157** crows in scope, against landed 560 and 531. The honest ratios are
+**4.09x and 3.38x**. The prompt's figures give 0.35x and 0.32x - a
+catastrophic under-fire that is not happening, and one I would have
+reported hourly.
+
+**This is L836's class, and the new half is WHERE IT LIVES.** L836 is about
+two rates in one sentence, written once and caught once. Here the figure
+sits in a CRON PROMPT that re-states it every hour, and **repetition reads
+as corroboration** - the same number arriving on a schedule looks
+established rather than unexamined.
+
+**THE SWEEP RESULT IS THE POINT.** Grepping the whole tree for those two
+numbers returns exactly **ONE** hit - the skill's own L836 tripwire row,
+where the figure is used correctly as an example of the class. So **1 of 1
+repo instance is sound and the live defect is in an artifact no repo sweep
+can reach.** A scheduled prompt is not a file in the working tree; the
+generalisation mandate's usual question, *what else breaks the same way*,
+has an answer the usual method cannot find. Every cron prompt, every
+runbook step quoted from memory, every template carrying a number is in
+that same blind spot.
+
+**Mechanism, and it is an ARTIFACT rather than a detector.** No scan reads
+a cron prompt, so detection is JUDGMENT-ONLY. What IS mechanizable is
+giving the baseline somewhere to be quoted FROM:
+`scripts/candle_r5_baselines.py` derives both grains - R5's full-window
+count from its own cube, and the matched-to-Step-1 count from the b2960
+diff artifacts - and writes each with its window, its universe size and a
+grain label saying which is comparable. Neither figure can be lifted out of
+it bare. Pinned by
+`test_b2973_baseline_artifact_carries_both_grains_with_their_scope`.
+
+**Disposition of the instance:** the cron prompt itself is NOT corrected
+mid-chain - the council's standing warning against churning a live
+monitoring instrument while a 36-config chain runs, and a
+CronDelete/CronCreate cycle risks losing the job. S6-B2972 carries it with
+CHAIN DONE as the trigger, where the monitor is deleted anyway. Until then
+each hourly report carries the correction in its own text.

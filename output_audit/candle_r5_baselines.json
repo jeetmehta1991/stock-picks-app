@@ -1,0 +1,40 @@
+{
+ "ticket": "S6-B2973 (L839)",
+ "why": "a baseline quoted without its window and universe is a count with no denominator; both grains are stamped here so neither can be quoted bare",
+ "legs": {
+  "three_white_soldiers": {
+   "full_window": {
+    "count": 1596,
+    "window_start": "2022-05-05",
+    "window_end": "2026-04-28",
+    "universe_distinct_tickers": 481,
+    "grain": "R5 FULL WINDOW - not comparable to a Step-1 cube"
+   },
+   "matched_to_step1": {
+    "count": 137,
+    "window_start": "2024-05-05",
+    "window_end": "2025-05-05",
+    "universe_distinct_tickers": 200,
+    "grain": "MATCHED to a Step-1 cube - this is the comparable figure",
+    "source": "b2960_three_white_soldiers_date_diff.json"
+   }
+  },
+  "three_black_crows_short": {
+   "full_window": {
+    "count": 1674,
+    "window_start": "2022-05-06",
+    "window_end": "2026-04-29",
+    "universe_distinct_tickers": 474,
+    "grain": "R5 FULL WINDOW - not comparable to a Step-1 cube"
+   },
+   "matched_to_step1": {
+    "count": 157,
+    "window_start": "2024-05-05",
+    "window_end": "2025-05-05",
+    "universe_distinct_tickers": 200,
+    "grain": "MATCHED to a Step-1 cube - this is the comparable figure",
+    "source": "b2960_three_black_crows_short_date_diff.json"
+   }
+  }
+ }
+}

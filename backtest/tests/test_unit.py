@@ -25075,6 +25075,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # code it loaded, so a fix to it is blocked by the RUN.
         ("A LONG RUN PINS THE CODE IT LOADED AT START - A FIX TO THAT CODE IS BLOCKED BY THE RUN, NOT BY THE OWNER, AND SHIPS THE HOUR IT LANDS",
          "B2957: ask what is RUNNING before routing a code ticket"),
+        # B2973: the L839 tripwire row - a figure in a scheduled
+        # instrument is outside every repo sweep.
+        ("A FIGURE INSIDE A SCHEDULED INSTRUMENT IS OUTSIDE EVERY REPO SWEEP AND RE-ASSERTS ITSELF ON A TIMER - GIVE THE BASELINE AN ARTIFACT TO BE QUOTED FROM, STAMPED WITH ITS WINDOW AND UNIVERSE",
+         "B2973/L839: stamp the baseline with its window and universe"),
         # B2971: the L838 tripwire row - a named trigger that nothing
         # evaluates is a reminder, not a gate.
         ("A NAMED TRIGGER THAT NOTHING EVALUATES IS A REMINDER, NOT A GATE - REGISTER AN EVALUATOR OR DISCLOSE THE TRIGGER AS UNEVALUATED",
@@ -25935,7 +25939,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with its tripwire row per B2130).
     # 294 -> 295 at B2971 (the L838 unevaluated-trigger fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 295, gutted
+    # 295 -> 296 at B2973 (the L839 scheduled-instrument fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 296, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -41552,3 +41558,51 @@ def test_b2971_deferral_audit_discloses_what_it_cannot_evaluate():
                 "the evaluator must count only the ledger-flip commits")
     finally:
         mod.EXEMPT_LOG = real
+
+
+
+def test_b2973_baseline_artifact_carries_both_grains_with_their_scope():
+    """S6-B2973 / L839: a baseline must not be quotable bare.
+
+    MEASURED 2026-09-22: an hourly monitor prompt compared Step-1 cubes
+    (1 year x 200 tickers) against R5 baselines counted over 4 years x 544
+    tickers. A 4.09x over-performance would have read as 0.35x.
+
+    Detection is JUDGMENT-ONLY - no scan reads a cron prompt. What this
+    pins is the DURABLE half: the artifact those instruments quote from
+    must carry BOTH grains, each stamped with the window and universe it
+    was counted over, so lifting a bare number out of it is not possible.
+    """
+    import importlib.util
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    src = root / "scripts" / "candle_r5_baselines.py"
+    assert src.exists(), "the baseline artifact's generator must exist"
+
+    spec = importlib.util.spec_from_file_location("_crb", src)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    # both legs are declared, and each declares BOTH grains
+    assert set(mod.LEGS) == {"three_white_soldiers", "three_black_crows_short"}
+
+    # the structure the generator promises - asserted on the SHAPE it
+    # builds, not on a stored artifact, so the pin survives a re-derive
+    import inspect
+    body = inspect.getsource(mod.build)
+    assert "full_window" in body and "matched_to_step1" in body, body
+
+    # every grain carries its own window and universe: a figure that does
+    # not name them is exactly the one this lesson is about
+    for fn in (mod._full_window, mod._matched):
+        text = inspect.getsource(fn)
+        for key in ("window_start", "window_end",
+                    "universe_distinct_tickers", "grain"):
+            assert key in text, (fn.__name__, key)
+
+    # and the grain labels must SAY which is comparable, not merely differ
+    matched_src = inspect.getsource(mod._matched)
+    full_src = inspect.getsource(mod._full_window)
+    assert "not comparable" in full_src
+    assert "comparable" in matched_src
