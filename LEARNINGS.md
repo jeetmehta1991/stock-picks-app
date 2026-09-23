@@ -23155,3 +23155,18 @@ p=0.09; gate mtimes PROXY CPU contention rather than measure it; the two windows
 in ways I have not eliminated. What is solid is the refutation and the duty cycle.
 
 **Compliance failure against L621**, cited not re-minted. Anchored at CHECKLIST #319.
+
+
+### L858 - NORMALISE LINE ENDINGS EXACTLY ONCE, AND NEVER SEND ESCAPES THROUGH A HEREDOC (B3065/B3067, compliance failure against #314/L850 and against the standing heredoc rule, 2026-09-23)
+
+**Two instances of one class in one turn, the second while fixing the first.**
+
+**Instance 1 - double conversion.** Patching CHECKLIST.md I concatenated an anchor I had ALREADY converted to carriage-return-plus-newline, then ran a replace over the whole result choosing the target ending by PRESENCE - use the two-byte ending if the two-byte ending is already present. The anchor's existing ending therefore gained a SECOND carriage return: one doubled sequence in a 597,365 byte file. The text attribute then collapsed the trailing pair on commit and stored a line ending in a bare carriage return, giving 1 two-byte ending against 6,169 plain ones - the mixed state the pin refuses. L850 states the rule in four words, NEVER INFER FROM PRESENCE, and my expression was a presence test. The rule was auto-injected in context while I wrote the thing it forbids.
+
+**Instance 2 - the repair reintroduced it.** Recording instance 1 meant writing about carriage returns, so the LEARNINGS text contained escape sequences, and I sent it through a bash heredoc. The escapes arrived as REAL carriage returns: LEARNINGS.md went from 0 two-byte endings to 5, with 2 doubled sequences, and the queue took 2 more. The standing memory rule says write patchers with the Write tool because a heredoc mangles backslashes, and L638 says never pass backslash-bearing content through one. **Describing a byte is the case where the prose itself is backslash-bearing**, so the topic of the lesson is what re-triggers the defect - write such prose in WORDS, never in escapes.
+
+**Why neither survives review.** A doubled carriage return is invisible in every artefact a human reads: the diff renders an ordinary changed line, the markdown is identical, the file opens normally, and the byte count moves by one. Only a test reading the INDEX rather than the worktree can see it.
+
+**Durability - the mechanism existed and it worked.** test_b2921_canonical_doc_eol_state_is_pinned caught instance 1 on the next pyramid, naming the file and the state, after the defect had already been COMMITTED at c87412e35. Detection here is NOT judgment-only; it is pinned, and no other check in the repo would have surfaced it. Repair is one byte, guarded by asserting the occurrence count first so a wrong assumption stops the edit instead of mangling the file.
+
+**Rule.** Hold the payload in plain newlines, convert ONCE at the final write, never on a fragment or on a concatenation of already-converted fragments - and keep escape sequences out of heredocs entirely.
