@@ -43010,3 +43010,150 @@ def test_b3061_pyramid_discloses_a_config_in_flight(tmp_path, monkeypatch):
     #    able to break the gate it annotates
     (tmp_path / "output_audit" / "serial_chain.log").unlink()
     assert pg._chain_inflight() == "none"
+
+
+
+def test_b3064_named_enforcers_resolve():
+    """S6-B3064: a rule may NAME an enforcer that does not exist.
+
+    #242 (every numbered rule names its mechanism), #231 (prose is not shipped)
+    and #300 (a JUDGMENT-ONLY label is earned by a named search) are ALL
+    satisfied by NAMING a function or test. Nothing checked that the name
+    resolves. test_b1945 freezes dangling L-numbers and test_b1971 freezes
+    dangling CHECKLIST numbers - the third namespace, the mechanism identifiers
+    those three rules exist to demand, was checked by nobody (L595: a citation
+    is a claim with an ADDRESS).
+
+    Shrink-only: the known-dangling set is frozen and a NEW dangling name fails.
+    """
+    import re as _re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+
+    # where a mechanism can legitimately live
+    hay = []
+    for rel in ("backtest/tests/test_unit.py", "backtest/tests/test_integration.py",
+                "scripts/verify_turn_compliance.py"):
+        f = root / rel
+        if f.is_file():
+            hay.append(f.read_text(encoding="utf-8", errors="replace"))
+    for f in (root / "scripts").glob("*.py"):
+        hay.append(f.read_text(encoding="utf-8", errors="replace"))
+    blob = chr(10).join(hay)
+    assert len(blob) > 500000, "haystack too small - the scan would pass vacuously"
+
+    defined = set(_re.findall(r"def\s+(test_b\w+|scan_\w+|check_\w+)", blob))
+    assert len(defined) > 400, "found only %d definitions - pattern is wrong" % len(defined)
+
+    cited = set()
+    for rel in ("CHECKLIST.md", ".claude/skills/execution-discipline/SKILL.md"):
+        f = root / rel
+        if not f.is_file():
+            continue
+        txt = f.read_text(encoding="utf-8", errors="replace")
+        cited |= set(_re.findall(r"\b(test_b\w+|scan_\w+)\b", txt))
+
+    # a positive control: a name we KNOW is defined must be seen as resolving
+    assert "test_b3064_named_enforcers_resolve" in defined, (
+        "the definition scan cannot see this very test - it is not measuring "
+        "what it claims")
+
+    # B2044's lesson, already in this suite: citations are PREFIXES.
+    # A rule cites test_b2921 while the def is
+    # test_b2921_canonical_doc_eol_state_is_pinned, so exact matching
+    # reports 48 dangling names of which ~0 are real. Resolve by prefix.
+    # Placeholders in prose (test_bNNN_, scan_x) are TEMPLATES, not claims.
+    def _placeholder(n):
+        return ('NNN' in n or n.endswith('_') or len(n.split('_')[-1]) <= 2)
+    def _resolves(n):
+        return any(d == n or d.startswith(n) for d in defined)
+    dangling = sorted(n for n in cited
+                      if not _placeholder(n) and not _resolves(n))
+
+    # FROZEN baseline. Shrink-only: removing a name from here is always fine;
+    # adding one means a rule now names an enforcer that does not exist.
+    # FROZEN 2026-09-23 at 10, every member VERIFIED absent from the
+    # WHOLE tree (grep -rl 'def <name>' over backtest/ and scripts/),
+    # not merely from this test's haystack. Named, not counted (L601).
+    # test_b3024... is the pin CHECKLIST #314 names as its enforcer -
+    # the line-ending rule whose violation shipped at c87412e35.
+    LEGACY = {
+        # RETIRED by name in the skill itself, kept as history there
+        'scan_unticketed_remediation',
+        'scan_monitor_no_stall_check',
+        'test_b1080_checklist_135_schema_pin',
+        'test_b1323',
+        'test_b1330',
+        'test_b1332',
+        'test_b2887',
+        'test_b3024_writers_match_the_stored_line_ending_of_their_target',
+        'test_batch625_walk_commit_fire_count_pin',
+        'test_batch743',
+        'test_batch744_borrow_gate_lint',
+    }
+    new = [n for n in dangling if n not in LEGACY]
+    assert not new, (
+        "these rules name an enforcer that does not exist anywhere in "
+        "backtest/tests or scripts - #242/#231/#300 are satisfied by NAMING "
+        "one, so nothing else would catch this: %s" % new)
+    stale = sorted(n for n in LEGACY if n in defined)
+    assert not stale, (
+        "these are no longer dangling - remove them from LEGACY so the "
+        "ratchet keeps shrinking: %s" % stale)
+
+
+def test_b3066_sampler_is_off_the_hot_paths():
+    """S6-B3066: the sampler must not change what the campaign runs.
+
+    Its module docstring CLAIMS it is neither engine nor battery, so the claim
+    needs an address (L595) - and this pin exists because that docstring NAMED
+    it before it was written, which is exactly the S6-B3068 class found in the
+    same turn. Note test_b3064's ratchet could NOT have caught it: that scan
+    reads CHECKLIST.md and SKILL.md, and this name lived in a SOURCE docstring.
+
+    Both directions: off the battery list AND outside the engine hash's tree.
+    """
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import run_serial_chain as rsc
+
+    rel = "scripts/resource_sampler.py"
+    assert (root / rel).is_file(), "the sampler does not exist: " + rel
+
+    # 1. not one of the scripts the post-config battery loads at every landing
+    assert rel not in rsc.BATTERY_PATHS, (
+        "the sampler is in BATTERY_PATHS - editing it would change the battery "
+        "hash mid-campaign, which is the contamination it exists to avoid")
+    assert len(rsc.BATTERY_PATHS) >= 5, rsc.BATTERY_PATHS   # not vacuous
+
+    # 2. outside the tree engine_path_hash walks
+    assert not rel.startswith("backtest/"), rel
+    _h, n = rsc.engine_path_hash()
+    assert n > 100, "engine hash walked only %d files - the scan is broken" % n
+
+    # 3. a RECORDER: it cannot terminate the thing it observes
+    src = (root / rel).read_text(encoding="utf-8", errors="replace")
+    body = src[src.index("def sample("):]
+    assert "sys.exit" not in body, "sample() can terminate the process"
+
+    # 4. every broad except records WHY it fired - a silent one lets a failed
+    #    read impersonate a real empty measurement (#122 / L641). Walked by
+    #    LINE rather than by regex: the escapes a pattern would need are the
+    #    thing that broke this very pin's first version (L858).
+    lines = src.split(chr(10))
+    sites, silent = 0, []
+    for i, ln in enumerate(lines):
+        if ln.strip().startswith("except Exception"):
+            sites += 1
+            window = chr(10).join(lines[i:i + 8])
+            if ("_ERRORS" not in window
+                    and "progress_read_error" not in window
+                    and "unknown" not in window):
+                silent.append("line %d" % (i + 1))
+    assert sites >= 4, "found %d except sites - the line scan is wrong" % sites
+    assert not silent, (
+        "these except blocks swallow silently, so a failed read impersonates a "
+        "measurement: %s" % silent)

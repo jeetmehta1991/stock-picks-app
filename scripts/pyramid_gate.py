@@ -107,6 +107,7 @@ def verdict_line(diff: list[str]) -> str:
 def run(out: Path, root: Path, pytest_args: list[str]) -> int:
     before = fingerprint(root)
     t0 = time.time()
+    chain_start = _chain_inflight()
     # B2856 (S6-B2854b): a stopper needs the TREE, not the wrapper. TaskStop
     # on the launching shell orphans this process and its pytest child (four
     # processes were hand-killed at B2854, two racing on one artifact). The
@@ -132,11 +133,19 @@ def run(out: Path, root: Path, pytest_args: list[str]) -> int:
         # over a 40-hour chain would block every commit for the rest of
         # it, which is L721 tightening-over-a-backlog. A disclosure costs
         # nothing and keeps the per-config runtime record readable.
-        chain = _chain_inflight()
+        # S6-B3063: sampling only HERE reads the state AFTER pytest has
+        # returned, so a config that LANDED mid-run reads 'none' despite
+        # having contended for most of it, and one that LAUNCHED late
+        # reads as in flight although it barely overlapped. Record BOTH
+        # ends: 'none' on both is the only honest all-clear.
+        chain_end = _chain_inflight()
+        chain = chain_start if chain_start != "none" else chain_end
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(f"\npytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
                      f"elapsed_s={time.time() - t0:.0f}\n"
-                     f"chain_inflight={chain}\n")
+                     f"chain_inflight={chain}\n"
+                     f"chain_inflight_start={chain_start}\n"
+                     f"chain_inflight_end={chain_end}\n")
         print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
         if chain != "none":
             print("  NOTE (L621/S6-B3061): a config was IN FLIGHT while "
