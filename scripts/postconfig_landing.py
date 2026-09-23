@@ -264,9 +264,31 @@ def _git(args: list[str], *, timeout: float | None = None) -> subprocess.Complet
 
 
 QUEUE = ROOT / "EXECUTION_QUEUE.md"
-# CRLF, built without escapes: L638 - backslashes do not survive a heredoc,
-# and this literal was mangled into a real line break on the first attempt.
-_ROW_END = chr(13) + chr(10)
+# S6-B3024b (CORRECTS S6-B3024): match the TARGET FILE'S DOMINANT ending,
+# hardcoding neither. B3024 set this to LF because `git show
+# HEAD:EXECUTION_QUEUE.md` holds 14,226 bare LF and zero CRLF - true, and the
+# wrong premise: core.autocrlf is TRUE and this file carries no .gitattributes
+# entry (only LEARNINGS.md and CHECKLIST.md are pinned `text`), so git STORES
+# it LF and CHECKS IT OUT as CRLF on Windows. The CRLF emitted here therefore
+# MATCHED its neighbours in a real working tree - which is precisely what
+# test_b2522 asserts, and what the LF cut broke.
+#
+# Neither hardcoded value is right: the correct ending is a property of the
+# file AS IT CURRENTLY EXISTS, not of the repo or the platform. The dominant
+# form serves both - CRLF after a Windows checkout, LF in a tree written by
+# scripts - and one stray foreign line can never flip it (L850). An absent or
+# empty file falls back to LF, which is what gets committed either way.
+#
+# The chr() form is kept for the original reason (L638): backslash escapes do
+# not survive a heredoc, and this literal was mangled on the first attempt -
+# which happened AGAIN while writing this very fix.
+def _row_end() -> str:
+    try:
+        raw = QUEUE.read_bytes()
+    except OSError:
+        return chr(10)
+    crlf = raw.count(bytes([13, 10]))
+    return chr(13) + chr(10) if crlf * 2 > raw.count(bytes([10])) else chr(10)
 
 
 def _append_landing_queue_row(cube: str, battery_exit: int, summary: str) -> bool:
@@ -287,7 +309,7 @@ def _append_landing_queue_row(cube: str, battery_exit: int, summary: str) -> boo
                f"{battery_exit})** | _reason:_ EXECUTED - recorded automatically "
                f"by scripts/postconfig_landing.py at {_now()} (B2520 owner "
                f"ruling: every landing runs the battery and reaches the owner). "
-               f"{one_line} |" + _ROW_END)
+               f"{one_line} |" + _row_end())
         with QUEUE.open("ab") as f:
             f.write(row.encode("utf-8"))
         return True

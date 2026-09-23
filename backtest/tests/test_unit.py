@@ -42663,3 +42663,71 @@ def test_b3023_table_c_carries_max_and_selected_sharpe_separately():
             nm + ": max " + c[9] + " < selected " + c[10] +
             " - a maximum cannot be below a member of its own population")
     assert seen >= 14, "expected every landed candle config checked, got %d" % seen
+
+
+
+def test_b3024_landing_row_matches_the_target_files_dominant_ending():
+    """S6-B3024b, CORRECTING S6-B3024. The landing hook appends a ledger row to
+    EXECUTION_QUEUE.md. B3024 hardcoded that row's ending to LF because git
+    STORES the file with 0 CRLF - a true fact and the wrong premise:
+    core.autocrlf is true and the file has no .gitattributes entry, so git
+    checks it out as CRLF on Windows and the hook's original CRLF MATCHED its
+    neighbours. test_b2522 asserts exactly that and refused the LF cut.
+
+    Neither hardcoded value is right. The ending is a property of the file AS
+    IT EXISTS, so the row takes the DOMINANT form - which also means one stray
+    foreign line can never flip the whole file (L850, the amplification that
+    turned 1 row into a 120-line diff preflight C13 refused)."""
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    pl = importlib.import_module("postconfig_landing")
+
+    assert not hasattr(pl, "_ROW_END"), (
+        "the hardcoded constant must be GONE - either value is wrong for some "
+        "real working tree, which is the whole finding")
+
+    import tempfile
+    d = _P(tempfile.mkdtemp())
+    crlf, lf = chr(13) + chr(10), chr(10)
+    cases = (
+        ("crlf.md", b"| a |\r\n| b |\r\n", crlf),      # Windows checkout
+        ("lf.md", b"| a |\n| b |\n", lf),                # script-written tree
+        ("stray.md", b"| a |\r\n| b |\n| c |\n| d |\n", lf),  # one foreign line
+    )
+    for fname, seed, want in cases:
+        q = d / fname
+        q.write_bytes(seed)
+        pl.QUEUE = q
+        got = pl._row_end()
+        assert got == want, (fname, repr(got), repr(want))
+
+    pl.QUEUE = d / "absent.md"
+    assert pl._row_end() == lf, "an absent file falls back to LF"
+
+    # end to end: the appended row terminates the way its neighbours do
+    for fname, seed, want in cases:
+        q = d / ("e2e_" + fname)
+        q.write_bytes(seed)
+        pl.QUEUE = q
+        assert pl._append_landing_queue_row("probe", 0, "battery exit 0") is True
+        raw = q.read_bytes()
+        assert raw.endswith(want.encode()), (fname, raw[-4:])
+        # and the SEEDED lines are untouched - the writer converts nothing
+        assert raw.startswith(seed), fname
+
+    # the INFERENCE half elsewhere: the plan writer must not use presence
+    src = (root / "scripts" / "plan_lineage.py").read_text(encoding="utf-8")
+    assert 'if "' + chr(92) + 'r' + chr(92) + 'n" in text else' not in src, (
+        "the any-occurrence idiom must be gone from the plan writer")
+
+    # and the LEGITIMATE CRLF site stays: a Windows .cmd requires it
+    ld = (root / "scripts" / "launch_detached.py").read_text(encoding="utf-8")
+    assert ".join(lines)" in ld, (
+        "launch_detached writes a .cmd batch file, where CRLF is REQUIRED - "
+        "this sweep classified it as correct and it must not be 'fixed'")

@@ -169,7 +169,15 @@ def main() -> int:
         return 0
 
     text = PLAN.read_text(encoding="utf-8", errors="replace")
-    nl = "\r\n" if "\r\n" in text else "\n"
+    # S6-B3024: the DOMINANT ending, not ANY occurrence. Inferring from a
+    # single match means one foreign line converts the whole appendix -
+    # which is exactly how one CRLF row from the landing hook turned 119
+    # later appends to EXECUTION_QUEUE.md into a 120-line flip. This plan
+    # is stored pure LF today (4,141 bare LF, 0 CRLF at HEAD), so the old
+    # expression is CORRECT here and latently wrong; majority makes it
+    # robust rather than lucky.
+    _crlf = text.count("\r\n")
+    nl = "\r\n" if _crlf * 2 > text.count("\n") else "\n"
     body = appendix.replace("\n", nl)
     if MARK_START in text and MARK_END in text:
         i = text.index(MARK_START)
