@@ -23170,3 +23170,16 @@ in ways I have not eliminated. What is solid is the refutation and the duty cycl
 **Durability - the mechanism existed and it worked.** test_b2921_canonical_doc_eol_state_is_pinned caught instance 1 on the next pyramid, naming the file and the state, after the defect had already been COMMITTED at c87412e35. Detection here is NOT judgment-only; it is pinned, and no other check in the repo would have surfaced it. Repair is one byte, guarded by asserting the occurrence count first so a wrong assumption stops the edit instead of mangling the file.
 
 **Rule.** Hold the payload in plain newlines, convert ONCE at the final write, never on a fragment or on a concatenation of already-converted fragments - and keep escape sequences out of heredocs entirely.
+
+
+### L859 - A LESSON THAT NAMES A MECHANISM IS AN INSTRUCTION TO RUN IT, NOT A DESCRIPTION TO RE-IMPLEMENT (B3070, compliance failure against #235, 2026-09-23)
+
+**What happened.** Four tickets carried blockers I had written without checking. I re-derived them BY HAND - opening the held patches, grepping their targets, reading BATTERY_PATHS and engine_path_hash - and found 3 of 4 false. Good result, wrong method: **L830 names its own mechanism, audit_ticket_staleness.py with the blockers flag, and I never ran it.**
+
+**The cost is COVERAGE, and it runs opposite to how the work felt.** Hand-verification felt like the more rigorous choice - I opened files, I read code, I quoted line numbers. It covered **4 tickets**. The tool covers **22 non-terminal rows**, classifies each blocker by kind, and reports whether any names a predecessor that is now terminal. So the careful-feeling method was 4 of 22 and the one-command method is 22 of 22. **Effort is not coverage**, and a manual re-derivation silently scopes itself to whatever you happened to think of.
+
+**Why the mechanism went unrun.** L830's text leads with its finding - three wrong blocker claims in one session - and names the tool in its last clause. Reading the entry delivers the WARNING and leaves the INSTRUCTION as a detail, so what survives into behaviour is *be suspicious of blockers*, which is satisfiable by hand. #235 already states this class: citing a rule is not the rule running. This is its sibling - re-implementing a rule is not the rule running either, and it is harder to notice because it produces real evidence.
+
+**Rule.** When a lesson names a script, a flag or a test, RUN THAT, and say what it returned. Re-deriving its answer by hand is acceptable only as a CHECK ON the tool, stated as such - never as a substitute, because the substitute's population is invisible.
+
+**Compliance failure against item #235**, not a new class, so no new checklist item (#136 anti-theater). Durability: the instruction now sits in the tripwire table where it is read before acting, and audit_ticket_staleness.py is named there with its flag.

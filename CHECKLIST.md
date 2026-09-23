@@ -4101,6 +4101,8 @@ citation + queue ticket** on any stated miss, enumerated through the primitive.
 
 ### #235 - CITING A RULE IS NOT THE RULE RUNNING (B1753 / L511)
 
+**INSTANCE (L859, B3070, 2026-09-23).** The sibling of citing-is-not-running: RE-IMPLEMENTING a rule is not running it either. L830 names audit_ticket_staleness.py with its blockers flag; I re-derived four tickets' blockers by hand instead, which felt more rigorous - files opened, line numbers quoted - and covered 4 tickets where the tool covers 22 non-terminal rows and classifies each. **Effort is not coverage.** When a lesson names a script, a flag or a test, run it and report what it returned.
+
 **MEASURED:** `#224` - *a gate nobody calls is not enforcement* - was a checklist paragraph plus
 ten docstring banners **for its entire life**. No `scan_` function for unwired gates ever existed.
 It was cited by number, repeatedly, as though citing it were the same as it working - **in the same
