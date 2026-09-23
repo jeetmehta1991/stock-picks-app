@@ -227,9 +227,51 @@ def sample() -> dict:
     rec["commit_used_pct"] = (round(100.0 * (1 - cf / cl), 1)
                               if cl and cf is not None else None)
     rec.update(_engine_progress(wave))
+    # S6-B3062, the half that needs no ruling. The ticket proposed REFUSING a
+    # pyramid above a time threshold, which is a behaviour change and the
+    # owner's call. The concern underneath it - a config crossing the owner's
+    # 5 h cap is KILLED and its compute lost (B2107) - is served by INFORMATION
+    # alone. So record the projection, and record it honestly:
+    #   * L840: a rate read mid-run is NOT stationary and an early-day
+    #     projection is biased HIGH, so the basis sim-day rides along and a
+    #     reading before sim-day 40 is labelled EARLY-BIASED-HIGH;
+    #   * L749: the reading carries its own age, which is the sample ts;
+    #   * this REFUSES NOTHING. It is a number in a file.
+    _proj(rec)
     if _ERRORS:
         rec["read_errors"] = dict(_ERRORS)
     return rec
+
+
+CAP_H = 5.0        # B2107 owner ruling: no local run over 5 hours (hard cap)
+EARLY_SIM_DAY = 40  # below this, a rate projection is biased high (L840)
+
+
+def _proj(rec: dict) -> None:
+    """Project the running config's finish and its margin against the cap.
+
+    Never raises and never refuses - a recorder that could stop a run would be
+    worse than no recorder (the S6-B3061 principle).
+    """
+    try:
+        d = rec.get("sim_day_index")
+        h = rec.get("elapsed_hours")
+        if not d or not h or d <= 0 or h <= 0:
+            return
+        total_days = 249          # the campaign's window, seen on every config
+        rate = d / h              # sim-days per hour, THIS reading
+        proj = total_days / rate
+        rec["sim_days_per_hour"] = round(rate, 2)
+        rec["projected_total_h"] = round(proj, 3)
+        rec["cap_h"] = CAP_H
+        rec["cap_margin_h"] = round(CAP_H - proj, 3)
+        rec["projection_basis_sim_day"] = d
+        if d < EARLY_SIM_DAY:
+            rec["projection_caveat"] = "EARLY-BIASED-HIGH (L840)"
+        if proj >= CAP_H:
+            rec["cap_risk"] = "PROJECTED OVER CAP"
+    except Exception as exc:
+        _ERRORS["projection"] = type(exc).__name__
 
 
 def append(rec: dict, out: Path = OUT) -> None:

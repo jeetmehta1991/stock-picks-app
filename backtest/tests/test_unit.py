@@ -43157,3 +43157,57 @@ def test_b3066_sampler_is_off_the_hot_paths():
     assert not silent, (
         "these except blocks swallow silently, so a failed read impersonates a "
         "measurement: %s" % silent)
+
+
+def test_b3071_l859_row_and_cap_projection():
+    """S6-B3070/S6-B3062: the L859 rule survives, and the cap projection works.
+
+    Two halves, because B1739 says a rule added to CHECKLIST or SKILL needs a
+    mechanism or an explicit PROSE-ONLY. Detection of "a lesson named a tool
+    and someone re-implemented it by hand" is JUDGMENT-ONLY - no scan reads
+    intent, and the SEARCH for one was run: grep over the existing scan_
+    functions found scan_unverified_count, scan_uninspected_constant and
+    scan_count_without_members, each keyed on a CLAIM in the response, and
+    none can see which of two equivalent methods produced an answer. So the
+    mechanisable half is DURABILITY - assert the instruction cannot vanish.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+
+    # half 1: the L859 instruction survives in the file read every turn
+    sk = (root / ".claude" / "skills" / "execution-discipline"
+          / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    for frag in ("Effort is not coverage",
+                 "audit_ticket_staleness.py",
+                 "RUN THAT MECHANISM AND REPORT"):
+        assert frag in sk, "L859's tripwire row lost the fragment: " + frag
+    ck = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="replace")
+    assert "INSTANCE (L859" in ck, "#235 no longer anchors L859"
+
+    # half 2: the cap projection behaves - and can FAIL, not just exist
+    import sys as _sys
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import resource_sampler as rs
+
+    fast = {"sim_day_index": 200, "elapsed_hours": 2.0}
+    rs._proj(fast)
+    assert fast["sim_days_per_hour"] == 100.0, fast
+    assert fast["projected_total_h"] == 2.49, fast
+    assert fast["cap_margin_h"] == 2.51, fast
+    assert "cap_risk" not in fast, "a 2.49h projection must not flag risk"
+    assert "projection_caveat" not in fast, fast
+
+    slow = {"sim_day_index": 100, "elapsed_hours": 2.5}
+    rs._proj(slow)
+    assert slow["projected_total_h"] > rs.CAP_H, slow
+    assert slow["cap_risk"] == "PROJECTED OVER CAP", slow
+
+    early = {"sim_day_index": 10, "elapsed_hours": 0.2}
+    rs._proj(early)
+    assert early["projection_caveat"] == "EARLY-BIASED-HIGH (L840)", early
+
+    # a reading with no progress must add nothing rather than guess
+    empty = {"sim_day_index": None, "elapsed_hours": None}
+    rs._proj(empty)
+    assert "projected_total_h" not in empty, empty
