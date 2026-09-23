@@ -17716,6 +17716,8 @@ happened to want a distribution rather than a yes/no.** The shape to catch is th
 it is what makes `[0]` feel sufficient.
 
 ## L715
+**ADDENDUM (B3055): THE MIRROR - A FIXED-LENGTH WINDOW FROM A FOUND ANCHOR PICKS UP A NEWLY ADJACENT SIBLING.** L715's instance goes BLIND, missing what it should see. This one goes GREEDY. A pin sliced a gate's body as `src[i:i + 1400]` from the `def` it had located - anchored on structure at the START, which is why it read as compliant - and the B2931 split inserts each new registration IMMEDIATELY AFTER its parent. The window then spilled into the sibling, so an assertion that the parent no longer calls the added arm found that call in the CHILD and failed. **Anchoring the START on structure is half the rule; the END needs it too** - bounded at the next `def`, both directions hold. MEASURED: the assertion failed in the worktree quoting the bos arm's body back while nominally testing the parent, which is the tell - an error message describing code you did not think you were reading. Near-miss in the same patch, caught before it ran: the first draft asserted the bare signal NAME was absent from the parent, and b2931 writes that name into the parent's own comment (L748).
+
 **A SCAN ANCHORED TO ABSOLUTE LINE NUMBERS GOES BLIND WHEN CODE IS INSERTED ABOVE IT - AND BLINDNESS RENDERS
 IDENTICALLY TO COMPLIANCE (B2389).**
 Implementing S6-B2213a I inserted ~100 lines ABOVE the engine's day loop. That shifted the loop
