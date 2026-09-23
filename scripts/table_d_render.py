@@ -129,6 +129,27 @@ def load(paths: list) -> tuple[list, list, list]:
     return arts, rows, skips
 
 
+def _rank_key(r: dict) -> tuple:
+    """The LOCKED Table D order: is_ci_lo DESC, then n DESC.
+
+    B3085. This renderer ranked on -is_sharpe, which the runbook's 6.4b
+    names as the REJECTED key: "Sorting on Sharpe was rejected: L455 records
+    that the higher Sharpe can carry a NEGATIVE lower bound." MEASURED on the
+    432-row three_white_soldiers set - 15 of the 25 top rows under the Sharpe
+    sort carried a negative lower bound, and only 2 of 25 positions agreed
+    with the specified order.
+
+    A row whose lower bound or trade count is NOT RECORDED sorts LAST on that
+    key rather than being read as 0 - an absent measurement must never rank as
+    a measured one (L580). Python's sort is stable, so rows tied on every
+    available key keep the order their artifacts were read in.
+    """
+    ci = r.get("is_ci_lo")
+    n = r.get("is_n")
+    return (0 if ci is not None else 1, -(ci if ci is not None else 0),
+            0 if n is not None else 1, -(n if n is not None else 0))
+
+
 def _design(rows: list) -> str:
     """B3082e: name the design the ROWS have, not an assumed one.
 
@@ -196,7 +217,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
     rows = [r for r in rows if not r.get("axis") or r["axis"] in known]
     skips = [s for s in skips if s.get("axis") in known]
     ranked = sorted((r for r in rows if not r.get("npt_barred")),
-                    key=lambda r: -r["is_sharpe"])
+                    key=_rank_key)
 
     # B3082c: evidence of testing comes in two shapes and BOTH count.
     #   sweep     - r["axis"]/r["level"], one axis per row
@@ -306,6 +327,10 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                "ranking columns - sharpe and ci_lo - are the graders' own "
                "output and are unaffected."]
               if any(r.get("is_n") is None for r in ranked) else []),
+            "SORT - is_ci_lo DESCENDING, then IS n descending, nothing filtered (runbook 6.4b). Ranking on Sharpe is the REJECTED order: a higher Sharpe can carry a NEGATIVE lower bound (L455)."
+            + ("" if any(r.get("is_n") is not None for r in ranked)
+               else " The secondary key is UNAVAILABLE here - no row carries IS n - so rows tied on is_ci_lo keep artifact order rather than being ranked on a substituted count."),
+            "EXITS - Step 1 picks each cell's exit by SHARPE alone (B1605) while this table RANKS by is_ci_lo. Two objectives, so a leading row can carry the exit that won on Sharpe.",
             f"Showing top {min(top, len(ranked))} of {len(ranked)} ranked cells.",
             "",
             "| rank | " + " | ".join(p["param"] for p in params)

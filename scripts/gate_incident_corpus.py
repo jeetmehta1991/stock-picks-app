@@ -72,6 +72,13 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
     # B1849 causal test. It promises a periodic unconditional report and has
     # no stall clause at all, so it could report a hung run as healthy, which
     # is what three ticks did at B1555.
+    # B3084: VERBATIM from the 22:16Z hourly report - the third
+    # firing of a cron whose subject had already landed.
+    "scan_monitor_not_retired": (
+        "Chain paused by owner instruction, nothing running, nothing owed.",
+        True,
+        {"events": ["create"]},
+    ),
     "scan_monitor_without_stall_check": (
         "PERIODIC UNCONDITIONAL RUN REPORT - B1849 causal test. Report EVERY "
         "time this fires. Do not withhold the report because nothing changed. "
@@ -686,6 +693,15 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
          {"blobs": ["grep -c 'AssertionError' run.log  # POSITIVE CONTROL "
                     "verified: line 10582 reads exactly AssertionError, "
                     "grep -c returns 1"]}),
+    ],
+    # B3084 (L594): a fire-only corpus cannot see a gate that
+    # fires on everything. Both must-QUIET shapes are here -
+    # the arm was retired, and the run is still live.
+    "scan_monitor_not_retired": [
+        ("Chain paused by owner instruction, nothing running, nothing owed.",
+         False, {"events": ["create", "delete"]}),
+        ("The wave is at sim-day 206 and advancing normally.",
+         False, {"events": ["create"]}),
     ],
     "scan_monitor_without_stall_check": [
         ("monitor armed", False,

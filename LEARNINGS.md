@@ -23235,3 +23235,77 @@ pins that an untouched free_band axis reads NOT TESTED and that `TESTED at`
 never appears on it; `test_b3082_table_d_reads_the_factorial_artifact_shape`
 pins the derived design phrase and the absent-count rendering.
 
+### L862 - THE ARM HALF OF A MONITOR'S LIFECYCLE IS GATED AND THE DISARM HALF WAS ENFORCED BY REMEMBERING (B3084, owner-caught 2026-09-23)
+
+**MEASURED.** Cron 524950bc watched a serial chain. The owner paused the chain,
+the config it watched landed COMPLETE, and the cron went on firing hourly for
+three more cycles - each one re-asserting a TERMINAL sim_day_index of 249 as
+though it were current, and each one instructing me to report a log append as
+still owed that had already been made. It ended because the owner said DISCARD
+THE HOURLY CRON, not because anything noticed.
+
+**The rule already existed.** `feedback_batch_run_update_cadence` step 2 has
+read *"On completion: PushNotification + CronDelete the job"* since B1356. So
+this is a COMPLIANCE FAILURE, not a gap in the rules - and the reason it failed
+is structural: `#185` gates the ARM at launch and `scan_monitor_without_stall_check`
+judges the arm's PROMPT, so the arming half had two mechanisms and the retiring
+half had none. **A monitor has a lifecycle and only its first half was ever
+instrumented.**
+
+**Why it survives.** A monitor that outlives its subject does not fail - it
+SUCCEEDS, on a prompt frozen at the moment it was armed. Each firing looks like
+diligence, and repetition on a timer reads as corroboration (L839). Every report
+it produced was accurate; what was wrong was that it should not have existed.
+
+**The rule.** When the watched thing reaches a terminal state, retire its
+monitor in the same turn. The existing sibling gate is TURN-SCOPED and cannot
+see an arm from hours earlier, so the new one counts arms and retirements across
+the SESSION and fires only when the response itself says the subject has
+stopped - a live run's monitor is never flagged.
+
+**ENFORCER:** `scan_monitor_not_retired`, pinned by
+`test_b3084_monitor_not_retired_fires_and_stays_quiet` with two must-QUIET arms
+(the arm was retired; the run is still live), so a gate that fires on everything
+cannot pass (L594).
+
+### L863 - A LOCKED FORMAT IS MORE THAN ITS COLUMNS, AND A COLUMN-PIN GOES GREEN ON A MISORDERED TABLE (B3085, owner-caught 2026-09-23)
+
+**MEASURED.** The owner said *"sort this table as per specs"*. The runbook's
+6.4b reads, verbatim: *"Sort: is_ci_lo descending, then n descending - and
+NOTHING is filtered ... Sorting on Sharpe was rejected: L455 records that the
+higher Sharpe can carry a NEGATIVE lower bound."* `table_d_render.py` - the
+renderer B2699 declared canonical for the unified form - ranked on
+`-is_sharpe`. Its sibling `producer_variant_table.py` sorts on `-ci` at two
+sites. **The ruling was implemented in one of two sibling renderers and the
+canonical one never inherited it** - L790's class, second instance.
+
+**The cost, measured on 432 rows:** 15 of the 25 top rows carried a NEGATIVE
+lower bound, and only 2 of 25 positions agreed with the specified order. In the
+committed smc_lsr precedent the same defect ranks ci_lo -5.644 at n=10 ABOVE a
+row at ci_lo 0.729 with n=111.
+
+**Why every guard missed it.** `#303` exists for exactly this class and its own
+title ends *PIN A LOCKED FORMAT ON ITS COLUMNS* - so the pins assert columns,
+and **a column assertion is satisfied by a table whose rows are in any order at
+all.** The format was pinned on the half visible in a header and left unpinned
+on the half that decides what a reader acts on.
+
+**The rule.** A locked format's ORDERING is part of the format. Pin the
+ordering PROPERTY, not the key: assert that a higher-Sharpe row carrying the
+lower bound ranks BELOW its rival - an assertion that fails under the rejected
+key and survives any future re-expression of the right one.
+
+**AND DO NOT REGENERATE A DATED ARTIFACT TO FIX ITS ORDER.** Re-rendering the
+smc_lsr precedent today returns 338 rows, not 702: the B2708 filter drops rows
+whose axis has since left the live Table A registry - 364 rows across five axes
+(bb_20_20_bandwidth, vp_close_near_poc_pct, atr_pct at 104 each, bullish_engulfing
+and gap_up_2pct at 26 each). That is the filter behaving as designed, and it
+means a re-render mixes two registry states and destroys evidence the committed
+artifact preserves. Fix the RENDERER, re-render what is CURRENT, and leave the
+dated record with a ticket naming the order it was built under. I overwrote it
+once before measuring and restored it from git; measure the row count BEFORE
+replacing a committed artifact, not after.
+
+**ENFORCER:** `test_b3085_table_d_sorts_on_the_locked_key`, which asserts the
+ordering property, the n tiebreak, absent-sorts-last, and the rendered
+disclosure.

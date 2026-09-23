@@ -4607,6 +4607,64 @@ CONTROL_CUES = ("grep_control", "search_with_control", "known positive",
                 "sample line", "matches a real line")
 
 
+# B3084 / L862: a report that nothing is running, while a cron this
+# session armed has never been deleted. QUIET_MARKERS are the phrases a
+# wound-down report uses; explicit substrings rather than a regex
+# alternation, per L638 (an alternation matched 7 sites in a probe and 3
+# from inside the test).
+QUIET_MARKERS = ("nothing running", "nothing owed", "chain paused",
+                 "no process", "not reappeared", "nothing is running")
+
+
+def scan_monitor_not_retired(entries, *, text=None, events=None) -> list[str]:
+    """L862: the ARM half of a monitor's lifecycle is gated; the DISARM half was not.
+
+    `feedback_batch_run_update_cadence` step 2 has said "On completion:
+    PushNotification + CronDelete the job" since B1356. Nothing enforced it.
+    MEASURED 2026-09-23: cron 524950bc outlived the run it watched by three
+    hourly firings, each re-asserting a terminal sim_day_index as if current,
+    until the owner said discard it.
+
+    Distinct from `scan_monitor_without_stall_check`, which judges an arm's
+    PROMPT and is TURN-SCOPED - a cron armed hours earlier is invisible to it.
+    This counts arms and retirements across the SESSION and fires only when the
+    response itself says the watched thing has stopped, so a live run's monitor
+    is never flagged.
+    """
+    import json as _j3
+
+    t = _response_text(entries, text)
+    if not t or not any(m in t for m in QUIET_MARKERS):
+        return []
+    if events is None:
+        events = []
+        for e in entries or ():
+            if e.get("type") != "assistant":
+                continue
+            for c in (e.get("message") or {}).get("content") or ():
+                if not (isinstance(c, dict) and c.get("type") == "tool_use"):
+                    continue
+                nm = str(c.get("name", "")).lower()
+                if "croncreate" in nm:
+                    events.append("create")
+                elif "crondelete" in nm:
+                    events.append("delete")
+        _j3  # imported for symmetry with sibling collectors; unused here
+    outstanding = events.count("create") - events.count("delete")
+    if outstanding <= 0:
+        return []
+    return ["MONITOR NOT RETIRED (B3084 / L862): this response reports that the "
+            "watched run has stopped while %d cron arm(s) from this session "
+            "have no matching CronDelete. The standing rule "
+            "feedback_batch_run_update_cadence step 2 is "
+            "'On completion: PushNotification + CronDelete the job' - the arm "
+            "half is gated by #185 and the disarm half was enforced by "
+            "remembering. A monitor that outlives its subject keeps firing a "
+            "prompt frozen at the moment it was armed, and repetition on a "
+            "timer reads as corroboration (L839). Delete it, or say in the "
+            "response why it must stay armed." % outstanding]
+
+
 def scan_monitor_pattern_unverified(entries, *, blobs=None) -> list[str]:
     """L576: a monitor that SEARCHES must prove its pattern can match.
 
@@ -5154,6 +5212,7 @@ def main(argv: list[str] | None = None) -> int:
                 scan_monitor_without_stall_check,
                 scan_bulk_process_kill,
                 scan_bare_python_launch,
+                scan_monitor_not_retired,
                 scan_monitor_pattern_unverified,
                 # B2520: a landed cube must be REPORTED before the turn ends.
                 scan_undelivered_landing,

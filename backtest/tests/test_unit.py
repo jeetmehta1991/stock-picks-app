@@ -43576,3 +43576,121 @@ def test_b3082_inventory_labels_come_from_evidence_not_band_shape(tmp_path):
 
     # a resim-only axis nothing varied keeps its honest untested label
     assert "UNTESTED-OFFLINE" in inv["P1"], inv["P1"]
+
+
+def test_b3084_monitor_not_retired_fires_and_stays_quiet():
+    """S6-B3084 / L862: the DISARM half of a monitor's lifecycle.
+
+    feedback_batch_run_update_cadence step 2 has read 'On completion:
+    PushNotification + CronDelete the job' since B1356, and nothing
+    enforced it. MEASURED 2026-09-23: cron 524950bc outlived the run it
+    watched by three hourly firings, each re-asserting a TERMINAL
+    sim_day_index as though current, until the owner said discard it.
+
+    The sibling scan_monitor_without_stall_check judges an arm's PROMPT
+    and is turn-scoped, so a cron armed hours earlier cannot reach it.
+    """
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    v = importlib.import_module("verify_turn_compliance")
+
+    quiet = "Chain paused by owner instruction, nothing running, nothing owed."
+    live = "The wave is at sim-day 206 and advancing normally."
+
+    # FIRES: the report says it stopped and an arm is outstanding
+    out = v.scan_monitor_not_retired([], text=quiet, events=["create"])
+    assert out, out
+    assert "MONITOR NOT RETIRED" in out[0], out[0]
+
+    # QUIET: the arm was retired in the same session
+    assert not v.scan_monitor_not_retired(
+        [], text=quiet, events=["create", "delete"])
+
+    # QUIET: the run is still live, so its monitor SHOULD stay armed
+    assert not v.scan_monitor_not_retired([], text=live, events=["create"])
+
+    # QUIET: nothing was ever armed
+    assert not v.scan_monitor_not_retired([], text=quiet, events=[])
+
+    # the gate is WIRED, not merely defined (#224): registration plus
+    # definition is two occurrences; one would mean it never runs
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert src.count("scan_monitor_not_retired") >= 2, src.count(
+        "scan_monitor_not_retired")
+
+
+def test_b3085_table_d_sorts_on_the_locked_key():
+    """S6-B3085 / L863: Table D ranks on is_ci_lo DESC then n DESC.
+
+    Runbook 6.4b, verbatim: "Sort: is_ci_lo descending, then n descending -
+    and NOTHING is filtered. ... Sorting on Sharpe was rejected: L455 records
+    that the higher Sharpe can carry a NEGATIVE lower bound."
+
+    table_d_render.py ranked on -is_sharpe for its whole life while its
+    sibling producer_variant_table.py sorts on -ci at two sites - L790's
+    class, second instance. MEASURED on the 432-row three_white_soldiers set:
+    15 of the 25 top rows under the Sharpe sort carried a NEGATIVE lower
+    bound, and only 2 of 25 positions agreed with the specified order.
+
+    The assertions below pin the ORDERING PROPERTY rather than the key name,
+    so any future re-expression of the right rule still passes and the
+    rejected one still fails.
+    """
+    import importlib
+    import json as _j
+    import sys as _sys
+    import tempfile as _t
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("table_d_render")
+
+    # THE PROPERTY THE SPEC EXISTS FOR: a higher Sharpe carrying a LOWER
+    # lower-bound must rank BELOW. Under the rejected key this inverts.
+    hi_sharpe = {"is_sharpe": 2.0, "is_ci_lo": -5.6, "is_n": 10}
+    hi_cilo = {"is_sharpe": 0.4, "is_ci_lo": 0.73, "is_n": 111}
+    assert sorted([hi_sharpe, hi_cilo], key=m._rank_key)[0] is hi_cilo
+
+    # n DESC is the secondary key, applied only at equal ci_lo
+    few = {"is_sharpe": 0.1, "is_ci_lo": 0.5, "is_n": 20}
+    many = {"is_sharpe": 0.1, "is_ci_lo": 0.5, "is_n": 300}
+    assert sorted([few, many], key=m._rank_key)[0] is many
+
+    # an ABSENT lower bound sorts LAST, never as 0 (L580)
+    absent = {"is_sharpe": 9.9, "is_ci_lo": None, "is_n": None}
+    worst = {"is_sharpe": 0.0, "is_ci_lo": -99.0, "is_n": 5}
+    assert sorted([absent, worst], key=m._rank_key)[0] is worst
+
+    # and the rendered table DISCLOSES the key, so a reader can check it
+    art = {
+        "strategy": "three_white_soldiers",
+        "rows": 6264,
+        "config": {"P2_n_bars": 3, "P3_min_body_pct": 0.5,
+                   "P4_min_step_pct": 0.0, "P5_max_wick_pct": 0.3},
+        "per_exit": [
+            {"exit": "regime_flip", "is_sharpe": 2.0, "is_ci_lo": -5.6,
+             "fires": 9, "rank": 1},
+            {"exit": "time_stop_10d", "is_sharpe": 0.4, "is_ci_lo": 0.73,
+             "fires": 9, "rank": 2},
+        ],
+    }
+    with _t.TemporaryDirectory() as d:
+        p = _P(d) / "zz.json"
+        p.write_text(_j.dumps(art), encoding="utf-8")
+        out = m.build_table("three_white_soldiers", [str(p)], top=10)
+    assert "is_ci_lo DESCENDING" in out, out[:400]
+    assert "REJECTED order" in out, out[:400]
+    # the leading row is the one with the higher LOWER BOUND, not Sharpe
+    body = [x for x in out.split(chr(10)) if x.startswith("| 1 |")]
+    assert len(body) == 1, out
+    assert "time_stop_10d" in body[0], body[0]

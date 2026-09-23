@@ -5917,6 +5917,22 @@ pin in test_b2123 plus test_b1486's banner sync.**
 
 ### #303 - A FORMAT RULING BINDS EVERY RENDERER OF THAT FORMAT; PIN A LOCKED FORMAT ON ITS COLUMNS (B2725 / L790, owner-caught 2026-09-12)
 
+**INSTANCE 2 - THE ORDERING IS PART OF THE FORMAT, AND THIS ITEM'S OWN TITLE IS WHY IT WAS MISSED (B3085 / L863).**
+This heading ends *PIN A LOCKED FORMAT ON ITS COLUMNS*, so every Table D pin asserts
+COLUMNS - and **a column assertion is satisfied by a table whose rows are in any order
+at all.** MEASURED 2026-09-23, owner-caught with *"sort this table by as per specs"*:
+runbook 6.4b rules `is_ci_lo` descending then `n` descending and records that sorting on
+Sharpe was REJECTED because a higher Sharpe can carry a negative lower bound (L455).
+`table_d_render.py`, the renderer B2699 declared canonical, ranked on `-is_sharpe` for
+its whole life while its sibling `producer_variant_table.py` sorts on `-ci` at two sites
+- the same one-of-two-siblings shape this item was minted from. Cost on 432 rows: **15 of
+the 25 top rows carried a NEGATIVE lower bound and only 2 of 25 positions agreed with the
+specified order.** **Pin the ordering PROPERTY, not the key name** - assert a
+higher-Sharpe row with the lower bound ranks BELOW its rival, which fails under the
+rejected key and survives any re-expression of the right one. ENFORCED BY
+test_b3085_table_d_sorts_on_the_locked_key, fail-proved in both directions.
+
+
 An owner ruling about a DOCUMENT ("Table D is one unified table, a column per
 producer band") is satisfied per-RENDERER, and a repo can hold more than one
 renderer for the same document. Before calling such a ruling satisfied:
@@ -6175,3 +6191,23 @@ named tool for the mechanism's identifier and confirm a caller. DURABILITY IS PI
 rule was minted from IS mechanically enforced - test_b3061_pyramid_discloses_a_config_in_flight pins scripts/pyramid_gate.py's
 _chain_inflight() in both directions - but the CLASS (does a lesson's durable
 half sit where the failure re-executes?) has no scan and is checked by reading.
+
+### #320 - A MONITOR HAS A LIFECYCLE; RETIRE IT WHEN ITS SUBJECT STOPS (B3084 / L862, owner-caught 2026-09-23)
+
+`#185` gates ARMING a cadence monitor at launch and `scan_monitor_without_stall_check`
+judges the arm's PROMPT. **Nothing gated the other end.** `feedback_batch_run_update_cadence`
+step 2 has read *"On completion: PushNotification + CronDelete the job"* since B1356 and
+was enforced by remembering.
+
+MEASURED 2026-09-23: cron 524950bc outlived the run it watched by three hourly firings,
+each re-asserting a TERMINAL `sim_day_index` of 249 as though current and instructing a
+report of a log append already made. It stopped because the owner said discard it.
+**A monitor that outlives its subject does not fail - it SUCCEEDS on a frozen prompt**,
+so every firing reads as diligence and repetition on a timer reads as corroboration (L839).
+
+RULE: when the watched thing reaches a terminal state, retire its monitor in the SAME
+turn, or say in the response why it must stay armed. ENFORCED BY `scan_monitor_not_retired`,
+which counts arms and retirements across the SESSION - the sibling gate is turn-scoped and
+cannot see an arm from hours earlier - and fires only when the response itself says the
+subject has stopped, so a live run's monitor is never flagged. Pinned by
+test_b3084_monitor_not_retired_fires_and_stays_quiet with two must-QUIET arms (L594).
