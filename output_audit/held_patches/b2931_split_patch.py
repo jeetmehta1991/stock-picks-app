@@ -7,12 +7,43 @@ mid-chain puts configs on different rosters (S6-B2957 / L836 addendum).
 The chain-done checklist runs:
 
     python output_audit/held_patches/b2931_split_patch.py
-    python -m pytest backtest/tests/test_unit.py -q -k "b2931 or f_002 or 15457"
-    python scripts/build_strategy_status.py     # regenerate the 223-row doc
+    #   S6-B3034: THE REGENERATION STEPS MOVED ABOVE THE PYTEST STEP, and the
+    #   order is load-bearing, not tidiness. Three of this patch's pins read
+    #   a GENERATED artifact, not source: test_b2825 reads
+    #   strategy_optimisation_status.json's row count, test_batch373_e1 reads
+    #   the drift snapshot, test_batch357 reads the doc counts. The patch
+    #   edits their ASSERTS to 225 and the artifacts only reach 225 when
+    #   regenerated - so with the old order those three pins COULD NOT pass
+    #   at the point the selector ran, whatever the patch did.
+    python scripts/build_strategy_status.py     # 223 -> 225 rows (one rec per
+                       # name: build_strategy_status.py:283 iterates
+                       # sorted(ALL_STRATEGIES), appending unconditionally)
     python scripts/drift_audit_pre_phase_1a_beta.py   # snapshot strategy_total
                        # 223 -> 225 (worktree validation 2026-09-22 found
                        # test_batch373_e1_drift reading this snapshot; with it
                        # regenerated, 7 of 7 targeted pins pass)
+    python -m pytest backtest/tests/test_unit.py -q -k "b2931 or b2825 or b1248 or batch373_e1_doc_count_pin_against_code or b1619_variant_strategy_binds_to_its_own_signal"
+    #   S6-B3030: the old selector was VACUOUS - MEASURED 2026-09-23, the
+    #   expression "b2931 or f_002 or 15457" collects ZERO tests (1330
+    #   deselected) and pytest EXITS 0 on an empty selection, so this
+    #   checklist step went green having run nothing. `f_002` is a
+    #   CONCEPT name and `15457` is a LINE NUMBER; -k matches test NAMES,
+    #   so neither could ever match, and the line has since drifted to
+    #   15461. Pinned since B3034 by
+    #   test_b3033_held_patch_selector_terms_name_tests_that_exist.
+    #   S6-B3034 added b2825 (this patch moves its assert, see step 6) and
+    #   b1248 (#315: a pin this change BREAKS).
+    #   *** b1248 IS EXPECTED TO FAIL AND MUST NOT BE WAVED THROUGH. ***
+    #   test_b1248_or_arm_attribution_separates_the_added_arm asserts
+    #   `" or " in` the source of strat_smc_equal_highs_sweep_short, and its
+    #   own docstring states why: "if a future edit changes an arm, the
+    #   recorded shares stop describing the code". This split REPLACES that
+    #   OR with an exact partition, so the tripwire is firing exactly as
+    #   designed - the recorded OR-arm attribution shares now describe a
+    #   roster that no longer exists. It is in this selector so that fact
+    #   surfaces in two seconds rather than at the pyramid gate. DISPOSITION
+    #   IS OWNER-RULED, carried by S6-B3035; this patch does not apply until
+    #   that ruling lands.
     python scripts/pyramid_gate.py --out output_audit/b2931_apply_gate.json \
         -- backtest/tests/test_unit.py backtest/tests/test_integration.py -q
 
@@ -30,9 +61,13 @@ bar fires in both - total fires are preserved, only the naming splits.
 Both new registrations keep the parent's family and the parent's other
 confluence gates verbatim, and their docstrings carry the lineage.
 
-COUNT PINS moved 223 -> 225 (and derived counts +2) at the FOUR sites this
-file edits by exact anchor; a fifth pin (the status doc's 223 rows) moves
-by REGENERATION, not by edit - run build_strategy_status.py as listed.
+COUNT PINS moved 223 -> 225 (and derived counts +2) at the FIVE sites this
+file edits by exact anchor. S6-B3034 CORRECTS THIS PARAGRAPH: it read
+'FOUR sites ... a fifth pin (the status doc's 223 rows) moves by
+REGENERATION, not by edit', which is wrong in both halves. Step 6 DOES
+edit that pin's assert (223 -> 225, the last sub in the block), and the
+DATA it compares against moves by regeneration - so the pin needs BOTH,
+which is why build_strategy_status.py must run BEFORE the pytest step.
 CLAUDE.md's canonical counts are banner-synced in the applying commit.
 """
 import ast
@@ -43,7 +78,14 @@ def rd(p):
     return io.open(p, encoding="utf-8", newline="").read()
 
 def nl(p):
-    return "\r\n" if "\r\n" in rd(p) else "\n"
+    # S6-B3026: the DOMINANT ending, not ANY occurrence. This helper runs
+    # at CHAIN DONE against files edited across the whole session, and the
+    # presence form lets ONE foreign line convert every replacement the
+    # patch writes - the amplification L850 records, which turned a single
+    # landing row into a 120-line diff preflight C13 refused at B3023. A
+    # majority test is unmoved by a stray line and identical otherwise.
+    text = rd(p)
+    return "\r\n" if text.count("\r\n") * 2 > text.count("\n") else "\n"
 
 def sub(path, old, new, count=1):
     s = rd(path)

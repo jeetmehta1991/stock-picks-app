@@ -7,7 +7,18 @@ applying this while the b2944b chain runs would grade earlier and later
 configs under different disposition rules. The chain-done checklist runs:
 
     python output_audit/held_patches/b2919_terminal_na_patch.py
-    python -m pytest backtest/tests/test_unit.py -q -k b2919_terminal
+    python -m pytest backtest/tests/test_unit.py -q -k "b2919_below_power or b2612"
+    #   S6-B3031: the token was b2919_terminal and it collects ZERO
+    #   tests - the pin is named test_b2919_below_power_is_terminal_na
+    #   and -k does SUBSTRING matching, so b2919_terminal is not in it.
+    #   This selector never ran the patch's own pin, which is why the
+    #   KeyError below went undiscovered until a full-suite diff.
+    #   S6-B3030 (#315): b2612 is NOT decoration. This patch adds an N/A
+    #   branch to the very fail-closed path
+    #   test_b2612_step2_cube_without_gate_verdicts_fails_closed pins, so
+    #   that pin MUST move with the ruling or the two contradict. The old
+    #   selector named only the pin this patch ADDS, so the conflict
+    #   surfaced at the pyramid late in the apply batch instead of here.
     python scripts/pyramid_gate.py --out output_audit/b2919_apply_gate.json \
         -- backtest/tests/test_unit.py backtest/tests/test_integration.py -q
 
@@ -40,7 +51,14 @@ def rd(p):
     return io.open(p, encoding="utf-8", newline="").read()
 
 def nl(p):
-    return "\r\n" if "\r\n" in rd(p) else "\n"
+    # S6-B3026: the DOMINANT ending, not ANY occurrence. This helper runs
+    # at CHAIN DONE against files edited across the whole session, and the
+    # presence form lets ONE foreign line convert every replacement the
+    # patch writes - the amplification L850 records, which turned a single
+    # landing row into a 120-line diff preflight C13 refused at B3023. A
+    # majority test is unmoved by a stray line and identical otherwise.
+    text = rd(p)
+    return "\r\n" if text.count("\r\n") * 2 > text.count("\n") else "\n"
 
 def sub(path, old, new, count=1):
     s = rd(path)
@@ -156,9 +174,19 @@ def test_b2919_below_power_is_terminal_na(monkeypatch, tmp_path):
                         "reason": "holdout n 7 < min_n 10 on 'ts10'"}}
     malformed = {"results": [{"verdict": "RANKED"}]}
 
+    # S6-B3032: the family's OWN key set, not an empty dict.
+    # run_family builds its label as p[k] for every key the family
+    # declares (run_postconfig.py:619), so {} raises KeyError on the
+    # first one. institutional_committed_growth_long declares four:
+    # P4 min_consecutive_quarters, P5 growth_lookback_quarters,
+    # P6 growth_multiple, P9 ema_span. These values mirror the B2612
+    # harness this fixture claims to mirror (test_unit.py:30813).
+    _p = {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+          "growth_multiple": 1.1, "ema_span": 200}
+
     # arm 1: honest verdict -> N/A, verdict and reason carried, no FAIL row
     monkeypatch.setattr(rp, "_run", make_run(honest))
-    res, _, _, _ = rp.run_institutional(cube, {}, manifest, step=2)
+    res, _, _, _ = rp.run_institutional(cube, _p, manifest, step=2)
     by = {n: (st, m) for n, st, m in res}
     assert by["step2_grade_auto"][0] == "N/A", by["step2_grade_auto"]
     assert "BELOW_POWER_FLOOR" in by["step2_grade_auto"][1]
@@ -167,7 +195,7 @@ def test_b2919_below_power_is_terminal_na(monkeypatch, tmp_path):
 
     # arm 2: NO step2 block on a declared Step-2 cube -> FAIL closed (L642)
     monkeypatch.setattr(rp, "_run", make_run(malformed))
-    res2, _, _, _ = rp.run_institutional(cube, {}, manifest, step=2)
+    res2, _, _, _ = rp.run_institutional(cube, _p, manifest, step=2)
     by2 = {n: (st, m) for n, st, m in res2}
     assert by2["step2_grade_auto"][0] == "FAIL", by2["step2_grade_auto"]
 '''

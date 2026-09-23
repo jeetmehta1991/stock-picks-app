@@ -36180,12 +36180,60 @@ def test_b2705_judgment_only_declarations_carry_their_search():
     tail = text.split("### #298", 1)
     assert len(tail) == 2, "modern items start at #298"
     sections = ("### #298" + tail[1]).split("### #")
+
+    # S6-B3036b: a BODY line carrying the split token halves its own
+    # item, and the two fragments then fail this check for opposite
+    # reasons - one holds the JUDGMENT-ONLY with no durability, the
+    # other holds the durability with no JUDGMENT-ONLY - so BOTH are
+    # skipped and the item is never checked at all. MEASURED: #316
+    # quoted the marker while describing #315 and split in two,
+    # passing vacuously. This is L748 - anchor on something that
+    # cannot appear in prose - arriving through the SPLITTER rather
+    # than through an assertion, which is why the prose reads fine.
+    for i, line in enumerate(text.split("\n"), 1):
+        if "### #" in line and not line.startswith("### #"):
+            raise AssertionError(
+                "CHECKLIST.md:%d - a BODY line carries the section-split "
+                "token, which halves its item and makes this gate skip "
+                "both fragments: %s" % (i, line.strip()[:90]))
     for sec in sections:
         if "JUDGMENT-ONLY" not in sec:
             continue
-        ok = ("durability" in sec or "pinned by" in sec.lower()
-              or "attempted" in sec or "Mechanism" in sec)
+        # S6-B3035: the durability arm was CASE-SENSITIVE while the
+        # "pinned by" arm beside it was not - one boolean, two
+        # comparisons, which is the L771 class. "Durability" opens a
+        # sentence, so the NORMAL form of a compliant clause was
+        # invisible and both #315 sections failed carrying the exact
+        # clause #300 demands. "Mechanism" stays CAPITALISED on
+        # purpose: it marks L548's structured form, and lowercasing
+        # it would match the prose "no mechanism is possible" - the
+        # bare label this rule exists to refuse (L528: an escape
+        # takes the STRICTER matcher).
+        low = sec.lower()
+        ok = ("durability" in low or "pinned by" in low
+              or "attempted" in low or "Mechanism" in sec)
         assert ok, "a JUDGMENT-ONLY with no durability/attempted-search "                    "clause in item section: #" + sec[:60]
+
+    # S6-B3035: the arm pinned in BOTH directions, because the defect it
+    # just carried was invisible from the repo text - every section
+    # passed until one opened its clause with a capital D. A corpus of
+    # must-QUIET cases alone cannot see an arm that accepts everything.
+    def _arm(s):
+        lo = s.lower()
+        return ("durability" in lo or "pinned by" in lo
+                or "attempted" in lo or "Mechanism" in s)
+
+    for label, body, want in (
+            ("bare label", "Detection is JUDGMENT-ONLY.", False),
+            ("no mechanism is possible",
+             "JUDGMENT-ONLY: no mechanism is possible here.", False),
+            ("Durability capitalised",
+             "JUDGMENT-ONLY. Durability is pinned by test_b999.", True),
+            ("durability lowercase",
+             "JUDGMENT-ONLY; durability via test_b999.", True),
+            ("L548 structured form",
+             "Mechanism: JUDGMENT-ONLY. No scan reads intent.", True)):
+        assert _arm(body) is want, (label, body, "arm verdict moved")
 
 
 def test_b2706_smc_depth_knobs_reach_the_engine_and_bite():
@@ -42731,3 +42779,91 @@ def test_b3024_landing_row_matches_the_target_files_dominant_ending():
     assert ".join(lines)" in ld, (
         "launch_detached writes a .cmd batch file, where CRLF is REQUIRED - "
         "this sweep classified it as correct and it must not be 'fixed'")
+
+
+
+def test_b3033_held_patch_selector_terms_name_tests_that_exist():
+    """S6-B3033 / CHECKLIST #315: a held patch's `-k` selector is a gate only
+    if every term in it resolves to a test that exists somewhere.
+
+    MEASURED 2026-09-23 - THREE defective terms across two parked patches:
+    `f_002` (a CONCEPT name), `15457` (a LINE NUMBER, since drifted to 15461)
+    and `b2919_terminal` (a pin misremembered; it is named
+    test_b2919_below_power_is_terminal_na and -k matches substrings). Each
+    collects ZERO tests, and `pytest -k` EXITS 0 on an empty selection, so
+    both checklist steps reported green having run nothing - one of them for
+    the entire life of the parked patch, which is why a KeyError in that
+    patch's own pin survived until a full-suite diff found it.
+
+    A term is legitimate when it names a test in the SUITE (a pin the change
+    BREAKS) or a test the patch's own source APPENDS (a pin it ADDS). Both
+    halves of #315 therefore reduce to one substring check.
+    """
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    suite = (root / "backtest" / "tests" / "test_unit.py").read_text(
+        encoding="utf-8", errors="replace")
+    held = sorted((root / "output_audit" / "held_patches").glob("*.py"))
+    assert held, "no held patches found - the directory or the glob moved"
+
+    NAMES = re.compile(r"def (test_[A-Za-z0-9_]+)")
+    suite_names = set(NAMES.findall(suite))
+
+    checked = 0
+    for p in held:
+        src = p.read_text(encoding="utf-8", errors="replace")
+        universe = suite_names | set(NAMES.findall(src))
+        selectors = re.findall(r'pytest[^\n]*? -k "([^"]+)"', src)
+        assert selectors, (p.name, "a held patch with no targeted pytest step")
+        for sel in selectors:
+            for term in sel.split(" or "):
+                term = term.strip()
+                if not term:
+                    continue
+                checked += 1
+                assert any(term in n for n in universe), (
+                    p.name, term, "selector term matches no test in the suite "
+                    "and none this patch appends - pytest -k would deselect "
+                    "everything and still exit 0")
+    assert checked >= 4, (
+        "expected both held patches' selector terms; only %d checked" % checked)
+
+
+
+def test_b3036_a_ticket_id_in_use_is_reported_as_taken():
+    """S6-B3036: allocating a ticket id from the BATCH NUMBER collides,
+    because batch numbers advance every turn and ticket ids do not.
+
+    MEASURED 2026-09-23: S6-B3035 was opened as an OPEN owner decision, then
+    reused the next turn for unrelated work and appended as EXECUTED. Every
+    ledger invariant stayed green - terminal-not-last was still 0, because a
+    terminal row following a non-terminal one is exactly what a close looks
+    like - and last-row-wins made the owner's question vanish from the OPEN
+    count. The decidable half is not "is this a collision" (that needs the
+    subject); it is "is this id already spoken for", which is one call.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import queue_state as _qs
+
+    live = _qs.tickets()
+    assert live, "the ledger parsed to zero tickets - the reader moved"
+
+    # a real id is taken; a synthetic one is not
+    taken = next(iter(live))
+    assert _qs.is_used(taken), (taken, "a live ticket read as free")
+    assert not _qs.is_used("S6-B0-NOT-A-REAL-TICKET-b3036"), (
+        "an id that is not in the ledger read as taken")
+
+    # next_free skips what is used and is itself free
+    free = _qs.next_free("S6-B", start=1)
+    assert not _qs.is_used(free), (free, "next_free returned a used id")
+
+    # the collision this pin exists for: S6-B3035 carries BOTH an owner
+    # decision and an unrelated close, so it must read as used forever
+    assert _qs.is_used("S6-B3035"), (
+        "S6-B3035 is the recorded collision and must stay in the ledger")

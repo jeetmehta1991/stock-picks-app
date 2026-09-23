@@ -151,3 +151,30 @@ def main() -> int:
 if __name__ == "__main__":
     import sys
     sys.exit(main())
+
+
+def is_used(tid, path=None):
+    """S6-B3036: is this ticket id ALREADY in the ledger?
+
+    Allocating a new ticket id from the BATCH NUMBER is what collides: batch
+    numbers advance every turn, ticket ids are allocated ad hoc, and the two
+    sequences drift. MEASURED 2026-09-23 - S6-B3035 was opened as an OPEN
+    owner decision in one turn and reused in the next for unrelated work,
+    marked EXECUTED; last-row-wins then made the owner's question invisible
+    while every audit invariant stayed green, because a terminal row after a
+    non-terminal one is the NORMAL shape of a close.
+
+    Call this before appending a row that OPENS a new ticket. It cannot tell
+    a legitimate close from a collision - that needs the subject - but it can
+    say the id is already spoken for, which is the half that was skipped.
+    """
+    return tid in tickets(path)
+
+
+def next_free(prefix, start=1, path=None):
+    """Lowest unused ``<prefix><n>`` at or after ``start`` (S6-B3036)."""
+    used = tickets(path)
+    n = start
+    while ("%s%d" % (prefix, n)) in used:
+        n += 1
+    return "%s%d" % (prefix, n)
