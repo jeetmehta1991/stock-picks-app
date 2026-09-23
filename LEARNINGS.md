@@ -23196,3 +23196,42 @@ in ways I have not eliminated. What is solid is the refutation and the duty cycl
 **Rule.** After ANY change to the state a blocker depends on - a run stopped, a dependency landed, a decision ruled, a campaign paused - re-read the held tickets and ask what each is waiting on NOW. State the blocker as the CONDITION (no config in flight), never as the EVENT you expect to produce it (chain done), because the condition can arrive by a route the event never takes.
 
 **Compliance failure against #235 and L830**, not a new class - no new checklist item (#136). Durability: the tripwire row, and the blocker audit that already exists is audit_ticket_staleness.py with its blockers flag, which classifies each row's wait-reason and is the thing to RUN after a state change (L859).
+
+### L861 - A RENDERED INVENTORY IS A DENOMINATOR STATEMENT, AND #182 HAD NEVER BEEN APPLIED TO ONE (B3082, 2026-09-23)
+
+**The defect.** Table D's inventory preamble decides, per parameter, whether
+this campaign TESTED it. It made that decision by asking whether the parameter
+has a `free_band` - that is, whether it COULD be graded offline. Capability was
+read as evidence. On a one-at-a-time offline sweep the two coincide, which is
+why it survived every prior campaign; on the factorial candle campaign they
+come apart completely and the labels came out INVERTED.
+
+**MEASURED on 18 three_white_soldiers artifacts.** P3 body, P4 step and P5 wick
+were each tested by RE-SIMULATING engine configs - the stronger form of
+evidence - and all three read `UNTESTED-OFFLINE` while the table body
+underneath showed their thresholds. P6 rsi_14, which nothing in the campaign
+touched, read `TESTED at {41.97, 46.31, 50.16, 54.42}`, because when nothing
+had tested an axis the fallback printed its BAND under a `TESTED at` heading.
+**That fallback is not candle-specific: any campaign that leaves a free_band
+axis alone got a line asserting a test that never ran** (L580, the same class
+as a missing measurement printing as a measured zero).
+
+**Why nobody applied #182 to it.** #182 already says a verdict must name its
+denominator, and an inventory preamble is a denominator statement - it is
+literally the TESTED/UNTESTED enumeration #182 demands. But every example under
+#182 is a prose SENTENCE, so the rule was read as being about sentences. Same
+diagnosis as L857: a rule whose examples share one shape gets applied to that
+shape only. The header carried the same defect one level up - it asserted
+`one-at-a-time design` unconditionally, which was false of the rows it sat on.
+
+**The rule.** A label that classifies evidence must read the EVIDENCE, never a
+property that correlates with it. Ask *did any row vary this?*, not *could a row
+have varied this?* - and when nothing varied it, say so; never substitute the
+space that was available for the subset that was used. Apply #182 to any
+RENDERED view that enumerates coverage, not only to sentences.
+
+**ENFORCER:** `test_b3082_inventory_labels_come_from_evidence_not_band_shape`
+pins that an untouched free_band axis reads NOT TESTED and that `TESTED at`
+never appears on it; `test_b3082_table_d_reads_the_factorial_artifact_shape`
+pins the derived design phrase and the absent-count rendering.
+

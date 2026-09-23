@@ -67,13 +67,85 @@ def _spec(strategy: str) -> dict:
     return spec
 
 
+# B3082: the campaign's parameter points can arrive in either of two
+# shapes, and the renderer owes the same unified table for both.
+#   SWEEP      - one cube, one-at-a-time axis sweeps graded offline; the
+#                artifact carries "rows" as a LIST of graded rows.
+#   FACTORIAL  - one ENGINE RUN per corner (the candle campaign: 18 configs
+#                over P3 x P4 x P5); each artifact carries "rows" as an INT
+#                row-count, its corner in "config", and its graded cells in
+#                "per_exit".
+# Detected on the TYPE of "rows" rather than on a filename, because a
+# filename is a claim by its author (L445).
+_CONFIG_TO_PARAM = {
+    "P2_n_bars": "n_bars (pattern length)",
+    "P3_min_body_pct": "min_body_pct_of_range",
+    "P4_min_step_pct": "min_step_up_pct",
+    "P5_max_wick_pct": "max_upper_wick_pct",
+}
+
+
+def _factorial_rows(a: dict) -> list:
+    """One row per graded exit of a factorial corner.
+
+    The corner's levels come from the artifact's own config block, so the
+    table reports what the run actually used rather than what a filename
+    suggests. A cell with no is_sharpe is a non-observation and is routed to
+    the SKIP list by the caller exactly as a sweep row would be.
+    """
+    cfg = a.get("config") or {}
+    levels = {_CONFIG_TO_PARAM[k]: v for k, v in cfg.items()
+              if k in _CONFIG_TO_PARAM}
+    out = []
+    for pe in a.get("per_exit") or []:
+        out.append({
+            "exit": pe.get("exit"),
+            "is_sharpe": pe.get("is_sharpe"),
+            "is_ci_lo": pe.get("is_ci_lo"),
+            "fires": pe.get("fires"),
+            "rank": pe.get("rank"),
+            "admit": pe.get("admit"),
+            "levels": levels,
+            "cube": a.get("cube"),
+            # B3082b: per_exit carries no per-cell trade counts. These are
+            # set to None EXPLICITLY - not omitted, not filled from fires
+            # (a fire count is not a trade count, L580) - so the renderer
+            # prints '-' and the reader can tell "not measured" from a
+            # measured value.
+            "is_n": None,
+            "full_n_count_only": None,
+        })
+    return out
+
+
 def load(paths: list) -> tuple[list, list, list]:
     arts = [json.loads(Path(p).read_text(encoding="utf-8")) for p in paths]
     rows, skips = [], []
     for a in arts:
-        for r in a.get("rows", []):
+        raw = a.get("rows")
+        src = raw if isinstance(raw, list) else _factorial_rows(a)
+        for r in src:
             (skips if r.get("is_sharpe") is None else rows).append(r)
     return arts, rows, skips
+
+
+def _design(rows: list) -> str:
+    """B3082e: name the design the ROWS have, not an assumed one.
+
+    This header said "one-at-a-time design" unconditionally. On the
+    factorial candle campaign that is false - each corner moves three
+    axes together - and a header asserting a design the rows do not
+    have is the same defect as a label asserting a test that never
+    ran. Derived from the rows, so it cannot drift from them.
+    """
+    if any(r.get("levels") for r in rows):
+        return "FACTORIAL design - a row is one corner, several axes at once"
+    return "one-at-a-time design"
+
+
+def _n(v) -> str:
+    """A count the artifact does not carry renders '-', never 0 or None."""
+    return "-" if v is None else str(v)
 
 
 def _level_cell(param: dict, level) -> str:
@@ -92,6 +164,17 @@ def _row_cells(r: dict, params: list) -> dict:
     vals = {}
     for p in params:
         vals[p["param"]] = "-" if p["id"].startswith("B") else str(p["production"])
+    # B3082: a FACTORIAL row varies several axes at once. Without this the
+    # loop below would set at most ONE of them and the other tested axes
+    # would render at production value - a view that cannot be told apart
+    # from one where they were never tested (#182 applied to the view).
+    if r.get("levels"):
+        by_name = {p["param"]: p for p in params}
+        for name, level in r["levels"].items():
+            p = by_name.get(name)
+            if p is not None:
+                vals[name] = _level_cell(p, level)
+        return vals
     tag = r.get("cell", "")
     if tag.startswith("depth:"):
         leg, arm = tag.split(":", 1)[1].split("/")
@@ -115,10 +198,19 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
     ranked = sorted((r for r in rows if not r.get("npt_barred")),
                     key=lambda r: -r["is_sharpe"])
 
+    # B3082c: evidence of testing comes in two shapes and BOTH count.
+    #   sweep     - r["axis"]/r["level"], one axis per row
+    #   factorial - r["levels"], every axis the corner varied
+    # Reading only the first labelled a factorial campaign's tested axes
+    # UNTESTED while the body showed their thresholds.
     tested_levels: dict[str, set] = {}
+    resim_tested: set = set()
     for r in rows:
         if r.get("axis"):
             tested_levels.setdefault(r["axis"], set()).add(r["level"])
+        for name, lev in (r.get("levels") or {}).items():
+            tested_levels.setdefault(name, set()).add(lev)
+            resim_tested.add(name)
 
     resweeps = {a["axis"]: a for a in arts if a.get("axis")}
     fires = next((a.get("reproduction_fires") for a in arts
@@ -131,11 +223,27 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
         # only ever met the 41 that do because the resolver above it
         # KeyErrored before reaching them. Fixing the first crash unmasked
         # the second - the defect was hiding behind the defect (L814).
-        if p.get("free_band"):
-            levs = tested_levels.get(p["param"])
-            shown = (", ".join(str(x) for x in sorted(levs, key=str)) if levs
-                     else ", ".join(str(x) for x in p["free_band"]))
-            line = f"{p['id']} {p['param']}: TESTED at {{{shown}}}"
+        levs = tested_levels.get(p["param"])
+        if levs:
+            shown = ", ".join(str(x) for x in sorted(levs, key=str))
+            # B3082c: name the MECHANISM. Re-simulation is stronger evidence
+            # than offline grading, and calling it "untested offline" reads
+            # as untested.
+            how = ("TESTED BY RE-SIMULATION" if p["param"] in resim_tested
+                   else "TESTED")
+            # B3082d: ONE level equal to production is the axis being HELD,
+            # not tested - calling it tested overstates the campaign's
+            # coverage. And a multi-level axis owes its DENOMINATOR: how
+            # many of its band levels were actually run (#182 applied to
+            # the view, the defect this renderer exists to prevent).
+            band = p.get("band") or []
+            if len(levs) == 1 and next(iter(levs)) == p.get("production"):
+                line = (f"{p['id']} {p['param']}: HELD AT PRODUCTION"
+                        f" {p['production']} - band {band} was not varied")
+            else:
+                cov = (f" ({len(levs)} of {len(band)} band levels)"
+                       if band else "")
+                line = f"{p['id']} {p['param']}: {how} at {{{shown}}}{cov}"
             rs = resweeps.get(p["param"])
             if rs and rs.get("coverage"):
                 c = rs["coverage"]
@@ -143,6 +251,13 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                          f" (owner option (b); {c['excluded_gap_pct']}% gap"
                          " excluded from both arms - verdict binds the covered"
                          " subpopulation only)")
+        elif p.get("free_band"):
+            # B3082c: previously this printed the BAND under a "TESTED at"
+            # heading whenever nothing had tested it - announcing a test
+            # that never ran (L580). It is offline-gradable and UNTESTED.
+            line = (f"{p['id']} {p['param']}: production {p['production']},"
+                    f" free band {p['free_band']} - NOT TESTED in this"
+                    " campaign (offline-gradable; no rows varied it)")
         else:
             line = (f"{p['id']} {p['param']}: production {p['production']},"
                     f" band {p['band']} - resim-only, UNTESTED-OFFLINE"
@@ -180,10 +295,17 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             + (f"; reproduction {fires} fires" if fires else "")
             + "; holdout NOT read; no gates (B1608); npt excluded from ranking.",
             "INVENTORY (one column per Table A row; '-' = breadth axis not applied,"
-            " production behavior; one-at-a-time design):",
+            " production behavior; " + _design(rows) + "):",
             *["  - " + x for x in inv],
             *[u"NULL PRICE - " + x for x in nulls],
             *["DISPOSITION - " + x for x in skip_notes],
+            *(["COUNTS - this campaign's artifacts are FACTORIAL (one engine "
+               "run per corner) and per_exit carries no per-cell trade "
+               "counts, so IS n and full n render '-'. They are NOT filled "
+               "from the fire count: a fire is not a trade (L580). The "
+               "ranking columns - sharpe and ci_lo - are the graders' own "
+               "output and are unaffected."]
+              if any(r.get("is_n") is None for r in ranked) else []),
             f"Showing top {min(top, len(ranked))} of {len(ranked)} ranked cells.",
             "",
             "| rank | " + " | ".join(p["param"] for p in params)
@@ -198,7 +320,11 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                     + " | ".join(c[p["param"]] for p in params)
                     + f" | {r['exit']} | {r['is_sharpe']:.3f} | "
                     + ("" if ci is None else str(round(ci, 3)))
-                    + f" | {r['is_n']} | {r['full_n_count_only']} |")
+                    # B3082b: '-' for a count the artifact does not carry.
+                    # An unmeasured value must never render as 0 or None
+                    # (L580); .get keeps a sweep row's behaviour unchanged.
+                    + " | " + _n(r.get("is_n"))
+                    + " | " + _n(r.get("full_n_count_only")) + " |")
     return "\n".join(head + body) + "\n"
 
 

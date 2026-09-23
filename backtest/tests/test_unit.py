@@ -43454,3 +43454,125 @@ def test_b2919_below_power_is_terminal_na(monkeypatch, tmp_path):
     res2, _, _, _ = rp.run_institutional(cube, _p, manifest, step=2)
     by2 = {n: (st, m) for n, st, m in res2}
     assert by2["step2_grade_auto"][0] == "FAIL", by2["step2_grade_auto"]
+
+
+def _b3082_art(body, step, wick, sharpes):
+    """A candle grid_auto artifact in its REAL shape, confirmed by opening
+    output_candle_tws_c02_b0.0_s0.0_w0.3_grid_auto.json: rows is an INT
+    row-count, the corner lives in config, graded cells live in per_exit,
+    and NO key carries a per-cell trade count (is_rows == rows == 6264 is
+    the grid row-count; fires is identical across all 24 exits)."""
+    return {
+        "strategy": "three_white_soldiers",
+        "cube": "candle_tws_zz01",
+        "rows": 6264,
+        "is_rows": 6264,
+        "config": {"P2_n_bars": 3, "P3_min_body_pct": body,
+                   "P4_min_step_pct": step, "P5_max_wick_pct": wick},
+        "per_exit": [{"exit": ex, "fires": 261, "is_sharpe": sh,
+                      "is_ci_lo": round(sh / 4, 3), "class_size": 1,
+                      "rank": i + 1,
+                      "admit": {"holdout_n": 0, "full_period_n": 261,
+                                "verdict": "RANKED"}}
+                     for i, (ex, sh) in enumerate(sharpes)],
+    }
+
+
+def _b3082_render(tmp_path, arts):
+    import importlib
+    import json as _j
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("table_d_render")
+    paths = []
+    for i, a in enumerate(arts):
+        p = tmp_path / ("zz%02d.json" % i)
+        p.write_text(_j.dumps(a), encoding="utf-8")
+        paths.append(str(p))
+    return m, m.build_table("three_white_soldiers", paths, top=50)
+
+
+def test_b3082_table_d_reads_the_factorial_artifact_shape(tmp_path):
+    """S6-B3082: THE ruled renderer (B2699/L784) could not read the candle
+    campaign at all. Two defects, both load-bearing:
+
+    1. load() iterated a[rows] expecting a LIST. A candle grid_auto carries
+       rows as an INT row-count, so it raised TypeError.
+    2. _row_cells modelled ONE-AT-A-TIME sweeps - one axis per row - while
+       this campaign is a FACTORIAL where a single config varies P3, P4 and
+       P5 together. Two of three tested axes would have rendered at their
+       PRODUCTION value, indistinguishable in the view from never tested
+       (#182 applied to the view, which is what this renderer prevents).
+
+    Both shapes must render from the ONE renderer, detected on the TYPE of
+    rows rather than a filename (a filename is its author's claim, L445)."""
+    arts = [_b3082_art(0.5, 0.0, 0.3, [("regime_flip", 0.993)]),
+            _b3082_art(0.0, 0.25, 0.3, [("time_stop_10d", 0.410)])]
+    m, out = _b3082_render(tmp_path, arts)
+
+    # 1. the int-rows artifact renders instead of raising
+    body = [x for x in out.split(chr(10)) if x.startswith("| 1 |")]
+    assert len(body) == 1, out
+
+    # 2. EVERY axis the corner varied appears - not just one. The 0.5 body
+    #    and the 0.0 step both come from the same row.
+    cells = [c.strip() for c in body[0].strip("|").split("|")]
+    assert cells[3] == "0.5" and cells[4] == "0.0" and cells[5] == "0.3", cells
+
+    # 3. the design phrase is DERIVED, never asserted. It said
+    #    "one-at-a-time design" unconditionally - false for these rows.
+    assert "FACTORIAL design" in out
+    assert m._design([]) == "one-at-a-time design"
+
+    # 4. counts the artifact does not carry render as absent, never as 0.
+    #    VERIFIED against the real file: is_rows == rows == 6264 is the grid
+    #    row-count and fires is identical across all 24 exits, so neither is
+    #    a per-cell trade count and substituting one would be a fabricated
+    #    measurement (L580).
+    assert cells[-1] == "-" and cells[-2] == "-", cells
+    assert m._n(None) == "-" and m._n(0) == "0"
+    assert "IS n and full n render" in out
+
+
+def test_b3082_inventory_labels_come_from_evidence_not_band_shape(tmp_path):
+    """S6-B3082c: the inventory preamble was INVERTED, and carried a fallback
+    that asserts a test which never ran.
+
+    The branch keyed on whether a param has a free_band - a proxy for
+    offline-gradability - instead of on whether any row VARIED it. So the
+    three axes this campaign tested by re-simulating 18 engine configs read
+    UNTESTED-OFFLINE while the table body plainly showed their thresholds,
+    and P6 rsi_14, which nothing touched, read TESTED at its four band
+    levels because the fallback printed the BAND under a TESTED heading.
+
+    That fallback is NOT candle-specific: any campaign leaving a free_band
+    axis alone got a false TESTED line. An unmeasured value must never
+    render as a measured one (L580)."""
+    arts = [_b3082_art(0.5, 0.0, 0.3, [("regime_flip", 0.993)]),
+            _b3082_art(0.0, 0.25, 0.3, [("time_stop_10d", 0.410)])]
+    _m, out = _b3082_render(tmp_path, arts)
+    inv = {x.split(":")[0].strip("- ").split(" ", 1)[0]: x
+           for x in out.split(chr(10)) if x.startswith("  - P")}
+
+    # varied by re-simulation -> named as such, with its DENOMINATOR
+    assert "TESTED BY RE-SIMULATION" in inv["P3"], inv["P3"]
+    assert "2 of 3 band levels" in inv["P3"], inv["P3"]
+    assert "TESTED BY RE-SIMULATION" in inv["P4"], inv["P4"]
+
+    # held at ONE level equal to production is HELD, never TESTED - calling
+    # it tested overstates what the campaign covered
+    assert "HELD AT PRODUCTION" in inv["P2"], inv["P2"]
+    assert "TESTED" not in inv["P2"], inv["P2"]
+
+    # THE REGRESSION THAT MATTERS: an untouched free_band axis must read
+    # NOT TESTED and must not print its band under a TESTED heading
+    assert "NOT TESTED in this campaign" in inv["P6"], inv["P6"]
+    assert "TESTED at" not in inv["P6"], inv["P6"]
+
+    # a resim-only axis nothing varied keeps its honest untested label
+    assert "UNTESTED-OFFLINE" in inv["P1"], inv["P1"]
