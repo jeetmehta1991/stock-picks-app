@@ -123,14 +123,55 @@ def run(out: Path, root: Path, pytest_args: list[str]) -> int:
                                  stdout=fh, stderr=subprocess.STDOUT, cwd=str(root))
         diff = changed(before, fingerprint(root))
         final = 4 if diff else rc
+        # S6-B3061 (L621): a pyramid is CPU-heavy and the engine is
+        # timing-sensitive. L621 says hold it until the completion line
+        # and NOTHING ENFORCED THAT - 30 gate runs landed inside one
+        # campaign window at ~45 pct duty cycle, and the configs that
+        # ran alongside them were 61 pct slower than those that did not.
+        # This RECORDS the contention rather than refusing: a refusal
+        # over a 40-hour chain would block every commit for the rest of
+        # it, which is L721 tightening-over-a-backlog. A disclosure costs
+        # nothing and keeps the per-config runtime record readable.
+        chain = _chain_inflight()
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(f"\npytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
-                     f"elapsed_s={time.time() - t0:.0f}\n")
+                     f"elapsed_s={time.time() - t0:.0f}\n"
+                     f"chain_inflight={chain}\n")
         print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
+        if chain != "none":
+            print("  NOTE (L621/S6-B3061): a config was IN FLIGHT while "
+                  "this pyramid ran - %s. Its wall-clock is contended."
+                  % chain)
         return final
     finally:
         pidfile.unlink(missing_ok=True)
 
+
+def _chain_inflight() -> str:
+    """S6-B3061 (L621): is a serial-chain config running right now?
+
+    Reads the chain log the way every other consumer does - a LAUNCH with
+    no matching finished line is in flight. Returns the wave name(s) or
+    "none". Never raises: a disclosure that could break the gate it
+    annotates would be worse than no disclosure at all.
+    """
+    try:
+        import re as _re
+        log = ROOT / "output_audit" / "serial_chain.log"
+        if not log.exists():
+            return "none"
+        pend = {}
+        for line in log.read_text(encoding="utf-8", errors="replace").split("\n"):
+            m = _re.match(r"\S+Z LAUNCH (\S+)", line)
+            if m:
+                pend[m.group(1)] = True
+                continue
+            m = _re.match(r"\S+Z (\S+) finished", line)
+            if m:
+                pend.pop(m.group(1), None)
+        return ",".join(sorted(pend)) if pend else "none"
+    except Exception:
+        return "unknown"
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])

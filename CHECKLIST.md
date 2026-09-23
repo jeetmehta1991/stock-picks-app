@@ -6146,3 +6146,25 @@ Before appending a row that OPENS a ticket, call `queue_state.is_used(tid)` - or
 ### #318 - MEASURE AN ESCALATED DECISION'S OWN STATED UNCERTAINTIES BEFORE ESCALATING IT (L856, S6-B3044, 2026-09-23)
 
 Before putting a decision to the owner, walk every uncertainty the write-up itself names and ask of each: is this measurable with the artifacts already on disk, this turn? Measure the ones that are; escalate with the remainder explicitly listed as what could not be settled and why. A claim correctly labelled UNVERIFIED is compliant with the Truth Standard - the four evidence classes tag PROVENANCE, and UNVERIFIED is a valid class - so nothing fires, and the honest label reads as rigour. That is what lets it survive: MEASURED, an uncertainty I had labelled properly rode through four consecutive closes inside an owner-facing decision while one command settled it, and settling it retired one of the three objections I had raised against my own recommendation. The discriminator is who is waiting: an unmeasured claim in your own reasoning is a note to self, while the same claim inside an escalated decision is a gap in the OWNER's evidence that only you can see is cheap to close. Check also which way the gap points - here the missing measurement favoured the option being recommended (L559). Mechanism: JUDGMENT-ONLY for detection, and the search that establishes it was run - of 51 scan gates in verify_turn_compliance.py none reads an escalation's uncertainty list, because no scan can tell a decision put to the owner from a paragraph that merely mentions one, nor price the cost of a measurement it has not run. Durability is this item plus the L856 entry, both pinned as recent-learnings anchors by test_b2526_recent_learnings_are_anchored_and_l735_is_not_an_orphan.
+
+
+### #319 - A LESSON THAT NAMES A TOOL AS THE HAZARD PUTS ITS MECHANISM IN THAT TOOL (L857, S6-B3061, 2026-09-23)
+
+When a lesson's own text names the thing that caused the harm, the mechanism belongs
+inside that thing. A manifest field or a cron prompt reaches only the launches someone
+stops to decide; it never reaches a tool that runs on every commit under a
+no-exceptions rule, because there is no decision point to intercept. Before filing a
+lesson's durable half, ask which code path executes when the failure recurs - and put
+the mechanism there. If the honest answer is "my own judgment at the keyboard", the
+lesson has no durable half yet, whatever the entry says.
+
+Prefer a DISCLOSURE to a REFUSAL when the guarded window is long: a refusal spanning a
+multi-day run blocks every unrelated turn inside it (L721), while a recorded line in
+the artifact costs nothing and survives to be read later.
+
+ENFORCER. **Detection: JUDGMENT-ONLY.** SEARCH ATTEMPTED (#300 - the label is a claim about the search space and is earned by naming the search): I grepped for a gate asserting that a named enforcer resolves, and found test_b1945_no_new_dangling_learnings_citation for L-numbers and test_b1971_no_new_dangling_checklist_citation for #-numbers - both check that a CITATION resolves, neither can ask whether a mechanism sits in the tool the lesson named, because that requires reading prose to identify which tool is the hazard. No scan can tell a mechanism that fires
+from one that merely exists. The retro-sweep check is mechanical: grep the lesson's
+named tool for the mechanism's identifier and confirm a caller. DURABILITY IS PINNED even though detection is not: the instance this
+rule was minted from IS mechanically enforced - test_b3061_pyramid_discloses_a_config_in_flight pins scripts/pyramid_gate.py's
+_chain_inflight() in both directions - but the CLASS (does a lesson's durable
+half sit where the failure re-executes?) has no scan and is checked by reading.

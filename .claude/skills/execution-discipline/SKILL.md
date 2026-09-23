@@ -4029,6 +4029,38 @@ Owner, verbatim: **"No arbitrary decisions. That's an absolute red flag."** and
    (test_b2502's matrix is eleven asserts). Extends #226 from "prove the PIN
    can fail" to "prove the DESIGN survives its own motivating case".
 
+7. **A LESSON'S DURABLE HALF GOES WHERE THE FAILURE RE-EXECUTES, NOT WHERE
+   LAUNCHES ARE DECIDED (L857 / CHECKLIST #319).** When a lesson names a tool
+   as the hazard, the mechanism belongs INSIDE that tool. MEASURED: L621 says
+   any CPU-heavy run beside a timing measurement poisons it and names my own
+   pyramid as "the heavy thing most often at hand" - then put its durable half
+   in the rerun manifest's obsolescence risks and the cadence cron's prompt,
+   BOTH OF WHICH GOVERN ENGINE LAUNCHES. The pyramid is launched by neither;
+   it is hand-run at every commit under a no-exceptions rule, so its frequency
+   tracks my COMMIT RATE, which no launch gate observes. Consequence: 30 gate
+   runs landed inside one campaign window at a ~45 pct duty cycle, the configs
+   alongside them averaged 3.09 h against 1.92 h, and their FIRE COUNTS FELL -
+   so the extra time was not work.
+   (a) **One correct application is the signature of failure, not of
+   compliance.** I DID apply L621 once, killing my own measurement at 0.17 h
+   of margin. A judgment-only rule fires when the cost is SALIENT and is
+   silent otherwise, and that silence is indistinguishable from compliance.
+   Before filing a durable half, name the code path that RUNS when the failure
+   recurs and put the mechanism there; if the honest answer is "my own
+   judgment at the keyboard", the lesson has no durable half yet, whatever the
+   entry says.
+   (b) **Prefer a DISCLOSURE to a REFUSAL when the guarded window is long
+   (L721).** A refusal spanning a multi-day run blocks every unrelated turn
+   inside it; a recorded line in the artifact costs nothing and survives to be
+   read beside the number it distorts. scripts/pyramid_gate.py now writes
+   chain_inflight= into every gate artifact, pinned both ways by
+   test_b3061_pyramid_discloses_a_config_in_flight.
+   (c) **A refusal is a BEHAVIOUR change and needs owner approval; a
+   disclosure is not.** The narrow refusal was costed (S6-B3062) and filed
+   OPEN rather than shipped - and the costing overturned the intuition: the
+   obvious threshold, the 5 h cap minus a 0.24 h pyramid, would have fired
+   ZERO times across 19 configs and is theatre.
+
 ## TRIPWIRE TABLE — recurring mistake classes and their pre-action checks
 
 Before acting, scan this table. If the action matches a row, run the tripwire
@@ -4131,6 +4163,7 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | Test a numeric function's units by CROSS-CALLER AGREEMENT - a wire-up test whose expected value is computed by the caller's own feed | PIN UNITS AT THE BOUNDARY, IN DATA: a shaped must-fire carrying real-world moments that must COMPUTE. Two callers sharing a convention agree whether it is right or wrong, so agreement can never test units; the tell is a docstring and its body disagreeing about units while every test passes | L773 / #201 (B2646: 5 of 5 sites fed annualised SR + excess kurtosis into a per-period raw-kurtosis formula; two B457 agreement tests pinned the feed green for its whole life; the corrected gate re-judged the roster 3 -> 7 graded cells) |
 | Run a probe to validate an assertion - a vacuity check, an occurrence count, a before/after diff proving a pin is not hollow | MAKE THE PROBE PERFORM THE SAME comparison the assertion performs - same case sensitivity, same normalisation, same whitespace. A probe LOOSER than its assertion yields FALSE CONFIRMATIONS, which is the expensive direction: a stricter probe only nags, a looser one certifies an arm that fails after you have stopped looking. The tell is two different expressions of the same question - one a count, one an `in` | L771 / #226 (MEASURED 2026-09-07: a case-insensitive vacuity probe certified a case-sensitive assertion; CHECKLIST said 'different kind' where LEARNINGS said 'different KIND', the probe reported 0 -> 1 in both files and the pyramid went RED) |
 | Report a parameter search - a ranked list, a best cell, an argmax over a grid | PARTITION ITS AXES BY PRIOR PREDICTION FIRST. An axis carrying a directional prediction from the literature or the design is a CONFIRMATION replicated across the levels of the others, and N independent confirmations of one ordering is evidence of a different KIND than an argmax over N x M cells; only the UNPREDICTED axes spend multiplicity budget and carry the trials count. The tell: you can state what the literature predicts about one knob and not the other, and your report treats them identically | L770 / #297 (MEASURED 2026-09-07: five council advisors read a 390-trial pead grid as one max-search and three predicted a variance-mined winner; the drift-window axis was monotone at 5 of 5 levels of the other axis - the Bernard-Thomas prediction - and the tightest cell ranked FIFTH, refuting the objection) |
+| File a lesson's durable half - the mechanism, gate or manifest field meant to stop the failure recurring | Name the CODE PATH that EXECUTES when it recurs and put the mechanism THERE. A prompt or manifest reaches only launches someone stops to decide; it never reaches a tool that runs on every commit. If the honest answer is "my own judgment at the keyboard", there is no durable half yet. Prefer a DISCLOSURE to a REFUSAL when the guarded window is long (L721) | L857 / #319 (L621 named my own pyramid as the hazard, then instrumented the rerun manifest and the cadence cron - both engine-launch paths; 30 gate runs then landed inside one campaign at ~45 pct duty cycle, configs alongside 3.09 h vs 1.92 h with fires FALLING) |
 
 | Remediate an owner catch against a LOCKED format - a table shape, a spec layout, a report standard | DIFF THE WHOLE ARTIFACT AGAINST THE STANDARD'S EXEMPLAR IN THE CATCH'S OWN TURN - a catch names ONE element but is evidence the whole rendering drifted, so restoring only the named element ships the next catch; land per-element pins so drift fails the pyramid instead of waiting for the owner | L805 / #196 (B2838-B2851: 5 of 7 owner catches on Table A were ONE defect - a memory-rendered standard - surfaced one element per catch) |
 

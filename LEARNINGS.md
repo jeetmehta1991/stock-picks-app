@@ -23113,3 +23113,45 @@ One command settled it: `python scripts/or_arm_attribution.py --cube output_r5_m
 **The discriminator is who is waiting on it.** An UNVERIFIED claim in my own reasoning is a note to self. An UNVERIFIED claim inside a decision I have escalated to the owner is a **gap in the owner's evidence**, and the owner cannot see that the measurement was one command away - only I can. So: before escalating any decision, walk its stated uncertainties and ask of each whether it is measurable THIS TURN; measure the ones that are, and escalate with the remainder named.
 
 **The cost, stated plainly.** Four closes asked for a ruling on a weaker evidence base than the repo could produce, and the missing measurement favoured the option I was recommending - which is the direction L559 names as the one you are least likely to test.
+
+
+### L857 - A RULE'S DURABLE HALF WAS PLACED WHERE LAUNCHES ARE DECIDED, SO IT NEVER REACHED THE TOOL THE RULE WAS ABOUT (B3058/B3061, 2026-09-23)
+
+**What happened.** L621 says a timing measurement's environment is part of its
+instrument, and it names the culprit outright - my own pyramid, "the heavy thing most
+often at hand". Its durable half went into the B2096 rerun manifest's obsolescence
+risks and into the cadence cron's prompt, which forbids heavy work until the completion
+line. **Both of those govern ENGINE LAUNCHES.** The pyramid is launched by neither. It
+is hand-run at every commit under a no-exceptions rule, so its frequency is set by my
+COMMIT RATE - a thing no launch gate observes. The rule named the instrument and then
+instrumented everything except it.
+
+**Measured** (S6-B3058, joining 18 grid artifacts to output_audit/serial_chain.log,
+read in full): gate artifacts by mtime number 18 in the 15.5 h before candle c14 and 30
+in the 15.5 h spanning c14 to c18 - 1.16/h rising to 1.94/h, roughly a 45 pct duty
+cycle at the measured 14 min per run. Configs in that window averaged 3.09 h against
+1.92 h before it, while their FIRE COUNTS FELL from 137 to 69, so the extra time was
+not work. corr(fires, runtime) = -0.415, the wrong sign, which refutes the cause I had
+filed; corr(run order, runtime) = +0.531.
+
+**The part that makes this a class and not a slip.** I DID apply L621 - once. L852's
+operational half records killing my own running measurement at c15 with 0.17 h of
+margin against the cap. **One correct application at the single moment the danger was
+visible, against 30 runs where it was not.** That is the exact signature of a
+judgment-only rule: it fires when the cost is salient and is silent the rest of the
+time, and the silence is indistinguishable from compliance. Detection was never going
+to come from remembering harder.
+
+**Durable half:** scripts/pyramid_gate.py now calls _chain_inflight() and writes
+chain_inflight= into every gate artifact, plus a console NOTE when a config was live.
+**A DISCLOSURE, NOT A REFUSAL** - blocking commits across a 40 h chain is L721
+tightening-over-a-backlog; the disclosure costs nothing and lands the contention in the
+artifact beside the runtime it distorts. Pinned both ways by
+test_b3061_pyramid_discloses_a_config_in_flight, whose fixture wave names are
+deliberately unrunnable so no case can pass off the live log.
+
+**Scope, stated:** n=18, observational; r=+0.531 is about p=0.02 and r=-0.415 about
+p=0.09; gate mtimes PROXY CPU contention rather than measure it; the two windows differ
+in ways I have not eliminated. What is solid is the refutation and the duty cycle.
+
+**Compliance failure against L621**, cited not re-minted. Anchored at CHECKLIST #319.

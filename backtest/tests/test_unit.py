@@ -42951,3 +42951,62 @@ def test_b3040_held_patch_guard_anchors_on_the_def_and_precedes_every_write():
 
     assert checked >= 2, (
         "expected both held patches to carry a guard; checked %d" % checked)
+
+
+
+def test_b3061_pyramid_discloses_a_config_in_flight(tmp_path, monkeypatch):
+    """S6-B3061 / L621: a pyramid is CPU-heavy and the engine is
+    timing-sensitive, so L621 says hold one until the completion line.
+
+    NOTHING ENFORCED THAT. MEASURED 2026-09-23: 30 gate runs landed inside a
+    single campaign window at roughly a 45 pct duty cycle, and the configs
+    that ran alongside them averaged 3.09 h against 1.92 h for those that
+    did not - while their FIRE COUNTS FELL, so the extra time was not work.
+
+    The remedy is a DISCLOSURE, not a refusal: blocking every commit for the
+    40 remaining hours of a chain is L721's tightening-over-a-backlog. So
+    this pins that the detector reads the chain log correctly in BOTH
+    directions - an unmatched LAUNCH is in flight, a matched one is not -
+    because a disclosure that always says "none" is decoration (#226).
+    """
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import pyramid_gate as pg
+
+    # NAMES ARE DELIBERATELY UNRUNNABLE: a live wave name here would let
+    # case 1 pass off the REAL log if the ROOT patch ever silently broke.
+    log = tmp_path / "output_audit" / "serial_chain.log"
+    log.parent.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(pg, "ROOT", tmp_path)
+
+    # 1. a LAUNCH with no finish -> that wave is in flight
+    log.write_text(
+        "2026-09-23T09:13:12Z LAUNCH fixture_wave_zz99 via run_wave\n",
+        encoding="utf-8")
+    assert pg._chain_inflight() == "fixture_wave_zz99"
+
+    # 2. the matching finish -> nothing in flight
+    log.write_text(
+        "2026-09-23T09:13:12Z LAUNCH fixture_wave_zz99 via run_wave\n"
+        "2026-09-23T11:20:00Z fixture_wave_zz99 finished: run_wave exit 0\n",
+        encoding="utf-8")
+    assert pg._chain_inflight() == "none", (
+        "a finished wave still reads as in flight - the disclosure would "
+        "cry wolf on every gate run and get ignored")
+
+    # 3. a RESTARTED wave (two launches, one finish) is NOT in flight -
+    #    the same last-wins shape the runtime derivation needs (L737)
+    log.write_text(
+        "2026-09-22T23:18:21Z LAUNCH fixture_restarted_zz98 via run_wave\n"
+        "2026-09-23T01:00:00Z LAUNCH fixture_restarted_zz98 via run_wave\n"
+        "2026-09-23T02:59:00Z fixture_restarted_zz98 finished: run_wave exit 0\n",
+        encoding="utf-8")
+    assert pg._chain_inflight() == "none"
+
+    # 4. no log at all -> "none", never a crash: the disclosure must not be
+    #    able to break the gate it annotates
+    (tmp_path / "output_audit" / "serial_chain.log").unlink()
+    assert pg._chain_inflight() == "none"
