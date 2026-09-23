@@ -72,6 +72,16 @@ V = "scripts/run_postconfig.py"
 
 
 def apply() -> int:
+    # S6-B3040: the idempotency check runs BEFORE any write. It used to sit
+    # beside the test-append at the END of apply(), after run_postconfig.py
+    # had already been rewritten - so a second run left the tree HALF
+    # PATCHED and the guard reported the refusal as if nothing had happened.
+    # MEASURED 2026-09-23 in a clean worktree: the run aborted at the guard
+    # and git status showed scripts/run_postconfig.py already modified.
+    _t0 = rd("backtest/tests/test_unit.py")
+    assert "def test_b2919_below_power_is_terminal_na" not in _t0, (
+        "already applied - refusing before any file is written")
+
     N = nl(V)
 
     # 1. a sentinel initialised beside ok2/why2, same scope as the append
@@ -130,6 +140,52 @@ def apply() -> int:
 
     ast.parse(rd(V))
     print("  run_postconfig.py N/A branch applied - AST OK")
+
+    # ---- S6-B3038: move the pin this ruling BREAKS ---------------------
+    # test_b2612_step2_cube_without_gate_verdicts_fails_closed arm (b)
+    # feeds verdict NO_HOLDOUT_ROWS - one of the three HONEST not-evaluable
+    # verdicts this patch reclassifies - and asserts FAIL. MEASURED in the
+    # worktree before this step existed: "assert 'N/A' == 'FAIL'". So the
+    # owner ruling and a standing pin contradict each other, and S6-B3030
+    # only added b2612 to the SELECTOR, which SURFACES the conflict without
+    # resolving it (#315: name the pins you break - then move them).
+    #
+    # Arms (a) and (a2) are UNTOUCHED on purpose: they plant a grid with no
+    # step2 block at all, which is the L642 malformed case this patch
+    # deliberately keeps failing closed.
+    T0 = "backtest/tests/test_unit.py"
+    T0N = nl(T0)
+    sub(T0,
+        "    # (b) a step2 block that graded NOTHING (declared, but no holdout rows) fails" + T0N +
+        "    seen.clear()",
+        "    # (b) S6-B2919/B3038 (owner ruled 2026-09-22): a step2 block" + T0N +
+        "    # carrying an HONEST not-evaluable verdict is a terminal N/A" + T0N +
+        "    # carrying its reason, NOT a FAIL. This arm asserted FAIL and is" + T0N +
+        "    # the pin the ruling breaks; it moves WITH the ruling." + T0N +
+        "    seen.clear()")
+    sub(T0,
+        "    assert by[\"step2_grade_auto\"][0] == \"FAIL\" and \"NO_HOLDOUT_ROWS\" in by[\"step2_grade_auto\"][1]",
+        "    assert by[\"step2_grade_auto\"][0] == \"N/A\", by[\"step2_grade_auto\"]" + T0N +
+        "    assert \"NO_HOLDOUT_ROWS\" in by[\"step2_grade_auto\"][1]" + T0N +
+        "    assert \"S6-B2919\" in by[\"step2_grade_auto\"][1], \"the N/A must cite its ruling\"" + T0N +
+        "    assert \"no rows\" in by[\"step2_grade_auto\"][1], \"the N/A must carry the grid reason\"" + T0N +
+        T0N +
+        "    # (b2) S6-B3038: the L642 fail-closed path this patch PROMISES" + T0N +
+        "    # to preserve - a step2 block that is present but whose verdict is" + T0N +
+        "    # NOT one of the three honest not-evaluable values. Nothing pinned" + T0N +
+        "    # this before, so the promise was prose (L733: a negative claim in" + T0N +
+        "    # a docstring is believed, never checked)." + T0N +
+        "    seen.clear()" + T0N +
+        "    monkeypatch.setattr(rp, \"_run\", make_run(" + T0N +
+        "        {\"per_exit\": [], \"step2\": {\"holdout_read\": False, \"gates\": None," + T0N +
+        "                                   \"verdict\": \"GRADER_EXPLODED\"," + T0N +
+        "                                   \"reason\": \"not an honest not-evaluable verdict\"}}))" + T0N +
+        "    results, _, _, _ = rp.run_institutional(cube, params, step2_manifest, step=2)" + T0N +
+        "    by = {n: (s, m) for n, s, m in results}" + T0N +
+        "    assert by[\"step2_grade_auto\"][0] == \"FAIL\", (" + T0N +
+        "        by[\"step2_grade_auto\"], \"an unrecognised verdict must still fail closed\")")
+    ast.parse(rd(T0))
+    print("  test_b2612 moved with the ruling + fail-closed arm added - AST OK")
 
     T = "backtest/tests/test_unit.py"
     TN = nl(T)
@@ -200,7 +256,11 @@ def test_b2919_below_power_is_terminal_na(monkeypatch, tmp_path):
     assert by2["step2_grade_auto"][0] == "FAIL", by2["step2_grade_auto"]
 '''
     raw = rd(T)
-    assert "test_b2919_below_power_is_terminal_na" not in raw
+    assert "def test_b2919_below_power_is_terminal_na" not in raw, (
+        "already applied. S6-B3039: this guard was anchored on the "
+        "pin NAME, and a prose MENTION of it in an unrelated docstring "
+        "satisfied it, so the patch refused to apply (L748 "
+        "mention-vs-use). Anchor on the DEF.")
     io.open(T, "a", encoding="utf-8", newline="").write(
         TEST.replace("\n", TN) if TN != "\n" else TEST)
     ast.parse(rd(T))

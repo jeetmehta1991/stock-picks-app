@@ -100,6 +100,16 @@ T = "backtest/tests/test_unit.py"
 
 
 def apply() -> int:
+    # S6-B3040: the idempotency check runs BEFORE any write. It used to sit
+    # beside the test-append at the END of apply(), after run_postconfig.py
+    # had already been rewritten - so a second run left the tree HALF
+    # PATCHED and the guard reported the refusal as if nothing had happened.
+    # MEASURED 2026-09-23 in a clean worktree: the run aborted at the guard
+    # and git status showed scripts/run_postconfig.py already modified.
+    _t0 = rd("backtest/tests/test_unit.py")
+    assert "def test_b2931_split_is_an_exact_partition" not in _t0, (
+        "already applied - refusing before any file is written")
+
     N = nl(SC)
 
     # ---- 1. turtle_soup_short: thesis-only again ------------------------
@@ -295,7 +305,11 @@ def test_b2931_split_is_an_exact_partition():
         assert not f(s4)["fires"]
 '''
     raw = rd(T)
-    assert "test_b2931_split_is_an_exact_partition" not in raw
+    assert "def test_b2931_split_is_an_exact_partition" not in raw, (
+        "already applied. S6-B3039: this guard was anchored on the "
+        "pin NAME, and a prose MENTION of it in an unrelated docstring "
+        "satisfied it, so the patch refused to apply (L748 "
+        "mention-vs-use). Anchor on the DEF.")
     io.open(T, "a", encoding="utf-8", newline="").write(
         TEST.replace("\n", TN) if TN != "\n" else TEST)
     ast.parse(rd(T))

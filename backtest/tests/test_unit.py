@@ -25072,6 +25072,12 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # remedy, not the heading (L548).
         ("DIFF THE WHOLE ARTIFACT AGAINST THE STANDARD'S EXEMPLAR IN THE CATCH'S OWN TURN",
          "B2851/L805: restoring only the named element ships the next catch"),
+        # S6-B3040d: the L855 tripwire row - an idempotency guard keyed
+        # on a NAME is satisfied by a prose MENTION, and one placed
+        # after its writes leaves a half-patched tree. Pins the remedy,
+        # which is the part a future reader needs (L548).
+        ("ANCHOR IT ON A FORM PROSE CANNOT PRODUCE, AND RUN IT BEFORE THE FIRST WRITE",
+         "B3039/L855: a docstring mention made an owner-approved held patch unapplyable"),
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
@@ -25999,7 +26005,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 304 -> 305 at batch-3 (the #310 ship-vs-ask fragment;
     # same-call with its skill bullet per B2130).
-    assert len(gutted) == 305, gutted
+    # 305 -> 306 at B3040d (the L855 idempotency-guard fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 306, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -42867,3 +42875,70 @@ def test_b3036_a_ticket_id_in_use_is_reported_as_taken():
     # decision and an unrelated close, so it must read as used forever
     assert _qs.is_used("S6-B3035"), (
         "S6-B3035 is the recorded collision and must stay in the ledger")
+
+
+
+def test_b3040_held_patch_guard_anchors_on_the_def_and_precedes_every_write():
+    """S6-B3039/B3040: a held patch's idempotency guard must be anchored on
+    the DEFINITION and must run before any file is written.
+
+    TWO defects, one apply attempt, both measured 2026-09-23 in a clean
+    worktree at 8cf624447:
+
+    (a) ANCHOR. The guard read `assert "<pin name>" not in raw`, so a prose
+        MENTION satisfied it. B3034's new selector pin cites
+        test_b2919_below_power_is_terminal_na in its own docstring as an
+        example of a misremembered term - and that one sentence made the
+        held patch refuse to apply. L748: anchor on something that cannot
+        appear in prose. Sweep found this shape in 2 of 2 held patches; one
+        was blocking, the other latent at zero mentions.
+
+    (b) ORDER. The guard sat at line 249 while the first write was at line
+        78, so the refusal left scripts/run_postconfig.py already modified -
+        a half-patched tree, and the message reported a clean refusal. A
+        check that cannot stop the thing it checks is decoration (#226).
+    """
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    held = sorted((root / "output_audit" / "held_patches").glob("*.py"))
+    assert held, "no held patches found - the directory or the glob moved"
+
+    checked = 0
+    for p in held:
+        src = p.read_text(encoding="utf-8", errors="replace")
+        lines = src.split("\n")
+
+        guards = [i for i, l in enumerate(lines)
+                  if re.search(r'assert "(?:def )?test_[A-Za-z0-9_]+" not in',
+                               l)]
+        if not guards:
+            continue
+        checked += 1
+
+        for i in guards:
+            assert re.search(r'assert "def test_', lines[i]), (
+                p.name, i + 1, lines[i].strip()[:80],
+                "guard anchors on the pin NAME - a prose mention satisfies it")
+
+        # S6-B3040c: scoped to apply(). The first draft matched the
+        # sub() HELPER DEFINITION at module level - a write, but not one
+        # apply() performs - so it reported the guard as running after a
+        # "write" 14 lines above the function. L713: a detector whose
+        # reading unit does not match the thing it judges.
+        body = next((i for i, l in enumerate(lines)
+                     if l.startswith("def apply(")), None)
+        assert body is not None, (p.name, "no apply() entry point")
+        writes = [i for i, l in enumerate(lines)
+                  if i > body
+                  and re.match(r'\s*sub\((?:V|SC|T|T0),', l)]
+        assert writes, (p.name, "no sub() call sites found inside apply()"
+                        " - the detector is blind, not the patch clean")
+        if writes:
+            assert min(guards) < min(writes), (
+                p.name, "guard at line %d runs AFTER the first write at line "
+                "%d - a failed guard leaves the tree half-patched"
+                % (min(guards) + 1, min(writes) + 1))
+
+    assert checked >= 2, (
+        "expected both held patches to carry a guard; checked %d" % checked)
