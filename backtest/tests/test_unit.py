@@ -10649,9 +10649,11 @@ def test_batch373_e1_doc_count_pin_against_code():
     # B2669: 219 -> 221 (+2 owner-instructed mirror shorts: totm_short,
     # mfi_overbought_short).
     # B2680: 221 -> 223 (+2 owner-worded vwap-extension pair).
-    assert len(ALL_STRATEGIES) == 223, (
-        f"F-002 drift: ALL_STRATEGIES expected 223 post-B2680 (221 "
-        f"post-B2669); got {len(ALL_STRATEGIES)}. "
+    # S6-B2931: 223 -> 225 (+2 owner-ruled splits of the B1202 arm:
+    # turtle_soup_bos_short, smc_equal_highs_bos_short).
+    assert len(ALL_STRATEGIES) == 225, (
+        f"F-002 drift: ALL_STRATEGIES expected 225 post-B2931 (223 "
+        f"post-B2680); got {len(ALL_STRATEGIES)}. "
         f"Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10679,9 +10681,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
     # B2098: 213 registered; this leg's "active" excludes only DEPRECATED +
     # MISSING_PRODUCER (both empty), so it tracks the registration count.
-    assert active == 223, (
-        f"F-002 drift: active strategy count expected 223 (223 registered "
-        f"post-B2680); got {active}."
+    assert active == 225, (
+        f"F-002 drift: active strategy count expected 225 (225 registered "
+        f"post-B2931); got {active}."
     )
 
     # F-004 exit method count
@@ -13272,8 +13274,8 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
         "producer removed - retirement was supposed to be reversible when "
         "sector_history.csv is extended (S6-B1434b)"
     )
-    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 222, (
-        "active count drifted from 222 (223 registered post-B2680 minus the "
+    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 224, (
+        "active count drifted from 224 (225 registered post-B2931 minus the "
         "data-scarce survivor)")
 
 
@@ -15458,7 +15460,7 @@ def test_b1619_variant_strategy_binds_to_its_own_signal():
         ALL_STRATEGIES, BREAKER_VARIANT_STRATEGIES,
         make_breaker_variant_strategy, assert_variant_strategies_are_configured)
 
-    assert len(ALL_STRATEGIES) == 223, (
+    assert len(ALL_STRATEGIES) == 225, (
         f"roster is {len(ALL_STRATEGIES)}; the variant factory must not "
         f"register anything until an admission is owner-approved")
     assert BREAKER_VARIANT_STRATEGIES == {}
@@ -34318,7 +34320,10 @@ def test_b2612_step2_cube_without_gate_verdicts_fails_closed(tmp_path, monkeypat
     assert by["step2_grade_auto"][0] == "FAIL", "derive_step must say 2 for a 4-year window"
     assert "--step2" in [c for c in seen if "grade_institutional_config" in " ".join(c)][0]
 
-    # (b) a step2 block that graded NOTHING (declared, but no holdout rows) fails
+    # (b) S6-B2919/B3038 (owner ruled 2026-09-22): a step2 block
+    # carrying an HONEST not-evaluable verdict is a terminal N/A
+    # carrying its reason, NOT a FAIL. This arm asserted FAIL and is
+    # the pin the ruling breaks; it moves WITH the ruling.
     seen.clear()
     monkeypatch.setattr(rp, "_run", make_run(
         {"per_exit": [], "step2": {"holdout_read": False, "gates": None,
@@ -34326,7 +34331,25 @@ def test_b2612_step2_cube_without_gate_verdicts_fails_closed(tmp_path, monkeypat
                                    "reason": "declared Step-2 but the cube has no rows"}}))
     results, _, _, _ = rp.run_institutional(cube, params, step2_manifest, step=2)
     by = {n: (s, m) for n, s, m in results}
-    assert by["step2_grade_auto"][0] == "FAIL" and "NO_HOLDOUT_ROWS" in by["step2_grade_auto"][1]
+    assert by["step2_grade_auto"][0] == "N/A", by["step2_grade_auto"]
+    assert "NO_HOLDOUT_ROWS" in by["step2_grade_auto"][1]
+    assert "S6-B2919" in by["step2_grade_auto"][1], "the N/A must cite its ruling"
+    assert "no rows" in by["step2_grade_auto"][1], "the N/A must carry the grid reason"
+
+    # (b2) S6-B3038: the L642 fail-closed path this patch PROMISES
+    # to preserve - a step2 block that is present but whose verdict is
+    # NOT one of the three honest not-evaluable values. Nothing pinned
+    # this before, so the promise was prose (L733: a negative claim in
+    # a docstring is believed, never checked).
+    seen.clear()
+    monkeypatch.setattr(rp, "_run", make_run(
+        {"per_exit": [], "step2": {"holdout_read": False, "gates": None,
+                                   "verdict": "GRADER_EXPLODED",
+                                   "reason": "not an honest not-evaluable verdict"}}))
+    results, _, _, _ = rp.run_institutional(cube, params, step2_manifest, step=2)
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step2_grade_auto"][0] == "FAIL", (
+        by["step2_grade_auto"], "an unrecognised verdict must still fail closed")
 
     # (c) a step2 block with the six gates -> PASS, and step 8 names the verdict
     seen.clear()
@@ -38017,7 +38040,18 @@ def test_b2814_survival_calls_the_live_gate():
     d = json.loads(art.read_text(encoding="utf-8"))
     rows = {r["strategy"]: r for r in d["rows"]}
     assert rows["smc_liquidity_sweep_reversal"]["survives_pct"] == 0.0515
-    assert rows["turtle_soup_short"]["survives_pct"] == 1.0
+    # S6-B2931 (B3078): turtle_soup_short was the "unchanged since R5"
+    # anchor at 1.0. The owner-approved OR-arm SPLIT moved its BOS arm
+    # out to strat_turtle_soup_bos_short, so the parent no longer fires
+    # on that thesis and its survival is genuinely different. The pin is
+    # UPDATED rather than deleted, and the anchor role moves to a
+    # strategy the split did not touch, so this keeps testing that
+    # "unchanged" really means unchanged. Verified BEFORE moving it:
+    # test_b1248_or_arm_attribution_separates_the_added_arm passes, and
+    # the gate lists were read from screener source - the parent carries
+    # above_prev_high, the child carries smc_bos_bearish.
+    assert rows["turtle_soup_short"]["survives_pct"] == 0.1654
+    assert rows["avwap_252_breakout"]["survives_pct"] == 1.0
     assert rows["smc_order_block_bounce"]["survives_pct"] == 0.0
     pop = [r for r in d["rows"] if r["survives_pct"] is not None]
     assert len(pop) >= 200, f"survival must be near-universal, got {len(pop)}"
@@ -38364,8 +38398,16 @@ def test_b2823_stream_is_classified_on_current_gate_fires():
     assert m["stream"] == "BOTH", m["stream"]
     assert m["projected_current_gate"] < 100, m
     # unchanged high-survival rows keep their lanes
-    assert rows["turtle_soup_short"]["projected_current_gate"] == \
-        rows["turtle_soup_short"]["projected_step1_fires"]
+    # S6-B2931 (B3078): the split changed turtle_soup_short, so it can no
+    # longer carry the "unchanged rows keep their lanes" assertion.
+    # avwap_252_breakout is untouched by the split and carries it now, so
+    # the PROPERTY is still tested rather than a number relaxed to fit.
+    _un = rows["avwap_252_breakout"]
+    assert _un["projected_current_gate"] == _un["projected_step1_fires"]
+    # and the split parent must now DIFFER - which proves the split moved
+    # real fires rather than only adding an empty registration
+    _sp = rows["turtle_soup_short"]
+    assert _sp["projected_current_gate"] < _sp["projected_step1_fires"]
     assert any("CURRENT-GATE projection" in c for c in art["caveats"])
 
     import spot_check_smc_family as spot
@@ -38422,7 +38464,7 @@ def test_b2825_status_groups_are_mutually_exclusive():
                 "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE"}
     import collections
     st = collections.Counter(r["status"] for r in rows)
-    assert sum(st.values()) == len(rows) == 223
+    assert sum(st.values()) == len(rows) == 225
     for r in rows:
         if r["status"] in TERMINAL:
             assert r["stream"] == "-", (r["strategy"], "terminal row in a lane")
@@ -41149,13 +41191,61 @@ def test_b1248_or_arm_attribution_separates_the_added_arm():
 
     src = (root / "backtest" / "signals" / "screener.py").read_text(
         encoding="utf-8", errors="replace")
-    for strat, (thesis, added) in oaa.GATES.items():
-        i = src.index("def strat_%s(" % strat)
-        body = src[i:i + 1400]
-        assert thesis in body, (strat, thesis, "thesis arm not in the gate")
-        assert added in body, (strat, added, "added arm not in the gate")
-        # it must still be an OR of the two, not an AND - the whole question
-        assert " or " in body, (strat, "the OR gate is gone")
+
+    # S6-B3037 (owner ruled RE-DERIVE 2026-09-23): the B2931 split
+    # replaced the OR with an exact partition, so asserting the OR is
+    # still present would pin a roster that no longer exists. The pin
+    # is RE-DERIVED, not retired - it still couples GATES to the live
+    # screener, now by asserting the PARTITION and the PAIRING.
+    #
+    # The anchors are the EXECUTABLE form s.get("<signal>" and not the
+    # bare signal name: b2931 writes 'the B1202 smc_bos_bearish OR-arm
+    # now lives in ...' into the PARENT's comment, so a bare
+    # `added not in body` check would match prose and test nothing
+    # (L748 - anchor on something that cannot appear in prose).
+    # The body must stop at the NEXT def. The pre-split pin sliced a
+    # fixed 1400 chars, which was safe only while nothing sat between
+    # the two gates - b2931 inserts each bos registration IMMEDIATELY
+    # after its parent, so a fixed window spills into the sibling and
+    # finds the added arm there. MEASURED: this exact assertion failed
+    # that way in the worktree before the bound was added.
+    def _gate_body(name):
+        k = src.index("def strat_%s(" % name)
+        e = src.find("\ndef ", k + 1)
+        return src[k:e if e != -1 else len(src)]
+
+    for parent, bos in oaa.SPLIT_PAIRS.items():
+        thesis, added = oaa.GATES[parent]
+        assert oaa.GATES[bos] == (thesis, added), (
+            bos, "the bos registration must carry its parent's pair")
+
+        pbody = _gate_body(parent)
+        assert ('s.get("%s"' % thesis) in pbody, (
+            parent, thesis, "the thesis arm left the parent")
+        assert ('s.get("%s"' % added) not in pbody, (
+            parent, added,
+            "the B1202 arm is STILL executable in the parent - the "
+            "split did not land, so the recorded shares would again "
+            "describe two populations under one name")
+
+        bbody = _gate_body(bos)
+        assert ('s.get("%s"' % added) in bbody, (
+            bos, added, "the added arm is not in the bos gate")
+        # B3078: the held patch wrote this exclusion as a BANNED
+        # not-s-get gate, and preflight C7a refused the commit - so this
+        # pin had been asserting the forbidden form. The exclusion now
+        # fails CLOSED (identity test, NO default - a missing key yields
+        # None and None is False is False), which is strictly
+        # safer: a MISSING producer key previously made the child FIRE
+        # and double-count with its parent, destroying the exact
+        # partition. The assertion is STRENGTHENED, not relaxed - it now
+        # pins fail-closed exclusion rather than mere negation.
+        assert ('s.get("%s") is False' % thesis) in bbody, (
+            bos, thesis,
+            "the bos gate does not EXCLUDE the thesis signal FAIL-CLOSED - "
+            "without that the two registrations overlap on a missing key "
+            "and the partition is not exact, which is the property the "
+            "whole attribution now rests on")
 
     # the signal parser must read BOTH dialects; literal_eval alone fails on
     # every JSON-style row, which reads identically to the field being absent
@@ -43211,3 +43301,156 @@ def test_b3071_l859_row_and_cap_projection():
     empty = {"sim_day_index": None, "elapsed_hours": None}
     rs._proj(empty)
     assert "projected_total_h" not in empty, empty
+
+
+def test_b3074_l860_blocker_condition_rule_survives():
+    """S6-B3075 / L860: state a blocker as its CONDITION, not as the EVENT.
+
+    DETECTION IS JUDGMENT-ONLY and the search was run: no scan can tell a
+    blocker that is still applicable from one whose condition has dissolved,
+    because that turns on world state no text carries. The mechanisable half
+    is DURABILITY - assert the instruction cannot vanish from the two files
+    read every turn - plus the ENUMERATOR, which is audit_ticket_staleness.py
+    with its blockers flag (L859: run the named tool after a state change).
+
+    Anchored by the measured instance: two tickets said 'at chain done' when
+    the hold only needed 'no config in flight', a reading that under a pause
+    would never be satisfied at all.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+
+    sk = (root / ".claude" / "skills" / "execution-discipline"
+          / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    for frag in ("Receive an instruction that CHANGES STATE",
+                 "RE-READ THE HELD TICKETS",
+                 "never as the EVENT"):
+        assert frag in sk, "L860's tripwire row lost the fragment: " + frag
+
+    ck = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="replace")
+    assert "INSTANCE 2 (L860" in ck, "#235 no longer anchors L860"
+
+    lr = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    assert "### L860" in lr, "L860 entry is gone"
+    assert "no config in flight" in lr.lower(), (
+        "L860 lost the CONDITION its instance turns on - without it the entry "
+        "states a rule with no way to tell the right phrasing from the wrong")
+
+    # the named enumerator must still exist, or the rule points at nothing
+    assert (root / "scripts" / "audit_ticket_staleness.py").is_file(), (
+        "the blocker audit L860 tells you to run does not exist")
+
+
+
+def test_b2931_split_is_an_exact_partition():
+    """S6-B2931 (owner ruled 2026-09-22): the B1202 OR-arm is its own
+    registration and the split PARTITIONS the old OR exactly - no bar
+    fires in both, and every bar the old OR admitted fires in exactly one.
+    """
+    from backtest.signals.screener import (
+        ALL_STRATEGIES, strat_turtle_soup_short, strat_turtle_soup_bos_short,
+        strat_smc_equal_highs_sweep_short, strat_smc_equal_highs_bos_short)
+
+    assert "turtle_soup_bos_short" in ALL_STRATEGIES
+    assert "smc_equal_highs_bos_short" in ALL_STRATEGIES
+
+    base = {"below_prev_high": True, "close_below_open": True,
+            "smc_fvg_bearish_active": True, "borrow_ok": True}
+
+    # sweep-only bar: thesis fires, bos-arm does not
+    s1 = dict(base, smc_liquidity_swept_up=True, smc_bos_bearish=False,
+              smc_equal_highs_swept=True)
+    assert strat_turtle_soup_short(s1)["fires"]
+    assert not strat_turtle_soup_bos_short(s1)["fires"]
+    assert strat_smc_equal_highs_sweep_short(s1)["fires"]
+    assert not strat_smc_equal_highs_bos_short(s1)["fires"]
+
+    # bos-only bar: bos-arm fires, thesis does not
+    s2 = dict(base, smc_liquidity_swept_up=False, smc_bos_bearish=True,
+              smc_equal_highs_swept=False)
+    assert not strat_turtle_soup_short(s2)["fires"]
+    assert strat_turtle_soup_bos_short(s2)["fires"]
+    assert not strat_smc_equal_highs_sweep_short(s2)["fires"]
+    assert strat_smc_equal_highs_bos_short(s2)["fires"]
+
+    # both-signals bar: thesis wins, bos-arm stays quiet (exact partition,
+    # matching the attribution artifacts' thesis_only/both/added_only split)
+    s3 = dict(base, smc_liquidity_swept_up=True, smc_bos_bearish=True,
+              smc_equal_highs_swept=True)
+    assert strat_turtle_soup_short(s3)["fires"]
+    assert not strat_turtle_soup_bos_short(s3)["fires"]
+    assert strat_smc_equal_highs_sweep_short(s3)["fires"]
+    assert not strat_smc_equal_highs_bos_short(s3)["fires"]
+
+    # neither-signal bar: all four quiet
+    s4 = dict(base, smc_liquidity_swept_up=False, smc_bos_bearish=False,
+              smc_equal_highs_swept=False)
+    for f in (strat_turtle_soup_short, strat_turtle_soup_bos_short,
+              strat_smc_equal_highs_sweep_short,
+              strat_smc_equal_highs_bos_short):
+        assert not f(s4)["fires"]
+
+
+
+def test_b2919_below_power_is_terminal_na(monkeypatch, tmp_path):
+    """S6-B2919 (owner ruled 2026-09-22): a below-power Step-2 result is a
+    terminal N/A carrying its reason - and the L642 fail-closed path stays
+    for a grid whose step2 block is absent.
+
+    Fixture mirrors the B2612 harness: _run is monkeypatched to write the
+    planted grid json, so the caller's disposition logic is exercised on
+    the real path with no engine involved.
+    """
+    import json as _json
+    from pathlib import Path as _P
+
+    import scripts.run_postconfig as rp
+
+    def make_run(grid_doc):
+        def _run(cmd, env=None):
+            class R:
+                returncode = 0
+                stdout = b""
+                stderr = b""
+            outs = [str(a) for a in cmd if str(a).endswith(".json")]
+            if outs:
+                _P(outs[-1]).write_text(_json.dumps(grid_doc),
+                                        encoding="utf-8")
+            return R()
+        return _run
+
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    (cube / "trade_exit_detail.csv").write_text("x", encoding="utf-8")
+    manifest = {"window": {"start": "2024-05-05", "end": "2025-05-05"},
+                "arms": [{"env": {}}]}
+
+    honest = {"results": [{"verdict": "BELOW_POWER_FLOOR"}],
+              "step2": {"verdict": "BELOW_POWER_FLOOR",
+                        "reason": "holdout n 7 < min_n 10 on 'ts10'"}}
+    malformed = {"results": [{"verdict": "RANKED"}]}
+
+    # S6-B3032: the family's OWN key set, not an empty dict.
+    # run_family builds its label as p[k] for every key the family
+    # declares (run_postconfig.py:619), so {} raises KeyError on the
+    # first one. institutional_committed_growth_long declares four:
+    # P4 min_consecutive_quarters, P5 growth_lookback_quarters,
+    # P6 growth_multiple, P9 ema_span. These values mirror the B2612
+    # harness this fixture claims to mirror (test_unit.py:30813).
+    _p = {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+          "growth_multiple": 1.1, "ema_span": 200}
+
+    # arm 1: honest verdict -> N/A, verdict and reason carried, no FAIL row
+    monkeypatch.setattr(rp, "_run", make_run(honest))
+    res, _, _, _ = rp.run_institutional(cube, _p, manifest, step=2)
+    by = {n: (st, m) for n, st, m in res}
+    assert by["step2_grade_auto"][0] == "N/A", by["step2_grade_auto"]
+    assert "BELOW_POWER_FLOOR" in by["step2_grade_auto"][1]
+    assert "S6-B2919" in by["step2_grade_auto"][1]
+    assert "holdout n 7" in by["step2_grade_auto"][1]
+
+    # arm 2: NO step2 block on a declared Step-2 cube -> FAIL closed (L642)
+    monkeypatch.setattr(rp, "_run", make_run(malformed))
+    res2, _, _, _ = rp.run_institutional(cube, _p, manifest, step=2)
+    by2 = {n: (st, m) for n, st, m in res2}
+    assert by2["step2_grade_auto"][0] == "FAIL", by2["step2_grade_auto"]

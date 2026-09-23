@@ -4101,6 +4101,8 @@ citation + queue ticket** on any stated miss, enumerated through the primitive.
 
 ### #235 - CITING A RULE IS NOT THE RULE RUNNING (B1753 / L511)
 
+**INSTANCE 2 (L860, B3074, 2026-09-23).** The other half of re-implementing-is-not-running: RE-VERIFYING a blocker is not re-asking whether it still APPLIES. Three tickets stayed held behind the chain-contamination rule after an owner pause had already dissolved it, because a blocker verified TRUE keeps the authority of having been checked. State a blocker as its CONDITION - no config in flight - never as the EVENT expected to produce it, and after any state change run the blocker audit rather than re-reading the row.
+
 **INSTANCE (L859, B3070, 2026-09-23).** The sibling of citing-is-not-running: RE-IMPLEMENTING a rule is not running it either. L830 names audit_ticket_staleness.py with its blockers flag; I re-derived four tickets' blockers by hand instead, which felt more rigorous - files opened, line numbers quoted - and covered 4 tickets where the tool covers 22 non-terminal rows and classifies each. **Effort is not coverage.** When a lesson names a script, a flag or a test, run it and report what it returned.
 
 **MEASURED:** `#224` - *a gate nobody calls is not enforcement* - was a checklist paragraph plus

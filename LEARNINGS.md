@@ -23183,3 +23183,16 @@ in ways I have not eliminated. What is solid is the refutation and the duty cycl
 **Rule.** When a lesson names a script, a flag or a test, RUN THAT, and say what it returned. Re-deriving its answer by hand is acceptable only as a CHECK ON the tool, stated as such - never as a substitute, because the substitute's population is invisible.
 
 **Compliance failure against item #235**, not a new class, so no new checklist item (#136 anti-theater). Durability: the instruction now sits in the tripwire table where it is read before acting, and audit_ticket_staleness.py is named there with its flag.
+
+
+### L860 - A BLOCKER IS A CLAIM ABOUT A CONDITION, AND THE CONDITION CAN DISSOLVE WITHOUT THE TICKET NOTICING (B3074, compliance failure against #235 and L830, 2026-09-23)
+
+**What happened.** Three tickets were held behind the chain-contamination rule: a config imports whatever code is on disk when it STARTS, so editing the engine or the battery mid-campaign splits early and late configs across two versions. That reasoning is correct. Earlier this same session I had already RE-DERIVED those blockers against the code and found 3 of 4 false, which felt like the diligence was done.
+
+**Then the owner instructed a pause, and I did not re-ask.** Stopping the chain after the current config means no config is running and none will start - which IS the condition the hold required. The blocker dissolved the moment the instruction landed, and I went on reporting the tickets as blocked until an evaluator pushed back. **I had also mis-stated the condition itself**, calling it CHAIN DONE across all 36 configs when the hold only ever needed NO CONFIG IN FLIGHT - a stricter reading that, under a pause, would never be satisfied at all.
+
+**The shape.** L830 says a blocker is the least-audited claim a ticket carries, and its remedy is to verify the claim. That covers *is this true* and is silent on *is this still applicable*. A blocker verified TRUE acquires the authority of having been checked, and that authority survives the event that voids it. Worse, the voiding event here was an OWNER INSTRUCTION - the loudest possible input - and it still did not trigger the re-ask, because I processed it as a task to execute rather than as a state change with consequences for the backlog.
+
+**Rule.** After ANY change to the state a blocker depends on - a run stopped, a dependency landed, a decision ruled, a campaign paused - re-read the held tickets and ask what each is waiting on NOW. State the blocker as the CONDITION (no config in flight), never as the EVENT you expect to produce it (chain done), because the condition can arrive by a route the event never takes.
+
+**Compliance failure against #235 and L830**, not a new class - no new checklist item (#136). Durability: the tripwire row, and the blocker audit that already exists is audit_ticket_staleness.py with its blockers flag, which classifies each row's wait-reason and is the thing to RUN after a state change (L859).

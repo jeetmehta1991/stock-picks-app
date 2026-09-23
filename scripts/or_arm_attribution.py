@@ -46,6 +46,19 @@ ROOT = Path(__file__).resolve().parent.parent
 GATES = {
     "smc_equal_highs_sweep_short": ("smc_equal_highs_swept", "smc_bos_bearish"),
     "turtle_soup_short": ("smc_liquidity_swept_up", "smc_bos_bearish"),
+    # S6-B3037 (owner ruled RE-DERIVE 2026-09-23): the B2931 split
+    # gave the B1202 arm its own registration. Each carries its
+    # PARENT's signal pair so the same classifier runs on both.
+    "smc_equal_highs_bos_short": ("smc_equal_highs_swept", "smc_bos_bearish"),
+    "turtle_soup_bos_short": ("smc_liquidity_swept_up", "smc_bos_bearish"),
+}
+
+# S6-B3037: the PAIR is the unit of analysis after the split - the
+# question 'how much of this name rests on the added arm' is answered
+# by the two populations, not by one name's internal split.
+SPLIT_PAIRS = {
+    "turtle_soup_short": "turtle_soup_bos_short",
+    "smc_equal_highs_sweep_short": "smc_equal_highs_bos_short",
 }
 
 
@@ -87,7 +100,13 @@ def main() -> int:
         sub = df[df["strategy"] == strat] if "strategy" in df.columns else df
         if sub.empty:
             out_rows.append({"strategy": strat, "verdict": "NO_ROWS",
-                             "landed": 0})
+                             "landed": 0,
+                             "regime": "NO_READABLE_ROWS",
+                             "regime_note": (
+                                 "no rows for this registration in this "
+                                 "cube - expected on a PRE-split cube for "
+                                 "the two B2931 registrations"),
+                             "split_pair": SPLIT_PAIRS.get(strat)})
             continue
         both = thesis_only = added_only = neither = unparsed = 0
         for raw in sub.get("signals_at_entry", pd.Series([None] * len(sub))):
@@ -105,6 +124,19 @@ def main() -> int:
             else:
                 neither += 1
         readable = both + thesis_only + added_only + neither
+        # S6-B3037: a share that CANNOT be wrong is not evidence.
+        # After the split each registration's classification is fixed
+        # by its own gate - the parent cannot fire without the thesis
+        # signal, the bos arm cannot fire with it - so the share is
+        # STRUCTURAL, not measured. Say which regime produced it.
+        if not readable:
+            regime = "NO_READABLE_ROWS"
+        elif added_only == 0 and (both + thesis_only) == readable:
+            regime = "POST_SPLIT_STRUCTURAL_THESIS_SIDE"
+        elif added_only == readable:
+            regime = "POST_SPLIT_STRUCTURAL_BOS_SIDE"
+        else:
+            regime = "PRE_SPLIT_INFORMATIVE"
         # the dilution figure: of the trades the gate ADMITTED, how many rest
         # on the ADDED arm alone - those are trades the pre-B1202 thesis
         # would never have taken
@@ -121,6 +153,13 @@ def main() -> int:
             "added_arm_only": added_only,
             "neither_arm": neither,
             "added_arm_only_share": None if share is None else round(share, 4),
+            "regime": regime,
+            "regime_note": (
+                "share is structural, fixed by this registration's own "
+                "gate, not measured from the data"
+                if regime.startswith("POST_SPLIT") else
+                "share is measured: both arms could have fired"),
+            "split_pair": SPLIT_PAIRS.get(strat),
         })
 
     doc = {

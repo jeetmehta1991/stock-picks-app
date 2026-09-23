@@ -4581,13 +4581,42 @@ def strat_smc_equal_highs_sweep_short(s):
     # B1202 (2026-07-06 Council 278 owner-approved): loosen with smc_bos_bearish
     # OR-alternative per B1186 SPY probe finding (increases fire count when
     # library treats price as break-of-structure not sweep).
+    # S6-B2931 (owner ruled 2026-09-22 SPLIT): thesis arm only - the
+    # B1202 OR-arm now lives in strat_smc_equal_highs_bos_short.
     fires = (
-        (s.get("smc_equal_highs_swept", False) or s.get("smc_bos_bearish", False))
+        s.get("smc_equal_highs_swept", False)
         and s.get("smc_fvg_bearish_active", False)
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "smc",
-        ["(smc_equal_highs_swept OR smc_bos_bearish)", "smc_fvg_bearish_active", "borrow_ok"],
+        ["smc_equal_highs_swept", "smc_fvg_bearish_active", "borrow_ok"],
         ["Equal-highs cluster swept OR bearish BOS (B1202 add per B1186 probe)",
+         "Bearish FVG active below - reversal confluence"])
+
+
+def strat_smc_equal_highs_bos_short(s):
+    """S6-B2931 (owner ruled 2026-09-22): the B1202-added arm of
+    smc_equal_highs_sweep_short as its own registration; exact
+    partition (bos AND NOT swept), union == the pre-split OR."""
+    fires = (
+        s.get("smc_bos_bearish", False)
+        # S6-B2931 / B3078: the held patch wrote this as a banned
+        # not-s-get gate (feedback_never_use_NOT_s_get_pattern). With
+        # default False a MISSING producer key would make this child FIRE,
+        # double-counting with its parent and destroying the exact
+        # partition the split exists to create. Defaulting True and testing
+        # identity with NO default fails CLOSED on the absent input (L642):
+        # a missing key yields None, and None is False is False, so the
+        # child does not fire. No default-True (C7b) and no not-s-get
+        # (C7a) - both scanners are satisfied by the same form. missing
+        # -> no
+        # fire, present-and-False -> fire, present-and-True -> no fire.
+        and s.get("smc_equal_highs_swept") is False  # exact partition
+        and s.get("smc_fvg_bearish_active", False)
+     and not _short_borrow_trap_active(s))
+    return _strat(fires, "short", "smc",
+        ["smc_bos_bearish AND NOT smc_equal_highs_swept",
+         "smc_fvg_bearish_active", "borrow_ok"],
+        ["Equal-highs bos-arm short (S6-B2931 split of the B1202 add)",
          "Bearish FVG active below - reversal confluence"])
 
 
@@ -4809,17 +4838,45 @@ def strat_turtle_soup_short(s):
     # OR-alternative to smc_liquidity_swept_up per B1186 SPY probe finding
     # (BOS fires when library treats price action as break-of-structure not
     # liquidity sweep; increases fire count).
+    # S6-B2931 (owner ruled 2026-09-22 SPLIT): thesis arm only -
+    # the B1202 smc_bos_bearish OR-arm now lives in
+    # strat_turtle_soup_bos_short, so one name covers one population.
     fires = (
-        (s.get("smc_liquidity_swept_up", False) or s.get("smc_bos_bearish", False))
+        s.get("smc_liquidity_swept_up", False)
         and s.get("below_prev_high", False)     # B616: closed back BELOW prior-day-high
         and s.get("close_below_open", False)    # bearish reversal bar
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "ict",
-        ["(smc_liquidity_swept_up OR smc_bos_bearish)", "below_prev_high", "close_below_open", "borrow_ok"],
+        ["smc_liquidity_swept_up", "below_prev_high", "close_below_open", "borrow_ok"],
         ["Turtle Soup short (Raschke Street Smarts 1996) - B1202 added smc_bos_bearish OR per B1186 probe",
          "Upside liquidity swept OR bearish break-of-structure",
          "Price reversed back BELOW prior-day-high - stop-hunt failed",
          "Bearish close below open - rejection of upside breakout"])
+
+
+def strat_turtle_soup_bos_short(s):
+    """S6-B2931 (owner ruled 2026-09-22): the B1202-added arm of
+    turtle_soup_short as its own registration. B1202 (Council 278)
+    added smc_bos_bearish as an OR-alternative; the S6-B2931
+    attribution artifacts measured that arm carrying the majority of
+    the name's fires - two populations under one name. The partition
+    is exact: this fires on bos AND NOT the sweep signal, the parent
+    keeps the sweep signal, union == the pre-split OR."""
+    fires = (
+        s.get("smc_bos_bearish", False)
+        # S6-B2931 / B3078: same fix as the sibling above - fail CLOSED on
+        # a missing producer key rather than firing and double-counting.
+        and s.get("smc_liquidity_swept_up") is False  # exact partition
+        and s.get("below_prev_high", False)
+        and s.get("close_below_open", False)
+     and not _short_borrow_trap_active(s))
+    return _strat(fires, "short", "ict",
+        ["smc_bos_bearish AND NOT smc_liquidity_swept_up",
+         "below_prev_high", "close_below_open", "borrow_ok"],
+        ["Turtle Soup bos-arm short (S6-B2931 split of the B1202 add)",
+         "Bearish break-of-structure without a liquidity sweep",
+         "Price reversed back BELOW prior-day-high",
+         "Bearish close below open"])
 
 
 def strat_judas_swing_long(s):
@@ -8130,6 +8187,8 @@ ALL_STRATEGIES = {
     # feedback_long_short_inverse_audit.
     "turtle_soup_long":             strat_turtle_soup_long,
     "turtle_soup_short":            strat_turtle_soup_short,
+    # S6-B2931 split (owner ruled 2026-09-22): the B1202 bos arm
+    "turtle_soup_bos_short":        strat_turtle_soup_bos_short,
     # ICT Layer 2D second batch (B581 owner directive 2026-06-04):
     # Judas Swing + MMBM/MMSM + Week Opening Gap. 6 new strategies.
     "judas_swing_long":             strat_judas_swing_long,
@@ -8188,6 +8247,8 @@ ALL_STRATEGIES = {
     "smc_ote_long":                 strat_smc_ote_long,
     "smc_ote_short":                strat_smc_ote_short,
     "smc_equal_highs_sweep_short":  strat_smc_equal_highs_sweep_short,
+    # S6-B2931 split (owner ruled 2026-09-22): the B1202 bos arm
+    "smc_equal_highs_bos_short":    strat_smc_equal_highs_bos_short,
     "smc_equal_lows_sweep_long":    strat_smc_equal_lows_sweep_long,
     "smc_bos_retest_entry":         strat_smc_bos_retest_entry,
     # PEAD family (2 - Batch 209 2026-05-17 owner-approved research review)

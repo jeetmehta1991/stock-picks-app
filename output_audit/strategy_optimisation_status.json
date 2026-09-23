@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "72739db05",
-    "generated_at": "2026-09-18 20:29:24"
+    "source_commit": "a3b3b12a5",
+    "generated_at": "2026-09-23 15:28:57"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -242,7 +242,8 @@
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2418"
+        "S6-B2418",
+        "S6-B3078"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -316,11 +317,13 @@
         "adx": 1.0
       },
       "tickets": [
-        "S6-B2383"
+        "S6-B2383",
+        "S6-B2872"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2383"
+        "S6-B2383",
+        "S6-B2872"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -1143,12 +1146,14 @@
       },
       "tickets": [
         "S6-B2810b",
-        "S6-B2810c"
+        "S6-B2810c",
+        "S6-B2872"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b",
-        "S6-B2810c"
+        "S6-B2810c",
+        "S6-B2872"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -1466,9 +1471,13 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2874"
+      ],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B2874"
+      ],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -3082,11 +3091,15 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B2872"
+      ],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B2872"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "short_borrow_trap_avoid",
@@ -3263,24 +3276,43 @@
       "status": "STALLED-CAMPAIGN"
     },
     {
+      "strategy": "smc_equal_highs_bos_short",
+      "family": "smc",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
+      "reopen_candidate": false,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "live_campaign_tickets": [],
+      "mention_tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
       "strategy": "smc_equal_highs_sweep_short",
       "family": "smc",
       "r5_fires": 838,
-      "changed_since_r5": false,
-      "survives_pct": 1.0,
+      "changed_since_r5": true,
+      "survives_pct": 0.3652,
       "projected_step1_fires": 77.0,
-      "projected_current_gate": 77.0,
+      "projected_current_gate": 28.1,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2756",
-        "S6-B2763"
+        "S6-B2763",
+        "S6-B2931"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2756",
-        "S6-B2763"
+        "S6-B2763",
+        "S6-B2931"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -3732,12 +3764,14 @@
       },
       "tickets": [
         "S6-B2838",
-        "S6-B2850"
+        "S6-B2850",
+        "S6-B2861"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2838",
-        "S6-B2850"
+        "S6-B2850",
+        "S6-B2861"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -3757,12 +3791,14 @@
       },
       "tickets": [
         "S6-B2842",
-        "S6-B2850"
+        "S6-B2850",
+        "S6-B2861"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2842",
-        "S6-B2850"
+        "S6-B2850",
+        "S6-B2861"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -3863,6 +3899,23 @@
       "status": "NOT-STARTED"
     },
     {
+      "strategy": "turtle_soup_bos_short",
+      "family": "ict",
+      "r5_fires": 0,
+      "changed_since_r5": false,
+      "survives_pct": null,
+      "projected_step1_fires": 0.0,
+      "projected_current_gate": 0.0,
+      "reopen_candidate": false,
+      "stream": "LOOSEN",
+      "tightenable_keys": {},
+      "tickets": [],
+      "live_campaign_tickets": [],
+      "mention_tickets": [],
+      "admitted": false,
+      "status": "NOT-STARTED"
+    },
+    {
       "strategy": "turtle_soup_long",
       "family": "ict",
       "r5_fires": 324,
@@ -3883,21 +3936,23 @@
       "strategy": "turtle_soup_short",
       "family": "ict",
       "r5_fires": 1880,
-      "changed_since_r5": false,
-      "survives_pct": 1.0,
+      "changed_since_r5": true,
+      "survives_pct": 0.1654,
       "projected_step1_fires": 172.8,
-      "projected_current_gate": 172.8,
+      "projected_current_gate": 28.6,
       "reopen_candidate": false,
-      "stream": "NONE",
+      "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2756",
-        "S6-B2810c"
+        "S6-B2810c",
+        "S6-B2931"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2756",
-        "S6-B2810c"
+        "S6-B2810c",
+        "S6-B2931"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"

@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 72739db05 at 2026-09-18 20:29:24 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit a3b3b12a5 at 2026-09-23 15:28:57 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -13,11 +13,11 @@
 
 | | count |
 |---|---|
-| registered strategies | 223 |
+| registered strategies | 225 |
 | DONE - admitted to Phase 1B | 14 |
 | IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 2 |
-| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 50 |
-| NOT-STARTED | 141 |
+| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 51 |
+| NOT-STARTED | 142 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
 | CONTAINED-IN-REPRESENTATIVE (b2647) | 1 |
@@ -30,8 +30,8 @@
 |---|---|---|
 | TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 12 |
 | BOTH | tightenable AND fire-starved | 29 |
-| LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 124 |
-| NONE | no numeric knob and not starved - a BREADTH candidate | 28 |
+| LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 127 |
+| NONE | no numeric knob and not starved - a BREADTH candidate | 27 |
 
 ## Tightening candidates by family - largest families first
 
@@ -102,7 +102,7 @@
 | institutional_committed_growth_long | institutional_persistence | 1941 | 178.4 | YES | 100.0% | - | DONE-ADMITTED |
 | risk_off_bond_equity_short | cross_asset | 1895 | 0.0 | YES | 0.0% | LOOSEN | NOT-STARTED |
 | break_retest_confluence | confluence | 1889 | 173.6 |  | 100.0% | NONE | NOT-STARTED |
-| turtle_soup_short | ict | 1880 | 172.8 |  | 100.0% | NONE | STALLED-CAMPAIGN |
+| turtle_soup_short | ict | 1880 | 28.6 | YES | 16.5% | LOOSEN | STALLED-CAMPAIGN |
 | tema_dema | trend | 1876 | 124.2 | YES | 72.0% | NONE | NOT-STARTED |
 | institutional_strong_conviction_long | institutional_persistence | 1826 | 167.8 |  | 100.0% | - | DONE-ADMITTED |
 | naked_poc_retest_long | volume_profile | 1788 | 164.3 |  | 100.0% | TIGHTEN | NOT-STARTED |
@@ -150,7 +150,7 @@
 | pead_short | event_driven | 872 | 80.1 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | pivot_r1_breakout | pivot | 860 | 79.0 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | bollinger_tight_with_smart_money_long | smart_money_sleeve | 840 | 77.2 |  | 100.0% | LOOSEN | NOT-STARTED |
-| smc_equal_highs_sweep_short | smc | 838 | 77.0 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
+| smc_equal_highs_sweep_short | smc | 838 | 28.1 | YES | 36.5% | LOOSEN | STALLED-CAMPAIGN |
 | week_opening_gap_fill_up | ict | 834 | 76.7 |  | 100.0% | LOOSEN | NOT-STARTED |
 | prev_day_low_breakdown | breakout | 800 | 73.5 |  | 100.0% | LOOSEN | NOT-STARTED |
 | williams_stoch_dual | confluence | 750 | 68.9 |  | 100.0% | BOTH | NOT-STARTED |
@@ -198,7 +198,7 @@
 | insider_cluster_concentrated_sell_short | event_driven | 269 | 24.7 |  | 100.0% | LOOSEN | NOT-STARTED |
 | smc_ote_short | smc | 262 | 24.1 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | xs_momentum_top_decile | factor | 255 | 23.4 |  | 100.0% | - | DONE-ADMITTED |
-| shooting_star_short | candle | 250 | 23.0 |  | 100.0% | BOTH | NOT-STARTED |
+| shooting_star_short | candle | 250 | 23.0 |  | 100.0% | BOTH | STALLED-CAMPAIGN |
 | mfi_oversold_with_smart_money_long | smart_money_sleeve | 244 | 22.4 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | doji_at_support | candle | 232 | 21.3 |  | 100.0% | LOOSEN | NOT-STARTED |
 | smc_ote_long | smc | 231 | 21.2 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
@@ -284,8 +284,10 @@
 | rsi_overbought_short | mean_reversion | 0 | 0.0 |  | - | LOOSEN | STALLED-CAMPAIGN |
 | sector_rotation_defensive_long | cross_asset | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | short_borrow_trap_avoid | smart_money_sleeve | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
+| smc_equal_highs_bos_short | smc | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | squeeze_setup_long | smart_money_sleeve | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | totm_short | calendar | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
+| turtle_soup_bos_short | ict | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | vwap_extension_momentum_long | momentum | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | vwap_extension_momentum_short | momentum | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | weekly_bias_pullback_short | multi_timeframe | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |

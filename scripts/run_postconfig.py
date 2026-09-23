@@ -637,6 +637,7 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
              _sub_env(arm_env, gb))
     ok2 = g.returncode == 0 and grid_out.exists()
     why2 = ""
+    step2_na_row = None   # S6-B2919: set on an honest not-evaluable verdict
     if ok2 and step == 2:
         # B2612 (S6-B2612a): a Step-2 cube's grid MUST carry a gate verdict;
         # a Step-1-shaped grid on a Step-2 cube fails step 2 CLOSED (L642) -
@@ -650,10 +651,30 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
             ok2 = bool(graded)
             why2 = ("Step-2 gate verdict present: " if graded else
                     "Step-2 cube with NO gate verdict (fail closed, L642): ") + why2
-    results.append(("step2_grade_auto", "PASS" if ok2 else "FAIL",
-                    f"exit {g.returncode}; {label} -> {grid_out.name}"
-                    + (f"; {why2[:200]}" if why2 else "")
-                    + ("" if ok2 or why2 else f"; {_tail(g)[:160]}")))
+            if not graded:
+                # S6-B2919 (owner ruled 2026-09-22): an HONEST
+                # not-evaluable verdict is a terminal N/A carrying
+                # its reason - an evidenced answer, not a failure
+                # needing hand disposition. The fail-closed path
+                # remains for a grid whose step2 block is ABSENT or
+                # carries no such verdict (the L642 malformed case).
+                _s2b = _grid.get("step2")
+                _hv = (_s2b.get("verdict")
+                       if isinstance(_s2b, dict) else None)
+                if _hv in ("BELOW_POWER_FLOOR", "NO_HOLDOUT_ROWS",
+                           "NO_EXIT_SELECTABLE"):
+                    step2_na_row = (
+                        "step2_grade_auto", "N/A",
+                        "%s: %s - terminal N/A per owner ruling "
+                        "2026-09-22 (S6-B2919)"
+                        % (_hv, str(_s2b.get("reason") or "")[:160]))
+    if step2_na_row is not None:
+        results.append(step2_na_row)
+    else:
+        results.append(("step2_grade_auto", "PASS" if ok2 else "FAIL",
+                        f"exit {g.returncode}; {label} -> {grid_out.name}"
+                        + (f"; {why2[:200]}" if why2 else "")
+                        + ("" if ok2 or why2 else f"; {_tail(g)[:160]}")))
     # B2569 (owner directive 2026-09-02): a family whose band carries FREE
     # levels grades them on EVERY landing, reproduction-gated - never once at
     # strategy level (the S6-B2501/B2504 class bug). A reproduction failure

@@ -4,7 +4,7 @@
 > **Doc-sync status:** This document may contain references stale as of 2026-06-27 or earlier. The current state below overrides any stale references in the body until the next full-rewrite.
 >
 > **Current canonical values (as of 2026-07-07 B1231):**
-> - `len(ALL_STRATEGIES) = 222` (B1382 2026-07-25 owner standing directive 'mirror shorts by default': 219 -> 222 via 3 Class 7 NEW symmetric SHORT mirrors (news_sentiment_short + poc_magnet_short + xs_combined_momentum_high_ivol_short), all tagged EXPLORATORY (zero short rows cleared the B1378 true holdout; L229); was 219 post-B1189)
+> - `len(ALL_STRATEGIES) = 225` (B3078 2026-09-23: the S6-B2931 OR-arm split added strat_smc_equal_highs_bos_short and strat_turtle_soup_bos_short as separate registrations; prior line preserved below) `len(ALL_STRATEGIES) = 222` (B1382 2026-07-25 owner standing directive 'mirror shorts by default': 219 -> 222 via 3 Class 7 NEW symmetric SHORT mirrors (news_sentiment_short + poc_magnet_short + xs_combined_momentum_high_ivol_short), all tagged EXPLORATORY (zero short rows cleared the B1378 true holdout; L229); was 219 post-B1189)
 > - `STRATEGIES_DISABLED_MISSING_PRODUCER = set()` (was `{dxy_headwind_multinational_short}` pre-B1189)
 > - Active strategies for Phase 1A-β cube: 222; cube cells 222×26 = 5,772 (B1382)
 > - Test count: **880 passed, 2 skipped** on `test_unit.py + test_integration.py`
