@@ -18504,6 +18504,8 @@ amends #223 (SKIPPED clause retired) and #284 (render lives in the supervisor).
 **B2524, 2026-09-02. Two wrong counts in one turn, same shape, one of them
 inside the command that was checking the other.**
 
+**ADDENDUM (B3052): INSTANCE - A LOOKUP, NOT A STATISTIC, AND IT WAS THE DELIVERY FLAG ITSELF.** Reporting the c16 landing I opened the landings jsonl, read one row's `reported_to_owner` as False, and said in the response that delivery was outstanding. Calling the reducer settled it the other way: `mark_reported` changed 0 rows and `undelivered()` returned the empty list, because the flag lives under last-row-wins and later rows had already flipped it. **The tell I walked past is the one this entry names: I wanted ONE FIELD OF ONE RECORD, which feels like a lookup rather than a count, and the reducer gets bypassed for exactly the read that reaches the owner as a statement.** Nothing broke - the report was delivered either way - and that is why it is worth recording: the error was invisible in the outcome and visible only in the method.
+
 **The instances.** (1) I reported *"four advisors rejected discarding the 23
 rows"*; re-reading the five returned texts, all five reject it - a count
 asserted from impression over a population sitting in front of me. (2)
