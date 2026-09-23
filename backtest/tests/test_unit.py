@@ -13755,9 +13755,13 @@ def test_b1510_producer_artifact_standard():
     # B2585, owner directive 2026-09-03: the lock MOVED - the column is now
     # `all producer bands tested`, every parameter of the config's family
     # rather than the SMC six. A lock pin follows its lock, in the same commit.
+    # S6-B3023 (owner ruling 2026-09-23): `best IS-Sharpe` named a
+    # maximum and carried the selected row's value; it is retired for
+    # two unambiguous columns - the max (the B2182 diagnostic) and the
+    # Sharpe of the row that was actually selected.
     header_c = ("| config | combos | starved-IS | no-Sharpe | graded | distinct "
-                "| bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe "
-                "| best IS-CI-lo | best combination |")
+                "| bands | all producer bands tested | median IS-Sharpe | max IS-Sharpe "
+                "| IS-Sharpe at best ci_lo | best IS-CI-lo | best combination |")
     assert header_c in src_c, (
         "TABLE C header drifted from the locked B1898 column set. The columns "
         "are the funnel IN ORDER; renaming or reordering changes what a pasted "
@@ -27274,12 +27278,19 @@ def test_b2199_table_c_is_printed_with_every_locked_column(tmp_path, monkeypatch
     # reads the grid's own window block so Step-2 and Step-1 shapes are
     # distinguishable from the table itself; pin moves in the same commit
     # (B2585 precedent).
+    # S6-B3023 (owner ruling 2026-09-23): `best IS-Sharpe` named a maximum
+    # and carried the selected row's value, so the B2182 diagnostic
+    # (max - median = the selection artifact) was understated on 2 of 14
+    # landed configs. Split into two columns; FOURTH site to move with this
+    # lock (L592 - count the sites, and the pins found each one).
     for col in ("combos", "starved-IS", "no-Sharpe", "graded", "distinct",
                 "bands", "all producer bands tested", "median IS-Sharpe",
-                "best IS-Sharpe", "best IS-CI-lo", "best combination",
-                "entry window"):
+                "max IS-Sharpe", "IS-Sharpe at best ci_lo", "best IS-CI-lo",
+                "best combination", "entry window"):
         assert col in header, f"locked column missing from Table C: {col}"
-    assert header.count("|") == 14, "locked Table C is 13 columns"
+    assert "best IS-Sharpe" not in header, (
+        "the ambiguous label must be retired, not left beside its replacements")
+    assert header.count("|") == 15, "locked Table C is 14 columns"
 
 def test_b2203a_hardened_registration_uses_system_principal(monkeypatch):
     """B2203a (S6-B2202a class): the hardened detached launch must register
@@ -33837,7 +33848,10 @@ def test_b2585_table_c_bands_column_carries_every_producer_parameter(tmp_path, m
     # B2625: the lock moved to 13 columns (entry window, S6-B2612e) -
     # this SIBLING pin of test_b2199 moves with it (L592: count the
     # sites; the first B2625 pyramid caught exactly this one unmoved).
-    assert hdr.count("|") == 14, "the locked table is 13 columns"
+    # S6-B3023: 14 columns on the owner ruling 2026-09-23 - `best
+    # IS-Sharpe` split into `max IS-Sharpe` and `IS-Sharpe at best
+    # ci_lo`. L592 again: this is the third site that moves with the lock.
+    assert hdr.count("|") == 15, "the locked table is 14 columns"
     row = [l for l in out.splitlines() if l.startswith("| `icg_probe` | 1 ")][0]
     assert "P7=" in row and "P8=" in row and "P1=" in row, row
     # refused artifact in place -> nothing graded free -> bands is not a number
@@ -42176,3 +42190,476 @@ def test_b2938_figures_artifact_names_its_members():
     assert o["occupancy_skip_rows"] == 391782
     assert o["landed_trades"] == 189471
     assert o["ratio"] == 2.07
+
+
+
+def test_b2947_preleg_bar_audit_flags_defects_and_spares_delistings():
+    """S6-B2947 (owner-approved 2026-09-22): the pre-leg bar audit fails on
+    real defects (interior gaps, NaN, zero volume, non-positive prices) and
+    NEVER on the delisted-complete class its first live run mis-flagged
+    (TWTR/ATVI/PXD absent, MRO truncated - all sound histories)."""
+    import importlib
+    import sys as _sys
+    from datetime import date as _d
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("preleg_bar_audit")
+    import pandas as pd
+
+    days = [_d(2024, 5, d) for d in (6, 7, 8, 9, 10)]
+    kw = dict(max_nan_share=0.02, max_gap_share=0.02,
+              max_zero_volume_share=0.10)
+
+    def frame(dates, nan_at=None, nonpos_at=None, zvol=False):
+        df = pd.DataFrame({"date": pd.to_datetime(dates),
+                           "open": 100.0, "high": 101.0, "low": 99.0,
+                           "close": 100.5, "volume": 0 if zvol else 1000})
+        if nan_at is not None:
+            df.loc[nan_at, "close"] = float("nan")
+        if nonpos_at is not None:
+            df.loc[nonpos_at, "low"] = -1.0
+        return df
+
+    assert m.audit_frame(frame(days), days, **kw)["verdict"] == "PASS"
+    r = m.audit_frame(frame([days[0], days[1], days[3], days[4]]), days, **kw)
+    assert r["verdict"] == "FAIL" and "gap_share" in r["defects"]
+    assert r["gap_days"] == 1
+    r = m.audit_frame(frame(days, nan_at=2), days, **kw)
+    assert r["verdict"] == "FAIL" and "nan_share" in r["defects"]
+    r = m.audit_frame(frame(days, nonpos_at=1), days, **kw)
+    assert r["verdict"] == "FAIL" and "nonpositive_price" in r["defects"]
+    r = m.audit_frame(frame(days, zvol=True), days, **kw)
+    assert r["verdict"] == "FAIL" and "zero_volume_share" in r["defects"]
+    # delisted before the window: reported ABSENT, never a failure
+    assert m.audit_frame(None, days, **kw)["verdict"] == "ABSENT"
+    assert m.audit_frame(frame(days).iloc[0:0], days, **kw)["verdict"] == "ABSENT"
+    # delisted mid-window: PASS with the truncation reported (the MRO case)
+    r = m.audit_frame(frame(days[:3]), days, **kw)
+    assert r["verdict"] == "PASS" and r["trailing_absent_days"] == 2
+    # the launcher gates on it BEFORE every LAUNCH and halts on refusal
+    src = (root / "scripts" / "run_serial_chain.py").read_text(encoding="utf-8")
+    assert "preleg_bar_audit.py" in src
+    assert src.index("preleg_bar_audit.py") < src.index(
+        "via run_wave (battery included")
+    assert "pre-leg bar audit refused" in src
+
+
+def test_b2948_chain_watchdog_alerts_on_silence_and_documents_registration():
+    """S6-B2948 (owner-approved 2026-09-22): the session-independent
+    watchdog's verdict function alerts on undelivered halts and on a stale
+    heartbeat ONLY while the chain is live; the owner's one elevated
+    registration command (S6-B2203b) is documented in the file; the
+    launcher announces registration state at CHAIN START (proven live at
+    the 23:09:15Z restart, and the 23:04Z tick's ALERT caught the real
+    chain death)."""
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    w = importlib.import_module("chain_watchdog")
+
+    v, r = w.assess([{"wave": "x"}], 1.0, "done")
+    assert v == "ALERT" and "undelivered" in r[0]
+    assert w.assess([], 60.0, "live")[0] == "ALERT"
+    assert w.assess([], 60.0, "done")[0] == "QUIET"
+    assert w.assess([], None, "live")[0] == "ALERT"
+    assert w.assess([], 5.0, "live")[0] == "QUIET"
+    assert w.chain_state("x\nCHAIN DONE - every spec COMPLETE") == "done"
+    assert w.chain_state("LAUNCH candle_x via run_wave") == "live"
+    src = (root / "scripts" / "chain_watchdog.py").read_text(encoding="utf-8")
+    for tok in ("schtasks /Create", "/RU SYSTEM", "/SC MINUTE /MO 15",
+                w.TASK_NAME):
+        assert tok in src
+    lsrc = (root / "scripts" / "run_serial_chain.py").read_text(encoding="utf-8")
+    assert "chain_watchdog" in lsrc and "NOT REGISTERED" in lsrc
+
+
+
+def test_b3012_table_d_carries_the_leg_axis_for_the_candle_family():
+    """S6-B3012 (owner catch 2026-09-23): the candle pair's two legs shared
+    one D_AXIS_FAMILIES entry, which made the LEG a non-axis - invisible in
+    Table D except as a substring of the config name. P1 leg now reads from
+    the ARTIFACT (a third axis source beside cfg and admit)."""
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("producer_variant_table")
+
+    fam = m.D_AXIS_FAMILIES["candle_anatomy"]
+    labels = [spec[0] for spec in fam["d2"]]
+    assert labels[0] == "P1 leg", labels
+    assert [s[0] for s in fam["d2"]][1:] == [
+        "P2 n_bars", "P3 body", "P4 step", "P5 wick"]
+    # the leg's SOURCE is the artifact, not the swept-knob dicts
+    assert fam["d2"][0][1] == "art" and fam["d2"][0][2] == "strategy"
+    assert m._d_axis_value(("P1 leg", "art", "strategy"), {}, {},
+                           {"strategy": "three_black_crows_short"}) == (
+        "three_black_crows_short")
+    # and the older sources still resolve (no regression)
+    assert m._d_axis_value(("P2 n_bars", "cfg", "P2_n_bars"),
+                           {"P2_n_bars": 3}, {}) == 3
+    assert m._d_axis_value(("x", "admit", "holdout_n"), {},
+                           {"holdout_n": 7}) == 7
+
+    # rendered end to end, both legs distinguishable without reading the name
+    grids = {
+        "candle_tws_cA": {"strategy": "three_white_soldiers",
+                          "config": {"P2_n_bars": 3, "P3_min_body_pct": 0.5,
+                                     "P4_min_step_pct": 0.0,
+                                     "P5_max_wick_pct": 0.3},
+                          "step1_ranking": [{"exit": "regime_flip",
+                                             "is_ci_lo": 0.2, "fires": 98,
+                                             "is_sharpe": 0.9, "class_size": 1,
+                                             "admit": {"holdout_n": 0,
+                                                       "full_period_n": 98,
+                                                       "verdict": "RANKED"}}]},
+        "candle_tbc_cA": {"strategy": "three_black_crows_short",
+                          "config": {"P2_n_bars": 3, "P3_min_body_pct": 0.0,
+                                     "P4_min_step_pct": 0.0,
+                                     "P5_max_wick_pct": None},
+                          "step1_ranking": [{"exit": "breakeven_plus_trail",
+                                             "is_ci_lo": 0.1, "fires": 531,
+                                             "is_sharpe": 0.4, "class_size": 1,
+                                             "admit": {"holdout_n": 0,
+                                                       "full_period_n": 531,
+                                                       "verdict": "RANKED"}}]},
+    }
+    out = m.table_d(grids)
+    hdr = [l for l in out if l.startswith("| # | config |")]
+    assert len(hdr) == 1, "exactly one header row expected"
+    assert "P1 leg" in hdr[0]
+    body = [l for l in out if l.startswith("| 1 |") or l.startswith("| 2 |")]
+    assert any("three_white_soldiers" in l for l in body)
+    assert any("three_black_crows_short" in l for l in body)
+
+
+def test_b3013_retyped_locked_table_is_refused():
+    """S6-B3013: #285 ('print the locked table, never retype it') had NO
+    detector for four instances - three on Table C, one on Table D - each
+    caught by the owner. This is the detector, and it reads the renderer's
+    own TABLE_D_FIXED_COLUMNS so it cannot drift from the table it guards."""
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    v = importlib.import_module("verify_turn_compliance")
+    pvt = importlib.import_module("producer_variant_table")
+    fixed = pvt.TABLE_D_FIXED_COLUMNS
+
+    # ONE definition: the renderer's header is built from the same tuple
+    src = (root / "scripts" / "producer_variant_table.py").read_text(
+        encoding="utf-8")
+    assert "TABLE_D_FIXED_COLUMNS" in src
+    assert src.count("TABLE_D_FIXED_COLUMNS") >= 2, (
+        "the tuple must be DEFINED and CONSUMED by the header builder")
+
+    full = "| # | config | P1 leg | P2 n_bars | " + " | ".join(fixed) + " |"
+    assert v.scan_retyped_locked_table([], text=full) == []
+    assert v.scan_retyped_locked_table([], text="prose only, no table") == []
+    assert v.scan_retyped_locked_table(
+        [], text="| tier | best is_ci_lo | at n | rows |") == []
+
+    # the ACTUAL shape shipped on 2026-09-23: axis columns kept, fixed tail cut
+    retyped = ("| # | config | P3 body | P4 step | P5 wick | exit "
+               "| is_ci_lo | n | tier | is_sharpe |")
+    hits = v.scan_retyped_locked_table([], text=retyped)
+    assert hits, "the owner-caught retype must fire"
+    assert "dup" in hits[0] and "verdict" in hits[0] and "cls" in hits[0]
+
+    # dropping ONE column is enough - not just a wholesale rewrite
+    one_short = full.replace(" | verdict", "")
+    assert v.scan_retyped_locked_table([], text=one_short), (
+        "a single dropped column must still fire")
+
+    # registered in the live gate tuple
+    gsrc = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert gsrc.count("scan_retyped_locked_table") >= 2, (
+        "defined and registered, not defined only")
+
+
+
+def test_b3018_table_c_reads_the_family_own_config_keys():
+    """S6-B3015/B3017 (owner-caught 2026-09-23): SPECS `param` is a DISPLAY
+    LABEL, so building the artifact key as `id + "_" + param` searched for
+    P3_min_body_pct_of_range while the artifact holds P3_min_body_pct - and
+    Table C rendered `?`, which its own precedence defines as NOT RECORDED,
+    about four values sitting in the config block. `cfg_key` splits the two
+    jobs; the default keeps every smc entry byte-identical."""
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("producer_variant_table")
+
+    # every candle axis that the engine pins declares its artifact key
+    for strat, keys in (("three_white_soldiers",
+                         {"P2_n_bars", "P3_min_body_pct",
+                          "P4_min_step_pct", "P5_max_wick_pct"}),
+                        ("three_black_crows_short",
+                         {"P2_n_bars", "P3_min_body_pct",
+                          "P4_min_step_pct", "P5_max_wick_pct"})):
+        declared = {p["cfg_key"] for p in m.SPECS[strat]["params"]
+                    if p.get("cfg_key")}
+        assert declared == keys, (strat, declared)
+
+    # THE DEFAULT IS UNCHANGED: an smc param has no cfg_key and still resolves
+    smc = m.SPECS["smc_breaker_block_long"]["params"]
+    assert all(not p.get("cfg_key") for p in smc), (
+        "smc must keep using the id_param default - that is the no-regression "
+        "half of this fix")
+
+    grid = {"strategy": "three_white_soldiers",
+            "config": {"P2_n_bars": 3, "P3_min_body_pct": 0.5,
+                       "P4_min_step_pct": 0.0, "P5_max_wick_pct": 0.3},
+            "results": [], "step1_ranking": []}
+    cells = m.producer_bands("candle_tws_probe", grid)
+    by_id = {pid: cell for pid, _nm, cell in cells}
+    assert by_id["P2"].startswith("3(fixed)"), by_id
+    assert by_id["P3"].startswith("0.5"), by_id
+    assert "(fixed)" in by_id["P4"] and "(fixed)" in by_id["P5"], by_id
+    # the defect itself: NONE of the pinned axes may read '?'
+    for pid in ("P2", "P3", "P4", "P5"):
+        assert by_id[pid] != "?", (
+            pid + " reads '?' - a false NOT-RECORDED about a value the "
+            "artifact carries (L580)")
+
+    # mutation: drop the cfg_key and the defect returns - proves the pin bites
+    import copy
+    spec2 = copy.deepcopy(m.SPECS["three_white_soldiers"])
+    for p in spec2["params"]:
+        p.pop("cfg_key", None)
+    saved = m.SPECS["three_white_soldiers"]
+    m.SPECS["three_white_soldiers"] = spec2
+    try:
+        broken = {pid: c for pid, _n, c in
+                  m.producer_bands("candle_tws_probe", grid)}
+        assert broken["P3"] == "?", (
+            "removing cfg_key must reproduce the owner-caught defect")
+    finally:
+        m.SPECS["three_white_soldiers"] = saved
+
+
+def test_b3018_table_c_header_and_separator_cannot_disagree():
+    """S6-B3016: the header gained `entry window` and the separator literal
+    stayed at 12 cells, so a LOCKED format emitted malformed markdown and the
+    trailing column - the window every figure was measured over - drops in a
+    strict renderer. The separator is now DERIVED from the header."""
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("producer_variant_table")
+
+    grid = {"strategy": "three_white_soldiers",
+            "config": {"P2_n_bars": 3, "P3_min_body_pct": 0.5,
+                       "P4_min_step_pct": 0.0, "P5_max_wick_pct": 0.3},
+            "results": [], "step1_ranking": [
+                {"exit": "regime_flip", "is_sharpe": 0.9, "is_ci_lo": 0.2,
+                 "fires": 98, "class_size": 1,
+                 "admit": {"holdout_n": 0, "full_period_n": 98,
+                           "verdict": "RANKED"}}]}
+    out = m.table_c({"candle_tws_probe": grid})
+    hdr = next(l for l in out if l.startswith("| config | combos |"))
+    sep = out[out.index(hdr) + 1]
+    n_h = len(hdr.split("|")[1:-1])
+    n_s = len(sep.split("|")[1:-1])
+    assert n_h == n_s, (
+        "header %d cells vs separator %d - malformed markdown" % (n_h, n_s))
+    assert n_h == 14, n_h
+    assert "entry window" in hdr
+    # derived, not typed: the source must not carry a hand-written separator
+    src = (root / "scripts" / "producer_variant_table.py").read_text(
+        encoding="utf-8")
+    assert '"|---|---|---|---|---|---|---|---|---|---|---|---|"' not in src, (
+        "the 12-cell separator literal must be gone, not merely corrected")
+
+    # bands reports 0 (recorded, nothing searched in-cube), never '-'
+    row = next(l for l in out if l.startswith("| `candle_tws_probe"))
+    bands = [c.strip() for c in row.split("|")[1:-1]][6]
+    assert bands == "0", (
+        "a family that pins its axes must read 0, not '-' - '-' says NOT "
+        "RECORDED about values the config block carries (S6-B3017); got "
+        + repr(bands))
+
+
+
+def test_b3019_a_pinned_none_is_a_value_not_an_absence():
+    """S6-B3019: seven of the fourteen landed candle configs pin
+    P5_max_wick_pct to null - 'no wick cap' IS the production setting - and
+    `cfg.get(k)` returns None both for that and for a key that is absent, so
+    `pin is not None` sent them to `?`, the token this renderer defines as NOT
+    RECORDED. The L605/B1972 class (a lookup default cannot tell 'no value'
+    from 'the value None') surviving in the TAIL of a fix whose head I had
+    verified on a single row."""
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("producer_variant_table")
+
+    base = {"P2_n_bars": 3, "P3_min_body_pct": 0.5, "P4_min_step_pct": 0.0}
+
+    # PINNED None -> a rendered value, never '?'
+    g_none = {"strategy": "three_white_soldiers", "results": [],
+              "step1_ranking": [],
+              "config": dict(base, P5_max_wick_pct=None)}
+    cells = {pid: c for pid, _n, c in m.producer_bands("probe", g_none)}
+    assert cells["P5"] == "none(fixed)", cells["P5"]
+
+    # a real value still renders
+    g_val = {"strategy": "three_white_soldiers", "results": [],
+             "step1_ranking": [], "config": dict(base, P5_max_wick_pct=0.3)}
+    cells = {pid: c for pid, _n, c in m.producer_bands("probe", g_val)}
+    assert cells["P5"] == "0.300(fixed)", cells["P5"]
+
+    # and a genuinely ABSENT key must NOT be claimed as pinned - the whole
+    # point of the sentinel is that these two stay distinguishable
+    g_missing = {"strategy": "three_white_soldiers", "results": [],
+                 "step1_ranking": [], "config": dict(base)}
+    cells = {pid: c for pid, _n, c in m.producer_bands("probe", g_missing)}
+    assert "(fixed)" not in cells["P5"], (
+        "an absent key must not render as pinned; got " + cells["P5"])
+
+    # EVERY landed candle config, not one sampled row (the miss this pins)
+    import glob
+    import json
+    paths = sorted(glob.glob(str(root / "output_audit" /
+                                 "output_candle_t*_c*_grid_auto.json")))
+    if paths:
+        checked = 0
+        for p in paths:
+            grid = json.loads(_P(p).read_text(encoding="utf-8"))
+            if not grid.get("config"):
+                continue
+            name = _P(p).name.replace("output_", "").replace(
+                "_grid_auto.json", "")
+            out = m.producer_bands(name, grid)
+            if out is None:
+                continue
+            checked += 1
+            for pid, _nm, cell in out:
+                if pid in ("P2", "P3", "P4", "P5"):
+                    assert cell != "?", (
+                        name + " " + pid + " reads '?' - a false NOT-RECORDED "
+                        "about a value its config block carries")
+        assert checked >= 14, (
+            "expected every landed candle config to be checked, got %d"
+            % checked)
+
+
+
+def test_b3023_table_c_carries_max_and_selected_sharpe_separately():
+    """S6-B3021 owner ruling 2026-09-23, option c: `best IS-Sharpe` named a
+    MAXIMUM and delivered the Sharpe of the best-ci_lo row. Selecting on
+    is_ci_lo is correct (L455); the label was not, and the B2182 diagnostic
+    (max - median = the selection artifact) was understated wherever the two
+    rankings disagree - 2 of 14 landed candle configs. Both are columns now."""
+    import importlib
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("producer_variant_table")
+
+    hdr_cells = [c.strip() for c in m._TABLE_C_HEADER.split("|")[1:-1]]
+    assert "max IS-Sharpe" in hdr_cells, hdr_cells
+    assert "IS-Sharpe at best ci_lo" in hdr_cells, hdr_cells
+    assert "best IS-Sharpe" not in hdr_cells, (
+        "the ambiguous label must be RETIRED, not left beside its replacements")
+    # order: median, then max, then the selected row - the diagnostic pair
+    # sits adjacent on purpose (B2182: printed beside each other every time)
+    i = hdr_cells.index("median IS-Sharpe")
+    assert hdr_cells[i + 1] == "max IS-Sharpe"
+    assert hdr_cells[i + 2] == "IS-Sharpe at best ci_lo"
+
+    # a grid where the max Sharpe sits on a DIFFERENT exit than the best ci_lo
+    grid = {"strategy": "three_white_soldiers",
+            "config": {"P2_n_bars": 3, "P3_min_body_pct": 0.0,
+                       "P4_min_step_pct": 0.25, "P5_max_wick_pct": 0.3},
+            "results": [],
+            # grid_population() returns `per_exit` when present - that IS the
+            # graded population, and `max IS-Sharpe` is taken over it (L708:
+            # never over step1_ranking, which is a top-10 selection).
+            "per_exit": [{"exit": "earnings_blackout", "is_sharpe": 0.310,
+                          "is_ci_lo": -0.010},
+                         {"exit": "regime_flip", "is_sharpe": 0.379,
+                          "is_ci_lo": -0.091}],
+            "step1_ranking": [
+                {"exit": "earnings_blackout", "is_sharpe": 0.310,
+                 "is_ci_lo": -0.010, "fires": 186, "class_size": 1,
+                 "admit": {"holdout_n": 0, "full_period_n": 186,
+                           "verdict": "RANKED"}},
+                {"exit": "regime_flip", "is_sharpe": 0.379,
+                 "is_ci_lo": -0.091, "fires": 186, "class_size": 1,
+                 "admit": {"holdout_n": 0, "full_period_n": 186,
+                           "verdict": "RANKED"}}]}
+    out = m.table_c({"candle_tws_probe": grid})
+    hdr = next(l for l in out if l.startswith("| config | combos |"))
+    sep = out[out.index(hdr) + 1]
+    assert len(hdr.split("|")[1:-1]) == len(sep.split("|")[1:-1]) == 14
+
+    row = next(l for l in out if l.startswith("| `candle_tws_probe"))
+    cells = [c.strip() for c in row.split("|")[1:-1]]
+    _max, _sel, _ci = cells[9], cells[10], cells[11]
+    assert float(_max) == 0.379, _max
+    assert float(_sel) == 0.310, _sel
+    assert float(_ci) == -0.010, _ci
+    assert float(_max) > float(_sel), (
+        "this fixture exists BECAUSE the two disagree; if they are equal the "
+        "fixture stopped testing the thing (L684 - fixtures rot toward passing)")
+
+    # invariant across every landed candle artifact: max >= selected, always
+    import glob
+    import json
+    seen = 0
+    for p in sorted(glob.glob(str(root / "output_audit" /
+                                  "output_candle_t*_c*_grid_auto.json"))):
+        g = json.loads(_P(p).read_text(encoding="utf-8"))
+        if not g.get("step1_ranking"):
+            continue
+        nm = _P(p).name.replace("output_", "").replace("_grid_auto.json", "")
+        o = m.table_c({nm: g})
+        r = next((l for l in o if l.startswith("| `" + nm)), None)
+        if r is None:
+            continue
+        c = [x.strip() for x in r.split("|")[1:-1]]
+        if c[9] in ("-", "") or c[10] in ("-", ""):
+            continue
+        seen += 1
+        assert float(c[9]) >= float(c[10]) - 1e-9, (
+            nm + ": max " + c[9] + " < selected " + c[10] +
+            " - a maximum cannot be below a member of its own population")
+    assert seen >= 14, "expected every landed candle config checked, got %d" % seen

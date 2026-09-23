@@ -4184,6 +4184,67 @@ def _written_file_paths(entries) -> list[str]:
     return out
 
 
+def scan_retyped_locked_table(entries, *, text=None) -> list[str]:
+    """#285 / L652: a LOCKED table is PRINTED from its renderer, never retyped.
+
+    THE RULE EXISTED AND HAD NO DETECTOR. `producer_variant_table.table_d`'s
+    own docstring says *"The renderer is the only source. Table C's docstring
+    records that hand-retyping a locked table dropped four columns three times
+    before the owner caught it"* - and on 2026-09-23 I retyped Table D into a
+    response, dropped 7 of its 17 columns and collapsed 10 of 20 rows into
+    prose, while the same paragraph claimed it was *printed, never retyped*.
+    Four instances of one class now (three on Table C, one on D), every one
+    caught by the owner rather than by the system.
+
+    WHY A SCAN IS POSSIBLE HERE when #285 was filed JUDGMENT-ONLY: the claim
+    "this is Table D" is unreadable, but the SHAPE is not. Table D's header is
+    the only one in the programme carrying a `#` column immediately followed by
+    `config`, and every family emits the same fixed tail regardless of its axis
+    registry. So the gate keys on that signature and checks the tail is whole.
+
+    It reads TABLE_D_FIXED_COLUMNS from the RENDERER - one definition, so a
+    column added there arms this gate in the same commit (L593). The per-family
+    AXIS columns are deliberately NOT checked: they vary by family by design,
+    and demanding them would fire on a legitimate cross-family excerpt.
+
+    QUIET on: a response with no such table; a verbatim paste of the renderer's
+    output; any other markdown table. FIRES on: a `# | config` header missing
+    any fixed column.
+    """
+    import re as _re
+    t = _response_text(entries, text, keep_code=True)
+    if not t:
+        return []
+    try:
+        import sys as _sys
+        from pathlib import Path as _P
+        _sp = str(_P(__file__).resolve().parent)
+        if _sp not in _sys.path:
+            _sys.path.insert(0, _sp)
+        from producer_variant_table import TABLE_D_FIXED_COLUMNS as _FIXED
+    except Exception:
+        return []
+    out = []
+    for line in t.splitlines():
+        if not _re.match(r"\s*\|\s*#\s*\|\s*config\s*\|", line):
+            continue
+        cells = {c.strip().lower() for c in line.split("|")}
+        missing = [c for c in _FIXED if c.lower() not in cells]
+        if missing:
+            out.append(
+                "RETYPED LOCKED TABLE (#285 / L652): a Table D header in this "
+                "response is missing " + str(len(missing)) + " of "
+                + str(len(_FIXED)) + " fixed columns - " + ", ".join(missing)
+                + ". A locked table is PRINTED from its renderer "
+                "(scripts/show_table_d.py), never retyped: hand-retyping "
+                "dropped four columns from Table C three times, and Table D "
+                "lost seven on 2026-09-23, each caught by the owner. Paste the "
+                "renderer's output verbatim, or do not present it as the "
+                "table.")
+            break
+    return out
+
+
 def scan_locked_format_edit_without_source_open(entries, *, text=None,
                                                 written=None,
                                                 opened=None) -> list[str]:
@@ -5106,6 +5167,10 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B2993 (owner approved 2026-09-22): a registered
                 # deferral trigger that NEWLY fires blocks one close.
                 scan_deferral_trigger_fired,
+                # S6-B3013: #285's first DETECTOR - a retyped locked
+                # table with columns dropped (four instances, all
+                # owner-caught).
+                scan_retyped_locked_table,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):

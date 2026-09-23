@@ -277,6 +277,19 @@ def main() -> int:
     a = ap.parse_args()
     prev_hash: dict | None = None
 
+    # S6-B2948: a multi-day chain must not run unwatched without saying so.
+    # The session-independent watchdog (scripts/chain_watchdog.py, every
+    # 15 min via Task Scheduler) is registered by the owner's one elevated
+    # command (S6-B2203b); every launch announces whether it exists.
+    try:
+        from chain_watchdog import TASK_NAME, registered
+        log(f"watchdog task {TASK_NAME}: "
+            + ('REGISTERED' if registered() else
+               'NOT REGISTERED - registration command in '
+               'scripts/chain_watchdog.py docstring (S6-B2203b)'))
+    except Exception as exc:  # announcement only, never blocks a launch
+        log(f"watchdog check skipped ({exc!r})")
+
     if a.wait_for:
         wp = ROOT / a.wait_for
         log(f"CHAIN START - waiting on predecessor {wp.name}")
@@ -307,6 +320,18 @@ def main() -> int:
                         "the engine path changed since the previous launch of "
                         "this chain and neither the spec (engine_change_accepted) "
                         "nor --on-engine-change continue accepts it",
+                        a.specs[a.specs.index(spec_path):])
+        # S6-B2947 (owner-approved 2026-09-22): audit the bars this config
+        # will actually read BEFORE the leg spends 4.5 h - gaps vs the
+        # engine's own NYSE calendar, NaN share, zero-volume days,
+        # non-positive prices. Exit 2 = refusal with a per-ticker artifact.
+        ba = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "preleg_bar_audit.py"),
+             "--spec", spec_path], cwd=str(ROOT))
+        if ba.returncode != 0:
+            return halt(spec["wave"],
+                        f"pre-leg bar audit refused (exit {ba.returncode}); "
+                        f"see output_audit/{spec['wave']}_preleg_bar_audit.json",
                         a.specs[a.specs.index(spec_path):])
         log(f"LAUNCH {spec['wave']} via run_wave (battery included per B2177)")
         r = subprocess.run(

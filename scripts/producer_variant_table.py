@@ -2067,7 +2067,7 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
          "status": "SMOKED-0.5 (479 pattern fires, 6 megacaps 4y)",
          "evidence": "technical.py:2104-2107", "engine_implemented": True},
         {"id": "P2", "producer": "compute_candles",
-         "param": "n_bars (pattern length)", "env": "CANDLE_N_BARS",
+         "param": "n_bars (pattern length)", "env": "CANDLE_N_BARS", "cfg_key": "P2_n_bars",
          "consumers": ["backtest/config.py", "backtest/signals/technical.py",
                            "scripts/spot_check_candle.py"],
          "production": 3, "type": "int", "band": [3, 4],
@@ -2085,7 +2085,7 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
          "evidence": "technical.py five-bar block; config.py CANDLE_N_BARS",
          "engine_implemented": True},
         {"id": "P3", "producer": "compute_candles",
-         "param": "min_body_pct_of_range", "env": "CANDLE_MIN_BODY_PCT",
+         "param": "min_body_pct_of_range", "env": "CANDLE_MIN_BODY_PCT", "cfg_key": "P3_min_body_pct",
          "consumers": ["backtest/config.py", "backtest/signals/technical.py",
                            "scripts/spot_check_candle.py"],
          "production": 0.0, "type": "float", "band": [0.0, 0.3, 0.5],
@@ -2095,7 +2095,7 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MIN_BODY_PCT", "engine_implemented": True},
         {"id": "P4", "producer": "compute_candles",
-         "param": "min_step_up_pct", "env": "CANDLE_MIN_STEP_PCT",
+         "param": "min_step_up_pct", "env": "CANDLE_MIN_STEP_PCT", "cfg_key": "P4_min_step_pct",
          "consumers": ["backtest/config.py", "backtest/signals/technical.py",
                            "scripts/spot_check_candle.py"],
          "production": 0.0, "type": "float", "band": [0.0, 0.1, 0.25],
@@ -2105,7 +2105,7 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MIN_STEP_PCT", "engine_implemented": True},
         {"id": "P5", "producer": "compute_candles",
-         "param": "max_upper_wick_pct", "env": "CANDLE_MAX_WICK_PCT",
+         "param": "max_upper_wick_pct", "env": "CANDLE_MAX_WICK_PCT", "cfg_key": "P5_max_wick_pct",
          "consumers": ["backtest/config.py", "backtest/signals/technical.py",
                            "scripts/spot_check_candle.py"],
          "production": None, "type": "float", "band": [None, 0.3, 0.2],
@@ -2228,7 +2228,7 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
          "status": "SMOKED-0.5 (302 pattern fires, 6 megacaps 4y)",
          "evidence": "technical.py:2108-2111", "engine_implemented": True},
         {"id": "P2", "producer": "compute_candles",
-         "param": "n_bars (pattern length)", "env": "CANDLE_N_BARS",
+         "param": "n_bars (pattern length)", "env": "CANDLE_N_BARS", "cfg_key": "P2_n_bars",
          "consumers": ["backtest/config.py", "backtest/signals/technical.py",
                            "scripts/spot_check_candle.py"],
          "production": 3, "type": "int", "band": [3, 4],
@@ -2246,7 +2246,7 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
          "evidence": "technical.py five-bar block; config.py CANDLE_N_BARS",
          "engine_implemented": True},
         {"id": "P3", "producer": "compute_candles",
-         "param": "min_body_pct_of_range", "env": "CANDLE_MIN_BODY_PCT",
+         "param": "min_body_pct_of_range", "env": "CANDLE_MIN_BODY_PCT", "cfg_key": "P3_min_body_pct",
          "consumers": ["backtest/config.py", "backtest/signals/technical.py",
                            "scripts/spot_check_candle.py"],
          "production": 0.0, "type": "float", "band": [0.0, 0.3, 0.5],
@@ -2256,7 +2256,7 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MIN_BODY_PCT", "engine_implemented": True},
         {"id": "P4", "producer": "compute_candles",
-         "param": "min_step_down_pct", "env": "CANDLE_MIN_STEP_PCT",
+         "param": "min_step_down_pct", "env": "CANDLE_MIN_STEP_PCT", "cfg_key": "P4_min_step_pct",
          "consumers": ["backtest/config.py", "backtest/signals/technical.py",
                            "scripts/spot_check_candle.py"],
          "production": 0.0, "type": "float", "band": [0.0, 0.1, 0.25],
@@ -2266,7 +2266,7 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
          "subset_safe": False, "status": "ACTUATED-B2865",
          "evidence": "technical.py five-bar block; config.py CANDLE_MIN_STEP_PCT", "engine_implemented": True},
         {"id": "P5", "producer": "compute_candles",
-         "param": "max_lower_wick_pct", "env": "CANDLE_MAX_WICK_PCT",
+         "param": "max_lower_wick_pct", "env": "CANDLE_MAX_WICK_PCT", "cfg_key": "P5_max_wick_pct",
          "consumers": ["backtest/config.py", "backtest/signals/technical.py",
                            "scripts/spot_check_candle.py"],
          "production": None, "type": "float", "band": [None, 0.3, 0.2],
@@ -3470,6 +3470,16 @@ def _d_tier(n) -> str:
 # institutional grid exists yet, so these are the config keys its future
 # grader MUST emit (pinned by test_b2505) - defining the schema now beats
 # guessing it later (L722).
+# S6-B3012: the columns Table D emits for EVERY family, independent of
+# the per-family axis registry. ONE definition: table_d builds its header
+# from this tuple and scan_retyped_locked_table in
+# scripts/verify_turn_compliance.py reads the SAME tuple to refuse a
+# response that retypes the table with columns dropped. Two copies of a
+# column list diverge the first time one is edited (L593).
+TABLE_D_FIXED_COLUMNS = ("exit", "is_ci_lo", "n", "tier", "dup",
+                        "is_sharpe", "cls", "holdout_n",
+                        "full_period_n", "verdict", "npt_excl")
+
 D_AXIS_FAMILIES = {
     # S6-B2940: the candle pair. WITHOUT this a candle cfg falls through
     # _d_family to smc's columns and Table D renders P1 swing / P2
@@ -3487,7 +3497,14 @@ D_AXIS_FAMILIES = {
         "detect": "P2_n_bars",
         "d1": (("body", "cfg", "P3_min_body_pct"),
                ("step", "cfg", "P4_min_step_pct")),
-        "d2": (("P2 n_bars", "cfg", "P2_n_bars"),
+        # S6-B3012 (owner catch): BOTH LEGS SHARING ONE ENTRY IS WHY THE
+        # LEG WAS INVISIBLE. The note above says the pair shares one
+        # producer and four env knobs - true, and it silently made the
+        # LEG a non-axis, so a reader could tell tws from tbc only by
+        # squinting at the config string. It is the FIRST axis of this
+        # campaign (36 configs = 18 knob cells x 2 legs), hence P1.
+        "d2": (("P1 leg", "art", "strategy"),
+               ("P2 n_bars", "cfg", "P2_n_bars"),
                ("P3 body", "cfg", "P3_min_body_pct"),
                ("P4 step", "cfg", "P4_min_step_pct"),
                ("P5 wick", "cfg", "P5_max_wick_pct")),
@@ -3534,8 +3551,16 @@ def _d_family(cfg: dict) -> dict:
     return D_AXIS_FAMILIES["smc_breaker_block"]
 
 
-def _d_axis_value(spec, cfg: dict, admit: dict):
+def _d_axis_value(spec, cfg: dict, admit: dict, art=None):
+    """S6-B3012: THREE sources, not two. `cfg` and `admit` reach the
+    swept knobs; an axis that is a property of the RUN rather than of a
+    knob - the leg a config belongs to - lives on the artifact, and with
+    only two sources it was unreachable, so it was left out of the
+    registry entirely. That omission is what made P1 invisible for the
+    candle pair (owner catch 2026-09-23)."""
     _, src, key = spec
+    if src == "art":
+        return (art or {}).get(key)
     return (cfg if src == "cfg" else (admit or {})).get(key)
 
 
@@ -3602,7 +3627,7 @@ def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
             }
             # B2725: every producer band is a COLUMN of this table now
             for _j, spec in enumerate(_fam["d2"], 1):
-                row[f"A{_j}"] = _d_axis_value(spec, cfg, a)
+                row[f"A{_j}"] = _d_axis_value(spec, cfg, a, g)
             rows.append(row)
 
     sig = lambda r: (round(r["ci"], 3) if r["ci"] is not None else None,
@@ -3650,10 +3675,9 @@ def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
          "boundary-spanning (B2014), one of the two exits missing from "
          "24._"),
         "",
-        "| # | config | " + " | ".join(_labels) + " | exit | is_ci_lo | n "
-        "| tier | dup | is_sharpe | cls | holdout_n | full_period_n "
-        "| verdict | npt_excl |",
-        "|" + "---|" * (len(_labels) + 13),
+        ("| # | config | " + " | ".join(_labels) + " | "
+         + " | ".join(TABLE_D_FIXED_COLUMNS) + " |"),
+        "|" + "---|" * (len(_labels) + 2 + len(TABLE_D_FIXED_COLUMNS)),
     ]
     for i, r in enumerate(rows[:top], 1):
         k = sig(r)
@@ -3785,6 +3809,9 @@ def free_levels_graded(name, root=None) -> dict:
     return {k: sorted(v) for k, v in out.items()}
 
 
+_PIN_ABSENT = object()  # S6-B3019: distinguishes "key missing" from "pinned None"
+
+
 def producer_bands(name, grid, root=None):
     """One cell per parameter of the config's family - EVERY producer band.
 
@@ -3819,11 +3846,31 @@ def producer_bands(name, grid, root=None):
     cells = []
     for _p in spec["params"]:
         pid, nm = _p["id"], _p["param"]
-        pin = cfg.get(pid + "_" + nm)
+        # S6-B3015: `param` is a DISPLAY LABEL - "n_bars (pattern
+        # length)", "min_body_pct_of_range" - while the artifact key is
+        # the engine's own spelling ("P3_min_body_pct"). Building the key
+        # as pid + "_" + label silently missed all four candle axes and
+        # rendered `?`, which by this function's own precedence means NOT
+        # RECORDED, about values sitting in the artifact's config block.
+        # One field doing two jobs (L728); `cfg_key` splits them and
+        # defaults to the old expression, so every smc entry - whose
+        # labels ARE their keys - resolves byte-identically.
+        # S6-B3019: a PINNED None is a VALUE, not an absence. Seven of
+        # the fourteen landed candle configs pin P5_max_wick_pct to
+        # null - "no wick cap" IS the setting - and `cfg.get(k)`
+        # returns None for that and for a key that is simply missing,
+        # so `pin is not None` sent them to `?`, which this function
+        # defines as NOT RECORDED. Same false-absence class as the
+        # cfg_key defect one commit earlier, surviving in the tail
+        # (L605/B1972: a lookup default cannot tell "no value" from
+        # "the value None"). A sentinel separates them; _fmt already
+        # renders None as "none".
+        _pin_key = _p.get("cfg_key") or (pid + "_" + nm)
+        pin = cfg[_pin_key] if _pin_key in cfg else _PIN_ABSENT
         obs = observed.get(nm)
         fl = freed.get(pid.lower())
         band = [str(x) for x in (_p.get("band") or [])]
-        if pin is not None:
+        if pin is not _PIN_ABSENT:
             cell = _fmt(pin) + "(fixed)"
         elif obs:
             cell = _band_str(obs)
@@ -3837,6 +3884,13 @@ def producer_bands(name, grid, root=None):
             cell = "?"
         cells.append((pid, nm, cell))
     return cells
+
+
+# S6-B3016: ONE LINE ON PURPOSE. test_b1510_producer_artifact_standard
+# asserts the locked header appears VERBATIM in this source, so
+# splitting it across string fragments defeats that pin - the guard
+# over a locked format must keep reading as one literal.
+_TABLE_C_HEADER = "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | max IS-Sharpe | IS-Sharpe at best ci_lo | best IS-CI-lo | best combination | entry window |"
 
 
 def table_c(grids: dict[str, dict], root=None) -> list[str]:
@@ -3898,8 +3952,13 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
             "family's own SPECS entry - 6 for smc_breaker_block_long, 9 for "
             "institutional_committed_growth_long._",
             "",
-            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination | entry window |",
-            "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+            _TABLE_C_HEADER,
+            # S6-B3016: DERIVED, never typed. The header gained `entry
+            # window` and the separator literal stayed at 12 cells, so a
+            # locked format emitted malformed markdown and the trailing
+            # column - the window every figure was measured over - drops
+            # in any strict renderer. One definition (L593).
+            "|" + "---|" * (len(_TABLE_C_HEADER.split("|")) - 2)]
     for name, g in grids.items():
         # B2521 (S6-B2520m): the declared population, not the field name.
         res, _pf, _pu = grid_population(g)
@@ -3962,6 +4021,21 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         # (B2569) - so the count includes them. Before this, a family that
         # searches nothing in-cube but grades four free levels read `-`,
         # which says 'not recorded' about work that WAS done.
+        # S6-B3017: AXIS_KEYS is the hardcoded smc six, and it is read
+        # from the RESULT ROWS. A family that PINS its axes in the config
+        # block and searches ACROSS configs (the candle campaign: one
+        # engine cell per config) therefore had no axes at all, so the
+        # count fell to None and rendered `-` - "not recorded" - about
+        # four values the artifact records. Seeding from the family spec
+        # makes it read 0: recorded, and nothing was searched WITHIN this
+        # cube, which is the truth. Counts are unchanged for smc: a pinned
+        # axis contributes a 1-element set and the sum counts len > 1.
+        _fspec = SPECS.get(g.get("strategy"))
+        _fcfg = g.get("config") or {}
+        for _fp in (_fspec or {}).get("params", []):
+            _fk = _fp.get("cfg_key") or (_fp["id"] + "_" + _fp["param"])
+            if _fk in _fcfg:
+                axes.setdefault(_fk, set()).add(repr(_fcfg[_fk]))
         _freed = free_levels_graded(name, root)
         _free_n = sum(len(v) for v in _freed.values() if len(v) > 1)
         bands = (sum(len(v) for v in axes.values() if len(v) > 1) + _free_n
@@ -4013,6 +4087,24 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         import statistics as _st
         _med_vals = [r.get(_sk) for r in graded if r.get(_sk) is not None]
         med = round(_st.median(_med_vals), 3) if _med_vals else None
+        # S6-B3023 (owner ruling 2026-09-23, option c). The single column
+        # named `best IS-Sharpe` held the Sharpe OF THE BEST-CI_LO ROW,
+        # not a maximum - correct selection (L455) under a label that
+        # claims otherwise. The B2182 comment above states the intent:
+        # max - median IS the selection artifact. With the selected row
+        # in that cell the diagnostic was UNDERSTATED wherever the two
+        # rankings disagree: MEASURED 2 of 14 landed candle configs,
+        # c06 printing 0.310 against a true max 0.379 and c12 printing
+        # 0.205 against 0.394. Now BOTH are columns.
+        #
+        # THE MAX COMES FROM `graded`, THE SAME POPULATION AS THE MEDIAN -
+        # never from step1_ranking, which holds the top 10 rows by ci_lo
+        # and is a SELECTED set (L708). For the candle family the two
+        # happen to agree at 24 graded rows; for a family with hundreds of
+        # combinations a top-10 by ci_lo can easily exclude the max
+        # Sharpe, and max - median must be one population or it is not a
+        # difference.
+        mx = round(max(_med_vals), 3) if _med_vals else None
         cfg = g.get("config") or {}
         # B2542: a family whose axes are not the SMC six records them as
         # P<N>_<name> in its own config block. Render THOSE rather than six
@@ -4026,7 +4118,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
             rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
                         f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
                         f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
-                        f"{sh} | {cl} | {combo} | {_win_cell} |")
+                        f"{_measured_fmt(mx)} | {sh} | {cl} | {combo} | {_win_cell} |")
             per_config_axes[name] = (axes, cfg)
             _per_config_grid[name] = g
             continue
@@ -4037,7 +4129,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
             rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
                         f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
                         f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
-                        f"{sh} | {cl} | {combo} | {_win_cell} |")
+                        f"{_measured_fmt(mx)} | {sh} | {cl} | {combo} | {_win_cell} |")
             per_config_axes[name] = (axes, cfg)
             continue
         p_cells = []
@@ -4056,9 +4148,9 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         p_col = "; ".join(p_cells)
         rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
                     f"{g.get('step1_distinct_outcomes', '-')} | {_measured_fmt(bands)} | {p_col} | "
-                    f"{_measured_fmt(med)} | {sh} | {cl} | {combo} | {_win_cell} |")
+                    f"{_measured_fmt(med)} | {_measured_fmt(mx)} | {sh} | {cl} | {combo} | {_win_cell} |")
         if other:
-            rows.append(f"| | | | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
+            rows.append(f"| | | | | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
                         f"reconcile, do not trust this row** |")
         per_config_axes[name] = (axes, cfg)
 

@@ -284,6 +284,11 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
     # mechanical could tell the landing had reached the owner - the sixth
     # ask about the same mechanism (L736). The state is the landing event as
     # the supervisor writes it; the gate reads the LAST event per cube.
+    "scan_retyped_locked_table": (
+        "| # | config | P3 body | P4 step | P5 wick | exit | is_ci_lo | n | tier | is_sharpe |",
+        True,
+        {},
+    ),
     "scan_deferral_trigger_fired": (
         "MEASURED 2026-09-22: S6-B2620b's trigger reads 'exceeds 5' and the count is 8 - it crossed on 2026-09-21 and stood over the line for three commits, while S6-B2933 had measured 5 on 09-14 and written into the row that it sat ONE landing away. HOW IT SURFACED IS THE LESSON: not a sweep, but the turn gate refusing a close for naming GIT_QUEUE_EXEMPT without inspecting it.",
         True,
@@ -611,6 +616,16 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
                         "findings": ["empty_signals_share WARN: 23 of 373"],
                         "committed": False, "pushed": False,
                         "reported_to_owner": False}]}),
+    ],
+    "scan_retyped_locked_table": [
+        ("| # | config | P1 leg | P2 n_bars | exit | is_ci_lo | n | tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict | npt_excl |",
+         False,
+         {}),
+        ("The renderer is the only source; this close prints no table at "
+         "all, only prose about one.",
+         False,
+         {}),
+        ("| tier | best is_ci_lo | at n | rows |", False, {}),
     ],
     "scan_deferral_trigger_fired": [
         ("The S6-B2620b firing is already recorded in the state file; this close does unrelated work.",
