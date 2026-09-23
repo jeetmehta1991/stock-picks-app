@@ -23091,3 +23091,15 @@ The b2919 held patch would not apply. Its guard is `assert "<pin name>" not in r
 **And a third, quieter thing, worth recording because it made the first two nearly invisible.** The worktree command ended in a pipe, so the task notification reported **exit code 0** on a run that had died on an AssertionError - L793's rule that a compound command's status is its last command's. A green notification on a failed apply is exactly the signal that stops an investigation before it starts.
 
 Both halves are now one pin asserting, across every held patch, that each guard is `def`-anchored and precedes the first write - the two properties whose absence cost this.
+
+### L856 - LABELLING A CLAIM UNVERIFIED SATISFIES THE TRUTH STANDARD AND DOES NOT DISCHARGE THE DUTY TO MEASURE IT (B3043/B3044, 2026-09-23)
+
+I filed a case-against my own recommendation on S6-B3037 containing this: *the structural argument holds on the gate expressions, while the script measured LANDED TRADES, which I have not re-derived.* That sentence is fully compliant. It names the gap, it labels the claim, it does not overstate. **And I repeated it, unchanged, across four consecutive closes while asking the owner to rule on exactly that disposition.**
+
+One command settled it: `python scripts/or_arm_attribution.py --cube output_r5_merged_1_7`. The partition is exact on the traded population - 838 landed splitting 2 both / 304 thesis-only / 532 added-only / 0 neither, and 1880 splitting 58 / 253 / 1569 / 0, both summing to their totals with nothing unattributable - which RETIRED one of the three objections I had filed against my own recommendation.
+
+**The failure mode is specific and it is not L645.** L645 says an objection carries a measurement's burden, so cost it before filing. I DID label mine honestly, which is why nothing fired: the Truth Standard's four evidence classes are about PROVENANCE, and `UNVERIFIED` is a valid class. **A correctly-labelled unmeasured claim reads as rigour** - it is the sentence a careful person writes - and that is exactly what makes it sit unmeasured. The label discharged my honesty obligation and silently replaced my measurement obligation.
+
+**The discriminator is who is waiting on it.** An UNVERIFIED claim in my own reasoning is a note to self. An UNVERIFIED claim inside a decision I have escalated to the owner is a **gap in the owner's evidence**, and the owner cannot see that the measurement was one command away - only I can. So: before escalating any decision, walk its stated uncertainties and ask of each whether it is measurable THIS TURN; measure the ones that are, and escalate with the remainder named.
+
+**The cost, stated plainly.** Four closes asked for a ruling on a weaker evidence base than the repo could produce, and the missing measurement favoured the option I was recommending - which is the direction L559 names as the one you are least likely to test.

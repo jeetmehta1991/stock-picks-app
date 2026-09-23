@@ -25078,6 +25078,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # which is the part a future reader needs (L548).
         ("ANCHOR IT ON A FORM PROSE CANNOT PRODUCE, AND RUN IT BEFORE THE FIRST WRITE",
          "B3039/L855: a docstring mention made an owner-approved held patch unapplyable"),
+        # S6-B3044b: the L856 tripwire row - a correctly-labelled
+        # UNVERIFIED claim is compliant, which is exactly why it survives
+        # inside an escalation. Pins the remedy, not the heading (L548).
+        ("WALK ITS OWN STATED UNCERTAINTIES AND MEASURE THE ONES THE ARTIFACTS ON DISK CAN SETTLE",
+         "B3044/L856: an uncertainty labelled properly rode four closes inside an owner-facing decision"),
         # B2871: the L812 tripwire row - a recomputable magnitude does
         # not make a TRADE SET derivable. Pins the discriminator, not
         # the heading (L548).
@@ -26007,7 +26012,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its skill bullet per B2130).
     # 305 -> 306 at B3040d (the L855 idempotency-guard fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 306, gutted
+    # 306 -> 307 at B3044b (the L856 escalated-uncertainty fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 307, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
