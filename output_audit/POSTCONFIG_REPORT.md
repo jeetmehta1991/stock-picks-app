@@ -6,15 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (142 entries), 1254 named checks have run and 9 have ever returned non-PASS.**
+**Across the entire ledger (143 entries), 1273 named checks have run and 9 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-37 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_candle_tws_c14_b0.5_s0.0_w0.3).
+37 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_candle_tws_c14_b0.5_s0.0_w0.3 | 2026-09-22T21:17:41 | engine-hook | 0 | none | 0 | c8d75997a | True | **NO** |
+| output_candle_tws_c14_b0.5_s0.0_w0.3 | 2026-09-22T21:17:41 | engine-hook | 0 | none | 0 | c8d75997a | True | yes 2026-09-22T22:02:50 |
 | output_candle_tws_c13_b0.5_s0.0_wNone | 2026-09-22T17:02:48 | engine-hook | 0 | none | 0 | 962a06ffc | True | yes 2026-09-22T17:47:43 |
 | output_candle_tws_c12_b0.3_s0.25_w0.3 | 2026-09-22T15:32:20 | engine-hook | 0 | none | 0 | 08db42ad4 | True | yes 2026-09-22T15:50:24 |
 | output_candle_tws_c11_b0.3_s0.25_wNone | 2026-09-22T13:54:30 | engine-hook | 0 | none | 0 | False | False | yes 2026-09-22T14:11:48 |
@@ -57,76 +57,77 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than a quality verdict. `graded` = reached `evaluate()` and produced a Sharpe. `distinct` = graded outcomes after equivalence-class collapse (L473). `bands` = distinct parameter VALUES exercised. `ci_lo` = the LOWER bound of the Sharpe confidence interval, which is what `best` ranks on - a higher Sharpe can carry a NEGATIVE lower bound (L455). `all producer bands tested` = EVERY parameter of this config's family (owner directive 2026-09-03), each marked how it was exercised: (fixed) pinned by this config, a bare list searched in-cube, (free) graded from the landed cube by the battery, (free, declared) gradable but not graded here, (not swept) held by design. The count is the family's own SPECS entry - 6 for smc_breaker_block_long, 9 for institutional_committed_growth_long._
 
-| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination | entry window |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| `b2183_sw30_sw30` | 300 | 106 | 0 | 184 | 61 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.565 | 2.757 | 0.362 | cm=False brk=0.020 age=120 tail=20 / time_stop_20d | - |
-| `b2177_sw50_sw50` | 300 | 225 | 0 | 75 | 29 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.697 | 0.889 | -0.508 | cm=True brk=none age=none tail=3 / chandelier_3x | - |
-| `b2190_sw10_sw10` | 300 | 45 | 0 | 245 | 133 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.46 | 0.746 | -0.091 | cm=False brk=0.020 age=none tail=10 / fixed_4r_2r | - |
-| `b2190_sw5_sw5` | 300 | 40 | 0 | 250 | 132 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.389 | 0.625 | 0.123 | cm=True brk=0.020 age=120 tail=5 / earnings_blackout | - |
-| `b2197_sw20sp9_sw20sp9` | 300 | 77 | 0 | 223 | 100 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.487 | 1.576 | 0.044 | cm=False brk=0.030 age=none tail=5 / r_multiple_2r | - |
-| `b2197_sw20sp20_sw20sp20` | 300 | 77 | 0 | 223 | 97 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.493 | 0.551 | 0.107 | cm=False brk=0.050 age=none tail=5 / hybrid_50pct_target | - |
-| `b2197_sw20sp21_sw20sp21` | 300 | 77 | 0 | 223 | 97 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=21(fixed) | 0.504 | 0.551 | 0.107 | cm=False brk=0.050 age=none tail=5 / hybrid_50pct_target | - |
-| `b2197_sw20sp50_sw20sp50` | 300 | 77 | 0 | 223 | 92 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.488 | 0.535 | 0.025 | cm=False brk=0.050 age=none tail=2 / hybrid_50pct_target | - |
-| `b2197_sw20sp100_sw20sp100` | 300 | 77 | 0 | 223 | 91 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.441 | 0.465 | -0.036 | cm=False brk=0.050 age=none tail=2 / hybrid_50pct_target | - |
-| `b2197_sw20sp150_sw20sp150` | 300 | 77 | 0 | 223 | 92 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.35 | 0.357 | -0.114 | cm=False brk=none age=250 tail=20 / hybrid_50pct_target | - |
-| `b2197_sw30sp9_sw30sp9` | 300 | 95 | 0 | 195 | 75 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.821 | 1.684 | 0.687 | cm=False brk=0.020 age=250 tail=20 / earnings_blackout | - |
-| `b2197_sw30sp20_sw30sp20` | 300 | 100 | 0 | 200 | 74 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.884 | 4.103 | 0.816 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
-| `b2197_sw30sp50_sw30sp50` | 300 | 100 | 0 | 200 | 68 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.896 | 4.103 | 0.816 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
-| `b2197_sw30sp100_sw30sp100` | 300 | 100 | 0 | 200 | 67 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.858 | 4.103 | 0.816 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
-| `b2197_sw30sp150_sw30sp150` | 300 | 106 | 0 | 194 | 65 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.8 | 4.807 | 1.214 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
-| `b2197_sw10sp9_sw10sp9` | 300 | 42 | 0 | 258 | 138 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.431 | 0.714 | -0.014 | cm=False brk=0.020 age=none tail=2 / class_time_stop | - |
-| `b2197_sw10sp20_sw10sp20` | 300 | 41 | 0 | 259 | 129 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.432 | 0.47 | -0.07 | cm=True brk=0.050 age=none tail=10 / breakeven_plus_trail | - |
-| `b2197_sw10sp50_sw10sp50` | 300 | 45 | 0 | 250 | 128 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.418 | 0.422 | -0.042 | cm=False brk=0.050 age=none tail=10 / breakeven_plus_trail | - |
-| `b2197_sw10sp100_sw10sp100` | 300 | 40 | 0 | 250 | 127 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.402 | 0.34 | -0.12 | cm=False brk=none age=none tail=5 / breakeven_plus_trail | - |
-| `b2197_sw10sp150_sw10sp150` | 300 | 40 | 0 | 250 | 131 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.44 | 0.282 | -0.11 | cm=False brk=none age=none tail=2 / hybrid_50pct_target | - |
-| `b2197_sw5sp9_sw5sp9` | 300 | 45 | 0 | 250 | 126 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.462 | 0.6 | 0.098 | cm=True brk=0.050 age=none tail=3 / breakeven_plus_trail | - |
-| `b2197_sw5sp20_sw5sp20` | 300 | 45 | 0 | 250 | 125 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.388 | 0.49 | -0.005 | cm=True brk=0.050 age=none tail=3 / breakeven_plus_trail | - |
-| `b2197_sw5sp50_sw5sp50` | 300 | 45 | 0 | 250 | 124 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.392 | 0.402 | -0.005 | cm=True brk=none age=180 tail=20 / breakeven_plus_trail | - |
-| `b2197_sw5sp100_sw5sp100` | 300 | 40 | 0 | 250 | 132 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.359 | 0.513 | 0.027 | cm=True brk=0.020 age=120 tail=5 / earnings_blackout | - |
-| `b2197_sw5sp150_sw5sp150` | 300 | 40 | 0 | 250 | 132 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.355 | 0.508 | 0.019 | cm=True brk=0.020 age=120 tail=5 / earnings_blackout | - |
-| `b2197_sw50sp9_sw50sp9` | 300 | 200 | 0 | 100 | 42 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 1.589 | 2.82 | 0.724 | cm=True brk=0.020 age=none tail=3 / time_stop_10d | - |
-| `b2197_sw50sp20_sw50sp20` | 300 | 200 | 0 | 100 | 41 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 1.554 | 3.915 | 0.93 | cm=True brk=0.010 age=none tail=3 / time_stop_10d | - |
-| `b2197_sw50sp50_sw50sp50` | 300 | 200 | 0 | 100 | 42 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 1.488 | 4.301 | 1.25 | cm=True brk=0.010 age=none tail=3 / time_stop_10d | - |
-| `b2197_sw50sp100_sw50sp100` | 300 | 200 | 0 | 100 | 42 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 1.434 | 2.292 | -0.023 | cm=False brk=0.020 age=none tail=2 / r_multiple_3r | - |
-| `b2197_sw50sp150_sw50sp150` | 300 | 190 | 0 | 110 | 44 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 1.276 | 3.083 | 0.437 | cm=True brk=0.020 age=250 tail=20 / fixed_4r_2r | - |
-| `b2399_step2_sw50sp50_step2_sw50sp50` | 300 | 29 | 73 | 198 | 104 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.712 | 0.145 | -0.026 | cm=False brk=0.050 age=none tail=2 / trailing_15pct | - |
-| `b2174_sw20_sw20` | 300 | 82 | 0 | 218 | 89 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.204 | 0.282 | -0.196 | cm=False brk=none age=250 tail=20 / hybrid_50pct_target | - |
-| `icg_cfg1` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.62 | 0.263 | -0.087 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_span9_span9` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=9(fixed) | -0.349 | 0.489 | 0.167 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=9 / regime_flip | 2024-05-06..2025-05-02 |
-| `icg_span20_span20` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=20(fixed) | -0.597 | 0.3 | -0.015 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=20 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_span50_span50` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=50(fixed) | -0.485 | 0.288 | -0.067 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=50 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_span150_span150` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=150(fixed) | -0.516 | 0.24 | -0.11 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=150 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_mult1.5_mult1.5` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.500(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.785 | 0.176 | -0.223 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.500 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_lookback2_lookback2` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=2(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.629 | 0.305 | -0.075 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=2 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_minq8_minq8` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=8(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.459 | 0.452 | 0.054 | P4_min_consecutive_quarters=8 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_span100_span100` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free, declared); P8=5,6(free, declared); P9=100(fixed) | -0.396 | 0.438 | 0.062 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=100 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_mult1.0_mult1.0` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.000(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.679 | 0.224 | -0.091 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.000 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_mult1.25_mult1.25` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.250(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.786 | 0.092 | -0.297 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.250 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_lookback3_lookback3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=3(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.666 | 0.231 | -0.134 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=3 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_lookback6_lookback6` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=6(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.252 | 0.425 | 0.07 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=6 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_lookback8_lookback8` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=8(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.24 | 0.4 | 0.038 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=8 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_minq6_minq6` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=6(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.474 | 0.446 | 0.043 | P4_min_consecutive_quarters=6 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_minq3_minq3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=3(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.633 | 0.259 | -0.084 | P4_min_consecutive_quarters=3 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_minq2_minq2` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=2(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.586 | 0.28 | -0.051 | P4_min_consecutive_quarters=2 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_span100_rerun_span100` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=100(fixed) | -0.528 | 0.281 | -0.078 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=100 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_cfg1_rerun_cfg1_rerun` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.643 | 0.241 | -0.106 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_step2_span9_step2_span9` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=9(fixed) | 0.214 | 0.516 | 0.428 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=9 / breakeven_plus_trail | 2022-05-05..2026-05-04 |
-| `b2712_smc_sw10_sw10` | 300 | 44 | 0 | 241 | 113 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.649 | 2.221 | 0.803 | cm=True brk=0.010 age=180 tail=3 / earnings_blackout | - |
-| `candle_tws_c01_b0.0_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.228 | 0.308 | 0.048 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `candle_tbc_c01_b0.0_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=45.094,50.132,54.066,58.812(free, declared); P7=5.000(not swept) | -0.373 | 0.378 | 0.067 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `candle_tws_c02_b0.0_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.17 | 0.504 | 0.028 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c03_b0.0_s0.1_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.225 | 0.305 | 0.034 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.100 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `candle_tws_c04_b0.0_s0.1_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.271 | 0.535 | 0.04 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.100 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c05_b0.0_s0.25_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.292 | 0.251 | -0.051 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.250 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `candle_tws_c06_b0.0_s0.25_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.341 | 0.31 | -0.01 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.250 P5_max_wick_pct=0.300 / earnings_blackout | 2024-05-06..2025-05-02 |
-| `candle_tws_c07_b0.3_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.403 | 0.349 | -0.077 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.000 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c08_b0.3_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.291 | 0.63 | 0.075 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c09_b0.3_s0.1_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.366 | 0.364 | -0.074 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.100 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c10_b0.3_s0.1_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.406 | 0.546 | -0.022 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.100 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c11_b0.3_s0.25_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.534 | 0.083 | -0.409 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.250 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c12_b0.3_s0.25_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.498 | 0.205 | -0.204 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.250 P5_max_wick_pct=0.300 / hybrid_50pct_target | 2024-05-06..2025-05-02 |
-| `candle_tws_c13_b0.5_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.58 | 0.72 | 0.067 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.000 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c14_b0.5_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=True(not swept); P2=?; P3=?; P4=?; P5=?; P6=41.97,46.31,50.16,54.42(free, declared) | -0.562 | 0.993 | 0.225 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
+| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | max IS-Sharpe | IS-Sharpe at best ci_lo | best IS-CI-lo | best combination | entry window |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `b2183_sw30_sw30` | 300 | 106 | 0 | 184 | 61 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.565 | 5.149 | 2.757 | 0.362 | cm=False brk=0.020 age=120 tail=20 / time_stop_20d | - |
+| `b2177_sw50_sw50` | 300 | 225 | 0 | 75 | 29 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.697 | 3.006 | 0.889 | -0.508 | cm=True brk=none age=none tail=3 / chandelier_3x | - |
+| `b2190_sw10_sw10` | 300 | 45 | 0 | 245 | 133 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.46 | 2.074 | 0.746 | -0.091 | cm=False brk=0.020 age=none tail=10 / fixed_4r_2r | - |
+| `b2190_sw5_sw5` | 300 | 40 | 0 | 250 | 132 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.389 | 0.805 | 0.625 | 0.123 | cm=True brk=0.020 age=120 tail=5 / earnings_blackout | - |
+| `b2197_sw20sp9_sw20sp9` | 300 | 77 | 0 | 223 | 100 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.487 | 2.815 | 1.576 | 0.044 | cm=False brk=0.030 age=none tail=5 / r_multiple_2r | - |
+| `b2197_sw20sp20_sw20sp20` | 300 | 77 | 0 | 223 | 97 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.493 | 2.544 | 0.551 | 0.107 | cm=False brk=0.050 age=none tail=5 / hybrid_50pct_target | - |
+| `b2197_sw20sp21_sw20sp21` | 300 | 77 | 0 | 223 | 97 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=21(fixed) | 0.504 | 2.544 | 0.551 | 0.107 | cm=False brk=0.050 age=none tail=5 / hybrid_50pct_target | - |
+| `b2197_sw20sp50_sw20sp50` | 300 | 77 | 0 | 223 | 92 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.488 | 2.544 | 0.535 | 0.025 | cm=False brk=0.050 age=none tail=2 / hybrid_50pct_target | - |
+| `b2197_sw20sp100_sw20sp100` | 300 | 77 | 0 | 223 | 91 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.441 | 2.544 | 0.465 | -0.036 | cm=False brk=0.050 age=none tail=2 / hybrid_50pct_target | - |
+| `b2197_sw20sp150_sw20sp150` | 300 | 77 | 0 | 223 | 92 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.35 | 2.854 | 0.357 | -0.114 | cm=False brk=none age=250 tail=20 / hybrid_50pct_target | - |
+| `b2197_sw30sp9_sw30sp9` | 300 | 95 | 0 | 195 | 75 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.821 | 3.846 | 1.684 | 0.687 | cm=False brk=0.020 age=250 tail=20 / earnings_blackout | - |
+| `b2197_sw30sp20_sw30sp20` | 300 | 100 | 0 | 200 | 74 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.884 | 4.103 | 4.103 | 0.816 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
+| `b2197_sw30sp50_sw30sp50` | 300 | 100 | 0 | 200 | 68 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.896 | 4.103 | 4.103 | 0.816 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
+| `b2197_sw30sp100_sw30sp100` | 300 | 100 | 0 | 200 | 67 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.858 | 4.103 | 4.103 | 0.816 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
+| `b2197_sw30sp150_sw30sp150` | 300 | 106 | 0 | 194 | 65 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.8 | 4.807 | 4.807 | 1.214 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
+| `b2197_sw10sp9_sw10sp9` | 300 | 42 | 0 | 258 | 138 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.431 | 2.839 | 0.714 | -0.014 | cm=False brk=0.020 age=none tail=2 / class_time_stop | - |
+| `b2197_sw10sp20_sw10sp20` | 300 | 41 | 0 | 259 | 129 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.432 | 2.839 | 0.47 | -0.07 | cm=True brk=0.050 age=none tail=10 / breakeven_plus_trail | - |
+| `b2197_sw10sp50_sw10sp50` | 300 | 45 | 0 | 250 | 128 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.418 | 0.846 | 0.422 | -0.042 | cm=False brk=0.050 age=none tail=10 / breakeven_plus_trail | - |
+| `b2197_sw10sp100_sw10sp100` | 300 | 40 | 0 | 250 | 127 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.402 | 1.352 | 0.34 | -0.12 | cm=False brk=none age=none tail=5 / breakeven_plus_trail | - |
+| `b2197_sw10sp150_sw10sp150` | 300 | 40 | 0 | 250 | 131 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.44 | 1.779 | 0.282 | -0.11 | cm=False brk=none age=none tail=2 / hybrid_50pct_target | - |
+| `b2197_sw5sp9_sw5sp9` | 300 | 45 | 0 | 250 | 126 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.462 | 0.767 | 0.6 | 0.098 | cm=True brk=0.050 age=none tail=3 / breakeven_plus_trail | - |
+| `b2197_sw5sp20_sw5sp20` | 300 | 45 | 0 | 250 | 125 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.388 | 0.734 | 0.49 | -0.005 | cm=True brk=0.050 age=none tail=3 / breakeven_plus_trail | - |
+| `b2197_sw5sp50_sw5sp50` | 300 | 45 | 0 | 250 | 124 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.392 | 0.711 | 0.402 | -0.005 | cm=True brk=none age=180 tail=20 / breakeven_plus_trail | - |
+| `b2197_sw5sp100_sw5sp100` | 300 | 40 | 0 | 250 | 132 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.359 | 0.738 | 0.513 | 0.027 | cm=True brk=0.020 age=120 tail=5 / earnings_blackout | - |
+| `b2197_sw5sp150_sw5sp150` | 300 | 40 | 0 | 250 | 132 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.355 | 0.739 | 0.508 | 0.019 | cm=True brk=0.020 age=120 tail=5 / earnings_blackout | - |
+| `b2197_sw50sp9_sw50sp9` | 300 | 200 | 0 | 100 | 42 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 1.589 | 2.994 | 2.82 | 0.724 | cm=True brk=0.020 age=none tail=3 / time_stop_10d | - |
+| `b2197_sw50sp20_sw50sp20` | 300 | 200 | 0 | 100 | 41 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 1.554 | 3.915 | 3.915 | 0.93 | cm=True brk=0.010 age=none tail=3 / time_stop_10d | - |
+| `b2197_sw50sp50_sw50sp50` | 300 | 200 | 0 | 100 | 42 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 1.488 | 4.301 | 4.301 | 1.25 | cm=True brk=0.010 age=none tail=3 / time_stop_10d | - |
+| `b2197_sw50sp100_sw50sp100` | 300 | 200 | 0 | 100 | 42 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 1.434 | 2.996 | 2.292 | -0.023 | cm=False brk=0.020 age=none tail=2 / r_multiple_3r | - |
+| `b2197_sw50sp150_sw50sp150` | 300 | 190 | 0 | 110 | 44 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 1.276 | 3.083 | 3.083 | 0.437 | cm=True brk=0.020 age=250 tail=20 / fixed_4r_2r | - |
+| `b2399_step2_sw50sp50_step2_sw50sp50` | 300 | 29 | 73 | 198 | 104 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.712 | 1.658 | 0.145 | -0.026 | cm=False brk=0.050 age=none tail=2 / trailing_15pct | - |
+| `b2174_sw20_sw20` | 300 | 82 | 0 | 218 | 89 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.204 | 2.811 | 0.282 | -0.196 | cm=False brk=none age=250 tail=20 / hybrid_50pct_target | - |
+| `icg_cfg1` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.62 | 0.263 | 0.263 | -0.087 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
+| `icg_span9_span9` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=9(fixed) | -0.349 | 0.489 | 0.489 | 0.167 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=9 / regime_flip | 2024-05-06..2025-05-02 |
+| `icg_span20_span20` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=20(fixed) | -0.597 | 0.3 | 0.3 | -0.015 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=20 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `icg_span50_span50` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=50(fixed) | -0.485 | 0.288 | 0.288 | -0.067 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=50 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `icg_span150_span150` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=150(fixed) | -0.516 | 0.24 | 0.24 | -0.11 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=150 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `icg_mult1.5_mult1.5` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.500(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.785 | 0.176 | 0.176 | -0.223 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.500 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
+| `icg_lookback2_lookback2` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=2(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.629 | 0.305 | 0.305 | -0.075 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=2 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `icg_minq8_minq8` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=8(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.459 | 0.452 | 0.452 | 0.054 | P4_min_consecutive_quarters=8 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `icg_span100_span100` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free, declared); P8=5,6(free, declared); P9=100(fixed) | -0.396 | 0.438 | 0.438 | 0.062 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=100 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `icg_mult1.0_mult1.0` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.000(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.679 | 0.224 | 0.224 | -0.091 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.000 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `icg_mult1.25_mult1.25` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.250(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.786 | 0.092 | 0.092 | -0.297 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.250 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
+| `icg_lookback3_lookback3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=3(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.666 | 0.231 | 0.231 | -0.134 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=3 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
+| `icg_lookback6_lookback6` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=6(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.252 | 0.425 | 0.425 | 0.07 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=6 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
+| `icg_lookback8_lookback8` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=8(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.24 | 0.4 | 0.4 | 0.038 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=8 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
+| `icg_minq6_minq6` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=6(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.474 | 0.446 | 0.446 | 0.043 | P4_min_consecutive_quarters=6 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `icg_minq3_minq3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=3(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.633 | 0.259 | 0.259 | -0.084 | P4_min_consecutive_quarters=3 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
+| `icg_minq2_minq2` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=2(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.586 | 0.28 | 0.28 | -0.051 | P4_min_consecutive_quarters=2 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
+| `icg_span100_rerun_span100` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=100(fixed) | -0.528 | 0.281 | 0.281 | -0.078 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=100 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `icg_cfg1_rerun_cfg1_rerun` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.643 | 0.241 | 0.241 | -0.106 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
+| `icg_step2_span9_step2_span9` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=9(fixed) | 0.214 | 0.516 | 0.516 | 0.428 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=9 / breakeven_plus_trail | 2022-05-05..2026-05-04 |
+| `b2712_smc_sw10_sw10` | 300 | 44 | 0 | 241 | 113 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.649 | 3.05 | 2.221 | 0.803 | cm=True brk=0.010 age=180 tail=3 / earnings_blackout | - |
+| `candle_tws_c01_b0.0_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.000(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.228 | 0.308 | 0.308 | 0.048 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `candle_tbc_c01_b0.0_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.000(fixed); P5=none(fixed); P6=45.094,50.132,54.066,58.812(free, declared); P7=5.000(not swept) | -0.373 | 0.378 | 0.378 | 0.067 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `candle_tws_c02_b0.0_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.17 | 0.504 | 0.504 | 0.028 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
+| `candle_tws_c03_b0.0_s0.1_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.100(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.225 | 0.305 | 0.305 | 0.034 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.100 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `candle_tws_c04_b0.0_s0.1_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.100(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.271 | 0.535 | 0.535 | 0.04 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.100 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
+| `candle_tws_c05_b0.0_s0.25_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.250(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.292 | 0.251 | 0.251 | -0.051 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.250 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `candle_tws_c06_b0.0_s0.25_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.250(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.341 | 0.379 | 0.31 | -0.01 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.250 P5_max_wick_pct=0.300 / earnings_blackout | 2024-05-06..2025-05-02 |
+| `candle_tws_c07_b0.3_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.000(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.403 | 0.349 | 0.349 | -0.077 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.000 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
+| `candle_tws_c08_b0.3_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.291 | 0.63 | 0.63 | 0.075 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
+| `candle_tws_c09_b0.3_s0.1_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.100(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.366 | 0.364 | 0.364 | -0.074 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.100 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
+| `candle_tws_c10_b0.3_s0.1_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.100(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.406 | 0.546 | 0.546 | -0.022 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.100 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
+| `candle_tws_c11_b0.3_s0.25_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.250(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.534 | 0.083 | 0.083 | -0.409 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.250 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
+| `candle_tws_c12_b0.3_s0.25_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.250(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.498 | 0.394 | 0.205 | -0.204 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.250 P5_max_wick_pct=0.300 / hybrid_50pct_target | 2024-05-06..2025-05-02 |
+| `candle_tws_c13_b0.5_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.000(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.58 | 0.72 | 0.72 | 0.067 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.000 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
+| `candle_tws_c14_b0.5_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.562 | 0.993 | 0.993 | 0.225 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
+| `candle_tws_c15_b0.5_s0.1_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.100(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.537 | 0.682 | 0.682 | 0.018 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.100 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
 
 **Parameters tested** - distinct values each config exercised per axis, read from the result rows themselves. `1 value` = the axis was PINNED and contributed no search; an axis absent from the artifact reads `not recorded`, never `1`. **P1 `swing_length` and P6 `span` are the CROSS-CONFIG axes** - they define which config a cube IS and are held FIXED within it, so they show a value rather than a count. Recorded in the artifact since B2138; anything graded before that reads `not recorded`, which is what let a swing-10 cube be re-graded as swing-20 (S6-B2136).
 
@@ -193,21 +194,22 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 
 | config | P1 three_white_soldiers (boolean leg) | P2 n_bars (pattern length) | P3 min_body_pct_of_range | P4 min_step_up_pct | P5 max_upper_wick_pct | P6 rsi_14 ceiling |
 |---|---|---|---|---|---|---|
-| `candle_tws_c01_b0.0_s0.0_wNone` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tbc_c01_b0.0_s0.0_wNone` | True(not swept) | ? | ? | ? | ? | 45.094,50.132,54.066,58.812(free, declared) | 5.000(not swept) |
-| `candle_tws_c02_b0.0_s0.0_w0.3` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c03_b0.0_s0.1_wNone` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c04_b0.0_s0.1_w0.3` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c05_b0.0_s0.25_wNone` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c06_b0.0_s0.25_w0.3` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c07_b0.3_s0.0_wNone` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c08_b0.3_s0.0_w0.3` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c09_b0.3_s0.1_wNone` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c10_b0.3_s0.1_w0.3` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c11_b0.3_s0.25_wNone` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c12_b0.3_s0.25_w0.3` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c13_b0.5_s0.0_wNone` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c14_b0.5_s0.0_w0.3` | True(not swept) | ? | ? | ? | ? | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c01_b0.0_s0.0_wNone` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.000(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tbc_c01_b0.0_s0.0_wNone` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.000(fixed) | none(fixed) | 45.094,50.132,54.066,58.812(free, declared) | 5.000(not swept) |
+| `candle_tws_c02_b0.0_s0.0_w0.3` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.000(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c03_b0.0_s0.1_wNone` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.100(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c04_b0.0_s0.1_w0.3` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.100(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c05_b0.0_s0.25_wNone` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.250(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c06_b0.0_s0.25_w0.3` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.250(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c07_b0.3_s0.0_wNone` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.000(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c08_b0.3_s0.0_w0.3` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.000(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c09_b0.3_s0.1_wNone` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.100(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c10_b0.3_s0.1_w0.3` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.100(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c11_b0.3_s0.25_wNone` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.250(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c12_b0.3_s0.25_w0.3` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.250(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c13_b0.5_s0.0_wNone` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.000(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c14_b0.5_s0.0_w0.3` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.000(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
+| `candle_tws_c15_b0.5_s0.1_wNone` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.100(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
 
 ## TABLE D - STEP-1 RANKED LIST (top 25)
 
@@ -247,20 +249,21 @@ _**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one unified table, no s
 | 24 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 120 | 0.03 | 20 | earnings_blackout | +0.604 | 15 | THIN | 1 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 | 25 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 120 | 0.03 | 50 | earnings_blackout | +0.604 | 15 | THIN | 2 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 
-_680 ranked outcomes across 68 graded configs; 654 distinct signatures._
+_690 ranked outcomes across 69 graded configs; 664 distinct signatures._
 
 **Best within each depth tier** (the comparison a rank order hides):
 
 | tier | best is_ci_lo | at n | rows |
 |---|---|---|---|
-| DEEP | +0.428 | 3509 | 448 |
+| DEEP | +0.428 | 3509 | 458 |
 | MID | +0.656 | 33 | 151 |
 | THIN | +1.250 | 14 | 81 |
 
-## Index - 68 graded config(s), newest first
+## Index - 69 graded config(s), newest first
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_candle_tws_c15_b0.5_s0.1_wNone | 0.018 | 132 | 0/24 exits | 9/9 |
 | output_candle_tws_c14_b0.5_s0.0_w0.3 | 0.225 | 98 | 0/24 exits | 9/9 |
 | output_candle_tws_c13_b0.5_s0.0_wNone | 0.067 | 137 | 0/24 exits | 9/9 |
 | output_candle_tws_c12_b0.3_s0.25_w0.3 | -0.204 | 131 | 0/24 exits | 9/9 |
@@ -331,6 +334,103 @@ _680 ranked outcomes across 68 graded configs; 654 distinct signatures._
 | output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 combinations | 9/9 |
 
 ## Per-config findings
+
+### output_candle_tws_c15_b0.5_s0.1_wNone
+
+**Configuration:** P2_n_bars=3, P3_min_body_pct=0.5, P4_min_step_pct=0.1, P5_max_wick_pct=None
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.018** (is_sharpe 0.682, 132 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, holdout never read (scripts/grade_free_levels_candle.py (S6-B2904)).
+
+| level | knobs | IS fires | top exit (ranked by ci_lo) | is_sharpe | is_ci_lo |
+|---|---|---|---|---|---|
+| 41.97 | p6=41.97 | 16 | time_stop_20d | None | None |
+| 46.31 | p6=46.31 | 37 | regime_flip | None | None |
+| 50.16 | p6=50.16 | 57 | regime_flip | None | None |
+| 54.42 | p6=54.42 | 82 | regime_flip | None | None |
+| 60.0 | p6=60.0 | 132 | regime_flip | None | None |
+
+**Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | AUTO (S6-B2900): grade_candle_config at manifest n_bars=3 min_body_pct=0.5 min_step_pct=0.1 max_wick_pct= -> output_candle_tws_c15_b0.5_s0.1_wNone_grid_auto.json; free levels reproduction-gated -> output_candle_tws_c15_b0.5_s0.1_wNone_free_levels.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B2899): spot_check_candle at manifest n_bars=3 min_body_pct=0.5 min_step_pct=0.1 max_wick_pct=; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_candle_tws_c15_b0.5_s0.1_wNone_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 9 run: 0 WARN / 0 FAIL / 9 INFO -> output_candle_tws_c15_b0.5_s0.1_wNone_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (9 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | DONE | AUTO (B2192): the grader collapses identical outcomes - 10 ranked outcome classes carry 1 parameter combinations; 1 distinct outcome classes among 1 combinations enumerated in output_candle_tws_c15_b0.5_s0.1_wNone_grid_auto.json |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 declared knobs read from the environment + consumer lists match the tree |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_candle_tws_c15_b0.5_s0.1_wNone_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 3168 IS rows (3168 cube rows, 0 holdout rows); rank-1 [regime_flip] is_ci_lo 0.018 is_sharpe 0.682 fires 132 - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 3168 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | 9ad78968c41bed87 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha ac61195ef1e6 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_candle_tws_c15_b0.5_s0.1_wNone_spot_check.json.
+
+**Adversarial lenses (step 5) - 9 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family three_white_soldiers)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 132 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.30 (2024Q4) over 5 quarters of 132 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.10 of 132 entries across 102 tickers; WARN > 0.30 |
+| selection_margin | INFO | rank-1 [regime_flip] is_ci_lo 0.018 vs rank-2 [time_stop_20d] -0.397: margin 0.415 between exits; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a) |
+| empty_signals_share | INFO | 0 of 132 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/132 (0.0%) from replay_atr_fallback.json) |
+| direction_consistency | INFO | directions ['long'] (one strategy, one direction expected) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_candle_tws_c15_b0.5_s0.1_wNone_spot_check.json |
+| min_trades_floor | INFO | 132 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 24 exits enumerated (population field `per_exit`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | 0.018 | 0.682 | 132 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.397 | 0.217 | 132 | time_stop_20d | 1 | (no knobs recorded) |
+| 3 | -0.459 | -0.078 | 132 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.601 | 0.064 | 132 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 5 | -0.638 | -0.192 | 132 | hybrid_50pct_target | 1 | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c15_b0.5_s0.1_wNone_grid_auto.json._
 
 ### output_candle_tws_c14_b0.5_s0.0_w0.3
 
