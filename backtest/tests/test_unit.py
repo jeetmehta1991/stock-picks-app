@@ -19701,7 +19701,9 @@ def test_b1869_authored_then_violated_ledger():
 
     i = lea.index("### L570")
     entry = lea[i:i + 8000]   # B2372: widened - instance 3 appends past 4000
-    for instance in ("S6-B1762f", "L567", "B2372", "B2395"):
+    # S6-B3047: instance 5 - #318/L856 authored, then broken ONE TURN
+    # later inside the very decision it was written about.
+    for instance in ("S6-B1762f", "L567", "B2372", "B2395", "B3047"):
         assert instance in entry, (
             f"L570 no longer names {instance}. The entry's whole value is the "
             "COUNT of times a rule was cited and not applied - an instance "

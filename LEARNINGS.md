@@ -11857,6 +11857,12 @@ but it fires at turn-END, after the commit. **No pre-commit mechanism can see th
 preflight scans STAGED FILES, and the command line is not a file. So detection before the fact is
 **JUDGMENT-ONLY**, and the durability half is the bright-line rule in SKILL.md with its own
 fragment pin, which removes the decision rather than relying on making it correctly.
+**ADDENDUM (B3047): INSTANCE 5 - AUTHORED AND BROKEN ONE TURN LATER, INSIDE THE DECISION IT WAS WRITTEN ABOUT.** I wrote L856 and CHECKLIST `#318` - *before escalating a decision, walk its own stated uncertainties and measure the ones the artifacts on disk can settle* - and in the NEXT turn shipped a close whose last remaining objection on S6-B3037 was an unmeasured claim about whether a coupling check survives retirement. One file-open settled it: the split patch ships `test_b2931_split_is_an_exact_partition`, a BEHAVIOURAL coupling check stronger than the textual one I was defending, so the objection was not merely unmeasured but FALSE, and it had been in front of the owner for several closes.
+
+**What makes this instance different from 1-4, and worth the entry.** Those are a rule cited then broken, or a lesson written then broken in a sibling. Here the rule was authored **about this exact situation** - an owner-facing decision carrying its own stated uncertainty - and the next instance of that situation was the one I was already standing in. **The rule did not fail to be recalled; it failed to be RECOGNISED**, because I had filed the claim under *my objection* rather than under *the owner's evidence*, which is the discriminator L856 itself names in its last paragraph. I had written the discriminator and still applied the wrong label.
+
+**The lever that would have worked, stated as a procedure rather than as resolve:** L856's own instruction is a WALK - enumerate the uncertainties a write-up names, then measure each. I never performed the walk on the write-up I had just published; I only applied the rule prospectively, to decisions I might escalate NEXT. **A rule authored mid-escalation binds the escalation already in flight**, and nothing prompts that, because the open decision does not look like a new one.
+
 **Retroactive sweep (#237): every git commit this session, by message-passing form.** All
 substantial commits used `-F` with a quoted heredoc; **the sole `-m` use is this one**, and it
 is the only one carrying a substitution - roughly 1 of 12, and the shortest message of the set,
