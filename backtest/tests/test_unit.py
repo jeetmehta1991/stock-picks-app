@@ -26454,6 +26454,12 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
         eng._last_sim_day_index, eng._last_sim_date = 7, "2024-06-03"
         eng._last_universe = ["AAA", "BBB"]
         eng.supervisor_interval_s = 0.5
+        # B3098 (S6-B3094g): the supervisor now waits cap + grace (default
+        # 900 s) so a PLANNED leg end is the in-loop check at a day boundary.
+        # This test drives the HANG backstop, so it shrinks the grace; and
+        # day 7 is the day in progress, day 6 the last one finished.
+        eng.supervisor_grace_s = 2.0
+        eng._last_completed_day, eng._day_in_progress = 6, 7
         eng._start_run_supervisor()
         # THE PATHOLOGICAL DAY: never returns to a loop boundary, so the
         # in-loop cap can never be evaluated. Pre-B2148 this ran forever.
@@ -26489,6 +26495,12 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
         "wall_time_kill the B2502b rename regressed, and any other value "
         "means the hung-day protection weakened")
     assert state["sim_day_index"] == 7
+    # B3098 (S6-B3094g): the hard kill mid-day 7 records it as HALF-RUN, and the
+    # resume skips it and discloses it (owner ruling) - never replays it.
+    assert state["last_completed_day"] == 6 and state["day_in_progress"] == 7
+    from backtest.engine.backtest import BacktestEngine as _BE
+    assert _BE.resume_plan(state) == {"resume_index": 8, "skipped_index": 7,
+                                      "decision": "skipped_half_run_day"}
     assert state["open_trades"] == 1
 
 
@@ -30682,9 +30694,14 @@ def test_b2502_both_gating_sites_call_the_one_decision():
     from backtest.engine.backtest import BacktestEngine
 
     sup = inspect.getsource(BacktestEngine._start_run_supervisor)
-    assert "_why = self.kill_decision(_el, _cr_h, self.max_run_hours)" in sup, (
+    # B3098 (S6-B3094g, owner 'Fix it'): the supervisor's CAP is now cap +
+    # grace (supervisor_kill_cap) so the in-loop check ends a planned leg at a
+    # day boundary; the ACCUMULATOR it passes is still the sleep credit.
+    assert ("_why = self.kill_decision(_el, _cr_h, self.supervisor_kill_cap("
+            in sup), (
         "the supervisor must pass the CAP accumulator (sleep credit), not "
-        "the reporting one - passing _sh would forgive stalls")
+        "the reporting one - passing _sh would forgive stalls - against "
+        "the grace-extended supervisor cap (B3098)")
     assert "SUPERVISOR KILL [%s]" in sup, "the kill line names its arm"
 
     run = inspect.getsource(BacktestEngine.run)
@@ -44486,3 +44503,359 @@ def test_b3097_l395_and_l397_carry_the_b2046_correction():
         assert "CORRECTED B3097" in body, "%s lost its B3097 correction" % lid
         assert "trade_exit_detail" in body and "B2046" in body, (
             "%s correction no longer names the defective file and its fix" % lid)
+
+
+def test_b3098_resume_plan_resumes_at_the_first_unfinished_day():
+    """S6-B3094g (B3098, owner re-ruling 2026-09-24 'Fix it'). Every checkpoint
+    writer records simulated_day = N BEFORE day N runs, and the pre-B3098 resume
+    skipped i <= N - so day N, which never ran, was lost at every boundary.
+    resume_plan resumes AT the first day that did not finish, skips a day only
+    when it was HALF-RUN (owner: skipped and disclosed, never replayed), and
+    keeps the old skip for a pre-B3098 SUPERVISOR checkpoint, which cannot say
+    whether its day ran, disclosing it as unknown.
+
+    Must-fire: the pre-B3098 rule is asserted to DISAGREE with the plan on the
+    periodic-checkpoint case, so this test fails against the old behaviour.
+    """
+    from backtest.engine.backtest import BacktestEngine as BE
+    rp = BE.resume_plan
+    # B3098-format checkpoints: the two markers decide
+    assert rp({"simulated_day": 5, "status": "running", "last_completed_day": 4,
+               "day_in_progress": None}) == {
+        "resume_index": 5, "skipped_index": None,
+        "decision": "resumed_at_next_unrun_day"}
+    # the in-loop cap kill at the top of iteration 330: day 330 never started
+    assert rp({"simulated_day": 330, "status": "wall_time_kill",
+               "last_completed_day": 329, "day_in_progress": None}
+              )["resume_index"] == 330
+    # supervisor hard kill in the MIDDLE of day 329: skip it, disclose it
+    assert rp({"simulated_day": 329, "status": "supervisor_active_cap",
+               "last_completed_day": 328, "day_in_progress": 329}) == {
+        "resume_index": 330, "skipped_index": 329,
+        "decision": "skipped_half_run_day"}
+    # supervisor snapshot after day 329 finished but before its marker cleared:
+    # 329 is DONE and nothing is skipped
+    assert rp({"simulated_day": 329, "status": "supervisor_active_cap",
+               "last_completed_day": 329, "day_in_progress": 329}) == {
+        "resume_index": 330, "skipped_index": None,
+        "decision": "resumed_at_next_unrun_day"}
+    # killed during day 0: nothing finished, day 0 half-ran
+    assert rp({"simulated_day": 0, "status": "supervisor_active_cap",
+               "last_completed_day": -1, "day_in_progress": 0}
+              )["resume_index"] == 1
+    # pre-B3098 checkpoints carry no markers
+    assert rp({"simulated_day": 250, "status": "running"}) == {
+        "resume_index": 250, "skipped_index": None,
+        "decision": "resumed_at_never_run_day_pre_b3098"}
+    assert rp({"simulated_day": 10, "status": "wall_time_kill"}
+              )["resume_index"] == 10
+    assert rp({"simulated_day": 329, "status": "supervisor_active_cap"}) == {
+        "resume_index": 330, "skipped_index": 329,
+        "decision": "skipped_day_unknown_pre_b3098"}
+    # must-fire: the pre-B3098 rule resumed at simulated_day + 1 whatever the status
+    periodic = {"simulated_day": 5, "status": "running",
+                "last_completed_day": 4, "day_in_progress": None}
+    assert int(periodic["simulated_day"]) + 1 != rp(periodic)["resume_index"], (
+        "the plan agrees with the pre-B3098 rule on a periodic checkpoint - the "
+        "never-run day would be skipped again")
+
+
+def test_b3098_loader_takes_the_skip_index_from_the_plan(tmp_path):
+    """S6-B3094g: _load_resume_checkpoint sets _resume_sim_day from resume_plan
+    (the loop skips i <= resume_index - 1) and records the plan for the boundary
+    disclosure. MEASURED shape: an in-loop cap kill at the top of day 57."""
+    import json
+    from backtest.engine.backtest import BacktestEngine
+    (tmp_path / "engine_state.json").write_text(json.dumps({
+        "simulated_day": 57, "status": "wall_time_kill", "trades_so_far": 0,
+        "open_trades": 0, "last_completed_day": 56, "day_in_progress": None}))
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.resume_from_checkpoint = str(tmp_path)
+    eng._resume_sim_day = -1
+    eng._resumed_closed_trades_count = 0
+    eng.closed_trades = []
+    eng._load_resume_checkpoint()
+    assert eng._resume_sim_day == 56, "day 57 never ran and must run on resume"
+    assert eng._last_completed_day == 56 and eng._day_in_progress is None
+    assert eng._resume_plan["resume_index"] == 57
+    assert eng._resume_plan["skipped_index"] is None
+    assert eng._resume_plan["checkpoint_status"] == "wall_time_kill"
+
+
+def _b3098_regime_engine(monkeypatch, vix_path):
+    """A BacktestEngine shell whose regime inputs are SYNTHETIC and fully
+    controlled: macro VIX per day, smoothed VIX = raw VIX, bear composite 0,
+    and a toy hysteresis classifier (enter bear at VIX >= 25, leave only below
+    15). The engine's own _classify_and_record_regime runs unmodified."""
+    from datetime import date, timedelta
+
+    import pandas as pd
+
+    import backtest.engine.backtest as bt
+    import backtest.engine.regime_filter as rf
+    days = [date(2024, 1, 1) + timedelta(days=k) for k in range(len(vix_path))]
+    vix_by = dict(zip(days, vix_path))
+    monkeypatch.setattr(bt, "macro_snapshot", lambda d: {"vix_value": vix_by[d]})
+    monkeypatch.setattr(bt, "get_vix_smoothed",
+                        lambda s, d, window=5: vix_by[d])
+    monkeypatch.setattr(rf, "compute_bear_composite_score",
+                        lambda *a, **k: {"score": 0})
+
+    def toy(vix, spy_close, spy_ema, prev_regime=None, vix_smoothed=None,
+            use_hysteresis=False, bear_composite_score=0):
+        if use_hysteresis and prev_regime == "bear":
+            return {"regime": "bear" if vix_smoothed >= 15 else "bull"}
+        return {"regime": "bear" if vix >= 25 else "bull"}
+    monkeypatch.setattr(bt, "get_regime_context", toy)
+
+    def fresh():
+        e = bt.BacktestEngine.__new__(bt.BacktestEngine)
+        e.spy_df = None
+        e._vix_series = pd.Series(vix_path, index=pd.to_datetime(days))
+        e._bear_indicator_cache = {}
+        e.ohlcv_dict = {}
+        e.liquid_universe = []
+        return e
+    return days, fresh
+
+
+def test_b3098_resumed_regime_state_equals_an_uninterrupted_run(monkeypatch):
+    """S6-B3094c (B3098, owner-approved fix (a); Council 1a, 5 of 5 advisors).
+    A resumed leg must hold EXACTLY the regime state an uninterrupted run holds -
+    the date map regime_flip reads, the day-order history, the hysteresis label
+    and the EMA-smoothed score - or every regime-dependent exit is graded on a
+    different run. The SYNTHETIC VIX path enters bear on day 2 and HOLDS it to
+    day 8 only through hysteresis; resuming at k=7 (VIX 19) lands inside that
+    band, where an empty-state resume labels bull.
+
+    Must-fire: the same resume WITHOUT the rebuild (the pre-B3098 engine) must
+    produce a different label at k and a map missing the days before k.
+    """
+    vix = [10, 12, 30, 22, 20, 18, 21, 19, 16, 12, 10]
+    days, fresh = _b3098_regime_engine(monkeypatch, vix)
+    k = 7
+
+    def snap(e):
+        return (dict(e._regime_by_date), list(e._regime_history),
+                e._prev_regime, e._regime_smoothed)
+
+    full = fresh()
+    full._rebuild_regime_state(days, -1)        # a fresh run = zero-length replay
+    for d in days:
+        full._classify_and_record_regime(d, None)
+    res = fresh()
+    stats = res._rebuild_regime_state(days, k - 1)
+    assert stats["replayed_days"] == k and stats["map_size"] == k, stats
+    for d in days[k:]:
+        res._classify_and_record_regime(d, None)
+    fm, fh, fp, fs = snap(full)
+    rm, rh, rp, rs = snap(res)
+    assert fm == rm and fh == rh and fp == rp, (fm, rm)
+    assert abs(fs - rs) < 1e-12, (fs, rs)
+    assert fm[days[k]] == "bear", "the fixture no longer exercises hysteresis at k"
+    old = fresh()
+    old._rebuild_regime_state(days, -1)         # empty state, as before B3098
+    for d in days[k:]:
+        old._classify_and_record_regime(d, None)
+    assert old._regime_by_date[days[k]] != fm[days[k]], (
+        "an empty-state resume labels day k the same - the fixture cannot tell "
+        "a rebuilt resume from a broken one")
+    assert days[0] not in old._regime_by_date
+
+
+def test_b3098_resume_wiring_markers_and_every_state_writer():
+    """S6-B3094c/g wiring, by AST (L748: assert the code, never prose about it).
+    (1) run() rebuilds the regime state and records the boundary right after
+    loading the checkpoint, before the day loop. (2) The day loop sets
+    _day_in_progress before _process_day and, after it, sets _last_completed_day
+    BEFORE clearing _day_in_progress - the supervisor reads them in the opposite
+    order. (3) EVERY engine_state writer - every dict literal carrying a
+    'simulated_day' key - carries both markers, so a fifth writer inherits the
+    check without anyone remembering it."""
+    import ast
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "engine" / "backtest.py"
+           ).read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    cls = next(n for n in tree.body
+               if isinstance(n, ast.ClassDef) and n.name == "BacktestEngine")
+    run = next(n for n in cls.body
+               if isinstance(n, ast.FunctionDef) and n.name == "run")
+
+    def calls(node):
+        return [c.func.attr for c in ast.walk(node)
+                if isinstance(c, ast.Call) and isinstance(c.func, ast.Attribute)]
+    ifs = [n for n in ast.walk(run) if isinstance(n, ast.If)
+           and isinstance(n.test, ast.Attribute)
+           and n.test.attr == "resume_from_checkpoint"]
+    assert len(ifs) == 1, "run() must hold exactly one resume block"
+    order = [c for c in calls(ifs[0]) if c in (
+        "_load_resume_checkpoint", "_rebuild_regime_state",
+        "_record_resume_boundary")]
+    assert order == ["_load_resume_checkpoint", "_rebuild_regime_state",
+                     "_record_resume_boundary"], order
+    loop = next(n for n in ast.walk(run) if isinstance(n, ast.For)
+                and isinstance(n.iter, ast.Call)
+                and getattr(n.iter.func, "id", "") == "enumerate"
+                and getattr(n.iter.args[0], "id", "") == "trading_days")
+    assert ifs[0].lineno < loop.lineno, "the rebuild must run before the day loop"
+    body = loop.body
+    ti = [i for i, s in enumerate(body)
+          if isinstance(s, ast.Try) and "_process_day" in calls(s)]
+    assert len(ti) == 1, "exactly one try-block may run _process_day"
+    ti = ti[0]
+
+    def assign(s):
+        if isinstance(s, ast.Assign) and isinstance(s.targets[0], ast.Attribute):
+            return s.targets[0].attr, ast.unparse(s.value)
+        return None
+    assert assign(body[ti - 1]) == ("_day_in_progress", "i"), ast.unparse(body[ti - 1])
+    assert assign(body[ti + 1]) == ("_last_completed_day", "i"), ast.unparse(body[ti + 1])
+    assert assign(body[ti + 2]) == ("_day_in_progress", "None"), ast.unparse(body[ti + 2])
+    writers = [d for d in ast.walk(tree) if isinstance(d, ast.Dict)
+               and any(isinstance(k, ast.Constant) and k.value == "simulated_day"
+                       for k in d.keys)]
+    assert len(writers) >= 4, f"expected >= 4 engine_state writers, found {len(writers)}"
+    for d in writers:
+        keys = {k.value for k in d.keys if isinstance(k, ast.Constant)}
+        assert {"last_completed_day", "day_in_progress"} <= keys, (
+            f"engine_state writer at backtest.py:{d.lineno} lacks the B3098 "
+            "day markers - a resume from it cannot tell whether its day ran")
+
+
+def test_b3098_supervisor_kill_cap_boundary_matrix():
+    """S6-B3094g (B3098): the supervisor waits cap + grace so the in-loop check
+    ends a PLANNED leg at a day boundary, never above the owner's 5 h local cap.
+    L734: the rule is run on the motivating incidents' own numbers - c14's
+    Step-2 leg (cap 4.5 h, supervisor-killed mid-day 329) and cfg1's sleep
+    (16.10 h wall, 15.32 h credited)."""
+    from backtest.engine.backtest import BacktestEngine as BE
+    from backtest.engine.backtest import SUPERVISOR_GRACE_S
+    cap = BE.supervisor_kill_cap
+    assert cap(4.5, 900.0) == 4.75
+    assert cap(4.5, SUPERVISOR_GRACE_S) == 4.75
+    assert cap(5.0, 900.0) == 5.0          # no grace left under the ceiling
+    assert cap(4.9, 900.0) == 5.0
+    assert cap(6.0, 900.0) == 6.0          # a cap above the ceiling gets none
+    assert cap(4.5, 0) == 4.5 and cap(4.5, None) == 4.5
+    assert cap(None, 900.0) is None
+    kd = BE.kill_decision
+    assert kd(4.52, 0.0, 4.5) == "active_cap"          # the in-loop check fires
+    assert kd(4.52, 0.0, cap(4.5, 900.0)) is None      # the supervisor waits
+    assert kd(4.76, 0.0, cap(4.5, 900.0)) == "active_cap"   # a hang: backstop
+    assert kd(16.10, 15.32, cap(4.0, 900.0)) is None   # cfg1 still survives sleep
+
+
+def test_b3098_supervisor_ceiling_equals_owner_cap():
+    """The engine's copy of the owner's local hard cap must equal the ONE
+    definition, scripts/prelaunch_gate.py OWNER_LOCAL_CAP_HOURS (nothing under
+    backtest/ imports prelaunch_gate). Diverging copies would let cap + grace
+    pass 5 h."""
+    _b2520_scripts_on_path()
+    import prelaunch_gate
+    from backtest.engine.backtest import SUPERVISOR_HARD_CEILING_H
+    assert SUPERVISOR_HARD_CEILING_H == prelaunch_gate.OWNER_LOCAL_CAP_HOURS
+
+
+def test_b3098_landing_reports_run_integrity_findings(tmp_path, monkeypatch):
+    """S6-B3094c/g (B3098): the engine's own disclosures reach the LANDING
+    REPORT. A skipped day and a regime-map gap are findings; a missing coverage
+    record is a finding where the engine is known to write it (B3098+) and for a
+    pre-B3098 engine; a clean resume and a non-engine directory produce NONE
+    (must-quiet, B1944). Then land() is driven end to end and its ledger event
+    must carry the skipped-day finding (a pin on the callee is not a pin on
+    the wiring, L654)."""
+    import importlib.util as _iu
+    import json
+    root = _b2520_scripts_on_path()
+    monkeypatch.setenv("POSTCONFIG_LANDINGS_PATH", str(tmp_path / "landings.jsonl"))
+    monkeypatch.delenv("POSTCONFIG_LANDING_NO_GIT", raising=False)
+    spec = _iu.spec_from_file_location("pl_b3098", root / "scripts" / "postconfig_landing.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    rif = m.run_integrity_findings
+
+    def mk(name, state=None, cov=None, rb=None):
+        d = tmp_path / name
+        d.mkdir()
+        if state is not None:
+            (d / "engine_state.json").write_text(json.dumps(state))
+        if cov is not None:
+            (d / "regime_map_coverage.json").write_text(json.dumps(cov))
+        if rb is not None:
+            (d / "resume_boundaries.json").write_text(
+                rb if isinstance(rb, str) else json.dumps(rb))
+        return d
+    new_state = {"status": "complete", "last_completed_day": 249,
+                 "day_in_progress": None}
+    ok_cov = {"days_processed": 250, "days_in_map": 250, "missing_count": 0,
+              "missing_sample": []}
+    clean = {"resume_index": 120, "skipped_index": None, "skipped_date": None,
+             "decision": "resumed_at_next_unrun_day", "resume_date": "2024-11-01"}
+    skip = {"resume_index": 330, "skipped_index": 329,
+            "skipped_date": "2025-09-01", "resume_date": "2025-09-02",
+            "decision": "skipped_half_run_day"}
+    # must-quiet
+    assert rif(mk("empty")) == []
+    assert rif(mk("clean", new_state, ok_cov, [clean])) == []
+    # a skipped day: the count line and the day itself
+    f = rif(mk("skipped", new_state, ok_cov, [clean, skip]))
+    assert len(f) == 2, f
+    assert "1 of 2 resume boundaries SKIPPED" in f[0], f
+    assert "SKIPPED day 2025-09-01 (index 329) - skipped_half_run_day" in f[1], f
+    # a regime-map gap
+    gap = dict(ok_cov, missing_count=3, missing_sample=["2024-06-03"])
+    f = rif(mk("gap", new_state, gap))
+    assert len(f) == 1 and "regime map GAP - 3 of 250" in f[0], f
+    # coverage absent: B3098+ engine -> the writer failed; pre-B3098 -> disclosed
+    f = rif(mk("absent_new", new_state))
+    assert len(f) == 1 and "ABSENT from a B3098+ engine run" in f[0], f
+    f = rif(mk("absent_old", {"status": "complete", "simulated_day": 249}))
+    assert len(f) == 1 and "pre-B3098 engine" in f[0], f
+    # an unreadable boundary record never passes silently
+    f = rif(mk("bad", new_state, ok_cov, "{not json"))
+    assert len(f) == 1 and "unreadable" in f[0], f
+    # the wiring: land() puts these findings into the ledger event
+    cube = mk("output_b3098_land", new_state, ok_cov, [skip])
+    (cube / "trade_exit_detail.csv").write_text("h\n1\n", encoding="utf-8")
+    monkeypatch.setattr(m, "run_battery", lambda d, *, step1, step2: 0)
+    monkeypatch.setattr(m, "ledger_steps", lambda c: ({"1_cube_sanity": "DONE"}, []))
+    monkeypatch.setattr(m, "lens_findings", lambda c: [])
+    monkeypatch.setattr(m, "render_report", lambda: (True, "stubbed"))
+    assert m.land(cube, source="manual", if_not_landed=True, force=False,
+                  no_git=True, no_notify=True, step1=True, step2=False) == 0
+    evs = m.read_landings()
+    assert len(evs) == 1 and any(
+        "SKIPPED day 2025-09-01" in x for x in evs[0]["findings"]), evs
+
+
+def test_b3098_every_state_writer_flushes_the_open_book_unconditionally():
+    """S6-B3094g (B3098). MEASURED on the B3098 verification run: the in-loop
+    cap kill flushed the open book only inside `if self.closed_trades:`, so a
+    leg stopped before its first closed trade (0 closed, 5 open) left a book the
+    resume refused, and leg 2 HALTED. B3098 made that kill the PLANNED leg end.
+    Structural pin, by AST: no call to _flush_open_trades_checkpoint may sit
+    under an `if` that tests closed_trades, and there are at least three call
+    sites (periodic checkpoint, in-loop kill, supervisor kill)."""
+    import ast
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "engine" / "backtest.py"
+           ).read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    parents = {}
+    for node in ast.walk(tree):
+        for child in ast.iter_child_nodes(node):
+            parents[child] = node
+    sites = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
+             and isinstance(n.func, ast.Attribute)
+             and n.func.attr == "_flush_open_trades_checkpoint"]
+    assert len(sites) >= 3, f"expected >= 3 open-book flush sites, found {len(sites)}"
+    for call in sites:
+        p = parents.get(call)
+        while p is not None and not isinstance(p, ast.FunctionDef):
+            if isinstance(p, ast.If) and "closed_trades" in ast.unparse(p.test):
+                raise AssertionError(
+                    f"backtest.py:{call.lineno} flushes the open book only when "
+                    f"a trade has closed ({ast.unparse(p.test)!r}) - a leg stopped "
+                    "before its first closed trade becomes unresumable")
+            p = parents.get(p)

@@ -352,15 +352,17 @@ def main():
     p.add_argument("--output-dir", type=str, default="output_v2")
     # B1076 Council 191 Option 1: resume-from-checkpoint MVP (Sub-B F-13.1
     # + S5-B1073 ticket). Local directory containing engine_state.json +
-    # trade_log_checkpoint.csv from prior interrupted run. Engine skips
-    # to last completed sim_day + 1. Open trades at interruption point
-    # dropped (acknowledged caveat; B1075 had 0 open at interruption).
+    # trade_log_checkpoint.csv from prior interrupted run. Engine resumes at
+    # the first day that did not finish (S6-B3094g, B3098). Open trades are
+    # RESTORED or the resume HALTS (S6-B2213a; this comment said dropped).
     p.add_argument("--resume-from-checkpoint", type=str, default=None,
                    help="B1076 Council 191 Option 1: Local directory "
                         "containing engine_state.json + trade_log_checkpoint.csv "
                         "from prior interrupted run. Engine reads sim_day_index + "
-                        "trades_so_far + closed trades; skips sim_day loop up to "
-                        "resume_sim_day + 1; continues from there. S6-B2213a: "
+                        "trades_so_far + closed trades; resumes at the first "
+                        "day that did not finish (S6-B3094g/B3098: a half-run "
+                        "day is skipped and disclosed in resume_boundaries.json) "
+                        "and replays the regime state first. S6-B2213a: "
                         "open trades are RESTORED from open_trades_checkpoint.csv "
                         "or the resume HALTS - never dropped (this help said "
                         "'dropped (warned)' long after the code stopped doing "

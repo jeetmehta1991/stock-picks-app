@@ -6,8 +6,8 @@ Source: Council 190 owner-approved Option C (resume infra FIRST) + Council
 B1075 spot-interrupted at 13:42:08Z (Phase 1+2 PASS; Phase 3 ~32/167min).
 Sub-B F-12.1: spot interruption 5-15pct over 16-20hr runs; no resume infra
 exists. Council 191 ships MVP: sim_day skip + closed_trades reload from
-trade_log_checkpoint.csv. Open trades at interruption DROPPED (acknowledged
-caveat).
+trade_log_checkpoint.csv. (B3098: open trades were DROPPED at B1076; since
+S6-B2213a they are RESTORED or the resume HALTS - the test below says so.)
 
 Tests:
 - CLI flag wired to BacktestEngine
@@ -16,8 +16,9 @@ Tests:
 - HALT on status=complete (nothing to resume)
 - HALT on simulated_day <= 0
 - HALT on schema mismatch (trade_log row_count != engine_state.trades_so_far)
-- Open trades WARNING emitted (acknowledged caveat)
-- Resume sim_day index set correctly (main loop skips i <= resume_sim_day)
+- Open trades declared without an open-book checkpoint HALT (S6-B2213a)
+- Resume sim_day index set correctly: B3098 resumes AT the checkpoint's
+  never-run day (the loop skips i <= simulated_day - 1)
 """
 from __future__ import annotations
 
@@ -155,15 +156,20 @@ def test_b1076_resume_happy_path(tmp_path):
     df.to_csv(tmp_path / "trade_log_checkpoint.csv", index=False)
     eng = _make_engine_stub(tmp_path)
     eng._load_resume_checkpoint()
-    assert eng._resume_sim_day == 250
+    # B3098 (S6-B3094g, owner 'Fix it'): simulated_day=250 is written BEFORE
+    # day 250 runs, so the resume runs it: skip i <= 249. This pin read 250
+    # until B3098 - it froze the off-by-one that skipped a never-run day.
+    assert eng._resume_sim_day == 249
     assert eng._resumed_closed_trades_count == 3
     assert len(eng.closed_trades) == 3
 
 
-def test_b1076_resume_open_trades_warning_emitted(tmp_path, caplog):
-    """B1076 acknowledged caveat: open trades at resume point are DROPPED
-    with WARNING (MVP scope; full state restore deferred)."""
-    import logging
+def test_b1076_resume_open_trades_warning_emitted(tmp_path):
+    """B1076 dropped open trades with a WARNING; S6-B2213a replaced that with
+    RESTORE-or-HALT (owner 2026-08-26 'no dropped trades'), and this test kept
+    asserting the DROPPED warning - it failed on HEAD from then until B3098
+    (outside the gated pyramid, so nothing noticed: L867's stale caveat, in a
+    test). Open trades declared with no open-book checkpoint must HALT."""
     state = {
         "simulated_day": 100,
         "status": "running",
@@ -172,11 +178,8 @@ def test_b1076_resume_open_trades_warning_emitted(tmp_path, caplog):
     }
     (tmp_path / "engine_state.json").write_text(json.dumps(state))
     eng = _make_engine_stub(tmp_path)
-    with caplog.at_level(logging.WARNING):
+    with pytest.raises(RuntimeError, match="S6-B2213a RESUME HALT"):
         eng._load_resume_checkpoint()
-    assert any('RESUME open-trades DROPPED' in r.message for r in caplog.records), (
-        "B1076: open trades > 0 at resume point must emit DROPPED warning"
-    )
 
 
 def test_b1076_resume_empty_trade_log_with_zero_trades(tmp_path):
@@ -192,7 +195,7 @@ def test_b1076_resume_empty_trade_log_with_zero_trades(tmp_path):
     # No CSV created
     eng = _make_engine_stub(tmp_path)
     eng._load_resume_checkpoint()
-    assert eng._resume_sim_day == 50
+    assert eng._resume_sim_day == 49      # B3098: day 50 never ran; it runs
     assert eng._resumed_closed_trades_count == 0
     assert eng.closed_trades == []
 

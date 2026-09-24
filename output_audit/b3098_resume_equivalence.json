@@ -1,0 +1,482 @@
+{
+ "batch": "B3098",
+ "tickets": [
+  "S6-B3094c",
+  "S6-B3094g"
+ ],
+ "purpose": "a split (stopped + resumed) engine run must produce the same outputs as an uninterrupted one",
+ "narrow_by_design": "20 large-cap tickers (verify_universe_artifact exit 0, 20 of 544 R5 tickers), one strategy (three_white_soldiers, production params), window 2024-05-06..2024-09-03",
+ "code": {
+  "head": "a5906c125a63a14edb65e3f0bce5e32d2cbbdde6",
+  "working_tree_changes_under_test": [
+   "M backtest/engine/backtest.py",
+   " M backtest/run_phase1a.py",
+   " M backtest/tests/test_b1076_resume_from_checkpoint.py",
+   " M backtest/tests/test_unit.py",
+   " M scripts/postconfig_landing.py"
+  ]
+ },
+ "started_utc": "2026-09-24T21:45:22Z",
+ "run_a": {
+  "exit": 0,
+  "wall_s": 376.9,
+  "cube": true,
+  "last_progress": [
+   80,
+   83,
+   0.1
+  ],
+  "final_state": {
+   "simulated_day": 82,
+   "cells_completed": 30,
+   "status": "complete",
+   "sim_date": "2024-09-03",
+   "sim_day_index": 82,
+   "tickers_processed": 21,
+   "trades_so_far": 30,
+   "open_trades": 0,
+   "timestamp": "2026-09-24T21:51:23Z",
+   "pid": 18464,
+   "finalized_open_trades": 17,
+   "last_completed_day": 82,
+   "day_in_progress": null
+  }
+ },
+ "run_b_caps_hours": {
+  "leg1": 0.0208,
+  "later_legs": 0.04
+ },
+ "run_b_cap_basis": "CHOSEN: leg 1 reproduces attempt 1's zero-closed-trade boundary; later legs span several days each",
+ "run_b_legs": [
+  {
+   "leg": 1,
+   "cap_h": 0.0208,
+   "exit": 1,
+   "wall_s": 96.3,
+   "status": "wall_time_kill",
+   "simulated_day": 1,
+   "last_completed_day": 0,
+   "day_in_progress": null,
+   "trades_so_far": 0,
+   "open_trades": 5
+  },
+  {
+   "leg": 2,
+   "cap_h": 0.04,
+   "exit": 1,
+   "wall_s": 150.4,
+   "status": "wall_time_kill",
+   "simulated_day": 17,
+   "last_completed_day": 16,
+   "day_in_progress": null,
+   "trades_so_far": 1,
+   "open_trades": 4
+  },
+  {
+   "leg": 3,
+   "cap_h": 0.04,
+   "exit": 1,
+   "wall_s": 152.7,
+   "status": "wall_time_kill",
+   "simulated_day": 29,
+   "last_completed_day": 28,
+   "day_in_progress": null,
+   "trades_so_far": 1,
+   "open_trades": 15
+  },
+  {
+   "leg": 4,
+   "cap_h": 0.04,
+   "exit": 1,
+   "wall_s": 154.4,
+   "status": "wall_time_kill",
+   "simulated_day": 40,
+   "last_completed_day": 39,
+   "day_in_progress": null,
+   "trades_so_far": 4,
+   "open_trades": 15
+  },
+  {
+   "leg": 5,
+   "cap_h": 0.04,
+   "exit": 1,
+   "wall_s": 153.9,
+   "status": "wall_time_kill",
+   "simulated_day": 51,
+   "last_completed_day": 50,
+   "day_in_progress": null,
+   "trades_so_far": 5,
+   "open_trades": 15
+  },
+  {
+   "leg": 6,
+   "cap_h": 0.04,
+   "exit": 1,
+   "wall_s": 158.0,
+   "status": "wall_time_kill",
+   "simulated_day": 60,
+   "last_completed_day": 59,
+   "day_in_progress": null,
+   "trades_so_far": 7,
+   "open_trades": 14
+  },
+  {
+   "leg": 7,
+   "cap_h": 0.04,
+   "exit": 1,
+   "wall_s": 153.9,
+   "status": "wall_time_kill",
+   "simulated_day": 70,
+   "last_completed_day": 69,
+   "day_in_progress": null,
+   "trades_so_far": 11,
+   "open_trades": 12
+  },
+  {
+   "leg": 8,
+   "cap_h": 0.04,
+   "exit": 1,
+   "wall_s": 156.2,
+   "status": "wall_time_kill",
+   "simulated_day": 81,
+   "last_completed_day": 80,
+   "day_in_progress": null,
+   "trades_so_far": 13,
+   "open_trades": 17
+  },
+  {
+   "leg": 9,
+   "cap_h": 0.04,
+   "exit": 0,
+   "wall_s": 107.7,
+   "status": "complete",
+   "simulated_day": 82,
+   "last_completed_day": 82,
+   "day_in_progress": null,
+   "trades_so_far": 30,
+   "open_trades": 0
+  }
+ ],
+ "run_b_resume_boundaries": [
+  {
+   "resume_index": 1,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 1,
+   "checkpoint_sim_date": "2024-05-07",
+   "last_completed_day": 0,
+   "day_in_progress": null,
+   "trades_so_far": 0,
+   "open_trades": 5,
+   "resumed_at_utc": "2026-09-24T21:53:20Z",
+   "resume_date": "2024-05-07",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 1,
+    "map_size": 1,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 17,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 17,
+   "checkpoint_sim_date": "2024-05-30",
+   "last_completed_day": 16,
+   "day_in_progress": null,
+   "trades_so_far": 1,
+   "open_trades": 4,
+   "resumed_at_utc": "2026-09-24T21:55:52Z",
+   "resume_date": "2024-05-30",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 17,
+    "map_size": 17,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 29,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 29,
+   "checkpoint_sim_date": "2024-06-17",
+   "last_completed_day": 28,
+   "day_in_progress": null,
+   "trades_so_far": 1,
+   "open_trades": 15,
+   "resumed_at_utc": "2026-09-24T21:58:26Z",
+   "resume_date": "2024-06-17",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 29,
+    "map_size": 29,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 40,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 40,
+   "checkpoint_sim_date": "2024-07-03",
+   "last_completed_day": 39,
+   "day_in_progress": null,
+   "trades_so_far": 4,
+   "open_trades": 15,
+   "resumed_at_utc": "2026-09-24T22:01:02Z",
+   "resume_date": "2024-07-03",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 40,
+    "map_size": 40,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 51,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 51,
+   "checkpoint_sim_date": "2024-07-19",
+   "last_completed_day": 50,
+   "day_in_progress": null,
+   "trades_so_far": 5,
+   "open_trades": 15,
+   "resumed_at_utc": "2026-09-24T22:03:37Z",
+   "resume_date": "2024-07-19",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 51,
+    "map_size": 51,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 60,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 60,
+   "checkpoint_sim_date": "2024-08-01",
+   "last_completed_day": 59,
+   "day_in_progress": null,
+   "trades_so_far": 7,
+   "open_trades": 14,
+   "resumed_at_utc": "2026-09-24T22:06:15Z",
+   "resume_date": "2024-08-01",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 60,
+    "map_size": 60,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 70,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 70,
+   "checkpoint_sim_date": "2024-08-15",
+   "last_completed_day": 69,
+   "day_in_progress": null,
+   "trades_so_far": 11,
+   "open_trades": 12,
+   "resumed_at_utc": "2026-09-24T22:08:51Z",
+   "resume_date": "2024-08-15",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 70,
+    "map_size": 70,
+    "last_regime": "bull",
+    "last_regime_smoothed": 68.94323
+   }
+  },
+  {
+   "resume_index": 81,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 81,
+   "checkpoint_sim_date": "2024-08-30",
+   "last_completed_day": 80,
+   "day_in_progress": null,
+   "trades_so_far": 13,
+   "open_trades": 17,
+   "resumed_at_utc": "2026-09-24T22:11:27Z",
+   "resume_date": "2024-08-30",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 81,
+    "map_size": 81,
+    "last_regime": "bull",
+    "last_regime_smoothed": 76.53026841547
+   }
+  }
+ ],
+ "regime_map_coverage_a": {
+  "days_processed": 83,
+  "days_in_map": 83,
+  "missing_count": 0,
+  "missing_sample": []
+ },
+ "regime_map_coverage_b": {
+  "days_processed": 83,
+  "days_in_map": 83,
+  "missing_count": 0,
+  "missing_sample": []
+ },
+ "compare_a_vs_b": {
+  "identical": [
+   "agent_performance.csv (1 rows)",
+   "analyst_data_stub.json",
+   "backtest_results.csv (1 rows)",
+   "bootstrap_ci.csv (1 rows)",
+   "chart_pattern_skeleton_stub.json",
+   "congressional_correlation.csv (0 rows)",
+   "cube_compose_verdict.csv (3 rows)",
+   "dec_constants_verification.json",
+   "edge_decay_metrics.csv (1 rows)",
+   "exit_by_8K_filed_during_hold.csv (48 rows)",
+   "exit_by_adv_bucket.csv (24 rows)",
+   "exit_by_cap_band.csv (24 rows)",
+   "exit_by_circuit_breaker_active_during_hold.csv (24 rows)",
+   "exit_by_confidence_tier.csv (24 rows)",
+   "exit_by_day_of_week_at_entry.csv (120 rows)",
+   "exit_by_days_from_quarter_end_at_entry.csv (456 rows)",
+   "exit_by_earnings_during_hold.csv (48 rows)",
+   "exit_by_entry_atr_ratio.csv (720 rows)",
+   "exit_by_hold_duration_band.csv (48 rows)",
+   "exit_by_hy_oas_band_at_entry.csv (24 rows)",
+   "exit_by_mae_bucket.csv (24 rows)",
+   "exit_by_mfe_bucket.csv (48 rows)",
+   "exit_by_news_sentiment_shift_during_hold.csv (48 rows)",
+   "exit_by_regime_at_entry.csv (48 rows)",
+   "exit_by_regime_changed_during_hold.csv (24 rows)",
+   "exit_by_sector.csv (192 rows)",
+   "exit_by_sector_momentum_vs_spy_at_entry.csv (72 rows)",
+   "exit_by_smart_money_signal_present.csv (24 rows)",
+   "exit_by_universe_tier.csv (72 rows)",
+   "exit_by_vix_at_entry.csv (432 rows)",
+   "exit_by_vix_term_structure.csv (24 rows)",
+   "exit_by_vol_band.csv (48 rows)",
+   "exit_by_volume_rank_within_sector.csv (24 rows)",
+   "exit_by_win_loss_outcome.csv (48 rows)",
+   "exit_method_multi_dim_cube.csv (48 rows)",
+   "exit_strategy_best.csv (1 rows)",
+   "exit_strategy_comparison.csv (24 rows)",
+   "fx_exposure_stub.json",
+   "improvements_summary.json",
+   "insider_correlation.csv (0 rows)",
+   "portfolio_summary.json",
+   "regime_map_coverage.json",
+   "regime_performance.csv (1 rows)",
+   "regime_stratified_summary.json",
+   "replay_atr_fallback.json",
+   "rolling_sharpe_stability.json",
+   "sector_concentration.csv (27 rows)",
+   "sector_neutral_hedge_stub.json",
+   "short_long_conversion_stub.json",
+   "signal_fire_rates.json",
+   "slippage_advanced.csv (5 rows)",
+   "smart_money_combined.csv (3 rows)",
+   "strategy_regime_matrix.json",
+   "stress_metrics.json",
+   "test_coverage_gate.json",
+   "tier_adjustment_analysis.csv (1 rows)",
+   "top_losers_per_strategy.json",
+   "trade_exit_detail.csv (720 rows)",
+   "trade_log_out_of_sample.csv (0 rows)",
+   "trade_pnl_decomposition.csv (30 rows)",
+   "verdict_cube.csv (10 rows)",
+   "winning_strategies.json",
+   "yfinance_hardcut_verify.json"
+  ],
+  "different": {
+   "batch163_stub_results.json": "json differs (volatile keys stripped)",
+   "cache_freshness_checksum_stub.json": "json differs (volatile keys stripped)",
+   "circuit_breaker_log.csv": "compare failed: EmptyDataError('No columns to parse from file')",
+   "portfolio_metrics.json": "json differs (volatile keys stripped)",
+   "sizing_log.csv": "compare failed: EmptyDataError('No columns to parse from file')",
+   "skipped_trades.csv": "compare failed: EmptyDataError('No columns to parse from file')",
+   "trade_log.csv": "30 of 30 sorted rows differ; first: [{'ticker': 'AAPL', 'entry_date': '2024-08-08', 'exit_date': '2024-09-03', 'direction': 'long', 'strategy': 'three_white_soldiers', 'category': 'candle', 'sector': 'Information Technology', 'confidence_tier': 'LOW', 'regime': 'neutral', 'exit_reason': 'end_of_backtest', 'entry_price': '212.5385', 'exit_price': '222.77', 'initial_stop': '191.2846', 'highest_close': '229.79', 'trailing_stop_at_exit': '195.3215', 'pnl_pct': '4.407650793650793', 'pnl_dollar': '481.4', 'win': 'True', 'hold_days': '26', 'max_adverse_excursion': '-0.2675', 'max_favourable_excursion",
+   "trade_log_in_sample.csv": "30 of 30 sorted rows differ; first: [{'ticker': 'AAPL', 'entry_date': '2024-08-08', 'exit_date': '2024-09-03', 'direction': 'long', 'strategy': 'three_white_soldiers', 'category': 'candle', 'sector': 'Information Technology', 'confidence_tier': 'LOW', 'regime': 'neutral', 'exit_reason': 'end_of_backtest', 'entry_price': '212.5385', 'exit_price': '222.77', 'initial_stop': '191.2846', 'highest_close': '229.79', 'trailing_stop_at_exit': '195.3215', 'pnl_pct': '4.407650793650793', 'pnl_dollar': '481.4', 'win': 'True', 'hold_days': '26', 'max_adverse_excursion': '-0.2675', 'max_favourable_excursion"
+  },
+  "only_in_a": [],
+  "only_in_b": []
+ },
+ "comparator_must_fire": {
+  "perturbed": "trade_exit_detail.csv row 0 column entry_price + 1.0",
+  "flagged": true
+ },
+ "summary": {
+  "legs_b": 9,
+  "resume_boundaries": 8,
+  "days_skipped": 0,
+  "files_identical": 63,
+  "files_different": 8
+ },
+ "verdict": "NOT EQUIVALENT - see compare_a_vs_b",
+ "finished_utc": "2026-09-24T22:13:06Z",
+ "difference_classification": {
+  "method": "hand diagnosis after the run, each by an executed probe (B3098): per-column diff of the trade logs read as strings, key-level diff of each differing JSON, byte sizes of each differing CSV, and the per-trade signal-key counts against A's trading-day index",
+  "b3098_targets": {
+   "verified": true,
+   "evidence": "8 resume boundaries, 0 days skipped, every boundary 'resumed_at_next_unrun_day'; regime_map_coverage 83 of 83 days in BOTH runs; the cube trade_exit_detail.csv (720 rows) and every exit / verdict / regime / pnl-decomposition output IDENTICAL; the 30 trades have identical keys, prices and pnl; leg 1 ended with 0 closed / 5 open trades and leg 2 resumed (attempt 1 HALTED there before the open-book fix)"
+  },
+  "residual_differences": [
+   {
+    "files": [
+     "batch163_stub_results.json",
+     "cache_freshness_checksum_stub.json"
+    ],
+    "cause": "wall-clock values (compute_freshness_banner age_hours; checksum last_validated_iso)",
+    "kind": "benign - the comparator's volatile-key list lacked these two names"
+   },
+   {
+    "files": [
+     "circuit_breaker_log.csv"
+    ],
+    "cause": "both runs wrote the same 2-byte header-less file; the comparator raised EmptyDataError",
+    "kind": "identical - a comparator defect, not a run difference"
+   },
+   {
+    "files": [
+     "sizing_log.csv",
+     "skipped_trades.csv"
+    ],
+    "cause": "process-local logs are NOT checkpointed: A holds 3267 / 2856 bytes of rows, B (split) only the final leg's (empty). skipped_trades.csv is read by occupancy_disclosure in grade_free_levels_candle.py and grade_free_levels_institutional.py (battery step 2)",
+    "kind": "REAL resume gap, pre-existing, not introduced by B3098 - ticketed S6-B3098d"
+   },
+   {
+    "files": [
+     "trade_log.csv",
+     "trade_log_in_sample.csv"
+    ],
+    "cause": "signals_at_entry key SETS differ in 16 of 30 trades: every trade entered at A's trading-day index <= 22 is identical (757-826 keys); from index 24 A holds ~400 keys and B ~820, A a subset of B in 30 of 30 - the demand-pruning warm-up restarts in every leg, and B's ~12-day legs never leave it. Entries, prices, exits and pnl identical",
+    "kind": "REAL, pre-existing, superset-only - ticketed S6-B3098e"
+   },
+   {
+    "files": [
+     "portfolio_metrics.json"
+    ],
+    "cause": "portfolio state is not checkpointed, so B's benchmark / alpha / beta cover only its last leg (benchmark_total_return_pct A 6.8742 vs B -2.0579)",
+    "kind": "the S6-B3096g portfolio half, deferred by the owner to Phase 1B"
+   }
+  ],
+  "summary": "63 of 71 files identical; of the 8 that differ, 3 are harness artifacts (2 wall-clock stubs, 1 comparator error) and 5 are pre-existing resume gaps: 2 un-checkpointed logs, 2 trade logs whose signal snapshots depend on leg structure, 1 portfolio block the owner deferred. No difference touches entries, exits, prices, pnl, the cube or the regime map."
+ }
+}

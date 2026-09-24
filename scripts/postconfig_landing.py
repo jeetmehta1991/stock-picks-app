@@ -258,6 +258,73 @@ def lens_findings(cube: str) -> list[str]:
             if r.get("level") in ("WARN", "FAIL")]
 
 
+def run_integrity_findings(cube_dir: Path) -> list[str]:
+    """S6-B3094c/g (B3098): what the ENGINE disclosed about its own run, as
+    owner-visible findings beside the lens findings.
+
+    resume_boundaries.json (written at every resume): one finding per SKIPPED
+    day - the owner ruled a half-run day is skipped and disclosed, never
+    replayed - plus a count line. A resume that skipped nothing is a clean
+    leg boundary, not a finding. Absent = the run never resumed.
+
+    regime_map_coverage.json (written at run end since B3098): a finding when
+    any processed day has no regime, because regime_flip falls back on it.
+    Its ABSENCE is a finding only where the engine that ran is known to write
+    it - engine_state.json carries last_completed_day (B3098+) - or where the
+    engine is pre-B3098, whose resumed runs carry the S6-B3094c defect. A
+    directory with no engine_state.json was not produced by the engine (a
+    substitute or test cube) and gets no coverage finding (L643: absent
+    feature -> skip, absent bound -> refuse; this is a disclosure feature)."""
+    out: list[str] = []
+    rb = cube_dir / "resume_boundaries.json"
+    if rb.is_file():
+        try:
+            recs = json.loads(rb.read_text(encoding="utf-8")) or []
+        except (OSError, ValueError) as exc:
+            out.append(f"run-integrity: resume_boundaries.json unreadable ({exc!r}) - "
+                       "which days a resume skipped is UNKNOWN")
+        else:
+            skipped = [r for r in recs if r.get("skipped_index") is not None]
+            if skipped:
+                out.append(f"run-integrity: {len(skipped)} of {len(recs)} resume "
+                           "boundaries SKIPPED a day (owner ruling: skipped and "
+                           "disclosed, not replayed)")
+            for r in skipped:
+                out.append(f"run-integrity: SKIPPED day {r.get('skipped_date')} "
+                           f"(index {r.get('skipped_index')}) - {r.get('decision')}; "
+                           f"resumed at {r.get('resume_date')}")
+    es = cube_dir / "engine_state.json"
+    if not es.is_file():
+        return out
+    try:
+        state = json.loads(es.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        out.append(f"run-integrity: engine_state.json unreadable ({exc!r})")
+        return out
+    cov = cube_dir / "regime_map_coverage.json"
+    if not cov.is_file():
+        if "last_completed_day" in state:
+            out.append("run-integrity: regime_map_coverage.json ABSENT from a "
+                       "B3098+ engine run - its writer failed; regime-map "
+                       "coverage is UNMEASURED for this cube")
+        else:
+            out.append("run-integrity: pre-B3098 engine - regime-map coverage "
+                       "not recorded; if this run resumed, its regime_flip cell "
+                       "can carry the S6-B3094c time-stop fallback")
+        return out
+    try:
+        c = json.loads(cov.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        out.append(f"run-integrity: regime_map_coverage.json unreadable ({exc!r})")
+        return out
+    if int(c.get("missing_count") or 0) > 0:
+        out.append(f"run-integrity: regime map GAP - {c.get('missing_count')} of "
+                   f"{c.get('days_processed')} processed days have no regime; "
+                   f"regime_flip falls back on them (sample "
+                   f"{c.get('missing_sample')})")
+    return out
+
+
 def _git(args: list[str], *, timeout: float | None = None) -> subprocess.CompletedProcess:
     return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True,
                           text=True, timeout=timeout)
@@ -461,11 +528,14 @@ def land(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
           flush=True)
     battery_exit = run_battery(cube_dir, step1=step1, step2=step2)
     steps, blocking = ledger_steps(cube)
-    findings = lens_findings(cube)
+    # B3098 (S6-B3094c/g): the engine's own run-integrity disclosures ride the
+    # same list, so they reach the summary, the toast, the ledger event and the
+    # LANDING REPORT without a second channel.
+    findings = lens_findings(cube) + run_integrity_findings(cube_dir)
     report_ok, report_note = render_report()
 
     summary = (f"steps: " + ", ".join(f"{s}={st}" for s, st in sorted(steps.items()))
-               + f"; blocking: {blocking or 'none'}; lens findings: "
+               + f"; blocking: {blocking or 'none'}; findings (lens + run integrity): "
                + (f"{len(findings)} -> " + " | ".join(findings) if findings else "0"))
     git = {"committed": False, "pushed": False, "note": "git disabled"}
     git_allowed = (not no_git and os.environ.get("POSTCONFIG_LANDING_NO_GIT") != "1"
@@ -479,7 +549,7 @@ def land(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
     if not no_notify:
         notify = toast(f"Config landed: {cube}",
                        f"battery exit {battery_exit}; blocking {len(blocking)}; "
-                       f"lens findings {len(findings)}; committed "
+                       f"findings {len(findings)}; committed "
                        f"{git['committed'] or 'no'}, pushed {git['pushed']}")
 
     event = {"cube": cube, "ts": _now(), "fingerprint": fp, "source": source,
@@ -506,7 +576,7 @@ def land(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
           f"{blocking or 'none'}")
     for s, st in sorted(steps.items()):
         print(f"    {st:<5} {s}")
-    print(f"  lens findings: {len(findings)}")
+    print(f"  findings (lens + run integrity): {len(findings)}")
     for f_ in findings:
         print(f"    - {f_}")
     print(f"  report: {report_note}")

@@ -1,0 +1,81 @@
+{
+ "batch": "B3098",
+ "tickets": [
+  "S6-B3094c",
+  "S6-B3094g"
+ ],
+ "purpose": "a split (stopped + resumed) engine run must produce the same outputs as an uninterrupted one",
+ "narrow_by_design": "20 large-cap tickers (verify_universe_artifact exit 0, 20 of 544 R5 tickers), one strategy (three_white_soldiers, production params), window 2024-05-06..2024-09-03",
+ "code": {
+  "head": "a5906c125a63a14edb65e3f0bce5e32d2cbbdde6",
+  "working_tree_changes_under_test": [
+   "M backtest/engine/backtest.py",
+   " M backtest/run_phase1a.py",
+   " M backtest/tests/test_b1076_resume_from_checkpoint.py",
+   " M backtest/tests/test_unit.py",
+   " M scripts/postconfig_landing.py"
+  ]
+ },
+ "started_utc": "2026-09-24T21:35:16Z",
+ "run_a": {
+  "exit": 0,
+  "wall_s": 316.1,
+  "cube": true,
+  "last_progress": [
+   80,
+   83,
+   0.08
+  ],
+  "final_state": {
+   "simulated_day": 82,
+   "cells_completed": 30,
+   "status": "complete",
+   "sim_date": "2024-09-03",
+   "sim_day_index": 82,
+   "tickers_processed": 21,
+   "trades_so_far": 30,
+   "open_trades": 0,
+   "timestamp": "2026-09-24T21:40:16Z",
+   "pid": 18400,
+   "finalized_open_trades": 17,
+   "last_completed_day": 82,
+   "day_in_progress": null
+  }
+ },
+ "run_b_cap_hours": 0.0208,
+ "run_b_cap_basis": "A's loop pace from its last Progress line x total days / 4 (CHOSEN so B spans several legs)",
+ "run_b_legs": [
+  {
+   "leg": 1,
+   "exit": 1,
+   "wall_s": 87.3,
+   "status": "wall_time_kill",
+   "simulated_day": 1,
+   "last_completed_day": 0,
+   "day_in_progress": null,
+   "trades_so_far": 0,
+   "open_trades": 5
+  },
+  {
+   "leg": 2,
+   "exit": 1,
+   "wall_s": 5.1,
+   "status": "wall_time_kill",
+   "simulated_day": 1,
+   "last_completed_day": 0,
+   "day_in_progress": null,
+   "trades_so_far": 0,
+   "open_trades": 5,
+   "note": "NO PROGRESS across a leg - stopping (see its log)"
+  }
+ ],
+ "run_b_resume_boundaries": null,
+ "regime_map_coverage_a": {
+  "days_processed": 83,
+  "days_in_map": 83,
+  "missing_count": 0,
+  "missing_sample": []
+ },
+ "regime_map_coverage_b": null,
+ "verdict": "RUN B DID NOT LAND - see run_b_legs"
+}

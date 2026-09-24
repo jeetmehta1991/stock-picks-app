@@ -1355,15 +1355,20 @@ candidate's own 4-year metrics, and production parameters are one of the configs
 appended universe because `--cube-isolation` bypasses the candidate cap (`backtest.py:2442`). Scoping a
 baseline run once wasted 7.3 h of plan before this was caught.
 
-**THE REGIME MAP IS LOST ACROSS LEGS - a class-level defect (S6-B3094c, added to this runbook at
-B3096 from the ledger; on 2026-09-24 the owner answered "A" - option (a), the engine fix first - then
-"Pause" before any edit, so the fix waits on the owner's word).** The engine keeps its date-to-regime
+**THE REGIME MAP WAS LOST ACROSS LEGS - FIXED AT B3098 for runs on the B3098+ engine (S6-B3094c, added
+to this runbook at B3096 from the ledger; the owner approved fix (a) on 2026-09-24).** At every resume
+the engine now replays the regime classifier over each day the resumed loop skips, through the same
+code (`_rebuild_regime_state`), writes `regime_map_coverage.json` at the run end and records every
+boundary in `resume_boundaries.json`; the landing reports any gap as a finding. MEASURED
+(`output_audit/b3098_resume_equivalence.json`): a run split into 9 legs matched the unsplit run's cube
+row for row, regime map 83 of 83 days in both. WHAT FOLLOWS STILL HOLDS FOR ANY MULTI-LEG CUBE FROM A
+PRE-B3098 ENGINE - one with no `regime_map_coverage.json` beside it. The engine keeps its date-to-regime
 map only for days the running process simulated (`backtest.py:2144-2146`, `_regime_by_date`, filled in
 `_process_day`), and a resumed leg starts without it; `exit_regime_flip` then falls back to its 20-day
 time stop (`regime_flip_max_days_20`) for every entry whose hold window precedes the resume. In a
-multi-leg Step-2 cube, `regime_flip` is therefore measured only for entries in the final leg. **Until
-the fix ships, measure it per cube (`roster_core.measure_degraded_exits`) and never read a multi-leg
-`regime_flip` cell as the exit it is named for.** The measured evidence is in the campaign log.
+multi-leg Step-2 cube from such an engine, `regime_flip` is therefore measured only for entries in the
+final leg. **For those cubes, measure it per cube (`roster_core.measure_degraded_exits`) and never read a
+multi-leg `regime_flip` cell as the exit it is named for.** The measured evidence is in the campaign log.
 
 ### 4.9 THE STEP-2 LAUNCH PROCEDURE - Steps 2.1-2.5 (formerly STEP 3.1-3.4)
 
@@ -1678,7 +1683,7 @@ Each family's grader and free-levels commands are in the campaign log.
 | rank by `ci_lo`, NOT `sharpe` | the higher Sharpe can have a NEGATIVE lower bound (L455) |
 | `exits_effective` vs the LIVE registry | duplicate exits collapse; "best of N" is usually fewer (L461). **Derive N live** (B2140) |
 | PASS rows with a marginal `ci_lo` | 5 of 200 at `ci_lo` +0.08 is a WEAK positive, not a result |
-| any PASS selecting `regime_flip` | **run `measure_degraded_exits(cube)`** - do not judge by date; a multi-leg cube loses the regime map at every resume (added B3096 from the ledger; §4.8, S6-B3094c) |
+| any PASS selecting `regime_flip` | **run `measure_degraded_exits(cube)`** - do not judge by date; a multi-leg cube from a PRE-B3098 engine lost the regime map at every resume (fixed B3098 - a cube carrying `regime_map_coverage.json` with `missing_count` 0 has the full map; §4.8, S6-B3094c) |
 | **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** |
 | **the top-N holds N DISTINCT fire-sets** | **N rows can be a few real candidates restated - one config's top 10 was 4 (L473)** |
 | **measure DEGRADED exits per cube** | `regime_flip` was a time stop in every cube before B2043 made its flip branch live (B1622's fix never ran, found at B1680; the post-B1682 claim was falsified at B2018) - the pre-B3096 row said "every pre-B1622 cube", which those findings made stale; measured, not assumed (L483) |
@@ -2111,8 +2116,9 @@ codebase - its own definition), beside a placeholder that fabricated a "no" answ
 reached the replay workers. The defect record is L526 / S6-B1771; B1622's fix never ran (found at
 B1680), the claim after B1682 was falsified at first measurement (B2018 - "both inputs are in the code"
 was a code-presence claim), and B2043 (S6-B2018a) put the map in the task payload, after which the flip branch went live.
-**It is again degraded in multi-leg cubes,** whose resumed legs start without
-the map (added B3096 from the ledger: S6-B3094c, §4.8). `roster_core.measure_degraded_exits` measures the collapse per cube - **which
+**It was again degraded in multi-leg cubes from pre-B3098 engines,** whose resumed legs started
+without the map (added B3096 from the ledger: S6-B3094c, §4.8; FIXED B3098 - a resume replays the
+classifier over every skipped day). `roster_core.measure_degraded_exits` measures the collapse per cube - **which
 is why the runbook measures degeneracy per cube (#252) instead of maintaining a list: a hand-kept list of
 broken exits goes stale the moment one is repaired, and a stale list nearly retired a working exit at
 B2139.** The per-cube measurement tables are in the campaign log.
@@ -2301,10 +2307,17 @@ one carries a pin.
   positions (logged as a pre-B2387 checkpoint) - inert in an isolation cube, which never mirrors a
   trade into the portfolio (`backtest.py:3379-3380`), and real for a non-isolated run. **A resume RESTORES the open book** - it reads
   `open_trades_checkpoint.csv` and HALTS on a count mismatch rather than continue partial
-  (`backtest.py::_load_resume_checkpoint`, S6-B2213a; L867). Two resume defects are open: the regime
-  map is not restored (S6-B3094c, §4.8) and the in-progress boundary day's screen and entries are
-  skipped (S6-B3094g). (Added at B3096 from the code and the ledger: the pre-B3096 runbook said
-  nothing of restoring the open book, of the portfolio block or of these defects.)
+  (`backtest.py::_load_resume_checkpoint`, S6-B2213a; L867). The two resume defects recorded here at
+  B3096 are FIXED AT B3098: the regime map is rebuilt at every resume (S6-B3094c, §4.8), and a resume
+  starts at the first day that did not finish (S6-B3094g) - a planned leg end is a clean stop at a day
+  boundary, and only the supervisor's hang backstop (cap + 900 s grace; the grace never carries a
+  kill past the 5 h owner cap) can leave a half-run day, which is skipped and recorded in
+  `resume_boundaries.json`. MEASURED: a
+  9-leg split run matched the unsplit run's cube (`output_audit/b3098_resume_equivalence.json`). STILL
+  OPEN, measured by the same run: the sizing and skipped-trade logs are not carried across a resume
+  (S6-B3098d) and a trade's persisted signal snapshot depends on where the legs fell (S6-B3098e).
+  (Added at B3096 from the code and the ledger: the pre-B3096 runbook said nothing of restoring the
+  open book, of the portfolio block or of these defects.)
 - **B2167 caveat on historical data:** every `engine_state.json` written before B2167 records
   `open_trades: 0` and `tickers_processed: 0` - two getattr names were never assigned (the PIVOT #34
   phantom class) - so M6 boundary-carryover numbers (called boundary drops before S6-B2404 renamed the
@@ -2364,7 +2377,7 @@ are never started to "keep the machine busy" - an unexplained result stops the s
 | run completes, no cube | post-processing died; the percentage lied | L410 |
 | `MemoryError` in cube replay | cube too large; use the subset filter | B1552 |
 | pyramid OOMs mid-run | an engine run holds the memory; commit BEFORE launching | L425, L865 |
-| a multi-leg `regime_flip` cell looks like an edge | the resumed legs lacked the regime map | S6-B3094c (row added B3096) |
+| a multi-leg `regime_flip` cell looks like an edge | a PRE-B3098 cube's resumed legs lacked the regime map (fixed B3098; check `regime_map_coverage.json` beside the cube) | S6-B3094c (row added B3096, updated B3098) |
 
 ### 8.9 MONITOR ARMING - MANDATORY, MECHANICALLY ENFORCED (CHECKLIST #185/#186/#320; formerly §10.4)
 

@@ -56,6 +56,22 @@ from backtest.data.fetcher import days_to_next_earnings
 logger = logging.getLogger(__name__)
 _OFFICER_MOD_WARNED = False  # B2120 one-shot
 
+# S6-B3094g (B3098, owner re-ruling 2026-09-24 'Fix it'): a PLANNED leg end is
+# the in-loop cap check at the next day boundary; the supervisor thread waits
+# this grace past the leg cap and hard-kills only a day that hangs. A CHOSEN
+# value, not a measurement: ~18 day-lengths at c14's Step-2 pace (DERIVED
+# 4.5 h / 329 sim-days = ~49 s/day), kept small so a hang is still bounded.
+SUPERVISOR_GRACE_S = 900.0
+# The grace never lifts the supervisor above the owner's local hard cap
+# (ruling 2026-08-24). ONE DEFINITION lives in scripts/prelaunch_gate.py
+# (OWNER_LOCAL_CAP_HOURS); nothing under backtest/ imports prelaunch_gate, so
+# this copy is pinned equal to it by
+# test_b3098_supervisor_ceiling_equals_owner_cap. (The engine DOES import one
+# scripts/ module - signal_loader -> institutional_persistence_consumer ->
+# build_institutional_persistence_precompute - so 'the engine does not import
+# scripts/', this comment's first wording, was false.)
+SUPERVISOR_HARD_CEILING_H = 5.0
+
 
 # Council 233 Bug A fix (2026-07-02): module-level wrapper for pool.imap_unordered.
 # Previously defined as closure inside BacktestEngine.save_all_outputs which
@@ -214,6 +230,12 @@ class BacktestEngine:
         self.resume_from_checkpoint = resume_from_checkpoint
         self.cube_isolation = cube_isolation
         self._resume_sim_day = -1  # set by _load_resume_checkpoint when active
+        # S6-B3094g (B3098): what a checkpoint must carry for a resume to know
+        # whether its boundary day ran. _last_completed_day is set AFTER a day
+        # finishes; _day_in_progress only while _process_day is running.
+        self._last_completed_day = -1
+        self._day_in_progress = None
+        self.supervisor_grace_s = SUPERVISOR_GRACE_S
         self._resumed_closed_trades_count = 0  # idempotency check
         self.no_portfolio_cap = bool(no_portfolio_cap)
         self.no_dd_halt = bool(no_dd_halt)
@@ -548,7 +570,9 @@ class BacktestEngine:
 
         Called from ALL THREE checkpoint sites (periodic, wall-time kill, final
         flush) rather than one - L620/B2092: a payload's contract binds every
-        writer, and a fix through one path proves one path. Uses the
+        writer, and a fix through one path proves one path. (B3098: the
+        wall-time kill called it only when a trade had CLOSED - true of 2 of 3
+        sites until then; all three now call it unconditionally.) Uses the
         signals_serde contract for dict/list fields, matching the periodic
         closed-trade writer's post-B1260 form rather than the older raw vars().
         Atomic via .tmp + replace, matching B1046 F-11.
@@ -838,6 +862,23 @@ class BacktestEngine:
         return gap_s - interval_s
 
     @staticmethod
+    def supervisor_kill_cap(max_run_hours, grace_s, ceiling_h=None):
+        """S6-B3094g (B3098): the SUPERVISOR's hard-kill cap. The in-loop check
+        (same kill_decision, plain cap) stops a leg cleanly at the next day
+        boundary; the supervisor waits cap + grace, never above the owner's local
+        hard cap - min(cap + grace, max(cap, ceiling)). Boundary matrix, B3098:
+        cap 4.5 h, grace 900 s -> 4.75 h; cap 5.0 h -> 5.0 h (no grace left under
+        the ceiling, so the supervisor races the loop exactly as before B3098);
+        cap 6.0 h -> 6.0 h (a cap above the ceiling gets no grace); None -> None."""
+        if max_run_hours is None:
+            return None
+        cap = float(max_run_hours)
+        ceiling = (SUPERVISOR_HARD_CEILING_H if ceiling_h is None
+                   else float(ceiling_h))
+        grace_h = max(0.0, float(grace_s or 0.0)) / 3600.0
+        return min(cap + grace_h, max(cap, ceiling))
+
+    @staticmethod
     def kill_decision(elapsed_h, sleep_credit_h, max_run_hours):
         """S6-B2491/B2502b: what the run-hours cap measures, decided ONCE.
 
@@ -961,7 +1002,24 @@ class BacktestEngine:
                            if self._run_start_time else None)
                     _sh = getattr(self, "_suspended_seconds", 0.0) / 3600.0
                     _cr_h = getattr(self, "_sleep_credit_seconds", 0.0) / 3600.0
-                    _why = self.kill_decision(_el, _cr_h, self.max_run_hours)
+                    # S6-B3094g (B3098, owner 'Fix it'): a PLANNED leg end is the
+                    # in-loop check at the next day boundary - a clean checkpoint
+                    # whose day never started. The supervisor waits a grace past
+                    # the cap and hard-kills only a day that hangs (backstop).
+                    if (self.kill_decision(_el, _cr_h, self.max_run_hours)
+                            and not getattr(self, "_cap_reached_logged", False)):
+                        self._cap_reached_logged = True
+                        logger.warning(
+                            "S6-B3094g SUPERVISOR: leg cap %sh reached - the day "
+                            "loop stops at its next day boundary; hard kill only at "
+                            "%sh (cap + grace, never above %sh) as the hang backstop",
+                            self.max_run_hours, self.supervisor_kill_cap(
+                                self.max_run_hours, getattr(
+                                    self, "supervisor_grace_s", SUPERVISOR_GRACE_S)),
+                            SUPERVISOR_HARD_CEILING_H)
+                    _why = self.kill_decision(_el, _cr_h, self.supervisor_kill_cap(
+                        self.max_run_hours,
+                        getattr(self, "supervisor_grace_s", SUPERVISOR_GRACE_S)))
                     if _why:
                         logger.error(
                             "B2148 SUPERVISOR KILL [%s]: elapsed=%.2fh "
@@ -1037,6 +1095,16 @@ class BacktestEngine:
                     logger.error("S6-B2387: portfolio block NOT serialised (%r) - "
                                  "the rest of the checkpoint still writes, but this "
                                  "resume will restart portfolio accounting", _pexc)
+            # S6-B3094g (B3098): this runs on the SUPERVISOR thread while the day
+            # loop may still be moving. Read day_in_progress BEFORE
+            # last_completed_day - the loop sets last_completed_day first and only
+            # then clears day_in_progress, so this order never pairs 'nothing in
+            # progress' with an index older than the day that just finished.
+            # Residual race, disclosed: trades closed AFTER this snapshot can reach
+            # the CSV below; the resume's trades_so_far == CSV-rows contract HALTs
+            # on that (fail closed), and this path now fires only on a hang.
+            _b3098_dip = getattr(self, "_day_in_progress", None)
+            _b3098_lc = getattr(self, "_last_completed_day", -1)
             state = {
                 "simulated_day": getattr(self, "_last_sim_day_index", -1),
                 "cells_completed": len(self.closed_trades),
@@ -1053,6 +1121,8 @@ class BacktestEngine:
                 # book. Position carries `shares`, so the Portfolio can serialise
                 # itself - no OpenTrade schema change is needed.
                 "portfolio": _pf_block,
+                "last_completed_day": _b3098_lc,
+                "day_in_progress": _b3098_dip,
             }
             d = Path(self.output_dir)
             tmp, final = d / "engine_state.json.tmp", d / "engine_state.json"
@@ -1075,9 +1145,10 @@ class BacktestEngine:
         trade_log_checkpoint.csv from self.resume_from_checkpoint dir.
 
         Sets:
-          self._resume_sim_day = engine_state["simulated_day"] - 1 (so
-            main loop skips iterations i <= resume_sim_day; resumes at
-            resume_sim_day + 1 which == simulated_day in the prior run)
+          self._resume_sim_day = resume_plan(state)["resume_index"] - 1, so
+            the main loop skips i <= _resume_sim_day and resumes at the first
+            day that did not finish (S6-B3094g, B3098 - this docstring stated
+            that intent while the code skipped one day more)
           self._resumed_closed_trades_count = engine_state["trades_so_far"]
 
         Per CHECKLIST #124 + #128 schema-contract: HALT on:
@@ -1087,9 +1158,10 @@ class BacktestEngine:
           - trade_log_checkpoint.csv row count != trades_so_far (B1062
             schema-contract per PIVOT #37 lineage)
 
-        Open trades at interruption point are DROPPED with WARNING
-        (acknowledged caveat; B1075 had 0 open at interruption per
-        engine_state.json).
+        Open trades at the boundary are RESTORED from
+        open_trades_checkpoint.csv, or the resume HALTS (S6-B2213a). This
+        docstring said DROPPED with WARNING until B3098 - a caveat that outlived
+        the fix that voided it (L867).
         """
         import json
         from pathlib import Path
@@ -1184,12 +1256,24 @@ class BacktestEngine:
                 )
             self.closed_trades = []
         # Set resume marker; main loop skips i <= self._resume_sim_day.
-        # Prior run last completed simulated_day == N; resume at N+1.
-        # Engine writes simulated_day = self._last_sim_day_index (0-indexed
-        # iteration count). To skip the FIRST N iterations: skip i < N.
-        # Equivalently: continue if i <= self._resume_sim_day where
-        # self._resume_sim_day = N - 1.
-        self._resume_sim_day = resume_sim_day  # skip i <= this index
+        # S6-B3094g (B3098, owner re-ruling 2026-09-24 'Fix it'): every writer
+        # records simulated_day = N BEFORE day N runs, so day N never ran - yet
+        # this line used to set _resume_sim_day = N and skip it, against the
+        # N - 1 intent this comment block stated. resume_plan() now decides from
+        # the checkpoint itself; a skipped day is disclosed in
+        # resume_boundaries.json by _record_resume_boundary().
+        _plan = self.resume_plan(state)
+        self._resume_plan = dict(
+            _plan, checkpoint_status=state.get("status"),
+            checkpoint_simulated_day=resume_sim_day,
+            checkpoint_sim_date=state.get("sim_date"),
+            last_completed_day=state.get("last_completed_day"),
+            day_in_progress=state.get("day_in_progress"),
+            trades_so_far=trades_so_far,
+            open_trades=state.get("open_trades"))
+        self._resume_sim_day = int(_plan["resume_index"]) - 1  # skip i <= this index
+        self._last_completed_day = self._resume_sim_day
+        self._day_in_progress = None
         self._resumed_closed_trades_count = trades_so_far
         # S6-B2213a: RESTORE the open book. Pre-B2213a this logged
         # "open-trades DROPPED" and continued with a fresh portfolio - a
@@ -1354,10 +1438,14 @@ class BacktestEngine:
         # Sub-B F-13.1 + S5-B1073-RESUME-FROM-CHECKPOINT ticket. Loaded
         # state: sim_day_index + closed_trades_count from prior interrupted
         # run. Main loop skips iterations where i <= self._resume_sim_day.
-        # Open trades at interruption point are DROPPED (acknowledged
-        # caveat; documented in CLI help). HALT on schema mismatch.
+        # Open trades are RESTORED or the resume HALTS (S6-B2213a; this comment
+        # said DROPPED until B3098). HALT on schema mismatch.
         if self.resume_from_checkpoint:
             self._load_resume_checkpoint()
+            # S6-B3094c + S6-B3094g (B3098): rebuild the regime state for every
+            # index the loop is about to skip, then disclose the boundary.
+            _replay = self._rebuild_regime_state(trading_days, self._resume_sim_day)
+            self._record_resume_boundary(trading_days, _replay)
 
         # B2148: arm the out-of-loop supervisor BEFORE the
         # first iteration, so a pathological day 0 is still bounded.
@@ -1459,13 +1547,21 @@ class BacktestEngine:
                             self.output_dir / "trade_log_checkpoint.csv",
                             index=False,
                         )
-                        self._flush_open_trades_checkpoint(
-                            self.output_dir)   # S6-B2213a
                         logger.error(
                             "Batch 394 final-checkpoint flushed: %d "
                             "closed trades to trade_log_checkpoint.csv",
                             len(self.closed_trades),
                         )
+                    # S6-B3094g (B3098): the OPEN book is flushed whatever the
+                    # closed count. It sat inside `if self.closed_trades:`, so a
+                    # leg stopped before its first closed trade left a book the
+                    # resume refused - MEASURED on the B3098 verification run
+                    # (0 closed, 5 open at the first boundary, leg 2 HALTED).
+                    # B3098 made this the PLANNED leg-end path, so the guard sat
+                    # on the main path; the periodic writer and the supervisor
+                    # already flush unconditionally (3 of 3 writers now).
+                    self._flush_open_trades_checkpoint(
+                        self.output_dir)   # S6-B2213a
                 except Exception as _exc:
                     logger.error(
                         "Batch 394 final-checkpoint flush failed: %s",
@@ -1501,6 +1597,8 @@ class BacktestEngine:
                         "timestamp": _ktime.strftime(
                             "%Y-%m-%dT%H:%M:%SZ", _ktime.gmtime()),
                         "pid": _kos.getpid(),
+                        "last_completed_day": getattr(self, "_last_completed_day", -1),
+                        "day_in_progress": getattr(self, "_day_in_progress", None),
                     }
                     _kpath = self.output_dir / "engine_state.json"
                     _ktmp = self.output_dir / "engine_state.json.tmp"
@@ -1658,6 +1756,8 @@ class BacktestEngine:
                         "open_trades": _open,
                         "timestamp": _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime()),
                         "pid": _os.getpid(),
+                        "last_completed_day": getattr(self, "_last_completed_day", -1),
+                        "day_in_progress": getattr(self, "_day_in_progress", None),
                     }
                     state_path = self.output_dir / "engine_state.json"
                     state_tmp = self.output_dir / "engine_state.json.tmp"
@@ -1699,10 +1799,18 @@ class BacktestEngine:
                 )
                 if _pair_ok and _time_trigger:
                     self._last_checkpoint_time = _now_chkpt
+            self._day_in_progress = i          # S6-B3094g (B3098)
             try:
                 self._process_day(as_of)
             except Exception as exc:
                 logger.error("Day %s failed: %s", as_of, exc, exc_info=True)
+            # S6-B3094g: a failed day is still a FINISHED day - the loop moves on,
+            # and so must a resume. ORDER IS LOAD-BEARING: set last_completed_day
+            # BEFORE clearing day_in_progress; the supervisor thread reads the two
+            # in the opposite order (_emit_kill_state), which is what keeps its
+            # cross-thread snapshot from pairing a finished day with an older one.
+            self._last_completed_day = i
+            self._day_in_progress = None
 
         # BUG-29 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 8 2026-05-10:
         # Force-close any remaining open trades at last available close price so
@@ -1710,6 +1818,27 @@ class BacktestEngine:
         # results (silently capped by trailing stop not yet triggered) and open
         # losers disappeared entirely. Both biases removed by end-of-backtest
         # finalization at mark-to-market exit.
+        # S6-B3094c (B3098): a date the run processed but the regime map lacks
+        # made regime_flip fall back SILENTLY (75 of 98 trades on c14's resumed
+        # Step-1 cube). Record the coverage; the landing reports any gap.
+        try:
+            import json as _cj
+            _lcd = getattr(self, "_last_completed_day", -1)
+            _done = [d for ix, d in enumerate(trading_days) if ix <= _lcd]
+            _rmap = getattr(self, "_regime_by_date", {}) or {}
+            _miss = [str(d) for d in _done if d not in _rmap]
+            (Path(self.output_dir) / "regime_map_coverage.json").write_text(
+                _cj.dumps({"days_processed": len(_done),
+                           "days_in_map": len(_rmap),
+                           "missing_count": len(_miss),
+                           "missing_sample": _miss[:10]}, indent=1),
+                encoding="utf-8")
+            if _miss:
+                logger.error("S6-B3094c REGIME MAP GAP: %d of %d processed days "
+                             "have no regime - regime_flip falls back on them",
+                             len(_miss), len(_done))
+        except Exception as _cexc:
+            logger.error("S6-B3094c regime coverage NOT recorded: %r", _cexc)
         n_finalized = self._finalize_open_trades()
 
         # DEC-149 RESOLVED-IMPLEMENTED Batch 79 2026-05-12 owner-mandated
@@ -1770,6 +1899,8 @@ class BacktestEngine:
                 "timestamp": _time_b1070.strftime("%Y-%m-%dT%H:%M:%SZ", _time_b1070.gmtime()),
                 "pid": _os_b1070.getpid(),
                 "finalized_open_trades": int(n_finalized),
+                "last_completed_day": getattr(self, "_last_completed_day", -1),
+                "day_in_progress": getattr(self, "_day_in_progress", None),
             }
             _state_tmp.write_text(_json_b1070.dumps(_final_state, indent=2))
             _os_b1070.replace(_state_tmp, _state_path)
@@ -1984,59 +2115,14 @@ class BacktestEngine:
             d += timedelta(days=1)
         return days
 
-    def _process_day(self, as_of: date):
-        # B1057 C-instrumentation (PIVOT #33 forensics enabler):
-        # Phase-timing logs for per-day wall-clock decomposition. Smoke
-        # v2.5d engine.log forensics revealed ~92% of per-day cost is
-        # in unaccounted silent gaps. These markers let next forensics
-        # decompose where the gap actually lives. Per Council 153/154 +
-        # CHECKLIST #126 evidence-artifact rule. INFO-level so visible
-        # without log-level flags.
-        import time as _b1057_time
-        _b1057_t_start = _b1057_time.time()
-        logger.info("PHASE_TIMING day=%s start", as_of)
-        # -- 1. Slice OHLCV to point-in-time using year-appropriate liquid universe --
-        liquid_this_year = self._get_liquid_universe_for_date(as_of)
-        ohlcv_pit = {}
-        for t in liquid_this_year:
-            df = self.ohlcv_dict.get(t)
-            if df is None:
-                continue
-            sliced = df[df.index.date <= as_of]
-            if len(sliced) >= 30:
-                ohlcv_pit[t] = sliced
-        _b1057_t_after_pit = _b1057_time.time()
-        logger.info("PHASE_TIMING day=%s ohlcv_pit_built dur=%.3fs tickers=%d",
-                    as_of, _b1057_t_after_pit - _b1057_t_start, len(ohlcv_pit))
-
-        # -- 1b. BUG-287 fix (Batch 308 2026-05-24): include OHLCV for any
-        # ticker with an OPEN trade, even if it dropped out of the annual
-        # liquid set. Previously, when a ticker fell below the liquidity
-        # floor (e.g., price < $5 mid-window), it was silently excluded
-        # from `ohlcv_pit` -> ticker_bars -> process_day_exits, so the
-        # exit-check loop never gave the trade a chance to close.
-        #
-        # Phase 1A-beta 2026-05-24 surfaced 6 stuck shorts on RIOT / HOUS /
-        # UWMC / WW / CUBI / CURI held 371-1239 days while underlyings
-        # rallied 2-5x against the position. Five of six were closed only
-        # when the year-rollover annual re-check re-added them to liquid
-        # set; CUBI/CURI never re-qualified and sat until end-of-backtest.
-        # Combined drag: -1,347 pp on Phase 1A-beta aggregate.
-        #
-        # Fix scope: exit-check only. New entries are still gated by
-        # liquid_this_year (we don't want to enter illiquid positions);
-        # existing entries get exit-checked regardless of current liquidity.
-        for trade in self.open_trades:
-            if trade.ticker in ohlcv_pit:
-                continue
-            df = self.ohlcv_dict.get(trade.ticker)
-            if df is None:
-                continue
-            sliced = df[df.index.date <= as_of]
-            if len(sliced) >= 1:
-                ohlcv_pit[trade.ticker] = sliced
-
-        # -- 2. Regime classification  -  direction gating only, no sizing --
+    def _classify_and_record_regime(self, as_of, spy_close):
+        """S6-B3094c (B3098): one day's regime classification and the four
+        state fields it writes (_prev_regime, _regime_smoothed, _regime_history,
+        _regime_by_date). Moved VERBATIM out of _process_day so the live loop and
+        the resume replay run the same code. Returns (regime_ctx, macro, vix,
+        spy_ema) - the only locals of this block _process_day reads afterwards
+        (B3098 AST probe: macro, vix, spy_ema, regime_ctx, plus spy_close which
+        stays in the caller; Path is never read after the block)."""
         # DEC-317 + DEC-388 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 43
         # engine wiring 2026-05-11: hysteresis active. Pass smoothed VIX (5d
         # SMA) + prev_regime so regime doesn't flip on single noisy prints.
@@ -2044,7 +2130,6 @@ class BacktestEngine:
         # back to raw VIX with no hysteresis (legacy behavior).
         macro     = macro_snapshot(as_of)
         vix       = macro.get("vix_value")
-        spy_close = float(ohlcv_pit["SPY"]["close"].iloc[-1]) if "SPY" in ohlcv_pit else None
         spy_ema   = get_spy_ema200(self.spy_df, as_of) if self.spy_df is not None else None
         # Compute smoothed VIX from pre-loaded series if available
         vix_smoothed = None
@@ -2144,6 +2229,191 @@ class BacktestEngine:
         if not hasattr(self, "_regime_by_date"):
             self._regime_by_date = {}
         self._regime_by_date[as_of] = regime   # _process_day(self, as_of)
+        return regime_ctx, macro, vix, spy_ema
+
+    def _spy_close_for_regime_replay(self, as_of):
+        """The SPY close _process_day passes for as_of, by the ohlcv_pit rule:
+        SPY in that year's liquid universe with >= 30 bars up to as_of. The live
+        path can ALSO admit a ticker outside the liquid set when an OPEN trade
+        holds it (BUG-287, >= 1 bar); the replay carries no trade state, so the
+        two can differ only on a day SPY is held while outside its year's liquid
+        set. That case is not ruled out by construction - the B3098 equivalence
+        run compares a resumed run's regime map against an uninterrupted one."""
+        if "SPY" not in self._get_liquid_universe_for_date(as_of):
+            return None
+        df = self.ohlcv_dict.get("SPY")
+        if df is None:
+            return None
+        sliced = df[df.index.date <= as_of]
+        if len(sliced) < 30:
+            return None
+        return float(sliced["close"].iloc[-1])
+
+    def _rebuild_regime_state(self, trading_days, upto_index) -> dict:
+        """S6-B3094c (B3098, owner-approved fix (a)): a resumed leg used to start
+        with all four regime fields EMPTY - every pre-resume date missing from the
+        map (regime_flip then fell back to a 20-day time stop: 75 of 98 trades on
+        c14's resumed Step-1 cube) and the first resumed day classified with no
+        hysteresis. Regime is DERIVED data - a function of each date's market
+        inputs plus the previous day's label - so it is recomputed, never stored:
+        replay the classifier over trading_days[0..upto_index], every index the
+        resumed loop skips, through the live method. MEASURED cost ~62 ms/day
+        (B3098 probe), ~1 min for a resume at day 1,000."""
+        self._prev_regime = None
+        self._regime_smoothed = None
+        self._regime_history = []
+        self._regime_by_date = {}
+        n = 0
+        for as_of in list(trading_days)[: max(0, int(upto_index) + 1)]:
+            self._classify_and_record_regime(
+                as_of, self._spy_close_for_regime_replay(as_of))
+            n += 1
+        return {"replayed_days": n, "map_size": len(self._regime_by_date),
+                "last_regime": self._prev_regime,
+                "last_regime_smoothed": self._regime_smoothed}
+
+    @staticmethod
+    def resume_plan(state: dict) -> dict:
+        """S6-B3094g (B3098, owner re-ruling 2026-09-24 'Fix it'): where a resumed
+        leg starts. Every writer records simulated_day = i BEFORE day i runs (the
+        periodic checkpoint and the in-loop kill at the top of iteration i; the
+        supervisor from _last_sim_day_index, set there too), yet the old resume
+        skipped i <= simulated_day - so every resume skipped a day that NEVER RAN.
+        B3098 checkpoints carry last_completed_day and day_in_progress: resume at
+        the first day that did not finish, and skip it only if it was HALF-RUN (a
+        hard-kill backstop mid-day), which the owner ruled is skipped and disclosed,
+        never replayed. Pre-B3098 checkpoints: the periodic and in-loop writers
+        never started their day; a supervisor checkpoint cannot say whether its
+        day ran, half-ran or never started, so it keeps the old skip and is
+        disclosed as unknown."""
+        sim = int(state.get("simulated_day", 0))
+        status = str(state.get("status") or "")
+        lc = state.get("last_completed_day")
+        dip = state.get("day_in_progress")
+        if lc is not None:
+            nxt = int(lc) + 1
+            if dip is not None and int(dip) == nxt:
+                return {"resume_index": nxt + 1, "skipped_index": nxt,
+                        "decision": "skipped_half_run_day"}
+            return {"resume_index": nxt, "skipped_index": None,
+                    "decision": "resumed_at_next_unrun_day"}
+        if status.startswith("supervisor_"):
+            return {"resume_index": sim + 1, "skipped_index": sim,
+                    "decision": "skipped_day_unknown_pre_b3098"}
+        return {"resume_index": sim, "skipped_index": None,
+                "decision": "resumed_at_never_run_day_pre_b3098"}
+
+    def _record_resume_boundary(self, trading_days, replay: dict) -> dict:
+        """S6-B3094g (B3098): DISCLOSE every resume boundary - appended to
+        <output_dir>/resume_boundaries.json, which the landing turns into a
+        finding in the owner's LANDING REPORT (postconfig_landing
+        .run_integrity_findings). A skipped half-run day is logged at WARNING.
+        Never raises: a failed record is logged at ERROR."""
+        import json as _rj
+        import os as _ro
+        import time as _rt
+        plan = dict(getattr(self, "_resume_plan", {}) or {})
+        days = list(trading_days)
+
+        def _d(ix):
+            if ix is None or not (0 <= int(ix) < len(days)):
+                return None
+            return str(days[int(ix)])
+        rec = dict(plan,
+                   resumed_at_utc=_rt.strftime("%Y-%m-%dT%H:%M:%SZ", _rt.gmtime()),
+                   resume_date=_d(plan.get("resume_index")),
+                   skipped_date=_d(plan.get("skipped_index")),
+                   regime_replay=replay)
+        try:
+            p = Path(self.output_dir) / "resume_boundaries.json"
+            prior = []
+            if p.exists():
+                try:
+                    prior = _rj.loads(p.read_text(encoding="utf-8")) or []
+                except ValueError:
+                    logger.error("S6-B3094g resume_boundaries.json unreadable - "
+                                 "starting a new list; earlier boundaries are "
+                                 "in the prior legs' logs")
+                    prior = []
+            prior.append(rec)
+            tmp = p.with_suffix(".json.tmp")
+            tmp.write_text(_rj.dumps(prior, indent=1, default=str),
+                           encoding="utf-8")
+            _ro.replace(tmp, p)
+        except Exception as _exc:
+            logger.error("S6-B3094g resume boundary NOT recorded: %r", _exc)
+        if rec.get("skipped_index") is not None:
+            logger.warning("S6-B3094g RESUME: day %s (index %s) SKIPPED - %s; not "
+                           "replayed (owner ruling), disclosed in "
+                           "resume_boundaries.json", rec.get("skipped_date"),
+                           rec.get("skipped_index"), rec.get("decision"))
+        logger.info("S6-B3094c/g RESUME: starts at index %s (%s), decision %s; "
+                    "regime replayed over %s days (map %s, last regime %s)",
+                    rec.get("resume_index"), rec.get("resume_date"),
+                    rec.get("decision"), replay.get("replayed_days"),
+                    replay.get("map_size"), replay.get("last_regime"))
+        return rec
+
+    def _process_day(self, as_of: date):
+        # B1057 C-instrumentation (PIVOT #33 forensics enabler):
+        # Phase-timing logs for per-day wall-clock decomposition. Smoke
+        # v2.5d engine.log forensics revealed ~92% of per-day cost is
+        # in unaccounted silent gaps. These markers let next forensics
+        # decompose where the gap actually lives. Per Council 153/154 +
+        # CHECKLIST #126 evidence-artifact rule. INFO-level so visible
+        # without log-level flags.
+        import time as _b1057_time
+        _b1057_t_start = _b1057_time.time()
+        logger.info("PHASE_TIMING day=%s start", as_of)
+        # -- 1. Slice OHLCV to point-in-time using year-appropriate liquid universe --
+        liquid_this_year = self._get_liquid_universe_for_date(as_of)
+        ohlcv_pit = {}
+        for t in liquid_this_year:
+            df = self.ohlcv_dict.get(t)
+            if df is None:
+                continue
+            sliced = df[df.index.date <= as_of]
+            if len(sliced) >= 30:
+                ohlcv_pit[t] = sliced
+        _b1057_t_after_pit = _b1057_time.time()
+        logger.info("PHASE_TIMING day=%s ohlcv_pit_built dur=%.3fs tickers=%d",
+                    as_of, _b1057_t_after_pit - _b1057_t_start, len(ohlcv_pit))
+
+        # -- 1b. BUG-287 fix (Batch 308 2026-05-24): include OHLCV for any
+        # ticker with an OPEN trade, even if it dropped out of the annual
+        # liquid set. Previously, when a ticker fell below the liquidity
+        # floor (e.g., price < $5 mid-window), it was silently excluded
+        # from `ohlcv_pit` -> ticker_bars -> process_day_exits, so the
+        # exit-check loop never gave the trade a chance to close.
+        #
+        # Phase 1A-beta 2026-05-24 surfaced 6 stuck shorts on RIOT / HOUS /
+        # UWMC / WW / CUBI / CURI held 371-1239 days while underlyings
+        # rallied 2-5x against the position. Five of six were closed only
+        # when the year-rollover annual re-check re-added them to liquid
+        # set; CUBI/CURI never re-qualified and sat until end-of-backtest.
+        # Combined drag: -1,347 pp on Phase 1A-beta aggregate.
+        #
+        # Fix scope: exit-check only. New entries are still gated by
+        # liquid_this_year (we don't want to enter illiquid positions);
+        # existing entries get exit-checked regardless of current liquidity.
+        for trade in self.open_trades:
+            if trade.ticker in ohlcv_pit:
+                continue
+            df = self.ohlcv_dict.get(trade.ticker)
+            if df is None:
+                continue
+            sliced = df[df.index.date <= as_of]
+            if len(sliced) >= 1:
+                ohlcv_pit[trade.ticker] = sliced
+
+        # -- 2. Regime classification  -  direction gating only, no sizing --
+        # S6-B3094c (B3098): the classification and the four state fields it
+        # writes live in _classify_and_record_regime, so a resumed leg REPLAYS it
+        # for every day it skips (_rebuild_regime_state) through the SAME code.
+        spy_close = float(ohlcv_pit["SPY"]["close"].iloc[-1]) if "SPY" in ohlcv_pit else None
+        regime_ctx, macro, vix, spy_ema = self._classify_and_record_regime(
+            as_of, spy_close)
+        regime = regime_ctx["regime"]
         # DEC-106 RESOLVED-IMPLEMENTED Batch 80 2026-05-12 owner-mandated
         # wiring: multi-input regime scorecard (Phase A telemetry). Uses
         # whatever inputs are currently available (VIX + SPY trend + AAII
