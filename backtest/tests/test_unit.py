@@ -43900,3 +43900,43 @@ def test_b3091_commit_free_reads_commit_in_process():
     assert 'ctypes' in mods, mods
     assert not (mods & {'subprocess', 'multiprocessing', 'os'}), (
         'commit_free must not spawn a process - that is the failure it avoids: %r' % mods)
+
+
+def test_b3093_drift_check_refuses_any_commit_not_only_engine_commits(tmp_path):
+    """S6-B3093 / L866: the SHA half of drift_check compares SHAS, never
+    content. MEASURED 2026-09-24: the candle c14 Step-2 wave (allow_engine_
+    drift false) ran leg 1 to its cap at sim-day 329, then leg 2 was REFUSED
+    because four queue-only commits moved HEAD - `git diff` over backtest/
+    between the two shas was empty. Runbook 3.2 now says so. If the check is
+    ever made content-aware (S6-B3093a), THIS PIN MUST CHANGE WITH THAT
+    BULLET - a doc that describes the old comparison would mislead the next
+    spec author exactly as the gate's name misled this one."""
+    import importlib.util
+    import json as _json
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "launch_sweep_b3093", root / "scripts" / "launch_sweep.py")
+    ls = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ls)
+
+    calls = []
+
+    def fake_git(*args):
+        calls.append(args[0])
+        return {"rev-parse": "a" * 40, "status": ""}.get(args[0], "")
+
+    ls._git = fake_git
+    m = tmp_path / "m.json"
+    m.write_text(_json.dumps({"frozen_sha": "b" * 40}), encoding="utf-8")
+    reasons = ls.drift_check(str(m))
+    assert any("frozen_sha" in r for r in reasons), reasons
+    # content-blind: a clean tree and an unconsulted diff still refuse
+    assert "diff" not in calls and "log" not in calls, calls
+
+    body = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    sec = body.split("### STEP 3.2", 1)[1].split("### STEP 3.3", 1)[0]
+    assert '"allow_engine_drift": true' in sec, "template lost its value"
+    assert "S6-B3093" in sec and "ANY COMMIT" in sec, (
+        "runbook 3.2 no longer explains what drift_check refuses")

@@ -4011,6 +4011,8 @@ UNVERIFIED claim stated as fact is a fabrication. This item exists because the r
 pointed at data and I read the scope narrowly. **A rule whose examples share one shape gets applied
 to that shape only.**
 
+**INSTANCE - A GATE NAMED AS A MITIGATION (B3093 / L866).** A manifest risk read *engine code changes mid-run* with the gate *the launcher refuses on drift*. The function behind it, `drift_check`, compares HEAD's sha with `frozen_sha`, so it refuses ANY commit, and four queue-only commits refused leg 2 of a 10-leg wave after 4.5 h. **What a gate refuses is a capability claim about the gate** - open the function and write what it compares before citing it, and check the recovery path through every gate it crosses.
+
 ### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
 
 **Owner directive: prose alone will not suffice - a rule earns its place only when something

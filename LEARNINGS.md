@@ -23396,3 +23396,35 @@ there is no window.
 by `test_b3091_pyramid_sees_an_engine_the_chain_log_never_names` - including
 the exact defect case, a fresh heartbeat with no chain-log entry. It is a
 DISCLOSURE, not a refusal: L857(c).
+
+### L866 - A GATE CITED BY ITS NAME IS A CLAIM ABOUT WHAT IT COMPARES, AND THE RECOVERY I QUOTED RAN THROUGH IT (B3093, 2026-09-24)
+
+**MEASURED.** The candle c14 Step-2 manifest listed the risk *"engine code
+changes mid-run would split the comparison"* with the gate
+*"allow_engine_drift=false - the launcher refuses on drift"*. I never opened
+`drift_check`. It compares HEAD's sha with `frozen_sha` and nothing else, so it
+refuses ANY commit. I then made four queue-only commits during the wave
+(launch record plus monitor firings 1-3). Leg 1 ran to its 4.5 h cap at
+sim-day 329 (04:22 local); leg 2 was REFUSED; `git diff` over `backtest/`
+between the two shas was empty. The machine sat idle from that moment.
+
+**The recovery claim was false as configured.** At firing 2 I told the owner
+an engine crash would cost at most about 30 minutes, because of the
+checkpoint cadence and run_wave's resume. Every resume leg passes through
+`launch_sweep` and therefore through `drift_check`. Under my spec, the first
+commit after launch made every later leg impossible, so the resume I quoted
+could not run. That is Truth Standard 9 c2 (RECOVERY): verify the config the
+recovery reads. The runbook's own template carried `true`, with the reason
+written only in a code comment (`run_wave.py`, B2174) and nowhere a reader of
+the runbook would meet it.
+
+**The rule.** Before naming a gate as a risk's mitigation, open the function and
+write what it COMPARES, not what it is called. Before quoting a recovery path,
+list every gate that path passes through and check each one against what the
+session will do in the meantime - here, commit every hour.
+
+**ENFORCER:** runbook 3.2 bullet (S6-B3093) and
+`test_b3093_drift_check_refuses_any_commit_not_only_engine_commits`. The pin
+asserts the sha half never consults `git diff`, and that the runbook bullet
+exists, so a content-aware drift check (proposed as S6-B3093a, awaiting the
+owner) cannot ship without the bullet changing with it.

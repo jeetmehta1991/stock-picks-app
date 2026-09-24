@@ -1816,6 +1816,17 @@ wave, all of them apply.
   superseding the 2026-08-17 exclusion for this phase only.
 - **leg_cap_hours x max_legs is the capacity** and must exceed the projection; the leg cap itself
   stays under the owner's 5h hard cap.
+- **`allow_engine_drift: true` IS THE TEMPLATE VALUE - `false` KILLS A MULTI-LEG WAVE AT ITS
+  FIRST LEG BOUNDARY AFTER ANY COMMIT (S6-B3093).** The name says *engine* drift; the check does
+  not look at engine code. `drift_check` in `scripts/launch_sweep.py` refuses whenever HEAD differs
+  from the manifest's `frozen_sha`, so a queue row or a monitor report refuses the next leg exactly
+  as an engine edit would. This project commits every turn (CHECKLIST #67 / #94). **MEASURED
+  2026-09-24:** the candle c14 Step-2 wave ran leg 1 to its 4.5 h cap at sim-day 329, then leg 2
+  was REFUSED because four queue-only commits had moved HEAD; `git diff` over `backtest/` between
+  the pinned sha and HEAD was empty. With `true`, the safety rests on the rule the `run_wave.py`
+  B2174 comment names - **no engine commit until the wave lands** - so keep it. `false` is right
+  only for a single-leg run. Pinned by
+  test_b3093_drift_check_refuses_any_commit_not_only_engine_commits.
 
 ### STEP 3.3 - MEASURED RUNTIME, and the memory ceiling that stopped the first attempt
 
