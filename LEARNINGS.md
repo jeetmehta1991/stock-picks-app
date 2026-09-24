@@ -23428,3 +23428,40 @@ session will do in the meantime - here, commit every hour.
 asserts the sha half never consults `git diff`, and that the runbook bullet
 exists, so a content-aware drift check (proposed as S6-B3093a, awaiting the
 owner) cannot ship without the bullet changing with it.
+
+**B3094 CORRECTION OF THIS ENTRY.** It says `drift_check` "compares HEAD's sha with `frozen_sha` and nothing else". FALSE: lines 77-81 of scripts/launch_sweep.py also refuse when an engine-consumed path is DIRTY, and I had read those lines before writing the sentence. The waiver (lines 70-71) turns off both halves. The rule survives, and it convicts its own first draft: I described the gate by the half I was thinking about, not by what the function does. Caught by the B3094 launch review, not by me.
+
+### L867 - A CAVEAT A GENERATOR WRITES INTO EVERY ARTIFACT OUTLIVES THE FIX THAT VOIDED IT, AND I REPEATED IT TO THE OWNER (B3094, 2026-09-24)
+
+**MEASURED.** Three times across 2026-09-24 I told the owner that resuming the
+candle c14 Step-2 wave would DROP the 67 open trades held at the sim-day-329
+boundary. It restores them: backtest.py S6-B2213a reads
+open_trades_checkpoint.csv at resume and halts on a count mismatch, and the
+checkpoint held 67 rows against engine_state open_trades 67. The claim came
+from a caveat, not from the engine: scripts/run_wave.py build_manifest wrote
+"open trades dropped at chunk boundaries (B1076)" into the obsolescence risks
+of every manifest it generated - 83 of the 92 cube run_manifest.json files on
+disk carry it - and my hand-written manifest copied it. The same file's own
+comment seventy lines lower (S6-B2404) already said the next leg RESTORES
+exactly these trades.
+
+**Why it survived.** A disclosed caveat reads as the careful half of a claim,
+so nobody re-derives it; and this one erred PESSIMISTIC, understating the
+run's fidelity - the direction that feels safe to repeat. L638 already says a
+recorded defect has an expiry that the ledger never shows. This is that rule
+arriving through a GENERATOR rather than a ledger row: every new artifact
+re-stamps the stale text with a fresh date, so its age is invisible (L696,
+find the artifact that re-supplies it).
+
+**The rule.** Before repeating a caveat about what a mechanism does - drops,
+loses, cannot, never - open the mechanism. When the caveat is stale, fix the
+GENERATOR, not only the copy in front of you.
+
+**Compliance failure against #256** (its L638 recorded-defect-expiry
+extension), not a new class. **ENFORCER (durability):**
+test_b3094_run_wave_manifest_says_open_trades_are_restored calls
+build_manifest and asserts no generated risk claims a drop, and asserts the
+engine's resume path still reads open_trades_checkpoint.csv - so the generator
+text and the mechanism it describes cannot drift apart silently. No DETECTION
+mechanism is possible: no scan tells a stale caveat from a live one without
+running the mechanism it describes.

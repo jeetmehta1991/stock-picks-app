@@ -6,7 +6,7 @@
  "leg_cap_hours": 4.5,
  "max_legs": 10,
  "pool_workers": 6,
- "allow_engine_drift": false,
+ "allow_engine_drift": true,
  "resume": true,
  "cube_riders": null,
  "arms": [
@@ -28,5 +28,7 @@
  ],
  "_window_note": "DELIBERATELY ABSENT. phase_table.resolve(2) injects the window and the 544-ticker universe; typing them is refused by spec_refusals (B2713/L788).",
  "fires_at_production": 199,
- "_fires_basis": "output_audit/b2850_candle_step05_smoke.json - SS11.2 step 0.5 at PRODUCTION params on 6 megacaps 2022-05-05..2026-05-05: pattern 479, pattern_and_rsi 199. Carried from the tws c14 Step-1 spec (b2944_candle_tws_c14_spec.json), which records the same family baseline. This is the count at PRODUCTION params; c14 is a TIGHTENING of production on body/step/wick, so its own fire count is lower and a tighter config also frees occupancy (L812), which can raise landed trades. S6-B3089: this was in the manifest but NOT the spec, and run_wave refused the launch fail-closed (S6-B2573b/S6-B2848c) - the refusal was correct."
+ "_fires_basis": "output_audit/b2850_candle_step05_smoke.json - SS11.2 step 0.5 at PRODUCTION params on 6 megacaps 2022-05-05..2026-05-05: pattern 479, pattern_and_rsi 199. Carried from the tws c14 Step-1 spec (b2944_candle_tws_c14_spec.json), which records the same family baseline. This is the count at PRODUCTION params; c14 is a TIGHTENING of production on body/step/wick, so its own fire count is lower and a tighter config also frees occupancy (L812), which can raise landed trades. S6-B3089: this was in the manifest but NOT the spec, and run_wave refused the launch fail-closed (S6-B2573b/S6-B2848c) - the refusal was correct.",
+ "_drift_note": "B3094 (owner chose A, 2026-09-24): TRUE, the runbook 3.2 template value. It was false for attempt 2, and launch_sweep.py drift_check compares HEAD's sha with frozen_sha - so four queue-only monitor commits refused leg 2 at the sim-day-329 boundary (S6-B3093). With true, drift_check returns [] (launch_sweep.py:70-71) BEFORE BOTH of its halves - the sha comparison AND the dirty-engine-path refusal (lines 77-81) - so the safety is the rule: NO ENGINE-CODE EDIT OR COMMIT UNTIL LANDING, and the monitor git-statuses the engine paths. Queue and output_audit commits are unaffected.",
+ "_resume_note": "B3094: resume=true with engine_state.json present makes leg 1 pass --resume-from-checkpoint (run_wave.py:269-271). Checkpoint verified this batch: simulated_day 329, status supervisor_active_cap, trade_log 365 rows == trades_so_far 365, open_trades_checkpoint 67 rows == open_trades 67 - the engine RESTORES the open book (backtest.py S6-B2213a), it does not drop it."
 }

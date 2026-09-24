@@ -201,9 +201,9 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
         **({"fires_at_production": spec["fires_at_production"]}
            if "fires_at_production" in spec else {}),
         "obsolescence_risks": [
-            {"risk": "open trades dropped at chunk boundaries (B1076)",
-             "status": "DISCLOSED - leg count recorded per arm; the auction "
-                       "box runs single-piece and will not carry this"},
+            {"risk": "open trades RESTORED at leg boundaries (S6-B2213a; B3094 fixed this stale B1076 text)",
+             "status": "GATED - the resume reads open_trades_checkpoint.csv and HALTS on a "
+                       "count mismatch; carryover recorded per leg in boundary_carryover"},
             # B2613 (S6-B2612g): the cap is READ from the constant the gate
             # enforces (prelaunch_gate.py OWNER_LOCAL_CAP_HOURS), not retyped -
             # every manifest to date said '3h' against an enforced 5.0h.

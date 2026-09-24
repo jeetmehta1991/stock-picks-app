@@ -2,12 +2,16 @@
  "sequence": "three_white_soldiers_step2_waterfall",
  "batch": "b3089_c14_step2",
  "execution": "LOCAL",
- "frozen_sha": "d2319b804392379ca978f5afe731b119054e21dd",
+ "frozen_sha": "9544e96e94dd93c467abe13760301a05295c9974",
  "isolation": true,
  "calendar": "nyse_mcal",
  "universe": "output_audit/r5_universe_544.txt",
  "universe_sha_note": "544 lines VERIFIED this batch (#187): all six mega-caps present (AAPL MSFT NVDA GOOGL META TSLA), A-C share 25.2% so no alphabetical skew (L445). INJECTED by phase_table.resolve(2), not typed.",
- "tickers": [],
+ "tickers": {
+  "file": "output_audit/r5_universe_544.txt",
+  "n": 544,
+  "sha256": "c14f8a455a86e8507ada803f3ec6cc2b0b4e85d2baf5f3d57cabd680c0649b86"
+ },
  "budget_cap_usd": 100,
  "spent_usd": 0,
  "projected_batch_usd": 0,
@@ -29,8 +33,8 @@
  ],
  "concurrency": 1,
  "screen_pool_workers": 6,
- "wall_clock_projection_hours": 27.7,
- "wall_clock_projection_note": "B3091 RE-DERIVED from the engine's own log, superseding both the 21.6 h Step-1 scaling and the 26.2 h carried from S6-B3090: output_audit/b3089_c14_step2_launch.log holds 19 PHASE_TIMING total= lines for attempt 1 (first 223.0 s cold, all-days mean 139.9 s, last-5 mean 99.4 s/day); 1,003 NYSE days x 99.4 s = 27.7 h. That EXCEEDS the old 6-leg capacity of 27.0 h, so max_legs 6 would have run out before landing; the ruled 10 legs give 45.0 h, 38 percent headroom. CAVEAT: every one of those 19 days ran contended by pyramids, so the uncontended rate is UNMEASURED; run_wave re-projects from each leg's own rate at the boundary (B2127).",
+ "wall_clock_projection_hours": 9.28,
+ "wall_clock_projection_note": "B3094 RE-PROJECTED FOR THE RESUME from the run's OWN measured rate: the B2127 rate line in output_audit/b3091_c14_step2_launch.log reads 49.49 s/sim-day over leg 1 (329 days in 4.5015 h), days_remaining 675, projected_remaining_hours 9.28, 3 legs at the 4.5 h cap. This is the REMAINING projection; the whole config is 4.50 h already run + 9.28 h. Leg 1 ran UNCONTENDED after the B3091 relaunch, so this supersedes the contended 27.7 h. The resumed invocation's leg counter restarts at 1, so max_legs 10 gives 45.0 h of fresh capacity against 9.28 h.",
  "legs": {
   "leg_cap_hours": 4.5,
   "max_legs": 10,
@@ -44,8 +48,8 @@
   },
   {
    "risk": "engine code changes mid-run would split the comparison",
-   "gate": "allow_engine_drift=false - the launcher refuses on drift",
-   "accepted": false
+   "gate": "RULE, not mechanism: no engine-code edit or commit until landing. B3093 CORRECTION of this entry - it read 'allow_engine_drift=false - the launcher refuses on drift', naming the gate by its label: drift_check compares HEAD's sha, so it refused leg 2 on four queue-only commits while the engine never changed. B3094: waiver ON by the owner's choice A.",
+   "accepted": true
   },
   {
    "risk": "a second pyramid or heavy process during the run distorts nothing here (this is not a timing measurement) but does contend for RAM",
@@ -70,21 +74,34 @@
    "accepted": true
   },
   {
-   "risk": "each leg boundary DROPS OPEN TRADES (run_wave DISCLOSED FIDELITY CAVEAT, B1076) and attempt 1 held 73 open trades at day 19",
-   "gate": "the wave summary records the leg count per arm so the grader sees the artifact's size; ~6 boundaries are expected at 26.2 h / 4.5 h",
+   "risk": "B3094 CORRECTION - leg boundaries RESTORE open trades, they do not drop them",
+   "gate": "backtest.py S6-B2213a reads open_trades_checkpoint.csv at resume and HALTS on a count mismatch rather than continue partial. MEASURED at the day-329 boundary: 67 rows == engine_state open_trades 67. The prior text carried run_wave's stale build_manifest string ('open trades dropped at chunk boundaries (B1076)'), ticketed S6-B3094b.",
+   "accepted": true
+  },
+  {
+   "risk": "ATTEMPT 2 LEG 2 WAS REFUSED at the leg-1 boundary (sim-day 329, 04:22 local 2026-09-24) by the B2127 drift gate",
+   "evidence": "launch log line 'HEAD 1c6e832dcd6b != manifest frozen_sha d2319b804392'; wave summary results[0] GATE_REFUSED legs 2 (run_wave.py:314, the rc == 2 branch); S6-B3093",
+   "gate": "allow_engine_drift=true (this batch), so queue commits no longer refuse a leg",
+   "accepted": true
+  },
+  {
+   "risk": "the resumed invocation's first [B2127 rate] line is MIS-SCALED: run_wave starts _prev_sim_day at 0, so leg 1 of a resume divides the leg's hours by every sim-day since day 0, not by the days it ran",
+   "evidence": "run_wave.py:242 _prev_sim_day = 0 and project_from_leg's leg_days = sim_day - leg_start_day; at ~656 days after a ~327-day leg it would print about half the true s/sim-day",
+   "gate": "DISCLOSED to the monitor, which computes the true rate as leg hours / (sim_day - 329); code fix ticketed S6-B3094a (needs a pyramid, so not beside this wave)",
    "accepted": true
   }
  ],
  "halt_conditions": [
   "cube sanity: not exactly 1 strategy, or a mega-cap absent",
   "any leg exceeding leg_cap_hours without a sim-day advance",
-  "engine path hash drift (allow_engine_drift=false)"
+  "any engine-code edit or commit before landing (allow_engine_drift=true since B3094, so this is a RULE, not a mechanism - S6-B3093a proposes the mechanism)"
  ],
  "gating": "Owner instruction 2026-09-23: 'Launch step 2 for the top 3 configs'. Executed through the ruled WATERFALL: config 1 launched now, configs 2 and 3 conditional on its verdict.",
  "leg_cap_hours": 4.5,
  "max_legs": 10,
  "fires_at_production": 199,
  "_fires_basis": "output_audit/b2850_candle_step05_smoke.json - SS11.2 step 0.5 at PRODUCTION params on 6 megacaps 2022-05-05..2026-05-05: pattern 479, pattern_and_rsi 199. Taken from the tws c14 Step-1 spec, which carries the same family baseline. This is the PRODUCTION count, not c14's own - c14 is a TIGHTENING of production on body/step/wick.",
- "tickers_note": "DELIBERATELY EMPTY. 'tickers' drives the AWS append-plan DISJOINTNESS check against output_batches/batch_ledger.json, which holds 7 committed batches. Step 2 is ruled NON-disjoint by design - the runbook states the 544 include the 200 tickers Step 1 selected on - so populating this field would fail a check written for a different execution model. The real universe is in 'universe', verified 544 lines this batch. The gate's 'narrow universe (0 tickers)' line is ADVISORY and is a false positive on the LOCAL path, which the gate itself announces it is taking.",
- "frozen_sha_note": "B3091: re-pinned from c0f4b4a8d5de to HEAD d2319b804392, the commit attempt 2 actually runs. Engine code is unchanged between them (only scripts/pyramid_gate.py, scripts/commit_free.py, tests and docs moved), but a manifest pinning a SHA other than the one running is the stale-SHA class B1335 rule 1 exists to stop."
+ "tickers_note": "B3094: PINNED BY VALUE in run_wave's own shape (run_wave.py:161-163); the sha256 equals the one in attempt 2's generated out-dir manifest. CORRECTION: this note used to say populating the field 'would fail a check written for a different execution model' - false: prelaunch_gate reads a dict's 'list' key for the AWS disjointness check (prelaunch_gate.py:145-146) and that check is skipped on the LOCAL path anyway; the empty list only produced the false 'narrow universe (0 tickers)' advisory.",
+ "frozen_sha_note": "B3094 RE-PINNED d2319b804392 -> 9544e96e94dd for the resume. Engine and launcher code are IDENTICAL across the two: git diff over backtest/ excluding backtest/tests, scripts/run_wave.py and scripts/launch_sweep.py is empty; the only change under backtest/ is the B3093 pin in backtest/tests/test_unit.py, which the engine never imports. run_wave writes its own out-dir manifest pinned to HEAD at arm start.",
+ "allow_engine_drift": true
 }

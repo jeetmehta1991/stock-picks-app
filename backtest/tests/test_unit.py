@@ -43940,3 +43940,47 @@ def test_b3093_drift_check_refuses_any_commit_not_only_engine_commits(tmp_path):
     assert '"allow_engine_drift": true' in sec, "template lost its value"
     assert "S6-B3093" in sec and "ANY COMMIT" in sec, (
         "runbook 3.2 no longer explains what drift_check refuses")
+
+
+def test_b3094_run_wave_manifest_says_open_trades_are_restored(tmp_path):
+    """S6-B3094b / L867: run_wave's build_manifest wrote 'open trades dropped
+    at chunk boundaries (B1076)' into 83 of 92 generated manifests, while the
+    engine RESTORES the open book at resume (backtest.py S6-B2213a) - and I
+    repeated the stale caveat to the owner three times. Behaviour pin: call
+    the GENERATOR and assert no risk it writes claims a drop, and pin the
+    mechanism the caveat describes so the two cannot drift apart silently."""
+    import ast
+    import importlib.util
+    import inspect
+    import json as _json
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec_ = importlib.util.spec_from_file_location(
+        "run_wave_b3094", root / "scripts" / "run_wave.py")
+    rw = importlib.util.module_from_spec(spec_)
+    spec_.loader.exec_module(rw)
+
+    tickers = tmp_path / "tickers.txt"
+    tickers.write_text("AAA\nBBB\n", encoding="utf-8")
+    spec = {"wave": "b3094test", "tickers_file": str(tickers),
+            "window": {"start": "2022-05-05", "end": "2026-05-05"},
+            "leg_cap_hours": 4.5, "strategy_subset": "x.txt"}
+    mp = rw.build_manifest(spec, {"tag": "armx"}, tmp_path / "out", "0" * 40)
+    risks = _json.loads(mp.read_text(encoding="utf-8"))["obsolescence_risks"]
+    texts = [(str(r.get("risk", "")) + " " + str(r.get("status", ""))).lower()
+             for r in risks]
+    assert texts, "build_manifest wrote no obsolescence risks - pin is vacuous"
+    assert not any("dropped" in t for t in texts), texts
+    assert any("restored" in t for t in texts), texts
+
+    # the mechanism the caveat describes: the resume path still READS the
+    # open-book checkpoint (an executable line, not a comment - L748)
+    from backtest.engine.backtest import BacktestEngine
+    src = inspect.getsource(BacktestEngine._load_resume_checkpoint)
+    import textwrap
+    tree = ast.parse(textwrap.dedent(src))
+    consts = [n.value for n in ast.walk(tree)
+              if isinstance(n, ast.Constant) and isinstance(n.value, str)]
+    assert "open_trades_checkpoint.csv" in consts, (
+        "the resume no longer reads the open book - re-check the caveat")

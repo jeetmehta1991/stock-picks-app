@@ -4715,6 +4715,8 @@ vocabulary**).
 landed and four because the QUESTION changed shape - their concerns live on in other rows.
 **Closing a stale framing is bookkeeping.**
 
+**INSTANCE - A CAVEAT RE-STAMPED BY ITS GENERATOR (B3094 / L867).** I told the owner three times that a resumed wave would DROP its 67 open trades; the engine restores them (backtest.py S6-B2213a, 67 checkpoint rows == 67 open). The caveat came from scripts/run_wave.py build_manifest, which wrote it into 83 of 92 generated manifests while its own comment said RESTORES. **Re-derive a caveat against the mechanism before repeating it, and fix the generator.** Pinned by test_b3094_run_wave_manifest_says_open_trades_are_restored.
+
 ### #257 - A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION (B1777 / L532)
 
 **MEASURED: I reported "271 closed in 48h". The real figure is 13.** The other 268 were WRITTEN as
