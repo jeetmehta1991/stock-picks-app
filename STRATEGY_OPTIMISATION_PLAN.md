@@ -947,13 +947,31 @@ three-way conflict recorded at S6-B2358. Step 2 therefore runs the FULL 4-year s
 qualify for phase 1B after clearing all gates we do not run the next two configs else we continue to
 config 2 then 3 then terminate."*
 
-**THE RULE.** Configs run SEQUENTIALLY in the mechanical rank order. After each config's cube is
-graded, evaluate its 300 combinations:
+**THE RULE - FAMILY-GENERAL (B3089).** The owner's wording above names the smc
+campaign because that is the campaign it was ruled on. The RULE it states is
+family-independent and is written here with no family in it. `<C1>`, `<C2>`,
+`<C3>` are the slate from STEP 2 ENTRY; `<K>` is the number of graded cells the
+family's grid carries per config (smc: 300 companion combinations; candle: 1
+knob-cell x 24 registered exits - **the unit is "every graded cell the config
+produced", not the literal 300**); `<STRATEGY>` is the strategy under test.
 
-1. **Config 1 = sw50sp50.** Run the config **IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never stops mid-config. Then: if any combination qualifies -> **STOP. Configs 2 and 3 are not run.** *(2026-08-30 amendment, S6-B2409: the original "AND is ROBUST" condition is retired - see the STOPPING RULE section below.)*
-2. Otherwise **config 2 = sw30sp150**, again in its entirety. If any qualifies -> STOP.
-3. Otherwise **config 3 = sw50sp20**, in its entirety. If any qualifies -> admit it; otherwise **TERMINATE** - `smc_breaker_block_long` closes NEGATIVE for Phase 1B and the program moves to the next of the 207-strategy optimisation backlog.
-   `smc_breaker_block_long` does not enter Phase 1B and its optimisation-backlog entry closes NEGATIVE.
+Configs run SEQUENTIALLY in the mechanical rank order. After each config's cube
+is graded, evaluate all `<K>` of its graded cells:
+
+1. **Config 1 = `<C1>`.** Run the config **IN ITS ENTIRETY** - all `<K>` cells graded; the waterfall never stops mid-config. Then: if any cell qualifies -> **STOP. Configs 2 and 3 are not run.** *(2026-08-30 amendment, S6-B2409: the original "AND is ROBUST" condition is retired - see the STOPPING RULE section below.)*
+2. Otherwise **config 2 = `<C2>`**, again in its entirety. If any qualifies -> STOP.
+3. Otherwise **config 3 = `<C3>`**, in its entirety. If any qualifies -> admit it; otherwise **TERMINATE** - `<STRATEGY>` closes NEGATIVE for Phase 1B and the program moves to the next of the optimisation backlog.
+
+**WHY THE SEQUENCE IS NOT OPTIONAL.** Each config spends an IRREVERSIBLE read of
+the locked holdout year for `<STRATEGY>`. Launching the slate in parallel, or
+"launching the top 3" as one batch, spends two reads the waterfall exists to
+protect. **A request to launch Step 2 for the top 3 configs is executed by
+launching config 1 and reporting its verdict**; configs 2 and 3 are conditional
+on that verdict by construction.
+
+**SMC INSTANCE (the campaign this was ruled on, DATED - not the procedure):**
+`<C1>`=sw50sp50, `<C2>`=sw30sp150, `<C3>`=sw50sp20, `<K>`=300,
+`<STRATEGY>`=`smc_breaker_block_long`.
 
 **WHAT "QUALIFY" MEANS, IN CODE - not paraphrased.** `tighten_breaker_block.py:373-383`: a row gets
 `verdict = "PASS"` iff `all(gates.values())` over the six `LIVE_GATES` (`roster_core.py:60-61`:
@@ -1063,7 +1081,13 @@ trial** - the negative result is evidence about this strategy.
 
 ### STEP 2 PRE-TRIAGE - EXECUTED, AND THE METHOD CHANGED (S6-B2369)
 
-**MANDATORY before any Step-2 cube. It has now been RUN, and the answer is recorded here.**
+**MANDATORY before any Step-2 cube, PER CAMPAIGN (B3089).** It is not a
+one-time step: it projects THIS family's Step-1 `full_period_n` past THIS
+campaign's trade floors, so a run recorded for one strategy says nothing about
+another. The smc record below is the WORKED EXAMPLE and the method; every new
+family runs its own and records the result beside it. **The text previously
+read "It has now been RUN, and the answer is recorded here", which for any
+reader outside the smc campaign asserted a mandatory gate had already passed.**
 
 **THE METHOD CHANGED, and this supersedes the `measure_fire_count.py` step approved earlier the same
 day.** That tool sweeps only 2 of the 6 config axes and counts ENTRY FIRES, an upper bound. The
@@ -1622,11 +1646,18 @@ PYTHONPATH=. python scripts/producer_variant_table.py \
 > the search set*, and *100 tickers*. **All four are now wrong.** Lineage: top 10 -> **top 3**;
 > 444 disjoint -> **all 544**; 100 -> **200** for Step 1.
 
-**UNIT OF EXECUTION: the CONFIG. UNIT OF EVIDENCE: the combination.** Step 2 runs one cube per
-config, and each cube re-evaluates **all 300 parameter combinations x all registered exits**.
+**UNIT OF EXECUTION: the CONFIG. UNIT OF EVIDENCE: the graded cell.** Step 2 runs
+one cube per config, and each cube re-evaluates **every parameter combination the
+family's grid carries x all registered exits**. The count is family-specific and
+is NOT 300 in general: smc carries 300 companion combinations per config, while
+the candle family carries ONE knob-cell per config against 24 registered exits.
+Quoting 300 as the unit is the defect B3089 removed.
 
-**THE THREE CONFIGS**, from the mechanical rule in STEP 2 ENTRY, re-derived over 26 of 26 Step-1
-grids on step1_ranking[0].is_ci_lo:
+**THE THREE CONFIGS - SMC INSTANCE (B3089: this is a dated result, not the
+procedure).** Derived by the mechanical rule in STEP 2 ENTRY over 26 of 26 smc
+Step-1 grids on `step1_ranking[0].is_ci_lo`. Any other family re-derives its own
+slate by the same rule; see THE CANDLE INSTANCE below for a second worked
+derivation.
 
 | order | config | is_ci_lo | is_sharpe | fires | exit chosen |
 |---|---|---|---|---|---|
@@ -1638,11 +1669,86 @@ Recorded so a later widening need not re-derive them: sw30sp20 (+0.816, first ho
 triplicate signature - sw30sp50 and sw30sp100 collapse into it) and sw50sp9 (+0.724).
 
 **THE STOPPING RULE (owner, D1; AMENDED by owner ruling 2026-08-30, S6-B2409).** Each config runs
-**IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never halts mid-config. Then, and
-only then: if any combination **clears all six gates**, STOP - the remaining configs are not run.
-If none of the three yields a qualifier, **TERMINATE**: smc_breaker_block_long closes NEGATIVE for
-Phase 1B and the program moves to the next of the 207-strategy backlog (owner, D6 - the METHOD is
-not on trial).
+**IN ITS ENTIRETY** - every graded cell the config produced; the waterfall never halts mid-config.
+Then, and only then: if any cell **clears all six gates**, STOP - the remaining configs are not run.
+If none of the three yields a qualifier, **TERMINATE**: the strategy under test closes NEGATIVE for
+Phase 1B and the program moves to the next of the optimisation backlog (owner, D6 - the METHOD is
+not on trial). *(B3089: this read "all 300 combinations" and named smc_breaker_block_long; both were
+the smc instance standing in for the rule.)*
+
+### THE CANDLE INSTANCE - SECOND WORKED DERIVATION (S6-B3089, 2026-09-23)
+
+Added because the Step-2 procedure had been written as one campaign's story:
+61 family-specific tokens across 42 lines, including procedural steps reading
+*"Config 1 = sw50sp50"* and a MANDATORY pre-triage marked *"It has now been
+RUN"*. A rule with two instances is much harder to mistake for a narrative.
+
+**FAMILY:** `three_white_soldiers` (candle_anatomy). `<K>` = 1 knob-cell x 24
+registered exits per config, NOT 300.
+
+**STEP-1 BASIS, verified not assumed.** 18 landed configs, `_sweep_200.txt`
+(200 tickers, confirmed 200 lines), window `2024-05-05 -> 2025-05-05` - so
+exactly **200 ticker-years**, which is what makes the 10.88x Step-2 scaling
+apply unchanged. Each config's cube holds `rows / results_n_exits` trades per
+cell; verified `rows / 24 == fires == admit.full_period_n` on 18 of 18.
+
+**THE SLATE, by the mechanical rule in STEP 2 ENTRY** (rank on
+`step1_ranking[0].is_ci_lo`, duplicate-signature collapse, ties to the
+deterministic lower config index, take the first 3). No signature collapsed -
+all 18 best-rows carry distinct signatures:
+
+| order | config | knobs (body/step/wick) | is_ci_lo | is_sharpe | IS n | tier |
+|---|---|---|---|---|---|---|
+| 1 | **c14** | 0.5 / 0.0 / 0.3 | +0.225 | 0.993 | 98 | MID |
+| 2 | **c08** | 0.3 / 0.0 / 0.3 | +0.075 | 0.630 | 181 | DEEP |
+| 3 | **c13** | 0.5 / 0.0 / None | +0.067 | 0.720 | 137 | DEEP |
+
+Next two, recorded so a later widening need not re-derive them: c01
+(+0.048, n 560) and c04 (+0.040, n 240).
+
+**READ THE TIER BEFORE THE RANK.** The slate leader is the SHALLOWEST of the
+three - n=98 against 181 and 137 - and across all 432 graded cells only **10
+carry a positive lower bound**. This is the effect the tier column exists to
+expose (RANK IS NOT TRUSTWORTHINESS), and it is why the tier column was
+restored to the unified renderer at B3088.
+
+**PRE-TRIAGE (mandatory, run for THIS family per B3089).** Step-1 scope 200
+ticker-years; Step-2 full period 544 x 4 = 2,176 (**10.88x**), Step-2 holdout
+544 x 1 = 544 (**2.72x**). Projecting each config's WORST per-cell count:
+
+| config | worst Step-1 n | projects to full (bar 75) | projects to holdout (bar 15) | verdict |
+|---|---|---|---|---|
+| c14 | 98 | 1,066 | 267 | **clears both** |
+| c08 | 181 | 1,969 | 492 | **clears both** |
+| c13 | 137 | 1,491 | 373 | **clears both** |
+
+**RESULT: the pre-triage excludes nothing, by a margin of more than 13x on the
+binding bar.** As in the smc campaign, the trade floors will not be what
+decides this strategy - the four statistical gates will. **The same limitation
+rides:** no candle Step-1 config ran a day of 2022-23, so the fire rate in the
+two added years is UNMEASURED.
+
+**COST, projected per config from ITS OWN Step-1 base (S6-B2364's rule, never a
+median):**
+
+| config | step-1 measured | step-2 projected at 10.88x | legs at the 4.5h cap |
+|---|---|---|---|
+| c14 | 1.989h | **21.6h** | 5 |
+| c08 | 2.004h | **21.8h** | 5 |
+| c13 | 1.506h | **16.4h** | 4 |
+| **slate serial, if the waterfall never stops** | | **~59.8h (2.5 days)** | 14 |
+
+The waterfall means only config 1's 21.6h is committed at launch. **B2107's 5h
+hard cap is satisfied by LEGGING, not by shortening the run** - `leg_cap_hours`
+4.5 with `max_legs` 6 - which is the sanctioned mechanism and the one the smc
+Step-2 template uses.
+
+**SPEC SHAPE - the window and universe are NOT typed.** `phase_table.resolve(2)`
+injects window `2022-05-05 -> 2026-05-05` and `output_audit/r5_universe_544.txt`
+from the phase table above, and `spec_refusals` refuses a spec that types them
+(B2713/L788). A Step-2 candle spec therefore declares `step: 2`,
+`step1_cube: false`, the leg cap, an explicit `pool_workers`, and one arm
+carrying the config's four `CANDLE_*` env knobs - and nothing else about scope.
 
 **THE 2026-08-30 AMENDMENT (S6-B2409).** The original D1 stop condition was *qualifies AND is
 ROBUST* - ROBUST meaning the holdout Sharpe cleared the 1.0 gate by more than the 0.333
@@ -1730,8 +1836,18 @@ the stop it read **46.49 GB at 50 percent**. Relaunched at pool_workers 6, max_l
 
 - **A pyramid alongside a live wave is not free.** Engine alone ran 48-58 GB committed of 63.63;
   engine **plus** a pytest run hit 62.03 GB with **1.61 GB free** - the exhaustion class S6-B2237
-  records as having killed three prior runs. Do not run the full suite against a live wave; defer
-  the commit to a leg boundary.
+  records as having killed three prior runs. Do not run the full suite against a live wave.
+  **SEQUENCE IT BEFORE THE LAUNCH - there is no leg-boundary window (B3091).** This bullet used
+  to say *defer the commit to a leg boundary*, and the third bullet below measured why that
+  cannot work: run_wave's leg loop respawns the engine and *the tree came back within
+  seconds*. So every commit that needs a pyramid is made and pushed BEFORE the wave launches,
+  and the next one waits for landing. **MEASURED AGAIN 2026-09-23 (S6-B3091):** the candle
+  Step-2 wave at pool 6 ran beside two pyramids; Windows logged low-virtual-memory events at
+  22:56, 23:10 and 23:12 (a pytest at 11.1 GB, then an engine worker at 5.5 GB), the box became
+  unresponsive and was restarted from the Start menu, and the run died at sim-day 19 of 1,003.
+  `scripts/pyramid_gate.py` now records `engine_inflight` from the engine's own
+  `run_heartbeat.json`, because its `chain_inflight` field reads only `serial_chain.log` and
+  printed **none** at both ends while that wave ran - a direct run_wave launch never writes there.
 - **Editing the spec does NOT affect a running wave.** run_wave.py reads the spec ONCE at startup
   (line 361) and the leg loop reads max_legs from that in-memory dict (line 140). Raising max_legs
   mid-flight changes nothing. A running process holds what it loaded.

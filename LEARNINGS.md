@@ -23356,3 +23356,43 @@ counts were missing.
 **ENFORCER:** `test_b3088_table_d_counts_are_trades_and_carry_a_depth_tier`,
 which pins the counts, the tier boundaries at the values that decide them,
 absent-stays-absent, and DEPTH_TIERS equal to the sibling renderer's.
+
+### L865 - A DISCLOSURE KEYED ON ONE LAUNCHER'S LOG IS BLIND TO EVERY OTHER LAUNCH PATH, AND IT SAID "NONE" WHILE THE MACHINE RAN OUT OF MEMORY (B3091, 2026-09-23)
+
+**MEASURED.** The candle Step-2 wave was launched with a direct `run_wave.py`.
+Two pyramids then ran beside it - one mine, one from a concurrent session.
+`output_audit/b3089_gate.json` recorded **chain_inflight=none at both ends**
+while that six-worker engine was running. Windows logged
+Resource-Exhaustion-Detector 2004 at 22:56:16, 23:10:17 and 23:12:24 (a
+pytest at 11.1 GB, then an engine worker at 5.5 GB); the owner restarted the
+machine from the Start menu at 23:14:04 (User32 1074) and the run died at
+sim-day 19 of 1,003.
+
+**Why the disclosure was blind.** `_chain_inflight()` was built at B3061 to
+put L621's durable half where the failure re-executes - correctly placed, per
+L857. But it answered *"is anything running?"* by reading
+`serial_chain.log`, which only the serial chain writes. **The detector's
+population was one launch path's; the rule's population is every engine.**
+That is L826's shape (take the denominator from a source the gate does not
+own) arriving in a disclosure rather than a coverage figure, and it is the
+silent kind: a blind disclosure prints the all-clear.
+
+**Compliance failure, not a new rule.** Runbook 3.3 already said *"Do not run
+the full suite against a live wave."* I ran one anyway after measuring 148 MB
+of free physical memory, reasoning that the commit gate had blocked me and a
+held commit was worse. That trade was wrong, and it was wrong in the direction
+I had written down. **The runbook also contradicted itself** - it said *defer
+the commit to a leg boundary* two bullets above measuring that the engine
+respawns within seconds, so the advice pointed at a window that does not exist.
+
+**The rule.** Detect from the artifact the THING ITSELF writes, not from the
+log of one way of starting it. Every engine launch path writes
+`output_*/run_heartbeat.json`; no launcher log is written by all of them. And
+sequence heavy verification BEFORE a long run starts - once it is running,
+there is no window.
+
+**ENFORCER:** `_engine_inflight()` in `scripts/pyramid_gate.py`, recorded as
+`engine_inflight_start` / `engine_inflight_end` in every gate artifact, pinned
+by `test_b3091_pyramid_sees_an_engine_the_chain_log_never_names` - including
+the exact defect case, a fresh heartbeat with no chain-log entry. It is a
+DISCLOSURE, not a refusal: L857(c).

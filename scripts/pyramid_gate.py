@@ -108,6 +108,7 @@ def run(out: Path, root: Path, pytest_args: list[str]) -> int:
     before = fingerprint(root)
     t0 = time.time()
     chain_start = _chain_inflight()
+    engine_start = _engine_inflight()
     # B2856 (S6-B2854b): a stopper needs the TREE, not the wrapper. TaskStop
     # on the launching shell orphans this process and its pytest child (four
     # processes were hand-killed at B2854, two racing on one artifact). The
@@ -140,20 +141,67 @@ def run(out: Path, root: Path, pytest_args: list[str]) -> int:
         # ends: 'none' on both is the only honest all-clear.
         chain_end = _chain_inflight()
         chain = chain_start if chain_start != "none" else chain_end
+        engine_end = _engine_inflight()
+        engine = engine_start if engine_start != "none" else engine_end
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(f"\npytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
                      f"elapsed_s={time.time() - t0:.0f}\n"
                      f"chain_inflight={chain}\n"
                      f"chain_inflight_start={chain_start}\n"
-                     f"chain_inflight_end={chain_end}\n")
+                     f"chain_inflight_end={chain_end}\n"
+                     f"engine_inflight={engine}\n"
+                     f"engine_inflight_start={engine_start}\n"
+                     f"engine_inflight_end={engine_end}\n")
         print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
         if chain != "none":
             print("  NOTE (L621/S6-B3061): a config was IN FLIGHT while "
                   "this pyramid ran - %s. Its wall-clock is contended."
                   % chain)
+        if engine != "none":
+            print("  NOTE (B3091/runbook 3.3): an ENGINE heartbeat was fresh "
+                  "while this pyramid ran - %s. A pyramid beside a live "
+                  "wave can exhaust commit; runbook 3.3 says defer the "
+                  "full suite to before the launch or to a leg boundary."
+                  % engine)
         return final
     finally:
         pidfile.unlink(missing_ok=True)
+
+
+ENGINE_FRESH_S = 3600
+
+
+def _engine_inflight(now=None) -> str:
+    """B3091: is an ENGINE running right now, by ANY launch path?
+
+    _chain_inflight() reads serial_chain.log, which only the serial chain
+    writes - so a direct run_wave launch was invisible to it. MEASURED
+    2026-09-23: b3089_gate.json recorded chain_inflight=none at both ends
+    while a six-worker Step-2 engine ran, and the pyramids beside it ended
+    in commit exhaustion and a manual restart.
+
+    This reads the artifact the ENGINE writes: every launch path produces
+    <ROOT>/output_*/run_heartbeat.json from the engine's supervisor thread.
+    A heartbeat touched within ENGINE_FRESH_S names that out dir. The window
+    is an hour because L656's addendum measured final-reading heartbeat ages
+    up to 47.8 min on runs that landed COMPLETE; the residual error is a run
+    that died under an hour ago reading as possibly live, which is the safe
+    direction for a disclosure. Filesystem-only - PowerShell cannot start
+    under the commit exhaustion this reports (runbook 3.4). Never raises.
+    """
+    try:
+        import time as _t
+        now = _t.time() if now is None else now
+        live = []
+        for hb in ROOT.glob("output_*/run_heartbeat.json"):
+            try:
+                if now - hb.stat().st_mtime <= ENGINE_FRESH_S:
+                    live.append(hb.parent.name)
+            except OSError:
+                continue
+        return ",".join(sorted(live)) if live else "none"
+    except Exception:
+        return "unknown"
 
 
 def _chain_inflight() -> str:

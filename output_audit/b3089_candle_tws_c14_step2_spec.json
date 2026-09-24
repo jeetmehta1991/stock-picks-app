@@ -1,0 +1,32 @@
+{
+ "wave": "candle_tws_c14_step2",
+ "strategy_subset": "output_audit/_subset_three_white_soldiers.txt",
+ "step": 2,
+ "step1_cube": false,
+ "leg_cap_hours": 4.5,
+ "max_legs": 10,
+ "pool_workers": 6,
+ "allow_engine_drift": false,
+ "resume": true,
+ "cube_riders": null,
+ "arms": [
+  {
+   "tag": "step2_b0.5_s0.0_w0.3",
+   "env": {
+    "CANDLE_N_BARS": "3",
+    "CANDLE_MIN_BODY_PCT": "0.5",
+    "CANDLE_MIN_STEP_PCT": "0.0",
+    "CANDLE_MAX_WICK_PCT": "0.3"
+   },
+   "n_bars": 3,
+   "min_body_pct": 0.5,
+   "min_step_pct": 0.0,
+   "max_wick_pct": 0.3,
+   "note": "S6-B3089 STEP 2, config 1 of the mechanically derived slate. Step-1 knob cell c14: is_ci_lo +0.225, is_sharpe 0.993, IS n 98 (MID tier - the SHALLOWEST of the three, read the tier before the rank).",
+   "env_note": "CANDLE_MAX_WICK_PCT='0.3' is a real threshold here; the None level is the empty string, config.py:2490 reads falsy as None."
+  }
+ ],
+ "_window_note": "DELIBERATELY ABSENT. phase_table.resolve(2) injects the window and the 544-ticker universe; typing them is refused by spec_refusals (B2713/L788).",
+ "fires_at_production": 199,
+ "_fires_basis": "output_audit/b2850_candle_step05_smoke.json - SS11.2 step 0.5 at PRODUCTION params on 6 megacaps 2022-05-05..2026-05-05: pattern 479, pattern_and_rsi 199. Carried from the tws c14 Step-1 spec (b2944_candle_tws_c14_spec.json), which records the same family baseline. This is the count at PRODUCTION params; c14 is a TIGHTENING of production on body/step/wick, so its own fire count is lower and a tighter config also frees occupancy (L812), which can raise landed trades. S6-B3089: this was in the manifest but NOT the spec, and run_wave refused the launch fail-closed (S6-B2573b/S6-B2848c) - the refusal was correct."
+}

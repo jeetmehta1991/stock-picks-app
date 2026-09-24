@@ -28884,11 +28884,26 @@ def test_b2370_waterfall_order_agrees_with_the_mechanical_slate():
              if re.match(r"^\d\. \*\*Config \d|^\d\. Otherwise", ln)]
     assert len(steps) == 3, f"waterfall must state 3 ordered steps, found {len(steps)}: {steps}"
 
-    order = []
+    # B3089: the owner ruled the Step-2 PROCEDURE must not name a family
+    # ("Update the runbook ... Serious error"), so the numbered steps are now
+    # parameterised to C1/C2/C3 and the smc names live in the SMC INSTANCE
+    # line inside this same section. The invariant this pin exists for -
+    # waterfall order AGREES with the mechanical slate - is unchanged; only
+    # the anchor moves.
     for ln in steps:
-        m = re.search(r"(sw\d+sp\d+)", ln)
-        assert m, f"waterfall step names no config: {ln}"
-        order.append(m.group(1))
+        assert not re.search(r"sw\d+sp\d+", ln), (
+            "B3089: a waterfall STEP names a family config, which is the "
+            "defect the owner called a serious error: " + ln)
+
+    # B3089: the instance is a PARAGRAPH - a heading line followed by the
+    # names on the next - so select the SPAN, never a single line (L705).
+    # Matching the heading line alone found it and zero config names.
+    assert body.count("SMC INSTANCE") == 1, "expected one SMC INSTANCE block"
+    _para = body.split("SMC INSTANCE", 1)[1].split((chr(10) + chr(10)), 1)[0]
+    order = re.findall(r"(sw\d+sp\d+)", _para)
+    assert len(order) == 3, (
+        "the SMC INSTANCE line must name three configs in slate order, "
+        f"found {order}")
 
     # the mechanical section's applied slate, read from ITS OWN sentence
     applied = [ln for ln in text.splitlines()
@@ -43786,3 +43801,102 @@ def test_b3088_table_d_counts_are_trades_and_carry_a_depth_tier():
     # and the leader is the SHALLOWER sample - the exact thing tier exposes
     assert r1[-1] == "MID" and r2[-1] == "DEEP", (r1, r2)
     assert "TIER - DEEP n>=100" in out
+
+
+def test_b3091_pyramid_sees_an_engine_the_chain_log_never_names(tmp_path, monkeypatch):
+    """S6-B3091: the in-flight disclosure was blind to a direct run_wave.
+
+    MEASURED 2026-09-23: output_audit/b3089_gate.json recorded
+    chain_inflight=none at BOTH ends while a six-worker Step-2 engine ran,
+    because _chain_inflight() reads only serial_chain.log and a direct
+    run_wave launch never writes there. Two pyramids ran beside that engine,
+    Windows logged three low-virtual-memory events, and the owner restarted
+    the machine. The fix reads the artifact the ENGINE writes -
+    output_*/run_heartbeat.json - which every launch path produces.
+    """
+    import os
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import pyramid_gate as pg
+
+    monkeypatch.setattr(pg, "ROOT", tmp_path)
+    fresh = pg.ENGINE_FRESH_S
+
+    # 0. nothing on disk -> "none", never a crash
+    assert pg._engine_inflight() == "none"
+
+    # 1. THE DEFECT CASE: a wave's engine heartbeat exists and the chain log
+    #    does not mention it. The old disclosure says none; the new one must
+    #    name the wave. Names are deliberately unrunnable (see test_b3061).
+    run = tmp_path / "output_fixture_zz97_step2_arm"
+    run.mkdir()
+    hb = run / "run_heartbeat.json"
+    hb.write_text('{"sim_day_index": 19}', encoding="utf-8")
+    m = hb.stat().st_mtime
+    assert pg._chain_inflight() == "none"
+    assert pg._engine_inflight(now=m + 60) == "output_fixture_zz97_step2_arm"
+
+    # 2. inside the window at its far edge -> still named; one second past
+    #    it -> none. The window is the one L656's addendum measured for.
+    assert pg._engine_inflight(now=m + fresh) == "output_fixture_zz97_step2_arm"
+    assert pg._engine_inflight(now=m + fresh + 1) == "none"
+
+    # 3. an ARCHIVED dead run is not under output_* and must not be named -
+    #    this is how a dead wave is retired without a stale false alarm
+    dead = tmp_path / "output_audit" / "_fixture_attempt1_dead"
+    dead.mkdir(parents=True)
+    (dead / "run_heartbeat.json").write_text("{}", encoding="utf-8")
+    os.utime(dead / "run_heartbeat.json", (m, m))
+    assert pg._engine_inflight(now=m + 60) == "output_fixture_zz97_step2_arm"
+
+    # 4. two live waves -> both named, sorted, so the record is stable
+    run2 = tmp_path / "output_fixture_zz96_other"
+    run2.mkdir()
+    (run2 / "run_heartbeat.json").write_text("{}", encoding="utf-8")
+    os.utime(run2 / "run_heartbeat.json", (m, m))
+    assert pg._engine_inflight(now=m + 60) == (
+        "output_fixture_zz96_other,output_fixture_zz97_step2_arm")
+
+    # 5. the gate RECORDS it - a detector nobody writes down is decoration
+    src = (root / "scripts" / "pyramid_gate.py").read_text(encoding="utf-8")
+    assert "engine_inflight_start=" in src and "engine_inflight_end=" in src
+    assert src.count("_engine_inflight()") >= 2, "must sample at BOTH ends"
+
+
+def test_b3091_commit_free_reads_commit_in_process():
+    """S6-B3091: runbook 3.4 names GlobalMemoryStatusEx as THE way to read
+    free commit, because PowerShell cannot start under the exhaustion a
+    monitor exists to report. Nothing implemented it until
+    scripts/commit_free.py. This pins that it returns a coherent reading and
+    that it spawns no child process to get one."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / 'scripts') not in _sys.path:
+        _sys.path.insert(0, str(root / 'scripts'))
+    import commit_free as cf
+    r = cf.read()
+    assert r['commit_limit_gb'] > 0, r
+    assert 0 <= r['commit_free_gb'] <= r['commit_limit_gb'], r
+    assert 0.0 <= r['commit_used_pct'] <= 100.0, r
+    assert 0 <= r['phys_free_gb'] <= r['phys_total_gb'], r
+    # commit is the quantity an allocation draws on, and on this box it
+    # exceeds physical RAM - reporting physical instead is the L670 error
+    assert r['commit_limit_gb'] >= r['phys_total_gb'], r
+    # in-process by construction. Checked on the AST, NOT the source text:
+    # the docstring quotes the runbook's 'not PowerShell counters', so a
+    # text grep would fail on prose (L748).
+    import ast as _ast
+    tree = _ast.parse((root / 'scripts' / 'commit_free.py').read_text(encoding='utf-8'))
+    mods = set()
+    for n in _ast.walk(tree):
+        if isinstance(n, _ast.Import):
+            mods |= {a.name.split('.')[0] for a in n.names}
+        elif isinstance(n, _ast.ImportFrom) and n.module:
+            mods.add(n.module.split('.')[0])
+    assert 'ctypes' in mods, mods
+    assert not (mods & {'subprocess', 'multiprocessing', 'os'}), (
+        'commit_free must not spawn a process - that is the failure it avoids: %r' % mods)

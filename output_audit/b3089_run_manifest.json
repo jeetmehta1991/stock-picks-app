@@ -1,0 +1,89 @@
+{
+ "sequence": "three_white_soldiers_step2_waterfall",
+ "batch": "b3089_c14_step2",
+ "execution": "LOCAL",
+ "frozen_sha": "c0f4b4a8d5de0c872ec5d861af3ca45e1f09eee1",
+ "isolation": true,
+ "calendar": "nyse_mcal",
+ "universe": "output_audit/r5_universe_544.txt",
+ "universe_sha_note": "544 lines VERIFIED this batch (#187): all six mega-caps present (AAPL MSFT NVDA GOOGL META TSLA), A-C share 25.2% so no alphabetical skew (L445). INJECTED by phase_table.resolve(2), not typed.",
+ "tickers": [],
+ "budget_cap_usd": 100,
+ "spent_usd": 0,
+ "projected_batch_usd": 0,
+ "spend_note": "LOCAL run on the owner's machine - no AWS, no paid API. The scarce resource is WALL CLOCK, not dollars (L333). The $100 cap (B2109) is untouched by this batch.",
+ "window": {
+  "start": "2022-05-05",
+  "end": "2026-05-05",
+  "years": 4,
+  "note": "RESOLVED from the runbook phase table, sha 2618c72515527bc3 - recorded here for the manifest's own audit trail, NOT typed into the spec."
+ },
+ "configs": [
+  {
+   "name": "candle_tws_c14",
+   "CANDLE_N_BARS": 3,
+   "CANDLE_MIN_BODY_PCT": 0.5,
+   "CANDLE_MIN_STEP_PCT": 0.0,
+   "CANDLE_MAX_WICK_PCT": 0.3
+  }
+ ],
+ "concurrency": 1,
+ "screen_pool_workers": 6,
+ "wall_clock_projection_hours": 27.7,
+ "wall_clock_projection_note": "B3091 RE-DERIVED from the engine's own log, superseding both the 21.6 h Step-1 scaling and the 26.2 h carried from S6-B3090: output_audit/b3089_c14_step2_launch.log holds 19 PHASE_TIMING total= lines for attempt 1 (first 223.0 s cold, all-days mean 139.9 s, last-5 mean 99.4 s/day); 1,003 NYSE days x 99.4 s = 27.7 h. That EXCEEDS the old 6-leg capacity of 27.0 h, so max_legs 6 would have run out before landing; the ruled 10 legs give 45.0 h, 38 percent headroom. CAVEAT: every one of those 19 days ran contended by pyramids, so the uncontended rate is UNMEASURED; run_wave re-projects from each leg's own rate at the boundary (B2127).",
+ "legs": {
+  "leg_cap_hours": 4.5,
+  "max_legs": 10,
+  "note": "B2107's 5h HARD CAP is satisfied by LEGGING, the sanctioned mechanism the smc Step-2 template uses. 21.6h / 4.5h = 5 legs, 6 for headroom. B3089 CORRECTION: these were nested here only, so the gate could not see a declared bound and refused. They are now top-level; this block is the rationale. B3091: RAISED 6 -> 10 to match the runbook 3.2 ruled template. 6 gave 4.5 x 6 = 27.0 h of capacity against a measured need of 27.7 h (19 PHASE_TIMING lines in b3089_c14_step2_launch.log, last-5 mean 99.4 s/day x 1,003 NYSE days) - 6 legs would have run OUT; 10 gives 45.0 h. The per-leg cap is unchanged at 4.5 h, under the owner's 5 h bound (B2107), which is PER LEG, not total."
+ },
+ "obsolescence_risks": [
+  {
+   "risk": "the 2022-23 fire rate is UNMEASURED - no candle Step-1 config ran a day of it, and 2022 was a distinct regime",
+   "gate": "pre-triage margin is >13x on the binding bar, so the rate would have to collapse before the trade floors bind",
+   "accepted": true
+  },
+  {
+   "risk": "engine code changes mid-run would split the comparison",
+   "gate": "allow_engine_drift=false - the launcher refuses on drift",
+   "accepted": false
+  },
+  {
+   "risk": "a second pyramid or heavy process during the run distorts nothing here (this is not a timing measurement) but does contend for RAM",
+   "gate": "L621 hold: no pyramid while this runs",
+   "accepted": false
+  },
+  {
+   "risk": "holdout read is IRREVERSIBLE for three_white_soldiers",
+   "gate": "waterfall - config 1 only; configs 2 and 3 are conditional on this verdict and are NOT launched with it",
+   "accepted": true
+  },
+  {
+   "risk": "ATTEMPT 1 DIED at sim_day 19 of 1003 when the machine was restarted under commit exhaustion",
+   "evidence": "Windows System log: Resource-Exhaustion-Detector 2004 at 22:56:16, 23:10:17, 23:12:24 (python.exe 12208 at 11.1 GB, then engine worker 25536 at 5.5 GB); User32 1074 restart from the Start menu at 23:14:04; Kernel-Power 109 at 23:14:23. Cause: two pyramids run beside a six-worker engine, against runbook 3.3.",
+   "gate": "attempt 2 starts clean at day 0 - the dead dir is archived at output_audit/_c14_step2_attempt1_dead_reboot, so the resume branch (run_wave.py:269, engine_state.json exists) does not fire on leg 1. Resuming would have saved ~14 min at the cost of one extra open-trade drop from a checkpoint written under memory exhaustion.",
+   "accepted": true
+  },
+  {
+   "risk": "NO PYRAMID MAY RUN BESIDE THIS WAVE, so NO .py or pin-read commit can land until it does",
+   "evidence": "runbook 3.3: engine alone at pool 6 ran 48-58 GB committed of 63.63, leaving no headroom for a pytest run; attempt 1 proved it. pyramid_gate now records engine_inflight from run_heartbeat.json (B3091) so a violation is at least disclosed.",
+   "gate": "every commit that needs a pyramid is made BEFORE the launch; the next one waits for landing (~26 h) or for the owner to pause the wave",
+   "accepted": true
+  },
+  {
+   "risk": "each leg boundary DROPS OPEN TRADES (run_wave DISCLOSED FIDELITY CAVEAT, B1076) and attempt 1 held 73 open trades at day 19",
+   "gate": "the wave summary records the leg count per arm so the grader sees the artifact's size; ~6 boundaries are expected at 26.2 h / 4.5 h",
+   "accepted": true
+  }
+ ],
+ "halt_conditions": [
+  "cube sanity: not exactly 1 strategy, or a mega-cap absent",
+  "any leg exceeding leg_cap_hours without a sim-day advance",
+  "engine path hash drift (allow_engine_drift=false)"
+ ],
+ "gating": "Owner instruction 2026-09-23: 'Launch step 2 for the top 3 configs'. Executed through the ruled WATERFALL: config 1 launched now, configs 2 and 3 conditional on its verdict.",
+ "leg_cap_hours": 4.5,
+ "max_legs": 10,
+ "fires_at_production": 199,
+ "_fires_basis": "output_audit/b2850_candle_step05_smoke.json - SS11.2 step 0.5 at PRODUCTION params on 6 megacaps 2022-05-05..2026-05-05: pattern 479, pattern_and_rsi 199. Taken from the tws c14 Step-1 spec, which carries the same family baseline. This is the PRODUCTION count, not c14's own - c14 is a TIGHTENING of production on body/step/wick.",
+ "tickers_note": "DELIBERATELY EMPTY. 'tickers' drives the AWS append-plan DISJOINTNESS check against output_batches/batch_ledger.json, which holds 7 committed batches. Step 2 is ruled NON-disjoint by design - the runbook states the 544 include the 200 tickers Step 1 selected on - so populating this field would fail a check written for a different execution model. The real universe is in 'universe', verified 544 lines this batch. The gate's 'narrow universe (0 tickers)' line is ADVISORY and is a false positive on the LOCAL path, which the gate itself announces it is taking."
+}

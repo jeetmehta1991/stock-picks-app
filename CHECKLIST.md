@@ -6175,6 +6175,9 @@ Before putting a decision to the owner, walk every uncertainty the write-up itse
 
 ### #319 - A LESSON THAT NAMES A TOOL AS THE HAZARD PUTS ITS MECHANISM IN THAT TOOL (L857, S6-B3061, 2026-09-23)
 
+**INSTANCE 2 - THE MECHANISM WAS IN THE RIGHT TOOL AND READ THE WRONG SOURCE (B3091 / L865).** B3061 put L621's disclosure inside `scripts/pyramid_gate.py`, exactly where this item says. It then decided *is an engine running?* by reading `serial_chain.log`, which only the serial chain writes. MEASURED 2026-09-23: a direct `run_wave.py` Step-2 wave ran beside two pyramids with **chain_inflight=none at both ends**; the machine ran out of commit and was restarted by hand at sim-day 19 of 1,003. **Placing the mechanism in the tool is half the rule; the other half is that it reads a source every instance of the hazard produces** - here the engine's own `run_heartbeat.json`, which every launch path writes. ENFORCED BY `_engine_inflight()` and pinned by test_b3091_pyramid_sees_an_engine_the_chain_log_never_names.
+
+
 When a lesson's own text names the thing that caused the harm, the mechanism belongs
 inside that thing. A manifest field or a cron prompt reaches only the launches someone
 stops to decide; it never reaches a tool that runs on every commit under a
