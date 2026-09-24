@@ -3983,6 +3983,8 @@ while being described to the owner as structurally unavailable.
 `TURN_GATE_TRANSCRIPT` argument dissolved (B1713); the "26-way exit selection causes the inversion"
 hypothesis disproven by one group-by (B1717).
 
+**INSTANCE (B3097 / L871) - CALLED FULLY LOADED ON A PREVIEW.** After a mid-turn compaction I wrote 'execution-discipline FULLY LOADED (invoked this turn, re-injected after the compaction)'; the only re-injection was the B1744 hook's output, which the harness persisted as a 367.5 KB file with a 2 KB preview. scan_discipline_not_loaded blocked the close and a Skill call loaded the file. This item's own lesson - run the probe that separates a LIMIT from an OMISSION - applied to the hook: it RUNS every turn and no longer DELIVERS. Remedy row in the skill's tripwire table; the hook redesign is S6-B3097b.
+
 ### #230 - A CLAIM ABOUT A CAPABILITY IS A CLAIM, AND NEEDS THE SAME EVIDENCE (B1731 / L505)
 
 The Truth Standard's four evidence classes are stated in terms of DATA - counts, coverage, fire

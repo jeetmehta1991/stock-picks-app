@@ -25834,6 +25834,12 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L869 (B3096): a rewrite drifts even from a fresh read of its source"),
         ("RUN `scripts/transcript_timeline.py` AND CITE THE ENTRY OR UTC TIME IT PRINTS",
          "L870 (B3096): a timeline claim across a compaction is read from the transcript"),
+        # B3097: the L871 tripwire row and the standing-activation correction -
+        # pin the REMEDY (invoke the Skill after a compaction), not the heading (L548).
+        ("RE-INVOKE Skill(execution-discipline) BEFORE THE NEXT SUBSTANTIVE STEP",
+         "L871 (B3097): after a compaction only a Skill call loads the skill"),
+        ("B3097 CORRECTION (L871)",
+         "L871 (B3097): the B1744 injection arrives as a 2 KB preview"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26034,7 +26040,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 307 -> 309 at B3096 (the L869 machine-comparison and L870
     # transcript-timeline fragments; same-call with their tripwire rows
     # per B2130).
-    assert len(gutted) == 309, gutted
+    # 309 -> 311 at B3097 (the L871 re-invoke row and the auto-injection
+    # correction; same-call with the row per B2130).
+    assert len(gutted) == 311, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

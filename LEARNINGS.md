@@ -23611,3 +23611,15 @@ something happened after or before a compaction, or was written from the summary
 transcript with an entry index or a UTC time; its must-fire case is L869's first version). The
 response-level scan is ticketed S6-B3096d: editing the live Stop hook mid-session risks blocking
 every close, #300's own reason for the same split.
+
+### L871 - THE SKILL THE HOOK INJECTS EVERY TURN NOW ARRIVES AS A 2 KB PREVIEW, AND I CALLED IT FULLY LOADED (B3097, 2026-09-24)
+
+**MEASURED, from the transcript (scripts/transcript_timeline.py plus a scan of the session transcript for the four events).** The context compacted at entry 70288 (17:42:40 UTC) in the middle of this turn. Nothing re-injected the skill until the next B1744 hook outputs, at entries 70813 and 70815 (18:08:19 UTC), and those read 'Output too large (367.5KB). Full output saved to ... Preview (first 2KB)' - what reached context was the first 2 KB of a 380 KB skill. At entry 70856 (18:10:44 UTC) I closed with 'execution-discipline FULLY LOADED (invoked this turn, re-injected after the compaction)', resting on the Skill call made before the compaction, sections I had re-read by hand, and those previews. scan_discipline_not_loaded blocked the close at entry 70861 (18:11:17 UTC); the Skill call at entry 70865 (18:12:33 UTC) is what loaded the file.
+
+**Two findings, and the second is the larger.**
+1. **Compliance failure against #229** (a truncated copy is not the skill) and against the owner's 2026-09-16 re-context directive. The mechanism exists and fired: scan_discipline_not_loaded. The false part was the status word - 're-injected' was true of an event and false of its content.
+2. **The B1744 auto-injection no longer delivers this skill.** At 380 KB its output is past what the harness shows inline, so it is persisted to a file and only a preview enters context. The skill said it was 'Mechanically enforced by the B1744 auto-injection hook' and that 'this file arrives in context every turn' (Phase 0) - both false at this size, and nothing measured it, because the injection still RUNS and still reports success. Only a Skill call delivers the file; the invocation gate is now the whole enforcement, and it fires at a close, after the work.
+
+**Rule: after any context compaction, invoke Skill(execution-discipline) before the next substantive step, and write FULLY LOADED only for a Skill call made after the last compaction.** A hook that injects a document is a claim that the document stays under a limit nobody set; the hook's success says nothing about what reached context. Anchored as a tripwire row and a standing-activation correction in the skill, and an INSTANCE under CHECKLIST #229. The hook itself (a compact index under the limit, or a smaller skill) is S6-B3097b, for the owner.
+
+Detection: scan_discipline_not_loaded already detects the missing load - it fired here. Durability pinned by two test_b2123 fragments (the row's remedy and the correction).
