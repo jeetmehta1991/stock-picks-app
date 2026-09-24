@@ -376,7 +376,7 @@ pair is now consistent.
 | Threshold-only vs adding a NEW gate | **ASK EVERY TIME** - no default; label every knob EXISTING-THRESHOLD or NEW-GATE before building any grid, and a NEW-GATE is a stop-and-ask (`feedback_ask_before_adding_gates_vs_threshold_only`) |
 | Admitted strategies | **CLOSED to re-testing** (owner 2026-09-12: *"We stop testing the strategies once they are in the phase 1B unless you get specific over rides from me!!"*). Enforced at launch: `phase1b_admitted()` + `_admitted_retest_refusals()` inside `launch_refusals` (B2731; the admissions JSON and PHASE_1B_ROSTER.md unioned, fail-closed, B2733; CHECKLIST #304 / L791). The only escape is the owner's dated words in the spec under `owner_override_retest_admitted[<strategy>]`; a bare boolean is refused (L789) |
 | `next_pivot_target` | barred as a selected exit (owner 2026-09-10; §0.3) |
-| Launch path | ONLY `run_wave.py` (writes `run_manifest.json` from the spec) -> `launch_sweep.py` (runs `prelaunch_gate.py --manifest` and REFUSES on non-zero, `launch_sweep.py:43`, then writes `gate_receipt.json` - the battery FAILS a cube without one, M10). A direct `run_phase1a.py` invocation bypasses all three (S6-B2159b class) - never launch that way |
+| Launch path | ONLY `run_wave.py` (writes `run_manifest.json` from the spec) -> `launch_sweep.py` (runs `prelaunch_gate.py --manifest` and REFUSES on non-zero, `launch_sweep.gate_passes`, then writes `gate_receipt.json` - the battery FAILS a cube without one, M10). A direct `run_phase1a.py` invocation bypasses all three (S6-B2159b class) - never launch that way |
 | A running chain is LIVE CODE | `run_postconfig.py`, `postconfig_landing.py`, `run_wave.py`, `launch_sweep.py` and the engine are re-read at each landing/launch, so an edit while a chain runs is a deploy onto every queued spec (S6-B2573i); do not edit them mid-chain without saying so |
 | Isolation bypasses tier sizing | approved; comparability loss accepted (B1545; §8.1) |
 | Hourly updates while any run is active | STANDING (§8.9) |
@@ -1398,7 +1398,7 @@ wave, all of them apply.
    cap that is not declared cannot be enforced (L642, fail-closed).
 5. **Run the gate and paste the exit code:** `python scripts/prelaunch_gate.py --manifest
    output_audit/<batch>_run_manifest.json`. A pass prints `PRELAUNCH_GATE_PASS`. `launch_sweep.py` also
-   runs it on every launch and refuses on non-zero (`launch_sweep.py:43`; wired at B2082, ending the
+   runs it on every launch and refuses on non-zero (`launch_sweep.gate_passes`; wired at B2082, ending the
    B1704 hand-run-only era - the pre-B3096 text still said "HAND-RUN - nothing calls it
    automatically"), so the hand run is the in-turn EVIDENCE the gate passes, not the only gate.
 6. **Arm the cadence monitor BEFORE the launch, in the same turn** (#185; §8.9).
@@ -1417,7 +1417,7 @@ instance is recorded in the campaign log).
  "step1_cube": false,
  "leg_cap_hours": 4.5, "max_legs": 10,
  "pool_workers": 6,
- "allow_engine_drift": true,
+ "allow_engine_drift": false,
  "resume": true,
  "fires_at_production": "<the family step-0.5 smoke count at production params>",
  "arms": [{"tag": "step2_<config>",
@@ -1427,7 +1427,8 @@ instance is recorded in the campaign log).
 - **`step1_cube: false` - set it explicitly, and know what it reaches.** A Step-1 marking arms the
   **holdout-touch FAIL** in run_postconfig - correct for a Step-1 search, which must not touch the
   holdout, and **WRONG for Step 2, which grades ON the holdout by design.** The spec field selects the
-  step only for run_wave's own post-landing call (`run_wave.py:374`, default TRUE). On a real engine
+  step only for run_wave's own post-landing call (`run_arm`'s battery call, `spec.get("step1_cube",
+  True)`, default TRUE). On a real engine
   landing that call is a no-op: the engine hook lands the cube first with NO step flag, and
   `run_postconfig.derive_step` takes the step from the manifest window, where a window ending after
   HO_START is Step 2 (`run_postconfig.py:398-417`; `postconfig_landing.py:451-457`). So a copied Step-1
@@ -1435,41 +1436,49 @@ instance is recorded in the campaign log).
   pre-B3096 text said a copied Step-1 spec arms a check guaranteed to fail; that holds only on the
   fallback path.)
 - **The config axes are ENV, not CLI flags** - each family's knobs are read from the environment in
-  `backtest/config.py`, and run_wave passes each arm's env dict to the engine (`run_wave.py:291`).
+  `backtest/config.py`, and run_wave passes each arm's env dict to the engine (`run_arm`'s leg env, `arm.get("env")`).
   Which variables a family has is in its SPECS entry, never in this template.
 - **The window and the universe are NOT typed in the spec** - `phase_table.resolve(2)` injects the full
   4 years (`2022-05-05 -> 2026-05-05`) and the 544-ticker universe (§1.2), and `spec_refusals` refuses a
   typed window (B2713 / L788).
 - **`fires_at_production` is required** - run_wave carries it into the generated manifest and the
   prelaunch gate refuses a launch without it (S6-B2848c).
-- **`resume: true` is harmless on a fresh directory** (`run_wave.py:269-271` resumes only when
+- **`resume: true` is harmless on a fresh directory** (`run_arm`'s resume branch resumes only when
   `engine_state.json` exists) and makes a relaunch continue from its checkpoint, not restart.
 - **`leg_cap_hours x max_legs` is the capacity** and must exceed the projection; the leg cap stays
   under the owner's 5 h ceiling (4.5 here leaves margin under it). A resumed invocation's leg counter
   restarts at 1. `pool_workers` 6 is the value the first pooled Step-2 wave was relaunched at after its
   commit exhaustion (campaign log; Step 2.4) - a starting point, not a measured optimum. Size it on the
   commit reading of Step 1.0 (b), since commit is the binding quantity (L670).
-- **`allow_engine_drift: true` IS THE TEMPLATE VALUE - `false` KILLS A MULTI-LEG WAVE AT ITS FIRST LEG
-  BOUNDARY AFTER ANY COMMIT (S6-B3093).** `drift_check` in `scripts/launch_sweep.py` has TWO halves: it
-  refuses whenever HEAD differs from the manifest's `frozen_sha` - so a queue row or a monitor report
-  refuses the next leg exactly as an engine commit would - AND it refuses when an engine-consumed path
-  is DIRTY (uncommitted; `launch_sweep.py:77-81`). **`true` turns off BOTH** (`launch_sweep.py:70-71`
-  returns before either runs), so the rule it leaves is *no engine EDIT OR commit until landing* - the
-  rule the `run_wave.py` B2174 comment names - and the monitor must `git status` the engine paths, not
-  only `git log`. (B3094 CORRECTION: this bullet first said the check does not look at engine code -
-  false.) This project commits every turn (CHECKLIST #67 / #94). MEASURED 2026-09-24 on a live Step-2
-  wave: leg 2 was REFUSED after four queue-only commits moved HEAD, while `git diff` over `backtest/`
-  between the pinned sha and HEAD was empty (the instance is in the campaign log). `false` is right only
-  for a single-leg run. Pinned by `test_b3093_drift_check_refuses_any_commit_not_only_engine_commits`.
+- **`allow_engine_drift: false` IS THE TEMPLATE VALUE (S6-B3093a, B3099 - it was `true` while the check
+  compared SHAS).** `drift_check` in `scripts/launch_sweep.py` compares CONTENT at every leg boundary.
+  It refuses when a commit since the manifest's `frozen_sha` changed a path a LEG computes with: the
+  engine (`backtest/`, its tests excepted), the per-leg launch code (`launch_sweep.py`, `prelaunch_gate.py`
+  and what they import) and every `scripts/` module the ENGINE imports - both sets derived from the code -
+  a pinned input, or any file that is not an artifact. It allows docs (`.md`, the queue and this runbook
+  included - the phase table is frozen into the manifest at wave start), `output_audit` artifacts, tests
+  and the scripts no leg loads, so the every-turn commit rule no longer ends a multi-leg wave.
+  `PHASE_1B_ROSTER.md` and the admissions JSON are allowed too: the gate RE-READS them at every leg, so
+  admitting the wave's own strategy stops the wave at the next leg while an unrelated admission does not
+  (what a leg opens is MEASURED by `scripts/leg_read_set.py`). It ALWAYS refuses an uncommitted change
+  to a path a leg computes with, and a tickers or strategy file that no longer matches the manifest's pin.
+  **`true` waives only COMMITTED engine drift** - a deliberate, recorded engine change mid-wave - never
+  an uncommitted edit or a changed input. (Until B3099 this bullet recorded the sha comparison, which
+  refused leg 2 of a live Step-2 wave after four queue-only commits while `git diff` over `backtest/`
+  was empty; the instance is in the campaign log.) The landing battery runs once, after the last leg,
+  from whatever code is on disk, so the landing records the code that graded it (`graded_with`).
+  Pinned by `test_b3093_drift_check_compares_content_not_shas` and `test_b3099_drift_check_is_content_aware`.
 
 #### Step 2.3 - MEASURED RUNTIME - per campaign and per pool size, never carried from another family's run
 
 Take it from the run's own `[B2127 rate]` line at the first leg boundary; until then use the family's
 Step-1 rate scaled by §4.7 as a labelled estimate. The window is 1,003 NYSE trading days (nyse_mcal).
-**The first rate line of a RESUMED invocation is mis-scaled:** run_wave starts its per-invocation
-sim-day counter at 0 (`run_wave.py:242`, used at `:87`), so the first leg of a resumed invocation
-divides its hours by every sim-day since day 0; compute the true rate as leg seconds / sim-days that leg
-advanced until S6-B3094a ships. Each campaign's measured rate and memory readings are recorded in
+**The first rate line of a RESUMED invocation - FIXED B3099 (S6-B3094a).** run_wave used to start its
+per-invocation sim-day counter at 0, so the first leg of a resumed invocation divided its hours by every
+sim-day since day 0. A leg's rate is now measured from the day the ENGINE recorded it resumed at (its
+`resume_boundaries.json` record, B3098; `run_wave.leg_start_from_records`), which also covers a crash
+that resumed from an older checkpoint. A leg launched with `--resume-from-checkpoint` that wrote no
+record prints `[B3099 WARN]`; for that leg, compute the rate as leg seconds / sim-days it advanced. Each campaign's measured rate and memory readings are recorded in
 `STRATEGY_CAMPAIGN_LOG.md`.
 
 #### Step 2.4 - THE MEMORY CEILING - three rules, each of which cost something to learn
@@ -1479,11 +1488,16 @@ advanced until S6-B3094a ships. Each campaign's measured rate and memory reading
   having killed three prior runs. Do not run the full suite against a live wave. **SEQUENCE IT BEFORE
   THE LAUNCH - there is no leg-boundary window (B3091):** this rule used to say *defer the commit to a
   leg boundary*, and the third bullet below measured why that cannot work. `scripts/pyramid_gate.py`
-  records `engine_inflight` from the engine's own `run_heartbeat.json`, because its `chain_inflight`
-  field reads only `serial_chain.log` and a direct run_wave launch never writes there (L865; the
-  S6-B3093c false-positive on a dead wave's heartbeat is open).
+  records `engine_inflight` from the PROCESS TABLE (S6-B3093c, B3099): any python whose script is a
+  runner - `run_phase1a.py`, `run_wave.py`, `run_serial_chain.py`, `launch_sweep.py` - is in flight,
+  whatever launched it, including the gap between legs when the engine has exited and run_wave has
+  not; an unreadable table reads `unknown`. Its `chain_inflight` field reads only `serial_chain.log`,
+  which a direct run_wave launch never writes (L865). A fresh heartbeat whose pid is gone is recorded
+  separately as `engine_dead_within_window` - the B3091 heartbeat-age reading named a dead wave as
+  in flight for an hour.
 - **Editing the spec does NOT affect a running wave.** `run_wave.py` reads the spec ONCE at startup
-  (`run_wave.py:492`) and the leg loop reads `max_legs` from that in-memory dict (`run_wave.py:245`);
+  (`run_wave.main`) and the leg loop reads `max_legs` from that in-memory dict (`run_arm`'s
+  `while legs < int(spec.get("max_legs", 4))`);
   raising `max_legs` mid-flight changes nothing. A running process holds what it loaded.
 - **Killing the engine is not killing the wave.** run_wave is the parent and its leg loop RESPAWNS the
   engine within seconds. **Kill the run_wave root and its descendants, parent-first**, by verified PID.
@@ -1508,8 +1522,8 @@ The monitor contract is §8.9. Wave-specific rules:
   exhaustion PowerShell cannot start, so a monitor built on it goes blind exactly when it matters.
   Report FREE COMMIT, never physical RAM (L670).
 - **A leg that dies before its cap is resumed SILENTLY by run_wave:** the leg loop continues whenever a
-  checkpoint exists and no cube does (`run_wave.py:245-338`). Read the wave's summary log each firing -
-  `launch_sweep.py:299-300` writes `CFG=<tag> EXIT=<rc> ELAPSED=<s> CUBE_ROWS=<n|ABSENT>` per leg, and a
+  checkpoint exists and no cube does (`run_arm`'s leg loop). Read the wave's summary log each firing -
+  `launch_sweep.main`'s summary-log line writes `CFG=<tag> EXIT=<rc> ELAPSED=<s> CUBE_ROWS=<n|ABSENT>` per leg, and a
   line with ELAPSED under the leg cap and `CUBE_ROWS=ABSENT` is a crash-and-resume (S6-B3094f item 3).
   It resumes from the last PERIODIC checkpoint, which carries no portfolio block, so cash and positions
   restart at that boundary - inert in an isolation cube, where the portfolio holds nothing (S6-B3096g,
@@ -1561,7 +1575,7 @@ real landing the engine hook passes NO flag, so the window decides; run_wave's f
 spec's `step1_cube`, applies only when its `--if-not-landed` call is the one that lands the cube), M5 pnl integrity (NaN / inf / winsorize), M7 degraded exits, M9 the
 universe artifact via the cube's own manifest, and **M10 the gate receipt** (§8.6); M6 (boundary
 carryover - the pre-B3096 text said boundary DROPS; open trades are restored at a leg boundary
-(S6-B2213a), and S6-B2404 renamed the counter to what it counts, `run_wave.py:323-329`) is recorded by run_wave and is meaningful only
+(S6-B2213a), and S6-B2404 renamed the counter to what it counts, `run_arm`'s `boundary_carryover`) is recorded by run_wave and is meaningful only
 after B2167. M8 (a short borrow-rate check) never entered the battery - the pre-B3096 text said it was
 pending a short cube: S6-B2118b resolved it by instrumenting the borrow-trap blocking rate at the
 helper's own definition (`_BORROW_TRAP_COUNTER`, `backtest/signals/screener.py:141`), so it needs no
@@ -2265,7 +2279,7 @@ per run  =  tickers x sim-days x 0.2613      <- a CANONICAL rate; a campaign's o
 | setting | value | why |
 |---|---|---|
 | `--cube-isolation` | ON | bypasses ALL cross-strategy gates and tier sizing (`backtest.py:212`, the B1321 constructor flag) |
-| `--screen-pool-workers` | from the spec's `pool_workers` | the spec's arm is the authority, read by run_wave (`run_wave.py:260`; the pre-B3096 table said launch_sweep, which never reads it); 0 is sequential (L407) |
+| `--screen-pool-workers` | from the spec's `pool_workers` | the spec's arm is the authority, read by run_wave (`run_arm`'s engine arguments, `spec.get("pool_workers", 0)`; the pre-B3096 table said launch_sweep, which never reads it); 0 is sequential (L407) |
 | `--no-agents --no-news --no-git --no-walk-forward` | ON | not consumed by the six gates |
 | `--max-run-hours` | the spec's `leg_cap_hours` | the runner REFUSES to start without it |
 | `OPTIMIZATION_MODE` | 1 | uncaps `max_cands` (no-op under isolation, L419) |

@@ -1,0 +1,42 @@
+{
+ "batch": "B3099",
+ "ticket": "S6-B3093a",
+ "measured_utc": "2026-09-24",
+ "purpose": "What a LEG reads, measured with sys.addaudithook - the basis of drift_check's allow-list",
+ "per_leg_gate": {
+  "command": "python scripts/leg_read_set.py --manifest output_candle_tws_c14_b0.5_s0.0_w0.3/run_manifest.json --out <file>",
+  "scope": "the real prelaunch_gate on c14's real Step-1 manifest (one family, one manifest)",
+  "result": {
+   "exit": 0,
+   "data_files": [
+    "Backtesting universe/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv",
+    "PHASE_1B_ROSTER.md",
+    "backtest/data/economic_calendar.json",
+    "output_audit/_subset_three_white_soldiers.txt",
+    "output_audit/phase_1b_step2_admissions.json",
+    "output_batches/batch_ledger.json",
+    "output_candle_tws_c14_b0.5_s0.0_w0.3/run_manifest.json"
+   ],
+   "python_files": 557
+  }
+ },
+ "engine": {
+  "command": "scratchpad probe: backtest/run_phase1a.py under a sitecustomize audit hook in every python process",
+  "scope": "NARROW: 3 tickers (AAPL MSFT JPM), 2024-05-06..2024-05-20, three_white_soldiers at production params, 2 pool workers; files read only on other dates, tickers or families are NOT covered",
+  "engine_exit": 0,
+  "processes_recorded": 3,
+  "data_files_by_top_level": {
+   ".venv": 171,
+   "backtest": 8,
+   "(repo root)": 1,
+   "backtesting universe": 8,
+   "data": 2,
+   "data_prefetch": 111,
+   "output_audit": 1
+  },
+  "md_or_output_audit_files": [
+   "output_audit/_subset_three_white_soldiers.txt"
+  ],
+  "tracked_engine_writes_note": "none in this run (git status clean after it); data/cache/info_cache.json and backtest/data/cache/index.json are engine-WRITTEN tracked state by code (universe.fetch_info_bulk, cache._save_index)"
+ }
+}

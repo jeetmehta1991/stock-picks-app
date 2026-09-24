@@ -100,6 +100,30 @@ def project_from_leg(elapsed_s: float, sim_day: int, total_days: int,
             "legs_still_needed_at_cap": legs_needed}
 
 
+def _resume_records(out_dir: Path) -> list:
+    """The engine's resume records (B3098 resume_boundaries.json), [] when
+    absent or unreadable."""
+    p = Path(out_dir) / "resume_boundaries.json"
+    try:
+        recs = json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
+    except (OSError, ValueError):
+        return []
+    return recs if isinstance(recs, list) else []
+
+
+def leg_start_from_records(before: list, after: list, fallback: int) -> tuple:
+    """S6-B3094a (B3099): (leg_start_day, source). A leg that appended a resume
+    record started at that record's resume_index - the first day it RAN,
+    written by the engine itself. Otherwise the fallback (0 on a fresh leg 1,
+    the previous leg's simulated_day after that)."""
+    if len(after) > len(before):
+        rec = after[-1] if isinstance(after[-1], dict) else {}
+        ri = rec.get("resume_index")
+        if isinstance(ri, int) and not isinstance(ri, bool):
+            return ri, "engine resume record"
+    return int(fallback), "run_wave bookkeeping"
+
+
 def resolve_ruled_scope(spec: dict) -> dict:
     """B2713 (LLM-council verdict 2026-09-12): a spec that declares `step`
     gets its window and universe INJECTED from the runbook's phase table -
@@ -163,6 +187,15 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
                         "\n".join(tickers).encode()).hexdigest()},
         "strategy_subset": spec["strategy_subset"],
         "cube_riders": spec.get("cube_riders"),
+        # S6-B3093a (B3099): the strategy files a leg reads, pinned by
+        # CONTENT at freeze (whitespace-normalised like the tickers pin);
+        # launch_sweep.drift_check re-hashes them at every leg.
+        "input_sha256": {
+            rel: hashlib.sha256("\n".join(
+                (ROOT / rel).read_text(encoding="utf-8").split()
+            ).encode()).hexdigest()
+            for rel in (spec["strategy_subset"], spec.get("cube_riders"))
+            if rel},
         # B2714c: this manifest is GENERATED from a spec that the launch
         # gate already judged; the typed-scope rule binds the AUTHORED
         # spec, so the derived artifact says so and carries the spec's
@@ -188,11 +221,14 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
             f"{RATE_S_PER_TICKER_DAY} s/ticker-day x {len(tickers)}t x "
             f"{days}d; chunked at {spec['leg_cap_hours']}h legs under the "
             f"owner's {OWNER_LOCAL_CAP_HOURS:g}h local cap"),
-        # B2174: spec passthrough for the drift waiver. Hourly owner updates
-        # are commits, commits move HEAD, and the sha half of drift_check
-        # would refuse every resume leg after the first report. The waiver is
-        # explicit and recorded HERE, in the manifest the receipt hashes; the
-        # no-engine-commits-mid-wave discipline carries the real safety.
+        # B2174 -> S6-B3093a (B3099): spec passthrough for the drift waiver.
+        # The sha half of drift_check is GONE - it now compares CONTENT, so
+        # hourly report commits no longer refuse a resume leg - and the
+        # waiver waives only COMMITTED drift in a path a leg computes with
+        # (a deliberate, recorded engine change); never an uncommitted edit
+        # or a changed input. Recorded HERE, in the manifest the receipt
+        # hashes. (The B2174 wording described the sha check, L867's class:
+        # a generator's comment outliving the fix that voided it.)
         "allow_engine_drift": bool(spec.get("allow_engine_drift", False)),
         # B2849 (S6-B2848c): the 0.5 smoke rides spec -> manifest so the
         # prelaunch refusal has a compliant path - the WRITER carries what
@@ -309,7 +345,16 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
                         "legs": 0, "spawn_error": why}
             print("[B2250a] pool spawn probe OK (one worker, at launch - "
                   "does not prove spawning survives the whole run)")
+        _rb_before = _resume_records(out_dir)
         rc = subprocess.run(cmd, cwd=str(ROOT), env=env).returncode
+        # S6-B3094a (B3099): the leg's first day as the ENGINE recorded it
+        leg_start_day, _start_src = leg_start_from_records(
+            _rb_before, _resume_records(out_dir), leg_start_day)
+        if "--resume-from-checkpoint" in engine_args and _start_src != \
+                "engine resume record":
+            print(f"[B3099 WARN] arm={arm['tag']} leg={legs} was launched with "
+                  "--resume-from-checkpoint but the engine wrote no resume "
+                  "record - its rate is measured from run_wave's bookkeeping")
         if rc == 2:
             return {"arm": arm["tag"], "status": "GATE_REFUSED", "legs": legs}
         if cube.exists():

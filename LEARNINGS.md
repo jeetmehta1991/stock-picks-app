@@ -23433,6 +23433,10 @@ asserts the sha half never consults `git diff`, and that the runbook bullet
 exists, so a content-aware drift check (proposed as S6-B3093a, awaiting the
 owner) cannot ship without the bullet changing with it.
 
+**B3099 NOTE.** S6-B3093a shipped at B3099 (owner-approved 2026-09-24): `drift_check` now compares
+CONTENT, and the pin above was renamed `test_b3093_drift_check_compares_content_not_shas` with the
+runbook bullet rewritten in the same batch - the coupling this entry asked for held.
+
 **B3094 CORRECTION OF THIS ENTRY.** It says `drift_check` "compares HEAD's sha with `frozen_sha` and nothing else". FALSE: lines 77-81 of scripts/launch_sweep.py also refuse when an engine-consumed path is DIRTY, and I had read those lines before writing the sentence. The waiver (lines 70-71) turns off both halves. The rule survives, and it convicts its own first draft: I described the gate by the half I was thinking about, not by what the function does. Caught by the B3094 launch review, not by me.
 
 ### L867 - A CAVEAT A GENERATOR WRITES INTO EVERY ARTIFACT OUTLIVES THE FIX THAT VOIDED IT, AND I REPEATED IT TO THE OWNER (B3094, 2026-09-24)

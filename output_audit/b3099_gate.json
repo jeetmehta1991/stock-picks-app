@@ -1,0 +1,61 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 18%]
+........................................................................ [ 23%]
+........................................................................ [ 28%]
+........................................................................ [ 33%]
+........................................................................ [ 37%]
+..............................................s......................... [ 42%]
+....................s.................................................s. [ 47%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 61%]
+........................................................................ [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 75%]
+........................................................................ [ 80%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+........................................................................ [ 99%]
+..........                                                               [100%]
+============================ slowest 25 durations =============================
+275.79s call     backtest/tests/test_unit.py::test_b2638_reproduction_failure_refuses
+133.06s call     backtest/tests/test_unit.py::test_b2886_holdout_read_refuses_an_uncovered_band
+122.27s call     backtest/tests/test_unit.py::test_b2337_no_header_asserted_by_substring_over_whole_output
+36.03s call     backtest/tests/test_unit.py::test_b1463_no_new_near_identical_pairs
+33.68s call     backtest/tests/test_unit.py::test_b1619_breaker_variants_isolate_and_do_not_move_the_base
+30.15s call     backtest/tests/test_unit.py::test_b1616_engine_defaults_are_byte_identical_and_knobs_bite
+24.59s call     backtest/tests/test_unit.py::test_smart_money_all_keys_present
+24.48s call     backtest/tests/test_unit.py::test_b3099_drift_check_is_content_aware
+16.70s call     backtest/tests/test_unit.py::test_bug273_institutional_signal_no_bulk_returns_none
+13.13s call     backtest/tests/test_unit.py::test_bug272_insider_signal_no_bulk_returns_none
+12.91s call     backtest/tests/test_unit.py::test_b1778_no_control_chars_in_gate_scripts
+10.68s call     backtest/tests/test_unit.py::test_b2116_run_wave_resume_loop_both_ways
+9.65s call     backtest/tests/test_unit.py::test_dec458_lead_lag_wired_in_screen_universe
+8.92s call     backtest/tests/test_unit.py::test_b2118_run_postconfig_checks_catch_the_planted_defects
+8.73s call     backtest/tests/test_unit.py::test_b2169_gate_receipt_binds_manifest_to_launch
+8.24s call     backtest/tests/test_integration.py::test_dec_235_engine_skips_holiday_weekday
+7.33s call     backtest/tests/test_unit.py::test_b2127_launch_refuses_when_the_engine_drifted_from_the_manifest
+5.68s call     backtest/tests/test_unit.py::test_b2148_supervisor_kills_a_run_whose_day_never_ends
+5.58s call     backtest/tests/test_unit.py::test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten
+5.52s call     backtest/tests/test_unit.py::test_b1884_raises_arms_use_genuinely_invalid_fixtures
+5.43s call     backtest/tests/test_unit.py::test_b1510_producer_artifact_standard
+5.07s call     backtest/tests/test_unit.py::test_b2207_ledger_lock_serializes_concurrent_landings
+4.70s call     backtest/tests/test_unit.py::test_b1819_declared_drop_counters_are_written_to
+3.97s call     backtest/tests/test_unit.py::test_b3099_every_file_the_leg_gate_opens_is_refused_or_declared_policy
+3.42s call     backtest/tests/test_unit.py::test_b1623_degraded_exits_are_measured_not_assumed
+1519 passed, 3 skipped in 912.49s (0:15:12)
+
+pytest_exit=0
+tree=SAME
+exit=0
+elapsed_s=936
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none

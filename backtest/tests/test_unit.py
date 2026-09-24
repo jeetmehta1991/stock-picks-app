@@ -26151,12 +26151,26 @@ def test_b2127_launch_refuses_when_the_engine_drifted_from_the_manifest(tmp_path
     sha_reasons = [r for r in ls.drift_check(str(current)) if "frozen_sha" in r]
     assert sha_reasons == [], f"HEAD must not read as drift: {sha_reasons}"
 
-    # explicit waiver is honoured and recorded in the manifest itself
+    # the waiver is recorded in the manifest itself. S6-B3093a (B3099): it
+    # waives ONLY committed content drift - a deliberate engine change - and
+    # never an uncommitted edit or an unpinned input. Git is faked so the
+    # verdict does not depend on this checkout's own working tree (L632).
+    def fake(*args):
+        if args[:3] == ("diff", "--name-only", "-z") and len(args) == 5:
+            return 0, ["backtest/engine/backtest.py"]
+        return 0, []
+    ls._git_names = fake
     waived = tmp_path / "waived.json"
     waived.write_text(_json.dumps(
         {"frozen_sha": "0" * 40, "allow_engine_drift": True}), encoding="utf-8")
-    assert ls.drift_check(str(waived)) == []
-
+    r_w = ls.drift_check(str(waived))
+    assert not any("changed" in r and "frozen_sha" in r for r in r_w), r_w
+    assert any("no tickers pin" in r for r in r_w), (
+        "the waiver must not lift the input pins: " + repr(r_w))
+    unwaived = tmp_path / "unwaived.json"
+    unwaived.write_text(_json.dumps({"frozen_sha": "0" * 40}), encoding="utf-8")
+    assert any("backtest/engine/backtest.py" in r
+               for r in ls.drift_check(str(unwaived))), "must-fire without the waiver"
 
 def test_b2127_arm_reprojects_from_its_own_leg_not_a_global_constant():
     """B2127 (S6-B2125b): one canonical rate cannot cover an arm set.
@@ -34475,6 +34489,8 @@ def test_b2613_manifest_basis_names_the_enforced_cap(tmp_path, monkeypatch):
     assert rw.OWNER_LOCAL_CAP_HOURS is pg.OWNER_LOCAL_CAP_HOURS
 
     (tmp_path / "t.txt").write_text("AAPL\nMSFT\n", encoding="utf-8")
+    # B3099: build_manifest content-pins the strategy file (S6-B3093a)
+    (tmp_path / "s.txt").write_text("three_white_soldiers\n", encoding="utf-8")
     monkeypatch.setattr(rw, "ROOT", tmp_path)
     spec = {"wave": "w", "tickers_file": "t.txt", "strategy_subset": "s.txt",
             "window": {"start": "2022-05-05", "end": "2026-05-05"},
@@ -43877,10 +43893,14 @@ def test_b3091_pyramid_sees_an_engine_the_chain_log_never_names(tmp_path, monkey
     because _chain_inflight() reads only serial_chain.log and a direct
     run_wave launch never writes there. Two pyramids ran beside that engine,
     Windows logged three low-virtual-memory events, and the owner restarted
-    the machine. The fix reads the artifact the ENGINE writes -
-    output_*/run_heartbeat.json - which every launch path produces.
+    the machine. B3091 then read heartbeat AGE - which named a DEAD engine as
+    in flight for an hour (MEASURED B3093) - and a pid check on the heartbeat
+    alone would read the gap BETWEEN legs as clear while run_wave waits to
+    start the next one (Council 1b). S6-B3093c (B3099) reads the PROCESS
+    TABLE: a python process whose script is a runner is in flight, whatever
+    launched it; a fresh heartbeat whose pid is gone is disclosed separately.
+    The `rows` seam carries (pid, argv) exactly as _python_argvs returns them.
     """
-    import os
     import sys as _sys
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2]
@@ -43889,48 +43909,45 @@ def test_b3091_pyramid_sees_an_engine_the_chain_log_never_names(tmp_path, monkey
     import pyramid_gate as pg
 
     monkeypatch.setattr(pg, "ROOT", tmp_path)
-    fresh = pg.ENGINE_FRESH_S
-
-    # 0. nothing on disk -> "none", never a crash
-    assert pg._engine_inflight() == "none"
-
-    # 1. THE DEFECT CASE: a wave's engine heartbeat exists and the chain log
-    #    does not mention it. The old disclosure says none; the new one must
-    #    name the wave. Names are deliberately unrunnable (see test_b3061).
+    py = "C:/r/.venv/Scripts/python.exe"
+    wave = (101, [py, "scripts/run_wave.py", "--spec",
+                  "output_audit/fixture_zz97_step2_spec.json"])
+    eng = (202, [py, "C:/r/backtest/run_phase1a.py", "--tickers-file", "t.txt",
+                 "--output-dir", "C:/r/output_fixture_zz97_step2_arm"])
+    # 0. nothing running -> "none"; an unreadable table -> "unknown" (fail closed)
+    assert pg._engine_inflight(rows=[]) == "none"
+    monkeypatch.setattr(pg, "_python_argvs", lambda: None)
+    assert pg._engine_inflight() == "unknown"
+    # 1. THE B3091 CASE: a direct run_wave the chain log never names
+    assert pg._chain_inflight() == "none"
+    assert pg._engine_inflight(rows=[wave]) == "run_wave:fixture_zz97_step2_spec.json"
+    # 2. BETWEEN LEGS: the engine has exited, run_wave has not - still in flight
+    assert pg._engine_inflight(rows=[wave]) != "none"
+    # 3. the engine itself, named by its output dir; venv launcher + interpreter
+    #    carry the same argv and collapse to one label; sorted and stable
+    assert pg._engine_inflight(rows=[eng, (203, eng[1]), wave]) == (
+        "run_phase1a:output_fixture_zz97_step2_arm,"
+        "run_wave:fixture_zz97_step2_spec.json")
+    # 4. must-QUIET: code that merely NAMES a runner, pytest, a pool worker
+    quiet = [(1, [py, "-c", "print('backtest/run_phase1a.py')"]),
+             (2, [py, "-m", "pytest", "backtest/tests/test_unit.py"]),
+             (3, [py, "-c", "from multiprocessing.spawn import spawn_main"])]
+    assert pg._engine_inflight(rows=quiet) == "none"
+    # 5. B3093's DEAD engine: a fresh heartbeat whose pid is not running is
+    #    disclosed as dead-within-window, never counted in flight
     run = tmp_path / "output_fixture_zz97_step2_arm"
     run.mkdir()
-    hb = run / "run_heartbeat.json"
-    hb.write_text('{"sim_day_index": 19}', encoding="utf-8")
-    m = hb.stat().st_mtime
-    assert pg._chain_inflight() == "none"
-    assert pg._engine_inflight(now=m + 60) == "output_fixture_zz97_step2_arm"
-
-    # 2. inside the window at its far edge -> still named; one second past
-    #    it -> none. The window is the one L656's addendum measured for.
-    assert pg._engine_inflight(now=m + fresh) == "output_fixture_zz97_step2_arm"
-    assert pg._engine_inflight(now=m + fresh + 1) == "none"
-
-    # 3. an ARCHIVED dead run is not under output_* and must not be named -
-    #    this is how a dead wave is retired without a stale false alarm
-    dead = tmp_path / "output_audit" / "_fixture_attempt1_dead"
-    dead.mkdir(parents=True)
-    (dead / "run_heartbeat.json").write_text("{}", encoding="utf-8")
-    os.utime(dead / "run_heartbeat.json", (m, m))
-    assert pg._engine_inflight(now=m + 60) == "output_fixture_zz97_step2_arm"
-
-    # 4. two live waves -> both named, sorted, so the record is stable
-    run2 = tmp_path / "output_fixture_zz96_other"
-    run2.mkdir()
-    (run2 / "run_heartbeat.json").write_text("{}", encoding="utf-8")
-    os.utime(run2 / "run_heartbeat.json", (m, m))
-    assert pg._engine_inflight(now=m + 60) == (
-        "output_fixture_zz96_other,output_fixture_zz97_step2_arm")
-
-    # 5. the gate RECORDS it - a detector nobody writes down is decoration
+    (run / "run_heartbeat.json").write_text('{"pid": 999999991}', encoding="utf-8")
+    assert pg._engine_inflight(rows=quiet) == "none"
+    assert pg._engine_dead_within_window(rows=quiet) == "output_fixture_zz97_step2_arm"
+    assert pg._engine_dead_within_window(rows=[(999999991, eng[1])]) == "none"
+    # 6. a python whose command line cannot be read, alone -> unknown
+    assert pg._engine_inflight(rows=[(7, None)]).startswith("unknown")
+    # 7. the gate RECORDS all of it - a detector nobody writes down is decoration
     src = (root / "scripts" / "pyramid_gate.py").read_text(encoding="utf-8")
     assert "engine_inflight_start=" in src and "engine_inflight_end=" in src
+    assert "engine_dead_within_window=" in src
     assert src.count("_engine_inflight()") >= 2, "must sample at BOTH ends"
-
 
 def test_b3091_commit_free_reads_commit_in_process():
     """S6-B3091: runbook 3.4 names GlobalMemoryStatusEx as THE way to read
@@ -43968,15 +43985,16 @@ def test_b3091_commit_free_reads_commit_in_process():
         'commit_free must not spawn a process - that is the failure it avoids: %r' % mods)
 
 
-def test_b3093_drift_check_refuses_any_commit_not_only_engine_commits(tmp_path):
-    """S6-B3093 / L866: the SHA half of drift_check compares SHAS, never
-    content. MEASURED 2026-09-24: the candle c14 Step-2 wave (allow_engine_
-    drift false) ran leg 1 to its cap at sim-day 329, then leg 2 was REFUSED
-    because four queue-only commits moved HEAD - `git diff` over backtest/
-    between the two shas was empty. Runbook Step 2.2 (formerly STEP 3.2) says so. If the check is
-    ever made content-aware (S6-B3093a), THIS PIN MUST CHANGE WITH THAT
-    BULLET - a doc that describes the old comparison would mislead the next
-    spec author exactly as the gate's name misled this one."""
+def test_b3093_drift_check_compares_content_not_shas(tmp_path):
+    """S6-B3093 / L866 -> S6-B3093a (B3099). Formerly
+    test_b3093_drift_check_refuses_any_commit_not_only_engine_commits, which
+    pinned the SHA comparison: MEASURED 2026-09-24, the candle c14 Step-2 wave
+    ran leg 1 to its cap at sim-day 329, then leg 2 was REFUSED because four
+    queue-only commits moved HEAD while `git diff` over backtest/ was empty.
+    The owner approved the content compare (2026-09-24), and this pin now holds
+    the new behaviour AND the runbook bullet that tells a spec author about it
+    (Step 2.2) - a doc describing the old comparison would mislead the next
+    author exactly as the gate's name misled this one."""
     import importlib.util
     import json as _json
     from pathlib import Path as _P
@@ -43987,26 +44005,30 @@ def test_b3093_drift_check_refuses_any_commit_not_only_engine_commits(tmp_path):
     ls = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ls)
 
-    calls = []
+    committed, dirty = [], []
 
-    def fake_git(*args):
-        calls.append(args[0])
-        return {"rev-parse": "a" * 40, "status": ""}.get(args[0], "")
-
-    ls._git = fake_git
+    def fake(*args):
+        if args[:3] == ("diff", "--name-only", "-z"):
+            return 0, (committed if len(args) == 5 else dirty)
+        return 0, []
+    ls._git_names = fake
     m = tmp_path / "m.json"
     m.write_text(_json.dumps({"frozen_sha": "b" * 40}), encoding="utf-8")
-    reasons = ls.drift_check(str(m))
-    assert any("frozen_sha" in r for r in reasons), reasons
-    # content-blind: a clean tree and an unconsulted diff still refuse
-    assert "diff" not in calls and "log" not in calls, calls
+
+    def drift():
+        return [r for r in ls.drift_check(str(m)) if "pin" not in r]
+    # the L866 incident: four queue-only commits - QUIET now
+    committed[:] = ["EXECUTION_QUEUE.md"] * 4
+    assert drift() == [], drift()
+    # an engine commit - REFUSED
+    committed[:] = ["EXECUTION_QUEUE.md", "backtest/engine/backtest.py"]
+    assert any("backtest/engine/backtest.py" in r for r in drift()), drift()
 
     body = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
     sec = body.split("#### Step 2.2", 1)[1].split("#### Step 2.3", 1)[0]
-    assert '"allow_engine_drift": true' in sec, "template lost its value"
-    assert "S6-B3093" in sec and "ANY COMMIT" in sec, (
-        "runbook Step 2.2 no longer explains what drift_check refuses")
-
+    assert '"allow_engine_drift": false' in sec, "template lost its value"
+    assert "S6-B3093a" in sec and "CONTENT" in sec, (
+        "runbook Step 2.2 no longer explains what drift_check compares")
 
 def test_b3094_run_wave_manifest_says_open_trades_are_restored(tmp_path):
     """S6-B3094b / L867: run_wave's build_manifest wrote 'open trades dropped
@@ -44029,9 +44051,13 @@ def test_b3094_run_wave_manifest_says_open_trades_are_restored(tmp_path):
 
     tickers = tmp_path / "tickers.txt"
     tickers.write_text("AAA\nBBB\n", encoding="utf-8")
+    # B3099: build_manifest now content-pins the strategy file (S6-B3093a),
+    # so the fixture's subset must exist - a missing one fails at wave start
+    subset = tmp_path / "x.txt"
+    subset.write_text("three_white_soldiers\n", encoding="utf-8")
     spec = {"wave": "b3094test", "tickers_file": str(tickers),
             "window": {"start": "2022-05-05", "end": "2026-05-05"},
-            "leg_cap_hours": 4.5, "strategy_subset": "x.txt"}
+            "leg_cap_hours": 4.5, "strategy_subset": str(subset)}
     mp = rw.build_manifest(spec, {"tag": "armx"}, tmp_path / "out", "0" * 40)
     risks = _json.loads(mp.read_text(encoding="utf-8"))["obsolescence_risks"]
     texts = [(str(r.get("risk", "")) + " " + str(r.get("status", ""))).lower()
@@ -44859,3 +44885,300 @@ def test_b3098_every_state_writer_flushes_the_open_book_unconditionally():
                     f"a trade has closed ({ast.unparse(p.test)!r}) - a leg stopped "
                     "before its first closed trade becomes unresumable")
             p = parents.get(p)
+
+
+def _b3099_launch_sweep():
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "launch_sweep_b3099", root / "scripts" / "launch_sweep.py")
+    ls = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ls)
+    return root, ls
+
+
+def test_b3099_drift_allowed_is_fail_closed():
+    """S6-B3093a (B3099): the allow-list admits only what no leg can read.
+    One case per class of path, both directions (B1944)."""
+    _root, ls = _b3099_launch_sweep()
+    leg = ls.leg_code_closure()
+    inputs = {"output_audit/r5_universe_544.txt"}
+    allowed = ["EXECUTION_QUEUE.md", "LEARNINGS.md", "CHECKLIST.md",
+               "output_audit/b3099_gate.json", "output_audit/postconfig_landings.jsonl",
+               "output_audit/POSTCONFIG_REPORT.md", ".claude/skills/x/SKILL.md",
+               "backtest/tests/test_unit.py", "scripts/queue_state.py",
+               "scripts/verify_turn_compliance.py", "output_audit/held_patches/p.py",
+               "archive/old/x.csv",
+               # measured B3099: the runbook is not opened per leg, and the two
+               # policy files are re-read by the gate at every leg
+               "STRATEGY_OPTIMISATION_PLAN.md", "PHASE_1B_ROSTER.md",
+               "output_audit/phase_1b_step2_admissions.json"]
+    refused = ["backtest/engine/backtest.py", "backtest/results/writer.py",
+               "backtest/config.py", "backtest/run_phase1a.py",
+               "backtest/data/economic_calendar.json",
+               "scripts/launch_sweep.py", "scripts/prelaunch_gate.py",
+               "scripts/producer_variant_table.py",
+               "scripts/build_institutional_persistence_precompute.py",
+               "scripts/inject_null_strategies.py",
+               "output_audit/_sweep_200.txt", "output_audit/_subset_x.txt",
+               "output_audit/_engine_set_w.txt", "output_audit/r5_universe_544.txt",
+               "output_audit/new_universe.txt", "output_batches/batch_ledger.json",
+               "Backtesting universe/Tier 3.csv", "requirements.txt", "setup.py"]
+    bad_a = [p for p in allowed if not ls.drift_allowed(p, inputs, leg)]
+    bad_r = [p for p in refused if ls.drift_allowed(p, inputs, leg)]
+    assert not bad_a, f"refused but no leg reads them: {bad_a}"
+    assert not bad_r, f"ALLOWED but a leg reads them: {bad_r}"
+    # the LEG_READ_FILES mechanism refuses a declared computation input even
+    # when its kind would be allowed - empty today, so prove it can fire
+    ls.LEG_READ_FILES = frozenset({"output_audit/zz_engine_input.json"})
+    assert not ls.drift_allowed("output_audit/zz_engine_input.json", inputs, leg)
+    assert ls.drift_allowed("output_audit/zz_other.json", inputs, leg)
+
+
+def test_b3099_leg_code_closure_follows_the_gate_import(tmp_path):
+    """The per-leg code set is DERIVED from the code: launch_sweep runs
+    prelaunch_gate as a subprocess (a .py string literal), prelaunch_gate
+    imports producer_variant_table, and the ENGINE imports scripts modules of
+    its own - all reached with nothing hand-listed. MEASURED B3099: the engine
+    imports build_institutional_persistence_precompute (signal_loader ->
+    institutional_persistence_consumer) and inject_null_strategies (a
+    diagnostics canary); the first was covered only because the gate happens
+    to import it as well."""
+    _root, ls = _b3099_launch_sweep()
+    leg = ls.leg_code_closure()
+    assert {"scripts/launch_sweep.py", "scripts/prelaunch_gate.py",
+            "scripts/producer_variant_table.py",
+            "scripts/build_institutional_persistence_precompute.py",
+            "scripts/inject_null_strategies.py"} <= leg, sorted(leg)
+    assert "scripts/verify_turn_compliance.py" not in leg, sorted(leg)
+    assert ls._engine_script_imports() >= {
+        "scripts/build_institutional_persistence_precompute.py",
+        "scripts/inject_null_strategies.py"}
+    # a synthetic tree, both directions (B1944): an engine IMPORT of a scripts
+    # module is leg code even when no gate imports it; a test's import and an
+    # engine STRING LITERAL (a post-leg subprocess such as the landing) are not
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "backtest" / "signals").mkdir(parents=True)
+    (tmp_path / "backtest" / "tests").mkdir()
+    for name in ("launch_sweep", "prelaunch_gate", "zz_helper", "zz_test_only",
+                 "zz_landing"):
+        (tmp_path / "scripts" / f"{name}.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "backtest" / "signals" / "c.py").write_text(
+        "from zz_helper import x\nLANDING = 'zz_landing.py'\n", encoding="utf-8")
+    (tmp_path / "backtest" / "tests" / "t.py").write_text(
+        "import zz_test_only\n", encoding="utf-8")
+    syn = ls.leg_code_closure(tmp_path)
+    assert "scripts/zz_helper.py" in syn, sorted(syn)
+    assert "scripts/zz_test_only.py" not in syn, sorted(syn)
+    assert "scripts/zz_landing.py" not in syn, sorted(syn)
+
+
+def test_b3099_drift_check_is_content_aware(tmp_path):
+    """S6-B3093a (B3099): the three checks, each must-fire and must-quiet, with
+    git faked so the verdict never depends on this checkout (L632)."""
+    import hashlib
+    import json as _json
+    root, ls = _b3099_launch_sweep()
+    committed, dirty = [], []
+
+    def fake(*args):
+        if args[:3] == ("diff", "--name-only", "-z"):
+            return 0, (committed if len(args) == 5 else dirty)
+        return 0, []
+    ls._git_names = fake
+    tick_rel = "output_audit/_subset_three_white_soldiers.txt"   # any real file
+    toks = (root / tick_rel).read_text(encoding="utf-8").split()
+    good = hashlib.sha256("\n".join(toks).encode()).hexdigest()
+    base = {"frozen_sha": "b" * 40, "tickers": {"file": tick_rel, "sha256": good},
+            "input_sha256": {tick_rel: good}}
+
+    def check(**over):
+        m = tmp_path / "m.json"
+        m.write_text(_json.dumps(dict(base, **over)), encoding="utf-8")
+        return ls.drift_check(str(m))
+    assert check() == [], check()                          # clean -> quiet
+    committed[:] = ["EXECUTION_QUEUE.md", "output_audit/b3099_gate.json"]
+    assert check() == [], check()                          # doc + artifact -> quiet
+    committed[:] = ["scripts/prelaunch_gate.py"]
+    assert any("prelaunch_gate" in r for r in check())     # per-leg code -> refuse
+    assert check(allow_engine_drift=True) == []            # waiver: committed only
+    committed[:] = []
+    dirty[:] = ["backtest/engine/backtest.py"]
+    assert any("uncommitted" in r for r in check(allow_engine_drift=True)), (
+        "the waiver must never lift the uncommitted-change check")
+    dirty[:] = ["LEARNINGS.md"]
+    assert check() == [], check()                          # a dirty doc -> quiet
+    # the engine's own cache state, written DURING a leg, never refuses the next
+    # leg; an engine INPUT dirtied by hand does, and so does a COMMITTED cache
+    dirty[:] = ["backtest/data/cache/index.json", "data/cache/info_cache.json"]
+    assert check() == [], check()
+    dirty[:] = ["backtest/data/economic_calendar.json"]
+    assert any("uncommitted" in r for r in check())
+    dirty[:] = []
+    committed[:] = ["backtest/data/cache/index.json"]
+    assert any("index.json" in r for r in check())
+    committed[:] = []
+    # the exempt roots are the engine writers' OWN paths - move a writer and
+    # this fails instead of the exemption silently covering nothing
+    import inspect
+    from backtest.data import cache as _cache
+    from backtest.data import universe as _uni
+    idx = _cache.INDEX_FILE.resolve().relative_to(root.resolve()).as_posix()
+    info = inspect.signature(_uni.fetch_info_bulk).parameters["cache_file"].default
+    assert idx.startswith(ls.ENGINE_STATE_PREFIXES), idx
+    assert str(info).replace("\\", "/").startswith(ls.ENGINE_STATE_PREFIXES), info
+    bad = dict(base["input_sha256"])
+    bad[tick_rel] = "0" * 64
+    assert any("no longer matches its pin" in r for r in check(input_sha256=bad))
+    assert any("no input_sha256" in r for r in check(input_sha256=None))
+    committed[:] = ["backtest/engine/backtest.py"]
+
+    def failing(*args):
+        return (128, []) if len(args) == 5 else (0, [])
+    ls._git_names = failing
+    assert any("cannot be diffed" in r for r in check()), "unknown sha fails closed"
+
+
+def test_b3099_manifest_pins_the_strategy_inputs(tmp_path, monkeypatch):
+    """run_wave.build_manifest writes the strategy-file pins drift_check
+    verifies, whitespace-normalised like the tickers pin."""
+    import hashlib
+    import json as _json
+    root = _b2520_scripts_on_path()
+    import run_wave as rw
+    rel = "output_audit/_subset_three_white_soldiers.txt"
+    spec = {"wave": "zz_b3099_pin", "tickers_file": rel, "strategy_subset": rel,
+            "window": {"start": "2024-05-06", "end": "2025-05-05"},
+            "leg_cap_hours": 4.5}
+    mp = rw.build_manifest(spec, {"tag": "t"}, tmp_path / "out", "a" * 40)
+    m = _json.loads(mp.read_text(encoding="utf-8"))
+    toks = (root / rel).read_text(encoding="utf-8").split()
+    assert m["input_sha256"] == {
+        rel: hashlib.sha256("\n".join(toks).encode()).hexdigest()}
+
+
+def test_b3099_leg_start_comes_from_the_engine_resume_record():
+    """S6-B3094a (B3099): a leg that appended a resume record started at its
+    resume_index; otherwise the fallback. And run_arm is wired to it."""
+    import ast
+    from pathlib import Path as _P
+    root = _b2520_scripts_on_path()
+    import run_wave as rw
+    rec = {"resume_index": 330, "decision": "resumed_at_next_unrun_day"}
+    assert rw.leg_start_from_records([], [rec], 0) == (330, "engine resume record")
+    assert rw.leg_start_from_records([rec], [rec], 329) == (329, "run_wave bookkeeping")
+    assert rw.leg_start_from_records([], [], 0) == (0, "run_wave bookkeeping")
+    assert rw.leg_start_from_records([], [{"x": 1}], 7) == (7, "run_wave bookkeeping")
+    src = (root / "scripts" / "run_wave.py").read_text(encoding="utf-8")
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "run_arm")
+    calls = [c.func.id for c in ast.walk(fn) if isinstance(c, ast.Call)
+             and isinstance(c.func, ast.Name)]
+    assert "leg_start_from_records" in calls and "_resume_records" in calls
+
+
+def test_b3099_process_table_sees_a_live_runner(tmp_path):
+    """S6-B3093c (B3099): the REAL table read, end to end - a child python
+    running a script named run_wave.py must be seen while it lives and not
+    after it is killed. The fake runner only sleeps."""
+    import subprocess
+    import sys as _sys
+    import time as _t
+    _b2520_scripts_on_path()
+    import pyramid_gate as pg
+    fake = tmp_path / "run_wave.py"
+    fake.write_text("import time\ntime.sleep(60)\n", encoding="utf-8")
+    label = "run_wave:zz_b3099_live_probe.json"
+    # the BASE interpreter, not the venv launcher: on Windows the launcher
+    # starts the real python as a child, and killing the launcher can leave
+    # that child running - the fake needs nothing from the venv
+    exe = getattr(_sys, "_base_executable", None) or _sys.executable
+    p = subprocess.Popen([exe, str(fake), "--spec", "zz_b3099_live_probe.json"])
+    try:
+        seen = False
+        for _ in range(40):
+            if label in pg._engine_inflight().split(","):
+                seen = True
+                break
+            _t.sleep(0.25)
+        assert seen, f"a live runner was not seen: {pg._engine_inflight()}"
+    finally:
+        p.kill()
+        p.wait(timeout=30)
+    assert label not in pg._engine_inflight().split(","), "a killed runner still reads live"
+
+
+def test_b3099_every_file_the_leg_gate_opens_is_refused_or_declared_policy(tmp_path):
+    """S6-B3093a (B3099). What a leg reads is MEASURED, not listed: the real
+    prelaunch gate runs under a sys.addaudithook (scripts/leg_read_set.py) on a
+    manifest built exactly as run_wave builds one, and every repo file it opens
+    must be one drift_check refuses to see change mid-wave OR a declared POLICY
+    file the gate re-reads at every leg (LEG_POLICY_FILES). MEASURED B3099: the
+    gate opens PHASE_1B_ROSTER.md and output_audit/phase_1b_step2_admissions.json
+    to refuse an admitted strategy - re-evaluated per leg, so an unrelated
+    admission must not halt a wave (L866's shape) - and does NOT open the
+    runbook, which a first draft froze by reasoning. The day the gate opens a
+    new file this test fails until it is classified; a declared policy file the
+    gate stops opening fails it too (#279, both directions)."""
+    import json as _json
+    import subprocess
+    import sys as _sys
+    root = _b2520_scripts_on_path()
+    import launch_sweep as ls
+    import run_wave as rw
+    spec = rw.resolve_ruled_scope({
+        "wave": "zz_b3099_legread", "step": 1, "step1_cube": True,
+        "strategy_subset": "output_audit/_subset_three_white_soldiers.txt",
+        "leg_cap_hours": 4.5, "max_legs": 3, "pool_workers": 4,
+        "allow_engine_drift": False, "resume": False, "cube_riders": None,
+        "fires_at_production": 199,
+        "arms": [{"tag": "t", "env": {"CANDLE_N_BARS": "3"}}]})
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(root),
+                          capture_output=True, text=True).stdout.strip()
+    mp = rw.build_manifest(spec, spec["arms"][0], tmp_path / "out", head)
+    out = tmp_path / "reads.json"
+    r = subprocess.run([_sys.executable, str(root / "scripts" / "leg_read_set.py"),
+                        "--manifest", str(mp), "--out", str(out)],
+                       cwd=str(root), capture_output=True, text=True, timeout=600)
+    assert r.returncode == 0, r.stdout + r.stderr
+    doc = _json.loads(out.read_text(encoding="utf-8"))
+    assert doc["exit"] == 0, ("the gate must PASS so its whole path runs", doc)
+    assert doc["python_files"] > 50 and doc["data_files"], doc
+    m = _json.loads(mp.read_text(encoding="utf-8"))
+    inputs = {m["tickers"]["file"], *m["input_sha256"]}
+    leg = ls.leg_code_closure()
+    loose = [p for p in doc["data_files"] if ls.drift_allowed(p, inputs, leg)
+             and p not in ls.LEG_POLICY_FILES]
+    assert not loose, (f"the per-leg gate OPENS {loose} but drift_check would let "
+                       "them change mid-wave - add each to LEG_READ_FILES (a "
+                       "computation input) or LEG_POLICY_FILES (re-read per leg)")
+    stale = sorted(ls.LEG_POLICY_FILES - set(doc["data_files"]))
+    assert not stale, f"declared policy files the gate no longer opens: {stale}"
+    assert "PHASE_1B_ROSTER.md" in doc["data_files"], (
+        "the measurement lost its known member - the probe, not the gate, changed")
+
+
+def test_b3099_landing_records_the_code_that_graded_it(tmp_path, monkeypatch):
+    """S6-B3093a companion (Council 1b): the per-leg drift check guards what each
+    leg RAN; the battery runs once, after the last leg, from whatever is on disk
+    - so the landing records the code identity that graded it."""
+    import importlib.util as _iu
+    root = _b2520_scripts_on_path()
+    monkeypatch.setenv("POSTCONFIG_LANDINGS_PATH", str(tmp_path / "landings.jsonl"))
+    spec = _iu.spec_from_file_location("pl_b3099", root / "scripts" / "postconfig_landing.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    ci = m.code_identity()
+    assert set(ci) >= {"head", "dirty_code_paths"} and ci["head"], ci
+    cube = tmp_path / "output_b3099_land"
+    cube.mkdir()
+    (cube / "trade_exit_detail.csv").write_text("h\n1\n", encoding="utf-8")
+    monkeypatch.setattr(m, "run_battery", lambda d, *, step1, step2: 0)
+    monkeypatch.setattr(m, "ledger_steps", lambda c: ({"1_cube_sanity": "DONE"}, []))
+    monkeypatch.setattr(m, "lens_findings", lambda c: [])
+    monkeypatch.setattr(m, "render_report", lambda: (True, "stubbed"))
+    m.land(cube, source="manual", if_not_landed=True, force=False, no_git=True,
+           no_notify=True, step1=True, step2=False)
+    ev = m.read_landings()[0]
+    assert ev["graded_with"]["head"] == ci["head"], ev

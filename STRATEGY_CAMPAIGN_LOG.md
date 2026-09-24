@@ -1816,7 +1816,8 @@ arm env CANDLE_N_BARS=3, CANDLE_MIN_BODY_PCT=0.5, CANDLE_MIN_STEP_PCT=0.0, CANDL
   the pinned sha and HEAD was empty. With `true`, the safety rests on the rule the `run_wave.py`
   B2174 comment names - **no engine edit or commit until the wave lands** - so keep it. `false` is right
   only for a single-leg run. Pinned by
-  test_b3093_drift_check_refuses_any_commit_not_only_engine_commits.
+  test_b3093_drift_check_refuses_any_commit_not_only_engine_commits (renamed B3099, when the content
+  compare shipped: test_b3093_drift_check_compares_content_not_shas).
 
 **CANDLE INSTANCE (three_white_soldiers c14, pool_workers 6):** leg 1 of attempt 2 ran uncontended
 from sim-day 0 to 329 inside its 4.5 h cap - **49.49 s/sim-day** by the B2127 rate line in

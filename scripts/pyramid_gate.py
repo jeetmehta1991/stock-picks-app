@@ -143,6 +143,7 @@ def run(out: Path, root: Path, pytest_args: list[str]) -> int:
         chain = chain_start if chain_start != "none" else chain_end
         engine_end = _engine_inflight()
         engine = engine_start if engine_start != "none" else engine_end
+        engine_dead = _engine_dead_within_window()
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(f"\npytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
                      f"elapsed_s={time.time() - t0:.0f}\n"
@@ -151,7 +152,8 @@ def run(out: Path, root: Path, pytest_args: list[str]) -> int:
                      f"chain_inflight_end={chain_end}\n"
                      f"engine_inflight={engine}\n"
                      f"engine_inflight_start={engine_start}\n"
-                     f"engine_inflight_end={engine_end}\n")
+                     f"engine_inflight_end={engine_end}\n"
+                     f"engine_dead_within_window={engine_dead}\n")
         print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
         if chain != "none":
             print("  NOTE (L621/S6-B3061): a config was IN FLIGHT while "
@@ -170,36 +172,182 @@ def run(out: Path, root: Path, pytest_args: list[str]) -> int:
 
 ENGINE_FRESH_S = 3600
 
+# S6-B3093c (B3099): a runner is a python process whose SCRIPT argument is one of
+# these. The venv launcher and the interpreter it starts both carry the same
+# command line, so labels are de-duplicated; pool workers (`-c spawn_main`) are
+# children of a runner and are not runners themselves.
+RUNNER_SCRIPTS = ("run_phase1a.py", "run_wave.py", "run_serial_chain.py",
+                  "launch_sweep.py")
 
-def _engine_inflight(now=None) -> str:
-    """B3091: is an ENGINE running right now, by ANY launch path?
 
-    _chain_inflight() reads serial_chain.log, which only the serial chain
-    writes - so a direct run_wave launch was invisible to it. MEASURED
-    2026-09-23: b3089_gate.json recorded chain_inflight=none at both ends
-    while a six-worker Step-2 engine ran, and the pyramids beside it ended
-    in commit exhaustion and a manual restart.
-
-    This reads the artifact the ENGINE writes: every launch path produces
-    <ROOT>/output_*/run_heartbeat.json from the engine's supervisor thread.
-    A heartbeat touched within ENGINE_FRESH_S names that out dir. The window
-    is an hour because L656's addendum measured final-reading heartbeat ages
-    up to 47.8 min on runs that landed COMPLETE; the residual error is a run
-    that died under an hour ago reading as possibly live, which is the safe
-    direction for a disclosure. Filesystem-only - PowerShell cannot start
-    under the commit exhaustion this reports (runbook Step 2.5). Never raises.
-    """
-    try:
-        import time as _t
-        now = _t.time() if now is None else now
-        live = []
-        for hb in ROOT.glob("output_*/run_heartbeat.json"):
+def _python_argvs():
+    """[(pid, argv)] for every running python process, read IN-PROCESS - ctypes
+    on Windows (EnumProcesses, then NtQueryInformationProcess class 60 for the
+    command line, split by CommandLineToArgvW exactly as Windows splits it),
+    /proc elsewhere. No PowerShell, so it still answers under the commit
+    exhaustion this gate exists to report (runbook Step 2.5). A process whose
+    command line cannot be read yields argv None. Returns None when the table
+    itself cannot be read."""
+    if os.name != "nt":
+        rows = []
+        for d in Path("/proc").iterdir():
+            if not d.name.isdigit():
+                continue
             try:
-                if now - hb.stat().st_mtime <= ENGINE_FRESH_S:
-                    live.append(hb.parent.name)
+                parts = (d / "cmdline").read_bytes().split(b"\0")
             except OSError:
                 continue
-        return ",".join(sorted(live)) if live else "none"
+            argv = [x.decode("utf-8", "replace") for x in parts if x]
+            if argv and "python" in argv[0].rsplit("/", 1)[-1]:
+                rows.append((int(d.name), argv))
+        return rows
+    import ctypes
+    from ctypes import wintypes
+    k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    psapi = ctypes.WinDLL("psapi", use_last_error=True)
+    ntdll = ctypes.WinDLL("ntdll")
+    shell32 = ctypes.WinDLL("shell32")
+    k32.OpenProcess.restype = wintypes.HANDLE
+    k32.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+    k32.CloseHandle.argtypes = (wintypes.HANDLE,)
+    k32.LocalFree.argtypes = (ctypes.c_void_p,)
+    k32.QueryFullProcessImageNameW.argtypes = (
+        wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR,
+        ctypes.POINTER(wintypes.DWORD))
+    ntdll.NtQueryInformationProcess.restype = ctypes.c_long
+    ntdll.NtQueryInformationProcess.argtypes = (
+        wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.ULONG,
+        ctypes.POINTER(wintypes.ULONG))
+    shell32.CommandLineToArgvW.restype = ctypes.POINTER(wintypes.LPWSTR)
+    shell32.CommandLineToArgvW.argtypes = (wintypes.LPCWSTR,
+                                           ctypes.POINTER(ctypes.c_int))
+
+    class _US(ctypes.Structure):
+        _fields_ = [("Length", ctypes.c_ushort),
+                    ("MaximumLength", ctypes.c_ushort),
+                    ("Buffer", ctypes.c_void_p)]
+    cap = 4096
+    while True:
+        arr = (wintypes.DWORD * cap)()
+        needed = wintypes.DWORD()
+        if not psapi.EnumProcesses(arr, ctypes.sizeof(arr), ctypes.byref(needed)):
+            return None
+        if needed.value < ctypes.sizeof(arr):
+            break
+        cap *= 2
+    rows = []
+    for pid in arr[:needed.value // ctypes.sizeof(wintypes.DWORD)]:
+        if not pid:
+            continue
+        h = k32.OpenProcess(0x1000, False, pid)   # PROCESS_QUERY_LIMITED_INFORMATION
+        if not h:
+            continue
+        try:
+            img = ctypes.create_unicode_buffer(1024)
+            size = wintypes.DWORD(1024)
+            if not k32.QueryFullProcessImageNameW(h, 0, img, ctypes.byref(size)):
+                continue
+            if not img.value.lower().endswith(("python.exe", "pythonw.exe")):
+                continue
+            ln = wintypes.ULONG(0)
+            ntdll.NtQueryInformationProcess(h, 60, None, 0, ctypes.byref(ln))
+            buf = ctypes.create_string_buffer(ln.value or 1)
+            if not ln.value or ntdll.NtQueryInformationProcess(
+                    h, 60, buf, ln, ctypes.byref(ln)) != 0:
+                rows.append((pid, None))
+                continue
+            us = _US.from_buffer(buf)
+            cmd = ctypes.wstring_at(us.Buffer, us.Length // 2)
+            argc = ctypes.c_int(0)
+            av = shell32.CommandLineToArgvW(cmd, ctypes.byref(argc))
+            if not av:
+                rows.append((pid, None))
+                continue
+            try:
+                rows.append((pid, [av[i] for i in range(argc.value)]))
+            finally:
+                k32.LocalFree(av)
+        finally:
+            k32.CloseHandle(h)
+    return rows
+
+
+def _runner_label(argv):
+    """The runner a python argv executes - 'run_wave:<spec>' or
+    'run_phase1a:<out dir>' - or None. Decided by the SCRIPT argument only:
+    `-c` code that merely NAMES a runner is not a launch (B1603's rule),
+    and `-m pytest` is not a runner."""
+    if not argv or len(argv) < 2 or str(argv[1]).startswith("-"):
+        return None
+    name = str(argv[1]).replace("\\", "/").rsplit("/", 1)[-1]
+    if name not in RUNNER_SCRIPTS:
+        return None
+    for flag in ("--output-dir", "--spec"):
+        if flag in argv[2:]:
+            i = argv.index(flag, 2)
+            if i + 1 < len(argv):
+                return f"{name[:-3]}:" + str(argv[i + 1]).replace(
+                    "\\", "/").rstrip("/").rsplit("/", 1)[-1]
+    return name[:-3]
+
+
+def _engine_heartbeats(root=None, now=None):
+    """[(out dir name, heartbeat pid)] for heartbeats touched within
+    ENGINE_FRESH_S under <root>/output_*."""
+    import json as _j
+    import time as _t
+    now = _t.time() if now is None else now
+    out = []
+    for hb in Path(root or ROOT).glob("output_*/run_heartbeat.json"):
+        try:
+            if now - hb.stat().st_mtime > ENGINE_FRESH_S:
+                continue
+            pid = _j.loads(hb.read_text(encoding="utf-8")).get("pid")
+        except (OSError, ValueError):
+            pid = None
+        out.append((hb.parent.name, pid))
+    return out
+
+
+def _engine_inflight(now=None, rows=None, root=None) -> str:
+    """B3091 -> S6-B3093c (B3099): is an ENGINE running right now, by ANY launch
+    path, in ANY output dir?
+
+    B3091 read heartbeat AGE, so a dead run's last heartbeat kept it 'in
+    flight' for up to an hour (MEASURED B3093). A pid check on the heartbeat
+    alone fails the other way: between legs the engine has exited while
+    run_wave is alive and about to start the next leg. The process table
+    answers the question itself: every running python whose script is a
+    runner (RUNNER_SCRIPTS) is in flight, labelled by its --output-dir or
+    --spec. When the table cannot be read, the answer is 'unknown' - which
+    every caller treats as in flight (fail closed). `rows` and `root` are the
+    test seams. Never raises."""
+    try:
+        rows = _python_argvs() if rows is None else rows
+        if rows is None:
+            return "unknown"
+        live = sorted({lbl for _pid, argv in rows
+                       if (lbl := _runner_label(argv))})
+        unreadable = [pid for pid, argv in rows if argv is None]
+        if unreadable and not live:
+            return "unknown(unreadable python pid %s)" % unreadable[0]
+        return ",".join(live) if live else "none"
+    except Exception:
+        return "unknown"
+
+
+def _engine_dead_within_window(now=None, rows=None, root=None) -> str:
+    """S6-B3093c: fresh heartbeats whose engine pid is NOT running - the case
+    B3091 reported as in flight. Disclosed separately, never as a contention.
+    'unknown' when the process table cannot be read."""
+    try:
+        rows = _python_argvs() if rows is None else rows
+        if rows is None:
+            return "unknown"
+        pids = {pid for pid, _argv in rows}
+        dead = sorted(d for d, pid in _engine_heartbeats(root, now)
+                      if pid not in pids)
+        return ",".join(dead) if dead else "none"
     except Exception:
         return "unknown"
 

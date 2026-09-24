@@ -51,6 +51,9 @@ def gate_passes(manifest: str) -> bool:
 # isolation (a worktree pinned at the frozen sha) is the full fix; this is the
 # DETECTION half, which ships today: refuse to launch when HEAD has moved off
 # the manifest's frozen_sha, or when an engine-consumed path is dirty.
+# SUPERSEDED B3099 (S6-B3093a): the sha half refused a live wave's leg 2 after
+# four queue-only commits (L866); drift_check below now compares CONTENT, and
+# ENGINE_PATHS is no longer read by it - kept for any external reader.
 ENGINE_PATHS = ("backtest/engine", "backtest/signals", "backtest/data",
                 "backtest/config.py", "backtest/run_phase1a.py")
 
@@ -60,25 +63,240 @@ def _git(*args: str) -> str:
                           capture_output=True, text=True).stdout.strip()
 
 
+# S6-B3093a (B3099, owner-approved 2026-09-24): CONTENT, not sha. The sha half
+# refused leg 2 of a live Step-2 wave after four queue-only commits (L866) while
+# `git diff` over backtest/ was empty; under the every-turn commit rule it would
+# refuse every multi-leg wave. The question a leg boundary must answer is "can
+# this leg read anything that changed since the wave froze?", so the check now
+# reads WHICH paths changed and allows only those no leg can read.
+#
+# What a LEG reads: run_wave is ONE process for the whole wave and resolves the
+# spec and the phase table ONCE at wave start, freezing the window and universe
+# into the manifest; each leg then runs launch_sweep.py and prelaunch_gate.py as
+# fresh subprocesses and the engine (backtest/**, the tickers file, the strategy
+# file, data caches). MEASURED B3099 (scripts/leg_read_set.py - the real gate
+# under a sys.addaudithook - on c14's real Step-1 manifest): 557 .py files and 7
+# data files - the Tier-1 ETF universe CSV, backtest/data/economic_calendar.json,
+# the subset file, output_batches/batch_ledger.json and the manifest, all
+# refused below by kind or by pin, plus PHASE_1B_ROSTER.md and
+# output_audit/phase_1b_step2_admissions.json. The runbook is NOT opened per leg
+# (a first draft froze it by reasoning, not measurement). Those two are POLICY:
+# the gate re-reads them at EVERY leg to refuse an admitted strategy
+# (producer_variant_table._admitted_retest_refusals), so an admission of the
+# wave's OWN strategy stops the wave at the next leg while an unrelated
+# admission cannot - freezing them would let an unrelated admission halt a
+# wave, L866's shape. LEG_READ_FILES holds any computation input the kinds
+# below would ALLOW (none measured); LEG_POLICY_FILES records the re-read
+# policy files. test_b3099_every_file_the_leg_gate_opens_is_refused_mid_wave
+# re-measures: every file the gate opens must be refused or declared policy,
+# and every declared policy file must still be opened (both directions, #279).
+LEG_CODE_ROOTS = ("scripts/launch_sweep.py", "scripts/prelaunch_gate.py")
+DRIFT_FREE_PREFIXES = (".claude/", "archive/", ".archive/", "backtest/tests/",
+                       "output_audit/held_patches/")
+AUDIT_ARTIFACT_EXT = ("md", "json", "jsonl", "log", "stdout", "csv", "html",
+                      "png", "svg")
+LEG_READ_FILES: frozenset = frozenset()
+LEG_POLICY_FILES = frozenset({"PHASE_1B_ROSTER.md",
+                              "output_audit/phase_1b_step2_admissions.json"})
+# The engine WRITES tracked files under these roots during a leg - its OHLCV
+# cache index (backtest/data/cache.py _save_index, e.g. when an index entry is
+# missing) and its ticker-info cache (backtest/data/universe.py fetch_info_bulk).
+# A leg that wrote them leaves them uncommitted, so the uncommitted-change check
+# skips them (it would refuse the next leg for the engine's own state) - a
+# COMMITTED change to them still refuses. Pinned to the two writers' paths by
+# test_b3099_drift_check_is_content_aware. (Before B3099 the dirty rule named
+# backtest/data too and would have fired the same way; the template waiver,
+# true until B3099, masked it.)
+ENGINE_STATE_PREFIXES = ("backtest/data/cache/", "data/cache/")
+
+
+def _engine_script_imports(root: Path = ROOT) -> set[str]:
+    """scripts/*.py the ENGINE imports - every non-test module under backtest/.
+    The engine runs in every leg, so a scripts module it imports is leg code.
+    MEASURED B3099: backtest/signals/institutional_persistence_consumer.py
+    imports build_institutional_persistence_precompute (reached from
+    signal_loader), and a diagnostics canary imports inject_null_strategies.
+    The first was protected only because the launch gate happens to import it
+    too - an accident of the gate's import graph, not a rule. IMPORTS ONLY: a
+    .py string literal in the engine names a subprocess the engine starts after
+    the LAST leg (run_phase1a -> postconfig_landing.py), and the landing records
+    the code that graded it instead (graded_with, Council 1b)."""
+    import ast as _ast
+    found: set[str] = set()
+    for f in sorted((root / "backtest").rglob("*.py")):
+        rel = f.relative_to(root).as_posix()
+        if rel.startswith("backtest/tests/"):
+            continue
+        try:
+            tree = _ast.parse(f.read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, ValueError):
+            continue
+        for n in _ast.walk(tree):
+            mods = []
+            if isinstance(n, _ast.Import):
+                mods = [a.name for a in n.names]
+            elif isinstance(n, _ast.ImportFrom) and n.module and not n.level:
+                mods = [n.module]
+            for mod in mods:
+                parts = mod.split(".")
+                nm = (parts[1] if parts[0] == "scripts" and len(parts) > 1
+                      else parts[0])
+                if nm and (root / "scripts" / f"{nm}.py").is_file():
+                    found.add(f"scripts/{nm}.py")
+    return found
+
+
+def leg_code_closure(root: Path = ROOT) -> set[str]:
+    """Every scripts/ file a LEG can load: the two per-leg roots and every
+    scripts module the engine imports (_engine_script_imports), plus their
+    transitive imports, and any scripts/*.py named as a string literal (a
+    subprocess target, e.g. prelaunch_gate.py). Read from the CURRENT code, so a
+    dependency is protected the moment it is imported. Over-inclusion only makes
+    the check stricter; an unparseable file stays in the set."""
+    import ast as _ast
+    seen: set[str] = set()
+    todo = list(LEG_CODE_ROOTS) + sorted(_engine_script_imports(root))
+    while todo:
+        rel = todo.pop()
+        if rel in seen:
+            continue
+        seen.add(rel)
+        try:
+            tree = _ast.parse((root / rel).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, ValueError):
+            continue
+        names: set[str] = set()
+        for n in _ast.walk(tree):
+            mods = []
+            if isinstance(n, _ast.Import):
+                mods = [a.name for a in n.names]
+            elif isinstance(n, _ast.ImportFrom) and n.module and not n.level:
+                mods = [n.module]
+            elif (isinstance(n, _ast.Constant) and isinstance(n.value, str)
+                    and n.value.endswith(".py") and "\n" not in n.value):
+                names.add(n.value.replace("\\", "/").rsplit("/", 1)[-1][:-3])
+            for mod in mods:
+                parts = mod.split(".")
+                names.add(parts[1] if parts[0] == "scripts" and len(parts) > 1
+                          else parts[0])
+        for nm in names:
+            cand = f"scripts/{nm}.py"
+            if nm and (root / cand).is_file():
+                todo.append(cand)
+    return seen
+
+
+def drift_allowed(path: str, inputs=frozenset(), leg_code=frozenset()) -> bool:
+    """FAIL-CLOSED: True only for a path no leg COMPUTES with - docs (.md)
+    other than LEG_READ_FILES, the harness (.claude/), tests, archives, parked
+    patch scripts, scripts/ OUTSIDE the leg closure, and output_audit ARTIFACTS
+    (never an underscore-prefixed input such as _sweep_200.txt / _subset_*.txt /
+    _engine_set_*.txt, never a .txt, never a file the manifest pins). The two
+    LEG_POLICY_FILES are allowed by kind because the gate re-reads them at
+    every leg. Everything else refuses."""
+    p = path.replace("\\", "/").strip().strip('"')
+    if not p or p in inputs or p in leg_code or p in LEG_READ_FILES:
+        return False
+    if p.endswith(".md") or p.startswith(DRIFT_FREE_PREFIXES):
+        return True
+    if p.startswith("scripts/"):
+        return True
+    if p.startswith("output_audit/"):
+        name = p.rsplit("/", 1)[-1]
+        ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+        return (not name.startswith("_")) and ext in AUDIT_ARTIFACT_EXT
+    return False
+
+
+def _git_names(*args: str) -> tuple[int, list[str]]:
+    """(returncode, paths) for a `git ... --name-only -z` call. The seam the
+    drift tests replace (B1761: a gate with no seam cannot be tested)."""
+    r = subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True,
+                       text=True)
+    return r.returncode, [x for x in r.stdout.split("\0") if x.strip()]
+
+
+def _text_pin(rel: str) -> str | None:
+    """sha256 of a text input, whitespace-normalised exactly as
+    run_wave.build_manifest pins it (its tokens joined by newlines), so a CRLF
+    checkout and an LF one pin identically. None when unreadable."""
+    import hashlib as _hl
+    try:
+        toks = (ROOT / rel).read_text(encoding="utf-8").split()
+    except (OSError, ValueError):
+        return None
+    return _hl.sha256("\n".join(toks).encode()).hexdigest()
+
+
 def drift_check(manifest: str) -> list[str]:
-    """Return the reasons this launch is NOT reproducible. Empty = clean."""
+    """Return the reasons this leg would NOT run on the wave's frozen inputs.
+    Empty = clean. Three checks (S6-B3093a, B3099):
+      1. COMMITTED changes since frozen_sha, by CONTENT: refuse when any
+         changed path is one a leg can read (drift_allowed). The ONLY check
+         allow_engine_drift waives - a deliberate, recorded engine change.
+      2. UNCOMMITTED changes (tracked) to paths a leg can read: always refuse
+         - except the engine's own cache state (ENGINE_STATE_PREFIXES), which
+         a leg writes as it runs.
+      3. INPUT PINS: the tickers file and every strategy file the manifest
+         pins must still hash to the pinned value; a manifest with no pins is
+         refused (it predates B3099 - run_wave rewrites the manifest at every
+         wave start). Untracked files are covered here, not by git.
+    Residual, stated: untracked data caches (data_prefetch/, backtest/data/
+    cache) are not content-pinned."""
     reasons = []
     try:
         m = json.loads(Path(manifest).read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         return [f"manifest unreadable: {exc!r}"]
-    if m.get("allow_engine_drift"):
-        return []                      # explicit, recorded waiver
+    tick = m.get("tickers") if isinstance(m.get("tickers"), dict) else {}
+    pins = m.get("input_sha256")
+    inputs = {str(x).replace("\\", "/") for x in
+              ([tick.get("file")] + list((pins or {}).keys())) if x}
+    leg_code = leg_code_closure()
     frozen = (m.get("frozen_sha") or "").strip()
-    head = _git("rev-parse", "HEAD")
-    if frozen and head and not head.startswith(frozen[:12])             and not frozen.startswith(head[:12]):
-        reasons.append(f"HEAD {head[:12]} != manifest frozen_sha {frozen[:12]} "
-                       "- a commit landed since this wave's manifest was written")
-    dirty = [ln for ln in _git("status", "--porcelain").splitlines()
-             if any(p in ln.replace("\\", "/") for p in ENGINE_PATHS)]
-    if dirty:
-        reasons.append("engine-consumed paths are dirty: "
-                       + "; ".join(d.strip() for d in dirty[:5]))
+    if not frozen:
+        reasons.append("manifest has no frozen_sha - nothing to compare the "
+                       "leg's code against")
+    else:
+        rc, changed = _git_names("diff", "--name-only", "-z", frozen, "HEAD")
+        if rc != 0:
+            reasons.append(f"frozen_sha {frozen[:12]} cannot be diffed against "
+                           "HEAD (unknown to this repo?) - content drift UNKNOWN")
+        else:
+            blocked = [p for p in changed
+                       if not drift_allowed(p, inputs, leg_code)]
+            if blocked and not m.get("allow_engine_drift"):
+                reasons.append(
+                    f"commits since frozen_sha {frozen[:12]} changed "
+                    f"{len(blocked)} path(s) a leg reads: "
+                    + "; ".join(blocked[:6]))
+    rc, dirty = _git_names("diff", "--name-only", "-z", "HEAD")
+    if rc != 0:
+        reasons.append("git diff HEAD failed - uncommitted changes UNKNOWN")
+    else:
+        dirty_blocked = [p for p in dirty
+                         if not drift_allowed(p, inputs, leg_code)
+                         and not p.replace("\\", "/").startswith(
+                             ENGINE_STATE_PREFIXES)]
+        if dirty_blocked:
+            reasons.append("uncommitted changes to path(s) a leg reads (never "
+                           "waived): " + "; ".join(dirty_blocked[:6]))
+    if not tick.get("file") or not tick.get("sha256"):
+        reasons.append("manifest carries no tickers pin")
+    else:
+        # the tickers pin predates B3099: build_manifest hashes the file's
+        # tokens joined by newlines, the same normalisation as _text_pin
+        got = _text_pin(str(tick["file"]))
+        if got != tick["sha256"]:
+            reasons.append(f"tickers file {tick['file']} no longer matches its "
+                           "pin - the universe changed mid-wave")
+    if not isinstance(pins, dict):
+        reasons.append("manifest carries no input_sha256 pins (it predates "
+                       "B3099); rebuild it - run_wave writes them at wave start")
+    else:
+        for rel, want in pins.items():
+            if _text_pin(rel) != want:
+                reasons.append(f"input {rel} no longer matches its pin")
     return reasons
 
 
@@ -241,9 +459,10 @@ def main(argv: list[str] | None = None) -> int:
               "manifest's pinned code. The engine was NOT invoked.")
         for r in drift:
             print(f"  - {r}")
-        print("  Fix: commit/stash the engine change and regenerate the "
-              "manifest, or set allow_engine_drift=true in the manifest to "
-              "record the exception deliberately.")
+        print("  Fix: commit or revert the change a leg would read; a "
+              "DELIBERATE committed engine change can be recorded with "
+              "allow_engine_drift=true, which never waives uncommitted "
+              "changes or a changed input (S6-B3093a, B3099).")
         return 2
 
     win = window_matches(a.manifest, list(a.engine_args))

@@ -325,6 +325,23 @@ def run_integrity_findings(cube_dir: Path) -> list[str]:
     return out
 
 
+def code_identity() -> dict:
+    """S6-B3093a companion (B3099, Council 1b): the code that GRADED this
+    landing. The per-leg drift check guards what each leg RAN; the battery runs
+    once, after the last leg, from whatever is on disk then - an edit made
+    during the final leg passes every leg check. Recorded, not refused:
+    grading with a corrected battery is usually why it was edited."""
+    try:
+        head = _git(["rev-parse", "HEAD"], timeout=30).stdout.strip()
+        dirty = [ln for ln in _git(["status", "--porcelain", "--untracked-files=no",
+                                    "--", "scripts", "backtest"],
+                                   timeout=60).stdout.splitlines() if ln.strip()]
+        return {"head": head[:12] or None, "dirty_code_paths": len(dirty)}
+    except Exception as exc:                        # noqa: BLE001
+        return {"head": None, "dirty_code_paths": None,
+                "error": repr(exc)[:160]}
+
+
 def _git(args: list[str], *, timeout: float | None = None) -> subprocess.CompletedProcess:
     return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True,
                           text=True, timeout=timeout)
@@ -533,6 +550,7 @@ def land(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
     # LANDING REPORT without a second channel.
     findings = lens_findings(cube) + run_integrity_findings(cube_dir)
     report_ok, report_note = render_report()
+    graded_with = code_identity()
 
     summary = (f"steps: " + ", ".join(f"{s}={st}" for s, st in sorted(steps.items()))
                + f"; blocking: {blocking or 'none'}; findings (lens + run integrity): "
@@ -556,6 +574,7 @@ def land(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
              "step_flags": ("step1" if step1 else "step2" if step2 else "derived"),
              "battery_exit": battery_exit, "steps": steps, "blocking": blocking,
              "findings": findings, "report_ok": report_ok, "report_note": report_note,
+             "graded_with": graded_with,
              "committed": git["committed"], "pushed": git["pushed"],
              "git_note": git["note"], "toast": notify[1],
              "elapsed_s": int(time.time() - t0), "reported_to_owner": False}
@@ -580,6 +599,8 @@ def land(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
     for f_ in findings:
         print(f"    - {f_}")
     print(f"  report: {report_note}")
+    print(f"  graded with: HEAD {graded_with.get('head')} "
+          f"({graded_with.get('dirty_code_paths')} uncommitted code path(s))")
     print(f"  git: committed {git['committed']}, pushed {git['pushed']}"
           + (f" ({git['note']})" if git["note"] else ""))
     print(f"  notify: {notify[1]}")
