@@ -43529,14 +43529,28 @@ def test_b3082_table_d_reads_the_factorial_artifact_shape(tmp_path):
     assert "FACTORIAL design" in out
     assert m._design([]) == "one-at-a-time design"
 
-    # 4. counts the artifact does not carry render as absent, never as 0.
-    #    VERIFIED against the real file: is_rows == rows == 6264 is the grid
-    #    row-count and fires is identical across all 24 exits, so neither is
-    #    a per-cell trade count and substituting one would be a fabricated
-    #    measurement (L580).
-    assert cells[-1] == "-" and cells[-2] == "-", cells
+    # 4. B3088 CORRECTION. This block asserted IS n and full n render '-',
+    #    reasoning that fires is identical across all 24 exits so it could
+    #    not be a trade count. THE REASONING WAS WRONG and the pin defended
+    #    it green (L706 - a pin can encode a mistake and protect it).
+    #    grade_candle_config.py:268 builds full_n from
+    #    cube.groupby("exit_method").size() and line 279 sets "fires" to
+    #    len(g) over is_rows grouped the same way: BOTH count CUBE ROWS,
+    #    i.e. trades. The value is constant across exits BY CONSTRUCTION -
+    #    every entry is replayed through all 24 exits - and varies 69..560
+    #    ACROSS configs, verified on 18 of 18.
+    # the helper fixture carries fires=261 and full_period_n=261, so DEEP
+    assert cells[-3] == "261" and cells[-2] == "261", cells
+    #    and the depth band is computed from it, so a reader can see that the
+    #    leading cell is the SHALLOWEST of the leaders (rank is not
+    #    trustworthiness)
+    assert cells[-1] == "DEEP", cells
+    assert m._tier(100) == "DEEP" and m._tier(99) == "MID"
+    assert m._tier(29) == "THIN"
+    #    an ABSENT count still renders absent, and never as 0 or THIN (L580)
     assert m._n(None) == "-" and m._n(0) == "0"
-    assert "IS n and full n render" in out
+    assert m._tier(None) == "-"
+    assert "IS n is the in-sample trade count" in out
 
 
 def test_b3082_inventory_labels_come_from_evidence_not_band_shape(tmp_path):
@@ -43694,3 +43708,81 @@ def test_b3085_table_d_sorts_on_the_locked_key():
     body = [x for x in out.split(chr(10)) if x.startswith("| 1 |")]
     assert len(body) == 1, out
     assert "time_stop_10d" in body[0], body[0]
+
+
+def test_b3088_table_d_counts_are_trades_and_carry_a_depth_tier():
+    """S6-B3088 / L864: the per-cell counts were present under a wrong name.
+
+    I rendered IS n and full n as '-' and justified it as "a fire is not a
+    trade" (L580) - correct as a RULE and false about THIS grader. Reading
+    scripts/grade_candle_config.py settles it:
+
+        line 268  full_n = cube.groupby("exit_method").size()
+        line 279  "fires": int(len(g))        # g = is_rows grouped by exit
+
+    Both count CUBE ROWS. VERIFIED on 18 of 18 tws configs:
+    rows / results_n_exits == fires == admit.full_period_n exactly.
+
+    full n equals IS n only because holdout_n is 0 on every row - Step 1 does
+    not read the holdout - so the two columns coinciding is a FACT about the
+    step, not a copied field.
+
+    The tier column returns with them: the locked format (runbook 6.4b)
+    requires it and the unified renderer never carried it, which is the THIRD
+    thing it failed to inherit from the ruled format after the sort key and
+    the merged axis columns.
+    """
+    import importlib
+    import json as _j
+    import sys as _sys
+    import tempfile as _t
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sp = str(root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    m = importlib.import_module("table_d_render")
+
+    # buckets match the sibling renderer's, never re-invented (L799)
+    pvt = importlib.import_module("producer_variant_table")
+    assert m.DEPTH_TIERS == pvt.DEPTH_TIERS, (m.DEPTH_TIERS, pvt.DEPTH_TIERS)
+
+    # the boundaries, at the values that decide them
+    assert m._tier(100) == "DEEP"
+    assert m._tier(99) == "MID"
+    assert m._tier(30) == "MID"
+    assert m._tier(29) == "THIN"
+    # absent stays absent - never 0, never THIN
+    assert m._tier(None) == "-"
+
+    # end to end: a DEEP cell and a MID cell, and the MID one leads on ci_lo
+    art = {
+        "strategy": "three_white_soldiers",
+        "rows": 4800, "results_n_exits": 24,
+        "config": {"P2_n_bars": 3, "P3_min_body_pct": 0.5,
+                   "P4_min_step_pct": 0.0, "P5_max_wick_pct": 0.3},
+        "per_exit": [
+            {"exit": "regime_flip", "is_sharpe": 0.99, "is_ci_lo": 0.225,
+             "fires": 98, "rank": 1,
+             "admit": {"holdout_n": 0, "full_period_n": 98}},
+            {"exit": "time_stop_10d", "is_sharpe": 0.63, "is_ci_lo": 0.075,
+             "fires": 181, "rank": 2,
+             "admit": {"holdout_n": 0, "full_period_n": 181}},
+        ],
+    }
+    with _t.TemporaryDirectory() as d:
+        p = _P(d) / "zz.json"
+        p.write_text(_j.dumps(art), encoding="utf-8")
+        out = m.build_table("three_white_soldiers", [str(p)], top=10)
+
+    rows = [x for x in out.split(chr(10)) if x.startswith("| 1 |")
+            or x.startswith("| 2 |")]
+    assert len(rows) == 2, out
+    r1 = [c.strip() for c in rows[0].strip("|").split("|")]
+    r2 = [c.strip() for c in rows[1].strip("|").split("|")]
+    # the count is the TRADE count, not a dash
+    assert r1[-3] == "98" and r2[-3] == "181", (r1, r2)
+    # and the leader is the SHALLOWER sample - the exact thing tier exposes
+    assert r1[-1] == "MID" and r2[-1] == "DEEP", (r1, r2)
+    assert "TIER - DEEP n>=100" in out

@@ -107,13 +107,19 @@ def _factorial_rows(a: dict) -> list:
             "admit": pe.get("admit"),
             "levels": levels,
             "cube": a.get("cube"),
-            # B3082b: per_exit carries no per-cell trade counts. These are
-            # set to None EXPLICITLY - not omitted, not filled from fires
-            # (a fire count is not a trade count, L580) - so the renderer
-            # prints '-' and the reader can tell "not measured" from a
-            # measured value.
-            "is_n": None,
-            "full_n_count_only": None,
+            # B3088 RETRACTION of B3082b. That comment said per_exit carries
+            # no per-cell trade counts and rendered '-'. IT DOES CARRY THEM,
+            # under a misleading name. grade_candle_config.py:268 builds
+            # full_n as cube.groupby("exit_method").size() and line 279 sets
+            # "fires" to len(g) over is_rows grouped the same way - BOTH are
+            # counts of CUBE ROWS, i.e. trades. VERIFIED across 18 of 18
+            # configs: rows / results_n_exits == fires == full_period_n
+            # exactly. The value is identical across exits BY CONSTRUCTION
+            # (every entry is replayed through all 24 exits) and varies
+            # 69..560 across configs. full_period_n matches fires only
+            # because holdout_n is 0 - Step 1 does not read the holdout.
+            "is_n": pe.get("fires"),
+            "full_n_count_only": (pe.get("admit") or {}).get("full_period_n"),
         })
     return out
 
@@ -127,6 +133,28 @@ def load(paths: list) -> tuple[list, list, list]:
         for r in src:
             (skips if r.get("is_sharpe") is None else rows).append(r)
     return arts, rows, skips
+
+
+# B3088: buckets COPIED from producer_variant_table.DEPTH_TIERS rather than
+# re-invented, so the two renderers cannot drift (L799). Runbook 6.4b: tier =
+# DEEP n>=100 / MID 30-99 / THIN 10-29. It exists because rank improves
+# monotonically as evidence thins - RANK IS NOT TRUSTWORTHINESS - so the depth
+# band has to sit beside the ranking key.
+DEPTH_TIERS = ((100, None, "DEEP"), (30, 100, "MID"), (0, 30, "THIN"))
+
+
+def _tier(n) -> str:
+    """The depth band for a cell, or '-' when the count is not recorded.
+
+    An absent count yields an absent tier - never THIN, which would read as a
+    measured shallow sample (L580).
+    """
+    if n is None:
+        return "-"
+    for lo, hi, name in DEPTH_TIERS:
+        if n >= lo and (hi is None or n < hi):
+            return name
+    return "-"
 
 
 def _rank_key(r: dict) -> tuple:
@@ -320,22 +348,32 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             *["  - " + x for x in inv],
             *[u"NULL PRICE - " + x for x in nulls],
             *["DISPOSITION - " + x for x in skip_notes],
-            *(["COUNTS - this campaign's artifacts are FACTORIAL (one engine "
-               "run per corner) and per_exit carries no per-cell trade "
-               "counts, so IS n and full n render '-'. They are NOT filled "
-               "from the fire count: a fire is not a trade (L580). The "
-               "ranking columns - sharpe and ci_lo - are the graders' own "
-               "output and are unaffected."]
+            *(["COUNTS - IS n is the in-sample trade count for the cell and "
+               "full n the full-period count. On a FACTORIAL artifact the "
+               "grader stores the first under the name 'fires', which counts "
+               "CUBE ROWS and not signal fires; n is identical across exits "
+               "BY CONSTRUCTION, because every entry is replayed through all "
+               "24 exit methods, and it varies across configs. full n equals "
+               "IS n wherever holdout_n is 0 - Step 1 does not read the "
+               "holdout."]
+              if any(r.get("levels") for r in ranked) else []),
+            *(["COUNTS - %d of %d ranked rows carry no IS n, so their tier "
+               "reads '-'. An absent count is never rendered as 0 or as THIN "
+               "(L580)." % (sum(1 for r in ranked if r.get("is_n") is None),
+                            len(ranked))]
               if any(r.get("is_n") is None for r in ranked) else []),
+            "TIER - DEEP n>=100, MID 30-99, THIN 10-29. Rank improves "
+            "monotonically as evidence thins, so RANK IS NOT TRUSTWORTHINESS "
+            "and the depth band sits beside the ranking key deliberately.",
             "SORT - is_ci_lo DESCENDING, then IS n descending, nothing filtered (runbook 6.4b). Ranking on Sharpe is the REJECTED order: a higher Sharpe can carry a NEGATIVE lower bound (L455)."
             + ("" if any(r.get("is_n") is not None for r in ranked)
-               else " The secondary key is UNAVAILABLE here - no row carries IS n - so rows tied on is_ci_lo keep artifact order rather than being ranked on a substituted count."),
+               else " No row carries IS n, so the secondary key cannot discriminate and rows tied on is_ci_lo keep artifact order - never a substituted count."),
             "EXITS - Step 1 picks each cell's exit by SHARPE alone (B1605) while this table RANKS by is_ci_lo. Two objectives, so a leading row can carry the exit that won on Sharpe.",
             f"Showing top {min(top, len(ranked))} of {len(ranked)} ranked cells.",
             "",
             "| rank | " + " | ".join(p["param"] for p in params)
-            + " | exit | IS sharpe | IS ci_lo | IS n | full n |",
-            "|" + "---|" * (len(params) + 6)]
+            + " | exit | IS sharpe | IS ci_lo | IS n | full n | tier |",
+            "|" + "---|" * (len(params) + 7)]
 
     body = []
     for i, r in enumerate(ranked[:top], 1):
@@ -349,7 +387,8 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                     # An unmeasured value must never render as 0 or None
                     # (L580); .get keeps a sweep row's behaviour unchanged.
                     + " | " + _n(r.get("is_n"))
-                    + " | " + _n(r.get("full_n_count_only")) + " |")
+                    + " | " + _n(r.get("full_n_count_only"))
+                    + " | " + _tier(r.get("is_n")) + " |")
     return "\n".join(head + body) + "\n"
 
 

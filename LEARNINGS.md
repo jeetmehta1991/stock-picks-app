@@ -23309,3 +23309,50 @@ replacing a committed artifact, not after.
 **ENFORCER:** `test_b3085_table_d_sorts_on_the_locked_key`, which asserts the
 ordering property, the n tiebreak, absent-sorts-last, and the rendered
 disclosure.
+
+### L864 - A FIELD'S MEANING IS A PRODUCER FACT, AND UNIFORMITY CAN BE THE DATA'S SHAPE RATHER THAN A DEFECT (B3088, owner-caught 2026-09-23)
+
+**MEASURED.** I rendered Table D's IS n and full n as `-` across 432 cells and
+justified it in the artifact, in a commit message and in a pin: *"per_exit
+carries no per-cell trade counts ... a fire is not a trade (L580)"*. The owner
+asked why. The counts were there the whole time. `grade_candle_config.py:268`
+builds `full_n` from `cube.groupby("exit_method").size()` and line 279 sets
+`"fires"` to `len(g)` over `is_rows` grouped the same way - **both count CUBE
+ROWS, that is trades. The field is MISNAMED.** Verified on 18 of 18 configs:
+`rows / results_n_exits == fires == admit.full_period_n` exactly, with n
+ranging 69 to 560.
+
+**TWO correct rules pointed the wrong way, which is why it felt settled.**
+L580 says an unmeasured value must never render as a measured one - true, and
+it decided nothing here, because the value WAS measured. L724 says a uniform
+value from a new extractor is a parser hypothesis - and I used the uniformity
+of `fires` across all 24 exits as my evidence that it could not be a per-cell
+count. **The uniformity is correct BY CONSTRUCTION:** the cube replays every
+entry through all 24 exit methods, so n is identical per exit and varies only
+across configs. A heuristic built to catch a reader bug fired on a fact about
+the data's shape.
+
+**The rule, and it is L719's, not a new one.** A persisted field's meaning is a
+PRODUCER fact: locate the WRITER before explaining the field by the shape of
+its values. I explained `fires` from its values and never opened the grader.
+The cheap discriminator I skipped: **divide the row count by the number of
+exits and see whether it equals the field** - one line, and it settles what
+the field counts.
+
+**What made it durable rather than a passing slip:** I wrote the wrong
+conclusion into a PIN (*assert cells[-1] == "-"*), so the error was defended
+green by the suite. That is L706's class - a pin can encode a mistake and then
+protect it - and it is why the correction had to update the assertion with its
+reason rather than simply delete it (L851).
+
+**The cost was not cosmetic.** Restoring the counts restored the TIER column
+the locked format requires, and the tier immediately shows that the
+campaign's LEADING cell is the SHALLOWEST of its leaders: rank 1 sits at
+ci_lo 0.225 with n=98 (MID) while rank 4 holds n=560 (DEEP). The headline I
+had given the owner was resting on the thinnest sample among the top rows -
+exactly what the tier column exists to prevent, and it was missing because the
+counts were missing.
+
+**ENFORCER:** `test_b3088_table_d_counts_are_trades_and_carry_a_depth_tier`,
+which pins the counts, the tier boundaries at the values that decide them,
+absent-stays-absent, and DEPTH_TIERS equal to the sibling renderer's.

@@ -8,442 +8,443 @@ INVENTORY (one column per Table A row; '-' = breadth axis not applied, productio
   - P4 min_step_up_pct: TESTED BY RE-SIMULATION at {0.0, 0.1, 0.25} (3 of 3 band levels)
   - P5 max_upper_wick_pct: TESTED BY RE-SIMULATION at {0.3, None} (2 of 3 band levels)
   - P6 rsi_14 ceiling: production 60, free band [41.97, 46.31, 50.16, 54.42] - NOT TESTED in this campaign (offline-gradable; no rows varied it)
-COUNTS - this campaign's artifacts are FACTORIAL (one engine run per corner) and per_exit carries no per-cell trade counts, so IS n and full n render '-'. They are NOT filled from the fire count: a fire is not a trade (L580). The ranking columns - sharpe and ci_lo - are the graders' own output and are unaffected.
-SORT - is_ci_lo DESCENDING, then IS n descending, nothing filtered (runbook 6.4b). Ranking on Sharpe is the REJECTED order: a higher Sharpe can carry a NEGATIVE lower bound (L455). The secondary key is UNAVAILABLE here - no row carries IS n - so rows tied on is_ci_lo keep artifact order rather than being ranked on a substituted count.
+COUNTS - IS n is the in-sample trade count for the cell and full n the full-period count. On a FACTORIAL artifact the grader stores the first under the name 'fires', which counts CUBE ROWS and not signal fires; n is identical across exits BY CONSTRUCTION, because every entry is replayed through all 24 exit methods, and it varies across configs. full n equals IS n wherever holdout_n is 0 - Step 1 does not read the holdout.
+TIER - DEEP n>=100, MID 30-99, THIN 10-29. Rank improves monotonically as evidence thins, so RANK IS NOT TRUSTWORTHINESS and the depth band sits beside the ranking key deliberately.
+SORT - is_ci_lo DESCENDING, then IS n descending, nothing filtered (runbook 6.4b). Ranking on Sharpe is the REJECTED order: a higher Sharpe can carry a NEGATIVE lower bound (L455).
 EXITS - Step 1 picks each cell's exit by SHARPE alone (B1605) while this table RANKS by is_ci_lo. Two objectives, so a leading row can carry the exit that won on Sharpe.
 Showing top 432 of 432 ranked cells.
 
-| rank | three_white_soldiers (boolean leg) | n_bars (pattern length) | min_body_pct_of_range | min_step_up_pct | max_upper_wick_pct | rsi_14 ceiling | exit | IS sharpe | IS ci_lo | IS n | full n |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | regime_flip | 0.993 | 0.225 | - | - |
-| 2 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | regime_flip | 0.630 | 0.075 | - | - |
-| 3 | True | 3 | 0.5 | 0.0 | None | 60 | regime_flip | 0.720 | 0.067 | - | - |
-| 4 | True | 3 | 0.0 | 0.0 | None | 60 | breakeven_plus_trail | 0.308 | 0.048 | - | - |
-| 5 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | regime_flip | 0.535 | 0.04 | - | - |
-| 6 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | regime_flip | 0.816 | 0.035 | - | - |
-| 7 | True | 3 | 0.0 | 0.1 | None | 60 | breakeven_plus_trail | 0.305 | 0.034 | - | - |
-| 8 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | regime_flip | 0.504 | 0.028 | - | - |
-| 9 | True | 3 | 0.5 | 0.1 | None | 60 | regime_flip | 0.682 | 0.018 | - | - |
-| 10 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | earnings_blackout | 0.291 | 0.011 | - | - |
-| 11 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | earnings_blackout | 0.310 | -0.01 | - | - |
-| 12 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | regime_flip | 0.546 | -0.022 | - | - |
-| 13 | True | 3 | 0.0 | 0.1 | None | 60 | earnings_blackout | 0.171 | -0.024 | - | - |
-| 14 | True | 3 | 0.0 | 0.0 | None | 60 | earnings_blackout | 0.143 | -0.045 | - | - |
-| 15 | True | 3 | 0.0 | 0.25 | None | 60 | breakeven_plus_trail | 0.251 | -0.051 | - | - |
-| 16 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | earnings_blackout | 0.198 | -0.071 | - | - |
-| 17 | True | 3 | 0.3 | 0.1 | None | 60 | regime_flip | 0.364 | -0.074 | - | - |
-| 18 | True | 3 | 0.3 | 0.0 | None | 60 | regime_flip | 0.349 | -0.077 | - | - |
-| 19 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | hybrid_50pct_target | 0.215 | -0.081 | - | - |
-| 20 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | hybrid_50pct_target | 0.249 | -0.091 | - | - |
-| 21 | True | 3 | 0.0 | 0.0 | None | 60 | hybrid_50pct_target | 0.099 | -0.106 | - | - |
-| 22 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | hybrid_50pct_target | 0.164 | -0.121 | - | - |
-| 23 | True | 3 | 0.0 | 0.1 | None | 60 | hybrid_50pct_target | 0.087 | -0.126 | - | - |
-| 24 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | earnings_blackout | 0.182 | -0.144 | - | - |
-| 25 | True | 3 | 0.0 | 0.25 | None | 60 | earnings_blackout | 0.058 | -0.155 | - | - |
-| 26 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | time_stop_20d | 0.371 | -0.155 | - | - |
-| 27 | True | 3 | 0.0 | 0.0 | None | 60 | regime_flip | 0.174 | -0.157 | - | - |
-| 28 | True | 3 | 0.3 | 0.1 | None | 60 | earnings_blackout | 0.080 | -0.169 | - | - |
-| 29 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | time_stop_20d | 0.271 | -0.171 | - | - |
-| 30 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | hybrid_50pct_target | 0.176 | -0.176 | - | - |
-| 31 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | regime_flip | 0.379 | -0.181 | - | - |
-| 32 | True | 3 | 0.0 | 0.1 | None | 60 | regime_flip | 0.153 | -0.19 | - | - |
-| 33 | True | 3 | 0.0 | 0.25 | None | 60 | hybrid_50pct_target | 0.040 | -0.193 | - | - |
-| 34 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | earnings_blackout | 0.126 | -0.193 | - | - |
-| 35 | True | 3 | 0.3 | 0.0 | None | 60 | earnings_blackout | 0.044 | -0.199 | - | - |
-| 36 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | hybrid_50pct_target | 0.157 | -0.2 | - | - |
-| 37 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | hybrid_50pct_target | 0.205 | -0.204 | - | - |
-| 38 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | breakeven_plus_trail | 0.169 | -0.206 | - | - |
-| 39 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | time_stop_20d | 0.248 | -0.21 | - | - |
-| 40 | True | 3 | 0.0 | 0.1 | None | 60 | trailing_10pct | -0.008 | -0.222 | - | - |
-| 41 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | fixed_4r_2r | 0.258 | -0.23 | - | - |
-| 42 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | fixed_4r_2r | 0.273 | -0.233 | - | - |
-| 43 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | breakeven_plus_trail | 0.149 | -0.245 | - | - |
-| 44 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | earnings_blackout | 0.119 | -0.257 | - | - |
-| 45 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | regime_flip | 0.394 | -0.261 | - | - |
-| 46 | True | 3 | 0.0 | 0.0 | None | 60 | trailing_10pct | -0.058 | -0.267 | - | - |
-| 47 | True | 3 | 0.0 | 0.25 | None | 60 | trailing_10pct | -0.037 | -0.27 | - | - |
-| 48 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | time_stop_20d | 0.255 | -0.28 | - | - |
-| 49 | True | 3 | 0.3 | 0.1 | None | 60 | hybrid_50pct_target | -0.016 | -0.296 | - | - |
-| 50 | True | 3 | 0.3 | 0.0 | None | 60 | hybrid_50pct_target | -0.027 | -0.301 | - | - |
-| 51 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | regime_flip | 0.589 | -0.312 | - | - |
-| 52 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | trailing_10pct | -0.017 | -0.317 | - | - |
-| 53 | True | 3 | 0.0 | 0.25 | None | 60 | regime_flip | 0.049 | -0.327 | - | - |
-| 54 | True | 3 | 0.0 | 0.0 | None | 60 | trailing_15pct | -0.165 | -0.329 | - | - |
-| 55 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | breakeven_plus_trail | 0.118 | -0.334 | - | - |
-| 56 | True | 3 | 0.0 | 0.1 | None | 60 | trailing_15pct | -0.166 | -0.336 | - | - |
-| 57 | True | 3 | 0.3 | 0.0 | None | 60 | breakeven_plus_trail | 0.011 | -0.341 | - | - |
-| 58 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | fixed_4r_2r | 0.231 | -0.343 | - | - |
-| 59 | True | 3 | 0.5 | 0.0 | None | 60 | time_stop_20d | 0.258 | -0.347 | - | - |
-| 60 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | trailing_10pct | -0.059 | -0.35 | - | - |
-| 61 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | breakeven_plus_trail | 0.101 | -0.35 | - | - |
-| 62 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | time_stop_20d | 0.165 | -0.357 | - | - |
-| 63 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | earnings_blackout | 0.087 | -0.358 | - | - |
-| 64 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | earnings_blackout | 0.077 | -0.361 | - | - |
-| 65 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | fixed_4r_2r | 0.222 | -0.362 | - | - |
-| 66 | True | 3 | 0.3 | 0.1 | None | 60 | breakeven_plus_trail | -0.005 | -0.366 | - | - |
-| 67 | True | 3 | 0.0 | 0.0 | None | 60 | trailing_5pct | -0.019 | -0.375 | - | - |
-| 68 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | earnings_blackout | 0.143 | -0.377 | - | - |
-| 69 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | time_stop_20d | 0.331 | -0.384 | - | - |
-| 70 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | trailing_10pct | -0.052 | -0.395 | - | - |
-| 71 | True | 3 | 0.5 | 0.1 | None | 60 | time_stop_20d | 0.217 | -0.397 | - | - |
-| 72 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | hybrid_50pct_target | 0.193 | -0.4 | - | - |
-| 73 | True | 3 | 0.3 | 0.25 | None | 60 | regime_flip | 0.083 | -0.409 | - | - |
-| 74 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | trailing_15pct | -0.173 | -0.411 | - | - |
-| 75 | True | 3 | 0.3 | 0.25 | None | 60 | hybrid_50pct_target | -0.095 | -0.412 | - | - |
-| 76 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | breakeven_plus_trail | 0.050 | -0.416 | - | - |
-| 77 | True | 3 | 0.5 | 0.0 | None | 60 | earnings_blackout | -0.046 | -0.42 | - | - |
-| 78 | True | 3 | 0.0 | 0.0 | None | 60 | break_even_at_1r | -0.065 | -0.435 | - | - |
-| 79 | True | 3 | 0.0 | 0.0 | None | 60 | fixed_4r_2r | -0.098 | -0.435 | - | - |
-| 80 | True | 3 | 0.0 | 0.25 | None | 60 | trailing_15pct | -0.248 | -0.436 | - | - |
-| 81 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | time_stop_20d | 0.182 | -0.437 | - | - |
-| 82 | True | 3 | 0.3 | 0.25 | None | 60 | earnings_blackout | -0.161 | -0.44 | - | - |
-| 83 | True | 3 | 0.0 | 0.25 | None | 60 | break_even_at_1r | -0.032 | -0.448 | - | - |
-| 84 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | trailing_15pct | -0.221 | -0.451 | - | - |
-| 85 | True | 3 | 0.5 | 0.1 | None | 60 | earnings_blackout | -0.078 | -0.459 | - | - |
-| 86 | True | 3 | 0.3 | 0.0 | None | 60 | trailing_5pct | -0.016 | -0.466 | - | - |
-| 87 | True | 3 | 0.0 | 0.1 | None | 60 | trailing_5pct | -0.097 | -0.468 | - | - |
-| 88 | True | 3 | 0.3 | 0.1 | None | 60 | time_stop_20d | -0.063 | -0.468 | - | - |
-| 89 | True | 3 | 0.0 | 0.1 | None | 60 | time_stop_20d | -0.160 | -0.477 | - | - |
-| 90 | True | 3 | 0.0 | 0.1 | None | 60 | fixed_4r_2r | -0.127 | -0.479 | - | - |
-| 91 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | time_stop_20d | 0.248 | -0.479 | - | - |
-| 92 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | trailing_15pct | -0.217 | -0.491 | - | - |
-| 93 | True | 3 | 0.0 | 0.1 | None | 60 | break_even_at_1r | -0.104 | -0.496 | - | - |
-| 94 | True | 3 | 0.3 | 0.1 | None | 60 | trailing_10pct | -0.220 | -0.5 | - | - |
-| 95 | True | 3 | 0.3 | 0.0 | None | 60 | time_stop_20d | -0.110 | -0.505 | - | - |
-| 96 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | trailing_5pct | -0.017 | -0.506 | - | - |
-| 97 | True | 3 | 0.3 | 0.1 | None | 60 | trailing_5pct | -0.052 | -0.512 | - | - |
-| 98 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | fixed_4r_2r | 0.081 | -0.516 | - | - |
-| 99 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | trailing_10pct | -0.165 | -0.519 | - | - |
-| 100 | True | 3 | 0.0 | 0.0 | None | 60 | time_stop_20d | -0.215 | -0.521 | - | - |
-| 101 | True | 3 | 0.0 | 0.25 | None | 60 | fixed_4r_2r | -0.134 | -0.521 | - | - |
-| 102 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | trailing_10pct | -0.167 | -0.529 | - | - |
-| 103 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | trailing_15pct | -0.262 | -0.537 | - | - |
-| 104 | True | 3 | 0.3 | 0.0 | None | 60 | trailing_10pct | -0.261 | -0.538 | - | - |
-| 105 | True | 3 | 0.3 | 0.0 | None | 60 | trailing_15pct | -0.331 | -0.546 | - | - |
-| 106 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | trailing_15pct | -0.267 | -0.548 | - | - |
-| 107 | True | 3 | 0.3 | 0.1 | None | 60 | trailing_15pct | -0.332 | -0.553 | - | - |
-| 108 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | time_stop_20d | 0.302 | -0.557 | - | - |
-| 109 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | fixed_4r_2r | 0.383 | -0.566 | - | - |
-| 110 | True | 3 | 0.5 | 0.0 | None | 60 | hybrid_50pct_target | -0.142 | -0.581 | - | - |
-| 111 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | breakeven_plus_trail | -0.037 | -0.582 | - | - |
-| 112 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | trailing_5pct | -0.006 | -0.589 | - | - |
-| 113 | True | 3 | 0.5 | 0.0 | None | 60 | fixed_4r_2r | 0.056 | -0.595 | - | - |
-| 114 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | trailing_15pct | -0.273 | -0.598 | - | - |
-| 115 | True | 3 | 0.0 | 0.0 | None | 60 | class_time_stop | -0.096 | -0.599 | - | - |
-| 116 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | next_pivot_target | 0.099 | -0.599 | - | - |
-| 117 | True | 3 | 0.5 | 0.1 | None | 60 | fixed_4r_2r | 0.064 | -0.601 | - | - |
-| 118 | True | 3 | 0.3 | 0.1 | None | 60 | fixed_4r_2r | -0.157 | -0.603 | - | - |
-| 119 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | trailing_5pct | -0.110 | -0.619 | - | - |
-| 120 | True | 3 | 0.0 | 0.0 | None | 60 | atr_trail_2x | -0.241 | -0.62 | - | - |
-| 121 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | hybrid_50pct_target | -0.113 | -0.623 | - | - |
-| 122 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | fixed_4r_2r | 0.054 | -0.624 | - | - |
-| 123 | True | 3 | 0.5 | 0.25 | None | 60 | hybrid_50pct_target | -0.120 | -0.625 | - | - |
-| 124 | True | 3 | 0.5 | 0.25 | None | 60 | earnings_blackout | -0.190 | -0.628 | - | - |
-| 125 | True | 3 | 0.3 | 0.0 | None | 60 | fixed_4r_2r | -0.193 | -0.63 | - | - |
-| 126 | True | 3 | 0.0 | 0.25 | None | 60 | time_stop_20d | -0.285 | -0.634 | - | - |
-| 127 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | fixed_4r_2r | 0.170 | -0.638 | - | - |
-| 128 | True | 3 | 0.5 | 0.1 | None | 60 | hybrid_50pct_target | -0.192 | -0.638 | - | - |
-| 129 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | trailing_10pct | -0.234 | -0.65 | - | - |
-| 130 | True | 3 | 0.5 | 0.25 | None | 60 | regime_flip | 0.110 | -0.651 | - | - |
-| 131 | True | 3 | 0.3 | 0.25 | None | 60 | breakeven_plus_trail | -0.238 | -0.652 | - | - |
-| 132 | True | 3 | 0.3 | 0.25 | None | 60 | trailing_10pct | -0.341 | -0.656 | - | - |
-| 133 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | atr_trail_2x | -0.120 | -0.661 | - | - |
-| 134 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | hybrid_50pct_target | -0.152 | -0.67 | - | - |
-| 135 | True | 3 | 0.0 | 0.25 | None | 60 | trailing_5pct | -0.275 | -0.685 | - | - |
-| 136 | True | 3 | 0.0 | 0.1 | None | 60 | next_pivot_target | -0.193 | -0.694 | - | - |
-| 137 | True | 3 | 0.3 | 0.0 | None | 60 | atr_trail_2x | -0.214 | -0.699 | - | - |
-| 138 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | fixed_4r_2r | 0.110 | -0.709 | - | - |
-| 139 | True | 3 | 0.0 | 0.1 | None | 60 | atr_trail_2x | -0.319 | -0.714 | - | - |
-| 140 | True | 3 | 0.0 | 0.25 | None | 60 | next_pivot_target | -0.195 | -0.725 | - | - |
-| 141 | True | 3 | 0.5 | 0.0 | None | 60 | trailing_5pct | -0.060 | -0.725 | - | - |
-| 142 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | next_pivot_target | 0.031 | -0.726 | - | - |
-| 143 | True | 3 | 0.0 | 0.1 | None | 60 | r_multiple_3r | -0.225 | -0.732 | - | - |
-| 144 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | trailing_5pct | -0.137 | -0.736 | - | - |
-| 145 | True | 3 | 0.0 | 0.0 | None | 60 | r_multiple_2r | -0.194 | -0.741 | - | - |
-| 146 | True | 3 | 0.0 | 0.1 | None | 60 | class_time_stop | -0.225 | -0.748 | - | - |
-| 147 | True | 3 | 0.3 | 0.1 | None | 60 | atr_trail_2x | -0.252 | -0.748 | - | - |
-| 148 | True | 3 | 0.3 | 0.25 | None | 60 | fixed_4r_2r | -0.260 | -0.759 | - | - |
-| 149 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | next_pivot_target | -0.046 | -0.76 | - | - |
-| 150 | True | 3 | 0.3 | 0.25 | None | 60 | trailing_15pct | -0.508 | -0.761 | - | - |
-| 151 | True | 3 | 0.0 | 0.0 | None | 60 | next_pivot_target | -0.282 | -0.768 | - | - |
-| 152 | True | 3 | 0.3 | 0.25 | None | 60 | time_stop_20d | -0.314 | -0.769 | - | - |
-| 153 | True | 3 | 0.0 | 0.1 | None | 60 | chandelier_3x | -0.254 | -0.771 | - | - |
-| 154 | True | 3 | 0.5 | 0.1 | None | 60 | trailing_5pct | -0.107 | -0.784 | - | - |
-| 155 | True | 3 | 0.0 | 0.0 | None | 60 | r_multiple_3r | -0.302 | -0.786 | - | - |
-| 156 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | atr_trail_2x | -0.220 | -0.786 | - | - |
-| 157 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | break_even_at_1r | -0.265 | -0.79 | - | - |
-| 158 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | trailing_5pct | -0.218 | -0.794 | - | - |
-| 159 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | r_multiple_3r | -0.092 | -0.797 | - | - |
-| 160 | True | 3 | 0.0 | 0.25 | None | 60 | ma_exit_ema9 | -0.163 | -0.802 | - | - |
-| 161 | True | 3 | 0.3 | 0.0 | None | 60 | chandelier_3x | -0.193 | -0.808 | - | - |
-| 162 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | r_multiple_3r | -0.070 | -0.814 | - | - |
-| 163 | True | 3 | 0.5 | 0.25 | None | 60 | time_stop_20d | -0.100 | -0.817 | - | - |
-| 164 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | class_time_stop | -0.098 | -0.826 | - | - |
-| 165 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | atr_trail_2x | -0.195 | -0.834 | - | - |
-| 166 | True | 3 | 0.3 | 0.1 | None | 60 | chandelier_3x | -0.214 | -0.843 | - | - |
-| 167 | True | 3 | 0.0 | 0.25 | None | 60 | chandelier_3x | -0.300 | -0.844 | - | - |
-| 168 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | trailing_10pct | -0.263 | -0.844 | - | - |
-| 169 | True | 3 | 0.0 | 0.1 | None | 60 | r_multiple_2r | -0.271 | -0.847 | - | - |
-| 170 | True | 3 | 0.0 | 0.1 | None | 60 | ma_exit_ema9 | -0.259 | -0.866 | - | - |
-| 171 | True | 3 | 0.0 | 0.25 | None | 60 | r_multiple_3r | -0.299 | -0.877 | - | - |
-| 172 | True | 3 | 0.5 | 0.25 | None | 60 | trailing_10pct | -0.389 | -0.879 | - | - |
-| 173 | True | 3 | 0.5 | 0.25 | None | 60 | fixed_4r_2r | -0.121 | -0.89 | - | - |
-| 174 | True | 3 | 0.0 | 0.25 | None | 60 | atr_trail_2x | -0.454 | -0.896 | - | - |
-| 175 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | break_even_at_1r | -0.340 | -0.905 | - | - |
-| 176 | True | 3 | 0.5 | 0.1 | None | 60 | trailing_10pct | -0.474 | -0.918 | - | - |
-| 177 | True | 3 | 0.0 | 0.0 | None | 60 | ma_exit_ema9 | -0.335 | -0.925 | - | - |
-| 178 | True | 3 | 0.5 | 0.0 | None | 60 | trailing_10pct | -0.494 | -0.933 | - | - |
-| 179 | True | 3 | 0.5 | 0.0 | None | 60 | breakeven_plus_trail | -0.374 | -0.942 | - | - |
-| 180 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | break_even_at_1r | -0.329 | -0.961 | - | - |
-| 181 | True | 3 | 0.5 | 0.1 | None | 60 | breakeven_plus_trail | -0.387 | -0.963 | - | - |
-| 182 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | atr_trail_2x | -0.310 | -0.964 | - | - |
-| 183 | True | 3 | 0.0 | 0.0 | None | 60 | time_stop_10d | -0.543 | -0.968 | - | - |
-| 184 | True | 3 | 0.0 | 0.0 | None | 60 | chandelier_3x | -0.455 | -0.97 | - | - |
-| 185 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | class_time_stop | 0.444 | -0.97 | - | - |
-| 186 | True | 3 | 0.3 | 0.25 | None | 60 | trailing_5pct | -0.456 | -0.979 | - | - |
-| 187 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | class_time_stop | 0.220 | -0.98 | - | - |
-| 188 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | trailing_10pct | -0.481 | -1.004 | - | - |
-| 189 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | class_time_stop | 0.173 | -1.008 | - | - |
-| 190 | True | 3 | 0.3 | 0.1 | None | 60 | r_multiple_3r | -0.360 | -1.013 | - | - |
-| 191 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | trailing_10pct | -0.498 | -1.015 | - | - |
-| 192 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | class_time_stop | -0.152 | -1.019 | - | - |
-| 193 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | time_stop_10d | -0.403 | -1.02 | - | - |
-| 194 | True | 3 | 0.0 | 0.1 | None | 60 | time_stop_10d | -0.581 | -1.022 | - | - |
-| 195 | True | 3 | 0.5 | 0.0 | None | 60 | class_time_stop | -0.031 | -1.025 | - | - |
-| 196 | True | 3 | 0.3 | 0.0 | None | 60 | r_multiple_3r | -0.397 | -1.035 | - | - |
-| 197 | True | 3 | 0.3 | 0.1 | None | 60 | class_time_stop | -0.373 | -1.047 | - | - |
-| 198 | True | 3 | 0.3 | 0.25 | None | 60 | chandelier_3x | -0.372 | -1.051 | - | - |
-| 199 | True | 3 | 0.0 | 0.25 | None | 60 | class_time_stop | -0.487 | -1.064 | - | - |
-| 200 | True | 3 | 0.5 | 0.1 | None | 60 | class_time_stop | -0.053 | -1.065 | - | - |
-| 201 | True | 3 | 0.3 | 0.0 | None | 60 | class_time_stop | -0.410 | -1.066 | - | - |
-| 202 | True | 3 | 0.3 | 0.25 | None | 60 | atr_trail_2x | -0.506 | -1.075 | - | - |
-| 203 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | chandelier_3x | -0.259 | -1.076 | - | - |
-| 204 | True | 3 | 0.0 | 0.25 | None | 60 | r_multiple_2r | -0.427 | -1.077 | - | - |
-| 205 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | class_time_stop | -0.321 | -1.079 | - | - |
-| 206 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | trailing_15pct | -0.677 | -1.089 | - | - |
-| 207 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | trailing_15pct | -0.673 | -1.089 | - | - |
-| 208 | True | 3 | 0.5 | 0.0 | None | 60 | trailing_15pct | -0.733 | -1.091 | - | - |
-| 209 | True | 3 | 0.5 | 0.0 | None | 60 | atr_trail_2x | -0.356 | -1.096 | - | - |
-| 210 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | trailing_5pct | -0.296 | -1.101 | - | - |
-| 211 | True | 3 | 0.5 | 0.1 | None | 60 | trailing_15pct | -0.745 | -1.108 | - | - |
-| 212 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | time_stop_10d | -0.468 | -1.109 | - | - |
-| 213 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | atr_trail_2x | -0.451 | -1.113 | - | - |
-| 214 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | chandelier_3x | -0.177 | -1.115 | - | - |
-| 215 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | trailing_15pct | -0.644 | -1.116 | - | - |
-| 216 | True | 3 | 0.5 | 0.1 | None | 60 | atr_trail_2x | -0.397 | -1.151 | - | - |
-| 217 | True | 3 | 0.0 | 0.25 | None | 60 | time_stop_10d | -0.674 | -1.161 | - | - |
-| 218 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | r_multiple_3r | -0.321 | -1.166 | - | - |
-| 219 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | trailing_5pct | -0.470 | -1.17 | - | - |
-| 220 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | class_time_stop | -0.306 | -1.171 | - | - |
-| 221 | True | 3 | 0.3 | 0.1 | None | 60 | r_multiple_2r | -0.420 | -1.171 | - | - |
-| 222 | True | 3 | 0.3 | 0.0 | None | 60 | r_multiple_2r | -0.444 | -1.175 | - | - |
-| 223 | True | 3 | 0.5 | 0.25 | None | 60 | trailing_15pct | -0.766 | -1.175 | - | - |
-| 224 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | chandelier_3x | -0.384 | -1.178 | - | - |
-| 225 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | trailing_5pct | -0.356 | -1.178 | - | - |
-| 226 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | chandelier_3x | -0.373 | -1.214 | - | - |
-| 227 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | r_multiple_2r | -0.418 | -1.219 | - | - |
-| 228 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | breakeven_plus_trail | -0.554 | -1.221 | - | - |
-| 229 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | next_pivot_target | 0.040 | -1.224 | - | - |
-| 230 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | r_multiple_3r | -0.353 | -1.226 | - | - |
-| 231 | True | 3 | 0.5 | 0.25 | None | 60 | trailing_5pct | -0.433 | -1.229 | - | - |
-| 232 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | breakeven_plus_trail | -0.561 | -1.241 | - | - |
-| 233 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | next_pivot_target | -0.415 | -1.245 | - | - |
-| 234 | True | 3 | 0.3 | 0.25 | None | 60 | next_pivot_target | -0.559 | -1.252 | - | - |
-| 235 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | chandelier_3x | -0.538 | -1.255 | - | - |
-| 236 | True | 3 | 0.3 | 0.25 | None | 60 | class_time_stop | -0.498 | -1.255 | - | - |
-| 237 | True | 3 | 0.3 | 0.1 | None | 60 | next_pivot_target | -0.629 | -1.26 | - | - |
-| 238 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | atr_trail_2x | -0.372 | -1.263 | - | - |
-| 239 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | r_multiple_3r | -0.406 | -1.265 | - | - |
-| 240 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | atr_trail_2x | -0.393 | -1.272 | - | - |
-| 241 | True | 3 | 0.5 | 0.25 | None | 60 | breakeven_plus_trail | -0.599 | -1.275 | - | - |
-| 242 | True | 3 | 0.3 | 0.0 | None | 60 | next_pivot_target | -0.647 | -1.276 | - | - |
-| 243 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | class_time_stop | -0.405 | -1.292 | - | - |
-| 244 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | atr_trail_2x | -0.526 | -1.299 | - | - |
-| 245 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | r_multiple_2r | -0.465 | -1.311 | - | - |
-| 246 | True | 3 | 0.5 | 0.1 | None | 60 | r_multiple_3r | -0.296 | -1.317 | - | - |
-| 247 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | time_stop_10d | -0.592 | -1.326 | - | - |
-| 248 | True | 3 | 0.5 | 0.25 | None | 60 | class_time_stop | -0.157 | -1.342 | - | - |
-| 249 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | time_stop_10d | -0.612 | -1.347 | - | - |
-| 250 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | trailing_5pct | -0.379 | -1.351 | - | - |
-| 251 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | next_pivot_target | -0.431 | -1.355 | - | - |
-| 252 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | next_pivot_target | -0.178 | -1.355 | - | - |
-| 253 | True | 3 | 0.5 | 0.0 | None | 60 | r_multiple_3r | -0.353 | -1.36 | - | - |
-| 254 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | chandelier_3x | -0.637 | -1.378 | - | - |
-| 255 | True | 3 | 0.5 | 0.25 | None | 60 | next_pivot_target | -0.359 | -1.381 | - | - |
-| 256 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | class_time_stop | -0.360 | -1.384 | - | - |
-| 257 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | breakeven_plus_trail | -0.604 | -1.401 | - | - |
-| 258 | True | 3 | 0.3 | 0.25 | None | 60 | r_multiple_3r | -0.654 | -1.414 | - | - |
-| 259 | True | 3 | 0.3 | 0.1 | None | 60 | time_stop_10d | -0.845 | -1.415 | - | - |
-| 260 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | next_pivot_target | -0.258 | -1.415 | - | - |
-| 261 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | next_pivot_target | -0.588 | -1.427 | - | - |
-| 262 | True | 3 | 0.5 | 0.0 | None | 60 | next_pivot_target | -0.475 | -1.438 | - | - |
-| 263 | True | 3 | 0.5 | 0.1 | None | 60 | next_pivot_target | -0.468 | -1.441 | - | - |
-| 264 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | atr_trail_2x | -0.380 | -1.45 | - | - |
-| 265 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | time_stop_10d | -0.457 | -1.469 | - | - |
-| 266 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | time_stop_10d | -0.275 | -1.47 | - | - |
-| 267 | True | 3 | 0.3 | 0.0 | None | 60 | break_even_at_1r | -0.928 | -1.474 | - | - |
-| 268 | True | 3 | 0.5 | 0.25 | None | 60 | time_stop_10d | -0.473 | -1.474 | - | - |
-| 269 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | time_stop_10d | -0.724 | -1.477 | - | - |
-| 270 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | ma_exit_ema9 | -0.551 | -1.492 | - | - |
-| 271 | True | 3 | 0.3 | 0.0 | None | 60 | time_stop_10d | -0.940 | -1.496 | - | - |
-| 272 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | r_multiple_2r | -0.531 | -1.499 | - | - |
-| 273 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | break_even_at_1r | -0.826 | -1.521 | - | - |
-| 274 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | time_stop_10d | -0.530 | -1.525 | - | - |
-| 275 | True | 3 | 0.5 | 0.1 | None | 60 | time_stop_10d | -0.682 | -1.54 | - | - |
-| 276 | True | 3 | 0.0 | 0.0 | None | 60 | atr_trail_vix_conditional | -0.991 | -1.555 | - | - |
-| 277 | True | 3 | 0.5 | 0.0 | None | 60 | time_stop_10d | -0.733 | -1.577 | - | - |
-| 278 | True | 3 | 0.3 | 0.1 | None | 60 | break_even_at_1r | -1.024 | -1.589 | - | - |
-| 279 | True | 3 | 0.3 | 0.25 | None | 60 | time_stop_10d | -0.948 | -1.591 | - | - |
-| 280 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | r_multiple_2r | -0.610 | -1.593 | - | - |
-| 281 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | ma_exit_ema9 | -0.763 | -1.597 | - | - |
-| 282 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | break_even_at_1r | -0.917 | -1.638 | - | - |
-| 283 | True | 3 | 0.0 | 0.1 | None | 60 | atr_trail_vix_conditional | -1.072 | -1.665 | - | - |
-| 284 | True | 3 | 0.5 | 0.25 | None | 60 | atr_trail_2x | -0.778 | -1.684 | - | - |
-| 285 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | time_stop_10d | -0.816 | -1.689 | - | - |
-| 286 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | r_multiple_3r | -0.687 | -1.693 | - | - |
-| 287 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | r_multiple_3r | -0.474 | -1.695 | - | - |
-| 288 | True | 3 | 0.5 | 0.1 | None | 60 | r_multiple_2r | -0.600 | -1.723 | - | - |
-| 289 | True | 3 | 0.3 | 0.25 | None | 60 | r_multiple_2r | -0.869 | -1.733 | - | - |
-| 290 | True | 3 | 0.5 | 0.0 | None | 60 | r_multiple_2r | -0.665 | -1.77 | - | - |
-| 291 | True | 3 | 0.0 | 0.25 | None | 60 | atr_trail_vix_conditional | -1.126 | -1.78 | - | - |
-| 292 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | r_multiple_3r | -0.570 | -1.783 | - | - |
-| 293 | True | 3 | 0.5 | 0.25 | None | 60 | r_multiple_3r | -0.564 | -1.802 | - | - |
-| 294 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | ma_exit_ema9 | -0.939 | -1.812 | - | - |
-| 295 | True | 3 | 0.3 | 0.25 | None | 60 | ma_exit_ema9 | -0.979 | -1.816 | - | - |
-| 296 | True | 3 | 0.3 | 0.1 | None | 60 | ma_exit_ema9 | -1.080 | -1.85 | - | - |
-| 297 | True | 3 | 0.5 | 0.0 | None | 60 | chandelier_3x | -0.898 | -1.874 | - | - |
-| 298 | True | 3 | 0.3 | 0.0 | None | 60 | ma_exit_ema9 | -1.136 | -1.888 | - | - |
-| 299 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | ma_exit_ema9 | -0.781 | -1.926 | - | - |
-| 300 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | r_multiple_3r | -0.439 | -1.93 | - | - |
-| 301 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | r_multiple_2r | -0.942 | -1.941 | - | - |
-| 302 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | ma_exit_ema9 | -0.951 | -1.942 | - | - |
-| 303 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | r_multiple_2r | -0.591 | -1.942 | - | - |
-| 304 | True | 3 | 0.5 | 0.1 | None | 60 | chandelier_3x | -0.953 | -1.955 | - | - |
-| 305 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | break_even_at_1r | -1.153 | -2.009 | - | - |
-| 306 | True | 3 | 0.5 | 0.1 | None | 60 | break_even_at_1r | -1.199 | -2.016 | - | - |
-| 307 | True | 3 | 0.5 | 0.0 | None | 60 | break_even_at_1r | -1.206 | -2.02 | - | - |
-| 308 | True | 3 | 0.0 | 0.0 | None | 60 | multi_tier_partial | -1.397 | -2.037 | - | - |
-| 309 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | ma_exit_ema9 | -1.036 | -2.049 | - | - |
-| 310 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | r_multiple_2r | -0.711 | -2.05 | - | - |
-| 311 | True | 3 | 0.3 | 0.25 | None | 60 | break_even_at_1r | -1.402 | -2.059 | - | - |
-| 312 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | r_multiple_2r | -0.913 | -2.074 | - | - |
-| 313 | True | 3 | 0.5 | 0.25 | None | 60 | chandelier_3x | -1.057 | -2.158 | - | - |
-| 314 | True | 3 | 0.0 | 0.25 | None | 60 | atr_trail_1x | -1.488 | -2.213 | - | - |
-| 315 | True | 3 | 0.0 | 0.25 | None | 60 | reverse_signal | -1.488 | -2.213 | - | - |
-| 316 | True | 3 | 0.5 | 0.25 | None | 60 | break_even_at_1r | -1.273 | -2.231 | - | - |
-| 317 | True | 3 | 0.0 | 0.0 | None | 60 | atr_trail_1x | -1.625 | -2.258 | - | - |
-| 318 | True | 3 | 0.0 | 0.0 | None | 60 | reverse_signal | -1.625 | -2.258 | - | - |
-| 319 | True | 3 | 0.0 | 0.25 | None | 60 | multi_tier_partial | -1.520 | -2.259 | - | - |
-| 320 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | break_even_at_1r | -1.302 | -2.283 | - | - |
-| 321 | True | 3 | 0.5 | 0.25 | None | 60 | r_multiple_2r | -0.911 | -2.287 | - | - |
-| 322 | True | 3 | 0.0 | 0.1 | None | 60 | multi_tier_partial | -1.625 | -2.299 | - | - |
-| 323 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | break_even_at_1r | -1.374 | -2.353 | - | - |
-| 324 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | r_multiple_2r | -0.724 | -2.401 | - | - |
-| 325 | True | 3 | 0.0 | 0.1 | None | 60 | atr_trail_1x | -1.747 | -2.411 | - | - |
-| 326 | True | 3 | 0.0 | 0.1 | None | 60 | reverse_signal | -1.747 | -2.411 | - | - |
-| 327 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | chandelier_3x | -1.286 | -2.436 | - | - |
-| 328 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | atr_trail_vix_conditional | -1.632 | -2.5 | - | - |
-| 329 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | chandelier_3x | -1.206 | -2.533 | - | - |
-| 330 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | chandelier_3x | -1.358 | -2.536 | - | - |
-| 331 | True | 3 | 0.0 | 0.0 | None | 60 | mfe_lockin_trail | -1.898 | -2.554 | - | - |
-| 332 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | break_even_at_1r | -1.432 | -2.599 | - | - |
-| 333 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | multi_tier_partial | -1.697 | -2.651 | - | - |
-| 334 | True | 3 | 0.5 | 0.0 | None | 60 | ma_exit_ema9 | -1.653 | -2.806 | - | - |
-| 335 | True | 3 | 0.5 | 0.1 | None | 60 | ma_exit_ema9 | -1.685 | -2.854 | - | - |
-| 336 | True | 3 | 0.3 | 0.0 | None | 60 | atr_trail_vix_conditional | -2.110 | -2.888 | - | - |
-| 337 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | ma_exit_ema9 | -1.291 | -2.903 | - | - |
-| 338 | True | 3 | 0.0 | 0.1 | None | 60 | mfe_lockin_trail | -2.229 | -2.917 | - | - |
-| 339 | True | 3 | 0.3 | 0.1 | None | 60 | atr_trail_vix_conditional | -2.174 | -2.972 | - | - |
-| 340 | True | 3 | 0.0 | 0.25 | None | 60 | mfe_lockin_trail | -2.289 | -3.05 | - | - |
-| 341 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | atr_trail_vix_conditional | -2.158 | -3.085 | - | - |
-| 342 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | ma_exit_ema9 | -1.688 | -3.099 | - | - |
-| 343 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | atr_trail_1x | -2.165 | -3.115 | - | - |
-| 344 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | reverse_signal | -2.165 | -3.115 | - | - |
-| 345 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | ma_exit_ema9 | -1.725 | -3.129 | - | - |
-| 346 | True | 3 | 0.5 | 0.25 | None | 60 | ma_exit_ema9 | -1.850 | -3.176 | - | - |
-| 347 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | multi_tier_partial | -2.172 | -3.185 | - | - |
-| 348 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | multi_tier_partial | -2.131 | -3.276 | - | - |
-| 349 | True | 3 | 0.3 | 0.0 | None | 60 | multi_tier_partial | -2.413 | -3.302 | - | - |
-| 350 | True | 3 | 0.3 | 0.25 | None | 60 | atr_trail_vix_conditional | -2.410 | -3.305 | - | - |
-| 351 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | multi_tier_partial | -2.200 | -3.373 | - | - |
-| 352 | True | 3 | 0.3 | 0.1 | None | 60 | multi_tier_partial | -2.534 | -3.45 | - | - |
-| 353 | True | 3 | 0.3 | 0.25 | None | 60 | multi_tier_partial | -2.490 | -3.513 | - | - |
-| 354 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | atr_trail_1x | -2.371 | -3.514 | - | - |
-| 355 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | reverse_signal | -2.371 | -3.514 | - | - |
-| 356 | True | 3 | 0.3 | 0.25 | None | 60 | atr_trail_1x | -2.520 | -3.516 | - | - |
-| 357 | True | 3 | 0.3 | 0.25 | None | 60 | reverse_signal | -2.520 | -3.516 | - | - |
-| 358 | True | 3 | 0.5 | 0.0 | None | 60 | atr_trail_vix_conditional | -2.385 | -3.583 | - | - |
-| 359 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | mfe_lockin_trail | -2.610 | -3.597 | - | - |
-| 360 | True | 3 | 0.5 | 0.1 | None | 60 | atr_trail_vix_conditional | -2.388 | -3.6 | - | - |
-| 361 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | atr_trail_vix_conditional | -2.524 | -3.608 | - | - |
-| 362 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | atr_trail_vix_conditional | -2.551 | -3.638 | - | - |
-| 363 | True | 3 | 0.3 | 0.0 | None | 60 | atr_trail_1x | -2.760 | -3.638 | - | - |
-| 364 | True | 3 | 0.3 | 0.0 | None | 60 | reverse_signal | -2.760 | -3.638 | - | - |
-| 365 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | multi_tier_partial | -2.473 | -3.674 | - | - |
-| 366 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | atr_trail_1x | -2.703 | -3.713 | - | - |
-| 367 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | reverse_signal | -2.703 | -3.713 | - | - |
-| 368 | True | 3 | 0.3 | 0.1 | None | 60 | atr_trail_1x | -2.827 | -3.73 | - | - |
-| 369 | True | 3 | 0.3 | 0.1 | None | 60 | reverse_signal | -2.827 | -3.73 | - | - |
-| 370 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | multi_tier_partial | -2.437 | -3.808 | - | - |
-| 371 | True | 3 | 0.5 | 0.25 | None | 60 | atr_trail_vix_conditional | -2.485 | -3.93 | - | - |
-| 372 | True | 3 | 0.3 | 0.0 | None | 60 | mfe_lockin_trail | -3.043 | -3.95 | - | - |
-| 373 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | atr_trail_1x | -2.845 | -4.019 | - | - |
-| 374 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | reverse_signal | -2.845 | -4.019 | - | - |
-| 375 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | atr_trail_vix_conditional | -2.915 | -4.035 | - | - |
-| 376 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | atr_trail_1x | -2.685 | -4.049 | - | - |
-| 377 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | reverse_signal | -2.685 | -4.049 | - | - |
-| 378 | True | 3 | 0.3 | 0.25 | None | 60 | mfe_lockin_trail | -3.061 | -4.095 | - | - |
-| 379 | True | 3 | 0.3 | 0.1 | None | 60 | mfe_lockin_trail | -3.171 | -4.105 | - | - |
-| 380 | True | 3 | 0.0 | 0.0 | None | 60 | smc_mitigation_zone | -3.237 | -4.128 | - | - |
-| 381 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | mfe_lockin_trail | -3.114 | -4.16 | - | - |
-| 382 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | mfe_lockin_trail | -3.011 | -4.206 | - | - |
-| 383 | True | 3 | 0.5 | 0.0 | None | 60 | multi_tier_partial | -2.888 | -4.26 | - | - |
-| 384 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | atr_trail_1x | -3.101 | -4.305 | - | - |
-| 385 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | reverse_signal | -3.101 | -4.305 | - | - |
-| 386 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | multi_tier_partial | -2.693 | -4.342 | - | - |
-| 387 | True | 3 | 0.5 | 0.1 | None | 60 | multi_tier_partial | -2.978 | -4.372 | - | - |
-| 388 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | multi_tier_partial | -2.461 | -4.382 | - | - |
-| 389 | True | 3 | 0.5 | 0.25 | None | 60 | multi_tier_partial | -2.825 | -4.435 | - | - |
-| 390 | True | 3 | 0.0 | 0.1 | None | 60 | smc_mitigation_zone | -3.506 | -4.437 | - | - |
-| 391 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | mfe_lockin_trail | -3.246 | -4.456 | - | - |
-| 392 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | atr_trail_vix_conditional | -2.632 | -4.461 | - | - |
-| 393 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | multi_tier_partial | -2.846 | -4.483 | - | - |
-| 394 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | mfe_lockin_trail | -3.259 | -4.672 | - | - |
-| 395 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | atr_trail_vix_conditional | -3.368 | -4.702 | - | - |
-| 396 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | mfe_lockin_trail | -3.632 | -4.876 | - | - |
-| 397 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | atr_trail_vix_conditional | -3.436 | -4.985 | - | - |
-| 398 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | atr_trail_vix_conditional | -3.579 | -5.12 | - | - |
-| 399 | True | 3 | 0.0 | 0.25 | None | 60 | smc_mitigation_zone | -4.258 | -5.288 | - | - |
-| 400 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | atr_trail_1x | -3.565 | -5.514 | - | - |
-| 401 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | reverse_signal | -3.565 | -5.514 | - | - |
-| 402 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | mfe_lockin_trail | -3.590 | -5.569 | - | - |
-| 403 | True | 3 | 0.3 | 0.0 | None | 60 | smc_mitigation_zone | -4.413 | -5.587 | - | - |
-| 404 | True | 3 | 0.5 | 0.0 | None | 60 | mfe_lockin_trail | -4.231 | -5.65 | - | - |
-| 405 | True | 3 | 0.3 | 0.1 | None | 60 | smc_mitigation_zone | -4.473 | -5.686 | - | - |
-| 406 | True | 3 | 0.5 | 0.25 | None | 60 | mfe_lockin_trail | -4.036 | -5.704 | - | - |
-| 407 | True | 3 | 0.5 | 0.1 | None | 60 | mfe_lockin_trail | -4.331 | -5.776 | - | - |
-| 408 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | smc_mitigation_zone | -4.536 | -5.836 | - | - |
-| 409 | True | 3 | 0.5 | 0.0 | None | 60 | atr_trail_1x | -4.475 | -5.885 | - | - |
-| 410 | True | 3 | 0.5 | 0.0 | None | 60 | reverse_signal | -4.475 | -5.885 | - | - |
-| 411 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | smc_mitigation_zone | -3.677 | -5.931 | - | - |
-| 412 | True | 3 | 0.5 | 0.1 | None | 60 | atr_trail_1x | -4.590 | -6.025 | - | - |
-| 413 | True | 3 | 0.5 | 0.1 | None | 60 | reverse_signal | -4.590 | -6.025 | - | - |
-| 414 | True | 3 | 0.5 | 0.25 | None | 60 | atr_trail_1x | -4.389 | -6.041 | - | - |
-| 415 | True | 3 | 0.5 | 0.25 | None | 60 | reverse_signal | -4.389 | -6.041 | - | - |
-| 416 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | smc_mitigation_zone | -4.591 | -6.122 | - | - |
-| 417 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | atr_trail_1x | -4.438 | -6.139 | - | - |
-| 418 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | reverse_signal | -4.438 | -6.139 | - | - |
-| 419 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | mfe_lockin_trail | -4.463 | -6.182 | - | - |
-| 420 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | smc_mitigation_zone | -4.514 | -6.255 | - | - |
-| 421 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | atr_trail_1x | -4.605 | -6.297 | - | - |
-| 422 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | reverse_signal | -4.605 | -6.297 | - | - |
-| 423 | True | 3 | 0.3 | 0.25 | None | 60 | smc_mitigation_zone | -4.959 | -6.301 | - | - |
-| 424 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | smc_mitigation_zone | -4.745 | -6.317 | - | - |
-| 425 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | mfe_lockin_trail | -4.630 | -6.34 | - | - |
-| 426 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | smc_mitigation_zone | -4.373 | -6.382 | - | - |
-| 427 | True | 3 | 0.5 | 0.1 | None | 60 | smc_mitigation_zone | -4.723 | -6.446 | - | - |
-| 428 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | smc_mitigation_zone | -5.064 | -6.454 | - | - |
-| 429 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | smc_mitigation_zone | -4.923 | -6.455 | - | - |
-| 430 | True | 3 | 0.5 | 0.0 | None | 60 | smc_mitigation_zone | -4.819 | -6.519 | - | - |
-| 431 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | smc_mitigation_zone | -4.605 | -6.597 | - | - |
-| 432 | True | 3 | 0.5 | 0.25 | None | 60 | smc_mitigation_zone | -4.759 | -6.698 | - | - |
+| rank | three_white_soldiers (boolean leg) | n_bars (pattern length) | min_body_pct_of_range | min_step_up_pct | max_upper_wick_pct | rsi_14 ceiling | exit | IS sharpe | IS ci_lo | IS n | full n | tier |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | regime_flip | 0.993 | 0.225 | 98 | 98 | MID |
+| 2 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | regime_flip | 0.630 | 0.075 | 181 | 181 | DEEP |
+| 3 | True | 3 | 0.5 | 0.0 | None | 60 | regime_flip | 0.720 | 0.067 | 137 | 137 | DEEP |
+| 4 | True | 3 | 0.0 | 0.0 | None | 60 | breakeven_plus_trail | 0.308 | 0.048 | 560 | 560 | DEEP |
+| 5 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | regime_flip | 0.535 | 0.04 | 240 | 240 | DEEP |
+| 6 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | regime_flip | 0.816 | 0.035 | 95 | 95 | MID |
+| 7 | True | 3 | 0.0 | 0.1 | None | 60 | breakeven_plus_trail | 0.305 | 0.034 | 515 | 515 | DEEP |
+| 8 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | regime_flip | 0.504 | 0.028 | 261 | 261 | DEEP |
+| 9 | True | 3 | 0.5 | 0.1 | None | 60 | regime_flip | 0.682 | 0.018 | 132 | 132 | DEEP |
+| 10 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | earnings_blackout | 0.291 | 0.011 | 240 | 240 | DEEP |
+| 11 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | earnings_blackout | 0.310 | -0.01 | 186 | 186 | DEEP |
+| 12 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | regime_flip | 0.546 | -0.022 | 173 | 173 | DEEP |
+| 13 | True | 3 | 0.0 | 0.1 | None | 60 | earnings_blackout | 0.171 | -0.024 | 515 | 515 | DEEP |
+| 14 | True | 3 | 0.0 | 0.0 | None | 60 | earnings_blackout | 0.143 | -0.045 | 560 | 560 | DEEP |
+| 15 | True | 3 | 0.0 | 0.25 | None | 60 | breakeven_plus_trail | 0.251 | -0.051 | 424 | 424 | DEEP |
+| 16 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | earnings_blackout | 0.198 | -0.071 | 261 | 261 | DEEP |
+| 17 | True | 3 | 0.3 | 0.1 | None | 60 | regime_flip | 0.364 | -0.074 | 304 | 304 | DEEP |
+| 18 | True | 3 | 0.3 | 0.0 | None | 60 | regime_flip | 0.349 | -0.077 | 322 | 322 | DEEP |
+| 19 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | hybrid_50pct_target | 0.215 | -0.081 | 240 | 240 | DEEP |
+| 20 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | hybrid_50pct_target | 0.249 | -0.091 | 186 | 186 | DEEP |
+| 21 | True | 3 | 0.0 | 0.0 | None | 60 | hybrid_50pct_target | 0.099 | -0.106 | 560 | 560 | DEEP |
+| 22 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | hybrid_50pct_target | 0.164 | -0.121 | 261 | 261 | DEEP |
+| 23 | True | 3 | 0.0 | 0.1 | None | 60 | hybrid_50pct_target | 0.087 | -0.126 | 515 | 515 | DEEP |
+| 24 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | earnings_blackout | 0.182 | -0.144 | 173 | 173 | DEEP |
+| 25 | True | 3 | 0.0 | 0.25 | None | 60 | earnings_blackout | 0.058 | -0.155 | 424 | 424 | DEEP |
+| 26 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | time_stop_20d | 0.371 | -0.155 | 181 | 181 | DEEP |
+| 27 | True | 3 | 0.0 | 0.0 | None | 60 | regime_flip | 0.174 | -0.157 | 560 | 560 | DEEP |
+| 28 | True | 3 | 0.3 | 0.1 | None | 60 | earnings_blackout | 0.080 | -0.169 | 304 | 304 | DEEP |
+| 29 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | time_stop_20d | 0.271 | -0.171 | 261 | 261 | DEEP |
+| 30 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | hybrid_50pct_target | 0.176 | -0.176 | 181 | 181 | DEEP |
+| 31 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | regime_flip | 0.379 | -0.181 | 186 | 186 | DEEP |
+| 32 | True | 3 | 0.0 | 0.1 | None | 60 | regime_flip | 0.153 | -0.19 | 515 | 515 | DEEP |
+| 33 | True | 3 | 0.0 | 0.25 | None | 60 | hybrid_50pct_target | 0.040 | -0.193 | 424 | 424 | DEEP |
+| 34 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | earnings_blackout | 0.126 | -0.193 | 181 | 181 | DEEP |
+| 35 | True | 3 | 0.3 | 0.0 | None | 60 | earnings_blackout | 0.044 | -0.199 | 322 | 322 | DEEP |
+| 36 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | hybrid_50pct_target | 0.157 | -0.2 | 173 | 173 | DEEP |
+| 37 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | hybrid_50pct_target | 0.205 | -0.204 | 131 | 131 | DEEP |
+| 38 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | breakeven_plus_trail | 0.169 | -0.206 | 261 | 261 | DEEP |
+| 39 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | time_stop_20d | 0.248 | -0.21 | 240 | 240 | DEEP |
+| 40 | True | 3 | 0.0 | 0.1 | None | 60 | trailing_10pct | -0.008 | -0.222 | 515 | 515 | DEEP |
+| 41 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | fixed_4r_2r | 0.258 | -0.23 | 261 | 261 | DEEP |
+| 42 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | fixed_4r_2r | 0.273 | -0.233 | 240 | 240 | DEEP |
+| 43 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | breakeven_plus_trail | 0.149 | -0.245 | 240 | 240 | DEEP |
+| 44 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | earnings_blackout | 0.119 | -0.257 | 131 | 131 | DEEP |
+| 45 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | regime_flip | 0.394 | -0.261 | 131 | 131 | DEEP |
+| 46 | True | 3 | 0.0 | 0.0 | None | 60 | trailing_10pct | -0.058 | -0.267 | 560 | 560 | DEEP |
+| 47 | True | 3 | 0.0 | 0.25 | None | 60 | trailing_10pct | -0.037 | -0.27 | 424 | 424 | DEEP |
+| 48 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | time_stop_20d | 0.255 | -0.28 | 173 | 173 | DEEP |
+| 49 | True | 3 | 0.3 | 0.1 | None | 60 | hybrid_50pct_target | -0.016 | -0.296 | 304 | 304 | DEEP |
+| 50 | True | 3 | 0.3 | 0.0 | None | 60 | hybrid_50pct_target | -0.027 | -0.301 | 322 | 322 | DEEP |
+| 51 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | regime_flip | 0.589 | -0.312 | 69 | 69 | MID |
+| 52 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | trailing_10pct | -0.017 | -0.317 | 240 | 240 | DEEP |
+| 53 | True | 3 | 0.0 | 0.25 | None | 60 | regime_flip | 0.049 | -0.327 | 424 | 424 | DEEP |
+| 54 | True | 3 | 0.0 | 0.0 | None | 60 | trailing_15pct | -0.165 | -0.329 | 560 | 560 | DEEP |
+| 55 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | breakeven_plus_trail | 0.118 | -0.334 | 186 | 186 | DEEP |
+| 56 | True | 3 | 0.0 | 0.1 | None | 60 | trailing_15pct | -0.166 | -0.336 | 515 | 515 | DEEP |
+| 57 | True | 3 | 0.3 | 0.0 | None | 60 | breakeven_plus_trail | 0.011 | -0.341 | 322 | 322 | DEEP |
+| 58 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | fixed_4r_2r | 0.231 | -0.343 | 186 | 186 | DEEP |
+| 59 | True | 3 | 0.5 | 0.0 | None | 60 | time_stop_20d | 0.258 | -0.347 | 137 | 137 | DEEP |
+| 60 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | trailing_10pct | -0.059 | -0.35 | 261 | 261 | DEEP |
+| 61 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | breakeven_plus_trail | 0.101 | -0.35 | 181 | 181 | DEEP |
+| 62 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | time_stop_20d | 0.165 | -0.357 | 186 | 186 | DEEP |
+| 63 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | earnings_blackout | 0.087 | -0.358 | 95 | 95 | MID |
+| 64 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | earnings_blackout | 0.077 | -0.361 | 98 | 98 | MID |
+| 65 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | fixed_4r_2r | 0.222 | -0.362 | 181 | 181 | DEEP |
+| 66 | True | 3 | 0.3 | 0.1 | None | 60 | breakeven_plus_trail | -0.005 | -0.366 | 304 | 304 | DEEP |
+| 67 | True | 3 | 0.0 | 0.0 | None | 60 | trailing_5pct | -0.019 | -0.375 | 560 | 560 | DEEP |
+| 68 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | earnings_blackout | 0.143 | -0.377 | 69 | 69 | MID |
+| 69 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | time_stop_20d | 0.331 | -0.384 | 98 | 98 | MID |
+| 70 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | trailing_10pct | -0.052 | -0.395 | 186 | 186 | DEEP |
+| 71 | True | 3 | 0.5 | 0.1 | None | 60 | time_stop_20d | 0.217 | -0.397 | 132 | 132 | DEEP |
+| 72 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | hybrid_50pct_target | 0.193 | -0.4 | 69 | 69 | MID |
+| 73 | True | 3 | 0.3 | 0.25 | None | 60 | regime_flip | 0.083 | -0.409 | 242 | 242 | DEEP |
+| 74 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | trailing_15pct | -0.173 | -0.411 | 240 | 240 | DEEP |
+| 75 | True | 3 | 0.3 | 0.25 | None | 60 | hybrid_50pct_target | -0.095 | -0.412 | 242 | 242 | DEEP |
+| 76 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | breakeven_plus_trail | 0.050 | -0.416 | 173 | 173 | DEEP |
+| 77 | True | 3 | 0.5 | 0.0 | None | 60 | earnings_blackout | -0.046 | -0.42 | 137 | 137 | DEEP |
+| 78 | True | 3 | 0.0 | 0.0 | None | 60 | break_even_at_1r | -0.065 | -0.435 | 560 | 560 | DEEP |
+| 79 | True | 3 | 0.0 | 0.0 | None | 60 | fixed_4r_2r | -0.098 | -0.435 | 560 | 560 | DEEP |
+| 80 | True | 3 | 0.0 | 0.25 | None | 60 | trailing_15pct | -0.248 | -0.436 | 424 | 424 | DEEP |
+| 81 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | time_stop_20d | 0.182 | -0.437 | 131 | 131 | DEEP |
+| 82 | True | 3 | 0.3 | 0.25 | None | 60 | earnings_blackout | -0.161 | -0.44 | 242 | 242 | DEEP |
+| 83 | True | 3 | 0.0 | 0.25 | None | 60 | break_even_at_1r | -0.032 | -0.448 | 424 | 424 | DEEP |
+| 84 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | trailing_15pct | -0.221 | -0.451 | 261 | 261 | DEEP |
+| 85 | True | 3 | 0.5 | 0.1 | None | 60 | earnings_blackout | -0.078 | -0.459 | 132 | 132 | DEEP |
+| 86 | True | 3 | 0.3 | 0.0 | None | 60 | trailing_5pct | -0.016 | -0.466 | 322 | 322 | DEEP |
+| 87 | True | 3 | 0.0 | 0.1 | None | 60 | trailing_5pct | -0.097 | -0.468 | 515 | 515 | DEEP |
+| 88 | True | 3 | 0.3 | 0.1 | None | 60 | time_stop_20d | -0.063 | -0.468 | 304 | 304 | DEEP |
+| 89 | True | 3 | 0.0 | 0.1 | None | 60 | time_stop_20d | -0.160 | -0.477 | 515 | 515 | DEEP |
+| 90 | True | 3 | 0.0 | 0.1 | None | 60 | fixed_4r_2r | -0.127 | -0.479 | 515 | 515 | DEEP |
+| 91 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | time_stop_20d | 0.248 | -0.479 | 95 | 95 | MID |
+| 92 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | trailing_15pct | -0.217 | -0.491 | 186 | 186 | DEEP |
+| 93 | True | 3 | 0.0 | 0.1 | None | 60 | break_even_at_1r | -0.104 | -0.496 | 515 | 515 | DEEP |
+| 94 | True | 3 | 0.3 | 0.1 | None | 60 | trailing_10pct | -0.220 | -0.5 | 304 | 304 | DEEP |
+| 95 | True | 3 | 0.3 | 0.0 | None | 60 | time_stop_20d | -0.110 | -0.505 | 322 | 322 | DEEP |
+| 96 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | trailing_5pct | -0.017 | -0.506 | 261 | 261 | DEEP |
+| 97 | True | 3 | 0.3 | 0.1 | None | 60 | trailing_5pct | -0.052 | -0.512 | 304 | 304 | DEEP |
+| 98 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | fixed_4r_2r | 0.081 | -0.516 | 173 | 173 | DEEP |
+| 99 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | trailing_10pct | -0.165 | -0.519 | 181 | 181 | DEEP |
+| 100 | True | 3 | 0.0 | 0.0 | None | 60 | time_stop_20d | -0.215 | -0.521 | 560 | 560 | DEEP |
+| 101 | True | 3 | 0.0 | 0.25 | None | 60 | fixed_4r_2r | -0.134 | -0.521 | 424 | 424 | DEEP |
+| 102 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | trailing_10pct | -0.167 | -0.529 | 173 | 173 | DEEP |
+| 103 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | trailing_15pct | -0.262 | -0.537 | 181 | 181 | DEEP |
+| 104 | True | 3 | 0.3 | 0.0 | None | 60 | trailing_10pct | -0.261 | -0.538 | 322 | 322 | DEEP |
+| 105 | True | 3 | 0.3 | 0.0 | None | 60 | trailing_15pct | -0.331 | -0.546 | 322 | 322 | DEEP |
+| 106 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | trailing_15pct | -0.267 | -0.548 | 173 | 173 | DEEP |
+| 107 | True | 3 | 0.3 | 0.1 | None | 60 | trailing_15pct | -0.332 | -0.553 | 304 | 304 | DEEP |
+| 108 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | time_stop_20d | 0.302 | -0.557 | 69 | 69 | MID |
+| 109 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | fixed_4r_2r | 0.383 | -0.566 | 69 | 69 | MID |
+| 110 | True | 3 | 0.5 | 0.0 | None | 60 | hybrid_50pct_target | -0.142 | -0.581 | 137 | 137 | DEEP |
+| 111 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | breakeven_plus_trail | -0.037 | -0.582 | 131 | 131 | DEEP |
+| 112 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | trailing_5pct | -0.006 | -0.589 | 181 | 181 | DEEP |
+| 113 | True | 3 | 0.5 | 0.0 | None | 60 | fixed_4r_2r | 0.056 | -0.595 | 137 | 137 | DEEP |
+| 114 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | trailing_15pct | -0.273 | -0.598 | 131 | 131 | DEEP |
+| 115 | True | 3 | 0.0 | 0.0 | None | 60 | class_time_stop | -0.096 | -0.599 | 560 | 560 | DEEP |
+| 116 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | next_pivot_target | 0.099 | -0.599 | 261 | 261 | DEEP |
+| 117 | True | 3 | 0.5 | 0.1 | None | 60 | fixed_4r_2r | 0.064 | -0.601 | 132 | 132 | DEEP |
+| 118 | True | 3 | 0.3 | 0.1 | None | 60 | fixed_4r_2r | -0.157 | -0.603 | 304 | 304 | DEEP |
+| 119 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | trailing_5pct | -0.110 | -0.619 | 240 | 240 | DEEP |
+| 120 | True | 3 | 0.0 | 0.0 | None | 60 | atr_trail_2x | -0.241 | -0.62 | 560 | 560 | DEEP |
+| 121 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | hybrid_50pct_target | -0.113 | -0.623 | 98 | 98 | MID |
+| 122 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | fixed_4r_2r | 0.054 | -0.624 | 131 | 131 | DEEP |
+| 123 | True | 3 | 0.5 | 0.25 | None | 60 | hybrid_50pct_target | -0.120 | -0.625 | 98 | 98 | MID |
+| 124 | True | 3 | 0.5 | 0.25 | None | 60 | earnings_blackout | -0.190 | -0.628 | 98 | 98 | MID |
+| 125 | True | 3 | 0.3 | 0.0 | None | 60 | fixed_4r_2r | -0.193 | -0.63 | 322 | 322 | DEEP |
+| 126 | True | 3 | 0.0 | 0.25 | None | 60 | time_stop_20d | -0.285 | -0.634 | 424 | 424 | DEEP |
+| 127 | True | 3 | 0.5 | 0.1 | None | 60 | hybrid_50pct_target | -0.192 | -0.638 | 132 | 132 | DEEP |
+| 128 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | fixed_4r_2r | 0.170 | -0.638 | 98 | 98 | MID |
+| 129 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | trailing_10pct | -0.234 | -0.65 | 131 | 131 | DEEP |
+| 130 | True | 3 | 0.5 | 0.25 | None | 60 | regime_flip | 0.110 | -0.651 | 98 | 98 | MID |
+| 131 | True | 3 | 0.3 | 0.25 | None | 60 | breakeven_plus_trail | -0.238 | -0.652 | 242 | 242 | DEEP |
+| 132 | True | 3 | 0.3 | 0.25 | None | 60 | trailing_10pct | -0.341 | -0.656 | 242 | 242 | DEEP |
+| 133 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | atr_trail_2x | -0.120 | -0.661 | 261 | 261 | DEEP |
+| 134 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | hybrid_50pct_target | -0.152 | -0.67 | 95 | 95 | MID |
+| 135 | True | 3 | 0.0 | 0.25 | None | 60 | trailing_5pct | -0.275 | -0.685 | 424 | 424 | DEEP |
+| 136 | True | 3 | 0.0 | 0.1 | None | 60 | next_pivot_target | -0.193 | -0.694 | 515 | 515 | DEEP |
+| 137 | True | 3 | 0.3 | 0.0 | None | 60 | atr_trail_2x | -0.214 | -0.699 | 322 | 322 | DEEP |
+| 138 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | fixed_4r_2r | 0.110 | -0.709 | 95 | 95 | MID |
+| 139 | True | 3 | 0.0 | 0.1 | None | 60 | atr_trail_2x | -0.319 | -0.714 | 515 | 515 | DEEP |
+| 140 | True | 3 | 0.0 | 0.25 | None | 60 | next_pivot_target | -0.195 | -0.725 | 424 | 424 | DEEP |
+| 141 | True | 3 | 0.5 | 0.0 | None | 60 | trailing_5pct | -0.060 | -0.725 | 137 | 137 | DEEP |
+| 142 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | next_pivot_target | 0.031 | -0.726 | 186 | 186 | DEEP |
+| 143 | True | 3 | 0.0 | 0.1 | None | 60 | r_multiple_3r | -0.225 | -0.732 | 515 | 515 | DEEP |
+| 144 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | trailing_5pct | -0.137 | -0.736 | 173 | 173 | DEEP |
+| 145 | True | 3 | 0.0 | 0.0 | None | 60 | r_multiple_2r | -0.194 | -0.741 | 560 | 560 | DEEP |
+| 146 | True | 3 | 0.0 | 0.1 | None | 60 | class_time_stop | -0.225 | -0.748 | 515 | 515 | DEEP |
+| 147 | True | 3 | 0.3 | 0.1 | None | 60 | atr_trail_2x | -0.252 | -0.748 | 304 | 304 | DEEP |
+| 148 | True | 3 | 0.3 | 0.25 | None | 60 | fixed_4r_2r | -0.260 | -0.759 | 242 | 242 | DEEP |
+| 149 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | next_pivot_target | -0.046 | -0.76 | 240 | 240 | DEEP |
+| 150 | True | 3 | 0.3 | 0.25 | None | 60 | trailing_15pct | -0.508 | -0.761 | 242 | 242 | DEEP |
+| 151 | True | 3 | 0.0 | 0.0 | None | 60 | next_pivot_target | -0.282 | -0.768 | 560 | 560 | DEEP |
+| 152 | True | 3 | 0.3 | 0.25 | None | 60 | time_stop_20d | -0.314 | -0.769 | 242 | 242 | DEEP |
+| 153 | True | 3 | 0.0 | 0.1 | None | 60 | chandelier_3x | -0.254 | -0.771 | 515 | 515 | DEEP |
+| 154 | True | 3 | 0.5 | 0.1 | None | 60 | trailing_5pct | -0.107 | -0.784 | 132 | 132 | DEEP |
+| 155 | True | 3 | 0.0 | 0.0 | None | 60 | r_multiple_3r | -0.302 | -0.786 | 560 | 560 | DEEP |
+| 156 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | atr_trail_2x | -0.220 | -0.786 | 240 | 240 | DEEP |
+| 157 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | break_even_at_1r | -0.265 | -0.79 | 261 | 261 | DEEP |
+| 158 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | trailing_5pct | -0.218 | -0.794 | 186 | 186 | DEEP |
+| 159 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | r_multiple_3r | -0.092 | -0.797 | 261 | 261 | DEEP |
+| 160 | True | 3 | 0.0 | 0.25 | None | 60 | ma_exit_ema9 | -0.163 | -0.802 | 424 | 424 | DEEP |
+| 161 | True | 3 | 0.3 | 0.0 | None | 60 | chandelier_3x | -0.193 | -0.808 | 322 | 322 | DEEP |
+| 162 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | r_multiple_3r | -0.070 | -0.814 | 240 | 240 | DEEP |
+| 163 | True | 3 | 0.5 | 0.25 | None | 60 | time_stop_20d | -0.100 | -0.817 | 98 | 98 | MID |
+| 164 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | class_time_stop | -0.098 | -0.826 | 261 | 261 | DEEP |
+| 165 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | atr_trail_2x | -0.195 | -0.834 | 181 | 181 | DEEP |
+| 166 | True | 3 | 0.3 | 0.1 | None | 60 | chandelier_3x | -0.214 | -0.843 | 304 | 304 | DEEP |
+| 167 | True | 3 | 0.0 | 0.25 | None | 60 | chandelier_3x | -0.300 | -0.844 | 424 | 424 | DEEP |
+| 168 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | trailing_10pct | -0.263 | -0.844 | 69 | 69 | MID |
+| 169 | True | 3 | 0.0 | 0.1 | None | 60 | r_multiple_2r | -0.271 | -0.847 | 515 | 515 | DEEP |
+| 170 | True | 3 | 0.0 | 0.1 | None | 60 | ma_exit_ema9 | -0.259 | -0.866 | 515 | 515 | DEEP |
+| 171 | True | 3 | 0.0 | 0.25 | None | 60 | r_multiple_3r | -0.299 | -0.877 | 424 | 424 | DEEP |
+| 172 | True | 3 | 0.5 | 0.25 | None | 60 | trailing_10pct | -0.389 | -0.879 | 98 | 98 | MID |
+| 173 | True | 3 | 0.5 | 0.25 | None | 60 | fixed_4r_2r | -0.121 | -0.89 | 98 | 98 | MID |
+| 174 | True | 3 | 0.0 | 0.25 | None | 60 | atr_trail_2x | -0.454 | -0.896 | 424 | 424 | DEEP |
+| 175 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | break_even_at_1r | -0.340 | -0.905 | 240 | 240 | DEEP |
+| 176 | True | 3 | 0.5 | 0.1 | None | 60 | trailing_10pct | -0.474 | -0.918 | 132 | 132 | DEEP |
+| 177 | True | 3 | 0.0 | 0.0 | None | 60 | ma_exit_ema9 | -0.335 | -0.925 | 560 | 560 | DEEP |
+| 178 | True | 3 | 0.5 | 0.0 | None | 60 | trailing_10pct | -0.494 | -0.933 | 137 | 137 | DEEP |
+| 179 | True | 3 | 0.5 | 0.0 | None | 60 | breakeven_plus_trail | -0.374 | -0.942 | 137 | 137 | DEEP |
+| 180 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | break_even_at_1r | -0.329 | -0.961 | 186 | 186 | DEEP |
+| 181 | True | 3 | 0.5 | 0.1 | None | 60 | breakeven_plus_trail | -0.387 | -0.963 | 132 | 132 | DEEP |
+| 182 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | atr_trail_2x | -0.310 | -0.964 | 173 | 173 | DEEP |
+| 183 | True | 3 | 0.0 | 0.0 | None | 60 | time_stop_10d | -0.543 | -0.968 | 560 | 560 | DEEP |
+| 184 | True | 3 | 0.0 | 0.0 | None | 60 | chandelier_3x | -0.455 | -0.97 | 560 | 560 | DEEP |
+| 185 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | class_time_stop | 0.444 | -0.97 | 69 | 69 | MID |
+| 186 | True | 3 | 0.3 | 0.25 | None | 60 | trailing_5pct | -0.456 | -0.979 | 242 | 242 | DEEP |
+| 187 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | class_time_stop | 0.220 | -0.98 | 95 | 95 | MID |
+| 188 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | trailing_10pct | -0.481 | -1.004 | 95 | 95 | MID |
+| 189 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | class_time_stop | 0.173 | -1.008 | 98 | 98 | MID |
+| 190 | True | 3 | 0.3 | 0.1 | None | 60 | r_multiple_3r | -0.360 | -1.013 | 304 | 304 | DEEP |
+| 191 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | trailing_10pct | -0.498 | -1.015 | 98 | 98 | MID |
+| 192 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | class_time_stop | -0.152 | -1.019 | 181 | 181 | DEEP |
+| 193 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | time_stop_10d | -0.403 | -1.02 | 261 | 261 | DEEP |
+| 194 | True | 3 | 0.0 | 0.1 | None | 60 | time_stop_10d | -0.581 | -1.022 | 515 | 515 | DEEP |
+| 195 | True | 3 | 0.5 | 0.0 | None | 60 | class_time_stop | -0.031 | -1.025 | 137 | 137 | DEEP |
+| 196 | True | 3 | 0.3 | 0.0 | None | 60 | r_multiple_3r | -0.397 | -1.035 | 322 | 322 | DEEP |
+| 197 | True | 3 | 0.3 | 0.1 | None | 60 | class_time_stop | -0.373 | -1.047 | 304 | 304 | DEEP |
+| 198 | True | 3 | 0.3 | 0.25 | None | 60 | chandelier_3x | -0.372 | -1.051 | 242 | 242 | DEEP |
+| 199 | True | 3 | 0.0 | 0.25 | None | 60 | class_time_stop | -0.487 | -1.064 | 424 | 424 | DEEP |
+| 200 | True | 3 | 0.5 | 0.1 | None | 60 | class_time_stop | -0.053 | -1.065 | 132 | 132 | DEEP |
+| 201 | True | 3 | 0.3 | 0.0 | None | 60 | class_time_stop | -0.410 | -1.066 | 322 | 322 | DEEP |
+| 202 | True | 3 | 0.3 | 0.25 | None | 60 | atr_trail_2x | -0.506 | -1.075 | 242 | 242 | DEEP |
+| 203 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | chandelier_3x | -0.259 | -1.076 | 181 | 181 | DEEP |
+| 204 | True | 3 | 0.0 | 0.25 | None | 60 | r_multiple_2r | -0.427 | -1.077 | 424 | 424 | DEEP |
+| 205 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | class_time_stop | -0.321 | -1.079 | 240 | 240 | DEEP |
+| 206 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | trailing_15pct | -0.677 | -1.089 | 98 | 98 | MID |
+| 207 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | trailing_15pct | -0.673 | -1.089 | 95 | 95 | MID |
+| 208 | True | 3 | 0.5 | 0.0 | None | 60 | trailing_15pct | -0.733 | -1.091 | 137 | 137 | DEEP |
+| 209 | True | 3 | 0.5 | 0.0 | None | 60 | atr_trail_2x | -0.356 | -1.096 | 137 | 137 | DEEP |
+| 210 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | trailing_5pct | -0.296 | -1.101 | 98 | 98 | MID |
+| 211 | True | 3 | 0.5 | 0.1 | None | 60 | trailing_15pct | -0.745 | -1.108 | 132 | 132 | DEEP |
+| 212 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | time_stop_10d | -0.468 | -1.109 | 240 | 240 | DEEP |
+| 213 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | atr_trail_2x | -0.451 | -1.113 | 186 | 186 | DEEP |
+| 214 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | chandelier_3x | -0.177 | -1.115 | 131 | 131 | DEEP |
+| 215 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | trailing_15pct | -0.644 | -1.116 | 69 | 69 | MID |
+| 216 | True | 3 | 0.5 | 0.1 | None | 60 | atr_trail_2x | -0.397 | -1.151 | 132 | 132 | DEEP |
+| 217 | True | 3 | 0.0 | 0.25 | None | 60 | time_stop_10d | -0.674 | -1.161 | 424 | 424 | DEEP |
+| 218 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | r_multiple_3r | -0.321 | -1.166 | 181 | 181 | DEEP |
+| 219 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | trailing_5pct | -0.470 | -1.17 | 131 | 131 | DEEP |
+| 220 | True | 3 | 0.3 | 0.1 | None | 60 | r_multiple_2r | -0.420 | -1.171 | 304 | 304 | DEEP |
+| 221 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | class_time_stop | -0.306 | -1.171 | 186 | 186 | DEEP |
+| 222 | True | 3 | 0.3 | 0.0 | None | 60 | r_multiple_2r | -0.444 | -1.175 | 322 | 322 | DEEP |
+| 223 | True | 3 | 0.5 | 0.25 | None | 60 | trailing_15pct | -0.766 | -1.175 | 98 | 98 | MID |
+| 224 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | chandelier_3x | -0.384 | -1.178 | 186 | 186 | DEEP |
+| 225 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | trailing_5pct | -0.356 | -1.178 | 95 | 95 | MID |
+| 226 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | chandelier_3x | -0.373 | -1.214 | 173 | 173 | DEEP |
+| 227 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | r_multiple_2r | -0.418 | -1.219 | 261 | 261 | DEEP |
+| 228 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | breakeven_plus_trail | -0.554 | -1.221 | 98 | 98 | MID |
+| 229 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | next_pivot_target | 0.040 | -1.224 | 69 | 69 | MID |
+| 230 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | r_multiple_3r | -0.353 | -1.226 | 186 | 186 | DEEP |
+| 231 | True | 3 | 0.5 | 0.25 | None | 60 | trailing_5pct | -0.433 | -1.229 | 98 | 98 | MID |
+| 232 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | breakeven_plus_trail | -0.561 | -1.241 | 95 | 95 | MID |
+| 233 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | next_pivot_target | -0.415 | -1.245 | 181 | 181 | DEEP |
+| 234 | True | 3 | 0.3 | 0.25 | None | 60 | next_pivot_target | -0.559 | -1.252 | 242 | 242 | DEEP |
+| 235 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | chandelier_3x | -0.538 | -1.255 | 261 | 261 | DEEP |
+| 236 | True | 3 | 0.3 | 0.25 | None | 60 | class_time_stop | -0.498 | -1.255 | 242 | 242 | DEEP |
+| 237 | True | 3 | 0.3 | 0.1 | None | 60 | next_pivot_target | -0.629 | -1.26 | 304 | 304 | DEEP |
+| 238 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | atr_trail_2x | -0.372 | -1.263 | 95 | 95 | MID |
+| 239 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | r_multiple_3r | -0.406 | -1.265 | 173 | 173 | DEEP |
+| 240 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | atr_trail_2x | -0.393 | -1.272 | 98 | 98 | MID |
+| 241 | True | 3 | 0.5 | 0.25 | None | 60 | breakeven_plus_trail | -0.599 | -1.275 | 98 | 98 | MID |
+| 242 | True | 3 | 0.3 | 0.0 | None | 60 | next_pivot_target | -0.647 | -1.276 | 322 | 322 | DEEP |
+| 243 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | class_time_stop | -0.405 | -1.292 | 173 | 173 | DEEP |
+| 244 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | atr_trail_2x | -0.526 | -1.299 | 131 | 131 | DEEP |
+| 245 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | r_multiple_2r | -0.465 | -1.311 | 240 | 240 | DEEP |
+| 246 | True | 3 | 0.5 | 0.1 | None | 60 | r_multiple_3r | -0.296 | -1.317 | 132 | 132 | DEEP |
+| 247 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | time_stop_10d | -0.592 | -1.326 | 186 | 186 | DEEP |
+| 248 | True | 3 | 0.5 | 0.25 | None | 60 | class_time_stop | -0.157 | -1.342 | 98 | 98 | MID |
+| 249 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | time_stop_10d | -0.612 | -1.347 | 181 | 181 | DEEP |
+| 250 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | trailing_5pct | -0.379 | -1.351 | 69 | 69 | MID |
+| 251 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | next_pivot_target | -0.431 | -1.355 | 131 | 131 | DEEP |
+| 252 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | next_pivot_target | -0.178 | -1.355 | 95 | 95 | MID |
+| 253 | True | 3 | 0.5 | 0.0 | None | 60 | r_multiple_3r | -0.353 | -1.36 | 137 | 137 | DEEP |
+| 254 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | chandelier_3x | -0.637 | -1.378 | 240 | 240 | DEEP |
+| 255 | True | 3 | 0.5 | 0.25 | None | 60 | next_pivot_target | -0.359 | -1.381 | 98 | 98 | MID |
+| 256 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | class_time_stop | -0.360 | -1.384 | 131 | 131 | DEEP |
+| 257 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | breakeven_plus_trail | -0.604 | -1.401 | 69 | 69 | MID |
+| 258 | True | 3 | 0.3 | 0.25 | None | 60 | r_multiple_3r | -0.654 | -1.414 | 242 | 242 | DEEP |
+| 259 | True | 3 | 0.3 | 0.1 | None | 60 | time_stop_10d | -0.845 | -1.415 | 304 | 304 | DEEP |
+| 260 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | next_pivot_target | -0.258 | -1.415 | 98 | 98 | MID |
+| 261 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | next_pivot_target | -0.588 | -1.427 | 173 | 173 | DEEP |
+| 262 | True | 3 | 0.5 | 0.0 | None | 60 | next_pivot_target | -0.475 | -1.438 | 137 | 137 | DEEP |
+| 263 | True | 3 | 0.5 | 0.1 | None | 60 | next_pivot_target | -0.468 | -1.441 | 132 | 132 | DEEP |
+| 264 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | atr_trail_2x | -0.380 | -1.45 | 69 | 69 | MID |
+| 265 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | time_stop_10d | -0.457 | -1.469 | 95 | 95 | MID |
+| 266 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | time_stop_10d | -0.275 | -1.47 | 69 | 69 | MID |
+| 267 | True | 3 | 0.3 | 0.0 | None | 60 | break_even_at_1r | -0.928 | -1.474 | 322 | 322 | DEEP |
+| 268 | True | 3 | 0.5 | 0.25 | None | 60 | time_stop_10d | -0.473 | -1.474 | 98 | 98 | MID |
+| 269 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | time_stop_10d | -0.724 | -1.477 | 173 | 173 | DEEP |
+| 270 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | ma_exit_ema9 | -0.551 | -1.492 | 186 | 186 | DEEP |
+| 271 | True | 3 | 0.3 | 0.0 | None | 60 | time_stop_10d | -0.940 | -1.496 | 322 | 322 | DEEP |
+| 272 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | r_multiple_2r | -0.531 | -1.499 | 181 | 181 | DEEP |
+| 273 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | break_even_at_1r | -0.826 | -1.521 | 181 | 181 | DEEP |
+| 274 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | time_stop_10d | -0.530 | -1.525 | 98 | 98 | MID |
+| 275 | True | 3 | 0.5 | 0.1 | None | 60 | time_stop_10d | -0.682 | -1.54 | 132 | 132 | DEEP |
+| 276 | True | 3 | 0.0 | 0.0 | None | 60 | atr_trail_vix_conditional | -0.991 | -1.555 | 560 | 560 | DEEP |
+| 277 | True | 3 | 0.5 | 0.0 | None | 60 | time_stop_10d | -0.733 | -1.577 | 137 | 137 | DEEP |
+| 278 | True | 3 | 0.3 | 0.1 | None | 60 | break_even_at_1r | -1.024 | -1.589 | 304 | 304 | DEEP |
+| 279 | True | 3 | 0.3 | 0.25 | None | 60 | time_stop_10d | -0.948 | -1.591 | 242 | 242 | DEEP |
+| 280 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | r_multiple_2r | -0.610 | -1.593 | 173 | 173 | DEEP |
+| 281 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | ma_exit_ema9 | -0.763 | -1.597 | 261 | 261 | DEEP |
+| 282 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | break_even_at_1r | -0.917 | -1.638 | 173 | 173 | DEEP |
+| 283 | True | 3 | 0.0 | 0.1 | None | 60 | atr_trail_vix_conditional | -1.072 | -1.665 | 515 | 515 | DEEP |
+| 284 | True | 3 | 0.5 | 0.25 | None | 60 | atr_trail_2x | -0.778 | -1.684 | 98 | 98 | MID |
+| 285 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | time_stop_10d | -0.816 | -1.689 | 131 | 131 | DEEP |
+| 286 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | r_multiple_3r | -0.687 | -1.693 | 131 | 131 | DEEP |
+| 287 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | r_multiple_3r | -0.474 | -1.695 | 95 | 95 | MID |
+| 288 | True | 3 | 0.5 | 0.1 | None | 60 | r_multiple_2r | -0.600 | -1.723 | 132 | 132 | DEEP |
+| 289 | True | 3 | 0.3 | 0.25 | None | 60 | r_multiple_2r | -0.869 | -1.733 | 242 | 242 | DEEP |
+| 290 | True | 3 | 0.5 | 0.0 | None | 60 | r_multiple_2r | -0.665 | -1.77 | 137 | 137 | DEEP |
+| 291 | True | 3 | 0.0 | 0.25 | None | 60 | atr_trail_vix_conditional | -1.126 | -1.78 | 424 | 424 | DEEP |
+| 292 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | r_multiple_3r | -0.570 | -1.783 | 98 | 98 | MID |
+| 293 | True | 3 | 0.5 | 0.25 | None | 60 | r_multiple_3r | -0.564 | -1.802 | 98 | 98 | MID |
+| 294 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | ma_exit_ema9 | -0.939 | -1.812 | 240 | 240 | DEEP |
+| 295 | True | 3 | 0.3 | 0.25 | None | 60 | ma_exit_ema9 | -0.979 | -1.816 | 242 | 242 | DEEP |
+| 296 | True | 3 | 0.3 | 0.1 | None | 60 | ma_exit_ema9 | -1.080 | -1.85 | 304 | 304 | DEEP |
+| 297 | True | 3 | 0.5 | 0.0 | None | 60 | chandelier_3x | -0.898 | -1.874 | 137 | 137 | DEEP |
+| 298 | True | 3 | 0.3 | 0.0 | None | 60 | ma_exit_ema9 | -1.136 | -1.888 | 322 | 322 | DEEP |
+| 299 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | ma_exit_ema9 | -0.781 | -1.926 | 131 | 131 | DEEP |
+| 300 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | r_multiple_3r | -0.439 | -1.93 | 69 | 69 | MID |
+| 301 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | r_multiple_2r | -0.942 | -1.941 | 186 | 186 | DEEP |
+| 302 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | ma_exit_ema9 | -0.951 | -1.942 | 181 | 181 | DEEP |
+| 303 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | r_multiple_2r | -0.591 | -1.942 | 95 | 95 | MID |
+| 304 | True | 3 | 0.5 | 0.1 | None | 60 | chandelier_3x | -0.953 | -1.955 | 132 | 132 | DEEP |
+| 305 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | break_even_at_1r | -1.153 | -2.009 | 131 | 131 | DEEP |
+| 306 | True | 3 | 0.5 | 0.1 | None | 60 | break_even_at_1r | -1.199 | -2.016 | 132 | 132 | DEEP |
+| 307 | True | 3 | 0.5 | 0.0 | None | 60 | break_even_at_1r | -1.206 | -2.02 | 137 | 137 | DEEP |
+| 308 | True | 3 | 0.0 | 0.0 | None | 60 | multi_tier_partial | -1.397 | -2.037 | 560 | 560 | DEEP |
+| 309 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | ma_exit_ema9 | -1.036 | -2.049 | 173 | 173 | DEEP |
+| 310 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | r_multiple_2r | -0.711 | -2.05 | 98 | 98 | MID |
+| 311 | True | 3 | 0.3 | 0.25 | None | 60 | break_even_at_1r | -1.402 | -2.059 | 242 | 242 | DEEP |
+| 312 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | r_multiple_2r | -0.913 | -2.074 | 131 | 131 | DEEP |
+| 313 | True | 3 | 0.5 | 0.25 | None | 60 | chandelier_3x | -1.057 | -2.158 | 98 | 98 | MID |
+| 314 | True | 3 | 0.0 | 0.25 | None | 60 | atr_trail_1x | -1.488 | -2.213 | 424 | 424 | DEEP |
+| 315 | True | 3 | 0.0 | 0.25 | None | 60 | reverse_signal | -1.488 | -2.213 | 424 | 424 | DEEP |
+| 316 | True | 3 | 0.5 | 0.25 | None | 60 | break_even_at_1r | -1.273 | -2.231 | 98 | 98 | MID |
+| 317 | True | 3 | 0.0 | 0.0 | None | 60 | atr_trail_1x | -1.625 | -2.258 | 560 | 560 | DEEP |
+| 318 | True | 3 | 0.0 | 0.0 | None | 60 | reverse_signal | -1.625 | -2.258 | 560 | 560 | DEEP |
+| 319 | True | 3 | 0.0 | 0.25 | None | 60 | multi_tier_partial | -1.520 | -2.259 | 424 | 424 | DEEP |
+| 320 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | break_even_at_1r | -1.302 | -2.283 | 95 | 95 | MID |
+| 321 | True | 3 | 0.5 | 0.25 | None | 60 | r_multiple_2r | -0.911 | -2.287 | 98 | 98 | MID |
+| 322 | True | 3 | 0.0 | 0.1 | None | 60 | multi_tier_partial | -1.625 | -2.299 | 515 | 515 | DEEP |
+| 323 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | break_even_at_1r | -1.374 | -2.353 | 98 | 98 | MID |
+| 324 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | r_multiple_2r | -0.724 | -2.401 | 69 | 69 | MID |
+| 325 | True | 3 | 0.0 | 0.1 | None | 60 | atr_trail_1x | -1.747 | -2.411 | 515 | 515 | DEEP |
+| 326 | True | 3 | 0.0 | 0.1 | None | 60 | reverse_signal | -1.747 | -2.411 | 515 | 515 | DEEP |
+| 327 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | chandelier_3x | -1.286 | -2.436 | 98 | 98 | MID |
+| 328 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | atr_trail_vix_conditional | -1.632 | -2.5 | 261 | 261 | DEEP |
+| 329 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | chandelier_3x | -1.206 | -2.533 | 69 | 69 | MID |
+| 330 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | chandelier_3x | -1.358 | -2.536 | 95 | 95 | MID |
+| 331 | True | 3 | 0.0 | 0.0 | None | 60 | mfe_lockin_trail | -1.898 | -2.554 | 560 | 560 | DEEP |
+| 332 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | break_even_at_1r | -1.432 | -2.599 | 69 | 69 | MID |
+| 333 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | multi_tier_partial | -1.697 | -2.651 | 261 | 261 | DEEP |
+| 334 | True | 3 | 0.5 | 0.0 | None | 60 | ma_exit_ema9 | -1.653 | -2.806 | 137 | 137 | DEEP |
+| 335 | True | 3 | 0.5 | 0.1 | None | 60 | ma_exit_ema9 | -1.685 | -2.854 | 132 | 132 | DEEP |
+| 336 | True | 3 | 0.3 | 0.0 | None | 60 | atr_trail_vix_conditional | -2.110 | -2.888 | 322 | 322 | DEEP |
+| 337 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | ma_exit_ema9 | -1.291 | -2.903 | 69 | 69 | MID |
+| 338 | True | 3 | 0.0 | 0.1 | None | 60 | mfe_lockin_trail | -2.229 | -2.917 | 515 | 515 | DEEP |
+| 339 | True | 3 | 0.3 | 0.1 | None | 60 | atr_trail_vix_conditional | -2.174 | -2.972 | 304 | 304 | DEEP |
+| 340 | True | 3 | 0.0 | 0.25 | None | 60 | mfe_lockin_trail | -2.289 | -3.05 | 424 | 424 | DEEP |
+| 341 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | atr_trail_vix_conditional | -2.158 | -3.085 | 240 | 240 | DEEP |
+| 342 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | ma_exit_ema9 | -1.688 | -3.099 | 95 | 95 | MID |
+| 343 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | atr_trail_1x | -2.165 | -3.115 | 261 | 261 | DEEP |
+| 344 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | reverse_signal | -2.165 | -3.115 | 261 | 261 | DEEP |
+| 345 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | ma_exit_ema9 | -1.725 | -3.129 | 98 | 98 | MID |
+| 346 | True | 3 | 0.5 | 0.25 | None | 60 | ma_exit_ema9 | -1.850 | -3.176 | 98 | 98 | MID |
+| 347 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | multi_tier_partial | -2.172 | -3.185 | 240 | 240 | DEEP |
+| 348 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | multi_tier_partial | -2.131 | -3.276 | 186 | 186 | DEEP |
+| 349 | True | 3 | 0.3 | 0.0 | None | 60 | multi_tier_partial | -2.413 | -3.302 | 322 | 322 | DEEP |
+| 350 | True | 3 | 0.3 | 0.25 | None | 60 | atr_trail_vix_conditional | -2.410 | -3.305 | 242 | 242 | DEEP |
+| 351 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | multi_tier_partial | -2.200 | -3.373 | 181 | 181 | DEEP |
+| 352 | True | 3 | 0.3 | 0.1 | None | 60 | multi_tier_partial | -2.534 | -3.45 | 304 | 304 | DEEP |
+| 353 | True | 3 | 0.3 | 0.25 | None | 60 | multi_tier_partial | -2.490 | -3.513 | 242 | 242 | DEEP |
+| 354 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | atr_trail_1x | -2.371 | -3.514 | 186 | 186 | DEEP |
+| 355 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | reverse_signal | -2.371 | -3.514 | 186 | 186 | DEEP |
+| 356 | True | 3 | 0.3 | 0.25 | None | 60 | atr_trail_1x | -2.520 | -3.516 | 242 | 242 | DEEP |
+| 357 | True | 3 | 0.3 | 0.25 | None | 60 | reverse_signal | -2.520 | -3.516 | 242 | 242 | DEEP |
+| 358 | True | 3 | 0.5 | 0.0 | None | 60 | atr_trail_vix_conditional | -2.385 | -3.583 | 137 | 137 | DEEP |
+| 359 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | mfe_lockin_trail | -2.610 | -3.597 | 261 | 261 | DEEP |
+| 360 | True | 3 | 0.5 | 0.1 | None | 60 | atr_trail_vix_conditional | -2.388 | -3.6 | 132 | 132 | DEEP |
+| 361 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | atr_trail_vix_conditional | -2.524 | -3.608 | 181 | 181 | DEEP |
+| 362 | True | 3 | 0.3 | 0.0 | None | 60 | atr_trail_1x | -2.760 | -3.638 | 322 | 322 | DEEP |
+| 363 | True | 3 | 0.3 | 0.0 | None | 60 | reverse_signal | -2.760 | -3.638 | 322 | 322 | DEEP |
+| 364 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | atr_trail_vix_conditional | -2.551 | -3.638 | 186 | 186 | DEEP |
+| 365 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | multi_tier_partial | -2.473 | -3.674 | 173 | 173 | DEEP |
+| 366 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | atr_trail_1x | -2.703 | -3.713 | 240 | 240 | DEEP |
+| 367 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | reverse_signal | -2.703 | -3.713 | 240 | 240 | DEEP |
+| 368 | True | 3 | 0.3 | 0.1 | None | 60 | atr_trail_1x | -2.827 | -3.73 | 304 | 304 | DEEP |
+| 369 | True | 3 | 0.3 | 0.1 | None | 60 | reverse_signal | -2.827 | -3.73 | 304 | 304 | DEEP |
+| 370 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | multi_tier_partial | -2.437 | -3.808 | 131 | 131 | DEEP |
+| 371 | True | 3 | 0.5 | 0.25 | None | 60 | atr_trail_vix_conditional | -2.485 | -3.93 | 98 | 98 | MID |
+| 372 | True | 3 | 0.3 | 0.0 | None | 60 | mfe_lockin_trail | -3.043 | -3.95 | 322 | 322 | DEEP |
+| 373 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | atr_trail_1x | -2.845 | -4.019 | 181 | 181 | DEEP |
+| 374 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | reverse_signal | -2.845 | -4.019 | 181 | 181 | DEEP |
+| 375 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | atr_trail_vix_conditional | -2.915 | -4.035 | 173 | 173 | DEEP |
+| 376 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | atr_trail_1x | -2.685 | -4.049 | 131 | 131 | DEEP |
+| 377 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | reverse_signal | -2.685 | -4.049 | 131 | 131 | DEEP |
+| 378 | True | 3 | 0.3 | 0.25 | None | 60 | mfe_lockin_trail | -3.061 | -4.095 | 242 | 242 | DEEP |
+| 379 | True | 3 | 0.3 | 0.1 | None | 60 | mfe_lockin_trail | -3.171 | -4.105 | 304 | 304 | DEEP |
+| 380 | True | 3 | 0.0 | 0.0 | None | 60 | smc_mitigation_zone | -3.237 | -4.128 | 560 | 560 | DEEP |
+| 381 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | mfe_lockin_trail | -3.114 | -4.16 | 240 | 240 | DEEP |
+| 382 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | mfe_lockin_trail | -3.011 | -4.206 | 186 | 186 | DEEP |
+| 383 | True | 3 | 0.5 | 0.0 | None | 60 | multi_tier_partial | -2.888 | -4.26 | 137 | 137 | DEEP |
+| 384 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | atr_trail_1x | -3.101 | -4.305 | 173 | 173 | DEEP |
+| 385 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | reverse_signal | -3.101 | -4.305 | 173 | 173 | DEEP |
+| 386 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | multi_tier_partial | -2.693 | -4.342 | 95 | 95 | MID |
+| 387 | True | 3 | 0.5 | 0.1 | None | 60 | multi_tier_partial | -2.978 | -4.372 | 132 | 132 | DEEP |
+| 388 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | multi_tier_partial | -2.461 | -4.382 | 69 | 69 | MID |
+| 389 | True | 3 | 0.5 | 0.25 | None | 60 | multi_tier_partial | -2.825 | -4.435 | 98 | 98 | MID |
+| 390 | True | 3 | 0.0 | 0.1 | None | 60 | smc_mitigation_zone | -3.506 | -4.437 | 515 | 515 | DEEP |
+| 391 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | mfe_lockin_trail | -3.246 | -4.456 | 181 | 181 | DEEP |
+| 392 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | atr_trail_vix_conditional | -2.632 | -4.461 | 69 | 69 | MID |
+| 393 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | multi_tier_partial | -2.846 | -4.483 | 98 | 98 | MID |
+| 394 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | mfe_lockin_trail | -3.259 | -4.672 | 131 | 131 | DEEP |
+| 395 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | atr_trail_vix_conditional | -3.368 | -4.702 | 131 | 131 | DEEP |
+| 396 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | mfe_lockin_trail | -3.632 | -4.876 | 173 | 173 | DEEP |
+| 397 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | atr_trail_vix_conditional | -3.436 | -4.985 | 95 | 95 | MID |
+| 398 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | atr_trail_vix_conditional | -3.579 | -5.12 | 98 | 98 | MID |
+| 399 | True | 3 | 0.0 | 0.25 | None | 60 | smc_mitigation_zone | -4.258 | -5.288 | 424 | 424 | DEEP |
+| 400 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | atr_trail_1x | -3.565 | -5.514 | 69 | 69 | MID |
+| 401 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | reverse_signal | -3.565 | -5.514 | 69 | 69 | MID |
+| 402 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | mfe_lockin_trail | -3.590 | -5.569 | 69 | 69 | MID |
+| 403 | True | 3 | 0.3 | 0.0 | None | 60 | smc_mitigation_zone | -4.413 | -5.587 | 322 | 322 | DEEP |
+| 404 | True | 3 | 0.5 | 0.0 | None | 60 | mfe_lockin_trail | -4.231 | -5.65 | 137 | 137 | DEEP |
+| 405 | True | 3 | 0.3 | 0.1 | None | 60 | smc_mitigation_zone | -4.473 | -5.686 | 304 | 304 | DEEP |
+| 406 | True | 3 | 0.5 | 0.25 | None | 60 | mfe_lockin_trail | -4.036 | -5.704 | 98 | 98 | MID |
+| 407 | True | 3 | 0.5 | 0.1 | None | 60 | mfe_lockin_trail | -4.331 | -5.776 | 132 | 132 | DEEP |
+| 408 | True | 3 | 0.0 | 0.0 | 0.3 | 60 | smc_mitigation_zone | -4.536 | -5.836 | 261 | 261 | DEEP |
+| 409 | True | 3 | 0.5 | 0.0 | None | 60 | atr_trail_1x | -4.475 | -5.885 | 137 | 137 | DEEP |
+| 410 | True | 3 | 0.5 | 0.0 | None | 60 | reverse_signal | -4.475 | -5.885 | 137 | 137 | DEEP |
+| 411 | True | 3 | 0.5 | 0.25 | 0.3 | 60 | smc_mitigation_zone | -3.677 | -5.931 | 69 | 69 | MID |
+| 412 | True | 3 | 0.5 | 0.1 | None | 60 | atr_trail_1x | -4.590 | -6.025 | 132 | 132 | DEEP |
+| 413 | True | 3 | 0.5 | 0.1 | None | 60 | reverse_signal | -4.590 | -6.025 | 132 | 132 | DEEP |
+| 414 | True | 3 | 0.5 | 0.25 | None | 60 | atr_trail_1x | -4.389 | -6.041 | 98 | 98 | MID |
+| 415 | True | 3 | 0.5 | 0.25 | None | 60 | reverse_signal | -4.389 | -6.041 | 98 | 98 | MID |
+| 416 | True | 3 | 0.3 | 0.0 | 0.3 | 60 | smc_mitigation_zone | -4.591 | -6.122 | 181 | 181 | DEEP |
+| 417 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | atr_trail_1x | -4.438 | -6.139 | 95 | 95 | MID |
+| 418 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | reverse_signal | -4.438 | -6.139 | 95 | 95 | MID |
+| 419 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | mfe_lockin_trail | -4.463 | -6.182 | 95 | 95 | MID |
+| 420 | True | 3 | 0.3 | 0.25 | 0.3 | 60 | smc_mitigation_zone | -4.514 | -6.255 | 131 | 131 | DEEP |
+| 421 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | atr_trail_1x | -4.605 | -6.297 | 98 | 98 | MID |
+| 422 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | reverse_signal | -4.605 | -6.297 | 98 | 98 | MID |
+| 423 | True | 3 | 0.3 | 0.25 | None | 60 | smc_mitigation_zone | -4.959 | -6.301 | 242 | 242 | DEEP |
+| 424 | True | 3 | 0.3 | 0.1 | 0.3 | 60 | smc_mitigation_zone | -4.745 | -6.317 | 173 | 173 | DEEP |
+| 425 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | mfe_lockin_trail | -4.630 | -6.34 | 98 | 98 | MID |
+| 426 | True | 3 | 0.5 | 0.1 | 0.3 | 60 | smc_mitigation_zone | -4.373 | -6.382 | 95 | 95 | MID |
+| 427 | True | 3 | 0.5 | 0.1 | None | 60 | smc_mitigation_zone | -4.723 | -6.446 | 132 | 132 | DEEP |
+| 428 | True | 3 | 0.0 | 0.1 | 0.3 | 60 | smc_mitigation_zone | -5.064 | -6.454 | 240 | 240 | DEEP |
+| 429 | True | 3 | 0.0 | 0.25 | 0.3 | 60 | smc_mitigation_zone | -4.923 | -6.455 | 186 | 186 | DEEP |
+| 430 | True | 3 | 0.5 | 0.0 | None | 60 | smc_mitigation_zone | -4.819 | -6.519 | 137 | 137 | DEEP |
+| 431 | True | 3 | 0.5 | 0.0 | 0.3 | 60 | smc_mitigation_zone | -4.605 | -6.597 | 98 | 98 | MID |
+| 432 | True | 3 | 0.5 | 0.25 | None | 60 | smc_mitigation_zone | -4.759 | -6.698 | 98 | 98 | MID |
