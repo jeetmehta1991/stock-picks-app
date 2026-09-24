@@ -1793,27 +1793,40 @@ wave, all of them apply.
 
 ### STEP 3.2 - THE SPEC, and the one field that is easy to get wrong
 
+This is the FAMILY-NEUTRAL shape the launch gates accept. Until B3095 (2026-09-24) this block
+was the smc campaign's own b2399 spec, so every later family's Step-2 spec was copied from smc;
+the owner's 2026-09-23 'Serious error' ruling on a family-specific Step-2 procedure applies to
+this section too. Copy the SHAPE; take each value from your own family's INSTANCE line below.
+
 ```json
-{"wave": "b2399_step2_sw50sp50",
- "tickers_file": "output_audit/r5_universe_544.txt",
- "strategy_subset": "output_audit/_subset_one.txt",
- "window": {"start": "2022-05-05", "end": "2026-05-05"},
- "leg_cap_hours": 4.5, "max_legs": 10,
+{"wave": "<campaign>_<config>_step2",
+ "strategy_subset": "output_audit/_subset_<strategy>.txt",
+ "step": 2,
  "step1_cube": false,
+ "leg_cap_hours": 4.5, "max_legs": 10,
  "pool_workers": 6,
  "allow_engine_drift": true,
- "arms": [{"tag": "step2_sw50sp50",
-           "env": {"SMC_SWING_LENGTH": "50", "STRAT_EMA_SPAN": "50"}}]}
+ "resume": true,
+ "fires_at_production": "<the family step-0.5 smoke count at production params>",
+ "arms": [{"tag": "step2_<config>",
+           "env": {"<FAMILY_KNOB>": "<config value>"}}]}
 ```
 
 - **`step1_cube: false` - THE ONE THAT IS EASY TO GET WRONG.** It arms the **holdout-touch FAIL**
   in run_postconfig. Correct for a Step-1 search, which must not touch the holdout, and **WRONG for
   Step 2, which grades ON the holdout by design.** Copying the Step-1 template arms a check
   guaranteed to fail. run_wave defaults it to TRUE, so it must be set explicitly.
-- **The config axes are ENV, not CLI flags** - config.py:2472 reads SMC_SWING_LENGTH from the
-  environment, and run_wave.py:39 passes each arm's env dict.
-- **The window runs the FULL 4 years.** 2022-23 is allowed for Step 2 (owner, 2026-08-29),
-  superseding the 2026-08-17 exclusion for this phase only.
+- **The config axes are ENV, not CLI flags** - each family's knobs are read from the environment
+  in backtest/config.py, and run_wave passes each arm's env dict to the engine
+  (run_wave.py:291). Which variables a family has is in its INSTANCE line, never in this template.
+- **The window and the universe are NOT typed in the spec.** phase_table.resolve(2) injects the
+  full 4 years (2022-05-05 to 2026-05-05) and the 544-ticker universe, and spec_refusals refuses
+  a typed window (B2713 / L788). 2022-23 is allowed for Step 2 (owner, 2026-08-29), superseding
+  the 2026-08-17 exclusion for this phase only.
+- **`fires_at_production` is required** - run_wave carries it into the generated manifest and the
+  prelaunch gate refuses a launch without it (S6-B2848c).
+- **`resume: true` is harmless on a fresh directory** (run_wave.py:269-271 resumes only when
+  engine_state.json exists) and makes a relaunch continue from its checkpoint, not restart.
 - **leg_cap_hours x max_legs is the capacity** and must exceed the projection; the leg cap itself
   stays under the owner's 5h hard cap.
 - **`allow_engine_drift: true` IS THE TEMPLATE VALUE - `false` KILLS A MULTI-LEG WAVE AT ITS
@@ -1827,28 +1840,44 @@ wave, all of them apply.
   2026-09-24:** the candle c14 Step-2 wave ran leg 1 to its 4.5 h cap at sim-day 329, then leg 2
   was REFUSED because four queue-only commits had moved HEAD; `git diff` over `backtest/` between
   the pinned sha and HEAD was empty. With `true`, the safety rests on the rule the `run_wave.py`
-  B2174 comment names - **no engine commit until the wave lands** - so keep it. `false` is right
+  B2174 comment names - **no engine edit or commit until the wave lands** - so keep it. `false` is right
   only for a single-leg run. Pinned by
   test_b3093_drift_check_refuses_any_commit_not_only_engine_commits.
 
-### STEP 3.3 - MEASURED RUNTIME, and the memory ceiling that stopped the first attempt
+**CANDLE INSTANCE (three_white_soldiers c14, B3089):** output_audit/b3089_candle_tws_c14_step2_spec.json;
+arm env CANDLE_N_BARS=3, CANDLE_MIN_BODY_PCT=0.5, CANDLE_MIN_STEP_PCT=0.0, CANDLE_MAX_WICK_PCT=0.3
+(backtest/config.py:2487-2490 - the wick knob's None level is the empty string); fires_at_production
+199 from the family's step-0.5 smoke.
 
-**Measured on the b2399 attempt from two readings of the wave's run_heartbeat.json four minutes
-apart, uncontended:** sim_day_index 6 -> 9 across elapsed_hours 0.2668 -> 0.3335, i.e. **3 sim-days
-in 4.00 minutes = 1.333 min/day at pool_workers 10.** Trading days for this window computed from
-nyse_mcal = **1,003**, giving **22.4h** - against a manifest projection of 18.7h scaled from
-Step-1's 200-ticker rate, which proved **about 20 percent optimistic**. That is the linearity
-caveat the manifest itself recorded, then measured.
+**SMC INSTANCE (b2399, historical - smc_breaker_block is finalised):** wave b2399_step2_sw50sp50,
+arm env SMC_SWING_LENGTH=50 and STRAT_EMA_SPAN=50 (backtest/config.py:2473 reads SMC_SWING_LENGTH).
+It predates phase-table injection, so it typed tickers_file and window.
 
-**THE FIRST ATTEMPT WAS STOPPED ON COMMIT EXHAUSTION (owner ruling, option b).** At pool_workers 10
-the box reached its commit limit: PowerShell could not start (Windows 0x5AF, which FormatMessageW
-renders as *The paging file is too small for this operation to complete*), a plain file read raised
-MemoryError, and GlobalMemoryStatusEx read **2.08 GB pagefile available at 93 percent load**. After
-the stop it read **46.49 GB at 50 percent**. Relaunched at pool_workers 6, max_legs 10.
+### STEP 3.3 - MEASURED RUNTIME PER CAMPAIGN, and the memory ceiling
+
+**Runtime is measured per campaign and per pool size, never carried from another family's run.**
+Take it from the run's own [B2127 rate] line at the first leg boundary; until then use the
+family's Step-1 rate as a labelled estimate. The window is 1,003 NYSE trading days (nyse_mcal).
+
+**CANDLE INSTANCE (three_white_soldiers c14, pool_workers 6):** leg 1 of attempt 2 ran uncontended
+from sim-day 0 to 329 inside its 4.5 h cap - **49.49 s/sim-day** by the B2127 rate line in
+output_audit/b3091_c14_step2_launch.log - so the whole window is about 13.8 h. Free commit fell to
+**1.58 GB** at 02:49 and Windows grew the system-managed page file, taking the commit limit from
+47.63 to 49.65 GB, with no low-memory event (output_audit/c14_step2_monitor_readings.jsonl).
+
+**SMC INSTANCE (b2399, historical):** two heartbeat readings four minutes apart, uncontended -
+sim_day_index 6 -> 9 across elapsed_hours 0.2668 -> 0.3335, **3 sim-days in 4.00 minutes = 1.333
+min/day at pool_workers 10**, 22.4 h for the window against a manifest projection of 18.7 h scaled
+from Step 1, about 20 percent optimistic. **That first attempt was stopped on commit exhaustion**
+(owner ruling, option b): PowerShell could not start (Windows 0x5AF, *The paging file is too small
+for this operation to complete*), a plain file read raised MemoryError, and GlobalMemoryStatusEx
+read **2.08 GB pagefile available at 93 percent load**, then 46.49 GB at 50 percent after the stop.
+It relaunched at pool_workers 6, max_legs 10. Those readings were taken against a 63.63 GB commit
+limit this box no longer has (47.63 GB after the 2026-09-23 restart).
 
 **Three rules this produced, each of which cost something to learn:**
 
-- **A pyramid alongside a live wave is not free.** Engine alone ran 48-58 GB committed of 63.63;
+- **A pyramid alongside a live wave is not free.** On the smc b2399 run the engine alone ran 48-58 GB committed of 63.63;
   engine **plus** a pytest run hit 62.03 GB with **1.61 GB free** - the exhaustion class S6-B2237
   records as having killed three prior runs. Do not run the full suite against a live wave.
   **SEQUENCE IT BEFORE THE LAUNCH - there is no leg-boundary window (B3091).** This bullet used
@@ -1879,7 +1908,8 @@ the stop it read **46.49 GB at 50 percent**. Relaunched at pool_workers 6, max_l
   and a STALE heartbeat does not prove death either, since a run at its final sim-day has stopped
   advancing while it writes its cube (L656 addendum). **Both directions are uninformative; only the
   counter carries signal.**
-- **The diff interval must exceed the expected per-unit time.** At roughly 1.3-2.0 min/day, a
+- **The diff interval must exceed the expected per-unit time.** At the campaign's own measured rate
+  (CANDLE INSTANCE 49.49 s/sim-day; SMC INSTANCE about 1.3-2.0 min/day), a
   60-second window showing no movement is normal, not a stall.
 - **Read pagefile availability via GlobalMemoryStatusEx, not PowerShell counters.** Under commit
   exhaustion PowerShell cannot start, so a monitor built on it goes blind exactly when it matters.

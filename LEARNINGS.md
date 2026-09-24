@@ -23465,3 +23465,36 @@ engine's resume path still reads open_trades_checkpoint.csv - so the generator
 text and the mechanism it describes cannot drift apart silently. No DETECTION
 mechanism is possible: no scan tells a stale caveat from a live one without
 running the mechanism it describes.
+
+### L868 - ANOTHER CAMPAIGN LEAKED INTO THE CURRENT STRATEGY'S WORK TWICE IN ONE DAY - THROUGH A TEMPLATE, THEN THROUGH MY EVIDENCE (B3095, 2026-09-24)
+
+**MEASURED.** The owner asked, of the three_white_soldiers Step-2 run: *"This run is for three white
+soldiers so why are you stating smc?"* Enumerated from the files, smc entered this work three ways:
+(1) the runbook's Step-2 launch procedure (the section headed STEP 3.x) still used smc's
+b2399_step2_sw50sp50 spec as its template, named SMC_SWING_LENGTH in its env bullet, and quoted the
+b2399 run's runtime and memory figures - the owner had called a family-specific Step-2 procedure a
+"Serious error" on 2026-09-23, and my B3089 fix neutralised the waterfall section only, because the
+one pin (test_b2370) covers the waterfall; (2) my evidence for the regime-map defect (S6-B3094c)
+cited smc's and icg's Step-2 cubes, when three_white_soldiers' own Step-1 cubes prove it - c14's cube
+came from a resumed invocation (its gate receipt carries --resume-from-checkpoint) and records real
+regime flips only from 2025Q1, while c08 and c13 ran fresh and record them from 2024Q3; (3) I opened
+S6-B3094e to re-audit the spent holdout reads of smc_breaker_block_long and
+institutional_committed_growth_long, both ADMITTED, which the owner closed to re-testing on
+2026-09-12 and, for smc, finalised on 2026-09-03.
+
+**Why it happened.** A finished multi-leg cube from another campaign looked like the strongest
+evidence available, and "the defect is engine-wide" made reaching for it feel like rigour. It was
+not needed, and the ticket it spawned would have spent work on decisions already banked. **Count the
+asks (#288):** this is the owner's second objection in two days to smc inside the three_white_soldiers
+Step-2 path, so the class was open, not the instance.
+
+**The rule.** Prove an engine-wide defect on the current strategy's own artifacts first; if another
+campaign's artifact adds something the current one cannot, give it one clause and no ticket. Never
+open work on an admitted or finalised strategy without the owner's override. A procedure section is
+family-neutral, with each family's values in a labelled INSTANCE paragraph.
+
+**Compliance failure against #295.** ENFORCER (the template half):
+test_b3095_step2_launch_procedure_names_no_family_outside_an_instance - the Step-2 launch procedure
+may name a family's knobs or configs only inside a paragraph labelled CANDLE INSTANCE or SMC
+INSTANCE. The evidence half is JUDGMENT-ONLY: no scan can tell a load-bearing cross-strategy fact
+from scope creep; its durability is the #295 INSTANCE and the tripwire row.

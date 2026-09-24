@@ -5774,6 +5774,8 @@ zoom-out is a true sentence about the repo, indistinguishable to a scan from a r
 durability is pinned by the skill fragment in test_b2123 and the memory entry
 feedback_strategy_scope_no_zoom_out.
 
+**INSTANCE - A SECOND OWNER ASK ABOUT THE SAME CAMPAIGN (B3095 / L868).** In the three_white_soldiers Step-2 run I cited smc's and icg's cubes as evidence for an engine defect that three_white_soldiers' own Step-1 cubes already proved, and ticketed a re-audit of two ADMITTED strategies - while the runbook's Step-2 launch template was still smc's b2399 spec, a day after the owner called a family-specific Step-2 procedure a serious error. **Prove engine-wide defects on the current strategy's own artifacts; a procedure names families only in labelled INSTANCE paragraphs.** Pinned by test_b3095_step2_launch_procedure_names_no_family_outside_an_instance.
+
 ### #296 - PRICE AN OPTION FROM THE PLAN ROW THAT DEFINES IT (B2612 / L767)
 
 **Before stating any option's cost** ("free", "nearly free", "just discipline", "only a re-grade",

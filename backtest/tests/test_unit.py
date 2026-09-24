@@ -43984,3 +43984,49 @@ def test_b3094_run_wave_manifest_says_open_trades_are_restored(tmp_path):
               if isinstance(n, ast.Constant) and isinstance(n.value, str)]
     assert "open_trades_checkpoint.csv" in consts, (
         "the resume no longer reads the open book - re-check the caveat")
+
+
+def test_b3095_step2_launch_procedure_names_no_family_outside_an_instance():
+    """S6-B3095 / L868: the owner asked why smc appeared in the three_white_soldiers
+    Step-2 run. The runbook's Step-2 launch procedure (headed STEP 3.x) used smc's
+    b2399 spec as its template, so every family's Step-2 spec was copied from smc -
+    a day after the owner called a family-specific Step-2 procedure a serious error.
+    test_b2370 pins the WATERFALL section only. This pins the launch procedure: a
+    family's knobs or config tags may appear only inside a paragraph that starts
+    with a CANDLE INSTANCE or SMC INSTANCE label."""
+    import re
+    from pathlib import Path
+
+    text = (Path(__file__).resolve().parents[2]
+            / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    start = text.index("### STEP 3.1")
+    end = text.index("## POST-CONFIG BATTERY", start)
+    span = text[start:end].replace(chr(13), "")
+    family = re.compile(r"sw\d+sp\d+|SMC_[A-Z_]+|STRAT_EMA_SPAN|CANDLE_[A-Z_]+"
+                        r"|b2399_step2|step2_sw\d|step2_b\d")
+
+    def offenders(block):
+        out = []
+        for para in block.split(chr(10) + chr(10)):
+            head = para.lstrip()
+            if head.startswith(("**CANDLE INSTANCE", "**SMC INSTANCE")):
+                continue
+            hits = family.findall(para)
+            if hits:
+                out.append((hits[:3], para[:90]))
+        return out
+
+    bad = offenders(span)
+    assert bad == [], "family knobs/configs outside a labelled INSTANCE: %r" % bad
+
+    # the template is the neutral shape, and both instances exist exactly once
+    assert "<FAMILY_KNOB>" in span, "the spec template lost its placeholder"
+    assert span.count("**CANDLE INSTANCE") >= 1 and span.count("**SMC INSTANCE") >= 1
+    # must-FIRE: the pre-B3095 template line is caught by the same check
+    old = '{"wave": "b2399_step2_sw50sp50",' + chr(10) + '  "env": {"SMC_SWING_LENGTH": "50"}}'
+    assert offenders(old), "the checker cannot see the template it replaced"
+    # must-QUIET: the same tokens inside a labelled instance pass
+    assert offenders("**SMC INSTANCE (x):** wave b2399_step2_sw50sp50, SMC_SWING_LENGTH=50") == []
+    # the CANDLE INSTANCE names a spec that exists
+    assert (Path(__file__).resolve().parents[2] / "output_audit"
+            / "b3089_candle_tws_c14_step2_spec.json").exists()
