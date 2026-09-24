@@ -4,7 +4,7 @@
 """B2644 (S6-B2638b, owner-fired 2026-09-08): STEP 2 for an offline-free
 strategy - the one-shot holdout read, all cells x exits in a single artifact.
 
-OWNER RULING 2026-09-08 (runbook SS11.2b F5): since the campaign is offline,
+OWNER RULING 2026-09-08 (runbook §3.4 F5): since the campaign is offline,
 Step 2 computes the holdout for ALL cells x exits IN ONE READ. The
 PRE-REGISTERED cell - read from the Step-1 artifact's preregistration_candidate,
 which was committed BEFORE any holdout code existed - CARRIES ADMISSION against

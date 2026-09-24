@@ -2849,8 +2849,8 @@ def _level_in_band(value, row: dict) -> bool:
 
 
 # B2711 (owner-caught 2026-09-12): the RULED Step-1 search shape, from the
-# runbook's phase table (STRATEGY_OPTIMISATION_PLAN.md line 838 "1 SEARCH |
-# all fire-adding configs | 1 year, 2024-05..2025-05 | 200") and SS10.1. The
+# runbook's step table (STRATEGY_OPTIMISATION_PLAN.md section 1.2, row "1 SEARCH |
+# all fire-adding configs | 1 year, 2024-05..2025-05 | 200"; formerly SS10.1). The
 # window ENDS at the IS/HO boundary 2025-05-05 BY DESIGN: a Step-1 search
 # that reaches past it ranks combinations on holdout data and destroys the
 # pre-registration for the whole family. Step 2 is the 4y/544 shape and is
@@ -2932,7 +2932,7 @@ def _step1_shape_refusals(doc: dict) -> list[str]:
             errs.append(
                 f"window {start}..{end} is not the RULED Step-1 window "
                 f"{RULED_STEP1_WINDOW['start']}..{RULED_STEP1_WINDOW['end']} "
-                "(runbook phase table / SS10.1) and carries no "
+                "(runbook step table, section 1.2) and carries no "
                 "`step1_shape_waiver` quoting the owner's words (B2711)")
     tf = str(doc.get("tickers_file", ""))
     if tf and tf != RULED_STEP1_TICKERS:

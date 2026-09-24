@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """B1772: MANDATORY POST-CONFIG step - which exits are not doing what they say?
 
-The runbook (STRATEGY_OPTIMISATION_PLAN 'MANDATORY POST-CONFIG ANALYSIS', step 3)
+The runbook (STRATEGY_OPTIMISATION_PLAN §5.3, battery step 3)
 carries three rows this script finally executes mechanically:
 
     "measure DEGRADED exits per cube"       (L483)

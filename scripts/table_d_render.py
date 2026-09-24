@@ -365,7 +365,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             "TIER - DEEP n>=100, MID 30-99, THIN 10-29. Rank improves "
             "monotonically as evidence thins, so RANK IS NOT TRUSTWORTHINESS "
             "and the depth band sits beside the ranking key deliberately.",
-            "SORT - is_ci_lo DESCENDING, then IS n descending, nothing filtered (runbook 6.4b). Ranking on Sharpe is the REJECTED order: a higher Sharpe can carry a NEGATIVE lower bound (L455)."
+            "SORT - is_ci_lo DESCENDING, then IS n descending, nothing filtered (runbook section 7.5). Ranking on Sharpe is the REJECTED order: a higher Sharpe can carry a NEGATIVE lower bound (L455)."
             + ("" if any(r.get("is_n") is not None for r in ranked)
                else " No row carries IS n, so the secondary key cannot discriminate and rows tied on is_ci_lo keep artifact order - never a substituted count."),
             "EXITS - Step 1 picks each cell's exit by SHARPE alone (B1605) while this table RANKS by is_ci_lo. Two objectives, so a leading row can carry the exit that won on Sharpe.",

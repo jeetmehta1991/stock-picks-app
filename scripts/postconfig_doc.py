@@ -459,7 +459,7 @@ def build(cubes: list[str] | None = None) -> str:
         # the analysis existed, the delivery did not.
         # B2728 CORRECTION: this comment used to cite 'the runbook
         # step-2 row says render Tables A-D at the landing'. Read at
-        # STRATEGY_OPTIMISATION_PLAN.md:3285 that row is a STEP-2
+        # the then-runbook's section 11.2 table (pre-B3096 archive line 3487) that row is a STEP-2
         # MILESTONE activity ('when every Step-1 spec is COMPLETE'),
         # run through the producer_variant_table CLI into
         # PRODUCER_VARIANT_TABLE_<strategy>.md - not a per-landing

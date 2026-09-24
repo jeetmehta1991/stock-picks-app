@@ -1,0 +1,17 @@
+# B3096 evidence for L869 / L870 - scripts/transcript_timeline.py on session 433f0dcd (run 2026-09-24)
+## L869: the defective draft
+compaction boundaries: 60
+  entry 58834   2026-09-23T14:56:40.060Z
+  entry 61439   2026-09-23T20:16:43.519Z
+  entry 63691   2026-09-24T08:50:46.597Z
+  entry 65183   2026-09-24T13:47:18.987Z
+  entry 66381   2026-09-24T14:41:01.366Z
+writes matching 'newplan_part4': 1
+  write entry 65167   2026-09-24T13:42:22.197Z  newplan_part4.md
+        after compaction 63691 (2026-09-24T08:50:46.597Z); before compaction 65183 (2026-09-24T13:47:18.987Z)
+        inspections since that compaction: 177; same path Read or Written since: no
+
+## L870 instance 2: the rb1.md edit reported as the first action after a compaction
+  edit  entry 66364   2026-09-24T14:39:23.232Z  rb1.md
+        after compaction 65183 (2026-09-24T13:47:18.987Z); before compaction 66381 (2026-09-24T14:41:01.366Z)
+        inspections since that compaction: 135; same path Read or Written since: yes

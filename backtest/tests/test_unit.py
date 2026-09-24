@@ -19004,27 +19004,34 @@ def test_b1838_accepted_asymmetry_stays_documented():
     effective exit family is **25, not 26**. Every config run after B1682 carries
     a live one. **The two are therefore not comparable on that exit.**
 
-    This asserts the plan still NAMES the four cubes and states the consequence.
-    It does not re-measure - `rc.measure_degraded_exits` does that from any cube,
-    which is the point of measuring rather than date-tracking.
+    B3096 (owner: the runbook is class-level and names no strategy): the four
+    NAMED cubes and the consequence moved, byte-for-byte, to the campaign log;
+    the runbook keeps the class-level rule - measure degeneracy per cube. This
+    asserts both halves. It does not re-measure - `rc.measure_degraded_exits`
+    does that from any cube, which is the point of measuring rather than
+    date-tracking.
     """
     import pathlib as _p
 
     root = _p.Path(__file__).resolve().parents[2]
+    log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(encoding="utf-8")
     plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
 
     for cube in ("output_cfg1", "output_cfg2",
                  "output_w1_sw20_span21", "output_w1_sw20_span50"):
-        assert cube in plan, (
-            f"the plan no longer names {cube} among the degraded cubes. An "
-            "ACCEPTED asymmetry that is not documented is an unknown one.")
+        assert cube in log, (
+            f"the campaign log no longer names {cube} among the degraded cubes. "
+            "An ACCEPTED asymmetry that is not documented is an unknown one.")
 
-    assert "25, not 26" in plan, (
-        "the plan lost the consequence of the acceptance - the four cubes have "
-        "an effective exit family of 25, and 'best of 26' is wrong for them")
-    assert "measure_degraded_exits" in plan, (
-        "the plan must point at the MEASUREMENT, not at dates - date-tracking "
-        "is the bookkeeping that decays the moment someone forgets")
+    assert "25, not 26" in log, (
+        "the campaign log lost the consequence of the acceptance - the four "
+        "cubes have an effective exit family of 25, and 'best of 26' is wrong "
+        "for them")
+    for doc, where in ((log, "campaign log"), (plan, "runbook")):
+        assert "measure_degraded_exits" in doc, (
+            f"the {where} must point at the MEASUREMENT, not at dates - "
+            "date-tracking is the bookkeeping that decays the moment someone "
+            "forgets")
 
 
 def test_b1843_skill_documents_a_dryrun_that_runs():
@@ -25821,6 +25828,12 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("ASK WHICH TREE THAT FACT BELONGS TO",
          "L792 (B2739): repo facts from the CODE tree, run facts from the "
          "run root; the wrong tree fails closed on the environment"),
+        # B3096: the L869 / L870 tripwire rows - pin the REMEDY each names
+        # (machine comparison; the transcript), not the heading (L548).
+        ("COMPARE IT WITH THE ARCHIVED SOURCE BY MACHINE BEFORE IT REPLACES ANYTHING",
+         "L869 (B3096): a rewrite drifts even from a fresh read of its source"),
+        ("RUN `scripts/transcript_timeline.py` AND CITE THE ENTRY OR UTC TIME IT PRINTS",
+         "L870 (B3096): a timeline claim across a compaction is read from the transcript"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26018,7 +26031,10 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 306 -> 307 at B3044b (the L856 escalated-uncertainty fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 307, gutted
+    # 307 -> 309 at B3096 (the L869 machine-comparison and L870
+    # transcript-timeline fragments; same-call with their tripwire rows
+    # per B2130).
+    assert len(gutted) == 309, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -28735,12 +28751,14 @@ def test_b2342_ranking_is_a_slice_not_the_population():
 def test_b2361_runbook_summary_table_agrees_with_the_section_that_defines_it():
     """S6-B2361: a ruling was applied at ONE site and five others kept the old value.
 
-    The VALIDATE row is a SUMMARY of the STEP 2 ENTRY section below it, so the two
+    The VALIDATE row is a SUMMARY of the slate section below it, so the two
     can drift and only the reader notices. MEASURED: after the 2026-08-29 second
     ruling the section's step 4 said 3 survivors while the table row, the section
     HEADING and its topic sentence all still said 5, and the row's window column
     still said 2 years after the ruling that made it 4. This pins the agreement
     rather than the values, so a future ruling moves both or fails here.
+
+    B3096: the slate section is now runbook 4.7 (formerly STEP 2 ENTRY).
     """
     from pathlib import Path
     import re
@@ -28753,13 +28771,14 @@ def test_b2361_runbook_summary_table_agrees_with_the_section_that_defines_it():
     assert len(rows) == 1, f"expected one VALIDATE row, found {len(rows)}"
     row = rows[0]
 
-    heads = [ln for ln in text.splitlines() if ln.startswith("## STEP 2 ENTRY")]
-    assert len(heads) == 1, f"expected one STEP 2 ENTRY heading, found {len(heads)}"
+    heads = [ln for ln in text.splitlines()
+             if ln.startswith("### 4.7 THE MECHANICAL TOP-")]
+    assert len(heads) == 1, f"expected one slate heading, found {len(heads)}"
     head = heads[0]
 
     body = text.split(head, 1)[1]
     step4 = [ln for ln in body.splitlines() if ln.lstrip().startswith("4. Take the first")]
-    assert step4, "STEP 2 ENTRY has no step-4 'Take the first N survivors' line"
+    assert step4, "the slate section has no step-4 'Take the first N survivors' line"
 
     def n_of(s, pat):
         m = re.search(pat, s)
@@ -28864,54 +28883,48 @@ def test_b2370_waterfall_order_agrees_with_the_mechanical_slate():
     can drift, and only the reader notices - the same defect B2361 pinned for
     the slate SIZE, now for its MEMBERS and their ORDER.
 
-    Anchored on the numbered rule lines, not on substrings of the whole
-    document (L703/L705/L706): the config names also appear in the cost table,
-    the pre-triage table and the applied-slate sentence, so a substring check
-    would pass against a waterfall that had lost its list entirely.
+    B3089 parameterised the waterfall's steps; B3096 (owner: the runbook is
+    class-level) moved the smc instance and its applied slate, byte-for-byte,
+    to STRATEGY_CAMPAIGN_LOG.md. So: the RUNBOOK's three numbered steps must be
+    neutral (<C1>/<C2>/<C3>), and the LOG's instance must agree with the LOG's
+    applied slate. Anchored on paragraphs and lines, never on substrings of a
+    whole document (L703/L705/L706).
     """
     from pathlib import Path
     import re
 
-    plan = Path(__file__).resolve().parents[2] / "STRATEGY_OPTIMISATION_PLAN.md"
-    text = plan.read_text(encoding="utf-8")
+    root = Path(__file__).resolve().parents[2]
+    text = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(encoding="utf-8")
 
-    head = "### STEP 2 EXECUTION - THE WATERFALL"
-    assert text.count(head) == 1, f"expected one waterfall heading, found {text.count(head)}"
-    body = text.split(head, 1)[1].split("###", 1)[0]
+    heads = [ln for ln in text.splitlines() if ln.startswith("### 4.8 THE WATERFALL")]
+    assert len(heads) == 1, f"expected one waterfall heading, found {len(heads)}"
+    body = text.split(heads[0], 1)[1].split(chr(10) + "### ", 1)[0]
 
-    # the numbered rule lines, in document order
     steps = [ln for ln in body.splitlines()
              if re.match(r"^\d\. \*\*Config \d|^\d\. Otherwise", ln)]
     assert len(steps) == 3, f"waterfall must state 3 ordered steps, found {len(steps)}: {steps}"
-
-    # B3089: the owner ruled the Step-2 PROCEDURE must not name a family
-    # ("Update the runbook ... Serious error"), so the numbered steps are now
-    # parameterised to C1/C2/C3 and the smc names live in the SMC INSTANCE
-    # line inside this same section. The invariant this pin exists for -
-    # waterfall order AGREES with the mechanical slate - is unchanged; only
-    # the anchor moves.
-    for ln in steps:
+    for i, ln in enumerate(steps, 1):
+        assert f"<C{i}>" in ln, f"step {i} must name <C{i}>: {ln}"
         assert not re.search(r"sw\d+sp\d+", ln), (
-            "B3089: a waterfall STEP names a family config, which is the "
-            "defect the owner called a serious error: " + ln)
+            "a waterfall STEP names a family config - the defect the owner "
+            "called a serious error: " + ln)
+    assert "SMC INSTANCE" not in text, "the class-level runbook carries an instance"
 
-    # B3089: the instance is a PARAGRAPH - a heading line followed by the
-    # names on the next - so select the SPAN, never a single line (L705).
-    # Matching the heading line alone found it and zero config names.
-    assert body.count("SMC INSTANCE") == 1, "expected one SMC INSTANCE block"
-    _para = body.split("SMC INSTANCE", 1)[1].split((chr(10) + chr(10)), 1)[0]
+    # the instance and its applied slate, both in the campaign log
+    anchor = "**SMC INSTANCE (the campaign this was ruled on"
+    assert log.count(anchor) == 1, "expected one waterfall SMC INSTANCE paragraph in the log"
+    _para = log.split(anchor, 1)[1].split(chr(10) + chr(10), 1)[0]
     order = re.findall(r"(sw\d+sp\d+)", _para)
     assert len(order) == 3, (
-        "the SMC INSTANCE line must name three configs in slate order, "
+        "the SMC INSTANCE paragraph must name three configs in slate order, "
         f"found {order}")
 
-    # the mechanical section's applied slate, read from ITS OWN sentence
-    applied = [ln for ln in text.splitlines()
+    applied = [ln for ln in log.splitlines()
                if ln.startswith("Applied to the completed b2197 program")]
     assert len(applied) == 1, f"expected one applied-slate line, found {len(applied)}"
-    tail = text.split(applied[0], 1)[1][:400]
+    tail = log.split(applied[0], 1)[1][:400]
     slate = re.findall(r"(sw\d+sp\d+)", applied[0] + tail)
-    # first three DISTINCT names in the applied sentence are the advancing slate
     seen, mech = set(), []
     for c in slate:
         if c not in seen:
@@ -38089,7 +38102,8 @@ def test_b2815_step1_graders_carry_multiplicity():
     roster_core.bh_fdr_report; pinned at source so a fourth grader written
     without it is caught the day its sibling sweep runs, and so none of the
     three can drop the call silently. The plan section is pinned by its
-    unsplittable ADVISORY-floor token (S6-B2765).
+    unsplittable ADVISORY-floor token (S6-B2765). B3096: the section is now
+    runbook 4.4 (formerly 11.2b2d).
     """
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2]
@@ -38101,8 +38115,9 @@ def test_b2815_step1_graders_carry_multiplicity():
             f"{name} emits no multiplicity block - S6-B2766 mandates it")
     plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
         encoding="utf-8", errors="replace")
-    heads = [l for l in plan.splitlines() if l.startswith("### 11.2b2d ")]
-    assert len(heads) == 1, f"expected one 11.2b2d heading, got {len(heads)}"
+    heads = [l for l in plan.splitlines() if l.startswith("### 4.4 LEVERAGE DISCIPLINE")]
+    assert len(heads) == 1, f"expected one 4.4 leverage heading, got {len(heads)}"
+    assert "formerly " + chr(0xa7) + "11.2b2d" in heads[0], "the old anchor must still resolve"
     assert "ADVISORY, never auto-refusing" in plan, (
         "the leverage floor's adopted mode must stay stated")
     assert plan.count("50:1 floor is") == 1
@@ -38440,22 +38455,31 @@ def test_b2823_stream_is_classified_on_current_gate_fires():
 def test_b2824_coordinate_descent_carries_its_interaction_check():
     """S6-B2822d (owner-approved 2026-09-16): the adopted CD default gains the
     one-confirmation-config interaction check. Pinned on unsplittable tokens
-    (L771) inside the 11.2b2d section so the clause cannot silently drop, and
+    (L771) inside the leverage section so the clause cannot silently drop, and
     on the section heading count so it cannot duplicate.
+
+    B3096: the section is runbook 4.4, and the factorial LINEAGE that names a
+    family config moved to the campaign log - the runbook section must carry
+    the rule and must NOT carry the config name.
     """
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2]
     plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
         encoding="utf-8", errors="replace")
-    heads = [l for l in plan.splitlines() if l.startswith("### 11.2b2d ")]
+    log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(
+        encoding="utf-8", errors="replace")
+    heads = [l for l in plan.splitlines() if l.startswith("### 4.4 LEVERAGE DISCIPLINE")]
     assert len(heads) == 1, heads
-    i = plan.index("### 11.2b2d ")
-    j = plan.index("### 11.2b3 ", i)
+    i = plan.index("### 4.4 ")
+    j = plan.index("### 4.5 ", i)
     sec = plan[i:j]
     assert "ONE confirmation config at the predicted joint optimum" in sec
     assert "predicted-vs-measured" in sec
     assert "re-opens the full-grid question" in sec
-    assert "sw50sp50" in sec, "the factorial lineage must stay stated"
+    assert "sw50sp50" not in sec, "the class-level section names a family config"
+    lin = log.split("The factorial lineage behind the coordinate-descent", 1)
+    assert len(lin) == 2 and "sw50sp50" in lin[1][:1500], (
+        "the factorial lineage must stay stated, in the campaign log")
 
 
 def test_b2825_status_groups_are_mutually_exclusive():
@@ -38507,24 +38531,41 @@ def test_b2828_workflows_are_defined_and_singular():
     (owner ruled AGAINST a standing convention), the probe-where-feasible
     ruling with its PROBE-INFEASIBLE escape, the existing-cube lookup that
     must precede engine proposals, and the persistence constraint that
-    forces the full open consumer set. Old sections 2 and 3 carry their
-    supersession pointers so two operative procedures cannot coexist.
+    forces the full open consumer set.
+
+    B3096 (owner: "Tightening and loosening are separate workflows"): the
+    workflows are runbook sections 3 and 4. The retired two-phase sections
+    carried supersession pointers so two operative procedures could not
+    coexist; they now live only in the archive, so the runbook must carry no
+    retired PHASE-1/PHASE-2 procedure at all, and the archive keeps both
+    pointers.
     """
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2]
     plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(
         encoding="utf-8", errors="replace")
-    for head in ("### 11.2t THE TIGHTENING WORKFLOW",
-                 "### 11.2l THE LOOSENING WORKFLOW",
-                 "### 11.2s SHARED-PRODUCER RESIM REUSE"):
+    for head in ("## 3. WORKFLOW W-T - TIGHTENING",
+                 "## 4. WORKFLOW W-L - LOOSENING",
+                 "### 4.3 SHARED-PRODUCER RESIM REUSE"):
         assert sum(1 for l in plan.splitlines() if l.startswith(head)) == 1, head
     assert "OWNER BAND REVIEW - PER STRATEGY (ruled 2026-09-16" in plan
     assert "RECOVERY PROBE - where feasible (owner-ruled 2026-09-16)" in plan
     assert "PROBE-INFEASIBLE" in plan and "PROBE-BELOW-FLOOR" in plan
     assert "EXISTING-CUBE LOOKUP - always before proposing engine hours" in plan
     assert "persists ONLY on" in plan and "FULL OPEN consumer set" in plan
-    assert plan.count("OPERATIVE PROCEDURE SUPERSEDED (B2828)") == 2
     assert "STATED ASSUMPTIONS (none silent" in plan
+    # no retired two-phase procedure survives beside the workflows (APPENDIX M
+    # may QUOTE the old headings - it is the map, and maps them to RETIRED)
+    body, amap = plan.split("## APPENDIX M", 1)
+    for retired in ("PHASE 1 " + chr(0x2014) + " TIGHTENING", "PHASE 2 " + chr(0x2014) + " LOOSENING",
+                    "2.3 Method " + chr(0x2014) + " six steps"):
+        assert retired not in body, f"a retired procedure is back: {retired}"
+        row = [l for l in amap.splitlines() if retired in l]
+        assert len(row) == 1 and "RETIRED" in row[0], (retired, row)
+    arch = (root / "archive" / "2026-09-24-strategy-optimisation-plan-pre-B3096"
+            / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8",
+                                                        errors="replace")
+    assert arch.count("OPERATIVE PROCEDURE SUPERSEDED (B2828)") == 2
 
 
 def test_b2829_in_campaign_requires_a_live_ticket():
@@ -38559,7 +38600,7 @@ def test_b2829_in_campaign_requires_a_live_ticket():
         encoding="utf-8", errors="replace")
     assert "COUNTS LIVE IN THE STAMPED VIEW, NEVER HERE" in plan
     assert sum(1 for l in plan.splitlines()
-               if l.startswith("### 11.2w THE DRIVER LOOP")) == 1
+               if l.startswith("### 0.5 THE DRIVER LOOP")) == 1
     assert "FRESHNESS PRECONDITION" in plan
 
 
@@ -43907,7 +43948,7 @@ def test_b3093_drift_check_refuses_any_commit_not_only_engine_commits(tmp_path):
     content. MEASURED 2026-09-24: the candle c14 Step-2 wave (allow_engine_
     drift false) ran leg 1 to its cap at sim-day 329, then leg 2 was REFUSED
     because four queue-only commits moved HEAD - `git diff` over backtest/
-    between the two shas was empty. Runbook 3.2 now says so. If the check is
+    between the two shas was empty. Runbook Step 2.2 (formerly STEP 3.2) says so. If the check is
     ever made content-aware (S6-B3093a), THIS PIN MUST CHANGE WITH THAT
     BULLET - a doc that describes the old comparison would mislead the next
     spec author exactly as the gate's name misled this one."""
@@ -43936,10 +43977,10 @@ def test_b3093_drift_check_refuses_any_commit_not_only_engine_commits(tmp_path):
     assert "diff" not in calls and "log" not in calls, calls
 
     body = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
-    sec = body.split("### STEP 3.2", 1)[1].split("### STEP 3.3", 1)[0]
+    sec = body.split("#### Step 2.2", 1)[1].split("#### Step 2.3", 1)[0]
     assert '"allow_engine_drift": true' in sec, "template lost its value"
     assert "S6-B3093" in sec and "ANY COMMIT" in sec, (
-        "runbook 3.2 no longer explains what drift_check refuses")
+        "runbook Step 2.2 no longer explains what drift_check refuses")
 
 
 def test_b3094_run_wave_manifest_says_open_trades_are_restored(tmp_path):
@@ -43988,45 +44029,389 @@ def test_b3094_run_wave_manifest_says_open_trades_are_restored(tmp_path):
 
 def test_b3095_step2_launch_procedure_names_no_family_outside_an_instance():
     """S6-B3095 / L868: the owner asked why smc appeared in the three_white_soldiers
-    Step-2 run. The runbook's Step-2 launch procedure (headed STEP 3.x) used smc's
-    b2399 spec as its template, so every family's Step-2 spec was copied from smc -
-    a day after the owner called a family-specific Step-2 procedure a serious error.
-    test_b2370 pins the WATERFALL section only. This pins the launch procedure: a
-    family's knobs or config tags may appear only inside a paragraph that starts
-    with a CANDLE INSTANCE or SMC INSTANCE label."""
+    Step-2 run. The runbook's Step-2 launch procedure (then headed STEP 3.x) used
+    smc's b2399 spec as its template, so every family's Step-2 spec was copied from
+    smc - a day after the owner called a family-specific Step-2 procedure a serious
+    error. B3095 fixed it with labelled INSTANCE paragraphs; B3096 (owner: the
+    runbook names no strategy) moved the instances to STRATEGY_CAMPAIGN_LOG.md, so
+    the launch procedure (runbook 4.9) now carries NO family knob, config tag or
+    INSTANCE paragraph at all. The whole-runbook scan is test_b3096."""
     import re
     from pathlib import Path
 
-    text = (Path(__file__).resolve().parents[2]
-            / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
-    start = text.index("### STEP 3.1")
-    end = text.index("## POST-CONFIG BATTERY", start)
+    root = Path(__file__).resolve().parents[2]
+    text = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(encoding="utf-8")
+    start = text.index("### 4.9 THE STEP-2 LAUNCH PROCEDURE")
+    end = text.index("## 5. THE POST-CONFIG BATTERY", start)
     span = text[start:end].replace(chr(13), "")
     family = re.compile(r"sw\d+sp\d+|SMC_[A-Z_]+|STRAT_EMA_SPAN|CANDLE_[A-Z_]+"
                         r"|b2399_step2|step2_sw\d|step2_b\d")
 
     def offenders(block):
-        out = []
-        for para in block.split(chr(10) + chr(10)):
-            head = para.lstrip()
-            if head.startswith(("**CANDLE INSTANCE", "**SMC INSTANCE")):
-                continue
-            hits = family.findall(para)
-            if hits:
-                out.append((hits[:3], para[:90]))
-        return out
+        return [(family.findall(p)[:3], p[:90])
+                for p in block.split(chr(10) + chr(10)) if family.search(p)]
 
-    bad = offenders(span)
-    assert bad == [], "family knobs/configs outside a labelled INSTANCE: %r" % bad
-
-    # the template is the neutral shape, and both instances exist exactly once
+    assert offenders(span) == [], "family knobs/configs in the launch procedure: %r" % offenders(span)
+    assert "INSTANCE" not in span, "an instance paragraph is back in the class-level procedure"
     assert "<FAMILY_KNOB>" in span, "the spec template lost its placeholder"
-    assert span.count("**CANDLE INSTANCE") >= 1 and span.count("**SMC INSTANCE") >= 1
     # must-FIRE: the pre-B3095 template line is caught by the same check
     old = '{"wave": "b2399_step2_sw50sp50",' + chr(10) + '  "env": {"SMC_SWING_LENGTH": "50"}}'
     assert offenders(old), "the checker cannot see the template it replaced"
-    # must-QUIET: the same tokens inside a labelled instance pass
-    assert offenders("**SMC INSTANCE (x):** wave b2399_step2_sw50sp50, SMC_SWING_LENGTH=50") == []
-    # the CANDLE INSTANCE names a spec that exists
-    assert (Path(__file__).resolve().parents[2] / "output_audit"
-            / "b3089_candle_tws_c14_step2_spec.json").exists()
+    # must-QUIET: the neutral template shape passes
+    assert offenders('{"wave": "<campaign>_<config>_step2", "env": {"<FAMILY_KNOB>": "<v>"}}') == []
+    # the instances did not vanish - they moved, and the candle spec they name exists
+    assert "output_audit/b3089_candle_tws_c14_step2_spec.json" in log
+    assert "b2399_step2_sw50sp50" in log
+    assert (root / "output_audit" / "b3089_candle_tws_c14_step2_spec.json").exists()
+
+
+def test_b3096_runbook_is_class_level_and_numbered_consistently():
+    """B3096 (owner directive 2026-09-24, verbatim): "Update the strategy
+    optimization doc to ensure numbering is correct and there are no references
+    to any specific strategy but the runbook is at a class level. The runbook is
+    intended to be broad for each strategy. Tightening and loosening are
+    separate workflows."
+
+    Four properties, each checked by a helper run on the REAL runbook (must be
+    clean) and on a MUTATED copy (must flag) - a pin that cannot fail pins
+    nothing (L686):
+      1. CLASS-LEVEL - no registered strategy name (the live registry is the
+         defining source, L697) and no family knob / config tag / family word,
+         outside a short allow-list of ENGINE identifiers;
+      2. NUMBERING - top sections 0..N consecutive, subsections consecutive
+         inside their section, and the section-0.1 step table agrees with the
+         parsed phase table step-for-step (the Step 2 / Step 3 confusion the
+         owner asked about);
+      3. REFERENCES - every section reference outside a "(formerly ...)" tag
+         and APPENDIX M resolves to a heading;
+      4. THE MAP - APPENDIX M has one row per heading of the archived
+         pre-B3096 runbook, so every old citation resolves.
+    """
+    import re
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import phase_table as pt
+    from backtest.signals.screener import ALL_STRATEGIES
+
+    plan_p = root / "STRATEGY_OPTIMISATION_PLAN.md"
+    text = plan_p.read_text(encoding="utf-8")
+    arch = (root / "archive" / "2026-09-24-strategy-optimisation-plan-pre-B3096"
+            / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    names = sorted({k[len("strat_"):] if k.startswith("strat_") else k
+                    for k in ALL_STRATEGIES}, key=len, reverse=True)
+    assert len(names) >= 200, len(names)
+
+    family = re.compile(
+        r"\bsw\d+sp\d+\b|\bSMC_[A-Z_]+|\bSTRAT_EMA_SPAN\b|\bCANDLE_[A-Z_]+"
+        r"|\bINST_[A-Z_]+|\bPEAD_[A-Z_]+|\bb2399\b|\bb2197\b|\bb2527\b|\bc14\b"
+        r"|\bicg\b|\bpead\b|\bsmc\b|\btop_decile\b|\bbreaker\b|\bsoldiers\b"
+        r"|\bcrows\b|\bhub-1\b|\binstitutional\b|\bcandle\b|\bswing_length\b", re.I)
+    ALLOW = ("USE_SMC_PANEL_CACHE", "SMC_PHASE", "smc_skip_primitives",
+             "institutional_companion_screen.py")
+
+    registry = re.compile(r"(?<![A-Za-z0-9_])(?:strat_)?(?:%s)(?![A-Za-z0-9_])"
+                          % "|".join(re.escape(nm) for nm in names))
+
+    def named(doc):
+        out = []
+        for n, line in enumerate(doc.split(chr(10)), 1):
+            ln = line
+            for a in ALLOW:
+                ln = ln.replace(a, "")
+            hit = family.search(ln) or registry.search(ln)
+            if hit:
+                out.append((n, hit.group(0)))
+        return out
+
+    assert named(text) == [], named(text)[:5]
+    # must-FIRE on a real registered name, on a family knob, and on a config tag
+    for bad in ("run it like three_white_soldiers", "set SMC_SWING_LENGTH=50",
+                "the sw50sp50 config"):
+        assert named(bad), bad
+    # must-QUIET on the engine identifiers the runbook legitimately cites
+    assert named("`SMC_PHASE='PRODUCTION'` and `USE_SMC_PANEL_CACHE=False`") == []
+
+    def numbering(doc):
+        errs = []
+        lines = doc.split(chr(10))
+        tops = [int(re.match(r"^## (\d+)\. ", l).group(1)) for l in lines
+                if re.match(r"^## \d+\. ", l)]
+        if tops != list(range(len(tops))):
+            errs.append(("top", tops))
+        cur, last = None, {}
+        for l in lines:
+            m1 = re.match(r"^## (\d+)\. ", l)
+            m2 = re.match(r"^### (\d+)\.(\d+) ", l)
+            if m1:
+                cur = int(m1.group(1)); last[cur] = 0
+            elif m2:
+                a, b = int(m2.group(1)), int(m2.group(2))
+                if a != cur or b != last.get(cur, 0) + 1:
+                    errs.append(("sub", l[:40]))
+                last[cur] = b
+        # section 0.1's step table must agree with the parsed phase table
+        rows = pt.parse(plan_p)["rows"] if doc is text else {}
+        for k, r in rows.items():
+            if "| **Step %d** | %s |" % (r["step"], r["name"]) not in doc:
+                errs.append(("step-table", r["step"], r["name"]))
+        if re.search(r"(?m)^#{2,4} STEP [34]\.", doc):
+            errs.append(("retired heading",))
+        return errs
+
+    assert numbering(text) == [], numbering(text)
+    assert set(pt.parse(plan_p)["rows"]) == {"0", "1", "2", "3"}
+    broken = text.replace("### 4.8 THE WATERFALL", "### 4.9 THE WATERFALL", 1)
+    assert numbering(broken), "a numbering break must be flagged"
+    assert numbering("## 0. A\n## 2. B\n"), "a skipped top section must be flagged"
+
+    def refs(doc):
+        live = re.sub(r"formerly [^)]*\)", "", doc)
+        live = live[:live.find("## APPENDIX M")] if "## APPENDIX M" in live else live
+        heads = set(re.findall(r"(?m)^### (\d+\.\d+) ", doc)) | set(
+            re.findall(r"(?m)^## (\d+)\. ", doc))
+        return sorted({r for r in re.findall(chr(0xa7) + r"(\d+(?:\.\d+)?)", live) if r not in heads})
+
+    assert refs(text) == [], refs(text)
+    # (placed ABOVE APPENDIX M - the map legitimately quotes old numbering and is exempt)
+    assert refs("see " + chr(0xa7) + "9.9\n" + text) == ["9.9"], "a dangling reference must be flagged"
+
+    arch_heads = []
+    inside = False
+    for n, l in enumerate(arch.split(chr(10)), 1):
+        if l.startswith("```"):
+            inside = not inside
+            continue
+        if inside or "LINEAGE-APPENDIX:START" in l:
+            if "LINEAGE-APPENDIX:START" in l:
+                break
+            continue
+        if re.match(r"^#{1,4} ", l):
+            arch_heads.append(n)
+    m = text.split("## APPENDIX M", 1)[1]
+    mapped = [int(x) for x in re.findall(r"(?m)^\| (\d+) \| ", m)]
+    assert mapped == arch_heads, (len(mapped), len(arch_heads))
+    # the key old anchors still resolve by search, through the (formerly ...) tags
+    for old in ("formerly " + chr(0xa7) + "11.2c", "formerly " + chr(0xa7) + "11.2w", "formerly " + chr(0xa7) + "11.2b2d",
+                "formerly STEP 3.1-3.4", "formerly " + chr(0xa7) + "10.1"):
+        assert old in text, old
+
+
+def test_b3096_doc_rewrite_coverage_catches_a_dropped_reservation(tmp_path):
+    """L869 / CHECKLIST #321: a rewrite of a governing document is compared
+    with its source BY MACHINE. MEASURED 2026-09-24: a runbook part drafted
+    minutes after a full read of its source switched a HALT condition the
+    source had left to the owner - "changing the concurrency conclusion is an
+    owner call" - while keeping every citation around it, so no citation check
+    could see it.
+
+    Must-fire cases are modelled on that draft: the dropped owner-call
+    sentence; a citation that survives only in a map repeating old headings
+    (the B3096 scratchpad check counted such a map as coverage); a reason-less
+    acceptance; a stale acceptance. Must-pass: the same sentence re-wrapped
+    across line breaks - a line-based grep had read a re-wrapped "owner
+    approval" as dropped."""
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import doc_rewrite_coverage as drc
+
+    old = tmp_path / "old.md"
+    old.write_text(
+        "# Runbook\n\n"
+        "Figures ANNOTATED rather than replaced - changing the concurrency conclusion "
+        "is an owner call (L670).\n\n"
+        "The monitor reads free RAM every 15 minutes (B2229).\n\n"
+        "## 10. THE REPEATABLE WORKFLOW (B1548)\n\nSteps follow.\n",
+        encoding="utf-8")
+    drifted = tmp_path / "drifted.md"
+    drifted.write_text(
+        "# Runbook\n\nFree COMMIT is the binding quantity (L670).\n\n"
+        "The monitor reads free RAM every 15 minutes (B2229).\n\n"
+        "## APPENDIX M\n\n| 10. THE REPEATABLE WORKFLOW (B1548) | section 0.1 |\n",
+        encoding="utf-8")
+    faithful = tmp_path / "faithful.md"
+    faithful.write_text(
+        "# Runbook\n\nThe steps descend from the repeatable workflow (B1548).\n\n"
+        "Figures ANNOTATED rather than replaced -\n"
+        "  changing the concurrency conclusion is an\n"
+        "  owner call (L670).\n\n"
+        "The monitor reads free RAM every 15 minutes (B2229).\n",
+        encoding="utf-8")
+
+    def run(new, *extra):
+        return drc.main(["--old", str(old), "--new", str(new),
+                         "--stop-new", "## APPENDIX M"] + list(extra))
+
+    # must-fire: the owner-call sentence, and B1548 live only in the map
+    res = drc.check(drc.load(str(old)), drc.load(str(drifted), "## APPENDIX M"))
+    assert [m["token"] for m in res["missing_tokens"]] == ["B1548"], res
+    assert [u["phrase"] for u in res["unmatched_reserved"]] == ["owner call"], res
+    assert run(drifted) == 1
+    # uncut, the heading map "covers" B1548 - the miss the cut exists to prevent
+    uncut = drc.check(drc.load(str(old)), drc.load(str(drifted)))
+    assert not uncut["missing_tokens"], "fixture no longer reproduces the map-coverage miss"
+    # must-pass: faithful text, re-wrapped across line breaks
+    assert run(faithful) == 0
+    # acceptances: with a reason pass; without one are refused; stale ones fail
+    key = res["unmatched_reserved"][0]["key"]
+    acc = tmp_path / "acc.txt"
+    acc.write_text("%s restated in the new section 1.3\nB1548 retired with its section\n" % key,
+                   encoding="utf-8")
+    assert run(drifted, "--accept", str(acc)) == 0
+    bare = tmp_path / "bare.txt"
+    bare.write_text(key + "\n", encoding="utf-8")
+    assert run(drifted, "--accept", str(bare)) == 2
+    assert run(faithful, "--accept", str(acc)) == 1, "stale acceptances must fail"
+
+
+def test_b3096_transcript_timeline_orders_writes_against_compactions(tmp_path):
+    """L870 / CHECKLIST #322: WHEN I did something across a compaction is read
+    from the transcript. MEASURED 2026-09-24, twice: an L-entry blamed a
+    compaction for a draft written five minutes BEFORE it, and an Edit issued
+    98 s before a compaction was reported as the first action after it - the
+    compacted view replays a pre-compaction call as if it came first.
+
+    The fixture has that shape: a Write and an Edit issued BEFORE the boundary,
+    the harness's two records of ONE compaction (a system compact_boundary
+    entry, then the continuation message), and post-compaction Edits without
+    and with a re-read of the same file."""
+    import json
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import transcript_timeline as tt
+
+    def tool(name, path, ts):
+        return {"type": "assistant", "timestamp": ts, "message": {"content": [
+            {"type": "tool_use", "name": name, "input": {"file_path": path}}]}}
+
+    rows = [
+        {"type": "user", "timestamp": "T0", "message": {"content": "restructure the doc"}},
+        tool("Read", "C:\\repo\\PLAN.md", "T1"),
+        tool("Write", "C:\\scratch\\draft4.md", "T2"),   # written BEFORE the compaction
+        tool("Edit", "C:\\scratch\\rb1.md", "T3"),       # replayed later, still BEFORE
+        {"type": "system", "subtype": "compact_boundary", "timestamp": "T4"},
+        {"type": "user", "timestamp": "T4", "message": {"content":
+            "This session is being continued from a previous conversation that ran out"}},
+        tool("Edit", "C:\\scratch\\draft4.md", "T5"),    # nothing re-read since the boundary
+        tool("Read", "C:\\scratch\\draft4.md", "T6"),
+        tool("Edit", "C:\\scratch\\draft4.md", "T7"),    # re-read since the boundary
+    ]
+    p = tmp_path / "t.jsonl"
+    p.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+    entries = tt.load(str(p))
+    assert tt.boundaries(entries) == [4], "two records of one compaction must count once"
+
+    w = {(r["entry"], r["tool"]): r for r in tt.timeline(entries, "draft4")["writes"]}
+    pre = w[(2, "write")]
+    assert pre["compaction_before"] is None and pre["compaction_after"] == 4
+    blind, reread = w[(6, "edit")], w[(8, "edit")]
+    assert blind["compaction_before"] == 4 and not blind["same_path_seen_since_compaction"]
+    assert reread["same_path_seen_since_compaction"]
+    assert reread["inspections_since_compaction"] == 1
+
+    replayed = tt.timeline(entries, "rb1.md")["writes"]
+    assert len(replayed) == 1 and replayed[0]["compaction_after"] == 4, \
+        "an Edit issued before the boundary must read as BEFORE the compaction"
+    # no transcript -> refused, never an empty timeline that reads as "nothing happened"
+    assert tt.main(["--transcript", str(tmp_path / "missing.jsonl")]) == 2
+
+
+def test_b3096_compaction_claims_in_learnings_cite_the_transcript():
+    """L870 / CHECKLIST #322, the repo-text slice: an L-entry (L869 on) that
+    says something happened after or before a compaction, or was written from
+    the summary, cites the transcript - the word "transcript" plus an entry
+    index or a UTC time - because the compacted view is not evidence of ORDER.
+
+    Must-fire: L869's first version, which recorded a compliance failure for a
+    draft written five minutes BEFORE the compaction it blamed."""
+    import re
+    from pathlib import Path
+
+    trigger = re.compile(r"(after|before|across)\s+(a|the|that)\s+(mid-turn\s+)?"
+                         r"(context\s+)?compaction|from\s+the\s+summary|"
+                         r"post-compaction|pre-compaction", re.I)
+    cite = re.compile(r"\b\d{2}:\d{2}:\d{2}\b|\bentry\s+\d{3,}\b")
+
+    def uncited(body):
+        return bool(trigger.search(body)) and not (
+            "transcript" in body.lower() and cite.search(body))
+
+    first_version = (
+        "**MEASURED.** The session resumed mid-restructure of STRATEGY_OPTIMISATION_PLAN.md "
+        "after a context\ncompaction, and my first action was to write the fourth draft part - "
+        "the battery, admission,\nreporting and reference sections, 634 lines - from the "
+        "summary alone.")
+    assert uncited(first_version), "the check no longer fires on L869's first version"
+    assert not uncited(first_version + " Transcript entry 65167 at 13:42:22."), \
+        "a version citing the transcript must pass"
+
+    text = (Path(__file__).resolve().parents[2] / "LEARNINGS.md").read_text(encoding="utf-8")
+    bad = []
+    for block in re.split(r"\n(?=#{2,3} L\d+\b)", text):
+        m = re.match(r"#{2,3} L(\d+)\b", block)
+        if m and int(m.group(1)) >= 869 and uncited(block):
+            bad.append("L" + m.group(1))
+    assert not bad, ("L-entries claim a compaction timeline without citing the transcript "
+                     "(run scripts/transcript_timeline.py; cite the entry or UTC time): %s" % bad)
+
+
+def _b3096_grid_table_d_order(table_d):
+    """The config order of Table D's MAIN ranked list, read from the rendered
+    rows - selected by the main header, never a substring over the whole
+    render (L705: the per-tier summary also names configs)."""
+    def _grid(sw, sp, ci, sh, n):
+        return {"config": {"P1_swing_length": sw, "P6_span": sp},
+                "step1_ranking": [{"is_ci_lo": ci, "is_sharpe": sh, "fires": n,
+                                   "exit": "time_stop_10d", "class_size": 1,
+                                   "admit": {"holdout_n": 0, "full_period_n": n,
+                                             "verdict": "BELOW_POWER_FLOOR"}}]}
+    grids = {"cfg_hi_sharpe": _grid(30, 20, 0.10, 3.0, 80),
+             "cfg_hi_bound": _grid(50, 50, 0.30, 1.0, 80)}
+    lines = "\n".join(table_d(grids)).splitlines()
+    head = [k for k, l in enumerate(lines) if l.startswith("| # | config |")]
+    assert head, "Table D's main header row is missing"
+    order = []
+    for l in lines[head[0] + 1:]:
+        if not l.startswith("|"):
+            break
+        cells = [c.strip() for c in l.split("|")]
+        if len(cells) > 2 and cells[2] in grids:
+            order.append(cells[2])
+    return order
+
+
+def test_b3096_grid_table_d_orders_on_the_lower_bound():
+    """B3096 audit finding (runbook section 7.5): Table D's ordering PROPERTY was
+    pinned for the OFFLINE renderer only - test_b3085 exercises
+    table_d_render._rank_key - while the GRID renderer,
+    producer_variant_table.table_d, the one every landing renders, had no
+    ordering pin (test_b2330 checks gating, tiers and duplicates, not order).
+    The locked key is is_ci_lo DESC then n DESC; sorting on Sharpe was
+    rejected because the higher Sharpe can carry the LOWER bound (L455).
+    Pinned as the PROPERTY, not the key name (L863 / #303): a config whose
+    best row has the higher is_sharpe but the lower is_ci_lo ranks BELOW its
+    rival. Proved to bite at B3096 by re-running this helper against a copy
+    of the renderer sorted on Sharpe, which inverts the order."""
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    order = _b3096_grid_table_d_order(pvt.table_d)
+    assert order == ["cfg_hi_bound", "cfg_hi_sharpe"], (
+        "Table D must rank on the in-sample lower bound, not Sharpe; got %r" % order)

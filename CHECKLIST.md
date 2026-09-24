@@ -5776,6 +5776,8 @@ feedback_strategy_scope_no_zoom_out.
 
 **INSTANCE - A SECOND OWNER ASK ABOUT THE SAME CAMPAIGN (B3095 / L868).** In the three_white_soldiers Step-2 run I cited smc's and icg's cubes as evidence for an engine defect that three_white_soldiers' own Step-1 cubes already proved, and ticketed a re-audit of two ADMITTED strategies - while the runbook's Step-2 launch template was still smc's b2399 spec, a day after the owner called a family-specific Step-2 procedure a serious error. **Prove engine-wide defects on the current strategy's own artifacts; a procedure names families only in labelled INSTANCE paragraphs.** Pinned by test_b3095_step2_launch_procedure_names_no_family_outside_an_instance.
 
+**B3096 SUPERSESSION.** The owner then directed a runbook that names no strategy at all (2026-09-24), so the labelled INSTANCE paragraphs moved byte-for-byte to STRATEGY_CAMPAIGN_LOG.md; the whole-runbook enforcer is test_b3096_runbook_is_class_level_and_numbered_consistently, and test_b3095 now asserts the Step-2 launch procedure carries no instance.
+
 ### #296 - PRICE AN OPTION FROM THE PLAN ROW THAT DEFINES IT (B2612 / L767)
 
 **Before stating any option's cost** ("free", "nearly free", "just discipline", "only a re-grade",
@@ -6222,3 +6224,49 @@ which counts arms and retirements across the SESSION - the sibling gate is turn-
 cannot see an arm from hours earlier - and fires only when the response itself says the
 subject has stopped, so a live run's monitor is never flagged. Pinned by
 test_b3084_monitor_not_retired_fires_and_stays_quiet with two must-QUIET arms (L594).
+
+### #321 - A REWRITE OF A GOVERNING DOCUMENT IS COMPARED WITH ITS SOURCE BY MACHINE - HAVING READ IT IS NOT THE CHECK (B3096 / L869, self-caught 2026-09-24)
+
+A 634-line part of the runbook restructure was drafted minutes after the whole source had been read
+in the same context, and it still switched a HALT condition the source had left to the owner,
+dropped two pinned passages and split a third (L869). Opening the source first was satisfied and
+was not enough; only a comparison after drafting sees the sentence that went missing.
+
+RULE: before a rewritten or restructured governing document (the runbook, CHECKLIST.md, a skill,
+CLAUDE.md) replaces its source, archive the source and run `python scripts/doc_rewrite_coverage.py
+--old <archived> --new <new> [--also <companion>] [--stop-old / --stop-new <generated-appendix
+heading>]`. Resolve every MISSING citation token and every UNMATCHED owner-reservation or prohibition
+sentence: restore it, or record it in an --accept file with the reason and where its substance now
+lives. Then run the tests that pin the document.
+
+DETECTION: JUDGMENT-ONLY for WHEN to run it. Durability: the CLI is fail-closed (exit 1 on any
+missing token, unmatched sentence or stale acceptance; an acceptance without a reason is refused),
+pinned by test_b3096_doc_rewrite_coverage_catches_a_dropped_reservation; for the runbook, test_b3096
+and the pinned-phrase tests also fail a rewrite that drops what they read. SEARCH ATTEMPTED (#300): a
+Stop-hook scan could key on a Write or Edit that replaces a large share of a root governing .md and
+demand a coverage run in the same turn. It is ticketed S6-B3096e rather than built now: no share
+threshold that fires on restructures and stays quiet on routine doc sweeps has been measured, and
+editing the live Stop hook mid-session risks blocking every close (#300's own reason).
+
+### #322 - A CLAIM ABOUT WHEN I DID SOMETHING ACROSS A COMPACTION IS CHECKED AGAINST THE TRANSCRIPT (B3096 / L870, self-caught twice 2026-09-24)
+
+After a compaction the context replays: a tool call issued before the compaction reappears after
+the summary and reads like the first action, and the summary can list an already-written file as
+still to write. Twice on 2026-09-24 I stated a false timeline from that view - an L-entry recording
+a compliance failure for a draft written five minutes BEFORE the compaction, and a message calling
+an Edit issued 98 seconds before a compaction my first action after it (L870).
+
+RULE: before an L-entry, retraction, RCA, queue row or report states WHEN, or FROM WHAT, I did
+something across a compaction boundary, run `python scripts/transcript_timeline.py --file <path>`
+(the transcript defaults to $TURN_GATE_TRANSCRIPT) and cite the entry index or UTC time it prints.
+The owner's 2026-09-16 re-context directive is unchanged: after a compaction, re-read the source and
+every file about to be edited before writing (runbook §0.5 item 5).
+
+DETECTION: JUDGMENT-ONLY for a claim made in a response. Durability: `scripts/transcript_timeline.py`
+answers the question from the transcript, and test_b3096_compaction_claims_in_learnings_cite_the_transcript
+pins the repo-text slice - every LEARNINGS entry from L869 on that says something happened after or
+before a compaction, or was written from the summary, must cite the transcript with an entry index
+or a UTC time; its must-fire case is L869's first version. SEARCH ATTEMPTED (#300): the
+response-level scan (a compaction-timing claim in a response or a new L-entry, with no
+transcript_timeline.py run in the turn) is ticketed S6-B3096d - the split #300 made for its own
+scan, for the same reason.

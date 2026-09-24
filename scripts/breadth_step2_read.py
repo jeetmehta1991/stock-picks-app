@@ -3,9 +3,9 @@
 """B2678 (S6-B2671c, owner word 'S6-b2671c proceed' 2026-09-11): the breadth
 STEP-2 - ONE holdout read of the Step-1 grid's cells, all of them, six
 LIVE_GATES - plus the control-family comparison on every all-six qualifier
-(the promoted B2658 rule, runbook 11.2b2).
+(the promoted B2658 rule, runbook §3.5).
 
-FAIL-CLOSED: refuses to run without --ruling (the 11.2c word, recorded into
+FAIL-CLOSED: refuses to run without --ruling (the runbook §0.6 word, recorded into
 the artifact verbatim). The cells come from the Step-1 ARTIFACT's own rows
 (the pre-registration), never re-derived - re-derivation could drift from
 what was registered. The frame comes from breadth_step1_grid.build_frame,
@@ -58,7 +58,7 @@ def require_multiplicity(art: dict, source: str) -> None:
     if not isinstance(mult, dict) or "reconciles" not in mult:
         raise SystemExit(
             f"REFUSED: {source} carries NO multiplicity block - Step-1 must "
-            "run the 11.2b2d multiplicity instrument before any holdout read "
+            "run the runbook section 1.4 multiplicity instrument before any holdout read "
             "(S6-B2836a; fail closed on absence)")
     if mult.get("reconciles") is not True:
         raise SystemExit(
@@ -71,7 +71,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--step1-artifact", required=True)
     ap.add_argument("--ruling", required=True,
-                    help="the owner's Step-2 word, verbatim (11.2c fail-closed)")
+                    help="the owner's Step-2 word, verbatim (runbook section 0.6, fail-closed)")
     ap.add_argument("--control", default="pead_long_high_yoy_growth_only",
                     help="control strategy for the B2658 comparison")
     # B2849 (S6-B2848d, owner-approved): T5's ran-or-waived stops being

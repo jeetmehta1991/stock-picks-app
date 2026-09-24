@@ -6,7 +6,7 @@ strategy's own persisted gate magnitudes - and **Table A (breadth)** - every
 relevant companion producer persisted on that strategy's own fires. Every
 level is marked **OFFLINE** (a subset of recorded fires - zero engine hours)
 or **RESIM** (an engine leg). The workflow that consumes these tables is
-STRATEGY_OPTIMISATION_PLAN.md SS11.2t (W-T) / SS11.2l (W-L); this directory is
+STRATEGY_OPTIMISATION_PLAN.md §3 (W-T) / §4 (W-L) (formerly SS11.2t / SS11.2l); this directory is
 the T2/L2 "Table A rendered" artifact, pre-built.
 
 **Shape (B2838, owner-caught conformance):** each file leads with the plan's
@@ -26,7 +26,7 @@ the formula <-> Table A cross-check.
 
 Each file carries an L803/#309 build stamp (generator + cube + status build +
 commit + timestamp). A file whose stamp is stale against HEAD is regenerated
-before any campaign reads it (the SS11.2w freshness precondition).
+before any campaign reads it (the runbook §0.5 freshness precondition).
 
 ## Division of labour (owner-ruled)
 
@@ -43,9 +43,9 @@ resim-scheduled or owner-waived in words, never silently dropped. Wave 1 runs
 the free legs first because they cost nothing; the P1-band SIMULATIONS then
 run as in-mandate engine legs, gated on three things: the T3 band words, the
 actuator plumbing for DEFINED-NO-ACTUATOR knobs, and the engine approvals
-(11.2c words; B2107 caps; venue ruling S6-B2107a precedes Step-1 launches).
+(runbook §0.6 words; B2107 caps; venue ruling S6-B2107a precedes Step-1 launches).
 A shared producer's resim runs the FULL OPEN consumer set and its one cube is
-graded offline per consumer (11.2s) - simulation results are reused by
+graded offline per consumer (runbook §4.3) - simulation results are reused by
 construction, and admitted strategies stay banked (B2731).
 
 ## What OFFLINE and RESIM mean here
@@ -56,7 +56,7 @@ construction, and admitted strategies stay banked (B2731).
 - **DEPTH, looser side = RESIM** by construction: a looser level admits bars
   the cube never recorded. Band from the SPECS entry (`producer_variant_table`),
   built at W-T T0/R1 where missing. Documented in every table, **not run** in
-  the wave-1 offline campaigns without the owner's engine words (11.2c).
+  the wave-1 offline campaigns without the owner's engine words (runbook §0.6).
 - **BREADTH = OFFLINE** where the companion key is persisted at coverage
   >= 0.98 on the strategy's fires (an AND-leg is subset selection); **every
   breadth row is a NEW-GATE** (standing owner rule 2026-08-10) - the T3 owner
@@ -64,7 +64,7 @@ construction, and admitted strategies stay banked (B2731).
 - **BREADTH below the coverage floor, price-denominated keys (as ratios), and
   any producer with NO persisted key = RESIM / engine-side design work.**
   What `signals_at_entry` does not hold, no offline instrument can see
-  (plan 11.2s: persistence exists only on taken trades).
+  (runbook §4.3: persistence exists only on taken trades).
 
 ## OFFLINE-ONLY STEP 2 (owner ruling 2026-09-16, verbatim intent)
 
@@ -78,12 +78,12 @@ Step 2; offline reads are free, so the full combination population is read.
 1. **The holdout is touched by every combination, not a pre-registered few.**
    Reading N combinations on the holdout and preferring the best is holdout
    mining unless the multiplicity machinery prices the FULL N. Therefore:
-   the trials count for the multiplicity block (11.2b2d - permutation null,
+   the trials count for the multiplicity block (runbook §1.4 - permutation null,
    BH-FDR across the read population) is the FULL number of combinations
    read, never a post-hoc subset; PSR cannot substitute (it is
    single-candidate, blind to trials - B2376).
 2. **One shot.** The read is still ONE pre-registered event on the owner's
-   explicit Step-2 word (11.2c, breadth_step2_read.py is fail-closed on
+   explicit Step-2 word (runbook §0.6; breadth_step2_read.py is fail-closed on
    --ruling). After it, the holdout is SPENT for these objects (B2136);
    re-reads only on explicit owner override.
 3. **Selection for admission is stated before the read** (which cells are
@@ -119,7 +119,7 @@ Step 2; offline reads are free, so the full combination population is read.
 |---|---|---|
 | Engine config lands | `run_phase1a.py::_postconfig_landing_hook` (line 181, invoked line 713) -> B2520 battery, all nine steps; Stop-hook LANDING REPORT gate | WIRED (grep this batch) |
 | Offline Step-1 grid | grader-internal fail-closed refusals (reproduction / coverage / join / truncation) + multiplicity block (`offline_level_sweep.py`, `breadth_step1_grid.py`) with `multiplicity.reconciles` required by the T4 gate | WIRED (in-process) |
-| Step-2 read | `breadth_step2_read.py` REFUSES without `--ruling` (the 11.2c word recorded verbatim) | WIRED |
+| Step-2 read | `breadth_step2_read.py` REFUSES without `--ruling` (the runbook §0.6 word recorded verbatim) | WIRED |
 | Step-2 vs Step-1 multiplicity | `breadth_step2_read.require_multiplicity()` REFUSES an absent or non-reconciled Step-1 multiplicity block, before any frame is built (pin test_b2839) | WIRED (B2839 closed S6-B2836a) |
 
 ## Roster - wave 1 (12 TIGHTEN, from the stamped status view)

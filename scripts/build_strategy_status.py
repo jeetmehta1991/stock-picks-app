@@ -32,12 +32,12 @@ judgement:
 STREAM IS THE HONEST PART, so its rule is stated rather than implied:
   TIGHTEN  the entry condition compares a signal to a NUMBER and that magnitude
            is persisted in signals_at_entry -> a tighter level is a SUBSET of
-           the recorded fires and costs ZERO engine hours (plan 11.2b).
+           the recorded fires and costs ZERO engine hours (runbook §3).
   LOOSEN   no tightenable persisted magnitude, OR the strategy is fire-starved
            under its current condition (< MIN_FIRES_FOR_GRID projected at the
            Step-1 shape) so the productive direction is a looser producer band -
            an ENGINE resim, since a looser level admits bars the cube never
-           recorded (plan 11.2b2b, DEPTH is Priority 1).
+           recorded (runbook §0.3, DEPTH is Priority 1).
   BOTH     tightenable AND fire-starved.
   NONE     neither - no numeric knob and not fire-starved; a candidate for
            BREADTH (companion axes) rather than depth.
@@ -146,7 +146,7 @@ def changed_since_r5(src_now: str) -> set:
     """Strategies whose function body differs from the R5-era screener.
 
     UPPER BOUND on behavioural change - a rename or a configurable-span swap
-    counts as changed (plan 11.2b4).
+    counts as changed (runbook §2.5).
     """
     try:
         old = subprocess.run(

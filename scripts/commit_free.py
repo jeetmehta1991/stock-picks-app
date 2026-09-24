@@ -1,6 +1,6 @@
-"""Free COMMIT, read in-process - the runbook 3.4 method (S6-B3091).
+"""Free COMMIT, read in-process - the runbook Step 2.5 method (§4.9; S6-B3091).
 
-Runbook 3.4: "Read pagefile availability via GlobalMemoryStatusEx, not
+Runbook Step 2.5 (formerly STEP 3.4): "Read commit availability via GlobalMemoryStatusEx, not
 PowerShell counters. Under commit exhaustion PowerShell cannot start, so a
 monitor built on it goes blind exactly when it matters. Report FREE COMMIT,
 never physical RAM (L670)."
@@ -51,7 +51,7 @@ def read() -> dict:
             "phys_total_gb": round(m.ullTotalPhys / GB, 2),
             "phys_free_gb": round(m.ullAvailPhys / GB, 2),
             "memory_load_pct": int(m.dwMemoryLoad),
-            "source": "GlobalMemoryStatusEx (in-process, runbook 3.4)"}
+            "source": "GlobalMemoryStatusEx (in-process, runbook Step 2.5)"}
 
 
 def main() -> int:

@@ -158,10 +158,10 @@ def run(out: Path, root: Path, pytest_args: list[str]) -> int:
                   "this pyramid ran - %s. Its wall-clock is contended."
                   % chain)
         if engine != "none":
-            print("  NOTE (B3091/runbook 3.3): an ENGINE heartbeat was fresh "
+            print("  NOTE (B3091/runbook Step 2.4): an ENGINE heartbeat was fresh "
                   "while this pyramid ran - %s. A pyramid beside a live "
-                  "wave can exhaust commit; runbook 3.3 says defer the "
-                  "full suite to before the launch or to a leg boundary."
+                  "wave can exhaust commit; runbook Step 2.4 says run the "
+                  "full suite BEFORE the launch - there is no leg-boundary window."
                   % engine)
         return final
     finally:
@@ -187,7 +187,7 @@ def _engine_inflight(now=None) -> str:
     up to 47.8 min on runs that landed COMPLETE; the residual error is a run
     that died under an hour ago reading as possibly live, which is the safe
     direction for a disclosure. Filesystem-only - PowerShell cannot start
-    under the commit exhaustion this reports (runbook 3.4). Never raises.
+    under the commit exhaustion this reports (runbook Step 2.5). Never raises.
     """
     try:
         import time as _t

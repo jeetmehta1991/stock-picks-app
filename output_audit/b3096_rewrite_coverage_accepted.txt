@@ -1,0 +1,78 @@
+# B3096 - reviewed dispositions for scripts/doc_rewrite_coverage.py
+# old: archive/2026-09-24-strategy-optimisation-plan-pre-B3096/STRATEGY_OPTIMISATION_PLAN.md (cut at "## APPENDIX L")
+# new: STRATEGY_OPTIMISATION_PLAN.md (cut at "## APPENDIX M") + STRATEGY_CAMPAIGN_LOG.md
+# Each line: <sentence-key or citation token> <reason>. Every entry was checked against the new text
+# on 2026-09-24 before it was written here; section numbers are the B3096 runbook's.
+#
+# --- citation tokens retired with their section ---
+B1194 archive §2.3 method, which old §10's own heading says B1548 superseded; cited only inside the L279 example there
+L279 the name-based-inference example of the superseded §2.3; the rule is stronger in §2.4 item 1 ("Read the PRODUCER layer, not the gate expression") and §3.4 F2
+S6-B1499a archive §2.3 method (superseded by B1548); no ledger row exists for it
+S6-B1495a archive §5 decision list, marked superseded in the archive itself; never a ledger row; the operative admission set is the six LIVE_GATES (roster_core.py:60-61), which carry no AUTO-FAIL screen
+plan_lineage.py the generated lineage-appendix marker; the appendix is regenerated from the committed runbook under S6-B3096c
+#
+# --- reserved sentences: substance kept, wording changed ---
+d18210c275 §1.1 item 3 states both separation mechanisms (select_exit IS-only, pinned by test_b1800; Step 1 ranks on is_sharpe, B1718) with B1820 / S6-B1705c
+83ff617a1f §1.2 bullet "No 2022-23 data in Step 1 (owner 2026-08-17)" - same ruling, "owner ruling" shortened to "owner"
+bf818dee93 §1.2 same bullet: "SUPERSEDED FOR STEP 2 ONLY (owner 2026-08-29): Steps 2 and 3 run the FULL 4 years"
+ab918f92b5 §1.2 - the same 2026-08-29 window ruling and the S6-B2358 conflict it resolved
+9d1068033d §1.2 bullet "Step 2 universe = ALL 544 tickers ... (owner 2026-08-29; supersedes the 344-disjoint design ...)"
+fc8e32738d §1.2 last bullet: "If Step 1 ever produces a PASS it is doing Step 2's job (L471)"
+1fbdacd6b4 §1.3 table rows "Local run cap" (B2107, S6-B2107-OWNER-RULINGS-3) and "Programme target" (B2107)
+af9b18b6cb §1.4: the TRUE-at-roster / FALSE-at-grid sentence and the D2 no-correction ruling; roster line re-derived as build_phase_1b_roster.py:366
+a66ea2467b §4.8 row D4: the waterfall supersedes the S6-B2242 ranked-list goal for Step 2 only - a FIRST-SUCCESS rule
+681e6ab1d5 §4.8 step 1: the config runs IN ITS ENTIRETY and the waterfall never stops mid-config (S6-B2409 amendment)
+f5c84e6ec6 §4.9: runtime is never carried from another run; it is read from the run's own [B2127 rate] line
+0fd9ce7daf §7.1: "The header must state the formula is READ from source, never recalled"; the :466-626 range was a documentation-time citation
+07112e6e5d archive §10.6 duplicated checklist item 17, which is kept verbatim (§2.4 item 17); the all-15 rule is §7.3 "Why all 15 and not just Sharpe (L373)"
+1c4536c565 §8.9: trip conditions for non-zero exit, death-without-artifact and overrun past 2x the projection; the CronDelete clause now cites CHECKLIST #320
+0f110cacd0 class-level by the B3096 directive: the smc naming moved to STRATEGY_CAMPAIGN_LOG.md (SMC INSTANCE); the rule itself is §4.8, family-general
+#
+# --- reserved sentences retired with their superseded section ---
+e14044327d the 41-strategy Phase 1 of the B1497 two-phase design B2828 superseded; the no-usable-prior constraint itself is §1.1 item 5, stated for the class
+d2e2dec7c1 archive §2.2 carries its own "SUPERSEDED, see §0a #2" marker
+8294f5bf1d archive §2.3 method (superseded by B1548); read-the-source is §2.4 item 1 and §3.4 F2
+0a7803d046 archive §2.3's 820-config design (superseded by B1548); selection never touching the grading window is §1.1 item 3
+37b395e2d5 archive §3.1, the Phase-2 population of the retired design (the archive marks §3 "OPERATIVE PROCEDURE SUPERSEDED (B2828)"); that tightening only selects a subset of existing fires is §1.5
+4f3b841dd0 retired Phase-1-before-Phase-2 sequencing, disclosed as not operative in §1.8 item 3
+183628f4b0 archive §5 heading, marked "(superseded by §8 - live list)" in the archive itself
+568b089645 superseded inside the archive: its later procedure runs Step 2 in "legs <= 5 h each, resume: true" (archive line 3488) after the owner raised the cap from 3 h to 5 h on 2026-08-24; §1.3 "Local run cap"
+e0ba9727bc a note on the old §10.1's own rewrite at B2402; the 2026-08-29 rulings it refers to are §1.2
+#
+# --- FIGURES (not checked by the CLI; an ad-hoc probe of every number-with-unit in the old live text) ---
+# 241 figures in the old live text; 31 were absent after the rebuild. 14 were RESTORED (runbook §1.2 ticker-years
+# arithmetic and 29 of 29 screen-days; §1.5 1 of 972 days; §4.5 Step 1.0 70 pct skew, 6.93x, 4.11 / 0.55 GB,
+# ~1.0-1.2 GB, ~6.4 GB baseline; Step 1.1 4.6 h vs 20 min; §4.7 ~92 h; §7.4 85 pct at wave 1; §8.3 2.0 / 2.1 / 4.0 h
+# at the ruled Step-1 shape; §8.x 97 pct of one core and ~19 pct headroom) and one moved to the log (46.2 pct, log F.5).
+# The 17 still absent, each dispositioned:
+#   same fact, other wording: "0 trades" (fires nothing), "~1 hour" (about an hour of reading, §2.2),
+#     "10,862 trades" (10,862-trade pool, §1.7), "75/15 trade floors" (floors stated in §1.2),
+#     "2.0 h / 2.1 h" (restored as 2.0 / 2.1 / 4.0 h, §8.3)
+#   retracted or superseded inside the archive itself: "20 trades" (B1861 note, retracted B1877), "3 hours",
+#     "3.64 h" (the 3 h cap, raised to 5 h 2026-08-24), "3.65 h" / "503 days" (pre-ruling 100-ticker shape),
+#     "20x" / "41 x" (the B1497 m=820 design), "26 MB" (superseded §2.3), "2.1-2.3 GB" (the REFERENCE-PARALLELISM
+#     claim that RAM binds, contradicted by the later COMMIT finding stated in §8.x and §4.5 Step 1.0 b)
+#   generalised on purpose because the figure was time-bound: "~3.3 h" per config (now "costs hours"; the
+#     measured figures are in §8.3), "99.2 pct" of "128" strategies per run (now "one run computes many strategies")
+#
+# --- FIGURES, RE-RUN AT B3096 CLOSE (after the 8-reviewer semantic audit) ---
+# The probe above MISSED a dropped figure: the §8 reviewer found the "100 tickers x 1003 days ~= 7.3 h" cost row
+# and its "7.3 h x (544/100)" derivation gone, and the probe passed it because "7.3 h" also occurs in an unrelated
+# sentence (runbook §4.8: "wasted 7.3 h of plan"). A value-only presence test passes on a coincidental match -
+# ticketed S6-B3096h (a figures leg for the CLI, anchored on context, not value). Both restored (§8.3).
+# Re-run with a wider unit set (strategies/configs/rows/cores/workers added) and number-unit spacing normalised:
+# 295 figures; 144 in the runbook, 127 only in the campaign log, 24 absent from both. The 127 were checked by
+# CONTEXT, not value: 126 have the archive's own words within 25 characters either side present verbatim in the
+# log; the last ("10 tickers") is the moved sentence at log line 476 - the window crossed into the next heading.
+# The 24 absent from both:
+#   14 already dispositioned above ("1 hour", "10,862 trades", "15 trade", "2.0 h", "2.1 h", "20 trades", "3.64 h",
+#     "3.65 h", "503 days", "20x", "41 x", "26 MB", "2.3 GB", "99.2 pct")
+#   2 false positives, not figures: "Step-1 row" and the date fragment "08-23, second"
+#   "207 / 108 / 58 strategies": the B1494 backlog partition - 207 in the archive's title block (APPENDIX M row 4,
+#     title superseded), 108 and 58 in sections APPENDIX M maps RETIRED - archive only (rows 310 and 349; the
+#     archive marks its §3.1 "design lineage only")
+#   "2 configs": same fact, other wording ("two configs", §4.5 Step 1.0)
+#   "1KB": inside the retired Get-CimInstance snippet (the §8.7 HALT row records why it was replaced)
+#   "1 core": same fact, other wording ("1 of 10 cores", §8.4)
+#   "6 configs": the same RAM-binds claim as "2.1-2.3 GB" above, same disposition
+#   "2 of 219 strategies": RESTORED - the B2573 audit that motivated the ordered list, now in §0.4

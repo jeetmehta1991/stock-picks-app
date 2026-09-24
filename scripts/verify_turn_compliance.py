@@ -797,6 +797,9 @@ FIX_WORDS = ("fix:", "fixed", "bugfix", "defect", "root cause", "rca",
 # Artifacts whose conclusions are DOWNSTREAM of engine/grading behaviour.
 DOWNSTREAM_ARTIFACTS = ("PHASE_1B_ROSTER.md", "PASSED_STRATEGY_EXIT_LIST.md",
                         "STRATEGY_OPTIMISATION_PLAN.md", "EXECUTION_QUEUE.md",
+                        # B3096: per-strategy campaign records moved out of
+                        # the class-level runbook into their own file.
+                        "STRATEGY_CAMPAIGN_LOG.md",
                         # B2053 (S6-B1968d): a fix's downstream footprint
                         # routinely IS the miss-capture trio - excluding them
                         # punished compliant Phase-5 commits.

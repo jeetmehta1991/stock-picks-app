@@ -23498,3 +23498,110 @@ test_b3095_step2_launch_procedure_names_no_family_outside_an_instance - the Step
 may name a family's knobs or configs only inside a paragraph labelled CANDLE INSTANCE or SMC
 INSTANCE. The evidence half is JUDGMENT-ONLY: no scan can tell a load-bearing cross-strategy fact
 from scope creep; its durability is the #295 INSTANCE and the tripwire row.
+
+**B3096 SUPERSESSION (owner directive 2026-09-24: "no references to any specific strategy but the
+runbook is at a class level").** The INSTANCE-paragraph form this entry's rule prescribed is
+retired: the runbook now names no strategy at all, every instance moved byte-for-byte to
+STRATEGY_CAMPAIGN_LOG.md, and the enforcer is
+test_b3096_runbook_is_class_level_and_numbered_consistently (test_b3095 now asserts the Step-2
+launch procedure carries no instance). The rule's first half - prove an engine-wide defect on the
+current strategy's own artifacts first - stands.
+
+### L869 - A REWRITE DRIFTS EVEN WITH ITS SOURCE FRESHLY READ - FIDELITY IS A MACHINE COMPARISON AFTER DRAFTING, NOT HAVING READ IT (B3096, self-caught 2026-09-24)
+
+**MEASURED (session transcript via `scripts/transcript_timeline.py`; output_audit/b3096_transcript_timeline.txt).**
+The owner's B3096 directive arrived at 13:24:37 UTC (entry 64829). From 13:27:05 to 13:29:54 fifteen
+Read calls covered lines 1-4,156 of the 4,301-line runbook (the rest was its generated lineage
+appendix). From 13:36:41 to 13:42:22 I wrote the restructure as four draft parts in four consecutive
+Writes, with no tool call between them. The fourth part (entry 65167; 634 lines - the battery,
+admission, reporting and reference sections) (1) switched a sweep HALT condition from free physical
+RAM to free commit, a change the source had explicitly left to the owner ("Figures ANNOTATED rather
+than replaced - changing the concurrency conclusion is an owner call"); (2) dropped two passages
+tests pin ("The gate checks DISPOSITION, not EXECUTION." and the "ALL NINE RUN ON EVERY LANDING"
+heading) and split a third across two lines where test_b2439 reads single lines (the LINEAGE
+sentence); and (3) dropped the battery's M-check list and the S6-B1509a known gap. None shipped: the
+context compacted at 13:47:18, the whole source was re-read from 13:47:49 to 13:53:07 before any
+rewrite, and the rebuild (14:02-14:10) was written from that re-read.
+
+**Reading the source first did not prevent it; a comparison after drafting catches it.**
+`scripts/doc_rewrite_coverage.py`, built this batch, FAILS the four draft parts against the archived
+source: 303 citation tokens missing (most because the campaign log that receives moved text did not
+exist yet) and 138 sentences carrying an owner reservation or a prohibition with no counterpart -
+the dropped "owner call" sentence among them at overlap 0.00. Against the final runbook plus the
+campaign log it flagged 12 citations my earlier scratchpad check had passed: 7 were restored to the
+live text and 5 are recorded as retired with reasons, alongside 24 reworded or retired
+owner-reservation sentences (output_audit/b3096_rewrite_coverage_accepted.txt). One cause of the
+earlier miss is structural: that check counted APPENDIX M - a map that repeats every old heading -
+as coverage, so a token whose section content was dropped still read as present (B1548 and
+S6-B1465c were live only there).
+
+**Why it happened.** A restatement of a long source is written from recall even minutes after
+reading it: the draft keeps the plan and the citations around a sentence and loses the sentence's
+force - here, WHO DECIDES: an owner-reserved HALT condition became my decision. It is the L652 /
+L805 class (a locked format reconstructed from memory drifts; remediate by full diff) at document
+scale, and "open the source first" was satisfied and was not enough.
+
+**The rule.** Before a rewritten governing document replaces its source, compare them by machine:
+every citation token, and every sentence carrying an owner reservation or a prohibition, with each
+retirement recorded with its reason. The comparison must exclude text that only repeats old
+headings, or a heading map covers every token of a dropped section.
+
+**Correction, stated rather than applied silently.** The first version of this entry (14:32 the
+same day) said the draft was written AFTER the compaction, from the summary, and recorded a
+compliance failure against the owner's 2026-09-16 re-context directive. The transcript refutes it:
+the draft precedes the compaction by five minutes, and the directive was kept. L870 records how that
+false story came to be written.
+
+ENFORCER: CHECKLIST #321 (rewritten) and `scripts/doc_rewrite_coverage.py` (fail-closed), pinned by
+test_b3096_doc_rewrite_coverage_catches_a_dropped_reservation. WHEN to run it is still my judgment;
+the Stop-hook scan that would demand it is ticketed S6-B3096e.
+
+**ADDENDUM, same batch - the machine comparison is a floor, not coverage (MEASURED; the eight-reviewer
+side-by-side audit is output_audit/b3096_semantic_audit.md).** The CLI passed the final text and a
+figure probe ran beside it; the side-by-side read still found 100 differences of meaning (93 fixed, 1
+an error in the archive itself, 6 correct as written). One the figure probe should have caught and
+did not: the dropped "100 tickers x 1003 days ~= 7.3 h" cost row passed because the value 7.3 h also
+occurs in an unrelated sentence - a value-only presence test passes on a coincidence (a figures leg
+anchored on context is ticketed S6-B3096h). And checking the audit's findings against the code found
+two drifts no reviewer reported: a kill-path sentence had widened the archive's "the supervisor
+flushes" to every wall-time kill, and the engine's other state writers do not carry the portfolio
+block (S6-B3096g); and my own reconciliation of the multiplicity rule credited offline_level_sweep.py
+with a block it never writes (S6-B3096f). The rule stands with its scope stated: token and sentence
+checks catch what moved and what was lost; a changed MEANING needs the side-by-side read, and each
+of its findings checked against the code.
+
+### L870 - A STORY ABOUT MY OWN ACTIONS ACROSS A COMPACTION IS A SECONDARY RECORD - CHECK THE TRANSCRIPT BEFORE IT BECOMES A RECORD (B3096, self-caught twice, 2026-09-24)
+
+**MEASURED (`scripts/transcript_timeline.py`; output_audit/b3096_transcript_timeline.txt).** Two
+instances in one day, both self-accusations, both false.
+1. L869's first version recorded a compliance failure: "after a context compaction ... my first
+   action was to write the fourth draft part ... from the summary alone". The draft was written at
+   13:42:22 (entry 65167), five minutes BEFORE the compaction at 13:47:18 (entry 65183); after the
+   compaction the source WAS re-read before any rewrite, so the directive the entry said I broke was
+   kept. The false story reached L869, CHECKLIST #321, a skill tripwire row, a memory note and the
+   CLAUDE.md banner. What exposed it was unrelated: the pyramid failed #321 for a missing
+   durability clause (#300), the search for a mechanism found the compaction marker the Stop hook
+   already reads, and probing the transcript for it showed the timeline.
+2. After the next compaction I told the owner an Edit was "my first action in this continuation";
+   it was issued at 14:39:23 (entry 66364), 98 seconds BEFORE that compaction's boundary entry at
+   14:41:01.
+
+**Why it happened.** After a compaction the context REPLAYS: a tool call issued before the
+compaction reappears after the summary and reads like the first action taken, and the summary can
+list a file already written as still to write - the 13:47 summary's pending tasks said "Write
+newplan_part4.md". A story about my own past actions assembled from that view is a SECONDARY record
+(L664: a queue row quoted instead of the file). It leaned toward self-blame, which feels safe and is
+still false: the record would have taught the next session a rule against a failure that never
+happened while hiding the one that did (L869).
+
+**The rule.** Before an L-entry, retraction, RCA, queue row or report states WHEN, or FROM WHAT, I
+did something across a compaction boundary, run `scripts/transcript_timeline.py` and cite the entry
+index or UTC time it prints. The owner's 2026-09-16 re-context directive is unchanged: after a
+compaction, re-read the source before writing.
+
+ENFORCER: CHECKLIST #322, `scripts/transcript_timeline.py`, and the repo-text pin
+test_b3096_compaction_claims_in_learnings_cite_the_transcript (every entry from L869 on that says
+something happened after or before a compaction, or was written from the summary, must cite the
+transcript with an entry index or a UTC time; its must-fire case is L869's first version). The
+response-level scan is ticketed S6-B3096d: editing the live Stop hook mid-session risks blocking
+every close, #300's own reason for the same split.

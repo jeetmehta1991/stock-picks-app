@@ -12,7 +12,7 @@ code; here the two consumers share the gate).
    discipline stopped it (the enforcement audit the owner forced,
    2026-09-17).
 2. require_fresh_status: the stamped status view's build.source_commit must
-   equal git HEAD - SS11.2w's regenerate-first precondition made mechanical.
+   equal git HEAD - the runbook §0.5 driver loop's regenerate-first precondition made mechanical.
    FAIL CLOSED on a missing or unreadable stamp (L642: the absent case is
    the case the guard exists for). `head` is injectable for tests only.
 """
@@ -74,5 +74,5 @@ def require_fresh_status(head: str | None = None) -> str:
         raise SystemExit(
             f"REFUSED: status view stamped {stamp!r} but HEAD is {head!r} - "
             "REGENERATE FIRST (scripts/build_strategy_status.py) and commit "
-            "the fresh build; SS11.2w made mechanical (S6-B2848b)")
+            "the fresh build; runbook section 0.5 made mechanical (S6-B2848b)")
     return stamp

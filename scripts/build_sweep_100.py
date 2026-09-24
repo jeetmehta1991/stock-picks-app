@@ -27,7 +27,7 @@ listed after 2021-05-06 -- MEASURED at **22 of 544** (the long-standing "41 of
 381" was the abandoned chunk's figure, wrong in BOTH halves). Those 22 remain in
 the 544 used for Phase-2 validation, so nothing is ADMITTED on the biased
 universe -- but rankings are derived from one. Documented in
-STRATEGY_OPTIMISATION_PLAN.md STEP 1.1.
+STRATEGY_OPTIMISATION_PLAN.md §4.5 Step 1.1.
 """
 from __future__ import annotations
 

@@ -240,7 +240,7 @@ def check_supervisor_and_cap(manifest: dict) -> list[str]:
     # (d) B2849 (S6-B2848c, owner-approved 2026-09-17): the ladder's 0.5
     # smoke made mechanical - the manifest must RECORD that fires exist at
     # the production parameters (fires_at_production > 0). A zero is a
-    # producer defect, not a search (SS11.2 step 0.5); an ABSENT field is a
+    # producer defect, not a search (runbook Step 0.5, section 2.2); an ABSENT field is a
     # refusal, not a pass (L642: the absent case is the case the guard
     # exists for).
     fires = manifest.get("fires_at_production")
@@ -258,7 +258,7 @@ def check_supervisor_and_cap(manifest: dict) -> list[str]:
         if not ok:
             probs.append(
                 f"fires_at_production = {fires!r} - a zero or non-numeric "
-                "smoke is a PRODUCER DEFECT, not a search (SS11.2 step 0.5). "
+                "smoke is a PRODUCER DEFECT, not a search (runbook Step 0.5, section 2.2). "
                 "Refusing to launch.")
     return probs
 

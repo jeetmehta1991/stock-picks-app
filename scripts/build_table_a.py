@@ -19,7 +19,7 @@ fire loading and signal parsing are the builder's own.
 
 WHAT THIS CANNOT SEE (stated in every file): a producer whose values are not
 persisted in signals_at_entry does not exist to the cube - such axes are
-engine-only by construction (plan 11.2s) and no offline table can enumerate
+engine-only by construction (runbook §4.3) and no offline table can enumerate
 them. The depth extraction is the builder's source pattern - a LOWER BOUND
 (thresholds via helpers or config constants are invisible).
 
@@ -375,7 +375,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"condition's input magnitudes are persisted on the fires - "
                  f"else none | variants over unpersisted bars/inputs - RESIM; "
                  f"a shared producer's resim runs the FULL OPEN consumer set "
-                 f"and its one cube is graded per consumer (11.2s - results "
+                 f"and its one cube is graded per consumer (runbook section 4.3 - results "
                  f"reused by construction); "
                  f"knobs {'in the SPECS entry' if in_specs else ('DEFINED below (P' + str(pid) + '.x)' if PRODUCER_BANDS.get(leg) else 'to define')} | "
                  f"{'SPECS-REGISTERED' if in_specs else ('BANDS-DEFINED' if PRODUCER_BANDS.get(leg) else 'BANDS-TO-DEFINE')} |")
@@ -429,7 +429,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"{k.get('resim', '-')} | T3 review |")
     L += ["| B-rows | BREADTH | every companion in the B-row candidate census "
           "below is Table A inventory once REGISTERED at the T3 band review "
-          "(11.2b3; B-rows are Table A members by owner ruling) | AND-leg "
+          "(runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg "
           "companions on persisted keys | - | census levels below | census "
           "levels below | sub-floor / unpersisted producers | CANDIDATE |",
           "",
@@ -531,7 +531,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     else:
         L.append("(none)")
     L += ["",
-          "**Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is",
+          "**Boundary (runbook section 4.3):** a producer with NO key in signals_at_entry is",
           "invisible to this table and to every offline instrument - genuinely new",
           "breadth producers are an engine-side design act, never an offline sweep.", ""]
 
@@ -544,7 +544,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     # THREE buckets, not two (S6-B2862). A fire-adding axis whose env actuator
     # does not exist cannot be run, so counting it in ENGINE RUNS would promise
     # engine hours for a band that is DEFINED but not IMPLEMENTED - state 1 of
-    # the four-state workflow in plan 11.0b. The old code got this right only
+    # the four-state workflow in runbook section 2.3. The old code got this right only
     # by accident: a prose band scored n=1, and n==1 was read as "no actuator".
     runs = math.prod(n for _, _, n, s, a in axes if not s and a) if axes else 0
     pend = math.prod(n for _, _, n, s, a in axes
@@ -580,7 +580,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
           f"ENGINE RUNS        {runs} (actuated fire-adding axes only)",
           f"PENDING ACTUATION  {pend} level-combinations are DEFINED but have "
           "no env knob - they are a FEATURE REQUEST, not a runnable band "
-          "(plan 11.0b state 1; B2866)",
+          "(runbook section 2.3 state 1; B2866)",
           f"STEP-1 SERIAL COST {runs} x {_STEP1_H} h = {runs * _STEP1_H:,.0f} h "
           f"at the ruled 1y x 200-ticker shape",
           f"                   per-run {_STEP1_H} h is within the {_CAP_H} h "
