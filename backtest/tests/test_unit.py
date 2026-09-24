@@ -24898,6 +24898,13 @@ if n == 1:
         # as dropped at the boundary - the B1076 caveat, quantified.
         assert res["boundary_carryover"] == [
             {"leg": 1, "sim_date": "2024-11-01", "open_trades_carried": 7}], res
+        # B3100 (S6-B3094f items 3 + 4): each leg's OUTCOME, read from the
+        # engine's status, reaches the summary on the LIVE path, and the
+        # resumed leg's checkpoint was backed up before it ran
+        assert [o["outcome"] for o in res["leg_outcomes"]] == [
+            "CRASH", "COMPLETE"], res["leg_outcomes"]
+        assert (out_dir / "checkpoint_backups" / "leg2" / "engine_state.json"
+                ).is_file(), "leg 2 resumed without a checkpoint backup"
         ledger = _json.loads((root / "output_audit" /
                               "postconfig_ledger.json").read_text())
         ent = ledger[f"output_{wave}_armx"]
@@ -45182,3 +45189,90 @@ def test_b3099_landing_records_the_code_that_graded_it(tmp_path, monkeypatch):
            no_notify=True, step1=True, step2=False)
     ev = m.read_landings()[0]
     assert ev["graded_with"]["head"] == ci["head"], ev
+
+
+def test_b3100_leg_outcome_reads_the_engine_stop_status():
+    """S6-B3094f item 3 (B3100): a leg's ending comes from the engine's own
+    status in engine_state.json, never from elapsed time - B3098 made a planned
+    leg end a clean in-loop stop that can land at any wall time past the cap.
+    One case per outcome; the status strings are the engine's own (checked
+    against backtest.py below, so a renamed status fails here, not in a wave)."""
+    from pathlib import Path as _P
+    root = _b2520_scripts_on_path()
+    import run_wave as rw
+    lo = rw.leg_outcome
+    assert lo(0, True, None) == "COMPLETE"
+    assert lo(0, True, {"status": "wall_time_kill"}) == "COMPLETE"   # cube wins
+    assert lo(2, False, None) == "GATE_REFUSED"
+    assert lo(1, False, None) == "NO_CHECKPOINT"
+    assert lo(0, False, {"status": "wall_time_kill"}) == "CAP_STOP"
+    assert lo(1, False, {"status": "supervisor_active_cap"}) == "HANG_BACKSTOP"
+    assert lo(0, False, {"status": "complete"}) == "COMPLETE_NO_CUBE"
+    assert lo(1, False, {"status": "running"}) == "CRASH"
+    assert lo(1, False, {}) == "CRASH"
+    eng = (_P(root) / "backtest" / "engine" / "backtest.py").read_text(encoding="utf-8")
+    assert '"status": "wall_time_kill"' in eng, "the in-loop stop status moved"
+    assert '_emit_kill_state("supervisor_%s"' in eng, "the supervisor status moved"
+    assert '"status": "complete"' in eng
+
+
+def test_b3100_backup_checkpoint_copies_what_a_resume_reads(tmp_path):
+    """S6-B3094f item 4 (B3100): the files a resumed leg reads are copied to
+    checkpoint_backups/leg<N>/ before it starts; an absent file is skipped,
+    and the originals are left in place."""
+    _b2520_scripts_on_path()
+    import run_wave as rw
+    for nm in ("engine_state.json", "trade_log_checkpoint.csv",
+               "open_trades_checkpoint.csv"):
+        (tmp_path / nm).write_text(nm, encoding="utf-8")
+    copied = rw.backup_checkpoint(tmp_path, 3)
+    assert copied == ["engine_state.json", "trade_log_checkpoint.csv",
+                      "open_trades_checkpoint.csv"], copied
+    dest = tmp_path / "checkpoint_backups" / "leg3"
+    for nm in copied:
+        assert (dest / nm).read_text(encoding="utf-8") == nm
+        assert (tmp_path / nm).exists()
+    assert not (dest / "resume_boundaries.json").exists()
+    assert rw.backup_checkpoint(tmp_path / "nothing_here", 1) == []
+
+
+def test_b3100_fresh_start_refuses_an_existing_checkpoint(tmp_path, monkeypatch):
+    """S6-B3094f (B3100, Council 1b Outsider): a spec that does not resume must
+    not restart day 0 over a directory holding a run's checkpoint - refused
+    BEFORE the manifest is rewritten. And a resuming spec is not refused."""
+    _b2520_scripts_on_path()
+    import run_wave as rw
+    monkeypatch.setenv("RUN_WAVE_OUT_BASE", str(tmp_path))
+    out = tmp_path / "output_zz_b3100_fresh_t"
+    out.mkdir()
+    (out / "engine_state.json").write_text('{"simulated_day": 9}', encoding="utf-8")
+    r = rw.run_arm({"wave": "zz_b3100_fresh"}, {"tag": "t"})
+    assert r["status"] == "REFUSED_EXISTING_CHECKPOINT" and r["legs"] == 0, r
+    assert not (out / "run_manifest.json").exists(), "refused AFTER rewriting"
+    assert (out / "engine_state.json").read_text(encoding="utf-8") == '{"simulated_day": 9}'
+    # must-QUIET: the resuming spec gets past the guard (it then fails on the
+    # missing spec fields, which proves the guard let it through)
+    import pytest
+    with pytest.raises(KeyError):
+        rw.run_arm({"wave": "zz_b3100_fresh", "resume": True}, {"tag": "t"})
+
+
+def test_b3100_run_wave_logs_as_it_goes():
+    """S6-B3094f item 1 (B3100): run_wave's own lines are line-buffered and its
+    legs run with PYTHONUNBUFFERED=1 - a block-buffered log is silent for a
+    whole leg, which reads exactly like a hang. Structural (AST), not a
+    substring: a comment naming the variable cannot satisfy it (L684)."""
+    import ast
+    from pathlib import Path as _P
+    root = _b2520_scripts_on_path()
+    tree = ast.parse((_P(root) / "scripts" / "run_wave.py").read_text(encoding="utf-8"))
+    fns = {n.name: n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}
+    env_keys = {k.value for d in ast.walk(fns["run_arm"]) if isinstance(d, ast.Dict)
+                for k in d.keys if isinstance(k, ast.Constant)}
+    assert "PYTHONUNBUFFERED" in env_keys, sorted(x for x in env_keys if isinstance(x, str))
+    kw = [k.arg for c in ast.walk(fns["main"]) if isinstance(c, ast.Call)
+          for k in c.keywords]
+    assert "line_buffering" in kw
+    calls = [c.func.id for c in ast.walk(fns["run_arm"]) if isinstance(c, ast.Call)
+             and isinstance(c.func, ast.Name)]
+    assert {"leg_outcome", "backup_checkpoint", "_commit_free_gb"} <= set(calls), calls

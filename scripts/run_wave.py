@@ -124,6 +124,58 @@ def leg_start_from_records(before: list, after: list, fallback: int) -> tuple:
     return int(fallback), "run_wave bookkeeping"
 
 
+def leg_outcome(rc: int, cube_exists: bool, state) -> str:
+    """S6-B3094f item 3 (B3100): how a leg ENDED, from the engine's own stop
+    status - never inferred from elapsed time. B3098 made a planned leg end a
+    clean in-loop stop (status wall_time_kill) that can land at any wall time
+    after the cap, so an ELAPSED threshold would misread it."""
+    if cube_exists:
+        return "COMPLETE"
+    if rc == 2:
+        return "GATE_REFUSED"
+    if not isinstance(state, dict):
+        return "NO_CHECKPOINT"
+    status = str(state.get("status") or "")
+    if status == "wall_time_kill":
+        return "CAP_STOP"
+    if status.startswith("supervisor_"):
+        return "HANG_BACKSTOP"
+    if status == "complete":
+        # the loop finished and wrote its final state, yet no cube landed -
+        # the save failed, which is not the same defect as a crash mid-loop
+        return "COMPLETE_NO_CUBE"
+    return "CRASH"
+
+
+CHECKPOINT_FILES = ("engine_state.json", "trade_log_checkpoint.csv",
+                    "open_trades_checkpoint.csv", "resume_boundaries.json")
+
+
+def backup_checkpoint(out_dir: Path, leg: int) -> list:
+    """S6-B3094f item 4 (B3100): copy the checkpoint a resumed leg is about to
+    read into <out>/checkpoint_backups/leg<N>/. Returns the files copied."""
+    import shutil as _sh
+    dest = Path(out_dir) / "checkpoint_backups" / f"leg{leg}"
+    copied = []
+    for nm in CHECKPOINT_FILES:
+        src = Path(out_dir) / nm
+        if src.exists():
+            dest.mkdir(parents=True, exist_ok=True)
+            _sh.copy2(src, dest / nm)
+            copied.append(nm)
+    return copied
+
+
+def _commit_free_gb():
+    """Free commit in GB, read in-process; None when unreadable (L580: an
+    unreadable value never renders as a measured one)."""
+    try:
+        from commit_free import read as _cf
+        return _cf().get("commit_free_gb")
+    except Exception:                               # noqa: BLE001
+        return None
+
+
 def resolve_ruled_scope(spec: dict) -> dict:
     """B2713 (LLM-council verdict 2026-09-12): a spec that declares `step`
     gets its window and universe INJECTED from the runbook's phase table -
@@ -262,6 +314,15 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     # tests, and the manifest records the real out_dir either way.
     _base = Path(os.environ.get("RUN_WAVE_OUT_BASE") or ROOT)
     out_dir = _base / f"output_{spec['wave']}_{arm['tag']}"
+    # B3100 FRESH-START GUARD (S6-B3094f, Council 1b Outsider): a spec that does
+    # not resume would restart day 0 over an existing checkpoint - and would
+    # rewrite its manifest first. Refuse before touching the directory.
+    if not spec.get("resume") and (out_dir / "engine_state.json").exists():
+        print(f"[B3100 REFUSED] arm={arm['tag']}: {out_dir.name} already holds "
+              "engine_state.json and this spec does not resume - archive (move) "
+              "the old run first; a fresh start would overwrite its checkpoint")
+        return {"arm": arm["tag"], "status": "REFUSED_EXISTING_CHECKPOINT",
+                "legs": 0}
     sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(ROOT),
                          capture_output=True, text=True).stdout.strip()
     manifest = build_manifest(spec, arm, out_dir, sha)
@@ -277,6 +338,7 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     # measured over its own days rather than every leg's days.
     _prev_sim_day = 0
     rates = []   # B2127 per-leg measured rates
+    leg_outcomes = []   # B3100 (S6-B3094f item 3)
     t0 = time.time()
     while legs < int(spec.get("max_legs", 4)):
         legs += 1
@@ -322,6 +384,8 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
                # BLAS threads buy nothing and reserve gigabytes.
                "OPENBLAS_NUM_THREADS": "1",
                "OMP_NUM_THREADS": "1",
+               # B3100 (S6-B3094f item 1): children write their logs as they go
+               "PYTHONUNBUFFERED": "1",
                "MKL_NUM_THREADS": "1",
                "STRATEGY_SUBSET_FILE": _engine_strategy_file(spec),
                **{k: str(v) for k, v in arm.get("env", {}).items()}}
@@ -345,6 +409,14 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
                         "legs": 0, "spawn_error": why}
             print("[B2250a] pool spawn probe OK (one worker, at launch - "
                   "does not prove spawning survives the whole run)")
+        # B3100 (S6-B3094f items 4 + 9): back up what a resumed leg will read,
+        # and record free commit at the leg's start
+        _backed = (backup_checkpoint(out_dir, legs)
+                   if "--resume-from-checkpoint" in engine_args else [])
+        _cfree = _commit_free_gb()
+        print(f"[B3100 leg-start] arm={arm['tag']} leg={legs} "
+              f"resume={'--resume-from-checkpoint' in engine_args} "
+              f"backed_up={_backed} commit_free_gb={_cfree}")
         _rb_before = _resume_records(out_dir)
         rc = subprocess.run(cmd, cwd=str(ROOT), env=env).returncode
         # S6-B3094a (B3099): the leg's first day as the ENGINE recorded it
@@ -355,14 +427,27 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
             print(f"[B3099 WARN] arm={arm['tag']} leg={legs} was launched with "
                   "--resume-from-checkpoint but the engine wrote no resume "
                   "record - its rate is measured from run_wave's bookkeeping")
+        # B3100 (S6-B3094f item 3): the leg's OUTCOME from the engine's status
+        try:
+            _st_end = json.loads((out_dir / "engine_state.json").read_text(
+                encoding="utf-8"))
+        except (OSError, ValueError):
+            _st_end = None
+        _oc = leg_outcome(rc, cube.exists(), _st_end)
+        leg_outcomes.append({"leg": legs, "outcome": _oc, "exit": rc,
+                             "status": (_st_end or {}).get("status"),
+                             "simulated_day": (_st_end or {}).get("simulated_day"),
+                             "commit_free_gb_at_start": _cfree})
+        print(f"[B3100 leg-end] arm={arm['tag']} leg={legs} outcome={_oc} rc={rc}")
         if rc == 2:
-            return {"arm": arm["tag"], "status": "GATE_REFUSED", "legs": legs}
+            return {"arm": arm["tag"], "status": "GATE_REFUSED", "legs": legs,
+                    "leg_outcomes": leg_outcomes}
         if cube.exists():
             break
         state_p = out_dir / "engine_state.json"
         if not state_p.exists():
             return {"arm": arm["tag"], "status": "FAILED_NO_CHECKPOINT",
-                    "legs": legs, "exit": rc}
+                    "legs": legs, "exit": rc, "leg_outcomes": leg_outcomes}
         try:
             st = json.loads(state_p.read_text(encoding="utf-8"))
             # S6-B2404: the open-trade count AT the boundary. The NEXT leg
@@ -395,7 +480,7 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
                 "leg": legs, "sim_date": None, "open_trades_carried": None})
     if not cube.exists():
         return {"arm": arm["tag"], "status": "INCOMPLETE_MAX_LEGS",
-                "legs": legs}
+                "legs": legs, "leg_outcomes": leg_outcomes}
     with cube.open(encoding="utf-8", errors="replace") as f:
         rows = sum(1 for _ in f) - 1
     status = "COMPLETE" if rows > 1 else "FAILED_EMPTY_CUBE"
@@ -480,7 +565,9 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
             "boundary_carryover": boundary_carryover if legs > 1 else _na,
             "measured_rates": rates if legs > 1 else _na,
             "cube_rows": rows, "elapsed_s": int(time.time() - t0),
-            "postconfig_exit": pc.returncode}
+            "postconfig_exit": pc.returncode,
+            # B3100 (S6-B3094f item 3): how every leg ended, from the engine
+            "leg_outcomes": leg_outcomes}
 
 
 def _spawn_probe_worker(x):
@@ -529,6 +616,13 @@ def archive_stale_summary(wave: str):
 
 
 def main() -> int:
+    # B3100 (S6-B3094f item 1): [B2127 rate] / [B3100 leg-end] lines reach the
+    # log as they are printed, not at exit - a block-buffered log is silent for
+    # a whole leg, which reads exactly like a hang. (getattr, not a silent
+    # except: a stream without reconfigure simply keeps its buffering.)
+    _reconf = getattr(sys.stdout, "reconfigure", None)
+    if _reconf is not None:
+        _reconf(line_buffering=True)
     ap = argparse.ArgumentParser()
     ap.add_argument("--spec", required=True)
     ap.add_argument("--engine-cmd", default=None,

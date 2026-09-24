@@ -1444,7 +1444,10 @@ instance is recorded in the campaign log).
 - **`fires_at_production` is required** - run_wave carries it into the generated manifest and the
   prelaunch gate refuses a launch without it (S6-B2848c).
 - **`resume: true` is harmless on a fresh directory** (`run_arm`'s resume branch resumes only when
-  `engine_state.json` exists) and makes a relaunch continue from its checkpoint, not restart.
+  `engine_state.json` exists) and makes a relaunch continue from its checkpoint, not restart. The
+  converse is refused: a spec with `resume: false` will NOT start in a directory that already holds
+  `engine_state.json` (B3100 fresh-start guard, S6-B3094f) - it would restart day 0 over that run's
+  checkpoint. Archive (move) the old run first.
 - **`leg_cap_hours x max_legs` is the capacity** and must exceed the projection; the leg cap stays
   under the owner's 5 h ceiling (4.5 here leaves margin under it). A resumed invocation's leg counter
   restarts at 1. `pool_workers` 6 is the value the first pooled Step-2 wave was relaunched at after its
@@ -1525,6 +1528,13 @@ The monitor contract is §8.9. Wave-specific rules:
   checkpoint exists and no cube does (`run_arm`'s leg loop). Read the wave's summary log each firing -
   `launch_sweep.main`'s summary-log line writes `CFG=<tag> EXIT=<rc> ELAPSED=<s> CUBE_ROWS=<n|ABSENT>` per leg, and a
   line with ELAPSED under the leg cap and `CUBE_ROWS=ABSENT` is a crash-and-resume (S6-B3094f item 3).
+  **Since B3100 the authority is run_wave's own line** `[B3100 leg-end] arm=<tag> leg=<n>
+  outcome=<...>`, read from the engine's stop status in `engine_state.json`: `CAP_STOP` (the planned
+  in-loop stop at the first day boundary past the cap), `HANG_BACKSTOP` (the supervisor's kill),
+  `CRASH` (neither kill path wrote), `COMPLETE`, `COMPLETE_NO_CUBE`, `GATE_REFUSED`, `NO_CHECKPOINT`;
+  the arm result carries them as `leg_outcomes`, and the ELAPSED reading is a cross-check. Before
+  every resumed leg run_wave copies the checkpoint to `<out>/checkpoint_backups/leg<N>/`, and each leg
+  start prints its free commit (`[B3100 leg-start]`).
   It resumes from the last PERIODIC checkpoint, which carries no portfolio block, so cash and positions
   restart at that boundary - inert in an isolation cube, where the portfolio holds nothing (S6-B3096g,
   §8.6).
