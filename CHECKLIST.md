@@ -3032,6 +3032,8 @@ After ANY defect fix, before moving on:
 (the 17pct Sharpe correction re-scaling every roster Sharpe against a 1.0 gate) and B1562 (the
 end-anchored coverage change altering which tickers any prior run would have served).
 
+**INSTANCE (B3097) - B2046 FIXED A DEFECT THAT FALSIFIED OUTPUTS AND SWEPT NONE OF THE FINDINGS THEY HAD PRODUCED.** Until B2046 (2026-08-23), trade_exit_detail.csv dropped every strategy with fewer than 5 trades. L395 (2026-08-10) had read `swing_length=50` as ZERO smc_breaker_block_long entries from that file; the engine trade log of the same run holds 3. The fix was pinned, but step 1 above - grep the shipped conclusions - was not run, so L395 and its own correction L397 kept the false zero until B3097 re-derived it while closing S6-B1520a. Corrected in place and pinned by test_b3097_l395_and_l397_carry_the_b2046_correction; the account is the L867 addendum.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in

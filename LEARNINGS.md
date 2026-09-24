@@ -6072,6 +6072,8 @@ same artifact answers the question at a coarser grain before re-running blind** 
 already in the cube I was about to discard.
 
 ### L395
+**CORRECTED B3097 - THE ZERO BELOW IS FALSE (L867 second shape).** The engine's own trade log for the SW=50 arm (`output_pin2_sw50/trade_log.csv`) holds **3** `smc_breaker_block_long` entries - AAPL 2024-06-24, SPY 2023-06-23, SPY 2025-05-02 - not 0. The SW=20 figure of 8 is 6 AAPL + 2 SPY, not AAPL alone, and the two arms SHARE one entry (SPY 2023-06-23), so 'zero overlap' is false as well. Every figure in this entry, the 384 vs 409 aggregate included, was read from `trade_exit_detail.csv`, which before B2046 (S6-B2043a, 2026-08-23) silently dropped every strategy with fewer than 5 trades - MEASURED B3097: in both arms that file holds the 49 strategies with 5-19 trades and none of the 68-71 with 1-4. What survives: the plumbing conclusion (the fire sets differ, 8 vs 3 with 1 shared) and the band rule as a rule; its instance was the defect's output.
+
 **Behavioural proof landed: the plumbing works, and `swing_length=50` KILLS the strategy.** B1525.
 The full-window pin proof (AAPL, 2022-05-05..2026-05-05) closes S6-B1520a:
 `SMC_SWING_LENGTH=20` -> **8** `smc_breaker_block_long` entries; `=50` -> **0**; fire sets NOT
@@ -6094,6 +6096,8 @@ expensive to automate, record it as a linked evidence artifact (CHECKLIST #124) 
 guard declare what it does NOT cover.** Silence about scope is how a guard gets mistaken for a proof.
 
 ### L397
+**CORRECTED B3097:** 'True for the STRATEGY on AAPL' below is false too - the SW=50 arm's trade log holds 1 AAPL entry (2024-06-24). This correction inherited the pre-B2046 `trade_exit_detail.csv` zero, which it could not know was wrong (see the L395 note). The signal-level table is unaffected: it came from a producer sandbox, not from that file.
+
 **CORRECTION to L395: `swing_length=50` does not kill the SIGNAL - it fires on 36 bars.** B1526,
 S6-B1525a resolved. Producer sandbox on AAPL over the locked window (Gate 0 ISOLATION PASS):
 
@@ -23465,6 +23469,8 @@ engine's resume path still reads open_trades_checkpoint.csv - so the generator
 text and the mechanism it describes cannot drift apart silently. No DETECTION
 mechanism is possible: no scan tells a stale caveat from a live one without
 running the mechanism it describes.
+
+**SECOND SHAPE (B3097): a one-time FINDING outlives the fix of the defect that produced it.** L395 recorded that `swing_length=50` gives `smc_breaker_block_long` zero entries; the engine's trade log for that run holds 3. The zero was read from `trade_exit_detail.csv` while it silently dropped every strategy under 5 trades - a defect B2046 fixed on 2026-08-23, 13 days after L395 was written. The fix repaired the producer and pinned it, and swept none of the findings the defect had already produced: L395 and its own correction L397 carried the false zero for 32 more days, until closing a legacy ticket (S6-B1520a) re-derived it from the trade log. Same family as the caveat above - the claim survives because the fix touched the code, not the record - but with no generator re-stamping it, so testing a generator cannot catch it. **NO NEW RULE - the one that applied already existed: CHECKLIST #196 (L462, POST-FIX RE-CHECK) requires that after ANY defect fix the shipped conclusions resting on the old behaviour be grepped for, the overlap measured, and each re-derived or ticketed. B2046 did not run it: a compliance failure against #196, recorded there as an INSTANCE.** I first drafted a fresh rule here and found #196 only on re-reading the skill, which is the ANCHOR-THE-RULE warning (grep the rule before saying it) caught in my own draft. **Detection is JUDGMENT-ONLY**: no scan can tell which recorded figure came from which artifact. **Durability pinned** by test_b3097_l395_and_l397_carry_the_b2046_correction, which keeps the corrections in L395 and L397.
 
 ### L868 - ANOTHER CAMPAIGN LEAKED INTO THE CURRENT STRATEGY'S WORK TWICE IN ONE DAY - THROUGH A TEMPLATE, THEN THROUGH MY EVIDENCE (B3095, 2026-09-24)
 

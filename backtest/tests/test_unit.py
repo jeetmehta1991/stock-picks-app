@@ -44415,3 +44415,66 @@ def test_b3096_grid_table_d_orders_on_the_lower_bound():
     order = _b3096_grid_table_d_order(pvt.table_d)
     assert order == ["cfg_hi_bound", "cfg_hi_sharpe"], (
         "Table D must rank on the in-sample lower bound, not Sharpe; got %r" % order)
+
+
+def test_b3097_roster_sharpe_uses_the_trading_day_basis():
+    """S6-B1589b (closed B3097): the Phase 1B roster is graded by roster_core,
+    which imports walk_forward_r5_cells._sharpe. B1589 fixed that function's
+    units - a CALENDAR-day hold annualised on 252 TRADING days understated every
+    Sharpe by ~17pct - and the fix carried no pin until this test.
+
+    Must-fire: revert the conversion (annualise the calendar hold on 252 again)
+    and the value falls to the old basis, failing the last assert.
+    """
+    import sys
+    from pathlib import Path
+
+    import numpy as np
+
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+    import walk_forward_r5_cells as wf
+
+    assert rc._sharpe is wf._sharpe, (
+        "roster_core must grade on walk_forward_r5_cells._sharpe (the B1589 units fix)")
+    rng = np.random.default_rng(0)
+    a = rng.normal(0.01, 0.05, 60)
+    hold = np.full(60, 10.0)                  # CALENDAR days, as the cube records them
+    out = wf._sharpe(a, hold, min_n=10)
+    sr_pt = a.mean() / a.std(ddof=1)
+    fixed = sr_pt * (365.0 / 10.0) ** 0.5     # 252 / (10 * 252/365) trades a year
+    old = sr_pt * (252.0 / 10.0) ** 0.5       # the pre-B1589 mixed-unit basis
+    assert abs(out["sharpe"] - fixed) < 1.5e-3, (out["sharpe"], fixed)
+    assert abs(out["sharpe"] - old) > 0.1, (
+        "Sharpe is back on the pre-B1589 calendar-on-252 basis: %r" % out["sharpe"])
+
+
+def test_b3097_l395_and_l397_carry_the_b2046_correction():
+    """L867 second shape (B3097): L395 recorded swing_length=50 as ZERO
+    smc_breaker_block_long entries, and its own correction L397 kept the zero for
+    AAPL. The engine's trade log for that run holds 3 (1 AAPL). The zero was read
+    from trade_exit_detail.csv while it dropped every sub-5-trade strategy - the
+    defect B2046 fixed without sweeping the findings it had already produced.
+
+    Durability pin: both entries keep the correction in place, so a later edit
+    cannot restore the false zero silently.
+    """
+    from pathlib import Path
+
+    text = (Path(__file__).resolve().parents[2] / "LEARNINGS.md").read_text(
+        encoding="utf-8", errors="replace")
+    lines = text.splitlines()
+    for lid in ("L395", "L397"):
+        starts = [i for i, ln in enumerate(lines) if ln.strip() == "### " + lid]
+        assert len(starts) == 1, "%s heading not found exactly once" % lid
+        body = []
+        i = starts[0] + 1
+        while i < len(lines) and not lines[i].startswith("### L"):
+            body.append(lines[i])
+            i += 1
+        body = " ".join(body)
+        assert "CORRECTED B3097" in body, "%s lost its B3097 correction" % lid
+        assert "trade_exit_detail" in body and "B2046" in body, (
+            "%s correction no longer names the defective file and its fix" % lid)
