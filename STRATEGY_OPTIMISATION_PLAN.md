@@ -2702,19 +2702,25 @@ Every heading of the pre-restructure runbook (147 of 147, generated from the arc
 
 | section | last amended | batch | commit |
 |---|---|---|---|
+| &nbsp;&nbsp;0.1 The five STEPS - the ruled numbering (owner 2026-08-29; Step 3 BREADTH added and ADM | 2026-09-25 | B3104 | `babbe2215` |
+| &nbsp;&nbsp;0.2 Two workflows - TIGHTENING and LOOSENING are separate (owner 2026-09-16, B2828; rest | 2026-09-25 | B3104 | `babbe2215` |
+| &nbsp;&nbsp;0.3 TWO LEGS PER CAMPAIGN - DEPTH AND BREADTH (L780, owner-caught 2026-09-11; Priority 1 | 2026-09-25 | B3104 | `babbe2215` |
+| &nbsp;&nbsp;0.4 Where each workflow's steps sit | 2026-09-25 | B3104 | `babbe2215` |
+| &nbsp;&nbsp;1.2 THE STEP TABLE - windows, universes and trade floors (owner 2026-08-29; formerly §10 | 2026-09-25 | B3104 | `babbe2215` |
+| &nbsp;&nbsp;1.4 Multiple testing (formerly §1 item 3, §2.3 step 5, §11.2b, §11.2b2d) | 2026-09-25 | B3101 | `3c1904199` |
+| &nbsp;&nbsp;3.2 The procedure, T0-T8 | 2026-09-25 | B3104 | `babbe2215` |
+| &nbsp;&nbsp;3.6 THE BREADTH LEG - the standard procedure (B2693, owner-ruled 2026-09-12; formerly §1 | 2026-09-25 | B3104 | `babbe2215` |
+| &nbsp;&nbsp;4.2 The procedure, L0-L8 | 2026-09-25 | B3104 | `babbe2215` |
+| &nbsp;&nbsp;4.5 Step 1 on the engine - Steps 1.0-1.7 (formerly §11 STEP 1 and §11.2 steps 1-1.4) | 2026-09-25 | B3104 | `babbe2215` |
+| &nbsp;&nbsp;4.9 THE STEP-2 LAUNCH PROCEDURE - Steps 2.1-2.5 (formerly STEP 3.1-3.4) | 2026-09-25 | B3108 | `ce65869a1` |
+| 6. STEP 4 - ADMIT (both workflows; numbered Step 3 from B3096 to B3105; formerly STEP 4  | 2026-09-25 | B3104 | `babbe2215` |
 | 0. VOCABULARY AND NUMBERING - read this first | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;0.1 The four STEPS - the ruled numbering (owner 2026-08-29; formerly §10.1 "The four pha | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;0.2 Two workflows - TIGHTENING and LOOSENING are separate (owner 2026-09-16, B2828; rest | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;0.3 TWO LEGS PER CAMPAIGN - DEPTH AND BREADTH (L780, owner-caught 2026-09-11; Priority 1 | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;0.4 Where each workflow's steps sit | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;0.5 THE DRIVER LOOP - how work is picked up, every session (B2829; formerly §11.2w) | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;0.6 APPROVAL FLOW - which word covers which step (L779, owner-mandated 2026-09-10; forme | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;0.7 THE PER-STRATEGY STATUS VIEW - consult it before naming ANY work (B2808, owner-appro | 2026-09-24 | B3096 | `e721c1ff8` |
 | 1. GOVERNING RULES - bind both workflows | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;1.1 HOLDOUT POLICY - settled by owner 2026-08-09 (formerly §0 and §1) | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;1.2 THE STEP TABLE - windows, universes and trade floors (owner 2026-08-29; formerly §10 | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;1.3 Standing owner constraints (formerly §10.1 constraints, §10.7, §11.0) | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;1.4 Multiple testing (formerly §1 item 3, §2.3 step 5, §11.2b, §11.2b2d) | 2026-09-24 | B3096 | `e721c1ff8` |
+| &nbsp;&nbsp;1.3 Standing owner constraints (formerly §10.1 constraints, §10.7, §11.0) | 2026-09-24 | B3099 | `596bdffc3` |
 | &nbsp;&nbsp;1.5 RESIMULATION - the rule is SUBSET-SAFETY, not "tightening" (B1508; formerly §2.1, §2 | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;1.6 Family campaigns - pre-gate, representative, sibling pass, run producers once (B2627 | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;1.7 Error checks and reporting standards (formerly §2.4 and §2.5) | 2026-09-24 | B3096 | `e721c1ff8` |
@@ -2729,26 +2735,20 @@ Every heading of the pre-restructure runbook (147 of 147, generated from the arc
 | &nbsp;&nbsp;2.7 THE PRE-STEP-1 SEQUENCE (B2847, owner-directed 2026-09-17: "Tabulate and capture thi | 2026-09-24 | B3096 | `e721c1ff8` |
 | 3. WORKFLOW W-T - TIGHTENING (offline, zero engine hours; B2828, owner-directed 2026-09- | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;3.1 Entry criteria and pick order | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;3.2 The procedure, T0-T8 | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;3.3 When the offline path applies (formerly §11.2b) | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;3.4 Offline Step 1 and Step 2 - F1-F5 (B2638; formerly §11.2b) | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;3.5 CONTROL-FAMILY COMPARISON (the B2658 rule, promoted to the template B2672) | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;3.6 THE BREADTH LEG - the standard procedure (B2693, owner-ruled 2026-09-12; formerly §1 | 2026-09-24 | B3096 | `e721c1ff8` |
 | 4. WORKFLOW W-L - LOOSENING (engine resim, hours minimised by construction; B2828, owner | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;4.1 Entry criteria and pick order | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;4.2 The procedure, L0-L8 | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;4.3 SHARED-PRODUCER RESIM REUSE - why the full consumer set is FORCED (B2707 owner philo | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;4.4 LEVERAGE DISCIPLINE AND COORDINATE DESCENT - ADOPTED (B2815, owner "Approve all your | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;4.5 Step 1 on the engine - Steps 1.0-1.7 (formerly §11 STEP 1 and §11.2 steps 1-1.4) | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;4.6 Step 1 grading (formerly §11 STEP 2 GRADE) | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;4.7 THE MECHANICAL TOP-3 CONFIG SELECTION - the Step-2 slate (owner ruling 2026-08-29; f | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;4.8 THE WATERFALL - Step 2 execution (owner ruling 2026-08-29, third set; formerly STEP  | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;4.9 THE STEP-2 LAUNCH PROCEDURE - Steps 2.1-2.5 (formerly STEP 3.1-3.4) | 2026-09-24 | B3096 | `e721c1ff8` |
+| &nbsp;&nbsp;4.8 THE WATERFALL - Step 2 execution (owner ruling 2026-08-29, third set; formerly STEP  | 2026-09-24 | B3098 | `655ca1e21` |
 | 5. THE POST-CONFIG BATTERY - MANDATORY AFTER EVERY CONFIG, STEP 1 AND STEP 2 (formerly P | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;5.1 The pipeline, by file | 2026-09-24 | B3096 | `e721c1ff8` |
+| &nbsp;&nbsp;5.1 The pipeline, by file | 2026-09-24 | B3099 | `596bdffc3` |
 | &nbsp;&nbsp;5.2 The nine steps, and the rule | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;5.3 What each battery step means (the manual forms remain canonical for legacy cubes and | 2026-09-24 | B3096 | `e721c1ff8` |
-| 6. STEP 3 - ADMIT (both workflows; formerly STEP 4 — ADMIT) | 2026-09-24 | B3096 | `e721c1ff8` |
+| &nbsp;&nbsp;5.3 What each battery step means (the manual forms remain canonical for legacy cubes and | 2026-09-24 | B3098 | `655ca1e21` |
 | &nbsp;&nbsp;6.1 The six live gates | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;6.2 THE ADMISSION DOCTRINE (owner ruling 2026-09-10, B2660) | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;6.3 Which combination advances, and how it enters the roster | 2026-09-24 | B3096 | `e721c1ff8` |
@@ -2758,7 +2758,7 @@ Every heading of the pre-restructure runbook (147 of 147, generated from the arc
 | &nbsp;&nbsp;7.3 Section 3 - TABLE B, combination results | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;7.4 Section 4 - TABLE C, the post-config funnel | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;7.5 Section 4b - TABLE D, the cross-config ranked list (shipped S6-B2330; documented S6- | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;7.6 The exit registry, and why a cube's exit COUNT is a dated fact | 2026-09-24 | B3096 | `e721c1ff8` |
+| &nbsp;&nbsp;7.6 The exit registry, and why a cube's exit COUNT is a dated fact | 2026-09-24 | B3098 | `655ca1e21` |
 | &nbsp;&nbsp;7.7 Computed, never hand-written | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;7.8 Drift guard | 2026-09-24 | B3096 | `e721c1ff8` |
 | 8. REFERENCE | 2026-09-24 | B3096 | `e721c1ff8` |
@@ -2766,15 +2766,15 @@ Every heading of the pre-restructure runbook (147 of 147, generated from the arc
 | &nbsp;&nbsp;8.2 What demand pruning skips, and when (formerly REFERENCE — WHAT GETS SKIPPED, AND WHE | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;8.3 Measured costs, and why a percentage alone is a lie (formerly §10.2 and REFERENCE —  | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;8.4 Parallelism and throughput (formerly REFERENCE — PARALLELISM and the B2142 throughpu | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;8.5 Engine settings for optimisation runs (formerly §10.3) | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;8.6 RUN-SAFETY ARCHITECTURE - the launch stack as it actually is (B2142-B2169, 2026-08-2 | 2026-09-24 | B3096 | `e721c1ff8` |
+| &nbsp;&nbsp;8.5 Engine settings for optimisation runs (formerly §10.3) | 2026-09-24 | B3099 | `596bdffc3` |
+| &nbsp;&nbsp;8.6 RUN-SAFETY ARCHITECTURE - the launch stack as it actually is (B2142-B2169, 2026-08-2 | 2026-09-24 | B3098 | `655ca1e21` |
 | &nbsp;&nbsp;8.7 SWEEP EXECUTION MODE - OPTION C: the mechanical HALT conditions (owner ruling 2026-0 | 2026-09-24 | B3096 | `e721c1ff8` |
-| &nbsp;&nbsp;8.8 FAILURE MODES - check these before believing a result | 2026-09-24 | B3096 | `e721c1ff8` |
+| &nbsp;&nbsp;8.8 FAILURE MODES - check these before believing a result | 2026-09-24 | B3098 | `655ca1e21` |
 | &nbsp;&nbsp;8.9 MONITOR ARMING - MANDATORY, MECHANICALLY ENFORCED (CHECKLIST #185/#186/#320; formerl | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;8.10 Design principle for NEW producers (B2182, external item 10 adopted) | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;8.11 Correlation and effective breadth (B2182 - zero engine runs) | 2026-09-24 | B3096 | `e721c1ff8` |
 | &nbsp;&nbsp;8.12 The turn-close that every step requires (formerly §11.3) | 2026-09-24 | B3096 | `e721c1ff8` |
 | APPENDIX S1-200 - THE 200 STEP-1 TICKERS (owner ruling 2026-08-29) | 2026-09-24 | B3096 | `e721c1ff8` |
-| APPENDIX M - WHERE EVERY PRE-B3096 SECTION WENT | 2026-09-24 | B3096 | `e721c1ff8` |
+| APPENDIX M - WHERE EVERY PRE-B3096 SECTION WENT | 2026-09-24 | B3097 | `5e52511ed` |
 
 <!-- LINEAGE-APPENDIX:END -->

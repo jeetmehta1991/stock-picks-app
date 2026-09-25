@@ -1,0 +1,324 @@
+{
+ "batch": "B3108",
+ "tickets": [
+  "S6-B3098d"
+ ],
+ "purpose": "a split (stopped + resumed) engine run must produce the same outputs as an uninterrupted one",
+ "narrow_by_design": "20 large-cap tickers (verify_universe_artifact exit 0, 20 of 544 R5 tickers), one strategy (three_white_soldiers, production params), window 2024-05-06..2024-09-03",
+ "code": {
+  "head": "2e0af42179cd72533e588e5fc1810471648727d0",
+  "working_tree_changes_under_test": [
+   "M backtest/engine/backtest.py",
+   " M backtest/signals/demand_pruning.py",
+   " M backtest/tests/test_unit.py"
+  ]
+ },
+ "started_utc": "2026-09-25T05:30:32Z",
+ "run_a": {
+  "exit": 0,
+  "wall_s": 516.7,
+  "cube": true,
+  "last_progress": [
+   80,
+   83,
+   0.13
+  ],
+  "final_state": {
+   "simulated_day": 82,
+   "cells_completed": 30,
+   "status": "complete",
+   "sim_date": "2024-09-03",
+   "sim_day_index": 82,
+   "tickers_processed": 21,
+   "trades_so_far": 30,
+   "open_trades": 0,
+   "timestamp": "2026-09-25T05:38:38Z",
+   "pid": 13896,
+   "finalized_open_trades": 17,
+   "last_completed_day": 82,
+   "day_in_progress": null
+  }
+ },
+ "run_b_caps_hours": {
+  "leg1": 0.0208,
+  "later_legs": 0.07
+ },
+ "run_b_cap_basis": "CHOSEN: leg 1 reproduces attempt 1's zero-closed-trade boundary; later legs span several days each",
+ "run_b_legs": [
+  {
+   "leg": 1,
+   "cap_h": 0.0208,
+   "exit": 1,
+   "wall_s": 101.4,
+   "status": "wall_time_kill",
+   "simulated_day": 1,
+   "last_completed_day": 0,
+   "day_in_progress": null,
+   "trades_so_far": 0,
+   "open_trades": 5
+  },
+  {
+   "leg": 2,
+   "cap_h": 0.07,
+   "exit": 1,
+   "wall_s": 264.9,
+   "status": "wall_time_kill",
+   "simulated_day": 24,
+   "last_completed_day": 23,
+   "day_in_progress": null,
+   "trades_so_far": 1,
+   "open_trades": 13
+  },
+  {
+   "leg": 3,
+   "cap_h": 0.07,
+   "exit": 1,
+   "wall_s": 261.4,
+   "status": "wall_time_kill",
+   "simulated_day": 63,
+   "last_completed_day": 62,
+   "day_in_progress": null,
+   "trades_so_far": 10,
+   "open_trades": 11
+  },
+  {
+   "leg": 4,
+   "cap_h": 0.07,
+   "exit": 0,
+   "wall_s": 244.2,
+   "status": "complete",
+   "simulated_day": 82,
+   "last_completed_day": 82,
+   "day_in_progress": null,
+   "trades_so_far": 30,
+   "open_trades": 0
+  }
+ ],
+ "run_b_resume_boundaries": [
+  {
+   "resume_index": 1,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 1,
+   "checkpoint_sim_date": "2024-05-07",
+   "last_completed_day": 0,
+   "day_in_progress": null,
+   "trades_so_far": 0,
+   "open_trades": 5,
+   "logs_restored": {
+    "skipped_trades": 0,
+    "sizing_log": 5,
+    "circuit_breaker_log": 0
+   },
+   "resumed_at_utc": "2026-09-25T05:40:54Z",
+   "resume_date": "2024-05-07",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 1,
+    "map_size": 1,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 24,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 24,
+   "checkpoint_sim_date": "2024-06-10",
+   "last_completed_day": 23,
+   "day_in_progress": null,
+   "trades_so_far": 1,
+   "open_trades": 13,
+   "logs_restored": {
+    "skipped_trades": 5,
+    "sizing_log": 17,
+    "circuit_breaker_log": 0
+   },
+   "resumed_at_utc": "2026-09-25T05:45:22Z",
+   "resume_date": "2024-06-10",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 24,
+    "map_size": 24,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 63,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 63,
+   "checkpoint_sim_date": "2024-08-06",
+   "last_completed_day": 62,
+   "day_in_progress": null,
+   "trades_so_far": 10,
+   "open_trades": 11,
+   "logs_restored": {
+    "skipped_trades": 19,
+    "sizing_log": 26,
+    "circuit_breaker_log": 0
+   },
+   "resumed_at_utc": "2026-09-25T05:49:55Z",
+   "resume_date": "2024-08-06",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 63,
+    "map_size": 63,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  }
+ ],
+ "regime_map_coverage_a": {
+  "days_processed": 83,
+  "days_in_map": 83,
+  "missing_count": 0,
+  "missing_sample": []
+ },
+ "regime_map_coverage_b": {
+  "days_processed": 83,
+  "days_in_map": 83,
+  "missing_count": 0,
+  "missing_sample": []
+ },
+ "compare_a_vs_b": {
+  "identical": [
+   "agent_performance.csv (1 rows)",
+   "analyst_data_stub.json",
+   "backtest_results.csv (1 rows)",
+   "batch163_stub_results.json",
+   "bootstrap_ci.csv (1 rows)",
+   "cache_freshness_checksum_stub.json",
+   "chart_pattern_skeleton_stub.json",
+   "circuit_breaker_log.csv (2 bytes)",
+   "congressional_correlation.csv (0 rows)",
+   "cube_compose_verdict.csv (3 rows)",
+   "dec_constants_verification.json",
+   "edge_decay_metrics.csv (1 rows)",
+   "exit_by_8K_filed_during_hold.csv (48 rows)",
+   "exit_by_adv_bucket.csv (24 rows)",
+   "exit_by_cap_band.csv (24 rows)",
+   "exit_by_circuit_breaker_active_during_hold.csv (24 rows)",
+   "exit_by_confidence_tier.csv (24 rows)",
+   "exit_by_day_of_week_at_entry.csv (120 rows)",
+   "exit_by_days_from_quarter_end_at_entry.csv (456 rows)",
+   "exit_by_earnings_during_hold.csv (48 rows)",
+   "exit_by_entry_atr_ratio.csv (720 rows)",
+   "exit_by_hold_duration_band.csv (48 rows)",
+   "exit_by_hy_oas_band_at_entry.csv (24 rows)",
+   "exit_by_mae_bucket.csv (24 rows)",
+   "exit_by_mfe_bucket.csv (48 rows)",
+   "exit_by_news_sentiment_shift_during_hold.csv (48 rows)",
+   "exit_by_regime_at_entry.csv (48 rows)",
+   "exit_by_regime_changed_during_hold.csv (24 rows)",
+   "exit_by_sector.csv (192 rows)",
+   "exit_by_sector_momentum_vs_spy_at_entry.csv (72 rows)",
+   "exit_by_smart_money_signal_present.csv (24 rows)",
+   "exit_by_universe_tier.csv (72 rows)",
+   "exit_by_vix_at_entry.csv (432 rows)",
+   "exit_by_vix_term_structure.csv (24 rows)",
+   "exit_by_vol_band.csv (48 rows)",
+   "exit_by_volume_rank_within_sector.csv (24 rows)",
+   "exit_by_win_loss_outcome.csv (48 rows)",
+   "exit_method_multi_dim_cube.csv (48 rows)",
+   "exit_strategy_best.csv (1 rows)",
+   "exit_strategy_comparison.csv (24 rows)",
+   "fx_exposure_stub.json",
+   "improvements_summary.json",
+   "insider_correlation.csv (0 rows)",
+   "portfolio_summary.json",
+   "regime_map_coverage.json",
+   "regime_performance.csv (1 rows)",
+   "regime_stratified_summary.json",
+   "replay_atr_fallback.json",
+   "rolling_sharpe_stability.json",
+   "sector_concentration.csv (27 rows)",
+   "sector_neutral_hedge_stub.json",
+   "short_long_conversion_stub.json",
+   "signal_fire_rates.json",
+   "sizing_log.csv (30 non-vol-target rows)",
+   "skipped_trades.csv (34 rows)",
+   "slippage_advanced.csv (5 rows)",
+   "smart_money_combined.csv (3 rows)",
+   "strategy_regime_matrix.json",
+   "stress_metrics.json",
+   "test_coverage_gate.json",
+   "tier_adjustment_analysis.csv (1 rows)",
+   "top_losers_per_strategy.json",
+   "trade_exit_detail.csv (720 rows)",
+   "trade_log_out_of_sample.csv (0 rows)",
+   "trade_pnl_decomposition.csv (30 rows)",
+   "verdict_cube.csv (10 rows)",
+   "winning_strategies.json",
+   "yfinance_hardcut_verify.json"
+  ],
+  "different": {
+   "demand_pruning_state.json": "json differs (volatile keys stripped)",
+   "portfolio_metrics.json": "json differs (volatile keys stripped)",
+   "trade_log.csv": "30 of 30 sorted rows differ; first: [{'ticker': 'AAPL', 'entry_date': '2024-08-08', 'exit_date': '2024-09-03', 'direction': 'long', 'strategy': 'three_white_soldiers', 'category': 'candle', 'sector': 'Information Technology', 'confidence_tier': 'LOW', 'regime': 'neutral', 'exit_reason': 'end_of_backtest', 'entry_price': '212.5385', 'exit_price': '222.77', 'initial_stop': '191.2846', 'highest_close': '229.79', 'trailing_stop_at_exit': '195.3215', 'pnl_pct': '4.407650793650793', 'pnl_dollar': '481.4', 'win': 'True', 'hold_days': '26', 'max_adverse_excursion': '-0.2675', 'max_favourable_excursion",
+   "trade_log_in_sample.csv": "30 of 30 sorted rows differ; first: [{'ticker': 'AAPL', 'entry_date': '2024-08-08', 'exit_date': '2024-09-03', 'direction': 'long', 'strategy': 'three_white_soldiers', 'category': 'candle', 'sector': 'Information Technology', 'confidence_tier': 'LOW', 'regime': 'neutral', 'exit_reason': 'end_of_backtest', 'entry_price': '212.5385', 'exit_price': '222.77', 'initial_stop': '191.2846', 'highest_close': '229.79', 'trailing_stop_at_exit': '195.3215', 'pnl_pct': '4.407650793650793', 'pnl_dollar': '481.4', 'win': 'True', 'hold_days': '26', 'max_adverse_excursion': '-0.2675', 'max_favourable_excursion"
+  },
+  "only_in_a": [],
+  "only_in_b": [],
+  "disclosed_residuals": {
+   "sizing_log.csv": "portfolio_vol_target rows A=19 B=5 EXCLUDED (S6-B3096g portfolio state, owner-deferred to Phase 1B)"
+  }
+ },
+ "comparator_must_fire": {
+  "perturbed": "trade_exit_detail.csv row 0 column entry_price + 1.0",
+  "flagged": true
+ },
+ "summary": {
+  "legs_b": 4,
+  "resume_boundaries": 3,
+  "days_skipped": 0,
+  "files_identical": 68,
+  "files_different": 4
+ },
+ "s6_b3098d_target": {
+  "files": {
+   "sizing_log.csv": "IDENTICAL",
+   "skipped_trades.csv": "IDENTICAL",
+   "circuit_breaker_log.csv": "IDENTICAL"
+  },
+  "bytes_a_b": {
+   "sizing_log.csv": [
+    3267,
+    2393
+   ],
+   "skipped_trades.csv": [
+    2856,
+    2856
+   ],
+   "circuit_breaker_log.csv": [
+    2,
+    2
+   ]
+  },
+  "logs_restored_per_boundary": [
+   {
+    "skipped_trades": 0,
+    "sizing_log": 5,
+    "circuit_breaker_log": 0
+   },
+   {
+    "skipped_trades": 5,
+    "sizing_log": 17,
+    "circuit_breaker_log": 0
+   },
+   {
+    "skipped_trades": 19,
+    "sizing_log": 26,
+    "circuit_breaker_log": 0
+   }
+  ],
+  "met": true
+ },
+ "verdict": "NOT EQUIVALENT - see compare_a_vs_b",
+ "finished_utc": "2026-09-25T05:53:46Z"
+}

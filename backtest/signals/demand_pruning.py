@@ -227,6 +227,68 @@ __all__ = [
 
 WARMUP_BARS_DEFAULT = 25
 
+# S6-B3098e (B3110): the warmup state file, shared by every worker of a
+# run. Its content converges across workers (the ARMED line was identical
+# on all 4, B3098), so last-writer-wins is safe; sim-days are persisted as
+# ISO strings and restored as the strings the day-set comparison uses.
+STATE_FILENAME = "demand_pruning_state.json"
+
+
+def _state_path():
+    import os
+    from pathlib import Path
+    d = os.environ.get("R5_OUTPUT_DIR")
+    return (Path(d) / STATE_FILENAME) if d else None
+
+
+def _persist():
+    """Write the warmup INPUTS atomically; never raises (a persistence
+    failure must not break the run - the cost is a longer warmup on the
+    next leg, the pre-B3110 behavior)."""
+    import json
+    import os
+    p = _state_path()
+    if p is None:
+        return
+    try:
+        tmp = p.with_suffix(".json.tmp%d" % os.getpid())
+        tmp.write_text(json.dumps({
+            "warmup_days": sorted(str(d) for d in _STATE["warmup_days"]),
+            "read": sorted(str(k) for k in _STATE["read"]),
+            "mode": _STATE["mode"],
+        }), encoding="utf-8")
+        os.replace(tmp, p)
+    except Exception as _exc:
+        logging.getLogger(__name__).warning(
+            "S6-B3098e: demand state not persisted (%r) - the next leg "
+            "re-warms from scratch, the pre-B3110 behavior", _exc)
+
+
+def _load_persisted() -> bool:
+    """Adopt a prior leg's warmup progress. True when state was loaded.
+    A torn or unreadable file is ignored (fresh warmup - the safe path,
+    since warmup computes everything)."""
+    import json
+    p = _state_path()
+    if p is None or not p.exists():
+        return False
+    try:
+        d = json.loads(p.read_text(encoding="utf-8"))
+        days, read = set(d["warmup_days"]), set(d["read"])
+    except Exception as _exc:
+        logging.getLogger(__name__).warning(
+            "S6-B3098e: persisted demand state unreadable (%r) - fresh "
+            "warmup", _exc)
+        return False
+    _STATE["warmup_days"] = days
+    _STATE["read"] |= read
+    _STATE["warmup_left"] -= len(days)
+    logging.getLogger(__name__).info(
+        "S6-B3098e: demand warmup RESUMED - %d distinct sim-days and %d "
+        "recorded reads adopted from %s; %d warmup days remain",
+        len(days), len(read), p, max(0, _STATE["warmup_left"]))
+    return True
+
 _STATE = {
     "mode": None,          # None=undecided, "off", "warmup", "pruned"
     "read": set(),
@@ -269,6 +331,10 @@ def begin_bar(sample_df=None) -> set:
         if _STATE["mode"] == "warmup":
             _STATE["warmup_left"] = int(
                 os.environ.get("DEMAND_PRUNING_WARMUP", WARMUP_BARS_DEFAULT))
+            # S6-B3098e: a resumed leg continues the PRIOR legs' warmup
+            # instead of restarting it - the split-vs-unsplit divergence
+            # B3098 measured (16 of 30 trades' signals_at_entry).
+            _load_persisted()
             if _PRODUCER_KEYS is None and sample_df is not None:
                 try:
                     build_producer_key_map(sample_df)
@@ -298,9 +364,13 @@ def wrap(signals: dict, as_of=None) -> dict:
         # of one day observes almost nothing.
         if as_of is not None:
             seen = _STATE.setdefault("warmup_days", set())
+            # S6-B3098e: day identity is the ISO STRING, so a persisted
+            # day and a live date/Timestamp for the same day compare equal.
+            as_of = str(as_of)
             if as_of not in seen:
                 seen.add(as_of)
                 _STATE["warmup_left"] -= 1
+                _persist()
         else:
             # No date supplied -> fall back to per-call counting rather than
             # never finishing warmup. Logged so the degradation is visible.
@@ -387,10 +457,11 @@ def _finalise():
     log.info("demand-pruning ARMED: %d/%d producers kept, %d keys pruned "
              "(recorded %d reads over warmup)",
              len(keep), len(km), len(_STATE["skip"]), len(_STATE["read"]))
+    _persist()   # S6-B3098e: the final state a resumed leg adopts
 
 
 __all__ += ["begin_bar", "wrap", "reset_state", "state",
-            "WARMUP_BARS_DEFAULT"]
+            "WARMUP_BARS_DEFAULT", "STATE_FILENAME"]
 
 
 # ---------------------------------------------------------------------------

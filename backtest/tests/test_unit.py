@@ -25851,6 +25851,13 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # the skill - pin that sentence, the half a reader would act on.
         ("The index is a reminder, never the skill: only a Skill call delivers this file.",
          "S6-B3097b (B3102): the hook emits a compact index, not the skill"),
+        # B3110: the L872-L874 tripwire rows - pin each REMEDY (L548).
+        ("END THE LAUNCH LINE WITH THE COMMAND'S OWN EXIT",
+         "L872 (B3110): a trailing echo reports the echo's exit, not the command's"),
+        ("ASK WHAT ELSE READS THE PYRAMID'S OUTPUT BEFORE THE RUN ENDS",
+         "L873 (B3110): the stamp gates every commit, the landing supervisor's included"),
+        ("BACK UP EVERY TARGET BEFORE THE FIRST WRITE",
+         "L874 (B3110): a finally restore does not survive a kill"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26055,7 +26062,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # correction; same-call with the row per B2130).
     # 311 -> 312 at B3102 (the S6-B3097b compact-index note; same-call
     # with the skill edit per B2132).
-    assert len(gutted) == 312, gutted
+    # 312 -> 315 at B3110 (the L872 / L873 / L874 tripwire-row fragments).
+    assert len(gutted) == 315, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -46461,4 +46469,66 @@ def test_s6b1798g_a_deferred_ticket_whose_code_moved_is_a_reopen_candidate():
         {"S6-X1": "DEFERRED"}, rows=rows, since={"S6-X1": 1000}, tracked=tracked,
         changed=lambda path, epoch: [] if epoch >= 1000 else ["old"])
     assert late == [("S6-X1", [], ["backtest/engine/backtest.py"])]
+
+
+def test_s6b3098e_demand_warmup_survives_a_resume(tmp_path, monkeypatch):
+    """S6-B3098e (B3110): a split run's demand-pruning warmup CONTINUES across
+    legs instead of restarting - the B3098 measurement (16 of 30 trades'
+    signals_at_entry differed; ~12-day legs never left warmup). A fresh
+    process adopting the persisted state arms on the SAME total day count
+    with the SAME skip set; a torn file falls back to a fresh warmup; no
+    R5_OUTPUT_DIR means no persistence (today's behavior)."""
+    import json
+    from backtest.signals import demand_pruning as dp
+
+    km = {"compute_a": frozenset({"ka1", "ka2"}), "compute_b": frozenset({"kb1"}),
+          "compute_c": frozenset({"kc1"})}
+
+    def leg(days, warmup=5, state_dir=None):
+        """One engine leg: reset process state (a new process), run `days`."""
+        dp.reset_state()
+        monkeypatch.setattr(dp, "_PRODUCER_KEYS", km)
+        monkeypatch.setenv("DEMAND_PRUNING", "1")
+        monkeypatch.setenv("DEMAND_PRUNING_WARMUP", str(warmup))
+        monkeypatch.setenv("STRATEGY_SUBSET_FILE", "output_audit/_subset_x.txt")
+        if state_dir is None:
+            monkeypatch.delenv("R5_OUTPUT_DIR", raising=False)
+        else:
+            monkeypatch.setenv("R5_OUTPUT_DIR", str(state_dir))
+        monkeypatch.setattr(dp, "_static_keys_of_active_strategies", lambda: set())
+        for d in days:
+            dp.begin_bar()
+            s = dp.wrap({"ka1": True, "kb1": False}, as_of=d)
+            s.get("ka1")
+        return dp.state()
+
+    # unsplit control: 5 days -> armed, compute_c pruned
+    st_a = leg(["2024-0%d-01" % i for i in range(1, 6)])
+    assert st_a["mode"] == "pruned" and "kc1" in st_a["skip"]
+
+    # split with persistence: leg 1 sees 2 days, leg 2 (fresh process) resumes
+    d1 = tmp_path / "run"
+    d1.mkdir()
+    leg(["2024-01-01", "2024-02-01"], state_dir=d1)
+    persisted = json.loads((d1 / dp.STATE_FILENAME).read_text(encoding="utf-8"))
+    assert sorted(persisted["warmup_days"]) == ["2024-01-01", "2024-02-01"]
+    st_b = leg(["2024-03-01", "2024-04-01", "2024-05-01"], state_dir=d1)
+    assert st_b["mode"] == "pruned", "leg 2 must arm at the SAME total (5 days)"
+    assert st_b["skip"] == st_a["skip"], "same skip set as the unsplit run"
+    final = json.loads((d1 / dp.STATE_FILENAME).read_text(encoding="utf-8"))
+    assert final["mode"] == "pruned" and len(final["warmup_days"]) == 5
+
+    # without the fix's persistence (no env), a 2+3 split NEVER arms - the
+    # measured defect stays reproducible as the control
+    leg(["2024-01-01", "2024-02-01"])
+    st_c = leg(["2024-03-01", "2024-04-01", "2024-05-01"])
+    assert st_c["mode"] == "warmup", "no state dir -> the old per-leg warmup"
+
+    # a torn file is ignored, never fatal
+    d2 = tmp_path / "torn"
+    d2.mkdir()
+    (d2 / dp.STATE_FILENAME).write_text("{not json", encoding="utf-8")
+    st_d = leg(["2024-01-01"], state_dir=d2)
+    assert st_d["mode"] == "warmup" and len(st_d["warmup_days"]) == 1
+    dp.reset_state()
 

@@ -1,0 +1,23 @@
+{
+ "batch": "B3110",
+ "ticket": "S6-B3099b",
+ "question": "did B3099 slow the three big-artifact tests, or were they always this slow?",
+ "method": "worktree C:/wt_b3098 at the B3098 commit 655ca1e21, junction to the main tree's output_r5_merged_1_7, the three tests alone, uncontended (zero other python), pytest --durations; log scratchpad/b3099b_at_b3098.txt",
+ "measured_at_b3098_code_s": {
+  "test_b2638": 268.82,
+  "test_b2886": 132.05,
+  "test_b2337": 83.84,
+  "combined": 484.71,
+  "suite_line": "3 passed in 495.31s"
+ },
+ "current_uncontended_s": {
+  "source": "output_audit/b3104_gate2.json (durations)",
+  "test_b2638": 289.17,
+  "test_b2886": 143.57,
+  "test_b2337": 94.87,
+  "combined": 527.61
+ },
+ "summary_line": "at B3098's code the three tests cost 268.82/132.05/83.84 s = 484.7 s combined, within 8 pct of their current 527.6 s",
+ "verdict": "B3099's code did NOT slow them - they cost the same at B3098's code. The B3098-era full-suite totals (533/550 s) are arithmetically impossible with these costs (the other ~1,508 tests measure ~398 s alone), so those runs read the same artifacts from a WARM OS file cache; the three tests are the suite's GB-scale readers and their cost tracks cache state, not code. The realistic uncontended pyramid is ~900-1,020 s",
+ "derived_note": "the warm-cache attribution is DERIVED from the arithmetic impossibility plus the tests' I/O profile; the code exoneration is MEASURED directly"
+}

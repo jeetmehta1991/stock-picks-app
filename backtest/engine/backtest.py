@@ -1412,6 +1412,11 @@ class BacktestEngine:
     # ----------------------------------------------------------------------
 
     def run(self):
+        # S6-B3098e (B3110): R5_OUTPUT_DIR was set only at POOL init
+        # (B1294), so the sequential path's demand-pruning state had no
+        # home and a sequential resumed leg re-warmed from scratch.
+        import os as _os_b3098e
+        _os_b3098e.environ["R5_OUTPUT_DIR"] = str(self.output_dir)
         if not self.ohlcv_dict:
             self.load_data()
 
@@ -2117,6 +2122,8 @@ class BacktestEngine:
         # the worker-side census flush knows where to write (B1292 gap:
         # counter lives in worker, main-process flush saw it empty).
         _os_b1294.environ["R5_OUTPUT_DIR"] = str(self.output_dir)
+        # S6-B3098e: the demand-pruning state file keys off this env too;
+        # the sequential path sets it in run() below.
         ctx = mp.get_context("spawn")
         # Cap workers at cpu_count so we don't oversubscribe (Hetzner CPX62
         # advertises 16 shared vCPU; setting screen_pool_workers=16 makes

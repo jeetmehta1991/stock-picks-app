@@ -6281,3 +6281,19 @@ transcript_timeline.py run in the turn) was ticketed S6-B3096d - the split #300 
 scan. BUILT B3107: scan_compaction_timeline_claim requires the script RUN this turn (a --help call
 or a grep naming it is not a run) AND an entry index or UTC time cited in the same response;
 `transcript_timeline.py --first-after N` prints the first calls after the last compaction.
+
+### #323 - A PROBE THAT EDITS LIVE FILES MUST SURVIVE ITS OWN KILL (B3107 / L874, self-caught 2026-09-25)
+
+An interrupted mutation probe left one of its mutations - preflight C1 failing open - in a worktree
+file, because its restore ran in a `finally`, which a killed process never reaches (L874). The next
+run's anchor-count report surfaced it; a probe that skipped a missing anchor would have hidden it.
+
+RULE: a probe that writes into live files (a mutation probe, a fault injector, a patcher test) (1)
+backs up every target before its first write, (2) reports an anchor that does not occur exactly
+once instead of skipping it, and (3) after ANY interruption compares its targets with the backup or
+a reference tree before trusting anything that ran there.
+
+DETECTION: JUDGMENT-ONLY - these probes are session scripts outside every repo scan. Durability: the
+SKILL tripwire row pinned by a test_b2123 fragment. SEARCH ATTEMPTED (#300): a repo helper every
+probe imports (backup, anchor count, restore check) would make the rule structural; not built -
+nothing in the repo would import it yet, and a helper nothing calls is theater (#136).
