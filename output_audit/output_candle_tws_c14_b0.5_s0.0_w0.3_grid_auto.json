@@ -47,8 +47,8 @@
   {
    "exit": "regime_flip",
    "fires": 98,
-   "is_sharpe": 0.993,
-   "is_ci_lo": 0.225,
+   "is_sharpe": 0.909,
+   "is_ci_lo": 0.141,
    "class_size": 1,
    "admit": {
     "holdout_n": 0,
@@ -175,12 +175,32 @@
    "rank": 10
   }
  ],
+ "multiplicity": {
+  "method": "benjamini-hochberg",
+  "q": 0.1,
+  "searched": 24,
+  "graded": 0,
+  "unpriceable": 0,
+  "no_candidate": 0,
+  "scored_unpriced": 24,
+  "unclassified": 0,
+  "rejected": 0,
+  "threshold": null,
+  "smallest_p": null,
+  "uncorrected_p05": 0,
+  "expected_best_under_null_se": null,
+  "expected_best_if_all_searched_counted_se": 1.79,
+  "report_only": true,
+  "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis; NO per-row p-values and no permutation null supplied - this grid's significance is UNPRICED, which is not the same as nothing having been graded",
+  "reconciles": true,
+  "significance_basis": "none_available"
+ },
  "per_exit": [
   {
    "exit": "regime_flip",
    "fires": 98,
-   "is_sharpe": 0.993,
-   "is_ci_lo": 0.225,
+   "is_sharpe": 0.909,
+   "is_ci_lo": 0.141,
    "class_size": 1,
    "admit": {
     "holdout_n": 0,

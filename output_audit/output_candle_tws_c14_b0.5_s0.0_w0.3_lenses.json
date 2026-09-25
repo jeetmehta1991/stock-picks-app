@@ -3,7 +3,7 @@
  "step": 1,
  "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
  "family": "three_white_soldiers",
- "ts": "2026-09-22T21:17:21",
+ "ts": "2026-09-24T22:44:19",
  "lenses": [
   {
    "lens": "holdout_untouched",
@@ -23,7 +23,7 @@
   {
    "lens": "selection_margin",
    "level": "INFO",
-   "evidence": "rank-1 [regime_flip] is_ci_lo 0.225 vs rank-2 [earnings_blackout] -0.361: margin 0.586 between exits; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a)"
+   "evidence": "rank-1 [regime_flip] is_ci_lo 0.141 vs rank-2 [earnings_blackout] -0.361: margin 0.502 between exits; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a)"
   },
   {
    "lens": "empty_signals_share",

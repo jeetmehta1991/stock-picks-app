@@ -1,0 +1,189 @@
+{
+ "rule": "runbook 4.7: step1_ranking[0].is_ci_lo per graded config, descending; skip a config whose best row repeats a higher config's (is_ci_lo, is_sharpe, fires, exit) signature; ties to the lower config index; first 3 survivors",
+ "campaign": "three_white_soldiers (candle_tws c01-c18)",
+ "trigger": "S6-B3094d: c14 Step-1 re-run on the full regime map landed 2026-09-25T02:43:05Z",
+ "generated_utc": "2026-09-25T03:06:38Z",
+ "configs_graded": 18,
+ "configs_found": 18,
+ "ranking": [
+  {
+   "rank": 1,
+   "config": "c14",
+   "grid": "output_candle_tws_c14_b0.5_s0.0_w0.3_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": 0.141,
+   "is_sharpe": 0.909,
+   "fires": 98
+  },
+  {
+   "rank": 2,
+   "config": "c08",
+   "grid": "output_candle_tws_c08_b0.3_s0.0_w0.3_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": 0.075,
+   "is_sharpe": 0.63,
+   "fires": 181
+  },
+  {
+   "rank": 3,
+   "config": "c13",
+   "grid": "output_candle_tws_c13_b0.5_s0.0_wNone_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": 0.067,
+   "is_sharpe": 0.72,
+   "fires": 137
+  },
+  {
+   "rank": 4,
+   "config": "c01",
+   "grid": "output_candle_tws_c01_b0.0_s0.0_wNone_grid_auto.json",
+   "exit": "breakeven_plus_trail",
+   "is_ci_lo": 0.048,
+   "is_sharpe": 0.308,
+   "fires": 560
+  },
+  {
+   "rank": 5,
+   "config": "c04",
+   "grid": "output_candle_tws_c04_b0.0_s0.1_w0.3_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": 0.04,
+   "is_sharpe": 0.535,
+   "fires": 240
+  },
+  {
+   "rank": 6,
+   "config": "c16",
+   "grid": "output_candle_tws_c16_b0.5_s0.1_w0.3_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": 0.035,
+   "is_sharpe": 0.816,
+   "fires": 95
+  },
+  {
+   "rank": 7,
+   "config": "c03",
+   "grid": "output_candle_tws_c03_b0.0_s0.1_wNone_grid_auto.json",
+   "exit": "breakeven_plus_trail",
+   "is_ci_lo": 0.034,
+   "is_sharpe": 0.305,
+   "fires": 515
+  },
+  {
+   "rank": 8,
+   "config": "c02",
+   "grid": "output_candle_tws_c02_b0.0_s0.0_w0.3_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": 0.028,
+   "is_sharpe": 0.504,
+   "fires": 261
+  },
+  {
+   "rank": 9,
+   "config": "c15",
+   "grid": "output_candle_tws_c15_b0.5_s0.1_wNone_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": 0.018,
+   "is_sharpe": 0.682,
+   "fires": 132
+  },
+  {
+   "rank": 10,
+   "config": "c06",
+   "grid": "output_candle_tws_c06_b0.0_s0.25_w0.3_grid_auto.json",
+   "exit": "earnings_blackout",
+   "is_ci_lo": -0.01,
+   "is_sharpe": 0.31,
+   "fires": 186
+  },
+  {
+   "rank": 11,
+   "config": "c10",
+   "grid": "output_candle_tws_c10_b0.3_s0.1_w0.3_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": -0.022,
+   "is_sharpe": 0.546,
+   "fires": 173
+  },
+  {
+   "rank": 12,
+   "config": "c05",
+   "grid": "output_candle_tws_c05_b0.0_s0.25_wNone_grid_auto.json",
+   "exit": "breakeven_plus_trail",
+   "is_ci_lo": -0.051,
+   "is_sharpe": 0.251,
+   "fires": 424
+  },
+  {
+   "rank": 13,
+   "config": "c09",
+   "grid": "output_candle_tws_c09_b0.3_s0.1_wNone_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": -0.074,
+   "is_sharpe": 0.364,
+   "fires": 304
+  },
+  {
+   "rank": 14,
+   "config": "c07",
+   "grid": "output_candle_tws_c07_b0.3_s0.0_wNone_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": -0.077,
+   "is_sharpe": 0.349,
+   "fires": 322
+  },
+  {
+   "rank": 15,
+   "config": "c12",
+   "grid": "output_candle_tws_c12_b0.3_s0.25_w0.3_grid_auto.json",
+   "exit": "hybrid_50pct_target",
+   "is_ci_lo": -0.204,
+   "is_sharpe": 0.205,
+   "fires": 131
+  },
+  {
+   "rank": 16,
+   "config": "c18",
+   "grid": "output_candle_tws_c18_b0.5_s0.25_w0.3_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": -0.312,
+   "is_sharpe": 0.589,
+   "fires": 69
+  },
+  {
+   "rank": 17,
+   "config": "c11",
+   "grid": "output_candle_tws_c11_b0.3_s0.25_wNone_grid_auto.json",
+   "exit": "regime_flip",
+   "is_ci_lo": -0.409,
+   "is_sharpe": 0.083,
+   "fires": 242
+  },
+  {
+   "rank": 18,
+   "config": "c17",
+   "grid": "output_candle_tws_c17_b0.5_s0.25_wNone_grid_auto.json",
+   "exit": "hybrid_50pct_target",
+   "is_ci_lo": -0.625,
+   "is_sharpe": -0.12,
+   "fires": 98
+  }
+ ],
+ "slate": [
+  "c14",
+  "c08",
+  "c13"
+ ],
+ "c14_before_rerun": {
+  "exit": "regime_flip",
+  "is_ci_lo": 0.225,
+  "is_sharpe": 0.993,
+  "fires": 98
+ },
+ "c14_after_rerun": {
+  "exit": "regime_flip",
+  "is_ci_lo": 0.141,
+  "is_sharpe": 0.909,
+  "fires": 98
+ }
+}

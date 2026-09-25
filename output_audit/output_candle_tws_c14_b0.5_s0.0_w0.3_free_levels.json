@@ -22,10 +22,10 @@
  "occupancy": {
   "artifact": "skipped_trades.csv",
   "attribution_available": true,
-  "blocked_rows_total": 14,
-  "blocked_rows_attributable": 14,
+  "blocked_rows_total": 21,
+  "blocked_rows_attributable": 21,
   "lower_bound_note": "Every trade count for a TIGHTER level is a LOWER BOUND: removing trades frees occupancy, and fires the engine blocked while a position was open would then be taken. Those trades exist in no cube and only the engine can produce them (L812).",
-  "note": "14 of 14 occupancy blocks name three_white_soldiers. A tighter level frees some of them, so each count below is short by at most that many. Every trade count for a TIGHTER level is a LOWER BOUND: removing trades frees occupancy, and fires the engine blocked while a position was open would then be taken. Those trades exist in no cube and only the engine can produce them (L812)."
+  "note": "21 of 21 occupancy blocks name three_white_soldiers. A tighter level frees some of them, so each count below is short by at most that many. Every trade count for a TIGHTER level is a LOWER BOUND: removing trades frees occupancy, and fires the engine blocked while a position was open would then be taken. Those trades exist in no cube and only the engine can produce them (L812)."
  },
  "results": [
   {
@@ -38,15 +38,15 @@
    "best": {
     "exit": "regime_flip",
     "n": 98,
-    "sharpe": 1.113,
-    "ci_lo": 0.342
+    "sharpe": 1.032,
+    "ci_lo": 0.26
    },
    "per_exit": [
     {
      "exit": "regime_flip",
      "n": 98,
-     "sharpe": 1.113,
-     "ci_lo": 0.342
+     "sharpe": 1.032,
+     "ci_lo": 0.26
     },
     {
      "exit": "time_stop_20d",
@@ -101,12 +101,6 @@
      "ci_lo": -0.721
     },
     {
-     "exit": "regime_flip",
-     "n": 12,
-     "sharpe": 1.417,
-     "ci_lo": -0.736
-    },
-    {
      "exit": "breakeven_plus_trail",
      "n": 12,
      "sharpe": 0.826,
@@ -129,6 +123,12 @@
      "n": 12,
      "sharpe": 2.02,
      "ci_lo": -1.224
+    },
+    {
+     "exit": "regime_flip",
+     "n": 12,
+     "sharpe": 0.947,
+     "ci_lo": -1.23
     }
    ]
   },
@@ -142,15 +142,15 @@
    "best": {
     "exit": "regime_flip",
     "n": 28,
-    "sharpe": 1.592,
-    "ci_lo": 0.126
+    "sharpe": 1.375,
+    "ci_lo": -0.096
    },
    "per_exit": [
     {
      "exit": "regime_flip",
      "n": 28,
-     "sharpe": 1.592,
-     "ci_lo": 0.126
+     "sharpe": 1.375,
+     "ci_lo": -0.096
     },
     {
      "exit": "time_stop_20d",
@@ -194,15 +194,15 @@
    "best": {
     "exit": "regime_flip",
     "n": 42,
-    "sharpe": 1.302,
-    "ci_lo": 0.095
+    "sharpe": 1.135,
+    "ci_lo": -0.075
    },
    "per_exit": [
     {
      "exit": "regime_flip",
      "n": 42,
-     "sharpe": 1.302,
-     "ci_lo": 0.095
+     "sharpe": 1.135,
+     "ci_lo": -0.075
     },
     {
      "exit": "time_stop_20d",
@@ -246,15 +246,15 @@
    "best": {
     "exit": "regime_flip",
     "n": 64,
-    "sharpe": 1.122,
-    "ci_lo": 0.177
+    "sharpe": 1.009,
+    "ci_lo": 0.061
    },
    "per_exit": [
     {
      "exit": "regime_flip",
      "n": 64,
-     "sharpe": 1.122,
-     "ci_lo": 0.177
+     "sharpe": 1.009,
+     "ci_lo": 0.061
     },
     {
      "exit": "time_stop_20d",
@@ -297,8 +297,8 @@
     {
      "exit": "regime_flip",
      "n": 98,
-     "sharpe": 1.113,
-     "ci_lo": 0.342
+     "sharpe": 1.032,
+     "ci_lo": 0.26
     },
     {
      "exit": "time_stop_20d",
@@ -343,12 +343,6 @@
      "ci_lo": -0.721
     },
     {
-     "exit": "regime_flip",
-     "n": 12,
-     "sharpe": 1.417,
-     "ci_lo": -0.736
-    },
-    {
      "exit": "breakeven_plus_trail",
      "n": 12,
      "sharpe": 0.826,
@@ -371,6 +365,12 @@
      "n": 12,
      "sharpe": 2.02,
      "ci_lo": -1.224
+    },
+    {
+     "exit": "regime_flip",
+     "n": 12,
+     "sharpe": 0.947,
+     "ci_lo": -1.23
     }
    ]
   },
@@ -381,8 +381,8 @@
     {
      "exit": "regime_flip",
      "n": 28,
-     "sharpe": 1.592,
-     "ci_lo": 0.126
+     "sharpe": 1.375,
+     "ci_lo": -0.096
     },
     {
      "exit": "time_stop_20d",
@@ -423,8 +423,8 @@
     {
      "exit": "regime_flip",
      "n": 42,
-     "sharpe": 1.302,
-     "ci_lo": 0.095
+     "sharpe": 1.135,
+     "ci_lo": -0.075
     },
     {
      "exit": "time_stop_20d",
@@ -465,8 +465,8 @@
     {
      "exit": "regime_flip",
      "n": 64,
-     "sharpe": 1.122,
-     "ci_lo": 0.177
+     "sharpe": 1.009,
+     "ci_lo": 0.061
     },
     {
      "exit": "time_stop_20d",
