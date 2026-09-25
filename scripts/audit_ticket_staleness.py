@@ -330,6 +330,105 @@ def unfixed_claims(states=None, rows=None) -> list:
     return out
 
 
+# S6-B1798g (B3109): a DEFERRED defect whose CODE moved. See the function.
+_CODE_PATH = None
+
+
+def _code_paths(text, tracked):
+    """Repo code files a ticket's text names: a full backtest/ or scripts/
+    path, or a bare basename that resolves to exactly ONE tracked file there
+    (an ambiguous basename is dropped rather than guessed, #165)."""
+    import re
+    global _CODE_PATH
+    if _CODE_PATH is None:
+        _CODE_PATH = re.compile(r"(?<![\w/.-])((?:backtest|scripts)/[\w/.-]+\.py"
+                                r"|[A-Za-z_]\w*\.py)(?!\w)")
+    by_base = {}
+    for p in tracked:
+        by_base.setdefault(p.rsplit("/", 1)[-1], []).append(p)
+    out = set()
+    for m in _CODE_PATH.finditer(text or ""):
+        tok = m.group(1)
+        if "/" in tok:
+            if tok in tracked:
+                out.add(tok)
+        elif len(by_base.get(tok, ())) == 1:
+            out.add(by_base[tok][0])
+    return sorted(out)
+
+
+def deferred_code_moved(states=None, *, rows=None, since=None, changed=None,
+                        tracked=None) -> list:
+    """(ticket, [(path, [commits after its last row])], paths named) for every
+    DEFERRED ticket. A non-empty commit list is a REOPEN CANDIDATE: the
+    deferral was decided on code that has since changed. Seams (#241):
+    rows {id: [lines]}, since {id: epoch of the last row's commit},
+    changed(path, epoch) -> ["<sha> <subject>"], tracked [paths]."""
+    import re
+    import subprocess
+    import queue_state as _qs
+    states = _qs.tickets() if states is None else states
+    deferred = sorted(t for t, s in states.items() if s == "DEFERRED")
+
+    def _git(*a):
+        return subprocess.run(["git", "-C", str(ROOT)] + list(a), capture_output=True,
+                              text=True, encoding="utf-8", errors="replace").stdout
+    if tracked is None:
+        tracked = [p for p in _git("ls-files", "*.py").split()
+                   if p.startswith(("backtest/", "scripts/")) and "/tests/" not in p]
+    tracked = set(tracked)
+    if rows is None or since is None:
+        lines = (ROOT / "EXECUTION_QUEUE.md").read_text(
+            encoding="utf-8", errors="replace").splitlines()
+        rows = {} if rows is None else rows
+        last_no = {}
+        for n, ln in enumerate(lines, 1):
+            c = ln.split("|")
+            if not ln.strip().startswith("|") or len(c) < 4:
+                continue
+            tid = re.sub(r"[*\s]", "", c[1])
+            if tid in deferred:
+                rows.setdefault(tid, []).append(ln)
+                last_no[tid] = n
+        if since is None:
+            # ONE blame call for every line: MEASURED on this ledger, a
+            # one-line blame costs 38 s and a two-line call 48 s - the history
+            # walk dominates, so a per-ticket loop cost minutes.
+            since = {}
+            args = ["blame", "--porcelain"]
+            for n in sorted(set(last_no.values())):
+                args += ["-L", f"{n},{n}"]
+            sha_time, line_sha, cur = {}, {}, None
+            for bl in (_git(*args, "--", "EXECUTION_QUEUE.md").splitlines()
+                       if last_no else ()):
+                m = re.match(r"^([0-9a-f]{40}) \d+ (\d+)", bl)
+                if m:
+                    cur = m.group(1)
+                    line_sha[int(m.group(2))] = cur
+                    continue
+                m = re.match(r"^committer-time (\d+)", bl)
+                if m and cur:
+                    sha_time[cur] = int(m.group(1))
+            for tid, n in last_no.items():
+                if line_sha.get(n) in sha_time:
+                    since[tid] = sha_time[line_sha[n]]
+    if changed is None:
+        def changed(path, epoch):
+            return [ln for ln in _git("log", f"--since=@{epoch}", "--format=%h %s",
+                                      "--", path).splitlines() if ln.strip()]
+    out = []
+    for tid in deferred:
+        paths = _code_paths(" ".join(rows.get(tid, ())), tracked)
+        moved = []
+        if tid in since:
+            for p in paths:
+                hits = changed(p, since[tid])
+                if hits:
+                    moved.append((p, hits))
+        out.append((tid, moved, paths))
+    return out
+
+
 def blocker_audit():
     """S6-B2932: re-derive every NON-TERMINAL ticket's BLOCKER.
 
@@ -385,9 +484,26 @@ def main() -> int:
                     help="list every open ticket carrying a number")
     ap.add_argument("--blockers", action="store_true",
                     help="S6-B2932: re-derive every non-terminal ticket's BLOCKER")
+    ap.add_argument("--deferred-code-moved", action="store_true",
+                    help="S6-B1798g: DEFERRED tickets whose named code changed since")
     ap.add_argument("--unfixed-claims", action="store_true",
                     help="S6-B3042: open tickets calling a CLOSED ticket unfixed")
     a = ap.parse_args()
+
+    if a.deferred_code_moved:
+        res = deferred_code_moved()
+        cand = [r for r in res if r[1]]
+        for tid, moved, paths in res:
+            if moved:
+                print(f"  REOPEN CANDIDATE {tid}: " + "; ".join(
+                    f"{p} changed by {len(c)} commit(s) since its last row, latest "
+                    f"{c[0][:70]}" for p, c in moved))
+            elif not paths:
+                print(f"  unmonitored      {tid}: names no backtest/ or scripts/ code file")
+        print(f"\n  {len(cand)} of {len(res)} DEFERRED ticket(s) are reopen candidates; "
+              f"{sum(1 for r in res if not r[2])} name no code file (the join cannot "
+              "watch them).")
+        return 1 if cand else 0
 
     if a.unfixed_claims:
         hits = unfixed_claims()

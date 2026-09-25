@@ -470,16 +470,28 @@ def test_dec_155_engine_wires_vs_spy_metrics():
     assert "information_ratio" in src
 
 
-def test_dec_106_engine_wires_multi_input_regime_score():
-    """DEC-106 Batch 80: multi-input regime score (Phase A telemetry) wired
-    in _process_day; uses available macro + sent fields (VIX + SPY trend +
-    AAII spread + CNN F&G); missing inputs skipped per helper.
-    """
+def test_dec_106_dead_telemetry_is_deleted_not_reworded():
+    """S6-B3098a (B3109): the Batch-80 DEC-106 block read `sent` before its
+    assignment, raised UnboundLocalError on EVERY day, and its DEBUG except
+    swallowed that for 4 months while this test asserted source STRINGS -
+    the wired-means-consumed class. Now: the engine neither CALLS the
+    scorer nor writes the key, no engine/scripts code READS the key, and
+    the helper survives in regime_filter for a deliberate re-wire."""
+    import re
     from pathlib import Path
     src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
-    assert "DEC-106 RESOLVED-IMPLEMENTED Batch 80" in src
-    assert "multi_input_regime_score" in src
-    assert "multi_input_regime" in src
+    assert "multi_input_regime_score(" not in src, "the engine must not call it"
+    assert not re.search(r"regime_ctx\[.multi_input_regime.\]\s*=", src)
+    assert "S6-B3098a" in src, "the deletion record must survive"
+    helper = Path("backtest/engine/regime_filter.py").read_text(encoding="utf-8")
+    assert "def multi_input_regime_score" in helper
+    for rel in sorted(Path("backtest").rglob("*.py")) + sorted(Path("scripts").glob("*.py")):
+        if "tests" in rel.parts or rel.name == "regime_filter.py":
+            continue
+        body = rel.read_text(encoding="utf-8", errors="replace")
+        for m in re.finditer(r"multi_input_regime(?!_score)", body):
+            ctx = body[max(0, m.start() - 80):m.start()]
+            assert "#" in ctx.rsplit(chr(10), 1)[-1], (rel, "a live reader appeared")
 
 
 def test_dec_149_engine_wires_regime_transition_matrix_at_finalize():

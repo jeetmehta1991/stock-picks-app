@@ -46380,3 +46380,85 @@ def test_s6b3062_pyramid_gate_refuses_beside_a_live_run(tmp_path, monkeypatch):
     assert len(calls) == 1
     assert "beside_wave_override=owner-approved hotfix" in out.read_text(encoding="utf-8")
 
+
+def test_s6b3107a_a_failed_landing_commit_unstages_its_paths(monkeypatch, tmp_path):
+    """S6-B3107a option (b) (B3109): MEASURED at the c14 landing - preflight C6
+    refused the supervisor's commit 5 of 5 and its paths sat STAGED in the
+    shared index. After the last failed attempt the hook now unstages exactly
+    the paths it staged, says so in the note, and never touches the working
+    tree (reset of the index only); a success path makes no reset call."""
+    import types
+    pl = _b2620_pl()
+    monkeypatch.setattr(pl, "_append_landing_queue_row", lambda *a, **k: True)
+    monkeypatch.setattr(pl, "INDEX_LOCK_WAIT_S", 0)
+    art = tmp_path / "a.json"
+    art.write_text("{}", encoding="utf-8")
+    for name in ("LEDGER", "REPORT", "QUEUE"):
+        monkeypatch.setattr(pl, name, art)
+    monkeypatch.setattr(pl, "AUDIT", tmp_path)
+    monkeypatch.setattr(pl, "ROOT", tmp_path)
+    calls = []
+
+    def fake_git(args, **k):
+        calls.append(list(args))
+        if args[0] == "diff":
+            return types.SimpleNamespace(returncode=1, stdout="", stderr="")
+        return types.SimpleNamespace(returncode=0, stdout="abc123", stderr="")
+    monkeypatch.setattr(pl, "_git", fake_git)
+    monkeypatch.setattr(pl.subprocess, "run", lambda cmd, **k: types.SimpleNamespace(
+        returncode=1, stdout="", stderr="preflight: C6 PYRAMID-STAMP | last full-pyramid run was RED"))
+    out = pl.commit_and_push("cube_x", 0, "s")
+    assert out["committed"] is False and "its paths were unstaged" in out["note"], out
+    resets = [c for c in calls if c[0] == "reset"]
+    adds = [c for c in calls if c[0] == "add"]
+    assert len(resets) == 1 and resets[0][:3] == ["reset", "-q", "--"]
+    assert resets[0][3:] == adds[0][2:], "unstage exactly the paths the hook staged"
+    assert art.read_text(encoding="utf-8") == "{}", "the working tree is untouched"
+    # success path: no reset
+    calls.clear()
+    monkeypatch.setattr(pl.subprocess, "run", lambda cmd, **k: types.SimpleNamespace(
+        returncode=0, stdout="", stderr=""))
+    out = pl.commit_and_push("cube_x", 0, "s")
+    assert out["committed"] and not [c for c in calls if c[0] == "reset"]
+
+
+def test_s6b1798g_a_deferred_ticket_whose_code_moved_is_a_reopen_candidate():
+    """S6-B1798g (B3109): the council's verdict when the trigger fired - a
+    deferral rested on run history, then a change made that path the planned
+    one within hours; 'the audit script reopens the ticket when a diff touches
+    that path'. Driven through the seams (no git history needed); the live
+    ledger run is recorded in the ticket (58.2 s, 6 of 15 flagged, 2 of 6
+    led to action on a hand-read)."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import audit_ticket_staleness as ats
+
+    tracked = ["backtest/engine/backtest.py", "scripts/pyramid_gate.py",
+               "scripts/a/util.py", "scripts/b/util.py"]
+    states = {"S6-X1": "DEFERRED", "S6-X2": "DEFERRED", "S6-X3": "DEFERRED",
+              "S6-X4": "DEFERRED", "S6-X5": "OPEN"}
+    rows = {"S6-X1": ["| **S6-X1** | **DEFERRED** | P2 | a defect in backtest/engine/backtest.py |"],
+            "S6-X2": ["| **S6-X2** | **DEFERRED** | P2 | pyramid_gate.py refuses nothing |"],
+            "S6-X3": ["| **S6-X3** | **DEFERRED** | P2 | util.py is ambiguous |"],
+            "S6-X4": ["| **S6-X4** | **DEFERRED** | P2 | a docs-only deferral |"],
+            "S6-X5": ["| **S6-X5** | **OPEN** | P2 | backtest/engine/backtest.py |"]}
+    since = {"S6-X1": 1000, "S6-X2": 1000, "S6-X3": 1000, "S6-X4": 1000}
+    moved = {"backtest/engine/backtest.py": ["abc1234 B9999: the resume path changed"]}
+    res = {tid: (m, p) for tid, m, p in ats.deferred_code_moved(
+        states, rows=rows, since=since, tracked=tracked,
+        changed=lambda path, epoch: moved.get(path, []))}
+    assert set(res) == {"S6-X1", "S6-X2", "S6-X3", "S6-X4"}, "only DEFERRED tickets"
+    assert res["S6-X1"][0] == [("backtest/engine/backtest.py",
+                                ["abc1234 B9999: the resume path changed"])]
+    assert res["S6-X2"][1] == ["scripts/pyramid_gate.py"] and res["S6-X2"][0] == []
+    assert res["S6-X3"][1] == [], "an ambiguous basename is dropped, never guessed"
+    assert res["S6-X4"][1] == [], "a deferral naming no code file is unmonitored"
+    # the path must move AFTER the ticket's last row: an older change is not a hit
+    late = ats.deferred_code_moved(
+        {"S6-X1": "DEFERRED"}, rows=rows, since={"S6-X1": 1000}, tracked=tracked,
+        changed=lambda path, epoch: [] if epoch >= 1000 else ["old"])
+    assert late == [("S6-X1", [], ["backtest/engine/backtest.py"])]
+

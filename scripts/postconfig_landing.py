@@ -479,6 +479,16 @@ def commit_and_push(cube: str, battery_exit: int, summary: str) -> dict:
             continue
         out["note"] = (f"git commit failed (attempt {attempt}/{INDEX_LOCK_RETRIES}): "
                        f"{_diag(c.stderr, c.stdout)}")
+        # S6-B3107a (B3109, option b): a failed commit must not leave its
+        # paths STAGED in the shared index. MEASURED at the c14 landing: a
+        # RED pyramid stamp refused the commit 5 of 5 and six paths sat
+        # staged, where any unscoped `git commit` would carry them into an
+        # unrelated commit. Unstaging never touches the working tree; the
+        # next landing's pending-sweep (B2623) picks the artifacts up.
+        un = _git(["reset", "-q", "--", *rel])
+        out["note"] += ("; its paths were unstaged" if un.returncode == 0
+                        else f"; UNSTAGE FAILED rc={un.returncode} - the paths "
+                             "may still be staged")
         return out
     head = _git(["rev-parse", "--short", "HEAD"])
     out["committed"] = head.stdout.strip() if head.returncode == 0 else True
