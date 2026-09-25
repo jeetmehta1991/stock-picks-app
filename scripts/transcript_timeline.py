@@ -102,6 +102,34 @@ def tool_calls(entries: list) -> list:
     return out
 
 
+def first_after(entries: list, n: int = 5) -> dict:
+    """S6-B3096d (B3107): the first `n` tool calls after the LAST
+    compaction boundary - the fact a 'my first action after the
+    compaction' claim needs. MEASURED 2026-09-25: the compacted view showed
+    a pre-compaction Bash call first; the transcript put it at entry 75831
+    and the boundary at 75842."""
+    bnd = boundaries(entries)
+    if not bnd:
+        return {"boundary": None, "calls": []}
+    b = bnd[-1]
+    calls = []
+    for i, e in enumerate(entries):
+        if i <= b or not isinstance(e, dict) or e.get("type") != "assistant":
+            continue
+        for blk in (e.get("message") or {}).get("content") or ():
+            if isinstance(blk, dict) and blk.get("type") == "tool_use":
+                inp = blk.get("input") or {}
+                what = (inp.get("skill") or inp.get("file_path") or
+                        inp.get("description") or str(inp.get("command") or ""))
+                calls.append({"entry": i, "time": e.get("timestamp") or "",
+                              "tool": str(blk.get("name") or ""),
+                              "what": str(what)[:90]})
+        if len(calls) >= n:
+            break
+    return {"boundary": b, "boundary_time": entries[b].get("timestamp") or ""
+            if isinstance(entries[b], dict) else "", "calls": calls[:n]}
+
+
 def timeline(entries: list, substr: str = "") -> dict:
     bnd = boundaries(entries)
     calls = tool_calls(entries)
@@ -131,11 +159,21 @@ def main(argv=None) -> int:
     ap.add_argument("--transcript", default=os.environ.get("TURN_GATE_TRANSCRIPT", ""))
     ap.add_argument("--file", default="", help="substring of the written path")
     ap.add_argument("--json", help="write the full result here")
+    ap.add_argument("--first-after", type=int, default=0, metavar="N",
+                    help="print the first N tool calls after the last compaction")
     a = ap.parse_args(argv)
     if not a.transcript or not os.path.exists(a.transcript):
         print("REFUSED: no transcript (pass --transcript or set TURN_GATE_TRANSCRIPT)")
         return 2
-    res = timeline(load(a.transcript), a.file)
+    ents = load(a.transcript)
+    if a.first_after:
+        fa = first_after(ents, a.first_after)
+        print("last compaction boundary: entry %s %s" % (fa["boundary"],
+                                                      fa.get("boundary_time", "")))
+        for c in fa["calls"]:
+            print("  entry %-7d %s  %-10s %s" % (c["entry"], c["time"], c["tool"],
+                                              c["what"].encode("ascii", "replace").decode()))
+    res = timeline(ents, a.file)
     print("compaction boundaries: %d" % len(res["compactions"]))
     for c in res["compactions"][-5:]:
         print("  entry %-7d %s" % (c["entry"], c["time"]))

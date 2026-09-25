@@ -41,6 +41,18 @@ from __future__ import annotations
 # incident produced several sentences, the one chosen is the one that appeared
 # in the response the owner reacted to.
 INCIDENTS: dict[str, tuple[str, bool, dict]] = {
+    # S6-B3096e (B3107): the B3096 restructure's MEASURED share - the runbook
+    # dropped 0.942 of its distinct lines - in a turn whose draft parts had
+    # been written before any coverage comparison ran (L869).
+    "scan_doc_rewrite_without_coverage": (
+        "The runbook restructure is written.", True,
+        {"rewrites": {"STRATEGY_OPTIMISATION_PLAN.md": 0.942}, "tool_text": ""}),
+    # S6-B3096d (B3107): VERBATIM - the B3096 claim, quoted in
+    # scripts/transcript_timeline.py's docstring; the Edit it described was
+    # issued 98 s BEFORE the compaction it was said to follow.
+    "scan_compaction_timeline_claim": (
+        "I told the owner an Edit was my first action in this continuation.",
+        True, {"tool_text": ""}),
     # B1887: VERBATIM from the B1856 monitor prompt. It greps for the fire
     # count using the ticker-FILE size, 200, while the screener reports
     # against the PIT-ACTIVE universe, 185. It would have reported "no fires"
@@ -589,6 +601,37 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    "scan_doc_rewrite_without_coverage": [
+        # the CLI was only asked for --help - not a run
+        ("Restructured.", True,
+         {"rewrites": {"CHECKLIST.md": 0.4},
+          "tool_text": "python scripts/doc_rewrite_coverage.py --help"}),
+        # the coverage CLI ran - must go quiet
+        ("Restructured and compared.", False,
+         {"rewrites": {"STRATEGY_OPTIMISATION_PLAN.md": 0.942},
+          "tool_text": "python scripts/doc_rewrite_coverage.py --old a.md --new b.md"}),
+        # a routine sweep: nothing crossed the threshold - must go quiet
+        ("Doc sweep done.", False, {"rewrites": {}, "tool_text": ""}),
+        # a grep that NAMES the CLI is not a run of it
+        ("Restructured.", True,
+         {"rewrites": {"CLAUDE.md": 0.6},
+          "tool_text": "grep -n doc_rewrite_coverage CHECKLIST.md"}),
+    ],
+    "scan_compaction_timeline_claim": [
+        # the L869 first version, VERBATIM from test_b3096's fixture
+        ("after a context compaction, and my first action was to write the "
+         "fourth draft part - from the summary alone.", True, {"tool_text": ""}),
+        # the tool was only asked for --help - not a run
+        ("My first action after the compaction was the Skill call (entry "
+         "75861, 01:09:03Z).", True,
+         {"tool_text": "python scripts/transcript_timeline.py --help"}),
+        # ran it AND cited what it printed - must go quiet
+        ("My first action after the compaction was the Skill call (entry "
+         "75861, 01:09:03Z).", False,
+         {"tool_text": "python scripts/transcript_timeline.py --first-after 5"}),
+        # no timeline claim at all - must go quiet
+        ("The pyramid passed and the commit is pushed.", False, {"tool_text": ""}),
+    ],
     # B2520 must-QUIET: the SAME landing event, and a response that carries
     # the report. It is quiet because of the `LANDING REPORT: <cube>` block and
     # nothing else - deleting only that line makes it fire, which is the
@@ -1120,6 +1163,9 @@ def all_incidents(name: str) -> list[tuple[str, bool, dict]]:
 # state that isolates TEXT, exactly as the incident run supplies the state the
 # incident had. A harness that gets either wrong reports on itself.
 NEUTRAL: dict[str, dict] = {
+    # S6-B3096e (B3107): this gate reads git and the working tree when no
+    # rewrites are supplied, so the control would measure the repo (L843).
+    "scan_doc_rewrite_without_coverage": {"rewrites": {}, "tool_text": ""},
     # B1778: this gate reads TOOL text for proof-of-computation, so the
     # control must supply a computing call or it measures the gate
     # doing its job.

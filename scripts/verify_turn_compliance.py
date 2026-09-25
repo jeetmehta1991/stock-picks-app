@@ -5132,6 +5132,156 @@ def synthetic_transcript() -> list[dict]:
 
 
 
+# S6-B3096d (B3107, L870 / CHECKLIST #322): the RESPONSE-level half. The
+# repo-text half is test_b3096_compaction_claims_in_learnings_cite_the_
+# transcript. A compacted view replays a pre-compaction tool call as if it
+# were the first action after it, so a claim about ORDER across a
+# compaction is checked against the transcript, never the look of the
+# context (MEASURED twice on 2026-09-24, both in the transcript_timeline
+# docstring).
+COMPACTION_TIMELINE_CLAIM = re.compile(
+    r"(?:after|before|across|since)\s+(?:a|the|that|this|my)\s+(?:mid-turn\s+)?"
+    r"(?:context\s+)?compaction"
+    r"|first\s+action\s+(?:in|after)\s+(?:this|the)\s+(?:continuation|compaction)"
+    r"|post-compaction|pre-compaction"
+    # 'from the summary' is a timeline claim only as a PROVENANCE of written
+    # work (L869's 'from the summary alone'); a value read 'from the summary
+    # json' is not, and must not arm the gate.
+    r"|from\s+the\s+(?:compaction\s+)?summary\s+alone"
+    r"|(?:written|wrote|drafted|built|reconstructed)\s+(?:it\s+|them\s+)?"
+    r"from\s+the\s+(?:compaction\s+)?summary", re.I)
+TIMELINE_CITE = re.compile(r"\b\d{2}:\d{2}:\d{2}Z?\b|\bentr(?:y|ies)\s+\d{3,}", re.I)
+
+
+def _ran_python_script(tool_text: str, stem: str) -> bool:
+    """B3107: True when EXECUTED tool text RAN scripts/<stem>.py - a python
+    command naming <stem>.py whose own command segment carries no --help
+    or -h. The text is scanned per command SEGMENT (split at a newline, ;,
+    | or &), because _executed_tool_text joins a turn's commands with
+    spaces: a line-based test would let a --help in ONE command veto a real
+    run in another, and a grep that merely NAMES the script is not a run."""
+    pat = re.compile(r"python[^\n;|&]*?" + re.escape(stem) + r"\.py([^\n;|&]*)", re.I)
+    return any(not re.search(r"(?<!\S)(?:--help|-h)(?!\S)", m.group(1))
+               for m in pat.finditer(tool_text or ""))
+
+
+def scan_compaction_timeline_claim(entries, *, text=None, tool_text=None) -> list[str]:
+    """S6-B3096d: a response that says what happened before or after a
+    compaction (or what was written 'from the summary') must rest on the
+    transcript: scripts/transcript_timeline.py RUN this turn (a --help
+    call is not a run) AND an entry index or UTC time cited in the same
+    response - the rule's own two halves (L870: run it AND cite what it
+    prints). Mention is not use: _response_text strips code spans, so a
+    response DESCRIBING the trigger in backticks does not fire."""
+    resp = _response_text(entries, text)
+    m = COMPACTION_TIMELINE_CLAIM.search(resp or "")
+    if not m:
+        return []
+    ran = _ran_python_script(_executed_tool_text(entries, tool_text),
+                             "transcript_timeline")
+    cited = bool(TIMELINE_CITE.search(resp))
+    if ran and cited:
+        return []
+    missing = [x for x, ok in (("run scripts/transcript_timeline.py this turn", ran),
+                               ("cite the entry index or UTC time it prints", cited))
+               if not ok]
+    return [f"COMPACTION TIMELINE CLAIM WITHOUT THE TRANSCRIPT (L870 / #322): the "
+            f"response says {m.group(0)!r}, and a compacted view replays a "
+            f"pre-compaction tool call as if it came first. Still owed: "
+            + "; ".join(missing) + ". (python scripts/transcript_timeline.py "
+            "--first-after prints the first calls after the last compaction.)"]
+
+
+# S6-B3096e (B3107, L869 / CHECKLIST #321): a governing doc REWRITTEN in a
+# turn that ran no coverage comparison. MEASURED on git history (every
+# commit that touched each doc, capped at 300; dropped share = the fraction
+# of the old file's distinct non-blank lines absent from the new, with CR
+# and trailing whitespace ignored so an ending flip is 0): routine commits
+# dropped at most 0.182 (B1498 on a 154-line runbook; runbook p99 0.067 over
+# 145 commits, CHECKLIST max 0.0123, CLAUDE.md 0.0116, the discipline skill
+# 0.0010, 300 commits each) and the one restructure, B3096, dropped 0.942.
+# A first measure, (added + deleted) / before, did NOT separate them - an
+# APPEND scores high on it (B1559 appended 341 lines to 580, 0.59) and an
+# append cannot drop anything, the only risk the coverage CLI exists for.
+# REWRITE_DROPPED_SHARE is CHOSEN inside the measured gap (L740).
+GOVERNING_DOCS = ("STRATEGY_OPTIMISATION_PLAN.md", "CHECKLIST.md", "CLAUDE.md")
+GOVERNING_DOC_GLOBS = (".claude/skills/*/SKILL.md",)
+REWRITE_DROPPED_SHARE = 0.25
+
+
+def _dropped_share(old_text: str, new_text: str) -> float:
+    """Fraction of the old text's distinct non-blank lines (CR and trailing
+    whitespace stripped) absent from the new text. A moved block keeps its
+    lines (0); a pure append drops nothing (0); a reflow counts, because a
+    reflow can hide a drop."""
+    def _lines(t):
+        return {ln.rstrip() for ln in (t or "").replace("\r\n", "\n").split("\n")
+                if ln.strip()}
+    old = _lines(old_text)
+    return len(old - _lines(new_text)) / len(old) if old else 0.0
+
+
+def _governing_rewrites(entries) -> dict:
+    """{path: dropped share} for every governing doc whose WORKING-TREE text
+    dropped >= REWRITE_DROPPED_SHARE of the lines it held at the last commit
+    before this turn began - so an edit committed mid-turn still counts. With
+    no instruction timestamp the base is HEAD (uncommitted edits only)."""
+    import glob as _glob
+    root = Path(__file__).resolve().parents[1]
+
+    def _git(*a):
+        return subprocess.run(["git", "-C", str(root)] + list(a), capture_output=True,
+                              text=True, encoding="utf-8", errors="replace", timeout=60)
+    base = "HEAD"
+    idx = _last_instruction_index(entries)
+    ts = ""
+    if 0 <= idx < len(entries or ()) and isinstance(entries[idx], dict):
+        ts = str(entries[idx].get("timestamp") or "")
+    if len(ts) >= 19:
+        r = _git("rev-list", "-1", "--before=" + ts[:19].replace("T", " ") + " +0000",
+                 "HEAD")
+        if r.returncode == 0 and r.stdout.strip():
+            base = r.stdout.strip()
+    rels = list(GOVERNING_DOCS) + sorted(
+        os.path.relpath(p, str(root)).replace("\\", "/")
+        for g in GOVERNING_DOC_GLOBS for p in _glob.glob(str(root / g)))
+    out = {}
+    for rel in rels:
+        cur = root / rel
+        if not cur.exists():
+            continue
+        r = _git("show", "%s:%s" % (base, rel))
+        if r.returncode != 0:
+            continue          # a file new in this turn has nothing to drop
+        share = _dropped_share(r.stdout, cur.read_text(encoding="utf-8", errors="replace"))
+        if share >= REWRITE_DROPPED_SHARE:
+            out[rel] = round(share, 3)
+    return out
+
+
+def scan_doc_rewrite_without_coverage(entries, *, rewrites=None,
+                                      tool_text=None) -> list[str]:
+    """S6-B3096e (B3107, L869 / CHECKLIST #321): a governing doc (the
+    runbook, CHECKLIST, CLAUDE.md, a skill) that dropped at least
+    REWRITE_DROPPED_SHARE of its lines this turn, in a turn that ran no
+    scripts/doc_rewrite_coverage.py (a --help call is not a run). The share
+    is read from git and the working tree, so a rewrite by Write, Edit or a
+    patcher script counts alike. Seams: rewrites={path: share}, tool_text."""
+    rw = _governing_rewrites(entries) if rewrites is None else dict(rewrites)
+    if not rw:
+        return []
+    if _ran_python_script(_executed_tool_text(entries, tool_text), "doc_rewrite_coverage"):
+        return []
+    what = "; ".join("%s dropped %.0f pct of its lines" % (p, 100 * s)
+                     for p, s in sorted(rw.items()))
+    return ["GOVERNING-DOC REWRITE WITHOUT A COVERAGE RUN (L869 / #321): " + what
+            + " this turn (threshold %.2f, CHOSEN inside the measured gap - routine "
+            "commits dropped at most 0.182, the one restructure 0.942), and no "
+            "scripts/doc_rewrite_coverage.py ran. Archive the source and run it "
+            "(CHECKLIST #321), then resolve what it reports as missing, "
+            "unmatched or uncarried." % REWRITE_DROPPED_SHARE]
+
+
 def scan_deferral_trigger_fired(entries, *, audit_doc=None, state=None,
                                 state_path=None) -> list[str]:
     """S6-B2993 (owner approved 2026-09-22): a NEWLY-fired registered
@@ -5290,6 +5440,10 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B2993 (owner approved 2026-09-22): a registered
                 # deferral trigger that NEWLY fires blocks one close.
                 scan_deferral_trigger_fired,
+                # S6-B3096d (B3107): WIRED, not merely defined (B1864).
+                scan_compaction_timeline_claim,
+                # S6-B3096e (B3107): WIRED, not merely defined (B1864).
+                scan_doc_rewrite_without_coverage,
                 # S6-B3013: #285's first DETECTOR - a retyped locked
                 # table with columns dropped (four instances, all
                 # owner-caught).

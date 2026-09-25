@@ -76,3 +76,30 @@ e0ba9727bc a note on the old §10.1's own rewrite at B2402; the 2026-08-29 rulin
 #   "1 core": same fact, other wording ("1 of 10 cores", §8.4)
 #   "6 configs": the same RAM-binds claim as "2.1-2.3 GB" above, same disposition
 #   "2 of 219 strategies": RESTORED - the B2573 audit that motivated the ordered list, now in §0.4
+#
+# --- FIGURES, MACHINE-CHECKED FROM B3107 (S6-B3096h: the CLI's figures leg, anchored on context) ---
+# The leg flags 21 of 312 figures on this pair. 9 are dispositioned in the probe notes above; the other 12
+# were outside that probe's population - 10 VALUE-ELSEWHERE (the value survives in an unrelated sentence,
+# the shape a value-only probe cannot see) and 2 dollar figures its unit set lacked. Each was hand-read
+# at B3107 against the new text: 0 were real drops.
+021df3ac35 26 MB: retired with the superseded Phase-1 method (archive section 2.3) - a derived 1,200-trade illustration of the carried 22 KB per trade
+0908dc51a9 100 pct: same fact, more precise wording - '380 of 381 tickers A-C, no mega-caps, 248 tickers R5 never ran - L445'
+0c6b3cd0ee $37.2: the SPY disclosure is carried ('SPY is in the list - a Tier-1 ETF legitimately inside the 544'); the ADV illustration was dropped
+14d9fbab92 99.2 pct: generalised on purpose - the harvest-all rule (L404) is carried as 'one run computes many strategies, and reading one wastes the rest'
+2287b7b589 3.65 h: marked PRE-RULING SHAPE in the archive itself; the cost block carries the ruled 200-ticker x 1-year shape (2.0 / 2.1 / 4.0 h) instead
+25e6aa55b2 2.1 GB: the RAM-binds claim, contradicted by the later COMMIT finding (L670) the new text carries
+30c5b94a10 64 GB: the archive's own retraction of the 64GB/128GB ceilings; the GRAIN-STALE correction is carried
+6156c6980a 20x: the B1497 m=820 multiplicity design, retired with its accepted siblings e14044327d and 0a7803d046
+6895bb124d 128 GB: ceilings the archive itself discredits two sentences on (derived from working set, not the commit charge that fails - L670); the GRAIN-STALE correction is carried
+6a41c127ab $50: the archive row is itself marked SUPERSEDED by the single $100 total budget (B2109), which the standing-constraints table carries
+735960fa9a 3.64 h: the 3 h local cap, raised to 5 h by the owner 2026-08-24; the new text records the move ('moved the owner's local cap from 3 h to 5 h')
+7d907eeae1 5 h: the waterfall row dropped its leg clause; the 5 h per-leg cap is carried in the owner-words row and the standing constraints
+9731a5bdce 3.3 h: generalised on purpose - a time-bound per-config figure, now 'each config costs hours'; measured costs are in the cost block
+9732b8103d 3 h: the same superseded 3 h cap clause; the Hetzner venue ruling itself is carried in the standing-constraints table
+9bef5eae10 4.56 h: same rule, other wording - the STRATEGY_SUBSET_FILE row carries 'omitting it loses BOTH savings, silently (L432)'; 4.56 h is in the cost table
+9e8ef4b624 22 KB: same fact, other wording - the per-trade size is carried at the signals_at_entry paragraph ('~22 KB per trade, verified B1497'); its old sentence was the retired Phase-1 EXTRACT step
+b800cfbe8c 2.3 GB: the same RAM-binds claim, same disposition
+bddf0c3f07 15.6 GB: the same RAM-binds sentence; 15.6 GB itself is carried in the machine row
+be669f2628 2.8x: the same SPY ADV illustration; the disclosure is carried
+c94711bfe8 3.30 h: same fact, other wording - 'pay 3.30 h each (S6-B1576a)' in the universe-artifact paragraph
+da51903277 1 h: same fact, other wording - section 2.2's heading reads 'about an hour of reading'

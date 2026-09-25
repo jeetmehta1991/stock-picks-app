@@ -6248,9 +6248,14 @@ missing token, unmatched sentence or stale acceptance; an acceptance without a r
 pinned by test_b3096_doc_rewrite_coverage_catches_a_dropped_reservation; for the runbook, test_b3096
 and the pinned-phrase tests also fail a rewrite that drops what they read. SEARCH ATTEMPTED (#300): a
 Stop-hook scan could key on a Write or Edit that replaces a large share of a root governing .md and
-demand a coverage run in the same turn. It is ticketed S6-B3096e rather than built now: no share
-threshold that fires on restructures and stays quiet on routine doc sweeps has been measured, and
-editing the live Stop hook mid-session risks blocking every close (#300's own reason).
+demand a coverage run in the same turn. It was ticketed S6-B3096e rather than built at B3096: no
+share threshold had been measured. BUILT B3107: scan_doc_rewrite_without_coverage fires when a
+governing doc's working tree dropped at least 0.25 of the distinct lines it held when the turn began
+and no doc_rewrite_coverage.py ran - the threshold CHOSEN inside a measured gap (routine commits
+dropped at most 0.182 across 145 runbook and 300 each CHECKLIST / CLAUDE.md / skill commits; the
+B3096 restructure dropped 0.942). The CLI also gained a FIGURES leg (S6-B3096h): a number-with-unit
+counts as carried only beside the words that anchored it, because B3096's value-only probe passed a
+dropped cost row on a coincidental '7.3 h' elsewhere.
 
 ### #322 - A CLAIM ABOUT WHEN I DID SOMETHING ACROSS A COMPACTION IS CHECKED AGAINST THE TRANSCRIPT (B3096 / L870, self-caught twice 2026-09-24)
 
@@ -6272,5 +6277,7 @@ pins the repo-text slice - every LEARNINGS entry from L869 on that says somethin
 before a compaction, or was written from the summary, must cite the transcript with an entry index
 or a UTC time; its must-fire case is L869's first version. SEARCH ATTEMPTED (#300): the
 response-level scan (a compaction-timing claim in a response or a new L-entry, with no
-transcript_timeline.py run in the turn) is ticketed S6-B3096d - the split #300 made for its own
-scan, for the same reason.
+transcript_timeline.py run in the turn) was ticketed S6-B3096d - the split #300 made for its own
+scan. BUILT B3107: scan_compaction_timeline_claim requires the script RUN this turn (a --help call
+or a grep naming it is not a run) AND an entry index or UTC time cited in the same response;
+`transcript_timeline.py --first-after N` prints the first calls after the last compaction.

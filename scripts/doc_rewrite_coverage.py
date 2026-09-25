@@ -21,6 +21,19 @@ it, so this script is that comparison, for any rewrite:
      concurrency conclusion is an owner call", and no citation check sees
      that, because the draft kept every citation around it. Each unmatched
      sentence prints with a 10-hex key.
+  3. FIGURE CONTEXT (S6-B3096h, B3107) - every number-with-unit of the old
+     text (hours, minutes, seconds, GB/MB/KB, pct, bps, dollars, an
+     attached multiplier like 2.8x) counts as CARRIED only where a new
+     sentence holds the same value AND keeps at least --min-overlap of the
+     content words beside it in the old sentence (FIGURE_CONTEXT a side).
+     MEASURED at B3096: an ad-hoc value probe run beside this CLI passed a
+     dropped cost row, '100 tickers x 1003 days (4y) ~= 7.3 h', because
+     7.3 h also sits in an unrelated sentence of the new runbook - a
+     value-only presence test passes on a coincidence. An uncarried figure
+     whose value survives elsewhere prints VALUE ELSEWHERE: that is the
+     coincidence shape. A shared-unit list or range ('2.0 / 2.1 / 4.0 h')
+     yields one figure per value; a heading id such as 11.2s is a section,
+     not 11.2 seconds; '41 x 20' is multiplication, not a multiplier.
 
 --accept FILE takes "<key-or-token> <reason>" lines for what was retired on
 purpose, so the review is recorded and re-runnable; a line with no reason is
@@ -31,7 +44,8 @@ reported as STALE, so the file cannot quietly outlive the text it excuses.
 Generated appendices repeat headings and would mask a drop, so --stop-old /
 --stop-new cut each text at the first line starting with a given prefix.
 
-Exit 1 when anything is missing or unmatched, else 0; --report-only exits 0.
+Exit 1 when anything is missing, unmatched or uncarried, else 0; --report-only
+exits 0.
 
     python scripts/doc_rewrite_coverage.py --old archive/<dir>/PLAN.md \\
         --new PLAN.md --also LOG.md --stop-old "## APPENDIX L" \\
@@ -68,6 +82,25 @@ _STOP = frozenset((
 _WORD = re.compile(r"[a-z0-9_][a-z0-9_.'-]*[a-z0-9_]|[a-z0-9]")
 _UNIT_START = re.compile(r"(- |\* |\d+\. |\|)")
 _SENT_SPLIT = re.compile(r"(?<=[.!?;])\s+(?=[A-Z*`(\"'_\[])")
+
+
+# S6-B3096h (B3107): the FIGURES leg - see item 3 of the docstring.
+# a thousands comma only when a DIGIT follows it (B3107: "2026-08-23, second"
+# had read as 23 + comma + a unit)
+_NUM = r"\d(?:\d|,(?=\d))*(?:\.\d+)?"
+_FIG_UNITS = r"h|hrs?|hours?|min|minutes?|s|secs?|seconds?|ms|gb|mb|kb|tb|pct|%|bps"
+FIGURE = re.compile(
+    r"(?<![\w.$/\u00a7-])(?:"
+    r"\$\s?(?P<money>" + _NUM + r")(?![\d.])"
+    r"|(?P<vals>" + _NUM + r"(?:\s*[-/]\s*" + _NUM + r")*)\s?"
+    r"(?P<unit>" + _FIG_UNITS + r")(?![\w-])"
+    r"|(?P<mult>" + _NUM + r")x(?![\w-]))", re.I)
+FIGURE_CONTEXT = 3
+_DATE = re.compile(r"\d{4}-\d{1,2}(?:-\d{1,2})?")
+_FIG_UNIT = {"hr": "h", "hrs": "h", "hour": "h", "hours": "h",
+             "minute": "min", "minutes": "min", "sec": "s", "secs": "s",
+             "second": "s", "seconds": "s", "%": "pct"}
+_SECTION_ID = re.compile(r"^#+\s+(?:\u00a7|SS)?(\d+(?:\.\d+)+[a-z]\w*)", re.M)
 
 
 def load(path: str, stop: str = "") -> str:
@@ -130,6 +163,46 @@ def words(s: str) -> set:
     return {w for w in _WORD.findall(s.lower()) if len(w) > 2 and w not in _STOP}
 
 
+def figures(sentence: str, section_ids=frozenset()) -> list:
+    """(figure, start, end) for every figure in a sentence. A shared-unit
+    list or range yields one figure per value, so a new '2.0 / 2.1 / 4.0 h'
+    carries an old '2.0 h'; a match equal to a heading id (11.2s) is a
+    section reference and is skipped."""
+    out = []
+    for m in FIGURE.finditer(sentence):
+        if m.group("money"):
+            out.append(("$" + m.group("money").replace(",", ""), m.start(), m.end()))
+        elif m.group("mult"):
+            out.append((m.group("mult").replace(",", "") + "x", m.start(), m.end()))
+        else:
+            if m.group(0).replace(" ", "").lower() in section_ids:
+                continue
+            # a DATE followed by a unit-shaped word ("2026-08-23 second
+            # message") is not a range of seconds - measured: 3 of the 25
+            # figures first flagged on the B3096 pair were this shape.
+            if _DATE.fullmatch(m.group("vals").replace(" ", "")):
+                continue
+            unit = m.group("unit").lower()
+            unit = _FIG_UNIT.get(unit, unit)
+            for v in re.split(r"\s*[-/]\s*", m.group("vals")):
+                out.append((v.replace(",", "") + " " + unit, m.start(), m.end()))
+    return out
+
+
+def _content_words(text: str) -> list:
+    return [w for w in _WORD.findall(text.lower()) if len(w) > 2 and w not in _STOP]
+
+
+def figure_context(sentence: str, start: int, end: int) -> set:
+    """The FIGURE_CONTEXT nearest content words on each side of a figure,
+    inside its sentence - what a coincidental occurrence elsewhere lacks."""
+    # other figures are dropped from the context: "4.2h" and "4.2 h" tokenise
+    # differently, so keeping them scored a carried sentence on formatting.
+    left, right = FIGURE.sub(" ", sentence[:start]), FIGURE.sub(" ", sentence[end:])
+    return (set(_content_words(left)[-FIGURE_CONTEXT:])
+            | set(_content_words(right)[:FIGURE_CONTEXT]))
+
+
 def key(sentence: str) -> str:
     return hashlib.sha1(" ".join(sentence.split()).encode("utf-8")).hexdigest()[:10]
 
@@ -166,9 +239,6 @@ def check(old: str, new: str, *, min_overlap: float = 0.5,
         if (k, p) in seen:
             continue
         seen.add((k, p))
-        if k in accepted:
-            used.add(k)
-            continue
         w = words(s)
         best = 0.0
         if w:
@@ -178,15 +248,53 @@ def check(old: str, new: str, *, min_overlap: float = 0.5,
                     break
         else:
             best = 1.0 if by_phrase.get(p) else 0.0
+        if best >= min_overlap:
+            continue          # carried: an acceptance for it would be STALE (B3107)
+        if k in accepted:
+            used.add(k)
+            continue
         if best < min_overlap:
             unmatched.append({"key": k, "phrase": p, "best_overlap": round(best, 2),
                               "sentence": " ".join(s.split())[:400]})
+    # S6-B3096h: the figures leg, anchored on context (docstring item 3).
+    ids = {i.lower() for i in _SECTION_ID.findall(old + "\n" + new)}
+    index = {}
+    for s in sentences(new):
+        found = figures(s, ids)
+        if found:
+            ws = words(s)
+            for f, _a, _b in found:
+                index.setdefault(f, []).append(ws)
+    uncarried, fseen = [], set()
+    for s in sentences(old):
+        for f, a, b in figures(s, ids):
+            k = key(f + "|" + s)
+            if k in fseen:
+                continue
+            fseen.add(k)
+            ctx = figure_context(s, a, b)
+            cands = index.get(f, ())
+            if ctx:
+                best = max((len(ctx & w) / len(ctx) for w in cands), default=0.0)
+            else:
+                best = 1.0 if cands else 0.0
+            if best >= min_overlap:
+                continue      # carried: an acceptance for it would be STALE
+            if k in accepted:
+                used.add(k)
+                continue
+            if best < min_overlap:
+                uncarried.append({"key": k, "figure": f, "best_overlap": round(best, 2),
+                                  "value_elsewhere": bool(cands),
+                                  "sentence": " ".join(s.split())[:400]})
     stale = sorted(k for k in accepted if k not in used)
     return {"missing_tokens": [{"token": t, "old_line": ln} for t, ln in missing],
             "unmatched_reserved": unmatched,
+            "uncarried_figures": uncarried,
+            "figures_checked": len(fseen),
             "accepted_used": sorted(used),
             "accepted_stale": stale,
-            "ok": not missing and not unmatched and not stale}
+            "ok": not missing and not unmatched and not uncarried and not stale}
 
 
 def main(argv=None) -> int:
@@ -202,6 +310,11 @@ def main(argv=None) -> int:
     ap.add_argument("--json", help="write the full result here")
     ap.add_argument("--report-only", action="store_true")
     a = ap.parse_args(argv)
+    # B3107: a sentence carrying a character outside the console code page
+    # (U+2248 on a cp1252 console) crashed the report mid-list - measured on
+    # the B3096 pair. Replace it in the PRINTED report; the --json keeps it.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(errors="replace")
     accepted = {}
     if a.accept:
         for ln in io.open(a.accept, encoding="utf-8"):
@@ -222,6 +335,13 @@ def main(argv=None) -> int:
     for u in res["unmatched_reserved"]:
         print("  UNMATCHED %s [%s] overlap %.2f: %s"
               % (u["key"], u["phrase"], u["best_overlap"], u["sentence"][:220]))
+    print("figures uncarried: %d of %d" % (len(res["uncarried_figures"]),
+                                           res["figures_checked"]))
+    for u in res["uncarried_figures"]:
+        print("  UNCARRIED %s [%s] overlap %.2f%s: %s"
+              % (u["key"], u["figure"], u["best_overlap"],
+                 " VALUE ELSEWHERE" if u["value_elsewhere"] else "",
+                 u["sentence"][:220]))
     for k in res["accepted_stale"]:
         print("  STALE ACCEPTANCE %s - matches nothing now; remove it" % k)
     if a.json:

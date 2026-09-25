@@ -46076,3 +46076,169 @@ def test_b3106_open_ticket_calling_a_closed_ticket_unfixed_is_flagged():
         assert ats.unfixed_claims(states, rows(quiet)) == [], quiet
     live = ats.unfixed_claims()
     assert live == [], live
+
+
+
+def test_b3107_figures_leg_is_anchored_on_context(tmp_path):
+    """S6-B3096h (B3107): a figure counts as CARRIED only beside the words that
+    anchored it. MEASURED at B3096: a value-only probe passed a dropped cost
+    row because '7.3 h' also sits in an unrelated sentence of the new runbook.
+    The must-fire fixture is the VERBATIM archive text: the cost block plus
+    the 'wasted 7.3 h' sentence; the drifted new text keeps the sentence and
+    drops the two cost rows, as the B3096 draft did."""
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import doc_rewrite_coverage as drc
+
+    cost_head = ("```\n0.2613 s per ticker-day   (pool=10; two concordant points, 10pct apart:\n"
+                 "                           0.2484 @ 50t x 4y, 0.2743 @ 20t x 2y)\n\n"
+                 "per run  =  tickers x sim-days x 0.2613\n")
+    rows = ("100 tickers x 1003 days (4y)  ~= 7.3 h\n"
+            "544 tickers x 1003 days (4y)  ~= 39.7 h   <- 7.3 h x (544/100), rescaled B1618\n")
+    wasted = ("**NO separate baseline run (L423).** Production parameters are one of the configs "
+              "anyway, so that number arrives\nfree if it ranks. Scoping a baseline run wasted "
+              "7.3 h of plan before this was caught.\n")
+    # the runbook's own B1618 citation elsewhere (live line 364): with it, the
+    # CITATION leg cannot see the dropped rows - exactly the B3096 situation
+    universe = ("- **THE BASELINE UNIVERSE IS 544 (B1618, owner 2026-08-17)** - "
+                "`output_audit/r5_universe_544.txt`.\n\n")
+    old = tmp_path / "old.md"
+    old.write_text("# Runbook\n\n" + universe + cost_head + rows + "```\n\n" + wasted,
+                   encoding="utf-8")
+    drifted = tmp_path / "drifted.md"
+    drifted.write_text("# Runbook\n\n" + universe + cost_head + "```\n\n" + wasted.replace(
+        "run wasted", "run once wasted"), encoding="utf-8")
+    faithful = tmp_path / "faithful.md"
+    faithful.write_text("# Runbook\n\n" + universe + cost_head
+                        + rows.replace("~= 7.3 h", "~= 7.3h") + "```\n\n"
+                        + wasted.replace("\nfree", " free"), encoding="utf-8")
+
+    res = drc.check(drc.load(str(old)), drc.load(str(drifted)))
+    assert res["missing_tokens"] == [] and res["unmatched_reserved"] == [], (
+        "the fixture must leave the citation and reservation legs blind, as B3096 did")
+    got = sorted(u["figure"] for u in res["uncarried_figures"])
+    assert got == ["39.7 h", "7.3 h"], res["uncarried_figures"]
+    seven = [u for u in res["uncarried_figures"] if u["figure"] == "7.3 h"][0]
+    # the coincidence the B3096 probe fell for: the VALUE survives elsewhere
+    assert seven["value_elsewhere"] is True and "7.3 h" in drifted.read_text()
+    assert "1003" in seven["sentence"] and "wasted" not in seven["sentence"]
+    assert res["ok"] is False and drc.main(["--old", str(old), "--new", str(drifted)]) == 1
+    # must-quiet: the same rows re-spaced and re-wrapped
+    ok = drc.check(drc.load(str(old)), drc.load(str(faithful)))
+    assert ok["uncarried_figures"] == [] and ok["ok"], ok["uncarried_figures"]
+
+    # shapes: a shared-unit list, a section id, multiplication, a dated ruling
+    f = [x[0] for x in drc.figures("2.0 / 2.1 / 4.0 h per config; ~2.8x AAPL; $37.2B; 0.01 - 0.03 s")]
+    assert f == ["2.0 h", "2.1 h", "4.0 h", "2.8x", "$37.2", "0.01 s", "0.03 s"], f
+    assert drc.figures("see 11.2s", frozenset({"11.2s"})) == []
+    assert drc.figures("41 x 20 strategy-specific configs") == []
+    assert drc.figures("(owner ruling 2026-08-23, second message, B2109)") == []
+    # the no-comma form is what the DATE guard alone stops (the comma form is
+    # stopped by the number pattern, which never ends a number in a comma)
+    assert drc.figures("owner ruling 2026-08-23 second message") == []
+    assert [x[0] for x in drc.figures("1,200 IS trades is ~26 MB")] == ["26 mb"]
+    lst_old = tmp_path / "lo.md"
+    lst_old.write_text("Measured on one chain: 2.0 h / 2.1 h / 4.0 h per config at pool 0.\n",
+                       encoding="utf-8")
+    lst_new = tmp_path / "ln.md"
+    lst_new.write_text("Measured on one chain: 2.0 / 2.1 / 4.0 h per config at pool 0.\n",
+                       encoding="utf-8")
+    assert drc.check(drc.load(str(lst_old)), drc.load(str(lst_new)))["uncarried_figures"] == []
+
+    # acceptances: keyed with a reason pass; a stale one fails
+    acc = tmp_path / "acc.txt"
+    acc.write_text("".join("%s retired with the cost block, restated in section 8.3\n" % u["key"]
+                           for u in res["uncarried_figures"]), encoding="utf-8")
+    assert drc.main(["--old", str(old), "--new", str(drifted), "--accept", str(acc)]) == 0
+    assert drc.main(["--old", str(old), "--new", str(faithful), "--accept", str(acc)]) == 1
+
+
+def test_b3107_rewrite_scan_measures_dropped_lines_and_wants_a_coverage_run():
+    """S6-B3096e (B3107): the Stop hook fires when a governing doc dropped at
+    least REWRITE_DROPPED_SHARE of its lines in a turn that ran no
+    doc_rewrite_coverage.py. The share counts DROPPED lines, not churn: an
+    append or an ending flip drops nothing (a first churn measure scored
+    B1559's 341-line append 0.59). Must-fire on the REAL restructure (the
+    archived pre-B3096 runbook against the live one); must-quiet on a real
+    routine runbook commit (B3101)."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as v
+
+    assert v._dropped_share("a\nb\nc\nd\n", "a\nb\nc\nd\ne\nf\n") == 0.0          # append
+    assert v._dropped_share("a\r\nb  \r\n", "a\nb\n") == 0.0                     # endings
+    assert v._dropped_share("a\nb\nc\nd\n", "a\nx\ny\nz\n") == 0.75
+    arch = (root / "archive" / "2026-09-24-strategy-optimisation-plan-pre-B3096"
+            / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    live = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    assert v._dropped_share(arch, live) >= v.REWRITE_DROPPED_SHARE
+    show = lambda ref: subprocess.run(  # noqa: E731
+        ["git", "-C", str(root), "show", ref + ":STRATEGY_OPTIMISATION_PLAN.md"],
+        capture_output=True, text=True, encoding="utf-8").stdout
+    b, a = show("3c1904199~1"), show("3c1904199")
+    assert a and b, "the routine-commit control needs the B3101 runbook from git"
+    assert v._dropped_share(b, a) < v.REWRITE_DROPPED_SHARE
+
+    rw = {"STRATEGY_OPTIMISATION_PLAN.md": 0.942}
+    fired = v.scan_doc_rewrite_without_coverage([], rewrites=rw, tool_text="")
+    assert fired and "94 pct" in fired[0] and "#321" in fired[0], fired
+    ran = "python scripts/doc_rewrite_coverage.py --old a.md --new b.md"
+    assert v.scan_doc_rewrite_without_coverage([], rewrites=rw, tool_text=ran) == []
+    for not_a_run in ("python scripts/doc_rewrite_coverage.py --help",
+                      "grep -n doc_rewrite_coverage CHECKLIST.md"):
+        assert v.scan_doc_rewrite_without_coverage([], rewrites=rw, tool_text=not_a_run)
+    # a --help in ANOTHER command must not veto a real run (commands are joined)
+    both = "python other.py --help " + ran
+    assert v.scan_doc_rewrite_without_coverage([], rewrites=rw, tool_text=both) == []
+    assert v.scan_doc_rewrite_without_coverage([], rewrites={}, tool_text="") == []
+
+
+def test_b3107_timeline_scan_and_first_after():
+    """S6-B3096d (B3107): a response that places an action before or after a
+    compaction must have RUN transcript_timeline.py and cite what it printed;
+    first_after() answers the question from the transcript, excluding the
+    pre-compaction call a compacted view replays first (L870's shape)."""
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import transcript_timeline as tl
+    import verify_turn_compliance as v
+
+    def call(name, **inp):
+        return {"type": "assistant", "timestamp": "2026-09-24T01:0%dZ" % len(inp),
+                "message": {"content": [{"type": "tool_use", "name": name, "input": inp}]}}
+    ents = [{"type": "user", "message": {"content": "go"}},
+            call("Edit", file_path="PLAN.md"),
+            {"type": "system", "subtype": "compact_boundary", "timestamp": "2026-09-24T01:08:41Z"},
+            {"type": "user", "message": {"content": "This session is being continued"}},
+            call("Skill", skill="execution-discipline"),
+            call("Bash", command="git status", description="status")]
+    fa = tl.first_after(ents, 5)
+    assert fa["boundary"] == 2 and [c["entry"] for c in fa["calls"]] == [4, 5], fa
+    assert fa["calls"][0]["tool"] == "Skill" and "PLAN.md" not in str(fa["calls"])
+
+    claim = "My first action after the compaction was the Skill call (entry 75861, 01:09:03Z)."
+    ran = "python scripts/transcript_timeline.py --first-after 5"
+    assert v.scan_compaction_timeline_claim([], text=claim, tool_text=ran) == []
+    assert v.scan_compaction_timeline_claim([], text=claim, tool_text="")          # not run
+    assert v.scan_compaction_timeline_claim(
+        [], text="My first action after the compaction was the Skill call.", tool_text=ran)
+    assert v.scan_compaction_timeline_claim(
+        [], text=claim, tool_text="python scripts/transcript_timeline.py --help")
+    # 'from the summary' arms the gate only as the provenance of written work
+    assert v.scan_compaction_timeline_claim(
+        [], text="The value 0.141 is read from the summary json.", tool_text="") == []
+    assert v.scan_compaction_timeline_claim(
+        [], text="I wrote the fourth part from the summary alone.", tool_text="")
