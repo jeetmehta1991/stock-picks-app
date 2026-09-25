@@ -104,11 +104,38 @@ def verdict_line(diff: list[str]) -> str:
     return f"tree=CHANGED ({len(diff)} paths): {shown}"
 
 
-def run(out: Path, root: Path, pytest_args: list[str]) -> int:
+EXIT_REFUSED_BESIDE_WAVE = 5
+
+
+def refusal_beside_wave(engine: str, beside_wave: str | None) -> str | None:
+    """S6-B3062 (B3108): the refusal message, or None when the gate may run.
+    Refuses while ANY runner is in flight - `engine` is _engine_inflight()'s
+    answer, and 'unknown' refuses too (fail closed, L642) - unless the
+    caller gave a non-empty --beside-wave reason, which the artifact records.
+    MEASURED before building it: a pyramid beside the live c14 Step-1 wave
+    failed on memory and its RED stamp refused the landing commit 5 of 5
+    (L873); pyramids beside the c14 Step-2 wave exhausted commit (L865)."""
+    if engine == "none" or (beside_wave or "").strip():
+        return None
+    return ("REFUSED (S6-B3062, runbook 4.9 Step 2.4): an engine run is in flight - "
+            f"{engine}. A pyramid beside a live run has exhausted commit (L865) and "
+            "its RED stamp has refused an unattended landing commit (L873). Run "
+            "the suite after the run lands, or pass --beside-wave \"<reason>\" to "
+            "override; the reason is recorded in the artifact.")
+
+
+def run(out: Path, root: Path, pytest_args: list[str],
+        beside_wave: str | None = None) -> int:
+    engine_start = _engine_inflight()
+    refused = refusal_beside_wave(engine_start, beside_wave)
+    if refused:
+        Path(out).write_text(refused + "\nexit=%d\n" % EXIT_REFUSED_BESIDE_WAVE,
+                             encoding="utf-8")
+        print(refused)
+        return EXIT_REFUSED_BESIDE_WAVE
     before = fingerprint(root)
     t0 = time.time()
     chain_start = _chain_inflight()
-    engine_start = _engine_inflight()
     # B2856 (S6-B2854b): a stopper needs the TREE, not the wrapper. TaskStop
     # on the launching shell orphans this process and its pytest child (four
     # processes were hand-killed at B2854, two racing on one artifact). The
@@ -153,7 +180,8 @@ def run(out: Path, root: Path, pytest_args: list[str]) -> int:
                      f"engine_inflight={engine}\n"
                      f"engine_inflight_start={engine_start}\n"
                      f"engine_inflight_end={engine_end}\n"
-                     f"engine_dead_within_window={engine_dead}\n")
+                     f"engine_dead_within_window={engine_dead}\n"
+                     f"beside_wave_override={(beside_wave or '').strip() or 'none'}\n")
         print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
         if chain != "none":
             print("  NOTE (L621/S6-B3061): a config was IN FLIGHT while "
@@ -382,6 +410,9 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--out", required=True, help="the pyramid artifact (stdout+stderr of pytest, then the verdict lines)")
     ap.add_argument("--root", default=str(ROOT))
+    ap.add_argument("--beside-wave", default=None, metavar="REASON",
+                    help="S6-B3062: run even though an engine run is in flight; "
+                         "the reason is recorded in the artifact")
     ap.add_argument("pytest_args", nargs=argparse.REMAINDER,
                     help="everything after `--` goes to pytest verbatim")
     a = ap.parse_args(argv)
@@ -389,7 +420,7 @@ def main(argv=None) -> int:
     if not args:
         args = ["backtest/tests/test_unit.py", "backtest/tests/test_integration.py",
                 "-q", "-p", "no:cacheprovider"]
-    return run(Path(a.out), Path(a.root), args)
+    return run(Path(a.out), Path(a.root), args, beside_wave=a.beside_wave)
 
 
 if __name__ == "__main__":

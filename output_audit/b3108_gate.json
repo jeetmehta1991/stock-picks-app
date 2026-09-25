@@ -1,0 +1,52 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 13%]
+........................................................................ [ 18%]
+........................................................................ [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 32%]
+........................................................................ [ 37%]
+..............................................s......................... [ 41%]
+....................s.................................................s. [ 46%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 83%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 97%]
+......................................                                   [100%]
+============================ slowest 15 durations =============================
+277.66s call     backtest/tests/test_unit.py::test_b2638_reproduction_failure_refuses
+133.22s call     backtest/tests/test_unit.py::test_b2886_holdout_read_refuses_an_uncovered_band
+87.63s call     backtest/tests/test_unit.py::test_b2337_no_header_asserted_by_substring_over_whole_output
+34.14s call     backtest/tests/test_unit.py::test_b1463_no_new_near_identical_pairs
+33.05s call     backtest/tests/test_unit.py::test_b1616_engine_defaults_are_byte_identical_and_knobs_bite
+31.98s call     backtest/tests/test_unit.py::test_b1619_breaker_variants_isolate_and_do_not_move_the_base
+28.38s call     backtest/tests/test_unit.py::test_smart_money_all_keys_present
+21.33s call     backtest/tests/test_unit.py::test_b3099_drift_check_is_content_aware
+16.12s call     backtest/tests/test_unit.py::test_bug273_institutional_signal_no_bulk_returns_none
+16.08s call     backtest/tests/test_unit.py::test_bug272_insider_signal_no_bulk_returns_none
+14.19s call     backtest/tests/test_unit.py::test_b1778_no_control_chars_in_gate_scripts
+12.21s call     backtest/tests/test_unit.py::test_b2116_run_wave_resume_loop_both_ways
+8.39s call     backtest/tests/test_unit.py::test_dec458_lead_lag_wired_in_screen_universe
+7.98s call     backtest/tests/test_integration.py::test_dec_235_engine_skips_holiday_weekday
+7.93s call     backtest/tests/test_unit.py::test_b2127_launch_refuses_when_the_engine_drifted_from_the_manifest
+1547 passed, 3 skipped in 886.63s (0:14:46)
+
+pytest_exit=0
+tree=SAME
+exit=0
+elapsed_s=909
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none

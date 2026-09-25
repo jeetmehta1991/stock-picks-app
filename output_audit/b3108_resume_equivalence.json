@@ -1,0 +1,450 @@
+{
+ "batch": "B3108",
+ "tickets": [
+  "S6-B3098d"
+ ],
+ "purpose": "a split (stopped + resumed) engine run must produce the same outputs as an uninterrupted one",
+ "narrow_by_design": "20 large-cap tickers (verify_universe_artifact exit 0, 20 of 544 R5 tickers), one strategy (three_white_soldiers, production params), window 2024-05-06..2024-09-03",
+ "code": {
+  "head": "d01ded82e29c860b1b903f31124ee4d7d4e05748",
+  "working_tree_changes_under_test": [
+   "M backtest/engine/backtest.py",
+   " M backtest/tests/conftest.py",
+   " M backtest/tests/test_unit.py",
+   " M scripts/pyramid_gate.py"
+  ]
+ },
+ "started_utc": "2026-09-25T03:55:40Z",
+ "run_a": {
+  "exit": 0,
+  "wall_s": 584.7,
+  "cube": true,
+  "last_progress": [
+   80,
+   83,
+   0.15
+  ],
+  "final_state": {
+   "simulated_day": 82,
+   "cells_completed": 30,
+   "status": "complete",
+   "sim_date": "2024-09-03",
+   "sim_day_index": 82,
+   "tickers_processed": 21,
+   "trades_so_far": 30,
+   "open_trades": 0,
+   "timestamp": "2026-09-25T04:04:52Z",
+   "pid": 10420,
+   "finalized_open_trades": 17,
+   "last_completed_day": 82,
+   "day_in_progress": null
+  }
+ },
+ "run_b_caps_hours": {
+  "leg1": 0.0208,
+  "later_legs": 0.07
+ },
+ "run_b_cap_basis": "CHOSEN: leg 1 reproduces attempt 1's zero-closed-trade boundary; later legs span several days each",
+ "run_b_legs": [
+  {
+   "leg": 1,
+   "cap_h": 0.0208,
+   "exit": 1,
+   "wall_s": 123.6,
+   "status": "wall_time_kill",
+   "simulated_day": 1,
+   "last_completed_day": 0,
+   "day_in_progress": null,
+   "trades_so_far": 0,
+   "open_trades": 5
+  },
+  {
+   "leg": 2,
+   "cap_h": 0.07,
+   "exit": 1,
+   "wall_s": 262.3,
+   "status": "wall_time_kill",
+   "simulated_day": 22,
+   "last_completed_day": 21,
+   "day_in_progress": null,
+   "trades_so_far": 1,
+   "open_trades": 10
+  },
+  {
+   "leg": 3,
+   "cap_h": 0.07,
+   "exit": 1,
+   "wall_s": 259.7,
+   "status": "wall_time_kill",
+   "simulated_day": 43,
+   "last_completed_day": 42,
+   "day_in_progress": null,
+   "trades_so_far": 4,
+   "open_trades": 15
+  },
+  {
+   "leg": 4,
+   "cap_h": 0.07,
+   "exit": 1,
+   "wall_s": 259.9,
+   "status": "wall_time_kill",
+   "simulated_day": 62,
+   "last_completed_day": 61,
+   "day_in_progress": null,
+   "trades_so_far": 9,
+   "open_trades": 12
+  },
+  {
+   "leg": 5,
+   "cap_h": 0.07,
+   "exit": 1,
+   "wall_s": 271.0,
+   "status": "wall_time_kill",
+   "simulated_day": 71,
+   "last_completed_day": 70,
+   "day_in_progress": null,
+   "trades_so_far": 11,
+   "open_trades": 14
+  },
+  {
+   "leg": 6,
+   "cap_h": 0.07,
+   "exit": 1,
+   "wall_s": 266.7,
+   "status": "wall_time_kill",
+   "simulated_day": 82,
+   "last_completed_day": 81,
+   "day_in_progress": null,
+   "trades_so_far": 13,
+   "open_trades": 17
+  },
+  {
+   "leg": 7,
+   "cap_h": 0.07,
+   "exit": 0,
+   "wall_s": 134.3,
+   "status": "complete",
+   "simulated_day": 82,
+   "last_completed_day": 82,
+   "day_in_progress": null,
+   "trades_so_far": 30,
+   "open_trades": 0
+  }
+ ],
+ "run_b_resume_boundaries": [
+  {
+   "resume_index": 1,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 1,
+   "checkpoint_sim_date": "2024-05-07",
+   "last_completed_day": 0,
+   "day_in_progress": null,
+   "trades_so_far": 0,
+   "open_trades": 5,
+   "logs_restored": {
+    "skipped_trades": 0,
+    "sizing_log": 5,
+    "circuit_breaker_log": 0
+   },
+   "resumed_at_utc": "2026-09-25T04:07:32Z",
+   "resume_date": "2024-05-07",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 1,
+    "map_size": 1,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 22,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 22,
+   "checkpoint_sim_date": "2024-06-06",
+   "last_completed_day": 21,
+   "day_in_progress": null,
+   "trades_so_far": 1,
+   "open_trades": 10,
+   "logs_restored": {
+    "skipped_trades": 3,
+    "sizing_log": 11,
+    "circuit_breaker_log": 0
+   },
+   "resumed_at_utc": "2026-09-25T04:11:58Z",
+   "resume_date": "2024-06-06",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 22,
+    "map_size": 22,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 43,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 43,
+   "checkpoint_sim_date": "2024-07-09",
+   "last_completed_day": 42,
+   "day_in_progress": null,
+   "trades_so_far": 4,
+   "open_trades": 15,
+   "logs_restored": {
+    "skipped_trades": 12,
+    "sizing_log": 19,
+    "circuit_breaker_log": 0
+   },
+   "resumed_at_utc": "2026-09-25T04:16:21Z",
+   "resume_date": "2024-07-09",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 43,
+    "map_size": 43,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 62,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 62,
+   "checkpoint_sim_date": "2024-08-05",
+   "last_completed_day": 61,
+   "day_in_progress": null,
+   "trades_so_far": 9,
+   "open_trades": 12,
+   "logs_restored": {
+    "skipped_trades": 19,
+    "sizing_log": 21,
+    "circuit_breaker_log": 0
+   },
+   "resumed_at_utc": "2026-09-25T04:20:51Z",
+   "resume_date": "2024-08-05",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 62,
+    "map_size": 62,
+    "last_regime": "bull",
+    "last_regime_smoothed": 80.0
+   }
+  },
+  {
+   "resume_index": 71,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 71,
+   "checkpoint_sim_date": "2024-08-16",
+   "last_completed_day": 70,
+   "day_in_progress": null,
+   "trades_so_far": 11,
+   "open_trades": 14,
+   "logs_restored": {
+    "skipped_trades": 25,
+    "sizing_log": 25,
+    "circuit_breaker_log": 0
+   },
+   "resumed_at_utc": "2026-09-25T04:25:25Z",
+   "resume_date": "2024-08-16",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 71,
+    "map_size": 71,
+    "last_regime": "bull",
+    "last_regime_smoothed": 70.048907
+   }
+  },
+  {
+   "resume_index": 82,
+   "skipped_index": null,
+   "decision": "resumed_at_next_unrun_day",
+   "checkpoint_status": "wall_time_kill",
+   "checkpoint_simulated_day": 82,
+   "checkpoint_sim_date": "2024-09-03",
+   "last_completed_day": 81,
+   "day_in_progress": null,
+   "trades_so_far": 13,
+   "open_trades": 17,
+   "logs_restored": {
+    "skipped_trades": 34,
+    "sizing_log": 30,
+    "circuit_breaker_log": 0
+   },
+   "resumed_at_utc": "2026-09-25T04:29:48Z",
+   "resume_date": "2024-09-03",
+   "skipped_date": null,
+   "regime_replay": {
+    "replayed_days": 82,
+    "map_size": 82,
+    "last_regime": "bull",
+    "last_regime_smoothed": 76.877241573923
+   }
+  }
+ ],
+ "regime_map_coverage_a": {
+  "days_processed": 83,
+  "days_in_map": 83,
+  "missing_count": 0,
+  "missing_sample": []
+ },
+ "regime_map_coverage_b": {
+  "days_processed": 83,
+  "days_in_map": 83,
+  "missing_count": 0,
+  "missing_sample": []
+ },
+ "compare_a_vs_b": {
+  "identical": [
+   "agent_performance.csv (1 rows)",
+   "analyst_data_stub.json",
+   "backtest_results.csv (1 rows)",
+   "bootstrap_ci.csv (1 rows)",
+   "cache_freshness_checksum_stub.json",
+   "chart_pattern_skeleton_stub.json",
+   "circuit_breaker_log.csv (2 bytes)",
+   "congressional_correlation.csv (0 rows)",
+   "cube_compose_verdict.csv (3 rows)",
+   "dec_constants_verification.json",
+   "edge_decay_metrics.csv (1 rows)",
+   "exit_by_8K_filed_during_hold.csv (48 rows)",
+   "exit_by_adv_bucket.csv (24 rows)",
+   "exit_by_cap_band.csv (24 rows)",
+   "exit_by_circuit_breaker_active_during_hold.csv (24 rows)",
+   "exit_by_confidence_tier.csv (24 rows)",
+   "exit_by_day_of_week_at_entry.csv (120 rows)",
+   "exit_by_days_from_quarter_end_at_entry.csv (456 rows)",
+   "exit_by_earnings_during_hold.csv (48 rows)",
+   "exit_by_entry_atr_ratio.csv (720 rows)",
+   "exit_by_hold_duration_band.csv (48 rows)",
+   "exit_by_hy_oas_band_at_entry.csv (24 rows)",
+   "exit_by_mae_bucket.csv (24 rows)",
+   "exit_by_mfe_bucket.csv (48 rows)",
+   "exit_by_news_sentiment_shift_during_hold.csv (48 rows)",
+   "exit_by_regime_at_entry.csv (48 rows)",
+   "exit_by_regime_changed_during_hold.csv (24 rows)",
+   "exit_by_sector.csv (192 rows)",
+   "exit_by_sector_momentum_vs_spy_at_entry.csv (72 rows)",
+   "exit_by_smart_money_signal_present.csv (24 rows)",
+   "exit_by_universe_tier.csv (72 rows)",
+   "exit_by_vix_at_entry.csv (432 rows)",
+   "exit_by_vix_term_structure.csv (24 rows)",
+   "exit_by_vol_band.csv (48 rows)",
+   "exit_by_volume_rank_within_sector.csv (24 rows)",
+   "exit_by_win_loss_outcome.csv (48 rows)",
+   "exit_method_multi_dim_cube.csv (48 rows)",
+   "exit_strategy_best.csv (1 rows)",
+   "exit_strategy_comparison.csv (24 rows)",
+   "fx_exposure_stub.json",
+   "improvements_summary.json",
+   "insider_correlation.csv (0 rows)",
+   "portfolio_summary.json",
+   "regime_map_coverage.json",
+   "regime_performance.csv (1 rows)",
+   "regime_stratified_summary.json",
+   "replay_atr_fallback.json",
+   "rolling_sharpe_stability.json",
+   "sector_concentration.csv (27 rows)",
+   "sector_neutral_hedge_stub.json",
+   "short_long_conversion_stub.json",
+   "signal_fire_rates.json",
+   "skipped_trades.csv (34 rows)",
+   "slippage_advanced.csv (5 rows)",
+   "smart_money_combined.csv (3 rows)",
+   "strategy_regime_matrix.json",
+   "stress_metrics.json",
+   "test_coverage_gate.json",
+   "tier_adjustment_analysis.csv (1 rows)",
+   "top_losers_per_strategy.json",
+   "trade_exit_detail.csv (720 rows)",
+   "trade_log_out_of_sample.csv (0 rows)",
+   "trade_pnl_decomposition.csv (30 rows)",
+   "verdict_cube.csv (10 rows)",
+   "winning_strategies.json",
+   "yfinance_hardcut_verify.json"
+  ],
+  "different": {
+   "batch163_stub_results.json": "json differs (volatile keys stripped)",
+   "portfolio_metrics.json": "json differs (volatile keys stripped)",
+   "sizing_log.csv": "rows 49 vs 30",
+   "trade_log.csv": "30 of 30 sorted rows differ; first: [{'ticker': 'AAPL', 'entry_date': '2024-08-08', 'exit_date': '2024-09-03', 'direction': 'long', 'strategy': 'three_white_soldiers', 'category': 'candle', 'sector': 'Information Technology', 'confidence_tier': 'LOW', 'regime': 'neutral', 'exit_reason': 'end_of_backtest', 'entry_price': '212.5385', 'exit_price': '222.77', 'initial_stop': '191.2846', 'highest_close': '229.79', 'trailing_stop_at_exit': '195.3215', 'pnl_pct': '4.407650793650793', 'pnl_dollar': '481.4', 'win': 'True', 'hold_days': '26', 'max_adverse_excursion': '-0.2675', 'max_favourable_excursion",
+   "trade_log_in_sample.csv": "30 of 30 sorted rows differ; first: [{'ticker': 'AAPL', 'entry_date': '2024-08-08', 'exit_date': '2024-09-03', 'direction': 'long', 'strategy': 'three_white_soldiers', 'category': 'candle', 'sector': 'Information Technology', 'confidence_tier': 'LOW', 'regime': 'neutral', 'exit_reason': 'end_of_backtest', 'entry_price': '212.5385', 'exit_price': '222.77', 'initial_stop': '191.2846', 'highest_close': '229.79', 'trailing_stop_at_exit': '195.3215', 'pnl_pct': '4.407650793650793', 'pnl_dollar': '481.4', 'win': 'True', 'hold_days': '26', 'max_adverse_excursion': '-0.2675', 'max_favourable_excursion"
+  },
+  "only_in_a": [],
+  "only_in_b": []
+ },
+ "comparator_must_fire": {
+  "perturbed": "trade_exit_detail.csv row 0 column entry_price + 1.0",
+  "flagged": true
+ },
+ "summary": {
+  "legs_b": 7,
+  "resume_boundaries": 6,
+  "days_skipped": 0,
+  "files_identical": 66,
+  "files_different": 5
+ },
+ "s6_b3098d_target": {
+  "files": {
+   "sizing_log.csv": "rows 49 vs 30",
+   "skipped_trades.csv": "IDENTICAL",
+   "circuit_breaker_log.csv": "IDENTICAL"
+  },
+  "bytes_a_b": {
+   "sizing_log.csv": [
+    3267,
+    2084
+   ],
+   "skipped_trades.csv": [
+    2856,
+    2856
+   ],
+   "circuit_breaker_log.csv": [
+    2,
+    2
+   ]
+  },
+  "logs_restored_per_boundary": [
+   {
+    "skipped_trades": 0,
+    "sizing_log": 5,
+    "circuit_breaker_log": 0
+   },
+   {
+    "skipped_trades": 3,
+    "sizing_log": 11,
+    "circuit_breaker_log": 0
+   },
+   {
+    "skipped_trades": 12,
+    "sizing_log": 19,
+    "circuit_breaker_log": 0
+   },
+   {
+    "skipped_trades": 19,
+    "sizing_log": 21,
+    "circuit_breaker_log": 0
+   },
+   {
+    "skipped_trades": 25,
+    "sizing_log": 25,
+    "circuit_breaker_log": 0
+   },
+   {
+    "skipped_trades": 34,
+    "sizing_log": 30,
+    "circuit_breaker_log": 0
+   }
+  ],
+  "met": false
+ },
+ "verdict": "NOT EQUIVALENT - see compare_a_vs_b",
+ "finished_utc": "2026-09-25T04:31:48Z"
+}

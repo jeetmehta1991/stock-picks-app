@@ -605,6 +605,33 @@ class BacktestEngine:
             _pd.DataFrame(rows).to_csv(tmp, index=False)
         _os.replace(tmp, path)
 
+    # S6-B3098d: the three PROCESS-LOCAL logs a resume used to lose, and the
+    # file each is checkpointed to beside the trade checkpoints.
+    LOG_CHECKPOINTS = (("skipped_trades", "skipped_trades_checkpoint.pkl"),
+                       ("sizing_log", "sizing_log_checkpoint.pkl"),
+                       ("circuit_breaker_log", "circuit_breaker_log_checkpoint.pkl"))
+
+    def _flush_log_checkpoints(self, out_dir):
+        """S6-B3098d: checkpoint the three in-memory logs so a resumed leg
+        carries them. MEASURED B3098: a 9-leg split run's sizing_log.csv and
+        skipped_trades.csv were EMPTY where the unsplit run's held rows -
+        only the final leg's survived. Called beside every open-book flush
+        (L620: a payload's contract binds every writer). PICKLE, not json:
+        json turns a tuple into a list and a numpy scalar into a string, so a
+        split run's final CSV could differ from an unsplit run's; pickle
+        restores the rows exactly. An empty list is written - a measured
+        zero, not an absence (L580). Atomic via .tmp + replace."""
+        import os as _os
+        import pickle as _pk
+        from pathlib import Path as _P
+        d = _P(out_dir)
+        for attr, fname in self.LOG_CHECKPOINTS:
+            rows = list(getattr(self, attr, None) or [])
+            path, tmp = d / fname, d / (fname + ".tmp")
+            with open(tmp, "wb") as fh:
+                _pk.dump(rows, fh, protocol=4)
+            _os.replace(tmp, path)
+
     @staticmethod
     def _csv_row_to_open_trade(row: dict) -> "OpenTrade":
         """Reconstruct an OpenTrade from a checkpoint CSV row.
@@ -1134,6 +1161,7 @@ class BacktestEngine:
                 _epd.DataFrame(closed_trade_rows(self.closed_trades)).to_csv(
                     d / "trade_log_checkpoint.csv", index=False)
             self._flush_open_trades_checkpoint(d)   # S6-B2213a
+            self._flush_log_checkpoints(d)          # S6-B3098d
             logger.error("B2148 %s state flushed: day=%s trades=%d",
                          status, state["sim_day_index"], state["trades_so_far"])
         except Exception as _exc:
@@ -1322,6 +1350,27 @@ class BacktestEngine:
                 "S6-B2213a RESUME: restored %d open position(s) at "
                 "resume_sim_day=%d (exit path only; portfolio accounting is "
                 "NOT restored - see S6-B2387)", len(restored), resume_sim_day)
+        # S6-B3098d: restore the three process-local logs. An absent file is
+        # a checkpoint from before this writer - the log restarts EMPTY at
+        # the resume day, which is disclosed (WARNING + logs_restored None)
+        # rather than read as a measured empty log (L580).
+        import pickle as _pk
+        _logs_restored = {}
+        for attr, fname in self.LOG_CHECKPOINTS:
+            _lp = resume_dir / fname
+            if _lp.exists():
+                with open(_lp, "rb") as fh:
+                    _rows = list(_pk.load(fh))
+                setattr(self, attr, _rows)
+                _logs_restored[attr] = len(_rows)
+            else:
+                _logs_restored[attr] = None
+                logger.warning(
+                    "S6-B3098d RESUME: %s absent - a checkpoint from before "
+                    "the log writer; %s restarts EMPTY at the resume day",
+                    fname, attr)
+        if isinstance(getattr(self, "_resume_plan", None), dict):
+            self._resume_plan["logs_restored"] = _logs_restored
         logger.info(
             "B1076 RESUME: resume_sim_day=%d closed_trades=%d (from %s)",
             resume_sim_day, trades_so_far, resume_dir,
@@ -1562,6 +1611,7 @@ class BacktestEngine:
                     # already flush unconditionally (3 of 3 writers now).
                     self._flush_open_trades_checkpoint(
                         self.output_dir)   # S6-B2213a
+                    self._flush_log_checkpoints(self.output_dir)   # S6-B3098d
                 except Exception as _exc:
                     logger.error(
                         "Batch 394 final-checkpoint flush failed: %s",
@@ -1737,6 +1787,7 @@ class BacktestEngine:
                 # the book with it makes the count and the positions ALWAYS
                 # consistent - which is what the resume HALT relies on.
                 self._flush_open_trades_checkpoint(self.output_dir)
+                self._flush_log_checkpoints(self.output_dir)   # S6-B3098d
                 try:
                     import json as _json
                     import os as _os

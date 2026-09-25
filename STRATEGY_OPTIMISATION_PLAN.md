@@ -1532,7 +1532,9 @@ record prints `[B3099 WARN]`; for that leg, compute the rate as leg seconds / si
 
 - **A pyramid alongside a live wave is not free.** A pooled engine alone has run at tens of GB of
   commit, and engine plus a pytest run has reached commit exhaustion - the class S6-B2237 records as
-  having killed three prior runs. Do not run the full suite against a live wave. **SEQUENCE IT BEFORE
+  having killed three prior runs. Do not run the full suite against a live wave - ENFORCED since B3108:
+  `scripts/pyramid_gate.py` REFUSES to start while any runner is in flight (S6-B3062, exit 5), and
+  `--beside-wave "<reason>"` overrides it, recorded in the artifact. **SEQUENCE IT BEFORE
   THE LAUNCH - there is no leg-boundary window (B3091):** this rule used to say *defer the commit to a
   leg boundary*, and the third bullet below measured why that cannot work. `scripts/pyramid_gate.py`
   records `engine_inflight` from the PROCESS TABLE (S6-B3093c, B3099): any python whose script is a

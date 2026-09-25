@@ -33652,6 +33652,8 @@ def test_b2580_pyramid_gate_voids_a_run_whose_tree_changed(tmp_path, monkeypatch
             (Path(cwd) / "scripts" / "a.py").write_text("x = 2\n", encoding="utf-8")
         return 0
     monkeypatch.setattr(pg.subprocess, "call", fake_call)
+    # S6-B3062: the refusal must not read this machine's live runs (L843)
+    monkeypatch.setattr(pg, "_engine_inflight", lambda *a, **k: "none")
     out = tmp_path / "pyr.txt"
     assert pg.run(out, tmp_path, ["-q"]) == 0
     text = out.read_text(encoding="utf-8")
@@ -39305,6 +39307,8 @@ def test_b2856_gate_pidfile_and_tree_stopper(tmp_path, monkeypatch):
         return 0
 
     monkeypatch.setattr(pg.subprocess, "call", fake_call)
+    # S6-B3062: the refusal must not read this machine's live runs (L843)
+    monkeypatch.setattr(pg, "_engine_inflight", lambda *a, **k: "none")
     empty_root = tmp_path / "r"
     empty_root.mkdir()
     rc = pg.run(out, empty_root, ["-q"])
@@ -46242,3 +46246,137 @@ def test_b3107_timeline_scan_and_first_after():
         [], text="The value 0.141 is read from the summary json.", tool_text="") == []
     assert v.scan_compaction_timeline_claim(
         [], text="I wrote the fourth part from the summary alone.", tool_text="")
+
+
+def test_s6b3098d_every_state_writer_checkpoints_the_logs():
+    """S6-B3098d: every function that flushes the open book also checkpoints
+    the three process-local logs (L620: a payload's contract binds every
+    writer - supervisor kill, in-loop kill, periodic). Structural, by AST."""
+    import ast
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "engine" / "backtest.py"
+           ).read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    fns = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]
+
+    def calls(fn, name):
+        return [c for c in ast.walk(fn) if isinstance(c, ast.Call)
+                and isinstance(c.func, ast.Attribute) and c.func.attr == name]
+    writers = [f for f in fns if calls(f, "_flush_open_trades_checkpoint")
+               and f.name != "_flush_open_trades_checkpoint"]
+    assert len(writers) >= 2, [f.name for f in writers]
+    n_open = sum(len(calls(f, "_flush_open_trades_checkpoint")) for f in writers)
+    n_logs = sum(len(calls(f, "_flush_log_checkpoints")) for f in writers)
+    assert n_open >= 3 and n_logs == n_open, (n_open, n_logs)
+
+
+def test_s6b3098d_logs_survive_a_resume_exactly(tmp_path):
+    """S6-B3098d: the three logs written by one engine are restored by the
+    next, row for row and type for type (a tuple stays a tuple, a date a date
+    - the reason for pickle over json); an absent file restores NOTHING and is
+    disclosed as None, never read as a measured empty log (L580)."""
+    import json
+    from datetime import date
+    from backtest.engine.backtest import BacktestEngine
+    a = BacktestEngine.__new__(BacktestEngine)
+    a.skipped_trades = [{"ticker": "AAA", "date": date(2024, 5, 6),
+                         "strategies": ("s1", "s2"), "reason": "occupancy"}]
+    a.sizing_log = [{"ticker": "BBB", "scale": 0.5}]
+    a.circuit_breaker_log = []
+    a._flush_log_checkpoints(tmp_path)
+    (tmp_path / "engine_state.json").write_text(json.dumps({
+        "simulated_day": 57, "status": "wall_time_kill", "trades_so_far": 0,
+        "open_trades": 0, "last_completed_day": 56, "day_in_progress": None}))
+    b = BacktestEngine.__new__(BacktestEngine)
+    b.resume_from_checkpoint = str(tmp_path)
+    b._resume_sim_day = -1
+    b._resumed_closed_trades_count = 0
+    b.closed_trades = []
+    b.skipped_trades, b.sizing_log, b.circuit_breaker_log = [], [], []
+    b._load_resume_checkpoint()
+    assert b.skipped_trades == a.skipped_trades
+    assert isinstance(b.skipped_trades[0]["strategies"], tuple)
+    assert b.sizing_log == a.sizing_log and b.circuit_breaker_log == []
+    assert b._resume_plan["logs_restored"] == {
+        "skipped_trades": 1, "sizing_log": 1, "circuit_breaker_log": 0}
+    # must-fire: a checkpoint written before the log writer restores nothing
+    for _attr, fname in BacktestEngine.LOG_CHECKPOINTS:
+        (tmp_path / fname).unlink()
+    c = BacktestEngine.__new__(BacktestEngine)
+    c.resume_from_checkpoint = str(tmp_path)
+    c._resume_sim_day = -1
+    c._resumed_closed_trades_count = 0
+    c.closed_trades = []
+    c.skipped_trades, c.sizing_log, c.circuit_breaker_log = [], [], []
+    c._load_resume_checkpoint()
+    assert c.skipped_trades == [] and set(c._resume_plan["logs_restored"].values()) == {None}
+
+
+def test_s6b3107b_a_session_that_ran_nothing_never_writes_a_green_stamp():
+    """S6-B3107b (B3108): MEASURED 2026-09-25 - a `--collect-only` session over
+    both tiers ran ZERO tests and wrote a GREEN .pyramid_stamp (n_tests 1546),
+    which C6 would have accepted as a pyramid. Drives the pure decision with
+    each shape of session, then checks sessionfinish actually CALLS it."""
+    import ast
+    from pathlib import Path
+    from backtest.tests import conftest as cf
+
+    both = {"test_unit.py", "test_integration.py"}
+    full = dict(collectonly=False, keyword="", markexpr="", n_items=1546,
+                n_reported=1546, n_deselected=0)
+    ok = cf.pyramid_stamp_decision(both, 0, **full)
+    assert ok["green"] is True and ok["n_tests"] == 1546
+    # must-fire shapes: none may be GREEN
+    assert cf.pyramid_stamp_decision(both, 0, **dict(full, collectonly=True, n_reported=0)) is None
+    assert cf.pyramid_stamp_decision(both, 0, **dict(full, keyword="test_b1760 or test_x")) is None
+    assert cf.pyramid_stamp_decision(both, 0, **dict(full, markexpr="slow")) is None
+    assert cf.pyramid_stamp_decision(both, 0, **dict(full, n_deselected=1400)) is None
+    assert cf.pyramid_stamp_decision({"test_unit.py"}, 0, **full) is None
+    interrupted = cf.pyramid_stamp_decision(both, 0, **dict(full, n_reported=830))
+    assert interrupted["green"] is False
+    assert cf.pyramid_stamp_decision(both, 1, **full)["green"] is False
+    assert cf.pyramid_stamp_decision(both, 0, **dict(full, n_items=0, n_reported=0))["green"] is False
+    # wiring: the hook routes through the decision (a pin on the callee alone
+    # would not prove the hook uses it - L654)
+    src = (Path(cf.__file__)).read_text(encoding="utf-8")
+    hook = [n for n in ast.parse(src).body
+            if isinstance(n, ast.FunctionDef) and n.name == "pytest_sessionfinish"][0]
+    called = {c.func.id for c in ast.walk(hook)
+              if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)}
+    assert "pyramid_stamp_decision" in called
+
+
+def test_s6b3062_pyramid_gate_refuses_beside_a_live_run(tmp_path, monkeypatch):
+    """S6-B3062 (B3108): the gate REFUSES while any runner is in flight
+    (L873: a pyramid beside the live c14 wave failed on memory and its RED
+    stamp refused the landing commit 5 of 5), fails closed on an unreadable
+    process table, and runs - recording the reason - under --beside-wave."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import pyramid_gate as pg
+
+    assert pg.refusal_beside_wave("none", None) is None
+    live = pg.refusal_beside_wave("run_wave:b3108_candle_tws_c14_step2_restart_spec.json", None)
+    assert live and "S6-B3062" in live and "--beside-wave" in live
+    assert pg.refusal_beside_wave("unknown", None), "an unreadable table must refuse"
+    assert pg.refusal_beside_wave("run_phase1a:output_x", "   ") , "a blank reason is no reason"
+    assert pg.refusal_beside_wave("run_phase1a:output_x", "hotfix for a crash in leg 2") is None
+    # the live path: run() refuses BEFORE starting pytest, writes the refusal
+    # to the artifact and returns the refusal exit code
+    calls = []
+    monkeypatch.setattr(pg, "_engine_inflight", lambda *a, **k: "run_wave:spec.json")
+    monkeypatch.setattr(pg.subprocess, "call", lambda *a, **k: calls.append(a) or 0)
+    out = tmp_path / "gate.json"
+    assert pg.run(out, tmp_path, ["-q"]) == pg.EXIT_REFUSED_BESIDE_WAVE
+    assert calls == [] and "REFUSED (S6-B3062" in out.read_text(encoding="utf-8")
+    # and with an override it runs, and the artifact records the reason
+    monkeypatch.setattr(pg, "fingerprint", lambda root: {})
+    monkeypatch.setattr(pg, "_chain_inflight", lambda: "none")
+    monkeypatch.setattr(pg, "_engine_dead_within_window", lambda *a, **k: "none")
+    assert pg.run(out, tmp_path, ["-q"], beside_wave="owner-approved hotfix") == 0
+    assert len(calls) == 1
+    assert "beside_wave_override=owner-approved hotfix" in out.read_text(encoding="utf-8")
+
