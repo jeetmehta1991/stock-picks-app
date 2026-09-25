@@ -160,10 +160,19 @@ def main() -> int:
                     default=DEFAULT_MAX_ZERO_VOLUME_SHARE)
     a = ap.parse_args()
 
+    exemptions: dict = {}
     if a.spec:
         spec = resolve_scope(json.loads((ROOT / a.spec).read_text(encoding="utf-8")))
         wave = spec["wave"]
         tickers_file, window = spec["tickers_file"], spec["window"]
+        # S6-B3092b (B3111): named per-run exemptions, gap defects only.
+        exemptions = dict(spec.get("preleg_exemptions") or {})
+        for t, why in exemptions.items():
+            if not str(why or "").strip():
+                print(f"preleg bar audit REFUSED: exemption for {t} carries "
+                      "no reason (an exemption with no reason is the "
+                      "bare-boolean escape, L789)")
+                return 2
     else:
         if not (a.tickers_file and a.start and a.end):
             raise SystemExit("need --spec OR --tickers-file --start --end")
@@ -202,10 +211,28 @@ def main() -> int:
                           max_nan_share=a.max_nan_share,
                           max_gap_share=a.max_gap_share,
                           max_zero_volume_share=a.max_zero_volume_share)
+        # S6-B3092b: an exemption reclassifies a PURE-GAP failure as the
+        # reported lifecycle class; corruption defects are never exempt.
+        if row["verdict"] == "FAIL" and t in exemptions:
+            if row["defects"] == ["gap_share"]:
+                row["verdict"] = "EXEMPT"
+                row["exempt_reason"] = str(exemptions[t])
+            else:
+                row["exempt_refused"] = ("only gap_share is exemptible; "
+                                         f"defects={row['defects']}")
         per_ticker[t] = row
         if row["verdict"] == "FAIL":
             failing.append(t)
 
+    # S6-B3092b: a stale exemption (naming a ticker with no gap failure)
+    # refuses - the register must not outlive the data it excuses (L587).
+    stale = sorted(t for t in exemptions
+                   if per_ticker.get(t, {}).get("verdict") not in ("EXEMPT",)
+                   and t not in failing)
+    if stale:
+        print(f"preleg bar audit REFUSED: stale exemption(s) {stale} - the "
+              "named tickers carry no gap failure in this window; remove them")
+        return 2
     doc = {
         "ticket": "S6-B2947",
         "wave": wave,
@@ -214,6 +241,8 @@ def main() -> int:
         "n_tickers": len(tickers),
         "n_failing": len(failing),
         "failing": failing,
+        "exemptions_used": {t: exemptions[t] for t, r in per_ticker.items()
+                            if r.get("verdict") == "EXEMPT"},
         "n_absent": sum(1 for r in per_ticker.values()
                         if r["verdict"] == "ABSENT"),
         "n_truncated": sum(1 for r in per_ticker.values()

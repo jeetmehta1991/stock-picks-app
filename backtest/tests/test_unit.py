@@ -46532,3 +46532,78 @@ def test_s6b3098e_demand_warmup_survives_a_resume(tmp_path, monkeypatch):
     assert st_d["mode"] == "warmup" and len(st_d["warmup_days"]) == 1
     dp.reset_state()
 
+
+def test_s6b3092b_preleg_exemptions_are_named_reasoned_and_gap_only(tmp_path):
+    """S6-B3092b (B3111): the pre-leg bar audit's per-run exemptions. MEASURED
+    at the c14 Step-2 restart: FISV (889-day rename gap with a stray tail
+    putting bars on both sides) and SBNY (18-day halt at the 2023-03 seizure)
+    are L847 lifecycle shapes, not corruption. An exemption is a NAMED ticker
+    with a REASON in the spec; reasonless refuses everything; only gap_share
+    is exemptible; a stale exemption refuses."""
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+
+    def run(spec_extra, tickers, frames):
+        wt = tmp_path / f"case{len(list(tmp_path.iterdir()))}"
+        (wt / "output_audit").mkdir(parents=True)
+        (wt / "cachedir").mkdir()
+        import pandas as pd
+        days = pd.date_range("2024-01-01", "2024-03-29", freq="B")
+        for t, kind in frames.items():
+            d = pd.DataFrame({"date": days, "open": 10.0, "high": 11.0,
+                              "low": 9.0, "close": 10.5, "volume": 1000})
+            if kind == "gap":
+                d = d.drop(d.index[20:40])           # a 20-day interior hole
+            elif kind == "nonpos":
+                d.loc[d.index[5], "close"] = -1.0
+            d.to_parquet(wt / "cachedir" / f"{t}.parquet")
+        (wt / "tickers.txt").write_text("\n".join(tickers), encoding="utf-8")
+        spec = {"wave": "zz_exempt_case", "tickers_file": "tickers.txt",
+                "window": {"start": "2024-01-01", "end": "2024-03-29"},
+                "_resolved_scope": {"note": "typed window is fine: resolve_scope "
+                                            "passes through a resolved spec"},
+                **spec_extra}
+        (wt / "spec.json").write_text(json.dumps(spec), encoding="utf-8")
+        env = dict(__import__("os").environ)
+        code = (
+            "import sys, types, json; sys.path.insert(0, %r);"
+            "import preleg_bar_audit as m; m.ROOT = __import__('pathlib').Path(%r);"
+            "from pathlib import Path;"
+            "import backtest.data.cache as c;"
+            "c._cache_path = lambda t: Path(%r) / (t + '.parquet');"
+            "m.resolve_scope = lambda s: s;"
+            "sys.argv = ['x', '--spec', 'spec.json', '--out', %r];"
+            "raise SystemExit(m.main())"
+        ) % (str(root / "scripts"), str(wt), str(wt / "cachedir"),
+             str(wt / "output_audit" / "out.json"))
+        r = subprocess.run([sys.executable, "-c", code], cwd=str(root),
+                           capture_output=True, text=True, env=env, timeout=180)
+        art = wt / "output_audit" / "out.json"
+        return r, (json.loads(art.read_text(encoding="utf-8")) if art.exists() else None)
+
+    # exempted gap -> EXEMPT + PASS, reason reported
+    r, doc = run({"preleg_exemptions": {"GAPT": "18-day exchange halt"}},
+                 ["OKAY", "GAPT"], {"OKAY": "ok", "GAPT": "gap"})
+    assert r.returncode == 0 and doc["verdict"] == "PASS", (r.returncode, r.stdout[-300:])
+    assert doc["per_ticker"]["GAPT"]["verdict"] == "EXEMPT"
+    assert doc["exemptions_used"] == {"GAPT": "18-day exchange halt"}
+    # unexempted gap still fails
+    r, doc = run({}, ["OKAY", "GAPT"], {"OKAY": "ok", "GAPT": "gap"})
+    assert r.returncode == 2 and doc["verdict"] == "FAIL" and doc["failing"] == ["GAPT"]
+    # corruption is never exemptible
+    r, doc = run({"preleg_exemptions": {"BADP": "please ignore"}},
+                 ["BADP"], {"BADP": "nonpos"})
+    assert r.returncode == 2 and doc["failing"] == ["BADP"]
+    assert "exempt_refused" in doc["per_ticker"]["BADP"]
+    # a reasonless exemption refuses everything, before any verdict
+    r, doc = run({"preleg_exemptions": {"GAPT": "  "}},
+                 ["GAPT"], {"GAPT": "gap"})
+    assert r.returncode == 2 and "no reason" in r.stdout
+    # a stale exemption refuses
+    r, doc = run({"preleg_exemptions": {"OKAY": "left over from last quarter"}},
+                 ["OKAY"], {"OKAY": "ok"})
+    assert r.returncode == 2 and "stale exemption" in r.stdout.lower()
+
