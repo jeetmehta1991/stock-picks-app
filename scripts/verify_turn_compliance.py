@@ -1978,6 +1978,27 @@ def _midturn_instruction_text(entry):
     return p if isinstance(p, str) and p.strip() else None
 
 
+def _last_hook_injection(entries) -> str:
+    """The most recent UserPromptSubmit hook output, lowercased; "" if none.
+
+    B3102 (S6-B3097b): MEASURED on the live transcript - the hook's output is
+    stored as an ATTACHMENT (attachment.type == "hook_success", hookEvent ==
+    "UserPromptSubmit", the text in attachment.content), never in a type ==
+    "user" entry, so a gate reading _last_user_text for the injection read
+    nothing (the L795 channel class, hook half)."""
+    txt = ""
+    for d in entries or ():
+        if not isinstance(d, dict) or d.get("type") != "attachment":
+            continue
+        att = d.get("attachment")
+        if (isinstance(att, dict) and att.get("type") == "hook_success"
+                and att.get("hookEvent") == "UserPromptSubmit"):
+            c = att.get("content") or att.get("stdout") or ""
+            if isinstance(c, str):
+                txt = c
+    return txt.lower()
+
+
 def _last_user_text(entries) -> str:
     """The most recent REAL user message, lowercased.
 
@@ -2326,6 +2347,11 @@ def scan_discipline_not_loaded(entries, *, tool_text=None,
 
     B1728, owner directive: *"I want the full 632 lines loaded each turn!"*
 
+    B3102 (S6-B3097b): the hook now emits a COMPACT INDEX - at ~377 KB the
+    full-skill emission below reached context as a 2 KB preview (L871) - so
+    this gate, which counts only a Skill call or the skill-body message, is
+    the whole enforcement. The B1883 paragraph is kept for lineage.
+
     B1883 (S6-B1813d): THE RATIONALE BELOW IS STALE AND THE CHECK IS NOT.
     Since B1744 the hook injects the FULL SKILL BODY - see
     `inject_tier3_discipline.py:72` emitting "FULL SKILL, auto-injected
@@ -2374,7 +2400,8 @@ def scan_discipline_not_loaded(entries, *, tool_text=None,
     if 'execution-discipline' in tt:
         return []
     return ['EXECUTION-DISCIPLINE NOT LOADED: this turn did substantive work '
-            'with only the 12-bullet hook summary in context. The full skill is '
+            'with only the hook\'s COMPACT INDEX in context (S6-B3097b, B3102 - '
+            'a reminder, never the skill). The full skill is '
             '644 lines and invoking it delivers all of them. The 632 lines the '
             'summary omits hold #182 verdict-scope, the POST-FIX RE-CHECK rule, '
             'B1446 no-arbitrary-decisions and the tripwire table - all violated '
@@ -3745,11 +3772,28 @@ def scan_false_skill_status(entries, *, text=None, injected=None) -> list[str]:
     if not t or "skills invoked" not in t:
         return []
     if injected is None:
-        u = _last_user_text(entries)
-        injected = "full skill, auto-injected" in u
+        # B3102: the injection lives in a hook ATTACHMENT, not the user text
+        u = _last_hook_injection(entries) or _last_user_text(entries)
+        if "compact index (s6-b3097b)" in u:
+            injected = "compact_index"
+        else:
+            injected = "full skill, auto-injected" in u
     if not injected:
         return []
     tail = t.split("skills invoked", 1)[1][:600]
+    if injected == "compact_index":
+        # S6-B3097b (B3102): the hook injects an INDEX, never the skill - only a
+        # Skill call delivers it, so a status crediting the hook is false (L871)
+        cred = [m for m in ("auto-injected", "hook summary", "always-on")
+                if m in tail]
+        if cred:
+            return [f"FALSE SKILL STATUS (B3102 / L871): the SKILLS INVOKED "
+                    f"block says {cred[0]!r}, but the hook injects a COMPACT "
+                    "INDEX (S6-B3097b), never the skill. Report "
+                    "execution-discipline as FULLY LOADED only for a "
+                    "Skill(execution-discipline) call made after the last "
+                    "compaction."]
+        return []
     STALE = ("12-bullet", "12 bullet", "hook summary", "not invoked this turn",
              "always-on")
     hit = [m for m in STALE if m in tail]
@@ -3761,7 +3805,9 @@ def scan_false_skill_status(entries, *, text=None, injected=None) -> list[str]:
                 f"{hit[0]!r}. Reporting a state you did not observe - the "
                 "session's root cause, inside the line meant to prove "
                 "compliance. Report execution-discipline as FULLY LOADED "
-                "(auto-injected)."]
+                "only for a Skill call made after the last compaction - at "
+                "~377 KB the injection reaches context as a 2 KB preview "
+                "(L871; this line said 'FULLY LOADED (auto-injected)')."]
     return []
 
 

@@ -25847,6 +25847,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L871 (B3097): after a compaction only a Skill call loads the skill"),
         ("B3097 CORRECTION (L871)",
          "L871 (B3097): the B1744 injection arrives as a 2 KB preview"),
+        # B3102 (S6-B3097b): the hook's compact index is a reminder, never
+        # the skill - pin that sentence, the half a reader would act on.
+        ("The index is a reminder, never the skill: only a Skill call delivers this file.",
+         "S6-B3097b (B3102): the hook emits a compact index, not the skill"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26049,7 +26053,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # per B2130).
     # 309 -> 311 at B3097 (the L871 re-invoke row and the auto-injection
     # correction; same-call with the row per B2130).
-    assert len(gutted) == 311, gutted
+    # 311 -> 312 at B3102 (the S6-B3097b compact-index note; same-call
+    # with the skill edit per B2132).
+    assert len(gutted) == 312, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -45408,3 +45414,142 @@ def test_b3101_level_sweep_writes_the_block_without_null_perms():
            and any(isinstance(tg, ast.Subscript) and isinstance(tg.slice, ast.Constant)
                    and tg.slice.value == "multiplicity" for tg in s.targets)]
     assert top, "main() must assign rec['multiplicity'] at its top level, unconditionally"
+
+
+def _b3102_tripwire_rows(body: str) -> list:
+    """The tripwire table's data rows, one per physical line (header and
+    separator excluded) - the same unit the compact index reads."""
+    i = body.index("## TRIPWIRE TABLE")
+    j = body.index("\n## ", i + 5)
+    return [ln for ln in body[i:j].split("\n") if ln.startswith("| ")
+            and not ln.startswith("| If you are about to")
+            and not ln.replace(" ", "").startswith("|---")]
+
+
+def test_b3102_tripwire_rows_are_physical_lines():
+    """S6-B3097b (B3102): 7 tripwire rows sat on ONE physical line, joined by a
+    literal backslash + 'n' - the L834 patcher defect, repaired in the test file
+    at B2942 and never in the skill - so they rendered as one row and a
+    line-based reader (the compact index) dropped six. No join may remain."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    body = (root / ".claude" / "skills" / "execution-discipline" / "SKILL.md").read_text(
+        encoding="utf-8")
+    join = chr(92) + "n| "
+    i = body.index("## TRIPWIRE TABLE")
+    sec = body[i:body.index("\n## ", i + 5)]
+    assert join not in sec, f"{sec.count(join)} tripwire rows joined by a literal backslash-n"
+    assert len(_b3102_tripwire_rows(body)) >= 157
+    # the check can fire: a planted join is found
+    assert join in ("| a | b |" + join + "c | d |")
+
+
+def test_b3102_hook_emits_a_compact_index_with_essentials_first(tmp_path):
+    """S6-B3097b (B3102, owner-approved option a). MEASURED B3097: the hook's
+    ~377 KB output was persisted to a file and only a 2 KB preview reached
+    context (L871). Run as the hook runs (a subprocess reading stdin): the
+    output is the COMPACT INDEX, the essentials sit inside the first 2 KB of
+    it, every tripwire row's first column is listed or the shortfall is
+    stated, and it is pure ASCII under the budget."""
+    import os as _os
+    import subprocess as _sp
+    import sys as _s
+    root = _b2520_scripts_on_path()
+    import inject_tier3_discipline as it3
+    (tmp_path / "landings.jsonl").write_text("", encoding="utf-8")
+    env = {**_os.environ, "POSTCONFIG_LANDINGS_PATH": str(tmp_path / "landings.jsonl")}
+    r = _sp.run([_s.executable, str(root / "scripts" / "inject_tier3_discipline.py")],
+                cwd=str(root), input="", capture_output=True, text=True,
+                encoding="utf-8", errors="replace", env=env)
+    assert r.returncode == 0, r.stderr
+    k = r.stdout.index("[EXECUTION-DISCIPLINE - COMPACT INDEX (S6-B3097b)")
+    idx = r.stdout[k:]
+    assert "FULL SKILL, auto-injected" not in r.stdout
+    head = idx[:it3.HEAD_BUDGET]
+    for must in ("Skill(execution-discipline)", "compaction", "BREVITY", "TRUTH",
+                 "END BLOCKS"):
+        assert must in head, (must, head)
+    assert len(idx) <= it3.HOOK_BUDGET, len(idx)
+    assert all(ord(c) < 128 for c in idx)
+    body = (root / ".claude" / "skills" / "execution-discipline" / "SKILL.md").read_text(
+        encoding="utf-8")
+    rows = _b3102_tripwire_rows(body)
+    listed = [ln for ln in idx.split("\n") if ln.startswith("- ")
+              and not ln.startswith(("- BREVITY", "- TRUTH", "- END BLOCKS"))]
+    import re as _re
+    short = _re.search(r"\[(\d+) more tripwire rows not shown", idx)
+    assert len(listed) + (int(short.group(1)) if short else 0) == len(rows), (
+        len(listed), short and short.group(0), len(rows))
+    # the index is GENERATED: a row added to the skill appears without editing
+    # the hook - fed a body with one extra row, the count follows it
+    extra = body
+    j = extra.index("## TRIPWIRE TABLE")
+    j = extra.index("\n## ", j + 5)
+    extra = extra[:j] + "\n| Zz a planted row | check | Lzz |" + extra[j:]
+    idx2 = it3.compact_index(extra)
+    listed2 = [ln for ln in idx2.split("\n") if ln.startswith("- ")
+               and not ln.startswith(("- BREVITY", "- TRUTH", "- END BLOCKS"))]
+    short2 = _re.search(r"\[(\d+) more tripwire rows not shown", idx2)
+    assert len(listed2) + (int(short2.group(1)) if short2 else 0) == len(rows) + 1
+
+
+def test_b3102_false_skill_status_reads_the_hook_attachment():
+    """S6-B3097b (B3102): the hook's output is stored as an ATTACHMENT entry
+    (hook_success / UserPromptSubmit), never in a user entry - MEASURED, 1000 of
+    them in the B3102 session - so a gate reading the user text for the
+    injection saw nothing on the live path. Driven through `entries` (the live
+    path), not the injected= seam: the legacy banner in an attachment now
+    fires on a stale status, and under the compact index a status crediting
+    the hook with the skill fires while a Skill-call status stays quiet."""
+    _b2520_scripts_on_path()
+    import verify_turn_compliance as tg
+
+    def att(content):
+        return [{"type": "attachment", "attachment": {
+            "type": "hook_success", "hookEvent": "UserPromptSubmit",
+            "content": content}}]
+    legacy = att("[EXECUTION-DISCIPLINE - FULL SKILL, auto-injected every turn (B1744).]")
+    compact = att("[EXECUTION-DISCIPLINE - COMPACT INDEX (S6-B3097b). ...]")
+    f = lambda e, t: bool(tg.scan_false_skill_status(e, text=t))
+    assert f(legacy, "SKILLS INVOKED: execution-discipline ALWAYS-ON (12-bullet)")
+    assert f(compact, "SKILLS INVOKED: execution-discipline FULLY LOADED (auto-injected)")
+    assert not f(compact, "SKILLS INVOKED: execution-discipline FULLY LOADED "
+                          "(Skill invoked after the last compaction)")
+    assert not f([], "SKILLS INVOKED: execution-discipline FULLY LOADED (auto-injected)")
+    assert tg._last_hook_injection(compact + [{"type": "user", "message": {
+        "content": "hello"}}]).startswith("[execution-discipline - compact index")
+
+
+def test_b3102_index_fits_the_measured_inline_limit(monkeypatch, capsysbinary):
+    """S6-B3097b delivery, MEASURED over three hook firings at B3102: 15,395 and
+    11,829 chars were persisted to a file with a 2 KB preview in context, and
+    8,890 chars reached context INLINE - the first budget, a CHOSEN 16,000, did
+    not fit. HOOK_BUDGET stays at the measured-inline size with margin, and the
+    owner-ruled banners that print first come out of the SAME budget: a long
+    landing banner shrinks the index instead of pushing the whole output past
+    the limit. The head (the invoke instruction) is emitted whatever is left."""
+    root = _b2520_scripts_on_path()
+    import inject_tier3_discipline as it3
+    assert it3.HOOK_BUDGET <= 9000, "re-measure the inline limit before raising it"
+    body = (root / ".claude" / "skills" / "execution-discipline" / "SKILL.md"
+            ).read_text(encoding="utf-8")
+    small = it3.compact_index(body, budget=3000)
+    assert len(small) <= 3000 and "Skill(execution-discipline)" in small
+    assert "more tripwire rows not shown" in small
+    none_left = it3.compact_index(body, budget=0)
+    assert "Skill(execution-discipline)" in none_left
+    assert "- Cite any count" not in none_left
+    # behavioural, through main(): a 6,000-char landing banner is paid for by
+    # the index, so the whole output still fits the budget
+    monkeypatch.setattr(it3, "undelivered_landings_banner", lambda: "L" * 6000 + "\n\n")
+    monkeypatch.setattr(it3, "chain_halts_banner", lambda: "")
+    # the hook reads its payload from stdin; pytest refuses a stdin read while
+    # capturing, and the hook's fail-open except would then print NOTHING - so
+    # give it the empty payload a real UserPromptSubmit pipe carries
+    import io as _io
+    import sys as _sys
+    monkeypatch.setattr(_sys, "stdin", _io.StringIO(""))
+    assert it3.main() == 0
+    out = capsysbinary.readouterr().out.decode("utf-8")
+    assert out.startswith("L" * 100) and "Skill(execution-discipline)" in out
+    assert len(out) <= it3.HOOK_BUDGET + 120, len(out)

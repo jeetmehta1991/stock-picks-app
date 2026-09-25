@@ -47,6 +47,70 @@ statement (Stop hook + pre-commit enforce the mechanical half).
 """
 
 
+# MEASURED B3102 (S6-B3097b delivery, three hook firings): 15,395 and 11,829
+# chars were persisted to a file with only a 2 KB preview in context; 8,890
+# chars reached context INLINE. The harness limit is in (8,890, 11,829], so
+# the budget is a measured-inline value with margin - the first CHOSEN value,
+# 16,000, did not fit. Banners count toward the same limit (see main).
+HOOK_BUDGET = 9000   # chars, whole hook output
+HEAD_BUDGET = 2000    # chars the harness ALWAYS shows (its preview) - essentials first
+
+
+def _section(body: str, title: str) -> str:
+    i = body.find(title)
+    if i < 0:
+        return ""
+    j = body.find("\n## ", i + len(title))
+    return body[i:j if j > 0 else len(body)]
+
+
+def compact_index(body: str, budget: int = HOOK_BUDGET) -> str:
+    """S6-B3097b (B3098): what the hook injects instead of the whole skill.
+
+    MEASURED B3097: at ~377 KB the full skill is persisted to a file and only a
+    2 KB preview reaches context, so every rule past the first 2 KB was
+    under-delivered while the hook reported success (L871). The HEAD - invoke
+    instruction, brevity rule, truth-standard core - fits HEAD_BUDGET, the part
+    the harness always shows. The tripwire index follows: the first column of
+    EVERY row, GENERATED from SKILL.md, so a new row appears without anyone
+    editing this hook. Pure ASCII; capped at HOOK_BUDGET with the dropped count
+    stated (a silent cap reads as complete)."""
+    import re as _re
+    head = [
+        "[EXECUTION-DISCIPLINE - COMPACT INDEX (S6-B3097b). The full skill is "
+        ".claude/skills/execution-discipline/SKILL.md and ONLY a Skill call "
+        "delivers it - this index is not the skill. It must be in context on "
+        "every working turn: INVOKE Skill(execution-discipline) at session start "
+        "and again after EVERY compaction (L871). Apply it UNPROMPTED.]",
+        "- BREVITY (owner 2026-09-10): lead with the answer; ~300 words before the "
+        "end blocks; tables over prose; plain words, every quant term glossed.",
+        "- TRUTH: every claim is EXECUTED / READ / DERIVED or labelled UNVERIFIED; "
+        "sub-agent output is UNVERIFIED until spot-checked; counts are re-derived "
+        "this turn; DONE needs pyramid GREEN + commit hash, FIXED needs a passing "
+        "pin; a verdict names its N of M; retract a false claim visibly, then Phase 5.",
+        "- END BLOCKS: SKILLS INVOKED; ticket counts table (6 classes + delta, from "
+        "scripts/queue_state.py); CHECKLIST compliance citing items with status.",
+    ]
+    trip = _section(body, "## TRIPWIRE TABLE")
+    rows = [ln for ln in trip.splitlines()
+            if ln.startswith("| ") and not ln.startswith("| If you are about to")
+            and not _re.match(r"^\|\s*-{3}", ln)]
+    firsts = [ln.split(" | ")[0].lstrip("| ").strip() for ln in rows]
+    out = "\n".join(head) + "\n[TRIPWIRES - if you are about to... (full check "
+    out += "per row in the skill)]\n"
+    shown = 0
+    for f in firsts:
+        line = "- " + f + "\n"
+        if len(out) + len(line) > budget - 120:
+            break
+        out += line
+        shown += 1
+    if shown < len(firsts):
+        out += (f"[{len(firsts) - shown} more tripwire rows not shown - "
+                "invoke the skill]\n")
+    return out.encode("ascii", "replace").decode("ascii")
+
+
 def undelivered_landings_banner() -> str:
     """B2520 (owner ruling 2026-09-01, "share results with me"): every cube
     whose landing has not yet been reported to the owner is printed at the
@@ -112,6 +176,13 @@ def main() -> int:
         # need its content -- the injection is unconditional every turn.
         if not sys.stdin.isatty():
             sys.stdin.read()
+        # SUPERSEDED 2026-09-24 by the owner's approval of S6-B3097b option (a):
+        # at ~377 KB the harness persists this output to a file and shows a
+        # 2 KB preview, so emitting the whole file delivered 2 KB (MEASURED
+        # B3097, L871) while reporting success. The hook now emits a COMPACT
+        # INDEX with the essentials inside that preview, and the Skill call is
+        # the only delivery of the full file. The directive's reasoning below
+        # is kept: its goal - the protocol present every turn - is unchanged.
         # B1743 OWNER DIRECTIVE: emit the FULL SKILL, not a 12-bullet summary.
         #
         # "There is no logic if a turn proceeds without fully invoking it."
@@ -128,9 +199,13 @@ def main() -> int:
                   / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
         try:
             body = _skill.read_text(encoding="utf-8")
-            out = (undelivered_landings_banner() + chain_halts_banner()
-                   + "[EXECUTION-DISCIPLINE - FULL SKILL, auto-injected every turn "
-                   "(B1744). Apply UNPROMPTED.]" + chr(10) + body)
+            # S6-B3097b (B3098): a COMPACT INDEX, not the whole file - at ~377 KB
+            # the harness showed only a 2 KB preview of it (L871).
+            _banners = undelivered_landings_banner() + chain_halts_banner()
+            # the banners print first and count toward the same inline limit
+            # (the head is always emitted, whatever budget is left)
+            out = _banners + compact_index(
+                body, budget=max(0, HOOK_BUDGET - len(_banners)))
             # B1744 ROOT CAUSE. B1743 shipped and SILENTLY did nothing for two
             # sessions, including across a restart. PROVEN: this hook writes to a
             # cp1252 stdout on Windows, SKILL.md contains U+2192 and U+2264 and
