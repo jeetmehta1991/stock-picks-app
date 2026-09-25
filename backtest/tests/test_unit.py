@@ -45276,3 +45276,135 @@ def test_b3100_run_wave_logs_as_it_goes():
     calls = [c.func.id for c in ast.walk(fns["run_arm"]) if isinstance(c, ast.Call)
              and isinstance(c.func, ast.Name)]
     assert {"leg_outcome", "backup_checkpoint", "_commit_free_gb"} <= set(calls), calls
+
+
+def _b3101_writes_multiplicity(src: str) -> bool:
+    """True when `src` places a bh_fdr_report(...) call under the key
+    'multiplicity' - as a dict entry or as a subscript assignment. Structural
+    (AST), so a comment or docstring naming the block cannot satisfy it."""
+    import ast
+
+    def _is_fdr(v):
+        return (isinstance(v, ast.Call) and (
+            (isinstance(v.func, ast.Attribute) and v.func.attr == "bh_fdr_report")
+            or (isinstance(v.func, ast.Name) and v.func.id == "bh_fdr_report")))
+    for n in ast.walk(ast.parse(src)):
+        if isinstance(n, ast.Dict):
+            for k, v in zip(n.keys, n.values):
+                if isinstance(k, ast.Constant) and k.value == "multiplicity" and _is_fdr(v):
+                    return True
+        if isinstance(n, ast.Assign) and _is_fdr(n.value):
+            for tg in n.targets:
+                if (isinstance(tg, ast.Subscript) and isinstance(tg.slice, ast.Constant)
+                        and tg.slice.value == "multiplicity"):
+                    return True
+    return False
+
+
+def test_b3101_exit_family_rows_keeps_every_searched_exit():
+    """S6-B3096f (B3101): the per-exit graders nest the power-floor verdict
+    under `admit` and write no row for an exit with no in-sample trade, so
+    passing per_exit straight to bh_fdr_report counts a BELOW_POWER_FLOOR exit
+    as SCORED and drops the zero-trade exits from `searched`. The helper lifts
+    the verdict and keeps every exit searched. Both directions."""
+    root = _b2520_scripts_on_path()
+    import roster_core as rc
+    per_exit = [
+        {"exit": "a", "is_sharpe": 0.4, "is_ci_lo": 0.1, "admit": {"verdict": "RANKED"}},
+        {"exit": "b", "is_sharpe": 0.2, "is_ci_lo": -0.3, "admit": {"verdict": "RANKED"}},
+        {"exit": "c", "is_sharpe": 1.9, "is_ci_lo": -2.0,
+         "admit": {"verdict": "BELOW_POWER_FLOOR"}}]
+    searched = ["a", "b", "c", "d", "e"]          # d and e fired nothing in-sample
+    rows = rc.exit_family_rows(per_exit, searched)
+    rep = rc.bh_fdr_report(rows)
+    assert rep["searched"] == 5 and rep["reconciles"] is True, rep
+    assert (rep["scored_unpriced"], rep["unpriceable"], rep["no_candidate"]) == (2, 1, 2), rep
+    assert sorted(r["exit"] for r in rows) == searched
+    # must-fire: the raw per_exit mis-buckets the power-floor exit and loses d, e
+    raw = rc.bh_fdr_report(per_exit)
+    assert raw["searched"] == 3 and raw["unpriceable"] == 0, raw
+    assert rc.exit_family_rows(None, None) == []
+
+
+def test_b3101_every_registered_grader_writes_the_multiplicity_block():
+    """S6-B2766 made the block MANDATORY; B3101 measured 4 of 6 registered
+    grader scripts writing it - grade_candle_config.py and
+    grade_institutional_config.py did not, and offline_level_sweep.py wrote one
+    only under --null-perms. The list is DERIVED from the registry
+    (producer_variant_table.SPECS tools.grade.script), so a family added
+    tomorrow is checked without anyone editing this test."""
+    from pathlib import Path as _P
+    root = _b2520_scripts_on_path()
+    import producer_variant_table as pvt
+    scripts = sorted({(((s or {}).get("tools") or {}).get("grade") or {}).get("script")
+                      for s in pvt.SPECS.values()} - {None})
+    assert len(scripts) >= 6, scripts
+    scripts.append("offline_level_sweep.py")
+    missing = [s for s in scripts if not _b3101_writes_multiplicity(
+        (_P(root) / "scripts" / s).read_text(encoding="utf-8"))]
+    assert not missing, f"graders writing no multiplicity block: {missing}"
+    # the predicate can fail: a docstring that NAMES the block is not the block
+    assert not _b3101_writes_multiplicity(
+        "def f():\n    \"\"\"writes multiplicity via bh_fdr_report\"\"\"\n"
+        "    return {'multiplicity': None}\n")
+    assert _b3101_writes_multiplicity("x = {'multiplicity': rc.bh_fdr_report([])}\n")
+
+
+def test_b3101_candle_block_is_report_only_and_feeds_the_breadth_reader():
+    """Council 2's report-only proof, on a REAL landed cube: re-grading c08
+    reproduces its stored pre-B3101 grid key for key, plus the new block and
+    NOTHING else changed; the block counts every exit the cube searched and
+    reconciles; and breadth_step2_read.require_multiplicity - the reader that
+    fails closed without it - refuses the stored grid and accepts the new one.
+    Skipped where the cube dir is absent (cube dirs are never committed)."""
+    import json as _j
+    import pandas as _pd
+    import pytest as _pt
+    from pathlib import Path as _P
+    root = _P(_b2520_scripts_on_path())
+    cube = root / "output_candle_tws_c08_b0.3_s0.0_w0.3" / "trade_exit_detail.csv"
+    stored_p = root / "output_audit" / "output_candle_tws_c08_b0.3_s0.0_w0.3_grid_auto.json"
+    if not cube.is_file() or not stored_p.is_file():
+        _pt.skip("c08 cube or its stored grid not on this machine")
+    import grade_candle_config as g
+    import breadth_step2_read as b2
+    stored = _j.loads(stored_p.read_text(encoding="utf-8"))
+    doc = _j.loads(_j.dumps(g.grade(
+        cube, stored["config"], min_n=stored["min_n"], top_n=10,
+        note=stored["note"], disclosure=stored["manifest_check"]), default=float))
+    mult = doc.pop("multiplicity")
+    doc["cube"] = stored["cube"]
+    assert doc == stored, sorted(k for k in set(doc) | set(stored)
+                                 if doc.get(k) != stored.get(k))
+    n_exits = _pd.read_csv(cube, usecols=["exit_method"])["exit_method"].nunique()
+    assert mult["searched"] == n_exits and mult["reconciles"] is True, mult
+    assert mult["report_only"] is True
+    with _pt.raises(SystemExit):
+        b2.require_multiplicity(stored, "stored c08 grid (pre-B3101)")
+    b2.require_multiplicity(dict(doc, multiplicity=mult), "re-graded c08 grid")
+
+
+def test_b3101_level_sweep_writes_the_block_without_null_perms():
+    """offline_level_sweep.py wrote a multiplicity instrument only under
+    --null-perms > 0 (default 0), so a default grid carried no block and the
+    breadth reader refused it. B3101: the family is EVERY cell searched
+    (cell_family_rows), and main() assigns the block OUTSIDE any branch."""
+    import ast
+    from pathlib import Path as _P
+    root = _b2520_scripts_on_path()
+    import offline_level_sweep as ols
+    import roster_core as rc
+    cells = [{"levels": (1,), "is_sharpe": 0.3, "is_trades": 40},
+             {"levels": (2,), "is_sharpe": None, "is_trades": 7},
+             {"levels": (3,), "is_sharpe": None, "is_trades": 0}]
+    rows = ols.cell_family_rows(cells)
+    rep = rc.bh_fdr_report(rows)
+    assert rep["searched"] == 3 and rep["reconciles"] is True, rep
+    assert [r.get("verdict") for r in rows] == [None, "BELOW_POWER_FLOOR", "ZERO_FIRES"]
+    src = (_P(root) / "scripts" / "offline_level_sweep.py").read_text(encoding="utf-8")
+    main = next(n for n in ast.parse(src).body
+                if isinstance(n, ast.FunctionDef) and n.name == "main")
+    top = [s for s in main.body if isinstance(s, ast.Assign)
+           and any(isinstance(tg, ast.Subscript) and isinstance(tg.slice, ast.Constant)
+                   and tg.slice.value == "multiplicity" for tg in s.targets)]
+    assert top, "main() must assign rec['multiplicity'] at its top level, unconditionally"

@@ -398,6 +398,13 @@ pair is now consistent.
   when `--null-perms` is above 0 (default off) - and the breadth grid prices its search in a separate
   step (§3.6 item 6). Ticketed S6-B3096f. Until it closes, record `trials_searched` beside any ranked
   list whose grid carries no `multiplicity` block.
+  **CLOSED B3101 (S6-B3096f):** every grader the registry names now writes the block - the two
+  per-exit engine graders over the exits SEARCHED in their cube (`roster_core.exit_family_rows`: one
+  config's exits; the campaign family of configs x exits is not priced there), and
+  `offline_level_sweep.py` on EVERY run, its family every cell searched, the permutation null attached
+  when one ran. Pinned by `test_b3101_every_registered_grader_writes_the_multiplicity_block`, which
+  derives the grader list from the registry (it supersedes test_b2815's hand list of three). Grids
+  written before B3101 still lack the block: for those, record `trials_searched` as before.
 - **Read every search's best against ITS OWN permutation null (B2676).** `offline_level_sweep.py
   --null-perms` shuffles magnitudes across fires and re-grades the identical grid; its maxima are
   SYNTHETIC and price the search, never performance. MEASURED on a 390-trial grid: the null's best

@@ -161,6 +161,18 @@ def permutation_null(IS, axes, min_n, n_perms, seed):
     return maxima
 
 
+def cell_family_rows(cells) -> list:
+    """S6-B3096f (B3101): the multiplicity family of a level sweep is EVERY
+    cell searched - the record keeps only the graded ones. A graded cell is
+    scored; a cell with trades and no exit at min_n could not be priced
+    (BELOW_POWER_FLOOR); a zero-trade cell produced no candidate (ZERO_FIRES)."""
+    return [({"levels": c["levels"], "is_sharpe": c["is_sharpe"]}
+             if c.get("is_sharpe") is not None else
+             {"levels": c["levels"],
+              "verdict": "BELOW_POWER_FLOOR" if c.get("is_trades") else "ZERO_FIRES"})
+            for c in cells]
+
+
 def sweep(strategy: str, axes: list[dict], production: tuple,
           coverage_min: float, repro_min: float, min_n: int) -> dict:
     m, ev = load(strategy, axes)
@@ -200,6 +212,7 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
                       "best_exit": best_ex, "is_sharpe": best_sh,
                       "exits_evaluated": int(k["exit_method"].nunique())})
     graded = [c for c in cells if c["is_sharpe"] is not None]
+    _family_rows = cell_family_rows(cells)   # S6-B3096f (B3101)
     graded.sort(key=lambda c: c["is_sharpe"], reverse=True)
     trials = sum(c["exits_evaluated"] for c in cells)
     return {"strategy": strategy,
@@ -210,6 +223,7 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
             "trials_searched": trials,
             "window": {"is": [str(rc.IS_START), str(rc.IS_END)]},
             "ranked": graded,
+            "_family_rows": _family_rows,
             "preregistration_candidate": graded[0] if graded else None,
             "holdout_read": "NOT FIRED - owner-gated, one shot, against the "
                             "preregistration_candidate named above"}
@@ -304,6 +318,14 @@ def main() -> int:
         print(f"permutation null ({pn['n_perms']} perms): observed best "
               f"{pn['observed_best_is_sharpe']} | null q95 "
               f"{pn['null_max_is_sharpe_quantiles'].get('0.95')} | p {pn['p_value_best']}")
+    # S6-B3096f (B3101): the multiplicity block is written EVERY sweep - with
+    # the permutation null when one ran, 'none_available' when not (was: only
+    # under --null-perms > 0, default 0, so a default T4 grid carried none and
+    # breadth_step2_read refused it, fail-closed). trials_searched rides beside
+    # it: the partition counts CELLS, the search spanned cells x exits.
+    rec["multiplicity"] = rc.bh_fdr_report(
+        rec.pop("_family_rows"), permutation_null=rec.get("permutation_null"))
+    rec["multiplicity"]["trials_searched"] = rec.get("trials_searched")
     rec["band_ruling_verbatim"] = _ruling
     rec["status_stamp_at_run"] = _stamp
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")

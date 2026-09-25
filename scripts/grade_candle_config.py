@@ -62,6 +62,9 @@ has a single row and equivalence collapse needs >= 2 combinations. Cross-config
 multiplicity across the 54-config campaign is NOT handled here and is tracked
 separately - every config writes its own grid carrying its own `config` block,
 so the campaign-level deflation is computable post-hoc by globbing them.
+WITHIN one config the exit family IS reported (B3101, S6-B3096f): every grid
+carries the report-only `multiplicity` block over the exits searched
+(roster_core.exit_family_rows), which breadth_step2_read requires.
 
 Usage:
   python scripts/grade_candle_config.py --cube output_candle_cfg01 \\
@@ -313,6 +316,13 @@ def grade(cube_csv: Path, config: dict, *, min_n: int = 10, top_n: int = 10,
         "step1_combinations_carried": 1,
         "step1_distinct_outcomes": 1,
         "step1_ranking": ranked[:top_n],
+        # S6-B3096f (B3101): the report-only multiplicity block S6-B2766 made
+        # mandatory - every exit SEARCHED in this cube, partitioned (a zero-trade
+        # exit stays in the denominator). Scope: one config's exits; the
+        # campaign-level family (configs x exits) is not priced here. No
+        # ranking or verdict reads it (B1608).
+        "multiplicity": rc.bh_fdr_report(rc.exit_family_rows(
+            per_exit, cube["exit_method"].astype(str).unique())),
         "per_exit": per_exit,
         "results_n_exits": len(per_exit),
         "step2": grade_step2(cube, ho_rows, min_n=min_n, declared_step2=step2,

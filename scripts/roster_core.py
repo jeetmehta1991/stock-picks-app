@@ -446,6 +446,32 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
 SCORE_KEYS = ("is_sharpe", "sharpe", "holdout_sharpe", "pooled_sharpe")
 
 
+def exit_family_rows(per_exit, exits_searched) -> list:
+    """S6-B3096f (B3101): the multiplicity family of a PER-EXIT grader - one
+    row per exit SEARCHED, in the shape bh_fdr_report partitions.
+
+    The per-exit graders nest the power-floor verdict under `admit` and emit
+    no row for an exit with no in-sample trade, so passing `per_exit`
+    straight in would (a) count a BELOW_POWER_FLOOR exit as scored and (b)
+    drop the zero-trade exits from `searched` - rows leaving the denominator
+    silently is the defect bh_fdr_report exists to expose (B2775). Here every
+    exit present in the strategy's cube is a row: its verdict lifted to the
+    top level, and ZERO_FIRES for an exit with no in-sample row."""
+    rows, seen = [], set()
+    for r in per_exit or []:
+        if not isinstance(r, dict):
+            continue
+        verdict = (r.get("admit") or {}).get("verdict") or r.get("verdict")
+        rows.append({"exit": r.get("exit"), "verdict": verdict,
+                     "is_sharpe": r.get("is_sharpe"),
+                     "is_ci_lo": r.get("is_ci_lo")})
+        seen.add(str(r.get("exit")))
+    for ex in sorted({str(e) for e in (exits_searched if exits_searched is not None else [])}):
+        if ex not in seen:
+            rows.append({"exit": ex, "verdict": "ZERO_FIRES"})
+    return rows
+
+
 def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
     """Benjamini-Hochberg over a grid's graded rows, as a COMPLETE PARTITION.
 

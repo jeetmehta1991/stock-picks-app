@@ -210,6 +210,13 @@ def grade(cube_csv: Path, config: dict, admit: dict, *, min_n: int = 10,
         "step1_combinations_carried": 1,
         "step1_distinct_outcomes": 1,
         "step1_ranking": ranked[:top_n],
+        # S6-B3096f (B3101): the report-only multiplicity block S6-B2766 made
+        # mandatory - every exit SEARCHED in this cube, partitioned (a zero-trade
+        # exit stays in the denominator). Scope: one config's exits; the
+        # campaign-level family (configs x exits) is not priced here. No
+        # ranking or verdict reads it (B1608).
+        "multiplicity": rc.bh_fdr_report(rc.exit_family_rows(
+            per_exit, cube["exit_method"].astype(str).unique())),
         "per_exit": per_exit,
         "results_n_exits": len(per_exit),
         # B2612: the Step-2 leg - ALWAYS present so a reader (and the battery's
