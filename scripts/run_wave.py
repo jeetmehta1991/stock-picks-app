@@ -60,6 +60,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from producer_variant_table import launch_refusals  # noqa: E402  (B2578 launch gate)
 from prelaunch_gate import OWNER_LOCAL_CAP_HOURS  # noqa: E402  (B2613 S6-B2612g)
+import wave_identity as _wi  # noqa: E402  (B3104 S6-B3102a: one identity, one decision)
 RATE_S_PER_TICKER_DAY = 0.2613   # canonical, B2021-bracketed end to end
 
 
@@ -192,7 +193,8 @@ def resolve_ruled_scope(spec: dict) -> dict:
     spec["window"] = ruled["window"]
     spec["tickers_file"] = ruled["tickers_file"]
     spec["_resolved_scope"] = {
-        "step": ruled["step"], "universe_n": ruled["universe_n"],
+        "step": ruled["step"], "name": ruled["name"],
+        "universe_n": ruled["universe_n"],
         "produces": ruled["produces"],
         "phase_table_sha256": ruled["phase_table_sha256"],
         "resolved_from": ruled["resolved_from"]}
@@ -629,12 +631,41 @@ def main() -> int:
                     help="TEST SEAM ONLY - forwarded to launch_sweep.py")
     a = ap.parse_args()
     spec = json.loads(Path(a.spec).read_text(encoding="utf-8"))
+    # B3104 (S6-B3102a): the AUTHORED spec's identity - taken before any key
+    # is added - and the chain run that launched this wave (None when
+    # run_wave is called directly). Both go into EVERY summary below, so a
+    # chain can tell its own restart from someone else's result
+    # (wave_identity.decide).
+    ident = _wi.spec_digest(spec)
+    chain_run_id = os.environ.get("SERIAL_CHAIN_RUN_ID") or None
     # B2717: stamp the spec's own basename so grandfather identity is
     # EXACT rather than inferred from the wave name.
     spec["_spec_path"] = Path(a.spec).name
+    prior = _wi.read_summary(ROOT, spec["wave"])
+    # B3104: a COMPLETE Step-2 summary is a spent holdout read. Refuse to
+    # archive it and run again unless the spec declares the re-run - the
+    # guard sits HERE because this archive is where a second read starts,
+    # and run_wave is also called directly (council B3104). Nothing is
+    # archived or written on a refusal.
+    _second_read = _wi.step2_rerun_refusal(spec, prior)
+    if _second_read:
+        print(_second_read)
+        return 3
     stale = archive_stale_summary(spec["wave"])
+    lineage = None
     if stale:
         print(f"[STALE] prior wave summary archived -> {stale.name}")
+        _p = prior if isinstance(prior, dict) else {}
+        _pid = _wi.summary_digest(_p) if _p else None
+        lineage = {"archived_to": stale.name, "identity": _pid,
+                   "status": _wi.summary_status(_p) if _p else prior,
+                   "declared": bool(_pid) and spec.get(_wi.TOKEN_KEY) == _pid}
+        if lineage["status"] == _wi.COMPLETE and not lineage["declared"]:
+            print(f"[RE-RUN] a COMPLETE summary (identity {_pid}) was archived "
+                  f"with no declared {_wi.TOKEN_KEY} - a direct re-run; the "
+                  "lineage is recorded in the new summary")
+    stamp = {"spec_sha256": ident, "chain_run_id": chain_run_id,
+             "supersedes": lineage}
     # B2578 (S6-B2573b): the launch gate runs BEFORE any arm. A refusal
     # writes a REFUSED summary (so run_serial_chain HALTs on it and an
     # idempotent restart does not relaunch the same spec) and exits 3.
@@ -648,7 +679,7 @@ def main() -> int:
             print(f"LAUNCH REFUSED (S6-B2573b): {r}")
         out = ROOT / "output_audit" / f"{spec['wave']}_wave_summary.json"
         out.write_text(json.dumps({
-            "spec": spec, "refusals": refusals,
+            **stamp, "spec": spec, "refusals": refusals,
             "results": [{"arm": arm.get("tag", "?"), "status": "REFUSED",
                          "legs": 0} for arm in spec["arms"]]},
             indent=1), encoding="utf-8")
@@ -660,8 +691,8 @@ def main() -> int:
     results = [run_arm(spec, arm, engine_cmd=a.engine_cmd)
                for arm in spec["arms"]]
     out = ROOT / "output_audit" / f"{spec['wave']}_wave_summary.json"
-    out.write_text(json.dumps({"spec": spec, "results": results}, indent=1),
-                   encoding="utf-8")
+    out.write_text(json.dumps({**stamp, "spec": spec, "results": results},
+                              indent=1), encoding="utf-8")
     print(f"\nWAVE {spec['wave']}: "
           + " | ".join(f"{r['arm']}={r['status']}(legs={r['legs']})"
                        for r in results))

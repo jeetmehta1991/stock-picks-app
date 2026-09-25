@@ -719,7 +719,7 @@ particular was a distinct regime. If the rate there is materially lower the proj
 worst margin is 45%, so the rate would have to be roughly a third of the 2024-25 rate in the added
 years before the floor binds.
 
-### B.8 Step 3 validate - the three configs (old STEP 3)
+### B.8 Step 2 VALIDATE - the three configs (old STEP 3; this heading read "Step 3 validate" until B3105)
 
 *Source lines 1656-1669, verbatim.*
 

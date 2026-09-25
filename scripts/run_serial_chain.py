@@ -14,7 +14,15 @@ receipt -> legs -> battery with steps 1/2/4 + M1-M10 -> ledger -> summary).
 No session anywhere is needed for the band to complete.
 
 RULES ENFORCED:
-- SKIP a spec whose wave summary already reads COMPLETE (idempotent restarts).
+- B3104 (S6-B3102a): every launch / skip / halt is wave_identity.decide().
+  SKIP only a COMPLETE summary that THIS chain run wrote (a reboot restart
+  re-executes the same --task-name, so it is the same run); a summary any
+  other run wrote HALTS unless the spec declares
+  "supersedes_summary": "<that summary's identity>" - a one-shot token the
+  HALT message prints. Keyed on the wave NAME, the old rule skipped a
+  deliberate same-name re-run and ended CHAIN DONE having run nothing.
+- (superseded by the rule above) SKIP a spec whose wave summary already reads
+  COMPLETE (idempotent restarts).
 - STOP the chain on any non-COMPLETE outcome (FAILED / INCOMPLETE) - the
   no-relaunch rule is the owner's; a dead link halts the chain for a human.
 - WAIT (poll 60s) for a predecessor summary named via --wait-for; if it
@@ -41,6 +49,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -55,6 +64,17 @@ def log(msg: str) -> None:
     print(line, flush=True)
     with LOG.open("a", encoding="utf-8") as f:
         f.write(line + "\n")
+
+
+def read_summary(spec: dict):
+    """B3104: the parsed summary, None when absent, or UNREADABLE - read the
+    one way run_wave reads it (wave_identity.read_summary)."""
+    import wave_identity as _wi
+    s = _wi.read_summary(ROOT, spec["wave"])
+    if s == _wi.UNREADABLE:
+        log(f"UNREADABLE summary {spec['wave']}_wave_summary.json - a HALT, "
+            "never a relaunch")
+    return s
 
 
 def summary_status(spec: dict) -> str | None:
@@ -276,6 +296,16 @@ def main() -> int:
                          "unregistered by the chain itself at CHAIN DONE")
     a = ap.parse_args()
     prev_hash: dict | None = None
+    # B3104 (S6-B3102a): THIS chain run's id - the Task Scheduler task name,
+    # which a reboot restart re-executes unchanged, or a fresh id for a
+    # console chain, which has no restart path. run_wave records it in every
+    # summary it writes; decide() SKIPs only a COMPLETE summary carrying it.
+    import uuid
+    import wave_identity as _wi
+    chain_run_id = a.task_name or f"console_{uuid.uuid4().hex[:12]}"
+    log(f"chain run id {chain_run_id} - only a summary recording this id is "
+        "this run's own (S6-B3102a)")
+    launched = skipped = 0
 
     # S6-B2948: a multi-day chain must not run unwatched without saying so.
     # The session-independent watchdog (scripts/chain_watchdog.py, every
@@ -304,13 +334,14 @@ def main() -> int:
 
     for spec_path in a.specs:
         spec = json.loads((ROOT / spec_path).read_text(encoding="utf-8"))
-        st = summary_status(spec)
-        if st == "COMPLETE":
-            log(f"SKIP {spec['wave']} - already COMPLETE (idempotent restart)")
+        action, why = _wi.decide(spec, read_summary(spec),
+                                 chain_run_id=chain_run_id)
+        if action == _wi.SKIP:
+            log(f"SKIP {spec['wave']} - {why}")
+            skipped += 1
             continue
-        if st is not None:
-            return halt(spec["wave"], f"existing summary reads {st}",
-                        a.specs[a.specs.index(spec_path):])
+        if action != _wi.LAUNCH:
+            return halt(spec["wave"], why, a.specs[a.specs.index(spec_path):])
         ok, prev_hash = engine_hash_gate(
             spec["wave"], prev_hash,
             accepted=(a.on_engine_change == "continue"
@@ -333,19 +364,32 @@ def main() -> int:
                         f"pre-leg bar audit refused (exit {ba.returncode}); "
                         f"see output_audit/{spec['wave']}_preleg_bar_audit.json",
                         a.specs[a.specs.index(spec_path):])
-        log(f"LAUNCH {spec['wave']} via run_wave (battery included per B2177)")
+        log(f"LAUNCH {spec['wave']} via run_wave (battery included per B2177) "
+            f"- {why}")
         r = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "run_wave.py"),
-             "--spec", spec_path], cwd=str(ROOT))
-        st = summary_status(spec)
+             "--spec", spec_path], cwd=str(ROOT),
+            env={**os.environ, "SERIAL_CHAIN_RUN_ID": chain_run_id})
+        launched += 1
+        # B3104: the summary read back must be the one THIS launch wrote. A
+        # refusal that writes nothing leaves the previous summary on disk,
+        # and reading its status as this run's would call a refused launch a
+        # success.
+        summ = read_summary(spec)
+        st = _wi.summary_status(summ) if isinstance(summ, dict) else summ
+        ours = isinstance(summ, dict) and summ.get("chain_run_id") == chain_run_id
         log(f"{spec['wave']} finished: run_wave exit {r.returncode}, "
-            f"summary status {st}")
-        if st != "COMPLETE":
+            f"summary status {st}"
+            + ("" if ours else " (the summary on disk is NOT this run's)"))
+        if r.returncode != 0 or st != "COMPLETE" or not ours:
             return halt(spec["wave"],
-                        f"run_wave exit {r.returncode}, summary status {st}",
+                        f"run_wave exit {r.returncode}, summary status {st}"
+                        + ("" if ours else "; the summary on disk was not "
+                           "written by this chain run"),
                         a.specs[a.specs.index(spec_path) + 1:])
 
-    log("CHAIN DONE - every spec COMPLETE")
+    log(f"CHAIN DONE - every spec COMPLETE (launched {launched}, skipped "
+        f"{skipped}; chain run {chain_run_id})")
     if a.task_name:
         cleanup_task(a.task_name)
     return 0

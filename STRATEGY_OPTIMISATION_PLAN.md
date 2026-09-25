@@ -33,9 +33,10 @@ states the rule it instantiates. Pinned by `test_b3096_runbook_is_class_level_an
 
 ## 0. VOCABULARY AND NUMBERING - read this first
 
-### 0.1 The four STEPS - the ruled numbering (owner 2026-08-29; formerly §10.1 "The four phases")
+### 0.1 The five STEPS - the ruled numbering (owner 2026-08-29; Step 3 BREADTH added and ADMIT moved to Step 4 by owner ruling 2026-09-24; formerly §10.1 "The four phases")
 
-Every campaign passes through four STEPS, numbered by the ruled step table in §1.2. That table is
+Every campaign passes through five STEPS - one of them, Step 3 BREADTH, optional - numbered by
+the ruled step table in §1.2. That table is
 data, not prose: `scripts/phase_table.py` parses it and the launcher resolves each step's window
 and universe from it. The steps descend from B1548's REPEATABLE WORKFLOW (formerly §10), which
 superseded the original two-phase method for every strategy.
@@ -44,11 +45,17 @@ superseded the original two-phase method for every strategy.
 |---|---|---|
 | **Step 0** | INVENTORY | build the SPECS entry: formula, Table A, factorial (§2) |
 | **Step 1** | SEARCH | rank combinations IN-SAMPLE - a ranked list with NO gates (owner ruling B1608) |
-| **Step 2** | VALIDATE | the holdout read - gate verdicts (one read offline; one per slate config under the waterfall, §1.1 item 1) |
-| **Step 3** | ADMIT | a qualifier enters the Phase 1B roster on the owner's ruling (§6) |
+| **Step 2** | VALIDATE | the holdout read, on the owner's explicit word (§0.6) - gate verdicts (one read offline; one per slate config under the waterfall, §1.1 item 1) |
+| **Step 3** | BREADTH | OPTIONAL - companion axes from other producer families (§3.6): an in-sample search, then ONE holdout read of the registered cells, on the owner's explicit word; offline, never the engine |
+| **Step 4** | ADMIT | a qualifier enters the Phase 1B roster on the owner's ruling (§6) |
 
 This is the numbering the owner's rulings, the queue and the code already use: a spec's
-`"step": 2` is Step 2, and `phase_table.resolve(2)` supplies its window and universe.
+`"step": 2` is Step 2, and `phase_table.resolve(2)` supplies its window and universe. **Only the
+two ENGINE steps resolve - SEARCH and VALIDATE.** `phase_table.resolve` refuses every other row
+BY NAME (S6-B3096a, B3105), so a spec declaring Step 0, 3 or 4 is refused rather than handed a
+window; before B3105, `resolve(3)` returned 2021-05-05 -> 2025-05-05 for ADMIT, a window its own
+row ("4 years (as Step 2)") contradicts. The manifest records the resolved step NAME beside its
+number.
 
 - **Sub-steps** are numbered inside their step: Steps 0.1-0.7 build the SPECS entry (§2.2),
   Steps 1.0-1.7 launch an engine Step 1 (§4.5), Steps 2.1-2.5 launch Step 2 (§4.9). **"§" always
@@ -61,13 +68,28 @@ This is the numbering the owner's rulings, the queue and the code already use: a
   SPECS, STEP 1 SEARCH, STEP 2 GRADE, STEP 3 VALIDATE, STEP 4 ADMIT - one higher than the ruled
   table from grading onward - so the Step-2 launch procedure was headed STEP 3.1-3.4 and admission
   was STEP 4. Grading is now part of Step 1 (§4.6), the launch procedure is Steps 2.1-2.5, and
-  admission is Step 3. APPENDIX M maps both.
-- **BREADTH IS NOT A STEP.** It is the Priority-2 LEG of a campaign (§0.3): its search runs inside
-  Step 1, and its cells are read inside Step 2 - in the campaign's one read when breadth runs on the
-  winning line before it (§4.4 items 5-6), or in a Step-2 read of its own when the breadth leg runs
-  after the depth verdict (§3.6 item 7).
+  admission is Step 4 (it was Step 3 from B3096 until the ruling below). APPENDIX M maps both.
+- **A THIRD CHANGE, 2026-09-24 (owner, verbatim: *"Breadth is an optional step 3 and step 4 is
+  admit."*):** BREADTH became Step 3 and ADMIT moved to Step 4. A DATED record's "Step 3" therefore
+  means VALIDATE before B3096, ADMIT from B3096 to B3105, and BREADTH from B3105 on - read the date.
+  **Write every new step reference as number AND name** ("Step 4 ADMIT"), never a bare number:
+  "step N" is also the post-config battery's numbering (§5) and a fragment of file names that
+  predate this numbering and are kept (`phase_1b_step2_admissions.json`, `breadth_step1_grid.py`,
+  `breadth_step2_read.py`).
+- **BREADTH IS STEP 3 - OPTIONAL (owner ruling 2026-09-24, verbatim: *"Breadth is an optional step
+  3 and step 4 is admit."*; it supersedes B3096's "BREADTH IS NOT A STEP").** It is the Priority-2
+  LEG of a campaign (§0.3), run by the §3.6 procedure: an in-sample search, then ONE holdout read
+  of the registered cells **on the owner's explicit word** - the requirement its read carried when it
+  counted as a Step-2 read, restated here because a renumbering must not drop it (council B3105, 5 of
+  5); `breadth_step2_read.py` refuses to run without `--ruling`. It is OFFLINE and never launches the
+  engine, so `phase_table.resolve(3)` refuses. **When it runs:** its cells may be registered before
+  the Step-2 read and ride that one read (the order before B3105 - breadth on the winning line, §4.4
+  items 5-6 - **retained pending the owner's confirmation**), or be read after the depth verdict in a
+  read of their own, labelled DISCLOSED-RE-READ when the subject's holdout was already read (§3.6
+  item 7). **Optional is never silent:** the Step 4 ADMIT proposal records Step 3 as RAN or N/A with
+  the reason (§6).
 - **Not the PROJECT stages.** CLAUDE.md's "Stage 2 - Strategy Validation", "Stage 3" (paper
-  trading) and "Stage 4" (live) name the whole project's phases; the four steps here all sit inside
+  trading) and "Stage 4" (live) name the whole project's phases; the five steps here all sit inside
   project Stage 2 (CLAUDE.md's header: the project is at Stage 2, and Phase 1B precedes Stage 3).
 
 ### 0.2 Two workflows - TIGHTENING and LOOSENING are separate (owner 2026-09-16, B2828; restated 2026-09-24)
@@ -77,7 +99,7 @@ This is the numbering the owner's rulings, the queue and the code already use: a
 | **W-T TIGHTENING** | moves a threshold TIGHTER on a magnitude persisted in `signals_at_entry` - every level is a SUBSET of fires already recorded | zero engine hours | §3 |
 | **W-L LOOSENING** | moves a threshold LOOSER, or changes a producer's own detection (FIRE-ADDING) - admits bars no cube recorded | engine resim | §4 |
 
-Each workflow runs Steps 0-3 with its own step ids (T0-T8, L0-L8; §0.4). **Bands differ by
+Each workflow runs Steps 0-4 (Step 3 BREADTH optional) with its own step ids (T0-T8, L0-L8; §0.4). **Bands differ by
 direction and the schema already encodes it:** tighten-side levels live in `free_band`
 (subset-safe, offline), loosen-side levels in `resim_band` (engine), and `validate_spec` enforces
 that the two partition the band exactly - so W-T and W-L read DIFFERENT halves of the SAME Table A
@@ -95,7 +117,8 @@ Every per-strategy campaign has TWO legs, each run or explicitly waived with a r
   `offline_level_sweep` pattern), AND every producer band in its Table A, resim included.
 - **BREADTH** - companion axes from OTHER producer families, sourced from a family companion screen
   (IS-only, one BH-FDR pass, a ranked hypothesis list - never a gate, the B2657 instrument) and
-  swept as tightening axes in the same Step 1 (§3.6).
+  swept as tightening axes in Step 3 BREADTH (§3.6) - which may run before the Step-2 read so its
+  cells ride that read (§0.1).
 
 **DEPTH IS PRIORITY 1, AND THE VENUE NEVER NARROWS IT (B2702, owner ruling 2026-09-12, verbatim):**
 *"Step 1 / Priority 1: Test depth by analyzing all bands of existing producers - mandatory and
@@ -134,9 +157,10 @@ owner-worded Step-2 read, admissions ruled.
 | step | W-T tightening (§3) | W-L loosening (§4) |
 |---|---|---|
 | Step 0 INVENTORY | T0 context · T1 survival filter · T2 tighten bands · T3 owner band review | L0 context + binding leg · L1 classify the knob · L2 existing-cube lookup · L3 recovery probe · L4 loosen bands + leverage |
-| Step 1 SEARCH | T4 offline grid · T5 breadth leg | L5 owner words, then the shared resim · L6 grade every open consumer |
+| Step 1 SEARCH | T4 offline grid | L5 owner words, then the shared resim · L6 grade every open consumer |
 | Step 2 VALIDATE | T6 the one holdout read, offline | L7 the waterfall, engine |
-| Step 3 ADMIT | T7 admission proposal · T8 close | L8 admission + close |
+| Step 3 BREADTH (optional) | T5 breadth leg (§3.6) | the same §3.6 leg - offline in either workflow |
+| Step 4 ADMIT | T7 admission proposal · T8 close | L8 admission + close |
 
 **Why there is one ordered list (B2573, 2026-09-02; formerly §11's opening).** The owner asked whether the
 workflow was mechanical enough to run across all strategies. The audit
@@ -300,7 +324,8 @@ only on an owner ruling - the hash change is then visible to every artifact run 
 | **0 INVENTORY** | build the SPECS entry | — | — | formula + Table A + factorial |
 | **1 SEARCH** | all fire-adding configs | **1 year, 2024-05..2025-05** | **200** | ranked combinations |
 | **2 VALIDATE** | **top 3 CONFIGS (owner 2026-08-29 second set; was top 5 same day, top 10 combinations before)** | **4 years, `2022-05-05 -> 2026-05-05` (owner 2026-08-29: 2022-23 allowed for Step 2)** | **ALL 544 (owner 2026-08-29; was 344 disjoint)** | gate verdicts |
-| **3 ADMIT** | best 1 | 4 years (as Step 2) | 544 | Phase 1B decision |
+| **3 BREADTH** | OPTIONAL - companion axes (§3.6); offline, never the engine | in-sample search, then ONE holdout read of the registered cells on the owner's explicit word (the Step-2 window) | 544 (the Step-2 cube) | breadth verdicts, or N/A with a reason |
+| **4 ADMIT** | best 1 | 4 years (as Step 2) | 544 | Phase 1B decision |
 
 **The windows and universes are INJECTED, never typed.** `phase_table.resolve(<step>)` supplies
 them and `phase_table.spec_refusals` refuses a spec that types them (B2713 / L788: a ruled value
@@ -851,10 +876,10 @@ and its gate - a step missing its expected output is a STOP, not a judgment call
 | T2 | 0 | TABLE A - TIGHTEN BANDS: for each persisted numeric gate magnitude (coverage >= 0.98 on the surviving fires), free-side levels are TIGHTER-ONLY: threshold knobs at their `free_band`; unbanded magnitudes at retention quantiles (QUANTS, breadth_step1_grid.py). Label every knob EXISTING-THRESHOLD or NEW-GATE - **a NEW-GATE is a STOP-AND-ASK, never built silently** (standing owner rule 2026-08-10). **THE TABLE IS PRE-BUILT (B2836): `strategy_optimisation/<lane>/<strategy>.md` holds Table A (depth) + Table A (breadth), generated by `scripts/build_table_a.py` off the surviving fires - T2 CONSUMES that file (regenerating first if its stamp is stale against HEAD), never re-derives by hand** | `scripts/build_table_a.py` (imports QUANTS + MIN_COVERAGE from breadth_step1_grid; depth via `numeric_thresholds`'s pattern) | the strategy's file in `strategy_optimisation/` with the free/resim split, coverage per key, and the price-denominated exclusion list | every level is a SUBSET of surviving fires by construction |
 | T3 | 0 | **OWNER BAND REVIEW - PER STRATEGY (ruled 2026-09-16: no standing convention).** Present Table A (depth free rows + any §3.6 breadth B-rows together); WAIT | the campaign ticket carries the table | the owner's band word quoted verbatim in the row | no grid runs before the word |
 | T4 | 1 | OFFLINE STEP-1 GRID on the surviving fires: every free level x every exit, IS-only, holdout untouched, `next_pivot_target` barred, multiplicity block MANDATORY (§1.4; permutation null where a numeric search exists). The generic instrument is `offline_level_sweep.py --axes ...`; the family's own grader where one is registered. Its four refusals BIND: reproduction (against the SURVIVING subset, T1), coverage, join, truncation | the named grader | `output_audit/<batch>_<strategy>_step1.json` with generator + cube stamped (#309) and `multiplicity.reconciles == true`, plus Table D (offline form) beside it (MEASURED B3096: only `roster_core.bh_fdr_report` writes that block and `offline_level_sweep.py` never calls it, so a grid built by the generic instrument cannot meet this exit until S6-B3096f closes - record `trials_searched`, §1.4) | reproduction 1.0 on the surviving subset, else REFUSED |
-| T5 | 1 | BREADTH LEG: run §3.6 steps 1-6 (companion screen at two exits, cluster -> representatives, B-rows, permutation price) or WAIVE with the reason in the row - never silently skipped (§0.3) | `scripts/institutional_companion_screen.py --family <prefix>` (named for its first family; generic by argument) + `breadth_step1_grid.py` | the consistent-intersect artifact + B-rows in Table A | ran-or-waived recorded |
+| T5 | 3 | BREADTH LEG (Step 3, optional - it may run before T6 so its cells ride T6's read): run §3.6 steps 1-6 (companion screen at two exits, cluster -> representatives, B-rows, permutation price) or WAIVE with the reason in the row - never silently skipped (§0.3) | `scripts/institutional_companion_screen.py --family <prefix>` (named for its first family; generic by argument) + `breadth_step1_grid.py` | the consistent-intersect artifact + B-rows in Table A | ran-or-waived recorded |
 | T6 | 2 | STEP 2: ONE pre-registered holdout read, on the owner's EXPLICIT word - the one-way door (§0.6). Six LIVE_GATES; control-family comparison on any all-six qualifier (§3.6 step 8). **OFFLINE-ONLY STEP 2 (owner ruling 2026-09-16, B2836): for an offline-only campaign the read covers the FULL cube (544 tickers x the whole 4-year window) and the FULL combination population - NO pruning, since Step-1 pruning exists only to cap engine runtime in Step 2. The statistical price rides with the ruling: the multiplicity block prices the FULL number of combinations read (PSR is no substitute, B2376); admission candidates are stated BEFORE the read; it stays ONE read, after which the holdout is SPENT for these objects (B2136)** | `scripts/breadth_step2_read.py` (fail-closed `--ruling`; a re-read of a previously read subject is LABELLED DISCLOSED-RE-READ, never refused) or `scripts/offline_holdout_read.py` (no `--ruling` argument; it refuses only when its own `--out` exists, and `--force-rerun` overrides that with a RERUN_OF_SPENT_HOLDOUT label) - so the one-way door is the owner's word and the pre-registration, not either script | the Step-2 unified artifact; controls recorded | the owner's Step-2 word, every time |
-| T7 | 3 | ADMISSION PROPOSAL with provenance labels riding (the B2660 doctrine, §6.2); Jaccard-0.70 de-dup and mirror resolution at admission | `build_phase_1b_roster.py` funnel | roster diff | the owner's ruling per admission |
-| T8 | 3 | CLOSE: if the family has open siblings, the pre-registered sibling containment pass (§1.6; the B2628/B2647 pattern) so siblings ride the verdict instead of getting campaigns; queue row EXECUTED; doc sweep | the sibling-pass instrument | sibling grades artifact; the campaign row | family accounted - every member ends TERMINAL, IN-CAMPAIGN, STALLED-CAMPAIGN (campaign concluded mid-path, B2833 - the view names it), or explicitly deferred |
+| T7 | 4 | ADMISSION PROPOSAL (it records Step 3 BREADTH as RAN or N/A with the reason) with provenance labels riding (the B2660 doctrine, §6.2); Jaccard-0.70 de-dup and mirror resolution at admission | `build_phase_1b_roster.py` funnel | roster diff | the owner's ruling per admission |
+| T8 | 4 | CLOSE: if the family has open siblings, the pre-registered sibling containment pass (§1.6; the B2628/B2647 pattern) so siblings ride the verdict instead of getting campaigns; queue row EXECUTED; doc sweep | the sibling-pass instrument | sibling grades artifact; the campaign row | family accounted - every member ends TERMINAL, IN-CAMPAIGN, STALLED-CAMPAIGN (campaign concluded mid-path, B2833 - the view names it), or explicitly deferred |
 
 ### 3.3 When the offline path applies (formerly §11.2b)
 
@@ -945,12 +970,14 @@ meaning.
    formula block (§7.1's two-layer format) shows both layers plus a BREADTH LAYER listing the B-axes.
 4. **BAND REVIEW** - the owner reviews the full band (depth + breadth rows) before Step 1 (§0.6).
    Nothing runs earlier.
-5. **STEP-1 GRID** - `scripts/breadth_step1_grid.py` (shared `build_frame`; fail-closed reproduction
+5. **THE IN-SAMPLE GRID** (Step 3's search; the tool's name predates the renumbering) -
+   `scripts/breadth_step1_grid.py` (shared `build_frame`; fail-closed reproduction
    gate against the admitted or production base; IS-only grading; `next_pivot_target` barred from
    ranking; per-leg for dual strategies).
 6. **MULTIPLICITY PRICE** - the grid's best priced against its own permutation null (the B2676
    instrument pattern; SYNTHETIC maxima, p on the artifact's face).
-7. **STEP 2** - ONE holdout read of every registered cell, on the owner's explicit word
+7. **THE HOLDOUT READ** - ONE holdout read of every registered cell, on the owner's explicit word
+   (Step 3's own read, or the Step-2 read when the cells were registered before it)
    (`scripts/breadth_step2_read.py`, fail-closed `--ruling`; a DISCLOSED-RE-READ label when the
    subject's holdout was previously read).
 8. **CONTROL-FAMILY COMPARISON** - every all-six qualifier gets the same axis/level/exit applied to a
@@ -984,7 +1011,7 @@ trade floor (> 75, §1.2; the pre-B3096 text said "the 100 floor", a value stale
 | L5 | 1 | **OWNER WORDS: band + venue + launch** (§0.6; the B2107 5 h per-leg cap; the $100 total; the venue ruling precedes a non-local run). Then the SHARED resim per §4.3: `strategy_subset` = the producer's FULL OPEN consumer set, chain-launched (§4.5, Steps 1.1-1.7), battery per landing, cube registered as resim evidence | `run_wave.py` chain + `launch_refusals` | manifest + gate_receipt + the landed variant cube | COMPLETE landings; the HALT protocol otherwise |
 | L6 | 1 | GRADE EVERY OPEN CONSUMER from the SAME cube, offline: each family grader in VARIANT mode (own-fire reproduction recorded, no R5 comparison - the L754 contract); coordinate descent across levels with the B2823 interaction check (§4.4 item 4) | family graders + §4.4 | one Step-1 artifact PER consumer from one cube | every open consumer graded or its absence explained |
 | L7 | 2 | STEP 2 - THE WATERFALL for qualifiers at the ruled shape (4 years x 544 tickers, the six LIVE_GATES, stop at the first qualifier; §4.7-§4.9) - the owner's word per read | the Step-2 machinery below | grid artifacts with `qualifiers` | the owner's word, every read |
-| L8 | 3 | ADMISSION + CLOSE as T7/T8; the variant cube stays in the registry for every FUTURE campaign's L2 lookup | roster funnel + resim registry | roster diff + registry entry | family accounted |
+| L8 | 4 | ADMISSION + CLOSE as T7/T8; the variant cube stays in the registry for every FUTURE campaign's L2 lookup | roster funnel + resim registry | roster diff + registry entry | family accounted |
 
 ### 4.3 SHARED-PRODUCER RESIM REUSE - why the full consumer set is FORCED (B2707 owner philosophy; B2828 mechanics; formerly §11.2s)
 
@@ -1210,8 +1237,18 @@ checkpoint dir FIRST, L646) or RE-RUN, and PROPOSE it; the relaunch from the hal
 relaunching corrected version after HALT"), and halt-on-failure is for humans (owner 2026-08-25). The HALT leaves a queue row naming the
 halted spec, the cause class, and the relaunch command. Every HALT appends `output_audit/chain_halts.jsonl`, toasts, and the Stop hook
 blocks the turn until the response carries `CHAIN HALT REPORT: <wave>` (B2577; the HALT record is
-S6-B2573f.a, and all four halt paths of `scripts/run_serial_chain.py` call it). A run that stopped
-non-COMPLETE is never auto-relaunched. The session-independent
+S6-B2573f.a, and every halt path of `scripts/run_serial_chain.py` calls it - 5 of them; this line
+said four until B3104). A run that stopped non-COMPLETE is never auto-relaunched.
+**A same-name re-run is DECLARED, never inferred (S6-B3102a, B3104).** The chain SKIPs only a
+COMPLETE summary written by ITS OWN run (the Task Scheduler task name, which a reboot restart
+re-executes unchanged) and HALTs on a summary any other run wrote, printing the one line that
+declares a re-run: `"supersedes_summary": "<that summary's identity>"` in the spec. The token
+names the summary it replaces, so it cannot fire twice. A Step-2 re-run reads the holdout again
+and needs the owner's word first; `run_wave.py` refuses to archive a COMPLETE Step-2 summary
+without the token. Moving a summary aside by hand is no longer the re-run mechanism (it was, for
+the first owner-approved Step-1 re-run, 2026-09-24: keyed on the wave NAME, the chain would have logged SKIP and ended CHAIN DONE
+having run nothing). Identity = `wave_identity.spec_digest` of the authored spec; free-text notes
+(`note`, `_doc`, `*_note`, `*_basis`) do not count, every other key does. The session-independent
 reporter is §8.9's peer reporter (S6-B2573f.c) - the pre-B3096 text called it PROPOSED-NOT-BUILT, stale
 since B2618.
 
@@ -1833,7 +1870,10 @@ pre-B3096 text said "of 26", the registry before B2110), and the
 
 ---
 
-## 6. STEP 3 - ADMIT (both workflows; formerly STEP 4 — ADMIT)
+## 6. STEP 4 - ADMIT (both workflows; numbered Step 3 from B3096 to B3105; formerly STEP 4 — ADMIT)
+
+**Every admission proposal records Step 3 BREADTH as RAN or N/A with the reason** (owner ruling
+2026-09-24 made breadth an OPTIONAL step; optional is never silent - §0.1).
 
 ### 6.1 The six live gates
 

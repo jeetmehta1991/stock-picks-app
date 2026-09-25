@@ -32954,12 +32954,17 @@ def test_b2577_chain_halts_are_reported_cleanup_is_self_and_kill_finds_the_root(
     assert [e["wave"] for e in rsc.undelivered_halts(halts)] == ["icg_w2", "wa"]
     cleaned = []
     monkeypatch.setattr(rsc, "cleanup_task", lambda n: cleaned.append(n))
-    (oa / "wa_wave_summary.json").write_text(_json.dumps({"results": [{"status": "COMPLETE"}]}), encoding="utf-8")
+    # B3104 (S6-B3102a): a SKIP needs the summary to be THIS chain run's. A
+    # COMPLETE summary with no provenance now HALTs - the name-keyed SKIP this
+    # section used to pin ran nothing on a deliberate same-name re-run.
+    (oa / "wa_wave_summary.json").write_text(_json.dumps({"chain_run_id": "stockpicks_chain_x_1", "spec": {"wave": "wa"}, "results": [{"status": "COMPLETE"}]}), encoding="utf-8")
     monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--task-name", "stockpicks_chain_x_1", "--specs", "spec_a.json"])
     assert rsc.main() == 0 and cleaned == ["stockpicks_chain_x_1"]
     assert "CHAIN DONE" in (tmp_path / "chain.log").read_text(encoding="utf-8")
     monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--specs", "spec_a.json"])
-    assert rsc.main() == 0 and cleaned == ["stockpicks_chain_x_1"], "no --task-name, no cleanup"
+    assert rsc.main() == 1 and cleaned == ["stockpicks_chain_x_1"], (
+        "a console chain is a NEW run: it halts on another run's summary "
+        "(B3104), and with no --task-name there is no cleanup")
 
     # ---- (b) the launcher passes its own task name; None keeps the golden shape
     log = tmp_path / "x.log"
@@ -44228,7 +44233,8 @@ def test_b3096_runbook_is_class_level_and_numbered_consistently():
         return errs
 
     assert numbering(text) == [], numbering(text)
-    assert set(pt.parse(plan_p)["rows"]) == {"0", "1", "2", "3"}
+    # S6-B3096a (B3105, owner 2026-09-24): Step 3 BREADTH added, ADMIT is Step 4
+    assert set(pt.parse(plan_p)["rows"]) == {"0", "1", "2", "3", "4"}
     broken = text.replace("### 4.8 THE WATERFALL", "### 4.9 THE WATERFALL", 1)
     assert numbering(broken), "a numbering break must be flagged"
     assert numbering("## 0. A\n## 2. B\n"), "a skipped top section must be flagged"
@@ -45553,3 +45559,394 @@ def test_b3102_index_fits_the_measured_inline_limit(monkeypatch, capsysbinary):
     out = capsysbinary.readouterr().out.decode("utf-8")
     assert out.startswith("L" * 100) and "Skill(execution-discipline)" in out
     assert len(out) <= it3.HOOK_BUDGET + 120, len(out)
+
+
+def test_b3104_decide_truth_table_with_run_wave_statuses():
+    """S6-B3102a (B3104): the chain's launch / skip / halt is ONE function,
+    wave_identity.decide(), keyed on WHO wrote the summary and a DECLARED
+    re-run token - never on the wave name. The statuses are read out of
+    run_wave's own source by AST, so a status added there without a row here
+    is still exercised: every non-COMPLETE status HALTs, none SKIPs."""
+    import ast
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import wave_identity as wi
+
+    def _strs(node):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return {node.value}
+        if isinstance(node, ast.IfExp):
+            return _strs(node.body) | _strs(node.orelse)
+        return set()
+
+    statuses = set()
+    tree = ast.parse((root / "scripts" / "run_wave.py").read_text(encoding="utf-8"))
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Dict):
+            for k, v in zip(n.keys, n.values):
+                if isinstance(k, ast.Constant) and k.value == "status":
+                    statuses |= _strs(v)
+        elif isinstance(n, ast.Assign) and any(
+                isinstance(t, ast.Name) and t.id == "status" for t in n.targets):
+            statuses |= _strs(n.value)
+    assert "COMPLETE" in statuses, statuses
+    assert {"GATE_REFUSED", "REFUSED", "INCOMPLETE_MAX_LEGS",
+            "REFUSED_EXISTING_CHECKPOINT"} <= statuses, statuses
+
+    spec = {"wave": "w", "step": 1, "arms": [{"tag": "a", "env": {"K": "1"}}]}
+    ident = wi.spec_digest(spec)
+
+    def summ(status, chain=None, ident_=ident):
+        return {"results": [{"status": status}], "chain_run_id": chain,
+                "spec_sha256": ident_}
+
+    # absent -> LAUNCH; unreadable -> HALT
+    assert wi.decide(spec, None, chain_run_id="R")[0] == wi.LAUNCH
+    assert wi.decide(spec, wi.UNREADABLE, chain_run_id="R")[0] == wi.HALT
+    # this run's own COMPLETE -> SKIP (the reboot restart); anything else HALTs
+    assert wi.decide(spec, summ("COMPLETE", "R"), chain_run_id="R")[0] == wi.SKIP
+    for st in sorted(statuses - {"COMPLETE"}):
+        act, why = wi.decide(spec, summ(st, "R"), chain_run_id="R")
+        assert act == wi.HALT, (st, act, why)
+    # THE DEFECT: a COMPLETE summary another run wrote, spec unchanged, no
+    # token -> a HALT that prints the token line, never a silent SKIP
+    for other in (None, "OTHER"):
+        act, why = wi.decide(spec, summ("COMPLETE", other), chain_run_id="R")
+        assert act == wi.HALT and wi.token_line(ident) in why, (other, act, why)
+    # a console chain (no task name) is a new run too
+    assert wi.decide(spec, summ("COMPLETE", "R"),
+                     chain_run_id="console_x")[0] == wi.HALT
+    # a declared token naming that summary -> LAUNCH, whatever its status
+    dec = dict(spec, supersedes_summary=ident)
+    for st in sorted(statuses):
+        assert wi.decide(dec, summ(st, "OTHER"), chain_run_id="R")[0] == wi.LAUNCH, st
+    # ONE-SHOT: once the re-run lands it is this run's summary with the
+    # declared spec's identity -> SKIP on restart; a later chain -> HALT (stale)
+    landed = summ("COMPLETE", "R", ident_=wi.spec_digest(dec))
+    assert wi.decide(dec, landed, chain_run_id="R")[0] == wi.SKIP
+    act, why = wi.decide(dec, landed, chain_run_id="LATER")
+    assert act == wi.HALT and "stale" in why, why
+    # annotations never move the identity; every other key does, unknown ones too
+    noted = dict(spec, _drift_note="edited", _fires_basis="b", _doc="d",
+                 arms=[dict(spec["arms"][0], note="changed", env_note="n")])
+    assert wi.spec_digest(noted) == ident
+    assert wi.decide(noted, summ("COMPLETE", "R"), chain_run_id="R")[0] == wi.SKIP
+    for key, val in (("allow_engine_drift", True), ("max_legs", 3),
+                     ("an_unknown_key", 1)):
+        changed = dict(spec, **{key: val})
+        assert wi.spec_digest(changed) != ident, key
+        act, why = wi.decide(changed, summ("COMPLETE", "R"), chain_run_id="R")
+        assert act == wi.HALT and wi.token_line(ident) in why, (key, why)
+    # Step 2: the halt says a re-run reads the holdout again
+    s2 = dict(spec, step=2)
+    _, why2 = wi.decide(s2, summ("COMPLETE", None, ident_=wi.spec_digest(s2)),
+                        chain_run_id="R")
+    assert "HOLDOUT" in why2, why2
+    # a summary that embeds no spec cannot be named by a token - say so
+    _, why3 = wi.decide(spec, {"results": [{"status": "FAILED"}]}, chain_run_id="R")
+    assert "move it aside" in why3 and '"None"' not in why3, why3
+
+
+def test_b3104_run_wave_stamps_identity_and_refuses_a_second_step2_read(
+        tmp_path, monkeypatch):
+    """B3104: run_wave records spec_sha256 (the AUTHORED spec, before it adds
+    any key), the launching chain run and the lineage of a summary it
+    archives - and the identity REBUILT from the embedded spec equals the
+    recorded one, so a pre-B3104 summary (no recorded hash) is judged the same
+    way. A COMPLETE Step-2 summary is a spent holdout read: without the
+    declared token run_wave refuses and writes NOTHING (the council's 'put the
+    check where the damage happens' - run_wave's archive)."""
+    import importlib.util as _ilu
+    import json as _json
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import wave_identity as wi
+    _s = _ilu.spec_from_file_location("run_wave_b3104", root / "scripts" / "run_wave.py")
+    rw = _ilu.module_from_spec(_s)
+    _s.loader.exec_module(rw)
+    oa = tmp_path / "output_audit"
+    oa.mkdir()
+    monkeypatch.setattr(rw, "ROOT", tmp_path)
+    monkeypatch.setattr(rw, "launch_refusals", lambda spec, root: [])
+    ran = []
+
+    def fake_arm(spec, arm, engine_cmd=None):
+        ran.append(arm["tag"])
+        return {"arm": arm["tag"], "status": "COMPLETE", "legs": 1}
+
+    monkeypatch.setattr(rw, "run_arm", fake_arm)
+    monkeypatch.setenv("SERIAL_CHAIN_RUN_ID", "task_R")
+
+    def run(d, name):
+        p = tmp_path / name
+        p.write_text(_json.dumps(d), encoding="utf-8")
+        monkeypatch.setattr(sys, "argv", ["run_wave.py", "--spec", str(p)])
+        return rw.main()
+
+    # a step-DECLARING spec, so the resolver adds window/tickers_file/_resolved_scope
+    s1 = {"wave": "w1", "step": 1, "arms": [{"tag": "a", "env": {}}], "x_note": "n"}
+    assert run(s1, "s1.json") == 0
+    out1 = oa / "w1_wave_summary.json"
+    j = _json.loads(out1.read_text(encoding="utf-8"))
+    assert j["spec_sha256"] == wi.spec_digest(s1)
+    assert j["chain_run_id"] == "task_R" and j["supersedes"] is None
+    assert "_resolved_scope" in j["spec"] and "window" in j["spec"], "the resolver ran"
+    legacy = {k: v for k, v in j.items() if k != "spec_sha256"}
+    assert wi.summary_digest(legacy) == j["spec_sha256"], "rebuilt == recorded"
+
+    # Step 2: a COMPLETE summary is a spent holdout read
+    s2 = {"wave": "w2", "step": 2, "arms": [{"tag": "b", "env": {}}]}
+    assert run(s2, "s2.json") == 0
+    out2 = oa / "w2_wave_summary.json"
+    before = out2.read_bytes()
+    n_ran = len(ran)
+    assert run(s2, "s2.json") == 3, "a second Step-2 run must be refused"
+    assert out2.read_bytes() == before, "the spent read's summary is untouched"
+    assert not list(oa.glob("w2_wave_summary_STALE_*")), "nothing archived"
+    assert len(ran) == n_ran, "no arm ran"
+    # the declared token runs it once, archives the old summary, records lineage
+    old_id = _json.loads(before)["spec_sha256"]
+    assert run(dict(s2, supersedes_summary=old_id), "s2.json") == 0
+    assert len(ran) == n_ran + 1
+    j2 = _json.loads(out2.read_text(encoding="utf-8"))
+    assert j2["supersedes"]["identity"] == old_id
+    assert j2["supersedes"]["declared"] is True and j2["supersedes"]["status"] == "COMPLETE"
+    assert len(list(oa.glob("w2_wave_summary_STALE_*"))) == 1
+    # a Step-1 re-run reads no holdout: not refused, but the lineage says undeclared
+    assert run(s1, "s1.json") == 0
+    j1b = _json.loads(out1.read_text(encoding="utf-8"))
+    assert j1b["supersedes"]["declared"] is False
+    assert j1b["supersedes"]["status"] == "COMPLETE"
+
+
+def test_b3104_chain_counts_launches_and_never_skips_a_summary_it_did_not_write(
+        tmp_path, monkeypatch):
+    """S6-B3102a (B3104) through run_serial_chain.main() with run_wave stubbed,
+    COUNTING launches - the defect printed CHAIN DONE after running nothing, so
+    log text alone proves nothing. The c14 shape (a COMPLETE summary another
+    run wrote, spec unchanged, no token) HALTS with 0 launches where the
+    name-keyed rule SKIPPED; the declared token launches exactly once and a
+    reboot restart of the same task then SKIPs; a later chain halts on the
+    spent token; the discarded Step-2 shape (GATE_REFUSED) launches once with
+    its token; and a run_wave that writes nothing is a HALT, not CHAIN DONE."""
+    import json as _json
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import postconfig_landing as pl
+    import run_serial_chain as rsc
+    import wave_identity as wi
+    oa = tmp_path / "output_audit"
+    oa.mkdir()
+    monkeypatch.setattr(rsc, "ROOT", tmp_path)
+    monkeypatch.setattr(rsc, "LOG", oa / "chain.log")
+    monkeypatch.setattr(rsc, "HALTS", oa / "halts.jsonl")
+    monkeypatch.setattr(rsc, "ENGINE_HASH_RECORD", oa / "hash.json")
+    monkeypatch.setattr(rsc, "cleanup_task", lambda n: None)
+    monkeypatch.setattr(pl, "toast", lambda t, b: (True, "fake"))
+    launches = []
+    mode = {"write": True}
+    real_run = _sp.run
+
+    def fake_run(cmd, *a, **k):
+        name = Path(str(cmd[1])).name if len(cmd) > 1 else ""
+        if name == "preleg_bar_audit.py":
+            return _sp.CompletedProcess(cmd, 0)
+        if name == "run_wave.py":
+            sf = tmp_path / cmd[cmd.index("--spec") + 1]
+            spec = _json.loads(sf.read_text(encoding="utf-8"))
+            launches.append(spec["wave"])
+            if mode["write"]:
+                (oa / f"{spec['wave']}_wave_summary.json").write_text(_json.dumps({
+                    "spec_sha256": wi.spec_digest(spec),
+                    "chain_run_id": (k.get("env") or {}).get("SERIAL_CHAIN_RUN_ID"),
+                    "spec": dict(spec, _spec_path=sf.name),
+                    "results": [{"status": "COMPLETE"}]}), encoding="utf-8")
+            return _sp.CompletedProcess(cmd, 0)
+        return real_run(cmd, *a, **k)
+
+    monkeypatch.setattr(rsc.subprocess, "run", fake_run)
+
+    def spec_file(name, d):
+        (tmp_path / name).write_text(_json.dumps(d), encoding="utf-8")
+        return name
+
+    def chain(*specs, task="task_R"):
+        argv = ["run_serial_chain.py"] + (["--task-name", task] if task else [])
+        monkeypatch.setattr(_sys, "argv", argv + ["--specs", *specs])
+        return rsc.main()
+
+    base = {"wave": "c14", "step": 1, "arms": [{"tag": "a", "env": {}}]}
+    f = spec_file("c14_spec.json", base)
+    (oa / "c14_wave_summary.json").write_text(_json.dumps({
+        "spec": dict(base, _spec_path=f), "results": [{"status": "COMPLETE"}]}),
+        encoding="utf-8")
+    assert chain(f) == 1 and launches == [], "the name-keyed rule SKIPPED here"
+    old_id = wi.spec_digest(base)
+    assert wi.token_line(old_id) in rsc.read_halts(oa / "halts.jsonl")[-1]["reason"]
+    f2 = spec_file("c14_spec.json", dict(base, supersedes_summary=old_id))
+    assert chain(f2) == 0 and launches == ["c14"], "declared: exactly one launch"
+    assert chain(f2) == 0 and launches == ["c14"], "reboot restart: SKIP"
+    assert "launched 0, skipped 1" in (oa / "chain.log").read_text(encoding="utf-8")
+    assert chain(f2, task="task_LATER") == 1 and launches == ["c14"], "spent token"
+    g = {"wave": "s2", "step": 2, "arms": [{"tag": "b", "env": {}}]}
+    fg = spec_file("s2_spec.json", g)
+    (oa / "s2_wave_summary.json").write_text(_json.dumps({
+        "spec": dict(g, _spec_path=fg), "results": [{"status": "GATE_REFUSED"}]}),
+        encoding="utf-8")
+    assert chain(fg) == 1 and launches == ["c14"], "no token: HALT"
+    fg2 = spec_file("s2_spec.json", dict(g, supersedes_summary=wi.spec_digest(g)))
+    assert chain(fg2) == 0 and launches == ["c14", "s2"]
+    mode["write"] = False
+    fn = spec_file("n1_spec.json", {"wave": "n1", "step": 1,
+                                    "arms": [{"tag": "c", "env": {}}]})
+    assert chain(fn) == 1 and launches[-1] == "n1", "no summary written: HALT"
+    tail = (oa / "chain.log").read_text(encoding="utf-8").splitlines()[-3:]
+    assert any("CHAIN HALT at n1" in ln for ln in tail), tail
+    # a run_wave that exits 0 but leaves ANOTHER run's COMPLETE summary on
+    # disk (it wrote nothing) must not read as this run's success - only the
+    # provenance check can catch it: exit code and status both look clean
+    k = {"wave": "k1", "step": 1, "arms": [{"tag": "d", "env": {}}]}
+    fk = spec_file("k1_spec.json", k)
+    (oa / "k1_wave_summary.json").write_text(_json.dumps({
+        "spec": dict(k, _spec_path=fk), "results": [{"status": "COMPLETE"}]}),
+        encoding="utf-8")
+    fk2 = spec_file("k1_spec.json", dict(k, supersedes_summary=wi.spec_digest(k)))
+    assert chain(fk2) == 1 and launches[-1] == "k1", "a stale COMPLETE is not this run's"
+    assert "not written by this chain run" in \
+        rsc.read_halts(oa / "halts.jsonl")[-1]["reason"]
+
+
+def test_b3104_one_identity_one_decision():
+    """L561 (one pattern, one definition): the spec digest and the summary
+    identity are DEFINED once, in scripts/wave_identity.py, and both actors
+    import it - a second digest in the chain or in run_wave would let the
+    recorder and the decider disagree about the same summary."""
+    import ast
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    defs = {}
+    for p in sorted((root / "scripts").glob("*.py")):
+        try:
+            tree = ast.parse(p.read_text(encoding="utf-8"))
+        except (SyntaxError, UnicodeDecodeError):
+            continue
+        for n in ast.walk(tree):
+            if isinstance(n, ast.FunctionDef) and n.name in (
+                    "spec_digest", "summary_digest", "step2_rerun_refusal"):
+                defs.setdefault(n.name, []).append(p.name)
+    for fn in ("spec_digest", "summary_digest", "step2_rerun_refusal"):
+        assert defs.get(fn) == ["wave_identity.py"], (fn, defs.get(fn))
+    for f in ("run_wave.py", "run_serial_chain.py"):
+        tree = ast.parse((root / "scripts" / f).read_text(encoding="utf-8"))
+        mods = {a.name for n in ast.walk(tree) if isinstance(n, ast.Import)
+                for a in n.names}
+        assert "wave_identity" in mods, f
+
+
+def test_b3105_steps_are_keyed_on_name_and_engine_windows_are_unchanged():
+    """S6-B3096a (B3105), owner 2026-09-24 verbatim: "Breadth is an optional
+    step 3 and step 4 is admit."
+
+    Steps are keyed on NAME: only SEARCH and VALIDATE launch the engine, so
+    only they resolve a window, and every other row is refused by name - which
+    also closes the pre-B3105 defect where resolve(3) returned
+    2021-05-05..2025-05-05 for ADMIT, contradicting its own row. The two
+    engine resolutions are pinned to GOLDEN values captured from the
+    pre-change code (EXECUTED B3105), so the renumbering provably moved
+    nothing the engine sees; the table's content hash changes, and no code
+    compares it (measured B3105: it is recorded in manifests only)."""
+    import importlib.util as _ilu
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import phase_table as pt
+    import roster_core as rc
+
+    rows = pt.parse()["rows"]
+    got = [(r["step"], r["name"], r["name"] in pt.ENGINE_STEPS)
+           for _, r in sorted(rows.items(), key=lambda kv: int(kv[0]))]
+    assert got == [(0, "INVENTORY", False), (1, "SEARCH", True),
+                   (2, "VALIDATE", True), (3, "BREADTH", False),
+                   (4, "ADMIT", False)], got
+    golden = {
+        1: ("SEARCH", {"start": "2024-05-05", "end": "2025-05-05"},
+            "output_audit/_sweep_200.txt", 200, "ranked combinations"),
+        2: ("VALIDATE", {"start": "2022-05-05", "end": "2026-05-05"},
+            "output_audit/r5_universe_544.txt", 544, "gate verdicts"),
+    }
+    for step, want in golden.items():
+        r = pt.resolve(step)
+        assert (r["name"], r["window"], r["tickers_file"], r["universe_n"],
+                r["produces"]) == want, (step, r)
+    for step in (0, 3, 4):
+        try:
+            pt.resolve(step)
+        except SystemExit as e:
+            assert "not an engine step" in str(e), (step, str(e))
+        else:
+            raise AssertionError(f"resolve({step}) must refuse by name")
+    # the launcher refuses a spec declaring a non-engine step, and records
+    # the resolved NAME for an engine one
+    _s = _ilu.spec_from_file_location("run_wave_b3105", root / "scripts" / "run_wave.py")
+    rw = _ilu.module_from_spec(_s)
+    _s.loader.exec_module(rw)
+    for step in (3, 4):
+        try:
+            rw.resolve_ruled_scope({"wave": "x", "step": step, "arms": []})
+        except SystemExit as e:
+            assert "not an engine step" in str(e), str(e)
+        else:
+            raise AssertionError(f"a step-{step} spec must be refused")
+    filled = rw.resolve_ruled_scope({"wave": "x", "step": 1, "arms": []})
+    assert filled["_resolved_scope"]["name"] == "SEARCH"
+    # ONE boundary: the resolver's copy equals roster_core's, which every
+    # in-sample / holdout split (breadth included) takes its cut from
+    assert pt.IS_HO_BOUNDARY == rc.HO_START.isoformat() == rc.IS_END.isoformat()
+
+
+def test_b3105_breadth_step_keeps_the_owner_word_and_is_never_silent():
+    """S6-B3096a (B3105), council 5 of 5: while breadth was a leg read INSIDE
+    Step 2, Step 2's owner-word rule covered its holdout read. Renumbered to
+    Step 3 it would inherit nothing - and a deletion checker cannot see a
+    sentence's SCOPE shrink (the L866 shape), because the Step-2 sentence is
+    still there. So every step-table row that reads the holdout names the
+    owner's explicit word, the breadth read tool refuses without a ruling,
+    and the ADMIT section requires Step 3's disposition (optional is never
+    silent)."""
+    import ast
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    text = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    sec01 = text.split("### 0.1 ", 1)[1].split("### 0.2 ", 1)[0]
+    table = [ln for ln in sec01.splitlines() if ln.startswith("| **Step ")]
+    assert len(table) == 5, table
+    for name in ("VALIDATE", "BREADTH"):
+        row = [ln for ln in table if ("| " + name + " |") in ln]
+        assert len(row) == 1 and "owner's explicit word" in row[0], (name, row)
+    assert "**BREADTH IS NOT A STEP.**" not in text, "the superseded rule is gone"
+    assert "BREADTH IS STEP 3 - OPTIONAL" in sec01
+    sec6 = text.split("\n## 6. ", 1)[1].split("\n## 7. ", 1)[0]
+    assert sec6.startswith("STEP 4 - ADMIT"), sec6[:40]
+    assert "records Step 3 BREADTH as RAN or N/A with the reason" in sec6
+    # the tool half: breadth_step2_read.py's --ruling is REQUIRED
+    src = (root / "scripts" / "breadth_step2_read.py").read_text(encoding="utf-8")
+    req = None
+    for n in ast.walk(ast.parse(src)):
+        if (isinstance(n, ast.Call) and getattr(n.func, "attr", "") == "add_argument"
+                and n.args and isinstance(n.args[0], ast.Constant)
+                and n.args[0].value == "--ruling"):
+            req = any(k.arg == "required" and isinstance(k.value, ast.Constant)
+                      and k.value.value is True for k in n.keywords)
+    assert req is True, "breadth_step2_read.py must require --ruling"

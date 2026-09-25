@@ -1,0 +1,179 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 18%]
+........................................................................ [ 23%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+........................................................................ [ 37%]
+..............................................s......................... [ 42%]
+....................s.................................................s. [ 46%]
+........................................................................ [ 51%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 65%]
+........................................................................ [ 70%]
+........................................................................ [ 74%]
+.............................F.......................................... [ 79%]
+........................................................................ [ 84%]
+......................................................F................. [ 88%]
+........................................................................ [ 93%]
+........................................................................ [ 98%]
+............................                                             [100%]
+================================== FAILURES ===================================
+___________________ test_b2638_reproduction_failure_refuses ___________________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-2034/test_b2638_reproduction_failur0')
+
+    def test_b2638_reproduction_failure_refuses(tmp_path):
+        """B2638 (L642, fail-closed): if re-applying the declared PRODUCTION levels
+        does not return the landed fire set, the persisted magnitude is not the
+        quantity the engine thresholded - so every derived level measures a
+        different gate. MUST-FIRE arm: declaring the tightest cell as production
+        reproduces 0.22 and has to refuse. MUST-QUIET arm: the true production
+        levels reproduce 1.0000 and grade all 15 cells."""
+        m, root = _b2638_mod()
+        if not m.TRADE_LOG.exists():          # artifact-dependent; skip if absent
+            import pytest
+            pytest.skip("R5 merged cube not present")
+        axes = [m.parse_axis("days_since_last_earnings:le:20,40,60"),
+                m.parse_axis("earnings_eps_yoy_growth:ge:0.05,0.10,0.20,0.35,0.50")]
+        strat = "pead_long_high_yoy_growth_only"
+        import pytest
+        with pytest.raises(SystemExit) as e:
+>           m.sweep(strat, axes, (20.0, 0.50), 0.99, 0.999, 30)
+
+backtest\tests\test_unit.py:35630: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts\offline_level_sweep.py:178: in sweep
+    m, ev = load(strategy, axes)
+            ^^^^^^^^^^^^^^^^^^^^
+scripts\offline_level_sweep.py:100: in load
+    tl = pd.read_csv(TRADE_LOG, low_memory=False,
+.venv\Lib\site-packages\pandas\io\parsers\readers.py:873: in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pandas\io\parsers\readers.py:306: in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pandas\io\parsers\readers.py:1947: in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+.venv\Lib\site-packages\pandas\io\parsers\c_parser_wrapper.py:219: in read
+    data = self._reader.read(nrows)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+pandas/_libs/parsers.pyx:814: in pandas._libs.parsers.TextReader.read
+    ???
+pandas/_libs/parsers.pyx:906: in pandas._libs.parsers.TextReader._read_rows
+    ???
+pandas/_libs/parsers.pyx:885: in pandas._libs.parsers.TextReader._check_tokenize_status
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+>   ???
+E   pandas.errors.ParserError: Error tokenizing data. C error: out of memory
+
+pandas/_libs/parsers.pyx:2084: ParserError
+_________ test_b3096_runbook_is_class_level_and_numbered_consistently _________
+
+    def test_b3096_runbook_is_class_level_and_numbered_consistently():
+        """B3096 (owner directive 2026-09-24, verbatim): "Update the strategy
+        optimization doc to ensure numbering is correct and there are no references
+        to any specific strategy but the runbook is at a class level. The runbook is
+        intended to be broad for each strategy. Tightening and loosening are
+        separate workflows."
+    
+        Four properties, each checked by a helper run on the REAL runbook (must be
+        clean) and on a MUTATED copy (must flag) - a pin that cannot fail pins
+        nothing (L686):
+          1. CLASS-LEVEL - no registered strategy name (the live registry is the
+             defining source, L697) and no family knob / config tag / family word,
+             outside a short allow-list of ENGINE identifiers;
+          2. NUMBERING - top sections 0..N consecutive, subsections consecutive
+             inside their section, and the section-0.1 step table agrees with the
+             parsed phase table step-for-step (the Step 2 / Step 3 confusion the
+             owner asked about);
+          3. REFERENCES - every section reference outside a "(formerly ...)" tag
+             and APPENDIX M resolves to a heading;
+          4. THE MAP - APPENDIX M has one row per heading of the archived
+             pre-B3096 runbook, so every old citation resolves.
+        """
+        import re
+        import sys
+        from pathlib import Path
+    
+        root = Path(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import phase_table as pt
+        from backtest.signals.screener import ALL_STRATEGIES
+    
+        plan_p = root / "STRATEGY_OPTIMISATION_PLAN.md"
+        text = plan_p.read_text(encoding="utf-8")
+        arch = (root / "archive" / "2026-09-24-strategy-optimisation-plan-pre-B3096"
+                / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+        names = sorted({k[len("strat_"):] if k.startswith("strat_") else k
+                        for k in ALL_STRATEGIES}, key=len, reverse=True)
+        assert len(names) >= 200, len(names)
+    
+        family = re.compile(
+            r"\bsw\d+sp\d+\b|\bSMC_[A-Z_]+|\bSTRAT_EMA_SPAN\b|\bCANDLE_[A-Z_]+"
+            r"|\bINST_[A-Z_]+|\bPEAD_[A-Z_]+|\bb2399\b|\bb2197\b|\bb2527\b|\bc14\b"
+            r"|\bicg\b|\bpead\b|\bsmc\b|\btop_decile\b|\bbreaker\b|\bsoldiers\b"
+            r"|\bcrows\b|\bhub-1\b|\binstitutional\b|\bcandle\b|\bswing_length\b", re.I)
+        ALLOW = ("USE_SMC_PANEL_CACHE", "SMC_PHASE", "smc_skip_primitives",
+                 "institutional_companion_screen.py")
+    
+        registry = re.compile(r"(?<![A-Za-z0-9_])(?:strat_)?(?:%s)(?![A-Za-z0-9_])"
+                              % "|".join(re.escape(nm) for nm in names))
+    
+        def named(doc):
+            out = []
+            for n, line in enumerate(doc.split(chr(10)), 1):
+                ln = line
+                for a in ALLOW:
+                    ln = ln.replace(a, "")
+                hit = family.search(ln) or registry.search(ln)
+                if hit:
+                    out.append((n, hit.group(0)))
+            return out
+    
+>       assert named(text) == [], named(text)[:5]
+E       AssertionError: [(1249, 'c14')]
+E       assert [(1249, 'c14')] == []
+E         
+E         Left contains one more item: (1249, 'c14')
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:44200: AssertionError
+============================ slowest 15 durations =============================
+284.44s call     backtest/tests/test_unit.py::test_b2886_holdout_read_refuses_an_uncovered_band
+202.67s call     backtest/tests/test_unit.py::test_b2337_no_header_asserted_by_substring_over_whole_output
+92.12s call     backtest/tests/test_unit.py::test_b2638_reproduction_failure_refuses
+85.94s call     backtest/tests/test_unit.py::test_b1616_engine_defaults_are_byte_identical_and_knobs_bite
+85.54s call     backtest/tests/test_unit.py::test_b1463_no_new_near_identical_pairs
+72.20s call     backtest/tests/test_unit.py::test_b1619_breaker_variants_isolate_and_do_not_move_the_base
+69.11s call     backtest/tests/test_unit.py::test_smart_money_all_keys_present
+54.34s call     backtest/tests/test_unit.py::test_b2116_run_wave_resume_loop_both_ways
+50.45s call     backtest/tests/test_unit.py::test_b3099_drift_check_is_content_aware
+33.53s call     backtest/tests/test_unit.py::test_bug273_institutional_signal_no_bulk_returns_none
+29.38s call     backtest/tests/test_unit.py::test_bug272_insider_signal_no_bulk_returns_none
+28.79s call     backtest/tests/test_unit.py::test_b1778_no_control_chars_in_gate_scripts
+27.38s call     backtest/tests/test_unit.py::test_b2118_run_postconfig_checks_catch_the_planted_defects
+22.58s call     backtest/tests/test_unit.py::test_b2207_ledger_lock_serializes_concurrent_landings
+22.21s call     backtest/tests/test_unit.py::test_b2127_launch_refuses_when_the_engine_drifted_from_the_manifest
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2638_reproduction_failure_refuses
+FAILED backtest/tests/test_unit.py::test_b3096_runbook_is_class_level_and_numbered_consistently
+2 failed, 1535 passed, 3 skipped in 1638.09s (0:27:18)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1668
+chain_inflight=candle_tws_c14
+chain_inflight_start=candle_tws_c14
+chain_inflight_end=candle_tws_c14
+engine_inflight=launch_sweep:output_candle_tws_c14_b0.5_s0.0_w0.3,run_phase1a:output_candle_tws_c14_b0.5_s0.0_w0.3,run_serial_chain,run_wave:b3098_candle_tws_c14_step1_rerun_spec.json
+engine_inflight_start=launch_sweep:output_candle_tws_c14_b0.5_s0.0_w0.3,run_phase1a:output_candle_tws_c14_b0.5_s0.0_w0.3,run_serial_chain,run_wave:b3098_candle_tws_c14_step1_rerun_spec.json
+engine_inflight_end=launch_sweep:output_candle_tws_c14_b0.5_s0.0_w0.3,run_phase1a:output_candle_tws_c14_b0.5_s0.0_w0.3,run_serial_chain,run_wave:b3098_candle_tws_c14_step1_rerun_spec.json
+engine_dead_within_window=none

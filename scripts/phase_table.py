@@ -38,6 +38,16 @@ RUNBOOK = ROOT / "STRATEGY_OPTIMISATION_PLAN.md"
 # whatever the table says.
 IS_HO_BOUNDARY = "2025-05-05"
 
+# S6-B3096a (B3105, owner ruling 2026-09-24: "Breadth is an optional step 3
+# and step 4 is admit"): steps are keyed on NAME. Only these two rows launch
+# the engine, so only they resolve a window; every other row - INVENTORY,
+# BREADTH (offline), ADMIT (a ruling) - is REFUSED by name. Before B3105,
+# resolve(3) returned 2021-05-05..2025-05-05 for ADMIT, a window its own row
+# ("4 years (as Step 2)") contradicts - a number is a display order and moves
+# on a renumbering; a name is an identifier. An unknown name refuses too
+# (fail closed, L642).
+ENGINE_STEPS = frozenset({"SEARCH", "VALIDATE"})
+
 _ROW = re.compile(
     r"^\|\s*\*{0,2}(?P<step>\d)\s+(?P<name>[A-Z]+)\*{0,2}\s*\|"
     r"(?P<scope>[^|]*)\|(?P<window>[^|]*)\|(?P<universe>[^|]*)\|"
@@ -114,6 +124,11 @@ def resolve(step: int, runbook: Path | None = None) -> dict:
     row = tbl["rows"].get(str(step))
     if row is None:
         raise SystemExit(f"REFUSED: no phase-table row for step {step}")
+    if row["name"] not in ENGINE_STEPS:
+        raise SystemExit(
+            f"REFUSED: step {step} is {row['name']} - not an engine step, so there "
+            f"is no window to resolve; only {sorted(ENGINE_STEPS)} launch the "
+            "engine (S6-B3096a: steps are keyed on NAME)")
     start, end = row["window_start"], row["window_end"]
     if not (start and end):
         yrs = row["window_years"]
@@ -141,7 +156,8 @@ def resolve(step: int, runbook: Path | None = None) -> dict:
         raise SystemExit(
             f"REFUSED: step {step} universe {row['universe_raw']!r} has no "
             "registered ticker file - register it rather than typing a path")
-    return {"step": step, "window": {"start": start, "end": end},
+    return {"step": step, "name": row["name"],
+            "window": {"start": start, "end": end},
             "tickers_file": tickers_file, "universe_n": n,
             "produces": row["produces"], "scope": row["scope"],
             "phase_table_sha256": tbl["source_sha256"],
