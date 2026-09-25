@@ -1,0 +1,9 @@
+{
+ "tickers_check": "verify_universe_artifact.py r5_universe_544.txt: 544 tickers, 26 letters, top-3 letter share 27 pct, mega-caps 18 of 18, in-cube-NOT-file 0 against the c14 Step-1 cube (79 tickers; the PROVENANCE MISMATCH finding is the expected one for a 200-ticker Step 1)",
+ "prelaunch": "PRELAUNCH_GATE_PASS batch=CANDLE_TWS_C14_STEP2 frozen_sha=5632fd391e7c tickers=544 (in-chain at the relaunch; hand rehearsal earlier also PASS)",
+ "cron_id": "e5ceb927 (hourly at :37, session-only, 7-day expiry; replaced 342dd245 armed before the first launch)",
+ "engines_before": "0 python processes; pyramid_gate engine_inflight=none",
+ "launched_utc": "2026-09-25T06:23:54Z (first attempt 05:58 HALTed at the pre-leg bar audit; relaunched after B3111)",
+ "task": "stockpicks_chain_b3111_1790317409 (registered_and_started, state=Running)",
+ "os_verified": "pyramid_gate process table at 06:24:18Z: run_serial_chain + run_wave:b3108_candle_tws_c14_step2_restart_spec.json + launch_sweep + run_phase1a on the run dir; 10 python procs; heartbeat sim-day 39 at 07:04"
+}
