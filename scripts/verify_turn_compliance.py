@@ -41,10 +41,25 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 # modifications are these must NOT block -- the pre-B1338 behavior forced
 # dozens of manual .stop_exempt cycles (pure waste, B1334 retrospective).
 # They still commit naturally with the next substantive doc-sweep.
+#
+# S6-B3099a (B3106): every member names its WRITER (L747) - measured, not
+# assumed. The pre-B3106 set listed backtest/data/economic_calendar.json,
+# which the engine only READS (backtest/data/macro.py
+# _load_economic_calendar; its one writer is the manual
+# scripts/refresh_event_calendar.py), so an uncommitted calendar edit - a
+# real INPUT change - was waved through; and it omitted
+# backtest/data/cache/index.json, which the engine DOES write, so a turn
+# whose only change was that write was blocked. Pinned by
+# test_b3106_live_run_churn_names_the_engine_writers, which derives the
+# engine members from the writers' own path constants.
 LIVE_RUN_CHURN = {
-    "STRATEGY_ROSTER.md",
-    "backtest/data/economic_calendar.json",
-    "data/cache/info_cache.json",
+    "STRATEGY_ROSTER.md":
+        "rewritten by scripts/build_strategy_roster.py, which "
+        "test_batch575_strategy_roster.py runs",
+    "backtest/data/cache/index.json":
+        "the engine: backtest/data/cache.py _save_index (INDEX_FILE)",
+    "data/cache/info_cache.json":
+        "the engine: backtest/data/universe.py fetch_info_bulk (cache_file)",
 }
 
 

@@ -261,6 +261,75 @@ def _ascii(reason):
     return r.encode("ascii", "replace").decode("ascii")
 
 
+def _last_lines(states) -> dict:
+    """The LAST ledger line of every id the reducer knows (last row wins,
+    #271) - one definition for every audit that joins on it (L561)."""
+    import re
+    q = (ROOT / "EXECUTION_QUEUE.md").read_text(encoding="utf-8",
+                                                errors="replace")
+    last = {}
+    for ln in q.splitlines():
+        if not ln.strip().startswith("|"):
+            continue
+        c = ln.split("|")
+        if len(c) < 4:
+            continue
+        tid = re.sub(r"[*\s]", "", c[1])
+        if tid in states:
+            last[tid] = ln
+    return last
+
+
+# S6-B3042 (B3106): the unfixed-claim join. A NON-terminal ticket whose body
+# or reason says ANOTHER ticket is unfixed / still open / owed, while that
+# ticket is TERMINAL, carries a stale claim no other audit reads: the
+# numeric re-derivation (L639/#256) reads numbers and the --blockers join
+# reads a declared dependency phrase. This vocabulary is ENUMERATED (the
+# bottom rung, L548) and so is a LOWER BOUND on the class; the positive
+# control is the S6-B2922 incident.
+UNFIXED_MARKERS = ("unfixed", "remain open", "remains open", "still open",
+                   "not yet fixed", "not fixed", "unresolved", "still pending",
+                   "remains pending", "is pending", "still owed", "is owed",
+                   "remain owed", "outstanding", "not yet built", "not built",
+                   "not yet shipped", "still unbuilt")
+UNFIXED_NEGATIONS = ("no longer", "not still", "was unfixed", "were unfixed")
+
+
+def unfixed_claims(states=None, rows=None) -> list:
+    """(ticket, its state, the terminal id it calls unfixed, that id's
+    state, the sentence). `rows` maps id -> the last row's cells (a seam
+    for the pin, #241); default: the live ledger. Quoted spans are
+    stripped first - a row DOCUMENTING an old claim quotes it, and a quote
+    is a mention, not a use (B1738). A quote opens only after a non-word
+    character, so a possessive apostrophe (S6-B2922's) never pairs with
+    the next quote mark."""
+    import re
+    import queue_state as _qs
+    states = _qs.tickets() if states is None else states
+    if rows is None:
+        rows = {t: ln.split("|") for t, ln in _last_lines(states).items()}
+    quoted = re.compile(r"(?<!\w)'[^']*'(?!\w)|(?<!\w)\"[^\"]*\"(?!\w)|`[^`]*`")
+    ident = re.compile(r"S6-B[0-9]+[a-z]?(?:-[A-Z0-9-]+)?")
+    terminal = ("EXECUTED", "DROPPED")
+    out = []
+    for tid, st in sorted(states.items()):
+        if st in terminal:
+            continue
+        cells = rows.get(tid) or []
+        blob = " ".join(cells[4:6]) if len(cells) > 5 else " ".join(cells[4:])
+        blob = quoted.sub(" ", blob)
+        for sent in re.split(r"(?<=[.;!?])\s+", blob):
+            low = sent.lower()
+            if not any(m in low for m in UNFIXED_MARKERS):
+                continue
+            if any(n in low for n in UNFIXED_NEGATIONS):
+                continue
+            for ref in sorted(set(ident.findall(sent))):
+                if ref != tid and states.get(ref) in terminal:
+                    out.append((tid, st, ref, states[ref], _ascii(sent)))
+    return out
+
+
 def blocker_audit():
     """S6-B2932: re-derive every NON-TERMINAL ticket's BLOCKER.
 
@@ -277,18 +346,7 @@ def blocker_audit():
     import re
     import queue_state as _qs
     states = _qs.tickets()
-    q = (ROOT / "EXECUTION_QUEUE.md").read_text(encoding="utf-8",
-                                                errors="replace")
-    last = {}
-    for ln in q.splitlines():
-        if not ln.strip().startswith("|"):
-            continue
-        c = ln.split("|")
-        if len(c) < 4:
-            continue
-        tid = re.sub(r"[*\s]", "", c[1])
-        if tid in states:
-            last[tid] = ln
+    last = _last_lines(states)
 
     TERMINAL = ("EXECUTED", "DROPPED")
     out = []
@@ -327,7 +385,18 @@ def main() -> int:
                     help="list every open ticket carrying a number")
     ap.add_argument("--blockers", action="store_true",
                     help="S6-B2932: re-derive every non-terminal ticket's BLOCKER")
+    ap.add_argument("--unfixed-claims", action="store_true",
+                    help="S6-B3042: open tickets calling a CLOSED ticket unfixed")
     a = ap.parse_args()
+
+    if a.unfixed_claims:
+        hits = unfixed_claims()
+        for tid, st, ref, rst, sent in hits:
+            print(f"  {tid} ({st}) calls {ref} unfixed, but {ref} is {rst}:")
+            print(f"        {sent}")
+        print(f"\n  {len(hits)} stale unfixed-claim(s) across the non-terminal "
+              "tickets (enumerated markers - a LOWER bound, L548).")
+        return 1 if hits else 0
 
     if a.blockers:
         rows = blocker_audit()

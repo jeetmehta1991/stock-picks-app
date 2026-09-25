@@ -25318,7 +25318,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
          "B2382: Phase 1  SCOPE LEDGER the nosilentmiss mechanism"),
-        ('4. Batch cap: ≤3 substantive fixes per batch (Council 201). Larger sets split',
+        ('4. Batch cap: ' + chr(0x2264) + '3 substantive fixes per batch (Council 201). Larger sets split',
          "B2382: Phase 3  EXECUTE with the TEST PYRAMID GATE"),
         ('MEASURED across one session: 24 L-entries stated a generalised rule and **18 were',
          "B2382: ANCHORTHERULE RULE B1597  L464 CHECKLIST 197 mecha"),
@@ -25330,7 +25330,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "B2382: NOUNTESTEDCAUSE RULE B1587  L455 HARD mechanically"),
         ('produces **"gate verdicts"**. So **"0 PASS across 400 combinations" was reported as',
          "B2382: SPECvsIMPLEMENTATION RULE B1608  L471 CHECKLIST 202"),
-        ('GOOGL / META / TSLA — none of which were in the 381. Overlap: 133. The file held',
+        ('GOOGL / META / TSLA ' + chr(0x2014) + ' none of which were in the 381. Overlap: 133. The file held',
          "B2382: ARTIFACTPROVENANCE RULE B1572  L445 HARD mechanicall"),
         ('**MEASURED: `#224` - *a gate nobody calls is not enforcement* - was a checklist paragraph plus ten',
          "B2382: CITING A RULE IS NOT THE RULE RUNNING B1753  L511 CHEC"),
@@ -45950,3 +45950,129 @@ def test_b3105_breadth_step_keeps_the_owner_word_and_is_never_silent():
             req = any(k.arg == "required" and isinstance(k.value, ast.Constant)
                       and k.value.value is True for k in n.keywords)
     assert req is True, "breadth_step2_read.py must require --ruling"
+
+
+def test_b3106_live_run_churn_names_the_engine_writers():
+    """S6-B3099a (B3106): the Stop hook's LIVE_RUN_CHURN register was wrong by
+    one file each way (READ B3099): it waved through backtest/data/
+    economic_calendar.json, which the engine only READS (its one writer is the
+    manual refresh script), and blocked a turn whose only change was
+    backtest/data/cache/index.json, which the engine DOES write. Each member
+    now names its writer (L747), and the engine-written members are DERIVED
+    from the writers' own path constants, so moving a writer fails here."""
+    import ast
+    import inspect
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as vtc
+    from backtest.data import cache as _cache
+    from backtest.data import universe as _uni
+    reg = vtc.LIVE_RUN_CHURN
+    assert isinstance(reg, dict) and all(
+        isinstance(v, str) and len(v) >= 12 for v in reg.values()), reg
+    idx = _cache.INDEX_FILE.resolve().relative_to(root.resolve()).as_posix()
+    info = str(inspect.signature(_uni.fetch_info_bulk).parameters["cache_file"]
+               .default).replace("\\", "/")
+    assert idx in reg and info in reg, (idx, info, sorted(reg))
+    cal = "backtest/data/economic_calendar.json"
+    assert cal not in reg, "the engine only reads the calendar"
+    # and nothing under backtest/ writes it (AST: no write_text / open-for-write
+    # on the calendar constant), so an edit to it is an INPUT change
+    writes = []
+    for p in (root / "backtest").rglob("*.py"):
+        if "tests" in p.parts:
+            continue
+        src = p.read_text(encoding="utf-8", errors="replace")
+        if "ECONOMIC_CALENDAR_FILE" not in src and "economic_calendar.json" not in src:
+            continue
+        for n in ast.walk(ast.parse(src)):
+            if (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                    and n.func.attr in ("write_text", "write_bytes")
+                    and isinstance(n.func.value, ast.Name)
+                    and n.func.value.id == "ECONOMIC_CALENDAR_FILE"):
+                writes.append(p.name)
+    assert writes == [], writes
+    subst, churn = vtc.split_churn([" M " + idx, " M " + cal, " M " + info])
+    assert churn == [" M " + idx, " M " + info] and subst == [" M " + cal], (subst, churn)
+
+
+def test_b3106_preflight_c1_reads_strings_by_token_not_by_regex(tmp_path):
+    """S6-B3096i (B3106): C1 (#75) paired triple-quote sequences with a regex
+    split, so a triple quote INSIDE an ordinary string flipped its parity - C1
+    then scanned docstrings as code and skipped code as docstring (MEASURED
+    B3096: it refused a section sign inside a docstring while missing real
+    non-ASCII in string literals). It now blanks triple-quoted strings found
+    by TOKENIZE, in place (offsets and lines unchanged, L582), and fails
+    closed with a named violation when a file cannot be tokenized. MEASURED
+    B3106 over 1,104 tracked .py files: 0 tokenize failures; the corrected
+    check newly flagged 1 file with 2 characters (two fragment pins quoting
+    the skill verbatim), converted to chr() in the same batch (rule 9b)."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import preflight as pf
+    q3 = chr(34) * 3
+    e = chr(0xe9)
+    # the line-15543 fixture shape: a triple quote inside a single-quoted string
+    src = ("x = '" + q3 + "'\n" + "y = " + chr(34) + "caf" + e + chr(34) + "\n"
+           + "def f():\n    " + q3 + "doc " + e + q3 + "\n    return 1\n")
+    rt = pf.runtime_text(src)
+    assert ("caf" + e) in rt, "real code after the stray triple quote must be scanned"
+    assert ("doc " + e) not in rt, "a docstring must be blanked"
+    assert len(rt) == len(src) and rt.count(chr(10)) == src.count(chr(10))
+    p = tmp_path / "m.py"
+    p.write_text(src, encoding="utf-8")
+    v = pf.check_unicode_in_runtime([p])
+    assert len(v) == 1 and "0xe9" in v[0], v
+    # a triple-quoted f-string is blanked too; a comment stays in scope
+    src2 = "z = f" + q3 + "{1} " + e + q3 + "\n# note " + chr(0x2014) + "\n"
+    rt2 = pf.runtime_text(src2)
+    assert e not in rt2 and chr(0x2014) in rt2, repr(rt2)
+    # fail CLOSED on a file tokenize cannot read, and say why
+    bad = tmp_path / "bad.py"
+    bad.write_text("x = " + q3 + "never closed\n", encoding="utf-8")
+    vb = pf.check_unicode_in_runtime([bad])
+    assert len(vb) == 1 and "cannot tokenize" in vb[0], vb
+    # the backlog is disposed: this test file itself is C1-clean
+    me = Path(__file__)
+    assert pf.check_unicode_in_runtime([me]) == [], pf.check_unicode_in_runtime([me])
+
+
+def test_b3106_open_ticket_calling_a_closed_ticket_unfixed_is_flagged():
+    """S6-B3042 (B3106): an OPEN ticket's body can say another ticket is
+    unfixed / still open / owed after that ticket CLOSED - nothing checked it
+    (S6-B2922 said 'S6-B2918 keying ... remain unfixed' while S6-B2918 read
+    EXECUTED). audit_ticket_staleness.unfixed_claims() is the join: sentences
+    of NON-terminal rows naming a TERMINAL id beside an unfixed-marker, with
+    quoted spans stripped so a row DOCUMENTING an old claim does not fire.
+    Must-fire on the S6-B2922 shape; must-quiet on a quotation, a citation of
+    a shipped mechanism, a negation and a self-reference; and the LIVE ledger
+    carries none (MEASURED B3106: 0 across the non-terminal set, with the
+    known instance as the positive control)."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import audit_ticket_staleness as ats
+    states = {"S6-X1": "OPEN", "S6-B2918": "EXECUTED", "S6-B2620a": "EXECUTED"}
+
+    def rows(body):
+        return {"S6-X1": ["", " **S6-X1** ", " **OPEN** ", " P1 ", " " + body + " ",
+                          " _reason:_ OPEN - x. ", ""]}
+
+    fire = "STILL OPEN: S6-B2918 keying and the below-power disposition remain unfixed."
+    assert [h[2] for h in ats.unfixed_claims(states, rows(fire))] == ["S6-B2918"]
+    for quiet in (
+            "S6-B2922's body read 'S6-B2918 keying remain unfixed' while S6-B2918 reads EXECUTED.",
+            "The S6-B2620a sweep already exists and covers this.",
+            "S6-B2918 is no longer open.",
+            "S6-X1 remains open until the run lands."):
+        assert ats.unfixed_claims(states, rows(quiet)) == [], quiet
+    live = ats.unfixed_claims()
+    assert live == [], live

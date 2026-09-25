@@ -36,7 +36,8 @@ from pathlib import Path
 from typing import Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DOC_RE = re.compile(r'(\"\"\"[\s\S]*?\"\"\"|\'\'\'[\s\S]*?\'\'\')', re.MULTILINE)
+# S6-B3096i (B3106): DOC_RE (a regex that paired triple quotes by POSITION)
+# is retired - see runtime_text.
 
 
 def get_staged_files() -> list[Path]:
@@ -51,9 +52,69 @@ def get_staged_files() -> list[Path]:
 
 
 def runtime_text(source: str) -> str:
-    """Return source with docstrings removed (only runtime-printable code)."""
-    parts = DOC_RE.split(source)
-    return "".join(parts[i] for i in range(0, len(parts), 2))
+    """Return `source` with every triple-quoted string BLANKED in place -
+    docstrings and triple-quoted literals, f-/t-strings included - so C1
+    scans runtime code and comments (CHECKLIST #75).
+
+    S6-B3096i (B3106): the regex split this replaces paired triple-quote
+    sequences by POSITION, so a triple quote inside an ordinary string
+    flipped its parity for the rest of the file - C1 then scanned
+    docstrings as code and skipped code as docstring (MEASURED B3096: it
+    refused a section sign in a docstring while missing real non-ASCII in
+    string literals). TOKENIZE knows where every string starts and ends.
+    Blanking keeps every offset and line number (L582); line offsets are
+    taken from the SAME readline tokenize uses, so a form feed or other
+    str.splitlines() separator cannot shift them. Raises ValueError when
+    the source cannot be tokenized, so C1 fails closed and says why rather
+    than guessing (L642). MEASURED B3106 over 1,104 tracked .py files: 0
+    tokenize failures, 1 file newly flagged (2 characters, converted).
+    """
+    import io
+    import tokenize
+    rl = io.StringIO(source).readline
+    offs = [0]
+    while True:
+        ln = rl()
+        if not ln:
+            break
+        offs.append(offs[-1] + len(ln))
+
+    def pos(rc):
+        return offs[rc[0] - 1] + rc[1]
+
+    def triple(text):
+        body = text.lstrip("rRbBuUfFtT")
+        return body.startswith(chr(34) * 3) or body.startswith(chr(39) * 3)
+
+    spans, stack = [], []
+    try:
+        for tok in tokenize.generate_tokens(io.StringIO(source).readline):
+            name = tokenize.tok_name.get(tok.type, "")
+            if tok.type == tokenize.STRING and triple(tok.string):
+                spans.append((pos(tok.start), pos(tok.end)))
+            elif name in ("FSTRING_START", "TSTRING_START"):
+                stack.append((tok, triple(tok.string)))
+            elif name in ("FSTRING_END", "TSTRING_END") and stack:
+                st, tri = stack.pop()
+                if tri:
+                    spans.append((pos(st.start), pos(tok.end)))
+    except (tokenize.TokenError, SyntaxError) as exc:
+        raise ValueError(f"{type(exc).__name__}: {exc}") from exc
+    out = list(source)
+    for a, b in spans:
+        for i in range(a, b):
+            if out[i] not in "\r\n":
+                out[i] = " "
+    return "".join(out)
+
+
+def _rel(p: Path):
+    """A path for a message: repo-relative when it is inside the repo,
+    as given otherwise (a test fixture in a temp dir must not raise)."""
+    try:
+        return p.relative_to(REPO_ROOT)
+    except ValueError:
+        return p
 
 
 def check_unicode_in_runtime(paths: Iterable[Path]) -> list[str]:
@@ -75,11 +136,18 @@ def check_unicode_in_runtime(paths: Iterable[Path]) -> list[str]:
             text = p.read_text(encoding="utf-8")
         except Exception:
             continue
-        runtime = runtime_text(text)
+        try:
+            runtime = runtime_text(text)
+        except ValueError as exc:
+            violations.append(
+                f"C1 UNICODE | {_rel(p)}: cannot tokenize ({exc}) - C1 cannot "
+                f"tell code from strings in a file it cannot read; fix the "
+                f"syntax first (fail closed, S6-B3096i)")
+            continue
         bad = sorted({c for c in runtime if ord(c) > 127 and c not in ("\n", "\r", "\t")})
         if bad:
             codepoints = [hex(ord(c)) for c in bad]
-            rel = p.relative_to(REPO_ROOT) if p.is_absolute() else p
+            rel = _rel(p)
             violations.append(
                 f"C1 UNICODE | {rel}: non-ASCII codepoints {codepoints} in runtime code "
                 f"(use chr(0xN) or ASCII equivalent; emoji/em-dash/arrows banned)"
