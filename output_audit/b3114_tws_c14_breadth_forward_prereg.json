@@ -1,0 +1,15 @@
+{
+  "_doc": "B3114 FORWARD pre-registration for three_white_soldiers at the c14 producer configuration - owner ruling 2026-09-26 verbatim: 'C approved' (option c of the S6-B3112c item-9 proposal: pre-register confirm-or-strike, no admission now). The cell below was identified by the b3113 breadth grid and the b3114 holdout read (1 of 192 cells clearing all six live gates, output_audit/b3114_tws_c14_breadth_step2_read.json) - that read was itself a DISCLOSED-RE-READ of a spent holdout, so this registration names the cell as a HYPOTHESIS to be tested ONCE on data that does not yet exist. No peek is possible against future data; this is the strongest pre-registration form (the b2652 template, shape copied, values this campaign's own).",
+  "registered_utc": "2026-09-26T04:20:00Z",
+  "strategy": "three_white_soldiers",
+  "cell": {
+    "producer_config": "c14: n_bars 3, body 0.5, step 0.0, wick 0.3 (output_audit/b3108_candle_tws_c14_step2_restart_spec.json parameters)",
+    "breadth_filter": "cot_ndx_mmoney_pctile_3y >= 0.637 at the fire bar",
+    "exit": "class_time_stop"
+  },
+  "hypothesis_source": "b3114 re-read figures (DISCLOSED-RE-READ / GRID-SELECTED / IS-HOLDOUT-INVERSION - evidence only for the hypothesis, never for admission): holdout sharpe 1.779, psr 0.9653, profit factor 2.154, sortino 2.873, holdout n 36, full n 343, in-sample sharpe -0.421 (the inversion is disclosed, not explained away) - output_audit/b3114_tws_c14_breadth_step2_read.json; the in-sample search was priced separately at p=0.005 (output_audit/b3113_tws_c14_breadth_grid.json permutation_null), a price that does not cover the holdout-side selection of this 1 of 192 cells",
+  "test": "grade this exact (producer_config, breadth_filter, exit) cell against the SIX LIVE GATES (roster_core.LIVE_GATES, current thresholds at read time) on the first FORWARD window satisfying the trigger; ONE read; QUALIFIES -> admission proposal to the owner with all provenance labels riding; FAIL or ungradable -> the c14 breadth thread closes FAIL, no re-pick",
+  "trigger": "a landed cube at the c14 producer configuration covering entries AFTER 2026-05-05 spanning >= 12 months, with cot_ndx_mmoney_pctile_3y persisted at the fire bar and reproduction clearing the read tool's refusals; the read requires >= 15 forward-window trades for this cell, else the read is UNGRADABLE and the registration expires without verdict",
+  "no_other_cells": "no other cell, level or exit of this strategy may be graded on the forward window under this registration - one hypothesis, one read",
+  "trigger_evaluation_honesty": "no mechanical evaluator watches this trigger (the L838 disclosure, same standing as the b2652 registration); it is checked when a candle forward run lands"
+}
