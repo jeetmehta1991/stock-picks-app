@@ -46607,3 +46607,42 @@ def test_s6b3092b_preleg_exemptions_are_named_reasoned_and_gap_only(tmp_path):
                  ["OKAY"], {"OKAY": "ok"})
     assert r.returncode == 2 and "stale exemption" in r.stdout.lower()
 
+
+def test_b3112_breadth_grid_reads_the_subjects_own_cube(tmp_path, monkeypatch):
+    """S6-B3112c (B3113): breadth_step1_grid.py --cube-dir points the grid at
+    the SUBJECT'S OWN cube (runbook 3.6 - QUANTS on the subject's fires; a
+    producer-reconfiguration depth line is not expressible as an R5 row
+    filter). Both directions, repo-state-free (L843): the DEFAULT source
+    stays the R5 merged cube and the override sits BELOW the two Step-1
+    gates (test_b2848's call-site order pin); the behavioural arm runs
+    main() in-process with the gates stubbed and a missing --cube-dir, and
+    must see the refusal NAME that dir - if the override were dropped, main
+    would read R5 instead and this arm fails."""
+    import sys
+    from pathlib import Path
+    import pytest
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import importlib
+    import breadth_step1_grid as m
+    importlib.reload(m)
+    # direction 1 (must-quiet): defaults unchanged, and gate order preserved
+    assert str(m.CUBE).replace("\\", "/").endswith(
+        "output_r5_merged_1_7/trade_exit_detail.csv")
+    src = (root / "scripts" / "breadth_step1_grid.py").read_text(encoding="utf-8")
+    assert src.index("_stamp = require_fresh_status()") < src.index("if a.cube_dir:")
+    # direction 2 (must-fire): the override is READ - a missing dir refuses
+    monkeypatch.setattr(m, "require_band_ruling", lambda *a, **k: "stub")
+    monkeypatch.setattr(m, "require_fresh_status", lambda *a, **k: "stub")
+    missing = tmp_path / "no_such_run_dir"
+    monkeypatch.setattr(sys, "argv",
+                        ["breadth_step1_grid.py", "--strategy", "x",
+                         "--axes", "k:ge", "--out", str(tmp_path / "o.json"),
+                         "--band-ruling", "pin probe",
+                         "--cube-dir", str(missing)])
+    with pytest.raises(SystemExit) as e:
+        m.main()
+    msg = str(e.value)
+    assert "cube-dir file missing" in msg and "no_such_run_dir" in msg
+    importlib.reload(m)

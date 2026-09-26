@@ -111,9 +111,24 @@ def main() -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--band-ruling", required=True,
                     help="the owner's T3 band words, verbatim (S6-B2848a)")
+    ap.add_argument("--cube-dir", default=None,
+                    help="run-dir override: read <dir>/trade_exit_detail.csv"
+                         " + trade_log.csv instead of the R5 merged cube"
+                         " (S6-B3112c: the subject's own fires)")
     a = ap.parse_args()
     _ruling = require_band_ruling(a.band_ruling, a.strategy)   # S6-B2848a + B2855
     _stamp = require_fresh_status()                # S6-B2848b
+    # S6-B3112c: a breadth subject whose depth line is a producer
+    # reconfiguration has its fires only in its OWN cube - R5 cannot
+    # express it as a row filter, so the source must be overridable.
+    global CUBE, TRADE_LOG
+    if a.cube_dir:
+        CUBE = ROOT / a.cube_dir / "trade_exit_detail.csv"
+        TRADE_LOG = ROOT / a.cube_dir / "trade_log.csv"
+        for _f in (CUBE, TRADE_LOG):
+            if not _f.exists():
+                raise SystemExit(f"REFUSED: --cube-dir file missing: {_f}")
+        print(f"cube-dir override: {a.cube_dir} (S6-B3112c)")
     t0 = time.time()
     axes = [_axis_spec(x) for x in a.axes.split(",")]
 
@@ -177,6 +192,7 @@ def main() -> int:
     ranked = sorted((r for r in rows if not r["npt_barred"]),
                     key=lambda r: -r["is_sharpe"])
     rec = {"strategy": a.strategy, "depth_base": a.depth,
+           "cube_dir": a.cube_dir or "output_r5_merged_1_7 (default)",
            "axes": [{"key": k, "op": o} for k, o in axes],
            "quants": list(QUANTS), "min_coverage": MIN_COVERAGE,
            "window": "IS only (< 2025-05-05); holdout untouched - Step 2 needs its own owner word",
