@@ -3069,5 +3069,12 @@
     "null_max_p95": 0.44839999999999985,
     "null_max_max": 0.609,
     "p_value": 0.005
+  },
+  "multiplicity": {
+    "reconciles": true,
+    "trials": 192,
+    "graded_rows": 192,
+    "family_cells": 192,
+    "basis": "2 axes x 4 QUANTS levels x 24 exits = 192; no pruning (npt rows kept and flagged, not dropped); the permutation_null block prices this exact search (p=0.005)"
   }
 }

@@ -83,6 +83,11 @@ def main() -> int:
     ap.add_argument("--breadth-reason", default="",
                     help="required non-empty when --breadth-disposition=waived")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--cube-dir", default=None,
+                    help="SUBJECT run-dir override: read"
+                         " <dir>/trade_exit_detail.csv + trade_log.csv for the"
+                         " subject frame; the CONTROL comparison keeps the R5"
+                         " default - its own fires (S6-B3113a)")
     a = ap.parse_args()
     if not a.ruling.strip():
         raise SystemExit("REFUSED: empty --ruling")
@@ -92,6 +97,19 @@ def main() -> int:
             "- a waiver without its reason is a silent skip (S6-B2848d)")
     t0 = time.time()
 
+    # S6-B3113a: the subject's fires live only in its own cube when the
+    # depth line is a producer reconfiguration; the control leg below
+    # RESTORES the R5 default (the control's own fires, per this file's
+    # own note).
+    import breadth_step1_grid as _g
+    _default_paths = (_g.CUBE, _g.TRADE_LOG)
+    if a.cube_dir:
+        _g.CUBE = _g.ROOT / a.cube_dir / "trade_exit_detail.csv"
+        _g.TRADE_LOG = _g.ROOT / a.cube_dir / "trade_log.csv"
+        for _f in (_g.CUBE, _g.TRADE_LOG):
+            if not _f.exists():
+                raise SystemExit(f"REFUSED: --cube-dir file missing: {_f}")
+        print(f"cube-dir override (subject frame): {a.cube_dir} (S6-B3113a)")
     art = json.loads(Path(a.step1_artifact).read_text(encoding="utf-8"))
     require_multiplicity(art, a.step1_artifact)   # S6-B2836a, fail closed
     strategy = art["strategy"]
@@ -137,6 +155,8 @@ def main() -> int:
     controls = []
     if quals:
         ckeys = sorted({q["axis"] for q in quals})
+        # S6-B3113a: control on its OWN fires - the R5 default, always
+        _g.CUBE, _g.TRADE_LOG = _default_paths
         cm, _ = build_frame(a.control, None, ckeys)
         for q in quals:
             base_cell = cm[cm.exit_method == q["exit"]]
@@ -181,6 +201,8 @@ def main() -> int:
                "subject_holdout_previously_read": "B2668 depth admission",
                "disclosure_accepted": "owner 2026-09-11 'I am ok with the disclosure'",
                "label": "DISCLOSED-RE-READ / GRID-SELECTED"},
+           "cube_dir": a.cube_dir or "output_r5_merged_1_7 (default)",
+           "control_source": "output_r5_merged_1_7 (control's own fires)",
            "cells_read": len(rows),
            "qualifiers_all_six_non_npt": len(quals),
            "qualifiers": quals,

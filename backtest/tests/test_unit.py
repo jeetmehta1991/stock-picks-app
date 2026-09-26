@@ -46646,3 +46646,36 @@ def test_b3112_breadth_grid_reads_the_subjects_own_cube(tmp_path, monkeypatch):
     msg = str(e.value)
     assert "cube-dir file missing" in msg and "no_such_run_dir" in msg
     importlib.reload(m)
+
+
+def test_b3113a_step2_read_subject_cube_control_r5(tmp_path):
+    """S6-B3113a (B3114): breadth_step2_read.py --cube-dir overrides the
+    SUBJECT frame source while the CONTROL comparison restores the R5
+    default (its own fires). Structural both ways: the override block sits
+    before the artifact load with the pinned require_multiplicity <
+    build_frame order intact, and the control leg restores _default_paths
+    before its build_frame. Behavioural must-fire: a missing --cube-dir is
+    READ - the CLI refuses naming that path before touching the artifact
+    (mutating the override away makes the run proceed to the artifact load
+    and fail differently, so this arm goes red)."""
+    import subprocess
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "breadth_step2_read.py").read_text(encoding="utf-8")
+    body = src.split("def main(", 1)[1]
+    assert body.index("if a.cube_dir:") < body.index("art = json.loads")
+    assert body.index("require_multiplicity(art") < body.index("cm, _ = build_frame")
+    ctl = body.split("ckeys = sorted", 1)[1]
+    assert ctl.index("_default_paths") < ctl.index("build_frame(a.control")
+    missing = tmp_path / "no_such_run_dir"
+    r = subprocess.run(
+        [sys.executable, str(root / "scripts" / "breadth_step2_read.py"),
+         "--step1-artifact", str(tmp_path / "absent.json"),
+         "--ruling", "pin probe", "--breadth-disposition", "ran",
+         "--out", str(tmp_path / "o.json"), "--cube-dir", str(missing)],
+        cwd=str(root), capture_output=True, text=True, timeout=120)
+    blob = r.stdout + r.stderr
+    assert r.returncode != 0
+    assert "cube-dir file missing" in blob and "no_such_run_dir" in blob, blob[-400:]
+
