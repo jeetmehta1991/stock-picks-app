@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "a3b3b12a5",
-    "generated_at": "2026-09-23 15:28:57"
+    "source_commit": "4ed792978",
+    "generated_at": "2026-09-25 23:23:25"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -1908,13 +1908,18 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B2420"
+      ],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
       "mention_tickets": [
+        "S6-B2420",
         "S6-B2669"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "mfi_oversold",
@@ -2393,18 +2398,20 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
+        "S6-B2420",
         "S6-B2633",
-        "S6-B2644a",
-        "S6-B2645b"
+        "S6-B2644a"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
       "mention_tickets": [
+        "S6-B2420",
         "S6-B2633",
-        "S6-B2644a",
-        "S6-B2645b"
+        "S6-B2644a"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "pead_with_insider_confirmation_long",
@@ -2651,11 +2658,17 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "tickets": [
+        "S6-B2420"
+      ],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
+      "mention_tickets": [
+        "S6-B2420"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "pocket_pivot_long",
@@ -3168,16 +3181,20 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
+        "S6-B2420",
         "S6-B2644c",
         "S6-B2756"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
       "mention_tickets": [
+        "S6-B2420",
         "S6-B2644c",
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "smc_breaker_block_long",
@@ -3199,7 +3216,7 @@
       "mention_tickets": [
         "S6-B1505b",
         "S6-B1518c",
-        "S6-B1531a"
+        "S6-B1520a"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -3790,18 +3807,20 @@
         "rsi_14": 1.0
       },
       "tickets": [
+        "S6-B2178c",
         "S6-B2842",
-        "S6-B2850",
-        "S6-B2861"
+        "S6-B2850"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B2178c"
+      ],
       "mention_tickets": [
+        "S6-B2178c",
         "S6-B2842",
-        "S6-B2850",
-        "S6-B2861"
+        "S6-B2850"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "totm_long",
@@ -3839,13 +3858,18 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B2420"
+      ],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
       "mention_tickets": [
+        "S6-B2420",
         "S6-B2669"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "triangle_ascending_long",
@@ -4212,14 +4236,18 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
+        "S6-B2420",
         "S6-B2649"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
       "mention_tickets": [
+        "S6-B2420",
         "S6-B2649"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "xs_combined_momentum_low_ivol",
