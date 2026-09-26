@@ -29442,7 +29442,9 @@ def test_b2413_step2_admission_renders_rederived_and_refuses_unlocatable():
         notpass["admissions"][0]["grid_artifact"] = str(fake_grid)
         npp = _P(td) / "adm2.json"
         npp.write_text(_json.dumps(notpass), encoding="utf-8")
-        with _pytest.raises(ValueError, match="not PASS"):
+        # B3115: the refusal message gained the read-tool dialect; match
+        # the fragment stable across both wordings, not the dropped words.
+        with _pytest.raises(ValueError, match="cleared all six gates"):
             m.step2_admissions_section((lambda s: None), admissions_path=npp)
 
     # reachability (B2208): main() must actually call the section
@@ -30403,7 +30405,10 @@ def test_b2417_admission_mirror_is_counted_in_the_rollup():
     # roll-up now carries TWO admission mirrors, and the total is NINE.
     assert "smc_breaker_block_short" in adm_lines[0], adm_lines[0]
     assert "pead_short_negative_yoy_growth" in adm_lines[0], adm_lines[0]
-    assert "(2)" in adm_lines[0], adm_lines[0]
+    # B3115 (owner ruling 2026-09-26): three_white_soldiers admitted at
+    # the c14 breadth line; its declared mirror joins the roll-up -> 3.
+    assert "three_black_crows_short" in adm_lines[0], adm_lines[0]
+    assert "(3)" in adm_lines[0], adm_lines[0]
 
     tot = [l for l in doc.splitlines() if l.startswith("**Deployable total:")]
     assert len(tot) == 1, tot
@@ -30415,7 +30420,9 @@ def test_b2417_admission_mirror_is_counted_in_the_rollup():
     # B2668: the S6-B2649 campaign admission (top_decile) -> 26.
     # B2669: +2 created mirrors and the classifier fix -> 28, 0 to create.
     # B2685: 28 -> 29 (xs_low_beta_with_smart_money_long admitted, S6-B2674a).
-    assert "= 29 distinct strategies" in tot[0], tot[0]
+    # B3115: three_white_soldiers c14 breadth admission + its declared
+    # mirror three_black_crows_short (owner 2026-09-26) -> 31.
+    assert "= 31 distinct strategies" in tot[0], tot[0]
 
     # reachability (B2208): the generator derives the roll-up from the
     # admissions record, not from a hand count
@@ -41738,6 +41745,12 @@ def test_b2945_spec_gate_enforces_what_the_launch_gate_requires():
         "strategy_subset": "output_audit/_subset_three_white_soldiers.txt",
         "step": 1,
         "leg_cap_hours": 4.5,
+        # B3115: tws is ADMITTED now; this fixture probes spec-vs-launch
+        # gate parity, not the admitted-refusal - the override names its
+        # target (L789) with fixture text, not an owner word.
+        "owner_override_retest_admitted": {
+            "three_white_soldiers": "B3115 pin fixture - gate-plumbing "
+                                    "probe, not a retest word"},
         "arms": [{"tag": "t",
                   "env": {"CANDLE_N_BARS": "3", "CANDLE_MIN_BODY_PCT": "0.0",
                           "CANDLE_MIN_STEP_PCT": "0.0",
@@ -41768,8 +41781,12 @@ def test_b2945_spec_gate_enforces_what_the_launch_gate_requires():
     # and every b2944 campaign spec on disk must satisfy BOTH gates
     for f in sorted((root / "output_audit").glob("b2944_candle_*_spec.json")):
         d = json.loads(f.read_text(encoding="utf-8"))
-        assert launch_refusals(d, root=root) == [], (f.name,
-                                                     launch_refusals(d, root=root))
+        # B3115: a real spec whose SUBJECT is now ADMITTED refuses by
+        # design (the closed-roster owner rule, 2026-09-12); the parity
+        # this test guards is every OTHER refusal class.
+        refs = [r for r in launch_refusals(d, root=root)
+                if "ALREADY ADMITTED to Phase 1B" not in r]
+        assert refs == [], (f.name, refs)
         assert int(d["fires_at_production"]) > 0, f.name
 
 
@@ -45164,6 +45181,11 @@ def test_b3099_every_file_the_leg_gate_opens_is_refused_or_declared_policy(tmp_p
         "leg_cap_hours": 4.5, "max_legs": 3, "pool_workers": 4,
         "allow_engine_drift": False, "resume": False, "cube_riders": None,
         "fires_at_production": 199,
+        # B3115: same override as the b2945 fixture - tws is admitted and
+        # this test measures the leg-gate READ SET, not the refusal.
+        "owner_override_retest_admitted": {
+            "three_white_soldiers": "B3115 pin fixture - gate-plumbing "
+                                    "probe, not a retest word"},
         "arms": [{"tag": "t", "env": {"CANDLE_N_BARS": "3"}}]})
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(root),
                           capture_output=True, text=True).stdout.strip()
@@ -46678,4 +46700,41 @@ def test_b3113a_step2_read_subject_cube_control_r5(tmp_path):
     blob = r.stdout + r.stderr
     assert r.returncode != 0
     assert "cube-dir file missing" in blob and "no_such_run_dir" in blob, blob[-400:]
+
+
+def test_b3114b_roster_accepts_both_admission_dialects():
+    """S6-B3114b (B3115): the roster renderer's admission acceptance knows
+    BOTH evidence dialects - the sweep family's verdict=PASS and the breadth
+    read tool's all_live_gates=True - and refuses everything else (a FAIL
+    verdict, all_live_gates False, an empty row). Both directions per #226;
+    the full-n reader takes either spelling. Wiring: the render loop calls
+    the helper (a pinned callee is not a pinned call site, #224)."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_phase_1b_roster as bp
+    ok = bp._admission_row_ok
+    assert ok({"verdict": "PASS"}) and ok({"all_live_gates": True})
+    assert not ok({"verdict": "FAIL"})
+    assert not ok({"all_live_gates": False})
+    assert not ok({})
+    assert not ok({"verdict": None, "all_live_gates": None})
+    assert bp._admission_margin({"margin": 0.152}) == "+0.152"
+    assert bp._admission_margin({}).strip() == "-"
+    assert bp._admission_ho_sharpe({"sharpe": 1.152}) == 1.152
+    assert bp._admission_ho_sharpe({"holdout_sharpe": 1.779}) == 1.779
+    assert bp._admission_ho_sharpe({"sharpe": 1.152, "holdout_sharpe": 9}) == 1.152
+    assert bp._admission_full_n({"full_period_n": 955}) == 955
+    assert bp._admission_full_n({"full_n": 343}) == 343
+    assert bp._admission_full_n({"full_period_n": 955, "full_n": 343}) == 955
+    src = (root / "scripts" / "build_phase_1b_roster.py").read_text(encoding="utf-8")
+    assert "if not _admission_row_ok(r):" in src
+    assert "_admission_full_n(r)" in src
+    assert "_admission_ho_sharpe(r)" in src
+    from backtest.signals.screener import ALL_STRATEGIES as _all
+    import inspect as _ins
+    doc = _ins.getdoc(_all["three_black_crows_short"]) or ""
+    assert "EXACT MIRROR of strat_three_white_soldiers" in doc
 

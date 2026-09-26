@@ -203,6 +203,37 @@ def mirror_status(name: str) -> tuple[str, str | None]:
     return "NEEDS-CREATION", None
 
 
+def _admission_row_ok(r: dict) -> bool:
+    """S6-B3114b: an admitted row must have cleared all six gates. Two
+    evidence dialects exist - the sweep/grid family stamps verdict=PASS;
+    the breadth read tool (breadth_step2_read.py) stamps
+    all_live_gates=True and carries no verdict key. Anything else is
+    refused (fail closed, L642)."""
+    return r.get("verdict") == "PASS" or r.get("all_live_gates") is True
+
+
+def _admission_margin(r: dict) -> str:
+    """S6-B3114b: margin keeps the LOCKED +.3f sweep formatting (the b2413
+    pin guards it); the read dialect carries no margin and renders -."""
+    m = r.get("margin")
+    return f"{m:+.3f}" if m is not None else "     -"
+
+
+def _admission_ho_sharpe(r: dict):
+    """S6-B3114b: the sweep dialect names the holdout Sharpe `sharpe`;
+    the read dialect names it `holdout_sharpe`. One reader, both."""
+    s = r.get("sharpe")
+    return s if s is not None else r.get("holdout_sharpe")
+
+
+def _admission_full_n(r: dict):
+    """S6-B3114b: the sweep dialect names full_period_n; the read dialect
+    names full_n. One reader, both spellings (L825 - migrate the READER,
+    never half the record)."""
+    fp = r.get("full_period_n")
+    return fp if fp is not None else r.get("full_n")
+
+
 def load_admissions(admissions_path=None) -> list[dict]:
     """S6-B2413/S6-B2417: the owner-ruled Step-2 admissions record.
 
@@ -260,11 +291,12 @@ def step2_admissions_section(A, admissions_path=None) -> None:
                 f"{want} + exit {adm['exit']!r} in {art.name}, found {len(hit)} "
                 "- refusing to render an admission whose evidence cannot be located")
         r = hit[0]
-        if r.get("verdict") != "PASS":
+        if not _admission_row_ok(r):
             raise ValueError(
-                f"admission {adm['ticket']}: matched row verdict is "
-                f"{r.get('verdict')!r}, not PASS - an admitted combination must "
-                "have cleared all six gates")
+                f"admission {adm['ticket']}: matched row is neither verdict=PASS "
+                f"nor all_live_gates=True (verdict={r.get('verdict')!r}, "
+                f"all_live_gates={r.get('all_live_gates')!r}) - an admitted "
+                "combination must have cleared all six gates (S6-B3114b)")
         mstat, mname = mirror_status(adm["strategy"])
         mir = f"`{mname}`" if (mstat == "REGISTERED" and mname) else mstat
         combo = ", ".join(f"{k}={v}" for k, v in want.items())
@@ -275,11 +307,11 @@ def step2_admissions_section(A, admissions_path=None) -> None:
         _rev = adm.get("review_status") or "REVIEWED"
         _rev = f"**{_rev}**" if _rev != "REVIEWED" else _rev
         A(f"| `{adm['strategy']}` | {adm['direction']} | {_rev} | {cfg}; {combo} | `{adm['exit']}` | "
-          f"{_fmt(r.get('is_sharpe'))} | {_fmt(r.get('is_ci_lo'))} | {_fmt(r.get('sharpe'))} | "
-          f"{_fmt(r.get('ci_lo'))} | {r.get('margin'):+.3f} | {_fmt(r.get('psr'))} | "
+          f"{_fmt(r.get('is_sharpe'))} | {_fmt(r.get('is_ci_lo'))} | {_fmt(_admission_ho_sharpe(r))} | "
+          f"{_fmt(r.get('ci_lo'))} | {_admission_margin(r)} | {_fmt(r.get('psr'))} | "
           f"{_fmt(r.get('profit_factor'))} | {_fmt(r.get('sortino'))} | "
           f"{_fmt(r.get('win_rate'), 5, 3)} | {_fmt(r.get('expectancy'))} | "
-          f"{r.get('holdout_n')} | {r.get('full_period_n')} | {mir} |")
+          f"{r.get('holdout_n')} | {_admission_full_n(r)} | {mir} |")
     A("")
     _unrev = [a for a in adms if a.get("review_status") == "PROVISIONAL-UNREVIEWED"]
     if _unrev:

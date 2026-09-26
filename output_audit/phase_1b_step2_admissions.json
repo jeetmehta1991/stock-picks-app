@@ -1,492 +1,515 @@
 {
-  "_doc": "Owner-ruled Step-2 admissions to the Phase 1B roster document (S6-B2413). IDENTITY ONLY - every metric is re-derived at render time from the named grid artifact by exact combination+exit match (build_phase_1b_roster.step2_admissions_section), because a hand-copied number in a record decays while staying quotable (L577/#256). CSV-first: this list of admitted items is DATA, so it lives here and not in the generator.",
-  "admissions": [
-    {
-      "ticket": "S6-B2410",
-      "ruled": "2026-08-30",
-      "ruling_verbatim": "Lets retain the break_pct_max 0.02, close_mitigation True, age_bars_max None, exit time_stop_10d, tail_n (20) combination",
-      "strategy": "smc_breaker_block_long",
-      "direction": "long",
-      "config": {
-        "P1_swing_length": 50,
-        "P6_span": 50
-      },
-      "grid_artifact": "output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json",
-      "combination": {
-        "close_mitigation": true,
-        "break_pct_max": 0.02,
-        "age_bars_max": null,
-        "tail_n": 20
-      },
-      "exit": "time_stop_10d",
-      "universe": "544 tickers (output_audit/r5_universe_544.txt)",
-      "window": "4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout)",
-      "review_status": "PROVISIONAL-UNREVIEWED",
-      "review_note": "S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited."
-    },
-    {
-      "ticket": "S6-B2644a",
-      "ruled": "2026-09-08",
-      "ruling_verbatim": "Note that psr is missing and move to phase 1B strategy roster along with the metrics. Add mirror short as well in the selected roster doc",
-      "strategy": "pead_long_high_yoy_growth_only",
-      "direction": "long",
-      "config": {
-        "offline_campaign": "B2638/B2644"
-      },
-      "grid_artifact": "output_audit/b2645_pead_admission_grid.json",
-      "combination": {
-        "drift_window_days": 20.0,
-        "yoy_growth_long_threshold": 0.1
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 480 with pead fires)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "OFFLINE-CAMPAIGN-PSR-N/E",
-      "review_note": "Offline-free campaign (SS11.2b): zero engine hours, so the post-config battery never fired (it is landing-hook triggered). psr is INCOMPUTABLE for this cell (denominator_invalid) and reads NOT-EVALUABLE per owner ruling 2026-09-08 option (a); under the fail-closed gate the same cell graded FAIL 5 of 6 (output_audit/b2644_pead_step2_holdout.json). ENGINE WIRING of the admitted levels (drift 20 vs production 60; threshold 0.10 vs 0.05) requires knobs that DO NOT EXIST YET - signal_loader.py calls the producers bare - tracked S6-B2645a; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2651",
-      "ruled": "2026-09-09",
-      "ruling_verbatim": "admit 60d / 0.05 / 0.05 / time_stop_10d (holdout 1.308, psr 0.9596, n 37) with a review tag that says peeked-by-construction, no pre-registration, so the roster never pretends it was clean",
-      "strategy": "pead_with_smart_money_long",
-      "direction": "long",
-      "config": {
-        "offline_campaign": "B2649/B2651"
-      },
-      "grid_artifact": "output_audit/b2653_peadsm_admission_grid.json",
-      "combination": {
-        "drift_window_days": 60.0,
-        "yoy_growth_threshold": 0.05,
-        "announcement_return_threshold": 0.05
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 656 fires)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "PEEKED-BY-CONSTRUCTION-NO-PREREGISTRATION",
-      "review_note": "Owner instruction 2026-09-09, after the selection-inflation risk was flagged twice and an earlier admission attempt was rolled back: the admitted cell is the single line of 1,248 clearing all six gates in the all-cells holdout read, selected AFTER seeing every line (the strategy's pre-registered IS rank-1 cell was ungradable at holdout n=13). Evidence is WEAKER than a pre-registered admission and this label must travel with the row. CONFIRM-OR-STRIKE: the forward registration output_audit/b2652_peadsm_forward_prereg.json stays live - one clean six-gate read on the first cube spanning >= 12 months after 2026-05-05 either confirms this row or strikes it. Engine wiring shares S6-B2645a's class (admitted levels differ from production; no env knobs exist); admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_breakout_confirmation_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0719,
-        "strategy": "institutional_breakout_confirmation_long"
-      },
-      "exit": "r_multiple_2r",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_committed_growth_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0705,
-        "strategy": "institutional_committed_growth_long"
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_high_conviction_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0791,
-        "strategy": "institutional_high_conviction_long"
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_multi_quarter_persistence_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0668,
-        "strategy": "institutional_multi_quarter_persistence_long"
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_oversold_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "sector_strongest_rs",
-        "op": "le"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "sector_strongest_rs": 0.0517,
-        "strategy": "institutional_oversold_long"
-      },
-      "exit": "r_multiple_2r",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_persistence_oversold_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "institutional_new_positions",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "institutional_new_positions": 187.0,
-        "strategy": "institutional_persistence_oversold_long"
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_recent_init_momentum_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0752,
-        "strategy": "institutional_recent_init_momentum_long"
-      },
-      "exit": "r_multiple_2r",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_recent_init_volume_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0819,
-        "strategy": "institutional_recent_init_volume_long"
-      },
-      "exit": "r_multiple_2r",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_strong_conviction_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0691,
-        "strategy": "institutional_strong_conviction_long"
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
-    },
-    {
-      "ticket": "S6-B2678b",
-      "ruled": "2026-09-11",
-      "ruling_verbatim": "re-rule S6-B2678a to option C on the strengthened evidence",
-      "strategy": "xs_momentum_top_decile",
-      "direction": "long",
-      "config": {
-        "campaign": "B2673/B2678 breadth (two-legs 11.2b2)",
-        "axes": "pct_from_vwap stacked on the depth-admitted base"
-      },
-      "grid_artifact": "output_audit/b2684_topdecile_breadth_admission_grid.json",
-      "combination": {
-        "xs_momentum_12_1": 0.529,
-        "pct_from_vwap": 36.6266
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 255 fires)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED / CONTROL-REFUTED-ATTRIBUTION / DISCLOSED-RE-READ",
-      "review_note": "SUPERSESSION CHAIN: B2668 depth admission (HO 2.183 n 41/128) -> B2678a option A (2026-09-11, nothing new) -> RE-RULED option C same day under S6-B2678b on the B2682 per-year evidence (filtered beats base 4 of 4 gradable years; 2022 = abstention, n=1). Admitted line = depth 0.529 AND pct_from_vwap >= 36.6266 at time_stop_10d, HO 3.085 ci_lo 1.200 psr 0.999 n 32/84 (all six gates). LABELS: the pct_from_vwap lift is CONTROL-REFUTED as general structure (pead control +0.864 vs subject +0.90, b2678); the subject holdout was re-read under the accepted disclosure. The B787 EXPLORATORY tag still rides; admission is not deployment; engine wiring of BOTH added gates is the NEW-GATE build (S6-B2411 class, per-strategy approval)."
-    },
-    {
-      "ticket": "S6-B2674a",
-      "ruled": "2026-09-11",
-      "ruling_verbatim": "All open tickets implement now",
-      "strategy": "xs_low_beta_with_smart_money_long",
-      "direction": "long",
-      "config": {
-        "campaign": "B2674 composite variant test (owner-ruled measurement)",
-        "axes": "none - baseline admission"
-      },
-      "grid_artifact": "output_audit/b2685_xslowbeta_admission_grid.json",
-      "combination": {},
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 452 fires)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "MEASUREMENT-SURFACED-OWNER-RULED / IS-HOLDOUT-INVERSION",
-      "review_note": "Surfaced as a side-finding of the owner-ruled B2674 composite test (not a search grid: baseline + 3 variants x exits, and the baseline clears at multiple exits - r_multiple_2r 1.296 too). All six gates at ts10: HO 1.510 ci_lo n/a psr 0.995 PF 2.286 n 73/452. LABEL: IS sharpe -0.198 - the IS/holdout inversion travels with the row. The smart-money composite leg is SEC-long-only data; mirror policy per the roster classifier at render. Admission is not deployment; no engine change needed (production line as-is)."
-    }
-  ],
-  "pruned_collinear_b2666": [
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_buy_momentum_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0747,
-        "strategy": "institutional_buy_momentum_long"
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
-      "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_recent_init_momentum_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_cluster_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0676,
-        "strategy": "institutional_cluster_long"
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
-      "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_strong_conviction_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_insider_combo_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0668,
-        "strategy": "institutional_insider_combo_long"
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
-      "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_multi_quarter_persistence_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_persistence_breakout_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0715,
-        "strategy": "institutional_persistence_breakout_long"
-      },
-      "exit": "r_multiple_2r",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
-      "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_breakout_confirmation_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_persistence_momentum_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0752,
-        "strategy": "institutional_persistence_momentum_long"
-      },
-      "exit": "r_multiple_2r",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
-      "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_recent_init_momentum_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_persistence_volume_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0801,
-        "strategy": "institutional_persistence_volume_long"
-      },
-      "exit": "r_multiple_2r",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
-      "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_recent_init_volume_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_persistent_holders_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0684,
-        "strategy": "institutional_persistent_holders_long"
-      },
-      "exit": "time_stop_10d",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
-      "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_strong_conviction_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
-    },
-    {
-      "ticket": "S6-B2662a",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
-      "strategy": "institutional_volume_confirmation_long",
-      "direction": "long",
-      "config": {
-        "grid": "B2662",
-        "axis": "xs_max_anomaly",
-        "op": "ge"
-      },
-      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
-      "combination": {
-        "xs_max_anomaly": 0.0792,
-        "strategy": "institutional_volume_confirmation_long"
-      },
-      "exit": "r_multiple_2r",
-      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
-      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
-      "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_recent_init_volume_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
-    }
-  ]
+ "_doc": "Owner-ruled Step-2 admissions to the Phase 1B roster document (S6-B2413). IDENTITY ONLY - every metric is re-derived at render time from the named grid artifact by exact combination+exit match (build_phase_1b_roster.step2_admissions_section), because a hand-copied number in a record decays while staying quotable (L577/#256). CSV-first: this list of admitted items is DATA, so it lives here and not in the generator.",
+ "admissions": [
+  {
+   "ticket": "S6-B2410",
+   "ruled": "2026-08-30",
+   "ruling_verbatim": "Lets retain the break_pct_max 0.02, close_mitigation True, age_bars_max None, exit time_stop_10d, tail_n (20) combination",
+   "strategy": "smc_breaker_block_long",
+   "direction": "long",
+   "config": {
+    "P1_swing_length": 50,
+    "P6_span": 50
+   },
+   "grid_artifact": "output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json",
+   "combination": {
+    "close_mitigation": true,
+    "break_pct_max": 0.02,
+    "age_bars_max": null,
+    "tail_n": 20
+   },
+   "exit": "time_stop_10d",
+   "universe": "544 tickers (output_audit/r5_universe_544.txt)",
+   "window": "4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout)",
+   "review_status": "PROVISIONAL-UNREVIEWED",
+   "review_note": "S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited."
+  },
+  {
+   "ticket": "S6-B2644a",
+   "ruled": "2026-09-08",
+   "ruling_verbatim": "Note that psr is missing and move to phase 1B strategy roster along with the metrics. Add mirror short as well in the selected roster doc",
+   "strategy": "pead_long_high_yoy_growth_only",
+   "direction": "long",
+   "config": {
+    "offline_campaign": "B2638/B2644"
+   },
+   "grid_artifact": "output_audit/b2645_pead_admission_grid.json",
+   "combination": {
+    "drift_window_days": 20.0,
+    "yoy_growth_long_threshold": 0.1
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 480 with pead fires)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "OFFLINE-CAMPAIGN-PSR-N/E",
+   "review_note": "Offline-free campaign (SS11.2b): zero engine hours, so the post-config battery never fired (it is landing-hook triggered). psr is INCOMPUTABLE for this cell (denominator_invalid) and reads NOT-EVALUABLE per owner ruling 2026-09-08 option (a); under the fail-closed gate the same cell graded FAIL 5 of 6 (output_audit/b2644_pead_step2_holdout.json). ENGINE WIRING of the admitted levels (drift 20 vs production 60; threshold 0.10 vs 0.05) requires knobs that DO NOT EXIST YET - signal_loader.py calls the producers bare - tracked S6-B2645a; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2651",
+   "ruled": "2026-09-09",
+   "ruling_verbatim": "admit 60d / 0.05 / 0.05 / time_stop_10d (holdout 1.308, psr 0.9596, n 37) with a review tag that says peeked-by-construction, no pre-registration, so the roster never pretends it was clean",
+   "strategy": "pead_with_smart_money_long",
+   "direction": "long",
+   "config": {
+    "offline_campaign": "B2649/B2651"
+   },
+   "grid_artifact": "output_audit/b2653_peadsm_admission_grid.json",
+   "combination": {
+    "drift_window_days": 60.0,
+    "yoy_growth_threshold": 0.05,
+    "announcement_return_threshold": 0.05
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 656 fires)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "PEEKED-BY-CONSTRUCTION-NO-PREREGISTRATION",
+   "review_note": "Owner instruction 2026-09-09, after the selection-inflation risk was flagged twice and an earlier admission attempt was rolled back: the admitted cell is the single line of 1,248 clearing all six gates in the all-cells holdout read, selected AFTER seeing every line (the strategy's pre-registered IS rank-1 cell was ungradable at holdout n=13). Evidence is WEAKER than a pre-registered admission and this label must travel with the row. CONFIRM-OR-STRIKE: the forward registration output_audit/b2652_peadsm_forward_prereg.json stays live - one clean six-gate read on the first cube spanning >= 12 months after 2026-05-05 either confirms this row or strikes it. Engine wiring shares S6-B2645a's class (admitted levels differ from production; no env knobs exist); admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_breakout_confirmation_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0719,
+    "strategy": "institutional_breakout_confirmation_long"
+   },
+   "exit": "r_multiple_2r",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_committed_growth_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0705,
+    "strategy": "institutional_committed_growth_long"
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_high_conviction_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0791,
+    "strategy": "institutional_high_conviction_long"
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_multi_quarter_persistence_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0668,
+    "strategy": "institutional_multi_quarter_persistence_long"
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_oversold_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "sector_strongest_rs",
+    "op": "le"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "sector_strongest_rs": 0.0517,
+    "strategy": "institutional_oversold_long"
+   },
+   "exit": "r_multiple_2r",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_persistence_oversold_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "institutional_new_positions",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "institutional_new_positions": 187.0,
+    "strategy": "institutional_persistence_oversold_long"
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_recent_init_momentum_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0752,
+    "strategy": "institutional_recent_init_momentum_long"
+   },
+   "exit": "r_multiple_2r",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_recent_init_volume_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0819,
+    "strategy": "institutional_recent_init_volume_long"
+   },
+   "exit": "r_multiple_2r",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_strong_conviction_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0691,
+    "strategy": "institutional_strong_conviction_long"
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+  },
+  {
+   "ticket": "S6-B2678b",
+   "ruled": "2026-09-11",
+   "ruling_verbatim": "re-rule S6-B2678a to option C on the strengthened evidence",
+   "strategy": "xs_momentum_top_decile",
+   "direction": "long",
+   "config": {
+    "campaign": "B2673/B2678 breadth (two-legs 11.2b2)",
+    "axes": "pct_from_vwap stacked on the depth-admitted base"
+   },
+   "grid_artifact": "output_audit/b2684_topdecile_breadth_admission_grid.json",
+   "combination": {
+    "xs_momentum_12_1": 0.529,
+    "pct_from_vwap": 36.6266
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 255 fires)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED / CONTROL-REFUTED-ATTRIBUTION / DISCLOSED-RE-READ",
+   "review_note": "SUPERSESSION CHAIN: B2668 depth admission (HO 2.183 n 41/128) -> B2678a option A (2026-09-11, nothing new) -> RE-RULED option C same day under S6-B2678b on the B2682 per-year evidence (filtered beats base 4 of 4 gradable years; 2022 = abstention, n=1). Admitted line = depth 0.529 AND pct_from_vwap >= 36.6266 at time_stop_10d, HO 3.085 ci_lo 1.200 psr 0.999 n 32/84 (all six gates). LABELS: the pct_from_vwap lift is CONTROL-REFUTED as general structure (pead control +0.864 vs subject +0.90, b2678); the subject holdout was re-read under the accepted disclosure. The B787 EXPLORATORY tag still rides; admission is not deployment; engine wiring of BOTH added gates is the NEW-GATE build (S6-B2411 class, per-strategy approval)."
+  },
+  {
+   "ticket": "S6-B2674a",
+   "ruled": "2026-09-11",
+   "ruling_verbatim": "All open tickets implement now",
+   "strategy": "xs_low_beta_with_smart_money_long",
+   "direction": "long",
+   "config": {
+    "campaign": "B2674 composite variant test (owner-ruled measurement)",
+    "axes": "none - baseline admission"
+   },
+   "grid_artifact": "output_audit/b2685_xslowbeta_admission_grid.json",
+   "combination": {},
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 452 fires)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "MEASUREMENT-SURFACED-OWNER-RULED / IS-HOLDOUT-INVERSION",
+   "review_note": "Surfaced as a side-finding of the owner-ruled B2674 composite test (not a search grid: baseline + 3 variants x exits, and the baseline clears at multiple exits - r_multiple_2r 1.296 too). All six gates at ts10: HO 1.510 ci_lo n/a psr 0.995 PF 2.286 n 73/452. LABEL: IS sharpe -0.198 - the IS/holdout inversion travels with the row. The smart-money composite leg is SEC-long-only data; mirror policy per the roster classifier at render. Admission is not deployment; no engine change needed (production line as-is)."
+  },
+  {
+   "ticket": "S6-B3114b",
+   "ruled": "2026-09-26",
+   "ruling_verbatim": "Approved add this cell to the phase 1B roster along with the mirror short strategy",
+   "strategy": "three_white_soldiers",
+   "direction": "long",
+   "config": {
+    "campaign": "candle_tws c14 breadth (S6-B3112c, runbook 3.6 full nine items)",
+    "axes": "producer c14 (n_bars 3, body 0.5, step 0.0, wick 0.3) + breadth B1 cot_ndx_mmoney_pctile_3y >= 0.637",
+    "producer_combination": "CANDLE_N_BARS=3, CANDLE_MIN_BODY_PCT=0.5, CANDLE_MIN_STEP_PCT=0.0, CANDLE_MAX_WICK_PCT=0.3"
+   },
+   "grid_artifact": "output_audit/b3114_tws_c14_breadth_step2_read.json",
+   "combination": {
+    "axis": "cot_ndx_mmoney_pctile_3y",
+    "op": "ge",
+    "level": 0.637
+   },
+   "exit": "class_time_stop",
+   "universe": "c14 Step-2 cube output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3 (544-ticker universe; 343 cell trades full period)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED / DISCLOSED-RE-READ / IS-HOLDOUT-INVERSION",
+   "review_note": "All six gates at class_time_stop on the b3114 read: HO sharpe 1.779 psr 0.9653 PF 2.154 sortino 2.873 n 36/343; ci_lo -0.164 reported (not a gate). LABELS travel: the holdout was a DISCLOSED-RE-READ (spent by the failed depth Step-2), the cell is 1 of 192 holdout-graded cells (the p=0.005 permutation price covered the IS search only), and IS sharpe is -0.421 (inversion). The b3114 forward registration (output_audit/b3114_tws_c14_breadth_forward_prereg.json) STAYS LIVE as ADDITIONAL evidence per the B2660 admission doctrine - never a strike condition post-admission. MIRROR: strat_three_black_crows_short REGISTERED (screener.py, Batch 636 Nison canonical mirror) and counted per the standing mirror policy; the breadth filter is NOT mechanically mirrored (a long-side NDX managed-money positioning gate has no economic mirror ruled for the short leg) - the short leg rides pattern-only, EXPLORATORY, no holdout evidence of its own, asymmetry surfaced per CHECKLIST (m). Admission is not deployment; engine wiring rides S6-B2411 as with all Step-2 admissions."
+  }
+ ],
+ "pruned_collinear_b2666": [
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_buy_momentum_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0747,
+    "strategy": "institutional_buy_momentum_long"
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_recent_init_momentum_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_cluster_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0676,
+    "strategy": "institutional_cluster_long"
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_strong_conviction_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_insider_combo_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0668,
+    "strategy": "institutional_insider_combo_long"
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_multi_quarter_persistence_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_persistence_breakout_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0715,
+    "strategy": "institutional_persistence_breakout_long"
+   },
+   "exit": "r_multiple_2r",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_breakout_confirmation_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_persistence_momentum_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0752,
+    "strategy": "institutional_persistence_momentum_long"
+   },
+   "exit": "r_multiple_2r",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_recent_init_momentum_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_persistence_volume_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0801,
+    "strategy": "institutional_persistence_volume_long"
+   },
+   "exit": "r_multiple_2r",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_recent_init_volume_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_persistent_holders_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0684,
+    "strategy": "institutional_persistent_holders_long"
+   },
+   "exit": "time_stop_10d",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_strong_conviction_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
+  },
+  {
+   "ticket": "S6-B2662a",
+   "ruled": "2026-09-10",
+   "ruling_verbatim": "Do not use next pivot exit and use the best next exit as long as it clears step 2 gates. Admit all distinction strategies in table A as long as it clears step 2 gates",
+   "strategy": "institutional_volume_confirmation_long",
+   "direction": "long",
+   "config": {
+    "grid": "B2662",
+    "axis": "xs_max_anomaly",
+    "op": "ge"
+   },
+   "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+   "combination": {
+    "xs_max_anomaly": 0.0792,
+    "strategy": "institutional_volume_confirmation_long"
+   },
+   "exit": "r_multiple_2r",
+   "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED",
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "pruned_reason": "B2666 (owner ruling 2026-09-10, B2665 option a): Jaccard >= 0.7 duplicate of institutional_recent_init_volume_long under the funnel's own de-dup rule; canonical = highest holdout sharpe"
+  }
+ ]
 }

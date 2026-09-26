@@ -2618,6 +2618,14 @@ def strat_three_black_crows_short(s):
     Batch 636 (2026-06-08 owner-directed Class 7 NEW per
     `feedback_long_short_inverse_audit`).
 
+    EXACT MIRROR of strat_three_white_soldiers (B3115: the B1452/B2050
+    declared-pair marker - white/black + soldiers/crows is
+    token-unmatchable, the B1453 class; counted in the roster's mirror
+    roll-up per the owner's 2026-09-26 admission ruling. The c14
+    breadth filter is NOT mirrored - a long-side NDX managed-money
+    positioning gate has no ruled economic mirror, asymmetry per
+    CHECKLIST (m)).
+
     Three consecutive bearish candles, each closing lower than the
     prior + each open lower than the prior. Strong bearish reversal
     indicating sustained selling pressure over 3 days. RSI>40 gate
