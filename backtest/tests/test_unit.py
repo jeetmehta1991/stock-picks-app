@@ -38860,7 +38860,11 @@ def test_b2836_table_a_directory_is_complete_and_honest():
         "an actuatorless resim band must say so (S6-B2569a class)")
     # B2842 (owner screenshot): no mirror STUBS - the soldiers file carries
     # its own four explicit knob rows, standalone at its own T3 review
-    tws = (d / "three_white_soldiers.md").read_text(encoding="utf-8")
+    # B3116: three_white_soldiers is ADMITTED (B3115), so its charter
+    # left the lane directory (file-set == lane-set above) for the
+    # archive; the B2842-B2844 conformance anchors follow it there.
+    tws = (root / "archive" / "2026-09-27-tws-admission-table-a" /
+           "three_white_soldiers.md").read_text(encoding="utf-8")
     assert tws.count("| BAND |") >= 4, "soldiers must carry explicit knobs"
     assert "min_step_up_pct" in tws and "max_upper_wick_pct" in tws
     assert "as three_black_crows, mirrored" not in tws, "stub returned"
@@ -38980,7 +38984,11 @@ def test_b2836_table_a_directory_is_complete_and_honest():
             in t3, p.name
     # the owner's concrete example: soldiers P1.1 shows its band VALUES
     # ("3, 4"), and the factorial's arithmetic check line is self-consistent
-    tws3 = (d / "three_white_soldiers.md").read_text(encoding="utf-8")
+    # B3116: the concrete example follows the admitted charter to the
+    # archive (see the b2836 note) - the anchors pin history, not a
+    # live lane row.
+    tws3 = (root / "archive" / "2026-09-27-tws-admission-table-a" /
+           "three_white_soldiers.md").read_text(encoding="utf-8")
     assert "| 3 | 3, 4 |" in tws3, "P1.1 band VALUES not visible"
     # S6-B2862: this used to assert the footer's "check R x F = RF" line. That
     # line could not fail - every axis sat in exactly one of two buckets, so

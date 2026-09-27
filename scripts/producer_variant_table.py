@@ -2127,7 +2127,10 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
                         "60pct, 46.31 40pct, 41.97 20pct; TIGHTER = LOWER "
                         "the ceiling; looser needs an env knob"),
          "subset_safe": True, "status": "MEASURED",
-         "evidence": "strategy_optimisation/tighten/three_white_soldiers.md",
+         # B3116: the charter moved when the strategy left the TIGHTEN lane
+         # on admission (test_b2836 holds file-set == lane-set exactly).
+         "evidence": "archive/2026-09-27-tws-admission-table-a/"
+                     "three_white_soldiers.md",
          "engine_implemented": True},
     ],
     "tools": {

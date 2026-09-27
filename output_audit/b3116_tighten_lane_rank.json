@@ -1,0 +1,759 @@
+{
+ "_doc": "B3116 tighten-lane ranking inputs. Sharpe = full-4y-window pooled Sharpe at best non-npt exit, n>=30, roster_core.evaluate defaults (winsorize 300, cost 20bps) - a ranking read, NOT an admission verdict (Step 1/2 windows differ). Jaccard grain: unique (ticker, entry_date) fire sets from trade_log.csv vs the 15 admitted strategies; threshold 0.70 = roster_core.JACCARD.",
+ "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
+ "status_build": {
+  "source_commit": "4eaabdea4",
+  "generated_at": "2026-09-27 03:54:49"
+ },
+ "absent_from_log": [],
+ "candidates": {
+  "bollinger_lower": {
+   "status": "STALLED-CAMPAIGN",
+   "family": "mean_reversion",
+   "r5_fires": 1622,
+   "survives_pct": 1.0,
+   "projected_current_gate": 149.1,
+   "changed_since_r5": false,
+   "jaccard": {
+    "max_jaccard": 0.1075,
+    "vs": "institutional_persistence_oversold_long",
+    "n_fires_log": 1622,
+    "top3": {
+     "institutional_persistence_oversold_long": 0.1075,
+     "institutional_strong_conviction_long": 0.0782,
+     "institutional_oversold_long": 0.0749
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 1622,
+     "sharpe": 0.424,
+     "psr": 1.0,
+     "sortino": 1.013,
+     "profit_factor": 1.654,
+     "n_gates": 4,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 1622,
+      "sharpe": 0.424,
+      "psr": 1.0,
+      "sortino": 1.013,
+      "profit_factor": 1.654,
+      "n_gates": 4,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "earnings_blackout",
+      "n": 1622,
+      "sharpe": 0.227,
+      "psr": 1.0,
+      "sortino": 0.296,
+      "profit_factor": 1.347,
+      "n_gates": 3,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "hybrid_50pct_target",
+      "n": 1622,
+      "sharpe": 0.227,
+      "psr": 1.0,
+      "sortino": 1.64,
+      "profit_factor": 1.251,
+      "n_gates": 3,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 19,
+    "free_band_rows": 19,
+    "resim_band_rows": 19
+   }
+  },
+  "cmf_flip": {
+   "status": "STALLED-CAMPAIGN",
+   "family": "mean_reversion",
+   "r5_fires": 2994,
+   "survives_pct": 0.7515,
+   "projected_current_gate": 206.8,
+   "changed_since_r5": true,
+   "jaccard": {
+    "max_jaccard": 0.0209,
+    "vs": "institutional_multi_quarter_persistence_long",
+    "n_fires_log": 2994,
+    "top3": {
+     "institutional_multi_quarter_persistence_long": 0.0209,
+     "pead_long_high_yoy_growth_only": 0.02,
+     "institutional_strong_conviction_long": 0.0195
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 2994,
+     "sharpe": 0.378,
+     "psr": 1.0,
+     "sortino": 1.2,
+     "profit_factor": 1.773,
+     "n_gates": 4,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 2994,
+      "sharpe": 0.378,
+      "psr": 1.0,
+      "sortino": 1.2,
+      "profit_factor": 1.773,
+      "n_gates": 4,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "hybrid_50pct_target",
+      "n": 2994,
+      "sharpe": 0.214,
+      "psr": 1.0,
+      "sortino": 1.393,
+      "profit_factor": 1.252,
+      "n_gates": 3,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "fixed_4r_2r",
+      "n": 2994,
+      "sharpe": 0.185,
+      "psr": 0.9998,
+      "sortino": 0.614,
+      "profit_factor": 1.169,
+      "n_gates": 2,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 10,
+    "free_band_rows": 10,
+    "resim_band_rows": 10
+   }
+  },
+  "cpr_narrow_momentum_short": {
+   "status": "NOT-STARTED",
+   "family": "confluence",
+   "r5_fires": 1696,
+   "survives_pct": 1.0,
+   "projected_current_gate": 155.9,
+   "changed_since_r5": false,
+   "jaccard": {
+    "max_jaccard": 0.0,
+    "vs": null,
+    "n_fires_log": 1696,
+    "top3": {
+     "smc_breaker_block_long": 0.0,
+     "pead_long_high_yoy_growth_only": 0.0,
+     "pead_with_smart_money_long": 0.0
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 1696,
+     "sharpe": -0.294,
+     "psr": 0.0,
+     "sortino": -0.262,
+     "profit_factor": 0.652,
+     "n_gates": 1,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 1696,
+      "sharpe": -0.294,
+      "psr": 0.0,
+      "sortino": -0.262,
+      "profit_factor": 0.652,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "hybrid_50pct_target",
+      "n": 1696,
+      "sharpe": -0.417,
+      "psr": 0.0,
+      "sortino": -2.488,
+      "profit_factor": 0.692,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "fixed_4r_2r",
+      "n": 1696,
+      "sharpe": -0.532,
+      "psr": 0.0,
+      "sortino": -0.482,
+      "profit_factor": 0.604,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 8,
+    "free_band_rows": 8,
+    "resim_band_rows": 8
+   }
+  },
+  "hull_rsi": {
+   "status": "STALLED-CAMPAIGN",
+   "family": "momentum",
+   "r5_fires": 1270,
+   "survives_pct": 1.0,
+   "projected_current_gate": 116.7,
+   "changed_since_r5": false,
+   "jaccard": {
+    "max_jaccard": 0.1073,
+    "vs": "institutional_multi_quarter_persistence_long",
+    "n_fires_log": 1270,
+    "top3": {
+     "institutional_multi_quarter_persistence_long": 0.1073,
+     "institutional_committed_growth_long": 0.0985,
+     "institutional_strong_conviction_long": 0.0959
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 1270,
+     "sharpe": 0.24,
+     "psr": 0.9996,
+     "sortino": 0.559,
+     "profit_factor": 1.33,
+     "n_gates": 3,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 1270,
+      "sharpe": 0.24,
+      "psr": 0.9996,
+      "sortino": 0.559,
+      "profit_factor": 1.33,
+      "n_gates": 3,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "hybrid_50pct_target",
+      "n": 1270,
+      "sharpe": 0.022,
+      "psr": 0.6341,
+      "sortino": 0.133,
+      "profit_factor": 1.022,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "regime_flip",
+      "n": 1270,
+      "sharpe": -0.122,
+      "psr": 0.1113,
+      "sortino": -0.147,
+      "profit_factor": 0.912,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 16,
+    "free_band_rows": 16,
+    "resim_band_rows": 16
+   }
+  },
+  "naked_poc_retest_long": {
+   "status": "NOT-STARTED",
+   "family": "volume_profile",
+   "r5_fires": 1788,
+   "survives_pct": 1.0,
+   "projected_current_gate": 164.3,
+   "changed_since_r5": false,
+   "jaccard": {
+    "max_jaccard": 0.4955,
+    "vs": "institutional_multi_quarter_persistence_long",
+    "n_fires_log": 1788,
+    "top3": {
+     "institutional_multi_quarter_persistence_long": 0.4955,
+     "institutional_committed_growth_long": 0.4045,
+     "institutional_strong_conviction_long": 0.381
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 1788,
+     "sharpe": 0.53,
+     "psr": 1.0,
+     "sortino": 2.13,
+     "profit_factor": 2.544,
+     "n_gates": 4,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 1788,
+      "sharpe": 0.53,
+      "psr": 1.0,
+      "sortino": 2.13,
+      "profit_factor": 2.544,
+      "n_gates": 4,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "earnings_blackout",
+      "n": 1788,
+      "sharpe": 0.318,
+      "psr": 1.0,
+      "sortino": 0.508,
+      "profit_factor": 1.527,
+      "n_gates": 3,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "time_stop_10d",
+      "n": 1788,
+      "sharpe": 0.305,
+      "psr": 0.9956,
+      "sortino": 0.412,
+      "profit_factor": 1.185,
+      "n_gates": 2,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 8,
+    "free_band_rows": 8,
+    "resim_band_rows": 8
+   }
+  },
+  "pairs_mean_reversion_long": {
+   "status": "NOT-STARTED",
+   "family": "pairs",
+   "r5_fires": 5036,
+   "survives_pct": 1.0,
+   "projected_current_gate": 462.9,
+   "changed_since_r5": true,
+   "jaccard": {
+    "max_jaccard": 0.0507,
+    "vs": "pead_long_high_yoy_growth_only",
+    "n_fires_log": 5036,
+    "top3": {
+     "pead_long_high_yoy_growth_only": 0.0507,
+     "institutional_multi_quarter_persistence_long": 0.0237,
+     "institutional_committed_growth_long": 0.0202
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 5036,
+     "sharpe": 0.506,
+     "psr": 1.0,
+     "sortino": 2.119,
+     "profit_factor": 3.214,
+     "n_gates": 4,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 5036,
+      "sharpe": 0.506,
+      "psr": 1.0,
+      "sortino": 2.119,
+      "profit_factor": 3.214,
+      "n_gates": 4,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "r_multiple_2r",
+      "n": 5036,
+      "sharpe": 0.46,
+      "psr": 1.0,
+      "sortino": 2.115,
+      "profit_factor": 1.676,
+      "n_gates": 4,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "time_stop_10d",
+      "n": 5036,
+      "sharpe": 0.431,
+      "psr": 1.0,
+      "sortino": 1.253,
+      "profit_factor": 1.713,
+      "n_gates": 4,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 8,
+    "free_band_rows": 7,
+    "resim_band_rows": 7
+   }
+  },
+  "pairs_mean_reversion_short": {
+   "status": "NOT-STARTED",
+   "family": "pairs",
+   "r5_fires": 5698,
+   "survives_pct": 0.7829,
+   "projected_current_gate": 410.0,
+   "changed_since_r5": true,
+   "jaccard": {
+    "max_jaccard": 0.0407,
+    "vs": "institutional_multi_quarter_persistence_long",
+    "n_fires_log": 5698,
+    "top3": {
+     "institutional_multi_quarter_persistence_long": 0.0407,
+     "institutional_high_conviction_long": 0.0369,
+     "institutional_recent_init_momentum_long": 0.0359
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 5698,
+     "sharpe": -0.237,
+     "psr": 0.0,
+     "sortino": -0.424,
+     "profit_factor": 0.804,
+     "n_gates": 1,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 5698,
+      "sharpe": -0.237,
+      "psr": 0.0,
+      "sortino": -0.424,
+      "profit_factor": 0.804,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "hybrid_50pct_target",
+      "n": 5698,
+      "sharpe": -0.399,
+      "psr": 0.0,
+      "sortino": -2.32,
+      "profit_factor": 0.703,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "class_time_stop",
+      "n": 5698,
+      "sharpe": -0.535,
+      "psr": 0.0,
+      "sortino": -0.58,
+      "profit_factor": 0.602,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 9,
+    "free_band_rows": 8,
+    "resim_band_rows": 8
+   }
+  },
+  "stochrsi_overbought_short": {
+   "status": "NOT-STARTED",
+   "family": "momentum",
+   "r5_fires": 4287,
+   "survives_pct": 1.0,
+   "projected_current_gate": 394.0,
+   "changed_since_r5": false,
+   "jaccard": {
+    "max_jaccard": 0.0273,
+    "vs": "institutional_recent_init_momentum_long",
+    "n_fires_log": 4287,
+    "top3": {
+     "institutional_recent_init_momentum_long": 0.0273,
+     "institutional_high_conviction_long": 0.0227,
+     "institutional_multi_quarter_persistence_long": 0.0149
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 4287,
+     "sharpe": -0.098,
+     "psr": 0.0331,
+     "sortino": -0.19,
+     "profit_factor": 0.914,
+     "n_gates": 1,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 4287,
+      "sharpe": -0.098,
+      "psr": 0.0331,
+      "sortino": -0.19,
+      "profit_factor": 0.914,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "hybrid_50pct_target",
+      "n": 4287,
+      "sharpe": -0.295,
+      "psr": 0.0,
+      "sortino": -1.37,
+      "profit_factor": 0.766,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "earnings_blackout",
+      "n": 4287,
+      "sharpe": -0.347,
+      "psr": 0.0,
+      "sortino": -0.363,
+      "profit_factor": 0.628,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 7,
+    "free_band_rows": 7,
+    "resim_band_rows": 7
+   }
+  },
+  "stochrsi_oversold": {
+   "status": "NOT-STARTED",
+   "family": "momentum",
+   "r5_fires": 2433,
+   "survives_pct": 1.0,
+   "projected_current_gate": 223.6,
+   "changed_since_r5": false,
+   "jaccard": {
+    "max_jaccard": 0.0427,
+    "vs": "institutional_persistence_oversold_long",
+    "n_fires_log": 2433,
+    "top3": {
+     "institutional_persistence_oversold_long": 0.0427,
+     "institutional_committed_growth_long": 0.0414,
+     "institutional_multi_quarter_persistence_long": 0.0406
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 2433,
+     "sharpe": 0.061,
+     "psr": 0.8268,
+     "sortino": 0.136,
+     "profit_factor": 1.065,
+     "n_gates": 1,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 2433,
+      "sharpe": 0.061,
+      "psr": 0.8268,
+      "sortino": 0.136,
+      "profit_factor": 1.065,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "earnings_blackout",
+      "n": 2433,
+      "sharpe": -0.078,
+      "psr": 0.0323,
+      "sortino": -0.092,
+      "profit_factor": 0.902,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "hybrid_50pct_target",
+      "n": 2433,
+      "sharpe": -0.09,
+      "psr": 0.0329,
+      "sortino": -0.659,
+      "profit_factor": 0.918,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 20,
+    "free_band_rows": 20,
+    "resim_band_rows": 20
+   }
+  },
+  "three_black_crows_short": {
+   "status": "STALLED-CAMPAIGN",
+   "family": "candle",
+   "r5_fires": 1674,
+   "survives_pct": 1.0,
+   "projected_current_gate": 153.9,
+   "changed_since_r5": true,
+   "jaccard": {
+    "max_jaccard": 0.0,
+    "vs": null,
+    "n_fires_log": 1674,
+    "top3": {
+     "smc_breaker_block_long": 0.0,
+     "pead_long_high_yoy_growth_only": 0.0,
+     "pead_with_smart_money_long": 0.0
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 1674,
+     "sharpe": 0.035,
+     "psr": 0.6693,
+     "sortino": 0.075,
+     "profit_factor": 1.035,
+     "n_gates": 1,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 1674,
+      "sharpe": 0.035,
+      "psr": 0.6693,
+      "sortino": 0.075,
+      "profit_factor": 1.035,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "hybrid_50pct_target",
+      "n": 1674,
+      "sharpe": -0.307,
+      "psr": 0.0,
+      "sortino": -1.894,
+      "profit_factor": 0.751,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "earnings_blackout",
+      "n": 1674,
+      "sharpe": -0.371,
+      "psr": 0.0,
+      "sortino": -0.372,
+      "profit_factor": 0.606,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 7,
+    "free_band_rows": 7,
+    "resim_band_rows": 7
+   }
+  },
+  "williams_r_oversold": {
+   "status": "STALLED-CAMPAIGN",
+   "family": "momentum",
+   "r5_fires": 2535,
+   "survives_pct": 1.0,
+   "projected_current_gate": 233.0,
+   "changed_since_r5": false,
+   "jaccard": {
+    "max_jaccard": 0.0369,
+    "vs": "three_white_soldiers",
+    "n_fires_log": 2535,
+    "top3": {
+     "three_white_soldiers": 0.0369,
+     "institutional_recent_init_momentum_long": 0.0338,
+     "institutional_high_conviction_long": 0.0307
+    }
+   },
+   "sharpe": {
+    "best": {
+     "exit": "breakeven_plus_trail",
+     "n": 2535,
+     "sharpe": 0.058,
+     "psr": 0.8034,
+     "sortino": 0.061,
+     "profit_factor": 1.084,
+     "n_gates": 1,
+     "n_gates_evaluable": 5
+    },
+    "exits_graded": 25,
+    "top3": [
+     {
+      "exit": "breakeven_plus_trail",
+      "n": 2535,
+      "sharpe": 0.058,
+      "psr": 0.8034,
+      "sortino": 0.061,
+      "profit_factor": 1.084,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "trailing_15pct",
+      "n": 2535,
+      "sharpe": -0.051,
+      "psr": 0.0765,
+      "sortino": -0.148,
+      "profit_factor": 0.923,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     },
+     {
+      "exit": "hybrid_50pct_target",
+      "n": 2535,
+      "sharpe": -0.101,
+      "psr": 0.0157,
+      "sortino": -0.569,
+      "profit_factor": 0.905,
+      "n_gates": 1,
+      "n_gates_evaluable": 5
+     }
+    ]
+   },
+   "table_a": {
+    "param_rows": 15,
+    "free_band_rows": 15,
+    "resim_band_rows": 15
+   }
+  }
+ }
+}

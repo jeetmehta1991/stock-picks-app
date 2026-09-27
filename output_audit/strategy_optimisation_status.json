@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "4ed792978",
-    "generated_at": "2026-09-25 23:23:25"
+    "source_commit": "4eaabdea4",
+    "generated_at": "2026-09-27 03:54:49"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -3770,7 +3770,7 @@
       "strategy": "three_black_crows_short",
       "family": "candle",
       "r5_fires": 1674,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 153.9,
       "projected_current_gate": 153.9,
@@ -3802,7 +3802,7 @@
       "projected_step1_fires": 146.7,
       "projected_current_gate": 146.7,
       "reopen_candidate": false,
-      "stream": "TIGHTEN",
+      "stream": "-",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
@@ -3819,8 +3819,8 @@
         "S6-B2842",
         "S6-B2850"
       ],
-      "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "admitted": true,
+      "status": "DONE-ADMITTED"
     },
     {
       "strategy": "totm_long",

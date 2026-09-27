@@ -21,7 +21,7 @@ the formula <-> Table A cross-check.
 
 **Generated, never hand-edited.** Regenerate with:
 
-    python scripts/build_table_a.py --lane TIGHTEN                      # tighten/ (12 files)
+    python scripts/build_table_a.py --lane TIGHTEN                      # tighten/ (11 files; an admitted/terminal row's charter moves to archive/ - B3115 three_white_soldiers, test_b2836 holds file-set == lane-set)
     python scripts/build_table_a.py --lane BOTH --subdir tighten/both   # tighten/both/ (29 files, owner-directed placement)
 
 Each file carries an L803/#309 build stamp (generator + cube + status build +

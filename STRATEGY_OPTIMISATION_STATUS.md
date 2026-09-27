@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 4ed792978 at 2026-09-25 23:23:25 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 4eaabdea4 at 2026-09-27 03:54:49 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -14,8 +14,8 @@
 | | count |
 |---|---|
 | registered strategies | 225 |
-| DONE - admitted to Phase 1B | 14 |
-| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 9 |
+| DONE - admitted to Phase 1B | 15 |
+| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 8 |
 | STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 47 |
 | NOT-STARTED | 139 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
@@ -28,7 +28,7 @@
 
 | stream | meaning | count |
 |---|---|---|
-| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 12 |
+| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 11 |
 | BOTH | tightenable AND fire-starved | 29 |
 | LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 127 |
 | NONE | no numeric knob and not starved - a BREADTH candidate | 27 |
@@ -38,10 +38,10 @@
 | family | strategies to tighten |
 |---|---|
 | news_sentiment | 6 |
-| candle | 5 |
 | momentum | 5 |
 | mean_reversion | 4 |
 | confluence | 4 |
+| candle | 4 |
 | smc | 3 |
 | pivot | 2 |
 | volume_profile | 2 |
@@ -107,12 +107,12 @@
 | institutional_strong_conviction_long | institutional_persistence | 1826 | 167.8 |  | 100.0% | - | DONE-ADMITTED |
 | naked_poc_retest_long | volume_profile | 1788 | 164.3 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | cpr_narrow_momentum_short | confluence | 1696 | 155.9 |  | 100.0% | TIGHTEN | NOT-STARTED |
-| three_black_crows_short | candle | 1674 | 153.9 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
+| three_black_crows_short | candle | 1674 | 153.9 | YES | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | parabolic_sar_flip_short | trend | 1672 | 153.7 |  | 100.0% | NONE | NOT-STARTED |
 | bollinger_lower | mean_reversion | 1622 | 149.1 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | parabolic_sar_flip | trend | 1618 | 148.7 |  | 100.0% | NONE | NOT-STARTED |
 | smc_breaker_block_short | smc | 1598 | 0.0 | YES | 0.0% | LOOSEN | STALLED-CAMPAIGN |
-| three_white_soldiers | candle | 1596 | 146.7 |  | 100.0% | TIGHTEN | IN-CAMPAIGN |
+| three_white_soldiers | candle | 1596 | 146.7 |  | 100.0% | - | DONE-ADMITTED |
 | ppo_crossover | momentum | 1588 | 146.0 |  | 100.0% | NONE | NOT-STARTED |
 | macd_crossover_short | momentum | 1524 | 140.1 |  | 100.0% | - | DISABLED |
 | volume_spike_breakout | breakout | 1500 | 137.9 |  | 100.0% | NONE | NOT-STARTED |
