@@ -812,6 +812,35 @@ from backtest.engine.backtest import REPLAY_ATR_FALLBACK_WARN_RATE  # noqa: E402
 NOT_COMPARABLE_TAG = "NOT COMPARABLE"
 
 
+
+def direction_lens_verdict(dirs: list[str], graded: str | None) -> tuple[str, str]:
+    """S6-B3119a: the single-strategy arm of direction_consistency.
+
+    A DUAL strategy (long+short branches in ONE registration - bollinger_lower
+    was the first the battery met) legitimately carries BOTH directions, so
+    two directions under a dual's name is the design, not a finding. The
+    discriminator is build_phase_1b_roster.is_dual - the ONE definition
+    (B1454/B1778, source-inspected: an fs= branch), never a name heuristic.
+    Fail-closed: if the detector cannot run, the FAIL stands (L642)."""
+    if len(dirs) <= 1:
+        return ("INFO", f"directions {dirs} (single direction)")
+    detector_note = ""
+    if graded:
+        try:
+            from build_phase_1b_roster import is_dual
+            if is_dual(graded):
+                return ("INFO",
+                        f"graded {graded} is DUAL (is_dual source check) - "
+                        f"directions {dirs} are its own two legs, the design "
+                        "and not a finding (S6-B3119a)")
+        except Exception as exc:                        # noqa: BLE001
+            # not a silent pass (test_b2128): the FAIL below carries WHY the
+            # detector could not run, and fail-closed stands (L642)
+            detector_note = (f"; is_dual detector unavailable "
+                             f"({type(exc).__name__}: {exc}) - fail-closed")
+    return ("FAIL", f"directions {dirs} (one strategy, one direction expected)"
+            + detector_note)
+
 def replay_atr_proxy_lens(cube_dir: Path, empty_share: float | None) -> tuple:
     """B2574: FAIL when the cube replay priced exits off the 2pct-of-price
     ATR proxy for more than the engine's threshold of trades. Reads the
@@ -987,9 +1016,9 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
                         "which is the B2710 design and not a finding"))
         else:
             dirs = sorted(str(x) for x in df["direction"].dropna().unique())
-            out.append(("direction_consistency",
-                        "INFO" if len(dirs) == 1 else "FAIL",
-                        f"directions {dirs} (one strategy, one direction expected)"))
+            # S6-B3119a: a DUAL strategy carries both directions by design
+            _lvl, _msg = direction_lens_verdict(dirs, _g)
+            out.append(("direction_consistency", _lvl, _msg))
 
     if spot_out is not None and spot_out.exists():
         try:

@@ -46714,6 +46714,27 @@ def test_b3113a_step2_read_subject_cube_control_r5(tmp_path):
     assert "cube-dir file missing" in blob and "no_such_run_dir" in blob, blob[-400:]
 
 
+def test_b3119a_direction_lens_knows_dual_strategies():
+    """S6-B3119a: the direction_consistency lens's single-strategy arm -
+    a DUAL registration (both legs under one name) is INFO, a non-dual
+    with two directions stays FAIL (fail-closed both ways), a single
+    direction is INFO. Discriminator = the repo's ONE is_dual."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    from run_postconfig import direction_lens_verdict
+    lvl, msg = direction_lens_verdict(["long", "short"], "bollinger_lower")
+    assert lvl == "INFO" and "DUAL" in msg, (lvl, msg)
+    lvl2, _ = direction_lens_verdict(["long", "short"], "three_white_soldiers")
+    assert lvl2 == "FAIL", lvl2
+    lvl3, _ = direction_lens_verdict(["long"], "three_white_soldiers")
+    assert lvl3 == "INFO", lvl3
+    lvl4, _ = direction_lens_verdict(["long", "short"], None)
+    assert lvl4 == "FAIL", lvl4
+
+
 def test_b3119_bollinger_gate_consumes_the_span_key():
     """B3119 (owner-approved span wiring): the gate reads
     price_above_ema_{STRAT_EMA_SPAN} / below_ema_{...}, not the literal
