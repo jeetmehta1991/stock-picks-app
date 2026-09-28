@@ -16,12 +16,30 @@ adx present at 100.0% of the strategy's 1,622 fires (the charter's measured
 free-band line).
 
 AXIS SCOPE, DISCLOSED (#290 - scheduled-with-mechanism, never dropped):
-this leg grades P9 only. The OTHER free axes of the entry ride their own
-named instruments per landing: the B-row companion axes ride the per-leg
-Step-1 grid instrument (scripts/breadth_step1_grid.py --cube-dir <landing>
---leg long|short, the b3119 pattern), and the P8xP11 VIX-edge composite is
-S6-B3118a's dedicated grader (the band-coverage gate names it at any Step-2
-declaration). One leg per axis family; each named; none silent.
+this leg grades P9, P11-tight and P8-tight (S6-B3117, the T3 band word's
+single-axis enumerations, added B3120 Batch C). The B-row companion axes
+ride the per-leg Step-1 grid instrument (scripts/breadth_step1_grid.py
+--cube-dir <landing> --leg long|short, the b3119 pattern), and the P8xP11
+JOINT composite remains S6-B3118a's dedicated grader (the band-coverage
+gate names it at any Step-2 declaration). One leg per axis family; each
+named; none silent.
+
+P11 TIGHT (each rsi edge -5 long / +5 short, T3-approved): the production
+leg is rsi_2<5 or rsi_14<thr_long per vix band {low:40, mid:45, high:50}
+(short: rsi_2>95 or rsi_14>thr_short {60,55,50}), screener.py:1855-1863
+verbatim. Tightening kills the rsi_2 escape arm outright (<0 / >100 are
+unsatisfiable - DISCLOSED, not hidden), so the tight level is effectively
+rsi_14 vs thr-/+5. The vix band re-derives from PERSISTED vix_percentile
+(technical.py:2727-2731: low pct<1/3, mid <2/3, else high); vix_percentile
+is persisted ROUNDED to 4dp, so rows within 0.00005 of either boundary are
+BOUNDARY-AMBIGUOUS - excluded and counted, never guessed.
+
+P8 TIGHT (quartile edges 0.25/0.75 replacing terciles, T3-approved): a
+RE-BANDING is not a pure subset - it reassigns fires between threshold
+regimes, so a variant can admit rows production rejected. Offline grades
+the INTERSECTION population only (fired under production AND passing under
+the re-banding); variant-only admissions are UNMEASURABLE offline and the
+rejected count is reported (L812 semantics, stated in the artifact).
 
 THE GATE IS MIRRORED EXACTLY, STRICT COMPARISON INCLUDED: the producer uses
 `<` (adx_ok = s.get("adx", 30) < 35).
@@ -66,6 +84,142 @@ KEY = "adx"
 def keep_row(value, direction: str, bound: float) -> bool:
     """Mirror the producer's gate EXACTLY, strict comparison included."""
     return (value < bound) if direction == "lt" else (value > bound)
+
+
+# ---- S6-B3117: the P11 / P8 single-axis enumerations (T3-approved) --------
+THR_LONG = {"low": 40.0, "mid": 45.0, "high": 50.0}    # screener.py:1866-1871
+THR_SHORT = {"low": 60.0, "mid": 55.0, "high": 50.0}
+BOUNDARY_EPS = 0.00005      # vix_percentile persists round(pct, 4)
+
+
+def vix_band(vp: float, lo: float, hi: float) -> str | None:
+    """Band from the persisted percentile, producer comparisons verbatim
+    (technical.py:2727-2731); None = BOUNDARY-AMBIGUOUS within the 4dp
+    rounding sliver of either edge."""
+    if abs(vp - lo) <= BOUNDARY_EPS or abs(vp - hi) <= BOUNDARY_EPS:
+        return None
+    if vp < lo:
+        return "low"
+    if vp < hi:
+        return "mid"
+    return "high"
+
+
+def rsi_leg(direction: str, rsi2: float, rsi14: float, band: str,
+            edge_shift: float) -> bool:
+    """The strategy's rsi leg (screener.py:1891/1894 verbatim), with the
+    T3 tight shift applied to BOTH edges of the row's direction. At -5/+5
+    the rsi_2 escape arm (5 -> 0 / 95 -> 100) is unsatisfiable - kept in
+    the expression so the disclosure is the arithmetic, not a footnote."""
+    if direction == "long":
+        thr = THR_LONG[band] - edge_shift
+        return (rsi2 < 5.0 - edge_shift) or (rsi14 < thr)
+    thr = THR_SHORT[band] + edge_shift
+    return (rsi2 > 95.0 + edge_shift) or (rsi14 > thr)
+
+
+def grade_kept(ted, keep_ids, min_n):
+    """Per-exit grades over the exit-expanded rows of the kept entries."""
+    sub = ted[[(t, d) in keep_ids for t, d in
+               zip(ted["ticker"].astype(str), ted["entry_date"])]]
+    per_exit = []
+    for ex, g in sub.groupby("exit_method", observed=True):
+        st = rc.evaluate(g["pnl_pct"], g["hold_days"], min_n=min_n)
+        if st is None:
+            continue
+        per_exit.append({"exit": str(ex), "n": int(len(g)),
+                         "sharpe": st.get("sharpe"),
+                         "ci_lo": st.get("ci_lo")})
+    per_exit.sort(key=lambda r: -(r["ci_lo"] if r["ci_lo"] is not None
+                                  else -9e9))
+    return per_exit
+
+
+def p11_p8_sections(tl, ted, min_n) -> dict:
+    """Both T3 single-axis enumerations on the covered fires. Rows missing
+    any of rsi_2 / rsi_14 / vix_percentile, carrying an unknown direction,
+    or boundary-ambiguous on the vix edge are EXCLUDED AND COUNTED. The
+    production leg is re-passed first (reproduction discipline); a covered,
+    unambiguous row failing it is a hard reproduction failure."""
+    rows = []
+    n_missing = n_baddir = 0
+    for _, r in tl.iterrows():
+        d = parse_signals(r.get("signals_at_entry"))
+        if d is None or "rsi_2" not in d or "rsi_14" not in d:
+            n_missing += 1
+            continue
+        direction = str(r.get("direction", "")).lower()
+        if direction not in ("long", "short"):
+            n_baddir += 1
+            continue
+        # the PRODUCTION band is the engine's own branch on the PERSISTED
+        # flags (screener.py:1866-1871): low if vix_band_low, elif high,
+        # ELSE mid - absent flags mean mid there too, mirrored exactly.
+        # (First draft re-derived it from vix_percentile and drew 22
+        # reproduction failures on span 9 - the flags are the branch input,
+        # the percentile is P8's re-banding input only.)
+        if d.get("vix_band_low"):
+            flag_band = "low"
+        elif d.get("vix_band_high"):
+            flag_band = "high"
+        else:
+            flag_band = "mid"
+        vp = d.get("vix_percentile")
+        rows.append({"ticker": str(r["ticker"]),
+                     "entry_date": str(r["entry_date"])[:10],
+                     "direction": direction, "band": flag_band,
+                     "rsi2": float(d["rsi_2"]), "rsi14": float(d["rsi_14"]),
+                     "vp": float(vp) if vp is not None else None})
+
+    def run(name, edge_shift):
+        ambiguous = repro_fail = no_vp = 0
+        kept, rejected = set(), 0
+        for r in rows:
+            if not rsi_leg(r["direction"], r["rsi2"], r["rsi14"],
+                           r["band"], 0.0):
+                repro_fail += 1
+                continue
+            if name == "p11_tight":
+                variant_band = r["band"]
+            else:
+                if r["vp"] is None:
+                    no_vp += 1
+                    continue
+                variant_band = vix_band(r["vp"], 0.25, 0.75)
+                if variant_band is None:
+                    ambiguous += 1
+                    continue
+            if rsi_leg(r["direction"], r["rsi2"], r["rsi14"],
+                       variant_band, edge_shift):
+                kept.add((r["ticker"], r["entry_date"]))
+            else:
+                rejected += 1
+        return {"covered_rows": len(rows), "excluded_missing": n_missing,
+                "excluded_direction": n_baddir,
+                "excluded_no_vix_percentile": no_vp,
+                "boundary_ambiguous": ambiguous,
+                "reproduction_failures_at_production": repro_fail,
+                "kept": len(kept), "rejected_by_level": rejected,
+                "per_exit": grade_kept(ted, kept, min_n)[:6]}
+
+    out = {
+        "p11_tight": {
+            "axis": "P11 vix-conditional rsi edges, TIGHT -5 long / +5 short "
+                    "(T3-approved single-axis enumeration)",
+            "note": "rsi_2 escape arm unsatisfiable at the shift (0/100) - "
+                    "the tight level is effectively rsi_14 vs thr-/+5",
+            **run("p11_tight", 5.0),
+        },
+        "p8_tight": {
+            "axis": "P8 vix band edges at QUARTILES 0.25/0.75 (T3-approved); "
+                    "INTERSECTION population only",
+            "note": "a re-banding reassigns fires between threshold regimes; "
+                    "variant-only admissions are UNMEASURABLE offline (L812) "
+                    "and every count is a lower bound",
+            **run("p8_tight", 0.0),
+        },
+    }
+    return out
 
 
 def parse_signals(raw):
@@ -183,6 +337,10 @@ def main() -> int:
             "per_exit": per_exit[:6],
         })
 
+    # S6-B3117 (B3120 Batch C): the T3 single-axis enumerations ride the
+    # same landing leg - battery-wired, never executed-once (L752/#290)
+    t3 = p11_p8_sections(tl, ted, a.min_n)
+
     doc = {
         "strategy": strat, "axis": "P9 " + str(p9["param"]),
         "grader": "scripts/grade_free_levels_bollinger.py (S6-B3119)",
@@ -195,6 +353,8 @@ def main() -> int:
                        "has a named instrument (#290)"),
         "reproduction": repro,
         "occupancy": occupancy_disclosure(cube_dir, strat),
+        "p11_tight": t3["p11_tight"],
+        "p8_tight": t3["p8_tight"],
         "results": results,
         "levels": {str(r["level"]): {"p9": r["level"],
                                      "is_fires": r["trades_kept"],

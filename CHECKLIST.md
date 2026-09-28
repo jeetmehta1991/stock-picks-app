@@ -1972,7 +1972,7 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** L176, `feedback_monitor_design_vs_operational_gap`, `feedback_monitor_arm_at_event_not_pre_launch` (#117 companion: when to arm), B1028 failure.
 
-122. **HARD RULE -- SILENT-FAILURE-PAIRING: every `|| true` requires paired explicit verification step.** (B1028 pandas-ta silent failure session 2026-06-27; Council 126 Tier 1.)
+122. **HARD RULE -- SILENT-FAILURE-PAIRING: every `|| true` requires paired explicit verification step.** (B1028 pandas-ta silent failure session 2026-06-27; Council 126 Tier 1.) **INSTANCE (B3120/L876):** the test_b2128 exception-form ratchet caught a second `except Exception` swallow in a draft (grading_surface_files) two days after the first (direction_lens_verdict, B3119g) - the pairing rule binds my own draft code first; consolidated with a disclosed `note` key, pre-commit.
 
      Every `|| true` / `|| :` / `|| echo` in user-data or shell scripts MUST be paired with an explicit success-verification step within 10 lines.
 
@@ -3774,6 +3774,8 @@ it; B1119's original 22-batch lapse.
 
 ### #226 - BEFORE TRUSTING A GATE'S PASS, PROVE IT CAN FAIL (B1707 / L501)
 
+**INSTANCE (B3120/L876):** the free-level grader's p8-tight draft re-derived vix bands from `vix_percentile` while the engine branches on the PERSISTED `vix_band_low`/`vix_band_high` flags; the reproduction gate returned 22 failures on the smoke - the fail arm firing on my own draft - and one probed row gave the diagnosis (plus the L724 lowercase-true re-hit). Rebuilt on the flag branch: 0 reproduction failures on 7 of 7 cubes.
+
 **EXTENSION (B1836 / L561) - A SILENT GATE AND A CORRECT ONE ARE THE SAME OBSERVATION.**
 
 **MEASURED while replacing `#201`'s mechanism: three bugs, none visible on reading, two of which
@@ -3986,6 +3988,8 @@ hypothesis disproven by one group-by (B1717).
 **INSTANCE (B3097 / L871) - CALLED FULLY LOADED ON A PREVIEW.** After a mid-turn compaction I wrote 'execution-discipline FULLY LOADED (invoked this turn, re-injected after the compaction)'; the only re-injection was the B1744 hook's output, which the harness persisted as a 367.5 KB file with a 2 KB preview. scan_discipline_not_loaded blocked the close and a Skill call loaded the file. This item's own lesson - run the probe that separates a LIMIT from an OMISSION - applied to the hook: it RUNS every turn and no longer DELIVERS. Remedy row in the skill's tripwire table; the hook redesign is S6-B3097b.
 
 ### #230 - A CLAIM ABOUT A CAPABILITY IS A CLAIM, AND NEEDS THE SAME EVIDENCE (B1731 / L505)
+
+**INSTANCE (B3120/L876, artifact-schema arm L506-a):** make_spec was drafted against a guessed status-artifact schema (`strategies`; the file holds `rows`) and its own fires_at_production refusal blocked the happy path; the artifact was opened, the key corrected, the both-ways CLI pin (test_b3120a) holds it.
 
 The Truth Standard's four evidence classes are stated in terms of DATA - counts, coverage, fire
 rates, test totals. **Every worked example is a measurement.** So claims about the SYSTEM ITSELF
@@ -5645,6 +5649,8 @@ in SKILL.md and in no CHECKLIST item, which is the orphan-rule shape ANCHOR-THE-
 
 ### #290 - A CHECK OWED EVERY LANDING IS DONE ONLY WHEN A SUPERVISOR RUNS IT UNPROMPTED (B2569 / L752)
 
+**INSTANCE (B3120/L877):** the free-level reproduction gate this item's mechanism pins re-passes the FIRE SET only; the bollinger and candle adapters score raw trade_exit_detail rows GROSS of the COST_BPS deduction load_cube applies (roster_core.py:181) - measured 0.200 on 308 of 308 span-9 rows, breakeven_plus_trail ci_lo 0.660 vs the family grader's 0.582 - while reporting 0 reproduction failures. Reproducing a baseline includes its SCORE; ratchet test_b3120f_free_level_adapters_score_on_the_net_basis_or_are_frozen, fix S6-B3120f.
+
 **The moment an analysis check is invented, run, or approved for ANY config's landed cube, the same
 turn does one of exactly two things: wires it into the post-config battery (a family-runner leg
 that FAILS closed), or files a ticket naming the battery gap.** "Executed once" + "the tool exists"
@@ -6110,6 +6116,8 @@ preferring per-level bands, returning `basis` so a figure cannot be quoted
 without its provenance; pinned by `test_b2767_leverage_prefers_per_level_bands`.
 
 ### #309 - STAMP THE GENERATOR, NOT ONLY THE SUBJECT (B2774 / L798, self-caught 2026-09-13)
+
+**INSTANCE (B3120/L877):** both artifacts stamped their grader and I still sent the owner a headline comparing a free-level cell (+0.769) against the family grader's production figure (+0.582); like-for-like inside one instrument the production row reads +0.684. The stamp is necessary and not sufficient - prose that quotes two figures names both instruments.
 
 An artifact that names what it is ABOUT but not what PRODUCED it invites a
 comparison its reader cannot validate. Two files describing one cube, written by

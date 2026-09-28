@@ -2,7 +2,7 @@
  "strategy": "bollinger_lower",
  "axis": "P9 adx ceiling",
  "grader": "scripts/grade_free_levels_bollinger.py (S6-B3119)",
- "cube": "C:/Users/jeetm/Github/stock-picks-app/output_bl_span250_span250",
+ "cube": "output_bl_span250_span250",
  "gate_mirrored": "adx lt <level> (strict, per screener.py)",
  "levels_searched": [
   35.0,
@@ -27,6 +27,106 @@
   "blocked_rows_attributable": 738,
   "lower_bound_note": "Every trade count for a TIGHTER level is a LOWER BOUND: removing trades frees occupancy, and fires the engine blocked while a position was open would then be taken. Those trades exist in no cube and only the engine can produce them (L812).",
   "note": "738 of 738 occupancy blocks name bollinger_lower. A tighter level frees some of them, so each count below is short by at most that many. Every trade count for a TIGHTER level is a LOWER BOUND: removing trades frees occupancy, and fires the engine blocked while a position was open would then be taken. Those trades exist in no cube and only the engine can produce them (L812)."
+ },
+ "p11_tight": {
+  "axis": "P11 vix-conditional rsi edges, TIGHT -5 long / +5 short (T3-approved single-axis enumeration)",
+  "note": "rsi_2 escape arm unsatisfiable at the shift (0/100) - the tight level is effectively rsi_14 vs thr-/+5",
+  "covered_rows": 698,
+  "excluded_missing": 0,
+  "excluded_direction": 0,
+  "excluded_no_vix_percentile": 0,
+  "boundary_ambiguous": 0,
+  "reproduction_failures_at_production": 0,
+  "kept": 486,
+  "rejected_by_level": 212,
+  "per_exit": [
+   {
+    "exit": "breakeven_plus_trail",
+    "n": 486,
+    "sharpe": 0.519,
+    "ci_lo": 0.236
+   },
+   {
+    "exit": "reverse_signal",
+    "n": 486,
+    "sharpe": 0.447,
+    "ci_lo": 0.205
+   },
+   {
+    "exit": "earnings_blackout",
+    "n": 486,
+    "sharpe": 0.148,
+    "ci_lo": -0.047
+   },
+   {
+    "exit": "hybrid_50pct_target",
+    "n": 486,
+    "sharpe": 0.126,
+    "ci_lo": -0.106
+   },
+   {
+    "exit": "next_pivot_target",
+    "n": 486,
+    "sharpe": 0.407,
+    "ci_lo": -0.131
+   },
+   {
+    "exit": "fixed_4r_2r",
+    "n": 486,
+    "sharpe": 0.139,
+    "ci_lo": -0.204
+   }
+  ]
+ },
+ "p8_tight": {
+  "axis": "P8 vix band edges at QUARTILES 0.25/0.75 (T3-approved); INTERSECTION population only",
+  "note": "a re-banding reassigns fires between threshold regimes; variant-only admissions are UNMEASURABLE offline (L812) and every count is a lower bound",
+  "covered_rows": 698,
+  "excluded_missing": 0,
+  "excluded_direction": 0,
+  "excluded_no_vix_percentile": 0,
+  "boundary_ambiguous": 2,
+  "reproduction_failures_at_production": 0,
+  "kept": 676,
+  "rejected_by_level": 20,
+  "per_exit": [
+   {
+    "exit": "reverse_signal",
+    "n": 676,
+    "sharpe": 0.563,
+    "ci_lo": 0.354
+   },
+   {
+    "exit": "breakeven_plus_trail",
+    "n": 676,
+    "sharpe": 0.559,
+    "ci_lo": 0.32
+   },
+   {
+    "exit": "time_stop_20d",
+    "n": 676,
+    "sharpe": 0.361,
+    "ci_lo": 0.092
+   },
+   {
+    "exit": "earnings_blackout",
+    "n": 676,
+    "sharpe": 0.201,
+    "ci_lo": 0.036
+   },
+   {
+    "exit": "hybrid_50pct_target",
+    "n": 676,
+    "sharpe": 0.229,
+    "ci_lo": 0.036
+   },
+   {
+    "exit": "next_pivot_target",
+    "n": 676,
+    "sharpe": 0.447,
+    "ci_lo": -0.009
+   }
+  ]
  },
  "results": [
   {

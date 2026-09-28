@@ -23766,3 +23766,66 @@ COMPLIANCE FAILURE against #196 and #256, no new item. ENFORCER (mechanism):
 test_b3119e_charter_span_band_matches_specs - parses the charter rows' band cell and asserts
 list-equality with the SPECS band, so a future band change reddens the pyramid until the
 charter row moves with it.
+
+### L876 - THREE DRAFT DEFECTS IN ONE BUILD DAY, ALL CAUGHT BY MY OWN EARLIER MACHINERY - RECORD THE CATCH AGAINST THE EXISTING ITEM, NOT AS A NEW CLASS (B3120, 2026-09-28)
+
+MEASURED on the B3120 build day (batches A-C), each caught pre-commit, none shipped:
+(1) the test_b2128 exception-form ratchet went RED on an `except Exception` swallow drafted
+into grading_surface_files - the SECOND swallow the same ratchet caught in two days (first:
+direction_lens_verdict, B3119g). COMPLIANCE FAILURE against #122 silent-failure pairing;
+remedy: consolidated into grading_surface_sha256 with a disclosed `note` key.
+(2) the p8-tight arm of the free-level grader re-derived vix bands from `vix_percentile`
+while the engine branches on the PERSISTED `vix_band_low`/`vix_band_high` flags
+(screener.py gate, technical.py writer); the grader's own reproduction gate returned
+22 failures on the smoke, and ONE probed row (which also re-hit L724's lowercase-true parse)
+gave the diagnosis. COMPLIANCE FAILURE against the script's exact-mirror rule read with #226
+(the fail arm firing is the proof the gate works); remedy: the flag-branch mirror, 0
+reproduction failures on 7 of 7 cubes.
+(3) make_spec was drafted against a GUESSED status-artifact schema (`strategies`; the file
+holds `rows`) and its own fires_at_production refusal blocked its happy path. COMPLIANCE
+FAILURE against #230's artifact-schema arm (L506 shape a); remedy: the artifact opened, the
+key corrected, the both-ways CLI pin test_b3120a.
+RULE: when machinery you built catches your draft, the ledger entry is a COMPLIANCE FAILURE
+against the item that machinery enforces - recorded with the ratchet named - never a quiet
+fix and never a new item; the enforcers already exist (test_b2128, the reproduction gate,
+launch_refusals + test_b3120a). Counting these keeps the ask-count honest (L736) and shows
+which ratchets earn their keep.
+
+### L877 - A REPRODUCTION GATE THAT CHECKS THE FIRE SET BUT NOT THE SCORE REPRODUCES HALF THE BASELINE (B3120, found by re-verification 2026-09-28)
+
+MEASURED on output_bl_span009 while re-deriving a queue row's figures before writing it: the
+bollinger free-level adapter reads trade_exit_detail with a bare pd.read_csv, so it scores trades
+GROSS of the 0.2-point cost roster_core.load_cube deducts (roster_core.py:181 - winsorize, then
+minus COST_BPS/100). On 308 of 308 aligned production rows the shift is 0.200; the adapter scores
+breakeven_plus_trail at Sharpe 1.036 / ci_lo 0.660 where the family grader scores the same rows
+0.957 / 0.582. Its reproduction gate re-passes the FIRE SET at the production bound and reported
+0 failures on every landing, so the half of L752 it implemented held while the half nobody built -
+the SCORE of the production row - stayed wrong for the adapter's whole life. By AST the candle
+adapter has the same raw-read shape (it serves both candle legs); the institutional adapter loads
+through load_cube. SECOND FAILURE, same investigation: a headline I sent the owner at 20:59 UTC
+compared span 9's p8-tight cell (+0.769, free-level adapter) against "production's +0.582" (family
+grader) - two instruments, each stamping its generator, so #309's mechanism was present and the
+prose ignored it. Like-for-like inside one instrument the production row is +0.684: the uplift I
+reported (0.187) was about 2.2x the real one (0.085). Retracted visibly the next turn.
+RULE: a re-scorer's reproduction covers the SCORE of the production row against the landed family
+grade, not only its fire set; and prose that compares two figures names the instrument behind each.
+COMPLIANCE FAILURE against #290 (reproduce the landed baseline - built as fire-set only) and #309
+(name the instrument before comparing). MECHANISM:
+test_b3120f_free_level_adapters_score_on_the_net_basis_or_are_frozen - a named shrink-only set of
+the gross adapters over a population derived from every SPECS tools block, so no new adapter can
+be written gross; the fix and the score reproduction are S6-B3120f. The prose-comparison half is
+JUDGMENT-ONLY for detection - no scan can tell which instrument produced a number quoted in prose;
+durability via the #309 INSTANCE note.
+THIRD, the same re-verification found three STALE CAMPAIGN RECORDS, each a compliance failure
+against an existing item and none a new class: (a) the bollinger_lower Table A file's factorial
+footer still computes the span axis at 3 levels, ENGINE RUNS 1 and 65,610, while its P3.1/P4.1
+rows carry the approved 8-level band and 7 span configs ran - the L875 fix, and its pin
+test_b3119e, covered the band CELL and not the footer of the same file (#196/#256, L875
+recurring one section down); the footer also counts the one STRAT_EMA_SPAN knob twice (P3.1 and
+P4.1 each contribute a factor), and the file header still reads "SPECS entry: NONE";
+(b) STRATEGY_CAMPAIGN_LOG.md holds no record of this campaign at all, while the runbook requires
+each campaign's slate, pre-triage, rate and memory readings there (#67); (c) the campaign ticket
+S6-B3119 still read RUNNING "span chain wave 2 of 7 in flight" after CHAIN DONE (L639 - a state
+written into a row decays while the row stays quotable). Remedies: S6-B3120h (regenerate Table A
+and the status view, extend the pin to the footer, write the campaign-log part) and the S6-B3119
+close with its remainder moved to S6-B3119f, both in this batch's ledger rows.

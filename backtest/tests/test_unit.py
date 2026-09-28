@@ -47080,3 +47080,134 @@ def test_b3120d_strat_constant_scripts_are_a_shrinking_set():
         "(run_postconfig.FAMILIES + the SPECS tools block) instead.")
     # shrink-only: members may retire; record the retirement by removing
     # them from FROZEN in the same commit.
+def test_b3120a_make_spec_generates_launchable_and_refuses_offband():
+    """S6-B3120a: the generator's output passes the CONSUMER'S OWN gate
+    (launch_refusals) and an off-band level is refused with the band
+    quoted - both directions, through the real CLI on the venv interpreter
+    (L573/L827: validate through the argv a caller builds)."""
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    ok = subprocess.run(
+        [sys.executable, str(root / "scripts" / "make_spec.py"),
+         "--strategy", "bollinger_lower", "--param", "P4",
+         "--levels", "50", "--wave-prefix", "bl_pin_demo", "--dry"],
+        capture_output=True, text=True, cwd=str(root))
+    assert ok.returncode == 0 and "launch_refusals clean" in ok.stdout, (
+        ok.returncode, ok.stdout[-300:], ok.stderr[-300:])
+    bad = subprocess.run(
+        [sys.executable, str(root / "scripts" / "make_spec.py"),
+         "--strategy", "bollinger_lower", "--param", "P4",
+         "--levels", "33", "--wave-prefix", "bl_pin_bad", "--dry"],
+        capture_output=True, text=True, cwd=str(root))
+    assert bad.returncode == 2 and "outside" in bad.stdout, (
+        bad.returncode, bad.stdout[-300:])
+
+
+def test_b3117_t3_sections_are_battery_wired_and_reproduce():
+    """S6-B3117: the T3-approved P11/P8 single-axis enumerations ride the
+    family's free-level landing leg (battery-wired, L752/#290) - the
+    landed span-9 artifact carries both sections with ZERO reproduction
+    failures, and the rsi_leg arithmetic is pinned on literals including
+    the impossible-arm disclosure (long shift 5 kills the rsi_2 escape)."""
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    art = json.loads((root / "output_audit" /
+                      "output_bl_span009_span009_free_levels.json"
+                      ).read_text(encoding="utf-8"))
+    for key in ("p11_tight", "p8_tight"):
+        sec = art[key]
+        assert sec["reproduction_failures_at_production"] == 0, (key, sec)
+        assert sec["covered_rows"] > 0, key
+    assert art["p8_tight"]["rejected_by_level"] > 0, (
+        "the quartile re-banding rejected nothing - intersection semantics "
+        "untested on this cube")
+    from grade_free_levels_bollinger import rsi_leg
+    # long, mid band, production: rsi_2 escape arm live
+    assert rsi_leg("long", 4.9, 60.0, "mid", 0.0) is True
+    # long, mid band, tight -5: escape arm dead (4.9 < 0 false), thr 40
+    assert rsi_leg("long", 4.9, 60.0, "mid", 5.0) is False
+    assert rsi_leg("long", 4.9, 39.9, "mid", 5.0) is True
+    # short, mid band, tight +5: escape dead (96 > 100 false), thr 60
+    assert rsi_leg("short", 96.0, 59.9, "mid", 5.0) is False
+    assert rsi_leg("short", 96.0, 60.1, "mid", 5.0) is True
+
+
+def _b3120f_classify(src):
+    """GROSS when a module scores trades (calls evaluate) without loading
+    them through roster_core.load_cube and without referencing COST_BPS -
+    the module-level criterion the S6-B3120f sweep ran. BOUNDARY at the live
+    inputs: a module that loads ONE file through load_cube and scores a
+    SECOND file read raw classifies NET here, so a mixed module needs a hand
+    read when it joins the population."""
+    import ast
+    ev = lc = cost = False
+    for n in ast.walk(ast.parse(src)):
+        if isinstance(n, ast.Call):
+            f = n.func
+            nm = (f.attr if isinstance(f, ast.Attribute)
+                  else f.id if isinstance(f, ast.Name) else None)
+            ev = ev or nm == "evaluate"
+            lc = lc or nm == "load_cube"
+        if (isinstance(n, ast.Attribute) and n.attr == "COST_BPS") or (
+                isinstance(n, ast.Name) and n.id == "COST_BPS"):
+            cost = True
+    return "GROSS" if ev and not lc and not cost else "NET"
+
+
+def test_b3120f_free_level_adapters_score_on_the_net_basis_or_are_frozen():
+    """S6-B3120f / L877: every battery free-level adapter must score trades
+    on the family grader's basis - rows through roster_core.load_cube, which
+    winsorizes pnl_pct and deducts COST_BPS (roster_core.py:181). MEASURED
+    2026-09-28 on output_bl_span009: the bollinger adapter's raw read scored
+    the 308 production trades at breakeven_plus_trail Sharpe 1.036 / ci_lo
+    0.660 where the family grader scores the same rows 0.957 / 0.582 - a
+    0.200-point shift on 308 of 308 aligned rows - while its reproduction
+    gate (fire set only) reported 0 failures. The population is derived from
+    every SPECS / SPECS_PHASE0 tools block at run time; the known gross
+    adapters are a NAMED shrink-only set carrying their ticket."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    FROZEN_GROSS = {
+        "grade_free_levels_bollinger.py":
+            "S6-B3120f: raw pd.read_csv of trade_exit_detail in main()",
+        "grade_free_levels_candle.py":
+            "S6-B3120f: same raw-read shape; serves both candle legs",
+    }
+    # the detector, both directions, on planted source (#226)
+    assert _b3120f_classify("rc.evaluate(p, h)\n") == "GROSS"
+    assert _b3120f_classify(
+        "d = rc.load_cube(x)\nrc.evaluate(p, h)\n") == "NET"
+    assert _b3120f_classify(
+        "p = p - rc.COST_BPS / 100\nrc.evaluate(p, h)\n") == "NET"
+
+    scripts = set()
+    for reg in (getattr(pvt, "SPECS", {}) or {},
+                getattr(pvt, "SPECS_PHASE0", {}) or {}):
+        for entry in reg.values():
+            fl = (entry.get("tools") or {}).get("free_levels") or {}
+            if fl.get("script"):
+                scripts.add(fl["script"])
+    assert len(scripts) >= 3, (
+        f"free-level adapter population shrank to {sorted(scripts)}")
+
+    gross = {s for s in scripts if _b3120f_classify(
+        (root / "scripts" / s).read_text(encoding="utf-8")) == "GROSS"}
+    new = gross - set(FROZEN_GROSS)
+    assert not new, (
+        f"free-level adapter(s) {sorted(new)} score the cube gross of "
+        "COST_BPS - load rows via roster_core.load_cube (S6-B3120f)")
+    fixed = set(FROZEN_GROSS) - gross
+    assert not fixed, (
+        f"{sorted(fixed)} now score on the net basis - remove from "
+        "FROZEN_GROSS (shrink-only)")
