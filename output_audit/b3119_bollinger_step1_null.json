@@ -1,0 +1,36 @@
+{
+ "instrument": "B2676 joint shuffle re-graded over the EXACT per-leg searches of the two b3119 grid artifacts (npt-barred excluded from observed and null alike)",
+ "n_perms": 200,
+ "seed": 20260928,
+ "label": "SYNTHETIC maxima (rng)",
+ "window": "IS only (< 2025-05-05); holdout untouched",
+ "legs": {
+  "long": {
+   "observed_best_is_sharpe": 2.816,
+   "null_max_median": 1.4675,
+   "null_max_p95": 2.337199999999999,
+   "null_max_max": 3.237,
+   "n_valid_perms": 200,
+   "p_value": 0.01,
+   "graded_cells_nonbarred": 775
+  },
+  "short": {
+   "observed_best_is_sharpe": 1.76,
+   "null_max_median": 0.978,
+   "null_max_p95": 2.2774999999999994,
+   "null_max_max": 3.455,
+   "n_valid_perms": 200,
+   "p_value": 0.1493,
+   "graded_cells_nonbarred": 725
+  }
+ },
+ "campaign": {
+  "observed_best_is_sharpe": 2.816,
+  "null_max_median": 1.567,
+  "null_max_p95": 2.5374999999999996,
+  "null_max_max": 3.455,
+  "n_valid_perms": 200,
+  "p_value": 0.0199,
+  "basis": "both legs searched in one campaign - observed and null are each max(long, short)"
+ }
+}

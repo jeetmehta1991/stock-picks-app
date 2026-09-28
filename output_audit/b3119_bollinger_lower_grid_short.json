@@ -9847,5 +9847,15 @@
     }
   ],
   "band_ruling_verbatim": "T3 2026-09-27 owner verbatim: 'Approve your recommendation' (adx tighter levels + six B-rows); same day: 'Q2 approved one line change fix. I want to test various spans' (persisted canon span flags as the offline leg) + 'Q3 approved. Want to test' (bb_20_15_pctb + bb_10_20_pctb) - bollinger_lower",
-  "status_stamp_at_run": "2daa28d28"
+  "status_stamp_at_run": "2daa28d28",
+  "permutation_null": {
+    "see": "b3119_bollinger_step1_null.json",
+    "observed_best_is_sharpe": 1.76,
+    "null_max_median": 0.978,
+    "null_max_p95": 2.2774999999999994,
+    "null_max_max": 3.455,
+    "n_valid_perms": 200,
+    "p_value": 0.1493,
+    "graded_cells_nonbarred": 725
+  }
 }
