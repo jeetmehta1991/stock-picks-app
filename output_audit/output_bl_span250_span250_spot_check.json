@@ -1,0 +1,16 @@
+{
+  "strategy": "bollinger_lower",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_bl_span250_span250",
+  "seed": 42,
+  "sampled": 50,
+  "agree": 50,
+  "disagree": 0,
+  "skipped": 0,
+  "execution_failures": 0,
+  "config": {
+    "ema_span": 250,
+    "ema_pairs": "9:21,20:50,50:200,100:150,2:250"
+  },
+  "detail": [],
+  "note": "leg A recomputes ewm(span, adjust=False) from cached closes, independent of the producer; leg B is compute_ema_sma on the same PIT slice; the checked key follows the sampled row's own direction (dual strategy, S6-B2917); a DISAGREE is a finding about either side, not a cause without a probe (#189)"
+}

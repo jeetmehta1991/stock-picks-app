@@ -1,0 +1,54 @@
+{
+ "cube": "output_bl_span250_span250",
+ "step": 1,
+ "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
+ "family": "bollinger_lower",
+ "ts": "2026-09-28T14:33:12",
+ "lenses": [
+  {
+   "lens": "holdout_untouched",
+   "level": "INFO",
+   "evidence": "0 of 698 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class)"
+  },
+  {
+   "lens": "period_concentration",
+   "level": "INFO",
+   "evidence": "max quarter share 0.35 (2025Q1) over 5 quarters of 698 entries; WARN > 0.5"
+  },
+  {
+   "lens": "ticker_concentration",
+   "level": "INFO",
+   "evidence": "top-5 tickers carry 0.06 of 698 entries across 186 tickers; WARN > 0.30"
+  },
+  {
+   "lens": "selection_margin",
+   "level": "INFO",
+   "evidence": "rank-1 [reverse_signal] is_ci_lo 0.295 vs rank-2 [breakeven_plus_trail] 0.248: margin 0.047 between exits; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a)"
+  },
+  {
+   "lens": "empty_signals_share",
+   "level": "INFO",
+   "evidence": "0 of 698 trade_log rows carry an empty signals_at_entry (S6-B2512 class)"
+  },
+  {
+   "lens": "replay_atr_proxy",
+   "level": "INFO",
+   "evidence": "ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/698 (0.0%) from replay_atr_fallback.json)"
+  },
+  {
+   "lens": "direction_consistency",
+   "level": "INFO",
+   "evidence": "graded bollinger_lower is DUAL (is_dual source check) - directions ['long', 'short'] are its own two legs, the design and not a finding (S6-B3119a)"
+  },
+  {
+   "lens": "spot_check_disagreements",
+   "level": "INFO",
+   "evidence": "50 agree / 0 DISAGREE / 0 skipped in output_bl_span250_span250_spot_check.json"
+  },
+  {
+   "lens": "min_trades_floor",
+   "level": "INFO",
+   "evidence": "698 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here)"
+  }
+ ]
+}
