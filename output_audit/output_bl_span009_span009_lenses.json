@@ -3,7 +3,7 @@
  "step": 1,
  "step_basis": "declared --step1-cube",
  "family": "bollinger_lower",
- "ts": "2026-09-28T03:23:52",
+ "ts": "2026-09-28T03:42:55",
  "lenses": [
   {
    "lens": "holdout_untouched",
@@ -37,8 +37,8 @@
   },
   {
    "lens": "direction_consistency",
-   "level": "FAIL",
-   "evidence": "directions ['long', 'short'] (one strategy, one direction expected)"
+   "level": "INFO",
+   "evidence": "graded bollinger_lower is DUAL (is_dual source check) - directions ['long', 'short'] are its own two legs, the design and not a finding (S6-B3119a)"
   },
   {
    "lens": "spot_check_disagreements",
