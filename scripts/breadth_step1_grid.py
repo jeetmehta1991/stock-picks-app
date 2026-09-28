@@ -56,9 +56,11 @@ def _parse(s):
 
 
 def _axis_spec(txt):
-    # "key:ge" / "key:le" / "key:eq_true"
+    # "key:ge" / "key:le" / "key:eq_true" / "key:eq_false" (B3118:
+    # a keep-FALSE boolean is half the boolean space; the original
+    # vocabulary encoded the long-only first subject - the L754 class)
     key, op = txt.rsplit(":", 1)
-    assert op in ("ge", "le", "eq_true"), op
+    assert op in ("ge", "le", "eq_true", "eq_false"), op
     return key, op
 
 
@@ -104,13 +106,19 @@ def main() -> int:
     ap.add_argument("--depth", default=None,
                     help="base filter key:op:level, e.g. xs_momentum_12_1:ge:0.529")
     ap.add_argument("--axes", required=True,
-                    help="comma-separated key:op list (op in ge|le|eq_true)")
+                    help="comma-separated key:op list (op in ge|le|eq_true|eq_false)")
     ap.add_argument("--repro-exit", default="time_stop_10d")
     ap.add_argument("--repro-artifact", default=None,
                     help="admission artifact whose is_sharpe the base must reproduce")
     ap.add_argument("--out", required=True)
     ap.add_argument("--band-ruling", required=True,
                     help="the owner's T3 band words, verbatim (S6-B2848a)")
+    ap.add_argument("--leg", default="both",
+                    choices=["long", "short", "both"],
+                    help="B3118: per-leg grading for DUAL strategies "
+                         "(runbook 3.6 item 5) - a companion's sign "
+                         "can invert by leg; filtered before the "
+                         "reproduction gate so the base is the leg's own")
     ap.add_argument("--cube-dir", default=None,
                     help="run-dir override: read <dir>/trade_exit_detail.csv"
                          " + trade_log.csv instead of the R5 merged cube"
@@ -134,6 +142,9 @@ def main() -> int:
 
     m, _dep = build_frame(a.strategy, a.depth, [k for k, _ in axes])
     print(f"frame ready: cube rows {len(m):,} after depth base ({time.time()-t0:.0f}s)")
+    if a.leg != "both":
+        m = m[m["direction"] == a.leg]
+        print(f"leg filter: {a.leg} -> cube rows {len(m):,} (B3118 per-leg)")
 
     # ---- REPRODUCTION GATE (fail-closed) ------------------------------------
     base_cell = m[m.exit_method == a.repro_exit]
@@ -165,6 +176,8 @@ def main() -> int:
             continue
         if op == "eq_true":
             levels = [1.0]
+        elif op == "eq_false":
+            levels = [0.0]
         else:
             levels = sorted(set(np.round(vals.quantile(QUANTS), 4)))
         for lev in levels:
@@ -172,6 +185,8 @@ def main() -> int:
                 mask = m[key] >= lev
             elif op == "le":
                 mask = m[key] <= lev
+            elif op == "eq_false":
+                mask = m[key] == 0.0
             else:
                 mask = m[key] == 1.0
             sub_all = m[mask & m[key].notna()]
@@ -193,6 +208,7 @@ def main() -> int:
                     key=lambda r: -r["is_sharpe"])
     rec = {"strategy": a.strategy, "depth_base": a.depth,
            "cube_dir": a.cube_dir or "output_r5_merged_1_7 (default)",
+           "leg": a.leg,
            "axes": [{"key": k, "op": o} for k, o in axes],
            "quants": list(QUANTS), "min_coverage": MIN_COVERAGE,
            "window": "IS only (< 2025-05-05); holdout untouched - Step 2 needs its own owner word",

@@ -46710,6 +46710,44 @@ def test_b3113a_step2_read_subject_cube_control_r5(tmp_path):
     assert "cube-dir file missing" in blob and "no_such_run_dir" in blob, blob[-400:]
 
 
+def test_b3118_breadth_grid_op_vocabulary_and_leg():
+    """B3118 (bollinger_lower campaign): the grid's op vocabulary carries
+    eq_false (keep-FALSE boolean AND-leg) and the per-leg switch exists for
+    dual strategies (runbook 3.6 item 5). _axis_spec is behavioural; the
+    leg plumbing is pinned at source (the live b3118 per-leg artifacts are
+    the executed proof - a source pin alone proves wiring, not the rule)."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import breadth_step1_grid as bg
+    assert bg._axis_spec("dc20_new_high:eq_false") == ("dc20_new_high", "eq_false")
+    assert bg._axis_spec("x:eq_true") == ("x", "eq_true")
+    import pytest as _pt
+    with _pt.raises(AssertionError):
+        bg._axis_spec("x:eq_maybe")
+    src = (root / "scripts" / "breadth_step1_grid.py").read_text(encoding="utf-8")
+    assert 'mask = m[key] == 0.0' in src, "eq_false mask branch missing"
+    assert '"--leg"' in src and 'm["direction"] == a.leg' in src, "per-leg switch missing"
+
+
+def test_b3118_bollinger_phase0_spec_validates_clean():
+    """B3118: the bollinger_lower SPECS_PHASE0 entry (F1, written from the
+    owner-approved T3 band) stays validate_spec-clean - formula ids match
+    params ids, bands partition, no actuatorless resim promise."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    spec = pvt.SPECS_PHASE0["bollinger_lower"]
+    assert pvt.validate_spec(spec) == []
+    ids = {p["id"] for p in spec["params"]}
+    assert {"P9", "B1", "B6"} <= ids and len(ids) == 17, sorted(ids)
+
+
 def test_b3114b_roster_accepts_both_admission_dialects():
     """S6-B3114b (B3115): the roster renderer's admission acceptance knows
     BOTH evidence dialects - the sweep family's verdict=PASS and the breadth

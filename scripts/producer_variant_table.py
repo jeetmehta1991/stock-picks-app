@@ -2050,6 +2050,213 @@ FORMULA_TWS = (
     "             (rsi_14 TIGHTER = LOWER the ceiling: free levels are the\n"
     "              measured retention quantiles on the 1,596 R5 fires)\n")
 
+
+SPECS_PHASE0.update({"bollinger_lower": {  # B3118 F1 - written from the owner-approved T3 band (2026-09-27 "Approve your recommendation"); offline campaign, no engine leg owed, so PHASE0 is the registry (tools adapter not on the critical path)
+    "formula": """
+ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in
+the producer->gate derivation (each tunable step is a Table A row with that
+id). B<n> = a BREADTH COMPANION AXIS from the b3117 screen, entering the
+combination space as an added AND-condition (T3-approved 2026-09-27).
+
+=============================== PRODUCER LAYER ===============================
+
+P1  bb_20_20_reclaim_from_lower_recent_3d  (period 20, k 2.0, recency 3)
+       close back inside the LOWER band within 3 bars after being outside
+       (technical.py:1402); identity UNACTUATED - held at production here,
+       aspirational band in table_a_bands.py:225-231 / the charter
+P2  bb_20_20_reclaim_from_upper_recent_3d  (same identity, upper mirror)
+P3  below_ema_200  (span 200, compute_ema_sma; gate reads the LITERAL key -
+       S6-B3117b records the STRAT_EMA_SPAN wiring gap, owner-pending)
+P4  price_above_ema_200  (span 200, same producer family and literal-key note)
+P5  rsi_14  (Wilder span 14; span band unpersisted at other spans)
+P6  rsi_2   (Wilder span 2; the fast escape-hatch)
+P7  vix_band_high  (vix_percentile above the upper edge - edges at P8)
+P8  vix_band_low   (vix_percentile below the lower edge; EDGES BANDED -
+       persisted vix_percentile re-derives any edge offline, T3-approved)
+
+=============================== BREADTH LAYER ===============================
+
+B1  cot_rut_commercials_net_pct  <= q   (keep LOW; screen joint rank 1)
+B2  defensive_leadership  require TRUE  (market-context)
+B3  macd_12_26_9_line  <= q             (keep LOW - deeper washout)
+B4  dc20_new_high  require FALSE        (not at a 20-day high)
+B5  pct_from_vwap  >= q                 (keep HIGH; vwap-anchor)
+B6  institutional_new_positions  require TRUE  (smart-money)
+
+=============================== STRATEGY LAYER ===============================
+
+P9  adx < 35   [EXISTING-THRESHOLD - the measured offline depth axis]
+P10 _short_borrow_trap_active(s)  (days_to_cover > 5.0 blocks the SHORT fire;
+       band OWNER-GATED, not in the approved grid)
+P11 VIX-conditional RSI thresholds (low 40/60, mid 45/55, high 50/50)
+       [T3-approved tighter-edge enumeration - composite, needs its own
+        offline leg; not expressible as one key:op axis]
+
+long_fires  = P1 AND (rsi_2 < 5 OR rsi_14 < thr_long[P11]) AND P4 AND P9
+short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
+              AND NOT P10
+""",
+    "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1622,
+                 "tickers": 544, "holdout_n": 430, "band": "T",
+                 "window": "2022-05-05..2026-05-05"},
+    "gate": ("(bb_20_20_reclaim_from_lower_recent_3d AND rsi_long_ok AND "
+             "price_above_ema_200 AND adx<35) | short mirror + borrow gate "
+             "(screener strat_bollinger_lower ~:1851-1889)"),
+    "params": [
+        {"id": "P1", "producer": "technical.py bb block -> screener emit",
+         "param": "bb (period, k, recency) identity - lower reclaim",
+         "production": "20/2.0/3", "band": ["20/2.0/3"],
+         "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": False,
+         "status": "DEFINED-NO-ACTUATOR (aspirational band in table_a_bands.py:225-231: k 1.5/2.5, recency 1/5)",
+         "type": "identity", "engine_implemented": False,
+         "evidence": "technical.py:1402; charter P1.x rows",
+         "derivation": "held at production in SPEC - no actuator, no resim promise (S6-B2569a)"},
+        {"id": "P2", "producer": "technical.py bb block -> screener emit",
+         "param": "bb identity - upper reclaim (mirror)",
+         "production": "20/2.0/3", "band": ["20/2.0/3"],
+         "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
+         "type": "identity", "engine_implemented": False,
+         "evidence": "technical.py:1402 region; charter P2.x",
+         "derivation": "as P1"},
+        {"id": "P3", "producer": "compute_ema_sma",
+         "param": "ema span (below_ema_200)", "production": 200,
+         "band": [200], "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": False,
+         "status": "DEFINED-NO-ACTUATOR for THIS gate (literal key; S6-B3117b wiring decision owner-pending)",
+         "type": "int", "engine_implemented": False,
+         "evidence": "screener.py gate ~:1852; table_a_bands.py:26-28",
+         "derivation": "STRAT_EMA_SPAN exists engine-wide but does not reach this literal-key gate"},
+        {"id": "P4", "producer": "compute_ema_sma",
+         "param": "ema span (price_above_ema_200)", "production": 200,
+         "band": [200], "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR (as P3)",
+         "type": "int", "engine_implemented": False,
+         "evidence": "screener.py gate ~:1851", "derivation": "as P3"},
+        {"id": "P5", "producer": "technical.py rsi block",
+         "param": "rsi span (slow)", "production": 14, "band": [14],
+         "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
+         "type": "int", "engine_implemented": False,
+         "evidence": "technical.py:540", "derivation": "other spans unpersisted"},
+        {"id": "P6", "producer": "technical.py rsi block",
+         "param": "rsi span (fast escape-hatch)", "production": 2, "band": [2],
+         "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": False, "status": "DEFINED-NO-ACTUATOR",
+         "type": "int", "engine_implemented": False,
+         "evidence": "technical.py:540", "derivation": "as P5"},
+        {"id": "P7", "producer": "technical.py vix percentile",
+         "param": "vix_band_high flag (upper edge feed)",
+         "production": "edge per P8", "band": ["edge per P8"],
+         "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": True, "status": "edges banded at P8",
+         "type": "bool", "engine_implemented": False,
+         "evidence": "technical.py:2690-2702", "derivation": "flag over P8's edges"},
+        {"id": "P8", "producer": "technical.py vix percentile terciles",
+         "param": "vix band edges on persisted vix_percentile",
+         "production": "1/3,2/3", "band": ["1/3,2/3", "0.25,0.75"],
+         "free_band": ["1/3,2/3", "0.25,0.75"], "resim_band": [], "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": True,
+         "status": "T3-APPROVED 2026-09-27 (owner: 'Approve your recommendation', leg b)",
+         "type": "edge-pair", "engine_implemented": False,
+         "evidence": "vix_percentile persisted on 100.0pct of fires (charter P8.1)",
+         "derivation": "re-derive bands offline from persisted vix_percentile"},
+        {"id": "P9", "producer": "screener strategy gate",
+         "param": "adx ceiling", "production": 35,
+         "band": [35, 27.51, 23.96, 20.976, 17.69],
+         "free_band": [35, 27.51, 23.96, 20.976, 17.69], "resim_band": [],
+         "env": None, "consumers": ["backtest/signals/screener.py"],
+         "sweep_levels": None, "subset_safe": True,
+         "status": "T3-APPROVED 2026-09-27 - all four tighter levels",
+         "type": "float", "engine_implemented": True,
+         "evidence": "charter free-band line (QUANTS retention on 1622 fires: 1298/974/649/326)",
+         "derivation": "TIGHTER = LOWER the ceiling; production included as the offline identity level"},
+        {"id": "P10", "producer": "screener helper (shared, 6 consumers)",
+         "param": "days_to_cover cap (borrow guard, SHORT leg)",
+         "production": "5.0", "band": ["5.0"],
+         "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": True,
+         "status": "BANDABLE-OWNER-GATED (B718a); NOT in the approved grid",
+         "type": "float", "engine_implemented": True,
+         "evidence": "charter P10; B718a ruling",
+         "derivation": "tighter cap is offline on persisted days_to_cover; band only on the owner's word"},
+        {"id": "P11", "producer": "screener strategy gate (composite)",
+         "param": "VIX-conditional rsi edges",
+         "production": "B1147 set (40/60, 45/55, 50/50)",
+         "band": ["B1147 set (40/60, 45/55, 50/50)", "edges 5 tighter per band"],
+         "free_band": ["B1147 set (40/60, 45/55, 50/50)", "edges 5 tighter per band"],
+         "resim_band": [], "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": True,
+         "status": "T3-APPROVED 2026-09-27; COMPOSITE - needs its own offline leg (not one key:op axis), scheduled S6-B3118a",
+         "type": "edge-set", "engine_implemented": True,
+         "evidence": "screener.py:1855-1863; rsi_2/rsi_14/vix_percentile all persisted",
+         "derivation": "tighter edges = subset on persisted keys per vix band"},
+        {"id": "B1", "producer": "cot (CFTC positioning)",
+         "param": "cot_rut_commercials_net_pct", "production": "not gated",
+         "band": ["q20", "q40", "q60", "q80"],
+         "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+         "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "status": "T3-APPROVED; op le (keep LOW)",
+         "type": "float<=q", "engine_implemented": False,
+         "evidence": "b3117_bollinger_lower_companions_consistent.json (ts10 -4.67 / bept -6.99, joint rank 1)",
+         "derivation": "BREADTH (3.6): cot cluster rep; levels = retention quantiles on own fires at grid time"},
+        {"id": "B2", "producer": "market context (sector breadth)",
+         "param": "defensive_leadership", "production": "not gated",
+         "band": ["require_true"], "free_band": ["require_true"],
+         "resim_band": [], "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "status": "T3-APPROVED; op eq_true",
+         "type": "bool", "engine_implemented": False,
+         "evidence": "b3117 consistent (ts10 +3.82 / bept +5.20)",
+         "derivation": "BREADTH: market-context rep"},
+        {"id": "B3", "producer": "technical.py macd",
+         "param": "macd_12_26_9_line", "production": "not gated",
+         "band": ["q20", "q40", "q60", "q80"],
+         "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+         "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "status": "T3-APPROVED; op le (keep LOW)",
+         "type": "float<=q", "engine_implemented": False,
+         "evidence": "b3117 consistent (ts10 -3.54 / bept -4.59)",
+         "derivation": "BREADTH: momentum-oscillator rep"},
+        {"id": "B4", "producer": "technical.py donchian",
+         "param": "dc20_new_high", "production": "not gated",
+         "band": ["require_false"], "free_band": ["require_false"],
+         "resim_band": [], "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True,
+         "status": "T3-APPROVED; op eq_false (the B3118 vocabulary addition)",
+         "type": "bool", "engine_implemented": False,
+         "evidence": "b3117 consistent (ts10 -2.72 / bept -2.78)",
+         "derivation": "BREADTH: dip-depth rep - not at a 20-day high"},
+        {"id": "B5", "producer": "technical.py vwap",
+         "param": "pct_from_vwap", "production": "not gated",
+         "band": ["q20", "q40", "q60", "q80"],
+         "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+         "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "status": "T3-APPROVED; op ge (keep HIGH)",
+         "type": "float>=q", "engine_implemented": False,
+         "evidence": "b3117 consistent (ts10 +2.37 / bept +4.67)",
+         "derivation": "BREADTH: vwap-anchor rep"},
+        {"id": "B6", "producer": "smart_money (13F flow)",
+         "param": "institutional_new_positions", "production": "not gated",
+         "band": ["require_true"], "free_band": ["require_true"],
+         "resim_band": [], "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "status": "T3-APPROVED; op eq_true",
+         "type": "bool", "engine_implemented": False,
+         "evidence": "b3117 consistent (ts10 +1.82 / bept +4.37)",
+         "derivation": "BREADTH: smart-money rep"},
+    ],
+}})
+
 SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes first"): PROMOTED from SPECS_PHASE0 to SPECS. It is no longer pre-engine inventory - the 54-config anatomy campaign runs, so the battery adapter is owed NOW. Moved, never copied: the two names that sit in BOTH registries carry tools={} in PHASE0 and a complete block in SPECS, so duplication is what makes a family droppable.
     "gate": "three_white_soldiers AND rsi_14 < 60",
     "formula": FORMULA_TWS,
