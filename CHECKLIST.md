@@ -5251,6 +5251,8 @@ exercised a path production never takes and reported clean for that reason.
 - **A test asserts the bypass cannot return** - `test_b1811_gate_echo_is_not_evidence` greps for the
   old expression.
 
+**Instance L878 (B3121): the call-site override survived B1811's sweep because that sweep keyed on ONE helper's name (`_tool_text`). `n = _queue_rows_added() if rows is None else rows` had the same shape with another helper; B1769 changed that helper's return type from int to list the day B1739 wrote the gate, every test passed `rows` as an int, and the live branch raised TypeError whenever it had a finding to judge. Sweep by SHAPE: an AST pass over the turn gate found 36 call-site seams - 2 defective (both fixed at B3121), 16 sound by reading, 18 not yet read (S6-B3121a). Compliance failure against #276b. Mechanism: test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason (a new seam fails until it is read and registered) and test_b3121_findings_gate_counts_rows_through_the_live_helper.**
+
 ### #277 - AN ARTIFACT MUST CARRY THE KEY IT WAS RANKED, SELECTED OR FILTERED ON (B1820 / L558)
 
 **MEASURED: `step1_ranking` emitted `sharpe` - the HOLDOUT measurement - as its first field and
@@ -6307,3 +6309,27 @@ DETECTION: JUDGMENT-ONLY - these probes are session scripts outside every repo s
 SKILL tripwire row pinned by a test_b2123 fragment. SEARCH ATTEMPTED (#300): a repo helper every
 probe imports (backup, anchor count, restore check) would make the rule structural; not built -
 nothing in the repo would import it yet, and a helper nothing calls is theater (#136).
+
+### #324 - A CRASHING STOP-HOOK GATE IS A PASS: THE ENTRY POINT FAILS CLOSED, AND A SEAMED GATE IS TESTED ON ITS LIVE BRANCH (B3121 / L878, self-caught 2026-09-28)
+
+The Stop hook treats any exit other than 2 as a non-blocking error: the stop proceeds and the
+harness logs hook_non_blocking_error. So an uncaught exception anywhere in the turn gate ends the
+turn as if every unreached check had passed. MEASURED (L878): scan_findings_vs_tickets raised
+TypeError on its live branch from B1769 (2026-08-19) until B3121, because its helper's return type
+changed from int to list while every test passed `rows` as an int; the transcripts on disk hold 8
+closes logged hook_non_blocking_error for it, each skipping that gate's verdict and Gate B's
+dirty-tree check.
+
+RULE: (1) the gate runner's entry point turns every exception into a block and prints the
+traceback - B1746's "a broken gate is itself a finding", which covered only the named gates
+inside main(); (2) a gate with an injection seam has at least one test that drives its LIVE branch
+with the helper's real return type, through the helper's own seam or a monkeypatch of it; (3) a
+new call-site seam is read for type and processing parity before it lands.
+
+MECHANISM: (1) run_guarded in scripts/verify_turn_compliance.py, pinned by
+test_b3121_a_raising_gate_runner_blocks_instead_of_passing - a raising runner blocks, a returning
+one keeps its verdict, SystemExit passes through, and the __main__ block calls the guard; (2)
+test_b3121_findings_gate_counts_rows_through_the_live_helper for the instance; (3)
+test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason - 17 seams classified sound
+with a reason, 18 named unread under S6-B3121a, and a new seam fails until it is read and
+registered.

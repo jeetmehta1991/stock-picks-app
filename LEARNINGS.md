@@ -23829,3 +23829,40 @@ S6-B3119 still read RUNNING "span chain wave 2 of 7 in flight" after CHAIN DONE 
 written into a row decays while the row stays quotable). Remedies: S6-B3120h (regenerate Table A
 and the status view, extend the pin to the footer, write the campaign-log part) and the S6-B3119
 close with its remainder moved to S6-B3119f, both in this batch's ledger rows.
+
+### L878 - A GATE WHOSE EVERY TEST PASSES A SEAM CAN BE DEAD ON ITS LIVE PATH, AND A CRASHING STOP HOOK IS A PASS (B3121, self-caught previewing a close 2026-09-28)
+
+MEASURED: scan_findings_vs_tickets (B1739, 2026-08-19) was written against an int-returning
+_queue_rows_added; B1769 the same day added a second definition returning the ROWS, a list,
+which shadowed the first (B1795b later deleted the dead one and did not sweep its callers). The
+gate's call-site override - helper() if rows is None else rows - then compared a list with an
+int, so its LIVE branch raised TypeError whenever it had anything to judge and returned []
+otherwise: the rule "each finding owes a ticket" could not fire on a real close from B1769 until
+B3121. Every test and corpus entry passed rows as an int, an override that never reaches the
+helper - #276b's exact shape, which B1811 removed from ten _tool_text sites with a sweep keyed on
+that helper's NAME. The crash also ended the legacy body, whose only check not already run
+(guarded) in main() is Gate B's dirty-tree block. The harness logged 8 such closes as
+hook_non_blocking_error and let each stop proceed - 6 in one session (2026-08-24 to 2026-08-30)
+and 2 in this one (2026-09-14, 2026-09-23) - across the 5 transcripts on disk, a lower bound; the
+documented Stop-hook contract says the same (any exit other than 2 is a non-blocking error and
+the response proceeds). B1746 had made a raising NAMED gate a finding; the legacy body and
+main()'s own statements were never inside that guard. Control before the edit: the live branch
+raised TypeError on the unfixed code and the legacy body exited 1 on the draft transcript.
+RULE: (1) a gate's tests drive its LIVE branch at least once with the helper's REAL return type -
+through the helper's own injection seam or a monkeypatch of it - never only through a call-site
+override that replaces the helper's output; (2) the gate runner's ENTRY POINT turns every
+exception into a block, because a crash is a pass to the Stop hook; (3) a sweep for a seam
+defect goes by SHAPE, never by one helper's name.
+SWEEP (by AST, with the same definition the pin calls): 36 call-site seams in the turn gate - 2
+defective (this site, and scan_rate_comparison_without_denominators, whose injected text skipped
+every _response_text scrub, so its tests and its closes read different texts), 16 sound by
+reading (the live helper's type and processing on both branches), and 18 not yet read, named as a
+shrink-only backlog under S6-B3121a.
+MECHANISM: run_guarded, pinned by test_b3121_a_raising_gate_runner_blocks_instead_of_passing
+(new CHECKLIST #324 - the fail-closed entry point sat in no item, only in a B1746 code comment);
+test_b3121_findings_gate_counts_rows_through_the_live_helper; and the register
+test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason. The seam half is a
+COMPLIANCE FAILURE against #276b (INSTANCE note added). Batch re-exam (B1446 rule 5, compared on
+REMEDY per L720): L876 and L877 were instances of existing items with their ratchets named;
+L878's seam half is one too, while its crash half carries a remedy no item held - hence #324
+rather than a third INSTANCE-only entry.

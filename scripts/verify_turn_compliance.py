@@ -221,7 +221,11 @@ def scan_rate_comparison_without_denominators(entries: list[dict], *,
     named, which is the compliant form.
     """
     import re as _re
-    blob = text if text is not None else _response_text(entries)
+    # B3121 (#276b): the override goes INSIDE the helper. An injected text used
+    # to skip every scrub the live path applies (lowercasing, fences, the gate
+    # echo, blockquotes, inline code), so a test and a close read two
+    # different texts.
+    blob = _response_text(entries, text)
     if not blob:
         return []
     connectives = ("against", " vs ", "versus", "compared to", "compared with")
@@ -3728,7 +3732,8 @@ def scan_prose_only_rule(entries, *, docs_touched=None, code_touched=None,
             "PROSE-ONLY and say why a mechanism is not possible."]
 
 
-def scan_findings_vs_tickets(entries, *, text=None, rows=None) -> list[str]:
+def scan_findings_vs_tickets(entries, *, text=None, rows=None,
+                             diff_text=None) -> list[str]:
     """B1739: EVERY finding owes a ticket, not just the first one.
 
     The #225 gate fires only when the queue is UNTOUCHED, so one ticket for one
@@ -3756,7 +3761,16 @@ def scan_findings_vs_tickets(entries, *, text=None, rows=None) -> list[str]:
     found = len({m for m in MARKERS if m in t})
     if found == 0:
         return []
-    n = _queue_rows_added() if rows is None else rows
+    # B3121 (S6-B3121, L878): the live helper returns the ROWS - a list since
+    # B1769 shadowed B1739's int-returning definition the same day - so the old
+    # call-site override compared a list with an int and raised TypeError on
+    # every close carrying an unticketed finding marker, from 2026-08-19 until
+    # B3121. Every test passed `rows` as an int and never reached the live
+    # branch (#276b). `rows` stays an int count for the corpus; a test of the
+    # live branch passes diff_text, which travels the helper's own parser.
+    if rows is None:
+        rows = _queue_rows_added(diff_text)
+    n = rows if isinstance(rows, int) else len(rows)
     if n >= found:
         return []
     return [f"FINDINGS EXCEED TICKETS (B1739): {found} distinct finding markers in "
@@ -5630,5 +5644,33 @@ def _main_legacy() -> int:
     return 2
 
 
+def run_guarded(argv: list[str] | None = None) -> int:
+    """B3121 (S6-B3121, CHECKLIST #324, L878): the ENTRY POINT fails closed.
+
+    The Stop hook treats any exit other than 2 as a non-blocking error - the
+    stop proceeds and the harness logs hook_non_blocking_error - so an
+    uncaught exception anywhere in this script is a PASS for every check it
+    had not reached. B1746 made a raising NAMED gate a finding inside main();
+    the legacy body and main()'s own statements stayed outside that guard.
+    MEASURED at B3121: scan_findings_vs_tickets raised TypeError on its live
+    branch from B1769 (2026-08-19), and the transcripts on disk hold 8 closes
+    logged hook_non_blocking_error for it, each skipping that gate's verdict
+    and Gate B's dirty-tree check. A broken runner is itself a finding: block,
+    and print the traceback that names the broken gate. SystemExit and
+    KeyboardInterrupt are not Exceptions and pass through unchanged.
+    """
+    try:
+        return main(argv)
+    except Exception as _e:              # a BROKEN gate is itself a finding
+        import traceback as _tb
+        print(f"TURN-GATE BLOCK - the turn gate RAISED {_e!r}. A crashing gate "
+              f"is a non-blocking error to the Stop hook, so the turn would end "
+              f"as if every unreached check had passed; this blocks instead "
+              f"(B3121 / #324). Fix the gate the traceback names:",
+              file=sys.stderr)
+        _tb.print_exc(file=sys.stderr)
+        return 2
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(run_guarded())

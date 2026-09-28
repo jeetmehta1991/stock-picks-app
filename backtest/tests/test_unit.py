@@ -25858,6 +25858,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L873 (B3110): the stamp gates every commit, the landing supervisor's included"),
         ("BACK UP EVERY TARGET BEFORE THE FIRST WRITE",
          "L874 (B3110): a finally restore does not survive a kill"),
+        # B3121: the L878 tripwire row - pin the REMEDY it names (L548).
+        ("DRIVE THE LIVE BRANCH ONCE WITH THE HELPER'S REAL RETURN TYPE",
+         "L878 (B3121): a seam-only test hides a dead live branch, and a "
+         "crashing Stop hook is a pass"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26063,7 +26067,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 311 -> 312 at B3102 (the S6-B3097b compact-index note; same-call
     # with the skill edit per B2132).
     # 312 -> 315 at B3110 (the L872 / L873 / L874 tripwire-row fragments).
-    assert len(gutted) == 315, gutted
+    # 315 -> 316 at B3121 (the L878 live-branch / fail-closed row fragment).
+    assert len(gutted) == 316, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -47211,3 +47216,234 @@ def test_b3120f_free_level_adapters_score_on_the_net_basis_or_are_frozen():
     assert not fixed, (
         f"{sorted(fixed)} now score on the net basis - remove from "
         "FROZEN_GROSS (shrink-only)")
+
+
+
+def _b3121_call_site_seams(src: str) -> set:
+    """(function, seam) for every CALL-SITE injection seam in `src`: a
+    parameter compared `is None` / `is not None` whose LIVE branch calls
+    something - `helper() if p is None else p`, `p if p is not None else
+    helper()`, or an `if p is None:` block with a call anywhere in its body.
+
+    The one definition behind the B3121 measurement AND its pin (L593: pin
+    the code that measured it). Its reach is exactly those spellings; the
+    planted control in the pin proves each is seen.
+    """
+    import ast
+    tree = ast.parse(src)
+    out = set()
+    for fn in ast.walk(tree):
+        if not isinstance(fn, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        params = {a.arg for a in fn.args.args + fn.args.kwonlyargs}
+        for n in ast.walk(fn):
+            t = getattr(n, "test", None)
+            if not (isinstance(t, ast.Compare) and len(t.ops) == 1
+                    and isinstance(t.ops[0], (ast.Is, ast.IsNot))
+                    and isinstance(t.left, ast.Name) and t.left.id in params
+                    and isinstance(t.comparators[0], ast.Constant)
+                    and t.comparators[0].value is None):
+                continue
+            if isinstance(n, ast.IfExp):
+                live = n.body if isinstance(t.ops[0], ast.Is) else n.orelse
+                if isinstance(live, ast.Call):
+                    out.add((fn.name, t.left.id))
+            elif isinstance(n, ast.If) and isinstance(t.ops[0], ast.Is):
+                if any(isinstance(x, ast.Call)
+                       for st in n.body for x in ast.walk(st)):
+                    out.add((fn.name, t.left.id))
+    return out
+
+
+# B3121 (S6-B3121, L878): every call-site seam in the turn gate, read for
+# whether an injected value travels the LIVE path - the TYPE the live helper
+# returns and the PROCESSING it applies (#276b). A new seam fails the pin until
+# it is read and entered here with its reason.
+_B3121_SEAMS_SOUND = {
+    ("scan_owner_decision_taken", "rows"):
+        "list seam (list(rows)) for the list _queue_rows_added(diff_text) returns",
+    ("scan_count_without_members", "rows"):
+        "list seam (list(rows)) for the list _queue_rows_added() returns",
+    ("scan_ticket_claim_without_pin", "rows"):
+        "list seam (list(rows)) for the list _queue_rows_added() returns",
+    ("scan_queue_vocabulary", "rows"):
+        "list seam (list(rows)) for the list _queue_rows_added(diff_text) returns",
+    ("scan_queue_not_updated", "rows"):
+        "list seam (list(rows)) for the list _queue_rows_added(diff_text) returns",
+    ("scan_findings_vs_tickets", "rows"):
+        "B3121: an int count for the corpus while the live list is len()-ed; "
+        "test_b3121_findings_gate_counts_rows_through_the_live_helper drives the "
+        "live branch through the helper's own diff_text seam",
+    ("scan_response_gates", "queue_touched"):
+        "bool seam for the bool _queue_touched(); nothing to scrub",
+    ("scan_skill_not_updated", "learnings_touched"):
+        "bool seam for the bool nested _touched(); nothing to scrub",
+    ("scan_skill_not_updated", "skill_touched"):
+        "bool seam for the bool nested _touched(); nothing to scrub",
+    ("scan_prose_only_rule", "docs_touched"):
+        "bool seam for the bool nested _touched(); nothing to scrub",
+    ("scan_prose_only_rule", "code_touched"):
+        "bool seam for the bool nested _touched(); nothing to scrub",
+    ("scan_miss_capture_complete", "touched"):
+        "bool seam for the bool _artifact_touched(); nothing to scrub",
+    ("scan_uninspected_constant", "text"):
+        "both branches pass through _strip_mentions; the raw window is the "
+        "pinned S6-B1783b reader counted by count_text_readers",
+    ("scan_unmeasured_quantity", "text"):
+        "both branches are lowercased and the B1738 strip then applies to both",
+    ("_response_text", "text"):
+        "the helper itself - an override INSIDE the helper is #276b's "
+        "compliant form",
+    ("scan_bulk_process_kill", "cmds"):
+        "a documented superset: injected cmds feed both the PowerShell and the "
+        "any-shell view, and the heredoc scrub applies to both",
+    ("main", "argv"):
+        "the CLI argv default, not a seam over a gate's evidence",
+}
+# Found by the B3121 sweep and NOT YET READ for type and processing parity -
+# a named backlog (L747), worked down under S6-B3121a. SHRINK-ONLY: frozen at
+# 18 at B3121; a member leaves by being read into the SOUND register or fixed.
+_B3121_SEAMS_UNREAD = frozenset({
+    ("scan_skill_not_invoked", "user_text"),
+    ("scan_skill_not_invoked", "tool_text"),
+    ("scan_skill_not_invoked_per_skill", "user_text"),
+    ("scan_skill_not_invoked_per_skill", "tool_text"),
+    ("scan_discipline_not_loaded", "tool_text"),
+    ("scan_locked_format_edit_without_source_open", "written"),
+    ("scan_locked_format_edit_without_source_open", "opened"),
+    ("scan_launch_missing_pool_workers", "blobs"),
+    ("scan_bare_python_launch", "cmds"),
+    ("scan_doc_rewrite_without_coverage", "rewrites"),
+    ("scan_owner_decision_taken", "queue_text"),
+    ("scan_response_gates", "tree_changed"),
+    ("scan_ungated_addition", "added_rules"),
+    ("scan_false_skill_status", "injected"),
+    ("scan_miss_capture_complete", "observed"),
+    ("scan_monitor_not_retired", "events"),
+    ("scan_deferral_trigger_fired", "audit_doc"),
+    ("scan_deferral_trigger_fired", "state"),
+})
+
+
+def test_b3121_findings_gate_counts_rows_through_the_live_helper():
+    """B3121 (S6-B3121, L878): the LIVE branch of scan_findings_vs_tickets.
+
+    B1739 wrote the gate against an int-returning _queue_rows_added; B1769 the
+    same day redefined the helper to return the ROWS, a list, and every test
+    kept passing `rows=` as an int - so the live branch raised TypeError
+    ('>=' between list and int) whenever it had a finding to judge, and no
+    test ever ran it (#276b: the seam answered a different question than the
+    live path). This drives the live branch through the helper's own
+    diff_text seam, so the helper's real return type reaches the comparison,
+    in both directions.
+    """
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+    NL = chr(10)
+    text = "The retroactive sweep is not built. This is a bug."
+    row = "+| **S6-B9990%s** | **OPEN** | P1 | x | _reason:_ OPEN - planted. |"
+    one = row % "a"
+    two = row % "a" + NL + row % "b"
+    rows_two = tg._queue_rows_added(two)
+    assert isinstance(rows_two, list) and len(rows_two) == 2, rows_two
+    fired = tg.scan_findings_vs_tickets([], text=text, diff_text=one)
+    assert fired and "2 distinct finding markers" in fired[0], fired
+    assert ", 1 S6-xxx rows added" in fired[0], fired
+    assert tg.scan_findings_vs_tickets([], text=text, diff_text=two) == []
+    # the corpus's int seam keeps its meaning, in both directions
+    assert tg.scan_findings_vs_tickets([], text=text, rows=2) == []
+    assert tg.scan_findings_vs_tickets([], text=text, rows=1)
+    # and a list seam is counted, not compared
+    assert tg.scan_findings_vs_tickets([], text=text, rows=["a", "b"]) == []
+
+
+def test_b3121_a_raising_gate_runner_blocks_instead_of_passing(monkeypatch, capsys):
+    """B3121 (S6-B3121, CHECKLIST #324, L878): the Stop hook treats any exit
+    other than 2 as a non-blocking error, so an uncaught exception in the gate
+    runner is a PASS for every check it had not reached. run_guarded turns an
+    exception into a block and leaves a returned verdict alone; the script's
+    entry point must call it, never main() bare (L654: a pin on the callee is
+    not a pin on the wiring).
+    """
+    import ast
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    def _boom(argv=None):
+        raise TypeError("'>=' not supported between instances of 'list' and 'int'")
+    monkeypatch.setattr(tg, "main", _boom)
+    assert tg.run_guarded([]) == 2
+    err = capsys.readouterr().err
+    assert "RAISED" in err and "TypeError" in err and "#324" in err, err
+    # must-QUIET: a runner that RETURNS keeps its own verdict, 0 and 2 alike
+    monkeypatch.setattr(tg, "main", lambda argv=None: 0)
+    assert tg.run_guarded([]) == 0
+    monkeypatch.setattr(tg, "main", lambda argv=None: 2)
+    assert tg.run_guarded([]) == 2
+    assert "RAISED" not in capsys.readouterr().err
+
+    # a SystemExit is not a crash and passes through untouched
+    def _exit(argv=None):
+        raise SystemExit(3)
+    monkeypatch.setattr(tg, "main", _exit)
+    with pytest.raises(SystemExit):
+        tg.run_guarded([])
+    # WIRING: the one __main__ block calls the guard and never main() itself
+    tree = ast.parse(open(tg.__file__, encoding="utf-8").read())
+    blocks = [n for n in tree.body if isinstance(n, ast.If)
+              and "__main__" in ast.unparse(n.test)]
+    assert len(blocks) == 1, "expected exactly one __main__ block"
+    called = {c.func.id for c in ast.walk(blocks[0])
+              if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)}
+    assert "run_guarded" in called and "main" not in called, called
+
+
+def test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason():
+    """B3121 (S6-B3121, L878, #276b): a seam that REPLACES a live helper's
+    output answers a different question than the live path - the class that
+    kept scan_findings_vs_tickets dead on its live branch while every test
+    passed. B1811 swept this shape by one helper's NAME; this sweeps it by
+    SHAPE. Every call-site seam in the turn gate is either classified SOUND
+    with its reason or named in the shrink-only UNREAD backlog (S6-B3121a);
+    a new seam fails here until someone reads it.
+    """
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts" /
+           "verify_turn_compliance.py").read_text(encoding="utf-8")
+    found = _b3121_call_site_seams(src)
+    assert not (set(_B3121_SEAMS_SOUND) & _B3121_SEAMS_UNREAD)
+    registered = set(_B3121_SEAMS_SOUND) | _B3121_SEAMS_UNREAD
+    new, stale = found - registered, registered - found
+    assert not new, (
+        "unregistered call-site seam(s) - read each: does the injected value "
+        "have the live helper's TYPE, and does it get the helper's PROCESSING? "
+        f"Then register it with its reason: {sorted(new)}")
+    assert not stale, f"registered seam(s) no longer in the file: {sorted(stale)}"
+    assert all(len(r) >= 30 for r in _B3121_SEAMS_SOUND.values())
+    assert len(_B3121_SEAMS_UNREAD) <= 18, "the UNREAD backlog is shrink-only"
+    # the two B3121 fixes stay fixed
+    assert ("scan_rate_comparison_without_denominators", "text") not in found
+    # POSITIVE CONTROL (L757): each spelling is seen on members the pattern
+    # was not derived from - including the try-wrapped block - and a default
+    # that calls nothing is not a seam
+    planted = chr(10).join([
+        "def _p1(entries, *, zz=None):",
+        "    return _helper() if zz is None else zz",
+        "def _p2(entries, *, yy=None):",
+        "    return yy if yy is not None else _helper(entries)",
+        "def _p3(entries, *, xx=None):",
+        "    if xx is None:",
+        "        try:",
+        "            xx = json.loads(_read())",
+        "        except Exception:",
+        "            xx = {}",
+        "    return xx",
+        "def _p4(entries, *, ww=None):",
+        "    return 3 if ww is None else ww",
+        ""])
+    got = _b3121_call_site_seams(planted)
+    assert got == {("_p1", "zz"), ("_p2", "yy"), ("_p3", "xx")}, got
