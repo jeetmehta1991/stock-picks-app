@@ -1848,8 +1848,13 @@ def strat_bollinger_lower(s):
     rsi_2 = s.get("rsi_2", 50)
     rsi_14 = s.get("rsi_14", 50)
     # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer)
-    above_200 = s.get("price_above_ema_200", False)
-    below_200 = s.get("below_ema_200", False)
+    # B3119 (owner-approved 2026-09-27 "Q2 approved one line change fix.
+    # I want to test various spans"): span-keyed form, identical at the
+    # 200 default; engine-actuated via STRAT_EMA_SPAN (config.py:2584),
+    # the :4418/:4453/:6724 pattern. Producer emission for non-canon
+    # spans rides env EMA_PAIRS (technical.py:768).
+    above_200 = s.get(f"price_above_ema_{_cfg.STRAT_EMA_SPAN}", False)
+    below_200 = s.get(f"below_ema_{_cfg.STRAT_EMA_SPAN}", False)
     # B1147 (2026-07-03 Council 258 LOOSEN per CSV MED action: widen
     # numeric thresholds by 10-20%; loosen strictest gate). n=29 MED boundary.
     # Widen adx_ok from <30 to <35 (~17% widening; allows more mean-rev entries
@@ -1889,7 +1894,7 @@ def strat_bollinger_lower(s):
     fs = (s.get("bb_20_20_reclaim_from_upper_recent_3d") and rsi_short_ok and below_200 and adx_ok) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "mean_reversion",
         ["bb_20_20_reclaim_from_lower_recent_3d", f"rsi_2<5_or_rsi_14<{rsi_thr_long}",
-         "price_above_ema_200", "adx<30"],
+         f"price_above_ema_{_cfg.STRAT_EMA_SPAN}", "adx<35"],
         ["bb_20_20_reclaim_from_upper_recent_3d", f"rsi_2>95_or_rsi_14>{rsi_thr_short}",
          "below_ema_200", "adx<30", "borrow_ok"],
         [f"Price RECLAIMED inside BB after lower-band touch (B800 #44 EVENT) - actual reversion not continuation",

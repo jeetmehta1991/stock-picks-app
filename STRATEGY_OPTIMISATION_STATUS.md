@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 4eaabdea4 at 2026-09-27 03:54:49 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 2daa28d28 at 2026-09-27 22:48:09 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -16,8 +16,8 @@
 | registered strategies | 225 |
 | DONE - admitted to Phase 1B | 15 |
 | IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 8 |
-| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 47 |
-| NOT-STARTED | 139 |
+| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 49 |
+| NOT-STARTED | 137 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
 | CONTAINED-IN-REPRESENTATIVE (b2647) | 1 |
@@ -69,7 +69,7 @@
 |---|---|---|---|---|---|---|---|
 | camarilla_r4_breakout | pivot | 5774 | 282.4 | YES | 53.2% | NONE | NOT-STARTED |
 | pairs_mean_reversion_short | pairs | 5698 | 410.0 | YES | 78.3% | TIGHTEN | NOT-STARTED |
-| pairs_mean_reversion_long | pairs | 5036 | 462.9 | YES | 100.0% | TIGHTEN | NOT-STARTED |
+| pairs_mean_reversion_long | pairs | 5036 | 462.9 | YES | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | stochrsi_overbought_short | momentum | 4287 | 394.0 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | macd_fast_crossover | momentum | 4070 | 374.1 |  | 100.0% | NONE | STALLED-CAMPAIGN |
 | r1_break_retest | pivot | 3371 | 309.8 |  | 100.0% | NONE | STALLED-CAMPAIGN |
@@ -105,7 +105,7 @@
 | turtle_soup_short | ict | 1880 | 28.6 | YES | 16.5% | LOOSEN | STALLED-CAMPAIGN |
 | tema_dema | trend | 1876 | 124.2 | YES | 72.0% | NONE | NOT-STARTED |
 | institutional_strong_conviction_long | institutional_persistence | 1826 | 167.8 |  | 100.0% | - | DONE-ADMITTED |
-| naked_poc_retest_long | volume_profile | 1788 | 164.3 |  | 100.0% | TIGHTEN | NOT-STARTED |
+| naked_poc_retest_long | volume_profile | 1788 | 164.3 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | cpr_narrow_momentum_short | confluence | 1696 | 155.9 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | three_black_crows_short | candle | 1674 | 153.9 | YES | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | parabolic_sar_flip_short | trend | 1672 | 153.7 |  | 100.0% | NONE | NOT-STARTED |

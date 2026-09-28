@@ -46710,6 +46710,27 @@ def test_b3113a_step2_read_subject_cube_control_r5(tmp_path):
     assert "cube-dir file missing" in blob and "no_such_run_dir" in blob, blob[-400:]
 
 
+def test_b3119_bollinger_gate_consumes_the_span_key():
+    """B3119 (owner-approved span wiring): the gate reads
+    price_above_ema_{STRAT_EMA_SPAN} / below_ema_{...}, not the literal
+    200 key - proven behaviourally by moving the span and watching the
+    SAME signal dict flip the fire."""
+    from backtest import config as _cfg
+    from backtest.signals import screener as sc
+    s = {"bb_20_20_reclaim_from_lower_recent_3d": True, "rsi_2": 50,
+         "rsi_14": 30, "adx": 20, "price_above_ema_50": True}
+    old = _cfg.STRAT_EMA_SPAN
+    try:
+        _cfg.STRAT_EMA_SPAN = 50
+        r50 = sc.strat_bollinger_lower(dict(s))
+        assert r50["fires"] and r50["direction"] == "long", r50
+        _cfg.STRAT_EMA_SPAN = 200
+        r200 = sc.strat_bollinger_lower(dict(s))
+        assert not r200["fires"], r200   # no _200 key in the dict
+    finally:
+        _cfg.STRAT_EMA_SPAN = old
+
+
 def test_b3118_breadth_grid_op_vocabulary_and_leg():
     """B3118 (bollinger_lower campaign): the grid's op vocabulary carries
     eq_false (keep-FALSE boolean AND-leg) and the per-leg switch exists for
@@ -46745,7 +46766,8 @@ def test_b3118_bollinger_phase0_spec_validates_clean():
     spec = pvt.SPECS_PHASE0["bollinger_lower"]
     assert pvt.validate_spec(spec) == []
     ids = {p["id"] for p in spec["params"]}
-    assert {"P9", "B1", "B6"} <= ids and len(ids) == 17, sorted(ids)
+    # B3119: Q2/Q3 words added B7/B8 (bb geometries); span rows actuated.
+    assert {"P9", "B1", "B6", "B7", "B8"} <= ids and len(ids) == 19, sorted(ids)
 
 
 def test_b3114b_roster_accepts_both_admission_dialects():

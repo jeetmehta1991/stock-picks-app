@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "4eaabdea4",
-    "generated_at": "2026-09-27 03:54:49"
+    "source_commit": "2daa28d28",
+    "generated_at": "2026-09-27 22:48:09"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -318,12 +318,14 @@
       },
       "tickets": [
         "S6-B2383",
-        "S6-B2872"
+        "S6-B2872",
+        "S6-B3116b"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383",
-        "S6-B2872"
+        "S6-B2872",
+        "S6-B3116b"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -508,12 +510,14 @@
       },
       "tickets": [
         "S6-B2836",
-        "S6-B2841"
+        "S6-B2841",
+        "S6-B3117a"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2836",
-        "S6-B2841"
+        "S6-B2841",
+        "S6-B3117a"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"
@@ -1448,12 +1452,14 @@
         "persistent_holders_4q": 1.0
       },
       "tickets": [
-        "S6-B2807"
+        "S6-B2807",
+        "S6-B3116b"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2646b",
-        "S6-B2807"
+        "S6-B2807",
+        "S6-B3116b"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -2056,11 +2062,15 @@
         "naked_poc_count": 1.0,
         "naked_poc_nearest_distance_pct": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B3116b"
+      ],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3116b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "news_momentum_long",
@@ -2252,11 +2262,15 @@
         "pair_half_life": 1.0,
         "pair_zscore_signed": 1.0
       },
-      "tickets": [],
+      "tickets": [
+        "S6-B3116b"
+      ],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3116b"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "pairs_mean_reversion_short",
@@ -4196,11 +4210,13 @@
         "williams_r": 1.0
       },
       "tickets": [
-        "S6-B2383"
+        "S6-B2383",
+        "S6-B3117a"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2383"
+        "S6-B2383",
+        "S6-B3117a"
       ],
       "admitted": false,
       "status": "STALLED-CAMPAIGN"

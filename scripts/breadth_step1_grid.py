@@ -86,6 +86,7 @@ def build_frame(strategy: str, depth: str | None, axis_keys: list[str]):
     fam = fam.drop(columns=["signals_at_entry"])
     cube = pd.read_csv(CUBE, low_memory=False,
                        usecols=["strategy", "ticker", "entry_date",
+                                "direction",   # B3119: the --leg filter reads it
                                 "exit_method", "pnl_pct", "hold_days"])
     cube = cube[cube.strategy == strategy]
     m = cube.merge(fam, on=["strategy", "ticker", "entry_date"], how="left")

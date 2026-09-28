@@ -26,7 +26,10 @@ STRATEGY_EXTRAS adds strategy-layer gates the source pattern cannot see
 _EMA200 = {"param": "ema span (the 200 in above/below_ema_200)",
            "production": 200, "band": [150, 200, 250],
            "basis": "BRACKET production; 150/250 are the adjacent canon spans",
-           "offline": "none - other spans' values are unpersisted",
+           "offline": "canon-span FLAGS (above/below ema 9/20/21/50/200) ARE "
+                      "persisted - measured 200-of-200 bollinger fires, "
+                      "S6-B3117b; offline as ADD-A-CONDITION legs only. The "
+                      "SWAP of the gate span, and non-canon spans, are RESIM",
            "resim": "the whole band", "env": None,
            "evidence": "backtest/signals/technical.py compute_ema_sma"}
 
