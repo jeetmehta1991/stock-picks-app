@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-44 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+45 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_bl_span020_span020).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_bl_span020_span020 | 2026-09-28T05:21:29 | engine-hook | 0 | none | 0 | 541811cca | True | **NO** |
 | output_bl_span009_span009 | 2026-09-28T03:43:29 | manual | 0 | none | 0 | cbd0bf8d3 | True | yes 2026-09-28T03:48:14 |
 | output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3 | 2026-09-25T16:37:02 | engine-hook | 0 | none | 0 | dce47e5d4 | True | yes 2026-09-25T17:08:05 |
 | output_candle_tws_c14_b0.5_s0.0_w0.3 | 2026-09-24T22:44:48 | engine-hook | 0 | none | 0 | False | False | yes 2026-09-25T03:10:06 |
@@ -422,7 +423,7 @@ _760 ranked outcomes across 76 graded configs; 734 distinct signatures._
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 888 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
