@@ -3806,6 +3806,14 @@ def _d_tier(n) -> str:
 # scripts/verify_turn_compliance.py reads the SAME tuple to refuse a
 # response that retypes the table with columns dropped. Two copies of a
 # column list diverge the first time one is edited (L593).
+# S6-B3112b: the D-2 axis panel's section-title stem - ONE definition (L593)
+# shared by the CLI that prints it (show_table_d.py) and the retyped-table
+# scan that must stay QUIET on a verbatim paste of it. The D-2 header carries
+# `# | config | <axes> | npt_excl` and BY DESIGN none of the fixed columns,
+# so the scan exempts a `# | config` header only when this title stem
+# appears within the six preceding lines.
+TABLE_D2_TITLE = "TABLE D-2"
+
 TABLE_D_FIXED_COLUMNS = ("exit", "is_ci_lo", "n", "tier", "dup",
                         "is_sharpe", "cls", "holdout_n",
                         "full_period_n", "verdict", "npt_excl")

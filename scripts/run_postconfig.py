@@ -1009,11 +1009,14 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
             _sub = df[df["strategy"] == _g]
             dirs = sorted(str(x) for x in _sub["direction"].dropna().unique())
             _all = sorted(str(x) for x in df["direction"].dropna().unique())
-            out.append(("direction_consistency",
-                        "INFO" if len(dirs) <= 1 else "FAIL",
-                        f"graded {_g} directions {dirs}; the cube also "
-                        f"carries {_all} across {len(_r)} declared riders, "
-                        "which is the B2710 design and not a finding"))
+            # S6-B3119b: the rider arm routes through the SAME dual-aware
+            # verdict as the else arm - a DUAL graded with riders is its
+            # own two legs, not a finding (the S6-B3119a class, both arms)
+            _lvl, _msg = direction_lens_verdict(dirs, _g)
+            out.append(("direction_consistency", _lvl,
+                        _msg + f"; the cube also carries {_all} across "
+                        f"{len(_r)} declared riders, which is the B2710 "
+                        "design and not a finding"))
         else:
             dirs = sorted(str(x) for x in df["direction"].dropna().unique())
             # S6-B3119a: a DUAL strategy carries both directions by design

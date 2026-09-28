@@ -36751,7 +36751,12 @@ def test_b2724_rider_cube_checks_judge_the_graded_strategy():
     import run_postconfig as rp
     src = _insp.getsource(rp)
     assert '["strategy", "ticker", "entry_date"]' in src, "M2 still ignores strategy"
-    assert "graded {_g} directions" in src, "direction lens ignores the graded strategy"
+    # S6-B3119b: the graded-strategy-aware verdict now lives in
+    # direction_lens_verdict, called from BOTH arms (rider and else) - the
+    # old f-string anchor "graded {_g} directions" moved inside the helper
+    assert src.count("direction_lens_verdict(dirs, _g)") == 2, (
+        "direction lens no longer routes both arms through the dual-aware "
+        "verdict (S6-B3119a/b)")
     assert "one_strategy_or_declared_riders" in src, "B2721 sanity fix regressed"
     assert "_graded_name if (_graded_name and _declared_riders)" in src, (
         "B2721 family dispatch fix regressed")
@@ -46875,3 +46880,103 @@ def test_b3119e_charter_span_band_matches_specs():
         for other in rows:
             if other not in band_rows:
                 assert "DEFINED-NO-ACTUATOR" not in other, (rid, other[:80])
+def test_b3120b_lens_shape_conformance():
+    """S6-B3120b (+ the S6-B3119b pin): the battery lens set must not FAIL a
+    strategy for its SHAPE. Arms: dual -> INFO, single -> INFO, genuinely
+    mixed NON-dual -> FAIL (fail-closed both ways), dual WITH declared
+    riders -> INFO carrying the rider disclosure. Fixture strategies are
+    DERIVED from the roster's own is_dual at runtime (L801); rows are
+    deterministic literals, no rng (#201); subset/rider manifest fields are
+    ABSOLUTE paths (graded_and_riders resolves ROOT / rel, and an absolute
+    right operand wins)."""
+    import csv
+    import json
+    import sys
+    import tempfile
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    for pth in (str(root), str(root / "scripts")):
+        if pth not in sys.path:
+            sys.path.insert(0, pth)
+    from backtest.signals.screener import ALL_STRATEGIES
+    from build_phase_1b_roster import is_dual
+    import run_postconfig as rp
+
+    names = sorted(ALL_STRATEGIES)
+    dual = next((s for s in names if is_dual(s)), None)
+    single = next((s for s in names if not is_dual(s)), None)
+    assert dual is not None and single is not None, (dual, single)
+    assert is_dual(dual) and not is_dual(single), (dual, single)
+
+    def build(tmp, strat, dirs, riders=None):
+        d = _P(tmp)
+        tickers = ["AAA", "BBB", "CCC", "DDD"]
+        rows = []
+        for k, dr in enumerate(dirs):
+            rows.append({"strategy": strat, "direction": dr,
+                         "entry_date": "2024-0%d-1%d" % ((k % 4) + 1, k % 3),
+                         "ticker": tickers[k % 4],
+                         "exit_method": "time_stop_10d"})
+        if riders:
+            for rname, rdir in riders:
+                rows.append({"strategy": rname, "direction": rdir,
+                             "entry_date": "2024-05-13", "ticker": "EEE",
+                             "exit_method": "time_stop_10d"})
+        with open(d / "trade_exit_detail.csv", "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=["strategy", "direction",
+                                              "entry_date", "ticker",
+                                              "exit_method"])
+            w.writeheader()
+            w.writerows(rows)
+        with open(d / "trade_log.csv", "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=["ticker", "entry_date",
+                                              "signals_at_entry"])
+            w.writeheader()
+            for r in rows:
+                w.writerow({"ticker": r["ticker"],
+                            "entry_date": r["entry_date"],
+                            "signals_at_entry": "{'adx': 20.0}"})
+        sub = d / "subset.txt"
+        sub.write_text(strat + "\n", encoding="utf-8")
+        man = {"batch": "b3120b_fixture", "strategy_subset": str(sub)}
+        if riders:
+            rid = d / "riders.txt"
+            rid.write_text("\n".join(r for r, _ in riders) + "\n",
+                           encoding="utf-8")
+            man["cube_riders"] = str(rid)
+        (d / "run_manifest.json").write_text(json.dumps(man),
+                                             encoding="utf-8")
+        return d
+
+    def direction_row(cube):
+        rows = rp.lenses(cube, 1, {"step1_ranking": [], "per_exit": []}, None)
+        return next(r for r in rows if r[0] == "direction_consistency")
+
+    with tempfile.TemporaryDirectory() as t1:
+        _, lvl, msg = direction_row(build(t1, dual, ["long", "short"]))
+        assert lvl == "INFO" and "DUAL" in msg, (lvl, msg)
+    with tempfile.TemporaryDirectory() as t2:
+        _, lvl, msg = direction_row(build(t2, single, ["long"]))
+        assert lvl == "INFO", (lvl, msg)
+    with tempfile.TemporaryDirectory() as t3:
+        _, lvl, msg = direction_row(build(t3, single, ["long", "short"]))
+        assert lvl == "FAIL", (lvl, msg)
+    with tempfile.TemporaryDirectory() as t4:
+        cube = build(t4, dual, ["long", "short"], riders=[(single, "long")])
+        _, lvl, msg = direction_row(cube)
+        assert lvl == "INFO" and "DUAL" in msg and "riders" in msg, (lvl, msg)
+
+
+def test_b3112b_d2_title_single_definition():
+    """S6-B3112b: the D-2 section title has ONE definition (L593) - the CLI
+    prints it FROM producer_variant_table.TABLE_D2_TITLE (no second literal),
+    and the retyped-table scan imports the same constant."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    cli = (root / "scripts" / "show_table_d.py").read_text(encoding="utf-8")
+    assert "TABLE_D2_TITLE" in cli, "CLI no longer imports the shared title"
+    assert 'print("### TABLE D-2' not in cli, "CLI regrew its own literal"
+    scan = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert "TABLE_D2_TITLE as _D2" in scan, "scan no longer shares the title"

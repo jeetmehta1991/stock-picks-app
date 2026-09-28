@@ -4286,11 +4286,26 @@ def scan_retyped_locked_table(entries, *, text=None) -> list[str]:
         if _sp not in _sys.path:
             _sys.path.insert(0, _sp)
         from producer_variant_table import TABLE_D_FIXED_COLUMNS as _FIXED
+        from producer_variant_table import TABLE_D2_TITLE as _D2
     except Exception:
         return []
     out = []
-    for line in t.splitlines():
+    lines = t.splitlines()
+    for i, line in enumerate(lines):
         if not _re.match(r"\s*\|\s*#\s*\|\s*config\s*\|", line):
+            continue
+        # S6-B3112b (L713 class): the renderer's OWN D-2 axis panel carries
+        # `# | config | <axes> | npt_excl` and none of the fixed columns BY
+        # DESIGN - a verbatim paste is the compliant form the docstring
+        # promises to stay quiet on. The legitimate form always follows its
+        # section title within a few lines (show_table_d.py prints both);
+        # a D-2-shaped header WITHOUT the title still fires, because an
+        # axis panel pasted alone and presented as Table D is the excerpt
+        # mislabel the rule exists for.
+        # case-folded: _response_text lowercases the blob (probe-measured -
+        # the first must-quiet run fired because "TABLE D-2" never matched)
+        if any(_D2.lower() in lines[j].lower()
+               for j in range(max(0, i - 6), i)):
             continue
         cells = {c.strip().lower() for c in line.split("|")}
         missing = [c for c in _FIXED if c.lower() not in cells]

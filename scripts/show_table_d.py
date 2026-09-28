@@ -73,7 +73,8 @@ def main() -> int:
         print(line)
     # S6-B2334: the six axes follow in the SAME order, joined on `#`
     print()
-    print("### TABLE D-2 - THE SIX SWEPT AXES")
+    from producer_variant_table import TABLE_D2_TITLE
+    print(f"### {TABLE_D2_TITLE} - THE SIX SWEPT AXES")
     print()
     for line in table_d_params(grids, top=a.top):
         print(line)

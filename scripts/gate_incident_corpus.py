@@ -671,6 +671,23 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
         ("| # | config | P1 leg | P2 n_bars | exit | is_ci_lo | n | tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict | npt_excl |",
          False,
          {}),
+        # S6-B3112b must-QUIET: the renderer's own D-2 axis panel, pasted
+        # verbatim WITH its section title - the L713-class false fire that
+        # refused three consecutive closes on 2026-09-25.
+        ("### TABLE D-2 - THE SIX SWEPT AXES\n\n"
+         "| # | config | P4 ema_span | npt_excl |\n"
+         "|---|---|---|---|\n"
+         "| 1 | bl_span009_span009 | 9 | None |",
+         False,
+         {}),
+        # S6-B3112b must-FIRE: the same D-2-shaped header pasted ALONE (no
+        # title within six lines) is an axis panel presented as Table D -
+        # the excerpt mislabel stays caught.
+        ("| # | config | P4 ema_span | npt_excl |\n"
+         "|---|---|---|---|\n"
+         "| 1 | bl_span009_span009 | 9 | None |",
+         True,
+         {}),
         ("The renderer is the only source; this close prints no table at "
          "all, only prose about one.",
          False,
