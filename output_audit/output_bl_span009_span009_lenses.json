@@ -1,9 +1,9 @@
 {
  "cube": "output_bl_span009_span009",
  "step": 1,
- "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
+ "step_basis": "declared --step1-cube",
  "family": "bollinger_lower",
- "ts": "2026-09-28T03:16:59",
+ "ts": "2026-09-28T03:23:52",
  "lenses": [
   {
    "lens": "holdout_untouched",
