@@ -293,7 +293,8 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
-                           "backtest/signals/screener.py"],
+                           "backtest/signals/screener.py",
+                           "scripts/spot_check_bollinger.py"],
              "production": 200, "type": "int", "band": [9, 20, 21, 50, 100, 150, 200],
              "derivation": "ALL spans the producer emits (READ technical.py:750 pairs "
                            "(9,21),(20,50),(50,200)). B1507 widened from [50,200] - the "
@@ -503,7 +504,8 @@ fires =  ( P7  OR  P8 )  AND  P9
              "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
-                           "backtest/signals/screener.py"],
+                           "backtest/signals/screener.py",
+                           "scripts/spot_check_bollinger.py"],
              "band": [9, 20, 50, 100, 150, 200],
              "free_band": [], "resim_band": [9, 20, 50, 100, 150, 200],
              "subset_safe": False, "status": "UNTESTED",
@@ -1225,7 +1227,8 @@ SPECS["smc_inverse_fvg"] = {
          "resim_band": [9, 20, 21, 50, 200],
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
-                       "backtest/signals/screener.py"],
+                       "backtest/signals/screener.py",
+                       "scripts/spot_check_bollinger.py"],
          "production": 200, "type": "int", "band": [9, 20, 21, 50, 200],
          "derivation": ("the ONLY engine knob reaching this gate - the fvg "
                         "internals take no parameters (smc_ict.py:296-360); "
@@ -2105,6 +2108,8 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
     "gate": ("(bb_20_20_reclaim_from_lower_recent_3d AND rsi_long_ok AND "
              "price_above_ema_200 AND adx<35) | short mirror + borrow gate "
              "(screener strat_bollinger_lower ~:1851-1889)"),
+    "tools": {},  # pre-engine stub; the COMPLETE adapter lives in
+                  # SPECS (the B2897 both-registries pattern)
     "params": [
         {"id": "P1", "producer": "technical.py bb block -> screener emit",
          "param": "bb (period, k, recency) identity - lower reclaim",
@@ -2133,7 +2138,8 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "env": "STRAT_EMA_SPAN",
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
-                       "backtest/signals/screener.py"],
+                       "backtest/signals/screener.py",
+                       "scripts/spot_check_bollinger.py"],
          "sweep_levels": None, "subset_safe": False,
          "status": "T3/Q2-APPROVED 2026-09-27; WIRED B3119. Resim spans {9,20,21,50,100,150,250} APPROVED but DECLARED ONLY IN THE CHARTER until the family tools adapter lands (S6-B2883 fail-closed: no resim promise without it) - S6-B3119 leg 3 names the adapter as its blocker",
          "type": "int", "engine_implemented": True,
@@ -2147,7 +2153,8 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "env": "STRAT_EMA_SPAN",
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
-                       "backtest/signals/screener.py"],
+                       "backtest/signals/screener.py",
+                       "scripts/spot_check_bollinger.py"],
          "sweep_levels": None, "subset_safe": False,
          "status": "T3/Q2-APPROVED 2026-09-27; WIRED B3119 (as P3 - adapter-gated resim)",
          "type": "int", "engine_implemented": True,
@@ -2290,6 +2297,85 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "derivation": "BREADTH: smart-money rep"},
     ],
 }})
+
+# B3119 - THE FAMILY ADAPTER (S6-B2883): bollinger_lower PROMOTED into SPECS
+# for the owner-approved span campaign (verbatim 2026-09-27: "Q2 approved one
+# line change fix. I want to test various spans"). The SPECS entry is DERIVED
+# from the PHASE0 dict (moved-not-copied semantics of B2897: PHASE0 keeps
+# tools={}), with the P3/P4 engine band RESTORED now that the adapter exists -
+# validate_spec's S6-B2883 rule is what held it out until this block.
+_bl_spec = json.loads(json.dumps(SPECS_PHASE0["bollinger_lower"]))
+_bl_spec.pop("tools", None)
+# SPECS carries the ENGINE surface: every P-row is engine-consumed
+# (engine_implemented=True, the convention of every passing family);
+# the B-row breadth inventory stays in PHASE0 + the charter, graded
+# per landing by breadth_step1_grid --cube-dir (test_b2752f: an
+# unreachable axis in SPECS would price into leverage()).
+_bl_spec["params"] = [q for q in _bl_spec["params"]
+                      if not q["id"].startswith("B")]
+for _q in _bl_spec["params"]:
+    _q["engine_implemented"] = True
+_bl_spec["formula"] = __import__("re").sub(
+    r"(?m)^B(\d+)", r" B", _bl_spec["formula"])
+for _bl_p in _bl_spec["params"]:
+    if _bl_p["id"] in ("P3", "P4"):
+        _bl_p["band"] = [9, 20, 21, 50, 100, 150, 200, 250]
+        _bl_p["free_band"] = [200]
+        _bl_p["resim_band"] = [9, 20, 21, 50, 100, 150, 250]
+        _bl_p["status"] = ("T3/Q2-APPROVED 2026-09-27; engine band LIVE in "
+                           "SPECS - the tools adapter below un-gates it "
+                           "(S6-B2883). A resim run sets STRAT_EMA_SPAN=N; "
+                           "spans 9/20/21/50/100/150 are emitted by the "
+                           "default EMA_PAIRS (config.py:2524) and 250 needs "
+                           "EMA_PAIRS extended to include it")
+_bl_spec["tools"] = {
+    # ONE engine axis: STRAT_EMA_SPAN drives BOTH P3 (short leg) and P4
+    # (long leg) - keys names P4 as the swept id; P3 rides the same knob
+    # (naming both would double the argv for one env value).
+    "keys": {"P4": "ema_span"},
+    "grid_keys": ["combo"],
+    # one knob -> every cube is one combination
+    "single_combination": True,
+    "spot_check": {"script": "spot_check_bollinger.py", "cube": "",
+                   "strategy_flag": "--strategy",
+                   "flags": {"P4": "--ema-span"},
+                   "extra": ["--n", "50"],
+                   "window": False, "precompute_check": False,
+                   "pythonpath": None,
+                   "note": "AUTO (S6-B3119); three legs - raw ewm arithmetic, "
+                           "compute_ema_sma on the PIT slice, the cube "
+                           "record; leg follows the row's own direction "
+                           "(dual strategy, S6-B2917)"},
+    "grade": {"script": "grade_bollinger_config.py",
+              "cube": "",
+              "flags": {"P4": "--ema-span"},
+              "extra": [],
+              "step2_flag": "--step2",
+              "preregistered_flag": "--preregistered-exit",
+              "pythonpath": None,
+              "note": "AUTO (S6-B3119); roster_core-delegated, manifest-"
+                      "verified span, EMA_PAIRS producibility refused when "
+                      "the span could never have been emitted"},
+    "free_levels": {"script": "grade_free_levels_bollinger.py",
+                    "note": "AUTO (S6-B3119); reproduction-gated P9 (adx) "
+                            "leg; B-rows ride breadth_step1_grid --cube-dir "
+                            "per leg and the P8xP11 composite is S6-B3118a "
+                            "- each free-axis family named, none silent "
+                            "(#290)"},
+}
+_bl_spec["env_actuators"] = {
+    "EMA_PAIRS": ("producer pair list - which spans compute_ema_sma "
+                  "emits (technical.py:768); needed only when a swept "
+                  "span is outside the default set config.py:2524 "
+                  "emits, e.g. 250")}
+# measured by pvt.knob_consumers("EMA_PAIRS") at declaration (B2579)
+_bl_spec["actuator_consumers"] = {
+    "EMA_PAIRS": ["backtest/config.py",
+                  "backtest/signals/technical.py",
+                  "scripts/spot_check_bollinger.py"]}
+SPECS["bollinger_lower"] = _bl_spec
+del _bl_spec, _bl_p
+
 
 SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes first"): PROMOTED from SPECS_PHASE0 to SPECS. It is no longer pre-engine inventory - the 54-config anatomy campaign runs, so the battery adapter is owed NOW. Moved, never copied: the two names that sit in BOTH registries carry tools={} in PHASE0 and a complete block in SPECS, so duplication is what makes a family droppable.
     "gate": "three_white_soldiers AND rsi_14 < 60",
@@ -3752,6 +3838,17 @@ D_AXIS_FAMILIES = {
                ("P3 body", "cfg", "P3_min_body_pct"),
                ("P4 step", "cfg", "P4_min_step_pct"),
                ("P5 wick", "cfg", "P5_max_wick_pct")),
+    },
+    # B3119: the bollinger span family - one engine knob. Without
+    # this a span cfg falls through _d_family to smc's columns and
+    # renders six dashes (the L833/L790 class the R2 rung exists
+    # for). detect keys on P4_ema_span, which only the bollinger
+    # grader emits.
+    "bollinger_lower": {
+        "serves": ("bollinger_lower",),
+        "detect": "P4_ema_span",
+        "d1": (("span", "cfg", "P4_ema_span"),),
+        "d2": (("P4 ema_span", "cfg", "P4_ema_span"),),
     },
     "smc_breaker_block": {
         # S6-B2941: records the CURRENT fallback for the four non-breaker

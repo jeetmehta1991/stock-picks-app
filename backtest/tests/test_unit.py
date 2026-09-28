@@ -33411,6 +33411,10 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
     # B2820 (S6-B2752 CLOSED): smc_inverse_fvg added DELIBERATELY - subject
     # 3 of 3, one honest knob (STRAT_EMA_SPAN; the fvg internals take none).
     assert set(rp.FAMILIES) == {"smc_breaker_block_long",
+                                # B3119: bollinger_lower promoted with
+                                # its adapter for the owner-approved
+                                # span campaign (2026-09-27)
+                                "bollinger_lower",
                                 "institutional_committed_growth_long",
                                 "smc_liquidity_sweep_reversal",
                                 "smc_order_block_bounce",
@@ -46763,10 +46767,23 @@ def test_b3118_bollinger_phase0_spec_validates_clean():
     if str(root / "scripts") not in sys.path:
         sys.path.insert(0, str(root / "scripts"))
     import producer_variant_table as pvt
-    spec = pvt.SPECS_PHASE0["bollinger_lower"]
+    # B3119: the binding entry is the PROMOTED SPECS one (adapter +
+    # live engine band); PHASE0 keeps the tools={} stub (B2897).
+    spec = pvt.SPECS["bollinger_lower"]
     assert pvt.validate_spec(spec) == []
-    ids = {p["id"] for p in spec["params"]}
-    # B3119: Q2/Q3 words added B7/B8 (bb geometries); span rows actuated.
+    assert pvt.SPECS_PHASE0["bollinger_lower"]["tools"] == {}
+    p4 = [p for p in spec["params"] if p["id"] == "P4"][0]
+    assert p4["resim_band"] == [9, 20, 21, 50, 100, 150, 250], p4
+    import run_postconfig as rp
+    assert rp.family_refusal("bollinger_lower") == ""
+    # B3119: SPECS carries the ENGINE surface only (11 P-rows, all
+    # engine_implemented, test_b2752f); the 19-id breadth inventory
+    # (B-rows included) stays in PHASE0, graded per landing by the
+    # grid tool. Q2/Q3 words added B7/B8 there.
+    sids = {p["id"] for p in spec["params"]}
+    assert sids == {f"P{i}" for i in range(1, 12)}, sorted(sids)
+    assert all(p.get("engine_implemented") for p in spec["params"])
+    ids = {p["id"] for p in pvt.SPECS_PHASE0["bollinger_lower"]["params"]}
     assert {"P9", "B1", "B6", "B7", "B8"} <= ids and len(ids) == 19, sorted(ids)
 
 
