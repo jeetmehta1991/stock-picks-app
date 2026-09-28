@@ -46844,3 +46844,34 @@ def test_b3114b_roster_accepts_both_admission_dialects():
     doc = _ins.getdoc(_all["three_black_crows_short"]) or ""
     assert "EXACT MIRROR of strat_three_white_soldiers" in doc
 
+def test_b3119e_charter_span_band_matches_specs():
+    # B3119e (owner-caught): the charter's Table A P3.1/P4.1 band cells must
+    # carry EXACTLY the SPECS band for the span axis - the registry and its
+    # human-facing render move together (L875). Cell parse, not substring
+    # (L706: "150" contains "50"), selector-anchored (L705).
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    p3 = [p for p in pvt.SPECS["bollinger_lower"]["params"] if p["id"] == "P3"][0]
+    want = [str(v) for v in p3["band"]]
+    text = (root / "strategy_optimisation" / "tighten" /
+            "bollinger_lower.md").read_text(encoding="utf-8")
+    for rid in ("P3.1", "P4.1"):
+        rows = [ln for ln in text.splitlines()
+                if ln.startswith("| " + rid + " |")]
+        band_rows = [r for r in rows
+                     if [c.strip() for c in r.split("|")][2] == "BAND"]
+        assert len(band_rows) == 1, (rid, len(band_rows), len(rows))
+        cells = [c.strip() for c in band_rows[0].split("|")]
+        band_cell = cells[6]
+        got = [x.strip() for x in band_cell.split(",")]
+        assert got == want, (rid, got, want)
+        # the knob-classification table's row for the same id must not keep
+        # the superseded no-actuator claim (the second stale row the first
+        # run of this pin surfaced - L805's whole-artifact diff)
+        for other in rows:
+            if other not in band_rows:
+                assert "DEFINED-NO-ACTUATOR" not in other, (rid, other[:80])

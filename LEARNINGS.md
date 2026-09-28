@@ -23749,3 +23749,20 @@ on those pins, so none survived there (DERIVED from the pins' design, not separa
 
 ENFORCER: new CHECKLIST #323 citing L874. DETECTION is JUDGMENT-ONLY - the probes live in the
 scratchpad, where no repo scan reaches; durability pinned by the tripwire row's test_b2123 fragment.
+### L875 - AN APPROVED BAND BINDS EVERY ARTIFACT THAT STATES THE BAND (B3119e, owner-caught 2026-09-28)
+
+MEASURED: the owner read Table A and asked why the ema-span rows show just 150, 200, 250 -
+"Its incorrect". It was: the Q2/Q3 approval (2026-09-27) widened the span band to
+9/20/21/50/100/150/200/250, the SPECS registry was updated the same batch
+(producer_variant_table.py:2322-2324) and the seven-wave chain was LAUNCHED on it - while the
+charter's Table A rows P3.1/P4.1 kept the pre-approval bracket for a full day, and I then
+PASTED the stale rows to the owner as the locked artifact (#256 instance: quoted without
+re-deriving against the registry; #196 instance: the approval turn never enumerated the
+artifacts stating the old band). The registry and its human-facing render are TWO artifacts;
+updating the binding one FEELS like updating the record. RULE: when an approval changes a
+band, grep every artifact stating that band in the approval's own turn - the charter render
+included - or the next reader of the locked table reads the superseded decision as current.
+COMPLIANCE FAILURE against #196 and #256, no new item. ENFORCER (mechanism):
+test_b3119e_charter_span_band_matches_specs - parses the charter rows' band cell and asserts
+list-equality with the SPECS band, so a future band change reddens the pyramid until the
+charter row moves with it.
