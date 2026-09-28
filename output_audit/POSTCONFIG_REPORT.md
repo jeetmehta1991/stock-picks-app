@@ -6,15 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (153 entries), 1501 named checks have run and 11 have ever returned non-PASS.**
+**Across the entire ledger (153 entries), 1520 named checks have run and 11 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-48 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_bl_span100_span100).
+48 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_bl_span100_span100 | 2026-09-28T10:33:38 | engine-hook | 0 | none | 0 | False | False | **NO** |
+| output_bl_span100_span100 | 2026-09-28T10:33:38 | engine-hook | 0 | none | 0 | False | False | yes 2026-09-28T10:41:47 |
 | output_bl_span050_span050 | 2026-09-28T08:34:54 | engine-hook | 0 | none | 0 | d1a354137 | True | yes 2026-09-28T08:41:43 |
 | output_bl_span021_span021 | 2026-09-28T06:56:50 | engine-hook | 0 | 6_post_fix_recheck | 1: ticker_concentration WARN: top-5 tickers carry 0.31 of 29 entries across 25 tickers; WARN > 0.30 | a694f16c6 | True | yes 2026-09-28T07:04:27 |
 | output_bl_span020_span020 | 2026-09-28T05:21:29 | engine-hook | 0 | none | 0 | 541811cca | True | yes 2026-09-28T05:27:01 |
@@ -400,14 +400,14 @@ _790 ranked outcomes across 79 graded configs; 764 distinct signatures._
 | step | status | evidence / reason (never truncated) |
 |---|---|---|
 | 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
-| 2_grade_with_config_params | DONE | AUTO (S6-B3119); roster_core-delegated, manifest-verified span, EMA_PAIRS producibility refused when the span could never have been emitted: grade_bollinger_config at manifest ema_span=100 -> output_bl_span100_span100_grid_auto.json; free levels reproduction-gated -> output_bl_span100_span100_free_levels.json |
-| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
-| 4_three_leg_spot_check | DONE | AUTO (S6-B3119); three legs - raw ewm arithmetic, compute_ema_sma on the PIT slice, the cube record; leg follows the row's own direction (dual strategy, S6-B2917): spot_check_bollinger at manifest ema_span=100; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_bl_span100_span100_spot_check.json |
-| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 9 run: 0 WARN / 0 FAIL / 9 INFO -> output_bl_span100_span100_lenses.json |
-| 6_post_fix_recheck | N/A | no lens finding (9 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
-| 6b_equivalence_class_check | N/A | 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
-| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 2 of 2 declared knobs read from the environment + consumer lists match the tree |
-| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_bl_span100_span100_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 9936 IS rows (9936 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.24 is_sharpe 0.548 fires 414 - Step-1: ranking only, no admission (B1608) |
+| 2_grade_with_config_params | DONE | AUTO (S6-B3119); roster_core-delegated, manifest-verified span, EMA_PAIRS producibility refused when the span could never have been emitted: grade_bollinger_config at manifest ema_span=100 -> output_bl_span100_span100_grid_auto.json; free levels reproduction-gated -> output_bl_span100_span100_free_levels.json / battery re-run 2026-09-28 11:50: DONE - AUTO (S6-B3119); roster_core-delegated, manifest-verified span, EMA_PAIRS producibility refused when the span could never have been emitted: grade_bollinger_config at manifest ema_span=100 -> output_bl_span100_span100_grid_auto.json; free levels reproduction-gated -> output_bl_span100_span100_free_levels.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS / battery re-run 2026-09-28 11:50: DONE - AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B3119); three legs - raw ewm arithmetic, compute_ema_sma on the PIT slice, the cube record; leg follows the row's own direction (dual strategy, S6-B2917): spot_check_bollinger at manifest ema_span=100; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_bl_span100_span100_spot_check.json / battery re-run 2026-09-28 11:50: DONE - AUTO (S6-B3119); three legs - raw ewm arithmetic, compute_ema_sma on the PIT slice, the cube record; leg follows the row's own direction (dual strategy, S6-B2917): spot_check_bollinger at manifest ema_span=100; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_bl_span100_span100_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 9 run: 0 WARN / 0 FAIL / 9 INFO -> output_bl_span100_span100_lenses.json / battery re-run 2026-09-28 11:50: DONE - AUTO (B2520): lenses 9 run: 0 WARN / 0 FAIL / 9 INFO -> output_bl_span100_span100_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (9 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence / battery re-run 2026-09-28 11:50: N/A - no lens finding (9 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | N/A | 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence / battery re-run 2026-09-28 11:50: N/A - 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 2 of 2 declared knobs read from the environment + consumer lists match the tree / battery re-run 2026-09-28 11:50: N/A - Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 2 of 2 declared knobs read from the environment + consumer lists match the tree |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_bl_span100_span100_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 9936 IS rows (9936 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.24 is_sharpe 0.548 fires 414 - Step-1: ranking only, no admission (B1608) / battery re-run 2026-09-28 11:50: DONE - AUTO (B2520) VERDICT (denominators from output_bl_span100_span100_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 9936 IS rows (9936 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.24 is_sharpe 0.548 fires 414 - Step-1: ranking only, no admission (B1608) |
 
 **Is this the right data?**
 
@@ -435,7 +435,7 @@ _790 ranked outcomes across 79 graded configs; 764 distinct signatures._
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 9936 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
@@ -446,7 +446,7 @@ _790 ranked outcomes across 79 graded configs; 764 distinct signatures._
 - Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
 - CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_bl_span100_span100_spot_check.json.
 
-**Adversarial lenses (step 5) - 9 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family bollinger_lower)
+**Adversarial lenses (step 5) - 9 lenses, 0 WARN/FAIL** (step basis: declared --step1-cube; family bollinger_lower)
 
 | lens | level | evidence |
 |---|---|---|
