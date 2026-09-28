@@ -920,6 +920,43 @@ def selection_margin_row(rk: list, unit: str, step: int = 1) -> tuple:
     return ("selection_margin", "INFO", "no ranked row in the grid artifact")
 
 
+def grading_provenance_lens(cube_dir: Path) -> tuple:
+    """S6-B3120c(b) / L844: compare the grading surface's digest NOW
+    against the manifest's freeze-time grading_sha256. INFO either way -
+    a drift is DISCLOSED, never refused (L857b: a refusal spanning a
+    campaign blocks every unrelated turn inside it; per-landing identity
+    is already stamped by graded_with). A manifest without the field is
+    a pre-B3120 freeze, said plainly rather than treated as clean."""
+    import json as _json
+    m = cube_dir / "run_manifest.json"
+    try:
+        frozen = (_json.loads(m.read_text(encoding="utf-8"))
+                  .get("grading_sha256"))
+    except (OSError, ValueError):
+        frozen = None
+    if not isinstance(frozen, dict) or not frozen.get("digest"):
+        return ("grading_provenance", "INFO",
+                "manifest carries no grading_sha256 (pre-B3120 freeze) - "
+                "grading identity is the landing's graded_with stamp only")
+    try:
+        from run_wave import grading_surface_sha256
+        now = grading_surface_sha256()
+    except Exception as exc:                        # noqa: BLE001
+        return ("grading_provenance", "INFO",
+                f"grading surface digest unavailable ({type(exc).__name__}:"
+                f" {exc}) - comparison not performed, said plainly")
+    if now["digest"] == frozen["digest"]:
+        return ("grading_provenance", "INFO",
+                f"grading surface UNCHANGED since freeze "
+                f"({now['n_files']} files, digest {now['digest'][:12]})")
+    return ("grading_provenance", "INFO",
+            f"grading surface MOVED since freeze: freeze "
+            f"{frozen['digest'][:12]} ({frozen.get('n_files')}) -> now "
+            f"{now['digest'][:12]} ({now['n_files']}) - DISCLOSED, not "
+            "refused (L857b); each landing's own code identity is its "
+            "graded_with stamp")
+
+
 def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list:
     import pandas as pd
     from roster_core import HO_START
@@ -998,6 +1035,7 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
     else:
         out.append(("empty_signals_share", "INFO", "no trade_log.csv beside the cube"))
     out.append(replay_atr_proxy_lens(cube_dir, empty_share))
+    out.append(grading_provenance_lens(cube_dir))
 
     if "direction" in df.columns:
         # B2724 instance 3: a RIDER cube carries both directions BY DESIGN

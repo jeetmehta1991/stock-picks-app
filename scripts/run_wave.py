@@ -227,6 +227,49 @@ def _engine_strategy_file(spec: dict) -> str:
     return str(merged.relative_to(ROOT)).replace("\\", "/")
 
 
+GRADING_SURFACE = (
+    # S6-B3120c(b): the fixed battery core; family adapter scripts are
+    # added from the SPECS tools blocks at call time so a new family
+    # extends the surface without editing this list (L593 one owner).
+    "scripts/run_postconfig.py", "scripts/roster_core.py",
+    "scripts/postconfig_landing.py", "scripts/grid_population.py",
+)
+
+
+def grading_surface_sha256() -> dict:
+    """Digest of the fixed battery core plus every SPECS adapter script.
+    A failed adapter scan DEGRADES to the fixed core and SAYS SO in the
+    returned dict (#122: a fallback that looks like success is served
+    forever) - never a silent pass."""
+    files = set(GRADING_SURFACE)
+    note = ""
+    try:
+        import sys as _s
+        _sp = str(ROOT / "scripts")
+        if _sp not in _s.path:
+            _s.path.insert(0, _sp)
+        from producer_variant_table import SPECS as _SP
+        for _spec in _SP.values():
+            tools = _spec.get("tools") or {}
+            for blk in ("grade", "spot_check", "free_levels"):
+                scr = (tools.get(blk) or {}).get("script")
+                if scr:
+                    files.add("scripts/" + scr)
+    except Exception as exc:                            # noqa: BLE001
+        note = (f"adapter scan unavailable ({type(exc).__name__}: {exc}) - "
+                "digest covers the fixed core only")
+    ordered = sorted(f for f in files if (ROOT / f).exists())
+    h = hashlib.sha256()
+    for rel in ordered:
+        h.update(rel.encode())
+        h.update("\n".join(
+            (ROOT / rel).read_text(encoding="utf-8").split()).encode())
+    out = {"digest": h.hexdigest(), "n_files": len(ordered)}
+    if note:
+        out["note"] = note
+    return out
+
+
 def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
     tickers = (ROOT / spec["tickers_file"]).read_text().split()
     days = 251 * max(1, (int(spec["window"]["end"][:4])
@@ -254,6 +297,13 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
         # gate already judged; the typed-scope rule binds the AUTHORED
         # spec, so the derived artifact says so and carries the spec's
         # step / resolved-scope / waiver for audit.
+        # S6-B3120c(b) / L844: the GRADING surface's content digest at
+        # freeze - the battery scripts a landing runs, which the leg
+        # closure deliberately excludes (legs never read them). The
+        # landing lens compares and DISCLOSES drift (INFO, never a
+        # refusal - L857b; graded_with already stamps each landing's
+        # own HEAD).
+        "grading_sha256": grading_surface_sha256(),
         "_derived_from_spec": spec["wave"],
         "step": spec.get("step"),
         "_resolved_scope": spec.get("_resolved_scope"),

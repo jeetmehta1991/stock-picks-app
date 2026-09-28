@@ -56,10 +56,15 @@ reject-must-reroute exists at the router layer, not the response layer).
 **RC-4. Gates that define their own population report full coverage.** L826: the R1 adapter
 refusal reported 8 of 8 covered / 0 blind - with the denominator taken from the gate's own
 predicate; against the band registry, 13 entries with 30 banded parameters were invisible to it.
-B2883b's disclosed limit is still live: the refusal keys on env-knob + resim level, so every
-PRE-SPLIT entry (resim_band None; **17 such rows counted in the registry this batch**) registers
-zero engine axes and evades R1 entirely - the most-run engine family among them. NOT ticketed
-until this audit (S6-B3120c below).
+B2883b's disclosed limit was PARTLY STALE by the time this audit executed it (CORRECTED at
+B3120 Batch B, the L639 decay class caught within hours by the runtime re-derivation): the smc
+family - the "most-run engine family" the runbook's limit names - is ALREADY split-migrated
+(probe: 6 of 6 params carry env + resim lists). The live resim-None population is 16 param-rows
+across 9 entries: bollinger's 6 are DEFINED-NO-ACTUATOR BY DESIGN (resim without an env knob is
+refused, S6-B2569a - correct encoding), and the 10 rows across 8 PHASE0 institutional-family
+entries plus xs_low_beta were bare "UNSCHEDULED" with no #290 reason - closed at Batch B:
+r1_coverage() now takes its denominator from the band registry and the 10 rows carry their
+named reasons.
 
 **RC-5. A locked format is enforced only as far as it is pinned.** The Table incidents, in
 sequence: L790 (the format ruling applied to one of two sibling renderers - the UNRULED one was
@@ -168,9 +173,12 @@ capture members; the charter's second stale table.
 - **S6-B3120b - lens shape-conformance corpus.** Every battery lens gets three must-behave arms
   (single / dual / graded+riders) driven from the roster's own registries, so the NEXT
   first-of-its-shape strategy cannot rediscover S6-B3119a's class lens by lens.
-- **S6-B3120c - R1 pre-split migration.** The 17 resim_band-None rows migrate to the split shape
-  so the adapter refusal's population is the band registry, not its own predicate (L817/L826/
-  B2883b); plus the L844 half - extend the provenance hash to the scripts/ grading surface.
+- **S6-B3120c - R1 denominator + grading provenance.** (Scope corrected at Batch B: smc is
+  already split-migrated, so no forced migration.) r1_coverage() partitions every banded
+  parameter of SPECS+PHASE0 into engine_covered / no_actuator_by_design / unscheduled with a
+  total-partition assert; the 10 bare-UNSCHEDULED PHASE0 rows carry their #290 reasons; and the
+  L844 half ships as a freeze-time grading-surface digest in the manifest plus a landing lens
+  that DISCLOSES drift (INFO in all arms - L857b), never refuses.
 - **S6-B3120d - STRAT-constant ratchet.** Freeze the current count of one-strategy scripts under
   scripts/ (12 files carry a STRAT constant today, counted this batch); shrink-only, with each
   member listed and reasoned (#280) - new tools must arrive through the adapter registry.

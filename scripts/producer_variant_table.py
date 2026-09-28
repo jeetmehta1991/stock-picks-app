@@ -1296,7 +1296,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                              'band': [40, 35, 30],
                                              'sweep_levels': [],
                                              'subset_safe': None,
-                                             'status': 'UNSCHEDULED',
+                                             'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                              'type': 'int',
                                              'engine_implemented': True,
                                              'evidence': 'screener.py strat '
@@ -1407,7 +1407,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                          'band': [3, 4, 5],
                                                          'sweep_levels': [],
                                                          'subset_safe': None,
-                                                         'status': 'UNSCHEDULED',
+                                                         'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                                          'type': 'int',
                                                          'engine_implemented': True,
                                                          'evidence': 'screener.py '
@@ -1459,7 +1459,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                          'band': [45, 40, 35],
                                                          'sweep_levels': [],
                                                          'subset_safe': None,
-                                                         'status': 'UNSCHEDULED',
+                                                         'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                                          'type': 'int',
                                                          'engine_implemented': True,
                                                          'evidence': 'screener.py '
@@ -1544,7 +1544,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                          'band': [2, 3, 4],
                                                          'sweep_levels': [],
                                                          'subset_safe': None,
-                                                         'status': 'UNSCHEDULED',
+                                                         'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                                          'type': 'int',
                                                          'engine_implemented': True,
                                                          'evidence': 'screener.py '
@@ -1625,7 +1625,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                        'band': [2, 3, 4],
                                                        'sweep_levels': [],
                                                        'subset_safe': None,
-                                                       'status': 'UNSCHEDULED',
+                                                       'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                                        'type': 'int',
                                                        'engine_implemented': True,
                                                        'evidence': 'screener.py '
@@ -1714,7 +1714,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                                        8],
                                                               'sweep_levels': [],
                                                               'subset_safe': None,
-                                                              'status': 'UNSCHEDULED',
+                                                              'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                                               'type': 'int',
                                                               'engine_implemented': True,
                                                               'evidence': 'screener.py '
@@ -1796,7 +1796,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                       'band': [5, 6, 8],
                                                       'sweep_levels': [],
                                                       'subset_safe': None,
-                                                      'status': 'UNSCHEDULED',
+                                                      'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                                       'type': 'int',
                                                       'engine_implemented': True,
                                                       'evidence': 'screener.py '
@@ -1842,7 +1842,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                       'band': [2, 3],
                                                       'sweep_levels': [],
                                                       'subset_safe': None,
-                                                      'status': 'UNSCHEDULED',
+                                                      'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                                       'type': 'int',
                                                       'engine_implemented': True,
                                                       'evidence': 'screener.py '
@@ -1912,7 +1912,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                     'band': [3, 4, 5],
                                                     'sweep_levels': [],
                                                     'subset_safe': None,
-                                                    'status': 'UNSCHEDULED',
+                                                    'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                                     'type': 'int',
                                                     'engine_implemented': True,
                                                     'evidence': 'screener.py '
@@ -1977,7 +1977,7 @@ SPECS_PHASE0.update({'institutional_oversold_long': {'gate': 'institutional_buy 
                                                    'band': [6.55, 8.0, 10.0],
                                                    'sweep_levels': [],
                                                    'subset_safe': None,
-                                                   'status': 'UNSCHEDULED',
+                                                   'status': 'UNSCHEDULED - no env actuator, so the resim side is refused until a wiring batch adds one (S6-B2569a); the tighter side becomes offline free_band when its key is persisted on the fires (S6-B3120c, #290 named reason)',
                                                    'type': 'float',
                                                    'engine_implemented': True,
                                                    'evidence': 'screener.py '
@@ -3813,6 +3813,54 @@ def _d_tier(n) -> str:
 # so the scan exempts a `# | config` header only when this title stem
 # appears within the six preceding lines.
 TABLE_D2_TITLE = "TABLE D-2"
+
+
+def r1_coverage() -> dict:
+    """S6-B3120c: the R1 coverage report whose DENOMINATOR is the band
+    registry, never the gate's own predicate (L817/L826: a gate that
+    defines its own population always reports full coverage; B2883b's
+    refusal keys on env+resim and is silent where those are absent).
+
+    Every banded parameter across SPECS + SPECS_PHASE0 lands in exactly
+    ONE bucket - refuse-to-write on an unclassifiable member (L545: a
+    classifier over a population has no else):
+      engine_covered        env knob + a resim level away from production
+                            (the population B2883's adapter refusal sees)
+      no_actuator_by_design banded, no env knob - resim is REFUSED
+                            without an actuator (S6-B2569a), so the
+                            engine side waits on a wiring batch
+      unscheduled           banded, env present, but no resim level away
+                            from production declared
+    """
+    seen = {}
+    for reg_name, reg in (("SPECS", SPECS), ("PHASE0", SPECS_PHASE0)):
+        for sname, spec in reg.items():
+            if reg_name == "PHASE0" and sname in SPECS:
+                continue  # the promoted entry is the binding one
+            for p in spec.get("params", []):
+                if not p.get("band"):
+                    continue
+                key = (sname, p["id"])
+                prod = p.get("production")
+                resim = p.get("resim_band")
+                away = [v for v in (resim or []) if v != prod]
+                if p.get("env") and away:
+                    bucket = "engine_covered"
+                elif not p.get("env"):
+                    bucket = "no_actuator_by_design"
+                elif p.get("env") and not away:
+                    bucket = "unscheduled"
+                else:
+                    raise AssertionError(
+                        f"r1_coverage: unclassifiable {key} - the "
+                        "partition must be total (L545)")
+                seen[key] = bucket
+    out = {"engine_covered": [], "no_actuator_by_design": [],
+           "unscheduled": []}
+    for key, bucket in sorted(seen.items()):
+        out[bucket].append(key)
+    out["denominator"] = len(seen)
+    return out
 
 TABLE_D_FIXED_COLUMNS = ("exit", "is_ci_lo", "n", "tier", "dup",
                         "is_sharpe", "cls", "holdout_n",

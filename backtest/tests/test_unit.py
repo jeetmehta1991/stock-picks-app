@@ -46980,3 +46980,103 @@ def test_b3112b_d2_title_single_definition():
     scan = (root / "scripts" / "verify_turn_compliance.py").read_text(
         encoding="utf-8")
     assert "TABLE_D2_TITLE as _D2" in scan, "scan no longer shares the title"
+def test_b3120c_r1_coverage_denominator_is_the_band_registry():
+    """S6-B3120c(a) / L817/L826: the R1 coverage partition is TOTAL over
+    every banded parameter in SPECS+PHASE0 (promoted entries deduped), each
+    member in exactly one bucket, and the no-actuator bucket is NON-EMPTY
+    (the population the old self-denominated report could not see).
+    Must-fail arm: a fabricated param outside the partition raises."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    cov = pvt.r1_coverage()
+    n = (len(cov["engine_covered"]) + len(cov["no_actuator_by_design"])
+         + len(cov["unscheduled"]))
+    assert n == cov["denominator"] and n > 0, cov["denominator"]
+    assert len(cov["no_actuator_by_design"]) > 0, "the blind bucket vanished?"
+    seen = (set(cov["engine_covered"]) | set(cov["no_actuator_by_design"])
+            | set(cov["unscheduled"]))
+    assert len(seen) == n, "a member landed in two buckets"
+    assert ("smc_breaker_block_long", "P6") in set(cov["engine_covered"]), \
+        "the span axis must classify engine_covered"
+    assert any(s == "bollinger_lower" for s, _ in
+               cov["no_actuator_by_design"]), \
+        "bollinger's DEFINED-NO-ACTUATOR rows must be visible, not silent"
+
+
+def test_b3120c_grading_provenance_lens_both_ways():
+    """S6-B3120c(b) / L844: the lens DISCLOSES - INFO on match, INFO with
+    MOVED on drift, INFO naming pre-B3120 when the manifest lacks the
+    field - and never any WARN/FAIL (L857b: disclosure, not refusal)."""
+    import json
+    import sys
+    import tempfile
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import run_postconfig as rp
+    from run_wave import grading_surface_sha256
+    now = grading_surface_sha256()
+    assert now["n_files"] >= 4 and len(now["digest"]) == 64, now
+
+    with tempfile.TemporaryDirectory() as t:
+        d = _P(t)
+        # arm 1: no manifest at all -> pre-B3120 wording, INFO
+        name, lvl, msg = rp.grading_provenance_lens(d)
+        assert (name, lvl) == ("grading_provenance", "INFO") \
+            and "pre-B3120" in msg, (lvl, msg)
+        # arm 2: manifest WITH the current digest -> UNCHANGED, INFO
+        (d / "run_manifest.json").write_text(
+            json.dumps({"grading_sha256": now}), encoding="utf-8")
+        name, lvl, msg = rp.grading_provenance_lens(d)
+        assert lvl == "INFO" and "UNCHANGED" in msg, (lvl, msg)
+        # arm 3: manifest with a DIFFERENT digest -> MOVED, still INFO
+        (d / "run_manifest.json").write_text(
+            json.dumps({"grading_sha256": {"digest": "0" * 64,
+                                           "n_files": 4}}),
+            encoding="utf-8")
+        name, lvl, msg = rp.grading_provenance_lens(d)
+        assert lvl == "INFO" and "MOVED" in msg, (lvl, msg)
+
+
+def test_b3120d_strat_constant_scripts_are_a_shrinking_set():
+    """S6-B3120d / L754/#291: one-strategy tooling (a module-level STRAT
+    constant under scripts/) is FROZEN at the B3120 census and shrink-only -
+    new tooling arrives through the FAMILIES adapter registry, never as the
+    next STRAT script. Every member carries its reason here (#280: a bare
+    integer is for a population too large to enumerate; this one is not).
+    """
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    FROZEN = {
+        # adapter-dispatched family legs (registered in SPECS tools blocks):
+        "grade_bollinger_config.py", "grade_free_levels_bollinger.py",
+        "spot_check_bollinger.py", "grade_institutional_config.py",
+        "grade_free_levels_institutional.py", "spot_check_institutional.py",
+        # pre-adapter smc standalone step tools (superseded by the smc
+        # family registration; retired when their outputs stop being cited):
+        "smc_lsr_step1.py", "smc_obb_step1.py", "spot_check_smc_lsr.py",
+        "spot_check_smc_obb.py", "diagnose_smc_lsr.py",
+        # cross-checker that pins one strategy's describing artifacts:
+        "verify_describing_artifacts.py",
+    }
+    live = set()
+    for p in sorted((root / "scripts").glob("*.py")):
+        try:
+            src = p.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if re.search(r"^STRAT\s*=\s*", src, re.M):
+            live.add(p.name)
+    new = live - FROZEN
+    assert not new, (
+        f"NEW one-strategy script(s) {sorted(new)} - the 13th STRAT tool "
+        "(L754/#291). Route it through the FAMILIES adapter registry "
+        "(run_postconfig.FAMILIES + the SPECS tools block) instead.")
+    # shrink-only: members may retire; record the retirement by removing
+    # them from FROZEN in the same commit.
