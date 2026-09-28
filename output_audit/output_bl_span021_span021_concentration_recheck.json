@@ -1,0 +1,13 @@
+{
+ "cube": "output_bl_span021_span021",
+ "instrument": "offline re-grade of trade_exit_detail.csv excluding the top-5 tickers (scripts/roster_core.evaluate, min_n=10); run in the B3119d disposition slice",
+ "finding_rechecked": "ticker_concentration WARN: top-5 tickers carry 0.31 of 29 entries across 25 tickers; WARN > 0.30",
+ "top5": ["ABNB", "ALGN", "MSFT", "PG", "AXP"],
+ "result": {
+  "all_29_rank1": {"exit": "regime_flip", "n": 29, "sharpe": 1.141, "ci_lo": -0.352},
+  "excl_top5_rank1": {"exit": "regime_flip", "n": 20, "sharpe": 1.187, "ci_lo": -0.662},
+  "grid_rank1_for_reference": {"exit": "regime_flip", "is_sharpe": 1.03, "is_ci_lo": -0.458,
+   "note": "the grid grader's own pipeline; rank-1 identity agrees with both recheck populations"}
+ },
+ "verdict": "rank-1 identity UNCHANGED with the concentrated tickers removed (regime_flip in 2 of 2 populations); ci_lo negative in both (no candidate cell either way); the WARN is a disclosed data property of a 29-entry cube, 1pp over the 0.30 line, not a ranking driver"
+}
