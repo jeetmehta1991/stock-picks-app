@@ -3,7 +3,7 @@
  "step": 1,
  "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
  "family": "bollinger_lower",
- "ts": "2026-09-28T03:15:54",
+ "ts": "2026-09-28T03:16:59",
  "lenses": [
   {
    "lens": "holdout_untouched",
