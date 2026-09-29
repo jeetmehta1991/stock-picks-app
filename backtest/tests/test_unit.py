@@ -47316,30 +47316,64 @@ _B3121_SEAMS_SOUND = {
         "any-shell view, and the heredoc scrub applies to both",
     ("main", "argv"):
         "the CLI argv default, not a seam over a gate's evidence",
+    # ---- B3126 (S6-B3121a): the 18-member backlog read down to zero ------
+    ("scan_skill_not_invoked", "user_text"):
+        "str seam; injected gets the same .lower() the live value carries - "
+        "_last_user_text's extra work is WINDOW selection, replaced by design",
+    ("scan_skill_not_invoked", "tool_text"):
+        "str seam through _strip_gate_echo; the live _skill_context_text "
+        "collects only skill-shaped evidence, which no gate echo matches",
+    ("scan_skill_not_invoked_per_skill", "user_text"):
+        "as scan_skill_not_invoked user_text - lowercased str either branch",
+    ("scan_skill_not_invoked_per_skill", "tool_text"):
+        "as scan_skill_not_invoked tool_text - echo-strip on injected, "
+        "skill-shaped-only collection on live",
+    ("scan_discipline_not_loaded", "tool_text"):
+        "as scan_skill_not_invoked tool_text - the same pair of branches",
+    ("scan_locked_format_edit_without_source_open", "written"):
+        "FIXED B3126: normalisation (backslash to slash, lower) now sits "
+        "INSIDE, over both branches - the live branch returned raw Windows "
+        "paths and endswith() never matched: the L878 class, live-blind "
+        "with a green seam; pinned on the live path by test_b3126",
+    ("scan_locked_format_edit_without_source_open", "opened"):
+        "str(opened).lower() applied AFTER the branch, so both travel it",
+    ("scan_launch_missing_pool_workers", "blobs"):
+        "FIXED B3126: the injected branch now strips heredoc bodies before "
+        "_segment_is_launch, matching _launch_blobs' live scrub (L569)",
+    ("scan_doc_rewrite_without_coverage", "rewrites"):
+        "dict seam for the dict _governing_rewrites returns; pure data, "
+        "no scrub on either branch",
+    ("scan_owner_decision_taken", "queue_text"):
+        "str seam for the queue file's text; the same splitlines row walk "
+        "parses both branches",
+    ("scan_response_gates", "tree_changed"):
+        "bool seam for a git-porcelain bool; nothing to scrub",
+    ("scan_ungated_addition", "added_rules"):
+        "list seam; sorted(set(str(r))) normalises AFTER the branch, so "
+        "injected and diff-parsed rules travel identically",
+    ("scan_false_skill_status", "injected"):
+        "state seam by design (#241): the corpus supplies WHAT the hook "
+        "injected (compact_index / bool), replacing detection, not "
+        "processing",
+    ("scan_miss_capture_complete", "observed"):
+        "dict-of-bools seam by design: members are supplied and "
+        "require_each judges them the same either way",
+    ("scan_monitor_not_retired", "events"):
+        "list seam of create/delete tokens; the same count runs either way",
+    ("scan_deferral_trigger_fired", "audit_doc"):
+        "fired-list seam matching the built shape; in_memory disables the "
+        "state write-back so corpus cases stay stateless",
+    ("scan_deferral_trigger_fired", "state"):
+        "dict seam matching the json state file's shape; the same keys are "
+        "read on both branches",
 }
-# Found by the B3121 sweep and NOT YET READ for type and processing parity -
-# a named backlog (L747), worked down under S6-B3121a. SHRINK-ONLY: frozen at
-# 18 at B3121; a member leaves by being read into the SOUND register or fixed.
-_B3121_SEAMS_UNREAD = frozenset({
-    ("scan_skill_not_invoked", "user_text"),
-    ("scan_skill_not_invoked", "tool_text"),
-    ("scan_skill_not_invoked_per_skill", "user_text"),
-    ("scan_skill_not_invoked_per_skill", "tool_text"),
-    ("scan_discipline_not_loaded", "tool_text"),
-    ("scan_locked_format_edit_without_source_open", "written"),
-    ("scan_locked_format_edit_without_source_open", "opened"),
-    ("scan_launch_missing_pool_workers", "blobs"),
-    ("scan_bare_python_launch", "cmds"),
-    ("scan_doc_rewrite_without_coverage", "rewrites"),
-    ("scan_owner_decision_taken", "queue_text"),
-    ("scan_response_gates", "tree_changed"),
-    ("scan_ungated_addition", "added_rules"),
-    ("scan_false_skill_status", "injected"),
-    ("scan_miss_capture_complete", "observed"),
-    ("scan_monitor_not_retired", "events"),
-    ("scan_deferral_trigger_fired", "audit_doc"),
-    ("scan_deferral_trigger_fired", "state"),
-})
+# B3126 (S6-B3121a): the backlog is EMPTY - all 18 read. 15 entered SOUND
+# with their reasons; 3 were parity FIXES (locked-format live normalisation,
+# bare-python routed through _executed_text's own seam - that call-site
+# override no longer exists, so the seam left the detector's population -
+# and launch-blobs' heredoc strip on the injected branch). Shrink-only: it
+# stays empty; a new seam fails the register until read into SOUND.
+_B3121_SEAMS_UNREAD = frozenset()
 
 
 def test_b3121_findings_gate_counts_rows_through_the_live_helper():
@@ -47441,7 +47475,9 @@ def test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason():
         f"Then register it with its reason: {sorted(new)}")
     assert not stale, f"registered seam(s) no longer in the file: {sorted(stale)}"
     assert all(len(r) >= 30 for r in _B3121_SEAMS_SOUND.values())
-    assert len(_B3121_SEAMS_UNREAD) <= 18, "the UNREAD backlog is shrink-only"
+    assert not _B3121_SEAMS_UNREAD, (
+        "the UNREAD backlog emptied at B3126 and stays empty - read a new "
+        "seam into SOUND instead")
     # the two B3121 fixes stay fixed
     assert ("scan_rate_comparison_without_denominators", "text") not in found
     # POSITIVE CONTROL (L757): each spelling is seen on members the pattern
@@ -47613,3 +47649,59 @@ def test_b3125_pyramid_gate_discloses_output_audit_residue(tmp_path):
     assert "oa_before = output_audit_snapshot(root)" in src
     assert "oa_created = output_audit_created(oa_before, root)" in src
     assert 'f"output_audit_created={oa_created}' in src
+
+
+def test_b3126_seam_parity_fixes_hold_on_the_live_path():
+    """B3126 (S6-B3121a): the three parity fixes, proven on the LIVE branch
+    (L878: a seam-only test hides a dead live branch). (1) the locked-format
+    gate normalises INSIDE - a real Windows Write path (backslashes) fires,
+    where the raw live branch never matched endswith('scripts/...'); (2)
+    bare-python routes through _executed_text's own seam, so a prior gate
+    report quoting the pattern is stripped as echo while a direct command
+    still fires; (3) launch-blobs' injected branch strips heredoc bodies
+    like the live collector."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as tg
+    NL = chr(10)
+
+    def entries_with_write(fp):
+        return [
+            {"type": "user", "message": {"content": "edit the generator"}},
+            {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Write",
+                 "input": {"file_path": fp}}]}},
+        ]
+
+    win = "C:\\Users\\x\\repo\\scripts\\table_a_bands.py"
+    # LIVE branch must-FIRE: a backslashed Write path, source unopened
+    fired = tg.scan_locked_format_edit_without_source_open(
+        entries_with_write(win), opened="")
+    assert fired and "table_a_bands.py" in fired[0], fired
+    # LIVE branch must-QUIET: the defining source was opened this turn
+    assert tg.scan_locked_format_edit_without_source_open(
+        entries_with_write(win),
+        opened="read strategy_optimisation/ this turn") == []
+    # seam parity: the injected written= travels the same normalisation
+    assert tg.scan_locked_format_edit_without_source_open(
+        [], written=[win], opened=""), "seam and live branch diverged"
+
+    # (2) bare-python: a direct subprocess launch fires...
+    direct = 'subprocess.run(["python", "x.py"])'
+    assert tg.scan_bare_python_launch([], cmds=[direct])
+    # ...while the same pattern inside a PRIOR GATE REPORT is echo, not use
+    echo = ("TURN-GATE BLOCK - 1 violation(s), ALL listed:" + NL
+            + "  [1/1] scan_x RAISED " + direct + " - this gate is broken")
+    assert tg.scan_bare_python_launch([], cmds=[echo]) == []
+
+    # (3) launch-blobs: a heredoc-wrapped runner is DATA on both branches
+    her = ("python - <<'PY'" + NL
+           + "python backtest/run_phase1a.py --phase 1" + NL + "PY")
+    assert tg.scan_launch_missing_pool_workers([], blobs=[her]) == []
+    bare_launch = "python backtest/run_phase1a.py --phase 1"
+    assert tg.scan_launch_missing_pool_workers([], blobs=[bare_launch])
+    assert tg.scan_launch_missing_pool_workers(
+        [], blobs=[bare_launch + " --screen-pool-workers 8"]) == []

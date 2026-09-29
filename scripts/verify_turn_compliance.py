@@ -4344,8 +4344,13 @@ def scan_locked_format_edit_without_source_open(entries, *, text=None,
     """B2853: a turn that EDITS a locked-format owner must OPEN its defining
     source in the same turn. The pre-action half of L471/L805 made
     scannable: the edit is the trigger, the Read/grep is the evidence."""
-    w = ([str(x).replace("\\", "/").lower() for x in written]
-         if written is not None else _written_file_paths(entries))
+    # B3126 (S6-B3121a / L878 class, #276b): normalise INSIDE, on both
+    # branches. The live branch returned RAW Write/Edit paths, and a real
+    # Windows file_path carries backslashes - so p.endswith("scripts/...")
+    # never matched and the gate was BLIND on every live edit while its
+    # normalising seam stayed green. Caught by the B3121 register sweep.
+    w = [str(x).replace("\\", "/").lower() for x in
+         (written if written is not None else _written_file_paths(entries))]
     if not w:
         return []
     if opened is None:
@@ -4595,8 +4600,14 @@ def scan_launch_missing_pool_workers(entries, *, blobs=None) -> list[str]:
     # path (B1811) - the raw substring filter judged a grep that NAMES
     # backtest/run_phase1a.py as a file argument to be a launch, three times
     # in one turn.
+    # B3126 (S6-B3121a): the live collector strips heredoc BODIES before
+    # the launch predicate (L569 - data handed to an interpreter is not a
+    # command that ran); the injected branch skipped that strip. Same
+    # scrub, both branches.
     cand = (_launch_blobs(entries) if blobs is None else
-            [b for b in blobs if _segment_is_launch(b)])
+            [b for b in blobs if _segment_is_launch(
+                re.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", b,
+                       flags=re.S | re.M))])
     if not cand:
         return []
     # B1865 (#244): this message says EVERY launch, so the check owes the
@@ -4820,7 +4831,10 @@ def scan_bare_python_launch(entries, *, cmds=None) -> list[str]:
     """
     import re as _re
 
-    raw = _executed_text(entries) if cmds is None else " ".join(cmds)
+    # B3126 (S6-B3121a): route the injection through _executed_text's OWN
+    # seam (the B1811 contract) instead of a call-site override, so injected
+    # text travels the same gate-echo strip the live path applies.
+    raw = _executed_text(entries, None if cmds is None else " ".join(cmds))
     # B1878: applying L569 BEFORE it bites. A gate that scans executed text is
     # proven by fixtures containing exactly what it detects, so it blocks its
     # own author unless fixture context is excluded. A heredoc BODY is data
