@@ -1,0 +1,1623 @@
+{
+ "_doc": "B3128 (S6-B3122, owner-approved 2026-09-29): read-only net-basis re-score of the admitted lines judged on raw pnl_pct. Labels only; no admission changed; any removal is a separate per-line owner ruling. Fail-closed #290 reproduction gate: raw reconstruction must equal the recorded admission row before any net figure is published.",
+ "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+ "generated_utc": "2026-09-29T06:48:17Z",
+ "rows": [
+  {
+   "strategy": "smc_breaker_block_long",
+   "status": "ALREADY-NET",
+   "reason": "Step-2 read of record ran through roster_core.load_cube (net basis)"
+  },
+  {
+   "strategy": "pead_long_high_yoy_growth_only",
+   "exit": "time_stop_10d",
+   "combination": {
+    "drift_window_days": 20.0,
+    "yoy_growth_long_threshold": 0.1
+   },
+   "status": "RESCORED",
+   "ops": [
+    "le",
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 1.148,
+    "ci_lo": 0.43,
+    "psr": 0.9998,
+    "profit_factor": 1.91,
+    "sortino": 2.366,
+    "holdout_n": 196,
+    "full_period_n": 988
+   },
+   "holdout_n": 196,
+   "full_period_n": 988,
+   "raw": {
+    "n": 196,
+    "sharpe": 1.148,
+    "sortino": 2.366,
+    "psr": 0.9998,
+    "profit_factor": 1.91,
+    "payoff": 1.83,
+    "expectancy": 1.5518,
+    "win_rate": 0.51,
+    "p": 0.0007532007943589797,
+    "ci_lo": 0.43,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 196,
+    "sharpe": 1.0,
+    "sortino": 2.061,
+    "psr": 0.999,
+    "profit_factor": 1.75,
+    "payoff": 1.68,
+    "expectancy": 1.3518,
+    "win_rate": 0.51,
+    "p": 0.002850980561347229,
+    "ci_lo": 0.284,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 792,
+    "sharpe": 1.475,
+    "sortino": 2.021,
+    "psr": 1.0,
+    "profit_factor": 2.153,
+    "payoff": 1.34,
+    "expectancy": 1.8711,
+    "win_rate": 0.616,
+    "p": 8.852196522622733e-17,
+    "ci_lo": 1.117,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_net": {
+    "n": 792,
+    "sharpe": 1.317,
+    "sortino": 1.799,
+    "psr": 1.0,
+    "profit_factor": 1.982,
+    "payoff": 1.3,
+    "expectancy": 1.6711,
+    "win_rate": 0.604,
+    "p": 9.454433065668838e-14,
+    "ci_lo": 0.96,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   }
+  },
+  {
+   "strategy": "pead_with_smart_money_long",
+   "exit": "time_stop_10d",
+   "combination": {
+    "drift_window_days": 60.0,
+    "yoy_growth_threshold": 0.05,
+    "announcement_return_threshold": 0.05
+   },
+   "status": "RESCORED",
+   "ops": [
+    "le",
+    "ge",
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 1.308,
+    "ci_lo": -0.325,
+    "psr": 0.9596,
+    "profit_factor": 2.317,
+    "sortino": 2.107,
+    "holdout_n": 37,
+    "full_period_n": 215
+   },
+   "holdout_n": 37,
+   "full_period_n": 215,
+   "raw": {
+    "n": 37,
+    "sharpe": 1.308,
+    "sortino": 2.107,
+    "psr": 0.9596,
+    "profit_factor": 2.317,
+    "payoff": 1.76,
+    "expectancy": 1.5343,
+    "win_rate": 0.568,
+    "p": 0.05514777985098503,
+    "ci_lo": -0.325,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 37,
+    "sharpe": 1.138,
+    "sortino": 1.871,
+    "psr": 0.9336,
+    "profit_factor": 2.062,
+    "payoff": 2.18,
+    "expectancy": 1.3343,
+    "win_rate": 0.486,
+    "p": 0.08246079976226539,
+    "ci_lo": -0.489,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 5,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_raw": {
+    "n": 178,
+    "sharpe": 0.874,
+    "sortino": 1.157,
+    "psr": 0.9889,
+    "profit_factor": 1.593,
+    "payoff": 1.11,
+    "expectancy": 1.2352,
+    "win_rate": 0.59,
+    "p": 0.009605827638351792,
+    "ci_lo": 0.137,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 5,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_net": {
+    "n": 178,
+    "sharpe": 0.733,
+    "sortino": 0.961,
+    "psr": 0.973,
+    "profit_factor": 1.478,
+    "payoff": 1.15,
+    "expectancy": 1.0352,
+    "win_rate": 0.562,
+    "p": 0.024864039491491876,
+    "ci_lo": -0.003,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "sortino": false,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 4,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "institutional_breakout_confirmation_long",
+   "exit": "r_multiple_2r",
+   "combination": {
+    "xs_max_anomaly": 0.0719,
+    "strategy": "institutional_breakout_confirmation_long"
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 3.132,
+    "ci_lo": 0.735,
+    "psr": 0.9954,
+    "profit_factor": 2.836,
+    "sortino": 10.005,
+    "holdout_n": 34,
+    "full_period_n": 128
+   },
+   "holdout_n": 34,
+   "full_period_n": 128,
+   "raw": {
+    "n": 34,
+    "sharpe": 3.132,
+    "sortino": 10.005,
+    "psr": 0.9954,
+    "profit_factor": 2.836,
+    "payoff": 2.52,
+    "expectancy": 2.9717,
+    "win_rate": 0.529,
+    "p": 0.0035287328177026262,
+    "ci_lo": 0.735,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 34,
+    "sharpe": 2.922,
+    "sortino": 9.331,
+    "psr": 0.9926,
+    "profit_factor": 2.618,
+    "payoff": 2.33,
+    "expectancy": 2.7717,
+    "win_rate": 0.529,
+    "p": 0.005988876038874311,
+    "ci_lo": 0.539,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 94,
+    "sharpe": 0.452,
+    "sortino": 1.637,
+    "psr": 0.7564,
+    "profit_factor": 1.167,
+    "payoff": 1.72,
+    "expectancy": 0.3823,
+    "win_rate": 0.404,
+    "p": 0.24633072405800027,
+    "ci_lo": -0.84,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": true,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 3,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_net": {
+    "n": 94,
+    "sharpe": 0.215,
+    "sortino": 0.781,
+    "psr": 0.6286,
+    "profit_factor": 1.076,
+    "payoff": 1.59,
+    "expectancy": 0.1823,
+    "win_rate": 0.404,
+    "p": 0.37176225635140175,
+    "ci_lo": -1.075,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": false,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 2,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "institutional_committed_growth_long",
+   "exit": "time_stop_10d",
+   "combination": {
+    "xs_max_anomaly": 0.0705,
+    "strategy": "institutional_committed_growth_long"
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 1.658,
+    "ci_lo": 0.807,
+    "psr": 1.0,
+    "profit_factor": 2.618,
+    "sortino": 3.388,
+    "holdout_n": 144,
+    "full_period_n": 387
+   },
+   "holdout_n": 144,
+   "full_period_n": 387,
+   "raw": {
+    "n": 144,
+    "sharpe": 1.658,
+    "sortino": 3.388,
+    "psr": 1.0,
+    "profit_factor": 2.618,
+    "payoff": 1.57,
+    "expectancy": 3.9431,
+    "win_rate": 0.625,
+    "p": 4.458517264247916e-05,
+    "ci_lo": 0.807,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 144,
+    "sharpe": 1.574,
+    "sortino": 3.193,
+    "psr": 1.0,
+    "profit_factor": 2.489,
+    "payoff": 1.54,
+    "expectancy": 3.7431,
+    "win_rate": 0.618,
+    "p": 9.978006630900696e-05,
+    "ci_lo": 0.725,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 243,
+    "sharpe": 1.19,
+    "sortino": 1.57,
+    "psr": 0.9998,
+    "profit_factor": 1.858,
+    "payoff": 1.13,
+    "expectancy": 1.9155,
+    "win_rate": 0.621,
+    "p": 0.00010480231234251739,
+    "ci_lo": 0.552,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_net": {
+    "n": 243,
+    "sharpe": 1.066,
+    "sortino": 1.396,
+    "psr": 0.9994,
+    "profit_factor": 1.743,
+    "payoff": 1.14,
+    "expectancy": 1.7155,
+    "win_rate": 0.605,
+    "p": 0.0004499665134824442,
+    "ci_lo": 0.43,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   }
+  },
+  {
+   "strategy": "institutional_high_conviction_long",
+   "exit": "time_stop_10d",
+   "combination": {
+    "xs_max_anomaly": 0.0791,
+    "strategy": "institutional_high_conviction_long"
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 1.399,
+    "ci_lo": 0.558,
+    "psr": 0.9999,
+    "profit_factor": 2.237,
+    "sortino": 2.765,
+    "holdout_n": 146,
+    "full_period_n": 492
+   },
+   "holdout_n": 146,
+   "full_period_n": 492,
+   "raw": {
+    "n": 146,
+    "sharpe": 1.399,
+    "sortino": 2.765,
+    "psr": 0.9999,
+    "profit_factor": 2.237,
+    "payoff": 1.79,
+    "expectancy": 3.3499,
+    "win_rate": 0.555,
+    "p": 0.0004454221653767795,
+    "ci_lo": 0.558,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 146,
+    "sharpe": 1.316,
+    "sortino": 2.6,
+    "psr": 0.9998,
+    "profit_factor": 2.126,
+    "payoff": 1.71,
+    "expectancy": 3.1499,
+    "win_rate": 0.555,
+    "p": 0.0008904790924126442,
+    "ci_lo": 0.477,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 346,
+    "sharpe": 0.764,
+    "sortino": 0.99,
+    "psr": 0.9975,
+    "profit_factor": 1.488,
+    "payoff": 1.04,
+    "expectancy": 1.3761,
+    "win_rate": 0.59,
+    "p": 0.0022817257365873476,
+    "ci_lo": 0.233,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "sortino": false,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 4,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_net": {
+    "n": 346,
+    "sharpe": 0.653,
+    "sortino": 0.841,
+    "psr": 0.9919,
+    "profit_factor": 1.405,
+    "payoff": 1.03,
+    "expectancy": 1.1761,
+    "win_rate": 0.578,
+    "p": 0.00767317308247802,
+    "ci_lo": 0.123,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "sortino": false,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 4,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "institutional_multi_quarter_persistence_long",
+   "exit": "time_stop_10d",
+   "combination": {
+    "xs_max_anomaly": 0.0668,
+    "strategy": "institutional_multi_quarter_persistence_long"
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 1.624,
+    "ci_lo": 0.784,
+    "psr": 1.0,
+    "profit_factor": 2.54,
+    "sortino": 3.118,
+    "holdout_n": 147,
+    "full_period_n": 505
+   },
+   "holdout_n": 147,
+   "full_period_n": 505,
+   "raw": {
+    "n": 147,
+    "sharpe": 1.624,
+    "sortino": 3.118,
+    "psr": 1.0,
+    "profit_factor": 2.54,
+    "payoff": 1.52,
+    "expectancy": 3.3548,
+    "win_rate": 0.626,
+    "p": 5.071596064135094e-05,
+    "ci_lo": 0.784,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 147,
+    "sharpe": 1.527,
+    "sortino": 2.914,
+    "psr": 1.0,
+    "profit_factor": 2.399,
+    "payoff": 1.48,
+    "expectancy": 3.1548,
+    "win_rate": 0.619,
+    "p": 0.00012838747294999732,
+    "ci_lo": 0.69,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 358,
+    "sharpe": 1.076,
+    "sortino": 1.478,
+    "psr": 1.0,
+    "profit_factor": 1.777,
+    "payoff": 1.17,
+    "expectancy": 1.7856,
+    "win_rate": 0.603,
+    "p": 2.3675682600890226e-05,
+    "ci_lo": 0.552,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_net": {
+    "n": 358,
+    "sharpe": 0.956,
+    "sortino": 1.307,
+    "psr": 0.9999,
+    "profit_factor": 1.667,
+    "payoff": 1.15,
+    "expectancy": 1.5856,
+    "win_rate": 0.592,
+    "p": 0.00015154815024589124,
+    "ci_lo": 0.432,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 5,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "institutional_oversold_long",
+   "exit": "r_multiple_2r",
+   "combination": {
+    "sector_strongest_rs": 0.0517,
+    "strategy": "institutional_oversold_long"
+   },
+   "status": "RESCORED",
+   "ops": [
+    "le"
+   ],
+   "reproduced": {
+    "sharpe": 2.084,
+    "ci_lo": 0.018,
+    "psr": 0.9756,
+    "profit_factor": 2.11,
+    "sortino": 6.696,
+    "holdout_n": 35,
+    "full_period_n": 156
+   },
+   "holdout_n": 35,
+   "full_period_n": 156,
+   "raw": {
+    "n": 35,
+    "sharpe": 2.084,
+    "sortino": 6.696,
+    "psr": 0.9756,
+    "profit_factor": 2.11,
+    "payoff": 1.78,
+    "expectancy": 1.7848,
+    "win_rate": 0.543,
+    "p": 0.020942842703903956,
+    "ci_lo": 0.018,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 35,
+    "sharpe": 1.85,
+    "sortino": 5.945,
+    "psr": 0.9603,
+    "profit_factor": 1.933,
+    "payoff": 1.63,
+    "expectancy": 1.5848,
+    "win_rate": 0.543,
+    "p": 0.035408296537522435,
+    "ci_lo": -0.203,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 121,
+    "sharpe": -1.546,
+    "sortino": -3.231,
+    "psr": 0.009,
+    "profit_factor": 0.57,
+    "payoff": 1.81,
+    "expectancy": -1.2172,
+    "win_rate": 0.24,
+    "p": 0.9963546804565382,
+    "ci_lo": -2.691,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": false,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 2,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_net": {
+    "n": 121,
+    "sharpe": -1.8,
+    "sortino": -3.762,
+    "psr": 0.0035,
+    "profit_factor": 0.525,
+    "payoff": 1.66,
+    "expectancy": -1.4172,
+    "win_rate": 0.24,
+    "p": 0.9991083830248759,
+    "ci_lo": -2.951,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": false,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 2,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "institutional_persistence_oversold_long",
+   "exit": "time_stop_10d",
+   "combination": {
+    "institutional_new_positions": 187.0,
+    "strategy": "institutional_persistence_oversold_long"
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 1.82,
+    "ci_lo": 0.449,
+    "psr": 0.9971,
+    "profit_factor": 2.607,
+    "sortino": 3.288,
+    "holdout_n": 55,
+    "full_period_n": 145
+   },
+   "holdout_n": 55,
+   "full_period_n": 145,
+   "raw": {
+    "n": 55,
+    "sharpe": 1.82,
+    "sortino": 3.288,
+    "psr": 0.9971,
+    "profit_factor": 2.607,
+    "payoff": 1.27,
+    "expectancy": 2.5184,
+    "win_rate": 0.673,
+    "p": 0.003615184854429788,
+    "ci_lo": 0.449,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 55,
+    "sharpe": 1.675,
+    "sortino": 2.936,
+    "psr": 0.9945,
+    "profit_factor": 2.417,
+    "payoff": 1.28,
+    "expectancy": 2.3184,
+    "win_rate": 0.655,
+    "p": 0.006704228426024204,
+    "ci_lo": 0.311,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 90,
+    "sharpe": -0.151,
+    "sortino": -0.161,
+    "psr": 0.3875,
+    "profit_factor": 0.919,
+    "payoff": 0.74,
+    "expectancy": -0.2199,
+    "win_rate": 0.556,
+    "p": 0.6126500289586081,
+    "ci_lo": -1.181,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": false,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 2,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_net": {
+    "n": 90,
+    "sharpe": -0.287,
+    "sortino": -0.306,
+    "psr": 0.2919,
+    "profit_factor": 0.85,
+    "payoff": 0.74,
+    "expectancy": -0.4199,
+    "win_rate": 0.533,
+    "p": 0.7076490238011726,
+    "ci_lo": -1.319,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": false,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 2,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "institutional_recent_init_momentum_long",
+   "exit": "r_multiple_2r",
+   "combination": {
+    "xs_max_anomaly": 0.0752,
+    "strategy": "institutional_recent_init_momentum_long"
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 1.231,
+    "ci_lo": 0.022,
+    "psr": 0.979,
+    "profit_factor": 1.535,
+    "sortino": 3.216,
+    "holdout_n": 111,
+    "full_period_n": 454
+   },
+   "holdout_n": 111,
+   "full_period_n": 454,
+   "raw": {
+    "n": 111,
+    "sharpe": 1.231,
+    "sortino": 3.216,
+    "psr": 0.979,
+    "profit_factor": 1.535,
+    "payoff": 2.01,
+    "expectancy": 1.2922,
+    "win_rate": 0.432,
+    "p": 0.02201994055817054,
+    "ci_lo": 0.022,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 111,
+    "sharpe": 1.04,
+    "sortino": 2.718,
+    "psr": 0.9569,
+    "profit_factor": 1.432,
+    "payoff": 1.88,
+    "expectancy": 1.0922,
+    "win_rate": 0.432,
+    "p": 0.04437440759967083,
+    "ci_lo": -0.165,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 343,
+    "sharpe": 0.83,
+    "sortino": 2.345,
+    "psr": 0.9974,
+    "profit_factor": 1.391,
+    "payoff": 1.94,
+    "expectancy": 1.0481,
+    "win_rate": 0.417,
+    "p": 0.0031750834763557252,
+    "ci_lo": 0.231,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 5,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_net": {
+    "n": 343,
+    "sharpe": 0.671,
+    "sortino": 1.897,
+    "psr": 0.9877,
+    "profit_factor": 1.303,
+    "payoff": 1.82,
+    "expectancy": 0.8481,
+    "win_rate": 0.417,
+    "p": 0.01360994703201661,
+    "ci_lo": 0.073,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 5,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "institutional_recent_init_volume_long",
+   "exit": "r_multiple_2r",
+   "combination": {
+    "xs_max_anomaly": 0.0819,
+    "strategy": "institutional_recent_init_volume_long"
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 2.076,
+    "ci_lo": 0.285,
+    "psr": 0.993,
+    "profit_factor": 2.009,
+    "sortino": 8.642,
+    "holdout_n": 59,
+    "full_period_n": 215
+   },
+   "holdout_n": 59,
+   "full_period_n": 215,
+   "raw": {
+    "n": 59,
+    "sharpe": 2.076,
+    "sortino": 8.642,
+    "psr": 0.993,
+    "profit_factor": 2.009,
+    "payoff": 2.22,
+    "expectancy": 2.3431,
+    "win_rate": 0.475,
+    "p": 0.010080627017536358,
+    "ci_lo": 0.285,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 59,
+    "sharpe": 1.899,
+    "sortino": 7.904,
+    "psr": 0.9874,
+    "profit_factor": 1.883,
+    "payoff": 2.08,
+    "expectancy": 2.1431,
+    "win_rate": 0.475,
+    "p": 0.01679254569895976,
+    "ci_lo": 0.114,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 156,
+    "sharpe": 0.748,
+    "sortino": 3.266,
+    "psr": 0.9554,
+    "profit_factor": 1.342,
+    "payoff": 2.03,
+    "expectancy": 0.9952,
+    "win_rate": 0.397,
+    "p": 0.05050035459448903,
+    "ci_lo": -0.15,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 5,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_net": {
+    "n": 156,
+    "sharpe": 0.598,
+    "sortino": 2.61,
+    "psr": 0.9111,
+    "profit_factor": 1.262,
+    "payoff": 1.91,
+    "expectancy": 0.7952,
+    "win_rate": 0.397,
+    "p": 0.09502620289605773,
+    "ci_lo": -0.299,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": true,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 3,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "institutional_strong_conviction_long",
+   "exit": "time_stop_10d",
+   "combination": {
+    "xs_max_anomaly": 0.0691,
+    "strategy": "institutional_strong_conviction_long"
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 1.777,
+    "ci_lo": 0.864,
+    "psr": 1.0,
+    "profit_factor": 2.861,
+    "sortino": 3.582,
+    "holdout_n": 125,
+    "full_period_n": 366
+   },
+   "holdout_n": 125,
+   "full_period_n": 366,
+   "raw": {
+    "n": 125,
+    "sharpe": 1.777,
+    "sortino": 3.582,
+    "psr": 1.0,
+    "profit_factor": 2.861,
+    "payoff": 1.61,
+    "expectancy": 4.3244,
+    "win_rate": 0.64,
+    "p": 4.197874805667329e-05,
+    "ci_lo": 0.864,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 125,
+    "sharpe": 1.695,
+    "sortino": 3.416,
+    "psr": 1.0,
+    "profit_factor": 2.721,
+    "payoff": 1.53,
+    "expectancy": 4.1244,
+    "win_rate": 0.64,
+    "p": 8.809145914714182e-05,
+    "ci_lo": 0.785,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 241,
+    "sharpe": 1.096,
+    "sortino": 1.508,
+    "psr": 0.9996,
+    "profit_factor": 1.765,
+    "payoff": 1.17,
+    "expectancy": 1.9226,
+    "win_rate": 0.602,
+    "p": 0.0003400956430168318,
+    "ci_lo": 0.456,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_net": {
+    "n": 241,
+    "sharpe": 0.982,
+    "sortino": 1.346,
+    "psr": 0.9987,
+    "profit_factor": 1.664,
+    "payoff": 1.14,
+    "expectancy": 1.7226,
+    "win_rate": 0.593,
+    "p": 0.0011672036696384223,
+    "ci_lo": 0.344,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 5,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "xs_momentum_top_decile",
+   "exit": "time_stop_10d",
+   "combination": {
+    "xs_momentum_12_1": 0.529,
+    "pct_from_vwap": 36.6266
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge",
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 3.085,
+    "ci_lo": 1.2,
+    "psr": 0.999,
+    "profit_factor": 4.829,
+    "sortino": 4.83,
+    "holdout_n": 32,
+    "full_period_n": 84
+   },
+   "holdout_n": 32,
+   "full_period_n": 84,
+   "raw": {
+    "n": 32,
+    "sharpe": 3.085,
+    "sortino": 4.83,
+    "psr": 0.999,
+    "profit_factor": 4.829,
+    "payoff": 1.89,
+    "expectancy": 4.1864,
+    "win_rate": 0.719,
+    "p": 0.00023161439438111316,
+    "ci_lo": 1.2,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 32,
+    "sharpe": 2.938,
+    "sortino": 4.599,
+    "psr": 0.9985,
+    "profit_factor": 4.468,
+    "payoff": 1.75,
+    "expectancy": 3.9864,
+    "win_rate": 0.719,
+    "p": 0.0004281853475893243,
+    "ci_lo": 1.067,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 52,
+    "sharpe": 1.928,
+    "sortino": 2.742,
+    "psr": 0.996,
+    "profit_factor": 2.71,
+    "payoff": 1.32,
+    "expectancy": 2.2324,
+    "win_rate": 0.673,
+    "p": 0.002674457391367787,
+    "ci_lo": 0.521,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_net": {
+    "n": 52,
+    "sharpe": 1.755,
+    "sortino": 2.496,
+    "psr": 0.9925,
+    "profit_factor": 2.483,
+    "payoff": 1.21,
+    "expectancy": 2.0324,
+    "win_rate": 0.673,
+    "p": 0.0056110385881359606,
+    "ci_lo": 0.357,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   }
+  },
+  {
+   "strategy": "xs_low_beta_with_smart_money_long",
+   "exit": "time_stop_10d",
+   "combination": {},
+   "status": "RESCORED",
+   "ops": [],
+   "reproduced": {
+    "sharpe": 1.51,
+    "ci_lo": 0.327,
+    "psr": 0.995,
+    "profit_factor": 2.286,
+    "sortino": 2.161,
+    "holdout_n": 73,
+    "full_period_n": 452
+   },
+   "holdout_n": 73,
+   "full_period_n": 452,
+   "raw": {
+    "n": 73,
+    "sharpe": 1.51,
+    "sortino": 2.161,
+    "psr": 0.995,
+    "profit_factor": 2.286,
+    "payoff": 1.19,
+    "expectancy": 1.6196,
+    "win_rate": 0.658,
+    "p": 0.005257922507182044,
+    "ci_lo": 0.327,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 73,
+    "sharpe": 1.323,
+    "sortino": 1.895,
+    "psr": 0.9881,
+    "profit_factor": 2.069,
+    "payoff": 1.08,
+    "expectancy": 1.4196,
+    "win_rate": 0.658,
+    "p": 0.012466051683625976,
+    "ci_lo": 0.147,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "is_raw": {
+    "n": 379,
+    "sharpe": -0.198,
+    "sortino": -0.21,
+    "psr": 0.2152,
+    "profit_factor": 0.899,
+    "payoff": 0.81,
+    "expectancy": -0.1867,
+    "win_rate": 0.525,
+    "p": 0.780627103834495,
+    "ci_lo": -0.701,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": false,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 2,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_net": {
+    "n": 379,
+    "sharpe": -0.411,
+    "sortino": -0.433,
+    "psr": 0.048,
+    "profit_factor": 0.801,
+    "payoff": 0.78,
+    "expectancy": -0.3867,
+    "win_rate": 0.507,
+    "p": 0.9456088819944828,
+    "ci_lo": -0.914,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": false,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 2,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  },
+  {
+   "strategy": "three_white_soldiers",
+   "exit": "class_time_stop",
+   "combination": {
+    "axis": "cot_ndx_mmoney_pctile_3y",
+    "op": "ge",
+    "level": 0.637
+   },
+   "status": "RESCORED",
+   "ops": [
+    "ge"
+   ],
+   "reproduced": {
+    "sharpe": 1.779,
+    "ci_lo": -0.164,
+    "psr": 0.9653,
+    "profit_factor": 2.154,
+    "sortino": 2.873,
+    "holdout_n": 36,
+    "full_period_n": 343
+   },
+   "holdout_n": 36,
+   "full_period_n": 343,
+   "raw": {
+    "n": 36,
+    "sharpe": 1.779,
+    "sortino": 2.873,
+    "psr": 0.9653,
+    "profit_factor": 2.154,
+    "payoff": 1.72,
+    "expectancy": 1.2009,
+    "win_rate": 0.556,
+    "p": 0.033150405640577044,
+    "ci_lo": -0.164,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": true,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 6,
+    "n_gates_evaluable": 6,
+    "all_live_gates": true
+   },
+   "net": {
+    "n": 36,
+    "sharpe": 1.483,
+    "sortino": 2.395,
+    "psr": 0.9355,
+    "profit_factor": 1.886,
+    "payoff": 1.51,
+    "expectancy": 1.0009,
+    "win_rate": 0.556,
+    "p": 0.06293965004743109,
+    "ci_lo": -0.447,
+    "gates": {
+     "pooled_sharpe": true,
+     "profit_factor": true,
+     "sortino": true,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 5,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_raw": {
+    "n": 307,
+    "sharpe": -0.421,
+    "sortino": -0.424,
+    "psr": 0.0957,
+    "profit_factor": 0.814,
+    "payoff": 0.77,
+    "expectancy": -0.3002,
+    "win_rate": 0.515,
+    "p": 0.8957909131840243,
+    "ci_lo": -1.077,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": false,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 2,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   },
+   "is_net": {
+    "n": 307,
+    "sharpe": -0.701,
+    "sortino": -0.708,
+    "psr": 0.0132,
+    "profit_factor": 0.708,
+    "payoff": 0.74,
+    "expectancy": -0.5002,
+    "win_rate": 0.489,
+    "p": 0.981954945702783,
+    "ci_lo": -1.359,
+    "gates": {
+     "pooled_sharpe": false,
+     "profit_factor": false,
+     "sortino": false,
+     "psr": false,
+     "min_trades_holdout": true,
+     "min_trades_full_period": true
+    },
+    "n_gates": 2,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false
+   }
+  }
+ ]
+}

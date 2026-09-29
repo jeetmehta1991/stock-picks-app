@@ -25067,6 +25067,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         if frag not in fable_text:
             missing.append(f"fable-mode lost [{why}]: {frag!r}")
     for frag, why in (
+        ("tracked output_audit artifacts are TEST INPUTS",
+         "B3129/L880: outside the fingerprint is not outside the test inputs"),
         ('as a miss (Phase 5) the moment it is noticed.',
          "B2382: Standing activation owner directive 20260707  Council"),
         ('1. **NO UNDER-GENERALIZATION.** When a defect is found, fix the CLASS, not',
@@ -26068,7 +26070,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with the skill edit per B2132).
     # 312 -> 315 at B3110 (the L872 / L873 / L874 tripwire-row fragments).
     # 315 -> 316 at B3121 (the L878 live-branch / fail-closed row fragment).
-    assert len(gutted) == 316, gutted
+    # 316 -> 317 at B3130 (the L880 fingerprint-vs-test-inputs fragment;
+    # same-call with its tripwire-row amendment per B2130).
+    assert len(gutted) == 317, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -46954,6 +46958,135 @@ def test_b3120h_span_knob_from_specs_and_counted_once():
     r = re.search(r"ENGINE RUNS\s+(\d+)", foot)
     assert r and int(r.group(1)) == len(p4["band"]), (r and r.group(1),
                                                      len(p4["band"]))
+
+
+def test_b3128_admissions_net_rescore_is_reproduction_gated():
+    """S6-B3122 (owner-approved 2026-09-29): the net-basis re-score of the
+    admitted lines. (1) The #290 gate: repro_ok REFUSES a mismatched target
+    (must-fire) and ACCEPTS the exact one (must-quiet) - deterministic
+    literals, demonstrating STRUCTURE not values (#201). (2) The committed
+    artifact: one row per admission, statuses in the closed vocabulary, and
+    every RESCORED row's `reproduced` block RE-VERIFIED here against the
+    admission grid artifact it claims to reproduce - the pin re-derives the
+    match, never trusts the re-scorer's own claim (L679: a self-measurement
+    gets MORE validation). (3) Labels: every admission row carries a
+    net_rescore block whose status matches the artifact's row."""
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import rescore_admissions_net as ran
+
+    # (1) the gate, both directions - structure fixture, not data
+    tgt = {"sharpe": 1.5, "ci_lo": 0.4, "psr": 0.99, "profit_factor": 2.0,
+           "sortino": 2.5, "holdout_n": 30, "full_period_n": 100}
+    good = {"sharpe": 1.5, "ci_lo": 0.4, "psr": 0.99, "profit_factor": 2.0,
+            "sortino": 2.5}
+    assert ran.repro_ok(good, tgt, 30, 100) == []
+    bad = dict(good, sharpe=1.6)
+    assert any("sharpe" in b for b in ran.repro_ok(bad, tgt, 30, 100))
+    assert any("holdout_n" in b for b in ran.repro_ok(good, tgt, 29, 100))
+
+    # (2) the committed artifact, re-verified against the grids it names
+    res = json.loads((root / "output_audit" /
+                      "b3128_admissions_net_rescore.json").read_text(
+                          encoding="utf-8"))
+    adms = json.loads((root / "output_audit" /
+                       "phase_1b_step2_admissions.json").read_text(
+                           encoding="utf-8"))["admissions"]
+    assert len(res["rows"]) == len(adms), (len(res["rows"]), len(adms))
+    VALID = {"RESCORED", "ALREADY-NET", "NET-RESCORE-UNAVAILABLE"}
+    by_strat = {a["strategy"]: a for a in adms}
+    n_checked = 0
+    for r in res["rows"]:
+        assert r["status"] in VALID, r["status"]
+        adm = by_strat[r["strategy"]]
+        # (3) the label rides the admission row and agrees
+        lab = adm.get("net_rescore")
+        assert lab and lab["status"] == r["status"], (r["strategy"], lab)
+        if r["status"] != "RESCORED":
+            continue
+        art = json.loads((root / adm["grid_artifact"]).read_text(
+            encoding="utf-8"))
+        rows = art.get("results") or art.get("rows") or []
+        combo = {k: v for k, v in (adm.get("combination") or {}).items()
+                 if k != "strategy"}
+        if "axis" in combo:      # the b3114 dialect
+            hit = [g for g in rows
+                   if g.get("axis") == combo["axis"]
+                   and g.get("op") == combo["op"]
+                   and abs(float(g.get("level")) - float(combo["level"])) < 1e-9
+                   and g.get("exit") == adm["exit"]]
+            key_sharpe = "holdout_sharpe"
+            key_full = "full_n"
+        else:
+            hit = [g for g in rows
+                   if g.get("strategy") in (None, adm["strategy"])
+                   and g.get("exit") == adm["exit"]
+                   and all(abs(float(g.get(k, float("nan"))) - float(v)) < 1e-9
+                           for k, v in combo.items() if k in g)]
+            key_sharpe = "sharpe"
+            key_full = "full_period_n"
+        assert len(hit) == 1, (r["strategy"], len(hit))
+        g = hit[0]
+        rep = r["reproduced"]
+        assert abs(float(rep["sharpe"]) - float(g[key_sharpe])) <= 1e-3
+        assert int(rep["holdout_n"]) == int(g["holdout_n"])
+        assert int(rep["full_period_n"]) == int(g[key_full])
+        for k in ("ci_lo", "psr", "profit_factor", "sortino"):
+            assert abs(float(rep[k]) - float(g[k])) <= 1e-3, (r["strategy"], k)
+        n_checked += 1
+    assert n_checked >= 12, n_checked   # 14 today; floor guards vacuity (#226)
+
+
+def test_b3129_workflow_state_banner_derives_and_fails_open():
+    """S6-B3120e D1 (owner-approved 2026-09-29): the workflow-state header.
+    (1) build() derives states through the ledger's ONE reducer
+    (queue_state.tickets) and returns the required fields; (2) NEXT never
+    names a BLOCKED ticket while an OPEN one exists; (3) banner() FAILS OPEN
+    - a broken derivation yields '' and never raises (a broken hook must
+    never block a turn); (4) LIVE PATH: the real hook invocation emits the
+    banner before the compact index (L878 - drive the live branch, not a
+    seam)."""
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_workflow_state as bws
+
+    st = bws.build()
+    for k in ("generated_utc", "engine_inflight", "open_tickets",
+              "n_nonterminal", "next_mandated_action"):
+        assert k in st, k
+    opens = [r for r in st["open_tickets"] if r["state"] == "OPEN"]
+    if opens:
+        assert not st["next_mandated_action"].startswith("nothing OPEN"), st
+    for r in st["open_tickets"]:
+        assert r["state"] in ("OPEN", "RUNNING", "BLOCKED"), r
+
+    # fail-open: a raising derivation yields '' (must-quiet arm)
+    _orig = bws.build
+    bws.build = lambda: (_ for _ in ()).throw(RuntimeError("boom"))
+    try:
+        assert bws.banner() == ""
+    finally:
+        bws.build = _orig
+    live = bws.banner()
+    assert live.startswith("[WORKFLOW STATE"), live[:60]
+
+    # the LIVE hook path: real invocation, banner precedes the index
+    r = subprocess.run([sys.executable,
+                        str(root / "scripts" / "inject_tier3_discipline.py")],
+                       input="{}", capture_output=True, text=True,
+                       cwd=str(root), timeout=120)
+    assert r.returncode == 0, r.returncode
+    out = r.stdout
+    i_ws, i_ix = out.find("[WORKFLOW STATE"), out.find("[EXECUTION-DISCIPLINE")
+    assert i_ws != -1 and i_ix != -1 and i_ws < i_ix, (i_ws, i_ix)
 def test_b3120b_lens_shape_conformance():
     """S6-B3120b (+ the S6-B3119b pin): the battery lens set must not FAIL a
     strategy for its SHAPE. Arms: dual -> INFO, single -> INFO, genuinely

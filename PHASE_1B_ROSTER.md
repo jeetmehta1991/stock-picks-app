@@ -96,6 +96,23 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 | `xs_low_beta_with_smart_money_long` | long | **MEASUREMENT-SURFACED-OWNER-RULED / IS-HOLDOUT-INVERSION** | campaign=B2674 composite variant test (owner-ruled measurement), axes=none - baseline admission;  | `time_stop_10d` |  -0.20 |  -0.70 |   1.51 |   0.33 | +0.510 |   0.99 |   2.29 |   2.16 | 0.658 |   1.62 | 73 | 452 | LONG-ONLY-DATA |
 | `three_white_soldiers` | long | **GRID-SELECTED-OWNER-RULED / DISCLOSED-RE-READ / IS-HOLDOUT-INVERSION** | campaign=candle_tws c14 breadth (S6-B3112c, runbook 3.6 full nine items), axes=producer c14 (n_bars 3, body 0.5, step 0.0, wick 0.3) + breadth B1 cot_ndx_mmoney_pctile_3y >= 0.637, producer_combination=CANDLE_N_BARS=3, CANDLE_MIN_BODY_PCT=0.5, CANDLE_MIN_STEP_PCT=0.0, CANDLE_MAX_WICK_PCT=0.3; axis=cot_ndx_mmoney_pctile_3y, op=ge, level=0.637 | `class_time_stop` |  -0.42 |      - |   1.78 |  -0.16 |      - |   0.97 |   2.15 |   2.87 |     - |      - | 36 | 343 | `three_black_crows_short` |
 
+**Net-basis labels (S6-B3122, owner-approved 2026-09-29; 15 of 15 rows carry one).** The Step-2 reads of record for most admissions scored the cube's RAW pnl_pct (no cost, no winsor cap - L879). Re-scored READ-ONLY on the roster basis (clip +/-300, minus 0.20 per trade; roster_core.py:181) over the SAME stored trades, behind a fail-closed reproduction gate (output_audit/b3128_admissions_net_rescore.json). A label changes no admission; any removal is a separate per-line owner ruling.
+    - `smc_breaker_block_long`: ALREADY-NET
+    - `pead_long_high_yoy_growth_only`: raw HO sharpe 1.148 -> net 1.0; net all_live_gates=True
+    - `pead_with_smart_money_long`: raw HO sharpe 1.308 -> net 1.138; net all_live_gates=False; failing: psr
+    - `institutional_breakout_confirmation_long`: raw HO sharpe 3.132 -> net 2.922; net all_live_gates=True
+    - `institutional_committed_growth_long`: raw HO sharpe 1.658 -> net 1.574; net all_live_gates=True
+    - `institutional_high_conviction_long`: raw HO sharpe 1.399 -> net 1.316; net all_live_gates=True
+    - `institutional_multi_quarter_persistence_long`: raw HO sharpe 1.624 -> net 1.527; net all_live_gates=True
+    - `institutional_oversold_long`: raw HO sharpe 2.084 -> net 1.85; net all_live_gates=True
+    - `institutional_persistence_oversold_long`: raw HO sharpe 1.82 -> net 1.675; net all_live_gates=True
+    - `institutional_recent_init_momentum_long`: raw HO sharpe 1.231 -> net 1.04; net all_live_gates=True
+    - `institutional_recent_init_volume_long`: raw HO sharpe 2.076 -> net 1.899; net all_live_gates=True
+    - `institutional_strong_conviction_long`: raw HO sharpe 1.777 -> net 1.695; net all_live_gates=True
+    - `xs_momentum_top_decile`: raw HO sharpe 3.085 -> net 2.938; net all_live_gates=True
+    - `xs_low_beta_with_smart_money_long`: raw HO sharpe 1.51 -> net 1.323; net all_live_gates=True
+    - `three_white_soldiers`: raw HO sharpe 1.779 -> net 1.483; net all_live_gates=False; failing: psr
+
 **PROVISIONAL-UNREVIEWED (1 of 15).** These admissions come from a Step-2 config whose four JUDGMENT post-config steps have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436 / L721). The five AUTO steps DID run and are DONE. The completeness gate now BLOCKS such a config (S6-B2440). The row stands, marked, until the pilot review clears it; if that review changes the verdict, the admission is revisited.
     - `smc_breaker_block_long`: S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited.
 

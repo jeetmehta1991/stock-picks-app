@@ -23898,3 +23898,42 @@ roster_core.evaluate either loads through load_cube or applies COST_BPS, or is n
 shrink-only set of the 10 raw scorers with the reason read for each; a new raw scorer fails. The
 instance - whether the 14 admissions are re-scored on the net basis - is S6-B3122, on the owner's
 word.
+### L880 - OUTSIDE THE FINGERPRINT IS NOT OUTSIDE THE TEST INPUTS (B3129, self-caught 2026-09-29)
+
+**MEASURED: while the B3129 pyramid ran, I injected net-rescore labels into
+phase_1b_step2_admissions.json and re-graded 20 candle free-level artifacts -
+all under output_audit, which pyramid_gate's tree fingerprint EXCLUDES BY
+DESIGN (L841).** The exclusion is for the
+landing hook's own writes; I read it as licence. But the fingerprint bounds
+what the gate can VOUCH FOR, not what the tests CONSUME: pins read those
+artifacts at execution time, so the suite measured a moving input and its
+verdict describes no single state. The gate run was discarded and the tree
+re-gated stable before any commit.
+
+- **CORRECTION, same batch (the NO-UNTESTED-CAUSE class, L455/#201): the F
+  that appeared mid-suite was NOT this class's doing.** I attributed it to
+  the moving artifacts in an owner-facing close before running the one grep
+  that settles it; the grep names test_b2128 - the silent-except ratchet
+  correctly catching a NEW `except OSError: pass` in Batch C's own
+  build_workflow_state.py (fixed: the degraded write now announces itself,
+  #122). The moving-inputs class stands on its own feet - artifact pins DID
+  read mid-run-written files - but this incident's F was the ratchet, and
+  the wrong cause shipped exactly the way L455 describes: cheaper to write
+  than to test.
+
+- **Compliance failure against #292** (a pyramid is a measurement of ONE
+  tree) - the item's list names scripts/, backtest/, root .md and .claude/;
+  the CLASS is any input a test reads, and tracked output_audit artifacts
+  are test inputs for every artifact-level pin (test_b3119e, test_b3123,
+  test_b3128's design). No new item: #292's sentence already states the
+  class; this entry records the instance that read the fingerprint's scope
+  as the rule's scope.
+- **Same close, second instance, compliance failure against #306 / L793:**
+  the candle re-grade loop read `python ... | tail`'s exit, so a grader
+  failure could not set EXIT= - the [FAIL] text surfaced it and nothing
+  false shipped, but the loop's success channel was decoration.
+- **Mechanizable slice:** pyramid_gate already discloses output_audit
+  residue it CREATED (S6-B3120g); the sibling disclosure - tracked
+  output_audit artifacts MODIFIED between its two fingerprints - is ticketed
+  S6-B3130a rather than declared judgment-only.
+

@@ -147,6 +147,22 @@ def undelivered_landings_banner() -> str:
     return "\n".join(lines).encode("ascii", "replace").decode("ascii") + "\n\n"
 
 
+def workflow_state_banner() -> str:
+    """S6-B3120e D1 (owner-approved 2026-09-29): the workflow-state header,
+    derived from the ledger + process table at the TURN BOUNDARY, so a
+    tangent meets the workflow before any work happens rather than at the
+    close. Delegates to build_workflow_state.banner(), which never raises
+    and returns '' on any failure (fail-open, like its sibling banners)."""
+    try:
+        here = str(pathlib.Path(__file__).resolve().parent)
+        if here not in sys.path:
+            sys.path.insert(0, here)
+        import build_workflow_state as _bws
+        return _bws.banner()
+    except Exception:
+        return ""
+
+
 def chain_halts_banner() -> str:
     """B2577: every serial-chain HALT not yet reported to the owner, printed
     at the top of the next turn beside the landings (the Stop hook's
@@ -201,7 +217,8 @@ def main() -> int:
             body = _skill.read_text(encoding="utf-8")
             # S6-B3097b (B3098): a COMPACT INDEX, not the whole file - at ~377 KB
             # the harness showed only a 2 KB preview of it (L871).
-            _banners = undelivered_landings_banner() + chain_halts_banner()
+            _banners = (undelivered_landings_banner() + chain_halts_banner()
+                        + workflow_state_banner())
             # the banners print first and count toward the same inline limit
             # (the head is always emitted, whatever budget is left)
             out = _banners + compact_index(
@@ -226,7 +243,9 @@ def main() -> int:
         except Exception:
             # Fallback retained, but it is now a REAL last resort rather than the
             # everyday path. TIER3 is pure ASCII so it always encodes.
-            sys.stdout.write(undelivered_landings_banner() + chain_halts_banner() + TIER3)
+            sys.stdout.write(undelivered_landings_banner()
+                             + chain_halts_banner()
+                             + workflow_state_banner() + TIER3)
     except Exception:
         pass  # fail-open: never block a turn
     return 0

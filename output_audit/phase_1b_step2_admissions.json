@@ -22,7 +22,13 @@
    "universe": "544 tickers (output_audit/r5_universe_544.txt)",
    "window": "4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout)",
    "review_status": "PROVISIONAL-UNREVIEWED",
-   "review_note": "S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited."
+   "review_note": "S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited.",
+   "net_rescore": {
+    "status": "ALREADY-NET",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181"
+   }
   },
   {
    "ticket": "S6-B2644a",
@@ -42,7 +48,44 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 480 with pead fires)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "OFFLINE-CAMPAIGN-PSR-N/E",
-   "review_note": "Offline-free campaign (SS11.2b): zero engine hours, so the post-config battery never fired (it is landing-hook triggered). psr is INCOMPUTABLE for this cell (denominator_invalid) and reads NOT-EVALUABLE per owner ruling 2026-09-08 option (a); under the fail-closed gate the same cell graded FAIL 5 of 6 (output_audit/b2644_pead_step2_holdout.json). ENGINE WIRING of the admitted levels (drift 20 vs production 60; threshold 0.10 vs 0.05) requires knobs that DO NOT EXIST YET - signal_loader.py calls the producers bare - tracked S6-B2645a; admission is not deployment."
+   "review_note": "Offline-free campaign (SS11.2b): zero engine hours, so the post-config battery never fired (it is landing-hook triggered). psr is INCOMPUTABLE for this cell (denominator_invalid) and reads NOT-EVALUABLE per owner ruling 2026-09-08 option (a); under the fail-closed gate the same cell graded FAIL 5 of 6 (output_audit/b2644_pead_step2_holdout.json). ENGINE WIRING of the admitted levels (drift 20 vs production 60; threshold 0.10 vs 0.05) requires knobs that DO NOT EXIST YET - signal_loader.py calls the producers bare - tracked S6-B2645a; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.148,
+     "ci_lo": 0.43,
+     "psr": 0.9998,
+     "profit_factor": 1.91,
+     "sortino": 2.366,
+     "n": 196
+    },
+    "net": {
+     "sharpe": 1.0,
+     "ci_lo": 0.284,
+     "psr": 0.999,
+     "profit_factor": 1.75,
+     "sortino": 2.061,
+     "n": 196,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": 1.475,
+    "is_sharpe_net": 1.317,
+    "ops": [
+     "le",
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2651",
@@ -63,7 +106,45 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 656 fires)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "PEEKED-BY-CONSTRUCTION-NO-PREREGISTRATION",
-   "review_note": "Owner instruction 2026-09-09, after the selection-inflation risk was flagged twice and an earlier admission attempt was rolled back: the admitted cell is the single line of 1,248 clearing all six gates in the all-cells holdout read, selected AFTER seeing every line (the strategy's pre-registered IS rank-1 cell was ungradable at holdout n=13). Evidence is WEAKER than a pre-registered admission and this label must travel with the row. CONFIRM-OR-STRIKE: the forward registration output_audit/b2652_peadsm_forward_prereg.json stays live - one clean six-gate read on the first cube spanning >= 12 months after 2026-05-05 either confirms this row or strikes it. Engine wiring shares S6-B2645a's class (admitted levels differ from production; no env knobs exist); admission is not deployment."
+   "review_note": "Owner instruction 2026-09-09, after the selection-inflation risk was flagged twice and an earlier admission attempt was rolled back: the admitted cell is the single line of 1,248 clearing all six gates in the all-cells holdout read, selected AFTER seeing every line (the strategy's pre-registered IS rank-1 cell was ungradable at holdout n=13). Evidence is WEAKER than a pre-registered admission and this label must travel with the row. CONFIRM-OR-STRIKE: the forward registration output_audit/b2652_peadsm_forward_prereg.json stays live - one clean six-gate read on the first cube spanning >= 12 months after 2026-05-05 either confirms this row or strikes it. Engine wiring shares S6-B2645a's class (admitted levels differ from production; no env knobs exist); admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.308,
+     "ci_lo": -0.325,
+     "psr": 0.9596,
+     "profit_factor": 2.317,
+     "sortino": 2.107,
+     "n": 37
+    },
+    "net": {
+     "sharpe": 1.138,
+     "ci_lo": -0.489,
+     "psr": 0.9336,
+     "profit_factor": 2.062,
+     "sortino": 1.871,
+     "n": 37,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": false,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": false
+    },
+    "is_sharpe_raw": 0.874,
+    "is_sharpe_net": 0.733,
+    "ops": [
+     "le",
+     "ge",
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2662a",
@@ -85,7 +166,43 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED",
-   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 3.132,
+     "ci_lo": 0.735,
+     "psr": 0.9954,
+     "profit_factor": 2.836,
+     "sortino": 10.005,
+     "n": 34
+    },
+    "net": {
+     "sharpe": 2.922,
+     "ci_lo": 0.539,
+     "psr": 0.9926,
+     "profit_factor": 2.618,
+     "sortino": 9.331,
+     "n": 34,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": 0.452,
+    "is_sharpe_net": 0.215,
+    "ops": [
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2662a",
@@ -107,7 +224,43 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED",
-   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.658,
+     "ci_lo": 0.807,
+     "psr": 1.0,
+     "profit_factor": 2.618,
+     "sortino": 3.388,
+     "n": 144
+    },
+    "net": {
+     "sharpe": 1.574,
+     "ci_lo": 0.725,
+     "psr": 1.0,
+     "profit_factor": 2.489,
+     "sortino": 3.193,
+     "n": 144,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": 1.19,
+    "is_sharpe_net": 1.066,
+    "ops": [
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2662a",
@@ -129,7 +282,43 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED",
-   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.399,
+     "ci_lo": 0.558,
+     "psr": 0.9999,
+     "profit_factor": 2.237,
+     "sortino": 2.765,
+     "n": 146
+    },
+    "net": {
+     "sharpe": 1.316,
+     "ci_lo": 0.477,
+     "psr": 0.9998,
+     "profit_factor": 2.126,
+     "sortino": 2.6,
+     "n": 146,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": 0.764,
+    "is_sharpe_net": 0.653,
+    "ops": [
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2662a",
@@ -151,7 +340,43 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED",
-   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.624,
+     "ci_lo": 0.784,
+     "psr": 1.0,
+     "profit_factor": 2.54,
+     "sortino": 3.118,
+     "n": 147
+    },
+    "net": {
+     "sharpe": 1.527,
+     "ci_lo": 0.69,
+     "psr": 1.0,
+     "profit_factor": 2.399,
+     "sortino": 2.914,
+     "n": 147,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": 1.076,
+    "is_sharpe_net": 0.956,
+    "ops": [
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2662a",
@@ -173,7 +398,43 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED",
-   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 2.084,
+     "ci_lo": 0.018,
+     "psr": 0.9756,
+     "profit_factor": 2.11,
+     "sortino": 6.696,
+     "n": 35
+    },
+    "net": {
+     "sharpe": 1.85,
+     "ci_lo": -0.203,
+     "psr": 0.9603,
+     "profit_factor": 1.933,
+     "sortino": 5.945,
+     "n": 35,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": -1.546,
+    "is_sharpe_net": -1.8,
+    "ops": [
+     "le"
+    ]
+   }
   },
   {
    "ticket": "S6-B2662a",
@@ -195,7 +456,43 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED",
-   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.82,
+     "ci_lo": 0.449,
+     "psr": 0.9971,
+     "profit_factor": 2.607,
+     "sortino": 3.288,
+     "n": 55
+    },
+    "net": {
+     "sharpe": 1.675,
+     "ci_lo": 0.311,
+     "psr": 0.9945,
+     "profit_factor": 2.417,
+     "sortino": 2.936,
+     "n": 55,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": -0.151,
+    "is_sharpe_net": -0.287,
+    "ops": [
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2662a",
@@ -217,7 +514,43 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED",
-   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.231,
+     "ci_lo": 0.022,
+     "psr": 0.979,
+     "profit_factor": 1.535,
+     "sortino": 3.216,
+     "n": 111
+    },
+    "net": {
+     "sharpe": 1.04,
+     "ci_lo": -0.165,
+     "psr": 0.9569,
+     "profit_factor": 1.432,
+     "sortino": 2.718,
+     "n": 111,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": 0.83,
+    "is_sharpe_net": 0.671,
+    "ops": [
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2662a",
@@ -239,7 +572,43 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED",
-   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 2.076,
+     "ci_lo": 0.285,
+     "psr": 0.993,
+     "profit_factor": 2.009,
+     "sortino": 8.642,
+     "n": 59
+    },
+    "net": {
+     "sharpe": 1.899,
+     "ci_lo": 0.114,
+     "psr": 0.9874,
+     "profit_factor": 1.883,
+     "sortino": 7.904,
+     "n": 59,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": 0.748,
+    "is_sharpe_net": 0.598,
+    "ops": [
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2662a",
@@ -261,7 +630,43 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED",
-   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
+   "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.777,
+     "ci_lo": 0.864,
+     "psr": 1.0,
+     "profit_factor": 2.861,
+     "sortino": 3.582,
+     "n": 125
+    },
+    "net": {
+     "sharpe": 1.695,
+     "ci_lo": 0.785,
+     "psr": 1.0,
+     "profit_factor": 2.721,
+     "sortino": 3.416,
+     "n": 125,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": 1.096,
+    "is_sharpe_net": 0.982,
+    "ops": [
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2678b",
@@ -282,7 +687,44 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 255 fires)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED / CONTROL-REFUTED-ATTRIBUTION / DISCLOSED-RE-READ",
-   "review_note": "SUPERSESSION CHAIN: B2668 depth admission (HO 2.183 n 41/128) -> B2678a option A (2026-09-11, nothing new) -> RE-RULED option C same day under S6-B2678b on the B2682 per-year evidence (filtered beats base 4 of 4 gradable years; 2022 = abstention, n=1). Admitted line = depth 0.529 AND pct_from_vwap >= 36.6266 at time_stop_10d, HO 3.085 ci_lo 1.200 psr 0.999 n 32/84 (all six gates). LABELS: the pct_from_vwap lift is CONTROL-REFUTED as general structure (pead control +0.864 vs subject +0.90, b2678); the subject holdout was re-read under the accepted disclosure. The B787 EXPLORATORY tag still rides; admission is not deployment; engine wiring of BOTH added gates is the NEW-GATE build (S6-B2411 class, per-strategy approval)."
+   "review_note": "SUPERSESSION CHAIN: B2668 depth admission (HO 2.183 n 41/128) -> B2678a option A (2026-09-11, nothing new) -> RE-RULED option C same day under S6-B2678b on the B2682 per-year evidence (filtered beats base 4 of 4 gradable years; 2022 = abstention, n=1). Admitted line = depth 0.529 AND pct_from_vwap >= 36.6266 at time_stop_10d, HO 3.085 ci_lo 1.200 psr 0.999 n 32/84 (all six gates). LABELS: the pct_from_vwap lift is CONTROL-REFUTED as general structure (pead control +0.864 vs subject +0.90, b2678); the subject holdout was re-read under the accepted disclosure. The B787 EXPLORATORY tag still rides; admission is not deployment; engine wiring of BOTH added gates is the NEW-GATE build (S6-B2411 class, per-strategy approval).",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 3.085,
+     "ci_lo": 1.2,
+     "psr": 0.999,
+     "profit_factor": 4.829,
+     "sortino": 4.83,
+     "n": 32
+    },
+    "net": {
+     "sharpe": 2.938,
+     "ci_lo": 1.067,
+     "psr": 0.9985,
+     "profit_factor": 4.468,
+     "sortino": 4.599,
+     "n": 32,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": 1.928,
+    "is_sharpe_net": 1.755,
+    "ops": [
+     "ge",
+     "ge"
+    ]
+   }
   },
   {
    "ticket": "S6-B2674a",
@@ -300,7 +742,41 @@
    "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 452 fires)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "MEASUREMENT-SURFACED-OWNER-RULED / IS-HOLDOUT-INVERSION",
-   "review_note": "Surfaced as a side-finding of the owner-ruled B2674 composite test (not a search grid: baseline + 3 variants x exits, and the baseline clears at multiple exits - r_multiple_2r 1.296 too). All six gates at ts10: HO 1.510 ci_lo n/a psr 0.995 PF 2.286 n 73/452. LABEL: IS sharpe -0.198 - the IS/holdout inversion travels with the row. The smart-money composite leg is SEC-long-only data; mirror policy per the roster classifier at render. Admission is not deployment; no engine change needed (production line as-is)."
+   "review_note": "Surfaced as a side-finding of the owner-ruled B2674 composite test (not a search grid: baseline + 3 variants x exits, and the baseline clears at multiple exits - r_multiple_2r 1.296 too). All six gates at ts10: HO 1.510 ci_lo n/a psr 0.995 PF 2.286 n 73/452. LABEL: IS sharpe -0.198 - the IS/holdout inversion travels with the row. The smart-money composite leg is SEC-long-only data; mirror policy per the roster classifier at render. Admission is not deployment; no engine change needed (production line as-is).",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.51,
+     "ci_lo": 0.327,
+     "psr": 0.995,
+     "profit_factor": 2.286,
+     "sortino": 2.161,
+     "n": 73
+    },
+    "net": {
+     "sharpe": 1.323,
+     "ci_lo": 0.147,
+     "psr": 0.9881,
+     "profit_factor": 2.069,
+     "sortino": 1.895,
+     "n": 73,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": true
+    },
+    "is_sharpe_raw": -0.198,
+    "is_sharpe_net": -0.411,
+    "ops": []
+   }
   },
   {
    "ticket": "S6-B3114b",
@@ -323,7 +799,43 @@
    "universe": "c14 Step-2 cube output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3 (544-ticker universe; 343 cell trades full period)",
    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
    "review_status": "GRID-SELECTED-OWNER-RULED / DISCLOSED-RE-READ / IS-HOLDOUT-INVERSION",
-   "review_note": "All six gates at class_time_stop on the b3114 read: HO sharpe 1.779 psr 0.9653 PF 2.154 sortino 2.873 n 36/343; ci_lo -0.164 reported (not a gate). LABELS travel: the holdout was a DISCLOSED-RE-READ (spent by the failed depth Step-2), the cell is 1 of 192 holdout-graded cells (the p=0.005 permutation price covered the IS search only), and IS sharpe is -0.421 (inversion). The b3114 forward registration (output_audit/b3114_tws_c14_breadth_forward_prereg.json) STAYS LIVE as ADDITIONAL evidence per the B2660 admission doctrine - never a strike condition post-admission. MIRROR: strat_three_black_crows_short REGISTERED (screener.py, Batch 636 Nison canonical mirror) and counted per the standing mirror policy; the breadth filter is NOT mechanically mirrored (a long-side NDX managed-money positioning gate has no economic mirror ruled for the short leg) - the short leg rides pattern-only, EXPLORATORY, no holdout evidence of its own, asymmetry surfaced per CHECKLIST (m). Admission is not deployment; engine wiring rides S6-B2411 as with all Step-2 admissions."
+   "review_note": "All six gates at class_time_stop on the b3114 read: HO sharpe 1.779 psr 0.9653 PF 2.154 sortino 2.873 n 36/343; ci_lo -0.164 reported (not a gate). LABELS travel: the holdout was a DISCLOSED-RE-READ (spent by the failed depth Step-2), the cell is 1 of 192 holdout-graded cells (the p=0.005 permutation price covered the IS search only), and IS sharpe is -0.421 (inversion). The b3114 forward registration (output_audit/b3114_tws_c14_breadth_forward_prereg.json) STAYS LIVE as ADDITIONAL evidence per the B2660 admission doctrine - never a strike condition post-admission. MIRROR: strat_three_black_crows_short REGISTERED (screener.py, Batch 636 Nison canonical mirror) and counted per the standing mirror policy; the breadth filter is NOT mechanically mirrored (a long-side NDX managed-money positioning gate has no economic mirror ruled for the short leg) - the short leg rides pattern-only, EXPLORATORY, no holdout evidence of its own, asymmetry surfaced per CHECKLIST (m). Admission is not deployment; engine wiring rides S6-B2411 as with all Step-2 admissions.",
+   "net_rescore": {
+    "status": "RESCORED",
+    "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
+    "artifact": "output_audit/b3128_admissions_net_rescore.json",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181",
+    "raw": {
+     "sharpe": 1.779,
+     "ci_lo": -0.164,
+     "psr": 0.9653,
+     "profit_factor": 2.154,
+     "sortino": 2.873,
+     "n": 36
+    },
+    "net": {
+     "sharpe": 1.483,
+     "ci_lo": -0.447,
+     "psr": 0.9355,
+     "profit_factor": 1.886,
+     "sortino": 2.395,
+     "n": 36,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": false,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     },
+     "all_live_gates": false
+    },
+    "is_sharpe_raw": -0.421,
+    "is_sharpe_net": -0.701,
+    "ops": [
+     "ge"
+    ]
+   }
   }
  ],
  "pruned_collinear_b2666": [

@@ -313,6 +313,38 @@ def step2_admissions_section(A, admissions_path=None) -> None:
           f"{_fmt(r.get('win_rate'), 5, 3)} | {_fmt(r.get('expectancy'))} | "
           f"{r.get('holdout_n')} | {_admission_full_n(r)} | {mir} |")
     A("")
+    # S6-B3122 (owner-approved 2026-09-29): the NET-BASIS LABELS - an ADDITIVE
+    # section, never a change to the ruled table above (L863: a locked format
+    # is pinned on its columns; labels ride beside it). Rendered from each
+    # admission row's `net_rescore` block, written by
+    # scripts/rescore_admissions_net.py behind its #290 reproduction gate.
+    # Labels REPORT; they change no verdict - removal is a separate per-line
+    # owner ruling.
+    _lab = [a for a in adms if a.get("net_rescore")]
+    if _lab:
+        A(f"**Net-basis labels (S6-B3122, owner-approved 2026-09-29; "
+          f"{len(_lab)} of {len(adms)} rows carry one).** The Step-2 reads of "
+          "record for most admissions scored the cube's RAW pnl_pct (no cost, "
+          "no winsor cap - L879). Re-scored READ-ONLY on the roster basis "
+          "(clip +/-300, minus 0.20 per trade; roster_core.py:181) over the "
+          "SAME stored trades, behind a fail-closed reproduction gate "
+          "(output_audit/b3128_admissions_net_rescore.json). A label changes "
+          "no admission; any removal is a separate per-line owner ruling.")
+        for a in _lab:
+            nr = a["net_rescore"]
+            if nr.get("status") == "RESCORED":
+                nv = nr.get("net") or {}
+                fails = [k for k, v in (nv.get("gates") or {}).items()
+                         if v is False]
+                A(f"    - `{a['strategy']}`: raw HO sharpe "
+                  f"{(nr.get('raw') or {}).get('sharpe')} -> net "
+                  f"{nv.get('sharpe')}; net all_live_gates="
+                  f"{nv.get('all_live_gates')}"
+                  + (f"; failing: {', '.join(fails)}" if fails else ""))
+            else:
+                A(f"    - `{a['strategy']}`: {nr.get('status')}"
+                  + (f" ({nr.get('reason')})" if nr.get("reason") else ""))
+        A("")
     _unrev = [a for a in adms if a.get("review_status") == "PROVISIONAL-UNREVIEWED"]
     if _unrev:
         A(f"**PROVISIONAL-UNREVIEWED ({len(_unrev)} of {len(adms)}).** "
