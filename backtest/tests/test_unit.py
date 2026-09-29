@@ -43572,6 +43572,16 @@ def test_b2919_below_power_is_terminal_na(monkeypatch, tmp_path):
 
     import scripts.run_postconfig as rp
 
+    # S6-B3120g (B3125): run_family derives its grader / spot-check /
+    # free-levels out-paths from run_postconfig.ROOT at CALL time
+    # (run_postconfig.py:617-618/685), so without this redirect every
+    # full-suite run left three 36-byte stubs (cube_grid_auto.json,
+    # cube_spot_check.json, cube_free_levels.json) in the PRODUCTION
+    # output_audit - invisible to the pyramid's tree fingerprint because
+    # they are untracked. The tail asserts keep the regression loud.
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+
     def make_run(grid_doc):
         def _run(cmd, env=None):
             class R:
@@ -43620,6 +43630,15 @@ def test_b2919_below_power_is_terminal_na(monkeypatch, tmp_path):
     res2, _, _, _ = rp.run_institutional(cube, _p, manifest, step=2)
     by2 = {n: (st, m) for n, st, m in res2}
     assert by2["step2_grade_auto"][0] == "FAIL", by2["step2_grade_auto"]
+
+    # S6-B3120g: the redirect held - the stubs landed in tmp_path and the
+    # PRODUCTION output_audit gained none of the three names.
+    repo_oa = _P(rp.__file__).resolve().parent.parent / "output_audit"
+    for nm in ("cube_grid_auto.json", "cube_spot_check.json",
+               "cube_free_levels.json"):
+        assert (tmp_path / "output_audit" / nm).exists(), nm
+        assert not (repo_oa / nm).exists(), (
+            f"{nm} leaked into the production output_audit (S6-B3120g)")
 
 
 def _b3082_art(body, step, wick, sharpes):
@@ -47553,3 +47572,44 @@ def test_b3123_free_level_score_reproduction_fails_closed(tmp_path):
     sr = art["score_reproduction"]
     assert sr["mismatches"] == [] and sr["compared_exits"] > 0, sr
     assert "net" in str(art.get("basis", "")), art.get("basis")
+
+
+def test_b3125_pyramid_gate_discloses_output_audit_residue(tmp_path):
+    """B3125 (S6-B3120g): pyramid_gate's artifact carries an
+    output_audit_created line - untracked residue a suite run drops into
+    the production output_audit is invisible to the tree fingerprint
+    (tree=SAME held while test_b2919 left three stubs per run), so the
+    gate DISCLOSES it. Both directions, plus the unreadable case and the
+    None-before guard (an empty 'before' must never read as 'everything
+    was created')."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import pyramid_gate as pg
+
+    d = tmp_path / "output_audit"
+    d.mkdir()
+    (d / "old.json").write_text("x", encoding="utf-8")
+    before = pg.output_audit_snapshot(tmp_path)
+    assert before == {"old.json"}
+    # must-QUIET: nothing created
+    assert pg.output_audit_created(before, tmp_path) == "none"
+    # must-FIRE: a created file is named
+    (d / "cube_grid_auto.json").write_text("x", encoding="utf-8")
+    assert pg.output_audit_created(before, tmp_path) == "cube_grid_auto.json"
+    # deleting a file is not 'created' (the set difference is one-sided)
+    (d / "cube_grid_auto.json").unlink()
+    (d / "old.json").unlink()
+    assert pg.output_audit_created(before, tmp_path) == "none"
+    # fail-closed shapes: unreadable before/after report as such
+    assert pg.output_audit_snapshot(tmp_path / "absent") is None
+    assert pg.output_audit_created(None, tmp_path) == "unreadable"
+    assert pg.output_audit_created(before, tmp_path / "absent") == "unreadable"
+    # WIRING (L654): run() computes the line into the artifact - source
+    # asserts the call site sits between the snapshot and the tail write
+    src = (root / "scripts" / "pyramid_gate.py").read_text(encoding="utf-8")
+    assert "oa_before = output_audit_snapshot(root)" in src
+    assert "oa_created = output_audit_created(oa_before, root)" in src
+    assert 'f"output_audit_created={oa_created}' in src

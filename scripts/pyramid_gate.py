@@ -124,6 +124,32 @@ def refusal_beside_wave(engine: str, beside_wave: str | None) -> str | None:
             "override; the reason is recorded in the artifact.")
 
 
+def output_audit_snapshot(root) -> set | None:
+    """S6-B3120g: the file names under the PRODUCTION output_audit before
+    pytest runs. None when unreadable - reported as such, never treated as
+    empty (an empty 'before' would list the whole directory as created)."""
+    try:
+        return {p.name for p in (Path(root) / "output_audit").iterdir()
+                if p.is_file()}
+    except OSError:
+        return None
+
+
+def output_audit_created(before, root) -> str:
+    """S6-B3120g: files a suite run left in the production output_audit.
+    Untracked residue is invisible to the tree fingerprint (tree=SAME held
+    while test_b2919 dropped three stubs per run), so the artifact
+    DISCLOSES it - a disclosure, not a refusal (L721/L857b): 'none' is the
+    only clean reading."""
+    if before is None:
+        return "unreadable"
+    after = output_audit_snapshot(root)
+    if after is None:
+        return "unreadable"
+    new = sorted(after - before)
+    return ",".join(new) if new else "none"
+
+
 def run(out: Path, root: Path, pytest_args: list[str],
         beside_wave: str | None = None) -> int:
     engine_start = _engine_inflight()
@@ -133,6 +159,7 @@ def run(out: Path, root: Path, pytest_args: list[str],
                              encoding="utf-8")
         print(refused)
         return EXIT_REFUSED_BESIDE_WAVE
+    oa_before = output_audit_snapshot(root)
     before = fingerprint(root)
     t0 = time.time()
     chain_start = _chain_inflight()
@@ -171,6 +198,7 @@ def run(out: Path, root: Path, pytest_args: list[str],
         engine_end = _engine_inflight()
         engine = engine_start if engine_start != "none" else engine_end
         engine_dead = _engine_dead_within_window()
+        oa_created = output_audit_created(oa_before, root)
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(f"\npytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
                      f"elapsed_s={time.time() - t0:.0f}\n"
@@ -181,7 +209,8 @@ def run(out: Path, root: Path, pytest_args: list[str],
                      f"engine_inflight_start={engine_start}\n"
                      f"engine_inflight_end={engine_end}\n"
                      f"engine_dead_within_window={engine_dead}\n"
-                     f"beside_wave_override={(beside_wave or '').strip() or 'none'}\n")
+                     f"beside_wave_override={(beside_wave or '').strip() or 'none'}\n"
+                     f"output_audit_created={oa_created}\n")
         print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
         if chain != "none":
             print("  NOTE (L621/S6-B3061): a config was IN FLIGHT while "
@@ -193,6 +222,10 @@ def run(out: Path, root: Path, pytest_args: list[str],
                   "wave can exhaust commit; runbook Step 2.4 says run the "
                   "full suite BEFORE the launch - there is no leg-boundary window."
                   % engine)
+        if oa_created not in ("none", "unreadable"):
+            print("  NOTE (S6-B3120g): this suite run CREATED file(s) under "
+                  "the production output_audit - test residue: %s"
+                  % oa_created)
         return final
     finally:
         pidfile.unlink(missing_ok=True)
