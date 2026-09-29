@@ -47183,12 +47183,10 @@ def test_b3120f_free_level_adapters_score_on_the_net_basis_or_are_frozen():
         _sys.path.insert(0, str(root / "scripts"))
     import producer_variant_table as pvt
 
-    FROZEN_GROSS = {
-        "grade_free_levels_bollinger.py":
-            "S6-B3120f: raw pd.read_csv of trade_exit_detail in main()",
-        "grade_free_levels_candle.py":
-            "S6-B3120f: same raw-read shape; serves both candle legs",
-    }
+    # B3123 (S6-B3120f executed): both adapters now apply the load_cube
+    # basis inline (clip +/-WINSORIZE, minus COST_BPS/100) and reproduce the
+    # family SCORE - the set emptied and stays empty (shrink-only).
+    FROZEN_GROSS = {}
     # the detector, both directions, on planted source (#226)
     assert _b3120f_classify("rc.evaluate(p, h)\n") == "GROSS"
     assert _b3120f_classify(
@@ -47467,10 +47465,6 @@ _B3122_RAW_SCORERS = {
         "reads the cube with pd.read_csv and scores ho pnl_pct",
     "grade_family_siblings.py":
         "reads the cube with pd.read_csv and scores hold_rows pnl_pct",
-    "grade_free_levels_bollinger.py":
-        "S6-B3120f: raw pd.read_csv of trade_exit_detail in main()",
-    "grade_free_levels_candle.py":
-        "S6-B3120f: the same raw-read shape; serves both candle legs",
     "institutional_companion_grid.py":
         "reads the cube with pd.read_csv (the 9 institutional admission reads)",
     "offline_holdout_read.py":
@@ -47515,3 +47509,47 @@ def test_b3122_every_trade_scorer_is_net_or_named_gross():
     # live positive control: a family grader that loads through load_cube is NET
     bol = (root / "grade_bollinger_config.py").read_text(encoding="utf-8")
     assert "load_cube" in bol and _b3120f_classify(bol) == "NET"
+
+
+def test_b3123_free_level_score_reproduction_fails_closed(tmp_path):
+    """B3123 (S6-B3120f): the free-level legs reproduce the SCORE of the
+    landed family grade, not only the fire set - L877's missing half. Both
+    directions on the pure function in BOTH adapters, and the WIRING proven
+    on the landed artifact: the committed span-9 free-levels file carries a
+    score_reproduction block with 0 mismatches, which only the live main()
+    path writes (L654: a pin on the callee is not a pin on the wiring)."""
+    import json
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import grade_free_levels_bollinger as gb
+    import grade_free_levels_candle as gc
+
+    gp = tmp_path / "g.json"
+    gp.write_text(json.dumps({"per_exit": [
+        {"exit": "time_stop_10d", "fires": 308,
+         "is_sharpe": 0.957, "is_ci_lo": 0.582}]}), encoding="utf-8")
+    good = [{"exit": "time_stop_10d", "n": 308,
+             "sharpe": 0.957, "ci_lo": 0.582}]
+    for mod in (gb, gc):
+        ok = mod.score_reproduction(good, gp)
+        assert ok["mismatches"] == [] and ok["compared_exits"] == 1, ok
+        # the L877 pair: the gross figures against the net family grade
+        bad = mod.score_reproduction(
+            [{"exit": "time_stop_10d", "n": 308,
+              "sharpe": 1.036, "ci_lo": 0.660}], gp)
+        assert bad["mismatches"], "a diverging score must be reported"
+        off = mod.score_reproduction(
+            [{"exit": "time_stop_10d", "n": 307,
+              "sharpe": 0.957, "ci_lo": 0.582}], gp)
+        assert off["mismatches"], "a diverging trade count must be reported"
+        gone = mod.score_reproduction(good, tmp_path / "absent.json")
+        assert gone["mismatches"], "a missing family grid must fail closed"
+    art = json.loads((root / "output_audit" /
+                      "output_bl_span009_span009_free_levels.json"
+                      ).read_text(encoding="utf-8"))
+    sr = art["score_reproduction"]
+    assert sr["mismatches"] == [] and sr["compared_exits"] > 0, sr
+    assert "net" in str(art.get("basis", "")), art.get("basis")

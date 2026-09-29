@@ -86,6 +86,53 @@ def keep_row(value, direction: str, bound: float) -> bool:
     return (value < bound) if direction == "lt" else (value > bound)
 
 
+def score_reproduction(prod_per_exit, grid_path) -> dict:
+    """S6-B3120f (L877): the reproduction gate covers the SCORE, not only
+    the fire set. The production row's per-exit sharpe / ci_lo (net basis,
+    min_n=1) must EQUAL the landed family grade's is_sharpe / is_ci_lo on
+    every exit the family grid carries, with matching trade counts - or the
+    leg fails closed (owner ruling 2026-09-02: a re-scorer that cannot
+    reproduce the landed baseline is believable about nothing). Returns the
+    artifact block; the caller exits 2 on any mismatch, and a missing or
+    unreadable grid IS a mismatch (fail closed, L642)."""
+    try:
+        grid = json.loads(Path(grid_path).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return {"family_grid": str(grid_path).replace("\\", "/"),
+                "basis": "net (roster_core.py:181 mirrored)",
+                "compared_exits": 0,
+                "mismatches": [f"family grid unreadable: {exc!r}"]}
+    mine = {str(r["exit"]): r for r in prod_per_exit}
+    compared, mismatches = 0, []
+    for row in grid.get("per_exit") or []:
+        ex = str(row.get("exit"))
+        fam_sh, fam_cl = row.get("is_sharpe"), row.get("is_ci_lo")
+        if fam_sh is None and fam_cl is None:
+            continue
+        m = mine.get(ex)
+        if m is None:
+            mismatches.append(f"{ex}: in the family grid, absent here")
+            continue
+        compared += 1
+        if int(row.get("fires", -1)) != int(m["n"]):
+            mismatches.append(
+                f"{ex}: n {m['n']} vs family fires {row.get('fires')}")
+            continue
+        for key, fam in (("sharpe", fam_sh), ("ci_lo", fam_cl)):
+            v = m.get(key)
+            same = (v is None and fam is None) or (
+                v is not None and fam is not None
+                and round(float(v), 3) == round(float(fam), 3))
+            if not same:
+                mismatches.append(f"{ex}: {key} {v} vs family {fam}")
+    if compared == 0:
+        mismatches.append(
+            "no exit compared - the family grid carries no graded rows")
+    return {"family_grid": str(grid_path).replace("\\", "/"),
+            "basis": "net (roster_core.py:181 mirrored)",
+            "compared_exits": compared, "mismatches": mismatches}
+
+
 # ---- S6-B3117: the P11 / P8 single-axis enumerations (T3-approved) --------
 THR_LONG = {"low": 40.0, "mid": 45.0, "high": 50.0}    # screener.py:1866-1871
 THR_SHORT = {"low": 60.0, "mid": 55.0, "high": 50.0}
@@ -240,6 +287,9 @@ def main() -> int:
     ap.add_argument("--cube", required=True)
     ap.add_argument("--out", default=None)
     ap.add_argument("--min-n", type=int, default=10)
+    ap.add_argument("--family-grid", default=None,
+                    help="the landed family grid this leg must reproduce "
+                         "(default output_audit/<cube>_grid_auto.json)")
     ap.add_argument("--strategy", default=None,
                     help="override the manifest's graded strategy (hand runs)")
     a = ap.parse_args()
@@ -305,6 +355,13 @@ def main() -> int:
     # ---- grade each free level on the exit-expanded cube -----------------
     ted = pd.read_csv(ted_path, low_memory=False)
     ted = ted[ted["strategy"].astype(str) == strat].copy()
+    # S6-B3120f (L877): score on the FAMILY GRADER'S basis - the winsorize +
+    # COST_BPS/100 deduction roster_core.load_cube applies (roster_core.py:181
+    # is the definition of record). The raw read stays only because this leg
+    # needs signal columns load_cube's usecols drop.
+    ted["pnl_pct"] = (ted["pnl_pct"].astype(float)
+                      .clip(-rc.WINSORIZE, rc.WINSORIZE)
+                      - rc.COST_BPS / 100.0)
     ted["entry_date"] = ted["entry_date"].astype(str).str[:10]
     covered = covered.copy()
     covered["entry_date"] = covered["entry_date"].astype(str).str[:10]
@@ -326,6 +383,8 @@ def main() -> int:
                              "ci_lo": st.get("ci_lo")})
         per_exit.sort(key=lambda r: -(r["ci_lo"] if r["ci_lo"] is not None
                                       else -9e9))
+        if float(lvl) == PRODUCTION:
+            prod_sub = sub
         results.append({
             "level": float(lvl),
             "is_production": float(lvl) == PRODUCTION,
@@ -336,6 +395,24 @@ def main() -> int:
             "best": per_exit[0] if per_exit else None,
             "per_exit": per_exit[:6],
         })
+
+    # ---- S6-B3120f: SCORE reproduction against the landed family grade --
+    prod_check = []
+    for ex, g in prod_sub.groupby("exit_method", observed=True):
+        st = rc.evaluate(g["pnl_pct"], g["hold_days"], min_n=1)
+        if st is not None:
+            prod_check.append({"exit": str(ex), "n": int(len(g)),
+                               "sharpe": st.get("sharpe"),
+                               "ci_lo": st.get("ci_lo")})
+    fam_grid = Path(a.family_grid) if a.family_grid else (
+        ROOT / "output_audit" / f"{cube_dir.name}_grid_auto.json")
+    srep = score_reproduction(prod_check, fam_grid)
+    if srep["mismatches"]:
+        print("[FAIL] score reproduction (S6-B3120f): the production row does "
+              "not reproduce the landed family grade ("
+              + "; ".join(str(x) for x in srep["mismatches"][:6])
+              + ") - grading nothing.")
+        return 2
 
     # S6-B3117 (B3120 Batch C): the T3 single-axis enumerations ride the
     # same landing leg - battery-wired, never executed-once (L752/#290)
@@ -351,7 +428,10 @@ def main() -> int:
                        "breadth_step1_grid --cube-dir per leg; the P8xP11 "
                        "composite is S6-B3118a's grader - each axis family "
                        "has a named instrument (#290)"),
+        "basis": ("net: pnl_pct clipped to +/-WINSORIZE then minus "
+                  "COST_BPS/100 - roster_core.py:181 mirrored (S6-B3120f)"),
         "reproduction": repro,
+        "score_reproduction": srep,
         "occupancy": occupancy_disclosure(cube_dir, strat),
         "p11_tight": t3["p11_tight"],
         "p8_tight": t3["p8_tight"],
