@@ -53,8 +53,21 @@ from table_a_bands import (LEG_DEFN, PRODUCER_BANDS, STRATEGY_EXTRAS,  # noqa: E
 # production gates were missing from Table A depth (cmf_flip's
 # po3_accum_range_pct >= 0.0458, pairs_short's ppo_signal >= -0.858). One
 # nested-paren level is now allowed.
-_NUM_CMP = (r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"]"
+_NUM_CMP = (r"s\.get\(f?['\"]([a-zA-Z0-9_{}.]+)['\"]"
             r"(?:[^()]|\([^()]*\))*\)\s*([<>]=?)\s*(-?[0-9.]+)")
+
+# S6-B3120h: a SPAN-KEYED gate reads its signal through an f-string whose
+# placeholder is a config constant - s.get(f"price_above_ema_{_cfg.
+# STRAT_EMA_SPAN}") since B3119. The old key pattern ([a-z0-9_{}]+) could not
+# cross the '.', so the leg was DROPPED SILENTLY and every regeneration lost
+# the bollinger P3/P4 ema rows that had to be hand-restored (the L875 class
+# reaching the generator). Known config placeholders resolve to their
+# production value so the leg lands under its persisted production key (and
+# its PRODUCER_BANDS entry); an UNKNOWN braced key passes through unchanged -
+# visible in the render, never silently dropped.
+def _resolve_fstring_key(key: str) -> str:
+    from backtest import config as _bt_cfg
+    return key.replace("{_cfg.STRAT_EMA_SPAN}", str(_bt_cfg.STRAT_EMA_SPAN))
 
 OUT_DIR = ROOT / "strategy_optimisation"
 STATUS_JSON = ROOT / "output_audit" / "strategy_optimisation_status.json"
@@ -77,7 +90,8 @@ def depth_comparisons(src: str) -> dict:
         body = ast.unparse(n)
         rows = re.findall(_NUM_CMP, body)
         if rows:
-            out[n.name[len("strat_"):]] = [(k, op, float(v)) for k, op, v in rows]
+            out[n.name[len("strat_"):]] = [
+                (_resolve_fstring_key(k), op, float(v)) for k, op, v in rows]
     return out
 
 
@@ -97,8 +111,10 @@ def gate_legs(src: str) -> dict:
         if not (isinstance(n, ast.FunctionDef) and n.name.startswith("strat_")):
             continue
         body = ast.unparse(n)
-        all_keys = re.findall(r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"]", body)
-        numeric = {k for k, _, _ in re.findall(_NUM_CMP, body)}
+        all_keys = [_resolve_fstring_key(k) for k in re.findall(
+            r"s\.get\(f?['\"]([a-zA-Z0-9_{}.]+)['\"]", body)]
+        numeric = {_resolve_fstring_key(k)
+                   for k, _, _ in re.findall(_NUM_CMP, body)}
         legs = sorted({k for k in all_keys if k not in numeric})
         # left boundary required: without it the DEF SIGNATURE's own name
         # matched ("...crows_short(s)" yielded a phantom helper _crows_short)
@@ -266,11 +282,11 @@ def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
             _act = bool(env)
             if len(_cnts) == 1:
                 axes.append((f"P{pid}.{j}", k["param"][:40], _cnts[0], _sub,
-                             _act))
+                             _act, env))
             else:
                 for _ai, _c in enumerate(_cnts, 1):
                     axes.append((f"P{pid}.{j}.{_ai}", k["param"][:40],
-                                 _c, _sub, _act))
+                                 _c, _sub, _act, env))
         out.append(
             f"| P{pid}.{j} | BAND | {k['param']} - {k['evidence']} | "
             f"{k['basis']} | "
@@ -388,7 +404,8 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             _qs = sorted(set(round(float(q), 4) for q in _ser.quantile(QUANTS)))
             _hi = op in (">", ">=")
             _nfree = sum(1 for lv in _qs if (lv > prod if _hi else lv < prod))
-        axes.append((f"P{pid}", f"{key} {op} {_fmt(prod)}", _nfree + 1, True, True))
+        axes.append((f"P{pid}", f"{key} {op} {_fmt(prod)}", _nfree + 1, True,
+                     True, None))
         L.append(f"| P{pid} | STRATEGY | {key} `{op} {_fmt(prod)}` "
                  f"[EXISTING-THRESHOLD] | {LEG_DEFN.get(key, 'gate threshold on the persisted magnitude')} "
                  f"| `{op} {_fmt(prod)}` | production + {_nfree} tighter measured levels | measured tighter "
@@ -405,7 +422,8 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             # (B718a, GME pre-squeeze calibration) shared by every short
             # strategy: any band is per-strategy-override scope, on the
             # owner's word only.
-            axes.append((f"P{pid}", "days_to_cover cap 5.0", 1, False, False))
+            axes.append((f"P{pid}", "days_to_cover cap 5.0", 1, False, False,
+                         None))
             L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - underlying "
                      f"condition: days_to_cover > 5.0 (blocks the fire) | "
                      f"blocks SHORT fires when days_to_cover > 5.0 (B718a) | "
@@ -422,7 +440,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"inspect before any engine leg | BANDS-TO-DEFINE |")
     for k in STRATEGY_EXTRAS.get(name, []):
         pid += 1
-        axes.append((f"P{pid}", k["param"][:40], 1, True, True))
+        axes.append((f"P{pid}", k["param"][:40], 1, True, True, None))
         L.append(f"| P{pid} | STRATEGY | {k['param']} - {k['evidence']} | "
                  f"{k['basis']} | {k['production']} | {k.get('band', '-')} | "
                  f"{k.get('offline', '-')} | "
@@ -539,16 +557,32 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     # THIS table's axes (plan:1211 - computed, never hand-counted), paired
     # with the Formula section above (B1523: never shown apart).
     import math
-    fact = math.prod(n for _, _, n, _, _ in axes) if axes else 0
-    free = math.prod(n for _, _, n, s, _ in axes if s) if axes else 0
+    # S6-B3120h: ONE physical knob can back SEVERAL P-rows - STRAT_EMA_SPAN
+    # drives BOTH the below_ema_200 (short leg) and price_above_ema_200 (long
+    # leg) rows, per the SPECS bollinger_lower tools block ("ONE engine axis").
+    # Counting each row as its own factor squared the span axis (8 -> 64) for
+    # one env value. An env-actuated axis therefore counts ONCE per env name;
+    # every duplicate row still renders, marked as sharing its knob.
+    _seen_env: dict[str, str] = {}
+    eff, shared = [], {}
+    for t in axes:
+        aid, _prm, _n, _s, _a, envn = t
+        if envn and envn in _seen_env:
+            shared[aid] = (envn, _seen_env[envn])
+            continue
+        if envn:
+            _seen_env[envn] = aid
+        eff.append(t)
+    fact = math.prod(n for _, _, n, _, _, _ in eff) if eff else 0
+    free = math.prod(n for _, _, n, s, _, _ in eff if s) if eff else 0
     # THREE buckets, not two (S6-B2862). A fire-adding axis whose env actuator
     # does not exist cannot be run, so counting it in ENGINE RUNS would promise
     # engine hours for a band that is DEFINED but not IMPLEMENTED - state 1 of
     # the four-state workflow in runbook section 2.3. The old code got this right only
     # by accident: a prose band scored n=1, and n==1 was read as "no actuator".
-    runs = math.prod(n for _, _, n, s, a in axes if not s and a) if axes else 0
-    pend = math.prod(n for _, _, n, s, a in axes
-                     if not s and not a) if axes else 0
+    runs = math.prod(n for _, _, n, s, a, _ in eff if not s and a) if eff else 0
+    pend = math.prod(n for _, _, n, s, a, _ in eff
+                     if not s and not a) if eff else 0
     # S6-B2862: the rendered line here used to read "check {runs} x {free} =
     # {runs*free}". Every axis is in exactly ONE of the two buckets, so that
     # product equals FULL FACTORIAL identically - MEASURED, the "check" line
@@ -567,13 +601,17 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
           "rows above; pairs with the Formula in Section 1)", "",
           "| axis | parameter | n levels | class | own engine run? |",
           "|---|---|---|---|---|"]
-    for aid, prm, n, sub, act in axes:
+    for aid, prm, n, sub, act, _envn in axes:
         cls = "subset-safe" if sub else "**FIRE-ADDING**"
-        need = "no - derives offline" if sub else \
-            ("no - production only (DEFINED-NO-ACTUATOR)" if not act
-             else "**YES**")
+        if aid in shared:
+            _e, _first = shared[aid]
+            need = f"shares env {_e} with {_first} - ONE knob, counted once"
+        else:
+            need = "no - derives offline" if sub else \
+                ("no - production only (DEFINED-NO-ACTUATOR)" if not act
+                 else "**YES**")
         L.append(f"| {aid} | {prm} | {n} | {cls} | {need} |")
-    expr = " x ".join(str(n) for _, _, n, _, _ in axes) or "0"
+    expr = " x ".join(str(n) for _, _, n, _, _, _ in eff) or "0"
     L += ["", "```",
           f"FULL FACTORIAL     {expr} = {fact}",
           f"offline gradings   {free} level-combinations x 24 exits = {free * 24}",

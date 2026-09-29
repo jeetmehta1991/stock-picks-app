@@ -1,6 +1,6 @@
 # Table A - news_reversal_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit f55b7c1e7 at 2026-09-19 23:26:39 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:35:17 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 1 | **surviving fires (T1):** 1 (unchanged since R5 - filter is identity)
 
@@ -44,15 +44,15 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | close_above_open - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | bar direction: close vs open (bar-anatomy block) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | close_above_open - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | bar direction: close vs open (bar-anatomy block) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
 | P1.1 | BAND | (structural) c > o - optional min body pct - backtest/signals/technical.py bar-anatomy block | BRACKET zero | 0.0 | [0, 0.2, 0.5] pct | none - bar OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P2 | PRODUCER | close_in_top_40pct_of_range - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close inside the top/bottom 40pct of the bar's range (technical.py:1682) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2 | PRODUCER | close_in_top_40pct_of_range - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close inside the top/bottom 40pct of the bar's range (technical.py:1682) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
 | P2.1 | BAND | range-position cutoff - backtest/signals/technical.py:1682 | BRACKET production 0.40 | 0.4 | [0.25, 0.40, 0.50] | none - bar OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | STRATEGY | news_count_5d `>= 3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 3` | production + 1 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P4 | STRATEGY | news_sentiment_5d `<= -0.3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `<= -0.3` | production + 1 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P5 | STRATEGY | news_sentiment_shift `> 0.2` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 0.2` | production + 1 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P6 | STRATEGY | pct_change_5d `< -0.1` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `< -0.1` | production + 1 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -96,7 +96,7 @@ producer work, i.e. RESIM, never an offline band.
 
 `bb_20_20_mid` (1.0)
 
-**Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
+**Boundary (runbook section 4.3):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
 
@@ -115,7 +115,7 @@ breadth producers are an engine-side design act, never an offline sweep.
 FULL FACTORIAL     3 x 3 x 2 x 2 x 2 x 2 = 144
 offline gradings   16 level-combinations x 24 exits = 384
 ENGINE RUNS        1 (actuated fire-adding axes only)
-PENDING ACTUATION  9 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (plan 11.0b state 1; B2866)
+PENDING ACTUATION  9 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

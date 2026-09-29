@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 2daa28d28 at 2026-09-27 22:48:09 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit d1e93ff7f at 2026-09-29 01:49:11 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -109,7 +109,7 @@
 | cpr_narrow_momentum_short | confluence | 1696 | 155.9 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | three_black_crows_short | candle | 1674 | 153.9 | YES | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | parabolic_sar_flip_short | trend | 1672 | 153.7 |  | 100.0% | NONE | NOT-STARTED |
-| bollinger_lower | mean_reversion | 1622 | 149.1 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
+| bollinger_lower | mean_reversion | 1622 | 149.1 | YES | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | parabolic_sar_flip | trend | 1618 | 148.7 |  | 100.0% | NONE | NOT-STARTED |
 | smc_breaker_block_short | smc | 1598 | 0.0 | YES | 0.0% | LOOSEN | STALLED-CAMPAIGN |
 | three_white_soldiers | candle | 1596 | 146.7 |  | 100.0% | - | DONE-ADMITTED |

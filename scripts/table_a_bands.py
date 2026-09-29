@@ -23,15 +23,36 @@ STRATEGY_EXTRAS adds strategy-layer gates the source pattern cannot see
 # knob dict fields: param, production, band, basis, offline, resim, env,
 #                   evidence  (env=None -> DEFINED-NO-ACTUATOR for resim legs)
 
-_EMA200 = {"param": "ema span (the 200 in above/below_ema_200)",
-           "production": 200, "band": [150, 200, 250],
-           "basis": "BRACKET production; 150/250 are the adjacent canon spans",
-           "offline": "canon-span FLAGS (above/below ema 9/20/21/50/200) ARE "
-                      "persisted - measured 200-of-200 bollinger fires, "
-                      "S6-B3117b; offline as ADD-A-CONDITION legs only. The "
-                      "SWAP of the gate span, and non-canon spans, are RESIM",
-           "resim": "the whole band", "env": None,
-           "evidence": "backtest/signals/technical.py compute_ema_sma"}
+def _ema200_from_specs() -> dict:
+    """S6-B3120h (L875 reaching the generator): the ema-span knob's band and
+    actuator are DERIVED from the registry of record - SPECS['bollinger_lower']
+    P4 (STRAT_EMA_SPAN drives P3 and P4 as ONE physical knob, per that entry's
+    tools block) - never a literal. The literal [150, 200, 250] with env None
+    survived here after the T3/Q2-approved 8-level band was WIRED (B3119), so
+    every regeneration reverted the hand-corrected Table A rows. Fail closed:
+    if the SPECS entry cannot be read, the generator must stop, not fall back
+    to a stale literal."""
+    import producer_variant_table as _pvt
+    p4 = next(q for q in _pvt.SPECS["bollinger_lower"]["params"]
+              if q["id"] == "P4")
+    assert p4["env"], "SPECS bollinger_lower P4 lost its env actuator"
+    return {"param": "ema span (the 200 in above/below_ema_200)",
+            "production": p4["production"], "band": list(p4["band"]),
+            "basis": "SPECS bollinger_lower P3/P4 (T3/Q2-APPROVED 2026-09-27):"
+                     " production 200 + resim spans "
+                     + str(list(p4["resim_band"])),
+            "offline": "canon-span FLAGS (above/below ema 9/20/21/50/200) ARE "
+                       "persisted - measured 200-of-200 bollinger fires, "
+                       "S6-B3117b; offline as ADD-A-CONDITION legs only. The "
+                       "SWAP of the gate span, and non-canon spans, are RESIM",
+            "resim": "the whole band except production (resim_band "
+                     + str(list(p4["resim_band"])) + ")",
+            "env": p4["env"],
+            "evidence": "producer_variant_table.SPECS['bollinger_lower'] "
+                        "P3/P4; backtest/signals/technical.py compute_ema_sma"}
+
+
+_EMA200 = _ema200_from_specs()
 
 PRODUCER_BANDS = {
     # ---- candle patterns (shared shape, strict zeros) ---------------------

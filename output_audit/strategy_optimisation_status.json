@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "2daa28d28",
-    "generated_at": "2026-09-27 22:48:09"
+    "source_commit": "d1e93ff7f",
+    "generated_at": "2026-09-29 01:49:11"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -307,7 +307,7 @@
       "strategy": "bollinger_lower",
       "family": "mean_reversion",
       "r5_fires": 1622,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 149.1,
       "projected_current_gate": 149.1,
@@ -1301,9 +1301,15 @@
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "tickets": [
+        "S6-B3122"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3122"
+      ],
+      "mention_tickets": [
+        "S6-B3122"
+      ],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -1388,11 +1394,15 @@
         "institutional_new_positions": 1.0
       },
       "tickets": [
-        "S6-B2807"
+        "S6-B2807",
+        "S6-B3122"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3122"
+      ],
       "mention_tickets": [
-        "S6-B2807"
+        "S6-B2807",
+        "S6-B3122"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1453,9 +1463,12 @@
       },
       "tickets": [
         "S6-B2807",
-        "S6-B3116b"
+        "S6-B3116b",
+        "S6-B3122"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3122"
+      ],
       "mention_tickets": [
         "S6-B2646b",
         "S6-B2807",
@@ -1478,11 +1491,15 @@
         "rsi_14": 1.0
       },
       "tickets": [
-        "S6-B2874"
+        "S6-B2874",
+        "S6-B3122"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3122"
+      ],
       "mention_tickets": [
-        "S6-B2874"
+        "S6-B2874",
+        "S6-B3122"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"
@@ -1541,9 +1558,15 @@
         "institutional_increased": 1.0,
         "rsi_14": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "tickets": [
+        "S6-B3122"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3122"
+      ],
+      "mention_tickets": [
+        "S6-B3122"
+      ],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -1602,9 +1625,15 @@
       "tightenable_keys": {
         "institutional_new_positions": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "tickets": [
+        "S6-B3122"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3122"
+      ],
+      "mention_tickets": [
+        "S6-B3122"
+      ],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -1621,9 +1650,15 @@
       "tightenable_keys": {
         "institutional_new_positions": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "tickets": [
+        "S6-B3122"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3122"
+      ],
+      "mention_tickets": [
+        "S6-B3122"
+      ],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -1641,9 +1676,15 @@
         "institutional_increased": 1.0,
         "institutional_new_positions": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "tickets": [
+        "S6-B3122"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3122"
+      ],
+      "mention_tickets": [
+        "S6-B3122"
+      ],
       "admitted": true,
       "status": "DONE-ADMITTED"
     },
@@ -4317,11 +4358,15 @@
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B2674a"
+        "S6-B2674a",
+        "S6-B3122"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3122"
+      ],
       "mention_tickets": [
-        "S6-B2674a"
+        "S6-B2674a",
+        "S6-B3122"
       ],
       "admitted": true,
       "status": "DONE-ADMITTED"

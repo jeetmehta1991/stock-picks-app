@@ -1,6 +1,6 @@
 # Table A - weekly_bias_pullback_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit f55b7c1e7 at 2026-09-19 23:26:39 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:35:17 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** multi_timeframe | **status:** NOT-STARTED | **R5 fires:** 27 | **surviving fires (T1):** 27 (unchanged since R5 - filter is identity)
 
@@ -35,11 +35,11 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | weekly_bias_bull - emitted by backtest/signals/multi_timeframe.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | weekly close above weekly EMA(10) AND EMA(20) (multi_timeframe.py:45-90) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | weekly_bias_bull - emitted by backtest/signals/multi_timeframe.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | weekly close above weekly EMA(10) AND EMA(20) (multi_timeframe.py:45-90) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
 | P1.1 | BAND | weekly ema pair - backtest/signals/multi_timeframe.py:45-90 | BRACKET production | (10, 20) | [(5,10), (10,20), (20,40)] | none - weekly emas unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P2 | STRATEGY | rsi_14 `< 45` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 45` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P2.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -546,7 +546,7 @@ producer work, i.e. RESIM, never an offline band.
 
 `avwap_20high` (0.999), `avwap_20low` (0.996), `avwap_252low` (0.986), `avwap_50low` (0.997), `bb_10_20_lower` (0.996), `bb_10_20_mid` (0.999), `bb_10_20_upper` (0.998), `bb_20_15_lower` (0.996), `bb_20_15_mid` (1.0), `bb_20_15_upper` (0.999), `bb_20_20_lower` (0.996), `bb_20_20_mid` (1.0), `bb_20_20_upper` (0.998), `cam_r1` (0.997), `cam_r2` (0.996), `cam_r3` (0.997), `cam_r4` (0.997), `cam_s1` (0.997), `cam_s2` (0.996), `cam_s3` (0.996), `cam_s4` (0.996), `chandelier_long_value` (0.998), `chandelier_short_value` (0.998), `corp_donations_1y` (1.0), `corp_donations_count_1y` (1.0), `corp_donations_unique_pacs` (1.0), `cpr_bottom` (0.996), `cpr_top` (0.996), `dc10_lower` (0.996), `dc10_mid` (0.999), `dc10_upper` (0.999), `dc20_lower` (0.995), `dc20_mid` (0.998), `dc20_upper` (0.998), `dema` (0.999), `double_bottom_neckline` (1.0), `double_bottom_trough` (1.0), `double_top_neckline` (1.0), `double_top_peak` (1.0), `entry_stop_long` (0.995), `entry_stop_short` (0.999), `fib_236` (0.997), `fib_382` (0.996), `fib_500` (0.995), `fib_618` (0.993), `fib_786` (0.987), `fib_ext_127` (0.995), `fib_ext_162` (0.991), `hull_ma` (0.997), `ichi_kijun` (0.998), `ichi_senkou_a` (0.993), `ichi_senkou_b` (0.99), `ichi_tenkan` (0.999), `kc_lower` (0.996), `kc_mid` (0.999), `kc_upper` (0.999), `monthly_close` (0.997), `monthly_sma_12` (0.987), `monthly_sma_6` (0.989), `pivot` (0.996), `prev_close` (0.997), `prev_high` (0.996), `prev_low` (0.996), `psar_value` (0.997), `r1` (0.996), `r2` (0.996), `r3` (0.998), `s1` (0.997), `s2` (0.996), `s3` (0.992), `supertrend_value` (0.99), `swing_high` (0.998), `swing_low` (0.981), `tema` (0.996), `triangle_breakout_pct` (1.0), `triangle_resistance_level` (1.0), `triangle_support_level` (1.0), `vp_poc` (0.985), `vp_value_area_high` (0.997), `vp_value_area_low` (0.987), `weekly_close` (0.997), `weekly_ema_10` (0.997), `weekly_ema_20` (0.996), `wood_p` (0.996), `wood_r1` (0.998), `wood_r2` (0.998), `wood_s1` (0.996), `wood_s2` (0.995), `year_high` (0.995)
 
-**Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
+**Boundary (runbook section 4.3):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
 
@@ -562,7 +562,7 @@ breadth producers are an engine-side design act, never an offline sweep.
 FULL FACTORIAL     3 x 5 x 3 = 45
 offline gradings   5 level-combinations x 24 exits = 120
 ENGINE RUNS        1 (actuated fire-adding axes only)
-PENDING ACTUATION  9 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (plan 11.0b state 1; B2866)
+PENDING ACTUATION  9 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

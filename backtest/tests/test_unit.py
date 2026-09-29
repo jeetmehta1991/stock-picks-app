@@ -46904,6 +46904,56 @@ def test_b3119e_charter_span_band_matches_specs():
         for other in rows:
             if other not in band_rows:
                 assert "DEFINED-NO-ACTUATOR" not in other, (rid, other[:80])
+
+
+def test_b3120h_span_knob_from_specs_and_counted_once():
+    """S6-B3120h: (1) the GENERATOR derives the ema-span band and its actuator
+    from SPECS['bollinger_lower'] P4 - never a literal (the stale [150,200,250]
+    env-None literal made every regeneration revert the approved band); (2) a
+    SPAN-KEYED gate (s.get(f"...{_cfg.STRAT_EMA_SPAN}")) is extracted as a leg
+    on the LIVE screener source, not silently dropped (L878: drive the live
+    branch, not only a fixture); (3) the committed Table A footer counts the
+    ONE physical knob once - P4.1 shares env with P3.1, the factorial carries
+    exactly one x8 factor, ENGINE RUNS equals the band length."""
+    import re
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for pth in (str(root), str(root / "scripts")):
+        if pth not in sys.path:
+            sys.path.insert(0, pth)
+    import producer_variant_table as pvt
+    import table_a_bands as tab
+    import build_table_a as bta
+
+    p4 = [p for p in pvt.SPECS["bollinger_lower"]["params"] if p["id"] == "P4"][0]
+    # (1) generator rows == registry, both legs, band AND actuator
+    for leg in ("price_above_ema_200", "below_ema_200"):
+        knob = tab.PRODUCER_BANDS[leg][0]
+        assert knob["band"] == list(p4["band"]), (leg, knob["band"], p4["band"])
+        assert knob["env"] == p4["env"] == "STRAT_EMA_SPAN", (leg, knob["env"])
+    # (2) live-path leg extraction from the real screener source
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    legs, _helpers = bta.gate_legs(src)["bollinger_lower"]
+    for leg in ("price_above_ema_200", "below_ema_200"):
+        assert leg in legs, (leg, legs)
+    # (3) footer of the committed artifact: one knob, counted once
+    text = (root / "strategy_optimisation" / "tighten" /
+            "bollinger_lower.md").read_text(encoding="utf-8")
+    foot = text.split("## Factorial", 1)[1]
+    p31 = [ln for ln in foot.splitlines() if ln.startswith("| P3.1 |")]
+    p41 = [ln for ln in foot.splitlines() if ln.startswith("| P4.1 |")]
+    assert len(p31) == 1 and len(p41) == 1, (len(p31), len(p41))
+    assert "**YES**" in p31[0], p31[0]
+    assert "shares env STRAT_EMA_SPAN with P3.1" in p41[0], p41[0]
+    m = re.search(r"FULL FACTORIAL\s+([0-9 x]+)=", foot)
+    assert m, "no FULL FACTORIAL line"
+    factors = m.group(1).split(" x ")
+    assert factors.count(str(len(p4["band"]))) == 1, factors
+    r = re.search(r"ENGINE RUNS\s+(\d+)", foot)
+    assert r and int(r.group(1)) == len(p4["band"]), (r and r.group(1),
+                                                     len(p4["band"]))
 def test_b3120b_lens_shape_conformance():
     """S6-B3120b (+ the S6-B3119b pin): the battery lens set must not FAIL a
     strategy for its SHAPE. Arms: dual -> INFO, single -> INFO, genuinely

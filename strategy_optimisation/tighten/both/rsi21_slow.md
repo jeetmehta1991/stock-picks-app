@@ -1,6 +1,6 @@
 # Table A - rsi21_slow
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit f55b7c1e7 at 2026-09-19 23:26:39 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:35:17 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** mean_reversion | **status:** NOT-STARTED | **R5 fires:** 9 | **surviving fires (T1):** 9 (unchanged since R5 - filter is identity)
 
@@ -41,14 +41,14 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | below_sma_50 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | below_sma_50 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
 | P1.1 | BAND | sma span - backtest/signals/technical.py sma block | BRACKET production with adjacent canon spans | 50 | [20, 50, 100] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P2 | PRODUCER | price_above_sma_50 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2 | PRODUCER | price_above_sma_50 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
 | P2.1 | BAND | sma span - backtest/signals/technical.py sma block | BRACKET production with adjacent canon spans | 50 | [20, 50, 100] | none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | STRATEGY | rsi_21 `< 40` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `< 40` | production + 3 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P4 | STRATEGY | rsi_21 `> 60` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 60` | production + 0 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P5 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -591,7 +591,7 @@ producer work, i.e. RESIM, never an offline band.
 
 `avwap_20high` (0.967), `avwap_20low` (1.0), `avwap_252low` (0.967), `avwap_50low` (0.979), `bb_10_20_lower` (0.979), `bb_10_20_mid` (0.983), `bb_10_20_upper` (0.983), `bb_20_15_mid` (1.0), `bb_20_15_upper` (1.0), `bb_20_20_mid` (1.0), `bb_20_20_upper` (0.983), `cam_r1` (0.983), `cam_r2` (0.983), `cam_r3` (0.983), `cam_r4` (0.983), `cam_s1` (0.983), `cam_s2` (0.983), `cam_s3` (0.983), `cam_s4` (0.983), `cpr_bottom` (0.983), `cpr_top` (0.983), `days_since_last_earnings` (1.0), `dc10_lower` (0.996), `dc10_mid` (0.996), `dc10_upper` (0.992), `dc20_lower` (0.975), `dc20_mid` (0.996), `dc20_upper` (0.992), `double_bottom_neckline` (1.0), `double_bottom_trough` (1.0), `double_top_neckline` (1.0), `double_top_peak` (1.0), `earnings_announcement_return` (1.0), `earnings_eps_yoy_growth` (-1.0), `fib_236` (0.992), `fib_382` (0.992), `fib_500` (0.992), `fib_618` (0.992), `fib_786` (0.992), `fib_ext_127` (0.992), `fib_ext_162` (0.975), `hull_ma` (0.983), `ichi_kijun` (0.992), `ichi_tenkan` (0.996), `monthly_close` (0.967), `pct_from_avwap_20low` (-0.983), `pct_from_vwap` (0.979), `pivot` (0.983), `prev_close` (0.983), `prev_high` (0.983), `prev_low` (0.979), `psar_value` (0.983), `r1` (0.983), `r2` (0.983), `r3` (0.983), `s1` (0.983), `s2` (0.983), `s3` (0.996), `search_volume_index_recent` (1.0), `supertrend_value` (0.983), `swing_high` (0.992), `swing_low` (0.979), `vix_today` (0.996), `vix_value` (0.996), `vp_value_area_low` (0.967), `weekly_close` (0.967), `wood_p` (0.983), `wood_r1` (0.983), `wood_r2` (0.983), `wood_s1` (0.983), `wood_s2` (0.983), `xs_quality_decile` (1.0), `xs_quality_gross_profitability` (1.0), `year_low` (0.975)
 
-**Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
+**Boundary (runbook section 4.3):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
 
@@ -609,7 +609,7 @@ breadth producers are an engine-side design act, never an offline sweep.
 FULL FACTORIAL     3 x 3 x 4 x 1 x 1 = 36
 offline gradings   4 level-combinations x 24 exits = 96
 ENGINE RUNS        1 (actuated fire-adding axes only)
-PENDING ACTUATION  9 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (plan 11.0b state 1; B2866)
+PENDING ACTUATION  9 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

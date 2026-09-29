@@ -1,6 +1,6 @@
 # Table A - pairs_mean_reversion_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 72739db05 | commit f55b7c1e7 at 2026-09-19 23:25:29 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:37:24 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** pairs | **status:** NOT-STARTED | **R5 fires:** 5698 | **surviving fires (T1):** 4461 (survives_pct 0.7829)
 
@@ -42,7 +42,7 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | pair_counterparty - emitted by backtest/signals/pairs_trading.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | display field naming the paired ticker - not a gate (pairs_trading.py:377) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (11.2s - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | pair_counterparty - emitted by backtest/signals/pairs_trading.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | display field naming the paired ticker - not a gate (pairs_trading.py:377) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
 | P1.1 | BAND | (not a gate) display field naming the paired ticker - backtest/signals/pairs_trading.py:377 region | no band - rationale text only | - | - | - | - | T3 review before any grid |
 | P2 | STRATEGY | pair_count_active `> 0` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 0` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P2.1 | BAND | EG cointegration significance - backtest/signals/pairs_trading.py:46 | BRACKET production toward strict (precompute-side) | 0.05 | 0.01, 0.05 | none - pair set is a PRECOMPUTE | the whole band (re-run pairs precompute + engine); DEFINED-NO-ACTUATOR | T3 review before any grid |
@@ -52,7 +52,7 @@ leg runs.
 | P4 | STRATEGY | pair_zscore_signed `> 2` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 2` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P5 | STRATEGY | ppo_signal `>= -0.858` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= -0.858` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P6 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (11.2b3; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
+| B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
 
@@ -797,7 +797,7 @@ producer work, i.e. RESIM, never an offline band.
 
 `avwap_20high` (0.998), `avwap_20low` (1.0), `avwap_252low` (0.993), `avwap_50low` (0.999), `bb_10_20_lower` (0.999), `bb_10_20_mid` (1.0), `bb_10_20_upper` (0.998), `bb_20_15_lower` (0.999), `bb_20_15_mid` (1.0), `bb_20_15_upper` (0.999), `bb_20_20_lower` (0.998), `bb_20_20_mid` (1.0), `bb_20_20_upper` (0.999), `cam_r1` (0.998), `cam_r2` (0.998), `cam_r3` (0.998), `cam_r4` (0.998), `cam_s1` (0.998), `cam_s2` (0.998), `cam_s3` (0.998), `cam_s4` (0.998), `chandelier_long_value` (0.999), `chandelier_short_value` (0.999), `cpr_bottom` (0.998), `cpr_top` (0.998), `cup_handle_breakout_level` (0.999), `cup_handle_rim` (0.999), `dc10_lower` (0.999), `dc10_mid` (0.999), `dc10_upper` (0.998), `dc20_lower` (0.999), `dc20_mid` (1.0), `dc20_upper` (0.999), `dema` (0.999), `double_bottom_neckline` (0.998), `double_bottom_trough` (0.998), `double_top_neckline` (0.998), `double_top_peak` (0.999), `entry_stop_long` (0.998), `entry_stop_short` (0.997), `fib_236` (0.999), `fib_382` (0.999), `fib_500` (0.999), `fib_618` (0.999), `fib_786` (0.998), `fib_ext_127` (0.997), `fib_ext_162` (0.995), `flag_bull_breakout_level` (1.0), `head_shoulders_bottom_neckline` (0.999), `head_shoulders_top_neckline` (0.998), `hull_ma` (0.999), `ichi_kijun` (1.0), `ichi_senkou_a` (0.997), `ichi_senkou_b` (0.994), `ichi_tenkan` (0.999), `inverted_cup_handle_breakdown_level` (0.999), `inverted_cup_handle_rim_low` (0.998), `kc_lower` (1.0), `kc_mid` (1.0), `kc_upper` (1.0), `monthly_close` (0.998), `monthly_sma_12` (0.987), `monthly_sma_6` (0.997), `pivot` (0.998), `prev_close` (0.998), `prev_high` (0.998), `prev_low` (0.998), `psar_value` (0.999), `r1` (0.998), `r2` (0.998), `r3` (0.997), `s1` (0.998), `s2` (0.998), `s3` (0.998), `supertrend_value` (0.998), `swing_high` (0.998), `swing_low` (0.995), `tema` (0.999), `triangle_resistance_level` (1.0), `triangle_support_level` (1.0), `vp_poc` (0.997), `vp_value_area_high` (0.999), `vp_value_area_low` (0.995), `weekly_close` (0.998), `weekly_ema_10` (1.0), `weekly_ema_20` (0.998), `wood_p` (0.998), `wood_r1` (0.998), `wood_r2` (0.998), `wood_s1` (0.998), `wood_s2` (0.998), `year_high` (0.982), `year_low` (0.951)
 
-**Boundary (plan 11.2s):** a producer with NO key in signals_at_entry is
+**Boundary (runbook section 4.3):** a producer with NO key in signals_at_entry is
 invisible to this table and to every offline instrument - genuinely new
 breadth producers are an engine-side design act, never an offline sweep.
 
@@ -818,7 +818,7 @@ breadth producers are an engine-side design act, never an offline sweep.
 FULL FACTORIAL     5 x 2 x 3 x 1 x 5 x 5 x 5 x 1 = 3750
 offline gradings   625 level-combinations x 24 exits = 15000
 ENGINE RUNS        1 (actuated fire-adding axes only)
-PENDING ACTUATION  6 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (plan 11.0b state 1; B2866)
+PENDING ACTUATION  6 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

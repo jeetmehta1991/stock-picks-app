@@ -20,6 +20,7 @@
 - **F. CANDLE FAMILY (three_white_soldiers / three_black_crows_short - IN CAMPAIGN)** - F.1, F.2, F.3, F.4, F.5, F.6
 - **G. FAMILY EXAMPLES OF CLASS-LEVEL COMMANDS AND ARTIFACTS** - G.1, G.2, G.3, G.4, G.5, G.6, G.7, G.8
 - **H. SHARED LAUNCH MEASUREMENTS (both families)** - H.1, H.2
+- **I. BOLLINGER FAMILY (bollinger_lower - IN CAMPAIGN)** - I.1, I.2, I.3, I.4, I.5
 
 ---
 
@@ -2079,3 +2080,78 @@ stale the moment one is repaired, and a stale list nearly retired a working exit
 **UPDATE B3114 (2026-09-26) - c14 STEP 2 FAIL; STEP 3 BREADTH RUN ON THE OWNER'S WORD; ITEM 9 RULED (c) FORWARD PRE-REGISTRATION.** The c14 Step-2 restart landed COMPLETE (4 legs, 3 clean resume boundaries, battery exit 0, landing dce47e5d4) and graded FAIL - the IS-selected exit's holdout sharpe -0.051 on 191 of 955 trades (output_audit/output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3_grid_auto.json). The owner halted the waterfall (c08/c13 holdouts unspent) and invoked Step 3 breadth on c14: the two-exit companion screen over 1,275 R5 fires (459 signals, 9+7 FDR survivors, 5 sign-consistent) clustered to B1 cot_ndx_mmoney_pctile_3y (ge) + B2 sector_strongest_rs (le), band approved (B3 short_interest_observations struck as a coverage proxy); the 192-trial grid on c14's OWN fires (breadth_step1_grid.py --cube-dir, S6-B3112c tooling) headlined B1>=0.8462 IS 1.509 on 161 of 764, priced at p=0.005 by the exact-search permutation null; the ONE holdout read (b3114, ruling verbatim, DISCLOSED-RE-READ) found 1 of 192 cells clearing all six gates - B1>=0.637 at class_time_stop, HO 1.779 psr 0.9653 n 36/343 WITH is_sharpe -0.421 (inversion disclosed) - and the control comparison refuted the universal-overlay alternative (lift -0.664 on the control's own fires). OWNER RULING 2026-09-26 'C approved': no admission; the cell is FORWARD PRE-REGISTERED confirm-or-strike in output_audit/b3114_tws_c14_breadth_forward_prereg.json (b2652 form: one hypothesis, one read, >=15 forward trades after 2026-05-05 or it expires). The campaign closes with the thread parked on the forward trigger.
 
 **UPDATE B3115 (2026-09-26) - ADMISSION SUPERSEDES THE (c) PARKING.** Hours after ruling (c), the owner ruled verbatim: 'Approved add this cell to the phase 1B roster along with the mirror short strategy.' three_white_soldiers is ADMITTED at the c14 breadth line (producer n_bars 3/body 0.5/step 0.0/wick 0.3 + cot_ndx_mmoney_pctile_3y >= 0.637, exit class_time_stop; HO 1.779 psr 0.9653 PF 2.154 sortino 2.873 n 36/343; labels GRID-SELECTED-OWNER-RULED + DISCLOSED-RE-READ + IS-HOLDOUT-INVERSION with IS -0.421) as admissions entry 15 (S6-B3114b), rendered into PHASE_1B_ROSTER.md by the S6-B2413 identity-only pipeline - the renderer gained the read-tool evidence dialect (all_live_gates/full_n) as S6-B3114b's pinned helpers. The REGISTERED mirror strat_three_black_crows_short is counted per the standing mirror policy (pattern-only; the breadth filter has no ruled economic mirror - asymmetry surfaced). The b3114 forward registration STAYS LIVE as additional evidence per the B2660 doctrine (never a strike condition post-admission). Deployable total 29 -> 31 distinct (15 Step-2 admissions).
+---
+
+## I. BOLLINGER FAMILY (bollinger_lower - IN CAMPAIGN)
+
+Appended B3127 (2026-09-29, S6-B3120h): the campaign records owed by runbook 4.7/4.8/4.9,
+written from the committed artifacts named per section. bollinger_lower is a DUAL strategy
+(long lower-band reclaim / short upper-band reclaim) gated on the STRAT_EMA_SPAN trend leg.
+
+### I.1 T3 band ruling and R1 registration
+
+- **T3/Q2 owner ruling 2026-09-27, verbatim: "Q2 approved one line change fix. I want to test
+  various spans."** The one-line fix made the gate SPAN-KEYED (screener.py:1856-1857 reads
+  s.get(f"price_above_ema_{STRAT_EMA_SPAN}") / below_ema_{...}); the approved span band is
+  production 200 + resim {9, 20, 21, 50, 100, 150, 250}.
+- **R1 (B3119):** SPECS["bollinger_lower"] promoted from PHASE0 with the full tools adapter
+  (spot_check_bollinger.py / grade_bollinger_config.py / grade_free_levels_bollinger.py);
+  ONE engine axis - STRAT_EMA_SPAN drives BOTH the P3 (short) and P4 (long) legs. EMA_PAIRS
+  is the producer actuator for non-default spans (250).
+- **Records repair (B3127, S6-B3120h):** table_a_bands._EMA200 now DERIVES the band + actuator
+  from the SPECS entry (the stale [150,200,250]/env-None literal had reverted every
+  regeneration); build_table_a extracts span-keyed f-string legs and counts the one env knob
+  ONCE in the factorial (ENGINE RUNS 8, was double-counted). Pins: test_b3119e + test_b3120h.
+
+### I.2 Step-1 span chain (7 of 7 COMPLETE) and its rank-1 table
+
+Chain of 7 configs, 1y x 200 tickers each, engine-invoked battery terminal on every landing;
+CHAIN DONE, monitor retired (S6-B3119). Family grades are NET of cost (grade_bollinger_config
+is roster_core-delegated), IS-only, a ranking and never an admission. Rank-1 cells per span
+(output_audit/output_bl_spanNNN_spanNNN_grid_auto.json):
+
+| span | exit | is_ci_lo | is_sharpe | fires |
+|---|---|---|---|---|
+| 9 | breakeven_plus_trail | +0.582 | 0.957 | 308 |
+| 250 | reverse_signal | +0.295 | 0.502 | 698 |
+| 100 | breakeven_plus_trail | +0.240 | 0.548 | 414 |
+| 150 | breakeven_plus_trail | +0.124 | 0.396 | 539 |
+| 50 | breakeven_plus_trail | +0.042 | 0.530 | 162 |
+| 20 | regime_flip | -0.361 | 0.979 | 37 |
+| 21 | regime_flip | -0.458 | 1.030 | 29 |
+
+### I.3 Multiplicity null
+
+B2676 joint shuffle, 200 permutations, seed 20260928
+(output_audit/b3119_bollinger_step1_null.json): long p 0.010, short p 0.149,
+campaign p 0.0199.
+
+### I.4 Per-leg breadth grids and free levels (bases stated per artifact)
+
+- **Breadth (per leg, GROSS basis - breadth_step1_grid scores raw pnl_pct; S6-B3122 class):**
+  output_audit/b3119_bollinger_lower_grid_long.json rank-1 time_stop_10d is_ci_lo 1.858 /
+  is_sharpe 2.816; ...grid_short.json rank-1 regime_flip 0.318 / 1.76. Rankings only; no
+  holdout read.
+- **Free levels (NET since B3123 - S6-B3120f):** all 7 span free-level artifacts
+  (output_bl_spanNNN_spanNNN_free_levels.json) re-graded on the roster basis
+  (clip +/-300, minus 0.2) behind a fail-closed score-reproduction gate - each reproduces its
+  landed family grade on 24 of 24 exits, 0 mismatches. The span-9 p8-tight cell reads
+  regime_flip ci_lo 0.659 (n 281) vs production regime_flip 0.580: like-for-like gain +0.079.
+  The earlier gross +0.769-vs-+0.684 pair is RETRACTED (L877); free-level cells are IS-only
+  and take no holdout read in Step 2 (owner-approved pre-registration item 2, 2026-09-29).
+
+### I.5 Step-2 slate, pre-triage and cost (runbook 4.7/4.8)
+
+- **Mechanical slate on step1_ranking[0].is_ci_lo:** (1) span 9 +0.582 n 308, (2) span 250
+  +0.295 n 698, (3) span 100 +0.240 n 414 - 0 ties, all DEEP tier (n >= 100). Waterfall runs
+  config 1 first; stop on qualification.
+- **4.8 pre-triage projection:** smallest slate config (span 9, 308 Step-1 fires) projects
+  ~3,351 full-period trades (x10.88) against the 75 floor - clears.
+- **Step-2 cost from each config's own Step-1 elapsed_s (x10.88 ticker-years):** span 9
+  6,423 s -> 19.4 h; span 250 6,626 s -> 20.0 h; span 100 7,111 s -> 21.5 h; ~5 legs each at
+  the 4.5 h leg cap.
+- **Owner-approved pre-registration (2026-09-29, "Approve all recs" on the B3122 council
+  items):** (1) NET basis written down before the read; (2) production slate only - free-level
+  cells not read; (3) up to 3 looks at one holdout, counted in the multiplicity block;
+  (4) costs as above; (5) whether an all-three fail counts toward S6-B2178c's re-raise
+  trigger remains the owner's, needed only after results.
