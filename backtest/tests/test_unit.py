@@ -47447,3 +47447,71 @@ def test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason():
         ""])
     got = _b3121_call_site_seams(planted)
     assert got == {("_p1", "zz"), ("_p2", "yy"), ("_p3", "xx")}, got
+
+
+
+# B3122 (S6-B3122, L879): every script under scripts/ that calls
+# roster_core.evaluate scores NET (it loads through load_cube or applies
+# COST_BPS) or is named here as a RAW scorer. Frozen at B3122 and shrink-only;
+# each member was read at B3122 and its reason recorded.
+_B3122_RAW_SCORERS = {
+    "b2701_smc_lsr_step2.py":
+        "reads output_r5_merged_1_7 raw through smc_lsr_step1.build and scores ho pnl_pct",
+    "breadth_step2_read.py":
+        "grades breadth_step1_grid.build_frame, a raw pd.read_csv of the cube (the "
+        "xs_momentum_top_decile and three_white_soldiers admission reads)",
+    "composite_variant_test.py":
+        "reads TRADE_LOG and CUBE with pd.read_csv (the xs_low_beta_with_smart_money_long "
+        "admission read)",
+    "family_pregate.py":
+        "reads the cube with pd.read_csv and scores ho pnl_pct",
+    "grade_family_siblings.py":
+        "reads the cube with pd.read_csv and scores hold_rows pnl_pct",
+    "grade_free_levels_bollinger.py":
+        "S6-B3120f: raw pd.read_csv of trade_exit_detail in main()",
+    "grade_free_levels_candle.py":
+        "S6-B3120f: the same raw-read shape; serves both candle legs",
+    "institutional_companion_grid.py":
+        "reads the cube with pd.read_csv (the 9 institutional admission reads)",
+    "offline_holdout_read.py":
+        "grades offline_level_sweep.load, a raw read of the cube (the 2 pead admission reads)",
+    "offline_level_sweep.py":
+        "reads TRADE_LOG and CUBE with pd.read_csv",
+}
+
+
+def test_b3122_every_trade_scorer_is_net_or_named_gross():
+    """B3122 (S6-B3122, L879): test_b3120f's population was the SPECS-registered
+    free-level adapters, so the admission-era Step-2 readers - which judged 14 of
+    15 admitted lines on raw pnl, with no trading cost at all - sat outside it.
+    This widens the population to every script under scripts/ that calls
+    evaluate: each is NET (load_cube or COST_BPS in the file) or a named member of
+    the frozen raw set. A NEW raw scorer fails; a member that becomes net must
+    leave the set (shrink-only). The classifier is test_b3120f's; a known-net
+    family grader is asserted NET here as the live positive control."""
+    import ast
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2] / "scripts"
+    raw = set()
+    for f in sorted(root.glob("*.py")):
+        src = f.read_text(encoding="utf-8", errors="replace")
+        if "evaluate" not in src:
+            continue
+        calls = any(
+            isinstance(n, ast.Call) and (
+                (isinstance(n.func, ast.Attribute) and n.func.attr == "evaluate")
+                or (isinstance(n.func, ast.Name) and n.func.id == "evaluate"))
+            for n in ast.walk(ast.parse(src)))
+        if calls and _b3120f_classify(src) == "GROSS":
+            raw.add(f.name)
+    new = raw - set(_B3122_RAW_SCORERS)
+    fixed = set(_B3122_RAW_SCORERS) - raw
+    assert not new, ("a NEW script scores trades on raw pnl (no load_cube, no "
+                     f"COST_BPS) - route it through roster_core.load_cube: {sorted(new)}")
+    assert not fixed, ("these scripts now score net or are gone - remove them from "
+                       f"_B3122_RAW_SCORERS (shrink-only): {sorted(fixed)}")
+    assert len(_B3122_RAW_SCORERS) <= 10, "the raw-scorer set is shrink-only"
+    assert all(len(r) >= 30 for r in _B3122_RAW_SCORERS.values())
+    # live positive control: a family grader that loads through load_cube is NET
+    bol = (root / "grade_bollinger_config.py").read_text(encoding="utf-8")
+    assert "load_cube" in bol and _b3120f_classify(bol) == "NET"

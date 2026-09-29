@@ -23866,3 +23866,35 @@ COMPLIANCE FAILURE against #276b (INSTANCE note added). Batch re-exam (B1446 rul
 REMEDY per L720): L876 and L877 were instances of existing items with their ratchets named;
 L878's seam half is one too, while its crash half carries a remedy no item held - hence #324
 rather than a third INSTANCE-only entry.
+
+### L879 - A RULE THAT CLOSES A SUBJECT TO RE-TESTING DOES NOT CLOSE IT TO REPORTING (B3122, found answering "What decisions are needed from me?" 2026-09-28)
+
+MEASURED: 14 of the 15 admitted Phase-1B lines rest on Step-2 reads whose producing scripts score
+the cube's raw pnl_pct - no COST_BPS/100 deduction and no WINSORIZE cap, the two steps
+roster_core.load_cube applies (roster_core.py:181) and the roster funnel applies
+(build_phase_1b_roster.py:368): offline_holdout_read.py via offline_level_sweep.load (the 2 pead
+admissions), institutional_companion_grid.py (the 9 institutional admissions),
+breadth_step2_read.py via breadth_step1_grid.build_frame (xs_momentum_top_decile,
+three_white_soldiers) and composite_variant_test.py (xs_low_beta_with_smart_money_long); only
+smc_breaker_block_long went through tighten_breaker_block.py and load_cube. The cube carries no
+trading cost of its own: its per-exit return is _pnl(entry, exit), the gross price move
+(exit_strategies.py:75-85), while improvements.apply_transaction_costs runs only on the trade log
+(backtest.py:3953) - so those 14 were judged with zero cost against gates the roster applies net,
+and the 0.2 is not a double haircut. A file-local AST sweep over scripts/ flags 10 of 22 callers of
+roster_core.evaluate as raw scorers; all 10 were read and confirmed. At B3120 the S6-B3120f row
+had already seen institutional_companion_grid.py in a keyword sweep and left it "UNVERIFIED, not
+ticketed, admitted lines stay closed without the owner's word". Verifying it needed only code
+reads, no re-test, and telling the owner needed nothing at all: the owner's closed rule governs
+reading an admitted line's holdout again, not reading the code that produced its evidence. Found
+this turn because assessing the candle re-grade question's stakes forced the provenance read, and
+a five-advisor council then asked whether the engine already charges costs - the code read above
+settled it.
+RULE: when a suspected defect touches a closed or admitted object, verify it from code the same
+turn and put it to the owner as a decision; closed-to-retesting binds holdout reads and re-scores,
+never provenance reads or reporting. COMPLIANCE FAILURE against #290 (a grader's basis must match
+the landed family basis) and against the skill's no-silent-resolution rule (L633). MECHANISM:
+test_b3122_every_trade_scorer_is_net_or_named_gross - every script under scripts/ that calls
+roster_core.evaluate either loads through load_cube or applies COST_BPS, or is named in a frozen,
+shrink-only set of the 10 raw scorers with the reason read for each; a new raw scorer fails. The
+instance - whether the 14 admissions are re-scored on the net basis - is S6-B3122, on the owner's
+word.
