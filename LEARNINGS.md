@@ -23936,4 +23936,39 @@ re-gated stable before any commit.
   residue it CREATED (S6-B3120g); the sibling disclosure - tracked
   output_audit artifacts MODIFIED between its two fingerprints - is ticketed
   S6-B3130a rather than declared judgment-only.
+### L881 - record-of-fact (B3132): the b3131 monitor's stall seed read a checkpoint, an L656 instance, self-caught at firing 2
 
+**record-of-fact** - an event record, no new rule - the rule is L656's ("read a counter only the
+WORK can advance; diff it, never trust freshness") and it already lives in the
+skill's tripwire table; this entry records the instance. MEASURED: the b3131
+monitor's firing-1 state seeded sim_day_index from engine_state.json - a
+CHECKPOINT written at day boundaries (mtime showed one write, at day 5) - so
+firing 2 read a false stall (5 == 5) while the live counter,
+run_heartbeat.json, stood at sim_day 15 with 65 closed trades. Caught before
+any loud report by reading the heartbeat and the log's newest day line.
+Compliance failure against L656 / #121; incident-specific, belongs only here -
+the durable fix is in the INSTRUMENT: the monitor cron was re-armed (B3132,
+job b3d0a0d0) with the ambiguity DELETED from its prompt (run_heartbeat.json
+ONLY; engine_state.json named as a checkpoint that must never seed the diff) -
+the #302 remedy, a degree of freedom removed rather than a rule added. Sweep
+(instrument: this session's CronCreate list): 1 of 1 armed monitor carried the
+ambiguous two-file instruction; 1 of 1 corrected.
+### L882 - record-of-fact (B3134): an exemption reason cited L581 as precedent, and L581 records the harm
+
+**record-of-fact** - an event record, no new rule. The rule is L595's ("a
+citation is a claim with an address") and it already lives in the skill; this
+entry records the instance and is incident-specific, so it belongs only here.
+MEASURED on the Opus 5.5 hand-off's fresh-eyes pass: the B3131 SBNY pre-leg
+exemption reason said "same bars R5 consumed - the L581 ticker" as reassurance;
+L581 is the entry where exactly those post-failure bars inflated an R5 mean to
++944.752pct. The citation argued for the opposite of what it was cited for.
+Compliance failure against #201 / L595 - the address was never opened. The
+consequence was checked, not assumed: the engine's eligibility is year-start
+only (backtest.py:499), the grader keeps collapse prints (roster_core.py:181),
+so the exposure is real; live entries so far 0 (sim-day 302). Remedies:
+S6-B3134 pre-registers a non-gating sensitivity before the holdout read;
+S6-B3134a tickets the engine root cause S6-B1901a never reached. Mechanism:
+the mechanizable slice ran this turn - a sweep script listing every L-citation
+in the session's queue rows beside the cited entry's title (10 of 10 exist and
+point the right way); telling SUPPORT from CONTRADICTION needs the entry's
+meaning, which no scan reads, so detection stays judgment-only past that slice.

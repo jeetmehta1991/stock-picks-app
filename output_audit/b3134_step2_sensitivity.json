@@ -1,0 +1,423 @@
+{
+ "instrument": "scripts/eligibility_sensitivity.py (S6-B3134)",
+ "instrument_sha256_lf": "26e65401bd16a178bd2de0ca73d6a38098eefce3b82f4edef0004ce5969c6c44",
+ "cube": "output_bl_step2_p4_9_p4_9",
+ "inputs_sha256": {
+  "trade_exit_detail.csv": "f6492a597f5c23bd4f1269fe9591b17dac1a73d70da1064fcc6dd71217e520c8",
+  "run_manifest.json": "f2f82f1002153c652bb4357ce2a9efad4270df7c60dd73c17cf6a08d6f5647e1",
+  "landed_grid": "1071bb65c8b1b28d9701ac9c7c69ff03bcfa78820dcf7242a2cc2a00b648953d"
+ },
+ "verdict_of_record": "C:/Users/jeetm/Github/stock-picks-app/output_audit/output_bl_step2_p4_9_p4_9_grid_auto.json",
+ "canonical": {
+  "selected_exit": "breakeven_plus_trail",
+  "verdict": "FAIL",
+  "gates": {
+   "min_trades_full_period": true,
+   "min_trades_holdout": true,
+   "pooled_sharpe": false,
+   "profit_factor": true,
+   "psr": true,
+   "sortino": true
+  },
+  "values": {
+   "sharpe": 0.422,
+   "sortino": 1.282,
+   "psr": 0.9999,
+   "profit_factor": 1.681,
+   "payoff": 3.98,
+   "expectancy": 1.5471,
+   "win_rate": 0.297,
+   "p": 0.0029366850567029345,
+   "ci_lo": 0.12,
+   "margin": null
+  },
+  "holdout_n": 465,
+  "full_period_n": 1737,
+  "is_stats": {
+   "n": 1272,
+   "sharpe": 0.694,
+   "ci_lo": 0.554,
+   "n_gates": 4,
+   "exits_effective": 23,
+   "exits_collapsed": null,
+   "npt_excluded_identity_boundary": true
+  },
+  "is_pick": {
+   "exit": "breakeven_plus_trail",
+   "is_sharpe": 0.694,
+   "is_ci_lo": 0.554,
+   "fires": 1272
+  },
+  "is_rows": 30528,
+  "holdout_rows": 11160
+ },
+ "reproduction": {
+  "ok": true,
+  "unfiltered_copy": {
+   "selected_exit": "breakeven_plus_trail",
+   "verdict": "FAIL",
+   "gates": {
+    "min_trades_full_period": true,
+    "min_trades_holdout": true,
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "psr": true,
+    "sortino": true
+   },
+   "values": {
+    "sharpe": 0.422,
+    "sortino": 1.282,
+    "psr": 0.9999,
+    "profit_factor": 1.681,
+    "payoff": 3.98,
+    "expectancy": 1.5471,
+    "win_rate": 0.297,
+    "p": 0.0029366850567029345,
+    "ci_lo": 0.12,
+    "margin": null
+   },
+   "holdout_n": 465,
+   "full_period_n": 1737,
+   "is_stats": {
+    "n": 1272,
+    "sharpe": 0.694,
+    "ci_lo": 0.554,
+    "n_gates": 4,
+    "exits_effective": 23,
+    "exits_collapsed": null,
+    "npt_excluded_identity_boundary": true
+   },
+   "is_pick": {
+    "exit": "breakeven_plus_trail",
+    "is_sharpe": 0.694,
+    "is_ci_lo": 0.554,
+    "fires": 1272
+   },
+   "is_rows": 30528,
+   "holdout_rows": 11160
+  }
+ },
+ "variants": {
+  "b1": {
+   "entries_removed": 0,
+   "exit_rows_removed": 0,
+   "entries_removed_by_reason": null,
+   "tickers": [],
+   "result": {
+    "selected_exit": "breakeven_plus_trail",
+    "verdict": "FAIL",
+    "gates": {
+     "min_trades_full_period": true,
+     "min_trades_holdout": true,
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "psr": true,
+     "sortino": true
+    },
+    "values": {
+     "sharpe": 0.422,
+     "sortino": 1.282,
+     "psr": 0.9999,
+     "profit_factor": 1.681,
+     "payoff": 3.98,
+     "expectancy": 1.5471,
+     "win_rate": 0.297,
+     "p": 0.0029366850567029345,
+     "ci_lo": 0.12,
+     "margin": null
+    },
+    "holdout_n": 465,
+    "full_period_n": 1737,
+    "is_stats": {
+     "n": 1272,
+     "sharpe": 0.694,
+     "ci_lo": 0.554,
+     "n_gates": 4,
+     "exits_effective": 23,
+     "exits_collapsed": null,
+     "npt_excluded_identity_boundary": true
+    },
+    "is_pick": {
+     "exit": "breakeven_plus_trail",
+     "is_sharpe": 0.694,
+     "is_ci_lo": 0.554,
+     "fires": 1272
+    },
+    "is_rows": 30528,
+    "holdout_rows": 11160
+   },
+   "compare": {
+    "differs": false,
+    "exit_differs": false,
+    "verdict_differs": false,
+    "gate_pass_flips": [],
+    "rescue_report_only": false
+   }
+  },
+  "b2": {
+   "entries_removed": 0,
+   "exit_rows_removed": 0,
+   "entries_removed_by_reason": null,
+   "tickers": [],
+   "result": {
+    "selected_exit": "breakeven_plus_trail",
+    "verdict": "FAIL",
+    "gates": {
+     "min_trades_full_period": true,
+     "min_trades_holdout": true,
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "psr": true,
+     "sortino": true
+    },
+    "values": {
+     "sharpe": 0.422,
+     "sortino": 1.282,
+     "psr": 0.9999,
+     "profit_factor": 1.681,
+     "payoff": 3.98,
+     "expectancy": 1.5471,
+     "win_rate": 0.297,
+     "p": 0.0029366850567029345,
+     "ci_lo": 0.12,
+     "margin": null
+    },
+    "holdout_n": 465,
+    "full_period_n": 1737,
+    "is_stats": {
+     "n": 1272,
+     "sharpe": 0.694,
+     "ci_lo": 0.554,
+     "n_gates": 4,
+     "exits_effective": 23,
+     "exits_collapsed": null,
+     "npt_excluded_identity_boundary": true
+    },
+    "is_pick": {
+     "exit": "breakeven_plus_trail",
+     "is_sharpe": 0.694,
+     "is_ci_lo": 0.554,
+     "fires": 1272
+    },
+    "is_rows": 30528,
+    "holdout_rows": 11160
+   },
+   "compare": {
+    "differs": false,
+    "exit_differs": false,
+    "verdict_differs": false,
+    "gate_pass_flips": [],
+    "rescue_report_only": false
+   }
+  },
+  "b3": {
+   "entries_removed": 27,
+   "exit_rows_removed": 648,
+   "entries_removed_by_reason": null,
+   "tickers": [
+    "AAP",
+    "BWA",
+    "CE",
+    "CMA",
+    "DXC",
+    "EMN",
+    "ENPH",
+    "GPS",
+    "ILMN",
+    "LW",
+    "MOH",
+    "MTCH",
+    "PAYC",
+    "RHI",
+    "UA",
+    "UAA",
+    "VFC",
+    "WHR",
+    "XRAY"
+   ],
+   "result": {
+    "selected_exit": "breakeven_plus_trail",
+    "verdict": "FAIL",
+    "gates": {
+     "min_trades_full_period": true,
+     "min_trades_holdout": true,
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "psr": true,
+     "sortino": true
+    },
+    "values": {
+     "sharpe": 0.42,
+     "sortino": 1.297,
+     "psr": 0.9999,
+     "profit_factor": 1.695,
+     "payoff": 4.05,
+     "expectancy": 1.5432,
+     "win_rate": 0.295,
+     "p": 0.0031899744713783837,
+     "ci_lo": 0.117,
+     "margin": null
+    },
+    "holdout_n": 454,
+    "full_period_n": 1710,
+    "is_stats": {
+     "n": 1256,
+     "sharpe": 0.706,
+     "ci_lo": 0.565,
+     "n_gates": 4,
+     "exits_effective": 23,
+     "exits_collapsed": null,
+     "npt_excluded_identity_boundary": true
+    },
+    "is_pick": {
+     "exit": "breakeven_plus_trail",
+     "is_sharpe": 0.706,
+     "is_ci_lo": 0.565,
+     "fires": 1256
+    },
+    "is_rows": 30144,
+    "holdout_rows": 10896
+   },
+   "compare": {
+    "differs": false,
+    "exit_differs": false,
+    "verdict_differs": false,
+    "gate_pass_flips": [],
+    "rescue_report_only": false
+   }
+  },
+  "b4": {
+   "entries_removed": 0,
+   "exit_rows_removed": 0,
+   "entries_removed_by_reason": {},
+   "tickers": [],
+   "result": {
+    "selected_exit": "breakeven_plus_trail",
+    "verdict": "FAIL",
+    "gates": {
+     "min_trades_full_period": true,
+     "min_trades_holdout": true,
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "psr": true,
+     "sortino": true
+    },
+    "values": {
+     "sharpe": 0.422,
+     "sortino": 1.282,
+     "psr": 0.9999,
+     "profit_factor": 1.681,
+     "payoff": 3.98,
+     "expectancy": 1.5471,
+     "win_rate": 0.297,
+     "p": 0.0029366850567029345,
+     "ci_lo": 0.12,
+     "margin": null
+    },
+    "holdout_n": 465,
+    "full_period_n": 1737,
+    "is_stats": {
+     "n": 1272,
+     "sharpe": 0.694,
+     "ci_lo": 0.554,
+     "n_gates": 4,
+     "exits_effective": 23,
+     "exits_collapsed": null,
+     "npt_excluded_identity_boundary": true
+    },
+    "is_pick": {
+     "exit": "breakeven_plus_trail",
+     "is_sharpe": 0.694,
+     "is_ci_lo": 0.554,
+     "fires": 1272
+    },
+    "is_rows": 30528,
+    "holdout_rows": 11160
+   },
+   "compare": {
+    "differs": false,
+    "exit_differs": false,
+    "verdict_differs": false,
+    "gate_pass_flips": [],
+    "rescue_report_only": false
+   }
+  },
+  "union": {
+   "entries_removed": 27,
+   "exit_rows_removed": 648,
+   "entries_removed_by_reason": null,
+   "tickers": [
+    "AAP",
+    "BWA",
+    "CE",
+    "CMA",
+    "DXC",
+    "EMN",
+    "ENPH",
+    "GPS",
+    "ILMN",
+    "LW",
+    "MOH",
+    "MTCH",
+    "PAYC",
+    "RHI",
+    "UA",
+    "UAA",
+    "VFC",
+    "WHR",
+    "XRAY"
+   ],
+   "result": {
+    "selected_exit": "breakeven_plus_trail",
+    "verdict": "FAIL",
+    "gates": {
+     "min_trades_full_period": true,
+     "min_trades_holdout": true,
+     "pooled_sharpe": false,
+     "profit_factor": true,
+     "psr": true,
+     "sortino": true
+    },
+    "values": {
+     "sharpe": 0.42,
+     "sortino": 1.297,
+     "psr": 0.9999,
+     "profit_factor": 1.695,
+     "payoff": 4.05,
+     "expectancy": 1.5432,
+     "win_rate": 0.295,
+     "p": 0.0031899744713783837,
+     "ci_lo": 0.117,
+     "margin": null
+    },
+    "holdout_n": 454,
+    "full_period_n": 1710,
+    "is_stats": {
+     "n": 1256,
+     "sharpe": 0.706,
+     "ci_lo": 0.565,
+     "n_gates": 4,
+     "exits_effective": 23,
+     "exits_collapsed": null,
+     "npt_excluded_identity_boundary": true
+    },
+    "is_pick": {
+     "exit": "breakeven_plus_trail",
+     "is_sharpe": 0.706,
+     "is_ci_lo": 0.565,
+     "fires": 1256
+    },
+    "is_rows": 30144,
+    "holdout_rows": 10896
+   },
+   "compare": {
+    "differs": false,
+    "exit_differs": false,
+    "verdict_differs": false,
+    "gate_pass_flips": [],
+    "rescue_report_only": false
+   }
+  }
+ },
+ "owner_rules_before_admission": false
+}

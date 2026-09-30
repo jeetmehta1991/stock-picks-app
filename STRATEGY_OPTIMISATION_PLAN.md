@@ -1493,7 +1493,7 @@ instance is recorded in the campaign log).
   `engine_state.json` (B3100 fresh-start guard, S6-B3094f) - it would restart day 0 over that run's
   checkpoint. Archive (move) the old run first.
 - **`leg_cap_hours x max_legs` is the capacity** and must exceed the projection; the leg cap stays
-  under the owner's 5 h ceiling (4.5 here leaves margin under it). A resumed invocation's leg counter
+  under the owner's 5 h ceiling (4.5 here leaves margin under it). **SCOPE RULED 2026-09-29 (B3133), owner verbatim: 'Note that 5h cap on run applies only for step 1 and not step 2' - the B2107 5 h cap binds STEP-1 runs ONLY; a Step-2 leg or total over 5 h is NOT a violation. Leg chunking stays as an operational choice for resume granularity and bounded interruption loss (B1083), never a ceiling requirement.** A resumed invocation's leg counter
   restarts at 1. `pool_workers` 6 is the value the first pooled Step-2 wave was relaunched at after its
   commit exhaustion (campaign log; Step 2.4) - a starting point, not a measured optimum. Size it on the
   commit reading of Step 1.0 (b), since commit is the binding quantity (L670).
