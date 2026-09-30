@@ -270,6 +270,39 @@ def grading_surface_sha256() -> dict:
     return out
 
 
+LIVE_STATES = ("OPEN", "DEFERRED", "BLOCKED", "RUNNING")
+
+
+def tickets_naming(names, queue_path=None) -> list:
+    """S6-B3139s (B3139, L892): the live tickets whose LATEST ledger row names
+    any of `names`, as [{"ticket", "state", "strategies"}] sorted by id.
+
+    S6-B3118a was deferred 'before any bollinger_lower T6/Step-2 ask'; the
+    Step-2 launch was that event and nothing read the trigger - the
+    deferral audit listed it among 11 unevaluated triggers, a list that
+    cannot know when an event happens. The launch CAN: it knows which
+    strategies it starts. Read through queue_state (last row wins, L794);
+    a name matches only as a whole identifier, so bollinger_lower does not
+    match bollinger_lower_short. Terminal tickets are never listed."""
+    import re as _re
+    import queue_state as _qs
+    q = Path(queue_path) if queue_path else _qs.QUEUE
+    lines = q.read_text(encoding="utf-8").splitlines()
+    last = {}
+    for n, tid, st in _qs.rows(q):
+        last[tid] = (n, st)
+    pats = {nm: _re.compile(r"(?<![A-Za-z0-9_])" + _re.escape(nm)
+                            + r"(?![A-Za-z0-9_])") for nm in set(names) if nm}
+    out = []
+    for tid, (n, st) in sorted(last.items()):
+        if st not in LIVE_STATES:
+            continue
+        hit = sorted(nm for nm, p in pats.items() if p.search(lines[n - 1]))
+        if hit:
+            out.append({"ticket": tid, "state": st, "strategies": hit})
+    return out
+
+
 def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
     tickers = (ROOT / spec["tickers_file"]).read_text().split()
     days = 251 * max(1, (int(spec["window"]["end"][:4])
@@ -293,6 +326,26 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
             ).encode()).hexdigest()
             for rel in (spec["strategy_subset"], spec.get("cube_riders"))
             if rel},
+        # S6-B3136a (B3139): the RESOLVED names beside each pin. 43 cubes
+        # cite output_audit/_subset_one.txt with no content record at all
+        # (they predate input_sha256), so a reused file with new content
+        # would silently rewrite their provenance; the hash says THAT a
+        # file changed, the list says WHAT the run actually graded. Parsed
+        # exactly as the engine parses STRATEGY_SUBSET_FILE (run_phase1a.py,
+        # B1425): one name per line, blank and #-lines skipped.
+        "input_names": {
+            rel: [ln.strip() for ln in (ROOT / rel).read_text(
+                      encoding="utf-8").splitlines()
+                  if ln.strip() and not ln.startswith("#")]
+            for rel in (spec["strategy_subset"], spec.get("cube_riders"))
+            if rel},
+        # S6-B3139s (B3139, L892): every live ticket whose latest row names
+        # a strategy this run launches - an event trigger evaluated AT its
+        # event. A disclosure: it changes no launch outcome.
+        "tickets_naming_launched": tickets_naming(sorted({
+            ln.strip() for rel in (spec["strategy_subset"], spec.get("cube_riders"))
+            if rel for ln in (ROOT / rel).read_text(encoding="utf-8").splitlines()
+            if ln.strip() and not ln.startswith("#")})),
         # B2714c: this manifest is GENERATED from a spec that the launch
         # gate already judged; the typed-scope rule binds the AUTHORED
         # spec, so the derived artifact says so and carries the spec's
@@ -378,6 +431,14 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(ROOT),
                          capture_output=True, text=True).stdout.strip()
     manifest = build_manifest(spec, arm, out_dir, sha)
+    # S6-B3139s: say it where the launch is watched, not only in the file
+    _named = json.loads(manifest.read_text(encoding="utf-8")).get(
+        "tickets_naming_launched") or []
+    if _named:
+        print(f"LAUNCH DISCLOSURE (S6-B3139s): {len(_named)} live ticket(s) "
+              "name a launched strategy - read each before relying on this run: "
+              + "; ".join(f"{t['ticket']} {t['state']} ({', '.join(t['strategies'])})"
+                          for t in _named), flush=True)
     summary = ROOT / "output_audit" / f"{spec['wave']}_summary.log"
     cube = out_dir / "trade_exit_detail.csv"
     legs = 0

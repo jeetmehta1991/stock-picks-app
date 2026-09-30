@@ -1,0 +1,84 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+..............................................s......................... [ 38%]
+....................s.................................................s. [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+.....................................................................F.. [ 81%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+.................                                                        [100%]
+================================== FAILURES ===================================
+___________________ test_b3099_drift_allowed_is_fail_closed ___________________
+
+    def test_b3099_drift_allowed_is_fail_closed():
+        """S6-B3093a (B3099): the allow-list admits only what no leg can read.
+        One case per class of path, both directions (B1944)."""
+        _root, ls = _b3099_launch_sweep()
+        leg = ls.leg_code_closure()
+        inputs = {"output_audit/r5_universe_544.txt"}
+        allowed = ["EXECUTION_QUEUE.md", "LEARNINGS.md", "CHECKLIST.md",
+                   "output_audit/b3099_gate.json", "output_audit/postconfig_landings.jsonl",
+                   "output_audit/POSTCONFIG_REPORT.md", ".claude/skills/x/SKILL.md",
+                   "backtest/tests/test_unit.py", "scripts/queue_state.py",
+                   "scripts/verify_turn_compliance.py", "output_audit/held_patches/p.py",
+                   "archive/old/x.csv",
+                   # measured B3099: the runbook is not opened per leg, and the two
+                   # policy files are re-read by the gate at every leg
+                   "STRATEGY_OPTIMISATION_PLAN.md", "PHASE_1B_ROSTER.md",
+                   "output_audit/phase_1b_step2_admissions.json"]
+        refused = ["backtest/engine/backtest.py", "backtest/results/writer.py",
+                   "backtest/config.py", "backtest/run_phase1a.py",
+                   "backtest/data/economic_calendar.json",
+                   "scripts/launch_sweep.py", "scripts/prelaunch_gate.py",
+                   "scripts/producer_variant_table.py",
+                   "scripts/build_institutional_persistence_precompute.py",
+                   "scripts/inject_null_strategies.py",
+                   "output_audit/_sweep_200.txt", "output_audit/_subset_x.txt",
+                   "output_audit/_engine_set_w.txt", "output_audit/r5_universe_544.txt",
+                   "output_audit/new_universe.txt", "output_batches/batch_ledger.json",
+                   "Backtesting universe/Tier 3.csv", "requirements.txt", "setup.py"]
+        bad_a = [p for p in allowed if not ls.drift_allowed(p, inputs, leg)]
+        bad_r = [p for p in refused if ls.drift_allowed(p, inputs, leg)]
+>       assert not bad_a, f"refused but no leg reads them: {bad_a}"
+E       AssertionError: refused but no leg reads them: ['scripts/queue_state.py']
+E       assert not ['scripts/queue_state.py']
+
+backtest\tests\test_unit.py:45073: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3099_drift_allowed_is_fail_closed
+1 failed, 1669 passed, 3 skipped in 925.98s (0:15:25)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=954
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

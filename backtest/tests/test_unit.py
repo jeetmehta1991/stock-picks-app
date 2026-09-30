@@ -45050,7 +45050,7 @@ def test_b3099_drift_allowed_is_fail_closed():
     allowed = ["EXECUTION_QUEUE.md", "LEARNINGS.md", "CHECKLIST.md",
                "output_audit/b3099_gate.json", "output_audit/postconfig_landings.jsonl",
                "output_audit/POSTCONFIG_REPORT.md", ".claude/skills/x/SKILL.md",
-               "backtest/tests/test_unit.py", "scripts/queue_state.py",
+               "backtest/tests/test_unit.py",
                "scripts/verify_turn_compliance.py", "output_audit/held_patches/p.py",
                "archive/old/x.csv",
                # measured B3099: the runbook is not opened per leg, and the two
@@ -45064,6 +45064,10 @@ def test_b3099_drift_allowed_is_fail_closed():
                "scripts/producer_variant_table.py",
                "scripts/build_institutional_persistence_precompute.py",
                "scripts/inject_null_strategies.py",
+               # B3139: run_wave's launch disclosure imports queue_state, so
+               # it is leg-loadable code and the closure protects it (L801:
+               # the freeze is updated in the batch that earns the member)
+               "scripts/queue_state.py",
                "output_audit/_sweep_200.txt", "output_audit/_subset_x.txt",
                "output_audit/_engine_set_w.txt", "output_audit/r5_universe_544.txt",
                "output_audit/new_universe.txt", "output_batches/batch_ledger.json",
@@ -50884,3 +50888,130 @@ def test_b3139_materialise_worktree_links_the_untracked_data(tmp_path):
     finally:
         subprocess.run(["git", "worktree", "remove", "--force", str(root / ".worktrees" / sha[:12])],
                        cwd=str(root), capture_output=True, text=True)
+
+
+# ================================================================ B3139 S6-B3139r: the occupancy skip names what it silences
+def test_b3139_mode_c_skip_row_names_the_silenced_cofiring_strategies():
+    """S6-B3139r (B3139): under cube isolation the mode-c branch skips the
+    WHOLE candidate when any of its strategies holds the ticker. The skip row
+    keeps the holders in "strategy" (B2905) and now names every co-firing
+    strategy it silenced in "blocked_cofiring". Behaviour on the real helper;
+    the verbatim case is the S6-B3134a slice's daily arm on MSFT 2022-09-15,
+    where its skip row named six holders; the candidate is reconstructed as
+    the ten strategies the legacy arm entered there that day."""
+    from backtest.engine.backtest import _mode_c_skip_row
+    holders = {"avwap_252_breakout", "donchian_breakdown_short",
+               "htf_aligned_breakout_short", "pairs_mean_reversion_long",
+               "prev_day_low_breakdown", "volume_spike_breakout"}
+    silenced = ["cpr_narrow_bullish", "cpr_narrow_momentum",
+                "cpr_narrow_momentum_short", "donchian_10_breakout"]
+    cand = {"strategies": [{"strategy": s} for s in sorted(holders) + silenced] + [{}]}
+    row = _mode_c_skip_row(cand, holders | {"elsewhere_only"}, "MSFT", "2022-09-15")
+    assert row["strategy"] == ",".join(sorted(holders)), row
+    assert row["blocked_cofiring"] == ",".join(sorted(silenced)), row
+    assert row["reason"] == "ticker_already_open_same_strategy_bug61_mode_c"
+    assert (row["ticker"], row["date"]) == ("MSFT", "2022-09-15")
+    # every candidate strategy holds -> nothing silenced, and the field says so
+    every = {s["strategy"] for s in cand["strategies"] if s}
+    assert _mode_c_skip_row(cand, every, "MSFT", "d")["blocked_cofiring"] == ""
+    # a holder that is NOT on the candidate is no skip at all
+    assert _mode_c_skip_row(cand, {"elsewhere_only"}, "MSFT", "d") is None
+    assert _mode_c_skip_row(cand, set(), "MSFT", "d") is None
+    assert _mode_c_skip_row({}, {"a"}, "MSFT", "d") is None
+
+
+def test_b3139_mode_c_branch_builds_its_row_through_the_helper():
+    """S6-B3139r (B3139): the wiring half. The ticker_strategy branch builds
+    its skip row through _mode_c_skip_row and still ends in `continue` - the
+    control flow (whole-candidate skip) is the owner's ruling, not this
+    change's - and the comment claiming co-firing strategies 'can stack' is
+    gone. The old pin for this branch (test_batch510a_mode_c_blocks_only_
+    same_strategy) intersects two literal sets and never reaches the engine
+    (#276b); this one reads the branch itself."""
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "backtest" / "engine" /
+           "backtest.py").read_text(encoding="utf-8", errors="replace")
+    occ = src[src.index('_bug61_mode == "ticker_strategy":'):]
+    occ = occ[:occ.index("else:  # default")]
+    assert "_occ_row = _mode_c_skip_row(cand, _open_strats, ticker, as_of)" in occ
+    assert "self.skipped_trades.append(_occ_row)" in occ and "continue" in occ
+    assert "# on this ticker. Different strategies can stack." not in occ
+    assert src.count("def _mode_c_skip_row(") == 1
+
+
+# ================================================================ B3139 S6-B3136a: manifests name their strategies
+def test_b3139_manifest_records_the_resolved_strategy_names(tmp_path):
+    """S6-B3136a (B3139): run_wave.build_manifest writes input_names - the
+    strategy names each pinned input resolves to, parsed exactly as the
+    engine parses STRATEGY_SUBSET_FILE (one per line, blank and #-lines
+    skipped) - beside input_sha256, so a reused subset file whose content
+    changes later cannot rewrite a cube's provenance. And the two subset
+    files 51 of 100 manifests cite are TRACKED (a fresh clone could not
+    re-run or audit them). Must-fail proven on the pre-change run_wave."""
+    import json as _json
+    import subprocess as _sp
+    import run_wave as rw
+    rel = "output_audit/_subset_three_white_soldiers.txt"
+    spec = {"wave": "zz_b3136a_pin", "tickers_file": rel, "strategy_subset": rel,
+            "window": {"start": "2024-05-06", "end": "2025-05-05"},
+            "leg_cap_hours": 4.5}
+    mp = rw.build_manifest(spec, {"tag": "t"}, tmp_path / "out", "a" * 40)
+    m = _json.loads(mp.read_text(encoding="utf-8"))
+    want = [ln.strip() for ln in (rw.ROOT / rel).read_text(encoding="utf-8").splitlines()
+            if ln.strip() and not ln.startswith("#")]
+    assert want, "the subset file is empty - the pin would be vacuous"
+    assert m["input_names"] == {rel: want}, m.get("input_names")
+    tracked = _sp.run(["git", "ls-files", "output_audit/_subset_one.txt",
+                       "output_audit/_subset_bollinger_lower.txt"],
+                      cwd=str(rw.ROOT), capture_output=True, text=True).stdout.split()
+    assert sorted(tracked) == ["output_audit/_subset_bollinger_lower.txt",
+                               "output_audit/_subset_one.txt"], tracked
+
+
+# ================================================================ B3139 S6-B3139s: a launch names the tickets that name it
+def test_b3139_launch_lists_live_tickets_naming_a_launched_strategy(tmp_path):
+    """S6-B3139s (B3139, L892): S6-B3118a was deferred 'before any
+    bollinger_lower T6/Step-2 ask' and fired unbuilt at the Step-2 launch,
+    though the deferral audit listed it as unevaluated - a list cannot know
+    when an event happens; the launch knows which strategies it starts.
+    must-FIRE: the verbatim trigger text on a DEFERRED row. must-QUIET: a
+    prefix-sharing name (bollinger_lower_short), a TERMINAL ticket naming the
+    strategy, and a ticket whose EARLIER row named it but whose latest row
+    does not (last row wins, L794)."""
+    import run_wave as rw
+    q = tmp_path / "EXECUTION_QUEUE.md"
+    q.write_text("\n".join([
+        "| Ticket | State | P | Text | Reason |",
+        "| **S6-B9001a** | **DEFERRED** | P2 | **THE COMPOSITE OFFLINE LEG ... "
+        "trigger: before any bollinger_lower T6/Step-2 ask** | _reason:_ DEFERRED - x |",
+        "| **S6-B9002** | **OPEN** | P2 | **a note about bollinger_lower_short only** | _reason:_ OPEN - x |",
+        "| **S6-B9003** | **EXECUTED** | P2 | **bollinger_lower done** | _reason:_ EXECUTED - x |",
+        "| **S6-B9004** | **OPEN** | P2 | **names bollinger_lower in an early row** | _reason:_ OPEN - x |",
+        "| **S6-B9004** | **OPEN** | P2 | **the latest row names nothing launched** | _reason:_ OPEN - x |",
+        ""]), encoding="utf-8")
+    got = rw.tickets_naming(["bollinger_lower"], queue_path=q)
+    assert got == [{"ticket": "S6-B9001a", "state": "DEFERRED",
+                    "strategies": ["bollinger_lower"]}], got
+    assert rw.tickets_naming(["bollinger_lower_short"], queue_path=q) == [
+        {"ticket": "S6-B9002", "state": "OPEN", "strategies": ["bollinger_lower_short"]}]
+    assert rw.tickets_naming([], queue_path=q) == []
+
+
+def test_b3139_launch_manifest_carries_the_ticket_disclosure(tmp_path):
+    """S6-B3139s: the wiring - build_manifest writes tickets_naming_launched,
+    computed from the strategies the run's inputs resolve to (the live
+    queue), and run_arm prints it at launch (the source line, since run_arm
+    starts an engine)."""
+    import inspect as _insp
+    import json as _json
+    import run_wave as rw
+    rel = "output_audit/_subset_three_white_soldiers.txt"
+    spec = {"wave": "zz_b3139s_pin", "tickers_file": rel, "strategy_subset": rel,
+            "window": {"start": "2024-05-06", "end": "2025-05-05"},
+            "leg_cap_hours": 4.5}
+    mp = rw.build_manifest(spec, {"tag": "t"}, tmp_path / "out", "a" * 40)
+    m = _json.loads(mp.read_text(encoding="utf-8"))
+    assert "tickets_naming_launched" in m
+    assert isinstance(m["tickets_naming_launched"], list)
+    assert all(set(t) == {"ticket", "state", "strategies"} for t in m["tickets_naming_launched"])
+    assert "LAUNCH DISCLOSURE (S6-B3139s)" in _insp.getsource(rw.run_arm)

@@ -203,6 +203,28 @@ def _skip_strategy_names(cand, blocking=None) -> str:
     return ",".join(names) if names else "(unknown)"
 
 
+def _mode_c_skip_row(cand, open_strats, ticker, as_of):
+    """S6-B3139r (B3139): the cube-isolation occupancy skip row, or None when
+    no strategy on the candidate holds the ticker (no skip).
+
+    The mode-c branch skips the WHOLE candidate when ANY of its strategies
+    already holds the ticker - every co-firing strategy that holds nothing is
+    silenced too (MEASURED on the S6-B3134a slice: whole candidates of 10, 4
+    and 12 strategies behind one to six holders). "strategy" names the
+    holders (B2905); "blocked_cofiring" names the silenced strategies ("" when
+    there are none), so the coupling is measurable in every cube. Whether the
+    branch should skip per strategy instead is the owner's ruling (S6-B3139r)."""
+    cand_strats = {s.get("strategy") for s in (cand.get("strategies") or [])}
+    held = set(open_strats) & cand_strats
+    if not held:
+        return None
+    return {"ticker": ticker, "date": as_of,
+            "strategy": _skip_strategy_names(cand, held),
+            "blocked_cofiring": ",".join(sorted(
+                str(s) for s in (cand_strats - set(open_strats)) if s)),
+            "reason": "ticker_already_open_same_strategy_bug61_mode_c"}
+
+
 class BacktestEngine:
 
     def __init__(
@@ -2900,21 +2922,18 @@ class BacktestEngine:
                     })
                     continue
             elif _bug61_mode == "ticker_strategy":
-                # Block only when the SAME strategy already has an open pos
-                # on this ticker. Different strategies can stack.
+                # B3139 (S6-B3139r): this branch skips the WHOLE candidate when
+                # ANY of its strategies already holds the ticker - co-firing
+                # strategies that hold nothing are not entered either (the
+                # comment here used to say they "can stack"). Per-strategy
+                # skipping would move every isolation cube's trade set and is
+                # the owner's ruling; the skip row names the silenced ones.
                 _open_strats = {
                     t.strategy for t in self.open_trades if t.ticker == ticker
                 }
-                _cand_strats = {
-                    s.get("strategy") for s in cand.get("strategies", [])
-                }
-                if _open_strats & _cand_strats:
-                    self.skipped_trades.append({
-                        "ticker": ticker, "date": as_of,
-                        "strategy": _skip_strategy_names(
-                            cand, _open_strats & _cand_strats),
-                        "reason": "ticker_already_open_same_strategy_bug61_mode_c",
-                    })
+                _occ_row = _mode_c_skip_row(cand, _open_strats, ticker, as_of)
+                if _occ_row is not None:
+                    self.skipped_trades.append(_occ_row)
                     continue
             else:  # default "ticker": owner-approved Option A (prior behavior)
                 if ticker in open_tickers:
