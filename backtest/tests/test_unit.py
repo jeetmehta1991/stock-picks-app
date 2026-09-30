@@ -50497,13 +50497,15 @@ def _b3139a_bollinger_artifacts():
 
 
 def test_b3139_band_gate_reads_every_bollinger_artifact_kind_without_crashing():
-    """S6-B3139a council, on the REAL campaign artifacts: the gate raised
-    TypeError on bollinger's grid_auto files (rows is an INT count). It now
-    classifies all 18 by kind, counts coverage ONLY from the 2 axis grids,
-    reports the 7 free-level evaluations and the 7 landed span configs
-    without counting them, discloses the PHASE0-vs-SPECS P4 band conflict,
-    and names exactly the 6 levels the free-level leg evaluated but no
-    Step-1 row graded (counting those is the owner's, #310)."""
+    """S6-B3139a council + the S6-B3139o owner ruling (2026-09-30), on the
+    REAL campaign artifacts. The gate classifies all 18 by kind; free-level
+    evaluations now COUNT toward coverage, labelled per level (the ruling's
+    count-with-label), so P8/P9/P11 are covered and each names its
+    free-covered levels; SPECS wins precedence (the ruling's second half),
+    so P3/P4 carry the 8-span SPECS band and their 7 resim spans read
+    untested here - engine-landed spans still enter only as
+    --resim-evidence by operator judgement, and the landed span configs
+    stay reported, never auto-counted. The P4 conflict stays DISCLOSED."""
     import collections
     import band_coverage_gate as bcg
     arts = _b3139a_bollinger_artifacts()
@@ -50512,17 +50514,33 @@ def test_b3139_band_gate_reads_every_bollinger_artifact_kind_without_crashing():
     kinds = collections.Counter(a["kind"] for a in rep["artifacts"])
     assert kinds == {"grid_auto": 7, "free_levels": 7, "axis_grid": 2,
                      "companion_screen": 1, "permutation_null": 1}, kinds
-    assert {a["artifact"] for a in rep["artifacts"] if a["coverage"] == "counted"} == {
-        "b3119_bollinger_lower_grid_long.json", "b3119_bollinger_lower_grid_short.json"}
+    counted = {a["artifact"] for a in rep["artifacts"]
+               if a["coverage"].startswith("counted")}
+    assert "b3119_bollinger_lower_grid_long.json" in counted
+    assert "b3119_bollinger_lower_grid_short.json" in counted
+    assert len(counted) == 9, counted  # 2 axis grids + 7 free-level evals
+    free_lab = {a["artifact"]: a["coverage"] for a in rep["artifacts"]
+                if a["kind"] == "free_levels"}
+    assert all("S6-B3139o" in v for v in free_lab.values()), free_lab
     assert {k: len(v) for k, v in rep["free_level_evaluations"].items()} == {"P9 adx ceiling": 7}
     assert sorted(c["config"]["P4_ema_span"] for c in rep["landed_configs"]) == [
         9, 20, 21, 50, 100, 150, 250]
     assert rep["registry_conflicts"]["P4"]["phase0"] == [200]
     assert rep["registry_conflicts"]["P4"]["specs"] == [9, 20, 21, 50, 100, 150, 200, 250]
     untested = {p["id"]: p["untested"] for p in rep["params"] if p["untested"]}
-    assert untested == {"P8": ["0.25,0.75"], "P9": [27.51, 23.96, 20.976, 17.69],
-                        "P11": ["edges 5 tighter per band"]}, untested
-    assert rep["complete"] is False and rep["untested_total"] == 6
+    assert untested == {"P3": [9, 20, 21, 50, 100, 150, 250],
+                        "P4": [9, 20, 21, 50, 100, 150, 250]}, untested
+    freec = {p["id"]: p["free_level_covered"] for p in rep["params"]
+             if p["free_level_covered"]}
+    assert freec == {"P8": ["0.25,0.75"], "P9": [27.51, 23.96, 20.976, 17.69],
+                     "P11": ["edges 5 tighter per band"]}, freec
+    assert rep["complete"] is False and rep["untested_total"] == 14
+    # and --resim-evidence still closes the resim spans (operator judgement)
+    spans = [9, 20, 21, 50, 100, 150, 250]
+    rep2 = bcg.coverage_report("bollinger_lower", arts, resim_evidence={
+        "ema span (below_ema_N, SHORT leg)": spans,
+        "ema span (price_above_ema_N, LONG leg)": spans})
+    assert rep2["complete"] is True and rep2["untested_total"] == 0
 
 
 def test_b3139_band_gate_refuses_an_unknown_kind_by_name_and_exits_2(tmp_path):

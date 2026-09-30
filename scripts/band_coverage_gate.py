@@ -37,17 +37,17 @@ grid_auto files (rows = an INT count - 7,392 on span 9 - on which
 'for r in rows' raised TypeError inside both Step-2 readers), free-level
 grids (a levels dict), companion screens and permutation nulls. The last
 four add NO coverage and each is REPORTED with its reason; free-level
-evaluations appear as a report column (counting them as coverage would
-change which failures can be declared - the owner's, #310); a grid_auto's
+evaluations COUNT toward coverage, labelled per level (S6-B3139o owner
+ruling 2026-09-30, "approved your rec": count-with-label); a grid_auto's
 landed producer config is reported under landed_configs for the operator
 to pass as --resim-evidence by judgement. An UNKNOWN shape refuses with a
 named reason - never a crash, never a silent skip. The refusal exits 2 as
 documented (a string SystemExit exits 1 - MEASURED - so it never did).
-A strategy present in BOTH SPECS_PHASE0 and SPECS is read from PHASE0 (as
-before) and every id whose band differs between the two is DISCLOSED under
-registry_conflicts - MEASURED: bollinger_lower's P4 reads [200] in PHASE0
-and the 8 campaign spans in SPECS; choosing a winner moves coverage
-verdicts and is the owner's.
+A strategy present in BOTH SPECS_PHASE0 and SPECS is read from SPECS
+(S6-B3139o owner ruling 2026-09-30: SPECS wins - it matches the campaign
+artifacts, e.g. bollinger_lower's P3/P4 resim spans; PHASE0 is retained
+untouched as the pre-registration record) and every id whose band differs
+between the two is still DISCLOSED under registry_conflicts.
 """
 from __future__ import annotations
 
@@ -90,15 +90,14 @@ KIND_IS_SURFACE = "is_surface"
 ZERO_COVERAGE = {
     KIND_GRID_AUTO: "rows is a COUNT - it cannot say which levels ran; the "
                     "landed producer config is reported under landed_configs",
-    KIND_FREE_LEVELS: "evaluations are REPORTED under free_level_evaluations; "
-                      "counting them as coverage is the owner's (#310)",
     KIND_COMPANION_SCREEN: "a screen of candidate companions grades no band level",
     KIND_PERMUTATION_NULL: "a null distribution grades no band level",
     # B3139 (found by test_b2886 on the pead family): an in-sample search
-    # surface reports; whether it may COUNT toward band coverage is the
-    # S6-B3139o policy question, so until that ruling it never counts.
+    # surface reports. The S6-B3139o ruling (2026-09-30) covered FREE-LEVEL
+    # evaluations only; an IS surface stays zero-coverage pending its own ask.
     KIND_IS_SURFACE: "an in-sample search surface - reported, never counted "
-                     "toward coverage pending the S6-B3139o ruling",
+                     "toward coverage (the S6-B3139o ruling covered "
+                     "free-level evaluations only)",
 }
 
 
@@ -154,7 +153,25 @@ def _load_spec(strategy: str, spec: dict | None):
         from producer_variant_table import SPECS
     except ImportError:  # pragma: no cover - SPECS always exists today
         SPECS = {}
-    entry = SPECS_PHASE0.get(strategy) or SPECS.get(strategy)
+    # S6-B3139o (owner ruling 2026-09-30): SPECS wins. Applied PER PARAM:
+    # where an id exists in both registries, SPECS' row is authoritative
+    # (the ruled case - P3/P4's 8-span band); an id present in only ONE
+    # registry is KEPT, because dropping inventoried params (bollinger's
+    # B1-B8 live only in PHASE0; smc_lsr's arm/leg/momentum rows likewise)
+    # would shrink Table A and weaken the B2704 refusal the inventory
+    # exists for. Non-param keys come from SPECS where present. PHASE0
+    # itself is never edited - it stays the pre-registration record.
+    s, p0 = SPECS.get(strategy), SPECS_PHASE0.get(strategy)
+    if s and p0 and "params" in s and "params" in p0:
+        key = lambda q: q.get("id") or q.get("param")
+        by_id = {key(q): q for q in p0["params"]}
+        by_id.update({key(q): q for q in s["params"]})
+        ids_p0 = [key(q) for q in p0["params"]]
+        merged = [by_id[i] for i in ids_p0]
+        merged += [q for q in s["params"] if key(q) not in set(ids_p0)]
+        entry = {**p0, **s, "params": merged}
+    else:
+        entry = s or p0
     if not entry:
         raise SystemExit(f"REFUSED: no Table A spec for {strategy!r}")
     return entry
@@ -223,18 +240,38 @@ def coverage_report(strategy: str, artifact_paths: list, *,
             "never guesses at an unfamiliar shape")
     artifacts = [{"artifact": n, "kind": k,
                   "coverage": ("counted" if k == KIND_AXIS_GRID
+                               else "counted (free-level, S6-B3139o owner "
+                                    "ruling 2026-09-30)"
+                               if k == KIND_FREE_LEVELS
                                else "none - " + ZERO_COVERAGE[k])}
                  for n, k in zip(names, kinds)]
     free_evals = {}
     landed = []
+    # S6-B3139o (owner ruling 2026-09-30): free-level evaluations COUNT.
+    # free_axis maps the artifact's axis (its id token, its param name and
+    # the full string) to the levels it evaluated; tight_ids collects
+    # "<id>_tight" extras, which evaluate exactly the id's approved
+    # non-production band levels (p8_tight = the 0.25,0.75 edges,
+    # p11_tight = the 5-tighter edge set).
+    free_axis: dict[str, set] = {}
+    tight_ids: set[str] = set()
     for n, k, a in zip(names, kinds, arts):
         if k == KIND_FREE_LEVELS:
-            ev = free_evals.setdefault(str(a.get("axis") or "unnamed axis"), [])
+            ax = str(a.get("axis") or "unnamed axis")
+            levs = set(a.get("levels_searched")
+                       or list((a.get("levels") or {}).keys()))
+            keys = {ax, ax.split(" ", 1)[0]}
+            if " " in ax:
+                keys.add(ax.split(" ", 1)[1])
+            for key in keys:
+                free_axis.setdefault(key, set()).update(levs)
+            extras = sorted(x for x in ("p11_tight", "p8_tight") if a.get(x))
+            tight_ids.update(x.split("_", 1)[0].upper() for x in extras)
+            ev = free_evals.setdefault(ax, [])
             ev.append({"artifact": n,
                        "levels": list(a.get("levels_searched")
                                      or list((a.get("levels") or {}).keys())),
-                       "extra_evaluations": sorted(
-                           x for x in ("p11_tight", "p8_tight") if a.get(x))})
+                       "extra_evaluations": extras})
         elif k == KIND_GRID_AUTO and isinstance(a.get("config"), dict):
             landed.append({"artifact": n, "config": a["config"]})
     graded, structural, discarded, resim = _gather(
@@ -245,10 +282,12 @@ def coverage_report(strategy: str, artifact_paths: list, *,
     out, untested_total = [], 0
     for p in entry["params"]:
         name, band, prod = p["param"], p["band"], p["production"]
+        free_seen = free_axis.get(p["id"], set()) | free_axis.get(name, set())
+        free_covered = []
         q_labels = [b for b in band if isinstance(b, str) and b.startswith("q")]
         tested, untested = [], []
         if q_labels:
-            got = len(graded.get(name, set()))
+            got = len(graded.get(name, set()) | free_seen)
             if got >= len(q_labels):
                 tested = list(band)
             else:
@@ -267,11 +306,23 @@ def coverage_report(strategy: str, artifact_paths: list, *,
                 else:
                     ok = (_num_eq(lev, prod)
                           or any(_num_eq(lev, s) for s in seen))
+                    if not ok and any(_num_eq(lev, s) for s in free_seen):
+                        # S6-B3139o: covered by a free-level evaluation -
+                        # counted, and LABELLED per level
+                        ok = True
+                        free_covered.append(lev)
+                    if (not ok and p["id"] in tight_ids
+                            and not _num_eq(lev, prod)):
+                        # the id's <id>_tight extra evaluated its approved
+                        # non-production level (reproduction-gated)
+                        ok = True
+                        free_covered.append(lev)
                 (tested if ok else untested).append(lev)
         untested_total += len(untested)
         out.append({"id": p["id"], "param": name, "band": band,
                     "production": prod, "tested": tested,
-                    "untested": untested})
+                    "untested": untested,
+                    "free_level_covered": free_covered})
     return {"strategy": strategy, "evaluable": True,
             "complete": untested_total == 0,
             "untested_total": untested_total, "params": out,
