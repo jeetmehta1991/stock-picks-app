@@ -150,6 +150,25 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {"written": ["scripts/build_table_a.py"], "opened": ""},
     ),
+    # S6-B3138a (B3139): VERBATIM from this session's transcript
+    # (2026-09-30T06:56:26Z) - a measurement fed to python through a quoted
+    # heredoc whose body carries b"\r\n" pairs. Most such heredocs arrive
+    # intact, which is how the form survived 25 times in one session.
+    "scan_heredoc_escapes": (
+        "",
+        True,
+        {"cmds": [(
+            "python - <<'EOF'\n"
+            'from pathlib import Path\n'
+            'import subprocess\n'
+            'for f in ["backtest/tests/test_unit.py","scripts/pyramid_gate.py","scripts/preflight.py","backtest/tests/conftest.py","scripts/verify_turn_compliance.py","scripts/runner_scripts.py","scripts/pytest_plugins/pyramid_readset.py","scripts/build_workflow_state.py","EXECUTION_QUEUE.md"]:\n'
+            '    b = Path(f).read_bytes()\n'
+            '    crlf = b.count(b"\\r\\n"); lf = b.count(b"\\n"); \n'
+            '    print(f"{f}: crlf={crlf} bare_lf={lf-crlf} bare_cr={b.count(b\'\\r\')-crlf}")\n'
+            'r = subprocess.run(["git","config","--get","core.autocrlf"],capture_output=True,text=True); print("autocrlf", r.stdout.strip())\n'
+            'r = subprocess.run(["git","check-attr","-a","backtest/tests/test_unit.py"],capture_output=True,text=True); print("attrs", r.stdout.strip())\n'
+            'EOF')]},
+    ),
     "scan_compliance_is_content": (
         "CHECKLIST compliance statement: all items applied and satisfied.",
         True,
@@ -839,6 +858,16 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
          "defect, the rest were already correct.",
          True, {}),
     ],
+    "scan_heredoc_escapes": [
+        # must-QUIET 1: the same interpreter heredoc with NO backslash - the
+        # form #259 permits; firing here would forbid every python heredoc.
+        ("", False, {"cmds": ["python - <<'EOF'\nimport json\n"
+                             "print(json.dumps({'a': 1}))\nEOF"]}),
+        # must-QUIET 2: a commit-message heredoc carrying a backslash - the
+        # council's slice exempts messages (git reads them, no interpreter).
+        ("", False, {"cmds": ["git commit -q -F - -- a.py <<'MSG'\n"
+                             "B1: fix the \\n handling\nMSG"]}),
+    ],
     "scan_locked_format_edit_without_source_open": [
         # must-QUIET 1: the same edit WITH the plan opened in the same turn -
         # the compliant form the gate exists to require.
@@ -1180,6 +1209,9 @@ def all_incidents(name: str) -> list[tuple[str, bool, dict]]:
 # state that isolates TEXT, exactly as the incident run supplies the state the
 # incident had. A harness that gets either wrong reports on itself.
 NEUTRAL: dict[str, dict] = {
+    # S6-B3138a (B3139): reads the turn's Bash commands when no cmds are
+    # supplied; the text-only control must not measure the transcript.
+    "scan_heredoc_escapes": {"cmds": []},
     # S6-B3096e (B3107): this gate reads git and the working tree when no
     # rewrites are supplied, so the control would measure the repo (L843).
     "scan_doc_rewrite_without_coverage": {"rewrites": {}, "tool_text": ""},

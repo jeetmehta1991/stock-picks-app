@@ -361,6 +361,20 @@ def gate_own_paths(out, root) -> set:
     return own
 
 
+def minus_gate_own(created: str, own) -> str:
+    """S6-B3139l (B3139): the created-files disclosure WITHOUT the gate's
+    own --out, .pid and read-set files (gate_own_paths) - the gate writes
+    them on every run whose --out sits under output_audit, so counting them
+    printed a 'test residue' NOTE on every such run (L721: a NOTE that
+    always fires trains its reader to skip it). 'none' / 'unreadable' pass
+    through unchanged."""
+    if created in ("none", "unreadable"):
+        return created
+    keep = [n for n in created.split(",")
+            if n and _fold("output_audit/" + n) not in own]
+    return ",".join(keep) if keep else "none"
+
+
 def _minus_own(moved, own: set):
     return None if moved is None else {m for m in moved if _fold(m) not in own}
 
@@ -508,6 +522,9 @@ def run(out: Path, root: Path, pytest_args: list[str],
         # the main run's output_audit disclosures, read BEFORE any re-run
         oa_state_after = output_audit_state(root)
         oa_created = output_audit_created(oa_before, root)
+        # S6-B3139l: the gate's own out / pid / read-set files are never
+        # test residue (they are subtracted from 'moved' the same way)
+        oa_created = minus_gate_own(oa_created, gate_own_paths(out, root))
         oa_mod_tracked, oa_mod_untracked = output_audit_modified(
             oa_state_before, root, oa_state_after)
         # S6-B3130a: judge the read-set; re-run exactly the named tests

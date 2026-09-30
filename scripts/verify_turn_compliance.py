@@ -5426,6 +5426,83 @@ def scan_deferral_trigger_fired(entries, *, audit_doc=None, state=None,
                 _extra))]
 
 
+
+# S6-B3138a (B3139, council of 5): the DETECTABLE slice of #259 - a backslash
+# pair inside a heredoc BODY that a Bash command feeds to an interpreter. It
+# judges only commands whose transcript timestamp is at or after
+# HEREDOC_ESCAPES_ACTIVE_FROM, so it never re-judges the backlog already in a
+# turn's window (L721: a gate tightened over a backlog blocks every turn until
+# the backlog clears). MEASURED before shipping, over this session's transcript
+# since 2026-09-29T00:00Z: 25 Bash commands fed such a body to python; the two
+# that failed visibly were the only two L885 first counted (L682).
+HEREDOC_ESCAPES_ACTIVE_FROM = "2026-09-30T07:32:00.000Z"
+_HEREDOC_RE = re.compile(
+    r"(?m)^(?P<head>[^\n]*?)<<-?\s*(?P<q>['\"]?)(?P<tag>\w+)(?P=q)[^\n]*\n"
+    r"(?P<body>.*?)^\s*(?P=tag)\s*$", re.S)
+_HEREDOC_INTERP_RE = re.compile(
+    r"(?i)(?:^|[\s/\\;&|(])(?:python[0-9.]*(?:\.exe)?|py|node|perl|ruby)(?=\s|$)")
+_ESCAPE_PAIR_RE = re.compile(r"\\\S")
+
+
+def heredoc_escape_hits(cmd: str) -> list[str]:
+    """One line per heredoc in `cmd` whose command head names an interpreter
+    (python / py / node / perl / ruby - never a git commit or tag message) and
+    whose BODY carries a backslash pair; [] when there is none."""
+    out = []
+    for m in _HEREDOC_RE.finditer(str(cmd or "")):
+        head = m.group("head")
+        if not _HEREDOC_INTERP_RE.search(head):
+            continue
+        if re.search(r"\bgit\s+(?:commit|tag)\b", head):
+            continue
+        pairs = sorted(set(_ESCAPE_PAIR_RE.findall(m.group("body"))))
+        if pairs:
+            out.append(f"{head.strip()[-60:]} <<{m.group('tag')}: "
+                       + " ".join(pairs[:6]))
+    return out
+
+
+def scan_heredoc_escapes(entries, *, cmds=None, active_from=None) -> list[str]:
+    """S6-B3138a / #259 / L885: never pass a backslash escape through a heredoc.
+
+    A heredoc body travels through the shell AND the tool layer; a backslash
+    pair in it (a Python string escape, a regex class, a Windows path) can
+    arrive altered, and a patcher's anchor then silently fails to match or -
+    worse - matches something else. B3138 wrote a wrong value into a pin this
+    way when the guard and the write sat in different commands; B3139 refused
+    twice more only because guard and write shared a process.
+
+    The remedy the rule prescribes is mechanical: put the script in a FILE
+    with the Write tool and run the file. This gate fires on the form, not on
+    a visible failure - most such heredocs happen to arrive intact, which is
+    exactly why the habit survived 25 instances in one session.
+
+    Seam (#241): `cmds` injects Bash command strings (the active-from window is
+    then the caller's); `active_from` overrides the ship timestamp.
+    """
+    if cmds is None:
+        cut = active_from or HEREDOC_ESCAPES_ACTIVE_FROM
+        cmds = []
+        for d in _turn_entries(entries):
+            if not isinstance(d, dict) or d.get("type") != "assistant":
+                continue
+            if str(d.get("timestamp") or "") < cut:
+                continue
+            for blk in (d.get("message") or {}).get("content") or ():
+                if (isinstance(blk, dict) and blk.get("type") == "tool_use"
+                        and str(blk.get("name") or "").lower() == "bash"):
+                    cmds.append(str((blk.get("input") or {}).get("command") or ""))
+    hits = [h for c in cmds for h in heredoc_escape_hits(c)]
+    if not hits:
+        return []
+    return [f"ESCAPE THROUGH A HEREDOC (S6-B3138a / #259 / L885): {len(hits)} "
+            f"heredoc body(ies) fed to an interpreter carry a backslash pair - "
+            f"first: {hits[0]!r}. A backslash pair can arrive altered through "
+            "the shell and tool layers; write the script with the Write tool "
+            "and run the FILE. A heredoc with no backslash is fine, and a git "
+            "commit or tag message heredoc is exempt."]
+
+
 def main(argv: list[str] | None = None) -> int:
     # B1746: RUN EVERY GATE, REPORT EVERY VIOLATION.
     #
@@ -5505,6 +5582,9 @@ def main(argv: list[str] | None = None) -> int:
                 # table with columns dropped (four instances, all
                 # owner-caught).
                 scan_retyped_locked_table,
+                # S6-B3138a (B3139): #259's detectable slice - a backslash
+                # pair in a heredoc body fed to an interpreter.
+                scan_heredoc_escapes,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):

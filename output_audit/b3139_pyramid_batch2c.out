@@ -1,0 +1,73 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+..............................................s......................... [ 40%]
+....................s.................................................s. [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 58%]
+........................................................................ [ 62%]
+........................................................................ [ 66%]
+........................................................................ [ 71%]
+........................................................................ [ 75%]
+........................................................................ [ 80%]
+........................................................................ [ 84%]
+..........................................................F............. [ 89%]
+........................................................................ [ 93%]
+........................................................................ [ 98%]
+.............................                                            [100%]
+================================== FAILURES ===================================
+___ test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason ___
+
+    def test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason():
+        """B3121 (S6-B3121, L878, #276b): a seam that REPLACES a live helper's
+        output answers a different question than the live path - the class that
+        kept scan_findings_vs_tickets dead on its live branch while every test
+        passed. B1811 swept this shape by one helper's NAME; this sweeps it by
+        SHAPE. Every call-site seam in the turn gate is either classified SOUND
+        with its reason or named in the shrink-only UNREAD backlog (S6-B3121a);
+        a new seam fails here until someone reads it.
+        """
+        from pathlib import Path as _P
+        src = (_P(__file__).resolve().parents[2] / "scripts" /
+               "verify_turn_compliance.py").read_text(encoding="utf-8")
+        found = _b3121_call_site_seams(src)
+        assert not (set(_B3121_SEAMS_SOUND) & _B3121_SEAMS_UNREAD)
+        registered = set(_B3121_SEAMS_SOUND) | _B3121_SEAMS_UNREAD
+        new, stale = found - registered, registered - found
+>       assert not new, (
+            "unregistered call-site seam(s) - read each: does the injected value "
+            "have the live helper's TYPE, and does it get the helper's PROCESSING? "
+            f"Then register it with its reason: {sorted(new)}")
+E       AssertionError: unregistered call-site seam(s) - read each: does the injected value have the live helper's TYPE, and does it get the helper's PROCESSING? Then register it with its reason: [('scan_heredoc_escapes', 'cmds')]
+E       assert not {('scan_heredoc_escapes', 'cmds')}
+
+backtest\tests\test_unit.py:47665: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason
+1 failed, 1609 passed, 3 skipped in 1111.53s (0:18:31)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1141
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

@@ -36457,16 +36457,24 @@ def test_b2706_smc_depth_knobs_reach_the_engine_and_bite():
     assert out.stdout.split() == ["0.02", "45"], out.stdout
 
 
-def test_b2710_cube_riders_are_validated_and_battery_exempt():
+def test_b2710_cube_riders_are_validated_and_battery_exempt(tmp_path, monkeypatch):
     """B2710: riders (B2707 reuse doctrine) - the gate passes a valid rider
     set, refuses an unregistered rider and a graded/rider overlap; the
-    engine set merges graded-first with no duplicates."""
+    engine set merges graded-first with no duplicates.
+    S6-B3139m (B3139): driven against a TMP root holding copies of the two
+    subset files - the read-set's first suite-writes reading named this
+    test writing two temporary files under the PRODUCTION output_audit."""
+    import shutil as _sh
     import sys as _sys
     from pathlib import Path as _P
-    root = _P(__file__).resolve().parents[2]
-    sp = str(root / "scripts")
+    repo = _P(__file__).resolve().parents[2]
+    sp = str(repo / "scripts")
     if sp not in _sys.path:
         _sys.path.insert(0, sp)
+    root = tmp_path / "root"
+    (root / "output_audit").mkdir(parents=True)
+    for name in ("_subset_one.txt", "_subset_smc_riders.txt"):
+        _sh.copyfile(repo / "output_audit" / name, root / "output_audit" / name)
     from producer_variant_table import launch_refusals
     doc = {"wave": "t", "strategy_subset": "output_audit/_subset_one.txt",
            "cube_riders": "output_audit/_subset_smc_riders.txt", "arms": []}
@@ -36485,11 +36493,13 @@ def test_b2710_cube_riders_are_validated_and_battery_exempt():
     finally:
         tmp.unlink()
     import run_wave as rw
+    monkeypatch.setattr(rw, "ROOT", root)
     spec = {"wave": "_tmp_test_b2710",
             "strategy_subset": "output_audit/_subset_one.txt",
             "cube_riders": "output_audit/_subset_smc_riders.txt"}
     rel = rw._engine_strategy_file(spec)
     mf = root / rel
+    assert mf.parent == root / "output_audit", mf
     try:
         lines = [l for l in mf.read_text(encoding="utf-8").splitlines()
                  if l.strip() and not l.startswith("#")]
@@ -47460,6 +47470,8 @@ def _b3121_call_site_seams(src: str) -> set:
 # returns and the PROCESSING it applies (#276b). A new seam fails the pin until
 # it is read and entered here with its reason.
 _B3121_SEAMS_SOUND = {
+    ("scan_heredoc_escapes", "cmds"):
+        "list seam (list[str] of Bash command strings) for the list the live collector builds from _turn_entries; every element gets the same heredoc_escape_hits processing, and the window/tool selection the seam skips is driven on the live branch by test_b3139_heredoc_escape_scan_judges_only_commands_after_it_shipped",
     ("scan_owner_decision_taken", "rows"):
         "list seam (list(rows)) for the list _queue_rows_added(diff_text) returns",
     ("scan_count_without_members", "rows"):
@@ -48753,3 +48765,105 @@ def test_b3139_gate_rerun_names_a_suite_that_rewrites_its_own_input(tmp_path,
     quiet = head + "def test_q():\n    assert json.loads(Path('output_audit/a.json').read_text())\n"
     rc, text = _b3130a_gate(pg, root, quiet, tmp_path / "q.out", monkeypatch)
     assert rc == 0 and "\nreadset_suite_writes=none\n" in text, text[-700:]
+
+
+# ================================================================ B3139 S6-B3138a: escape through a heredoc
+def _b3139_heredoc_incident():
+    """The VERBATIM incident, read from its ONE home - the gate corpus entry
+    (transcript 2026-09-30T06:56:26Z), never retyped here (L593)."""
+    import gate_incident_corpus as gic
+    return gic.INCIDENTS["scan_heredoc_escapes"][2]["cmds"][0]
+
+
+def test_b3139_heredoc_escape_scan_fires_on_the_session_incident():
+    """S6-B3138a (#259 / L885): a backslash pair in a heredoc BODY fed to an
+    interpreter fires, naming the interpreter head and the pairs; the text is
+    the session's own incident. Must-fail proven with the scan absent."""
+    import verify_turn_compliance as vtc
+    hits = vtc.heredoc_escape_hits(_b3139_heredoc_incident())
+    assert len(hits) == 1 and "python -" in hits[0], hits
+    assert "\\r" in hits[0] and "\\n" in hits[0], hits
+    out = vtc.scan_heredoc_escapes([], cmds=[_b3139_heredoc_incident()])
+    assert len(out) == 1 and out[0].startswith("ESCAPE THROUGH A HEREDOC"), out
+
+
+def test_b3139_heredoc_escape_scan_spares_the_compliant_forms():
+    """S6-B3138a: the forms #259 permits stay quiet - a python heredoc with no
+    backslash; a git commit message heredoc carrying one (exempt by the
+    council's slice); a heredoc written to a FILE by cat (not fed to an
+    interpreter); a python -c string (not a heredoc - #245's business). And
+    a path segment merely CONTAINING 'python' is not an interpreter head."""
+    import verify_turn_compliance as vtc
+    quiet = [
+        "python - <<'EOF'\nimport json\nprint(json.dumps({'a': 1}))\nEOF",
+        "git commit -q -F - -- a.py <<'MSG'\nB1: fix the \\n handling\nMSG",
+        "cat > notes.txt <<'EOF'\nC:\\Users\\x and \\n\nEOF",
+        "python -c \"print('a\\nb')\"",
+        "cd /c/python_stuff && cat <<'EOF' > out.txt\nline \\t\nEOF",
+    ]
+    for c in quiet:
+        assert vtc.heredoc_escape_hits(c) == [], c
+    assert vtc.scan_heredoc_escapes([], cmds=quiet) == []
+    # the venv interpreter and the py launcher are interpreters
+    for head in (".venv/Scripts/python.exe - <<'EOF'", "py -3 - <<EOF",
+                 "node <<'JS'"):
+        tag = head.split("<<")[1].strip("'\" ")
+        c = head + "\nx = 'a\\tb'\n" + tag
+        assert vtc.heredoc_escape_hits(c), c
+
+
+def test_b3139_heredoc_escape_scan_judges_only_commands_after_it_shipped():
+    """S6-B3138a / L721: the scan reads the turn's Bash commands whose
+    transcript timestamp is at or after HEREDOC_ESCAPES_ACTIVE_FROM, so the
+    backlog already in a turn's window can never block a close. The live
+    collector (no cmds seam) is driven here (L878)."""
+    import verify_turn_compliance as vtc
+    cut = vtc.HEREDOC_ESCAPES_ACTIVE_FROM
+    assert cut.endswith("Z") and cut[:4] == "2026", cut
+
+    def entry(ts, cmd):
+        return {"type": "assistant", "timestamp": ts,
+                "message": {"content": [{"type": "tool_use", "name": "Bash",
+                                         "input": {"command": cmd}}]}}
+    user = {"type": "user", "message": {"content": "go"}}
+    before = entry("2026-09-01T00:00:00.000Z", _b3139_heredoc_incident())
+    after = entry("2099-01-01T00:00:00.000Z", _b3139_heredoc_incident())
+    assert vtc.scan_heredoc_escapes([user, before]) == []
+    fired = vtc.scan_heredoc_escapes([user, before, after])
+    assert len(fired) == 1 and "1 heredoc body" in fired[0], fired
+    # a PowerShell call is never judged (a heredoc is bash syntax)
+    ps = {"type": "assistant", "timestamp": "2099-01-01T00:00:00.000Z",
+          "message": {"content": [{"type": "tool_use", "name": "PowerShell",
+                                   "input": {"command": _b3139_heredoc_incident()}}]}}
+    assert vtc.scan_heredoc_escapes([user, ps]) == []
+    # wired, not merely defined (B1751 / #224)
+    import inspect as _insp
+    assert "scan_heredoc_escapes" in _insp.getsource(vtc.main)
+
+
+# ================================================================ B3139 S6-B3139l: the gate's own files are not residue
+def test_b3139_created_disclosure_excludes_the_gates_own_files(tmp_path, monkeypatch):
+    """S6-B3139l (B3139): output_audit_created= and the S6-B3120g residue NOTE
+    no longer name the gate's OWN --out, .pid and read-set files (the batch-2
+    gate artifact output_audit/b3139_pyramid_batch2b.out called all three
+    'test residue'). Unit arm on minus_gate_own; LIVE arm through pg.run with
+    --out under the repo's output_audit (L878): a quiet suite reads 'none',
+    while a real residue file is still named. Must-fail proven on the
+    pre-change gate (it printed the three own files)."""
+    import pyramid_gate as pg
+    root = _b3130a_repo(tmp_path)
+    out = root / "output_audit" / "own.out"
+    own = pg.gate_own_paths(out, root)
+    assert pg.minus_gate_own("own.out,own.out.pid,own.out.readset.json", own) == "none"
+    assert pg.minus_gate_own("own.out,residue.json", own) == "residue.json"
+    assert pg.minus_gate_own("none", own) == "none"
+    assert pg.minus_gate_own("unreadable", own) == "unreadable"
+    quiet = "def test_q():\n    assert True\n"
+    rc, text = _b3130a_gate(pg, root, quiet, out, monkeypatch)
+    assert rc == 0 and "\noutput_audit_created=none\n" in text, text[-700:]
+    litter = ("from pathlib import Path\n"
+              "def test_litter():\n"
+              "    Path('output_audit/residue.json').write_text('{}')\n")
+    out2 = root / "output_audit" / "own2.out"
+    rc, text = _b3130a_gate(pg, root, litter, out2, monkeypatch)
+    assert "\noutput_audit_created=residue.json\n" in text, text[-700:]
