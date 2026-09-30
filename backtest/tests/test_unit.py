@@ -51332,3 +51332,28 @@ def test_b3139i_every_live_metric_writer_stamps_the_code_identity():
         src = (root / "scripts" / w).read_text(encoding="utf-8", errors="replace")
         assert src.count("stamp_metric_code") == 1, (w, src.count("stamp_metric_code"))
         assert "S6-B3139i" in src, w
+
+
+def test_b3139_make_spec_extends_ema_pairs_for_an_unemitted_span():
+    """B3139 (found launching Step-2 config 2): STRAT_EMA_SPAN=N re-points
+    the gate while compute_ema_sma emits only EMA_PAIRS' spans, so a swept
+    span outside the default set fires on keys the producer never writes -
+    a zero-fire engine run. make_spec._arm_env extends EMA_PAIRS with the
+    production-200 pairing for exactly those spans (the landed b3119
+    Step-1 span-250 precedent, '200:250') and leaves default-set spans
+    single-key. Both arms (B1944)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    from make_spec import _arm_env
+    # must-extend: 250 is outside the default emitted set
+    assert _arm_env("STRAT_EMA_SPAN", 250) == {
+        "STRAT_EMA_SPAN": "250",
+        "EMA_PAIRS": "9:21,20:50,50:200,100:150,200:250"}
+    # a below-200 unemitted span pairs fast-first (fast < slow)
+    assert _arm_env("STRAT_EMA_SPAN", 30)["EMA_PAIRS"].endswith(",30:200")
+    # must-stay-quiet: an emitted span and a non-EMA actuator stay single-key
+    assert _arm_env("STRAT_EMA_SPAN", 100) == {"STRAT_EMA_SPAN": "100"}
+    assert _arm_env("SOME_OTHER_KNOB", 250) == {"SOME_OTHER_KNOB": "250"}
