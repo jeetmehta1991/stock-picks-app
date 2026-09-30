@@ -53,7 +53,7 @@ def build() -> dict:
     # data only and decide nothing.
     states = qs.tickets()
     pat = re.compile(
-        r"^\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*\s*\|\s*[^|]*\|\s*(P\d)\s*\|"
+        r"^\|\s*\*\*(" + qs.TICKET_ID + r")\*\*\s*\|\s*[^|]*\|\s*(P\d)\s*\|"
         r"\s*(.{0,110})", re.M)
     text = (ROOT / "EXECUTION_QUEUE.md").read_text(
         encoding="utf-8", errors="replace")

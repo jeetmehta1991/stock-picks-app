@@ -1972,7 +1972,7 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** L176, `feedback_monitor_design_vs_operational_gap`, `feedback_monitor_arm_at_event_not_pre_launch` (#117 companion: when to arm), B1028 failure.
 
-122. **HARD RULE -- SILENT-FAILURE-PAIRING: every `|| true` requires paired explicit verification step.** (B1028 pandas-ta silent failure session 2026-06-27; Council 126 Tier 1.) **INSTANCE (B3120/L876):** the test_b2128 exception-form ratchet caught a second `except Exception` swallow in a draft (grading_surface_files) two days after the first (direction_lens_verdict, B3119g) - the pairing rule binds my own draft code first; consolidated with a disclosed `note` key, pre-commit.
+122. **HARD RULE -- SILENT-FAILURE-PAIRING: every `|| true` requires paired explicit verification step.** (B1028 pandas-ta silent failure session 2026-06-27; Council 126 Tier 1.) **INSTANCE (B3120/L876):** the test_b2128 exception-form ratchet caught a second `except Exception` swallow in a draft (grading_surface_files) two days after the first (direction_lens_verdict, B3119g) - the pairing rule binds my own draft code first; consolidated with a disclosed `note` key, pre-commit. **INSTANCE 2 (B3139/L887):** the same ratchet caught a bare `except ValueError: pass` I wrote in pyramid_gate.gate_own_paths (129 > 128) on the first full run of the batch that added it - replaced by a Path.is_relative_to guard, so no exception path remains.
 
      Every `|| true` / `|| :` / `|| echo` in user-data or shell scripts MUST be paired with an explicit success-verification step within 10 lines.
 
@@ -2909,6 +2909,8 @@ A causal claim never enters a durable artifact without EXECUTED evidence beside 
 cause-language with no run-evidence language in the same turn.
 *Lineage:* L455; the B2019 misattribution (L617) is the newest instance of the class.
 
+**INSTANCE (B3139 / L883):** the S6-B3128a 'rider-blind' diagnosis explained a count gap with the first structural difference that could produce it and shipped it to a ticket without the one refuting check (the cube held ONE strategy; the gap was the 191 holdout-entered trades).
+
 ### #190 — A FIX TOUCHES ITS DOWNSTREAM ARTIFACT (B1602)
 
 **A commit whose message says FIX / DEFECT / RCA and touches no downstream artifact is
@@ -3010,10 +3012,18 @@ not fix it - the reader still receives a cause.
 
 **Mechanically enforced:** `scan_unverified_cause()` in `scripts/verify_turn_compliance.py`
 blocks turn-end on cause language without evidence language in the same turn.
+**LIMIT (B3139, S6-B3135d / L883):** that cause language is `CAUSE_PHRASES` - 11 HEDGED
+phrases ('probable cause', 'likely because', ...). A cause stated CONFIDENTLY
+('the adapter is rider-blind') carries none of them and passes: 0 of 11 matched the
+S6-B3128a misdiagnosis, MEASURED. The gate enforces hedged causes only; a confident
+one is JUDGMENT-ONLY, and the durable remedy is at the instance - a FAIL message that
+prints the make-up of its own gap (free_level_window.gap_breakdown).
 
 **Retroactive coverage (#136):** catches L455 (the `i<250` warmup-guard hypothesis,
 disproved by one command); L450 (a stall "explained" by falling RAM before CPU was
 sampled); and L438 (a network call inferred from a log string without reading the callee).
+
+**INSTANCE (B3139 / L883):** the S6-B3128a 'rider-blind' cause was stated CONFIDENTLY, so the gate below saw none of its 11 hedged phrases - see the LIMIT added to the enforcement line.
 
 ### #196 — AFTER A FIX, RE-CHECK WHAT WAS ALREADY DECIDED (B1595 / L462)
 
@@ -3033,6 +3043,8 @@ After ANY defect fix, before moving on:
 end-anchored coverage change altering which tickers any prior run would have served).
 
 **INSTANCE (B3097) - B2046 FIXED A DEFECT THAT FALSIFIED OUTPUTS AND SWEPT NONE OF THE FINDINGS THEY HAD PRODUCED.** Until B2046 (2026-08-23), trade_exit_detail.csv dropped every strategy with fewer than 5 trades. L395 (2026-08-10) had read `swing_length=50` as ZERO smc_breaker_block_long entries from that file; the engine trade log of the same run holds 3. The fix was pinned, but step 1 above - grep the shipped conclusions - was not run, so L395 and its own correction L397 kept the false zero until B3097 re-derived it while closing S6-B1520a. Corrected in place and pinned by test_b3097_l395_and_l397_carry_the_b2046_correction; the account is the L867 addendum.
+
+**INSTANCE (B3139 / L884):** the B2646 PSR units fix re-judged the funnel only and S6-B3122 skipped smc_breaker_block_long as ALREADY-NET, so its pre-fix PSR 1.0 (current code 0.939) stood for a month - the re-check enumerated the population the fix was found in, not every conclusion the old formula wrote.
 
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
@@ -3194,6 +3206,8 @@ do the arithmetic and SHOW it.** If you cannot, drop the claim.
 
 **Retroactive coverage (#136):** catches the "costs nothing" claim verbatim, and the three
 rate-for-total substitutions above.
+
+**INSTANCE (B3139 / L890):** the cube-isolation occupancy block was described per-strategy in L812 and S6-B2905 from the comment at backtest.py:2830-2831 (at 83eb1ff48), while the control flow skips the WHOLE candidate - co-firing strategies holding nothing are not entered and are named in no skip row (S6-B3139r); its pin tests two literal sets, not the engine loop (#276b).
 
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
 
@@ -3747,6 +3761,8 @@ a live failure is not.
 **Retroactive coverage (#136):** `verify_postconfig_complete` (built B1699, wired B1702 only after
 the owner asked); `prelaunch_gate` still unwired; `verify_engine_implemented` / `verify_grid_bands`
 / `verify_spotcheck_coverage`, each built during this sweep and each hand-run only.
+
+**INSTANCE (B3139 / L892):** S6-B3118a's event trigger ('before any bollinger_lower T6/Step-2 ask') fired unbuilt at B3131 although deferral_trigger_audit.py listed it among 11 unevaluated triggers - a disclosure no launch path reads (S6-B3139s).
 
 ### #225 - AN ANALYSIS-ONLY TURN PASSES EVERY GATE AND CAN STILL BE A SILENT MISS (B1705 / L500)
 
@@ -4790,6 +4806,8 @@ After repair it detects **60 dual strategies**.
 outside comments. **Line 940 of `verify_turn_compliance.py` has carried a comment recording this
 same defect since B1721b - recorded, never gated.**
 
+**INSTANCE (B3138-B3139 / L885):** three escape-through-heredoc edits in two turns failed visibly; the one whose guard and write sat in DIFFERENT commands wrote a wrong value, the two whose guard and write sat in the SAME process refused before any write - and a transcript replay found 25 such heredocs in the session, most arriving intact. **Mechanically enforced since B3139 (S6-B3138a):** `scan_heredoc_escapes` in `scripts/verify_turn_compliance.py` fires on a backslash pair in a heredoc body fed to an interpreter (git commit/tag messages exempt), active from its ship time (L721).
+
 ### #260 - SHOW EVERY CLASS OR CITE NO TOTAL (B1779 / L534)
 
 **MEASURED: I reported "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649".** Three of SEVEN classes
@@ -4855,6 +4873,8 @@ instance patched while its class stayed open (`L519`); one gate's scoping lesson
 gate built three turns later (`L536`); and the ledger counting categories rather than members
 (`L532`). **When a rule is learned, ask what will CARRY it to the next instance - a shared helper, a
 primitive, or a test that pins the set. Prose in LEARNINGS carries nothing.**
+
+**INSTANCE (B3139 / L893):** scan_heredoc_escapes shipped without the B2689 one-report rule its sibling scan_shell_substitution carries, so an in-turn hit could never clear; its author tripped it three hours later (S6-B3139u).
 
 ### #263 - THE LEDGER HAS SIX MUTUALLY EXCLUSIVE CLASSES (B1784 / L537)
 
@@ -5057,6 +5077,8 @@ those 20 rows and used to score four classifiers, is 20 planning rows presented 
 correct; 20 sounds like a respectable sample. **The error was never in a row - it was in
 generalising from a slice**, which no amount of care inside the slice can detect.
 
+**INSTANCE (B3139 / L887):** the pyramid gate's read-set treated every mid-run move under output_audit as external while four tests in the suite rewrite output_audit/workflow_state.json - a verdict about who writes the watched directory, built into a mechanism with the writers never enumerated; its first full run read SUSPECT and could never have read anything else.
+
 ### #271 - COUNT TICKETS, NOT ROWS (B1795 / L545)
 
 **AMENDED B2525 (L737): the rule is right and its GATE sees one surface only.**
@@ -5253,6 +5275,8 @@ exercised a path production never takes and reported clean for that reason.
 
 **Instance L878 (B3121): the call-site override survived B1811's sweep because that sweep keyed on ONE helper's name (`_tool_text`). `n = _queue_rows_added() if rows is None else rows` had the same shape with another helper; B1769 changed that helper's return type from int to list the day B1739 wrote the gate, every test passed `rows` as an int, and the live branch raised TypeError whenever it had a finding to judge. Sweep by SHAPE: an AST pass over the turn gate found 36 call-site seams - 2 defective (both fixed at B3121), 16 sound by reading, 18 not yet read (S6-B3121a). Compliance failure against #276b. Mechanism: test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason (a new seam fails until it is read and registered) and test_b3121_findings_gate_counts_rows_through_the_live_helper.**
 
+**INSTANCE (B3139 / L886):** a pre-change proof imported the LIVE module - roster_core re-fronts the live scripts directory on import - and reported a pre-change PASS; every later proof asserted each module's __file__.
+
 ### #277 - AN ARTIFACT MUST CARRY THE KEY IT WAS RANKED, SELECTED OR FILTERED ON (B1820 / L558)
 
 **MEASURED: `step1_ranking` emitted `sharpe` - the HOLDOUT measurement - as its first field and
@@ -5345,6 +5369,8 @@ seam"* while drivable, 2 excused as *"undocumented trigger"* while importable,
   true**, and the two look identical in review.
 - **Before writing "cannot be tested / no seam / not available", CALL IT.**
   `#222`'s rule, applied to an exclusion instead of a threshold.
+
+**INSTANCE (B3139 / L888):** queue_state's reject pile had no reader - its disclosure regex shared the reducer's id charset, so 60 S6-LANDING-* ledger tickets (underscores and dots in the id) sat in neither tickets() nor unparsed() and every six-class table understated EXECUTED by 60; an independent cell-split parse (scripts/reconcile_self_measures.py) found it on its first run.
 
 
 ### #280 - A COUNT IS NOT A SET: NAME THE MEMBERS OR THE QUERY (B1965 / L601)
@@ -6162,6 +6188,8 @@ Mechanism: JUDGMENT-ONLY for detection - no scan reads whether a change alters a
 
 Before any gate, audit or validator treats an ABSENCE-shaped observation as a defect - no rows, no file, nothing after date X, a count of zero - enumerate the lifecycles that legitimately produce that absence (delisting, rename, late listing, not-yet-fetched, window predating existence) and fail ONLY the shapes no lifecycle explains. Interior corruption (gaps between first and last bar, NaN, non-positive prices) indicts; edge absence reports. MEASURED: the pre-leg bar audit's first live run failed 5 of 200 tickers - TWTR, ATVI, PXD, FISV absent and MRO truncated - every one a sound delisted-complete history the engine and R5 handle by design. Corollary: LIVE-RUN a new gate against real data before wiring lets its refusal block anything - the wrong definition cost one rerun instead of a halted chain only because the audit ran standalone first. Pinned by test_b2947_preleg_bar_audit_flags_defects_and_spares_delistings.
 
+**INSTANCE (B3139 / L891):** the S6-B3134a slice monitor took a missing heartbeat pid (not yet written at startup) as a dead arm and printed DONE while all four arms ran; liveness now comes from the OS and DONE needs every arm's cube.
+
 ### #312 - PRINT A LOCKED TABLE OR DO NOT CALL IT THAT (L848, S6-B3013, 2026-09-23)
 
 A locked format - Table A, C, D, or any artifact with a named renderer - reaches a response ONLY as that renderer's verbatim output. Retyping it, however faithfully intended, creates a second unreviewed renderer whose omissions read as editorial trimming. MEASURED: four instances, three on Table C (four columns dropped each time) and one on Table D (seven of seventeen columns and ten of twenty rows), every one caught by the owner and none by the system, because #285 was prose plus a pin on the renderer - which proves what the renderer emits and nothing about what is typed into chat. An EXCERPT is permitted when labelled an excerpt and not presented as the table. Enforced by scan_retyped_locked_table in scripts/verify_turn_compliance.py, which reads TABLE_D_FIXED_COLUMNS from the renderer so the gate cannot drift from the table it guards; pinned by test_b3013_retyped_locked_table_is_refused.
@@ -6337,3 +6365,28 @@ test_b3121_findings_gate_counts_rows_through_the_live_helper for the instance; (
 test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason - 17 seams classified sound
 with a reason, 18 named unread under S6-B3121a, and a new seam fails until it is read and
 registered.
+
+### #325 - A COMPARISON OF TWO CODE TREES HOLDS THE DATA ENVIRONMENT FIXED (B3139 / L889, self-caught 2026-09-30)
+
+A run-against-run comparison across two code trees (a worktree A/B, an old-engine
+vs new-engine slice, a before/after re-run) is a comparison of CODE only if every
+non-code input is identical. A git worktree carries only tracked files; the
+engine's data roots are gitignored. MEASURED (L889): the S6-B3134a slice's arms
+read two different data environments and its claim (1) failed on the ticker most
+exposed to the 4,342 filings one side lacked.
+
+RULE: before any cross-tree comparison, (1) build the second tree through
+launch_sweep.materialise_worktree (which merge-links the data roots since B3139
+and refuses on any parity difference); (2) run scripts/data_env_parity.py --left
+<tree> --right <tree> and proceed only on exit 0; (3) a comparison run without
+that check reports its verdict as UNTESTED, never as a code finding. A mechanism
+named as the prevention is itself a claim: run its HAPPY path before citing it
+(L889: the materialiser cited in the first draft of that entry linked nothing).
+
+MECHANISM: scripts/data_env_parity.py (one definition of the data roots:
+launch_sweep.LINKED_DATA_DIRS plus the universe CSVs), pinned by
+test_b3139_data_env_parity_names_a_missing_data_dir; materialise_worktree's
+happy path pinned by test_b3139_materialise_worktree_links_the_untracked_data.
+Detection that a comparison SKIPPED the check is JUDGMENT-ONLY - an ad-hoc A/B
+harness is scratch code no gate reads; durability is the pins plus the tripwire
+row in the execution-discipline skill.

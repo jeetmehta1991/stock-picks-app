@@ -34,7 +34,16 @@ QUEUE = pathlib.Path(__file__).resolve().parents[1] / "EXECUTION_QUEUE.md"
 CLASSES = ("EXECUTED", "DROPPED", "BLOCKED", "DEFERRED", "OPEN", "RUNNING")
 TERMINAL = ("EXECUTED", "DROPPED")
 
-_ROW = re.compile(r"^\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*\s*\|\s*\*\*([A-Z-]+)\*\*")
+# S6-B3139n (B3139): the ONE ticket-id charset. Dots and underscores are
+# legal: the landing supervisor names its records after the cube
+# (S6-LANDING-output_..._mult1.25-<ts>), and the old [A-Za-z0-9-] charset
+# dropped all 60 of them from BOTH tickets() and unparsed() - measured by
+# scripts/reconcile_self_measures.py, whose first run disagreed here.
+TICKET_ID = r"S6-[A-Za-z0-9._-]+"
+# the landing supervisor's machine records (postconfig_landing.py)
+MACHINE_ROW_PREFIX = "S6-LANDING-"
+
+_ROW = re.compile(r"^\|\s*\*\*(" + TICKET_ID + r")\*\*\s*\|\s*\*\*([A-Z-]+)\*\*")
 
 # B1969: what `_ROW` REJECTS, so the exclusion is DISCLOSED rather than silent.
 #
@@ -47,7 +56,7 @@ _ROW = re.compile(r"^\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*\s*\|\s*\*\*([A-Z-]+)\*\*")
 # This is NOT widened into `_ROW`. Those rows have no state to read, so
 # admitting them would INVENT one. The fix is to SAY they are excluded (L571) -
 # a count whose scope is unstated is the defect, not the count itself.
-_LOOSE = re.compile(r"^\|\s*\*{0,2}(S6-[A-Za-z0-9./-]+?)\*{0,2}\s*\|")
+_LOOSE = re.compile(r"^\|\s*\*{0,2}(S6-[A-Za-z0-9._/-]+?)\*{0,2}\s*\|")
 
 
 def unparsed(path=None) -> dict:

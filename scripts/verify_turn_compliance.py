@@ -2717,8 +2717,16 @@ def _queue_rows_added(diff_text=None) -> list[str]:
     """
     import re
     import subprocess
+    # S6-B3139n (B3139): ONE charset (queue_state.TICKET_ID), and the
+    # landing supervisor's S6-LANDING-* rows are skipped EXPLICITLY on
+    # both paths - machine records the engine hook appends, never rows
+    # this turn wrote. The live path used to skip them only because its
+    # charset could not spell a cube name; the seam path did not.
+    from queue_state import MACHINE_ROW_PREFIX, TICKET_ID
+    _machine = re.compile(r"^\+?\|\s*\*{0,2}" + re.escape(MACHINE_ROW_PREFIX))
     if diff_text is not None:
         return [ln[1:] for ln in diff_text.splitlines()
+                if not _machine.match(ln)
                 # B1970 (#275): the id need not be BOLD. Every row-reading
                 # gate draws its input from here, so requiring `**` let a row
                 # that merely omitted the asterisks bypass ALL of them at once
@@ -2744,8 +2752,10 @@ def _queue_rows_added(diff_text=None) -> list[str]:
         for ln in d.splitlines():
             # B1970: same widening as the collector above - the two must
             # agree, or a row is collected and then has no id (#226).
-            m = re.match(r"^\+\|\s*\*{0,2}(S6-[A-Za-z0-9-]+?)\*{0,2}\s*\|",
+            m = re.match(r"^\+\|\s*\*{0,2}(" + TICKET_ID + r"?)\*{0,2}\s*\|",
                          ln)
+            if m and m.group(1).startswith(MACHINE_ROW_PREFIX):
+                continue
             if m and m.group(1) not in seen:
                 seen.add(m.group(1))
                 out.append(ln[1:])
@@ -3506,7 +3516,8 @@ def scan_queue_vocabulary(entries, *, rows=None, diff_text=None) -> list[str]:
         # in `queue_state._ROW`. Their exclusion is disclosed by
         # `queue_state.unparsed()`, not hidden. Left as-is ON PURPOSE, recorded
         # so a later sweep can tell "considered and kept" from "missed".
-        m = re.match(r"\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*\s*\|\s*\*\*([A-Z-]+)\*\*", r)
+        from queue_state import TICKET_ID as _TID
+        m = re.match(r"\|\s*\*\*(" + _TID + r")\*\*\s*\|\s*\*\*([A-Z-]+)\*\*", r)
         if not m:
             bad.append(f"{r[:60].strip()} - not in `| **id** | **CLASS** |` shape")
             continue

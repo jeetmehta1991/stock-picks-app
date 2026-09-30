@@ -23972,3 +23972,284 @@ the mechanizable slice ran this turn - a sweep script listing every L-citation
 in the session's queue rows beside the cited entry's title (10 of 10 exist and
 point the right way); telling SUPPORT from CONTRADICTION needs the entry's
 meaning, which no scan reads, so detection stays judgment-only past that slice.
+
+### L883 - A COUNT GAP WAS EXPLAINED BY THE FIRST STRUCTURAL DIFFERENCE, AND THE CAUSE GATE KEYS ON HEDGES (B3135/B3139, S6-B3135d)
+
+At B3128 I explained the c14_step2 free-level reproduction gap - 955 rows per exit
+against the family grade's 764 - with the first structural difference that could
+produce it, declared riders (B2721's graded_and_riders), and wrote "the adapter is
+RIDER-BLIND" into a ticket without the one check that refutes it: the cube's
+strategy list, which holds ONE strategy. The gap was exactly the 191
+holdout-entered trades - a holdout leak filed as plumbing (corrected at B3135).
+Compliance failure against #195 (NO UNTESTED CAUSE: run the probe or say
+UNKNOWN), with an INSTANCE line on #189. And #195's own enforcement line
+overstated its reach: scan_unverified_cause keys on CAUSE_PHRASES, 11 HEDGED
+phrases ('probable cause', 'likely because', 'most likely', ...), and 0 of 11
+match a cause stated confidently - MEASURED B3139 on the misdiagnosis text. #195
+now states that limit. Mechanism: detecting a CONFIDENT cause is JUDGMENT-ONLY -
+no scan tells a stated cause from a stated fact; the durable half lives at the
+instance: every free-level reproduction FAIL now prints its n gap split by window
+and by strategy (free_level_window.gap_breakdown, pinned by
+test_b3135_unwindowed_adapter_fails_and_names_the_holdout, merged B3139d), so the
+next mismatch names its own make-up; the other reproduction gates get the same
+explainer under S6-B3139h.
+
+### L884 - TWO POST-FIX PASSES EACH EXCLUDED THE ONE RECORD THE FIX HAD WRITTEN OUTSIDE THEIR POPULATION (B3136/B3139, S6-B3136f)
+
+The B2646 PSR units fix re-judged the FUNNEL only; S6-B3122's net re-score skipped
+smc_breaker_block_long as ALREADY-NET - a property of its cost basis, not of which
+PSR formula produced its number. So smc's pre-fix PSR 1.0 (current code: 0.939)
+stood on the roster for a month, and its six-gate pass rested on it. Compliance
+failure against #196 (AFTER A FIX, RE-CHECK WHAT WAS ALREADY DECIDED): the
+re-check enumerated the population the fix was FOUND in, not every shipped
+conclusion the old formula produced. Mechanism:
+test_b3136_reproduction_gate_names_a_drifted_metric (the label re-score's
+comparator names any stored gate value a fresh evaluation does not reproduce);
+test_b3137_the_rendered_table_shows_the_rederived_psr (15 of 15 rendered PSR cells
+equal a fresh current-code evaluation); and, B3139, the metric-code fingerprint -
+a re-derivation artifact records which code computed it and the roster renders
+'pending' on a mismatch (test_b3139_psr_cell_reads_pending_under_a_stale_metric_code_stamp).
+Stamping EVERY stored figure is the owner's question (S6-B3139i).
+
+### L885 - A GUARD RAISED INSIDE A HEREDOC AND THE NEXT LINE RAN ANYWAY; ESCAPES WENT THROUGH A HEREDOC TWICE MORE THE NEXT TURN (B3138/B3139, S6-B3138a)
+
+At B3138 a fix script passed a backslash-n anchor through a heredoc; the escape
+arrived altered and its own guard raised - but the --write on the NEXT line was a
+separate command and ran, writing the old engine class name into a worktree pin
+(the next test run surfaced it; a script-file fix corrected it). Compliance
+failure against #259 (never pass escapes through a heredoc) and L763 (the line
+after a heredoc terminator is a new command; chain a guard to what it guards).
+B3139 repeated the #259 half twice more - a fix-up script whose anchors carried
+backslash-n pairs, and a merge-helper edit - and both times the anchor assert
+refused before any write, because the write sat inside the SAME process as its
+guard. That is the working remedy: one process holds both the check and the
+write. THOSE TWO ARE THE ONES THAT FAILED VISIBLY, NOT THE COUNT: a replay of the
+detectable slice over this session's transcript since 2026-09-29T00:00Z found
+25 Bash commands feeding python a heredoc body with a backslash pair, most of
+them after this entry was first drafted - a detection count is not an
+occurrence count (L682), and the form survived because most such heredocs
+arrive intact. Mechanism: the guarded-heredoc-then-unchained-command shape stays
+JUDGMENT-ONLY (flagging it matches compliant append-then-test calls, #246); the
+B3139 council's narrower slice is BUILT - scan_heredoc_escapes in
+scripts/verify_turn_compliance.py fires on a backslash pair in a heredoc body fed
+to an interpreter (python / py / node / perl / ruby; a git commit or tag message
+heredoc is exempt), judging only commands at or after its ship time so the
+backlog already in a turn's window cannot block a close (L721); pinned by
+test_b3139_heredoc_escape_scan_fires_on_the_session_incident and 2 siblings,
+each killing a mutant (fires-on-everything, never-fires, ignores-active-from);
+the incident is corpus-verbatim. A PreToolUse deny is the owner's. Durability:
+test_b2600_heredoc_terminator_sibling_chain_rule_is_in_the_skill.
+
+### L886 - record-of-fact (B3139): a pre-change proof ran the LIVE module because an import re-fronted sys.path
+
+**record-of-fact** - an event record, no new rule; the rule is #276b's ("a control
+must take the same path as the claim") and it already lives in the skill. Proving
+four new S6-B3128a pins could fail, the harness put pre-change copies at
+sys.path[0] and ran each pin; the occupancy pin PASSED on the "pre-change" code,
+which was impossible - the old function takes no window argument. Tracing the
+import: roster_core, imported by the pin before its module under test, moves the
+live scripts directory back to sys.path[0], so the pin imported the LIVE module.
+Caught before any claim because the result was impossible; the harness then
+pre-imported every module under test from the copy and asserted each module's
+__file__, and every later B3139 prefail proof (S6-B3130a, S6-B3139a, S6-B2556a)
+carried that assertion. Compliance failure against #276b; incident-specific, so it
+belongs only in LEARNINGS. Mechanism: JUDGMENT-ONLY for detection - a scratch
+harness's import order is no gate's input; the rule it instances is pinned where
+#276b lives.
+
+### L887 - A GATE BUILT TO SEE MID-RUN MOVEMENT COUNTED ITS OWN SUITE'S WRITES AS MOVEMENT, SO ITS FIRST FULL RUN COULD NEVER PASS (B3139, S6-B3130a)
+
+The read-set (S6-B3130a, the owner's ruling 6) re-runs the tests that read an
+output_audit file which moved during a pyramid, and treats every test that spawns
+a process as having read every moved file. Its first full-suite run through the
+gate (output_audit/b3139_pyramid_batch2.out) moved exactly one non-gate path,
+output_audit/workflow_state.json: four tests drive the prompt hook's derivation,
+which rewrites that production file on every call; the spawner rule re-ran one of
+them (test_b3129), it rewrote the file during the re-run, and the verdict read
+SUSPECT - exit 6 on EVERY full pyramid from the first commit on, which would have
+taught everyone to read past the gate's exit code (L721). The design rested on a
+population claim nobody enumerated: that nothing inside the suite writes the
+directory the gate watches. Compliance failure against #270 - L689's rule,
+enumerate writers across the WHOLE repo, tests included, before a verdict about
+the population - here the unenumerated verdict was built into a mechanism instead
+of typed into a ticket. The same run's other failure, a bare except-pass I wrote
+in gate_own_paths (test_b2128 ratchet 129 > 128), is a compliance failure against
+#122, caught by that ratchet exactly as designed. Mechanism for the class: the
+read-set plugin now records every in-process WRITE per test and the gate prints
+readset_suite_writes= on every run - the L689 population measured instead of
+assumed (a child process's writes still show only as moved paths); a re-run whose
+every move is its own tests' writes says so in its SUSPECT reason; and the suite's
+writer of the production copy is redirected (WORKFLOW_STATE_OUT, set by a conftest
+session fixture). Pinned by test_b3139_gate_rerun_names_a_suite_that_rewrites_its_own_input
+and four siblings, each proven to fail on the pre-change code. The next full
+run carried a planted mid-run move (output_audit/b2938_figures.json, one reader,
+rewritten with identical meaning): the gate read readset=RERUN-PASS:66-tests
+and output_audit_modified_untracked=none (output_audit/b3139_pyramid_batch2b.out)
+- the self-move was gone and the re-run settled.
+Retroactive sweep: the gate's two other change detectors - the tree fingerprint
+(output_audit excluded by design) and the output_audit_modified_* disclosures
+(they report movement and never call it external) - make no externality claim;
+1 of 3 detectors made one, and it is the one that failed.
+
+### L888 - EVERY TICKET COUNT I REPORTED LEFT OUT 60 TICKETS: A WRITER COINED A NEW ID SHAPE AND NO READER WAS TOLD (B3139, S6-B3139n)
+
+The six-class ticket table closes every turn, from queue_state (per distinct
+ticket, last row wins). The landing supervisor (B2520) names its ledger rows
+after the cube - S6-LANDING-output_..._mult1.25-<ts> - and queue_state's id
+charset, [A-Za-z0-9-], cannot spell an underscore or a dot. MEASURED B3139:
+3,554 bold-id rows, exactly 60 ids outside that charset, all S6-LANDING-*,
+all EXECUTED, and all 60 in NEITHER tickets() NOR unparsed() - the silent
+drop B1969 forbade, reached by a route B1969 never pictured: its disclosure
+regex shared the same charset, so the reject pile was itself invisible.
+Nothing looked wrong because no non-terminal ticket was among them; EXECUTED
+has been understated by 60 in every table since the first landing row.
+Compliance failure against #279 (an exclusion register needs a check in both
+directions: here the reducer's rejects had no reader at all) and #271's
+one-reader rule, which held for COUNTING and not for the charset 12 scripts
+re-declare. Found only because the S6-B2294 reconciler parses the same queue
+by splitting cells - an independent method, where every earlier check re-used
+the reducer's own shape. Mechanism: scripts/reconcile_self_measures.py runs on
+every pyramid (test_b3139_self_measures_agree_on_the_live_repo); the charset has
+one definition (queue_state.TICKET_ID) pinned by
+test_b3139_ticket_id_charset_has_one_definition, with the 9 historical re-
+declarations frozen by name.
+
+### L889 - A COMPARISON OF TWO CODE TREES MEASURED THEIR DATA: THE HAND-BUILT WORKTREE HAD NO DECODED SEC FILINGS (B3139, S6-B3134a)
+
+The pre-registered S6-B3134a slice ran the OLD engine from the main tree and the
+new engine (legacy and daily modes) from a worktree I had built by hand, and
+claim (1), old == legacy, failed: 1171 against 1181 trades, 25 of the 27
+old-only entries on one ticker, JPM. Before reading that as a refactor defect,
+a diff of the engine's data roots showed the worktree lacked
+data_prefetch/sec_edgar_decoded - 4,342 decoded 8-K / 13D / 13D-A / 13G files -
+plus two smaller items: a git worktree carries only TRACKED files, and the
+engine's data (the OHLCV cache anchored on the module's own path, and
+data_prefetch/) is gitignored. The pre-registration pinned code, window and
+tickers and never the data environment. Claim (1) is therefore UNTESTED by that
+run, not failed.
+
+MY FIRST DRAFT OF THIS ENTRY SAID THE PREVENTION ALREADY EXISTED AND WAS
+BYPASSED - launch_sweep.materialise_worktree (B2133), which junctions the data
+roots into the worktrees it builds. That premise was false, and building a
+second worktree through the same logic is what showed it. MEASURED: 149,783
+tracked files sit under data_prefetch and 4,654 under backtest/data/cache, so
+after `git worktree add` both roots already EXIST holding their tracked part;
+materialise_worktree links a root only `if not dst.exists()`, so it links
+NOTHING, and its guard (`any(dst.iterdir())`) passes on the tracked subset. It
+would have built exactly the environment that confounded the slice. It has zero
+production callers (launch_sweep's main never calls it) and its one pin drives
+only the two refusal paths (no sha, no git root) - the happy path had never
+run. A mechanism cited as the prevention is a capability claim (#230); I cited
+it from its docstring. No existing checklist item states the comparison rule,
+so it is new: #325.
+
+Mechanism: scripts/data_env_parity.py compares the engine's data roots
+(launch_sweep.LINKED_DATA_DIRS, one definition, plus the universe CSVs, line
+endings normalised) across two trees and exits 1 on any difference, pinned by
+test_b3139_data_env_parity_names_a_missing_data_dir (must-fire on the verbatim
+missing directory, must-quiet on identical trees and on an endings-only CSV);
+and materialise_worktree now MERGE-links - it recurses into a data dir both
+trees hold and links what the worktree lacks (junction for a directory, hard
+link for a file) - then refuses unless data_env_parity finds no difference,
+pinned on its HAPPY path by test_b3139_materialise_worktree_links_the_untracked_data
+over a real git repo with a partly-tracked data root. The slice re-run is
+preceded by the parity check.
+
+### L890 - I DESCRIBED THE OCCUPANCY BLOCK FROM ITS COMMENT; THE CONTROL FLOW SKIPS THE WHOLE CANDIDATE (B3139, S6-B3139r)
+
+Twice in closed records I described cube isolation's BUG-61 block as
+per-strategy: L812 ('a fire is BLOCKED when the same strategy already holds an
+open position on that ticker') and S6-B2905 ('SKIP ROWS NOW NAME THE STRATEGY
+THEY BLOCKED ... the row names only the blocking strategy'). Both paraphrase
+the comment at backtest/engine/backtest.py:2830-2831 (as of 83eb1ff48) - 'Block only when the
+SAME strategy already has an open pos on this ticker. Different strategies can
+stack.' The code under it computes the intersection of the candidate's
+strategies with the ticker's open strategies, appends ONE skip row naming that
+intersection, and `continue`s the CANDIDATE: every other strategy firing on the
+ticker that day, holding nothing, is not entered and is named nowhere.
+MEASURED on the S6-B3134a slice: on 5 of 5 traced ticker-days a whole
+candidate (10, 4 and 12 strategies on the three largest) vanished behind one to
+six holders, and one moved cross-sectional decile cascaded into 24 differing
+MSFT entry keys in two weeks. The magnitude on the full 10-ticker slice is in
+S6-B3139r.
+
+This is #201 as widened at B2458 - not only a figure, ANY claim a comment
+asserts is an assertion until the code under it is read. S6-B2905 cited the
+line range and still described the comment, which is the harder form: an
+address beside a claim reads as verification. And the claim had a PIN that could
+not fail: test_batch510a_mode_c_blocks_only_same_strategy
+(backtest/tests/test_batch510a_bug61_block_modes.py:120) asserts per-strategy
+blocking on two literal Python sets and never runs the engine loop, so it stays
+green while the engine skips whole candidates - a control that does not take
+the claim's path (#276b). Compliance failure against items #201 and #276b. The
+instance was found by a probe that asked what the ENGINE recorded
+(its own skipped_trades.csv) rather than what the source said, which is the
+check that separates the two.
+
+Mechanism for the class: JUDGMENT-ONLY for detection - no scan can tell a
+comment's claim from its control flow. The instance's behaviour is an owner
+question (S6-B3139r, since every graded cell moves); its RECORDING half is
+ticketed there as a no-behaviour-change skip-row column so the coupling is
+measurable in every future cube.
+
+### L891 - record-of-fact (B3139): the slice monitor read a missing heartbeat as a finished arm
+
+The scratch monitor for the S6-B3134a slice took each arm's liveness from the
+pid in its heartbeat file. Before an arm writes its first heartbeat there is
+no pid, so all four arms read as not alive and the verdict line said DONE -
+while the OS showed all four running (1.15 to 1.35 GB each). The cron armed a
+minute earlier would have run the compare on empty directories and deleted
+itself, leaving the run unmonitored. Caught on the first manual firing by
+asking the OS, as the process-truth rule requires. Compliance failure against
+item #311 - an absence explained by the lifecycle (not started writing yet)
+indicted as a terminal state. Fixed: liveness now comes from the OS (a python
+process naming the arm's output dir), and DONE requires every arm's cube on
+disk. Mechanism for the class: JUDGMENT-ONLY - a scratch monitor is code no
+gate reads; the repo's own run-log reader carries the rule and its pin
+(test_b2158). This belongs only in LEARNINGS.
+
+### L892 - record-of-fact (B3139): an unevaluated trigger was DISCLOSED by the audit built for it, and fired unbuilt anyway (S6-B3118a)
+
+S6-B3118a was deferred with the trigger 'before any bollinger_lower T6/Step-2
+ask'. The ask came at B3131 (the Step-2 launch) and the composite it guarded
+was not built; no row said so until the B3139 council found it. MEASURED:
+scripts/deferral_trigger_audit.py (S6-B2971, built after L838 for exactly this
+class) run over EXECUTION_QUEUE.md as it stood at 5bd708acd~1 lists S6-B3118a
+among 11 UNEVALUATED triggers - the disclosure existed. It is a LIST: it can
+name a trigger nobody evaluates but cannot know when an EVENT trigger's event
+happens, and the Step-2 launch path consults no deferred ticket. So L838's rule
+('register an evaluator or disclose the trigger as unevaluated') held, and its
+weaker branch was not enough for an event trigger. Compliance failure against
+item #224 (a mechanism nobody calls is not enforcement - the disclosure had no
+reader at launch time). Mechanism for the class: an event trigger that names a
+launch can be evaluated AT the launch - ticketed S6-B3139s (the launcher lists
+the deferred tickets whose trigger cites the strategy it is launching). This
+belongs only in LEARNINGS.
+
+### L893 - THE HEREDOC-ESCAPE SCAN SHIPPED WITHOUT ITS SIBLING'S ONE-REPORT RULE, AND ITS AUTHOR TRIPPED IT THE SAME MORNING (B3139, S6-B3139u / S6-B3139v)
+
+At 10:17:49Z I fed python a heredoc whose body carried backslash pairs (a
+raw Windows path) - three hours after shipping scan_heredoc_escapes, the scan
+built to stop exactly that. Authoring the rule did not install the habit
+(L570). Then the worse half: run over the live transcript the scan reports
+that hit, and nothing could ever clear it. A past command cannot be un-run,
+and the scan had no disposal path, so every later close of the turn would
+block. Its sibling scan_shell_substitution learned this at B2689 - ONE
+incident, ONE report: once harness-injected feedback quotes the hit, the
+close is a remediation pass. The new scan was written beside that code and
+inherited none of it (L608: a new helper starts without its siblings'
+lessons). Compliance failure against items #259 and #262. And a third shape
+of the same class went uncovered by design: the scan leaves double-quoted
+`python -c` payloads to #245, whose scan checks only backticks and $( - so a
+Python escape inside a -c string is watched by nothing. MEASURED: 17 of 429
+Bash commands since the scan shipped carried a backslash pair in such a
+payload (an upper bound - some are shell-level escapes that arrive as
+intended), and one of them wrote a real newline into a scratch generator,
+caught only by its parse check.
+
+Mechanism for the class: S6-B3139u gives the scan the sibling's one-report
+rule, pinned by test_b3139_heredoc_escape_scan_reports_an_incident_once and a
+PURE_INCIDENTS pair driving the live collector; and S6-B3139v closes the -c
+form in the same batch - dash_c_escape_hits keeps the four shell-consumed
+escapes quiet and fires on every pair that reaches the interpreter, under
+its own ship stamp so older commands are never retro-judged.

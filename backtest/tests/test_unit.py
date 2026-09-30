@@ -25865,6 +25865,14 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("DRIVE THE LIVE BRANCH ONCE WITH THE HELPER'S REAL RETURN TYPE",
          "L878 (B3121): a seam-only test hides a dead live branch, and a "
          "crashing Stop hook is a pass"),
+        # B3139: the L887/L888 tripwire row and the L883 cause-gate limit.
+        ("ENUMERATE THE WRITERS AND THE SHAPES THEY WRITE FIRST",
+         "L887/L888 (B3139): a change-detector's own suite is a writer, and a "
+         "writer can coin an id shape no reader can spell"),
+        ("HEDGED cause phrases, so a cause stated",
+         "L883 (B3139): the cause gate keys on hedged phrases only"),
+        ("HOLD THE DATA ENVIRONMENT FIXED FIRST",
+         "L889 (B3139): a cross-tree comparison measured the data gap"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26073,7 +26081,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 315 -> 316 at B3121 (the L878 live-branch / fail-closed row fragment).
     # 316 -> 317 at B3130 (the L880 fingerprint-vs-test-inputs fragment;
     # same-call with its tripwire-row amendment per B2130).
-    assert len(gutted) == 317, gutted
+    # 317 -> 319 at B3139 (the L887/L888 row and the L883 limit).
+    # 319 -> 320 at B3139 (the L889 row).
+    assert len(gutted) == 320, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -51126,3 +51136,85 @@ def test_b3139_dash_c_python_escape_fires_and_shell_escapes_stay_quiet():
         "a -c payload written before the -c check shipped is never retro-judged"
     assert vtc.scan_heredoc_escapes([between, after]), \
         "a -c payload after the ship stamp fires through the live collector"
+
+
+# ================================================================ B3139 S6-B2294 + S6-B3139n: self-measures reconciled
+def test_b3139_reconciler_checks_disagree_and_agree_both_ways():
+    """S6-B2294 (B3139): each reconciliation pairs a self-measuring tool with a
+    source it shares no code with, and each is proven BOTH ways on literal
+    inputs - it names a disagreement and stays quiet on agreement (#226)."""
+    import reconcile_self_measures as rsm
+    q = ("| **S6-B1** | **OPEN** | P2 | **a** | _reason:_ x |\n"
+         "| **S6-LANDING-output_a_b1.5-20260101T000000** | **EXECUTED** | P1 | **b** | _reason:_ y |\n"
+         "| not a row |\n")
+    bad = rsm.check_queue(q, {"S6-B1": "OPEN"}, {})
+    assert not bad["ok"] and bad["invisible_to_reducer"] == 1, bad
+    assert bad["invisible_states"] == {"EXECUTED": 1}, bad
+    good = rsm.check_queue(q, {"S6-B1": "OPEN",
+                               "S6-LANDING-output_a_b1.5-20260101T000000": "EXECUTED"}, {})
+    assert good["ok"], good
+    assert not rsm.check_queue(q, {"S6-B1": "DROPPED",
+                                   "S6-LANDING-output_a_b1.5-20260101T000000": "EXECUTED"},
+                               {})["ok"], "a state mismatch must disagree"
+    lines = ['{"cube": "c1", "reported_to_owner": false}',
+             '{"cube": "c1", "reported_to_owner": true}',
+             '{"cube": "c2", "reported_to_owner": false}', "not json"]
+    assert rsm.check_landings(lines, [{"cube": "c2"}])["ok"]
+    assert not rsm.check_landings(lines, [{"cube": "c1"}, {"cube": "c2"}])["ok"]
+    steps = ["s1", "s2"]
+    assert rsm.check_ledger(lines, {"c1": {"s1": 1, "s2": 1}, "c2": {"s1": 1, "s2": 1}}, steps)["ok"]
+    r = rsm.check_ledger(lines, {"c1": {"s1": 1}}, steps)
+    assert not r["ok"] and r["missing_from_ledger"] == ["c2"] and r["not_nine_steps"] == ["c1"], r
+    src_ok = "def main():\n    a()\ndef a():\n    scan_x()\ndef scan_x():\n    pass\n"
+    assert rsm.check_gate_reach(src_ok)["ok"]
+    src_bad = src_ok + "def scan_y():\n    pass\n"
+    r = rsm.check_gate_reach(src_bad)
+    assert not r["ok"] and r["unreached"] == ["scan_y"], r
+
+
+def test_b3139_self_measures_agree_on_the_live_repo():
+    """S6-B2294 (B3139): the reconciliation RUNS - on the live queue, landings
+    record, battery ledger and turn gate, every check agrees. A cross-check
+    nobody runs is a cross-check that does not exist (the ticket's own words);
+    this pin is where it runs. Its first run disagreed on the queue (60
+    S6-LANDING-* records invisible to queue_state, S6-B3139n)."""
+    import reconcile_self_measures as rsm
+    results = rsm.run()
+    assert [r["check"] for r in results] == ["queue", "landings", "ledger", "gate_reach"]
+    bad = [r for r in results if not r["ok"]]
+    assert not bad, bad
+
+
+def test_b3139_ticket_id_charset_has_one_definition(tmp_path):
+    """S6-B3139n (B3139): queue_state.TICKET_ID is the ONE ticket-id charset.
+    (1) a landing record's id (underscores, dots) is a ticket; (2) the turn
+    gates' row collector skips S6-LANDING-* machine rows EXPLICITLY on the
+    seam path and keeps an ordinary row; (3) no script re-declares the old
+    charset except a FROZEN set of historical/audit tools (shrink-only, each
+    named with its reason - an undocumented survivor of a class sweep is
+    indistinguishable from a miss, B1970)."""
+    import re
+    import queue_state as qs
+    import verify_turn_compliance as vtc
+    q = tmp_path / "Q.md"
+    q.write_text("| **S6-LANDING-output_x_m1.25-20260101T000000** | **EXECUTED** | P1 | **a** | b |\n"
+                 "| **S6-B7** | **OPEN** | P2 | **c** | d |\n", encoding="utf-8")
+    t = qs.tickets(q)
+    assert t == {"S6-LANDING-output_x_m1.25-20260101T000000": "EXECUTED", "S6-B7": "OPEN"}, t
+    assert qs.unparsed(q) == {}
+    diff = ("+| **S6-LANDING-output_x_m1.25-20260101T000000** | **EXECUTED** | P1 | **a** | b |\n"
+            "+| **S6-B7** | **OPEN** | P2 | **c** | _reason:_ OPEN - x |\n")
+    rows = vtc._queue_rows_added(diff)
+    assert len(rows) == 1 and rows[0].startswith("| **S6-B7**"), rows
+    old = re.compile(r"S6-\[A-Za-z0-9-\]")          # the OLD charset, exactly
+    frozen = {  # historical one-shot migrations and audit tools: they predate the
+        # landing records, count nothing the owner is shown, and are left as run
+        "audit_done_claims.py", "migrate_execution_queue.py", "migrate_to_executed.py",
+        "promote_verified_closed.py", "verify_analysis_rows_complete.py",
+        "verify_awaiting_rows.py", "verify_build_claims.py", "verify_open_via_diff.py",
+        "verify_ticket_symbols.py"}
+    root = _B3139_SCRIPTS
+    hits = sorted(p.name for p in root.glob("*.py")
+                  if old.search(p.read_text(encoding="utf-8", errors="replace")))
+    assert set(hits) <= frozen, sorted(set(hits) - frozen)
+    assert hits, "the frozen set is measured, not assumed - it must still find its members"
