@@ -51,8 +51,8 @@ grade nothing. Unparseable rows are counted, excluded and reported.
 
 THE OCCUPANCY DISCLOSURE (L812): a subset of SIGNALS is not a subset of
 TRADES - removing trades at a tighter level frees occupancy the engine alone
-can simulate. Every count here is a LOWER BOUND; verdicts are candidates,
-never admissions.
+can simulate. No count here is a bound in either direction (S6-B3139r):
+verdicts are candidates, never admissions.
 
 WINDOW (S6-B3128a, B3135): only rows ENTERED in-sample are read
 (free_level_window, = roster_core.in_sample, the family grader's own
@@ -284,7 +284,7 @@ def p11_p8_sections(tl, ted, min_n) -> dict:
                     "INTERSECTION population only",
             "note": "a re-banding reassigns fires between threshold regimes; "
                     "variant-only admissions are UNMEASURABLE offline (L812) "
-                    "and every count is a lower bound",
+                    "and no count is a bound either way (S6-B3139r)",
             **run("p8_tight", 0.0),
         },
     }
@@ -318,8 +318,8 @@ def p11_p8_sections(tl, ted, min_n) -> dict:
                  "pre-registered before the config-1 read)"),
         "note": ("in-sample, net; Step-1 COVERAGE evidence, never an admission "
                  "path and never read on the holdout; a re-banding reassigns "
-                 "fires between threshold regimes, so every count is a LOWER "
-                 "BOUND (L812)"),
+                 "fires between threshold regimes, and no count is a bound in "
+                 "either direction (L812, S6-B3139r)"),
         **comp,
         "kept_recount_agrees": len(kept_c) == comp["kept"],
         "random_deletion_null": {
@@ -463,7 +463,7 @@ def main() -> int:
             "level": float(lvl),
             "is_production": float(lvl) == PRODUCTION,
             "trades_kept": int(len(keep)),
-            "trades_kept_is_a_lower_bound": True,
+            "trades_kept_bound": "NONE - occupancy cascades both ways (S6-B3139r)",
             "exit_rows": int(len(sub)),
             "exits_evaluable": len(per_exit),
             "best": per_exit[0] if per_exit else None,
@@ -525,9 +525,9 @@ def main() -> int:
             "nested inside ONE engine run - the levels are not independent "
             "trials and no correction is applied here (S6-B2444 recording "
             "rule)"),
-        "verdict_status": ("CANDIDATES, never admissions - every trade count "
-                           "is a lower bound while the occupancy correction "
-                           "is unsimulated (L812)"),
+        "verdict_status": ("CANDIDATES, never admissions - no trade count is "
+                           "a bound in either direction while occupancy "
+                           "is unsimulated (L812, S6-B3139r)"),
     }
     out = Path(a.out) if a.out else (
         ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json")

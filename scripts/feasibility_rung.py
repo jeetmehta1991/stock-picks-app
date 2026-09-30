@@ -19,10 +19,11 @@ no --strict, no refuse branch, and a readable cube always exits 0. The reason
 is measured, not stylistic: a tighter config FREES OCCUPANCY (the engine
 blocks a fire while the same strategy already holds that ticker,
 backtest.py:2522-2538), so a tighter cell can admit trades present in NO cube
-and every count here is a LOWER BOUND (L812). A lower bound on trades makes
-the count of BELOW-FLOOR cells an UPPER bound - at most this many are dead,
-possibly fewer - so rejecting on it would kill cells that would clear the
-floor live. Cells reading just under the floor are exactly the ones most
+and - since what it then takes can block later fires the count keeps - no
+count here is a bound in either direction (L812, S6-B3139r; this said LOWER
+BOUND until B3139). A cell under the floor offline may clear it live and one
+over it may not, so rejecting on these counts would kill cells a real run
+might keep. Cells reading just under the floor are exactly the ones most
 likely to survive a real run.
 
 APPLICABILITY, stated rather than assumed (the Council Contrarian's limit on
@@ -174,10 +175,10 @@ def main() -> int:
         "levels": rows,
         "admitted_offline": [r["level"] for r in admitted],
         "disposition": (
-            "ADMISSION CANDIDATES. Every count here is a LOWER BOUND - a "
-            "tighter config frees occupancy and can admit trades present in "
-            "no cube (L812), so the count of below-floor cells is an UPPER "
-            "bound on how many are truly unevaluable. This rung RANKS and "
+            "ADMISSION CANDIDATES. No count here is a bound in either "
+            "direction - a tighter config frees occupancy and what it then "
+            "takes can block later fires (L812, S6-B3139r), so a below-floor "
+            "cell is not proven unevaluable. This rung RANKS and "
             "ADMITS; it NEVER rejects, and a cell reading below the floor is "
             "NOT proven dead."),
         "applicability": (
@@ -199,7 +200,7 @@ def main() -> int:
               f"{r['projected_holdout_n']:>10}  "
               + ("ADMIT" if r["clears_floor_offline"] else "below floor"))
     print(f"  {len(admitted)} of {len(rows)} levels clear the floor OFFLINE "
-          f"(lower bound - below-floor cells are NOT proven dead)")
+          f"(no bound either way - below-floor cells are NOT proven dead, S6-B3139r)")
     print(f"  -> {out}")
     return 0
 

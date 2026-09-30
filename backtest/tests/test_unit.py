@@ -40499,7 +40499,7 @@ def test_b2907_both_free_level_legs_disclose_the_occupancy_correction():
     if str(root / "scripts") not in sys.path:
         sys.path.insert(0, str(root / "scripts"))
     import pandas as _pd
-    from occupancy_disclosure import occupancy_disclosure, LOWER_BOUND_NOTE
+    from occupancy_disclosure import occupancy_disclosure, OCCUPANCY_NOTE
 
     import tempfile
     d = _P(tempfile.mkdtemp())
@@ -40510,14 +40510,14 @@ def test_b2907_both_free_level_legs_disclose_the_occupancy_correction():
 
     # the disclosure is STRUCTURAL - a caller cannot omit it by forgetting a
     # key, because every branch returns the same required fields
-    REQUIRED = {"attribution_available", "lower_bound_note", "note",
+    REQUIRED = {"attribution_available", "occupancy_note", "note",
                 "blocked_rows_total", "blocked_rows_attributable", "artifact"}
 
     # branch 1: no artifact at all -> unknown slack, disclosed not assumed
     note = occupancy_disclosure(d, "three_white_soldiers")
     assert REQUIRED <= set(note), sorted(note)
     assert note["attribution_available"] is False
-    assert "UNKNOWN slack" in note["note"], note["note"]
+    assert "UNKNOWN error" in note["note"], note["note"]
 
     # branch 2: an artifact with NO occupancy rows -> the premise HOLDS here,
     # and saying so is as important as the warning (a gate that only ever
@@ -40551,10 +40551,13 @@ def test_b2907_both_free_level_legs_disclose_the_occupancy_correction():
     other = occupancy_disclosure(d, "some_other_strategy")
     assert other["blocked_rows_attributable"] == 0, other
 
-    # the lower-bound sentence rides on every branch that reports a count
+    # the occupancy sentence rides on every branch that reports a count -
+    # and since B3139 (S6-B3139r) it says the count is NOT a bound in either
+    # direction: this pin used to assert 'LOWER BOUND', defending the claim
     for n in (note, other):
-        assert n["lower_bound_note"] == LOWER_BOUND_NOTE
-        assert "LOWER BOUND" in n["lower_bound_note"]
+        assert n["occupancy_note"] == OCCUPANCY_NOTE
+        assert "NOT A BOUND IN EITHER DIRECTION" in n["occupancy_note"]
+        assert "LOWER BOUND" not in n["occupancy_note"]
 
     # ---- BOTH legs route through the trunk, structurally ----------------
     # a leaf-by-leaf fix is how this class survives (L608/L814), so assert
@@ -41202,14 +41205,18 @@ def test_b2914_feasibility_rung_ranks_and_admits_but_never_rejects():
     bad = [r for r in rets if r != "return 0"]
     assert not bad, (
         bad, "the R10 rung has grown a non-zero exit - it must RANK and "
-        "ADMIT, never REJECT, because its input is a lower bound (S6-B2914)")
+        "ADMIT, never REJECT: its offline input bounds neither direction "
+        "(S6-B2914, S6-B3139r)")
 
     # and it must not offer a flag that turns it into a gate
     for flag in ('"--strict"', "'--strict'", '"--reject"', "'--reject'"):
         assert flag not in src, ("%s would make the rung a gate" % flag)
 
-    # the artifact must STAMP the bound, or a reader takes the count as exact
-    assert "LOWER" in src and "lower bound" in src.lower()
+    # the artifact must STAMP the count's status, or a reader takes it as
+    # exact. B3139 (S6-B3139r): the stamp is no longer "lower bound" - a
+    # tighter config frees occupancy, so the offline count bounds NEITHER
+    # direction, and the old assertion enforced the retired claim (#196)
+    assert "bound in either" in src and "S6-B3139r" in src
 
     # it must read the floor from the live gate rather than restating it
     assert 'rc.PC["min_trades_holdout"]' in src, (
@@ -48835,14 +48842,16 @@ def test_b3139_heredoc_escape_scan_spares_the_compliant_forms():
     """S6-B3138a: the forms #259 permits stay quiet - a python heredoc with no
     backslash; a git commit message heredoc carrying one (exempt by the
     council's slice); a heredoc written to a FILE by cat (not fed to an
-    interpreter); a python -c string (not a heredoc - #245's business). And
-    a path segment merely CONTAINING 'python' is not an interpreter head."""
+    interpreter); a -c payload whose only escapes are SHELL-CONSUMED (bash
+    eats them; S6-B3139v - the old case here, print('a\\nb') in double
+    quotes, is now the -c must-fire in the corpus). And a path segment
+    merely CONTAINING 'python' is not an interpreter head."""
     import verify_turn_compliance as vtc
     quiet = [
         "python - <<'EOF'\nimport json\nprint(json.dumps({'a': 1}))\nEOF",
         "git commit -q -F - -- a.py <<'MSG'\nB1: fix the \\n handling\nMSG",
         "cat > notes.txt <<'EOF'\nC:\\Users\\x and \\n\nEOF",
-        "python -c \"print('a\\nb')\"",
+        'python -c "print(\\"total: \\$4\\")"',
         "cd /c/python_stuff && cat <<'EOF' > out.txt\nline \\t\nEOF",
     ]
     for c in quiet:
@@ -51015,3 +51024,105 @@ def test_b3139_launch_manifest_carries_the_ticket_disclosure(tmp_path):
     assert isinstance(m["tickets_naming_launched"], list)
     assert all(set(t) == {"ticket", "state", "strategies"} for t in m["tickets_naming_launched"])
     assert "LAUNCH DISCLOSURE (S6-B3139s)" in _insp.getsource(rw.run_arm)
+
+
+# ================================================================ B3139 S6-B3139r: the occupancy "lower bound" is retired
+_B3139_RETIRED_BOUND_PHRASES = (
+    # anchored on the occupancy claim's subjects (count / number / level) so a
+    # detector-RECALL "is a LOWER BOUND" caveat - a different, correct claim -
+    # stays quiet (first run flagged 2 such false positives; L823)
+    "count is a LOWER", "count is a lower bound", "count here is a LOWER",
+    "counts here are therefore a LOWER", "level is a LOWER BOUND",
+    "number graded here is therefore a LOWER", "WHAT IT IS A LOWER BOUND ON",
+    "is a lower bound while the occupancy",
+    "trades_kept_is_a_lower_bound", "LOWER_BOUND_NOTE",
+    "LOWER bound on survivors", "the count is a LOWER bound (L812)",
+    "lower bounds of UNKNOWN slack",
+)
+
+
+def test_b3139_no_generator_calls_an_offline_occupancy_count_a_lower_bound():
+    """S6-B3139r (B3139, the #196 re-check of L812): an offline trade count for
+    a TIGHTER level is NOT a bound in either direction - a freed slot admits a
+    trade in no cube, and that trade can block later fires the count keeps
+    (production lands h 1-10, f1 11-20, f2 21-; g 5-30 is blocked by h; drop h
+    and g blocks f1 and f2: offline 2, engine 1). Six generators printed the
+    false caveat into every artifact (L867). A ZERO ratchet over the retired
+    phrases, so a copied block cannot bring it back (L613); the corrected
+    note is asserted positively in the occupancy-disclosure pin."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2] / "scripts"
+    found = []
+    for f in sorted(root.glob("*.py")):
+        src = f.read_text(encoding="utf-8", errors="replace")
+        for ph in _B3139_RETIRED_BOUND_PHRASES:
+            if ph in src:
+                found.append((f.name, ph))
+    assert found == [], ("a generator states the retired occupancy lower-bound "
+                         f"claim (S6-B3139r): {found}")
+    # the scan is not vacuous: the corrected disclosure is in the files it reads
+    assert "NOT A BOUND IN EITHER DIRECTION" in (root / "occupancy_disclosure.py").read_text(encoding="utf-8")
+
+
+# ================================================================ B3139 S6-B3139u: a heredoc escape is reported once
+def test_b3139_heredoc_escape_scan_reports_an_incident_once():
+    """S6-B3139u (B3139, L608): scan_heredoc_escapes shipped without the
+    B2689 rule its sibling scan_shell_substitution carries, so one in-turn
+    hit - a command that cannot be un-run - would block every later close
+    (L721). Three arms, the sibling's shape: a fresh hit fires; once
+    HARNESS-injected feedback (a user-type entry) quotes the hit's repr it is
+    quiet (a remediation pass, L753); a NEW hit still fires. Assistant text
+    quoting the repr does not suppress - only the harness's feedback can."""
+    import verify_turn_compliance as vtc
+    bad = "python - <<'EOF'\nx = 'a\\tb'\nprint(x)\nEOF"
+    msg = vtc.scan_heredoc_escapes([], cmds=[bad])
+    assert msg and msg[0].startswith("ESCAPE THROUGH A HEREDOC"), msg
+    fb = {"type": "user", "message": {"content": [
+        {"type": "text", "text": "Stop hook feedback:\n[1/1] " + msg[0]}]}}
+    assert vtc.scan_heredoc_escapes([fb], cmds=[bad]) == []
+    fb_str = {"type": "user", "message": {"content": "Stop hook feedback: " + msg[0]}}
+    assert vtc.scan_heredoc_escapes([fb_str], cmds=[bad]) == []
+    # assistant text quoting the same message suppresses nothing
+    said = {"type": "assistant", "message": {"content": [
+        {"type": "text", "text": msg[0]}]}}
+    assert vtc.scan_heredoc_escapes([said], cmds=[bad]), "assistant text must not suppress"
+    # a NEW hit fires despite the old feedback
+    new = "python - <<'EOF'\nimport re\nre.compile(r'\\d+')\nEOF"
+    assert vtc.scan_heredoc_escapes([fb], cmds=[new]), "a new incident must still fire"
+
+
+# ================================================================ B3139 S6-B3139v: -c payload escapes, shell-classified
+def test_b3139_dash_c_python_escape_fires_and_shell_escapes_stay_quiet():
+    """S6-B3139v (B3139, L893): a backslash pair inside a double-quoted
+    `python -c` payload that bash does NOT consume reaches the interpreter
+    and fires; the four shell-consumed escapes (backslash before a quote, a
+    dollar, a backtick or a backslash) stay quiet. must-FIRE is the class of
+    the rows_batch3_texts corruption; the -c check has its OWN ship stamp so
+    older commands are never retro-judged (L721), and the live collector
+    windows the two forms separately."""
+    import verify_turn_compliance as vtc
+    bad = 'python -c "t = x.rstrip(\\"\\n\\")"'
+    hits = vtc.dash_c_escape_hits(bad)
+    assert len(hits) == 1 and "\\n" in hits[0] and '\\"' not in hits[0], hits
+    assert vtc.scan_heredoc_escapes([], cmds=[bad]), "the -c hazard must fire"
+    # every shell-consumed escape, alone or together, is quiet
+    for quiet in ('python -c "print(\\"ok\\")"',
+                  'python -c "echo \\$HOME \\` \\\\\\\\"',
+                  "python -c 'print(\\'a\\nb\\')'",     # single-quoted: out of scope
+                  'grep -c "x\\n" file.txt'):            # no interpreter -c
+        assert vtc.dash_c_escape_hits(quiet) == [], quiet
+    assert vtc.scan_heredoc_escapes(
+        [], cmds=['python -c "print(\\"ok\\", \\"\\$HOME\\")"']) == []
+    # its own ship stamp, and the live branch windows -c separately
+    assert vtc.DASH_C_ACTIVE_FROM > vtc.HEREDOC_ESCAPES_ACTIVE_FROM
+
+    def entry(ts, cmd):
+        return {"type": "assistant", "timestamp": ts,
+                "message": {"content": [{"type": "tool_use", "name": "Bash",
+                                         "input": {"command": cmd}}]}}
+    between = entry("2026-09-30T09:00:00.000Z", bad)   # after heredoc cut, before -c cut
+    after = entry("2099-01-01T00:00:00.000Z", bad)
+    assert vtc.scan_heredoc_escapes([between]) == [], \
+        "a -c payload written before the -c check shipped is never retro-judged"
+    assert vtc.scan_heredoc_escapes([between, after]), \
+        "a -c payload after the ship stamp fires through the live collector"

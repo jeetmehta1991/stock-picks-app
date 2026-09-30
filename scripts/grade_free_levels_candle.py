@@ -43,8 +43,8 @@ cube the per-strategy correction is UNQUANTIFIABLE and the artifact says so.
 B2905 fixed the stamp forward-only, so cubes written after it carry a real
 count and this tool reports it.
 
-Every number graded here is therefore a LOWER BOUND on the level's trade
-count, and the verdicts are candidates, never admissions.
+No number graded here is a bound on the level's trade count in either
+direction (S6-B3139r), and the verdicts are candidates, never admissions.
 
 WINDOW (S6-B3128a, B3135): only rows ENTERED in-sample are read
 (free_level_window, = roster_core.in_sample, the family grader's own
@@ -273,7 +273,7 @@ def main() -> int:
             "level": float(lvl),
             "is_production": float(lvl) == production,
             "trades_kept": int(len(keep)),
-            "trades_kept_is_a_lower_bound": True,
+            "trades_kept_bound": "NONE - occupancy cascades both ways (S6-B3139r)",
             "exit_rows": int(len(sub)),
             "exits_evaluable": len(per_exit),
             "best": per_exit[0] if per_exit else None,
@@ -329,9 +329,9 @@ def main() -> int:
             "nested inside ONE engine run - the levels are not independent "
             "trials and no correction is applied here (S6-B2444 recording "
             "rule)"),
-        "verdict_status": ("CANDIDATES, never admissions - every trade count "
-                           "is a lower bound while the occupancy correction "
-                           "is unsimulated (L812)"),
+        "verdict_status": ("CANDIDATES, never admissions - no trade count is "
+                           "a bound in either direction while occupancy "
+                           "is unsimulated (L812, S6-B3139r)"),
     }
     out = Path(a.out) if a.out else (
         ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json")

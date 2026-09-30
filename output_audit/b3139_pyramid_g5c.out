@@ -1,0 +1,95 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+..............................................s......................... [ 38%]
+....................s.................................................s. [ 42%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+.......................................................................F [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+....................                                                     [100%]
+================================== FAILURES ===================================
+_______ test_b2914_feasibility_rung_ranks_and_admits_but_never_rejects ________
+
+    def test_b2914_feasibility_rung_ranks_and_admits_but_never_rejects():
+        """S6-B2914 (R10): R1-R9 all ask CAN WE RUN AND GRADE IT; none asked WILL
+        THE GRADE BE EVALUABLE, and 82.1 pct of 17,927 cells ever computed died on
+        sample size - each after a full engine run.
+    
+        THE PROPERTY THIS PINS is the one the ticket's correction turns on: the
+        rung may RANK and ADMIT, never REJECT. Its input is a LOWER bound on
+        trades (a tighter config frees occupancy and can admit trades present in
+        no cube, L812), so the count of below-floor cells is an UPPER bound and
+        rejecting on it would kill cells that clear the floor live.
+    
+        Enforced BY CONSTRUCTION rather than by prose, and asserted over the AST
+        rather than the source text - a grep for "reject" matches the docstring
+        that explains the rule (L748).
+        """
+        import ast
+        import sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        src_path = root / "scripts" / "feasibility_rung.py"
+        src = src_path.read_text(encoding="utf-8", errors="replace")
+        tree = ast.parse(src)
+    
+        mains = [n for n in tree.body
+                 if isinstance(n, ast.FunctionDef) and n.name == "main"]
+        assert len(mains) == 1, "expected exactly one main()"
+        rets = [ast.unparse(n).strip() for n in ast.walk(mains[0])
+                if isinstance(n, ast.Return)]
+        assert rets, "main() has no return at all - the exit code is unpinned"
+        bad = [r for r in rets if r != "return 0"]
+        assert not bad, (
+            bad, "the R10 rung has grown a non-zero exit - it must RANK and "
+            "ADMIT, never REJECT, because its input is a lower bound (S6-B2914)")
+    
+        # and it must not offer a flag that turns it into a gate
+        for flag in ('"--strict"', "'--strict'", '"--reject"', "'--reject'"):
+            assert flag not in src, ("%s would make the rung a gate" % flag)
+    
+        # the artifact must STAMP the bound, or a reader takes the count as exact
+>       assert "LOWER" in src and "lower bound" in src.lower()
+E       assert ('LOWER' in '#!/usr/bin/env python\n"""S6-B2914 (R10): can a scheduled cell produce a VERDICT at all?\n\nWHY IT EXISTS. R1-R9 all ..., S6-B3139r)")\n    print(f"  -> {out}")\n    return 0\n\n\nif __name__ == "__main__":\n    raise SystemExit(main())\n' and 'lower bound' in '#!/usr/bin/env python\n"""s6-b2914 (r10): can a scheduled cell produce a verdict at all?\n\nwhy it exists. r1-r9 all ..., s6-b3139r)")\n    print(f"  -> {out}")\n    return 0\n\n\nif __name__ == "__main__":\n    raise systemexit(main())\n')
+E        +  where '#!/usr/bin/env python\n"""s6-b2914 (r10): can a scheduled cell produce a verdict at all?\n\nwhy it exists. r1-r9 all ..., s6-b3139r)")\n    print(f"  -> {out}")\n    return 0\n\n\nif __name__ == "__main__":\n    raise systemexit(main())\n' = <built-in method lower of str object at 0x00000271E7565EC0>()
+E        +    where <built-in method lower of str object at 0x00000271E7565EC0> = '#!/usr/bin/env python\n"""S6-B2914 (R10): can a scheduled cell produce a VERDICT at all?\n\nWHY IT EXISTS. R1-R9 all ..., S6-B3139r)")\n    print(f"  -> {out}")\n    return 0\n\n\nif __name__ == "__main__":\n    raise SystemExit(main())\n'.lower
+
+backtest\tests\test_unit.py:41215: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2914_feasibility_rung_ranks_and_admits_but_never_rejects
+1 failed, 1672 passed, 3 skipped in 904.69s (0:15:04)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=934
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

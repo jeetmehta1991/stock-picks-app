@@ -15,9 +15,11 @@ tighter level FREES occupancy, and fires that were blocked while a position was
 open can now open instead. Those trades exist in NO cube. Only the engine can
 produce them.
 
-The honest consequence: every trade count an offline re-score reports for a
-TIGHTER level is a LOWER BOUND, and its verdicts are candidates, not
-admissions. This module makes that statement a field in the artifact rather
+The honest consequence: a trade count an offline re-score reports for a
+TIGHTER level is NOT A BOUND IN EITHER DIRECTION - a freed slot admits a
+trade in no cube, and that trade can block later fires the count keeps
+(S6-B3139r, B3139; this said LOWER BOUND until then) - so its verdicts are
+candidates, not admissions. This module makes that statement a field in the artifact rather
 than a caveat someone remembers.
 
 MEASURED on output_r5_merged_1_7: 391,782 of 444,226 skip rows are occupancy
@@ -32,7 +34,8 @@ IT DISCLOSES, IT DOES NOT REFUSE. A refusal would fail the institutional
 free-levels leg on every landing over a historical backlog nothing can fix
 retroactively, which is the L721 trap - the gate's own noise trains everyone to
 read past it. The owner's ruling is forward-only, and a field that says "this
-number is a lower bound and here is by how much" is what forward-only means
+number is not a bound and here is how many blocks sit behind it" is what
+forward-only means
 here.
 """
 from __future__ import annotations
@@ -41,11 +44,9 @@ from pathlib import Path
 
 _OCC_REASON = "already_open"
 
-LOWER_BOUND_NOTE = (
-    "Every trade count for a TIGHTER level is a LOWER BOUND: removing trades "
-    "frees occupancy, and fires the engine blocked while a position was open "
-    "would then be taken. Those trades exist in no cube and only the engine "
-    "can produce them (L812)."
+OCCUPANCY_NOTE = (
+    "A trade count for a TIGHTER level is " + 'NOT A BOUND IN EITHER DIRECTION (S6-B3139r): freeing a slot lets the engine take a fire it had blocked, and that trade can in turn block later fires this count keeps - the count can be too low OR too high, and only the engine produces the true set (L812)'
+    + "."
 )
 
 
@@ -63,7 +64,7 @@ def occupancy_disclosure(cube_dir, strategy: str, window=None) -> dict:
     cube, byte-identical to the pre-B3139 behaviour.
 
     Always returns a dict carrying `attribution_available` and
-    `lower_bound_note`, so a caller cannot accidentally omit the disclosure by
+    `occupancy_note`, so a caller cannot accidentally omit the disclosure by
     forgetting a key. Never raises and never refuses - see the module
     docstring for why the owner's ruling makes this a disclosure.
     """
@@ -73,13 +74,13 @@ def occupancy_disclosure(cube_dir, strategy: str, window=None) -> dict:
         "attribution_available": False,
         "blocked_rows_total": None,
         "blocked_rows_attributable": None,
-        "lower_bound_note": LOWER_BOUND_NOTE,
+        "occupancy_note": OCCUPANCY_NOTE,
     }
     f = cube_dir / "skipped_trades.csv"
     if not f.exists():
         out["note"] = ("no skipped_trades.csv in this cube - the occupancy "
                        "correction cannot be bounded at all, so the counts "
-                       "below are lower bounds of UNKNOWN slack")
+                       "below are counts of UNKNOWN error, either sign")
         return out
     try:
         import pandas as pd
@@ -127,7 +128,7 @@ def occupancy_disclosure(cube_dir, strategy: str, window=None) -> dict:
             f"{literal} of {len(occ)} occupancy rows carry a LITERAL stamp "
             "instead of a strategy name (the pre-B2905 writer), so the "
             "per-strategy correction is UNQUANTIFIABLE on this cube. "
-            + LOWER_BOUND_NOTE)
+            + OCCUPANCY_NOTE)
         return out
 
     out["attribution_available"] = True
@@ -135,6 +136,6 @@ def occupancy_disclosure(cube_dir, strategy: str, window=None) -> dict:
         names.str.split(",").apply(lambda xs: strategy in xs).sum())
     out["note"] = (
         f"{out['blocked_rows_attributable']} of {len(occ)} occupancy blocks "
-        f"name {strategy}. A tighter level frees some of them, so each count "
-        "below is short by at most that many. " + LOWER_BOUND_NOTE)
+        f"name {strategy}. A tighter level frees some of them, and what it then "
+        "takes can block others, so each count below can err either way. " + OCCUPANCY_NOTE)
     return out

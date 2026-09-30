@@ -4,7 +4,7 @@
  "cells": {
   "009": {
    "axis": "P8 x P11 COMPOSITE: vix band edges at quartiles 0.25/0.75 AND rsi edges 5 tighter per band, applied jointly (S6-B3118a, pre-registered before the config-1 read)",
-   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, so every count is a LOWER BOUND (L812)",
+   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, and no count is a bound in either direction (L812, S6-B3139r)",
    "covered_rows": 308,
    "excluded_missing": 0,
    "excluded_direction": 0,
@@ -103,7 +103,7 @@
   },
   "020": {
    "axis": "P8 x P11 COMPOSITE: vix band edges at quartiles 0.25/0.75 AND rsi edges 5 tighter per band, applied jointly (S6-B3118a, pre-registered before the config-1 read)",
-   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, so every count is a LOWER BOUND (L812)",
+   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, and no count is a bound in either direction (L812, S6-B3139r)",
    "covered_rows": 37,
    "excluded_missing": 0,
    "excluded_direction": 0,
@@ -128,7 +128,7 @@
   },
   "021": {
    "axis": "P8 x P11 COMPOSITE: vix band edges at quartiles 0.25/0.75 AND rsi edges 5 tighter per band, applied jointly (S6-B3118a, pre-registered before the config-1 read)",
-   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, so every count is a LOWER BOUND (L812)",
+   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, and no count is a bound in either direction (L812, S6-B3139r)",
    "covered_rows": 29,
    "excluded_missing": 0,
    "excluded_direction": 0,
@@ -153,7 +153,7 @@
   },
   "050": {
    "axis": "P8 x P11 COMPOSITE: vix band edges at quartiles 0.25/0.75 AND rsi edges 5 tighter per band, applied jointly (S6-B3118a, pre-registered before the config-1 read)",
-   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, so every count is a LOWER BOUND (L812)",
+   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, and no count is a bound in either direction (L812, S6-B3139r)",
    "covered_rows": 162,
    "excluded_missing": 0,
    "excluded_direction": 0,
@@ -252,7 +252,7 @@
   },
   "100": {
    "axis": "P8 x P11 COMPOSITE: vix band edges at quartiles 0.25/0.75 AND rsi edges 5 tighter per band, applied jointly (S6-B3118a, pre-registered before the config-1 read)",
-   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, so every count is a LOWER BOUND (L812)",
+   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, and no count is a bound in either direction (L812, S6-B3139r)",
    "covered_rows": 414,
    "excluded_missing": 0,
    "excluded_direction": 0,
@@ -351,7 +351,7 @@
   },
   "150": {
    "axis": "P8 x P11 COMPOSITE: vix band edges at quartiles 0.25/0.75 AND rsi edges 5 tighter per band, applied jointly (S6-B3118a, pre-registered before the config-1 read)",
-   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, so every count is a LOWER BOUND (L812)",
+   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, and no count is a bound in either direction (L812, S6-B3139r)",
    "covered_rows": 539,
    "excluded_missing": 0,
    "excluded_direction": 0,
@@ -450,7 +450,7 @@
   },
   "250": {
    "axis": "P8 x P11 COMPOSITE: vix band edges at quartiles 0.25/0.75 AND rsi edges 5 tighter per band, applied jointly (S6-B3118a, pre-registered before the config-1 read)",
-   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, so every count is a LOWER BOUND (L812)",
+   "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, and no count is a bound in either direction (L812, S6-B3139r)",
    "covered_rows": 698,
    "excluded_missing": 0,
    "excluded_direction": 0,

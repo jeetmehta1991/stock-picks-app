@@ -72,7 +72,7 @@
   "attribution_available": true,
   "blocked_rows_total": 1,
   "blocked_rows_attributable": 1,
-  "lower_bound_note": "Every trade count for a TIGHTER level is a LOWER BOUND: removing trades frees occupancy, and fires the engine blocked while a position was open would then be taken. Those trades exist in no cube and only the engine can produce them (L812).",
+  "occupancy_note": "A trade count for a TIGHTER level is NOT A BOUND IN EITHER DIRECTION (S6-B3139r): freeing a slot lets the engine take a fire it had blocked, and that trade can in turn block later fires this count keeps - the count can be too low OR too high, and only the engine produces the true set (L812).",
   "window": [
    "2022-05-05",
    "2025-05-05"
@@ -80,7 +80,7 @@
   "window_applied": true,
   "blocked_rows_outside_window": 0,
   "blocked_rows_undated_counted_in": 0,
-  "note": "1 of 1 occupancy blocks name bollinger_lower. A tighter level frees some of them, so each count below is short by at most that many. Every trade count for a TIGHTER level is a LOWER BOUND: removing trades frees occupancy, and fires the engine blocked while a position was open would then be taken. Those trades exist in no cube and only the engine can produce them (L812)."
+  "note": "1 of 1 occupancy blocks name bollinger_lower. A tighter level frees some of them, and what it then takes can block others, so each count below can err either way. A trade count for a TIGHTER level is NOT A BOUND IN EITHER DIRECTION (S6-B3139r): freeing a slot lets the engine take a fire it had blocked, and that trade can in turn block later fires this count keeps - the count can be too low OR too high, and only the engine produces the true set (L812)."
  },
  "p11_tight": {
   "axis": "P11 vix-conditional rsi edges, TIGHT -5 long / +5 short (T3-approved single-axis enumeration)",
@@ -97,7 +97,7 @@
  },
  "p8_tight": {
   "axis": "P8 vix band edges at QUARTILES 0.25/0.75 (T3-approved); INTERSECTION population only",
-  "note": "a re-banding reassigns fires between threshold regimes; variant-only admissions are UNMEASURABLE offline (L812) and every count is a lower bound",
+  "note": "a re-banding reassigns fires between threshold regimes; variant-only admissions are UNMEASURABLE offline (L812) and no count is a bound either way (S6-B3139r)",
   "covered_rows": 29,
   "excluded_missing": 0,
   "excluded_direction": 0,
@@ -147,7 +147,7 @@
  },
  "p8p11_composite": {
   "axis": "P8 x P11 COMPOSITE: vix band edges at quartiles 0.25/0.75 AND rsi edges 5 tighter per band, applied jointly (S6-B3118a, pre-registered before the config-1 read)",
-  "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, so every count is a LOWER BOUND (L812)",
+  "note": "in-sample, net; Step-1 COVERAGE evidence, never an admission path and never read on the holdout; a re-banding reassigns fires between threshold regimes, and no count is a bound in either direction (L812, S6-B3139r)",
   "covered_rows": 29,
   "excluded_missing": 0,
   "excluded_direction": 0,
@@ -175,7 +175,7 @@
    "level": 35.0,
    "is_production": true,
    "trades_kept": 29,
-   "trades_kept_is_a_lower_bound": true,
+   "trades_kept_bound": "NONE - occupancy cascades both ways (S6-B3139r)",
    "exit_rows": 696,
    "exits_evaluable": 24,
    "best": {
@@ -227,7 +227,7 @@
    "level": 27.51,
    "is_production": false,
    "trades_kept": 19,
-   "trades_kept_is_a_lower_bound": true,
+   "trades_kept_bound": "NONE - occupancy cascades both ways (S6-B3139r)",
    "exit_rows": 456,
    "exits_evaluable": 24,
    "best": {
@@ -279,7 +279,7 @@
    "level": 23.96,
    "is_production": false,
    "trades_kept": 15,
-   "trades_kept_is_a_lower_bound": true,
+   "trades_kept_bound": "NONE - occupancy cascades both ways (S6-B3139r)",
    "exit_rows": 360,
    "exits_evaluable": 24,
    "best": {
@@ -331,7 +331,7 @@
    "level": 20.976,
    "is_production": false,
    "trades_kept": 12,
-   "trades_kept_is_a_lower_bound": true,
+   "trades_kept_bound": "NONE - occupancy cascades both ways (S6-B3139r)",
    "exit_rows": 288,
    "exits_evaluable": 24,
    "best": {
@@ -383,7 +383,7 @@
    "level": 17.69,
    "is_production": false,
    "trades_kept": 5,
-   "trades_kept_is_a_lower_bound": true,
+   "trades_kept_bound": "NONE - occupancy cascades both ways (S6-B3139r)",
    "exit_rows": 120,
    "exits_evaluable": 0,
    "best": null,
@@ -566,5 +566,5 @@
   }
  },
  "multiplicity_exposure": "4 free levels searched on this axis, each a max over 24 exits, nested inside ONE engine run - the levels are not independent trials and no correction is applied here (S6-B2444 recording rule)",
- "verdict_status": "CANDIDATES, never admissions - every trade count is a lower bound while the occupancy correction is unsimulated (L812)"
+ "verdict_status": "CANDIDATES, never admissions - no trade count is a bound in either direction while occupancy is unsimulated (L812, S6-B3139r)"
 }

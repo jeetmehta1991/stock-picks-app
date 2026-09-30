@@ -2402,8 +2402,8 @@ SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes
          "sweep_levels": [],
          "sweep_skip_reason": ("n_bars stays at production 3. Level 4 clears the holdout floor in only 4 of 27 cel"
                                "ls on EACH leg (B2937 feasibility) - rare by construction, not bad luck. DEPRIORIT"
-                               "ISED not rejected; the count is a LOWER bound (L812) so it returns if the occupanc"
-                               "y correction proves large"),
+                               "ISED not rejected; the count is not a bound either way (L812, S6-B3139r) so it re"
+                               "turns if the occupancy correction proves large"),
          "derivation": ("CANON Nison 1991 three; 4 the strict extension. "
                         "B2865: ACTUATED - the literal range(1,4) became a "
                         "knob; measured bite 1175 -> 466 soldiers fires on "
@@ -2566,8 +2566,8 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
          "sweep_levels": [],
          "sweep_skip_reason": ("n_bars stays at production 3. Level 4 clears the holdout floor in only 4 of 27 cel"
                                "ls on EACH leg (B2937 feasibility) - rare by construction, not bad luck. DEPRIORIT"
-                               "ISED not rejected; the count is a LOWER bound (L812) so it returns if the occupanc"
-                               "y correction proves large"),
+                               "ISED not rejected; the count is not a bound either way (L812, S6-B3139r) so it re"
+                               "turns if the occupancy correction proves large"),
          "derivation": ("CANON Nison 1991 three; 4 the strict extension. "
                         "B2865: ACTUATED - the literal range(1,4) became a "
                         "knob; measured bite 1175 -> 466 soldiers fires on "

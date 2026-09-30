@@ -5462,6 +5462,33 @@ def heredoc_escape_hits(cmd: str) -> list[str]:
     return out
 
 
+# S6-B3139v (B3139, L893): the -c sibling. Inside DOUBLE QUOTES bash consumes
+# only these escapes (plus a backslash-newline continuation, which
+# _ESCAPE_PAIR_RE cannot match - its second char is non-space); every OTHER
+# backslash pair survives to the interpreter unchanged, which is exactly the
+# payload #259 forbids. Its own ship stamp: -c payloads written while no rule
+# watched them are never retro-judged (L721).
+DASH_C_ACTIVE_FROM = "2026-09-30T11:45:00.000Z"
+_SHELL_CONSUMED = {'\\"', "\\$", "\\`", "\\\\"}
+_DASH_C_RE = re.compile(
+    r'(?:python[0-9.]*(?:\.exe)?|py)\s+(?:-[A-Za-z]+\s+)*-c\s+'
+    r'"((?:[^"\\]|\\.)*)"', re.S | re.I)
+
+
+def dash_c_escape_hits(cmd: str) -> list[str]:
+    """S6-B3139v: one line per double-quoted `python -c "..."` payload in
+    `cmd` carrying a backslash pair the SHELL DOES NOT CONSUME (it reaches
+    the interpreter); [] when every pair is shell-consumed or none exists.
+    A single-quoted -c payload is untouched by bash and stays out of scope."""
+    out = []
+    for m in _DASH_C_RE.finditer(str(cmd or "")):
+        pairs = sorted({p for p in _ESCAPE_PAIR_RE.findall(m.group(1))
+                        if p not in _SHELL_CONSUMED})
+        if pairs:
+            out.append('python -c "..." payload: ' + " ".join(pairs[:6]))
+    return out
+
+
 def scan_heredoc_escapes(entries, *, cmds=None, active_from=None) -> list[str]:
     """S6-B3138a / #259 / L885: never pass a backslash escape through a heredoc.
 
@@ -5482,17 +5509,51 @@ def scan_heredoc_escapes(entries, *, cmds=None, active_from=None) -> list[str]:
     """
     if cmds is None:
         cut = active_from or HEREDOC_ESCAPES_ACTIVE_FROM
-        cmds = []
+        dcut = active_from or DASH_C_ACTIVE_FROM
+        cmds, dash_cmds = [], []
         for d in _turn_entries(entries):
             if not isinstance(d, dict) or d.get("type") != "assistant":
                 continue
-            if str(d.get("timestamp") or "") < cut:
+            ts = str(d.get("timestamp") or "")
+            if ts < cut and ts < dcut:
                 continue
             for blk in (d.get("message") or {}).get("content") or ():
                 if (isinstance(blk, dict) and blk.get("type") == "tool_use"
                         and str(blk.get("name") or "").lower() == "bash"):
-                    cmds.append(str((blk.get("input") or {}).get("command") or ""))
+                    c = str((blk.get("input") or {}).get("command") or "")
+                    if ts >= cut:
+                        cmds.append(c)
+                    if ts >= dcut:
+                        dash_cmds.append(c)
+    else:
+        # the seam supplies ONE list and its window is the caller's (#241)
+        dash_cmds = cmds
     hits = [h for c in cmds for h in heredoc_escape_hits(c)]
+    hits += [h for c in dash_cmds for h in dash_c_escape_hits(c)]
+    # S6-B3139u (B3139): ONE incident, ONE report - the B2689 rule the
+    # sibling scan_shell_substitution carries and this scan shipped
+    # without (L608). A past command cannot be un-run, so an in-turn hit
+    # would otherwise block every later close with no remedy (L721). The
+    # message embeds hits[0]'s repr; once HARNESS-injected gate feedback
+    # (user-type entries, which assistant text cannot fake) quotes it,
+    # the incident was reported and the close is a remediation pass
+    # (L753). A NEW hit still fires.
+    if hits:
+        reported = ""
+        for _d in (entries or ()):
+            if not (isinstance(_d, dict) and _d.get("type") == "user"):
+                continue
+            _c = (_d.get("message") or {}).get("content")
+            if isinstance(_c, str):
+                if "ESCAPE THROUGH A HEREDOC" in _c:
+                    reported += _c
+                continue
+            for _blk in _c or ():
+                if isinstance(_blk, dict):
+                    _t = str(_blk.get("text", "")) + str(_blk.get("content", ""))
+                    if "ESCAPE THROUGH A HEREDOC" in _t:
+                        reported += _t
+        hits = [h for h in hits if repr(h) not in reported]
     if not hits:
         return []
     return [f"ESCAPE THROUGH A HEREDOC (S6-B3138a / #259 / L885): {len(hits)} "

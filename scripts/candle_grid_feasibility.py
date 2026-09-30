@@ -19,12 +19,12 @@ count survivors. The premise is checked rather than assumed - the production
 corner must reproduce the landed set exactly, and the script REFUSES if it
 does not.
 
-WHAT IT IS A LOWER BOUND ON, stated because it changes how the number may be
-used. A tighter config FREES OCCUPANCY (backtest.py:2522-2538 blocks a fire
+WHAT IT IS NOT A BOUND ON, stated because it changes how the number may be
+used (S6-B3139r; this section said LOWER BOUND until B3139). A tighter config FREES OCCUPANCY (backtest.py:2522-2538 blocks a fire
 while the same strategy already holds that ticker), so a tighter cell can
-admit trades present in NO cube. Survivor counts here are therefore a LOWER
-bound, which makes the count of BELOW-FLOOR cells an UPPER bound: at most
-this many are unevaluable. A cell reading below the floor is NOT proven dead,
+admit trades present in NO cube - and each such trade can block later fires
+the count keeps. Survivor counts here are therefore NOT a bound in either
+direction, and neither is the count of BELOW-FLOOR cells. A cell reading below the floor is NOT proven dead,
 so this ranks and admits and must never be used to reject (S6-B2914).
 
 ONE DEFINITION OF THE ANATOMY. leg A of spot_check_candle is imported rather
@@ -151,9 +151,9 @@ def main() -> int:
                      "count below is usable"),
         },
         "below_floor": len(below), "clears_floor": len(rows) - len(below),
-        "bound": ("LOWER bound on survivors, therefore an UPPER bound on the "
-                  "count of unevaluable cells - a tighter config frees "
-                  "occupancy and can admit trades present in no cube (L812). "
+        "bound": ("NONE in either direction on survivors or on the count of "
+                  "unevaluable cells - a tighter config frees occupancy and "
+                  "what it then takes can block later fires (L812, S6-B3139r). "
                   "RANK AND ADMIT ONLY; a below-floor cell is NOT proven "
                   "dead."),
         "cells": sorted(rows, key=lambda r: -r["holdout_n"]),

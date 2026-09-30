@@ -452,6 +452,17 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
 #
 # name -> (args, should_fire, what the case is)
 PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
+    # S6-B3139u (B3139): the ONE-report branch, through the LIVE collector
+    # (no cmds seam). must-FIRE: a timestamped Bash heredoc feeding python a
+    # backslash pair. must-QUIET: the same, once harness feedback quotes the
+    # hit's repr (the close is a remediation pass). Literals generated from
+    # the real scan's output with repr(), never typed.
+    "scan_heredoc_escapes": [
+        (([{'type': 'assistant', 'timestamp': '2099-01-01T00:00:00.000Z', 'message': {'content': [{'type': 'tool_use', 'name': 'Bash', 'input': {'command': "python - <<'EOF'\nx = 'a\\tb'\nprint(x)\nEOF"}}]}}],), True,
+         "a heredoc body with a backslash pair, fed to python, after ship time"),
+        (([{'type': 'assistant', 'timestamp': '2099-01-01T00:00:00.000Z', 'message': {'content': [{'type': 'tool_use', 'name': 'Bash', 'input': {'command': "python - <<'EOF'\nx = 'a\\tb'\nprint(x)\nEOF"}}]}}, {'type': 'user', 'message': {'content': [{'type': 'text', 'text': "Stop hook feedback:\n[1/1] ESCAPE THROUGH A HEREDOC (S6-B3138a / #259 / L885): 1 heredoc body(ies) fed to an interpreter carry a backslash pair - first: 'python - <<EOF: \\\\t'. A backslash pair can arrive altered through the shell and tool layers; write the script with the Write tool and run the FILE. A heredoc with no backslash is fine, and a git commit or tag message heredoc is exempt."}]}}],), False,
+         "the same incident once harness feedback quoted its repr - reported once"),
+    ],
     # B1930: a gate taking ONLY `entries` is drivable by CONSTRUCTING entries.
     # B1925 and B1927 both did exactly that in their pins without noticing it
     # dissolved this gate's "no seam" exemption.
@@ -859,6 +870,14 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
          True, {}),
     ],
     "scan_heredoc_escapes": [
+        # S6-B3139v must-FIRE: a Python escape in a double-quoted -c payload -
+        # bash does not consume it, so it reaches the interpreter; the class
+        # of the B3139 rows_batch3_texts corruption (L893).
+        ("", True, {"cmds": ['python -c "t = x.rstrip(\\"\\n\\")"']}),
+        # S6-B3139v must-QUIET: only shell-consumed escapes in the payload -
+        # bash eats the backslash-quote and backslash-dollar; the interpreter
+        # sees clean text.
+        ("", False, {"cmds": ['python -c "print(\\"ok\\", \\"\\$HOME\\")"']}),
         # must-QUIET 1: the same interpreter heredoc with NO backslash - the
         # form #259 permits; firing here would forbid every python heredoc.
         ("", False, {"cmds": ["python - <<'EOF'\nimport json\n"
