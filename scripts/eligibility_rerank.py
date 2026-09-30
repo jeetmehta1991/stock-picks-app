@@ -212,6 +212,8 @@ def main(argv=None) -> int:
     else:
         for r in ok:
             print(f"{r['cube']} step2 as run {r['as_run']['step2']} | clean {r['clean']['step2']}")
+    from roster_core import stamp_metric_code as _smc  # S6-B3139i
+    _smc(doc)
     Path(a.out).write_text(json.dumps(doc, indent=1, default=float), encoding="utf-8")
     print("wrote", a.out)
     return 3 if doc["not_reproduced"] else 0

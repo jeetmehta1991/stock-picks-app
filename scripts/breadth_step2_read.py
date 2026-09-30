@@ -218,6 +218,8 @@ def main() -> int:
                                "holdout sharpe",
                        "rows": controls},
            "rows": rows}
+    from roster_core import stamp_metric_code as _smc  # S6-B3139i
+    _smc(rec)
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     print(f"wrote {a.out}")
     return 0

@@ -338,6 +338,16 @@ def metric_code_fingerprint() -> dict:
             "defined_in": "scripts/roster_core.py metric_code_fingerprint"}
 
 
+def stamp_metric_code(doc: dict) -> dict:
+    """S6-B3139i (owner ruling 2026-09-30, "approve your rec"): every stored
+    metric figure carries the CODE identity that computed it. Sets
+    doc["metric_code"] = metric_code_fingerprint() and returns doc. An
+    artifact written BEFORE the ruling has no stamp - readers that compare
+    stamps treat absence as GRANDFATHERED (disclosed, never refused)."""
+    doc["metric_code"] = metric_code_fingerprint()
+    return doc
+
+
 def qualifier_margin(holdout_sharpe):
     """Holdout Sharpe's distance above the LIVE pooled gate, for a cell that
     has already cleared the gates. REPORTING ONLY - no floor, no label

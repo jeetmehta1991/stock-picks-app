@@ -532,6 +532,8 @@ def main() -> int:
     out = Path(a.out) if a.out else (
         ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json")
     out.parent.mkdir(parents=True, exist_ok=True)
+    from roster_core import stamp_metric_code as _smc  # S6-B3139i
+    _smc(doc)
     out.write_text(json.dumps(doc, indent=1, default=float), encoding="utf-8")
     base = results[0]
     print(f"[OK] {strat} P9 {DIRECTION} - reproduction {repro['covered_rows']} "

@@ -330,6 +330,8 @@ def main() -> int:
     out = Path(a.out) if a.out else (
         ROOT / "output_audit" / f"{cube.parent.name}_grid_auto.json")
     out.parent.mkdir(parents=True, exist_ok=True)
+    from roster_core import stamp_metric_code as _smc  # S6-B3139i
+    _smc(doc)
     out.write_text(json.dumps(doc, indent=1, default=float), encoding="utf-8")
     top = doc["step1_ranking"][0] if doc["step1_ranking"] else None
     print(f"graded {doc['strategy']}: {doc['results_n_exits']} exits on "

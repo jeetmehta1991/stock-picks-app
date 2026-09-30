@@ -51306,3 +51306,29 @@ def test_b3139b_straddle_disclosure_survives_in_every_is_selector():
                     ("build_r6_change_list.py", "entry-dated per the ")):
         src = (sroot / w).read_text(encoding="utf-8", errors="replace")
         assert frag in src and "S6-B3139b" in src, w
+
+
+def test_b3139i_every_live_metric_writer_stamps_the_code_identity():
+    """S6-B3139i (owner ruling 2026-09-30, "approve your rec"): every stored
+    metric figure carries the code that computed it. ONE helper
+    (roster_core.stamp_metric_code) and all 8 live metric writers call it at
+    their single dump site; a pre-ruling artifact without the stamp is
+    GRANDFATHERED by disclosure (the helper's contract), never refused.
+    Behaviour on the helper; wiring asserted per writer at source."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import roster_core as _rc
+    d = _rc.stamp_metric_code({"is_sharpe": 1.0})
+    assert d["metric_code"]["sha256"] == _rc.metric_code_fingerprint()["sha256"]
+    assert "GRANDFATHERED" in _rc.stamp_metric_code.__doc__
+    writers = ["grade_free_levels_bollinger.py", "grade_free_levels_candle.py",
+               "grade_bollinger_config.py", "grade_candle_config.py",
+               "breadth_step2_read.py", "eligibility_rerank.py",
+               "rescore_admissions_net.py", "offline_holdout_read.py"]
+    for w in writers:
+        src = (root / "scripts" / w).read_text(encoding="utf-8", errors="replace")
+        assert src.count("stamp_metric_code") == 1, (w, src.count("stamp_metric_code"))
+        assert "S6-B3139i" in src, w

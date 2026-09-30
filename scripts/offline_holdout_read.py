@@ -225,6 +225,8 @@ def main() -> int:
     rec = read_step2(Path(a.sweep_artifact), a.coverage_min, a.repro_min, a.min_n)
     if a.force_rerun:
         rec["rerun_of_spent_holdout"] = True
+    from roster_core import stamp_metric_code as _smc  # S6-B3139i
+    _smc(rec)
     out.write_text(json.dumps(rec, indent=2), encoding="utf-8")
     out.with_suffix(".md").write_text(render_table(rec), encoding="utf-8")
 

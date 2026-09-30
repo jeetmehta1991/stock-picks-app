@@ -331,6 +331,8 @@ def main() -> int:
         "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "rows": out_rows,
     }
+    from roster_core import stamp_metric_code as _smc  # S6-B3139i
+    _smc(payload)
     OUT.write_text(json.dumps(payload, indent=1, default=str) + "\n",
                    encoding="utf-8", newline="\n")
     n_res = sum(1 for r in out_rows if r["status"] == "RESCORED")
