@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-50 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+51 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_bl_step2_p4_9_p4_9).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_bl_step2_p4_9_p4_9 | 2026-09-30T01:39:14 | engine-hook | 2 | 2_grade_with_config_params | 0 | 26a133ccf | True | **NO** |
 | output_bl_span250_span250 | 2026-09-28T14:33:29 | engine-hook | 0 | none | 0 | 225d9d49e | True | yes 2026-09-28T14:39:07 |
 | output_bl_span150_span150 | 2026-09-28T12:42:46 | engine-hook | 0 | none | 0 | caef0ba73 | True | yes 2026-09-28T12:47:52 |
 | output_bl_span100_span100 | 2026-09-28T11:50:40 | manual | 0 | none | 0 | c2bc9375e | True | yes 2026-09-28T11:54:38 |
@@ -436,7 +437,7 @@ _820 ranked outcomes across 82 graded configs; 794 distinct signatures._
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 41688 cube rows across 5 leg(s | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |

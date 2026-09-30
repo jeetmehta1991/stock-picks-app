@@ -1,4 +1,5 @@
 {
+ "superseded": {"status": "SUPERSEDED + PEEKED (S6-B3128a, B3139)", "why": "written 2026-09-25 before the score gate and before the in-sample window existed: it graded all 4 years of the Step-2 cube INCLUDING the holdout year (955 rows per exit against the family's 764), so its level rankings are holdout-contaminated candidates", "adopted": "nothing - the three_white_soldiers admission keeps P6 at its production value", "regrade": "NOT run: the line is admitted and closed to re-testing (owner 2026-09-29, '2 yes. No more retesting'); an in-sample re-grade is put to the owner (S6-B3128a)"},
  "strategy": "three_white_soldiers",
  "axis": "P6 rsi_14 ceiling",
  "grader": "scripts/grade_free_levels_candle.py (S6-B2904)",

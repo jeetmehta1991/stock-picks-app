@@ -3,7 +3,7 @@
  "step": 2,
  "step_basis": "manifest window.end 2026-05-05 > HO_START 2025-05-05 -> Step-2 cube",
  "family": "bollinger_lower",
- "ts": "2026-09-30T01:38:48",
+ "ts": "2026-09-30T02:23:53",
  "lenses": [
   {
    "lens": "holdout_untouched",
@@ -38,7 +38,7 @@
   {
    "lens": "grading_provenance",
    "level": "INFO",
-   "evidence": "grading surface UNCHANGED since freeze (21 files, digest 3a2b01620b11)"
+   "evidence": "grading surface MOVED since freeze: freeze 3a2b01620b11 (21) -> now dacc6bc49cea (21) - DISCLOSED, not refused (L857b); each landing's own code identity is its graded_with stamp"
   },
   {
    "lens": "direction_consistency",
