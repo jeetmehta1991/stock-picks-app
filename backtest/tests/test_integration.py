@@ -1291,21 +1291,41 @@ def test_bug_222_t1a_master_set_helper_returns_full_history():
 
 
 def test_bug_222_engine_pit_filter_excludes_non_t1a_from_intersection():
-    """BUG-222 behavior: the tier-specific PIT filter at the engine's
-    _build_liquid_universe only intersects T1a-classified tickers with
-    PIT S&P 500 membership; T1 ETFs / T2 / T3 bypass the intersection.
-    Source-grep verifies the gate logic + the `not in _t1a_master`
-    bypass + `not in _t1a_pit_at_year` filter.
+    """BUG-222 behavior: the tier-specific PIT filter only intersects
+    T1a-classified tickers with PIT S&P 500 membership; T1 ETFs / T2 / T3
+    bypass the intersection.
+
+    B3139 (S6-B3134a): the rule moved VERBATIM from the engine's year-set loop
+    into backtest/data/eligibility.jan1_reason (one definition for the engine,
+    the grader guard and the sensitivity legs; the pre-merge slice proved the
+    old engine and the refactor's legacy mode equal trade for trade). This pin
+    used to grep backtest.py for the literal, so it held the rule's LOCATION;
+    it now holds its BEHAVIOUR on the one definition, plus the engine's call.
     """
     from pathlib import Path
+
+    import pandas as pd
+
+    from backtest.data import eligibility as elig
+
+    bars = pd.DataFrame({"close": [50.0] * 40, "volume": [5_000_000] * 40})
+    master, pit = {"AAA", "BBB"}, {"AAA"}
+    # a T1a-master ticker OUTSIDE the PIT set is refused
+    assert elig.jan1_reason(bars, "BBB", master, pit, 5.0, 100_000) == "not-in-PIT"
+    # a master ticker INSIDE the set passes
+    assert elig.jan1_reason(bars, "AAA", master, pit, 5.0, 100_000) is None
+    # a non-master ticker (T1 ETF / T2 / T3) bypasses the intersection
+    assert elig.jan1_reason(bars, "SPY", master, pit, 5.0, 100_000) is None
+    # an EMPTY master (CSV read failure) disables the intersection entirely
+    assert elig.jan1_reason(bars, "BBB", set(), pit, 5.0, 100_000) is None
+
     src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
-    assert "BUG-222 RESOLVED-IMPLEMENTED Batch 117" in src
-    assert "get_t1a_master_set" in src
-    assert "_t1a_master" in src
-    assert "_t1a_pit_at_year" in src
-    # The tier-specific gate: T1a-in-master AND NOT-in-PIT-set -> skip
-    assert "ticker in _t1a_master" in src
-    assert "ticker not in _t1a_pit_at_year" in src
+    assert "BUG-222" in src and "get_t1a_master_set" in src
+    assert "_t1a_pit_at_year = set(get_sp500_constituents_pit(ref_date))" in src
+    # the WIRING: the year-set loop routes every ticker through jan1_reason
+    # with the master set and that year's PIT set
+    assert ("_elig.jan1_reason(sliced, ticker, _t1a_master,\n"
+            "                                     _t1a_pit_at_year,") in src
 
 
 def test_bug_218_239_engine_wires_pit_sector_at_three_sites():
@@ -1860,40 +1880,53 @@ def test_bug_235_aaii_wed_survey_not_tradeable_until_thu():
 
 
 def test_bug_238_engine_liquidity_filter_fails_closed_on_missing_market_cap():
-    """BUG-238 Batch 98: liquidity filter was fail-open on missing
-    market_cap (`if mkt_cap_m > 0 and mkt_cap_m < min: continue` skipped
-    only when data was present). Tickers without market_cap data
-    (delisted, recent IPO with stale ref row, Polygon reference gap)
-    silently passed the gate. RESOLVED-IMPLEMENTED Batch 98: filter
-    is now fail-closed when LIQUIDITY config sets a positive
-    min_market_cap_m threshold -- any ticker with mkt_cap_m < min
-    (including 0/missing) is dropped.
+    """BUG-238 Batch 98 made the engine's market-cap floor fail-closed on
+    missing data. S6-B3136b (owner ruling 2026-09-29, '7 retire them')
+    RETIRED the floor itself, so the engine block is gone: the config
+    carries neither retired key, and _build_liquid_universe reads no
+    market cap at all (AST, so a comment naming the old block cannot
+    satisfy or break it - L748).
     """
-    from pathlib import Path
-    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
-    assert "BUG-238 RESOLVED-IMPLEMENTED Batch 98" in src
-    # The old fail-open pattern (`mkt_cap_m > 0 and`) must NOT appear
-    # anywhere in the filter block; the new pattern is `if _min_cap > 0
-    # and mkt_cap_m < _min_cap`.
-    assert "if _min_cap > 0 and mkt_cap_m < _min_cap" in src
+    import ast
+    import inspect
+    import textwrap
+    from backtest.config import LIQUIDITY
+    from backtest.engine.backtest import BacktestEngine
+    assert "min_market_cap_m" not in LIQUIDITY
+    assert "min_listed_years" not in LIQUIDITY
+    fn = ast.parse(textwrap.dedent(
+        inspect.getsource(BacktestEngine._build_liquid_universe)))
+    consts = {n.value for n in ast.walk(fn)
+              if isinstance(n, ast.Constant) and isinstance(n.value, str)}
+    assert "market_cap" not in consts and "min_market_cap_m" not in consts
 
 
 def test_bug_238_fail_closed_behavior_for_zero_market_cap():
-    """BUG-238 behavior: ticker with market_cap=0 fails the filter when
-    LIQUIDITY min_market_cap_m > 0. Synthetic test of the inline gate
-    logic (matches the actual engine code).
+    """BUG-238's fail-closed semantics survive where a cap still exists:
+    apply_liquidity_filter with an EXPLICIT positive cap drops a ticker
+    whose market cap is missing or below it. With no cap passed - the
+    S6-B3136b default, the config floor being retired - neither ticker is
+    dropped for market cap, and an explicit 0 (the ETF tier) is a value,
+    not an absence (L605).
     """
-    from backtest.config import LIQUIDITY
-    min_cap = LIQUIDITY["min_market_cap_m"]
-    # If config sets a positive minimum, missing data (mkt_cap_m=0)
-    # must fail the filter
-    if min_cap > 0:
-        mkt_cap_m_missing = 0.0
-        assert mkt_cap_m_missing < min_cap   # would `continue` in engine
-        mkt_cap_m_below = min_cap / 2.0
-        assert mkt_cap_m_below < min_cap     # would `continue` in engine
-        mkt_cap_m_above = min_cap * 2.0
-        assert mkt_cap_m_above >= min_cap    # passes
+    from datetime import date
+    import pandas as pd
+    from backtest.data.universe import apply_liquidity_filter
+    idx = pd.date_range("2023-06-01", periods=25, freq="B")
+    df = pd.DataFrame({"close": [50.0] * 25, "volume": [2_000_000] * 25},
+                      index=idx)
+    ohlcv = {"NOCAP": df, "SMALL": df}
+    info = {"NOCAP": {}, "SMALL": {"market_cap": 40_000_000}}
+    as_of = date(2023, 7, 5)
+    ok, bad = apply_liquidity_filter(["NOCAP", "SMALL"], ohlcv, info, as_of,
+                                     min_market_cap_m=100)
+    assert ok == [] and bad["NOCAP"] == "mkt_cap_missing_fail_closed_dec321"
+    assert bad["SMALL"].startswith("mkt_cap_$40M_below")
+    ok, bad = apply_liquidity_filter(["NOCAP", "SMALL"], ohlcv, info, as_of)
+    assert ok == ["NOCAP", "SMALL"] and bad == {}
+    ok, bad = apply_liquidity_filter(["NOCAP"], ohlcv, info, as_of,
+                                     min_market_cap_m=0)
+    assert ok == ["NOCAP"], bad
 
 
 def test_bug_110_engine_enforces_entry_gap_filter():
@@ -2731,7 +2764,8 @@ def test_bug_037_041_058_059_092_112_183_241_243_247_248_249_252_253_261_265_266
     """Batch 154 2026-05-13: 20 BUGs closed as RESOLVED-DECIDED (false-positives + phase-scope deferrals).
 
     BUG-037: FALSE-POSITIVE — improvements.py docstring says RESOLVED-IMPLEMENTED Batch 5; hold-adjusted tiered rates.
-    BUG-041: min_market_cap_m=100 is approved threshold; changing requires owner approval.
+    BUG-041: min_market_cap_m=100 was the approved threshold; RETIRED by owner ruling
+    2026-09-29 (S6-B3136b) - it never reached the screen (see AUDIT_INDEX BUG-041).
     BUG-058: StochRSI cross-up methodology; oversold zone filter is strategy-level choice; Phase 1B empirical eval.
     BUG-059: CPR top/bottom internally consistent; convention mismatch is naming issue.
     BUG-092: Streaming progress = observability enhancement; logger output + Sprint 9 dashboard.

@@ -301,6 +301,43 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
 # quotable at the wrong grain).
 
 
+# S6-B3136 (B3139, council): the functions that turn a trade set into the
+# six live gate values, in a FIXED order. A re-derivation artifact stamps
+# their fingerprint; the roster renderer recomputes it and shows 'pending'
+# on a mismatch. BOUNDARY, stated: a change to a callee OUTSIDE this list
+# (scipy, pandas, a helper these call) does not move the fingerprint.
+METRIC_CODE_MEMBERS = (
+    "roster_core.load_cube",
+    "roster_core.holdout",
+    "roster_core.evaluate",
+    "walk_forward_r5_cells._sharpe",
+    "backtest.results.metrics._sortino_ratio",
+    "backtest.results.metrics._deflated_sharpe",
+    "rescore_admissions_net.net",
+    "rescore_admissions_net.score_both",
+)
+
+
+def metric_code_fingerprint() -> dict:
+    """sha256 over the SOURCE of every METRIC_CODE_MEMBERS function (name +
+    source, in order) plus PASSING_CRITERIA (the gate bars). Two runs on
+    the same code agree; a formula edit to any member changes it."""
+    import hashlib
+    import importlib
+    import inspect
+    import json as _json
+    h = hashlib.sha256()
+    for member in METRIC_CODE_MEMBERS:
+        mod, _, fn = member.rpartition(".")
+        m = sys.modules[__name__] if mod == "roster_core" else importlib.import_module(mod)
+        h.update(member.encode("utf-8"))
+        h.update(inspect.getsource(getattr(m, fn)).encode("utf-8"))
+    h.update(_json.dumps(PC, sort_keys=True, default=str).encode("utf-8"))
+    return {"sha256": h.hexdigest(), "members": list(METRIC_CODE_MEMBERS),
+            "plus": "backtest.config.PASSING_CRITERIA",
+            "defined_in": "scripts/roster_core.py metric_code_fingerprint"}
+
+
 def qualifier_margin(holdout_sharpe):
     """Holdout Sharpe's distance above the LIVE pooled gate, for a cell that
     has already cleared the gates. REPORTING ONLY - no floor, no label

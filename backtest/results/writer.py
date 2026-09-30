@@ -935,7 +935,9 @@ def write_all_outputs(
 
         # universe.py stubs
         # DEC-321 + DEC-392: build synthetic OHLCV that passes price + volume
-        # filters so the loop body REACHES line 426 (market_cap fail-closed check).
+        # filters so the loop body REACHES the market_cap fail-closed check.
+        # S6-B3136b: the config floor is retired, so the check runs only on
+        # an EXPLICIT cap - the stub passes one to keep reaching it.
         _synth_dates = _pd.date_range("2023-06-01", periods=25, freq="B")
         _synth_ohlcv = _pd.DataFrame({
             "open":   [200.0] * 25, "high": [205.0] * 25,
@@ -947,7 +949,8 @@ def write_all_outputs(
                   tickers=["AAPL"], ohlcv_dict={"AAPL": _synth_ohlcv},
                   info_dict={"AAPL": {"market_cap": 3_000_000_000_000}},
                   as_of=_date(2023, 6, 30),
-                  min_price=5.0, min_avg_volume=1_000_000)
+                  min_price=5.0, min_avg_volume=1_000_000,
+                  min_market_cap_m=100)
         _try_stub("union_universe_DEC321",
                   _univ.union_universe, as_of=_date(2023, 6, 30))
 

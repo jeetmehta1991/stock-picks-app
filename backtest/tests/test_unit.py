@@ -12037,7 +12037,8 @@ def test_batch301_fetch_info_bulk_skips_valid_entries(tmp_path):
 
 def test_batch301_fetch_info_bulk_universe_recovery(tmp_path):
     """End-to-end: fetching the Stage D 150-tkr sample yields >=100 tickers
-    with market_cap >= 100M (the LIQUIDITY['min_market_cap_m'] threshold).
+    with market_cap >= 100M (a fundamentals-coverage bar; the config floor
+    of that value was retired 2026-09-29, S6-B3136b).
     Pre-Batch-301 baseline was 8/150."""
     from pathlib import Path
     from backtest.data.universe import fetch_info_bulk
@@ -48867,3 +48868,860 @@ def test_b3139_created_disclosure_excludes_the_gates_own_files(tmp_path, monkeyp
     out2 = root / "output_audit" / "own2.out"
     rc, text = _b3130a_gate(pg, root, litter, out2, monkeypatch)
     assert "\noutput_audit_created=residue.json\n" in text, text[-700:]
+
+
+# ================================================================ B3139 merge batch 3: S6-B3134a, S6-B3134a part C, S6-B3136f, S6-B3136c, B3139 additions, B3139 S6-B3136c council
+import contextlib  # noqa: E402,F401
+import importlib.util  # noqa: E402,F401
+import io  # noqa: E402,F401
+import json  # noqa: E402,F401
+import subprocess  # noqa: E402,F401
+_REPO_B3135 = Path(__file__).resolve().parents[2]
+_SCRIPTS_B3135 = _REPO_B3135 / "scripts"
+if str(_SCRIPTS_B3135) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_B3135))
+
+# ---------------------------------------------------------------- S6-B3134a
+def _b3134a_frame(n, close, vol):
+    idx = pd.bdate_range(start="2022-09-01", periods=n)
+    assert len(idx) == n          # the fixture checks its own length
+    return pd.DataFrame({"open": close, "high": close, "low": close,
+                         "close": close, "volume": vol}, index=idx)
+
+
+def test_b3135_jan1_reason_checks_in_the_engine_order_at_the_engine_boundaries():
+    """S6-B3134a: the ONE Jan-1 rule (backtest/data/eligibility.py) keeps the
+    engine loop's four checks, their order and their strict comparisons -
+    a value AT a floor passes, one unit below fails."""
+    from backtest.data import eligibility as E
+    m, pit = {"T1A"}, {"T1A"}
+    ok = _b3134a_frame(30, 5.0, 500_000)
+    assert E.jan1_reason(ok, "T1A", m, pit, 5.0, 500_000) is None
+    assert E.jan1_reason(_b3134a_frame(29, 50.0, 1e6), "T1A", m, pit,
+                         5.0, 500_000) == "history<30"
+    assert E.jan1_reason(_b3134a_frame(30, 4.99, 1e6), "T1A", m, pit,
+                         5.0, 500_000) == "price<min"
+    assert E.jan1_reason(_b3134a_frame(30, 50.0, 499_999), "T1A", m, pit,
+                         5.0, 500_000) == "avgvol<min"
+    assert E.jan1_reason(ok, "T1A", m, set(), 5.0, 500_000) == "not-in-PIT"
+    # order: price before volume before membership
+    assert E.jan1_reason(_b3134a_frame(30, 1.0, 1.0), "T1A", m, set(),
+                         5.0, 500_000) == "price<min"
+    assert E.jan1_reason(_b3134a_frame(30, 50.0, 1.0), "T1A", m, set(),
+                         5.0, 500_000) == "avgvol<min"
+    # a non-master ticker never needs membership; an empty master disables it
+    assert E.jan1_reason(ok, "SPY", m, set(), 5.0, 500_000) is None
+    assert E.jan1_reason(ok, "T1A", set(), set(), 5.0, 500_000) is None
+    # the volume floor reads EXACTLY the last 20 bars: every bar at the floor
+    # passes; bar -21 dropping to 0 changes nothing; bar -20 dropping by 20
+    # shares takes the 20-bar mean to 499,999 and fails
+    f = _b3134a_frame(60, 50.0, 500_000.0)
+    vcol = f.columns.get_loc("volume")
+    assert E.jan1_reason(f, "T1A", m, pit, 5.0, 500_000) is None
+    f.iloc[-21, vcol] = 0.0
+    assert float(f["volume"].tail(20).mean()) == 500_000.0
+    assert E.jan1_reason(f, "T1A", m, pit, 5.0, 500_000) is None
+    f.iloc[-20, vcol] = 499_980.0
+    assert float(f["volume"].tail(20).mean()) == 499_999.0
+    assert E.jan1_reason(f, "T1A", m, pit, 5.0, 500_000) == "avgvol<min"
+
+
+def _b3134a_real_engine(tickers):
+    """A BacktestEngine carrying real cached OHLCV for `tickers`, built without
+    load_data (no network, no pool). Returns (engine, frozen_instrument)."""
+    import datetime as dt
+    from backtest.config import DATA_LOAD_START
+    from backtest.engine.backtest import BacktestEngine
+    import eligibility_sensitivity as es     # AFTER backtest is imported
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.ohlcv_dict = {}
+    for t in tickers:
+        df = es._ohlcv(t, DATA_LOAD_START, dt.date(max(es.YEARS), 12, 31))
+        if df is not None:
+            eng.ohlcv_dict[t] = df
+    eng.info_dict = {}
+    eng.start, eng.end = dt.date(2022, 5, 5), dt.date(2026, 5, 5)
+    return eng, es
+
+
+_B3134A_SAMPLE = ("SBNY", "FISV", "ILMN", "DPZ", "FFIV", "WST", "MSCI", "SPY",
+                  "AAPL", "NVDA", "AMGN", "BAX", "CBOE", "COIN", "DAL", "DXC",
+                  "EXPE", "GEN", "HPE", "ITW", "LH", "MDT", "NEM", "PANW",
+                  "PSKY", "SBUX", "SYY", "UA", "WAT", "ZTS")
+
+
+def test_b3135_engine_year_sets_equal_the_frozen_pre_change_replica(monkeypatch):
+    """S6-B3134a: the refactored engine loop (_build_liquid_universe ->
+    eligibility.jan1_reason) reproduces, ticker for ticker, the FROZEN
+    S6-B3134 instrument's replica of the PRE-CHANGE loop
+    (scripts/eligibility_sensitivity.py jan1_sets, sha-pinned) on real OHLCV:
+    30 tickers x 5 Jan-1 dates (2022-2026), all four failure reasons present.
+    Mutation arm: a rule off by one comparison makes the sets differ, so the
+    equality is not vacuous."""
+    import collections
+    from backtest.data import eligibility as E
+    eng, es = _b3134a_real_engine(_B3134A_SAMPLE)
+    if len(eng.ohlcv_dict) < 25:
+        pytest.skip(f"OHLCV cache holds {len(eng.ohlcv_dict)} of 30 sample "
+                    f"tickers - a fresh clone without the data cache")
+    frozen, why = es.jan1_sets(sorted(eng.ohlcv_dict), es.YEARS)
+    reasons = collections.Counter(why.values())
+    assert {"history<30", "price<min", "avgvol<min", "not-in-PIT"} <= set(reasons), reasons
+    assert sum(len(v) for v in frozen.values()) >= 50
+    eng._build_liquid_universe()
+    assert sorted(eng._annual_liquid) == list(es.YEARS)
+    for y in es.YEARS:
+        assert eng._annual_liquid[y] == frozen[y], (y, eng._annual_liquid[y] ^ frozen[y])
+    # mutation: the rule without its membership check (the M1 leak's own
+    # class) - every not-in-PIT pair above becomes eligible, so it must differ
+    real = E.jan1_reason
+
+    def no_membership(sliced, ticker, t1a_master, pit, min_price, min_vol):
+        return real(sliced, ticker, set(), pit, min_price, min_vol)
+    monkeypatch.setattr(E, "jan1_reason", no_membership)
+    eng._build_liquid_universe()
+    assert any(eng._annual_liquid[y] != frozen[y] for y in es.YEARS)
+
+
+def _b3134a_engine(ohlcv, year_sets, t1a_master, mode, members_fn=None,
+                   tiers_fn=None):
+    from backtest.data import eligibility as E
+    from backtest.engine.backtest import BacktestEngine
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.ohlcv_dict = dict(ohlcv)
+    eng._annual_liquid = {y: set(s) for y, s in year_sets.items()}
+    eng.liquid_universe = sorted(set().union(*year_sets.values()))
+    eng._t1a_master = set(t1a_master)
+    eng.eligibility_mode = mode
+    if members_fn is not None:
+        eng._daily_pit = E.DailyPit(fn=members_fn)
+    if tiers_fn is not None:
+        eng._daily_tiers = E.DailyTiers(fn=tiers_fn)
+    return eng
+
+
+def test_b3135_daily_rule_drops_sbny_from_its_removal_date_on_real_data():
+    """S6-B3134a M1, on the incident's own data: SBNY was an S&P member on
+    2023-01-01 (so in the 2023 year set) and was removed 2023-03-15 (T1a CSV).
+    daily_subtract_v1: screenable on 2023-03-10, NOT on the removal date or
+    after; jan1_legacy: screenable all year (the 321 R5 entries). Its frame
+    stays in ohlcv_pit either way - exits still need it."""
+    import datetime as dt
+    from backtest.data import eligibility as E
+    from backtest.data.universe import get_t1a_master_set
+    eng0, _es = _b3134a_real_engine(("SBNY", "AAPL", "SPY"))
+    if set(eng0.ohlcv_dict) != {"SBNY", "AAPL", "SPY"}:
+        pytest.skip("OHLCV cache lacks SBNY/AAPL/SPY - a fresh clone")
+    master = get_t1a_master_set()
+    assert "SBNY" in master and "SPY" not in master
+    days = (dt.date(2023, 3, 10), dt.date(2023, 3, 15), dt.date(2023, 3, 28))
+    got = {}
+    for mode in E.MODES:
+        eng = _b3134a_engine(eng0.ohlcv_dict, {2023: {"SBNY", "AAPL", "SPY"}},
+                             master, mode)
+        for d in days:
+            m, pit, scr = eng._pit_and_screenable(d)
+            assert m == mode and {"SBNY", "AAPL", "SPY"} <= set(pit)
+            got[(mode, d)] = scr
+    assert got[(E.MODE_DAILY, days[0])] == {"SBNY", "AAPL", "SPY"}
+    assert got[(E.MODE_DAILY, days[1])] == {"AAPL", "SPY"}
+    assert got[(E.MODE_DAILY, days[2])] == {"AAPL", "SPY"}
+    for d in days:
+        assert got[(E.MODE_LEGACY, d)] == {"SBNY", "AAPL", "SPY"}
+
+
+def test_b3135_daily_rule_drops_a_member_that_closes_below_the_floor():
+    """S6-B3134a: a member whose close falls below min_price leaves the screen
+    that day (and returns when it recovers); legacy keeps it. A non-master
+    ticker needs no S&P membership - it is judged by its TIER window
+    (S6-B3136c): here in its tier every day, so it stays; the must-fire arm
+    for a day in no tier is test_b3137_daily_rule_subtracts_a_ticker_in_no_tier.
+    Subtract-only: a ticker outside the year set is never added, whatever it
+    does that day."""
+    import datetime as dt
+    from backtest.data import eligibility as E
+    idx = pd.bdate_range("2023-01-02", "2023-03-31")
+    px = pd.Series(20.0, index=idx)
+    px.loc["2023-03-01":"2023-03-15"] = 4.0
+    mk = lambda s: pd.DataFrame({"open": s, "high": s, "low": s, "close": s,
+                                 "volume": 1e6}, index=idx)
+    ohlcv = {"MEM": mk(px), "OUT": mk(pd.Series(20.0, index=idx)),
+             "ETF": mk(pd.Series(20.0, index=idx))}
+    year = {2023: {"MEM", "ETF"}}
+    members = lambda d: {"MEM", "OUT"}
+    tiers = lambda d: {"ETF"}
+    daily = _b3134a_engine(ohlcv, year, {"MEM", "OUT"}, E.MODE_DAILY, members,
+                           tiers)
+    legacy = _b3134a_engine(ohlcv, year, {"MEM", "OUT"}, E.MODE_LEGACY, members,
+                            tiers)
+    assert daily._pit_and_screenable(dt.date(2023, 2, 28))[2] == {"MEM", "ETF"}
+    assert daily._pit_and_screenable(dt.date(2023, 3, 1))[2] == {"ETF"}
+    assert daily._pit_and_screenable(dt.date(2023, 3, 16))[2] == {"MEM", "ETF"}
+    assert legacy._pit_and_screenable(dt.date(2023, 3, 1))[2] == {"MEM", "ETF"}
+    for eng in (daily, legacy):
+        assert "OUT" not in eng._pit_and_screenable(dt.date(2023, 3, 20))[1]
+
+
+def test_b3135_screen_input_never_screens_a_carried_ticker():
+    """S6-B3134a M2: ohlcv_pit also carries every open-trade ticker for EXIT
+    checks (BUG-287); daily_subtract_v1 screens only today's screenable set,
+    jan1_legacy the whole dict (the pre-B3135 input)."""
+    from backtest.data import eligibility as E
+    pit = {"A": 1, "CARRIED": 2}
+    assert E.screen_input(pit, {"A"}, E.MODE_DAILY) == {"A": 1}
+    assert E.screen_input(pit, {"A"}, E.MODE_LEGACY) == pit
+    assert E.screen_input(pit, set(), E.MODE_DAILY) == {}
+
+
+def test_b3135_an_unknown_eligibility_mode_refuses_everywhere(tmp_path):
+    """S6-B3134a (L642): an unreadable screen rule is never read as the legacy
+    one - the config value, the screen input, the engine's day frames, a
+    cube stamp and a resume all refuse."""
+    import datetime as dt
+    from backtest.data import eligibility as E
+    for bad in ("bogus", "", None, "DAILY_SUBTRACT_V1"):
+        with pytest.raises(ValueError):
+            E.check_mode(bad)
+    with pytest.raises(ValueError):
+        E.screen_input({"A": 1}, {"A"}, "bogus")
+    eng = _b3134a_engine({}, {2023: set()}, set(), "bogus")
+    with pytest.raises(ValueError):
+        eng._pit_and_screenable(dt.date(2023, 3, 1))
+    (tmp_path / E.STAMP).write_text(json.dumps({"mode": "bogus"}))
+    with pytest.raises(ValueError):
+        E.read_stamp(tmp_path)
+    (tmp_path / E.STAMP).write_text("{not json")
+    with pytest.raises(ValueError):
+        E.read_stamp(tmp_path)
+    with pytest.raises(ValueError):
+        E.check_resume(None, "bogus")
+
+
+def test_b3135_resume_keeps_the_checkpoints_screen_rule_or_refuses(tmp_path,
+                                                                   monkeypatch):
+    """S6-B3134a: one cube, one screen rule. A fresh run stamps its mode; a
+    resume under the SAME mode proceeds; a resume under a different mode - or
+    a stampless (pre-B3135) checkpoint resumed under daily_subtract_v1 -
+    refuses before anything is written."""
+    import backtest.engine.backtest as bmod
+    from backtest.data import eligibility as E
+
+    def eng(out, resume):
+        e = bmod.BacktestEngine.__new__(bmod.BacktestEngine)
+        e.output_dir, e.resume_from_checkpoint = str(out), resume
+        return e
+    fresh = tmp_path / "fresh"
+    monkeypatch.setattr(bmod, "ENGINE_ELIGIBILITY_MODE", E.MODE_DAILY)
+    eng(fresh, None)._stamp_eligibility_mode()
+    assert E.read_stamp(fresh) == E.MODE_DAILY
+    e2 = eng(fresh, str(fresh))
+    e2._stamp_eligibility_mode()
+    assert e2.eligibility_mode == E.MODE_DAILY
+    monkeypatch.setattr(bmod, "ENGINE_ELIGIBILITY_MODE", E.MODE_LEGACY)
+    with pytest.raises(RuntimeError, match="refusing to resume"):
+        eng(fresh, str(fresh))._stamp_eligibility_mode()
+    assert E.read_stamp(fresh) == E.MODE_DAILY          # nothing overwritten
+    old = tmp_path / "pre_b3135"
+    old.mkdir()
+    e3 = eng(old, str(old))
+    e3._stamp_eligibility_mode()                        # legacy resumes legacy
+    assert e3.eligibility_mode == E.MODE_LEGACY
+    (old / E.STAMP).unlink()
+    monkeypatch.setattr(bmod, "ENGINE_ELIGIBILITY_MODE", E.MODE_DAILY)
+    with pytest.raises(RuntimeError, match="no stamp"):
+        eng(old, str(old))._stamp_eligibility_mode()
+    assert not (old / E.STAMP).exists()
+
+
+def _b3134a_screen_wiring_problems(src):
+    """What is wrong with _process_day's screen wiring (empty = correct):
+    the day's frames come from _pit_and_screenable, the screen reads
+    _elig.screen_input(ohlcv_pit, screenable, _mode), and that assignment
+    precedes the single screen_universe call."""
+    import ast
+    tree = ast.parse(src)
+    fn = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)
+          and n.name == "_process_day"]
+    if len(fn) != 1:
+        return [f"_process_day defined {len(fn)} times"]
+    fn = fn[0]
+    probs = []
+    calls = [n for n in ast.walk(fn) if isinstance(n, ast.Call) and (
+        getattr(n.func, "id", None) == "screen_universe"
+        or getattr(n.func, "attr", None) == "screen_universe")]
+    if len(calls) != 1:
+        return [f"screen_universe called {len(calls)} times"]
+    first = calls[0].args[0] if calls[0].args else None
+    if getattr(first, "id", None) != "_screen_pit":
+        probs.append(f"screen_universe reads {ast.unparse(first) if first else None}")
+    si = [n for n in ast.walk(fn) if isinstance(n, ast.Assign)
+          and [getattr(t, "id", None) for t in n.targets] == ["_screen_pit"]]
+    if len(si) != 1:
+        probs.append(f"_screen_pit assigned {len(si)} times")
+    else:
+        v = si[0].value
+        if not (isinstance(v, ast.Call) and getattr(v.func, "attr", None) == "screen_input"
+                and [getattr(a, "id", None) for a in v.args]
+                == ["ohlcv_pit", "screenable", "_mode"]):
+            probs.append("_screen_pit is not _elig.screen_input(ohlcv_pit, screenable, _mode)")
+        if si[0].lineno > calls[0].lineno:
+            probs.append("_screen_pit assigned after the screen call")
+    frames = [n for n in ast.walk(fn) if isinstance(n, ast.Assign)
+              and isinstance(n.value, ast.Call)
+              and getattr(n.value.func, "attr", None) == "_pit_and_screenable"]
+    if len(frames) != 1:
+        probs.append(f"_pit_and_screenable called {len(frames)} times")
+    return probs
+
+
+def test_b3135_the_screen_reads_screen_input_not_the_carried_dict():
+    """S6-B3134a M2 wiring (a source pin proves WIRING; the screen_input and
+    _pit_and_screenable tests prove the RULE - L732). Mutation arms: the
+    pre-B3135 wiring (screen_universe(ohlcv_pit, ...)) and a dropped
+    screen_input assignment are both reported."""
+    src = (_REPO_B3135 / "backtest" / "engine" / "backtest.py").read_text(encoding="utf-8")
+    assert _b3134a_screen_wiring_problems(src) == []
+    old = src.replace("            _screen_pit, self.info_dict, as_of, regime,",
+                      "            ohlcv_pit, self.info_dict, as_of, regime,")
+    assert old != src and _b3134a_screen_wiring_problems(old)
+    gone = src.replace("_screen_pit = _elig.screen_input(ohlcv_pit, screenable, _mode)",
+                       "_screen_pit = ohlcv_pit")
+    assert gone != src and _b3134a_screen_wiring_problems(gone)
+
+
+def test_b3135_engine_default_is_daily_subtract():
+    """S6-B3134a: the config default is the fixed rule; jan1_legacy exists only
+    to reproduce historical cubes and must be asked for by name."""
+    import os
+    if os.environ.get("ENGINE_ELIGIBILITY_MODE"):
+        pytest.skip("ENGINE_ELIGIBILITY_MODE set in this environment")
+    from backtest import config
+    from backtest.data import eligibility as E
+    assert config.ENGINE_ELIGIBILITY_MODE == E.MODE_DAILY
+
+
+# ------------------------------------------------------- S6-B3134a part C
+def _b3134c_universe():
+    """A deterministic 2023 universe exercising every outcome: REM leaves the
+    index 2023-03-15, LOW closes below $5 for two weeks of June, OUT is a
+    master ticker absent from the Jan-1 membership, THIN fails the Jan-1
+    volume floor, ETF is outside the master, NOPX has no frame."""
+    import datetime as dt
+    idx = pd.bdate_range("2022-09-01", "2023-12-29")
+    mk = lambda px, vol=1e6: pd.DataFrame(
+        {"open": px, "high": px, "low": px, "close": px, "volume": vol}, index=idx)
+    low = pd.Series(20.0, index=idx)
+    low.loc["2023-06-01":"2023-06-15"] = 4.0
+    thin = pd.Series(1e6, index=idx)
+    thin.loc["2022-12-01":"2022-12-31"] = 1_000.0
+    frames = {"REM": mk(pd.Series(30.0, index=idx)), "LOW": mk(low),
+              "OUT": mk(pd.Series(30.0, index=idx)),
+              "THIN": mk(pd.Series(30.0, index=idx), thin),
+              "ETF": mk(pd.Series(30.0, index=idx))}
+    master = {"REM", "LOW", "OUT", "THIN", "NOPX"}
+
+    def members(d):
+        s = {"LOW", "THIN", "NOPX"}
+        if d < dt.date(2023, 3, 15):
+            s.add("REM")
+        return s
+    return frames, master, members
+
+
+def _b3134c_tiers(d):
+    """S6-B3136c: the fixture's tier windows - its one non-master ticker
+    (ETF) is in its tier every day; master tickers are judged by the S&P
+    rule, so they need no tier entry."""
+    return {"ETF"}
+
+
+def test_b3135_leak_classifier_names_carry_daily_unknown_and_clean():
+    """S6-B3134a C: the grader-side classifier returns each outcome through
+    the engine's predicate - carry:<jan1 reason>, daily:<reason>,
+    unknown:no-ohlcv, or clean."""
+    import datetime as dt
+    import eligibility_leak as el
+    frames, master, members = _b3134c_universe()
+    clf = el.Classifier(list(frames) + ["NOPX"], dt.date(2023, 12, 29),
+                        frames=frames, members_fn=members, master=master,
+                        tiers_fn=_b3134c_tiers)
+    d = dt.date
+    assert clf.classify("REM", d(2023, 3, 10)) == ""
+    assert clf.classify("REM", d(2023, 3, 15)) == "daily:not-member-today"
+    assert clf.classify("LOW", d(2023, 6, 5)) == "daily:close<min-today"
+    assert clf.classify("LOW", d(2023, 6, 16)) == ""
+    assert clf.classify("OUT", d(2023, 5, 1)) == "carry:not-in-PIT"
+    assert clf.classify("THIN", d(2023, 5, 1)) == "carry:avgvol<min"
+    assert clf.classify("ETF", d(2023, 5, 1)) == ""
+    assert clf.classify("NOPX", d(2023, 5, 1)) == "unknown:no-ohlcv"
+    assert el.reason_class("") == "clean" and el.reason_class("carry:x") == "carry"
+
+
+def test_b3135_leak_classifier_agrees_with_the_engine_screen_every_day(monkeypatch):
+    """S6-B3134a: ONE predicate for engine and guard, VERIFIED - for every
+    business day of 2023 and every ticker, the engine's own Jan-1 loop plus
+    _pit_and_screenable (daily_subtract_v1) and the classifier agree: in the
+    screen <=> classified clean; outside the year set <=> classified carry."""
+    import datetime as dt
+    import backtest.data.universe as U
+    import eligibility_leak as el
+    from backtest.data import eligibility as E
+    from backtest.engine.backtest import BacktestEngine
+    frames, master, members = _b3134c_universe()
+    monkeypatch.setattr(U, "get_t1a_master_set", lambda: set(master))
+    monkeypatch.setattr(U, "get_sp500_constituents_pit", lambda d: sorted(members(d)))
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.ohlcv_dict, eng.info_dict, eng.liquid_universe = dict(frames), {}, []
+    eng.start, eng.end = dt.date(2023, 1, 3), dt.date(2023, 12, 29)
+    eng._build_liquid_universe()
+    eng.eligibility_mode = E.MODE_DAILY
+    eng._daily_pit = E.DailyPit(fn=lambda d: sorted(members(d)))
+    eng._daily_tiers = E.DailyTiers(fn=_b3134c_tiers)
+    clf = el.Classifier(list(frames), dt.date(2023, 12, 29), frames=frames,
+                        members_fn=members, master=master,
+                        tiers_fn=_b3134c_tiers)
+    year_set = eng._annual_liquid[2023]
+    assert year_set == {"REM", "LOW", "ETF"}, year_set
+    days = [x.date() for x in pd.bdate_range("2023-01-03", "2023-12-29")]
+    checked = 0
+    for day in days:
+        _, _, screenable = eng._pit_and_screenable(day)
+        for t in frames:
+            r = clf.classify(t, day)
+            if t in year_set:
+                assert (t in screenable) == (r == ""), (t, day, r)
+            else:
+                assert r.startswith("carry:") and t not in screenable, (t, day, r)
+            checked += 1
+    assert checked == len(days) * len(frames) and checked > 1000
+
+
+def _b3134c_cube(tmp, rows, stamp=None):
+    import csv
+    tmp.mkdir(parents=True, exist_ok=True)
+    with open(tmp / "trade_exit_detail.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["strategy", "ticker", "entry_date",
+                                          "exit_method", "pnl_pct", "hold_days"])
+        w.writeheader()
+        for s, t, d in rows:
+            for ex in ("time_stop_10d", "trailing_5pct"):
+                w.writerow({"strategy": s, "ticker": t, "entry_date": d,
+                            "exit_method": ex, "pnl_pct": 1.0, "hold_days": 5})
+    if stamp is not None:
+        from backtest.data import eligibility as E
+        (tmp / E.STAMP).write_text(json.dumps(E.stamp_doc(stamp)))
+    return tmp
+
+
+def test_b3135_cube_report_verdicts_and_lens_levels(tmp_path, monkeypatch):
+    """S6-B3134a C: a legacy (unstamped) cube's leaks are reported INFO with
+    counts; a daily_subtract_v1-stamped cube carrying one is a REGRESSION
+    (lens FAIL, CLI exit 2); unclassifiable entries WARN; a corrupt stamp
+    refuses (CLI exit 3); per-exit rows count once per entry."""
+    import eligibility_leak as el
+    from backtest.data import eligibility as E
+    frames, master, members = _b3134c_universe()
+    kw = dict(frames=frames, members_fn=members, master=master,
+              tiers_fn=_b3134c_tiers)
+    leaky = [("s1", "REM", "2023-03-20"), ("s1", "LOW", "2023-02-01"),
+             ("s2", "OUT", "2023-05-01")]
+    rep = el.cube_report(_b3134c_cube(tmp_path / "legacy", leaky), **kw)
+    assert rep["built_mode"] == E.MODE_LEGACY and rep["stamp"] is None
+    assert (rep["entries"], rep["leaked"], rep["unknown"]) == (3, 2, 0)
+    assert rep["verdict"] == "LEGACY-LEAKS"
+    assert rep["per_strategy"]["s1"] == {"entries": 2, "carry": 0, "daily": 1, "unknown": 0}
+    lens, lvl, ev = el.lens_row(rep)
+    assert (lens, lvl) == ("eligibility_leak", "INFO") and "2 of 3" in ev
+    rep = el.cube_report(_b3134c_cube(tmp_path / "reg", leaky, E.MODE_DAILY), **kw)
+    assert rep["verdict"] == "REGRESSION" and el.lens_row(rep)[1] == "FAIL"
+    rep = el.cube_report(_b3134c_cube(tmp_path / "ok", [("s1", "LOW", "2023-02-01")],
+                                      E.MODE_DAILY), **kw)
+    assert rep["verdict"] == "CLEAN" and el.lens_row(rep)[1] == "INFO"
+    rep = el.cube_report(_b3134c_cube(tmp_path / "unk", [("s1", "NOPX", "2023-02-01")]), **kw)
+    assert rep["unknown"] == 1 and el.lens_row(rep)[1] == "WARN"
+    bad = _b3134c_cube(tmp_path / "bad", leaky)
+    (bad / E.STAMP).write_text("{nope")
+    with pytest.raises(ValueError):
+        el.cube_report(bad, **kw)
+    assert el.main(["--cube", str(bad)]) == 3
+    monkeypatch.setattr(el, "cube_report", lambda *a, **k: {
+        "entries": 1, "leaked": 1, "unknown": 0, "by_reason": {"daily:x": 1},
+        "built_mode": E.MODE_DAILY, "stamp": E.MODE_DAILY, "verdict": "REGRESSION"})
+    assert el.main(["--cube", str(bad)]) == 2
+
+
+def test_b3135_the_battery_runs_the_eligibility_lens_and_a_crash_is_a_fail(
+        tmp_path, monkeypatch):
+    """S6-B3134a C wiring: run_postconfig.lenses emits an eligibility_leak row
+    on every landing; if the guard raises, the row is FAIL 'crashed' - never a
+    silently missing lens (#122)."""
+    import run_postconfig as rp
+    import eligibility_leak as el
+    cube = _b3134c_cube(tmp_path / "cube", [("s1", "AAA", "2024-02-12"),
+                                            ("s1", "BBB", "2024-03-11")])
+    # the lens battery reads a direction column too
+    df = pd.read_csv(cube / "trade_exit_detail.csv")
+    df["direction"] = "long"
+    df.to_csv(cube / "trade_exit_detail.csv", index=False)
+    tl = df.drop_duplicates(["ticker", "entry_date"])[["ticker", "entry_date"]].copy()
+    tl["signals_at_entry"] = "{'adx': 20.0}"
+    tl.to_csv(cube / "trade_log.csv", index=False)
+    (cube / "subset.txt").write_text("s1" + chr(10), encoding="utf-8")
+    (cube / "run_manifest.json").write_text(json.dumps(
+        {"batch": "b3136_fixture", "strategy_subset": str(cube / "subset.txt")}),
+        encoding="utf-8")
+    rows = rp.lenses(cube, 1, {"step1_ranking": [], "per_exit": []}, None)
+    got = [r for r in rows if r[0] == "eligibility_leak"]
+    assert len(got) == 1 and got[0][1] in ("INFO", "WARN", "FAIL"), got
+
+    def boom(*a, **k):
+        raise RuntimeError("probe")
+    monkeypatch.setattr(el, "cube_report", boom)
+    rows = rp.lenses(cube, 1, {"step1_ranking": [], "per_exit": []}, None)
+    got = [r for r in rows if r[0] == "eligibility_leak"]
+    assert got and got[0][1] == "FAIL" and "crashed" in got[0][2], got
+
+
+def test_b3135_label_rescore_scores_the_same_rows_with_and_without_leaks():
+    """S6-B3134a C (ii): the clean score and the with-leaks score come from ONE
+    scorer on the reproduced rows - so a label change is the removal's alone -
+    and leaked holdout rows are counted apart."""
+    import datetime as dt
+    import eligibility_leak as el
+    frames, master, members = _b3134c_universe()
+    clf = el.Classifier(list(frames), dt.date(2023, 12, 29), frames=frames,
+                        members_fn=members, master=master,
+                        tiers_fn=_b3134c_tiers)
+    sub = pd.DataFrame({"ticker": ["REM", "REM", "LOW", "ETF"],
+                        "entry_date": [dt.date(2023, 3, 10), dt.date(2023, 3, 20),
+                                       dt.date(2023, 6, 5), dt.date(2023, 7, 3)],
+                        "pnl_pct": [1.0, -2.0, -3.0, 4.0]})
+    seen = []
+
+    def scorer(x):
+        seen.append(sorted(x.index))
+        return {"n": len(x)}
+    out = el._score_clean(sub, clf, scorer)
+    assert out["leaked_rows"] == 2 and out["rows"] == 4
+    assert out["leaked_holdout_rows"] == 0          # all 2023 < HO_START
+    assert out["leaked_pnl_sum"] == -5.0 and out["total_pnl_sum"] == 0.0
+    assert seen == [[0, 1, 2, 3], [0, 3]]
+    assert out["with_leaks_score"] == {"n": 4} and out["clean_score"] == {"n": 2}
+
+
+def test_b3135_reproduce_functions_always_return_result_and_rows():
+    """S6-B3134a C: rescore_admissions_net's reproduce_* return (result, sub)
+    on EVERY path - a bare dict on one path would crash the label re-score -
+    and the S6-B3122 entry points are thin wrappers, so their artifact cannot
+    change."""
+    import ast
+    src = (_SCRIPTS_B3135 / "rescore_admissions_net.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    fns = {n.name: n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}
+    for name in ("reproduce_r5_line", "reproduce_tws_line"):
+        rets = [n for n in ast.walk(fns[name]) if isinstance(n, ast.Return)]
+        assert len(rets) >= 2
+        for r in rets:
+            assert isinstance(r.value, ast.Tuple) and len(r.value.elts) == 2, \
+                (name, r.lineno, ast.unparse(r))
+    for wrap, inner in (("rescore_r5_line", "reproduce_r5_line"),
+                        ("rescore_tws_line", "reproduce_tws_line")):
+        body = fns[wrap].body
+        assert len(body) == 1 and isinstance(body[0], ast.Return)
+        assert ast.unparse(body[0].value).startswith(f"{inner}(")
+        assert ast.unparse(body[0].value).endswith("[0]")
+
+
+# ------------------------------------------------------------- S6-B3136f
+def _b3136f_callers(src):
+    """Functions in eligibility_leak.py that call _mismatches."""
+    import ast
+    tree = ast.parse(src)
+    out = set()
+    for fn in ast.walk(tree):
+        if isinstance(fn, ast.FunctionDef):
+            for n in ast.walk(fn):
+                if (isinstance(n, ast.Call)
+                        and getattr(n.func, "id", None) == "_mismatches"):
+                    out.add(fn.name)
+    return out
+
+
+def test_b3136_reproduction_gate_names_a_drifted_metric():
+    """S6-B3136f mechanism: the label re-score publishes nothing for a line
+    whose stored gate values a FRESH roster_core evaluation does not
+    reproduce - the check that caught smc_breaker_block_long's pre-B2646 PSR
+    (stored 1.0, fresh 0.939). Drift beyond 1e-3 is named; agreement within
+    it is silent; a stored value the fresh read cannot produce is drift; a
+    value nothing stored is not. Both rebuild paths (smc and funnel) route
+    through the one comparator, and dropping it from either is detected."""
+    import eligibility_leak as el
+    stored = {"sharpe": 1.152, "ci_lo": -0.415, "psr": 1.0,
+              "profit_factor": 1.937, "sortino": 1.925}
+    fresh = dict(stored, psr=0.939)
+    assert el._mismatches(fresh, stored) == ["psr 0.939 != 1.0"]
+    assert el._mismatches(dict(fresh, psr=1.0004), stored) == []
+    assert el._mismatches(dict(fresh, psr=None), stored) == ["psr None != 1.0"]
+    assert el._mismatches(fresh, dict(stored, psr=None)) == []
+    src = (_SCRIPTS_B3135 / "eligibility_leak.py").read_text(encoding="utf-8")
+    need = {"reproduce_smc_line", "reproduce_funnel_cell"}
+    assert need <= _b3136f_callers(src), _b3136f_callers(src)
+    # B3137: the funnel path keeps identity mismatches apart from metric
+    # drift, so the comparator call is `bad = ident + _mismatches(...)`
+    cut = src.replace("    bad = ident + _mismatches(got[\"net\"] or {}, want)\n",
+                      "    bad = ident\n")
+    assert cut != src and "reproduce_funnel_cell" not in _b3136f_callers(cut)
+
+
+# ---------------------------------------------------------------- S6-B3136c
+def test_b3137_daily_rule_subtracts_a_ticker_in_no_tier():
+    """S6-B3136c (owner ruling 2026-09-29, '8 approve your recommendation'):
+    under daily_subtract_v1 a year-set ticker OUTSIDE the T1a master leaves
+    the screen on a day it is PIT-active in no tier, keeps its frame for
+    exits, and returns when its window reopens; the engine and the grader's
+    classifier agree day by day; a master ticker is judged by the S&P rule,
+    never by tiers; with NO master loaded every ticker is judged by tiers;
+    legacy is untouched; and the tier set is a REQUIRED keyword."""
+    import datetime as dt
+    import eligibility_leak as el
+    from backtest.data import eligibility as E
+    frames, master, members = _b3134c_universe()
+    gap = (dt.date(2023, 3, 1), dt.date(2023, 3, 15))
+    tiers = lambda d: set() if gap[0] <= d <= gap[1] else {"ETF"}
+    year = {2023: {"REM", "LOW", "ETF"}}
+    daily = _b3134a_engine(frames, year, master, E.MODE_DAILY,
+                           lambda d: sorted(members(d)), tiers)
+    legacy = _b3134a_engine(frames, year, master, E.MODE_LEGACY,
+                            lambda d: sorted(members(d)), tiers)
+    clf = el.Classifier(list(frames), dt.date(2023, 12, 29), frames=frames,
+                        members_fn=members, master=master, tiers_fn=tiers)
+    for day, want in ((dt.date(2023, 2, 28), True), (gap[0], False),
+                      (dt.date(2023, 3, 8), False), (gap[1], False),
+                      (dt.date(2023, 3, 16), True)):
+        _, pit, scr = daily._pit_and_screenable(day)
+        assert ("ETF" in scr) is want and "ETF" in pit, (day, scr)
+        assert clf.classify("ETF", day) == ("" if want else "daily:no-tier-today")
+        assert "ETF" in legacy._pit_and_screenable(day)[2]
+        # the master ticker LOW is S&P-judged: the empty tier set is irrelevant
+        assert ("LOW" in scr) == (clf.classify("LOW", day) == "")
+    assert "LOW" in daily._pit_and_screenable(gap[0])[2]
+    # no master loaded: every ticker is tier-judged (LOW is in no tier)
+    bare = _b3134a_engine(frames, year, set(), E.MODE_DAILY, None, tiers)
+    assert bare._pit_and_screenable(dt.date(2023, 2, 28))[2] == {"ETF"}
+    with pytest.raises(TypeError):
+        E.daily_reason("ETF", 30.0, set(), set(), 5.0)
+
+
+def test_b3137_tier_union_is_the_tier_resolvers_own_windows():
+    """S6-B3136c, on the real tier files: a ticker is in
+    tickers_in_any_tier(d) exactly when resolve_tier_precedence(t, d) names a
+    tier (one definition - both read universe.tier_members), across tickers
+    drawn from every tier and one in none, at dates on both sides of T3's
+    Jun-2022 start. And the live universes are UNCHANGED by the rule: on a
+    monthly sample of each ruled window every ticker of r5_universe_544 and
+    _sweep_200 outside the T1a master sits in some tier (MEASURED B3137 over
+    every weekday: 0 of 1,043 and 0 of 260 no-tier ticker-days, SPY only)."""
+    import datetime as dt
+    import pandas as pd_
+    from backtest.data import universe as U
+    dates = (dt.date(2022, 5, 5), dt.date(2023, 6, 1), dt.date(2025, 5, 5))
+    sample = {"ZZZZNOTIER"}
+    for tier in U._TIER_PRECEDENCE:
+        for d in dates:
+            sample.update(sorted(U.tier_members(tier, d))[:4])
+    assert len(sample) >= 15, sample
+    for d in dates:
+        anyt = U.tickers_in_any_tier(d)
+        for t in sorted(sample):
+            assert (t.upper() in anyt) == (U.resolve_tier_precedence(t, d)
+                                           is not None), (t, d)
+    assert not U.get_momentum_watchlist_pit(dates[0])      # T3 empty pre-window
+    master = U.get_t1a_master_set()
+    for rel, start, end in (("output_audit/r5_universe_544.txt", "2022-05-05", "2026-05-05"),
+                            ("output_audit/_sweep_200.txt", "2024-05-05", "2025-05-05")):
+        tick = [l.strip() for l in (_REPO_B3135 / rel).read_text(encoding="utf-8")
+                .splitlines() if l.strip()]
+        non = [t for t in tick if t not in master]
+        assert non == ["SPY"], (rel, non)
+        for ts in pd_.date_range(start, end, freq="MS"):
+            anyt = U.tickers_in_any_tier(ts.date())
+            assert all(t.upper() in anyt for t in non), (rel, ts)
+
+
+def test_b3137_an_unreadable_tier_refuses_before_day_one(tmp_path, monkeypatch):
+    """S6-B3136c (L642): a tier loader answers [] for a MISSING file, and an
+    empty tier would subtract its whole population from the screen. The
+    default DailyTiers runs the PER-TIER FILE CHECK (B3139, replacing the
+    fixed-date control) and refuses, naming the tier; the engine meets that
+    refusal in _stamp_eligibility_mode, before any simulated day; an
+    injected window (tests) runs no check; and the check passes on the
+    real files."""
+    import datetime as dt
+    import backtest.data.universe as U
+    from backtest.data import eligibility as E
+    from backtest.engine.backtest import BacktestEngine
+    E.DailyTiers()                                        # the real files pass
+    assert E.DailyTiers(fn=lambda d: set()).members(dt.date(2024, 1, 2)) == set()
+    monkeypatch.setitem(U.TIER_FILES, "T3", "no such tier file.csv")
+    with pytest.raises(RuntimeError, match=r"\['T3'\]"):
+        E.DailyTiers()
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.output_dir = str(tmp_path)
+    eng.resume_from_checkpoint = None
+    monkeypatch.setattr("backtest.engine.backtest.ENGINE_ELIGIBILITY_MODE",
+                        E.MODE_DAILY)
+    with pytest.raises(RuntimeError, match="tier file check failed"):
+        eng._stamp_eligibility_mode()
+    monkeypatch.setattr("backtest.engine.backtest.ENGINE_ELIGIBILITY_MODE",
+                        E.MODE_LEGACY)
+    eng2 = BacktestEngine.__new__(BacktestEngine)
+    eng2.output_dir = str(tmp_path / "legacy")
+    eng2.resume_from_checkpoint = None
+    eng2._stamp_eligibility_mode()                        # legacy reads no tiers
+    assert getattr(eng2, "_daily_tiers", None) is None
+
+# ---------------------------------------------------------------- B3139 additions
+def test_b3139_an_unwritable_eligibility_stamp_refuses_the_run(tmp_path, monkeypatch):
+    """S6-B3134a council (5 of 5): the stamp is the only record of a cube's
+    screen rule, and a stampless cube is READ as jan1_legacy - so a stamp that
+    cannot be written must refuse the run, never warn. Driven through the real
+    method (the resume pin's __new__ seam); the output dir sits beneath a plain
+    FILE so the mkdir itself fails. Mutation: restoring the pre-B3139 warning
+    branch makes this pin fail (proved when the pin was written)."""
+    import backtest.engine.backtest as bmod
+    from backtest.data import eligibility as E
+    blocker = tmp_path / "a_file"
+    blocker.write_text("not a directory", encoding="utf-8")
+    e = bmod.BacktestEngine.__new__(bmod.BacktestEngine)
+    e.output_dir, e.resume_from_checkpoint = str(blocker / "cube"), None
+    monkeypatch.setattr(bmod, "ENGINE_ELIGIBILITY_MODE", E.MODE_DAILY)
+    with pytest.raises(RuntimeError, match="stamp NOT written"):
+        e._stamp_eligibility_mode()
+    assert not (blocker / "cube").exists()
+
+
+def test_b3139_every_run_year_has_a_year_set_so_the_union_fallback_never_screens():
+    """S6-B3136b council (B3139): owner ruling 7 retired min_market_cap_m, and
+    trading stayed unchanged ONLY because the screen reads the per-year sets:
+    the union liquid_universe (the one list the cap ever filtered) is reached
+    solely as the fallback of _get_liquid_universe_for_date, which cannot fire
+    while _annual_liquid holds every year from start to end. Driven through
+    the real _build_liquid_universe on a multi-year window (the __new__ seam):
+    every calendar day of the window must resolve to its own year set, never
+    the union. Must-fire arm: a day before the window DOES reach the union, so
+    the sentinel check can fail. Mutation: dropping the first or the last year
+    from check_dates fails this pin (proved when the pin was written)."""
+    import datetime as dt
+    import backtest.engine.backtest as bmod
+    idx = pd.bdate_range("2021-01-04", "2024-03-29")
+    df = pd.DataFrame({"open": 20.0, "high": 21.0, "low": 19.0,
+                       "close": 20.0, "volume": 2_000_000.0}, index=idx)
+    e = bmod.BacktestEngine.__new__(bmod.BacktestEngine)
+    e.start, e.end = dt.date(2022, 5, 5), dt.date(2024, 3, 1)
+    e.ohlcv_dict = {"ZZB3139": df}          # outside the T1a master: no PIT step
+    e._build_liquid_universe()
+    assert set(e._annual_liquid) == {2022, 2023, 2024}
+    # non-vacuous: the fixture passes every year's floors, so each year set
+    # is populated and an empty set cannot stand in for a missing key
+    assert all(s == {"ZZB3139"} for s in e._annual_liquid.values())
+    e.liquid_universe = ["ZZSENTINEL"]      # the union the retired cap filtered
+    d, days = e.start, 0
+    while d <= e.end:
+        assert "ZZSENTINEL" not in e._get_liquid_universe_for_date(d), d
+        days, d = days + 1, d + dt.timedelta(days=1)
+    assert days == (e.end - e.start).days + 1 and days > 600
+    assert e._get_liquid_universe_for_date(dt.date(2021, 12, 31)) == {"ZZSENTINEL"}
+
+
+# ---------------------------------------------------------------- B3139 S6-B3136c council
+def _b3139_tier_dir(tmp_path):
+    """A copy of the five real tier files in a temp UNIVERSE_DIR."""
+    import shutil
+    import backtest.data.universe as U
+    d = tmp_path / "universe"
+    d.mkdir()
+    for name in U.TIER_FILES.values():
+        shutil.copyfile(U.UNIVERSE_DIR / name, d / name)
+    return d
+
+
+def test_b3139_tier_file_check_names_every_way_a_tier_file_fails(tmp_path, monkeypatch):
+    """S6-B3136c council: the per-tier file check refuses a MISSING file, an
+    UNREADABLE one, one with NO Symbol rows and - the case the fixed-date
+    control could not see - a windowed tier file that LOST its window
+    columns, which _filter_pit would read as every row always active. The
+    static ETF tier needs no window columns. The real files pass."""
+    import backtest.data.universe as U
+    from backtest.data import eligibility as E
+    assert U.tier_file_problems() == {}
+    d = _b3139_tier_dir(tmp_path)
+    monkeypatch.setattr(U, "UNIVERSE_DIR", d)
+    assert U.tier_file_problems() == {}
+    t2 = d / U.TIER_FILES["T2"]
+    pd.read_csv(t2, comment="#").drop(columns=["added_date", "removed_date"]).to_csv(t2, index=False)
+    etf = d / U.TIER_FILES["T1ETF"]
+    etf_df = pd.read_csv(etf, comment="#")
+    etf_df.drop(columns=[c for c in ("added_date", "removed_date") if c in etf_df.columns]).to_csv(etf, index=False)
+    (d / U.TIER_FILES["T1c"]).write_text("Symbol,added_date,removed_date\n", encoding="utf-8")
+    (d / U.TIER_FILES["T3"]).unlink()
+    got = U.tier_file_problems()
+    assert sorted(got) == ["T1c", "T2", "T3"], got
+    assert "lacks window column(s) ['added_date', 'removed_date']" in got["T2"]
+    assert got["T1c"].startswith("no Symbol rows")
+    assert got["T3"].startswith("missing file")
+    with pytest.raises(RuntimeError, match=r"tier file check failed for \['T1c', 'T2', 'T3'\]"):
+        E.DailyTiers()
+
+
+def test_b3139_each_tier_loader_reads_its_tier_files_entry():
+    """S6-B3136c council (L593): the check reads TIER_FILES, the loaders
+    hardcode their own paths - so each loader's source must name exactly its
+    TIER_FILES entry, or the check would vouch for a file the screen never
+    reads."""
+    import inspect
+    import backtest.data.universe as U
+    loaders = {"T3": U.get_momentum_watchlist_pit, "T2": U.get_extended_universe_pit,
+               "T1c": U.get_ndx_constituents_pit, "T1a": U.get_sp500_constituents_pit,
+               "T1ETF": U.get_etfs_full}
+    assert sorted(loaders) == sorted(U._TIER_PRECEDENCE) == sorted(U.TIER_FILES)
+    for tier, fn in loaders.items():
+        src = inspect.getsource(fn)
+        assert U.TIER_FILES[tier] in src, (tier, fn.__name__)
+        others = [n for t, n in U.TIER_FILES.items() if t != tier and n in src]
+        assert not others, (tier, others)
+
+
+def test_b3139_a_run_past_a_tier_files_stated_end_is_disclosed_in_the_stamp(
+        tmp_path, monkeypatch, caplog):
+    """S6-B3136c council: each tier file's NAME states its coverage month
+    (all five read 'May 2026' today); a run ending inside it reads
+    'end-month', before it 'within', after it 'past' - warned and written
+    into the cube's eligibility stamp. The pre-B3139 stamp carried no
+    coverage at all."""
+    import datetime as dt
+    import logging
+    import backtest.data.universe as U
+    from backtest.data import eligibility as E
+    import backtest.engine.backtest as bmod
+    cov = U.tier_coverage(dt.date(2026, 5, 5))
+    assert {c["stated_end_month"] for c in cov.values()} == {"2026-05"}
+    assert {c["status"] for c in cov.values()} == {"end-month"}
+    assert {c["status"] for c in U.tier_coverage(dt.date(2026, 4, 30)).values()} == {"within"}
+    with caplog.at_level(logging.WARNING, logger="backtest.data.eligibility"):
+        past = E.DailyTiers(run_end=dt.date(2026, 6, 1))
+    assert {c["status"] for c in past.coverage.values()} == {"past"}
+    assert "PAST the stated coverage" in caplog.text
+    assert E.DailyTiers(fn=lambda d: set()).coverage is None
+    e = bmod.BacktestEngine.__new__(bmod.BacktestEngine)
+    e.output_dir, e.resume_from_checkpoint = str(tmp_path / "cube"), None
+    e.end = dt.date(2026, 5, 5)
+    monkeypatch.setattr(bmod, "ENGINE_ELIGIBILITY_MODE", E.MODE_DAILY)
+    e._stamp_eligibility_mode()
+    stamp = json.loads((tmp_path / "cube" / E.STAMP).read_text(encoding="utf-8"))
+    assert stamp["mode"] == E.MODE_DAILY
+    assert stamp["tier_coverage"]["T3"] == {"stated_end_month": "2026-05",
+                                           "run_end": "2026-05-05",
+                                           "status": "end-month"}
+    assert E.read_stamp(tmp_path / "cube") == E.MODE_DAILY
+
+

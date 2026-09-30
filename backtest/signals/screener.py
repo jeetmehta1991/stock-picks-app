@@ -52,7 +52,8 @@ from backtest import config as _cfg  # B1519: module alias so the
 # optimisation knobs are read at CALL time, picking up any env override
 # applied per engine run rather than freezing at import.
 from backtest.config import ENTRY_GAP_ATR_MULT, LIQUIDITY
-from backtest.data.fetcher import passes_liquidity_filter
+# S6-B3136b (B3137): the unused passes_liquidity_filter import is retired
+# with the floors it hardcoded (owner ruling 2026-09-29, '7 retire them').
 from backtest.signals.technical import compute_all_signals, count_bullish_signals
 
 # B901 (2026-06-18) DEFER-I: raw-signal fire counter for R5 self-instrumentation.
@@ -6173,6 +6174,9 @@ def strat_institutional_buy_momentum_long(s):
 # the only gate that was actually doing discriminative work (below_ema_50)
 # without the 13F-trim-disguise. Registered in `momentum_trend` category;
 # does NOT belong to smart money cluster.
+# B3139 (S6-B3136e) CORRECTION: that was true at B670. B1422 later added a
+# 13F selectivity gate (committed_growth_holders >= 3.0) to the replacement,
+# so it now reads smart-money data; the category is unchanged.
 #
 # CITATION RETRACTION: the Sias 2004 + Lo-Wang 2000 citations in the
 # deleted SM-9 docstring were citation-overreach (Pattern F7 honesty
@@ -6206,10 +6210,14 @@ def strat_simple_below_ema_50_short(s):
     Expected fire-rate reduction per B655 precedent: ~95% (T10 supertrend
     went from 33K -> 772/yr post-conversion).
 
-    Registered in `momentum_trend` category; does NOT belong to smart
-    money cluster (no smart-money data dependency). Pure-technical SHORT
-    that honestly describes its thesis: trend continuation when price has
-    JUST broken below the 50-EMA.
+    Registered in `momentum_trend` category. DATA DEPENDENCY (B3139,
+    S6-B3136e - the pre-B1422 text called this pure-technical): the gate
+    also requires committed_growth_holders >= 3.0, a 13F field (the B1422
+    selectivity gate below), so the strategy depends on 13F data. Thesis:
+    trend continuation when price has JUST broken below the 50-EMA, in
+    names that committed growth holders still own. signals_used below does
+    not yet list that key; correcting it changes the Phase-1B agent input
+    (backtest/agents/pipeline.py) and is the owner's (S6-B3139c).
 
     Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
     """

@@ -38,6 +38,8 @@ from backtest.data.universe import fetch_info_bulk, get_sector_map
 from backtest.data.macro import macro_snapshot
 from backtest.data.sentiment import sentiment_snapshot
 from backtest.config import CUBE_ISOLATION_SIZE_PCT
+from backtest.config import ENGINE_ELIGIBILITY_MODE
+from backtest.data import eligibility as _elig
 from backtest.data.smart_money import smart_money_score
 from backtest.engine.regime_filter import (
     get_regime_context, get_spy_ema200, get_vix_smoothed,
@@ -415,6 +417,8 @@ class BacktestEngine:
         self.liquid_universe = self._build_liquid_universe()
         logger.info("Liquid universe: %d/%d instruments after one-time filter",
                     len(self.liquid_universe), len(self.ohlcv_dict))
+        # S6-B3134a (B3135): the screen rule, fixed and stamped once per run
+        self._stamp_eligibility_mode()
 
         # DEC-317 + DEC-388 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 43:
         # Pre-load VIX series for hysteresis-aware regime classification. The
@@ -461,17 +465,11 @@ class BacktestEngine:
                 avg_vol = float(sliced["volume"].tail(20).mean())
                 if avg_vol < LIQUIDITY["min_avg_volume"]:
                     continue
-                # BUG-238 RESOLVED-IMPLEMENTED Batch 98 2026-05-12: fail-closed
-                # on missing market_cap. Previously the filter only rejected
-                # when `mkt_cap_m > 0 and < min`, so any ticker without
-                # market_cap data (e.g. delisted, recent IPO with stale ref
-                # row, or Polygon reference gap) silently passed the gate.
-                # Now: missing data (mkt_cap_m == 0) fails the filter unless
-                # LIQUIDITY config explicitly sets min_market_cap_m=0.
-                mkt_cap_m = (self.info_dict.get(ticker, {}).get("market_cap", 0) or 0) / 1_000_000
-                _min_cap = LIQUIDITY["min_market_cap_m"]
-                if _min_cap > 0 and mkt_cap_m < _min_cap:
-                    continue
+                # S6-B3136b (owner ruling 2026-09-29, '7 retire them'): the
+                # market-cap floor (BUG-238's fail-closed block, Batch 98) is
+                # RETIRED. It gated only this union - the logged
+                # tickers_processed count and a fallback that never fires -
+                # while the per-year sets the screen reads never applied it.
                 passing.add(ticker)
 
         # BUG-222 RESOLVED-IMPLEMENTED Batch 117 2026-05-12 (owner-
@@ -489,6 +487,7 @@ class BacktestEngine:
             get_sp500_constituents_pit,
         )
         _t1a_master = get_t1a_master_set()
+        self._t1a_master = set(_t1a_master)   # S6-B3134a daily check
 
         # Build per-year liquid set for daily screening
         self._annual_liquid: dict[int, set] = {}
@@ -502,22 +501,94 @@ class BacktestEngine:
             year_set = set()
             for ticker, df in self.ohlcv_dict.items():
                 sliced = df[df.index.date <= ref_date]
-                if len(sliced) < 30:
-                    continue
-                if float(sliced["close"].iloc[-1]) < LIQUIDITY["min_price"]:
-                    continue
-                if float(sliced["volume"].tail(20).mean()) < LIQUIDITY["min_avg_volume"]:
-                    continue
-                # BUG-222 tier-specific PIT filter: T1a-classified tickers
-                # must be in the PIT S&P 500 set at year_start; other tier
-                # tickers bypass.
-                if (_t1a_master and ticker in _t1a_master
-                        and ticker not in _t1a_pit_at_year):
-                    continue
-                year_set.add(ticker)
+                # BUG-222 tier-specific PIT filter + the price / volume /
+                # history floors: S6-B3134a moved the rule to
+                # backtest/data/eligibility.py (one definition for the
+                # engine, the grader guard and the sensitivity legs) - the
+                # same four checks in the same order.
+                if _elig.jan1_reason(sliced, ticker, _t1a_master,
+                                     _t1a_pit_at_year, LIQUIDITY["min_price"],
+                                     LIQUIDITY["min_avg_volume"]) is None:
+                    year_set.add(ticker)
             self._annual_liquid[ref_date.year] = year_set
 
         return list(passing)
+
+    def _stamp_eligibility_mode(self):
+        """S6-B3134a (B3135): fix this run's screen rule and stamp it on the
+        cube ONCE, so a reader never guesses it (no stamp = a cube built
+        before B3135 = jan1_legacy). An unknown mode refuses. A RESUMED run
+        keeps the rule its checkpoint was built with or refuses - one cube,
+        one screen rule (eligibility.check_resume): resuming a pre-B3135 cube
+        under daily_subtract_v1 would grade rows screened by two rules as
+        one. A stamp that cannot be written REFUSES the run (B3139, S6-B3134a
+        council 5 of 5): a warning let a daily cube lose its stamp and be
+        read as jan1_legacy, downgrading the leak lens from FAIL to INFO."""
+        mode = _elig.check_mode(ENGINE_ELIGIBILITY_MODE)
+        resume_dir = getattr(self, "resume_from_checkpoint", None)
+        if resume_dir:
+            mode = _elig.check_resume(_elig.read_stamp(resume_dir), mode)
+        self.eligibility_mode = mode
+        # S6-B3136c: the tier windows are read (and their positive control
+        # run) HERE, so an unreadable tier file refuses before day 1
+        if mode == _elig.MODE_DAILY and getattr(self, "_daily_tiers", None) is None:
+            self._daily_tiers = _elig.DailyTiers(run_end=getattr(self, "end", None))
+        try:
+            import json as _ej2
+            Path(self.output_dir).mkdir(parents=True, exist_ok=True)
+            (Path(self.output_dir) / _elig.STAMP).write_text(
+                _ej2.dumps(_elig.stamp_doc(mode, tier_coverage=getattr(
+                    getattr(self, "_daily_tiers", None), "coverage", None)),
+                    indent=1))
+        except OSError as _se:
+            raise RuntimeError(
+                f"eligibility_mode stamp NOT written to {self.output_dir}: "
+                f"{_se!r} - refusing a run whose screen rule would be "
+                "unrecorded (a stampless cube reads as jan1_legacy)") from _se
+
+    def _pit_and_screenable(self, as_of: date):
+        """S6-B3134a (B3135): the day's frames. Returns (mode, ohlcv_pit,
+        screenable): ohlcv_pit = the year set sliced to as_of (>= 30 bars),
+        exactly as before; screenable = the subset the SCREEN may read -
+        under daily_subtract_v1 a year-set ticker that is ALSO a PIT member
+        today (T1a) and closed >= min_price today; under jan1_legacy the
+        whole of ohlcv_pit. Open-trade (carried) tickers are added to
+        ohlcv_pit later, for exits, and never become screenable.
+        S6-B3136c: a year-set ticker outside the T1a master is screenable
+        only on a day it is PIT-active in at least one tier."""
+        # validated EVERY call: a bad attribute must refuse, never read as
+        # "not daily" and quietly run the legacy screen (L642)
+        mode = _elig.check_mode(getattr(self, "eligibility_mode", None)
+                                or ENGINE_ELIGIBILITY_MODE)
+        daily = mode == _elig.MODE_DAILY
+        t1a = getattr(self, "_t1a_master", None) or set()
+        if daily and t1a:
+            if getattr(self, "_daily_pit", None) is None:
+                self._daily_pit = _elig.DailyPit()
+            pit_today = self._daily_pit.members(as_of)
+        else:
+            pit_today = set()
+        if daily:
+            if getattr(self, "_daily_tiers", None) is None:
+                self._daily_tiers = _elig.DailyTiers()
+            tiers_today = self._daily_tiers.members(as_of)
+        else:
+            tiers_today = set()
+        liquid_this_year = self._get_liquid_universe_for_date(as_of)
+        ohlcv_pit, screenable = {}, set()
+        for t in liquid_this_year:
+            df = self.ohlcv_dict.get(t)
+            if df is None:
+                continue
+            sliced = df[df.index.date <= as_of]
+            if len(sliced) >= 30:
+                ohlcv_pit[t] = sliced
+                if (not daily or _elig.daily_reason(
+                        t, float(sliced["close"].iloc[-1]), t1a, pit_today,
+                        LIQUIDITY["min_price"],
+                        tiers_today=tiers_today) is None):
+                    screenable.add(t)
+        return mode, ohlcv_pit, screenable
 
     def _get_liquid_universe_for_date(self, as_of: date) -> set:
         """Return the liquid universe for the year of as_of."""
@@ -2424,15 +2495,9 @@ class BacktestEngine:
         _b1057_t_start = _b1057_time.time()
         logger.info("PHASE_TIMING day=%s start", as_of)
         # -- 1. Slice OHLCV to point-in-time using year-appropriate liquid universe --
-        liquid_this_year = self._get_liquid_universe_for_date(as_of)
-        ohlcv_pit = {}
-        for t in liquid_this_year:
-            df = self.ohlcv_dict.get(t)
-            if df is None:
-                continue
-            sliced = df[df.index.date <= as_of]
-            if len(sliced) >= 30:
-                ohlcv_pit[t] = sliced
+        # S6-B3134a (B3135): the year set sliced (ohlcv_pit, unchanged) and
+        # the subset the SCREEN may read - see _pit_and_screenable.
+        _mode, ohlcv_pit, screenable = self._pit_and_screenable(as_of)
         _b1057_t_after_pit = _b1057_time.time()
         logger.info("PHASE_TIMING day=%s ohlcv_pit_built dur=%.3fs tickers=%d",
                     as_of, _b1057_t_after_pit - _b1057_t_start, len(ohlcv_pit))
@@ -2451,9 +2516,12 @@ class BacktestEngine:
         # set; CUBI/CURI never re-qualified and sat until end-of-backtest.
         # Combined drag: -1,347 pp on Phase 1A-beta aggregate.
         #
-        # Fix scope: exit-check only. New entries are still gated by
-        # liquid_this_year (we don't want to enter illiquid positions);
-        # existing entries get exit-checked regardless of current liquidity.
+        # Fix scope: exit-check only. S6-B3134a (B3135) CORRECTION: the claim
+        # that "new entries are still gated by liquid_this_year" was FALSE -
+        # this dict fed the screen, so a carried ticker kept taking new
+        # entries (R5: 7,097 of 189,471 trades). daily_subtract_v1 now screens
+        # `screenable` only; jan1_legacy keeps the old input to reproduce
+        # historical cubes. Existing entries get exit-checked regardless.
         for trade in self.open_trades:
             if trade.ticker in ohlcv_pit:
                 continue
@@ -2579,8 +2647,13 @@ class BacktestEngine:
         _b1057_t_pre_screen = _b1057_time.time()
         logger.info("PHASE_TIMING day=%s pre_screen dur=%.3fs",
                     as_of, _b1057_t_pre_screen - _b1057_t_after_exits)
+        # S6-B3134a M2 (the open-trade carry): ohlcv_pit also holds every
+        # open-trade ticker for EXIT checks (BUG-287); screening that dict let
+        # an ineligible ticker take NEW entries while any trade on it was
+        # open (R5: 7,097 of 189,471 trades). Legacy mode keeps the old input.
+        _screen_pit = _elig.screen_input(ohlcv_pit, screenable, _mode)
         candidates     = screen_universe(
-            ohlcv_pit, self.info_dict, as_of, regime,
+            _screen_pit, self.info_dict, as_of, regime,
             vix_value=_vix_today_for_screen,
             vix_history=_vix_history_for_screen,
             pool=self._screen_pool,  # None when sequential mode

@@ -1,0 +1,67 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+........................................................................ [ 35%]
+..............................................s......................... [ 39%]
+....................s.................................................s. [ 43%]
+........................................................................ [ 48%]
+........................................................................ [ 52%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 65%]
+........................................................................ [ 70%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+........................................................................ [ 87%]
+........................................................................ [ 92%]
+.............................................F.......................... [ 96%]
+.....................................................                    [100%]
+================================== FAILURES ===================================
+______ test_bug_222_engine_pit_filter_excludes_non_t1a_from_intersection ______
+
+    def test_bug_222_engine_pit_filter_excludes_non_t1a_from_intersection():
+        """BUG-222 behavior: the tier-specific PIT filter at the engine's
+        _build_liquid_universe only intersects T1a-classified tickers with
+        PIT S&P 500 membership; T1 ETFs / T2 / T3 bypass the intersection.
+        Source-grep verifies the gate logic + the `not in _t1a_master`
+        bypass + `not in _t1a_pit_at_year` filter.
+        """
+        from pathlib import Path
+        src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+        assert "BUG-222 RESOLVED-IMPLEMENTED Batch 117" in src
+        assert "get_t1a_master_set" in src
+        assert "_t1a_master" in src
+        assert "_t1a_pit_at_year" in src
+        # The tier-specific gate: T1a-in-master AND NOT-in-PIT-set -> skip
+>       assert "ticker in _t1a_master" in src
+E       assert 'ticker in _t1a_master' in '"""\nengine/backtest.py  -  Main backtest orchestrator.\n\nBacktest-mode operating rules (approved April 2026):\n  - ...t both\n        # screen + cube replay have completed.  Single teardown point.\n        self._teardown_screen_pool()\n'
+
+backtest\tests\test_integration.py:1307: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_integration.py::test_bug_222_engine_pit_filter_excludes_non_t1a_from_intersection
+1 failed, 1633 passed, 3 skipped in 1203.19s (0:20:03)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1365
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=output_audit/workflow_state.json
+readset=RERUN-PASS:66-tests
+readset_rerun=66 tests rc=0 log=b3139_pyramid_batch3.out.rerun.txt
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

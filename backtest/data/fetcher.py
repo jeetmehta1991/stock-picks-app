@@ -356,8 +356,10 @@ def passes_liquidity_filter(
     Filters:
       - Price > $5
       - 20-day avg volume > 500,000
-      - Listed > 1 year
-      - Market cap > $100M
+    The listing-age (> 1 year) and market-cap (> $100M) floors are RETIRED
+    (S6-B3136b, owner ruling 2026-09-29, '7 retire them'). No live code
+    calls this function; its floors are kept consistent with the config
+    so a future caller cannot silently revive a retired rule.
     """
     if df_ohlcv.empty:
         return False, "no_price_data"
@@ -371,19 +373,6 @@ def passes_liquidity_filter(
     vol_20d = df_ohlcv["volume"].tail(20).mean()
     if vol_20d < 500_000:
         return False, f"avg_vol_{int(vol_20d):,}_below_500k"
-
-    # Market cap filter  -  skip if data unavailable (e.g. rate limited or ETF)
-    market_cap_m = (info.get("market_cap") or 0) / 1_000_000
-    if market_cap_m > 0 and market_cap_m < 100:
-        return False, f"mkt_cap_${market_cap_m:.0f}M_below_$100M"
-
-    # Listing age filter  -  IPO date from yfinance info
-    ipo_epoch = info.get("ipo_date")
-    if ipo_epoch:
-        ipo_date = date.fromtimestamp(ipo_epoch)
-        years_listed = (as_of - ipo_date).days / 365.25
-        if years_listed < 1.0:
-            return False, f"listed_only_{years_listed:.1f}yr_(<1yr)"
 
     return True, ""
 

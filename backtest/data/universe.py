@@ -343,6 +343,75 @@ def union_universe(as_of: date, include_etfs: bool = True) -> list[str]:
 # Tier precedence order  -  index 0 = highest precedence
 _TIER_PRECEDENCE = ["T3", "T2", "T1c", "T1a", "T1ETF"]
 
+# S6-B3136c (B3139, council): the ONE file each tier loader reads. The
+# per-tier file check reads these names, and a pin asserts each loader's
+# source names its own entry (two readings of a tier file drift, one
+# cannot - L593). T1a's legacy/snapshot fallbacks are NOT the tier file:
+# the check requires the canonical PIT file.
+TIER_FILES = {
+    "T3": "Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv",
+    "T2": "Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv",
+    "T1c": "Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv",
+    "T1a": "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv",
+    "T1ETF": "Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv",
+}
+# tiers whose membership is a dated window (the ETF tier is static)
+WINDOWED_TIERS = ("T3", "T2", "T1c", "T1a")
+_MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+           "Sep", "Oct", "Nov", "Dec")
+
+
+def tier_file_problems() -> dict:
+    """{tier: reason} for every tier file the daily screen cannot trust;
+    {} when all pass. A file must exist, read with the loaders' own call
+    (pd.read_csv, comment='#'), carry >= 1 Symbol row, and - for a
+    WINDOWED tier - carry added_date and removed_date: _filter_pit treats
+    a file without them as all-active, a silent always-member (L642)."""
+    out = {}
+    for tier in _TIER_PRECEDENCE:
+        p = UNIVERSE_DIR / TIER_FILES[tier]
+        if not p.exists():
+            out[tier] = f"missing file {p.name}"
+            continue
+        try:
+            df = pd.read_csv(p, comment='#')
+        except Exception as exc:                        # noqa: BLE001
+            out[tier] = f"unreadable {p.name}: {exc!r}"
+            continue
+        if "Symbol" not in df.columns or not df["Symbol"].notna().any():
+            out[tier] = f"no Symbol rows in {p.name}"
+            continue
+        if tier in WINDOWED_TIERS:
+            miss = [c for c in ("added_date", "removed_date") if c not in df.columns]
+            if miss:
+                out[tier] = (f"{p.name} lacks window column(s) {miss} - "
+                             "_filter_pit would read every row as active")
+    return out
+
+
+def tier_coverage(run_end: date) -> dict:
+    """Per tier: the coverage month its FILE NAME states ('... to May
+    2026.csv', '..._May 2026.csv') - a claim by the file's author and the
+    only statement of coverage there is - and where `run_end` falls:
+    'within' (before that month), 'end-month' (in it; the exact day is
+    unstated) or 'past' (membership the file does not cover). A name that
+    states no month reads 'unstated'."""
+    out = {}
+    for tier in _TIER_PRECEDENCE:
+        stem = TIER_FILES[tier][:-len(".csv")]
+        head, _, year = stem.rpartition(" ")
+        month = head.rsplit(" ", 1)[-1].rsplit("_", 1)[-1]
+        if month not in _MONTHS or not year.isdigit():
+            out[tier] = {"stated_end_month": None, "status": "unstated"}
+            continue
+        ym = (int(year), _MONTHS.index(month) + 1)
+        r = (run_end.year, run_end.month)
+        out[tier] = {"stated_end_month": "%04d-%02d" % ym,
+                     "run_end": str(run_end),
+                     "status": ("within" if r < ym else
+                                "end-month" if r == ym else "past")}
+    return out
+
 # Tier-specific parameter dicts (DEC-504 owner-approved scope a-d)
 TIER_PARAMS = {
     "T3": {
@@ -383,20 +452,40 @@ TIER_PARAMS = {
 }
 
 
+def tier_members(tier: str, as_of: date) -> list[str]:
+    """The PIT-active members of ONE tier on `as_of` - the single per-tier
+    dispatch that _ticker_in_tier and tickers_in_any_tier both read
+    (S6-B3136c, L593: two readings of a tier window drift, one cannot).
+    NOTE the loaders return [] for a missing file as well as for a tier
+    with no members that day (T3 is legitimately empty before Jun 2022),
+    so an EMPTY answer is not evidence of a readable file - see
+    eligibility.DailyTiers for the positive control."""
+    if tier == "T3":
+        return get_momentum_watchlist_pit(as_of)
+    if tier == "T2":
+        return get_extended_universe_pit(as_of)
+    if tier == "T1c":
+        return get_ndx_constituents_pit(as_of)
+    if tier == "T1a":
+        return get_sp500_constituents_pit(as_of)
+    if tier == "T1ETF":
+        return get_etfs_full()
+    raise ValueError(f"Unknown tier: {tier}")
+
+
 def _ticker_in_tier(ticker: str, tier: str, as_of: date) -> bool:
     """Return True if ticker is PIT-active in the named tier on `as_of`."""
-    t = ticker.upper()
-    if tier == "T3":
-        return t in set(get_momentum_watchlist_pit(as_of))
-    if tier == "T2":
-        return t in set(get_extended_universe_pit(as_of))
-    if tier == "T1c":
-        return t in set(get_ndx_constituents_pit(as_of))
-    if tier == "T1a":
-        return t in set(get_sp500_constituents_pit(as_of))
-    if tier == "T1ETF":
-        return t in set(get_etfs_full())
-    raise ValueError(f"Unknown tier: {tier}")
+    return ticker.upper() in set(tier_members(tier, as_of))
+
+
+def tickers_in_any_tier(as_of: date) -> set:
+    """S6-B3136c: every ticker PIT-active in AT LEAST ONE tier on `as_of` -
+    the union of each tier's own window, so resolve_tier_precedence
+    returns None for a ticker exactly when it is outside this set."""
+    out: set = set()
+    for tier in _TIER_PRECEDENCE:
+        out.update(tier_members(tier, as_of))
+    return out
 
 
 def resolve_tier_precedence(ticker: str, as_of: date) -> Optional[str]:
@@ -451,11 +540,16 @@ def apply_liquidity_filter(
     Apply liquidity filters to a list of tickers.
     Returns (passing_tickers, {ticker: fail_reason}).
 
-    Uses config defaults if parameters not specified.
+    Uses config defaults if parameters not specified. S6-B3136b (owner
+    ruling 2026-09-29, '7 retire them'): there is no config market-cap
+    floor any more - an unspecified cap is NO cap; a tier cap applies only
+    when the caller passes it. `is None`, never `or`: an explicit 0 (the
+    ETF tier) is a value, not an absence (L605).
     """
-    min_price        = min_price        or LIQUIDITY["min_price"]
-    min_avg_volume   = min_avg_volume   or LIQUIDITY["min_avg_volume"]
-    min_market_cap_m = min_market_cap_m or LIQUIDITY["min_market_cap_m"]
+    min_price        = LIQUIDITY["min_price"] if min_price is None else min_price
+    min_avg_volume   = (LIQUIDITY["min_avg_volume"] if min_avg_volume is None
+                        else min_avg_volume)
+    min_market_cap_m = 0 if min_market_cap_m is None else min_market_cap_m
 
     passing = []
     failing = {}

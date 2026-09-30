@@ -1000,6 +1000,18 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
                     f"top-5 tickers carry {top5:.2f} of {n} entries across "
                     f"{len(tick)} tickers; WARN > 0.30"))
 
+    # S6-B3134a part C (B3136): the eligibility lens - every entry asked the
+    # fixed engine's screen question through the ONE predicate
+    # (backtest/data/eligibility.py). Report-only: INFO clean, WARN leaks in a
+    # pre-B3135 (unstamped) cube, FAIL when a daily_subtract_v1-stamped cube
+    # still carries one (the engine fix regressed). A crash is a FAIL row,
+    # never a silent skip (#122).
+    try:
+        import eligibility_leak as _el
+        out.append(_el.lens_row(_el.cube_report(cube_dir)))
+    except Exception as exc:                          # noqa: BLE001
+        out.append(("eligibility_leak", "FAIL", f"crashed: {exc!r}"[:200]))
+
     # rank-1 vs rank-2 on the ranking key: the rows are OUTCOME CLASSES on a
     # multi-combination grid (two classes may share an exit) and EXITS on a
     # single-combination grid - row_label names whichever it is.

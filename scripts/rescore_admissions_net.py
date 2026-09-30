@@ -184,13 +184,20 @@ def find_target(art: dict, adm: dict) -> dict | None:
 
 
 def rescore_r5_line(adm: dict, art: dict) -> dict:
+    return reproduce_r5_line(adm, art)[0]
+
+
+def reproduce_r5_line(adm: dict, art: dict):
+    """The r5 line reproduced (#290). Returns (result, sub): `sub` is the
+    reproduced trade set when status is RESCORED, else None - the S6-B3134a
+    eligibility re-score scores the SAME rows this function reproduced."""
     strat = adm["strategy"]
     combo = {k: v for k, v in (adm.get("combination") or {}).items()
              if k != "strategy"}
     target = find_target(art, adm)
     if target is None:
         return {"status": "NET-RESCORE-UNAVAILABLE",
-                "reason": "admitted row not found in grid artifact"}
+                "reason": "admitted row not found in grid artifact"}, None
     tgt = {k: float(target[k]) for k in
            ("sharpe", "ci_lo", "psr", "profit_factor", "sortino")
            if target.get(k) is not None}
@@ -218,14 +225,18 @@ def rescore_r5_line(adm: dict, art: dict) -> dict:
                       "holdout_n": sc["holdout_n"]})
         if not bad:
             return {"status": "RESCORED", "ops": list(ops),
-                    "reproduced": {k: tgt[k] for k in tgt}, **sc}
+                    "reproduced": {k: tgt[k] for k in tgt}, **sc}, sub
     return {"status": "NET-RESCORE-UNAVAILABLE",
             "reason": "raw reproduction failed for every op-set (fail closed)",
-            "attempts": tried}
+            "attempts": tried}, None
 
 
 def rescore_tws_line(adm: dict) -> dict:
-    """three_white_soldiers: the c14 Step-2 cube (depth_base None - the c14
+    return reproduce_tws_line(adm)[0]
+
+
+def reproduce_tws_line(adm: dict):
+    """(result, sub) - see reproduce_r5_line. three_white_soldiers: the c14 Step-2 cube (depth_base None - the c14
     anatomy lives in the producer), breadth axis re-applied from the admitted
     identity, same loader as the r5 lines."""
     art = json.load(open(ROOT / adm["grid_artifact"], encoding="utf-8"))
@@ -237,7 +248,7 @@ def rescore_tws_line(adm: dict) -> dict:
                 and r.get("exit") == adm["exit"]), None)
     if row is None:
         return {"status": "NET-RESCORE-UNAVAILABLE",
-                "reason": "admitted cell not found in b3114 artifact"}
+                "reason": "admitted cell not found in b3114 artifact"}, None
     tgt = {"sharpe": float(row["holdout_sharpe"]), "ci_lo": float(row["ci_lo"]),
            "psr": float(row["psr"]), "profit_factor": float(row["profit_factor"]),
            "sortino": float(row["sortino"]), "holdout_n": row["holdout_n"],
@@ -251,9 +262,9 @@ def rescore_tws_line(adm: dict) -> dict:
     if bad:
         return {"status": "NET-RESCORE-UNAVAILABLE",
                 "reason": "raw reproduction failed (fail closed)",
-                "mismatches": bad}
+                "mismatches": bad}, None
     return {"status": "RESCORED", "ops": [combo["op"]],
-            "reproduced": tgt, **sc}
+            "reproduced": tgt, **sc}, sub
 
 
 def main() -> int:

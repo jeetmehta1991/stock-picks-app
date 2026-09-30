@@ -41,7 +41,10 @@ def test_batch491_0d_liquidity_min_avg_volume_threshold_in_config():
     from backtest.config import LIQUIDITY
     assert LIQUIDITY["min_avg_volume"] == 500_000
     assert LIQUIDITY["min_price"] == 5.0
-    assert LIQUIDITY["min_market_cap_m"] == 100
+    # S6-B3136b (owner ruling 2026-09-29, '7 retire them'): the market-cap
+    # and listing-age floors are retired - absent, never silently revived
+    assert "min_market_cap_m" not in LIQUIDITY
+    assert "min_listed_years" not in LIQUIDITY
 
 
 def test_batch491_0d_below_floor_avg_volume_rejected_by_filter_logic():

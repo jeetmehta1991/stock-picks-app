@@ -140,9 +140,13 @@ MARKET_REGIMES = {
 LIQUIDITY = {
     "min_price":        5.0,      # eliminates penny stocks
     "min_avg_volume":   500_000,  # 20-day average shares/day
-    "min_listed_years": 1.0,      # must be listed at least 1 year
-    "min_market_cap_m": 100,      # USD millions
 }
+# RETIRED owner ruling 2026-09-29, '7 retire them' (S6-B3136b): "min_listed_years" (1.0 - read by
+# no code) and "min_market_cap_m" (100 - read only by the engine's
+# union-of-years liquid universe, which feeds a logged count and a
+# fallback that never fires; the per-year sets the screen reads never
+# applied it). A tier-specific cap still lives in universe.TIER_PARAMS and
+# is applied only where a caller passes it explicitly.
 
 # -----------------------------------------------------------------------------
 # ENTRY ZONE  -  ATR multiplier by strategy category
@@ -2460,6 +2464,13 @@ USE_PRECOMPUTED_SIGNALS = False
 #     would break the disjoint-universe APPEND design and is the leading
 #     hypothesis for the unexplained 26.63x entry inflation at 5 tickers (L376).
 OPTIMIZATION_MODE: bool = os.environ.get("OPTIMIZATION_MODE", "0") == "1"
+# S6-B3134a (B3135, owner-approved A 2026-09-29): the SCREEN's eligibility
+# rule - backtest/data/eligibility.py defines both modes. daily_subtract_v1
+# (default): the Jan-1 set AND daily T1a PIT membership AND the day's close
+# >= min_price, open-trade (carried) tickers exit-checked only. jan1_legacy:
+# the pre-B3135 screen, kept ONLY to reproduce historical cubes.
+ENGINE_ELIGIBILITY_MODE: str = os.environ.get("ENGINE_ELIGIBILITY_MODE",
+                                              "daily_subtract_v1")
 
 # B1561 -- STAGE-2 NO-LIVE-API ENFORCEMENT (CLAUDE.md HARD CUT 2026-05-05).
 # Defaults ON: a backtest must never reach the network. Until B1561 this rule
