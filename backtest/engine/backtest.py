@@ -178,6 +178,20 @@ def _b1070_starmap_wrapper(args):
     return _pool_cube_replay_worker(*args)
 
 
+def _sentiment_opt(v):
+    """S6-B3139e (owner ruling 2026-09-30): a MISSING sentiment reading is
+    None, never the old neutral/zero sentinel (float(x or 50) recorded a
+    real Fear-and-Greed 0 - extreme fear - and an absent reading as the
+    same 50; 'or 0' did the same to AAII). A real 0 stays 0.0."""
+    if v is None:
+        return None
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    return None if f != f else f  # NaN -> None
+
+
 def _skip_strategy_names(cand, blocking=None) -> str:
     """B2905 (S6-B2871): the REAL strategy names on a skipped-trade row.
 
@@ -923,10 +937,11 @@ class BacktestEngine:
             "congressional_signal": _parse_str(row.get("congressional_signal"), "none"),
             "insider_signal": _parse_str(row.get("insider_signal"), "none"),
             "institutional_signal": _parse_str(row.get("institutional_signal"), "none"),
-            "aaii_bullish": _parse_float(row.get("aaii_bullish"), 0.0),
-            "aaii_bearish": _parse_float(row.get("aaii_bearish"), 0.0),
+            # S6-B3139e: a missing reading re-parses as None, never 0/50
+            "aaii_bullish": _parse_float(row.get("aaii_bullish"), None),
+            "aaii_bearish": _parse_float(row.get("aaii_bearish"), None),
             "aaii_signal": _parse_str(row.get("aaii_signal"), "neutral"),
-            "cnn_fg_score": _parse_float(row.get("cnn_fg_score"), 50.0),
+            "cnn_fg_score": _parse_float(row.get("cnn_fg_score"), None),
             "cnn_fg_label": _parse_str(row.get("cnn_fg_label"), "Neutral"),
             "trade_id": _parse_optional(row.get("trade_id")),
             "exit_method": _parse_str(row.get("exit_method"), "trailing_stop"),
@@ -3773,10 +3788,10 @@ class BacktestEngine:
                     congressional_signal=sm.get("congressional_signal", "none"),
                     insider_signal=sm.get("insider_signal", "none"),
                     institutional_signal=sm.get("institutional_signal", "none"),
-                    aaii_bullish=float(sent.get("aaii", {}).get("bullish_pct", 0) or 0),
-                    aaii_bearish=float(sent.get("aaii", {}).get("bearish_pct", 0) or 0),
+                    aaii_bullish=_sentiment_opt(sent.get("aaii", {}).get("bullish_pct")),
+                    aaii_bearish=_sentiment_opt(sent.get("aaii", {}).get("bearish_pct")),
                     aaii_signal=str(sent.get("aaii", {}).get("signal", "neutral")),
-                    cnn_fg_score=float(sent.get("fear_greed", {}).get("score", 50) or 50),
+                    cnn_fg_score=_sentiment_opt(sent.get("fear_greed", {}).get("score")),
                     cnn_fg_label=str(sent.get("fear_greed", {}).get("label", "Neutral")),
                 )
                 self.open_trades.append(trade)

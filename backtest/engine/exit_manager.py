@@ -103,10 +103,12 @@ class OpenTrade:
     congressional_signal: str = "none"
     insider_signal:       str = "none"
     institutional_signal: str = "none"
-    aaii_bullish:         float = 0.0
-    aaii_bearish:         float = 0.0
+    # S6-B3139e (owner ruling 2026-09-30): None = reading MISSING at entry;
+    # a recorded 0.0 is a real reading (AAII 0 pct / F&G extreme fear 0)
+    aaii_bullish:         Optional[float] = None
+    aaii_bearish:         Optional[float] = None
     aaii_signal:          str = "neutral"
-    cnn_fg_score:         float = 50.0
+    cnn_fg_score:         Optional[float] = None
     cnn_fg_label:         str = "Neutral"
 
 
@@ -175,10 +177,12 @@ class ClosedTrade:
     congressional_signal: str = "none"
     insider_signal:       str = "none"
     institutional_signal: str = "none"
-    aaii_bullish:         float = 0.0
-    aaii_bearish:         float = 0.0
+    # S6-B3139e (owner ruling 2026-09-30): None = reading MISSING at entry;
+    # a recorded 0.0 is a real reading (AAII 0 pct / F&G extreme fear 0)
+    aaii_bullish:         Optional[float] = None
+    aaii_bearish:         Optional[float] = None
     aaii_signal:          str = "neutral"
-    cnn_fg_score:         float = 50.0
+    cnn_fg_score:         Optional[float] = None
     cnn_fg_label:         str = "Neutral"
     # DEC-493 (Pass 53 Sprint 2): unique trade_id propagated from OpenTrade
     trade_id:             Optional[str] = None

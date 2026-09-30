@@ -51254,3 +51254,33 @@ def test_b3139_ticket_id_charset_has_one_definition(tmp_path):
                   if old.search(p.read_text(encoding="utf-8", errors="replace")))
     assert set(hits) <= frozen, sorted(set(hits) - frozen)
     assert hits, "the frozen set is measured, not assumed - it must still find its members"
+
+
+def test_b3139e_missing_sentiment_records_none_not_the_neutral_sentinel():
+    """S6-B3139e (owner ruling 2026-09-30, "approve your recommendation"): a
+    MISSING Fear-and-Greed or AAII reading records as None; a REAL 0 (extreme
+    fear / 0 pct bulls) stays 0.0 - float(x or 50) had recorded both as the
+    neutral 50 and 'or 0' both AAII cases as 0 (the L605 x-or-default class).
+    Behaviour on the helper, defaults on both dataclasses, CSV re-parse
+    defaults asserted at source."""
+    import dataclasses
+    from backtest.engine.backtest import _sentiment_opt
+    from backtest.engine.exit_manager import ClosedTrade, OpenTrade
+    assert _sentiment_opt(None) is None
+    assert _sentiment_opt(float("nan")) is None
+    assert _sentiment_opt("not-a-number") is None
+    assert _sentiment_opt(0) == 0.0    # extreme fear is a READING, kept
+    assert _sentiment_opt(0.0) == 0.0
+    assert _sentiment_opt("42.5") == 42.5
+    for cls in (OpenTrade, ClosedTrade):
+        d = {f.name: f.default for f in dataclasses.fields(cls)}
+        for fld in ("cnn_fg_score", "aaii_bullish", "aaii_bearish"):
+            assert d[fld] is None, (cls.__name__, fld, d[fld])
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "backtest" / "engine" /
+           "backtest.py").read_text(encoding="utf-8", errors="replace")
+    assert src.count('_parse_float(row.get("cnn_fg_score"), None)') == 1
+    assert src.count('_parse_float(row.get("aaii_bullish"), None)') == 1
+    # the recording path routes through the helper, not the old sentinel
+    assert src.count('cnn_fg_score=_sentiment_opt(') == 1
+    assert 'cnn_fg_score=float(' not in src
