@@ -27,5 +27,7 @@
  "fires_at_production": 149,
  "_fires_basis": "strategy_optimisation_status.json (build 715abb8e6): projected_step1_fires 149.1 for bollinger_lower - the production-gate expectation per S6-B2848c; a knob swap changes the fire set both ways by construction (L812)",
  "_window_note": "DELIBERATELY ABSENT. phase_table.resolve injects window and universe; typing them is refused (B2713/L788).",
- "_generated_by": "scripts/make_spec.py (S6-B3120a)"
+ "_generated_by": "scripts/make_spec.py (S6-B3120a)",
+ "supersedes_summary": "2b66f717f53301be",
+ "supersedes_note": "B3139q-r12c: supersedes the cfg2b GATE_REFUSED summary only - that run's engine was NEVER invoked (B2127 drift refusal on a dirty tree), so no holdout was read and the runbook 0.6 re-read caveat does not bind; the owner's launch word (2026-09-30) stands"
 }
