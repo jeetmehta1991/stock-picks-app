@@ -184,6 +184,10 @@ def reproduction_gate(flags: pd.DataFrame) -> dict:
         bad = cov[[not keep_row(c, i, P7_PROD, P8_PROD)
                    for c, i in zip(cov["committed"], cov["increased"])]]
         print(bad.head(10).to_string())
+        # S6-B3139h: the disagreeing rows' window split, so the FAIL names
+        # its own make-up (a holdout leak reads differently from drift)
+        import free_level_window as _flw
+        print("  disagreeing " + _flw.window_note(bad))
         raise SystemExit(2)
     return rec
 

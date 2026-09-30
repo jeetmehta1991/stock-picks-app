@@ -382,11 +382,48 @@ def window_matches(manifest: str, engine_args: list[str]) -> list[str]:
 LINKED_DATA_DIRS = ("backtest/data/cache", "data_prefetch")
 
 
+def _merge_link(src: Path, dst: Path, problems: list[str]) -> None:
+    """L889 (B3139): make `dst` see every entry `src` holds. A child `src` has
+    and `dst` lacks is linked - a directory junction for a directory (no admin
+    rights needed, unlike a symlink), a hard link for a file (a copy when the
+    link fails, e.g. across volumes). A directory BOTH hold is recursed into:
+    git checked out its tracked part and the untracked part must be linked
+    beside it. Nothing that already exists in `dst` is replaced."""
+    for child in src.iterdir():
+        if child.name == "__pycache__":
+            continue
+        d = dst / child.name
+        if child.is_dir():
+            if not d.exists():
+                j = subprocess.run(["cmd", "/c", "mklink", "/J", str(d), str(child)],
+                                   capture_output=True, text=True)
+                if j.returncode != 0 and not d.exists():
+                    problems.append(f"could not link {d}: {j.stderr.strip()[:120]}")
+            elif d.is_dir() and not os.path.islink(d) and not getattr(
+                    d, "is_junction", lambda: False)():
+                _merge_link(child, d, problems)
+        elif not d.exists():
+            try:
+                os.link(child, d)
+            except OSError:
+                import shutil
+                shutil.copy2(child, d)
+
+
 def materialise_worktree(sha: str, root: Path) -> tuple[Path | None, list[str]]:
     """Create (or reuse) a detached worktree at `sha` with data dirs linked.
 
     Returns (worktree_path, problems). A non-empty problems list means the
     caller MUST refuse to launch - never fall back to the live tree silently.
+
+    L889 (B3139): both data roots hold TRACKED files (149,783 under
+    data_prefetch and 4,654 under backtest/data/cache at B3139), so after
+    `git worktree add` each root already EXISTS holding its tracked part only.
+    The pre-B3139 body linked a root only when it did not exist - so it linked
+    nothing - and its emptiness guard passed on the tracked subset. It now
+    merge-links (_merge_link) and refuses unless data_env_parity finds the two
+    trees' data environments identical: a cross-tree run otherwise measures
+    the data, not the code.
     """
     if not sha:
         return None, ["manifest has no frozen_sha to pin a worktree to"]
@@ -403,7 +440,8 @@ def materialise_worktree(sha: str, root: Path) -> tuple[Path | None, list[str]]:
                            capture_output=True, text=True)
         if r.returncode != 0:
             return None, [f"git worktree add failed: {r.stderr.strip()[:200]}"]
-    for rel in LINKED_DATA_DIRS:
+    import data_env_parity as _dep
+    for rel in _dep.data_roots():
         src, dst = root / rel, wt / rel
         if not src.exists():
             problems.append(f"source data dir missing in the main tree: {rel}")
@@ -415,14 +453,15 @@ def materialise_worktree(sha: str, root: Path) -> tuple[Path | None, list[str]]:
                                capture_output=True, text=True)
             if j.returncode != 0 and not dst.exists():
                 problems.append(f"could not link {rel}: {j.stderr.strip()[:120]}")
-                continue
-        # the check that matters: is the data actually VISIBLE from the worktree?
-        try:
-            if not any(dst.iterdir()):
-                problems.append(f"{rel} is EMPTY as seen from the worktree - the "
-                                "engine would run on no data and produce nothing")
-        except OSError as exc:
-            problems.append(f"{rel} unreadable from the worktree: {exc!r}")
+            continue
+        _merge_link(src, dst, problems)
+    # the check that matters: does the worktree read the SAME data?
+    diffs = _dep.differences(root, wt)
+    for d, left, right in diffs[:10]:
+        problems.append(f"data differs at {d}: main {left} | worktree {right} "
+                        "(L889 - a run here would measure the data, not the code)")
+    if len(diffs) > 10:
+        problems.append(f"... {len(diffs) - 10} more data director(ies) differ")
     return wt, problems
 
 

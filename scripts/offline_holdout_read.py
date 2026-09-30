@@ -103,6 +103,15 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
             "spent a 130-trial read on 1 of 5 axes and the owner "
             "overruled relying on it; that is the outcome this refuses.")
 
+    # S6-B3139g: a CLOSED strategy's holdout is not read offline either -
+    # the launch path's refusal, the owner's override register as the
+    # escape. Placed AFTER the band-coverage refusal (it asks whether the
+    # question is whole; this asks whether it may be asked at all) and
+    # BEFORE the first data read, so no holdout row is ever touched.
+    import producer_variant_table as _pvt
+    _closed = _pvt.offline_retest_refusal(strategy)
+    if _closed:
+        raise SystemExit("REFUSED (S6-B3139g): " + _closed)
     m, ev = ols.load(strategy, axes)
     if ev["coverage"] < coverage_min:
         raise SystemExit(f"REFUSED: coverage {ev['coverage']:.4f} < {coverage_min}")

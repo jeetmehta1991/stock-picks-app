@@ -98,6 +98,15 @@ def window_disclosure(before: pd.DataFrame, after: pd.DataFrame,
             "straddle_rows": straddle_count(after)}
 
 
+def window_note(df: pd.DataFrame) -> str:
+    """The entry-dated window split of `df` as one string - the shared
+    explainer for a reproduction gate whose rows are already narrowed to
+    one line (S6-B3139h): a holdout leak and a count drift read differently."""
+    w = split_windows(df)
+    return (f"rows by entry window: in-sample {w['in_sample']} / "
+            f"holdout {w['holdout']} / outside {w['outside_both']}")
+
+
 def gap_breakdown(ted_all: pd.DataFrame, exit_method: str) -> str:
     """For a reproduction mismatch on one exit: the cube's rows for that
     exit split by window AND by strategy, so the message names the cause

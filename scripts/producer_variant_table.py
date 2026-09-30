@@ -3483,6 +3483,33 @@ def _admitted_retest_refusals(doc: dict, root: Path, strats: list) -> list:
     return out
 
 
+RETEST_OVERRIDES = CODE_ROOT / "output_audit" / "s6_b2420_retest_overrides.json"
+
+
+def offline_retest_refusal(strategy: str) -> str | None:
+    """S6-B3139g: the closed-set refusal for an OFFLINE holdout read.
+
+    The owner's closure ('2 yes. No more retesting', 2026-09-29) was
+    enforced on engine launches only - 5 callers, all launch-path - while an
+    offline holdout read of a closed strategy went unrefused. This is the
+    SAME _admitted_retest_refusals call the launch path makes; the override
+    comes from the owner's register (RETEST_OVERRIDES), the one place a
+    per-strategy override is recorded. An unreadable register fails CLOSED
+    (L642) - unknown override status is not permission."""
+    import json as _json
+    try:
+        reg = _json.loads(RETEST_OVERRIDES.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return (f"{strategy}: the owner's override register is unreadable "
+                f"({exc!r}) - refusing an offline holdout read rather than "
+                "reading against unknown override status (L642)")
+    ov = (reg.get("overrides") or {}) if isinstance(reg, dict) else {}
+    doc = {"owner_override_retest_admitted":
+           ({strategy: ov[strategy]} if strategy in ov else {})}
+    errs = _admitted_retest_refusals(doc, CODE_ROOT, [strategy])
+    return errs[0] if errs else None
+
+
 def launch_refusals(doc: dict, root: Path | None = None,
                     require_subset: bool = True) -> list[str]:
     """Reasons NOT to launch `doc` (a wave spec or a run manifest - both carry

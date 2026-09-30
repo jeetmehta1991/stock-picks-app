@@ -365,8 +365,8 @@ def reproduce_smc_line(adm: dict, root: Path):
                 "reason": f"cannot derive the cube from {name}"}, None
     cdir = root / name[: -len("_grid_auto.json")]
     swing = int((art.get("config") or {}).get("P1_swing_length"))
-    g = rc.load_cube(cdir / "trade_exit_detail.csv")
-    g = g[g["strategy"] == adm["strategy"]]
+    g_all = rc.load_cube(cdir / "trade_exit_detail.csv")
+    g = g_all[g_all["strategy"] == adm["strategy"]]
     fires = g[["ticker", "entry_date"]].drop_duplicates()
     keep = set()
     for t in sorted(fires["ticker"].astype(str).unique()):
@@ -400,6 +400,10 @@ def reproduce_smc_line(adm: dict, root: Path):
         # S6-B3136 (B3137): the FRESH evaluation rides beside the named
         # drift; identity_reproduced says whether the trade set itself
         # reproduced (only then is `fresh` the same line on current code)
+        if ident:
+            # S6-B3139h: a count mismatch names its own make-up
+            import free_level_window as _flw
+            bad = bad + [_flw.gap_breakdown(g_all, adm["exit"])]
         return {"status": "NOT-REPRODUCED", "reason": bad, "fresh": got,
                 "identity_reproduced": not ident}, None
     return {"status": "REPRODUCED", "_scorer": score}, sub
@@ -431,6 +435,10 @@ def reproduce_funnel_cell(cell: dict, root: Path, rc):
     if int(want.get("n", -1)) != got["holdout_n"]:
         ident.append(f"holdout n {got['holdout_n']} != {want.get('n')}")
     bad = ident + _mismatches(got["net"] or {}, want)
+    if ident:
+        # S6-B3139h: a count mismatch names its own make-up
+        import free_level_window as _flw
+        bad = bad + [_flw.window_note(sub)]
     if bad:
         return ({"reason": bad, "fresh": got, "identity_reproduced": not ident},
                 None, None)

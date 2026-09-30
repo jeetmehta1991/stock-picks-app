@@ -50619,3 +50619,268 @@ def test_b3139_composite_null_is_same_size_and_deterministic():
     assert a["population"] == 4 and a["sampled"] == 2, a
 
 
+# ================================================================ B3139 S6-B3139g: offline holdout reads honour the closure
+def test_b3139_offline_holdout_reads_refuse_a_closed_strategy(tmp_path, monkeypatch):
+    """S6-B3139g (B3139): the owner's closure ('2 yes. No more retesting',
+    2026-09-29) reaches the offline holdout readers. offline_retest_refusal is
+    the launch path's own _admitted_retest_refusals: a closed name is refused,
+    a name the owner's register overrides is not, an unclosed name is not, and
+    an unreadable register fails CLOSED. Both readers call it BEFORE any data
+    read, and offline_holdout_read keeps the band-coverage refusal first.
+    Must-fail proven on the pre-change modules (no helper, no call)."""
+    import inspect
+    import producer_variant_table as pvt
+    closed, why = pvt.phase1b_admitted(None)
+    assert not why, why
+    assert "smc_breaker_block_long" in closed
+    msg = pvt.offline_retest_refusal("smc_breaker_block_long")
+    assert msg and "ALREADY ADMITTED" in msg, msg
+    import json as _json
+    ov = _json.loads(pvt.RETEST_OVERRIDES.read_text(encoding="utf-8"))["overrides"]
+    over = sorted(ov)[0]
+    assert over in closed, over
+    assert pvt.offline_retest_refusal(over) is None, over
+    assert pvt.offline_retest_refusal("bollinger_lower") is None
+    monkeypatch.setattr(pvt, "RETEST_OVERRIDES", tmp_path / "absent.json")
+    assert "unreadable" in (pvt.offline_retest_refusal("bollinger_lower") or "")
+    import offline_holdout_read as ohr
+    src = inspect.getsource(ohr.read_step2)
+    i_band = src.index("band_coverage.get(\"complete\", False)")
+    i_closed = src.index("_pvt.offline_retest_refusal(strategy)")
+    i_load = src.index("m, ev = ols.load(strategy, axes)")
+    assert i_band < i_closed < i_load
+    import breadth_step2_read as b2
+    src2 = inspect.getsource(b2.main)
+    assert src2.index("_pvt.offline_retest_refusal(strategy)") < \
+        src2.index("m, _ = build_frame(strategy, depth, axis_keys)")
+
+
+# ================================================================ B3139 S6-B3139h: count mismatches name their make-up
+def test_b3139_every_reproduction_gate_explains_a_count_mismatch():
+    """S6-B3139h (B3139): the reproduction gates route a COUNT mismatch
+    through the ONE explainer (free_level_window), so the message names its
+    own make-up - S6-B3128a was first misdiagnosed from a bare n gap. One arm
+    per gate: the shared window_note on literal rows; rescore_admissions_net's
+    _explained on an n mismatch (and NOT on a metric-only one); and the
+    source of the other three sites routes through the explainer on their
+    mismatch branches. Must-fail proven on the pre-change modules."""
+    import inspect
+    import pandas as pd
+    import free_level_window as flw
+    import rescore_admissions_net as ran
+    import eligibility_leak as el
+    import grade_free_levels_institutional as gfi
+    rows = pd.DataFrame({"entry_date": ["2023-01-05", "2023-06-01", "2025-07-01",
+                                        "2021-01-04"]})
+    note = flw.window_note(rows)
+    assert note == ("rows by entry window: in-sample 2 / holdout 1 / outside 1"), note
+    bad = ran._explained(["holdout_n 41 != 40", "sharpe 1.0 != 1.1"], rows)
+    assert bad[-1] == note and len(bad) == 3, bad
+    assert ran._explained(["sharpe 1.0 != 1.1"], rows) == ["sharpe 1.0 != 1.1"]
+    smc = inspect.getsource(el.reproduce_smc_line)
+    assert "_flw.gap_breakdown(g_all, adm[\"exit\"])" in smc
+    fun = inspect.getsource(el.reproduce_funnel_cell)
+    assert "_flw.window_note(sub)" in fun
+    inst = inspect.getsource(gfi.reproduction_gate)
+    assert "_flw.window_note(bad)" in inst
+    for fn in (ran.reproduce_r5_line, ran.reproduce_tws_line):
+        assert "_explained(repro_ok(" in inspect.getsource(fn), fn.__name__
+
+
+# ================================================================ B3139 S6-B3134a lens C re-rank
+def test_b3139_rerank_removes_exactly_the_leaked_rows_and_regrades_with_the_family_grader(
+        tmp_path, monkeypatch):
+    """S6-B3134a (B3139): eligibility_rerank grades a cube twice through the
+    family's OWN grader - as landed, and with every carry:* / daily:* row
+    removed - so the two rankings differ only by the removal. unknown:* rows
+    are KEPT and counted; a cube whose landed grade does not reproduce its
+    committed grid publishes nothing (#290). Deterministic literal rows; the
+    classifier is injected (L878: the real rerank_cube path runs)."""
+    import json as _json
+    import pandas as pd
+    import eligibility_rerank as er
+
+    cube = tmp_path / "output_bl_spanT_spanT"
+    cube.mkdir()
+    (cube / "run_manifest.json").write_text(_json.dumps(
+        {"arms": [{"tag": "t", "env": {"STRAT_EMA_SPAN": "50"}}]}), encoding="utf-8")
+    rows = []
+    # 12 IS rows per exit on a CLEAN ticker, 4 more on a LEAK ticker whose
+    # returns are large - removing them must change the grade
+    for ex, base in (("time_stop_10d", 0.4), ("breakeven_plus_trail", 0.2)):
+        for i in range(12):
+            rows.append({"strategy": "bollinger_lower", "ticker": "AAA",
+                         "entry_date": f"2023-{1 + i % 12:02d}-{10 + i % 5:02d}",
+                         "direction": "long", "exit_method": ex,
+                         "pnl_pct": base + (0.3 if i % 3 else -0.5),
+                         "hold_days": 5})
+        for i in range(4):
+            rows.append({"strategy": "bollinger_lower", "ticker": "LEAK",
+                         "entry_date": f"2023-0{2 + i}-15",
+                         "direction": "long", "exit_method": ex,
+                         "pnl_pct": 9.0, "hold_days": 5})
+        rows.append({"strategy": "bollinger_lower", "ticker": "UNK",
+                     "entry_date": "2023-03-20", "direction": "long",
+                     "exit_method": ex, "pnl_pct": 0.1, "hold_days": 5})
+    pd.DataFrame(rows).to_csv(cube / "trade_exit_detail.csv", index=False)
+
+    class FakeClf:
+        def __init__(self, tickers, end):
+            self.seen = sorted(tickers)
+
+        def classify(self, ticker, day):
+            return {"LEAK": "carry:not-in-jan1-set", "UNK": "unknown:no-ohlcv"}.get(ticker, "")
+
+    monkeypatch.setattr(er.el, "Classifier", FakeClf)
+    row = er.rerank_cube(cube, None, tmp_path / "work")
+    assert row["verdict"] == "RERANKED", row
+    assert row["leaked_rows"] == 8 and row["unknown_rows_kept"] == 2, row
+    assert row["by_reason"] == {"carry:not-in-jan1-set": 8}, row
+    assert row["kept_rows"] == row["strategy_rows"] - 8, row
+    wl, cl = row["as_run"]["top"], row["clean"]["top"]
+    assert wl and cl and wl["is_sharpe"] != cl["is_sharpe"], (wl, cl)
+    assert row["clean"]["is_rows"] == row["as_run"]["is_rows"] - 8, row
+    # reproduction gate: a committed grid that disagrees publishes nothing
+    bad = tmp_path / "grid.json"
+    bad.write_text(_json.dumps({"step1_ranking": [
+        {"exit": "time_stop_10d", "fires": 1, "is_ci_lo": 9.9}]}), encoding="utf-8")
+    row2 = er.rerank_cube(cube, bad, tmp_path / "work2")
+    assert row2["verdict"] == "NOT-REPRODUCED" and "clean" not in row2, row2
+
+
+def test_b3139_rerank_states_its_exactness_from_the_slice_verdict(tmp_path, monkeypatch):
+    """S6-B3134a / S6-B3139q (B3139): the re-rank's clean figures are the leak
+    rows REMOVED, which equals re-running the daily screen only if the slice's
+    claim (2) held. The caller must state that result (--slice-verdict, no
+    default - argparse exits 2 without it), and the output carries it as
+    'exactness' with the reason, so an APPROXIMATE re-rank can never read as
+    an emulation."""
+    import json as _json
+    import pandas as pd
+    import pytest as _pytest
+    import eligibility_rerank as er
+
+    cube = tmp_path / "output_bl_spanX_spanX"
+    cube.mkdir()
+    (cube / "run_manifest.json").write_text(_json.dumps(
+        {"arms": [{"tag": "t", "env": {"STRAT_EMA_SPAN": "50"}}]}), encoding="utf-8")
+    rows = [{"strategy": "bollinger_lower", "ticker": "AAA" if i % 4 else "LEAK",
+             "entry_date": f"2023-{1 + i % 12:02d}-{10 + i % 5:02d}",
+             "direction": "long", "exit_method": "time_stop_10d",
+             "pnl_pct": 0.3 if i % 3 else -0.5, "hold_days": 5} for i in range(24)]
+    pd.DataFrame(rows).to_csv(cube / "trade_exit_detail.csv", index=False)
+
+    class FakeClf:
+        def __init__(self, tickers, end):
+            pass
+
+        def classify(self, ticker, day):
+            return "daily:not-member-today" if ticker == "LEAK" else ""
+
+    monkeypatch.setattr(er.el, "Classifier", FakeClf)
+    out = tmp_path / "rerank.json"
+    with _pytest.raises(SystemExit) as e:
+        er.main(["--cubes", str(cube), "--out", str(out)])
+    assert e.value.code == 2 and not out.exists()
+    assert er.main(["--cubes", str(cube), "--slice-verdict", "APPROXIMATE",
+                    "--out", str(out)]) == 0
+    doc = _json.loads(out.read_text(encoding="utf-8"))
+    assert doc["exactness"] == "APPROXIMATE", doc
+    assert "S6-B3139q" in doc["exactness_note"] and "not a re-run" in doc["exactness_note"]
+    assert er.main(["--cubes", str(cube), "--slice-verdict", "EXACT",
+                    "--out", str(out)]) == 0
+    assert _json.loads(out.read_text(encoding="utf-8"))["exactness"] == "EXACT"
+
+
+# ================================================================ B3139 L889: a cross-tree comparison holds the data fixed
+def test_b3139_data_env_parity_names_a_missing_data_dir(tmp_path):
+    """L889 (B3139): scripts/data_env_parity.py compares the engine's data
+    roots (launch_sweep.LINKED_DATA_DIRS, one definition, plus the universe
+    CSVs) across two trees. must-FIRE: a decoded-filings directory present on
+    one side only (the slice's confound, verbatim in shape); must-QUIET:
+    identical trees, and a universe CSV differing only by line endings (a
+    pandas reader cannot tell them apart). A junction is followed - linked
+    data is data the engine reads."""
+    import data_env_parity as dep
+    assert set(dep.data_roots()) >= {"backtest/data/cache", "data_prefetch",
+                                     "Backtesting universe"}
+    left, right = tmp_path / "left", tmp_path / "right"
+    for t in (left, right):
+        (t / "data_prefetch" / "polygon").mkdir(parents=True)
+        (t / "data_prefetch" / "polygon" / "x.parquet").write_bytes(b"abc")
+        (t / "backtest" / "data" / "cache" / "ohlcv").mkdir(parents=True)
+        (t / "backtest" / "data" / "cache" / "ohlcv" / "JPM.parquet").write_bytes(b"j")
+        (t / "Backtesting universe").mkdir()
+    (left / "Backtesting universe" / "t1a.csv").write_bytes(b"Symbol\r\nJPM\r\n")
+    (right / "Backtesting universe" / "t1a.csv").write_bytes(b"Symbol\nJPM\n")
+    assert dep.differences(left, right) == []
+    assert dep.main(["--left", str(left), "--right", str(right)]) == 0
+    dec = left / "data_prefetch" / "sec_edgar_decoded" / "8_K"
+    dec.mkdir(parents=True)
+    (dec / "JPM_2022-10-06.json").write_text("{}", encoding="utf-8")
+    diffs = dep.differences(left, right)
+    assert [d[0] for d in diffs] == ["data_prefetch/sec_edgar_decoded",
+                                     "data_prefetch/sec_edgar_decoded/8_K"], diffs
+    assert dep.main(["--left", str(left), "--right", str(right)]) == 1
+
+
+# ================================================================ B3139 L889: materialise_worktree's HAPPY path
+def test_b3139_materialise_worktree_links_the_untracked_data(tmp_path):
+    """L889 (B3139): the worktree materialiser's happy path, never run before
+    (its B2133 pin drives only the two refusal paths). A real git repo whose
+    data roots hold a TRACKED file beside UNTRACKED data - the shape of this
+    repo (149,783 tracked files under data_prefetch at B3139): after
+    `git worktree add` each root exists holding its tracked part, and the
+    pre-B3139 body (`if not dst.exists(): junction`) linked nothing while its
+    emptiness guard passed. Now every untracked file and directory is visible
+    from the worktree and the parity check reports no difference; a data file
+    the main tree changes after linking is a DIFFERENCE the caller refuses on.
+    Must-fail proven against the pre-B3139 body."""
+    import importlib.util
+    import subprocess
+    from pathlib import Path as _P
+    here = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "launch_sweep_b3139", here / "scripts" / "launch_sweep.py")
+    ls = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ls)
+    root = tmp_path / "repo"
+    (root / "data_prefetch" / "polygon").mkdir(parents=True)
+    (root / "backtest" / "data" / "cache").mkdir(parents=True)
+    (root / "Backtesting universe").mkdir(parents=True)
+    (root / "data_prefetch" / "polygon" / "tracked.json").write_text("{}", encoding="utf-8")
+    (root / "backtest" / "data" / "cache" / "index.json").write_text("{}", encoding="utf-8")
+    (root / "Backtesting universe" / "t1a.csv").write_text("Symbol\nJPM\n", encoding="utf-8")
+
+    def git(*a):
+        r = subprocess.run(["git", *a], cwd=str(root), capture_output=True, text=True)
+        assert r.returncode == 0, r.stderr
+        return r.stdout.strip()
+    git("init", "-q")
+    git("-c", "user.email=t@t", "-c", "user.name=t", "add", "-A")
+    git("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "base")
+    sha = git("rev-parse", "HEAD")
+    # UNTRACKED data beside the tracked part: a whole directory, a file inside
+    # a tracked directory, and a file at a root's top level
+    dec = root / "data_prefetch" / "sec_edgar_decoded" / "8_K"
+    dec.mkdir(parents=True)
+    (dec / "JPM_2022-10-06.json").write_text('{"item": "1.01"}', encoding="utf-8")
+    (root / "data_prefetch" / "polygon" / "grouped.parquet").write_bytes(b"PAR1")
+    (root / "backtest" / "data" / "cache" / "JPM.parquet").write_bytes(b"PAR1ohlcv")
+    try:
+        wt, probs = ls.materialise_worktree(sha, root)
+        assert wt is not None and probs == [], probs
+        assert (wt / "data_prefetch" / "sec_edgar_decoded" / "8_K" / "JPM_2022-10-06.json").read_text(
+            encoding="utf-8") == '{"item": "1.01"}'
+        assert (wt / "data_prefetch" / "polygon" / "grouped.parquet").read_bytes() == b"PAR1"
+        assert (wt / "backtest" / "data" / "cache" / "JPM.parquet").read_bytes() == b"PAR1ohlcv"
+        # the tracked part is the worktree's own checkout, untouched
+        assert (wt / "data_prefetch" / "polygon" / "tracked.json").read_text(encoding="utf-8") == "{}"
+        # a data change in main AFTER linking a tracked file is a refusal:
+        # the tracked copy in the worktree no longer matches
+        (root / "data_prefetch" / "polygon" / "tracked.json").write_text('{"x": 1}', encoding="utf-8")
+        wt2, probs2 = ls.materialise_worktree(sha, root)
+        assert wt2 == wt and probs2 and "data differs" in probs2[0], probs2
+    finally:
+        subprocess.run(["git", "worktree", "remove", "--force", str(root / ".worktrees" / sha[:12])],
+                       cwd=str(root), capture_output=True, text=True)

@@ -1,0 +1,237 @@
+{
+ "ticket": "S6-B3134a lens C (B3139)",
+ "mode": "step2",
+ "method": "grade_bollinger_config.grade on the landed cube (reproduced against its committed grid) and on the cube with every carry:* / daily:* row removed; unknown:* rows kept and counted",
+ "cubes": [
+  {
+   "cube": "output_bl_step2_p4_9_p4_9",
+   "span": 9,
+   "step2": true,
+   "rows": 41688,
+   "reproduction": {
+    "grid": "output_audit/output_bl_step2_p4_9_p4_9_grid_auto.json",
+    "equal": true
+   },
+   "strategy": "bollinger_lower",
+   "strategy_rows": 41688,
+   "leaked_rows": 648,
+   "unknown_rows_kept": 0,
+   "entries": 1737,
+   "leaked_entries": 27,
+   "by_reason": {
+    "daily:not-member-today": 648
+   },
+   "kept_rows": 41040,
+   "as_run": {
+    "is_rows": 30528,
+    "holdout_rows": 11160,
+    "top": {
+     "exit": "breakeven_plus_trail",
+     "fires": 1272,
+     "is_sharpe": 0.694,
+     "is_ci_lo": 0.554,
+     "class_size": 1,
+     "admit": {
+      "holdout_n": 465,
+      "full_period_n": 1737,
+      "verdict": "RANKED"
+     },
+     "rank": 1
+    },
+    "ranking": [
+     {
+      "exit": "breakeven_plus_trail",
+      "fires": 1272,
+      "is_sharpe": 0.694,
+      "is_ci_lo": 0.554,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 465,
+       "full_period_n": 1737,
+       "verdict": "RANKED"
+      },
+      "rank": 1
+     },
+     {
+      "exit": "earnings_blackout",
+      "fires": 1272,
+      "is_sharpe": 0.574,
+      "is_ci_lo": 0.46,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 465,
+       "full_period_n": 1737,
+       "verdict": "RANKED"
+      },
+      "rank": 2
+     },
+     {
+      "exit": "regime_flip",
+      "fires": 1272,
+      "is_sharpe": 0.632,
+      "is_ci_lo": 0.411,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 465,
+       "full_period_n": 1737,
+       "verdict": "RANKED"
+      },
+      "rank": 3
+     },
+     {
+      "exit": "reverse_signal",
+      "fires": 1272,
+      "is_sharpe": 0.547,
+      "is_ci_lo": 0.404,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 465,
+       "full_period_n": 1737,
+       "verdict": "RANKED"
+      },
+      "rank": 4
+     },
+     {
+      "exit": "fixed_4r_2r",
+      "fires": 1272,
+      "is_sharpe": 0.538,
+      "is_ci_lo": 0.363,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 465,
+       "full_period_n": 1737,
+       "verdict": "RANKED"
+      },
+      "rank": 5
+     }
+    ],
+    "step2": {
+     "verdict": "FAIL",
+     "selected_exit": "breakeven_plus_trail",
+     "holdout_n": 465,
+     "full_period_n": 1737,
+     "sharpe": 0.422,
+     "sortino": 1.282,
+     "profit_factor": 1.681,
+     "psr": 0.9999,
+     "gates_passed": 5,
+     "gates": {
+      "pooled_sharpe": false,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean": {
+    "is_rows": 30144,
+    "holdout_rows": 10896,
+    "top": {
+     "exit": "breakeven_plus_trail",
+     "fires": 1256,
+     "is_sharpe": 0.706,
+     "is_ci_lo": 0.565,
+     "class_size": 1,
+     "admit": {
+      "holdout_n": 454,
+      "full_period_n": 1710,
+      "verdict": "RANKED"
+     },
+     "rank": 1
+    },
+    "ranking": [
+     {
+      "exit": "breakeven_plus_trail",
+      "fires": 1256,
+      "is_sharpe": 0.706,
+      "is_ci_lo": 0.565,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 454,
+       "full_period_n": 1710,
+       "verdict": "RANKED"
+      },
+      "rank": 1
+     },
+     {
+      "exit": "earnings_blackout",
+      "fires": 1256,
+      "is_sharpe": 0.583,
+      "is_ci_lo": 0.468,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 454,
+       "full_period_n": 1710,
+       "verdict": "RANKED"
+      },
+      "rank": 2
+     },
+     {
+      "exit": "regime_flip",
+      "fires": 1256,
+      "is_sharpe": 0.666,
+      "is_ci_lo": 0.443,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 454,
+       "full_period_n": 1710,
+       "verdict": "RANKED"
+      },
+      "rank": 3
+     },
+     {
+      "exit": "reverse_signal",
+      "fires": 1256,
+      "is_sharpe": 0.56,
+      "is_ci_lo": 0.416,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 454,
+       "full_period_n": 1710,
+       "verdict": "RANKED"
+      },
+      "rank": 4
+     },
+     {
+      "exit": "fixed_4r_2r",
+      "fires": 1256,
+      "is_sharpe": 0.561,
+      "is_ci_lo": 0.385,
+      "class_size": 1,
+      "admit": {
+       "holdout_n": 454,
+       "full_period_n": 1710,
+       "verdict": "RANKED"
+      },
+      "rank": 5
+     }
+    ],
+    "step2": {
+     "verdict": "FAIL",
+     "selected_exit": "breakeven_plus_trail",
+     "holdout_n": 454,
+     "full_period_n": 1710,
+     "sharpe": 0.42,
+     "sortino": 1.297,
+     "profit_factor": 1.695,
+     "psr": 0.9999,
+     "gates_passed": 5,
+     "gates": {
+      "pooled_sharpe": false,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "verdict": "RERANKED"
+  }
+ ],
+ "not_reproduced": [],
+ "exactness": "APPROXIMATE",
+ "exactness_note": "APPROXIMATE: the S6-B3134a slice FAILED its claim (2) - removing a leaked ticker also moves every surviving ticker's cross-sectional deciles, and the cube-isolation occupancy block skips a WHOLE candidate behind one holder, so a clean ticker-day's entry can differ too (S6-B3139q, S6-B3139r). The clean figures are the leak rows removed, not a re-run of the daily screen."
+}

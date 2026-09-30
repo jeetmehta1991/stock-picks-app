@@ -113,6 +113,12 @@ def main() -> int:
     art = json.loads(Path(a.step1_artifact).read_text(encoding="utf-8"))
     require_multiplicity(art, a.step1_artifact)   # S6-B2836a, fail closed
     strategy = art["strategy"]
+    # S6-B3139g: the SUBJECT's holdout is refused for a CLOSED strategy
+    # (the CONTROL is a comparison baseline, never a re-test)
+    import producer_variant_table as _pvt
+    _closed = _pvt.offline_retest_refusal(strategy)
+    if _closed:
+        raise SystemExit("REFUSED (S6-B3139g): " + _closed)
     depth = art["depth_base"]
     cells = sorted({(r["axis"], r["op"], r["level"]) for r in art["rows"]})
     axis_keys = sorted({c[0] for c in cells})

@@ -162,6 +162,15 @@ def repro_ok(raw: dict, target: dict, ho_n: int, full_n: int):
     return bad
 
 
+def _explained(bad: list, rows) -> list:
+    """S6-B3139h: a COUNT mismatch (holdout_n / full_period_n) carries the
+    candidate rows' entry-window split, so the gap names its own make-up."""
+    if any(b.startswith(("holdout_n ", "full_period_n ")) for b in bad):
+        import free_level_window as _flw
+        return bad + [_flw.window_note(rows)]
+    return bad
+
+
 def find_target(art: dict, adm: dict) -> dict | None:
     """The admission-grid row matching this admission's identity."""
     rows = art.get("results") or art.get("rows") or []
@@ -220,8 +229,9 @@ def reproduce_r5_line(adm: dict, art: dict):
         conds = [(k, o, lv) for k, o, lv in zip(keys, ops, levels)]
         sub = apply_ops(base, conds) if conds else base
         sc = score_both(sub)
-        bad = repro_ok(sc["raw"], tgt, sc["holdout_n"], sc["full_period_n"])
-        tried.append({"ops": list(ops), "mismatches": bad[:3],
+        bad = _explained(repro_ok(sc["raw"], tgt, sc["holdout_n"],
+                                  sc["full_period_n"]), sub)
+        tried.append({"ops": list(ops), "mismatches": bad[:4],
                       "holdout_n": sc["holdout_n"]})
         if not bad:
             return {"status": "RESCORED", "ops": list(ops),
@@ -258,7 +268,8 @@ def reproduce_tws_line(adm: dict):
     base = frame[frame["exit_method"] == adm["exit"]]
     sub = apply_ops(base, [(combo["axis"], combo["op"], float(combo["level"]))])
     sc = score_both(sub)
-    bad = repro_ok(sc["raw"], tgt, sc["holdout_n"], sc["full_period_n"])
+    bad = _explained(repro_ok(sc["raw"], tgt, sc["holdout_n"],
+                              sc["full_period_n"]), sub)
     if bad:
         return {"status": "NET-RESCORE-UNAVAILABLE",
                 "reason": "raw reproduction failed (fail closed)",

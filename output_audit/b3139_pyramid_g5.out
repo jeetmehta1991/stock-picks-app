@@ -1,0 +1,72 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+..............................................s......................... [ 38%]
+....................s.................................................s. [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 56%]
+..................................................................F..... [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 99%]
+............                                                             [100%]
+================================== FAILURES ===================================
+______________ test_b2128_silent_except_pass_is_a_shrinking_set _______________
+
+    def test_b2128_silent_except_pass_is_a_shrinking_set():
+        """B2128 (S6-B2118a, prevention half): no NEW silent `except: pass`.
+    
+        THE CORRECTION THIS SHIPS WITH: the execution-discipline skill's
+        enforcement table claimed the C7 banned-pattern scan blocks "unlogged
+        `except: pass`". It does not - C7 has exactly three patterns (NOT-S-GET,
+        DEFAULT-TRUE-GATE, RELATIVE-PREFETCH-PATH), read this batch. The rule was
+        real and the mechanism was absent: #224, inside the enforcement table
+        itself. A line-scan cannot see the multi-line form anyway, so the
+        mechanism is this AST ratchet rather than a fourth regex.
+        """
+        sites = _b2128_silent_except_sites()
+>       assert len(sites) <= _B2128_SILENT_EXCEPT_CEILING, (
+            f"{len(sites)} silent except:pass sites > frozen ceiling "
+            f"{_B2128_SILENT_EXCEPT_CEILING}. A NEW one was added: pair it with a "
+            "logged success-check (#122), or waive it on the line with a reason. "
+            f"New/changed sites include: {sites[-5:]}")
+E       AssertionError: 129 silent except:pass sites > frozen ceiling 128. A NEW one was added: pair it with a logged success-check (#122), or waive it on the line with a reason. New/changed sites include: ['scripts\\validate_sec_edgar_decoded_completeness.py:230', 'scripts\\verify_batch_69_phase_3.py:120', 'scripts\\verify_flag_binds.py:57', 'scripts\\verify_turn_compliance.py:796', 'scripts\\verify_turn_compliance.py:5633']
+E       assert 129 <= 128
+E        +  where 129 = len(['backtest\\agents\\pipeline.py:303', 'backtest\\agents\\toolkits\\our_fundamentals_toolkit.py:85', 'backtest\\data\\s...money.py:1167', 'backtest\\diagnostics\\section_09b_pre_cube_evidence.py:121', 'backtest\\engine\\backtest.py:99', ...])
+
+backtest\tests\test_unit.py:26280: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2128_silent_except_pass_is_a_shrinking_set
+1 failed, 1664 passed, 3 skipped in 946.77s (0:15:46)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=978
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red
