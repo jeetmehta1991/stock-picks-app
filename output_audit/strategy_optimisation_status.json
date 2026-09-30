@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "d1e93ff7f",
-    "generated_at": "2026-09-29 01:49:11"
+    "source_commit": "715abb8e6",
+    "generated_at": "2026-09-30 07:35:52"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -17,7 +17,21 @@
     "survives_pct calls the LIVE strategy function on each fire's persisted signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). A LOWER BOUND where a gate leg reads an unpersisted key (defaults False); an erroring row counts as non-survival; None only for zero-fire strategies",
     "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the strategy (S6-B2810c; a bare mention is not a campaign) - the vocabulary is a heuristic, so borderline rows are settled by reading the ticket; mention_tickets keeps the unfiltered list; IN-CAMPAIGN additionally requires a naming ticket whose CURRENT ledger state is non-terminal (B2829) - a concluded campaign does not own a strategy forever; a row whose campaign tickets exist but are ALL terminal is STALLED-CAMPAIGN (B2833, owner-approved 2026-09-15): campaigned, concluded mid-path, still in its lane. STALLED inherits the vocabulary heuristic WITHOUT the liveness mask, so a builder-audit ticket that names a strategy as an EXAMPLE (the S6-B2810b/c and S6-B2830 rows) can stall it falsely - settle a surprising row by reading its tickets",
     "stream and the proj column use the CURRENT-GATE projection (raw projection x survives_pct, B2822); projected_step1_fires in this JSON keeps the raw figure",
-    "terminal statuses (ADMITTED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED) are MUTUALLY EXCLUSIVE with the stream lanes and excluded from every work bucket (B2825); reopen_candidate flags a terminal row whose entry condition changed since its closure evidence (survives < 1.0) - flagged for the owner, never auto-reopened"
+    "terminal statuses (ADMITTED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED) are MUTUALLY EXCLUSIVE with the stream lanes and excluded from every work bucket (B2825); reopen_candidate flags a terminal row whose entry condition changed since its closure evidence (survives < 1.0) - flagged for the owner, never auto-reopened",
+    "IN-ROSTER-FUNNEL / IN-ROSTER-MIRROR (S6-B3135) come from scripts/phase1b_membership.py: a graded 3-cube funnel cell is on the Phase 1B roster, terminal like an admission and CLOSED to re-testing like one (owner 2026-09-29, '2 yes. No more retesting'); a short mirror retained by the owner's mirror policy is on the roster but UNGRADED, so it keeps its lane while the owner has Step 2 scheduled on it (S6-B2420)",
+    "DONE-OWNER-CLOSED (S6-B3135a) is a campaign the owner closed outright, read from output_audit/owner_campaign_closures.json with the owner's words; it outranks the mirror lane, so IN-ROSTER-MIRROR is exactly the mirrors with scheduled work. A closed mirror stays ON the Phase 1B roster - the closure ends its campaign, not its membership"
+  ],
+  "phase1b_roster": {
+    "funnel_cells": 7,
+    "step2_admissions": 15,
+    "mirrors": 9,
+    "long": 22,
+    "short": 9,
+    "total": 31
+  },
+  "owner_closures": [
+    "smc_breaker_block_short",
+    "three_black_crows_short"
   ],
   "rows": [
     {
@@ -35,6 +49,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -46,16 +61,25 @@
       "projected_step1_fires": 13.8,
       "projected_current_gate": 13.8,
       "reopen_candidate": false,
-      "stream": "LOOSEN",
+      "stream": "-",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3135",
+        "S6-B3135a"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3135"
+      ],
       "mention_tickets": [
         "S6-B1770b",
-        "S6-B2014b"
+        "S6-B2014b",
+        "S6-B3135"
       ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "roster_roles": [
+        "FUNNEL_CELL"
+      ],
+      "status": "IN-ROSTER-FUNNEL"
     },
     {
       "strategy": "52w_high_breakout_with_smart_money_long",
@@ -72,6 +96,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -89,6 +114,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -114,6 +140,7 @@
         "S6-B2835"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -139,7 +166,10 @@
         "S6-B2830"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_MIRROR"
+      ],
+      "status": "IN-ROSTER-MIRROR"
     },
     {
       "strategy": "52wh_break_retest",
@@ -156,6 +186,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -173,6 +204,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -190,6 +222,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -207,6 +240,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -224,6 +258,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -246,6 +281,7 @@
         "S6-B3078"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -267,6 +303,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -284,6 +321,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -301,6 +339,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -317,18 +356,21 @@
         "adx": 1.0
       },
       "tickets": [
+        "S6-B2178c",
         "S6-B2383",
-        "S6-B2872",
-        "S6-B3116b"
+        "S6-B2872"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B2178c"
+      ],
       "mention_tickets": [
+        "S6-B2178c",
         "S6-B2383",
-        "S6-B2872",
-        "S6-B3116b"
+        "S6-B2872"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "roster_roles": [],
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "bollinger_tight",
@@ -349,6 +391,7 @@
         "S6-B2383"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -366,6 +409,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -389,6 +433,7 @@
         "S6-B2383"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -406,6 +451,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -423,6 +469,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -440,6 +487,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -457,6 +505,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -476,6 +525,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -493,6 +543,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "DISABLED"
     },
     {
@@ -520,6 +571,7 @@
         "S6-B3117a"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -533,11 +585,16 @@
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
-      "tickets": [],
+      "tickets": [
+        "S6-B3139q"
+      ],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3139q"
+      ],
       "admitted": false,
-      "status": "NOT-STARTED"
+      "roster_roles": [],
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "cpr_narrow_bullish",
@@ -558,6 +615,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -577,6 +635,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -596,6 +655,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -613,6 +673,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -632,6 +693,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -649,6 +711,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -666,6 +729,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -683,6 +747,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -700,6 +765,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -717,6 +783,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -734,6 +801,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -751,6 +819,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -768,6 +837,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -787,6 +857,7 @@
         "S6-B1901a"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -804,6 +875,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -821,6 +893,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -838,6 +911,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -855,6 +929,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -872,6 +947,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -889,6 +965,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -906,6 +983,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -923,6 +1001,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -940,6 +1019,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -957,6 +1037,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -974,6 +1055,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -991,6 +1073,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1012,6 +1095,7 @@
         "S6-B2477"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -1029,6 +1113,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1046,6 +1131,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1065,6 +1151,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1082,6 +1169,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1099,6 +1187,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1116,6 +1205,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1133,6 +1223,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1160,6 +1251,7 @@
         "S6-B2872"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -1177,6 +1269,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1194,6 +1287,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1215,6 +1309,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -1234,6 +1329,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1251,6 +1347,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1268,6 +1365,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1288,6 +1386,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1304,13 +1403,14 @@
       "tickets": [
         "S6-B3122"
       ],
-      "live_campaign_tickets": [
-        "S6-B3122"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3122"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -1328,6 +1428,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "PRUNED-DUPLICATE"
     },
     {
@@ -1351,6 +1452,7 @@
         "S6-B2425"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "PRUNED-DUPLICATE"
     },
     {
@@ -1378,6 +1480,9 @@
         "S6-B2435"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -1397,14 +1502,15 @@
         "S6-B2807",
         "S6-B3122"
       ],
-      "live_campaign_tickets": [
-        "S6-B3122"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2807",
         "S6-B3122"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -1425,6 +1531,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "CLOSED-NEGATIVE"
     },
     {
@@ -1446,6 +1553,7 @@
         "S6-B2806"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "PRUNED-DUPLICATE"
     },
     {
@@ -1466,15 +1574,16 @@
         "S6-B3116b",
         "S6-B3122"
       ],
-      "live_campaign_tickets": [
-        "S6-B3122"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2646b",
         "S6-B2807",
         "S6-B3116b"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -1494,14 +1603,15 @@
         "S6-B2874",
         "S6-B3122"
       ],
-      "live_campaign_tickets": [
-        "S6-B3122"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2874",
         "S6-B3122"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -1521,6 +1631,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "PRUNED-DUPLICATE"
     },
     {
@@ -1542,6 +1653,7 @@
         "S6-B2827"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "PRUNED-DUPLICATE"
     },
     {
@@ -1561,13 +1673,14 @@
       "tickets": [
         "S6-B3122"
       ],
-      "live_campaign_tickets": [
-        "S6-B3122"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3122"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -1591,6 +1704,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "PRUNED-DUPLICATE"
     },
     {
@@ -1610,6 +1724,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "PRUNED-DUPLICATE"
     },
     {
@@ -1628,13 +1743,14 @@
       "tickets": [
         "S6-B3122"
       ],
-      "live_campaign_tickets": [
-        "S6-B3122"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3122"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -1653,13 +1769,14 @@
       "tickets": [
         "S6-B3122"
       ],
-      "live_campaign_tickets": [
-        "S6-B3122"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3122"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -1679,13 +1796,14 @@
       "tickets": [
         "S6-B3122"
       ],
-      "live_campaign_tickets": [
-        "S6-B3122"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3122"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -1708,6 +1826,7 @@
         "S6-B2806"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "PRUNED-DUPLICATE"
     },
     {
@@ -1727,6 +1846,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "CLOSED-NEGATIVE"
     },
     {
@@ -1747,6 +1867,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "CLOSED-NEGATIVE"
     },
     {
@@ -1764,6 +1885,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1781,6 +1903,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1798,6 +1921,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1815,6 +1939,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1832,6 +1957,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1849,6 +1975,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1870,6 +1997,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -1887,6 +2015,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1904,6 +2033,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "DISABLED"
     },
     {
@@ -1925,6 +2055,7 @@
         "S6-B2418"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -1942,6 +2073,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "DISABLED"
     },
     {
@@ -1966,7 +2098,10 @@
         "S6-B2669"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_MIRROR"
+      ],
+      "status": "IN-ROSTER-MIRROR"
     },
     {
       "strategy": "mfi_oversold",
@@ -1983,6 +2118,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -1994,7 +2130,7 @@
       "projected_step1_fires": 22.4,
       "projected_current_gate": 22.4,
       "reopen_candidate": false,
-      "stream": "LOOSEN",
+      "stream": "-",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2644c",
@@ -2008,7 +2144,10 @@
         "S6-B2651"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_CELL"
+      ],
+      "status": "IN-ROSTER-FUNNEL"
     },
     {
       "strategy": "mmbm_long",
@@ -2029,6 +2168,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -2046,6 +2186,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2063,6 +2204,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2087,6 +2229,7 @@
         "S6-B2845"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -2111,6 +2254,7 @@
         "S6-B3116b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -2131,6 +2275,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2151,6 +2296,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2173,6 +2319,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2195,6 +2342,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2215,6 +2363,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2235,6 +2384,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2252,6 +2402,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2269,6 +2420,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2286,6 +2438,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2311,6 +2464,7 @@
         "S6-B3116b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -2332,6 +2486,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2349,6 +2504,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2366,6 +2522,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2391,6 +2548,7 @@
         "S6-B2645b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "CONTAINED-IN-REPRESENTATIVE"
     },
     {
@@ -2416,6 +2574,9 @@
         "S6-B2633"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -2439,6 +2600,7 @@
         "S6-B2645b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -2455,18 +2617,22 @@
       "tickets": [
         "S6-B2420",
         "S6-B2633",
-        "S6-B2644a"
+        "S6-B2638d"
       ],
       "live_campaign_tickets": [
-        "S6-B2420"
+        "S6-B2420",
+        "S6-B2638d"
       ],
       "mention_tickets": [
         "S6-B2420",
         "S6-B2633",
-        "S6-B2644a"
+        "S6-B2638d"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "roster_roles": [
+        "ADMISSION_MIRROR"
+      ],
+      "status": "IN-ROSTER-MIRROR"
     },
     {
       "strategy": "pead_with_insider_confirmation_long",
@@ -2489,6 +2655,7 @@
         "S6-B2649c"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -2514,6 +2681,9 @@
         "S6-B2646b"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -2531,6 +2701,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2552,6 +2723,7 @@
         "S6-B2383"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -2573,6 +2745,7 @@
         "S6-B2383"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -2590,6 +2763,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2607,6 +2781,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2626,6 +2801,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2643,6 +2819,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2660,6 +2837,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2677,6 +2855,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2688,19 +2867,28 @@
       "projected_step1_fires": 54.1,
       "projected_current_gate": 54.1,
       "reopen_candidate": false,
-      "stream": "BOTH",
+      "stream": "-",
       "tightenable_keys": {
         "vp_close_near_poc_pct": 1.0
       },
       "tickets": [
-        "S6-B2644c"
+        "S6-B2644c",
+        "S6-B3135",
+        "S6-B3135a"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3135"
+      ],
       "mention_tickets": [
-        "S6-B2644c"
+        "S6-B2644c",
+        "S6-B3135",
+        "S6-B3135a"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_CELL"
+      ],
+      "status": "IN-ROSTER-FUNNEL"
     },
     {
       "strategy": "poc_magnet_short",
@@ -2714,16 +2902,21 @@
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B2420"
+        "S6-B2420",
+        "S6-B3139q"
       ],
       "live_campaign_tickets": [
         "S6-B2420"
       ],
       "mention_tickets": [
-        "S6-B2420"
+        "S6-B2420",
+        "S6-B3139q"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_MIRROR"
+      ],
+      "status": "IN-ROSTER-MIRROR"
     },
     {
       "strategy": "pocket_pivot_long",
@@ -2740,6 +2933,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2757,6 +2951,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2774,6 +2969,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2791,6 +2987,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2808,6 +3005,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2825,6 +3023,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2842,6 +3041,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2859,6 +3059,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2878,6 +3079,7 @@
         "S6-B1617b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2895,6 +3097,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2912,6 +3115,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2929,6 +3133,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2950,6 +3155,7 @@
         "S6-B2418"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -2967,6 +3173,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -2984,6 +3191,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3001,6 +3209,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3020,6 +3229,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3037,6 +3247,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3058,6 +3269,7 @@
         "S6-B2383"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3083,6 +3295,7 @@
         "S6-B2422"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3108,6 +3321,7 @@
         "S6-B2649"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3127,6 +3341,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3144,6 +3359,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3167,6 +3383,7 @@
         "S6-B2872"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3184,6 +3401,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3201,6 +3419,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3222,6 +3441,7 @@
         "S6-B2756"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3233,7 +3453,7 @@
       "projected_step1_fires": 62.7,
       "projected_current_gate": 62.7,
       "reopen_candidate": false,
-      "stream": "LOOSEN",
+      "stream": "-",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2420",
@@ -3249,7 +3469,11 @@
         "S6-B2756"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_CELL",
+        "DUAL_SELF"
+      ],
+      "status": "IN-ROSTER-FUNNEL"
     },
     {
       "strategy": "smc_breaker_block_long",
@@ -3274,6 +3498,9 @@
         "S6-B1520a"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -3285,7 +3512,7 @@
       "projected_step1_fires": 146.9,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
-      "stream": "LOOSEN",
+      "stream": "-",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2413",
@@ -3299,7 +3526,10 @@
         "S6-B2417"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "roster_roles": [
+        "ADMISSION_MIRROR"
+      ],
+      "status": "DONE-OWNER-CLOSED"
     },
     {
       "strategy": "smc_choch_reversal",
@@ -3322,6 +3552,7 @@
         "S6-B2763"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3345,6 +3576,7 @@
         "S6-B2763"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3362,6 +3594,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3387,6 +3620,7 @@
         "S6-B2931"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3412,6 +3646,7 @@
         "S6-B2833"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3433,6 +3668,7 @@
         "S6-B2737"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3450,6 +3686,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3475,6 +3712,7 @@
         "S6-B2752e"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3500,6 +3738,7 @@
         "S6-B2693"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3521,6 +3760,7 @@
         "S6-B1617b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3542,6 +3782,7 @@
         "S6-B1995b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3569,6 +3810,7 @@
         "S6-B2692"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3591,6 +3833,7 @@
         "S6-B2756"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3612,6 +3855,7 @@
         "S6-B2756"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3635,6 +3879,7 @@
         "S6-B2763"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3656,6 +3901,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -3677,6 +3923,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "DISABLED"
     },
     {
@@ -3694,6 +3941,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3711,6 +3959,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3730,6 +3979,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3749,6 +3999,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3766,6 +4017,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3783,6 +4035,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3802,6 +4055,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3819,6 +4073,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3830,23 +4085,28 @@
       "projected_step1_fires": 153.9,
       "projected_current_gate": 153.9,
       "reopen_candidate": false,
-      "stream": "TIGHTEN",
+      "stream": "-",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
       "tickets": [
+        "S6-B2420",
         "S6-B2838",
-        "S6-B2850",
-        "S6-B2861"
+        "S6-B2850"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
       "mention_tickets": [
+        "S6-B2420",
         "S6-B2838",
-        "S6-B2850",
-        "S6-B2861"
+        "S6-B2850"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "roster_roles": [
+        "ADMISSION_MIRROR"
+      ],
+      "status": "DONE-OWNER-CLOSED"
     },
     {
       "strategy": "three_white_soldiers",
@@ -3863,18 +4123,22 @@
       },
       "tickets": [
         "S6-B2178c",
-        "S6-B2842",
-        "S6-B2850"
+        "S6-B2420",
+        "S6-B2842"
       ],
       "live_campaign_tickets": [
-        "S6-B2178c"
+        "S6-B2178c",
+        "S6-B2420"
       ],
       "mention_tickets": [
         "S6-B2178c",
-        "S6-B2842",
-        "S6-B2850"
+        "S6-B2420",
+        "S6-B2842"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -3886,7 +4150,7 @@
       "projected_step1_fires": 31.5,
       "projected_current_gate": 31.5,
       "reopen_candidate": false,
-      "stream": "LOOSEN",
+      "stream": "-",
       "tightenable_keys": {},
       "tickets": [
         "S6-B2644c",
@@ -3900,7 +4164,10 @@
         "S6-B2651"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_CELL"
+      ],
+      "status": "IN-ROSTER-FUNNEL"
     },
     {
       "strategy": "totm_short",
@@ -3924,7 +4191,10 @@
         "S6-B2669"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_MIRROR"
+      ],
+      "status": "IN-ROSTER-MIRROR"
     },
     {
       "strategy": "triangle_ascending_long",
@@ -3941,6 +4211,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3958,6 +4229,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3975,6 +4247,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -3992,6 +4265,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4009,6 +4283,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4034,6 +4309,7 @@
         "S6-B2931"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -4053,6 +4329,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4070,6 +4347,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4089,6 +4367,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4110,6 +4389,7 @@
         "S6-B2810b"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -4127,6 +4407,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4144,6 +4425,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4161,6 +4443,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4180,6 +4463,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4199,6 +4483,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4218,6 +4503,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4235,6 +4521,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4260,6 +4547,7 @@
         "S6-B3117a"
       ],
       "admitted": false,
+      "roster_roles": [],
       "status": "STALLED-CAMPAIGN"
     },
     {
@@ -4279,6 +4567,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4304,7 +4593,10 @@
         "S6-B2649"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_MIRROR"
+      ],
+      "status": "IN-ROSTER-MIRROR"
     },
     {
       "strategy": "xs_combined_momentum_low_ivol",
@@ -4315,19 +4607,28 @@
       "projected_step1_fires": 19.5,
       "projected_current_gate": 19.5,
       "reopen_candidate": false,
-      "stream": "BOTH",
+      "stream": "-",
       "tightenable_keys": {
         "xs_ivol_decile": 1.0
       },
       "tickets": [
-        "S6-B2644c"
+        "S6-B2644c",
+        "S6-B3135",
+        "S6-B3135a"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3135"
+      ],
       "mention_tickets": [
-        "S6-B2644c"
+        "S6-B2644c",
+        "S6-B3135",
+        "S6-B3135a"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_CELL"
+      ],
+      "status": "IN-ROSTER-FUNNEL"
     },
     {
       "strategy": "xs_low_beta_long",
@@ -4344,6 +4645,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4361,14 +4663,15 @@
         "S6-B2674a",
         "S6-B3122"
       ],
-      "live_campaign_tickets": [
-        "S6-B3122"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2674a",
         "S6-B3122"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -4383,16 +4686,25 @@
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B2420"
+        "S6-B2420",
+        "S6-B3135",
+        "S6-B3135a"
       ],
       "live_campaign_tickets": [
-        "S6-B2420"
+        "S6-B2420",
+        "S6-B3135"
       ],
       "mention_tickets": [
-        "S6-B2420"
+        "S6-B2420",
+        "S6-B3135",
+        "S6-B3135a"
       ],
       "admitted": false,
-      "status": "IN-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_MIRROR",
+        "ADMISSION_MIRROR"
+      ],
+      "status": "IN-ROSTER-MIRROR"
     },
     {
       "strategy": "xs_momentum_quality_combined",
@@ -4409,6 +4721,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     },
     {
@@ -4423,17 +4736,22 @@
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [
+        "S6-B2420",
         "S6-B2644c",
-        "S6-B2649",
-        "S6-B2668a"
+        "S6-B2649"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B2420"
+      ],
       "mention_tickets": [
         "S6-B1589b",
         "S6-B1772b",
-        "S6-B2644c"
+        "S6-B2420"
       ],
       "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
       "status": "DONE-ADMITTED"
     },
     {
@@ -4445,19 +4763,26 @@
       "projected_step1_fires": 60.5,
       "projected_current_gate": 60.5,
       "reopen_candidate": false,
-      "stream": "LOOSEN",
+      "stream": "-",
       "tightenable_keys": {},
       "tickets": [
-        "S6-B2418"
+        "S6-B2418",
+        "S6-B3135",
+        "S6-B3135a"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3135"
+      ],
       "mention_tickets": [
         "S6-B1589b",
         "S6-B1593d",
         "S6-B1595c"
       ],
       "admitted": false,
-      "status": "STALLED-CAMPAIGN"
+      "roster_roles": [
+        "FUNNEL_CELL"
+      ],
+      "status": "IN-ROSTER-FUNNEL"
     },
     {
       "strategy": "xs_quality_top_quintile_long",
@@ -4474,6 +4799,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [],
       "admitted": false,
+      "roster_roles": [],
       "status": "NOT-STARTED"
     }
   ]

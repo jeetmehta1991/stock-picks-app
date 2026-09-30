@@ -47,7 +47,21 @@
     "dual_self": [
       "smc_bos_retest_entry"
     ],
-    "needs_creation": []
+    "needs_creation": [],
+    "admissions_long_only_data": [
+      "pead_with_smart_money_long",
+      "institutional_breakout_confirmation_long",
+      "institutional_committed_growth_long",
+      "institutional_high_conviction_long",
+      "institutional_multi_quarter_persistence_long",
+      "institutional_oversold_long",
+      "institutional_persistence_oversold_long",
+      "institutional_recent_init_momentum_long",
+      "institutional_recent_init_volume_long",
+      "institutional_strong_conviction_long",
+      "xs_low_beta_with_smart_money_long"
+    ],
+    "admissions_needs_creation": []
   },
   "roster": [
     {
@@ -203,9 +217,11 @@
       "mirror_status": "REGISTERED",
       "mirror": "mfi_overbought_short",
       "asym_signals": [
+        "cfo_buy",
         "insider_cluster_active",
         "institutional_buy",
-        "institutional_strong_buy"
+        "institutional_strong_buy",
+        "large_dollar_buy"
       ],
       "mirror_registered": true,
       "margin": 0.01
@@ -3702,9 +3718,11 @@
       "mirror_status": "REGISTERED",
       "mirror": "mfi_overbought_short",
       "asym_signals": [
+        "cfo_buy",
         "insider_cluster_active",
         "institutional_buy",
-        "institutional_strong_buy"
+        "institutional_strong_buy",
+        "large_dollar_buy"
       ],
       "mirror_registered": true,
       "margin": 0.01

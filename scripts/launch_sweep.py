@@ -96,7 +96,14 @@ DRIFT_FREE_PREFIXES = (".claude/", "archive/", ".archive/", "backtest/tests/",
 AUDIT_ARTIFACT_EXT = ("md", "json", "jsonl", "log", "stdout", "csv", "html",
                       "png", "svg")
 LEG_READ_FILES: frozenset = frozenset()
+# B3139 (batch 4): the admission refusal now reads the FROZEN closed set
+# and the roster sidecar (phase1b_membership via producer_variant_table), so
+# the per-leg gate opens two more files of the same POLICY kind - re-read at
+# every leg so an admission of the wave's own strategy stops the wave, while
+# freezing them would let an unrelated admission halt a wave (L866's shape).
 LEG_POLICY_FILES = frozenset({"PHASE_1B_ROSTER.md",
+                              "output_audit/b1453_phase_1b_roster.json",
+                              "output_audit/phase1b_closed_set_frozen.json",
                               "output_audit/phase_1b_step2_admissions.json"})
 # The engine WRITES tracked files under these roots during a leg - its OHLCV
 # cache index (backtest/data/cache.py _save_index, e.g. when an index entry is

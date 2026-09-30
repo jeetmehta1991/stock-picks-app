@@ -5,9 +5,11 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit d1e93ff7f at 2026-09-29 01:49:11 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 715abb8e6 at 2026-09-30 07:35:52 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
+
+**Phase 1B roster: 31 distinct = 7 graded funnel cells + 15 Step-2 admissions + 9 short mirrors (22 long / 9 short)** - read from scripts/phase1b_membership.py (S6-B3135). 'DONE - admitted' below counts the Step-2 admissions only; the funnel cells and mirrors carry their own rows.
 
 ## Totals
 
@@ -15,9 +17,12 @@
 |---|---|
 | registered strategies | 225 |
 | DONE - admitted to Phase 1B | 15 |
-| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 8 |
-| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 49 |
-| NOT-STARTED | 137 |
+| IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | 7 |
+| IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded, with Step 2 scheduled (S6-B2420) | 7 |
+| DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 2 |
+| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 1 |
+| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 42 |
+| NOT-STARTED | 135 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
 | CONTAINED-IN-REPRESENTATIVE (b2647) | 1 |
@@ -28,9 +33,9 @@
 
 | stream | meaning | count |
 |---|---|---|
-| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 11 |
-| BOTH | tightenable AND fire-starved | 29 |
-| LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 127 |
+| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 10 |
+| BOTH | tightenable AND fire-starved | 27 |
+| LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 121 |
 | NONE | no numeric knob and not starved - a BREADTH candidate | 27 |
 
 ## Tightening candidates by family - largest families first
@@ -41,19 +46,18 @@
 | momentum | 5 |
 | mean_reversion | 4 |
 | confluence | 4 |
-| candle | 4 |
+| candle | 3 |
 | smc | 3 |
 | pivot | 2 |
-| volume_profile | 2 |
 | pairs | 2 |
 | chart_pattern | 1 |
 | breakout | 1 |
 | event_driven | 1 |
+| volume_profile | 1 |
 | trend | 1 |
 | cross_asset | 1 |
 | ict | 1 |
 | multi_timeframe | 1 |
-| factor | 1 |
 
 ## Caveats that bound every number above
 
@@ -62,6 +66,8 @@
 - `survives_pct` calls the **live strategy function** on each fire's persisted signals (S6-B2814). A **lower bound** where a gate leg reads an unpersisted key; an erroring row counts as non-survival; `-` only for zero-fire strategies.
 - `IN-CAMPAIGN` requires a campaign-vocabulary token in the row naming the strategy (S6-B2810c) - **a bare mention is not a campaign** - AND a naming ticket whose CURRENT ledger state is non-terminal (B2829). The vocabulary is a heuristic; a borderline row is settled by reading the ticket, and `mention_tickets` in the JSON keeps the unfiltered list.
 - `STALLED-CAMPAIGN` (B2833, owner-approved 2026-09-15): campaign tickets exist but every one is terminal - campaigned, concluded mid-path (e.g. Step-1 done, no Step-2 word). **Not terminal**: the row keeps its stream lane; the history is preserved rather than erased into NOT-STARTED. It inherits the vocabulary heuristic WITHOUT the liveness mask, so a builder-audit ticket naming a strategy as an EXAMPLE (S6-B2810b/c, S6-B2830) can stall it falsely - settle a surprising row by reading its tickets.
+- `IN-ROSTER-FUNNEL` / `IN-ROSTER-MIRROR` (S6-B3135): read from scripts/phase1b_membership.py, the one reader of the Phase 1B roster. A funnel cell is terminal like an admission and closed to re-testing like one (owner 2026-09-29); a mirror is ungraded and keeps its lane while the owner has Step 2 scheduled on it (S6-B2420).
+- `DONE-OWNER-CLOSED` (S6-B3135a, owner 2026-09-29): a campaign the owner closed outright (output_audit/owner_campaign_closures.json, each with the owner's words). Terminal; never auto-reopened. A closed mirror stays ON the Phase 1B roster - the closure ends its campaign, not its membership.
 
 ## Per strategy
 
@@ -94,7 +100,7 @@
 | avwap_252_breakout | vwap | 2294 | 210.8 |  | 100.0% | NONE | STALLED-CAMPAIGN |
 | morning_star | candle | 2280 | 96.8 | YES | 46.2% | BOTH | STALLED-CAMPAIGN |
 | institutional_recent_init_momentum_long | institutional_persistence | 2268 | 208.5 |  | 100.0% | - | DONE-ADMITTED |
-| pead_short_negative_yoy_growth | event_driven | 2215 | 203.6 | YES | 100.0% | NONE | IN-CAMPAIGN |
+| pead_short_negative_yoy_growth | event_driven | 2215 | 203.6 | YES | 100.0% | NONE | IN-ROSTER-MIRROR |
 | break_retest_volume | breakout | 2164 | 98.6 | YES | 49.6% | LOOSEN | NOT-STARTED |
 | pead_long_high_yoy_growth_only | event_driven | 2116 | 194.5 |  | 100.0% | - | DONE-ADMITTED |
 | institutional_persistent_holders_long | institutional_persistence | 1955 | 179.7 |  | 100.0% | - | PRUNED-DUPLICATE |
@@ -107,18 +113,18 @@
 | institutional_strong_conviction_long | institutional_persistence | 1826 | 167.8 |  | 100.0% | - | DONE-ADMITTED |
 | naked_poc_retest_long | volume_profile | 1788 | 164.3 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | cpr_narrow_momentum_short | confluence | 1696 | 155.9 |  | 100.0% | TIGHTEN | NOT-STARTED |
-| three_black_crows_short | candle | 1674 | 153.9 | YES | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
+| three_black_crows_short | candle | 1674 | 153.9 | YES | 100.0% | - | DONE-OWNER-CLOSED |
 | parabolic_sar_flip_short | trend | 1672 | 153.7 |  | 100.0% | NONE | NOT-STARTED |
-| bollinger_lower | mean_reversion | 1622 | 149.1 | YES | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
+| bollinger_lower | mean_reversion | 1622 | 149.1 | YES | 100.0% | TIGHTEN | IN-CAMPAIGN |
 | parabolic_sar_flip | trend | 1618 | 148.7 |  | 100.0% | NONE | NOT-STARTED |
-| smc_breaker_block_short | smc | 1598 | 0.0 | YES | 0.0% | LOOSEN | STALLED-CAMPAIGN |
+| smc_breaker_block_short | smc | 1598 | 0.0 | YES | 0.0% | - | DONE-OWNER-CLOSED |
 | three_white_soldiers | candle | 1596 | 146.7 |  | 100.0% | - | DONE-ADMITTED |
 | ppo_crossover | momentum | 1588 | 146.0 |  | 100.0% | NONE | NOT-STARTED |
 | macd_crossover_short | momentum | 1524 | 140.1 |  | 100.0% | - | DISABLED |
 | volume_spike_breakout | breakout | 1500 | 137.9 |  | 100.0% | NONE | NOT-STARTED |
 | prev_day_high_break | pivot | 1424 | 58.5 | YES | 44.7% | LOOSEN | NOT-STARTED |
 | institutional_volume_confirmation_long | - | 1387 | 98.3 | YES | 77.1% | - | PRUNED-DUPLICATE |
-| xs_momentum_bottom_decile_short | factor | 1384 | 127.2 | YES | 100.0% | NONE | IN-CAMPAIGN |
+| xs_momentum_bottom_decile_short | factor | 1384 | 127.2 | YES | 100.0% | NONE | IN-ROSTER-MIRROR |
 | smc_order_block_bounce | smc | 1340 | 0.0 | YES | 0.0% | BOTH | STALLED-CAMPAIGN |
 | mmbm_long | ict | 1337 | 122.9 |  | 100.0% | NONE | STALLED-CAMPAIGN |
 | avwap_50_reclaim | vwap | 1336 | 105.7 | YES | 86.1% | NONE | STALLED-CAMPAIGN |
@@ -156,14 +162,14 @@
 | williams_stoch_dual | confluence | 750 | 68.9 |  | 100.0% | BOTH | NOT-STARTED |
 | po3_bullish | - | 731 | 67.2 |  | 100.0% | LOOSEN | NOT-STARTED |
 | institutional_persistence_oversold_long | institutional_persistence | 716 | 65.8 |  | 100.0% | - | DONE-ADMITTED |
-| smc_bos_retest_entry | smc | 682 | 62.7 |  | 100.0% | LOOSEN | IN-CAMPAIGN |
+| smc_bos_retest_entry | smc | 682 | 62.7 |  | 100.0% | - | IN-ROSTER-FUNNEL |
 | inside_bar_breakout | breakout | 677 | 62.2 |  | 100.0% | BOTH | NOT-STARTED |
-| xs_momentum_with_smart_money_long | smart_money_sleeve | 658 | 60.5 | YES | 100.0% | LOOSEN | STALLED-CAMPAIGN |
+| xs_momentum_with_smart_money_long | smart_money_sleeve | 658 | 60.5 | YES | 100.0% | - | IN-ROSTER-FUNNEL |
 | pead_with_smart_money_long | smart_money_sleeve | 656 | 60.3 |  | 100.0% | - | DONE-ADMITTED |
 | institutional_breakout_confirmation_long | - | 642 | 59.0 |  | 100.0% | - | DONE-ADMITTED |
 | week_opening_gap_fill_down | ict | 633 | 58.2 |  | 100.0% | BOTH | NOT-STARTED |
 | ultimate_oscillator | momentum | 592 | 54.4 |  | 100.0% | BOTH | NOT-STARTED |
-| poc_magnet_long | volume_profile | 589 | 54.1 |  | 100.0% | BOTH | STALLED-CAMPAIGN |
+| poc_magnet_long | volume_profile | 589 | 54.1 |  | 100.0% | - | IN-ROSTER-FUNNEL |
 | prev_day_low_bounce | pivot | 577 | 53.0 |  | 100.0% | LOOSEN | NOT-STARTED |
 | smc_choch_reversal | smc | 551 | 50.6 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | rsi_volume_200ema | confluence | 548 | 50.4 |  | 100.0% | BOTH | NOT-STARTED |
@@ -177,14 +183,14 @@
 | pivot_s1_bounce | pivot | 458 | 42.1 |  | 100.0% | LOOSEN | NOT-STARTED |
 | xs_low_beta_with_smart_money_long | smart_money_sleeve | 452 | 30.9 | YES | 74.3% | - | DONE-ADMITTED |
 | smc_premium_short | smc | 433 | 39.8 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
-| 52w_low_breakdown_pullback_short | breakout | 427 | 39.2 | YES | 100.0% | LOOSEN | IN-CAMPAIGN |
+| 52w_low_breakdown_pullback_short | breakout | 427 | 39.2 | YES | 100.0% | LOOSEN | IN-ROSTER-MIRROR |
 | golden_cross_20_50 | trend | 413 | 38.0 |  | 100.0% | LOOSEN | NOT-STARTED |
 | institutional_oversold_long | - | 386 | 35.5 |  | 100.0% | - | DONE-ADMITTED |
 | smc_equal_lows_sweep_long | smc | 382 | 35.1 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | value_area_breakout_long | volume_profile | 375 | 34.5 |  | 100.0% | LOOSEN | NOT-STARTED |
 | inverted_cup_and_handle_short | chart_pattern | 366 | 33.6 |  | 100.0% | LOOSEN | NOT-STARTED |
 | news_sentiment_shift_long | news_sentiment | 357 | 32.8 |  | 100.0% | BOTH | NOT-STARTED |
-| totm_long | calendar | 343 | 31.5 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
+| totm_long | calendar | 343 | 31.5 |  | 100.0% | - | IN-ROSTER-FUNNEL |
 | smc_discount_long | smc | 333 | 30.6 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | triangle_ascending_long | chart_pattern | 330 | 30.3 |  | 100.0% | LOOSEN | NOT-STARTED |
 | htf_aligned_breakout_long | multi_timeframe | 326 | 30.0 |  | 100.0% | LOOSEN | NOT-STARTED |
@@ -199,16 +205,16 @@
 | smc_ote_short | smc | 262 | 24.1 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | xs_momentum_top_decile | factor | 255 | 23.4 |  | 100.0% | - | DONE-ADMITTED |
 | shooting_star_short | candle | 250 | 23.0 |  | 100.0% | BOTH | STALLED-CAMPAIGN |
-| mfi_oversold_with_smart_money_long | smart_money_sleeve | 244 | 22.4 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
+| mfi_oversold_with_smart_money_long | smart_money_sleeve | 244 | 22.4 |  | 100.0% | - | IN-ROSTER-FUNNEL |
 | doji_at_support | candle | 232 | 21.3 |  | 100.0% | LOOSEN | NOT-STARTED |
 | smc_ote_long | smc | 231 | 21.2 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | camarilla_s3_bounce | pivot | 228 | 21.0 |  | 100.0% | BOTH | NOT-STARTED |
-| xs_combined_momentum_low_ivol | factor | 212 | 19.5 |  | 100.0% | BOTH | STALLED-CAMPAIGN |
+| xs_combined_momentum_low_ivol | factor | 212 | 19.5 |  | 100.0% | - | IN-ROSTER-FUNNEL |
 | 52w_high_breakout_with_smart_money_vol_below_long | smart_money_sleeve | 203 | 18.7 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | ichimoku_cloud_breakdown | trend | 197 | 7.8 | YES | 43.1% | LOOSEN | NOT-STARTED |
 | cup_and_handle_long | chart_pattern | 164 | 15.1 |  | 100.0% | LOOSEN | NOT-STARTED |
 | xs_momentum_quality_combined | factor | 163 | 15.0 |  | 100.0% | LOOSEN | NOT-STARTED |
-| 52w_high_breakout_pullback_long | breakout | 150 | 13.8 |  | 100.0% | LOOSEN | NOT-STARTED |
+| 52w_high_breakout_pullback_long | breakout | 150 | 13.8 |  | 100.0% | - | IN-ROSTER-FUNNEL |
 | head_and_shoulders_bottom_long | chart_pattern | 146 | 13.4 |  | 100.0% | LOOSEN | NOT-STARTED |
 | pead_long | event_driven | 140 | 12.9 |  | 100.0% | - | CONTAINED-IN-REPRESENTATIVE |
 | bollinger_upper_short | mean_reversion | 130 | 11.9 |  | 100.0% | BOTH | STALLED-CAMPAIGN |
@@ -271,14 +277,14 @@
 | pivot_s3_capitulation | pivot | 3 | 0.3 |  | 100.0% | LOOSEN | NOT-STARTED |
 | january_effect_small_cap_long | calendar | 1 | 0.1 |  | 100.0% | LOOSEN | NOT-STARTED |
 | news_reversal_long | news_sentiment | 1 | 0.1 |  | 100.0% | BOTH | NOT-STARTED |
-| consec_downdays_quality_long | mean_reversion | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
+| consec_downdays_quality_long | mean_reversion | 0 | 0.0 |  | - | LOOSEN | STALLED-CAMPAIGN |
 | earnings_avwap_reclaim_long | vwap | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | failed_breakout_2b_short | breakout | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | gap_and_go_long | momentum | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | gold_silver_risk_off_long | cross_asset | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
-| mfi_overbought_short | mean_reversion | 0 | 0.0 |  | - | LOOSEN | IN-CAMPAIGN |
+| mfi_overbought_short | mean_reversion | 0 | 0.0 |  | - | LOOSEN | IN-ROSTER-MIRROR |
 | news_sentiment_short | news_sentiment | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
-| poc_magnet_short | volume_profile | 0 | 0.0 |  | - | LOOSEN | IN-CAMPAIGN |
+| poc_magnet_short | volume_profile | 0 | 0.0 |  | - | LOOSEN | IN-ROSTER-MIRROR |
 | pocket_pivot_long | momentum | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | rs_line_sector_leader_long | momentum | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | rsi_overbought_short | mean_reversion | 0 | 0.0 |  | - | LOOSEN | STALLED-CAMPAIGN |
@@ -286,9 +292,9 @@
 | short_borrow_trap_avoid | smart_money_sleeve | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | smc_equal_highs_bos_short | smc | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | squeeze_setup_long | smart_money_sleeve | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
-| totm_short | calendar | 0 | 0.0 |  | - | LOOSEN | IN-CAMPAIGN |
+| totm_short | calendar | 0 | 0.0 |  | - | LOOSEN | IN-ROSTER-MIRROR |
 | turtle_soup_bos_short | ict | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | vwap_extension_momentum_long | momentum | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | vwap_extension_momentum_short | momentum | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
 | weekly_bias_pullback_short | multi_timeframe | 0 | 0.0 |  | - | LOOSEN | NOT-STARTED |
-| xs_combined_momentum_high_ivol_short | factor | 0 | 0.0 |  | - | LOOSEN | IN-CAMPAIGN |
+| xs_combined_momentum_high_ivol_short | factor | 0 | 0.0 |  | - | LOOSEN | IN-ROSTER-MIRROR |

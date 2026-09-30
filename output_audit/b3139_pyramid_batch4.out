@@ -1,0 +1,194 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+..............................................s......................... [ 39%]
+....................s.................................................s. [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................F............................... [ 78%]
+........................................................................ [ 82%]
+...F....................F............................................... [ 86%]
+........................................................................ [ 91%]
+........................................................................ [ 95%]
+........................................................................ [ 99%]
+.                                                                        [100%]
+================================== FAILURES ===================================
+_____________ test_b2836_table_a_directory_is_complete_and_honest _____________
+
+    def test_b2836_table_a_directory_is_complete_and_honest():
+        """B2836 (owner-directed 2026-09-16): the strategy_optimisation/ Table A
+        charter. The expected roster is DERIVED from the stamped status view (the
+        defining source, L697), never hand-listed; the generator's two judgment
+        mechanisms are pinned in both directions (#226)."""
+        import json
+        import sys
+        from pathlib import Path as _P
+        import pandas as pd
+        root = _P(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import build_table_a as bta
+    
+        view = json.loads((root / "output_audit" /
+                           "strategy_optimisation_status.json")
+                          .read_text(encoding="utf-8"))
+        tighten = {r["strategy"] for r in view["rows"] if r["stream"] == "TIGHTEN"}
+        d = root / "strategy_optimisation" / "tighten"
+        files = {p.stem for p in d.glob("*.md")}
+>       assert files == tighten, (files ^ tighten,
+                                  "one Table A file per TIGHTEN row, exactly")
+E       AssertionError: ({'three_black_crows_short'}, 'one Table A file per TIGHTEN row, exactly')
+E       assert {'bollinger_l...on_long', ...} == {'bollinger_l...on_long', ...}
+E         
+E         Extra items in the left set:
+E         'three_black_crows_short'
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:38846: AssertionError
+___ test_b3099_every_file_the_leg_gate_opens_is_refused_or_declared_policy ____
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-2209/test_b3099_every_file_the_leg_0')
+
+    def test_b3099_every_file_the_leg_gate_opens_is_refused_or_declared_policy(tmp_path):
+        """S6-B3093a (B3099). What a leg reads is MEASURED, not listed: the real
+        prelaunch gate runs under a sys.addaudithook (scripts/leg_read_set.py) on a
+        manifest built exactly as run_wave builds one, and every repo file it opens
+        must be one drift_check refuses to see change mid-wave OR a declared POLICY
+        file the gate re-reads at every leg (LEG_POLICY_FILES). MEASURED B3099: the
+        gate opens PHASE_1B_ROSTER.md and output_audit/phase_1b_step2_admissions.json
+        to refuse an admitted strategy - re-evaluated per leg, so an unrelated
+        admission must not halt a wave (L866's shape) - and does NOT open the
+        runbook, which a first draft froze by reasoning. The day the gate opens a
+        new file this test fails until it is classified; a declared policy file the
+        gate stops opening fails it too (#279, both directions)."""
+        import json as _json
+        import subprocess
+        import sys as _sys
+        root = _b2520_scripts_on_path()
+        import launch_sweep as ls
+        import run_wave as rw
+        spec = rw.resolve_ruled_scope({
+            "wave": "zz_b3099_legread", "step": 1, "step1_cube": True,
+            "strategy_subset": "output_audit/_subset_three_white_soldiers.txt",
+            "leg_cap_hours": 4.5, "max_legs": 3, "pool_workers": 4,
+            "allow_engine_drift": False, "resume": False, "cube_riders": None,
+            "fires_at_production": 199,
+            # B3115: same override as the b2945 fixture - tws is admitted and
+            # this test measures the leg-gate READ SET, not the refusal.
+            "owner_override_retest_admitted": {
+                "three_white_soldiers": "B3115 pin fixture - gate-plumbing "
+                                        "probe, not a retest word"},
+            "arms": [{"tag": "t", "env": {"CANDLE_N_BARS": "3"}}]})
+        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(root),
+                              capture_output=True, text=True).stdout.strip()
+        mp = rw.build_manifest(spec, spec["arms"][0], tmp_path / "out", head)
+        out = tmp_path / "reads.json"
+        r = subprocess.run([_sys.executable, str(root / "scripts" / "leg_read_set.py"),
+                            "--manifest", str(mp), "--out", str(out)],
+                           cwd=str(root), capture_output=True, text=True, timeout=600)
+        assert r.returncode == 0, r.stdout + r.stderr
+        doc = _json.loads(out.read_text(encoding="utf-8"))
+        assert doc["exit"] == 0, ("the gate must PASS so its whole path runs", doc)
+        assert doc["python_files"] > 50 and doc["data_files"], doc
+        m = _json.loads(mp.read_text(encoding="utf-8"))
+        inputs = {m["tickers"]["file"], *m["input_sha256"]}
+        leg = ls.leg_code_closure()
+        loose = [p for p in doc["data_files"] if ls.drift_allowed(p, inputs, leg)
+                 and p not in ls.LEG_POLICY_FILES]
+>       assert not loose, (f"the per-leg gate OPENS {loose} but drift_check would let "
+                           "them change mid-wave - add each to LEG_READ_FILES (a "
+                           "computation input) or LEG_POLICY_FILES (re-read per leg)")
+E       AssertionError: the per-leg gate OPENS ['output_audit/b1453_phase_1b_roster.json', 'output_audit/phase1b_closed_set_frozen.json'] but drift_check would let them change mid-wave - add each to LEG_READ_FILES (a computation input) or LEG_POLICY_FILES (re-read per leg)
+E       assert not ['output_audit/b1453_phase_1b_roster.json', 'output_audit/phase1b_closed_set_frozen.json']
+
+backtest\tests\test_unit.py:45285: AssertionError
+---------------------------- Captured stdout call -----------------------------
+phase table step 1: window 2024-05-05..2025-05-05, universe 200 (table sha 93e3652773ffc7fe)
+_________ test_b3106_preflight_c1_reads_strings_by_token_not_by_regex _________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-2209/test_b3106_preflight_c1_reads_0')
+
+    def test_b3106_preflight_c1_reads_strings_by_token_not_by_regex(tmp_path):
+        """S6-B3096i (B3106): C1 (#75) paired triple-quote sequences with a regex
+        split, so a triple quote INSIDE an ordinary string flipped its parity - C1
+        then scanned docstrings as code and skipped code as docstring (MEASURED
+        B3096: it refused a section sign inside a docstring while missing real
+        non-ASCII in string literals). It now blanks triple-quoted strings found
+        by TOKENIZE, in place (offsets and lines unchanged, L582), and fails
+        closed with a named violation when a file cannot be tokenized. MEASURED
+        B3106 over 1,104 tracked .py files: 0 tokenize failures; the corrected
+        check newly flagged 1 file with 2 characters (two fragment pins quoting
+        the skill verbatim), converted to chr() in the same batch (rule 9b)."""
+        import sys
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import preflight as pf
+        q3 = chr(34) * 3
+        e = chr(0xe9)
+        # the line-15543 fixture shape: a triple quote inside a single-quoted string
+        src = ("x = '" + q3 + "'\n" + "y = " + chr(34) + "caf" + e + chr(34) + "\n"
+               + "def f():\n    " + q3 + "doc " + e + q3 + "\n    return 1\n")
+        rt = pf.runtime_text(src)
+        assert ("caf" + e) in rt, "real code after the stray triple quote must be scanned"
+        assert ("doc " + e) not in rt, "a docstring must be blanked"
+        assert len(rt) == len(src) and rt.count(chr(10)) == src.count(chr(10))
+        p = tmp_path / "m.py"
+        p.write_text(src, encoding="utf-8")
+        v = pf.check_unicode_in_runtime([p])
+        assert len(v) == 1 and "0xe9" in v[0], v
+        # a triple-quoted f-string is blanked too; a comment stays in scope
+        src2 = "z = f" + q3 + "{1} " + e + q3 + "\n# note " + chr(0x2014) + "\n"
+        rt2 = pf.runtime_text(src2)
+        assert e not in rt2 and chr(0x2014) in rt2, repr(rt2)
+        # fail CLOSED on a file tokenize cannot read, and say why
+        bad = tmp_path / "bad.py"
+        bad.write_text("x = " + q3 + "never closed\n", encoding="utf-8")
+        vb = pf.check_unicode_in_runtime([bad])
+        assert len(vb) == 1 and "cannot tokenize" in vb[0], vb
+        # the backlog is disposed: this test file itself is C1-clean
+        me = Path(__file__)
+>       assert pf.check_unicode_in_runtime([me]) == [], pf.check_unicode_in_runtime([me])
+E       AssertionError: ["C1 UNICODE | backtest\\tests\\test_unit.py: non-ASCII codepoints ['0x2020'] in runtime code (use chr(0xN) or ASCII equivalent; emoji/em-dash/arrows banned)"]
+E       assert ['C1 UNICODE ...rows banned)'] == []
+E         
+E         Left contains one more item: "C1 UNICODE | backtest\\tests\\test_unit.py: non-ASCII codepoints ['0x2020'] in runtime code (use chr(0xN) or ASCII equivalent; emoji/em-dash/arrows banned)"
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:46156: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2836_table_a_directory_is_complete_and_honest
+FAILED backtest/tests/test_unit.py::test_b3099_every_file_the_leg_gate_opens_is_refused_or_declared_policy
+FAILED backtest/tests/test_unit.py::test_b3106_preflight_c1_reads_strings_by_token_not_by_regex
+3 failed, 1651 passed, 3 skipped in 719.00s (0:11:58)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=751
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

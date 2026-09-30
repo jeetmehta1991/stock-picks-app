@@ -1,0 +1,54 @@
+{
+ "metric_code": {
+  "sha256": "3afedaeb36748b7f708ab78c90db111e822f9a403fa73161cc222be3443ce19c",
+  "members": [
+   "roster_core.load_cube",
+   "roster_core.holdout",
+   "roster_core.evaluate",
+   "walk_forward_r5_cells._sharpe",
+   "backtest.results.metrics._sortino_ratio",
+   "backtest.results.metrics._deflated_sharpe",
+   "rescore_admissions_net.net",
+   "rescore_admissions_net.score_both"
+  ],
+  "plus": "backtest.config.PASSING_CRITERIA",
+  "defined_in": "scripts/roster_core.py metric_code_fingerprint"
+ },
+ "_doc": "S6-B3134a part C (ii): one-shot LABEL re-score of the graded Phase 1B lines - each line reproduced from its own cube (#290) then scored with the entries the fixed engine would not take removed. Labels only; no line changes; any removal is a per-line owner ruling.",
+ "predicate": "backtest/data/eligibility.py (jan1_reason, daily_reason)",
+ "generated_utc": "2026-09-30T10:51:16Z",
+ "rows": [
+  {
+   "line": "smc_breaker_block_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "NOT-REPRODUCED",
+   "reason": [
+    "psr 0.939 != 1.0"
+   ],
+   "fresh": {
+    "holdout_n": 41,
+    "full_period_n": 180,
+    "net": {
+     "sharpe": 1.152,
+     "ci_lo": -0.415,
+     "psr": 0.939,
+     "profit_factor": 1.937,
+     "sortino": 1.925,
+     "n": 41,
+     "all_live_gates": false,
+     "n_gates": 5,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": false,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "identity_reproduced": true
+  }
+ ]
+}

@@ -24,10 +24,13 @@ judgement:
   stream            TIGHTEN / LOOSEN / BOTH / NONE - see classify_stream
   ticket            campaign tickets naming this strategy in EXECUTION_QUEUE.md
   admitted          present in phase_1b_step2_admissions.json
-  status            one of eight, mutually exclusive (B2825/B2833):
-                    DONE-ADMITTED / DISABLED / PRUNED-DUPLICATE /
-                    CLOSED-NEGATIVE / CONTAINED-IN-REPRESENTATIVE (terminal)
-                    IN-CAMPAIGN / STALLED-CAMPAIGN / NOT-STARTED (in lanes)
+  status            one of eleven, mutually exclusive (B2825/B2833/
+                    S6-B3135/S6-B3135a), decided by status_for():
+                    DONE-ADMITTED / IN-ROSTER-FUNNEL / DONE-OWNER-CLOSED /
+                    DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE /
+                    CONTAINED-IN-REPRESENTATIVE (terminal)
+                    IN-ROSTER-MIRROR / IN-CAMPAIGN / STALLED-CAMPAIGN /
+                    NOT-STARTED (in lanes)
 
 STREAM IS THE HONEST PART, so its rule is stated rather than implied:
   TIGHTEN  the entry condition compares a signal to a NUMBER and that magnitude
@@ -215,6 +218,114 @@ def classify_stream(tightenable: bool, projected: float) -> str:
     return "NONE"
 
 
+# S6-B3135 / S6-B3135a (owner rulings 2026-09-29): the status vocabulary.
+# TERMINAL rows leave every work lane; NEVER_REOPEN rows are owner decisions,
+# not gate verdicts, so the reopen flag (a changed entry condition) never
+# applies to them.
+TERMINAL_STATUSES = ("DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED",
+                     "DISABLED", "PRUNED-DUPLICATE", "CLOSED-NEGATIVE",
+                     "CONTAINED-IN-REPRESENTATIVE")
+NEVER_REOPEN = ("DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED")
+OWNER_CLOSURES = Path("output_audit") / "owner_campaign_closures.json"
+
+
+def load_owner_closures(root=ROOT) -> dict:
+    """{strategy: record} for campaigns the OWNER closed outright (S6-B3135a).
+    Every record carries the owner's words (verbatim, or in substance with the
+    rows that record them) and the date ruled. An unreadable or malformed
+    register RAISES - a closure list that silently read empty would reopen
+    closed campaigns (L642)."""
+    p = Path(root) / OWNER_CLOSURES
+    d = json.loads(p.read_text(encoding="utf-8"))
+    out = {}
+    for r in d.get("closures") or []:
+        s = r.get("strategy")
+        words = r.get("ruling_verbatim") or r.get("ruling_in_substance")
+        if not s or not words or not r.get("ruled"):
+            raise ValueError(f"{p}: a closure needs strategy, ruled and the "
+                             f"owner's words - got {r!r}")
+        if s in out:
+            raise ValueError(f"{p}: {s} is closed twice")
+        out[s] = r
+    return out
+
+
+def closed_populations(root=ROOT) -> dict:
+    """B2825 (owner-directed 2026-09-16, "groups must be mutually exclusive;
+    closed strategies must not count toward future work unless genuinely
+    reopened"): the ADMITTED and CLOSED populations, each from its committed
+    record - nothing here is a judgement. A pure function of `root` so the
+    precedence pin reads the very sets main() reads (L593)."""
+    root = Path(root)
+    admitted = set()
+    pruned = set()
+    adm = root / ADMISSIONS.relative_to(ROOT)
+    if adm.exists():
+        d = json.loads(adm.read_text(encoding="utf-8"))
+        rows = d if isinstance(d, list) else d.get("admissions") or d.get("rows") or []
+        admitted = {r.get("strategy") for r in rows
+                    if isinstance(r, dict) and r.get("strategy")}
+        # B2825: the Jaccard-0.70 pruned duplicates (B2666) are EVALUATED AND
+        # DISCARDED, not future work
+        pruned = {r.get("strategy")
+                  for r in (d.get("pruned_collinear_b2666") or [])
+                  if isinstance(r, dict) and r.get("strategy")}
+    closed_neg = set()      # family-pass FAIL, never re-admitted (b2628)
+    contained = set()       # contained in an admitted representative (b2647)
+    p28 = root / "output_audit" / "b2628_institutional_family_grades.json"
+    if p28.exists():
+        sib = json.loads(p28.read_text(encoding="utf-8")).get("siblings") or {}
+        closed_neg = {k for k, v in sib.items()
+                      if isinstance(v, dict)} - admitted - pruned
+    p47 = root / "output_audit" / "b2647_pead_sibling_pass.json"
+    if p47.exists():
+        for r in json.loads(p47.read_text(encoding="utf-8")).get("graded") or []:
+            if isinstance(r, dict) and "CONTAINED" in str(r.get("disposition", "")):
+                if r.get("strategy") not in admitted:
+                    contained.add(r["strategy"])
+    from backtest.config import (STRATEGIES_DISABLED_MISSING_PRODUCER,
+                                 STRATEGIES_DISABLED_DATA_SCARCITY,
+                                 STRATEGIES_DISABLED_DUPLICATE)
+    disabled = (set(STRATEGIES_DISABLED_MISSING_PRODUCER)
+                | set(STRATEGIES_DISABLED_DATA_SCARCITY)
+                | set(STRATEGIES_DISABLED_DUPLICATE))
+    return {"admitted": admitted, "pruned": pruned, "closed_neg": closed_neg,
+            "contained": contained, "disabled": disabled}
+
+
+def status_for(name: str, *, admitted, roster_status, owner_closed, disabled,
+               pruned, closed_neg, contained, live_tickets, tickets) -> str:
+    """B2825 precedence - ONE status per strategy, mutually exclusive by
+    construction; a terminal disposition beats a campaign mention.
+    S6-B3135a: an owner-closed campaign (DONE-OWNER-CLOSED) outranks every
+    lane, the roster-mirror lane included - a mirror stays IN-ROSTER-MIRROR
+    (non-terminal) only while the owner has work scheduled on it (S6-B2420).
+    An admission or a graded funnel cell outranks a closure: both are already
+    terminal, and the admission is the stronger fact."""
+    if name in admitted:
+        return "DONE-ADMITTED"
+    if roster_status == "IN-ROSTER-FUNNEL":
+        return "IN-ROSTER-FUNNEL"
+    if name in owner_closed:
+        return "DONE-OWNER-CLOSED"
+    if name in disabled:
+        return "DISABLED"
+    if name in pruned:
+        return "PRUNED-DUPLICATE"
+    if name in closed_neg:
+        return "CLOSED-NEGATIVE"
+    if name in contained:
+        return "CONTAINED-IN-REPRESENTATIVE"
+    if roster_status == "IN-ROSTER-MIRROR":
+        return "IN-ROSTER-MIRROR"
+    # B2833 (owner word "STALLED-CAMPAIGN approved", 2026-09-15): a row whose
+    # campaign tickets exist but are ALL terminal is distinguished from a
+    # never-campaigned row - Step-1 may be done with no Step-2 word, and
+    # NOT-STARTED erased that history. NON-terminal: it keeps its lane.
+    return ("IN-CAMPAIGN" if live_tickets
+            else "STALLED-CAMPAIGN" if tickets else "NOT-STARTED")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(ROOT / "STRATEGY_OPTIMISATION_STATUS.md"))
@@ -235,47 +346,24 @@ def main() -> int:
     tl = tl.drop_duplicates(["strategy", "ticker", "entry_date"])
     by_strat = {k: v for k, v in tl.groupby("strategy")}
 
-    admitted = set()
-    pruned = set()
-    if ADMISSIONS.exists():
-        d = json.loads(ADMISSIONS.read_text(encoding="utf-8"))
-        rows = d if isinstance(d, list) else d.get("admissions") or d.get("rows") or []
-        admitted = {r.get("strategy") for r in rows
-                    if isinstance(r, dict) and r.get("strategy")}
-        # B2825: the Jaccard-0.70 pruned duplicates (B2666) are EVALUATED AND
-        # DISCARDED, not future work
-        pruned = {r.get("strategy")
-                  for r in (d.get("pruned_collinear_b2666") or [])
-                  if isinstance(r, dict) and r.get("strategy")}
-
-    # B2825 (owner-directed 2026-09-16, "groups must be mutually exclusive;
-    # closed strategies must not count toward future work unless genuinely
-    # reopened"): CLOSED populations, each from its committed record -
-    # nothing here is a judgement.
-    closed_neg = set()      # family-pass FAIL, never re-admitted (b2628)
-    contained = set()       # contained in an admitted representative (b2647)
-    p28 = ROOT / "output_audit" / "b2628_institutional_family_grades.json"
-    if p28.exists():
-        sib = json.loads(p28.read_text(encoding="utf-8")).get("siblings") or {}
-        closed_neg = {k for k, v in sib.items()
-                      if isinstance(v, dict)} - admitted - pruned
-    p47 = ROOT / "output_audit" / "b2647_pead_sibling_pass.json"
-    if p47.exists():
-        for r in json.loads(p47.read_text(encoding="utf-8")).get("graded") or []:
-            if isinstance(r, dict) and "CONTAINED" in str(r.get("disposition", "")):
-                if r.get("strategy") not in admitted:
-                    contained.add(r["strategy"])
-    from backtest.config import (STRATEGIES_DISABLED_MISSING_PRODUCER,
-                                 STRATEGIES_DISABLED_DATA_SCARCITY,
-                                 STRATEGIES_DISABLED_DUPLICATE)
-    disabled = (set(STRATEGIES_DISABLED_MISSING_PRODUCER)
-                | set(STRATEGIES_DISABLED_DATA_SCARCITY)
-                | set(STRATEGIES_DISABLED_DUPLICATE))
+    # B2825: the admitted and CLOSED populations, from committed records
+    _pop = closed_populations(ROOT)
+    admitted, pruned = _pop["admitted"], _pop["pruned"]
+    closed_neg, contained = _pop["closed_neg"], _pop["contained"]
+    disabled = _pop["disabled"]
 
     qtext = QUEUE.read_text(encoding="utf-8", errors="replace") if QUEUE.exists() else ""
     # B2829: the canonical last-row-wins reducer - never a hand parser (L695)
     sys.path.insert(0, str(ROOT / "scripts"))
     import queue_state as _qs
+    # S6-B3135 (B3135): the Phase 1B roster is 31 strategies (7 funnel
+    # cells + 15 Step-2 admissions + 9 mirrors), not the admissions file's
+    # 15 - one reader, raising on an unreadable input (L642)
+    import phase1b_membership as _pm
+    _mem = _pm.members(ROOT)
+    _mem_sum = _pm.summary(_mem)
+    # S6-B3135a (owner 2026-09-29): campaigns the owner closed outright
+    owner_closed = load_owner_closures(ROOT)
     ticket_states = {k: (v.get("state") if isinstance(v, dict) else v)
                      for k, v in _qs.tickets().items()}
 
@@ -331,32 +419,18 @@ def main() -> int:
         # B2825 status precedence - one status per strategy, MUTUALLY
         # EXCLUSIVE by construction; a terminal disposition beats a campaign
         # mention, and the stream lane below is voided for terminal rows.
-        if name in admitted:
-            status = "DONE-ADMITTED"
-        elif name in disabled:
-            status = "DISABLED"
-        elif name in pruned:
-            status = "PRUNED-DUPLICATE"
-        elif name in closed_neg:
-            status = "CLOSED-NEGATIVE"
-        elif name in contained:
-            status = "CONTAINED-IN-REPRESENTATIVE"
-        else:
-            # B2833 (owner word "STALLED-CAMPAIGN approved", 2026-09-15): a
-            # row whose campaign tickets exist but are ALL terminal is
-            # distinguished from a never-campaigned row - Step-1 may be done
-            # with no Step-2 word, and NOT-STARTED erased that history
-            # (flagged at B2829, ruled now). NON-terminal: it keeps its lane.
-            status = ("IN-CAMPAIGN" if live_tickets
-                      else "STALLED-CAMPAIGN" if tickets else "NOT-STARTED")
-        terminal = status in ("DONE-ADMITTED", "DISABLED", "PRUNED-DUPLICATE",
-                              "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE")
+        status = status_for(
+            name, admitted=admitted, roster_status=_pm.roster_status(name, _mem),
+            owner_closed=owner_closed, disabled=disabled, pruned=pruned,
+            closed_neg=closed_neg, contained=contained,
+            live_tickets=live_tickets, tickets=tickets)
+        terminal = status in TERMINAL_STATUSES
         # REOPEN RULE (owner 2026-09-16, "unless reopened for a genuine
         # reason"): a terminal verdict was computed on the CLOSURE-TIME gate;
         # if the entry condition changed since R5 AND the old fires no longer
         # all satisfy it, the verdict's evidence base has moved - FLAGGED for
         # the owner, never auto-reopened.
-        reopen = bool(terminal and status != "DONE-ADMITTED"
+        reopen = bool(terminal and status not in NEVER_REOPEN
                       and name in changed
                       and (survives is None or survives < 1.0))
         # B2822 (owner-caught: "the counts are all over the place"): the LANE
@@ -376,7 +450,9 @@ def main() -> int:
                      "tightenable_keys": covered, "tickets": tickets,
                      "live_campaign_tickets": live_tickets,
                      "mention_tickets": mentions,
-                     "admitted": name in admitted, "status": status})
+                     "admitted": name in admitted,
+                     "roster_roles": list((_mem.get(name) or {}).get("roles", [])),
+                     "status": status})
 
     # L803 (B2822): the BUILD STAMP. A regenerated artifact without one
     # leaves its stale copies indistinguishable from HEAD - the owner quoted
@@ -428,15 +504,29 @@ def main() -> int:
              "stream lanes and excluded from every work bucket (B2825); "
              "reopen_candidate flags a terminal row whose entry condition "
              "changed since its closure evidence (survives < 1.0) - flagged "
-             "for the owner, never auto-reopened"],
+             "for the owner, never auto-reopened",
+             "IN-ROSTER-FUNNEL / IN-ROSTER-MIRROR (S6-B3135) come from "
+             "scripts/phase1b_membership.py: a graded 3-cube funnel cell is on "
+             "the Phase 1B roster, terminal like an admission and CLOSED to "
+             "re-testing like one (owner 2026-09-29, '2 yes. No more "
+             "retesting'); a short mirror retained by the owner's mirror "
+             "policy is on the roster but UNGRADED, so it keeps its lane "
+             "while the owner has Step 2 scheduled on it (S6-B2420)",
+             "DONE-OWNER-CLOSED (S6-B3135a) is a campaign the owner closed "
+             "outright, read from output_audit/owner_campaign_closures.json "
+             "with the owner's words; it outranks the mirror lane, so "
+             "IN-ROSTER-MIRROR is exactly the mirrors with scheduled work. "
+             "A closed mirror stays ON the Phase 1B roster - the closure "
+             "ends its campaign, not its membership"],
+         "phase1b_roster": _mem_sum,
+         "owner_closures": sorted(owner_closed),
          "rows": recs}, indent=2), encoding="utf-8")
 
     # ---- the markdown view -------------------------------------------------
     import collections
     bystream = collections.Counter(r["stream"] for r in recs)
     bystatus = collections.Counter(r["status"] for r in recs)
-    _TERMINAL = ("DONE-ADMITTED", "DISABLED", "PRUNED-DUPLICATE",
-                 "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE")
+    _TERMINAL = TERMINAL_STATUSES
     todo = [r for r in recs if r["status"] not in _TERMINAL]
     famcount = collections.Counter(r["family"] for r in todo
                                    if r["stream"] in ("TIGHTEN", "BOTH"))
@@ -456,10 +546,20 @@ def main() -> int:
          f"**Cube:** R5 ({R5_DIR.name}) | **R5-era screener:** {R5_SCREENER_COMMIT} | "
          f"**Step-1 shape:** {STEP1_TICKERS} tickers x {STEP1_YEARS}y | "
          f"**grid floor:** {MIN_FIRES_FOR_GRID} fires", "",
+         f"**Phase 1B roster: {_mem_sum['total']} distinct = "
+         f"{_mem_sum['funnel_cells']} graded funnel cells + "
+         f"{_mem_sum['step2_admissions']} Step-2 admissions + "
+         f"{_mem_sum['mirrors']} short mirrors ({_mem_sum['long']} long / "
+         f"{_mem_sum['short']} short)** - read from scripts/phase1b_membership.py "
+         "(S6-B3135). 'DONE - admitted' below counts the Step-2 admissions "
+         "only; the funnel cells and mirrors carry their own rows.", "",
          "## Totals", "",
          "| | count |", "|---|---|",
          f"| registered strategies | {len(recs)} |",
          f"| DONE - admitted to Phase 1B | {bystatus.get('DONE-ADMITTED', 0)} |",
+         f"| IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | {bystatus.get('IN-ROSTER-FUNNEL', 0)} |",
+         f"| IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded, with Step 2 scheduled (S6-B2420) | {bystatus.get('IN-ROSTER-MIRROR', 0)} |",
+         f"| DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | {bystatus.get('DONE-OWNER-CLOSED', 0)} |",
          f"| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | {bystatus.get('IN-CAMPAIGN', 0)} |",
          f"| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | {bystatus.get('STALLED-CAMPAIGN', 0)} |",
          f"| NOT-STARTED | {bystatus.get('NOT-STARTED', 0)} |",
@@ -503,7 +603,18 @@ def main() -> int:
           "inherits the vocabulary heuristic WITHOUT the liveness mask, so a "
           "builder-audit ticket naming a strategy as an EXAMPLE (S6-B2810b/c, "
           "S6-B2830) can stall it falsely - settle a surprising row by reading "
-          "its tickets.", "",
+          "its tickets.",
+          "- `IN-ROSTER-FUNNEL` / `IN-ROSTER-MIRROR` (S6-B3135): read from "
+          "scripts/phase1b_membership.py, the one reader of the Phase 1B roster. "
+          "A funnel cell is terminal like an admission and closed to re-testing "
+          "like one (owner 2026-09-29); a mirror is ungraded and keeps its lane "
+          "while the owner has Step 2 scheduled on it (S6-B2420).",
+          "- `DONE-OWNER-CLOSED` (S6-B3135a, owner 2026-09-29): a campaign the "
+          "owner closed outright (output_audit/owner_campaign_closures.json, "
+          "each with the owner's words). Terminal; never auto-reopened. A "
+          "closed mirror stays ON the Phase 1B roster - the closure ends its "
+          "campaign, not its membership.",
+          "",
           "## Per strategy", "",
           "| strategy | family | R5 fires | proj. Step-1 (current-gate) | chg | survives | stream | status |",
           "|---|---|---|---|---|---|---|---|"]

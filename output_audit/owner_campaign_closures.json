@@ -1,0 +1,24 @@
+{
+  "generator": "hand-maintained on owner rulings only - one record per campaign the owner closed outright",
+  "ticket": "S6-B3135a",
+  "reader": "scripts/build_strategy_status.py::load_owner_closures (status DONE-OWNER-CLOSED); an unreadable file, a record without the owner's words or date, or a strategy closed twice RAISES",
+  "semantics": "A closure ends a strategy's CAMPAIGN - no further configs, grids or Step-2 runs - and never its Phase 1B roster membership. A closed mirror stays on the roster under the standing mirror policy.",
+  "closures": [
+    {
+      "strategy": "three_black_crows_short",
+      "ruled": "2026-09-29",
+      "ruling_verbatim": "4 close and mark it as done",
+      "owner_question_answered": "It's equivalent short mirror is already in the phase 1b roster list? - YES: three_black_crows_short is three_white_soldiers' registered short mirror (role ADMISSION_MIRROR in scripts/phase1b_membership.py) and stays on the roster",
+      "scope": "the candle campaign's short leg: 2 of 18 short-leg configs ran; the 16 unrun configs will not run",
+      "tickets": ["S6-B3135a", "S6-B2944"]
+    },
+    {
+      "strategy": "smc_breaker_block_short",
+      "ruled": "2026-09-03",
+      "ruling_in_substance": "smc_breaker_block_long is finalised and part of the Phase 1B roster; even marked PROVISIONAL, long and short stay exactly as they are and no further work is to be done on that strategy",
+      "recorded_in": "EXECUTION_QUEUE.md - the S6-B1545a, S6-B2115a and S6-B2411 rows marked DROPPED by the owner's 2026-09-03 scope ruling (L758 / CHECKLIST #295)",
+      "scope": "the short mirror of the finalised smc_breaker_block_long admission; excluded from the S6-B2420 short-leg Step-2 programme for this reason",
+      "tickets": ["S6-B3135a", "S6-B2420"]
+    }
+  ]
+}

@@ -38604,8 +38604,9 @@ def test_b2825_status_groups_are_mutually_exclusive():
     d = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
                    .read_text(encoding="utf-8"))
     rows = d["rows"]
-    TERMINAL = {"DONE-ADMITTED", "DISABLED", "PRUNED-DUPLICATE",
-                "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE"}
+    TERMINAL = {"DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED",
+                "DISABLED", "PRUNED-DUPLICATE", "CLOSED-NEGATIVE",
+                "CONTAINED-IN-REPRESENTATIVE"}
     import collections
     st = collections.Counter(r["status"] for r in rows)
     assert sum(st.values()) == len(rows) == 225
@@ -38618,12 +38619,34 @@ def test_b2825_status_groups_are_mutually_exclusive():
     # + 3 closed-negative (b2628 + phase_1b_step2_admissions.json)
     assert st["CLOSED-NEGATIVE"] == 3 and st["PRUNED-DUPLICATE"] == 8
     assert st["CONTAINED-IN-REPRESENTATIVE"] == 1 and st["DISABLED"] == 4
+    # S6-B3135 / S6-B3135a: every Phase 1B roster member carries a roster
+    # status, never a work lane. The expected SETS are derived from the
+    # defining sources (L697) - the membership reader and the owner-closure
+    # register - never hand-listed: funnel cells are terminal, owner-closed
+    # mirrors are terminal, and the remaining mirrors (S6-B2420's short legs)
+    # keep their lane.
+    import sys as _sys
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import phase1b_membership as _pm
+    import build_strategy_status as _bss
+    _mem = _pm.members(root)
+    _closed = set(_bss.load_owner_closures(root))
+    _mirrors = {n for n in _mem if _pm.roster_status(n, _mem) == "IN-ROSTER-MIRROR"}
+    by = collections.defaultdict(set)
+    for r in rows:
+        by[r["status"]].add(r["strategy"])
+    assert by["DONE-OWNER-CLOSED"] == _closed & _mirrors == _closed
+    assert by["IN-ROSTER-MIRROR"] == _mirrors - _closed
+    assert st["IN-ROSTER-FUNNEL"] == 7 and st["IN-ROSTER-MIRROR"] == 7
+    assert d["phase1b_roster"]["total"] == 31
     ro = sorted(r["strategy"] for r in rows if r["reopen_candidate"])
     assert ro == ["institutional_insider_combo_long",
                   "institutional_volume_confirmation_long"], ro
     for r in rows:
         if r["reopen_candidate"]:
-            assert r["status"] in TERMINAL and r["status"] != "DONE-ADMITTED"
+            assert r["status"] in TERMINAL and r["status"] not in (
+                "DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED")
     assert any("never auto-reopened" in c for c in d["caveats"])
 
 
@@ -38818,10 +38841,19 @@ def test_b2836_table_a_directory_is_complete_and_honest():
                        "strategy_optimisation_status.json")
                       .read_text(encoding="utf-8"))
     tighten = {r["strategy"] for r in view["rows"] if r["stream"] == "TIGHTEN"}
+    # B3139 (batch 4): an owner-closed strategy leaves the TIGHTEN stream
+    # (DONE-OWNER-CLOSED, the 2026-09-29 ruling-4 effect) but its Table A
+    # file is a historical deliverable and stays - a closure closes the
+    # campaign, it does not delete its record.
+    owner_closed = {r["strategy"] for r in view["rows"]
+                    if r["status"] == "DONE-OWNER-CLOSED"}
     d = root / "strategy_optimisation" / "tighten"
     files = {p.stem for p in d.glob("*.md")}
-    assert files == tighten, (files ^ tighten,
-                              "one Table A file per TIGHTEN row, exactly")
+    assert tighten <= files, (tighten - files,
+                              "every TIGHTEN row has a Table A file")
+    assert files - tighten <= owner_closed, (
+        files - tighten - owner_closed,
+        "a non-TIGHTEN Table A file is allowed only for an owner-closed row")
     for p in d.glob("*.md"):
         t = p.read_text(encoding="utf-8")
         assert "Build (L803/#309)" in t, p.name
@@ -38923,7 +38955,14 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     both_dir = root / "strategy_optimisation" / "tighten" / "both"
     both_lane = {r["strategy"] for r in view["rows"] if r["stream"] == "BOTH"}
     both_files = {p.stem for p in both_dir.glob("*.md")}
-    assert both_files == both_lane, (both_files ^ both_lane)
+    # B3139 (batch 4): a strategy that left the lane by PROMOTION into the
+    # roster funnel, or by owner closure, keeps its file - the record stays
+    left_by_design = {r["strategy"] for r in view["rows"]
+                      if r["status"] in ("IN-ROSTER-FUNNEL", "IN-ROSTER-MIRROR",
+                                         "DONE-OWNER-CLOSED", "DONE-ADMITTED")}
+    assert both_lane <= both_files, (both_lane - both_files)
+    assert both_files - both_lane <= left_by_design, (
+        both_files - both_lane - left_by_design)
     for p in (root / "strategy_optimisation").rglob("*.md"):
         assert "BANDS-TO-DEFINE" not in p.read_text(encoding="utf-8"), (
             p.name, "an undefined band survived the B2845 curation")
@@ -49723,5 +49762,684 @@ def test_b3139_a_run_past_a_tier_files_stated_end_is_disclosed_in_the_stamp(
                                            "run_end": "2026-05-05",
                                            "status": "end-month"}
     assert E.read_stamp(tmp_path / "cube") == E.MODE_DAILY
+
+
+
+
+# ================================================================ B3139 merge batch 4: S6-B3135, S6-B3135a, S6-B3136, B3139 S6-B3136 council, B3139 S6-B3135 council
+import contextlib  # noqa: E402,F401
+import importlib.util  # noqa: E402,F401
+import io  # noqa: E402,F401
+import json  # noqa: E402,F401
+import subprocess  # noqa: E402,F401
+_REPO_B3135 = Path(__file__).resolve().parents[2]
+_SCRIPTS_B3135 = _REPO_B3135 / "scripts"
+if str(_SCRIPTS_B3135) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_B3135))
+
+# ---------------------------------------------------------------- S6-B3135
+def test_b3135_phase1b_membership_is_the_rosters_own_arithmetic(tmp_path):
+    """S6-B3135 (owner, 2026-09-29: 'Only 15 admitted ... I believe we have
+    more'): the ONE membership reader reproduces the roster document's own
+    deployable total - funnel cells = the sidecar's n_roster, admissions = the
+    admissions file, total = the '= N distinct' line - carries a strategy in
+    two mirror roles with both parents, and refuses a partial input (L642)."""
+    import re
+    import phase1b_membership as pm
+    root = _REPO_B3135
+    mem = pm.members(root)
+    s = pm.summary(mem)
+    side = json.loads((root / "output_audit" / "b1453_phase_1b_roster.json")
+                      .read_text(encoding="utf-8"))
+    adm = json.loads((root / "output_audit" / "phase_1b_step2_admissions.json")
+                     .read_text(encoding="utf-8"))["admissions"]
+    doc = (root / "PHASE_1B_ROSTER.md").read_text(encoding="utf-8")
+    tot = [l for l in doc.splitlines() if l.startswith("**Deployable total:")]
+    assert len(tot) == 1, tot
+    n_doc = int(re.search(r"= (\d+) distinct strategies", tot[0]).group(1))
+    assert s["funnel_cells"] == side["n_roster"]
+    assert s["step2_admissions"] == len(adm)
+    assert s["total"] == n_doc == s["long"] + s["short"], (s, n_doc)
+    assert s["long"] == s["funnel_cells"] + s["step2_admissions"]
+    both = mem["xs_momentum_bottom_decile_short"]
+    assert set(both["roles"]) == {"FUNNEL_MIRROR", "ADMISSION_MIRROR"}, both
+    assert both["parents"]["ADMISSION_MIRROR"] == ["xs_momentum_top_decile"]
+    assert "DUAL_SELF" in mem["smc_bos_retest_entry"]["roles"]
+    (tmp_path / "output_audit").mkdir()
+    (tmp_path / "output_audit" / "phase_1b_step2_admissions.json").write_text(
+        json.dumps({"admissions": []}), encoding="utf-8")
+    with pytest.raises(FileNotFoundError):
+        pm.members(tmp_path, mirror_status=lambda n: ("NEEDS-CREATION", None))
+
+
+def test_b3135_roster_members_get_roster_statuses_never_work_lanes():
+    """S6-B3135: a graded funnel cell reads IN-ROSTER-FUNNEL, a policy mirror
+    IN-ROSTER-MIRROR, a non-member None - and the status builder reads the
+    membership, not the admissions file alone (the 15-vs-31 defect)."""
+    import phase1b_membership as pm
+    mem = pm.members(_REPO_B3135)
+    assert pm.roster_status("totm_long", mem) == "IN-ROSTER-FUNNEL"
+    assert pm.roster_status("smc_bos_retest_entry", mem) == "IN-ROSTER-FUNNEL"
+    assert pm.roster_status("totm_short", mem) == "IN-ROSTER-MIRROR"
+    assert pm.roster_status("pead_short_negative_yoy_growth", mem) == "IN-ROSTER-MIRROR"
+    assert pm.roster_status("bollinger_lower", mem) is None
+    # B3137: the vocabulary is read from the builder's own constants, not
+    # from its source text (the prior text pin broke on the first re-order)
+    import build_strategy_status as bss
+    assert "IN-ROSTER-FUNNEL" in bss.TERMINAL_STATUSES
+    assert "IN-ROSTER-MIRROR" not in bss.TERMINAL_STATUSES
+
+
+def test_b3135_long_only_producer_keys_are_all_declared(monkeypatch):
+    """S6-B3135: long-only DATA is declared at the producer. Every key the
+    declared producers return is marker-covered or declared (AST walk), and
+    the checker FIRES when a declared key is removed (must-fire arm)."""
+    import build_phase_1b_roster as b
+    assert b.undeclared_long_only_keys() == []
+    red = dict(b.LONG_ONLY_SOURCE_KEYS)
+    red.pop("persistent_holders_4q")
+    got = b.undeclared_long_only_keys(declared=red)
+    assert got == ["backtest/signals/institutional_persistence_consumer.py::"
+                   "compute_persistence_signals::persistent_holders_4q"], got
+
+
+def test_b3135_classifier_flips_exactly_the_measured_set(monkeypatch):
+    """S6-B3135: reading the declared producer keys flips exactly ONE roster
+    strategy (institutional_multi_quarter_persistence_long -> LONG-ONLY-DATA,
+    13F) and exactly three of all registered strategies - the other two are
+    insider_cluster_concentrated_sell_short (insider source) and
+    simple_below_ema_50_short (its B1422 committed_growth_holders gate is 13F;
+    its docstring's 'no smart-money data dependency' is stale). A change to
+    this set is a classification change the owner sees - it must be re-pinned
+    deliberately, never drift."""
+    import build_phase_1b_roster as b
+    names = sorted(b.ALL_STRATEGIES)
+    b._DECLARED = None
+    new = {n: b.mirror_status(n)[0] for n in names}
+    monkeypatch.setattr(b, "LONG_ONLY_SOURCE_KEYS", {})
+    b._DECLARED = None
+    old = {n: b.mirror_status(n)[0] for n in names}
+    flips = sorted(n for n in names if old[n] != new[n])
+    assert flips == ["insider_cluster_concentrated_sell_short",
+                     "institutional_multi_quarter_persistence_long",
+                     "simple_below_ema_50_short"], flips
+    assert new["institutional_multi_quarter_persistence_long"] == "LONG-ONLY-DATA"
+
+
+# ---------------------------------------------------------------- S6-B3135a
+def _b3137_main_calls(src):
+    """(name calls, attribute calls, constant-valued `status =` assignments)
+    inside build_strategy_status.main - structure, never prose (L748)."""
+    import ast
+    tree = ast.parse(src)
+    main = next(n for n in tree.body
+                if isinstance(n, ast.FunctionDef) and n.name == "main")
+    names, attrs, const = [], [], []
+    for n in ast.walk(main):
+        if isinstance(n, ast.Call):
+            if isinstance(n.func, ast.Name):
+                names.append(n.func.id)
+            elif (isinstance(n.func, ast.Attribute)
+                  and isinstance(n.func.value, ast.Name)):
+                attrs.append(f"{n.func.value.id}.{n.func.attr}")
+        if (isinstance(n, ast.Assign) and isinstance(n.value, ast.Constant)
+                and any(isinstance(t, ast.Name) and t.id == "status"
+                        for t in n.targets)):
+            const.append(n.lineno)
+    return names, attrs, const
+
+
+def test_b3137_status_precedence_puts_owner_closure_above_the_mirror_lane():
+    """S6-B3135a (owner 2026-09-29, '4 close and mark it as done'): status_for
+    is the ONE precedence. An owner-closed mirror reads DONE-OWNER-CLOSED
+    (terminal); an open mirror keeps IN-ROSTER-MIRROR (its lane); an admission
+    and a graded funnel cell outrank a closure; a closure outranks every other
+    terminal population and every lane; someone else's closure changes
+    nothing. main() decides status ONLY through status_for and reads the
+    register and the populations through their helpers - pinned on the AST
+    with two mutation arms that must each fire (#226)."""
+    import build_strategy_status as bss
+    base = dict(admitted=set(), roster_status=None, owner_closed=set(),
+                disabled=set(), pruned=set(), closed_neg=set(),
+                contained=set(), live_tickets=[], tickets=[])
+
+    def f(**kw):
+        return bss.status_for("x", **{**base, **kw})
+
+    assert f(roster_status="IN-ROSTER-MIRROR") == "IN-ROSTER-MIRROR"
+    assert f(roster_status="IN-ROSTER-MIRROR",
+             owner_closed={"x"}) == "DONE-OWNER-CLOSED"
+    assert f(roster_status="IN-ROSTER-FUNNEL",
+             owner_closed={"x"}) == "IN-ROSTER-FUNNEL"
+    assert f(admitted={"x"}, owner_closed={"x"}) == "DONE-ADMITTED"
+    for k, want in (("disabled", "DISABLED"), ("pruned", "PRUNED-DUPLICATE"),
+                    ("closed_neg", "CLOSED-NEGATIVE"),
+                    ("contained", "CONTAINED-IN-REPRESENTATIVE")):
+        assert f(**{k: {"x"}}) == want
+        assert f(**{k: {"x"}}, owner_closed={"x"}) == "DONE-OWNER-CLOSED"
+        assert f(**{k: {"x"}}, roster_status="IN-ROSTER-MIRROR") == want
+    assert f(owner_closed={"x"}, live_tickets=["S6-B1"],
+             tickets=["S6-B1"]) == "DONE-OWNER-CLOSED"
+    assert f(live_tickets=["S6-B1"], tickets=["S6-B1"]) == "IN-CAMPAIGN"
+    assert f(tickets=["S6-B1"]) == "STALLED-CAMPAIGN"
+    assert f() == "NOT-STARTED"
+    assert f(owner_closed={"y"}) == "NOT-STARTED"
+    assert "DONE-OWNER-CLOSED" in bss.TERMINAL_STATUSES
+    assert "DONE-OWNER-CLOSED" in bss.NEVER_REOPEN
+    assert "IN-ROSTER-MIRROR" not in bss.TERMINAL_STATUSES
+    assert set(bss.NEVER_REOPEN) <= set(bss.TERMINAL_STATUSES)
+
+    src = (_SCRIPTS_B3135 / "build_strategy_status.py").read_text(encoding="utf-8")
+    names, attrs, const = _b3137_main_calls(src)
+    for fn in ("status_for", "load_owner_closures", "closed_populations"):
+        assert names.count(fn) == 1, (fn, names.count(fn))
+    assert "_pm.members" in attrs and "_pm.roster_status" in attrs
+    assert const == [], ("an inline precedence chain is back in main()", const)
+    # must-fire arm 1: an inline status literal reappears in main()
+    cut1 = src.replace("        status = status_for(\n",
+                       "        status = \"DONE-ADMITTED\"\n"
+                       "        status = status_for(\n")
+    assert cut1 != src and _b3137_main_calls(cut1)[2]
+    # must-fire arm 2: the register read is dropped from main()
+    cut2 = src.replace("owner_closed = load_owner_closures(ROOT)",
+                       "owner_closed = set()")
+    assert cut2 != src
+    assert _b3137_main_calls(cut2)[0].count("load_owner_closures") == 0
+
+
+def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path):
+    """S6-B3135a: every record carries the owner's words and date, and the
+    register fails CLOSED (L642) - a missing file, unparseable JSON, a record
+    without words, date or strategy, and a double closure each RAISE. On the
+    real tree both closures are roster mirrors (a closure never removes
+    membership), and the roster's 9 mirrors minus the closures, run through
+    the builder's own precedence and populations, are exactly S6-B2420's
+    seven short legs - the owner's 2026-09-24 scope list."""
+    import phase1b_membership as pm
+    import build_strategy_status as bss
+    reg = bss.load_owner_closures(_REPO_B3135)
+    assert sorted(reg) == ["smc_breaker_block_short", "three_black_crows_short"]
+    assert reg["three_black_crows_short"]["ruling_verbatim"] == (
+        "4 close and mark it as done")
+    mem = pm.members(_REPO_B3135)
+    mirrors = {n for n in mem if pm.roster_status(n, mem) == "IN-ROSTER-MIRROR"}
+    assert len(mirrors) == 9 and set(reg) <= mirrors
+    pop = bss.closed_populations(_REPO_B3135)
+    got = {n for n in mirrors if bss.status_for(
+        n, admitted=pop["admitted"], roster_status=pm.roster_status(n, mem),
+        owner_closed=reg, disabled=pop["disabled"], pruned=pop["pruned"],
+        closed_neg=pop["closed_neg"], contained=pop["contained"],
+        live_tickets=[], tickets=[]) == "IN-ROSTER-MIRROR"}
+    assert got == {"52w_low_breakdown_pullback_short", "mfi_overbought_short",
+                   "poc_magnet_short", "totm_short",
+                   "xs_combined_momentum_high_ivol_short",
+                   "xs_momentum_bottom_decile_short",
+                   "pead_short_negative_yoy_growth"}, got
+    with pytest.raises(FileNotFoundError):
+        bss.load_owner_closures(tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    p = tmp_path / "output_audit" / "owner_campaign_closures.json"
+    p.write_text("{not json", encoding="utf-8")
+    with pytest.raises(ValueError):
+        bss.load_owner_closures(tmp_path)
+    ok = {"strategy": "a", "ruled": "2026-09-29", "ruling_verbatim": "done"}
+    for bad in ([{k: v for k, v in ok.items() if k != "ruling_verbatim"}],
+                [{k: v for k, v in ok.items() if k != "ruled"}],
+                [{k: v for k, v in ok.items() if k != "strategy"}],
+                [ok, ok]):
+        p.write_text(json.dumps({"closures": bad}), encoding="utf-8")
+        with pytest.raises(ValueError):
+            bss.load_owner_closures(tmp_path)
+    p.write_text(json.dumps({"closures": [ok]}), encoding="utf-8")
+    assert list(bss.load_owner_closures(tmp_path)) == ["a"]
+
+def test_b3137_the_whole_phase1b_roster_is_closed_at_launch(monkeypatch):
+    """S6-B3135 (owner ruling 2026-09-29, '2 yes. No more retesting'): the
+    launch gate's CLOSED set is every one of the 31 roster members - read
+    through the one membership reader - not the admissions file plus one
+    roster line (18 of 31 before this batch). must-FIRE on each of the 13
+    members the old gate let through; must-QUIET on a non-member (the live
+    wave's bollinger_lower and hub-1's subject); fail CLOSED when the
+    membership cannot be read."""
+    import phase1b_membership as pm
+    import producer_variant_table as pvt
+    root = _REPO_B3135
+    adm, why = pvt.phase1b_admitted(root)
+    assert not why, why
+    mem = pm.members(root)
+    assert len(mem) == 31 and set(mem) <= adm, sorted(set(mem) - adm)
+    old_hole = {"52w_high_breakout_pullback_long",
+                "52w_low_breakdown_pullback_short", "mfi_overbought_short",
+                "mfi_oversold_with_smart_money_long", "poc_magnet_long",
+                "poc_magnet_short", "smc_bos_retest_entry", "totm_long",
+                "totm_short", "xs_combined_momentum_high_ivol_short",
+                "xs_combined_momentum_low_ivol",
+                "xs_momentum_bottom_decile_short",
+                "xs_momentum_with_smart_money_long"}
+    for s in sorted(old_hole):
+        r = pvt._admitted_retest_refusals({}, root, [s])
+        assert len(r) == 1 and "ALREADY ADMITTED" in r[0], (s, r)
+        assert "2 yes. No more retesting" in r[0]
+    for s in ("bollinger_lower", "smc_liquidity_sweep_reversal"):
+        assert s not in adm
+        assert pvt._admitted_retest_refusals({}, root, [s]) == []
+    # mutation arm (#226): the 13 reach the gate by TWO routes since B3139 -
+    # the membership reader and the FROZEN closed set. Neutralise the reader
+    # alone and the freeze still closes them; neutralise both and the old
+    # hole reopens, so each route is load-bearing on its own
+    monkeypatch.setattr(pm, "members", lambda *a, **k: {})
+    adm1, why1 = pvt.phase1b_admitted(root)
+    assert not why1 and old_hole <= adm1, sorted(old_hole - adm1)
+    monkeypatch.setattr(pm, "frozen_closed_set", lambda *a, **k: set())
+    adm0, why0 = pvt.phase1b_admitted(root)
+    assert not why0 and old_hole.isdisjoint(adm0), sorted(old_hole & adm0)
+    assert len(adm0) == 18, len(adm0)
+    # fail CLOSED: an unreadable membership refuses everything, member or not
+    def _boom(*a, **k):
+        raise FileNotFoundError("b1453 sidecar missing")
+    monkeypatch.setattr(pm, "members", _boom)
+    empty, why2 = pvt.phase1b_admitted(root)
+    assert empty == frozenset() and "membership unreadable" in why2, why2
+    r = pvt._admitted_retest_refusals({}, root, ["bollinger_lower"])
+    assert len(r) == 1 and "unreadable" in r[0], r
+
+
+def test_b3137_s6_b2420_overrides_open_exactly_the_seven_short_legs():
+    """S6-B2420 + S6-B3135a (owner 2026-09-24 'Approve all other recs', and
+    2026-09-29 '3 yes approve your recommendation'): the override register
+    names exactly the seven short legs, which are exactly the roster mirrors
+    that stay IN-ROSTER-MIRROR once the owner's closures are applied. Each leg
+    passes the gate with ITS OWN entry; the same entries do NOT open the
+    owner-closed candle mirror, a funnel long, or a leg whose own entry is
+    missing (an override names its target - L789)."""
+    import phase1b_membership as pm
+    import producer_variant_table as pvt
+    import build_strategy_status as bss
+    root = _REPO_B3135
+    ov = json.loads((root / "output_audit" / "s6_b2420_retest_overrides.json")
+                    .read_text(encoding="utf-8"))["overrides"]
+    mem = pm.members(root)
+    mirrors = {n for n in mem if pm.roster_status(n, mem) == "IN-ROSTER-MIRROR"}
+    closed = set(bss.load_owner_closures(root))
+    assert set(ov) == mirrors - closed, sorted(set(ov) ^ (mirrors - closed))
+    assert len(ov) == 7
+    for s, words in ov.items():
+        assert "Approve all other recs" in words and "3 yes approve" in words
+        assert pvt._admitted_retest_refusals(
+            {"owner_override_retest_admitted": {s: words}}, root, [s]) == []
+        # without its own entry the same leg is refused
+        others = {k: v for k, v in ov.items() if k != s}
+        r = pvt._admitted_retest_refusals(
+            {"owner_override_retest_admitted": others}, root, [s])
+        assert len(r) == 1 and "ALREADY ADMITTED" in r[0], (s, r)
+    for s in ("three_black_crows_short", "smc_breaker_block_short", "totm_long"):
+        r = pvt._admitted_retest_refusals(
+            {"owner_override_retest_admitted": ov}, root, [s])
+        assert len(r) == 1 and "ALREADY ADMITTED" in r[0], (s, r)
+
+# ---------------------------------------------------------------- S6-B3136
+_B3137_NEAR = {"smc_breaker_block_long", "three_white_soldiers",
+               "pead_with_smart_money_long"}
+
+
+def _b3137_drift_doc(tmp, identity=True, psr=0.939, clears=False, stamp="current"):
+    """A re-derivation artifact as scripts/eligibility_leak.py --roster writes
+    it. B3139: it carries the metric-code stamp of the code that computed
+    it - 'current' (today's fingerprint), None (unstamped) or a string."""
+    import roster_core as rc
+    p = tmp / "drift.json"
+    doc = {"rows": [{
+        "line": "smc_breaker_block_long", "status": "NOT-REPRODUCED",
+        "reason": [f"psr {psr} != 1.0"], "identity_reproduced": identity,
+        "fresh": {"holdout_n": 61, "full_period_n": 212,
+                  "net": {"psr": psr, "all_live_gates": clears,
+                          "gates": {"pooled_sharpe": True, "psr": clears}}}}]}
+    if stamp is not None:
+        doc["metric_code"] = (rc.metric_code_fingerprint() if stamp == "current"
+                              else {"sha256": stamp})
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    return p
+
+
+def test_b3137_near_miss_labels_carry_the_ruling_and_no_numbers():
+    """S6-B3136 (owner ruling 2026-09-29, '1 approve your recommendation'):
+    exactly the three net near-misses carry a net_near_miss block with the
+    owner's words and the strike rule - and NO stored figure (a number in a
+    record decays while staying quotable, L639/L832; the renderer derives
+    every figure)."""
+    doc = json.loads((_REPO_B3135 / "output_audit" / "phase_1b_step2_admissions.json")
+                     .read_text(encoding="utf-8"))
+    lab = {a["strategy"]: a["net_near_miss"] for a in doc["admissions"]
+           if a.get("net_near_miss")}
+    assert set(lab) == _B3137_NEAR, sorted(lab)
+    for s, b in lab.items():
+        assert b["ruling_verbatim"] == "1 approve your recommendation" and b["ruled"] == "2026-09-29"
+        assert "after 20 more paper trades" in b["strike_rule"] and "CHOSEN" in b["strike_rule"]
+        assert not any(isinstance(v, (int, float)) for v in b.values()), (s, b)
+
+
+def test_b3137_rederived_net_never_shows_a_stale_stored_psr(tmp_path, monkeypatch):
+    """S6-B3136: the figure an admission row shows is its CURRENT-CODE net
+    figure. A RESCORED block is read as-is; a line whose stored metric drifted
+    shows the fresh value (dagger) only when the trade set's identity
+    reproduced; an absent artifact reads 'pending', a failed identity reads
+    nothing - and the stale stored 1.00 is never the cell."""
+    import build_phase_1b_roster as b
+    doc = json.loads((_REPO_B3135 / "output_audit" / "phase_1b_step2_admissions.json")
+                     .read_text(encoding="utf-8"))
+    adm = {a["strategy"]: a for a in doc["admissions"]}
+    tws = adm["three_white_soldiers"]
+    net, kind, _ = b.rederived_net(tws)
+    assert kind == "rescored" and net["psr"] == 0.9355 and net["all_live_gates"] is False
+    smc = dict(adm["smc_breaker_block_long"])
+    fmt = lambda v: f"{v:>6.2f}" if isinstance(v, (int, float)) else "-"
+    stored = {"psr": 1.0}
+    smc["net_near_miss"] = dict(smc["net_near_miss"],
+                                psr_source=str(_b3137_drift_doc(tmp_path)))
+    net, kind, src = b.rederived_net(smc)
+    assert kind == "drift" and net["psr"] == 0.939 and "psr 0.939 != 1.0" in src
+    assert b._psr_cell(smc, stored, fmt) == " 0.94" + chr(0x2020)
+    smc["net_near_miss"]["psr_source"] = str(tmp_path / "absent.json")
+    assert b.rederived_net(smc)[0] is None and b._psr_cell(smc, stored, fmt) == "pending" + chr(0x2020)
+    (tmp_path / "noid").mkdir()
+    smc["net_near_miss"]["psr_source"] = str(_b3137_drift_doc(tmp_path / "noid",
+                                                              identity=False))
+    assert b.rederived_net(smc)[0] is None      # identity failed: no figure at all
+    # an admission with no near-miss block keeps its stored cell
+    plain = adm["institutional_oversold_long"]
+    assert b._psr_cell(plain, {"psr": 0.97}, fmt) == "  0.97"
+
+
+def test_b3137_after_costs_headline_on_the_real_roster(tmp_path):
+    """S6-B3136's headline, derived: 7 funnel cells (net basis by
+    construction) + 15 admissions = 22 long lines; 19 clear all six gates on
+    current code; three_white_soldiers and pead_with_smart_money_long miss;
+    smc_breaker_block_long misses once its re-derivation exists and is named
+    undetermined until then - never counted either way."""
+    import build_phase_1b_roster as b
+    root = _REPO_B3135
+    adms = json.loads((root / "output_audit" / "phase_1b_step2_admissions.json")
+                      .read_text(encoding="utf-8"))["admissions"]
+    cells = json.loads((root / "output_audit" / "b1453_phase_1b_roster.json")
+                       .read_text(encoding="utf-8"))["roster"]
+    res = b.net_clearance(adms, cells)
+    assert res["total"] == 22 and len(res["clear"]) == 19, res
+    assert {"three_white_soldiers", "pead_with_smart_money_long"} <= set(res["miss"])
+    assert "smc_breaker_block_long" in set(res["miss"]) | set(res["undetermined"])
+    for a in adms:
+        if a["strategy"] == "smc_breaker_block_long":
+            a["net_near_miss"] = dict(a["net_near_miss"],
+                                      psr_source=str(_b3137_drift_doc(tmp_path)))
+    res = b.net_clearance(adms, cells)
+    assert (len(res["clear"]), len(res["miss"]), res["undetermined"]) == (19, 3, [])
+    line = b.net_headline(res)
+    assert "19 of 22 long lines clear all six live gates" in line
+    assert all(f"`{m}`" in line for m in _B3137_NEAR)
+
+
+def test_b3137_the_rendered_table_shows_the_rederived_psr(tmp_path):
+    """S6-B3136 through the real renderer: the smc row's psr CELL (column 11
+    of the locked table) is the re-derived value with its dagger, the
+    footnote says why, and the near-miss block lists all three lines with
+    the live gate - the locked header is unchanged (L863)."""
+    import build_phase_1b_roster as b
+    src = json.loads((_REPO_B3135 / "output_audit" / "phase_1b_step2_admissions.json")
+                     .read_text(encoding="utf-8"))
+    for a in src["admissions"]:
+        if a["strategy"] == "smc_breaker_block_long":
+            a["net_near_miss"]["psr_source"] = str(_b3137_drift_doc(tmp_path))
+    p = tmp_path / "adm.json"
+    p.write_text(json.dumps(src), encoding="utf-8")
+    out = []
+    b.step2_admissions_section(out.append, admissions_path=p)
+    head = [l for l in out if l.startswith("| Strategy | Dir | Review |")]
+    assert len(head) == 1 and head[0].split("|")[11].strip() == "psr", head
+    row = [l for l in out if l.startswith("| `smc_breaker_block_long`")]
+    assert len(row) == 1 and row[0].split("|")[11].strip() == "0.94" + chr(0x2020), row
+    assert any(l.startswith(chr(0x2020) + " psr re-derived on CURRENT code") for l in out)
+    nm = [l for l in out if l.startswith("    - `") and "vs gate 0.95" in l]
+    assert {l.split("`")[1] for l in nm} == _B3137_NEAR, nm
+    # S6-B3136f's mechanism: EVERY rendered admission's psr cell equals a
+    # FRESH current-code evaluation - S6-B3122's reproduction-gated raw
+    # re-score for the RESCORED rows (same basis as their grids), the drift
+    # record for smc (MEASURED B3137: 14 of 15 stored cells reproduce
+    # within 1e-3; smc's does not)
+    raw = {a["strategy"]: ((a.get("net_rescore") or {}).get("raw") or {}).get("psr")
+           for a in src["admissions"]}
+    rows = [l for l in out if l.startswith("| `")]
+    assert len(rows) == len(src["admissions"]) == 15, len(rows)
+    for l in rows:
+        name, cell = l.split("`")[1], l.split("|")[11].strip()
+        if name == "smc_breaker_block_long":
+            assert cell == "0.94" + chr(0x2020), cell
+        else:
+            assert cell == f"{raw[name]:.2f}", (name, cell, raw[name])
+
+
+# ---------------------------------------------------------------- B3139 S6-B3136 council
+def _b3139_roster_inputs():
+    import build_phase_1b_roster as b
+    root = _REPO_B3135
+    adms = json.loads((root / "output_audit" / "phase_1b_step2_admissions.json")
+                      .read_text(encoding="utf-8"))["admissions"]
+    cells = json.loads((root / "output_audit" / "b1453_phase_1b_roster.json")
+                       .read_text(encoding="utf-8"))["roster"]
+    return b, adms, cells
+
+
+def _b3139_with_smc_source(adms, src):
+    out = []
+    for a in adms:
+        a = dict(a)
+        if a["strategy"] == "smc_breaker_block_long":
+            a["net_near_miss"] = dict(a["net_near_miss"], psr_source=str(src))
+        out.append(a)
+    return out
+
+
+def test_b3139_headline_moves_with_the_smc_figure_not_a_literal(tmp_path):
+    """S6-B3136 council: the literal '19 of 22' pin passes whether smc is a
+    miss or undetermined, so these MUTATION pins make the headline prove it
+    is derived: a re-derivation at psr 0.96 clearing all six gates renders
+    20 of 22; the same figure under a STALE metric-code stamp, an unstamped
+    artifact or an absent one renders smc 'Not yet re-derived' (19 of 22,
+    one undetermined) - never the figure."""
+    b, adms, cells = _b3139_roster_inputs()
+    ok = _b3139_with_smc_source(adms, _b3137_drift_doc(tmp_path, psr=0.96, clears=True))
+    res = b.net_clearance(ok, cells)
+    assert (len(res["clear"]), res["total"], res["undetermined"]) == (20, 22, []), res
+    assert "20 of 22 long lines clear all six live gates" in b.net_headline(res)
+    for stamp in ("0" * 64, None):
+        (tmp_path / str(stamp)[:1]).mkdir()
+        stale = _b3139_with_smc_source(
+            adms, _b3137_drift_doc(tmp_path / str(stamp)[:1], psr=0.96, clears=True,
+                                   stamp=stamp))
+        res = b.net_clearance(stale, cells)
+        assert res["undetermined"] == ["smc_breaker_block_long"], (stamp, res)
+        assert len(res["clear"]) == 19, (stamp, res)
+        line = b.net_headline(res)
+        assert "Not yet re-derived (1): `smc_breaker_block_long`" in line, line
+        net, kind, src = b.rederived_net(
+            [a for a in stale if a["strategy"] == "smc_breaker_block_long"][0])
+        assert net is None and "re-derive before quoting" in src, src
+    absent = _b3139_with_smc_source(adms, tmp_path / "absent.json")
+    res = b.net_clearance(absent, cells)
+    assert res["undetermined"] == ["smc_breaker_block_long"] and len(res["clear"]) == 19
+
+
+def test_b3139_psr_cell_reads_pending_under_a_stale_metric_code_stamp(tmp_path):
+    """S6-B3136 council: the locked table's psr cell shows the re-derived
+    value only while the metric code that computed it is today's; a stamp
+    from other code (a later formula fix) reads 'pending', never the figure
+    - the failure that left smc's pre-B2646 PSR 1.00 standing for a month."""
+    b, adms, _ = _b3139_roster_inputs()
+    fmt = lambda v: f"{v:>6.2f}" if isinstance(v, (int, float)) else "-"
+    smc = [a for a in _b3139_with_smc_source(adms, _b3137_drift_doc(tmp_path))
+           if a["strategy"] == "smc_breaker_block_long"][0]
+    assert b._psr_cell(smc, {"psr": 1.0}, fmt) == " 0.94\u2020"
+    (tmp_path / "s").mkdir()
+    stale = [a for a in _b3139_with_smc_source(
+        adms, _b3137_drift_doc(tmp_path / "s", stamp="f" * 64))
+        if a["strategy"] == "smc_breaker_block_long"][0]
+    assert b._psr_cell(stale, {"psr": 1.0}, fmt) == "pending\u2020"
+
+
+def test_b3139_metric_code_fingerprint_moves_with_a_formula_and_is_written(monkeypatch):
+    """S6-B3136 council: the fingerprint covers the gate-computing functions
+    and the gate bars - editing a member's source or a bar changes it, and
+    the re-derivation writer stamps it on every artifact."""
+    import roster_core as rc
+    base = rc.metric_code_fingerprint()
+    assert base == rc.metric_code_fingerprint() and len(base["sha256"]) == 64
+    assert "roster_core.evaluate" in base["members"]
+    assert "backtest.results.metrics._deflated_sharpe" in base["members"]
+    import inspect
+    real = inspect.getsource
+    monkeypatch.setattr(inspect, "getsource",
+                        lambda f: real(f) + ("# edited" if f.__name__ == "_deflated_sharpe" else ""))
+    assert rc.metric_code_fingerprint()["sha256"] != base["sha256"]
+    monkeypatch.setattr(inspect, "getsource", real)
+    monkeypatch.setitem(rc.PC, "min_psr", 0.9)
+    assert rc.metric_code_fingerprint()["sha256"] != base["sha256"]
+    src = (_SCRIPTS_B3135 / "eligibility_leak.py").read_text(encoding="utf-8")
+    assert '"metric_code": rc.metric_code_fingerprint()' in src
+
+
+def test_b3139_dropping_an_admission_moves_the_deployable_total(tmp_path):
+    """S6-B3136 council: the 31 is DERIVED, never typed. Dropping one admission
+    from a copy of the admissions record moves membership by exactly what its
+    roles say - the admission itself, plus its registered mirror when that
+    mirror rides no other parent - and the committed roster's rendered total
+    equals the one reader's total on today's records."""
+    import re
+    import shutil
+    import phase1b_membership as pm
+    root = tmp_path / "r"
+    (root / "output_audit").mkdir(parents=True)
+    for rel in (pm.SIDECAR, pm.ADMISSIONS):
+        shutil.copyfile(_REPO_B3135 / rel, root / rel)
+    base = pm.members(root)
+    total = pm.summary(base)["total"]
+    doc_line = [l for l in (_REPO_B3135 / "PHASE_1B_ROSTER.md").read_text(
+        encoding="utf-8").splitlines() if l.startswith("**Deployable total:")]
+    assert len(doc_line) == 1, doc_line
+    assert int(re.search(r"= (\d+) distinct strategies", doc_line[0]).group(1)) == total
+    adm = json.loads((root / pm.ADMISSIONS).read_text(encoding="utf-8"))
+    names = [a["strategy"] for a in adm["admissions"]]
+    tried = 0
+    for drop in names:
+        solo_mirrors = [n for n, r in base.items()
+                        if r["roles"] == ["ADMISSION_MIRROR"]
+                        and r["parents"].get("ADMISSION_MIRROR") == [drop]]
+        long_only_admission = base[drop]["roles"] == ["STEP2_ADMISSION"]
+        if not long_only_admission:
+            continue
+        cut = dict(adm, admissions=[a for a in adm["admissions"] if a["strategy"] != drop])
+        (root / pm.ADMISSIONS).write_text(json.dumps(cut), encoding="utf-8")
+        got = pm.summary(pm.members(root))["total"]
+        assert got == total - 1 - len(solo_mirrors), (drop, got, total, solo_mirrors)
+        tried += 1
+    assert tried >= 10, tried
+    (root / pm.ADMISSIONS).write_text(json.dumps(adm), encoding="utf-8")
+    assert pm.summary(pm.members(root))["total"] == total
+
+
+def test_b3139_launch_gate_parser_reads_the_same_names_from_the_new_render(tmp_path):
+    """S6-B3136 council: the launch gate reads names from PHASE_1B_ROSTER.md
+    lines carrying 'retained, Step-2 admissions'. The NEW admissions section
+    (dagger / pending psr cells, the near-miss block, the after-costs
+    headline) is spliced into the committed document: no line of it carries
+    the parser's phrase, the parser reads the same names before and after,
+    and phase1b_admitted over the spliced tree is exactly the membership."""
+    import shutil
+    import build_phase_1b_roster as b
+    import phase1b_membership as pm
+    import producer_variant_table as pvt
+    doc = (_REPO_B3135 / "PHASE_1B_ROSTER.md").read_text(encoding="utf-8").splitlines()
+    i0 = next(i for i, l in enumerate(doc) if l.startswith("## Step-2 admissions"))
+    i1 = next(i for i, l in enumerate(doc) if l.startswith("## Symmetric short mirrors"))
+    src = json.loads((_REPO_B3135 / pm.ADMISSIONS).read_text(encoding="utf-8"))
+    for a in src["admissions"]:
+        if a["strategy"] == "smc_breaker_block_long":
+            a["net_near_miss"]["psr_source"] = str(_b3137_drift_doc(tmp_path))
+    p = tmp_path / "adm.json"
+    p.write_text(json.dumps(src), encoding="utf-8")
+    new = []
+    b.step2_admissions_section(new.append, admissions_path=p)
+    assert any("\u2020" in l for l in new) and any("vs gate" in l for l in new)
+    assert not [l for l in new if "retained, Step-2 admissions" in l]
+    spliced = doc[:i0] + new + doc[i1:]
+    root = tmp_path / "r"
+    (root / "output_audit").mkdir(parents=True)
+    for rel in (pm.SIDECAR, pm.ADMISSIONS, pm.FROZEN):
+        shutil.copyfile(_REPO_B3135 / rel, root / rel)
+    (root / "PHASE_1B_ROSTER.md").write_text("\n".join(doc), encoding="utf-8")
+    before, why0 = pvt.phase1b_admitted(root)
+    (root / "PHASE_1B_ROSTER.md").write_text("\n".join(spliced), encoding="utf-8")
+    after, why1 = pvt.phase1b_admitted(root)
+    assert why0 == why1 == "" and before == after, (why0, why1, before ^ after)
+    assert set(after) == set(pm.members(root)), sorted(set(after) ^ set(pm.members(root)))
+
+
+# ---------------------------------------------------------------- B3139 S6-B3135 council
+def test_b3139_the_frozen_closed_set_is_the_rulings_31_names():
+    """S6-B3135 council: the tracked frozen file carries the owner's words and
+    exactly the 31 names the derived membership holds today, and nothing has
+    been removed since the freeze. Changing the file is an owner ruling."""
+    import phase1b_membership as pm
+    doc = json.loads((_REPO_B3135 / pm.FROZEN).read_text(encoding="utf-8"))
+    assert doc["ruling_verbatim"] == "2 yes. No more retesting" and doc["ruled"] == "2026-09-29"
+    assert doc["n"] == len(doc["names"]) == 31
+    assert set(doc["names"]) == pm.frozen_closed_set() == set(pm.members())
+    assert pm.removed_since_freeze() == []
+
+
+def test_b3139_a_name_dropped_from_the_records_stays_closed(tmp_path):
+    """S6-B3135 council: a later re-score or regeneration that DROPS a name
+    from the derived records must not reopen it - the gate unions the frozen
+    set, and removed_since_freeze names the dropped lines for the owner. An
+    ABSENT frozen file fails the gate CLOSED (L642)."""
+    import shutil
+    import phase1b_membership as pm
+    import producer_variant_table as pvt
+    root = tmp_path / "r"
+    (root / "output_audit").mkdir(parents=True)
+    for rel in (pm.SIDECAR, pm.ADMISSIONS, pm.FROZEN):
+        shutil.copyfile(_REPO_B3135 / rel, root / rel)
+    shutil.copyfile(_REPO_B3135 / "PHASE_1B_ROSTER.md", root / "PHASE_1B_ROSTER.md")
+    adm = json.loads((root / pm.ADMISSIONS).read_text(encoding="utf-8"))
+    drop = "institutional_oversold_long"
+    assert drop in {a["strategy"] for a in adm["admissions"]}
+    adm["admissions"] = [a for a in adm["admissions"] if a["strategy"] != drop]
+    (root / pm.ADMISSIONS).write_text(json.dumps(adm), encoding="utf-8")
+    assert drop not in pm.members(root)
+    names, why = pvt.phase1b_admitted(root)
+    assert why == "" and drop in names, (why, drop in names)
+    assert drop in pm.removed_since_freeze(root)
+    (root / pm.FROZEN).unlink()
+    empty, why2 = pvt.phase1b_admitted(root)
+    assert empty == frozenset() and "membership unreadable" in why2, why2
+    with pytest.raises(FileNotFoundError):
+        pm.frozen_closed_set(root)
+    (root / pm.FROZEN).write_text(json.dumps({"names": []}), encoding="utf-8")
+    with pytest.raises(ValueError, match="empty closure"):
+        pm.frozen_closed_set(root)
+
+
+def test_b3139_roster_renders_the_closed_set_against_the_freeze():
+    """S6-B3135 council: the roster document states the frozen count and any
+    name the derived membership lost since the freeze - rendered from the one
+    reader, never typed (source-level: the build reads the 1.6 GB R5 detail,
+    too heavy for a unit pin; the line's inputs are pinned behaviourally
+    above)."""
+    import ast
+    src = (_SCRIPTS_B3135 / "build_phase_1b_roster.py").read_text(encoding="utf-8")
+    main = [n for n in ast.parse(src).body
+            if isinstance(n, ast.FunctionDef) and n.name == "main"][0]
+    calls = {ast.unparse(c.func) for c in ast.walk(main) if isinstance(c, ast.Call)}
+    assert {"_pm.frozen_closed_set", "_pm.removed_since_freeze"} <= calls, sorted(
+        c for c in calls if "_pm" in c)
+    body = ast.unparse(main)
+    assert body.index("net_headline(") < body.index("_pm.frozen_closed_set")
 
 

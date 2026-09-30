@@ -1,0 +1,1806 @@
+{
+ "metric_code": {
+  "sha256": "3afedaeb36748b7f708ab78c90db111e822f9a403fa73161cc222be3443ce19c",
+  "members": [
+   "roster_core.load_cube",
+   "roster_core.holdout",
+   "roster_core.evaluate",
+   "walk_forward_r5_cells._sharpe",
+   "backtest.results.metrics._sortino_ratio",
+   "backtest.results.metrics._deflated_sharpe",
+   "rescore_admissions_net.net",
+   "rescore_admissions_net.score_both"
+  ],
+  "plus": "backtest.config.PASSING_CRITERIA",
+  "defined_in": "scripts/roster_core.py metric_code_fingerprint"
+ },
+ "_doc": "S6-B3134a part C (ii): one-shot LABEL re-score of the graded Phase 1B lines - each line reproduced from its own cube (#290) then scored with the entries the fixed engine would not take removed. Labels only; no line changes; any removal is a per-line owner ruling.",
+ "predicate": "backtest/data/eligibility.py (jan1_reason, daily_reason)",
+ "generated_utc": "2026-09-30T11:33:43Z",
+ "rows": [
+  {
+   "line": "smc_breaker_block_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "NOT-REPRODUCED",
+   "reason": [
+    "psr 0.939 != 1.0"
+   ],
+   "fresh": {
+    "holdout_n": 41,
+    "full_period_n": 180,
+    "net": {
+     "sharpe": 1.152,
+     "ci_lo": -0.415,
+     "psr": 0.939,
+     "profit_factor": 1.937,
+     "sortino": 1.925,
+     "n": 41,
+     "all_live_gates": false,
+     "n_gates": 5,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": false,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "identity_reproduced": true
+  },
+  {
+   "line": "pead_long_high_yoy_growth_only",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "REPRODUCED",
+   "rows": 988,
+   "leaked_rows": 38,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 26,
+    "carry:avgvol<min": 7,
+    "daily:not-member-today": 5
+   },
+   "leaked_holdout_rows": 15,
+   "leaked_pnl_sum": 81.542,
+   "total_pnl_sum": 1786.0911,
+   "with_leaks_score": {
+    "holdout_n": 196,
+    "full_period_n": 988,
+    "raw": {
+     "sharpe": 1.148,
+     "ci_lo": 0.43,
+     "psr": 0.9998,
+     "profit_factor": 1.91,
+     "sortino": 2.366,
+     "n": 196,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.0,
+     "ci_lo": 0.284,
+     "psr": 0.999,
+     "profit_factor": 1.75,
+     "sortino": 2.061,
+     "n": 196,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 181,
+    "full_period_n": 950,
+    "raw": {
+     "sharpe": 1.109,
+     "ci_lo": 0.362,
+     "psr": 0.9996,
+     "profit_factor": 1.877,
+     "sortino": 2.278,
+     "n": 181,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 0.963,
+     "ci_lo": 0.219,
+     "psr": 0.9979,
+     "profit_factor": 1.721,
+     "sortino": 1.979,
+     "n": 181,
+     "all_live_gates": false,
+     "n_gates": 5,
+     "gates": {
+      "pooled_sharpe": false,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "pead_with_smart_money_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "REPRODUCED",
+   "rows": 215,
+   "leaked_rows": 12,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 10,
+    "daily:not-member-today": 1,
+    "carry:avgvol<min": 1
+   },
+   "leaked_holdout_rows": 3,
+   "leaked_pnl_sum": 13.2696,
+   "total_pnl_sum": 276.63960000000003,
+   "with_leaks_score": {
+    "holdout_n": 37,
+    "full_period_n": 215,
+    "raw": {
+     "sharpe": 1.308,
+     "ci_lo": -0.325,
+     "psr": 0.9596,
+     "profit_factor": 2.317,
+     "sortino": 2.107,
+     "n": 37,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.138,
+     "ci_lo": -0.489,
+     "psr": 0.9336,
+     "profit_factor": 2.062,
+     "sortino": 1.871,
+     "n": 37,
+     "all_live_gates": false,
+     "n_gates": 5,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": false,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 34,
+    "full_period_n": 203,
+    "raw": {
+     "sharpe": 1.53,
+     "ci_lo": -0.182,
+     "psr": 0.9743,
+     "profit_factor": 2.723,
+     "sortino": 2.36,
+     "n": 34,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.363,
+     "ci_lo": -0.341,
+     "psr": 0.9578,
+     "profit_factor": 2.42,
+     "sortino": 2.188,
+     "n": 34,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "institutional_breakout_confirmation_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "r_multiple_2r",
+   "status": "REPRODUCED",
+   "rows": 128,
+   "leaked_rows": 8,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 5,
+    "daily:not-member-today": 2,
+    "carry:avgvol<min": 1
+   },
+   "leaked_holdout_rows": 3,
+   "leaked_pnl_sum": -29.4828,
+   "total_pnl_sum": 136.97549999999998,
+   "with_leaks_score": {
+    "holdout_n": 34,
+    "full_period_n": 128,
+    "raw": {
+     "sharpe": 3.132,
+     "ci_lo": 0.735,
+     "psr": 0.9954,
+     "profit_factor": 2.836,
+     "sortino": 10.005,
+     "n": 34,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 2.922,
+     "ci_lo": 0.539,
+     "psr": 0.9926,
+     "profit_factor": 2.618,
+     "sortino": 9.331,
+     "n": 34,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 31,
+    "full_period_n": 120,
+    "raw": {
+     "sharpe": 3.847,
+     "ci_lo": 1.314,
+     "psr": 0.9985,
+     "profit_factor": 3.593,
+     "sortino": 16.822,
+     "n": 31,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 3.636,
+     "ci_lo": 1.122,
+     "psr": 0.9976,
+     "profit_factor": 3.312,
+     "sortino": 15.896,
+     "n": 31,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "institutional_committed_growth_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "REPRODUCED",
+   "rows": 387,
+   "leaked_rows": 28,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 19,
+    "daily:not-member-today": 5,
+    "carry:avgvol<min": 2,
+    "carry:price<min": 2
+   },
+   "leaked_holdout_rows": 12,
+   "leaked_pnl_sum": 74.43410000000002,
+   "total_pnl_sum": 1033.268,
+   "with_leaks_score": {
+    "holdout_n": 144,
+    "full_period_n": 387,
+    "raw": {
+     "sharpe": 1.658,
+     "ci_lo": 0.807,
+     "psr": 1.0,
+     "profit_factor": 2.618,
+     "sortino": 3.388,
+     "n": 144,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.574,
+     "ci_lo": 0.725,
+     "psr": 1.0,
+     "profit_factor": 2.489,
+     "sortino": 3.193,
+     "n": 144,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 132,
+    "full_period_n": 359,
+    "raw": {
+     "sharpe": 1.924,
+     "ci_lo": 1.028,
+     "psr": 1.0,
+     "profit_factor": 3.044,
+     "sortino": 3.965,
+     "n": 132,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.834,
+     "ci_lo": 0.942,
+     "psr": 1.0,
+     "profit_factor": 2.885,
+     "sortino": 3.749,
+     "n": 132,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "institutional_high_conviction_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "REPRODUCED",
+   "rows": 492,
+   "leaked_rows": 55,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 32,
+    "daily:not-member-today": 18,
+    "carry:price<min": 3,
+    "carry:avgvol<min": 2
+   },
+   "leaked_holdout_rows": 25,
+   "leaked_pnl_sum": -6.349500000000002,
+   "total_pnl_sum": 965.2091999999999,
+   "with_leaks_score": {
+    "holdout_n": 146,
+    "full_period_n": 492,
+    "raw": {
+     "sharpe": 1.399,
+     "ci_lo": 0.558,
+     "psr": 0.9999,
+     "profit_factor": 2.237,
+     "sortino": 2.765,
+     "n": 146,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.316,
+     "ci_lo": 0.477,
+     "psr": 0.9998,
+     "profit_factor": 2.126,
+     "sortino": 2.6,
+     "n": 146,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 121,
+    "full_period_n": 437,
+    "raw": {
+     "sharpe": 1.776,
+     "ci_lo": 0.843,
+     "psr": 1.0,
+     "profit_factor": 2.782,
+     "sortino": 3.623,
+     "n": 121,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.689,
+     "ci_lo": 0.758,
+     "psr": 1.0,
+     "profit_factor": 2.636,
+     "sortino": 3.444,
+     "n": 121,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "institutional_multi_quarter_persistence_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "REPRODUCED",
+   "rows": 505,
+   "leaked_rows": 13,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:avgvol<min": 7,
+    "daily:not-member-today": 6
+   },
+   "leaked_holdout_rows": 2,
+   "leaked_pnl_sum": 41.0069,
+   "total_pnl_sum": 1132.3921,
+   "with_leaks_score": {
+    "holdout_n": 147,
+    "full_period_n": 505,
+    "raw": {
+     "sharpe": 1.624,
+     "ci_lo": 0.784,
+     "psr": 1.0,
+     "profit_factor": 2.54,
+     "sortino": 3.118,
+     "n": 147,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.527,
+     "ci_lo": 0.69,
+     "psr": 1.0,
+     "profit_factor": 2.399,
+     "sortino": 2.914,
+     "n": 147,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 145,
+    "full_period_n": 492,
+    "raw": {
+     "sharpe": 1.602,
+     "ci_lo": 0.757,
+     "psr": 1.0,
+     "profit_factor": 2.508,
+     "sortino": 3.096,
+     "n": 145,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.506,
+     "ci_lo": 0.663,
+     "psr": 1.0,
+     "profit_factor": 2.37,
+     "sortino": 2.892,
+     "n": 145,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "institutional_oversold_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "r_multiple_2r",
+   "status": "REPRODUCED",
+   "rows": 156,
+   "leaked_rows": 7,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 4,
+    "carry:avgvol<min": 3
+   },
+   "leaked_holdout_rows": 3,
+   "leaked_pnl_sum": 2.043499999999999,
+   "total_pnl_sum": -84.82009999999998,
+   "with_leaks_score": {
+    "holdout_n": 35,
+    "full_period_n": 156,
+    "raw": {
+     "sharpe": 2.084,
+     "ci_lo": 0.018,
+     "psr": 0.9756,
+     "profit_factor": 2.11,
+     "sortino": 6.696,
+     "n": 35,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.85,
+     "ci_lo": -0.203,
+     "psr": 0.9603,
+     "profit_factor": 1.933,
+     "sortino": 5.945,
+     "n": 35,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 32,
+    "full_period_n": 149,
+    "raw": {
+     "sharpe": 2.531,
+     "ci_lo": 0.351,
+     "psr": 0.9882,
+     "profit_factor": 2.497,
+     "sortino": 8.779,
+     "n": 32,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 2.294,
+     "ci_lo": 0.13,
+     "psr": 0.9802,
+     "profit_factor": 2.278,
+     "sortino": 7.956,
+     "n": 32,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "institutional_persistence_oversold_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "REPRODUCED",
+   "rows": 145,
+   "leaked_rows": 3,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:avgvol<min": 3
+   },
+   "leaked_holdout_rows": 0,
+   "leaked_pnl_sum": 15.7243,
+   "total_pnl_sum": 118.72,
+   "with_leaks_score": {
+    "holdout_n": 55,
+    "full_period_n": 145,
+    "raw": {
+     "sharpe": 1.82,
+     "ci_lo": 0.449,
+     "psr": 0.9971,
+     "profit_factor": 2.607,
+     "sortino": 3.288,
+     "n": 55,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.675,
+     "ci_lo": 0.311,
+     "psr": 0.9945,
+     "profit_factor": 2.417,
+     "sortino": 2.936,
+     "n": 55,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 55,
+    "full_period_n": 142,
+    "raw": {
+     "sharpe": 1.82,
+     "ci_lo": 0.449,
+     "psr": 0.9971,
+     "profit_factor": 2.607,
+     "sortino": 3.288,
+     "n": 55,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.675,
+     "ci_lo": 0.311,
+     "psr": 0.9945,
+     "profit_factor": 2.417,
+     "sortino": 2.936,
+     "n": 55,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "institutional_recent_init_momentum_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "r_multiple_2r",
+   "status": "REPRODUCED",
+   "rows": 454,
+   "leaked_rows": 44,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 21,
+    "daily:not-member-today": 20,
+    "carry:avgvol<min": 3
+   },
+   "leaked_holdout_rows": 15,
+   "leaked_pnl_sum": 11.642399999999999,
+   "total_pnl_sum": 502.9281,
+   "with_leaks_score": {
+    "holdout_n": 111,
+    "full_period_n": 454,
+    "raw": {
+     "sharpe": 1.231,
+     "ci_lo": 0.022,
+     "psr": 0.979,
+     "profit_factor": 1.535,
+     "sortino": 3.216,
+     "n": 111,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.04,
+     "ci_lo": -0.165,
+     "psr": 0.9569,
+     "profit_factor": 1.432,
+     "sortino": 2.718,
+     "n": 111,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 96,
+    "full_period_n": 410,
+    "raw": {
+     "sharpe": 1.23,
+     "ci_lo": -0.083,
+     "psr": 0.972,
+     "profit_factor": 1.52,
+     "sortino": 4.926,
+     "n": 96,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.028,
+     "ci_lo": -0.282,
+     "psr": 0.9438,
+     "profit_factor": 1.414,
+     "sortino": 4.116,
+     "n": 96,
+     "all_live_gates": false,
+     "n_gates": 5,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": false,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "institutional_recent_init_volume_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "r_multiple_2r",
+   "status": "REPRODUCED",
+   "rows": 215,
+   "leaked_rows": 18,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 13,
+    "daily:not-member-today": 4,
+    "carry:price<min": 1
+   },
+   "leaked_holdout_rows": 6,
+   "leaked_pnl_sum": -0.08809999999999946,
+   "total_pnl_sum": 293.4873,
+   "with_leaks_score": {
+    "holdout_n": 59,
+    "full_period_n": 215,
+    "raw": {
+     "sharpe": 2.076,
+     "ci_lo": 0.285,
+     "psr": 0.993,
+     "profit_factor": 2.009,
+     "sortino": 8.642,
+     "n": 59,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.899,
+     "ci_lo": 0.114,
+     "psr": 0.9874,
+     "profit_factor": 1.883,
+     "sortino": 7.904,
+     "n": 59,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 53,
+    "full_period_n": 197,
+    "raw": {
+     "sharpe": 1.942,
+     "ci_lo": 0.065,
+     "psr": 0.9859,
+     "profit_factor": 1.925,
+     "sortino": 8.984,
+     "n": 53,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.768,
+     "ci_lo": -0.103,
+     "psr": 0.9766,
+     "profit_factor": 1.807,
+     "sortino": 8.178,
+     "n": 53,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "institutional_strong_conviction_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "REPRODUCED",
+   "rows": 366,
+   "leaked_rows": 34,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 20,
+    "carry:avgvol<min": 6,
+    "daily:not-member-today": 6,
+    "carry:price<min": 2
+   },
+   "leaked_holdout_rows": 14,
+   "leaked_pnl_sum": 58.991600000000005,
+   "total_pnl_sum": 1003.9005999999999,
+   "with_leaks_score": {
+    "holdout_n": 125,
+    "full_period_n": 366,
+    "raw": {
+     "sharpe": 1.777,
+     "ci_lo": 0.864,
+     "psr": 1.0,
+     "profit_factor": 2.861,
+     "sortino": 3.582,
+     "n": 125,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.695,
+     "ci_lo": 0.785,
+     "psr": 1.0,
+     "profit_factor": 2.721,
+     "sortino": 3.416,
+     "n": 125,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 111,
+    "full_period_n": 332,
+    "raw": {
+     "sharpe": 2.108,
+     "ci_lo": 1.13,
+     "psr": 1.0,
+     "profit_factor": 3.464,
+     "sortino": 4.324,
+     "n": 111,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 2.021,
+     "ci_lo": 1.045,
+     "psr": 1.0,
+     "profit_factor": 3.284,
+     "sortino": 4.144,
+     "n": 111,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "xs_momentum_top_decile",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "REPRODUCED",
+   "rows": 84,
+   "leaked_rows": 2,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:avgvol<min": 1,
+    "carry:not-in-PIT": 1
+   },
+   "leaked_holdout_rows": 1,
+   "leaked_pnl_sum": -6.473800000000001,
+   "total_pnl_sum": 250.0499,
+   "with_leaks_score": {
+    "holdout_n": 32,
+    "full_period_n": 84,
+    "raw": {
+     "sharpe": 3.085,
+     "ci_lo": 1.2,
+     "psr": 0.999,
+     "profit_factor": 4.829,
+     "sortino": 4.83,
+     "n": 32,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 2.938,
+     "ci_lo": 1.067,
+     "psr": 0.9985,
+     "profit_factor": 4.468,
+     "sortino": 4.599,
+     "n": 32,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 31,
+    "full_period_n": 82,
+    "raw": {
+     "sharpe": 3.105,
+     "ci_lo": 1.184,
+     "psr": 0.9988,
+     "profit_factor": 4.778,
+     "sortino": 4.931,
+     "n": 31,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 2.96,
+     "ci_lo": 1.052,
+     "psr": 0.9982,
+     "profit_factor": 4.425,
+     "sortino": 4.7,
+     "n": 31,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "xs_low_beta_with_smart_money_long",
+   "role": "STEP2_ADMISSION",
+   "exit": "time_stop_10d",
+   "status": "REPRODUCED",
+   "rows": 452,
+   "leaked_rows": 2,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:avgvol<min": 2
+   },
+   "leaked_holdout_rows": 1,
+   "leaked_pnl_sum": 4.9719999999999995,
+   "total_pnl_sum": 47.460699999999974,
+   "with_leaks_score": {
+    "holdout_n": 73,
+    "full_period_n": 452,
+    "raw": {
+     "sharpe": 1.51,
+     "ci_lo": 0.327,
+     "psr": 0.995,
+     "profit_factor": 2.286,
+     "sortino": 2.161,
+     "n": 73,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.323,
+     "ci_lo": 0.147,
+     "psr": 0.9881,
+     "profit_factor": 2.069,
+     "sortino": 1.895,
+     "n": 73,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 72,
+    "full_period_n": 450,
+    "raw": {
+     "sharpe": 1.533,
+     "ci_lo": 0.34,
+     "psr": 0.9951,
+     "profit_factor": 2.303,
+     "sortino": 2.205,
+     "n": 72,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.347,
+     "ci_lo": 0.16,
+     "psr": 0.9886,
+     "profit_factor": 2.088,
+     "sortino": 1.938,
+     "n": 72,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "three_white_soldiers",
+   "role": "STEP2_ADMISSION",
+   "exit": "class_time_stop",
+   "status": "REPRODUCED",
+   "rows": 343,
+   "leaked_rows": 3,
+   "unknown_rows": 0,
+   "by_reason": {
+    "daily:not-member-today": 3
+   },
+   "leaked_holdout_rows": 0,
+   "leaked_pnl_sum": -13.025400000000001,
+   "total_pnl_sum": -48.936499999999995,
+   "with_leaks_score": {
+    "holdout_n": 36,
+    "full_period_n": 343,
+    "raw": {
+     "sharpe": 1.779,
+     "ci_lo": -0.164,
+     "psr": 0.9653,
+     "profit_factor": 2.154,
+     "sortino": 2.873,
+     "n": 36,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.483,
+     "ci_lo": -0.447,
+     "psr": 0.9355,
+     "profit_factor": 1.886,
+     "sortino": 2.395,
+     "n": 36,
+     "all_live_gates": false,
+     "n_gates": 5,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": false,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 36,
+    "full_period_n": 340,
+    "raw": {
+     "sharpe": 1.779,
+     "ci_lo": -0.164,
+     "psr": 0.9653,
+     "profit_factor": 2.154,
+     "sortino": 2.873,
+     "n": 36,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    },
+    "net": {
+     "sharpe": 1.483,
+     "ci_lo": -0.447,
+     "psr": 0.9355,
+     "profit_factor": 1.886,
+     "sortino": 2.395,
+     "n": 36,
+     "all_live_gates": false,
+     "n_gates": 5,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": false,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "xs_momentum_with_smart_money_long",
+   "role": "FUNNEL_CELL",
+   "exit": "breakeven_plus_trail",
+   "status": "REPRODUCED",
+   "rows": 658,
+   "leaked_rows": 22,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 16,
+    "carry:avgvol<min": 6
+   },
+   "leaked_holdout_rows": 5,
+   "leaked_pnl_sum": 49.86429977416992,
+   "total_pnl_sum": 3737.67724609375,
+   "with_leaks_score": {
+    "holdout_n": 162,
+    "full_period_n": 658,
+    "net": {
+     "sharpe": 1.146,
+     "ci_lo": 0.606,
+     "psr": 1.0,
+     "profit_factor": 4.234,
+     "sortino": 4.754,
+     "n": 162,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 157,
+    "full_period_n": 636,
+    "net": {
+     "sharpe": 1.154,
+     "ci_lo": 0.605,
+     "psr": 1.0,
+     "profit_factor": 4.208,
+     "sortino": 4.846,
+     "n": 157,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "totm_long",
+   "role": "FUNNEL_CELL",
+   "exit": "breakeven_plus_trail",
+   "status": "REPRODUCED",
+   "rows": 343,
+   "leaked_rows": 13,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 7,
+    "carry:avgvol<min": 5,
+    "daily:not-member-today": 1
+   },
+   "leaked_holdout_rows": 4,
+   "leaked_pnl_sum": 39.28779983520508,
+   "total_pnl_sum": 1526.958251953125,
+   "with_leaks_score": {
+    "holdout_n": 86,
+    "full_period_n": 343,
+    "net": {
+     "sharpe": 1.159,
+     "ci_lo": 0.35,
+     "psr": 1.0,
+     "profit_factor": 4.699,
+     "sortino": 7.963,
+     "n": 86,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 82,
+    "full_period_n": 330,
+    "net": {
+     "sharpe": 1.236,
+     "ci_lo": 0.415,
+     "psr": 1.0,
+     "profit_factor": 5.641,
+     "sortino": 9.423,
+     "n": 82,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "52w_high_breakout_pullback_long",
+   "role": "FUNNEL_CELL",
+   "exit": "breakeven_plus_trail",
+   "status": "REPRODUCED",
+   "rows": 146,
+   "leaked_rows": 6,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:avgvol<min": 3,
+    "daily:not-member-today": 3
+   },
+   "leaked_holdout_rows": 1,
+   "leaked_pnl_sum": 7.320799827575684,
+   "total_pnl_sum": 547.1753540039062,
+   "with_leaks_score": {
+    "holdout_n": 50,
+    "full_period_n": 146,
+    "net": {
+     "sharpe": 1.281,
+     "ci_lo": 0.207,
+     "psr": 1.0,
+     "profit_factor": 4.377,
+     "sortino": 6.592,
+     "n": 50,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 49,
+    "full_period_n": 140,
+    "net": {
+     "sharpe": 1.3,
+     "ci_lo": 0.217,
+     "psr": 1.0,
+     "profit_factor": 4.471,
+     "sortino": 6.645,
+     "n": 49,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "mfi_oversold_with_smart_money_long",
+   "role": "FUNNEL_CELL",
+   "exit": "breakeven_plus_trail",
+   "status": "REPRODUCED",
+   "rows": 242,
+   "leaked_rows": 11,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 6,
+    "carry:avgvol<min": 3,
+    "daily:not-member-today": 2
+   },
+   "leaked_holdout_rows": 6,
+   "leaked_pnl_sum": 26.80860137939453,
+   "total_pnl_sum": 636.5040283203125,
+   "with_leaks_score": {
+    "holdout_n": 71,
+    "full_period_n": 242,
+    "net": {
+     "sharpe": 1.01,
+     "ci_lo": 0.136,
+     "psr": 0.9982,
+     "profit_factor": 2.571,
+     "sortino": 2.809,
+     "n": 71,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 65,
+    "full_period_n": 231,
+    "net": {
+     "sharpe": 1.014,
+     "ci_lo": 0.115,
+     "psr": 0.9978,
+     "profit_factor": 2.623,
+     "sortino": 2.969,
+     "n": 65,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "xs_combined_momentum_low_ivol",
+   "role": "FUNNEL_CELL",
+   "exit": "breakeven_plus_trail",
+   "status": "REPRODUCED",
+   "rows": 211,
+   "leaked_rows": 0,
+   "unknown_rows": 0,
+   "by_reason": {},
+   "leaked_holdout_rows": 0,
+   "leaked_pnl_sum": 0.0,
+   "total_pnl_sum": 853.494873046875,
+   "with_leaks_score": {
+    "holdout_n": 35,
+    "full_period_n": 211,
+    "net": {
+     "sharpe": 1.158,
+     "ci_lo": 0.226,
+     "psr": 0.9999,
+     "profit_factor": 5.752,
+     "sortino": 6.307,
+     "n": 35,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": null
+  },
+  {
+   "line": "poc_magnet_long",
+   "role": "FUNNEL_CELL",
+   "exit": "breakeven_plus_trail",
+   "status": "REPRODUCED",
+   "rows": 589,
+   "leaked_rows": 14,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:not-in-PIT": 7,
+    "carry:avgvol<min": 6,
+    "daily:not-member-today": 1
+   },
+   "leaked_holdout_rows": 6,
+   "leaked_pnl_sum": 71.81260681152344,
+   "total_pnl_sum": 2547.634765625,
+   "with_leaks_score": {
+    "holdout_n": 151,
+    "full_period_n": 589,
+    "net": {
+     "sharpe": 1.026,
+     "ci_lo": 0.576,
+     "psr": 1.0,
+     "profit_factor": 4.978,
+     "sortino": 4.859,
+     "n": 151,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 145,
+    "full_period_n": 575,
+    "net": {
+     "sharpe": 1.03,
+     "ci_lo": 0.569,
+     "psr": 1.0,
+     "profit_factor": 4.94,
+     "sortino": 4.85,
+     "n": 145,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  },
+  {
+   "line": "smc_bos_retest_entry",
+   "role": "FUNNEL_CELL",
+   "exit": "breakeven_plus_trail",
+   "status": "REPRODUCED",
+   "rows": 202,
+   "leaked_rows": 7,
+   "unknown_rows": 0,
+   "by_reason": {
+    "carry:avgvol<min": 3,
+    "carry:not-in-PIT": 3,
+    "daily:not-member-today": 1
+   },
+   "leaked_holdout_rows": 3,
+   "leaked_pnl_sum": -24.04990005493164,
+   "total_pnl_sum": 582.83642578125,
+   "with_leaks_score": {
+    "holdout_n": 55,
+    "full_period_n": 202,
+    "net": {
+     "sharpe": 1.013,
+     "ci_lo": 0.268,
+     "psr": 1.0,
+     "profit_factor": 4.633,
+     "sortino": 4.312,
+     "n": 55,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   },
+   "clean_score": {
+    "holdout_n": 52,
+    "full_period_n": 195,
+    "net": {
+     "sharpe": 1.102,
+     "ci_lo": 0.347,
+     "psr": 1.0,
+     "profit_factor": 5.918,
+     "sortino": 5.544,
+     "n": 52,
+     "all_live_gates": true,
+     "n_gates": 6,
+     "gates": {
+      "pooled_sharpe": true,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+     }
+    }
+   }
+  }
+ ]
+}

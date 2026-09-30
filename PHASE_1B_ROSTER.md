@@ -80,13 +80,13 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 
 | Strategy | Dir | Review | Producer combination | Exit | IS Shrp | IS ci_lo | HO Shrp | HO ci_lo | margin | psr | PF | Sortino | WR | Exp | HO n | Full n | Mirror |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `smc_breaker_block_long` | long | **PROVISIONAL-UNREVIEWED** | P1_swing_length=50, P6_span=50; close_mitigation=True, break_pct_max=0.02, age_bars_max=None, tail_n=20 | `time_stop_10d` |   0.45 |  -0.39 |   1.15 |  -0.41 | +0.152 |   1.00 |   1.94 |   1.93 | 0.537 |   1.31 | 41 | 180 | `smc_breaker_block_short` |
+| `smc_breaker_block_long` | long | **PROVISIONAL-UNREVIEWED** | P1_swing_length=50, P6_span=50; close_mitigation=True, break_pct_max=0.02, age_bars_max=None, tail_n=20 | `time_stop_10d` |   0.45 |  -0.39 |   1.15 |  -0.41 | +0.152 |  0.94† |   1.94 |   1.93 | 0.537 |   1.31 | 41 | 180 | `smc_breaker_block_short` |
 | `pead_long_high_yoy_growth_only` | long | **OFFLINE-CAMPAIGN-PSR-N/E** | offline_campaign=B2638/B2644; drift_window_days=20.0, yoy_growth_long_threshold=0.1 | `time_stop_10d` |   1.48 |   1.12 |   1.15 |   0.43 | +0.148 |   1.00 |   1.91 |   2.37 | 0.510 |   1.55 | 196 | 988 | `pead_short_negative_yoy_growth` |
 | `pead_with_smart_money_long` | long | **PEEKED-BY-CONSTRUCTION-NO-PREREGISTRATION** | offline_campaign=B2649/B2651; drift_window_days=60.0, yoy_growth_threshold=0.05, announcement_return_threshold=0.05 | `time_stop_10d` |   0.87 |   0.14 |   1.31 |  -0.33 | +0.308 |   0.96 |   2.32 |   2.11 | 0.568 |   1.53 | 37 | 215 | LONG-ONLY-DATA |
 | `institutional_breakout_confirmation_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=xs_max_anomaly, op=ge; xs_max_anomaly=0.0719, strategy=institutional_breakout_confirmation_long | `r_multiple_2r` |   0.45 |  -0.84 |   3.13 |   0.73 | +2.132 |   1.00 |   2.84 |  10.01 | 0.529 |   2.97 | 34 | 128 | LONG-ONLY-DATA |
 | `institutional_committed_growth_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=xs_max_anomaly, op=ge; xs_max_anomaly=0.0705, strategy=institutional_committed_growth_long | `time_stop_10d` |   1.19 |   0.55 |   1.66 |   0.81 | +0.658 |   1.00 |   2.62 |   3.39 | 0.625 |   3.94 | 144 | 387 | LONG-ONLY-DATA |
 | `institutional_high_conviction_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=xs_max_anomaly, op=ge; xs_max_anomaly=0.0791, strategy=institutional_high_conviction_long | `time_stop_10d` |   0.76 |   0.23 |   1.40 |   0.56 | +0.399 |   1.00 |   2.24 |   2.77 | 0.555 |   3.35 | 146 | 492 | LONG-ONLY-DATA |
-| `institutional_multi_quarter_persistence_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=xs_max_anomaly, op=ge; xs_max_anomaly=0.0668, strategy=institutional_multi_quarter_persistence_long | `time_stop_10d` |   1.08 |   0.55 |   1.62 |   0.78 | +0.624 |   1.00 |   2.54 |   3.12 | 0.626 |   3.35 | 147 | 505 | NEEDS-CREATION |
+| `institutional_multi_quarter_persistence_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=xs_max_anomaly, op=ge; xs_max_anomaly=0.0668, strategy=institutional_multi_quarter_persistence_long | `time_stop_10d` |   1.08 |   0.55 |   1.62 |   0.78 | +0.624 |   1.00 |   2.54 |   3.12 | 0.626 |   3.35 | 147 | 505 | LONG-ONLY-DATA |
 | `institutional_oversold_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=sector_strongest_rs, op=le; sector_strongest_rs=0.0517, strategy=institutional_oversold_long | `r_multiple_2r` |  -1.55 |  -2.69 |   2.08 |   0.02 | +1.084 |   0.98 |   2.11 |   6.70 | 0.543 |   1.78 | 35 | 156 | LONG-ONLY-DATA |
 | `institutional_persistence_oversold_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=institutional_new_positions, op=ge; institutional_new_positions=187.0, strategy=institutional_persistence_oversold_long | `time_stop_10d` |  -0.15 |  -1.18 |   1.82 |   0.45 | +0.820 |   1.00 |   2.61 |   3.29 | 0.673 |   2.52 | 55 | 145 | LONG-ONLY-DATA |
 | `institutional_recent_init_momentum_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=xs_max_anomaly, op=ge; xs_max_anomaly=0.0752, strategy=institutional_recent_init_momentum_long | `r_multiple_2r` |   0.83 |   0.23 |   1.23 |   0.02 | +0.231 |   0.98 |   1.53 |   3.22 | 0.432 |   1.29 | 111 | 454 | LONG-ONLY-DATA |
@@ -95,6 +95,8 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 | `xs_momentum_top_decile` | long | **GRID-SELECTED-OWNER-RULED / CONTROL-REFUTED-ATTRIBUTION / DISCLOSED-RE-READ** | campaign=B2673/B2678 breadth (two-legs 11.2b2), axes=pct_from_vwap stacked on the depth-admitted base; xs_momentum_12_1=0.529, pct_from_vwap=36.6266 | `time_stop_10d` |   1.93 |   0.52 |   3.08 |   1.20 | +2.085 |   1.00 |   4.83 |   4.83 | 0.719 |   4.19 | 32 | 84 | `xs_momentum_bottom_decile_short` |
 | `xs_low_beta_with_smart_money_long` | long | **MEASUREMENT-SURFACED-OWNER-RULED / IS-HOLDOUT-INVERSION** | campaign=B2674 composite variant test (owner-ruled measurement), axes=none - baseline admission;  | `time_stop_10d` |  -0.20 |  -0.70 |   1.51 |   0.33 | +0.510 |   0.99 |   2.29 |   2.16 | 0.658 |   1.62 | 73 | 452 | LONG-ONLY-DATA |
 | `three_white_soldiers` | long | **GRID-SELECTED-OWNER-RULED / DISCLOSED-RE-READ / IS-HOLDOUT-INVERSION** | campaign=candle_tws c14 breadth (S6-B3112c, runbook 3.6 full nine items), axes=producer c14 (n_bars 3, body 0.5, step 0.0, wick 0.3) + breadth B1 cot_ndx_mmoney_pctile_3y >= 0.637, producer_combination=CANDLE_N_BARS=3, CANDLE_MIN_BODY_PCT=0.5, CANDLE_MIN_STEP_PCT=0.0, CANDLE_MAX_WICK_PCT=0.3; axis=cot_ndx_mmoney_pctile_3y, op=ge, level=0.637 | `class_time_stop` |  -0.42 |      - |   1.78 |  -0.16 |      - |   0.97 |   2.15 |   2.87 |     - |      - | 36 | 343 | `three_black_crows_short` |
+
+† psr re-derived on CURRENT code, net basis (S6-B3136): the grid's stored value predates the B2646 PSR units fix, so it is not shown; 'pending' = the re-derivation has not run yet.
 
 **Net-basis labels (S6-B3122, owner-approved 2026-09-29; 15 of 15 rows carry one).** The Step-2 reads of record for most admissions scored the cube's RAW pnl_pct (no cost, no winsor cap - L879). Re-scored READ-ONLY on the roster basis (clip +/-300, minus 0.20 per trade; roster_core.py:181) over the SAME stored trades, behind a fail-closed reproduction gate (output_audit/b3128_admissions_net_rescore.json). A label changes no admission; any removal is a separate per-line owner ruling.
     - `smc_breaker_block_long`: ALREADY-NET
@@ -112,6 +114,11 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
     - `xs_momentum_top_decile`: raw HO sharpe 3.085 -> net 2.938; net all_live_gates=True
     - `xs_low_beta_with_smart_money_long`: raw HO sharpe 1.51 -> net 1.323; net all_live_gates=True
     - `three_white_soldiers`: raw HO sharpe 1.779 -> net 1.483; net all_live_gates=False; failing: psr
+
+**Net near-misses (S6-B3136, owner 2026-09-29: *"1 approve your recommendation"*; 3 of 15 admissions).** Kept admitted. Each is STRUCK if its net PSR is still below the live psr gate (0.95) after 20 more paper trades - the 20 is a CHOSEN number, owner-approved.
+    - `smc_breaker_block_long`: net PSR 0.939 vs gate 0.95; failing: psr (drift: output_audit/b3137_smc_psr_rederived.json (stored drifted: psr 0.939 != 1.0))
+    - `pead_with_smart_money_long`: net PSR 0.9336 vs gate 0.95; failing: psr (rescored: output_audit/b3128_admissions_net_rescore.json)
+    - `three_white_soldiers`: net PSR 0.9355 vs gate 0.95; failing: psr (rescored: output_audit/b3128_admissions_net_rescore.json)
 
 **PROVISIONAL-UNREVIEWED (1 of 15).** These admissions come from a Step-2 config whose four JUDGMENT post-config steps have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436 / L721). The five AUTO steps DID run and are DONE. The completeness gate now BLOCKS such a config (S6-B2440). The row stands, marked, until the pilot review clears it; if that review changes the verdict, the admission is revisited.
     - `smc_breaker_block_long`: S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited.
@@ -140,12 +147,28 @@ Owner standing directive: *promoted longs carry short mirrors by default* - the 
 
 - **REGISTERED and retained, funnel cells (6):** `52w_low_breakdown_pullback_short`, `mfi_overbought_short`, `poc_magnet_short`, `totm_short`, `xs_combined_momentum_high_ivol_short`, `xs_momentum_bottom_decile_short`
 - **REGISTERED and retained, Step-2 admissions (3):** `smc_breaker_block_short`, `pead_short_negative_yoy_growth`, `three_black_crows_short`
-- **LONG-ONLY DATA, mirror excused (0):**
+- **LONG-ONLY DATA, mirror excused, funnel cells (0):**
     - none
+- **LONG-ONLY DATA, mirror excused, Step-2 admissions (11):**
+    - `pead_with_smart_money_long` - consumes `cfo_buy`, `insider_cluster_active`, `institutional_buy`, `institutional_strong_buy`, `large_dollar_buy`
+    - `institutional_breakout_confirmation_long` - consumes `institutional_buy`
+    - `institutional_committed_growth_long` - consumes `committed_growth_holders`, `institutional_increased`
+    - `institutional_high_conviction_long` - consumes `institutional_new_positions`
+    - `institutional_multi_quarter_persistence_long` - consumes `persistent_holders_4q`, `total_active_holders`
+    - `institutional_oversold_long` - consumes `institutional_buy`
+    - `institutional_persistence_oversold_long` - consumes `institutional_increased`
+    - `institutional_recent_init_momentum_long` - consumes `institutional_new_positions`
+    - `institutional_recent_init_volume_long` - consumes `institutional_new_positions`
+    - `institutional_strong_conviction_long` - consumes `institutional_increased`, `institutional_new_positions`
+    - `xs_low_beta_with_smart_money_long` - consumes `cfo_buy`, `insider_cluster_active`, `institutional_buy`, `institutional_strong_buy`, `large_dollar_buy`
 - **DUAL - own short branch is the mirror, nothing to create (1):** `smc_bos_retest_entry`
-- **NEEDS CREATION (0):** none
+- **NEEDS CREATION (0; funnel 0 + Step-2 admissions 0):** none
 
 **Deployable total: 7 graded cells + 6 funnel mirrors + 1 dual self-mirrors + 15 Step-2 admissions + 3 admission mirrors = 31 distinct strategies** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
+
+**After costs (S6-B3136, owner-approved 2026-09-29): 19 of 22 long lines clear all six live gates on current code.** Missing: `smc_breaker_block_long`, `pead_with_smart_money_long`, `three_white_soldiers` - net near-misses kept admitted under the forward strike rule.
+
+**Closed to re-testing (owner 2026-09-29: *"2 yes. No more retesting"*): 31 names frozen in `output_audit/phase1b_closed_set_frozen.json`; removed from the derived membership since the freeze: none.**
 
 ## What this roster does NOT establish
 

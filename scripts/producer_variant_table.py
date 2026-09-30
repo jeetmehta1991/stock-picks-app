@@ -3422,6 +3422,22 @@ def phase1b_admitted(root: Path | None = None) -> tuple:
     for line in rt.splitlines():
         if "retained, Step-2 admissions" in line:
             names.update(_re.findall(r"`([A-Za-z0-9_]+)`", line))
+    # S6-B3135 (owner ruling 2026-09-29, "2 yes. No more retesting"): the
+    # CLOSED population is the WHOLE Phase 1B roster - 7 graded funnel
+    # cells, 15 Step-2 admissions and 9 mirrors - read through the ONE
+    # membership reader. MEASURED before this: the two records above held
+    # 18 of the 31, so the 7 funnel longs and 6 of their mirrors stayed
+    # launchable. The reader raises on a partial input, and that fails
+    # CLOSED here exactly like an unreadable admissions file (L642).
+    try:
+        import phase1b_membership as _pm
+        names.update(_pm.members(root))
+        # S6-B3135 (B3139, council): the FROZEN closed set - the names the
+        # owner's ruling closed - is unioned, so a name dropped from a
+        # derived record later stays closed until the owner says otherwise
+        names.update(_pm.frozen_closed_set(root))
+    except Exception as exc:
+        return frozenset(), f"Phase 1B membership unreadable: {exc!r}"
     return frozenset(names), ""
 
 
@@ -3456,7 +3472,9 @@ def _admitted_retest_refusals(doc: dict, root: Path, strats: list) -> list:
                 f"{s}: ALREADY ADMITTED to Phase 1B - a strategy in the roster "
                 "is CLOSED to further optimisation testing (owner ruling "
                 "2026-09-12: 'We stop testing the strategies once they are in "
-                "the phase 1B unless you get specific over rides from me'). "
+                "the phase 1B unless you get specific over rides from me'; "
+                "and 2026-09-29, for every roster member including graded "
+                "funnel cells and mirrors: '2 yes. No more retesting'). "
                 "MEASURED COST OF THE INSTANCE THAT PRODUCED THIS GATE: 2.41 h "
                 "of engine time graded an admitted strategy while the actual "
                 "campaign subject rode along ungraded (S6-B2731). To override, "

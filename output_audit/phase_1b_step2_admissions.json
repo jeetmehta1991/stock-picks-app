@@ -28,6 +28,15 @@
     "ruled": "owner 2026-09-29 'Approve all recs' (S6-B3122): read-only labels; removal a separate per-line ruling",
     "artifact": "output_audit/b3128_admissions_net_rescore.json",
     "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.py:181"
+   },
+   "net_near_miss": {
+    "label": "NET-NEAR-MISS",
+    "ticket": "S6-B3136",
+    "ruled": "2026-09-29",
+    "ruling_verbatim": "1 approve your recommendation",
+    "kept": "admitted as a net near-miss by owner ruling; the failing gate(s) and the net PSR are rendered from the re-score, never typed here",
+    "strike_rule": "STRUCK if its net PSR is still below the live psr gate (PASSING_CRITERIA min_psr) after 20 more paper trades; the 20 is a CHOSEN number, owner-approved 2026-09-29",
+    "psr_source": "output_audit/b3137_smc_psr_rederived.json"
    }
   },
   {
@@ -144,6 +153,15 @@
      "ge",
      "ge"
     ]
+   },
+   "net_near_miss": {
+    "label": "NET-NEAR-MISS",
+    "ticket": "S6-B3136",
+    "ruled": "2026-09-29",
+    "ruling_verbatim": "1 approve your recommendation",
+    "kept": "admitted as a net near-miss by owner ruling; the failing gate(s) and the net PSR are rendered from the re-score, never typed here",
+    "strike_rule": "STRUCK if its net PSR is still below the live psr gate (PASSING_CRITERIA min_psr) after 20 more paper trades; the 20 is a CHOSEN number, owner-approved 2026-09-29",
+    "psr_source": "net_rescore"
    }
   },
   {
@@ -835,6 +853,15 @@
     "ops": [
      "ge"
     ]
+   },
+   "net_near_miss": {
+    "label": "NET-NEAR-MISS",
+    "ticket": "S6-B3136",
+    "ruled": "2026-09-29",
+    "ruling_verbatim": "1 approve your recommendation",
+    "kept": "admitted as a net near-miss by owner ruling; the failing gate(s) and the net PSR are rendered from the re-score, never typed here",
+    "strike_rule": "STRUCK if its net PSR is still below the live psr gate (PASSING_CRITERIA min_psr) after 20 more paper trades; the 20 is a CHOSEN number, owner-approved 2026-09-29",
+    "psr_source": "net_rescore"
    }
   }
  ],

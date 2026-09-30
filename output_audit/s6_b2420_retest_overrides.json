@@ -1,0 +1,18 @@
+{
+  "ticket": "S6-B2420",
+  "purpose": "The owner's per-strategy override for the Phase 1B launch gate (producer_variant_table._admitted_retest_refusals). Every S6-B2420 Step-2 spec copies the ONE entry naming its graded strategy into owner_override_retest_admitted; an entry is never copied to a spec grading a different strategy, and no other strategy is overridden by this file.",
+  "ruled": ["2026-09-24", "2026-09-29"],
+  "owner_words": {
+    "2026-09-24": "Approve all other recs",
+    "2026-09-29": "3 yes approve your recommendation"
+  },
+  "overrides": {
+    "52w_low_breakdown_pullback_short": "owner 2026-09-24 'Approve all other recs' (S6-B2420: Step 2 on the 7 standalone short legs, one at a time) + owner 2026-09-29 '3 yes approve your recommendation' (the S6-B2420 words are this leg's re-test override)",
+    "mfi_overbought_short": "owner 2026-09-24 'Approve all other recs' (S6-B2420: Step 2 on the 7 standalone short legs, one at a time) + owner 2026-09-29 '3 yes approve your recommendation' (the S6-B2420 words are this leg's re-test override)",
+    "poc_magnet_short": "owner 2026-09-24 'Approve all other recs' (S6-B2420: Step 2 on the 7 standalone short legs, one at a time) + owner 2026-09-29 '3 yes approve your recommendation' (the S6-B2420 words are this leg's re-test override)",
+    "totm_short": "owner 2026-09-24 'Approve all other recs' (S6-B2420: Step 2 on the 7 standalone short legs, one at a time) + owner 2026-09-29 '3 yes approve your recommendation' (the S6-B2420 words are this leg's re-test override)",
+    "xs_combined_momentum_high_ivol_short": "owner 2026-09-24 'Approve all other recs' (S6-B2420: Step 2 on the 7 standalone short legs, one at a time) + owner 2026-09-29 '3 yes approve your recommendation' (the S6-B2420 words are this leg's re-test override)",
+    "xs_momentum_bottom_decile_short": "owner 2026-09-24 'Approve all other recs' (S6-B2420: Step 2 on the 7 standalone short legs, one at a time) + owner 2026-09-29 '3 yes approve your recommendation' (the S6-B2420 words are this leg's re-test override)",
+    "pead_short_negative_yoy_growth": "owner 2026-09-24 'Approve all other recs' (S6-B2420: Step 2 on the 7 standalone short legs, one at a time) + owner 2026-09-29 '3 yes approve your recommendation' (the S6-B2420 words are this leg's re-test override)"
+  }
+}

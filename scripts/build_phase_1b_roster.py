@@ -79,6 +79,65 @@ ASYM_MARKERS = ("institutional_", "insider", "smart_money", "congress", "13f", "
                 "activist", "lobbying", "buyback")
 
 
+# S6-B3135 (B3135): long-only DATA is declared at the PRODUCER, not guessed
+# from a key's spelling. ASYM_MARKERS matches names, and the 13F persistence
+# keys (persistent_holders_4q ...) and insider event keys (cfo_buy ...) carry
+# no marker - so institutional_multi_quarter_persistence_long rendered
+# NEEDS-CREATION although its only data source is 13F. Every key a declared
+# producer returns is listed below; the pin
+# test_b3135_long_only_producer_keys_are_all_declared walks each producer's
+# returned dicts (AST), so a key added there cannot fall through silently.
+LONG_ONLY_PRODUCERS = {
+    ("backtest/signals/institutional_persistence_consumer.py",
+     "compute_persistence_signals"): "13F institutional holdings (persistence precompute)",
+    ("backtest/data/smart_money.py", "insider_signal"):
+        "insider Form 4 transactions (merged into the signal dict by "
+        "signal_loader.inject_insider_signal_keys via signals.update)",
+}
+LONG_ONLY_SOURCE_KEYS = {
+    "persistent_holders_4q": "13F", "persistent_holders_8q": "13F",
+    "avg_position_age_quarters": "13F", "committed_growth_holders": "13F",
+    "total_active_holders": "13F",
+    "signal": "insider", "buy_count": "insider", "sell_count": "insider",
+    "ceo_buy": "insider", "cfo_buy": "insider", "director_only_buy": "insider",
+    "large_dollar_buy": "insider", "concentrated_sell": "insider",
+    "cluster_buy": "insider",
+}
+
+
+def undeclared_long_only_keys(declared=None, root=None) -> list[str]:
+    """S6-B3135: every key a declared long-only PRODUCER returns (string keys
+    of the dict literals in its `return` statements, by AST) must be covered by
+    ASYM_MARKERS or LONG_ONLY_SOURCE_KEYS; returns the uncovered ones as
+    'path::function::key'. A missing producer or function is reported too -
+    an unreadable declaration is not an empty one (L642)."""
+    import ast as _ast
+    declared = LONG_ONLY_SOURCE_KEYS if declared is None else declared
+    root = Path(root) if root is not None else REPO
+    missing = []
+    for (rel, fn) in LONG_ONLY_PRODUCERS:
+        p = root / rel
+        if not p.exists():
+            missing.append(f"{rel}::{fn}::<file missing>")
+            continue
+        tree = _ast.parse(p.read_text(encoding="utf-8"))
+        fns = [n for n in _ast.walk(tree)
+               if isinstance(n, _ast.FunctionDef) and n.name == fn]
+        if not fns:
+            missing.append(f"{rel}::{fn}::<function missing>")
+            continue
+        keys = set()
+        for node in _ast.walk(fns[0]):
+            if isinstance(node, _ast.Return) and isinstance(node.value, _ast.Dict):
+                keys |= {k.value for k in node.value.keys
+                         if isinstance(k, _ast.Constant) and isinstance(k.value, str)}
+        if not keys:
+            missing.append(f"{rel}::{fn}::<no returned dict keys found>")
+        for k in sorted(keys):
+            if not (any(a in k for a in ASYM_MARKERS) or k in declared):
+                missing.append(f"{rel}::{fn}::{k}")
+    return missing
+
 
 def uses_long_only_data(name: str) -> tuple[bool, list[str]]:
     """Decide data-asymmetry from the SIGNALS THE FUNCTION ACTUALLY CONSUMES, never the name.
@@ -114,7 +173,8 @@ def uses_long_only_data(name: str) -> tuple[bool, list[str]]:
             # its keys unknown, which biases toward NEEDS-CREATION (fail-safe
             # toward creating a mirror, never toward excusing one).
             print(f"[mirror-classifier] helper {_h} unreadable for {name}: {_he}")
-    hits = sorted(k for k in keys if any(a in k for a in ASYM_MARKERS))
+    hits = sorted(k for k in keys if any(a in k for a in ASYM_MARKERS)
+                  or k in LONG_ONLY_SOURCE_KEYS)
     return bool(hits), hits
 
 
@@ -247,6 +307,106 @@ def load_admissions(admissions_path=None) -> list[dict]:
     return json.loads(p.read_text(encoding="utf-8")).get("admissions") or []
 
 
+# S6-B3136 (owner ruling 2026-09-29, '1 approve your recommendation'): three
+# admissions stay admitted as NET NEAR-MISSES under a forward strike rule, and
+# the roster shows each admission's CURRENT-CODE net figure - never a stored
+# value that predates a formula fix (smc_breaker_block_long's grid PSR 1.0 was
+# written before the B2646 PSR units fix).
+def rederived_net(adm: dict, root=None):
+    """(net gates | None, kind, source) - the admission's net figure on
+    CURRENT code. kind: 'rescored' (S6-B3122's reproduction-gated re-score -
+    current code by construction), 'reproduced' / 'drift' (the re-score
+    artifact its net_near_miss block names; 'drift' = the trade set's identity
+    reproduced while a STORED metric did not, so the fresh figure stands and
+    the stored one is stale), or None (no current-code figure - the reason is
+    in `source`)."""
+    root = Path(root) if root is not None else REPO
+    nr = adm.get("net_rescore") or {}
+    if nr.get("status") == "RESCORED" and nr.get("net"):
+        return nr["net"], "rescored", nr.get("artifact") or "net_rescore"
+    src = (adm.get("net_near_miss") or {}).get("psr_source")
+    if not src or src == "net_rescore":
+        return None, None, "no current-code net re-score recorded"
+    p = root / src
+    if not p.exists():
+        return None, None, f"{src} not yet written (post-landing re-derivation)"
+    doc = json.loads(p.read_text(encoding="utf-8"))
+    # S6-B3136 (B3139, council): a figure is current only while the metric
+    # code that computed it is - a stamp that is absent or differs from
+    # today's fingerprint reads 'pending', never the stale figure
+    import roster_core as _rc
+    stamp = ((doc.get("metric_code") or {}).get("sha256") or "")
+    now = _rc.metric_code_fingerprint()["sha256"]
+    if stamp != now:
+        return None, None, (f"{src}: metric code "
+                            f"{'unstamped' if not stamp else stamp[:12]} != current "
+                            f"{now[:12]} - re-derive before quoting")
+    rows = doc.get("rows") or []
+    row = next((x for x in rows if x.get("line") == adm["strategy"]), None)
+    if row is None:
+        return None, None, f"{src} carries no row for the line"
+    if row.get("status") == "REPRODUCED":
+        net = (row.get("with_leaks_score") or {}).get("net")
+        return (net, "reproduced", src) if net else (None, None, f"{src}: no net")
+    fresh = (row.get("fresh") or {}).get("net")
+    if row.get("identity_reproduced") and fresh:
+        return fresh, "drift", f"{src} (stored drifted: {'; '.join(map(str, row.get('reason') or []))})"
+    return None, None, f"{src}: NOT-REPRODUCED ({row.get('reason')})"
+
+
+def _psr_cell(adm: dict, r: dict, fmt) -> str:
+    """The locked table's psr cell. Unchanged for every admission EXCEPT one
+    whose net_near_miss block names a re-derivation artifact: that cell shows
+    the fresh value with a dagger, or 'pending' - never the stale stored one."""
+    src = (adm.get("net_near_miss") or {}).get("psr_source")
+    if not src or src == "net_rescore":
+        return fmt(r.get("psr"))
+    net, kind, _ = rederived_net(adm)
+    if kind in ("drift", "reproduced") and isinstance((net or {}).get("psr"), (int, float)):
+        return f"{net['psr']:>5.2f}\u2020"
+    return "pending\u2020"
+
+
+def net_clearance(adms: list, cells: list, root=None) -> dict:
+    """The owner-ruled headline (S6-B3136): how many of the roster's LONG
+    lines clear all six live gates AFTER COSTS on current code. Funnel cells
+    are graded on the net basis by construction (roster_core.load_cube);
+    admissions read rederived_net. A line with no current-code figure is
+    UNDETERMINED - named, never counted either way."""
+    clear, miss, undet = [], [], []
+    for c in cells:
+        if c.get("direction") != "long":
+            continue
+        ok = (c.get("holdout") or {}).get("all_live_gates")
+        (clear if ok else miss).append(c["strategy"])
+    for a in adms:
+        if a.get("direction") != "long":
+            continue
+        net, _, _ = rederived_net(a, root)
+        if net is None:
+            undet.append(a["strategy"])
+        elif net.get("all_live_gates"):
+            clear.append(a["strategy"])
+        else:
+            miss.append(a["strategy"])
+    return {"clear": clear, "miss": miss, "undetermined": undet,
+            "total": len(clear) + len(miss) + len(undet)}
+
+
+def net_headline(res: dict) -> str:
+    """One line, every count derived (never a typed figure - L832)."""
+    s = (f"**After costs (S6-B3136, owner-approved 2026-09-29): "
+         f"{len(res['clear'])} of {res['total']} long lines clear all six live "
+         f"gates on current code.**")
+    if res["miss"]:
+        s += (" Missing: " + ", ".join(f"`{m}`" for m in res["miss"])
+              + " - net near-misses kept admitted under the forward strike rule.")
+    if res["undetermined"]:
+        s += (f" Not yet re-derived ({len(res['undetermined'])}): "
+              + ", ".join(f"`{m}`" for m in res["undetermined"]) + ".")
+    return s
+
+
 def step2_admissions_section(A, admissions_path=None) -> None:
     """S6-B2413 (owner instruction 2026-08-30): render owner-ruled Step-2
     admissions into the roster document.
@@ -308,11 +468,17 @@ def step2_admissions_section(A, admissions_path=None) -> None:
         _rev = f"**{_rev}**" if _rev != "REVIEWED" else _rev
         A(f"| `{adm['strategy']}` | {adm['direction']} | {_rev} | {cfg}; {combo} | `{adm['exit']}` | "
           f"{_fmt(r.get('is_sharpe'))} | {_fmt(r.get('is_ci_lo'))} | {_fmt(_admission_ho_sharpe(r))} | "
-          f"{_fmt(r.get('ci_lo'))} | {_admission_margin(r)} | {_fmt(r.get('psr'))} | "
+          f"{_fmt(r.get('ci_lo'))} | {_admission_margin(r)} | {_psr_cell(adm, r, _fmt)} | "
           f"{_fmt(r.get('profit_factor'))} | {_fmt(r.get('sortino'))} | "
           f"{_fmt(r.get('win_rate'), 5, 3)} | {_fmt(r.get('expectancy'))} | "
           f"{r.get('holdout_n')} | {_admission_full_n(r)} | {mir} |")
     A("")
+    if any((a.get("net_near_miss") or {}).get("psr_source") not in (None, "net_rescore")
+           for a in adms):
+        A("\u2020 psr re-derived on CURRENT code, net basis (S6-B3136): the "
+          "grid's stored value predates the B2646 PSR units fix, so it is "
+          "not shown; 'pending' = the re-derivation has not run yet.")
+        A("")
     # S6-B3122 (owner-approved 2026-09-29): the NET-BASIS LABELS - an ADDITIVE
     # section, never a change to the ruled table above (L863: a locked format
     # is pinned on its columns; labels ride beside it). Rendered from each
@@ -344,6 +510,27 @@ def step2_admissions_section(A, admissions_path=None) -> None:
             else:
                 A(f"    - `{a['strategy']}`: {nr.get('status')}"
                   + (f" ({nr.get('reason')})" if nr.get("reason") else ""))
+        A("")
+    # S6-B3136 (owner ruling 2026-09-29): the NET NEAR-MISSES - kept
+    # admitted under a forward strike rule; figures derived, never typed.
+    _nm = [a for a in adms if a.get("net_near_miss")]
+    if _nm:
+        from backtest.config import PASSING_CRITERIA as _PC
+        _gate = _PC["min_psr"]
+        A(f"**Net near-misses (S6-B3136, owner 2026-09-29: "
+          f"*\"1 approve your recommendation\"*; {len(_nm)} of {len(adms)} "
+          f"admissions).** Kept admitted. Each is STRUCK if its net PSR is still "
+          f"below the live psr gate ({_gate}) after 20 more paper trades - the 20 "
+          "is a CHOSEN number, owner-approved.")
+        for a in _nm:
+            net, kind, src = rederived_net(a)
+            if net is None:
+                A(f"    - `{a['strategy']}`: net PSR not yet re-derived ({src})")
+                continue
+            fails = [k for k, v in (net.get("gates") or {}).items() if v is False]
+            A(f"    - `{a['strategy']}`: net PSR {net.get('psr')} vs gate {_gate}"
+              + (f"; failing: {', '.join(fails)}" if fails else "")
+              + f" ({kind}: {src})")
         A("")
     _unrev = [a for a in adms if a.get("review_status") == "PROVISIONAL-UNREVIEWED"]
     if _unrev:
@@ -661,11 +848,22 @@ def main() -> int:
         if (_ms == "REGISTERED" and _mn and _mn not in mirrors_reg
                 and _mn not in adm_mirrors_reg):
             adm_mirrors_reg.append(_mn)
+    # S6-B3135 (B3135): the roll-up read the funnel cells only, so it
+    # printed "0 mirrors to create" while an admission row showed
+    # NEEDS-CREATION. Admissions' excused and to-create statuses count too.
+    adm_mirrors_asym, adm_mirrors_new, _adm_ev = [], [], {}
+    for _a in _adms:
+        _ms, _mn = mirror_status(_a["strategy"])
+        if _ms == "LONG-ONLY-DATA":
+            adm_mirrors_asym.append(_a["strategy"])
+            _adm_ev[_a["strategy"]] = uses_long_only_data(_a["strategy"])[1]
+        elif _ms == "NEEDS-CREATION":
+            adm_mirrors_new.append(_a["strategy"])
     A(f"- **REGISTERED and retained, funnel cells ({len(mirrors_reg)}):** " +
       (", ".join(f"`{m}`" for m in mirrors_reg) if mirrors_reg else "none"))
     A(f"- **REGISTERED and retained, Step-2 admissions ({len(adm_mirrors_reg)}):** " +
       (", ".join(f"`{m}`" for m in adm_mirrors_reg) if adm_mirrors_reg else "none"))
-    A(f"- **LONG-ONLY DATA, mirror excused ({len(mirrors_asym)}):**")
+    A(f"- **LONG-ONLY DATA, mirror excused, funnel cells ({len(mirrors_asym)}):**")
     if mirrors_asym:
         _ev = {r["strategy"]: r.get("asym_signals") or [] for r in kept}
         for m in mirrors_asym:
@@ -677,17 +875,39 @@ def main() -> int:
           "mirror `xs_momentum_bottom_decile_short` is retained.")
     else:
         A("    - none")
+    A(f"- **LONG-ONLY DATA, mirror excused, Step-2 admissions ({len(adm_mirrors_asym)}):**")
+    if adm_mirrors_asym:
+        for m in adm_mirrors_asym:
+            A(f"    - `{m}` - consumes " + ", ".join(f"`{k}`" for k in _adm_ev.get(m, [])))
+    else:
+        A("    - none")
     A(f"- **DUAL - own short branch is the mirror, nothing to create ({len(mirrors_dual)}):** " +
       (", ".join(f"`{m}`" for m in mirrors_dual) if mirrors_dual else "none"))
-    A(f"- **NEEDS CREATION ({len(mirrors_new)}):** " +
-      (", ".join(f"`{m}`" for m in mirrors_new) if mirrors_new else "none"))
+    _new_all = mirrors_new + [m for m in adm_mirrors_new if m not in mirrors_new]
+    A(f"- **NEEDS CREATION ({len(_new_all)}; funnel {len(mirrors_new)} + Step-2 "
+      f"admissions {len(adm_mirrors_new)}):** " +
+      (", ".join(f"`{m}`" for m in _new_all) if _new_all else "none"))
     A("")
     A(f"**Deployable total: {len(kept)} graded cells + {len(mirrors_reg)} funnel mirrors "
       f"+ {len(mirrors_dual)} dual self-mirrors + {len(_adms)} Step-2 admissions "
       f"+ {len(adm_mirrors_reg)} admission mirrors = "
       f"{len(kept) + len(mirrors_reg) + len(_adms) + len(adm_mirrors_reg)} distinct strategies** "
       f"(dual mirrors are already counted in their parent cell), plus "
-      f"{len(mirrors_new)} mirrors to create.")
+      f"{len(_new_all)} mirrors to create.")
+    A("")
+    # S6-B3136: the after-costs headline, derived from the same lists
+    A(net_headline(net_clearance(_adms, kept)))
+    A("")
+    # S6-B3135 (B3139, council): the FROZEN closed set against today's
+    # derived membership - a lost name stays closed and goes to the owner
+    import phase1b_membership as _pm
+    _frz = _pm.frozen_closed_set()
+    _lost = _pm.removed_since_freeze()
+    _lost_txt = ((", ".join(f"`{n}`" for n in _lost)
+                  + " - still closed, the owner's to rule on") if _lost else "none")
+    A(f"**Closed to re-testing (owner 2026-09-29: *\"2 yes. No more retesting\"*): "
+      f"{len(_frz)} names frozen in `{_pm.FROZEN.as_posix()}`; removed from the "
+      f"derived membership since the freeze: {_lost_txt}.**")
     A("")
     A("## What this roster does NOT establish")
     A("")
@@ -738,7 +958,9 @@ def main() -> int:
          "n_cells": len(rows), "n_passed_fdr": len(passed), "n_roster": len(kept),
          "dup_of": dup_of,
          "mirrors": {"registered": mirrors_reg, "long_only_data": mirrors_asym,
-                     "dual_self": mirrors_dual, "needs_creation": mirrors_new},
+                     "dual_self": mirrors_dual, "needs_creation": mirrors_new,
+                     "admissions_long_only_data": adm_mirrors_asym,
+                     "admissions_needs_creation": adm_mirrors_new},
          "roster": [{k: v for k, v in r.items() if k != "trades"} for r in kept],
          "all_rows": rows}, indent=2, default=str), encoding="utf-8")
 
