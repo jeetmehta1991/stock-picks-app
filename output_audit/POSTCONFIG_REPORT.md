@@ -6,15 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (155 entries), 1558 named checks have run and 11 have ever returned non-PASS.**
+**Across the entire ledger (156 entries), 1577 named checks have run and 13 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-50 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_bl_span250_span250).
+50 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_bl_span250_span250 | 2026-09-28T14:33:29 | engine-hook | 0 | none | 0 | 225d9d49e | True | **NO** |
+| output_bl_span250_span250 | 2026-09-28T14:33:29 | engine-hook | 0 | none | 0 | 225d9d49e | True | yes 2026-09-28T14:39:07 |
 | output_bl_span150_span150 | 2026-09-28T12:42:46 | engine-hook | 0 | none | 0 | caef0ba73 | True | yes 2026-09-28T12:47:52 |
 | output_bl_span100_span100 | 2026-09-28T11:50:40 | manual | 0 | none | 0 | c2bc9375e | True | yes 2026-09-28T11:54:38 |
 | output_bl_span050_span050 | 2026-09-28T08:34:54 | engine-hook | 0 | none | 0 | d1a354137 | True | yes 2026-09-28T08:41:43 |
@@ -146,13 +146,14 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | `candle_tbc_c02_b0.0_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=45.094,50.132,54.066,58.812(free, declared); P7=5.000(not swept) | -0.329 | 0.245 | 0.225 | -0.297 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / breakeven_plus_trail | 2024-05-07..2025-04-17 |
 | `candle_tws_c14_b0.5_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.562 | 0.909 | 0.909 | 0.141 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
 | `candle_tws_c14_step2_step2_b0.5_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.975 | 0.082 | 0.082 | -0.063 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / earnings_blackout | 2022-05-16..2026-04-17 |
-| `bl_span009_span009` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=1/3,2/3,0.25,0.75(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | 0.052 | 1.047 | 0.957 | 0.582 | P4_ema_span=9 / breakeven_plus_trail | 2024-06-21..2025-04-25 |
-| `bl_span020_span020` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=1/3,2/3,0.25,0.75(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.65 | 0.98 | 0.979 | -0.361 | P4_ema_span=20 / regime_flip | 2024-08-07..2025-04-11 |
-| `bl_span021_span021` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=1/3,2/3,0.25,0.75(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.386 | 1.03 | 1.03 | -0.458 | P4_ema_span=21 / regime_flip | 2024-08-07..2025-04-11 |
-| `bl_span050_span050` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=1/3,2/3,0.25,0.75(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.088 | 0.53 | 0.53 | 0.042 | P4_ema_span=50 / breakeven_plus_trail | 2024-05-17..2025-04-14 |
-| `bl_span100_span100` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=1/3,2/3,0.25,0.75(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.128 | 0.548 | 0.548 | 0.24 | P4_ema_span=100 / breakeven_plus_trail | 2024-05-06..2025-04-30 |
-| `bl_span150_span150` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=1/3,2/3,0.25,0.75(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.206 | 0.396 | 0.396 | 0.124 | P4_ema_span=150 / breakeven_plus_trail | 2024-05-06..2025-04-29 |
-| `bl_span250_span250` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=1/3,2/3,0.25,0.75(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.139 | 0.502 | 0.502 | 0.295 | P4_ema_span=250 / reverse_signal | 2024-05-06..2025-04-28 |
+| `bl_span009_span009` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) | 0.052 | 1.047 | 0.957 | 0.582 | P4_ema_span=9 / breakeven_plus_trail | 2024-06-21..2025-04-25 |
+| `bl_span020_span020` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) | -0.65 | 0.98 | 0.979 | -0.361 | P4_ema_span=20 / regime_flip | 2024-08-07..2025-04-11 |
+| `bl_span021_span021` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) | -0.386 | 1.03 | 1.03 | -0.458 | P4_ema_span=21 / regime_flip | 2024-08-07..2025-04-11 |
+| `bl_span050_span050` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) | -0.088 | 0.53 | 0.53 | 0.042 | P4_ema_span=50 / breakeven_plus_trail | 2024-05-17..2025-04-14 |
+| `bl_span100_span100` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) | -0.128 | 0.548 | 0.548 | 0.24 | P4_ema_span=100 / breakeven_plus_trail | 2024-05-06..2025-04-30 |
+| `bl_span150_span150` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) | -0.206 | 0.396 | 0.396 | 0.124 | P4_ema_span=150 / breakeven_plus_trail | 2024-05-06..2025-04-29 |
+| `bl_span250_span250` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) | -0.139 | 0.502 | 0.502 | 0.295 | P4_ema_span=250 / reverse_signal | 2024-05-06..2025-04-28 |
+| `bl_step2_p4_9_p4_9` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) | 0.126 | 0.694 | 0.694 | 0.554 | P4_ema_span=9 / breakeven_plus_trail | 2022-05-05..2026-05-04 |
 
 **Parameters tested** - distinct values each config exercised per axis, read from the result rows themselves. `1 value` = the axis was PINNED and contributed no search; an axis absent from the artifact reads `not recorded`, never `1`. **P1 `swing_length` and P6 `span` are the CROSS-CONFIG axes** - they define which config a cube IS and are held FIXED within it, so they show a value rather than a count. Recorded in the artifact since B2138; anything graded before that reads `not recorded`, which is what let a swing-10 cube be re-graded as swing-20 (S6-B2136).
 
@@ -243,13 +244,14 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 
 | config | P1 bb (period, k, recency) identity - lower reclaim | P2 bb identity - upper reclaim (mirror) | P3 ema span (below_ema_N, SHORT leg) | P4 ema span (price_above_ema_N, LONG leg) | P5 rsi span (slow) | P6 rsi span (fast escape-hatch) | P7 vix_band_high flag (upper edge feed) | P8 vix band edges on persisted vix_percentile | P9 adx ceiling | P10 days_to_cover cap (borrow guard, SHORT leg) | P11 VIX-conditional rsi edges |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| `bl_span009_span009` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 1/3,2/3,0.25,0.75(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span020_span020` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 1/3,2/3,0.25,0.75(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span021_span021` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 1/3,2/3,0.25,0.75(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span050_span050` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 1/3,2/3,0.25,0.75(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span100_span100` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 1/3,2/3,0.25,0.75(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span150_span150` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 1/3,2/3,0.25,0.75(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span250_span250` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 1/3,2/3,0.25,0.75(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
+| `bl_span009_span009` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) |
+| `bl_span020_span020` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) |
+| `bl_span021_span021` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) |
+| `bl_span050_span050` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) |
+| `bl_span100_span100` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) |
+| `bl_span150_span150` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) |
+| `bl_span250_span250` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) |
+| `bl_step2_p4_9_p4_9` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | edges 5 tighter per band,B1147 set (40/60, 45/55, 50/50)(free, declared) |
 
 ## TABLE D - STEP-1 RANKED LIST (top 25)
 
@@ -289,20 +291,21 @@ _**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one unified table, no s
 | 24 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 120 | 0.03 | 20 | earnings_blackout | +0.604 | 15 | THIN | 1 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 | 25 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 120 | 0.03 | 50 | earnings_blackout | +0.604 | 15 | THIN | 2 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 
-_810 ranked outcomes across 81 graded configs; 784 distinct signatures._
+_820 ranked outcomes across 82 graded configs; 794 distinct signatures._
 
 **Best within each depth tier** (the comparison a rank order hides):
 
 | tier | best is_ci_lo | at n | rows |
 |---|---|---|---|
-| DEEP | +0.582 | 308 | 528 |
+| DEEP | +0.582 | 308 | 538 |
 | MID | +0.656 | 33 | 191 |
 | THIN | +1.250 | 14 | 91 |
 
-## Index - 81 graded config(s), newest first
+## Index - 82 graded config(s), newest first
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_bl_step2_p4_9_p4_9 | 0.554 | 1272 | 0/24 exits | 8/9 **OPEN: 2_grade_with_config_params** |
 | output_bl_span250_span250 | 0.295 | 698 | 0/24 exits | 9/9 |
 | output_bl_span150_span150 | 0.124 | 539 | 0/24 exits | 9/9 |
 | output_bl_span100_span100 | 0.24 | 414 | 0/24 exits | 9/9 |
@@ -386,6 +389,94 @@ _810 ranked outcomes across 81 graded configs; 784 distinct signatures._
 | output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 combinations | 9/9 |
 
 ## Per-config findings
+
+### output_bl_step2_p4_9_p4_9
+
+**Configuration:** P4_ema_span=9
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.554** (is_sharpe 0.694, 1272 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 8 of 9 steps closed** (6 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check). **1 step(s) NOT closed (2_grade_with_config_params) - this cube BLOCKS the turn gate until each is DONE with evidence or N/A with a reason; SKIPPED is not a disposition (B2520).**
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | FAIL **<-- NOT CLOSED** | free-levels grade exit 2 (reproduction gate or grading failed): [FAIL] score reproduction (S6-B3120f): the production row does not reproduce the landed family grade (breakeven_plus_trail: n 1737 vs family |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=SKIP; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B3119); three legs - raw ewm arithmetic, compute_ema_sma on the PIT slice, the cube record; leg follows the row's own direction (dual strategy, S6-B2917): spot_check_bollinger at manifest ema_span=9; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_bl_step2_p4_9_p4_9_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 10 run: 0 WARN / 0 FAIL / 10 INFO -> output_bl_step2_p4_9_p4_9_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (10 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | N/A | 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
+| 7_implement_in_engine | DONE | engine check PASS on a Step-2 cube: 2 of 2 declared knobs read from the environment + consumer lists match the tree |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_bl_step2_p4_9_p4_9_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 30528 IS rows (41688 cube rows, 11160 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.554 is_sharpe 0.694 fires 1272 - Step-2 admission on the IS-selected exit breakeven_plus_trail: holdout n 465 of full-period 1737, holdout sharpe 0.422, gates 5 of 6 PASS -> FAIL (S6-B2409: clearing the six live gates IS qualification) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 41688 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, META, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/r5_universe_544.txt (verifier is non- | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | e2f5c64d2195ba88 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2022-05-05 .. 2026-05-04 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 11160 entries past 2025-05-05 (not declared a Step-1 cube | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha f2f82f100215 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_bl_step2_p4_9_p4_9_spot_check.json.
+
+**Adversarial lenses (step 5) - 10 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2026-05-05 > HO_START 2025-05-05 -> Step-2 cube; family bollinger_lower)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 465 of 1737 entries in the holdout (Step-2 cube: the holdout is graded separately, never ranked on) |
+| period_concentration | INFO | max year share 0.40 (2025) over 5 years of 1737 entries; WARN > 0.6 |
+| ticker_concentration | INFO | top-5 tickers carry 0.03 of 1737 entries across 496 tickers; WARN > 0.30 |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.554 vs rank-2 [earnings_blackout] 0.46: margin 0.094 between exits; WARN < 0.05 (selection at noise level); Step-2 cube: the IS selection names the admission exit (ruling 2i), so a noise margin is a live risk at any sign |
+| empty_signals_share | INFO | 0 of 1737 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/1737 (0.0%) from replay_atr_fallback.json) |
+| grading_provenance | INFO | grading surface UNCHANGED since freeze (21 files, digest 3a2b01620b11) |
+| direction_consistency | INFO | graded bollinger_lower is DUAL (is_dual source check) - directions ['long', 'short'] are its own two legs, the design and not a finding (S6-B3119a) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_bl_step2_p4_9_p4_9_spot_check.json |
+| min_trades_floor | INFO | 1737 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 24 exits enumerated (population field `per_exit`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | 0.554 | 0.694 | 1272 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.46 | 0.574 | 1272 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | 0.411 | 0.632 | 1272 | regime_flip | 1 | (no knobs recorded) |
+| 4 | 0.404 | 0.547 | 1272 | reverse_signal | 1 | (no knobs recorded) |
+| 5 | 0.363 | 0.538 | 1272 | fixed_4r_2r | 1 | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_9_p4_9_grid_auto.json._
 
 ### output_bl_span250_span250
 
@@ -885,7 +976,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span021_span02
 | 17.69 | p9=17.69 | 6 | - | None | None |
 | 20.976 | p9=20.976 | 12 | hybrid_50pct_target | None | None |
 | 23.96 | p9=23.96 | 18 | hybrid_50pct_target | None | None |
-| 27.51 | p9=27.51 | 24 | time_stop_10d | None | None |
+| 27.51 | p9=27.51 | 24 | hybrid_50pct_target | None | None |
 | 35.0 | p9=35.0 | 37 | regime_flip | None | None |
 
 **Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
@@ -979,11 +1070,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span020_span02
 
 | level | knobs | IS fires | top exit (ranked by ci_lo) | is_sharpe | is_ci_lo |
 |---|---|---|---|---|---|
-| 17.69 | p9=17.69 | 61 | next_pivot_target | None | None |
-| 20.976 | p9=20.976 | 108 | next_pivot_target | None | None |
+| 17.69 | p9=17.69 | 61 | hybrid_50pct_target | None | None |
+| 20.976 | p9=20.976 | 108 | breakeven_plus_trail | None | None |
 | 23.96 | p9=23.96 | 165 | breakeven_plus_trail | None | None |
 | 27.51 | p9=27.51 | 225 | breakeven_plus_trail | None | None |
-| 35.0 | p9=35.0 | 308 | regime_flip | None | None |
+| 35.0 | p9=35.0 | 308 | breakeven_plus_trail | None | None |
 
 **Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -1468,7 +1559,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c18_b0
 | 46.31 | p6=46.31 | 23 | time_stop_20d | None | None |
 | 50.16 | p6=50.16 | 35 | time_stop_20d | None | None |
 | 54.42 | p6=54.42 | 51 | regime_flip | None | None |
-| 60.0 | p6=60.0 | 98 | regime_flip | None | None |
+| 60.0 | p6=60.0 | 98 | hybrid_50pct_target | None | None |
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -1854,7 +1945,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c13_b0
 |---|---|---|---|---|---|
 | 41.97 | p6=41.97 | 18 | time_stop_20d | None | None |
 | 46.31 | p6=46.31 | 35 | hybrid_50pct_target | None | None |
-| 50.16 | p6=50.16 | 52 | time_stop_20d | None | None |
+| 50.16 | p6=50.16 | 52 | earnings_blackout | None | None |
 | 54.42 | p6=54.42 | 82 | regime_flip | None | None |
 | 60.0 | p6=60.0 | 131 | hybrid_50pct_target | None | None |
 
@@ -2337,7 +2428,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c08_b0
 
 | level | knobs | IS fires | top exit (ranked by ci_lo) | is_sharpe | is_ci_lo |
 |---|---|---|---|---|---|
-| 41.97 | p6=41.97 | 47 | trailing_5pct | None | None |
+| 41.97 | p6=41.97 | 47 | earnings_blackout | None | None |
 | 46.31 | p6=46.31 | 97 | trailing_5pct | None | None |
 | 50.16 | p6=50.16 | 146 | regime_flip | None | None |
 | 54.42 | p6=54.42 | 212 | regime_flip | None | None |
@@ -2531,7 +2622,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c06_b0
 
 | level | knobs | IS fires | top exit (ranked by ci_lo) | is_sharpe | is_ci_lo |
 |---|---|---|---|---|---|
-| 41.97 | p6=41.97 | 63 | class_time_stop | None | None |
+| 41.97 | p6=41.97 | 63 | breakeven_plus_trail | None | None |
 | 46.31 | p6=46.31 | 121 | class_time_stop | None | None |
 | 50.16 | p6=50.16 | 181 | breakeven_plus_trail | None | None |
 | 54.42 | p6=54.42 | 270 | breakeven_plus_trail | None | None |
@@ -2630,7 +2721,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c05_b0
 |---|---|---|---|---|---|
 | 41.97 | p6=41.97 | 36 | earnings_blackout | None | None |
 | 46.31 | p6=46.31 | 72 | regime_flip | None | None |
-| 50.16 | p6=50.16 | 107 | regime_flip | None | None |
+| 50.16 | p6=50.16 | 107 | earnings_blackout | None | None |
 | 54.42 | p6=54.42 | 167 | regime_flip | None | None |
 | 60.0 | p6=60.0 | 240 | regime_flip | None | None |
 
