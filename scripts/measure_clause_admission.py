@@ -389,7 +389,7 @@ def main() -> int:
     out = REPO / args.output
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"window": [str(start), str(end)], "n_tickers": len(tickers),
-                               "holdout_touched": False, "results": results},
+                               "holdout_selection": False, "straddle_note": ("entry-dated IS per the S6-B3139b ruling 2026-09-30: end-of-window exits may price on holdout bars; selection never reads them"), "results": results},
                               indent=2), encoding="utf-8")
     # B1394 fix: the summary must show the top RELAXABLE clause. Sorting all clauses by lift
     # put TRIGGER clauses at the top (macd_fast_crossover's crossover, lift 8.94) under a

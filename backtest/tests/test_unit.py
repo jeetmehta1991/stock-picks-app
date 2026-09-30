@@ -51284,3 +51284,25 @@ def test_b3139e_missing_sentiment_records_none_not_the_neutral_sentinel():
     # the recording path routes through the helper, not the old sentinel
     assert src.count('cnn_fg_score=_sentiment_opt(') == 1
     assert 'cnn_fg_score=float(' not in src
+
+
+def test_b3139b_straddle_disclosure_survives_in_every_is_selector():
+    """S6-B3139b (owner ruling 2026-09-30, "disclose"): the entry-dated IS
+    convention is KEPT and DISCLOSED. The three artifact writers that carried
+    "holdout_touched": False now write holdout_selection + straddle_note
+    (0 old fields remain), and the two prose sites name the ruling. A
+    disclosure is load-bearing wording - without this pin a rewrite could
+    restore the false "holdout never read" claim (L867)."""
+    from pathlib import Path as _P
+    sroot = _P(__file__).resolve().parents[2] / "scripts"
+    writers = ["build_exit_reassignment.py", "measure_quality_lift.py",
+               "measure_clause_admission.py"]
+    for w in writers:
+        src = (sroot / w).read_text(encoding="utf-8", errors="replace")
+        assert '"holdout_touched"' not in src, w
+        assert src.count('"straddle_note"') == 1, w
+        assert "S6-B3139b" in src, w
+    for w, frag in (("compare_sample_fix_variants.py", "entry-dated only"),
+                    ("build_r6_change_list.py", "entry-dated per the ")):
+        src = (sroot / w).read_text(encoding="utf-8", errors="replace")
+        assert frag in src and "S6-B3139b" in src, w

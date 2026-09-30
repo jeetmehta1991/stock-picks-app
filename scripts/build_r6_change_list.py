@@ -184,7 +184,9 @@ def main() -> int:
 
     out = {
         "generated": "B1410", "status": "PRE-REGISTERED PROPOSAL - nothing applied",
-        "window": "IS only 2022-05-05 -> 2025-05-05; holdout never read",
+        "window": "IS entries 2022-05-05 -> 2025-05-05, entry-dated per the "
+                  "S6-B3139b ruling (straddling exits price on holdout bars; "
+                  "selection never reads them)",
         "routing_rule": {"<100": "LOOSEN", "100-299": "LOOSEN (selective)", ">=300": "TIGHTEN"},
         "counts": {"total_changes": len(changes), "tighten": len(tighten), "loosen": len(loosen),
                    "strategies_covered": len(covered), "r6_total": len(all_r6),

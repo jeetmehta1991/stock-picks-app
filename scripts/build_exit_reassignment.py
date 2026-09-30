@@ -28,7 +28,7 @@ GUARDS (all must hold; each targets a specific way argmax lies)
                   complex exit winning by a small margin deserves more suspicion than a simple
                   one winning by a large margin.
 
-IS window only; the holdout is never read.
+IS selection is ENTRY-DATED (owner ruling 2026-09-30, S6-B3139b): rows are chosen by entry_date inside the IS window only, and an IS entry exiting past the boundary is priced on holdout bars - a DISCLOSED straddle (0-7 pct of IS rows per cube), never a holdout SELECTION.
 """
 from __future__ import annotations
 
@@ -154,7 +154,9 @@ def main() -> int:
               f"{p_['margin']:>+10.2f}{p_['consistent_folds']:>7}"
               f"{('yes' if p_['proposed_is_simple_exit'] else 'no'):>8}")
     out = REPO / args.output
-    out.write_text(json.dumps({"window": [str(IS_START), str(IS_END)], "holdout_touched": False,
+    out.write_text(json.dumps({"window": [str(IS_START), str(IS_END)], "holdout_selection": False, "straddle_note": (
+        "entry-dated IS per the S6-B3139b ruling 2026-09-30: end-of-window "
+        "exits may price on holdout bars; selection never reads them"),
                                "guards": {"min_trades": args.min_trades, "min_margin": args.min_margin,
                                           "min_consistent_folds": args.min_consistent_folds,
                                           "fdr_q": args.fdr_q},

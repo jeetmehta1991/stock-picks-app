@@ -26,7 +26,9 @@ WHAT IT MEASURES, per (strategy, candidate signal):
 
 GUARDRAILS (this is a search over 91 strategies x many signals - without these it is
 curve-fitting):
-  - IS window only; the holdout is never read (hard-refused, same as B1394).
+  - IS selection ENTRY-DATED only (S6-B3139b ruling 2026-09-30): no row is
+    SELECTED on holdout data (hard-refused, same as B1394); an IS entry
+    exiting past the boundary prices on holdout bars, a disclosed straddle.
   - Candidates must retain >= --min-retained fires (default 100 = PASSING_CRITERIA min_trades),
     so a proposal cannot tighten a strategy into starvation.
   - BH-FDR across the entire family of tests, not per strategy.
@@ -366,7 +368,7 @@ def main() -> int:
     print(f"  [EXCLUDED] {len(marketwide)} candidates were MARKET-WIDE conditioners "
           f"(constant across tickers on a date - they select periods, not trades)")
     out.write_text(json.dumps({
-        "window": [str(IS_START), str(end)], "holdout_touched": False,
+        "window": [str(IS_START), str(end)], "holdout_selection": False, "straddle_note": ("entry-dated IS per the S6-B3139b ruling 2026-09-30: end-of-window exits may price on holdout bars; selection never reads them"),
         "min_fires": args.min_fires, "min_retained": args.min_retained,
         "fdr_q": args.fdr_q, "bh_threshold": thr,
         "n_tested": len(cands), "n_fdr_survivors": sum(1 for c in cands if c["bh_reject"]),

@@ -122,7 +122,9 @@ def main() -> int:
         strat, direction = str(strat), str(direction)
         isg = g[(g.entry_date >= IS_START) & (g.entry_date < IS_END)]
         hog = g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)]
-        # SELECT on IS -- unchanged, pooled tier, holdout never read
+        # SELECT on IS -- unchanged, pooled tier; selection is
+        # entry-dated only (S6-B3139b ruling: straddling exits may price on
+        # holdout bars, selection never reads them)
         pick, key = None, (-1, -9.0)
         for ex, ge in isg.groupby("exit_method", observed=True):
             r = pooled(ge)
