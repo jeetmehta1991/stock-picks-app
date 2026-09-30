@@ -25088,6 +25088,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # checked. Dropped from the skill, the third strategy inherits two copies.
         ("A SCRIPT WITH A STRAT CONSTANT IS THE FIRST INSTANCE OF A PORTABILITY CLASS, NOT A TOOL",
          "B2573/L754: extract the contract at the second family; check registration at launch"),
+        # B3139/L894: the packet-first ordering - decision tickets surfaced
+        # last serialise rulings behind implementation. Pins the rule's
+        # operative clause, not the heading (L548).
+        ("EMIT THE CONSOLIDATED ONE-WORD-MENU DECISION PACKET FIRST",
+         "B3139/L894: a goal gated on owner decisions is closed by a packet, not more autonomous work"),
         # B2851: the L805 tripwire row - an owner catch on a locked
         # format is evidence the WHOLE rendering drifted; pins the
         # remedy, not the heading (L548).
@@ -26083,7 +26088,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire-row amendment per B2130).
     # 317 -> 319 at B3139 (the L887/L888 row and the L883 limit).
     # 319 -> 320 at B3139 (the L889 row).
-    assert len(gutted) == 320, gutted
+    # 320 -> 321 at B3139 (the L894 packet-first fragment).
+    assert len(gutted) == 321, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

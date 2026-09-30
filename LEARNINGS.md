@@ -24253,3 +24253,24 @@ PURE_INCIDENTS pair driving the live collector; and S6-B3139v closes the -c
 form in the same batch - dash_c_escape_hits keeps the four shell-consumed
 escapes quiet and fires on every pair that reaches the interpreter, under
 its own ship stamp so older commands are never retro-judged.
+
+## L894 - A GOAL GATED ON OWNER DECISIONS IS CLOSED BY A PACKET, NOT BY MORE AUTONOMOUS WORK (B3139o-packet, 2026-09-30)
+
+Record-of-fact plus an ordering rule. The B3139 session closed 12 of 27
+addressable tickets in roughly 16 h; the other 15 were DECISION tickets, and
+no quantity of autonomous work could close them - the sanctioned skip (owner
+decisions) was reached only AFTER the code work, so decision latency
+serialised behind implementation instead of overlapping it. Of the
+wall-clock, 20 full pyramid gates ran (MEASURED: 20 b3139_pyramid_*.out
+artifacts, ~15-19 min each) across the <=3-fix batches, roughly 5-6 h of
+gate time bought ~10 real catches.
+
+RULE: when a goal's ledger contains decision tickets, emit the consolidated
+one-word-menu decision packet FIRST (the B3139o-packet form,
+output_audit/b3139_owner_decision_packet.md), so rulings overlap the
+implementable work; the packet is the CLOSING ARTIFACT for the gated
+remainder, never a fallback after it. Anchored: existing #164 (routed work
+becomes tickets) and Phase 1's depth-first ordering (B2056, decision-gated
+skips excepted) - no new CHECKLIST item (#136). Mechanism: JUDGMENT-ONLY -
+session orchestration ordering is not scannable; durability is this entry
+plus the committed packet precedent.
