@@ -317,7 +317,12 @@ def check_pyramid_stamp(paths: Iterable[Path]) -> list[str]:
     except Exception:
         return ["C6 PYRAMID-STAMP | .pyramid_stamp unreadable; re-run the full pyramid"]
     if not stamp.get("green"):
-        return ["C6 PYRAMID-STAMP | last full-pyramid run was RED; fix tests before commit"]
+        # S6-B3130a (B3137): a stamp the pyramid gate DEMOTED names why
+        gv = stamp.get("gate_verdict")
+        why = (f"the pyramid gate did not pass the run ({gv}, exit "
+               f"{stamp.get('gate_exit')}) - re-run it on a settled tree"
+               if gv else "fix tests before commit")
+        return [f"C6 PYRAMID-STAMP | last full-pyramid run was RED; {why}"]
     stamp_ts = float(stamp.get("timestamp", 0))
     stale = [str(p.relative_to(REPO_ROOT)) for p in py_staged + doc_staged
              if p.stat().st_mtime > stamp_ts]

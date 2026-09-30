@@ -14,6 +14,7 @@ L593). Every figure is derived at call time; generated_utc says when.
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import time
@@ -24,7 +25,20 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 OUT = ROOT / "output_audit" / "workflow_state.json"
+# S6-B3130a (B3139): a test session points the file copy elsewhere.
+# MEASURED - the production copy was the only non-gate output_audit path
+# the batch-2 full pyramid moved (output_audit/b3139_pyramid_batch2.out):
+# four tests drive this derivation, in-process and through the hook's
+# child, and the read-set re-run of one of them rewrote it again, so the
+# gate read SUSPECT on every run. Same shape as POSTCONFIG_LANDINGS_PATH.
+ENV_OUT = "WORKFLOW_STATE_OUT"
 _NONTERMINAL = ("OPEN", "RUNNING", "BLOCKED")
+
+
+def out_path() -> Path:
+    """Where build() writes its file copy: WORKFLOW_STATE_OUT when set,
+    else the production output_audit/workflow_state.json."""
+    return Path(os.environ.get(ENV_OUT) or OUT)
 
 
 def build() -> dict:
@@ -78,7 +92,7 @@ def build() -> dict:
         "next_mandated_action": next_action,
     }
     try:
-        OUT.write_text(json.dumps(state, indent=1) + "\n",
+        out_path().write_text(json.dumps(state, indent=1) + "\n",
                        encoding="utf-8", newline="\n")
     except OSError as e:
         # #122: a degraded output announces itself - the header is the

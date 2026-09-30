@@ -24,7 +24,8 @@ _REPORTED = ("passed", "failed", "skipped", "xfailed", "xpassed", "error")
 
 
 def pyramid_stamp_decision(files_run, exitstatus, *, collectonly, keyword,
-                           markexpr, n_items, n_reported, n_deselected):
+                           markexpr, n_items, n_reported, n_deselected,
+                           nodeid_selected=False):
     """S6-B3107b (B3108): the stamp pytest_sessionfinish writes, or None.
 
     MEASURED 2026-09-25: a `--collect-only` session over both tiers ran ZERO
@@ -34,10 +35,14 @@ def pyramid_stamp_decision(files_run, exitstatus, *, collectonly, keyword,
     each file. Now: nothing is written unless the session covered both tiers
     UNSELECTED (no collect-only, no -k, no -m, nothing deselected); and it is
     GREEN only when the exit status is 0 AND every collected test reported a
-    result - an interrupted run writes a RED stamp, never a green one."""
+    result - an interrupted run writes a RED stamp, never a green one.
+    S6-B3130a (B3137): a session narrowed by NODE IDS (`file::test`) is a
+    selection too - two named tests, one from each tier, would otherwise
+    read as both tiers ran unselected and write a GREEN stamp (the pyramid
+    gate's read-set re-run is exactly such a session)."""
     if not PYRAMID_TIERS <= set(files_run):
         return None
-    if collectonly or keyword or markexpr or n_deselected:
+    if collectonly or keyword or markexpr or n_deselected or nodeid_selected:
         return None
     green = int(exitstatus) == 0 and n_items > 0 and n_reported >= n_items
     return {"exitstatus": int(exitstatus), "green": green,
@@ -78,7 +83,9 @@ def pytest_sessionfinish(session, exitstatus):
         keyword=getattr(opt, "keyword", "") or "",
         markexpr=getattr(opt, "markexpr", "") or "",
         n_items=len(item_ids), n_reported=len(reported),
-        n_deselected=len(stats.get("deselected", [])))
+        n_deselected=len(stats.get("deselected", [])),
+        nodeid_selected=any("::" in str(a)
+                            for a in (session.config.args or [])))
     if decided is None:
         return
     repo_root = Path(__file__).resolve().parents[2]
@@ -111,3 +118,26 @@ def _smc_phase_production_for_semantic_tests(request, monkeypatch):
     if "test_smartmoneyconcepts_" in test_file or "test_smc_spof_sentinel" in test_file:
         import backtest.config as _cfg
         monkeypatch.setattr(_cfg, "SMC_PHASE", "PRODUCTION")
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _workflow_state_out_isolated(tmp_path_factory):
+    """S6-B3130a (B3139): inside a test session the prompt hook's derivation
+    (scripts/build_workflow_state.py) writes its file copy to a temp path,
+    never the production output_audit/workflow_state.json. MEASURED: that
+    file was the only non-gate output_audit path the batch-2 full pyramid
+    moved (output_audit/b3139_pyramid_batch2.out) - four tests drive the
+    derivation - and the read-set re-run of one of them rewrote it again,
+    so the gate read SUSPECT on every run. The variable rides os.environ,
+    so the hook's child processes inherit it."""
+    import os
+    path = tmp_path_factory.mktemp("workflow_state") / "workflow_state.json"
+    prev = os.environ.get("WORKFLOW_STATE_OUT")
+    os.environ["WORKFLOW_STATE_OUT"] = str(path)
+    try:
+        yield path
+    finally:
+        if prev is None:
+            os.environ.pop("WORKFLOW_STATE_OUT", None)
+        else:
+            os.environ["WORKFLOW_STATE_OUT"] = prev

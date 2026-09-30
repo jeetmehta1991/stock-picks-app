@@ -4457,11 +4457,19 @@ def check_unrecorded_miss() -> str | None:
 # above, silently making its four entries dead code - so nohup and
 # run_in_background survived only inside the conjunction below. Renamed so
 # neither list shadows the other.
-RUNNER_SCRIPTS = ("run_phase1a.py", "run_phase1b.py")
-import re as _re_mod
-_re_launch = _re_mod.compile(
-    r"python[0-9.]*\s+(?!-c\b)(?:-[A-Za-z]+\s+)*[^;&|]*?\b(?:"
-    + "|".join(_re_mod.escape(s) for s in RUNNER_SCRIPTS) + r")\b")
+# S6-B2556a (B3139, council of 5): the launcher list comes from the ONE
+# shared module. MEASURED before: this copy named run_phase1a.py and
+# run_phase1b.py - which exists nowhere - and missed run_wave.py,
+# run_serial_chain.py, launch_sweep.py and launch_detached.py, so a direct
+# run_wave launch escaped _segment_is_launch. The regex that once read
+# this list (_re_launch) had 0 callers since B2876 and is removed.
+_here_rs = str(Path(__file__).resolve().parent)
+if _here_rs not in sys.path:
+    sys.path.insert(0, _here_rs)
+from runner_scripts import LAUNCH_ENTRY_POINTS as RUNNER_SCRIPTS  # noqa: E402
+from runner_scripts import SPEC_DRIVEN  # noqa: E402
+# the direct engine entry points - their argv IS where the pool flag lives
+_DIRECT_ENGINE = ("run_phase1a.py", "universe_ladder_run.py")
 POOL_FLAG = "--screen-pool-workers"
 STALL_MARKERS = ("stall", "hang", "mtime", "not advanced", "no progress")
 BULK_KILL = ("stop-process -name", "stop-process -force",
@@ -4608,6 +4616,12 @@ def scan_launch_missing_pool_workers(entries, *, blobs=None) -> list[str]:
             [b for b in blobs if _segment_is_launch(
                 re.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", b,
                        flags=re.S | re.M))])
+    # S6-B2556a (B3139): a SPEC-DRIVEN launch (run_wave / run_serial_chain
+    # / launch_sweep / launch_detached) takes its pool setting from the
+    # spec, so its command line has no flag to check; a command that also
+    # names a DIRECT engine entry point still owes the flag.
+    cand = [b for b in cand if not (any(s in b for s in SPEC_DRIVEN)
+            and not any(d in b for d in _DIRECT_ENGINE))]
     if not cand:
         return []
     # B1865 (#244): this message says EVERY launch, so the check owes the

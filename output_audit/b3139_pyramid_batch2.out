@@ -1,0 +1,70 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+..............................................s......................... [ 40%]
+....................s.................................................s. [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 58%]
+..................................................................F..... [ 62%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 76%]
+........................................................................ [ 80%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+....................                                                     [100%]
+================================== FAILURES ===================================
+______________ test_b2128_silent_except_pass_is_a_shrinking_set _______________
+
+    def test_b2128_silent_except_pass_is_a_shrinking_set():
+        """B2128 (S6-B2118a, prevention half): no NEW silent `except: pass`.
+    
+        THE CORRECTION THIS SHIPS WITH: the execution-discipline skill's
+        enforcement table claimed the C7 banned-pattern scan blocks "unlogged
+        `except: pass`". It does not - C7 has exactly three patterns (NOT-S-GET,
+        DEFAULT-TRUE-GATE, RELATIVE-PREFETCH-PATH), read this batch. The rule was
+        real and the mechanism was absent: #224, inside the enforcement table
+        itself. A line-scan cannot see the multi-line form anyway, so the
+        mechanism is this AST ratchet rather than a fourth regex.
+        """
+        sites = _b2128_silent_except_sites()
+>       assert len(sites) <= _B2128_SILENT_EXCEPT_CEILING, (
+            f"{len(sites)} silent except:pass sites > frozen ceiling "
+            f"{_B2128_SILENT_EXCEPT_CEILING}. A NEW one was added: pair it with a "
+            "logged success-check (#122), or waive it on the line with a reason. "
+            f"New/changed sites include: {sites[-5:]}")
+E       AssertionError: 129 silent except:pass sites > frozen ceiling 128. A NEW one was added: pair it with a logged success-check (#122), or waive it on the line with a reason. New/changed sites include: ['scripts\\validate_sec_edgar_decoded_completeness.py:230', 'scripts\\verify_batch_69_phase_3.py:120', 'scripts\\verify_flag_binds.py:57', 'scripts\\verify_turn_compliance.py:796', 'scripts\\verify_turn_compliance.py:5553']
+E       assert 129 <= 128
+E        +  where 129 = len(['backtest\\agents\\pipeline.py:303', 'backtest\\agents\\toolkits\\our_fundamentals_toolkit.py:85', 'backtest\\data\\s...money.py:1167', 'backtest\\diagnostics\\section_09b_pre_cube_evidence.py:121', 'backtest\\engine\\backtest.py:97', ...])
+
+backtest\tests\test_unit.py:26279: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2128_silent_except_pass_is_a_shrinking_set
+1 failed, 1600 passed, 3 skipped in 1020.85s (0:17:00)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1188
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=b3139_pyramid_batch2.out,b3139_pyramid_batch2.out.pid,b3139_pyramid_batch2.out.readset.json
+output_audit_modified_tracked=none
+output_audit_modified_untracked=output_audit/workflow_state.json
+readset=SUSPECT:inputs-moved-again-during-rerun
+readset_rerun=64 tests rc=0 log=b3139_pyramid_batch2.out.rerun.txt
+stamp_binding=already-red

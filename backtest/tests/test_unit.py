@@ -48173,3 +48173,583 @@ def test_b3139_every_free_level_adapter_windows_its_occupancy_block():
             assert any(k.arg == "window" for k in c.keywords), (leg.name, c.lineno)
 
 
+
+
+# ================================================================ B3139 merge batch 2: S6-B3130a, S6-B3130a read-set, B3139 S6-B3130a council, B3139 S6-B2556a council, B3139 S6-B3128a real cube
+import contextlib  # noqa: E402,F401
+import importlib.util  # noqa: E402,F401
+import io  # noqa: E402,F401
+import json  # noqa: E402,F401
+import subprocess  # noqa: E402,F401
+_REPO_B3135 = Path(__file__).resolve().parents[2]
+_SCRIPTS_B3135 = _REPO_B3135 / "scripts"
+if str(_SCRIPTS_B3135) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_B3135))
+
+# ---------------------------------------------------------------- S6-B3130a
+def _b3130a_repo(tmp_path):
+    root = tmp_path / "repo"
+    for d in ("output_audit", "scripts", "tests"):
+        (root / d).mkdir(parents=True)
+    (root / "output_audit" / "a.json").write_text('{"v": 1}')      # tracked
+    (root / "output_audit" / "same.json").write_text('{"v": 1}')   # tracked
+    (root / "output_audit" / "b.json").write_text('{"v": 1}')      # untracked
+    git = ["git", "-c", "user.name=t", "-c", "user.email=t@t", "-c",
+           "core.autocrlf=false"]
+    subprocess.run(["git", "init", "-q"], cwd=str(root), check=True)
+    subprocess.run(git + ["add", "output_audit/a.json", "output_audit/same.json"],
+                   cwd=str(root), check=True)
+    subprocess.run(git + ["commit", "-q", "-m", "seed"], cwd=str(root), check=True)
+    return root
+
+
+def _b3130a_gate(pg, root, test_body, out, monkeypatch):
+    for name in ("_engine_inflight", "_chain_inflight", "_engine_dead_within_window"):
+        monkeypatch.setattr(pg, name, lambda *a, **k: "none")
+    t = root / "tests" / ("test_%s.py" % out.stem)
+    t.write_text(test_body)
+    rc_ = pg.run(out, root, [str(t), "-q", "-p", "no:cacheprovider"])
+    return rc_, out.read_text(encoding="utf-8")
+
+
+def test_b3135_pyramid_gate_discloses_rewritten_output_audit_inputs(tmp_path,
+                                                                    monkeypatch):
+    """S6-B3130a (L880): tracked output_audit files are TEST INPUTS. A suite
+    run that rewrites one - even at the same size with its mtime restored -
+    is disclosed on its own line; an untracked rewrite and a new file on
+    theirs; a run that moves nothing reads 'none'. Disclosure only: the run's
+    exit is the suite's (a refusal over a long window is L721's defect)."""
+    import pyramid_gate as pg
+    root = _b3130a_repo(tmp_path)
+    mover = (
+        "import os\n"
+        "from pathlib import Path\n"
+        "def test_mover():\n"
+        "    a = Path('output_audit/a.json')\n"
+        "    st = a.stat()\n"
+        "    a.write_text('{\"v\": 2}')\n"
+        "    os.utime(a, ns=(st.st_atime_ns, st.st_mtime_ns))\n"
+        "    Path('output_audit/b.json').write_text('{\"v\": 22}')\n"
+        "    Path('output_audit/c.json').write_text('{}')\n")
+    rc1, text1 = _b3130a_gate(pg, root, mover, tmp_path / "mover.out", monkeypatch)
+    assert rc1 == 0, text1[-800:]
+    assert "\noutput_audit_modified_tracked=output_audit/a.json\n" in text1, text1[-600:]
+    assert "\noutput_audit_modified_untracked=output_audit/b.json\n" in text1, text1[-600:]
+    assert "\noutput_audit_created=c.json\n" in text1, text1[-600:]
+    quiet = "def test_quiet():\n    assert True\n"
+    rc2, text2 = _b3130a_gate(pg, root, quiet, tmp_path / "quiet.out", monkeypatch)
+    assert rc2 == 0, text2[-800:]
+    assert "\noutput_audit_modified_tracked=none\n" in text2, text2[-600:]
+    assert "\noutput_audit_modified_untracked=none\n" in text2, text2[-600:]
+
+
+# ---------------------------------------------------------------- S6-B3130a read-set
+def test_b3137_readset_verdict_names_exactly_the_tests_that_read_a_moved_file():
+    """S6-B3130a (owner ruling 2026-09-29, '6. Yes'): the gate's decision is a
+    pure function of what moved and what each test read. Every branch:
+    nothing moved; moved but read by no test; a reader (re-run, and only it);
+    a spawner (re-run - its child's reads are invisible); a collection-time
+    read (SUSPECT); an unreadable read-set or state (SUSPECT, L642); more
+    tests than the cap (SUSPECT); a session-level spawn does not escalate;
+    and paths compare case-insensitively where the OS does."""
+    import os
+    import pyramid_gate as pg
+    rs = {"schema": 1, "session": ["output_audit/boot.json"],
+          "tests": {"t::reader": ["output_audit/a.json"],
+                    "t::other": ["output_audit/z.json"]},
+          "spawned": ["t::spawner", "session"], "addr": {}}
+    v = pg.readset_verdict
+    assert v(rs, set()) == ("CLEAN", [])
+    assert v({**rs, "spawned": []}, {"output_audit/q.json"}) == (
+        "CLEAN:moved-files-read-by-no-test", [])
+    assert v(rs, {"output_audit/a.json"}) == ("RERUN", ["t::reader", "t::spawner"])
+    assert v({**rs, "spawned": ["session"]}, {"output_audit/a.json"}) == (
+        "RERUN", ["t::reader"])
+    assert v(rs, {"output_audit/boot.json"})[0] == "SUSPECT:a-collection-time-read-moved"
+    assert v(None, {"output_audit/a.json"})[0] == "SUSPECT:read-set-unreadable"
+    assert v(rs, None)[0] == "SUSPECT:output_audit-state-unreadable"
+    assert v(rs, {"output_audit/a.json"}, cap=1)[0].startswith("SUSPECT:2-tests")
+    if os.name == "nt":
+        assert v(rs, {"output_audit/A.JSON"})[1] == ["t::reader", "t::spawner"]
+    assert pg.output_audit_moved({"tracked": {"x": 1}, "untracked": {}},
+                                 {"tracked": {"x": 2}, "untracked": {"n": 1}}) == {"x", "n"}
+    assert pg.output_audit_moved(None, {"tracked": {}, "untracked": {}}) is None
+
+
+def test_b3137_readset_plugin_counts_reads_not_writes():
+    """S6-B3130a: the recorder counts an open that can CONSUME content - a
+    mode with 'r' or '+', an os.open that is not write-only - and ignores a
+    write-only open (a test that rewrites an artifact did not read it); only
+    paths under the watched output_audit count, case as written."""
+    import os
+    import sys
+    sys.path.insert(0, str(_SCRIPTS_B3135 / "pytest_plugins"))
+    import pyramid_readset as pr
+    assert pr.is_read("r", None) and pr.is_read("rb", None) and pr.is_read("r+", None)
+    assert pr.is_read("w+", None) and not pr.is_read("w", None)
+    assert not pr.is_read("a", None) and not pr.is_read("xb", None)
+    assert pr.is_read(None, os.O_RDONLY) and pr.is_read(None, os.O_RDWR)
+    assert not pr.is_read(None, os.O_WRONLY | os.O_CREAT)
+    oa = os.path.normcase(os.path.join(str(_REPO_B3135), "output_audit")) + os.sep
+    assert pr.rel_under(_REPO_B3135 / "output_audit" / "Sub" / "X.json", oa) == \
+        "output_audit/Sub/X.json"
+    assert pr.rel_under(_REPO_B3135 / "scripts" / "x.py", oa) is None
+    assert pr.rel_under(3, oa) is None and pr.rel_under(None, oa) is None
+
+
+def _b3137_gate_run(pg, root, body, out, monkeypatch):
+    rc, text = _b3130a_gate(pg, root, body, out, monkeypatch)
+    rs = json.loads(Path(str(out) + pg.READSET_SUFFIX).read_text(encoding="utf-8"))
+    return rc, text, rs
+
+
+def test_b3137_gate_reruns_exactly_the_tests_that_read_a_moved_input(tmp_path,
+                                                                     monkeypatch):
+    """S6-B3130a end to end, a real pytest child in a throwaway git repo: a
+    test READS a.json, a bystander only stats a file, a mover REWRITES a.json
+    later in the same run. The gate re-runs EXACTLY the reader (not the
+    bystander, not the mover) - and when the reader's green rested on the
+    content that then moved, the re-run FAILS and the run exits 1. A spawner
+    is re-run too; a run that moves nothing reads CLEAN."""
+    import pyramid_gate as pg
+    root = _b3130a_repo(tmp_path)
+    tail = ("def test_b_bystander():\n"
+            "    assert Path('output_audit/same.json').stat().st_size > 0\n"
+            "def test_c_mover():\n"
+            "    Path('output_audit/a.json').write_text('{\"v\": 2}')\n")
+    head = "import json, subprocess, sys\nfrom pathlib import Path\n"
+    lenient = head + ("def test_a_reader():\n"
+                      "    assert json.loads(Path('output_audit/a.json')"
+                      ".read_text())['v'] in (1, 2)\n") + tail
+    rc, text, rs = _b3137_gate_run(pg, root, lenient, tmp_path / "ok.out", monkeypatch)
+    assert rc == 0, text[-900:]
+    assert "\nreadset=RERUN-PASS:1-tests\n" in text, text[-700:]
+    assert "\nreadset_rerun=1 tests rc=0 " in text, text[-700:]
+    readers = {k.split("::")[-1]: v for k, v in rs["tests"].items()}
+    assert readers == {"test_a_reader": ["output_audit/a.json"]}, rs["tests"]
+    assert "1 passed" in Path(str(tmp_path / "ok.out") + pg.RERUN_LOG_SUFFIX).read_text(
+        encoding="utf-8")
+    # the reader's green rested on the content that then moved: re-run FAILS
+    (root / "output_audit" / "a.json").write_text('{"v": 1}')
+    strict = head + ("def test_a_reader():\n"
+                     "    assert json.loads(Path('output_audit/a.json')"
+                     ".read_text())['v'] == 1\n") + tail
+    rc, text, _ = _b3137_gate_run(pg, root, strict, tmp_path / "bad.out", monkeypatch)
+    assert rc == 1 and "\nreadset=RERUN-FAILED:1-tests\n" in text, text[-700:]
+    assert "\npytest_exit=0\n" in text, "the main run itself was green"
+    # a spawner rides along - its child's reads are invisible
+    (root / "output_audit" / "a.json").write_text('{"v": 1}')
+    spawn = head + ("def test_a_spawner():\n"
+                    "    subprocess.run([sys.executable, '-c', 'pass'], check=True)\n") + tail
+    rc, text, rs = _b3137_gate_run(pg, root, spawn, tmp_path / "sp.out", monkeypatch)
+    assert rc == 0 and "\nreadset=RERUN-PASS:1-tests\n" in text, text[-700:]
+    assert [k.split("::")[-1] for k in rs["spawned"] if k != "session"] == [
+        "test_a_spawner"], rs["spawned"]
+    quiet = head + "def test_q():\n    assert json.loads(Path('output_audit/a.json').read_text())\n"
+    rc, text, _ = _b3137_gate_run(pg, root, quiet, tmp_path / "q.out", monkeypatch)
+    assert rc == 0 and "\nreadset=CLEAN\n" in text and "\nreadset_rerun=none\n" in text
+
+
+def test_b3137_a_run_the_gate_does_not_pass_demotes_its_green_stamp(tmp_path,
+                                                                    monkeypatch):
+    """S6-B3130a (B3137, found building the read-set): the session writes
+    .pyramid_stamp BEFORE the gate judges the run, so a tree=CHANGED run
+    exited 4 while its GREEN stamp still let C6 pass commits. bind_stamp
+    demotes the GREEN stamp THIS run wrote when the gate does not pass it
+    (exit 4 / 6 / a failed re-run), never touches an older stamp, and C6 then
+    names the gate's verdict. Both directions pinned."""
+    import time
+    import preflight as pf
+    import pyramid_gate as pg
+    p = tmp_path / ".pyramid_stamp"
+    t0 = time.time()
+    p.write_text(json.dumps({"timestamp": t0 + 1, "green": True}), encoding="utf-8")
+    assert pg.bind_stamp(tmp_path, t0, 0, "CLEAN") == "kept-green"
+    assert json.loads(p.read_text(encoding="utf-8"))["green"] is True
+    # B3139 (S6-B3130a council): until the owner rules, the gate DISCLOSES
+    # the demotion and writes nothing - the stamp stays as written
+    assert pg.DEMOTION_ENABLED is False
+    assert pg.bind_stamp(tmp_path, t0, 4, "tree=CHANGED (1 paths): x.py") == "would-demote"
+    assert json.loads(p.read_text(encoding="utf-8"))["green"] is True
+    monkeypatch.setattr(pg, "DEMOTION_ENABLED", True)   # the owner-ruled path
+    assert pg.bind_stamp(tmp_path, t0, 4, "tree=CHANGED (1 paths): x.py") == "demoted"
+    d = json.loads(p.read_text(encoding="utf-8"))
+    assert d["green"] is False and d["gate_exit"] == 4 and "tree=CHANGED" in d["gate_verdict"]
+    assert pg.bind_stamp(tmp_path, t0, 6, "SUSPECT") == "already-red"
+    p.write_text(json.dumps({"timestamp": t0 - 5, "green": True}), encoding="utf-8")
+    assert pg.bind_stamp(tmp_path, t0, 6, "SUSPECT:x") == "not-this-run"
+    assert json.loads(p.read_text(encoding="utf-8"))["green"] is True
+    assert pg.bind_stamp(tmp_path / "none", t0, 4, "x") == "no-stamp"
+    # C6 names the gate's verdict on a demoted stamp
+    p.write_text(json.dumps({"timestamp": t0, "green": False, "gate_exit": 6,
+                             "gate_verdict": "SUSPECT:read-set-unreadable"}),
+                 encoding="utf-8")
+    monkeypatch.setattr(pf, "REPO_ROOT", tmp_path)
+    staged = tmp_path / "x.md"
+    staged.write_text("x", encoding="utf-8")
+    msg = pf.check_pyramid_stamp([staged])
+    assert len(msg) == 1 and "SUSPECT:read-set-unreadable" in msg[0], msg
+
+
+def test_b3137_a_node_id_selected_session_writes_no_stamp():
+    """S6-B3130a (B3137): a session narrowed by node ids - two named tests,
+    one per tier, exactly the gate's re-run shape - read as 'both tiers ran
+    unselected' and could write a GREEN stamp. The decision refuses it, and
+    pytest_sessionfinish derives the flag from the session's args (L654: the
+    callee alone proves nothing about the wiring)."""
+    import ast
+    from backtest.tests import conftest as cf
+    both = {"test_unit.py", "test_integration.py"}
+    full = dict(collectonly=False, keyword="", markexpr="", n_items=2,
+                n_reported=2, n_deselected=0)
+    assert cf.pyramid_stamp_decision(both, 0, **full)["green"] is True
+    assert cf.pyramid_stamp_decision(both, 0, **dict(full, nodeid_selected=True)) is None
+    src = Path(cf.__file__).read_text(encoding="utf-8")
+    hook = [n for n in ast.parse(src).body
+            if isinstance(n, ast.FunctionDef) and n.name == "pytest_sessionfinish"][0]
+    kws = {k.arg: ast.unparse(k.value) for c in ast.walk(hook)
+           if isinstance(c, ast.Call) and getattr(c.func, "id", "") == "pyramid_stamp_decision"
+           for k in c.keywords}
+    assert "nodeid_selected" in kws and "session.config.args" in kws["nodeid_selected"]
+
+def test_b3137_output_audit_state_walks_subdirs_and_reads_a_non_repo_as_untracked(
+        tmp_path, monkeypatch):
+    """S6-B3130a (B3137): the state RECURSES (126 tracked output_audit files
+    sit in subdirectories, MEASURED - invisible to a top-level listing);
+    outside a git repository nothing is tracked, so every file is
+    fingerprinted by size and mtime and the state stays readable; any OTHER
+    git failure is unreadable (None -> SUSPECT, L642); and a root with no
+    output_audit directory has nothing to move."""
+    import pyramid_gate as pg
+    (tmp_path / "output_audit" / "sub").mkdir(parents=True)
+    (tmp_path / "output_audit" / "sub" / "x.json").write_text("{}", encoding="utf-8")
+    st = pg.output_audit_state(tmp_path)
+    assert st["tracked"] == {} and "output_audit/sub/x.json" in st["untracked"], st
+    assert pg.output_audit_state(tmp_path / "empty") == {"tracked": {}, "untracked": {}}
+
+    class _R:
+        returncode, stdout, stderr = 1, b"", b"fatal: index file corrupt"
+    monkeypatch.setattr(pg.subprocess, "run", lambda *a, **k: _R())
+    assert pg.output_audit_state(tmp_path) is None
+
+# ---------------------------------------------------------------- B3139 S6-B3130a council
+def test_b3139_directory_listings_and_fixture_reads_reach_the_verdict():
+    """S6-B3130a council: a LISTING is recorded as a read of the directory
+    (trailing slash) and matches every moved path beneath it, at test and at
+    collection level; a file read still matches only its own path; the
+    watched directory itself is 'output_audit/'; a sibling directory whose
+    name merely starts the same is not inside it."""
+    import os
+    import sys
+    import pyramid_gate as pg
+    sys.path.insert(0, str(_SCRIPTS_B3135 / "pytest_plugins"))
+    import pyramid_readset as pr
+    rs = {"schema": 1, "session": [], "spawned": [], "addr": {},
+          "tests": {"t::lister": ["output_audit/sub/"],
+                    "t::root_lister": ["output_audit/"],
+                    "t::reader": ["output_audit/sub/x.json"]}}
+    v = pg.readset_verdict
+    assert v(rs, {"output_audit/sub/new.json"}) == ("RERUN", ["t::lister", "t::root_lister"])
+    assert v(rs, {"output_audit/sub/x.json"}) == (
+        "RERUN", ["t::lister", "t::reader", "t::root_lister"])
+    assert v(rs, {"output_audit/top.json"}) == ("RERUN", ["t::root_lister"])
+    assert v({**rs, "tests": {"t::lister": ["output_audit/sub/"]}},
+             {"output_audit/subway.json"})[0] == "CLEAN:moved-files-read-by-no-test"
+    assert v({**rs, "session": ["output_audit/sub/"]},
+             {"output_audit/sub/y.json"})[0] == "SUSPECT:a-collection-time-read-moved"
+    oa = os.path.normcase(os.path.join(str(_REPO_B3135), "output_audit")) + os.sep
+    assert pr.rel_dir_under(_REPO_B3135 / "output_audit", oa) == "output_audit/"
+    assert pr.rel_dir_under(_REPO_B3135 / "output_audit" / "a" / "b", oa) == "output_audit/a/b/"
+    assert pr.rel_dir_under(_REPO_B3135 / "output_audit_x", oa) is None
+    assert pr.rel_dir_under(3, oa) is None and pr.rel_dir_under(None, oa) is None
+
+
+def test_b3139_gate_own_artifacts_never_count_as_moved_inputs(tmp_path):
+    """S6-B3130a (found building the directory reads): the gate writes its own
+    --out, .pid, read-set files and re-run log under output_audit during every
+    run - MEASURED in b3127/b3129/b3130_pyramid.out - so they are subtracted
+    from 'moved'; otherwise every test that lists output_audit would re-run on
+    every pyramid. A path outside output_audit contributes nothing."""
+    import pyramid_gate as pg
+    out = tmp_path / "output_audit" / "b9_pyramid.out"
+    own = pg.gate_own_paths(out, tmp_path)
+    for suffix in ("", ".pid", pg.READSET_SUFFIX, pg.RERUN_READSET_SUFFIX,
+                   pg.RERUN_LOG_SUFFIX):
+        assert pg._fold("output_audit/b9_pyramid.out" + suffix) in own, (suffix, own)
+    assert len(own) == 5
+    assert pg.gate_own_paths(tmp_path / "elsewhere.out", tmp_path) == set()
+    moved = {"output_audit/b9_pyramid.out", "output_audit/b9_pyramid.out.pid",
+             "output_audit/real_input.json"}
+    assert pg._minus_own(moved, own) == {"output_audit/real_input.json"}
+    assert pg._minus_own(None, own) is None
+
+
+def test_b3139_gate_credits_fixture_users_and_listers_end_to_end(tmp_path, monkeypatch):
+    """S6-B3130a council, a real pytest child through the real gate in a
+    throwaway repo: a MODULE-scoped fixture reads a.json during the FIRST
+    test's setup and a second test reuses the cached object - both are
+    re-run when a.json moves (before B3139 only the first was). A test that
+    LISTS output_audit/sub is re-run when a file is created there, and is not
+    re-run when only a.json (outside sub/) moves. The gate's own artifacts,
+    written under output_audit on every run, never trigger the lister."""
+    import pyramid_gate as pg
+    root = _b3130a_repo(tmp_path)
+    (root / "output_audit" / "sub").mkdir()
+    (root / "output_audit" / "sub" / "s.json").write_text("{}")
+    head = ("import json\nimport pytest\nfrom pathlib import Path\n"
+            "@pytest.fixture(scope='module')\n"
+            "def cached():\n"
+            "    return json.loads(Path('output_audit/a.json').read_text())\n"
+            "def test_a_first(cached):\n    assert cached['v'] in (1, 2)\n"
+            "def test_b_second(cached):\n    assert cached['v'] in (1, 2)\n"
+            "def test_c_lister():\n"
+            "    assert len(sorted(Path('output_audit/sub').glob('*.json'))) >= 1\n")
+    mover_a = "def test_d_mover():\n    Path('output_audit/a.json').write_text('{\"v\": 2}')\n"
+    out = root / "output_audit" / "fx.out"
+    rc, text, rs = _b3137_gate_run(pg, root, head + mover_a, out, monkeypatch)
+    assert rc == 0, text[-900:]
+    assert "\nreadset=RERUN-PASS:2-tests\n" in text, text[-700:]
+    got = {k.split("::")[-1]: v for k, v in rs["tests"].items()}
+    assert got["test_a_first"] == ["output_audit/a.json"], got
+    assert got["test_b_second"] == ["output_audit/a.json"], got
+    assert got["test_c_lister"] == ["output_audit/sub/"], got
+    assert rs["fixtures"]["cached"] == {"scope": "module", "reads": ["output_audit/a.json"]}
+    rerun = Path(str(out) + pg.RERUN_LOG_SUFFIX).read_text(encoding="utf-8")
+    assert "2 passed" in rerun, rerun[-400:]
+    (root / "output_audit" / "a.json").write_text('{"v": 1}')
+    mover_sub = ("def test_d_mover():\n"
+                 "    Path('output_audit/sub/new.json').write_text('{}')\n")
+    out2 = root / "output_audit" / "fx2.out"
+    rc, text, _ = _b3137_gate_run(pg, root, head + mover_sub, out2, monkeypatch)
+    assert rc == 0 and "\nreadset=RERUN-PASS:1-tests\n" in text, text[-700:]
+    (root / "output_audit" / "sub" / "new.json").unlink()
+    quiet = head + "def test_d_idle():\n    assert True\n"
+    out3 = root / "output_audit" / "fx3.out"
+    rc, text, _ = _b3137_gate_run(pg, root, quiet, out3, monkeypatch)
+    assert rc == 0 and "\nreadset=CLEAN\n" in text, text[-700:]
+
+
+# ---------------------------------------------------------------- B3139 S6-B2556a council
+def test_b3139_one_launcher_list_names_only_files_that_exist():
+    """S6-B2556a council: both gates read ONE module. Every launcher it names
+    is a file on disk (the old turn-gate list named run_phase1b.py, which
+    exists nowhere); the turn gate reads LAUNCH_ENTRY_POINTS, the pyramid
+    gate RUN_PROCESSES - the SAME tuple objects, not copies; and the dead
+    _re_launch regex is gone."""
+    import pyramid_gate as pg
+    import runner_scripts as rs
+    import verify_turn_compliance as vtc
+    on_disk = {p.name for d in ("scripts", "backtest")
+               for p in (_REPO_B3135 / d).glob("*.py")}
+    assert set(rs.LAUNCH_ENTRY_POINTS) <= on_disk, sorted(set(rs.LAUNCH_ENTRY_POINTS) - on_disk)
+    assert "run_phase1b.py" not in rs.LAUNCH_ENTRY_POINTS
+    assert set(rs.RUN_PROCESSES) <= set(rs.LAUNCH_ENTRY_POINTS)
+    assert set(rs.SPEC_DRIVEN) <= set(rs.LAUNCH_ENTRY_POINTS)
+    assert vtc.RUNNER_SCRIPTS is rs.LAUNCH_ENTRY_POINTS
+    assert pg.RUNNER_SCRIPTS is rs.RUN_PROCESSES
+    assert not hasattr(vtc, "_re_launch")
+
+
+def test_b3139_direct_spec_driven_calls_are_launches():
+    """S6-B2556a council: a direct run_wave / run_serial_chain / launch_sweep /
+    launch_detached call is a LAUNCH for the monitor-arm gate - before B3139
+    only a nohup-wrapped one was (the runner clause missed all four). A
+    runner named inside a quoted string is still not a launch."""
+    from verify_turn_compliance import _segment_is_launch as seg
+    for cmd in ("python scripts/run_wave.py --spec output_audit/x_spec.json",
+                "python scripts/run_serial_chain.py --task-name t --specs a.json",
+                "python scripts/launch_sweep.py --spec x.json",
+                "python scripts/launch_detached.py --chain --specs s.json"):
+        assert seg(cmd) is True, cmd
+    assert seg('python -c "print(\'scripts/run_wave.py\')"') is False
+    assert seg("grep -n run_wave scripts/run_wave.py") is False
+
+
+def test_b3139_spec_driven_launch_owes_no_pool_flag_but_run_phase1a_does():
+    """S6-B2556a council: widening the launcher list must not make the
+    pool-workers scan fire on launches whose pool setting lives in the SPEC;
+    a direct run_phase1a launch still owes the flag, alone or beside a
+    spec-driven one."""
+    import verify_turn_compliance as vtc
+    scan = vtc.scan_launch_missing_pool_workers
+    for cmd in ("python scripts/run_wave.py --spec x.json",
+                "python scripts/launch_detached.py --chain --specs s.json"):
+        assert scan([], blobs=[cmd]) == [], cmd
+    assert scan([], blobs=["python backtest/run_phase1a.py --start a"])
+    assert scan([], blobs=["python scripts/run_wave.py --spec x.json && "
+                           "python backtest/run_phase1a.py --start a"])
+    assert scan([], blobs=["python backtest/run_phase1a.py --screen-pool-workers 4"]) == []
+
+
+# ---------------------------------------------------------------- B3139 S6-B3128a real cube
+def test_b3139_bollinger_step2_free_levels_reproduce_on_the_landed_cube():
+    """S6-B3128a council, proof 5 on the REAL cube: at the bl_step2_p4_9
+    landing the free-level leg failed reproduction on 24 of 24 exits, each
+    gap exactly the 465 holdout-entered rows (the pre-registered prediction
+    held). With the in-sample window the same leg reproduces the landed
+    family grade on every exit, scores the 1,272 in-sample rows and
+    discloses the 465 it excluded (skips on a clone without the cube)."""
+    cube = _REPO_B3135 / "output_bl_step2_p4_9_p4_9"
+    grid = _REPO_B3135 / "output_audit" / (cube.name + "_grid_auto.json")
+    if not (cube / "trade_exit_detail.csv").exists() or not grid.exists():
+        pytest.skip("bl_step2_p4_9 cube not present on this machine")
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "fl.json"
+        r = subprocess.run([sys.executable,
+                            str(_SCRIPTS_B3135 / "grade_free_levels_bollinger.py"),
+                            "--cube", str(cube), "--out", str(out)],
+                           cwd=str(_REPO_B3135), capture_output=True, text=True)
+        assert r.returncode == 0, (r.stdout[-800:], r.stderr[-800:])
+        d = json.loads(out.read_text(encoding="utf-8"))
+    assert d["score_reproduction"]["mismatches"] == []
+    assert d["score_reproduction"]["compared_exits"] == 24
+    assert d["window"]["trade_log"]["rows_before_window"] == {
+        "in_sample": 1272, "holdout": 465, "outside_both": 0}
+    assert d["window"]["trade_log"]["rows_scored"] == 1272
+
+
+# ================================================================ B3139 batch-2 gate fixes (S6-B3130a): suite writes
+_B3139_REPO = Path(__file__).resolve().parents[2]
+_B3139_SCRIPTS = _B3139_REPO / "scripts"
+
+
+def _b3139_private(rel, name):
+    """A PRIVATE copy of a scripts/ module - its own globals - so a pin can
+    drive module state without touching the live copy the gate loaded (the
+    read-set plugin's _STATE is the gate's live record during a gate run)."""
+    import importlib.util as _ilu
+    spec = _ilu.spec_from_file_location(name, _B3139_SCRIPTS / rel)
+    mod = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_b3139_workflow_state_writes_follow_the_env_override(tmp_path, monkeypatch):
+    """S6-B3130a (B3139): build() writes its file copy where
+    WORKFLOW_STATE_OUT points and NOT to its production path. MEASURED: the
+    production output_audit/workflow_state.json was the only non-gate
+    output_audit path the batch-2 full pyramid moved, and the read-set re-run
+    of a test that rewrote it made the gate read SUSPECT on every run. The
+    production path is redirected to a sentinel here, so this pin never
+    touches the real file. Must-fail proven on the pre-change builder."""
+    bws = _b3139_private("build_workflow_state.py", "bws_b3139")
+    prod = tmp_path / "prod" / "workflow_state.json"
+    prod.parent.mkdir()
+    monkeypatch.setattr(bws, "OUT", prod)
+    target = tmp_path / "override.json"
+    monkeypatch.setenv("WORKFLOW_STATE_OUT", str(target))
+    st = bws.build()
+    assert target.is_file(), "the override received no file copy"
+    assert json.loads(target.read_text(encoding="utf-8"))["generated_utc"] == \
+        st["generated_utc"]
+    assert not prod.exists(), "build() wrote the production path under an override"
+    monkeypatch.delenv("WORKFLOW_STATE_OUT")
+    bws.build()
+    assert prod.is_file(), "without the override the production copy is written"
+
+
+def test_b3139_test_session_isolates_the_workflow_state_file():
+    """S6-B3130a (B3139): the conftest session fixture points
+    WORKFLOW_STATE_OUT outside the production output_audit, so no test - in
+    process or through the prompt hook's child, which inherits os.environ -
+    rewrites the production file. Must-fail proven with --noconftest."""
+    import os
+    v = os.environ.get("WORKFLOW_STATE_OUT")
+    assert v, "the test session does not isolate the workflow-state file"
+    oa = (_B3139_REPO / "output_audit").resolve()
+    assert not Path(v).resolve().is_relative_to(oa), v
+
+
+def test_b3139_readset_plugin_records_writes_apart_from_reads(tmp_path):
+    """S6-B3130a (B3139): the read-set recorder files an open that can CHANGE
+    content under 'writes' per test, never as a read; 'r+' is both; a path
+    outside the watched output_audit is neither. Driven through _hook on a
+    PRIVATE copy of the plugin. Must-fail proven on the pre-change plugin."""
+    import os
+    pr = _b3139_private("pytest_plugins/pyramid_readset.py", "pyramid_readset_b3139")
+    assert pr.is_write("w", None) and pr.is_write("ab", None) and pr.is_write("xb", None)
+    assert pr.is_write("r+", None) and not pr.is_write("r", None)
+    assert not pr.is_write("rb", None)
+    assert pr.is_write(None, os.O_WRONLY | os.O_CREAT) and pr.is_write(None, os.O_RDWR)
+    assert not pr.is_write(None, os.O_RDONLY)
+    pr._STATE["oa"] = os.path.normcase(str(tmp_path / "output_audit")) + os.sep
+    f = tmp_path / "output_audit" / "a.json"
+    pr._STATE["current"] = "t::w"
+    pr._hook("open", (str(f), "w", os.O_WRONLY | os.O_CREAT | os.O_TRUNC))
+    pr._STATE["current"] = "t::r"
+    pr._hook("open", (str(f), "r", os.O_RDONLY))
+    pr._STATE["current"] = "t::rw"
+    pr._hook("open", (str(f), "r+", os.O_RDWR))
+    pr._hook("open", (str(tmp_path / "elsewhere.json"), "w", os.O_WRONLY))
+    pr._STATE["current"] = None
+    pr._hook("open", (str(f), "a", os.O_WRONLY | os.O_APPEND))
+    assert pr._STATE["writes"] == {"t::w": {"output_audit/a.json"},
+                                   "t::rw": {"output_audit/a.json"},
+                                   pr.SESSION: {"output_audit/a.json"}}, pr._STATE["writes"]
+    assert pr._STATE["tests"] == {"t::r": {"output_audit/a.json"},
+                                  "t::rw": {"output_audit/a.json"}}, pr._STATE["tests"]
+
+
+def test_b3139_gate_names_suite_writes_and_a_self_moving_rerun():
+    """S6-B3130a (B3139): the gate footer names every output_audit path a
+    test wrote in-process (minus the gate's own files); when EVERY path that
+    moved during the read-set re-run was written by the re-run's own tests
+    the SUSPECT reason names them, and the generic reason stays for a move
+    nothing in the run explains. Must-fail proven on the pre-change gate."""
+    import pyramid_gate as pg
+    doc = {"writes": {"t.py::test_b": ["output_audit/ws.json", "output_audit/g.out"],
+                      "t.py::test_a": ["output_audit/ws.json"]}}
+    assert pg.suite_writes_line(doc) == \
+        "2: output_audit/g.out<-test_b; output_audit/ws.json<-test_a(+1)"
+    assert pg.suite_writes_line(doc, own={"output_audit/g.out"}) == \
+        "1: output_audit/ws.json<-test_a(+1)"
+    assert pg.suite_writes_line({"writes": {}}) == "none"
+    assert pg.suite_writes_line({}) == "none"
+    assert pg.suite_writes_line(None) == "unreadable"
+    assert pg.rerun_settled("CLEAN", set(), doc) is None
+    assert pg.rerun_settled("CLEAN:moved-files-read-by-no-test",
+                            {"output_audit/ws.json"}, doc) is None
+    assert pg.rerun_settled("RERUN", {"output_audit/ws.json"}, doc) == \
+        "SUSPECT:rerun-tests-rewrote-output_audit/ws.json"
+    assert pg.rerun_settled("RERUN", {"output_audit/ws.json", "output_audit/x.json"},
+                            doc) == "SUSPECT:inputs-moved-again-during-rerun"
+    assert pg.rerun_settled("SUSPECT:output_audit-state-unreadable", None, doc) == \
+        "SUSPECT:inputs-moved-again-during-rerun"
+
+
+def test_b3139_gate_rerun_names_a_suite_that_rewrites_its_own_input(tmp_path,
+                                                                   monkeypatch):
+    """S6-B3130a (B3139) END TO END, the shape the batch-2 full pyramid hit: a
+    SPAWNER that also rewrites an output_audit file is re-run by the read-set
+    (a spawner is treated as having read every moved file), rewrites it
+    again, and the run cannot settle. The gate now says WHY - the SUSPECT
+    reason names the self-written path - and its footer names every test
+    that wrote under output_audit; an ordinary mid-run mover is named there
+    too while the reader it moved still re-runs to RERUN-PASS. Must-fail
+    proven on the pre-change gate (generic reason, no suite-writes line)."""
+    import pyramid_gate as pg
+    root = _b3130a_repo(tmp_path)
+    head = "import json, subprocess, sys, time\nfrom pathlib import Path\n"
+    selfmove = head + (
+        "def test_a_spawner_writer():\n"
+        "    subprocess.run([sys.executable, '-c', 'pass'], check=True)\n"
+        "    Path('output_audit/a.json').write_text('{\"v\": %d}' % time.time_ns())\n")
+    rc, text = _b3130a_gate(pg, root, selfmove, tmp_path / "self.out", monkeypatch)
+    assert rc == pg.EXIT_SUSPECT, text[-900:]
+    assert "\nreadset=SUSPECT:rerun-tests-rewrote-output_audit/a.json\n" in text, text[-700:]
+    assert "\nreadset_suite_writes=1: output_audit/a.json<-test_a_spawner_writer\n" \
+        in text, text[-700:]
+    (root / "output_audit" / "a.json").write_text('{"v": 1}')
+    mover = head + (
+        "def test_a_reader():\n"
+        "    assert json.loads(Path('output_audit/a.json').read_text())['v'] in (1, 2)\n"
+        "def test_c_mover():\n"
+        "    Path('output_audit/a.json').write_text('{\"v\": 2}')\n")
+    rc, text = _b3130a_gate(pg, root, mover, tmp_path / "mv.out", monkeypatch)
+    assert rc == 0 and "\nreadset=RERUN-PASS:1-tests\n" in text, text[-700:]
+    assert "\nreadset_suite_writes=1: output_audit/a.json<-test_c_mover\n" in text, \
+        text[-700:]
+    quiet = head + "def test_q():\n    assert json.loads(Path('output_audit/a.json').read_text())\n"
+    rc, text = _b3130a_gate(pg, root, quiet, tmp_path / "q.out", monkeypatch)
+    assert rc == 0 and "\nreadset_suite_writes=none\n" in text, text[-700:]

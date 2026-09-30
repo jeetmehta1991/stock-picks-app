@@ -18,13 +18,26 @@ read the artifact's own exit, never a pipe's):
 
 A CHANGED run is VOID whatever pytest said; re-run it on the settled tree.
 
+S6-B3130a (owner ruling 2026-09-29): the READ-SET. A watched output_audit
+file that moved during the run sends EXACTLY the tests that read it back
+through pytest once (readset=RERUN-PASS / RERUN-FAILED), or marks the run
+SUSPECT (exit=6) when the tests cannot be named. A run the gate does not
+pass - exit 4, 6 or a failed re-run - WOULD demote the GREEN stamp it
+wrote; until the owner rules on the demotion (S6-B3130a, B3139 council)
+the gate records stamp_binding=would-demote and writes nothing, because
+C6 refuses EVERY commit on a non-green stamp while no launch path checks
+the stamp - a demotion before a wave launched would refuse that wave's
+unattended landing commit (L873). The gate's exit code is the verdict.
+
 Usage:
     python scripts/pyramid_gate.py --out <artifact> [--root <repo>] -- <pytest args...>
 """
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
+import json
 import os
 import subprocess
 import sys
@@ -150,6 +163,314 @@ def output_audit_created(before, root) -> str:
     return ",".join(new) if new else "none"
 
 
+def output_audit_state(root) -> dict | None:
+    """S6-B3130a (B3135, L880): what the suite's artifact-level pins READ.
+    Tracked output_audit files are TEST INPUTS, so they are fingerprinted by
+    CONTENT (sha1 - a same-size rewrite with its mtime restored still shows);
+    untracked ones by (size, mtime_ns). None when unreadable - reported as
+    such, never treated as an empty directory (L642). MEASURED at build: 1,245
+    tracked files / 72.1 MB hash in ~5 s, about 10 s per gate run."""
+    import hashlib
+    root = Path(root)
+    if not (root / "output_audit").is_dir():
+        return {"tracked": {}, "untracked": {}}   # nothing to move
+    try:
+        r = subprocess.run(["git", "ls-files", "-z", "output_audit"], cwd=str(root),
+                           capture_output=True, timeout=120)
+        if r.returncode != 0:
+            # S6-B3130a (B3137): outside a repository nothing is TRACKED -
+            # every file is fingerprinted by (size, mtime); any other git
+            # failure is unreadable, never an empty tracked set (L642)
+            if b"not a git repository" not in (r.stderr or b"").lower():
+                return None
+            tracked = set()
+        else:
+            tracked = {n for n in r.stdout.decode("utf-8", "replace").split("\0")
+                       if n}
+        state = {"tracked": {}, "untracked": {}}
+        base = root / "output_audit"
+        # S6-B3130a (B3137): RECURSIVE - 126 tracked files sit in
+        # subdirectories (MEASURED), invisible to a top-level listing
+        for p in base.rglob("*") if base.exists() else []:
+            if not p.is_file():
+                continue
+            rel = "output_audit/" + p.relative_to(base).as_posix()
+            if rel in tracked:
+                h = hashlib.sha1()
+                with open(p, "rb") as fh:
+                    for chunk in iter(lambda: fh.read(1 << 20), b""):
+                        h.update(chunk)
+                state["tracked"][rel] = h.hexdigest()
+            else:
+                st = p.stat()
+                state["untracked"][rel] = (st.st_size, st.st_mtime_ns)
+        return state
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def output_audit_modified(before, root, after=None) -> tuple[str, str]:
+    """S6-B3130a: PRE-EXISTING output_audit files rewritten or removed while
+    the suite ran - (tracked, untracked), each 'none', a comma list, or
+    'unreadable'. A DISCLOSURE, never a refusal (L721): the landing supervisor
+    writes here by design (L841), and a line naming the moved inputs is what
+    lets a reader tell a green run on moving inputs from a clean one. Files
+    CREATED mid-run are output_audit_created's, not this line's."""
+    if before is None:
+        return "unreadable", "unreadable"
+    if after is None:
+        after = output_audit_state(root)
+    if after is None:
+        return "unreadable", "unreadable"
+    out = []
+    for kind in ("tracked", "untracked"):
+        b, a = before[kind], after[kind]
+        moved = sorted(n for n in b if a.get(n) != b[n])
+        out.append(",".join(moved) if moved else "none")
+    return out[0], out[1]
+
+
+# S6-B3130a (owner ruling 2026-09-29, '6. Yes'): the READ-SET. The pytest
+# child loads scripts/pytest_plugins/pyramid_readset.py, which records every
+# output_audit file each test OPENED FOR READING and every test that spawned a
+# process. When a watched file moved during the run, the gate re-runs EXACTLY
+# the tests that read one (or spawned - a child's reads are invisible), or
+# marks the run SUSPECT when it cannot. The session writes .pyramid_stamp
+# BEFORE the gate has judged the run, so a run the gate does not pass (VOID,
+# SUSPECT, a failed re-run) DEMOTES the GREEN stamp this run wrote - otherwise
+# C6 would honour a verdict the gate withheld (MEASURED B3137: a tree=CHANGED
+# run exited 4 while its GREEN stamp still let commits through).
+EXIT_SUSPECT = 6
+RERUN_CAP = 150
+PLUGIN = "pyramid_readset"
+PLUGIN_DIR = Path(__file__).resolve().parent / "pytest_plugins"
+READSET_SUFFIX = ".readset.json"
+RERUN_READSET_SUFFIX = ".readset_rerun.json"
+RERUN_LOG_SUFFIX = ".rerun.txt"
+if str(PLUGIN_DIR) not in sys.path:
+    sys.path.insert(0, str(PLUGIN_DIR))
+from pyramid_readset import ENV_OUT, ENV_ROOT, SESSION  # noqa: E402
+
+
+def _fold(p: str) -> str:
+    p = str(p).replace("\\", "/")
+    return p.lower() if os.name == "nt" else p
+
+
+def output_audit_moved(before, after) -> set | None:
+    """Every output_audit path rewritten, removed or created between two
+    output_audit_state readings; None when either is unreadable (L642)."""
+    if before is None or after is None:
+        return None
+    out: set = set()
+    for kind in ("tracked", "untracked"):
+        b, a = before[kind], after[kind]
+        out |= {n for n in set(b) | set(a) if b.get(n) != a.get(n)}
+    return out
+
+
+def reads_moved(paths, mv: set) -> bool:
+    """Did any recorded read consume a moved path? A FILE read matches its
+    own path; a DIRECTORY read (a listing, recorded with a trailing '/')
+    matches every moved path beneath it - a created, removed or rewritten
+    file under a listed directory changes what the listing returned or what
+    the test then opened (B3139, S6-B3130a council)."""
+    for p in paths or []:
+        f = _fold(p)
+        if f.endswith("/"):
+            if any(m.startswith(f) for m in mv):
+                return True
+        elif f in mv:
+            return True
+    return False
+
+
+def load_readset(path) -> dict | None:
+    try:
+        d = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return d if isinstance(d, dict) and d.get("schema") == 1 else None
+
+
+def readset_verdict(readset, moved, cap: int = RERUN_CAP) -> tuple[str, list]:
+    """(verdict, node ids to re-run). CLEAN when nothing moved or no test read
+    a moved file; RERUN with the exact tests otherwise; SUSPECT when the
+    answer cannot be known - an unreadable state or read-set, a moved file
+    read at COLLECTION time (every test of that module may carry it), or more
+    tests than the re-run cap. A session-level SPAWN does not escalate: the
+    session's own stamp writer spawns git at finish."""
+    if moved is None:
+        return "SUSPECT:output_audit-state-unreadable", []
+    if not moved:
+        return "CLEAN", []
+    if readset is None:
+        return "SUSPECT:read-set-unreadable", []
+    mv = {_fold(m) for m in moved}
+    if reads_moved(readset.get("session"), mv):
+        return "SUSPECT:a-collection-time-read-moved", []
+    hit = sorted(n for n, ps in (readset.get("tests") or {}).items()
+                 if reads_moved(ps, mv))
+    spawn = sorted(n for n in (readset.get("spawned") or [])
+                   if n != SESSION and n not in hit)
+    todo = hit + spawn
+    if not todo:
+        return "CLEAN:moved-files-read-by-no-test", []
+    if len(todo) > cap:
+        return f"SUSPECT:{len(todo)}-tests-exceed-rerun-cap-{cap}", []
+    return "RERUN", todo
+
+
+@contextlib.contextmanager
+def readset_env(root, readset_path):
+    """The plugin's environment for ONE child, restored after. It rides
+    os.environ rather than a subprocess keyword, so every caller's
+    subprocess.call signature is unchanged; PYTHONPATH gains ONLY the plugin
+    directory, never scripts/ (a script named like a stdlib module would
+    shadow it in the child)."""
+    pp = os.environ.get("PYTHONPATH")
+    keys = {ENV_OUT: str(readset_path), ENV_ROOT: str(Path(root).resolve()),
+            "PYTHONPATH": str(PLUGIN_DIR) + (os.pathsep + pp if pp else "")}
+    saved = {k: os.environ.get(k) for k in keys}
+    os.environ.update(keys)
+    try:
+        yield
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
+
+def gate_own_paths(out, root) -> set:
+    """The gate's OWN artifacts - the --out file, its pidfile, the read-set
+    files and the re-run log - as folded 'output_audit/...' names, when
+    --out sits under root/output_audit. The gate writes them during every
+    run (MEASURED: b3127/b3129/b3130_pyramid.out each record
+    output_audit_created=<out>,<out>.pid), so they are never a moved INPUT;
+    counted, they would re-run every test that lists output_audit on every
+    pyramid (B3139, S6-B3130a)."""
+    base = (Path(root) / "output_audit").resolve()
+    own = set()
+    for suffix in ("", ".pid", READSET_SUFFIX, RERUN_READSET_SUFFIX,
+                   RERUN_LOG_SUFFIX):
+        p = Path(str(out) + suffix).resolve()
+        if p.is_relative_to(base):
+            own.add(_fold("output_audit/" + p.relative_to(base).as_posix()))
+    return own
+
+
+def _minus_own(moved, own: set):
+    return None if moved is None else {m for m in moved if _fold(m) not in own}
+
+
+def suite_writes(doc) -> dict:
+    """{folded output_audit path: [node ids]} for every in-process WRITE the
+    read-set recorded (B3139, S6-B3130a). A spawned child's writes are not
+    here - the audit hook sees this interpreter only - though a child's write
+    that CHANGES a file still shows in output_audit_modified_*."""
+    out: dict = {}
+    for node, paths in sorted(((doc or {}).get("writes") or {}).items()):
+        for p in paths or []:
+            out.setdefault(_fold(p), []).append(node)
+    return out
+
+
+def suite_writes_line(doc, own=frozenset(), limit: int = 6) -> str:
+    """The footer's readset_suite_writes= value: every output_audit path a
+    test of this run WROTE in-process (L689 - a test driving production code
+    is production code for the run), minus the gate's own files, each with
+    the first test that wrote it. 'unreadable' when the read-set is."""
+    if doc is None:
+        return "unreadable"
+    w = sorted((p, ns) for p, ns in suite_writes(doc).items() if p not in own)
+    if not w:
+        return "none"
+    shown = [p + "<-" + ns[0].split("::")[-1]
+             + (f"(+{len(ns) - 1})" if len(ns) > 1 else "") for p, ns in w[:limit]]
+    more = f"; +{len(w) - limit} more" if len(w) > limit else ""
+    return f"{len(w)}: " + "; ".join(shown) + more
+
+
+def rerun_settled(v2: str, moved2, doc2) -> str | None:
+    """None when the read-set re-run settled, else its SUSPECT reason. When
+    EVERY path that moved during the re-run was written in-process by the
+    re-run's own tests, the suite moved its own input (L689) and the reason
+    names the paths - the generic reason cost B3139 a diagnosis to find a
+    test rewriting output_audit/workflow_state.json on every pyramid."""
+    if not (v2 == "RERUN" or v2.startswith("SUSPECT")):
+        return None
+    mv = {_fold(m) for m in (moved2 or ())}
+    if mv and mv <= set(suite_writes(doc2)):
+        return "SUSPECT:rerun-tests-rewrote-" + ",".join(sorted(mv))
+    return "SUSPECT:inputs-moved-again-during-rerun"
+
+
+def readset_decide(out, root, st_before, st_after, readset_path) -> tuple[str, str]:
+    """Judge the main run's read-set; when it names tests, re-run EXACTLY
+    those once on the now-settled inputs and judge that run the same way."""
+    own = gate_own_paths(out, root)
+    moved = _minus_own(output_audit_moved(st_before, st_after), own)
+    doc = load_readset(readset_path)
+    verdict, todo = readset_verdict(doc, moved)
+    if verdict != "RERUN":
+        return verdict, "none"
+    addr = (doc or {}).get("addr") or {}
+    args = [addr.get(n, n) for n in todo]
+    rs2 = Path(str(out) + RERUN_READSET_SUFFIX)
+    rs2.unlink(missing_ok=True)
+    log2 = Path(str(out) + RERUN_LOG_SUFFIX)
+    st1 = output_audit_state(root)
+    with open(log2, "w", encoding="utf-8") as fh2, readset_env(root, rs2):
+        rc2 = subprocess.call([sys.executable, "-m", "pytest", "-p", PLUGIN,
+                               "-q", "-p", "no:cacheprovider", *args],
+                              stdout=fh2, stderr=subprocess.STDOUT, cwd=str(root))
+    doc2 = load_readset(rs2)
+    moved2 = _minus_own(output_audit_moved(st1, output_audit_state(root)), own)
+    v2, _ = readset_verdict(doc2, moved2, cap=10 ** 9)
+    line = f"{len(todo)} tests rc={rc2} log={log2.name}"
+    if rc2 != 0:
+        return f"RERUN-FAILED:{len(todo)}-tests", line
+    unsettled = rerun_settled(v2, moved2, doc2)
+    if unsettled:
+        return unsettled, line
+    return f"RERUN-PASS:{len(todo)}-tests", line
+
+
+# S6-B3130a (B3139, council 5 of 5): the owner approved the READ-SET, never
+# the DEMOTION. False = disclose what would happen (would-demote) and write
+# nothing; flipping it is the owner's ruling, together with a launch-time
+# GREEN-stamp check so a landing can never be the commit a demotion blocks.
+DEMOTION_ENABLED = False
+
+
+def bind_stamp(root, t0: float, final: int, reason: str) -> str:
+    """Demote the GREEN .pyramid_stamp THIS run wrote when the gate does not
+    pass the run (final != 0) - only while DEMOTION_ENABLED; until then the
+    same case returns 'would-demote' and the stamp is left as written. A
+    stamp older than the run is not this run's and is never touched (a
+    partial run through the gate writes none)."""
+    p = Path(root) / ".pyramid_stamp"
+    if not p.exists():
+        return "no-stamp"
+    try:
+        stamp = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return "unreadable"
+    if float(stamp.get("timestamp", 0) or 0) < t0:
+        return "not-this-run"
+    if final == 0:
+        return "kept-green" if stamp.get("green") else "kept-red"
+    if not stamp.get("green"):
+        return "already-red"
+    if not DEMOTION_ENABLED:
+        return "would-demote"
+    stamp.update(green=False, gate_exit=int(final), gate_verdict=str(reason)[:200])
+    p.write_text(json.dumps(stamp), encoding="utf-8")
+    return "demoted"
+
+
 def run(out: Path, root: Path, pytest_args: list[str],
         beside_wave: str | None = None) -> int:
     engine_start = _engine_inflight()
@@ -160,6 +481,7 @@ def run(out: Path, root: Path, pytest_args: list[str],
         print(refused)
         return EXIT_REFUSED_BESIDE_WAVE
     oa_before = output_audit_snapshot(root)
+    oa_state_before = output_audit_state(root)
     before = fingerprint(root)
     t0 = time.time()
     chain_start = _chain_inflight()
@@ -173,12 +495,32 @@ def run(out: Path, root: Path, pytest_args: list[str],
     import os
     pidfile = Path(str(out) + ".pid")
     pidfile.write_text(str(os.getpid()), encoding="utf-8")
+    readset_path = Path(str(out) + READSET_SUFFIX)
+    readset_path.unlink(missing_ok=True)
     try:
-        with open(out, "w", encoding="utf-8") as fh:
-            rc = subprocess.call([sys.executable, "-m", "pytest", *pytest_args],
+        with open(out, "w", encoding="utf-8") as fh, \
+                readset_env(root, readset_path):
+            rc = subprocess.call([sys.executable, "-m", "pytest", "-p", PLUGIN,
+                                  *pytest_args],
                                  stdout=fh, stderr=subprocess.STDOUT, cwd=str(root))
         diff = changed(before, fingerprint(root))
         final = 4 if diff else rc
+        # the main run's output_audit disclosures, read BEFORE any re-run
+        oa_state_after = output_audit_state(root)
+        oa_created = output_audit_created(oa_before, root)
+        oa_mod_tracked, oa_mod_untracked = output_audit_modified(
+            oa_state_before, root, oa_state_after)
+        # S6-B3130a: judge the read-set; re-run exactly the named tests
+        rs_verdict, rs_rerun = readset_decide(
+            out, root, oa_state_before, oa_state_after, readset_path)
+        rs_writes = suite_writes_line(load_readset(readset_path),
+                                      gate_own_paths(out, root))
+        if final == 0 and rs_verdict.startswith("SUSPECT"):
+            final = EXIT_SUSPECT
+        elif final == 0 and rs_verdict.startswith("RERUN-FAILED"):
+            final = 1
+        binding = bind_stamp(root, t0, final,
+                             verdict_line(diff) if diff else rs_verdict)
         # S6-B3061 (L621): a pyramid is CPU-heavy and the engine is
         # timing-sensitive. L621 says hold it until the completion line
         # and NOTHING ENFORCED THAT - 30 gate runs landed inside one
@@ -198,7 +540,6 @@ def run(out: Path, root: Path, pytest_args: list[str],
         engine_end = _engine_inflight()
         engine = engine_start if engine_start != "none" else engine_end
         engine_dead = _engine_dead_within_window()
-        oa_created = output_audit_created(oa_before, root)
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(f"\npytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
                      f"elapsed_s={time.time() - t0:.0f}\n"
@@ -210,7 +551,13 @@ def run(out: Path, root: Path, pytest_args: list[str],
                      f"engine_inflight_end={engine_end}\n"
                      f"engine_dead_within_window={engine_dead}\n"
                      f"beside_wave_override={(beside_wave or '').strip() or 'none'}\n"
-                     f"output_audit_created={oa_created}\n")
+                     f"output_audit_created={oa_created}\n"
+                     f"output_audit_modified_tracked={oa_mod_tracked}\n"
+                     f"output_audit_modified_untracked={oa_mod_untracked}\n"
+                     f"readset={rs_verdict}\n"
+                     f"readset_rerun={rs_rerun}\n"
+                     f"readset_suite_writes={rs_writes}\n"
+                     f"stamp_binding={binding}\n")
         print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
         if chain != "none":
             print("  NOTE (L621/S6-B3061): a config was IN FLIGHT while "
@@ -222,6 +569,16 @@ def run(out: Path, root: Path, pytest_args: list[str],
                   "wave can exhaust commit; runbook Step 2.4 says run the "
                   "full suite BEFORE the launch - there is no leg-boundary window."
                   % engine)
+        if oa_mod_tracked not in ("none", "unreadable"):
+            print("  NOTE (S6-B3130a/L880): TRACKED output_audit file(s) were "
+                  "rewritten while this suite ran - artifact-level pins may "
+                  "have read moving inputs: %s" % oa_mod_tracked)
+        if rs_verdict != "CLEAN":
+            print("  NOTE (S6-B3130a): read-set %s (re-run: %s; stamp: %s)"
+                  % (rs_verdict, rs_rerun, binding))
+        if rs_writes not in ("none", "unreadable"):
+            print("  NOTE (S6-B3130a/L689): test(s) WROTE under the production "
+                  "output_audit in-process: %s" % rs_writes)
         if oa_created not in ("none", "unreadable"):
             print("  NOTE (S6-B3120g): this suite run CREATED file(s) under "
                   "the production output_audit - test residue: %s"
@@ -237,8 +594,9 @@ ENGINE_FRESH_S = 3600
 # these. The venv launcher and the interpreter it starts both carry the same
 # command line, so labels are de-duplicated; pool workers (`-c spawn_main`) are
 # children of a runner and are not runners themselves.
-RUNNER_SCRIPTS = ("run_phase1a.py", "run_wave.py", "run_serial_chain.py",
-                  "launch_sweep.py")
+# S6-B2556a (B3139): ONE shared definition (scripts/runner_scripts.py); the
+# in-flight check reads the processes that ARE a run while alive.
+from runner_scripts import RUN_PROCESSES as RUNNER_SCRIPTS  # noqa: E402
 
 
 def _python_argvs():
