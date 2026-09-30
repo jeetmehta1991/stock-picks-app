@@ -303,6 +303,16 @@ def tickets_naming(names, queue_path=None) -> list:
     return out
 
 
+def _occupancy_rule() -> str:
+    """S6-B3139r: the engine's occupancy regime, stamped into every manifest.
+    An older tree without the constant is by definition a v1 engine."""
+    try:
+        from backtest.engine.backtest import OCCUPANCY_RULE
+        return str(OCCUPANCY_RULE)
+    except ImportError:
+        return "whole_candidate_v1"
+
+
 def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
     tickers = (ROOT / spec["tickers_file"]).read_text().split()
     days = 251 * max(1, (int(spec["window"]["end"][:4])
@@ -333,6 +343,7 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
         # file changed, the list says WHAT the run actually graded. Parsed
         # exactly as the engine parses STRATEGY_SUBSET_FILE (run_phase1a.py,
         # B1425): one name per line, blank and #-lines skipped.
+        "occupancy_rule": _occupancy_rule(),
         "input_names": {
             rel: [ln.strip() for ln in (ROOT / rel).read_text(
                       encoding="utf-8").splitlines()

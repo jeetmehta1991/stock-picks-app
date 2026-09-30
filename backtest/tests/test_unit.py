@@ -50916,52 +50916,62 @@ def test_b3139_materialise_worktree_links_the_untracked_data(tmp_path):
 
 
 # ================================================================ B3139 S6-B3139r: the occupancy skip names what it silences
-def test_b3139_mode_c_skip_row_names_the_silenced_cofiring_strategies():
-    """S6-B3139r (B3139): under cube isolation the mode-c branch skips the
-    WHOLE candidate when any of its strategies holds the ticker. The skip row
-    keeps the holders in "strategy" (B2905) and now names every co-firing
-    strategy it silenced in "blocked_cofiring". Behaviour on the real helper;
-    the verbatim case is the S6-B3134a slice's daily arm on MSFT 2022-09-15,
-    where its skip row named six holders; the candidate is reconstructed as
-    the ten strategies the legacy arm entered there that day."""
-    from backtest.engine.backtest import _mode_c_skip_row
+def test_b3139_mode_c_skip_row_skips_holders_and_lets_cofiring_proceed():
+    """S6-B3139r (owner ruling 2026-09-30): PER-STRATEGY occupancy. The
+    helper returns (row, allowed): the row names the holders in "strategy"
+    (B2905) and the proceeding co-firers in "cofiring_proceeded"; `allowed`
+    holds exactly the non-holder entry dicts, identity-preserved, so the
+    entry loop enters precisely those. Verbatim case: the S6-B3134a slice's
+    daily arm on MSFT 2022-09-15 (six holders, four co-firers - silenced
+    under v1, proceeding under v2)."""
+    from backtest.engine.backtest import OCCUPANCY_RULE, _mode_c_skip_row
+    assert OCCUPANCY_RULE == "per_strategy_v2"
     holders = {"avwap_252_breakout", "donchian_breakdown_short",
                "htf_aligned_breakout_short", "pairs_mean_reversion_long",
                "prev_day_low_breakdown", "volume_spike_breakout"}
-    silenced = ["cpr_narrow_bullish", "cpr_narrow_momentum",
-                "cpr_narrow_momentum_short", "donchian_10_breakout"]
-    cand = {"strategies": [{"strategy": s} for s in sorted(holders) + silenced] + [{}]}
-    row = _mode_c_skip_row(cand, holders | {"elsewhere_only"}, "MSFT", "2022-09-15")
+    cofire = ["cpr_narrow_bullish", "cpr_narrow_momentum",
+              "cpr_narrow_momentum_short", "donchian_10_breakout"]
+    entries = [{"strategy": s} for s in sorted(holders) + cofire]
+    cand = {"strategies": entries + [{}]}
+    row, allowed = _mode_c_skip_row(cand, holders | {"elsewhere_only"},
+                                    "MSFT", "2022-09-15")
     assert row["strategy"] == ",".join(sorted(holders)), row
-    assert row["blocked_cofiring"] == ",".join(sorted(silenced)), row
+    assert row["cofiring_proceeded"] == ",".join(sorted(cofire)), row
     assert row["reason"] == "ticker_already_open_same_strategy_bug61_mode_c"
     assert (row["ticker"], row["date"]) == ("MSFT", "2022-09-15")
-    # every candidate strategy holds -> nothing silenced, and the field says so
-    every = {s["strategy"] for s in cand["strategies"] if s}
-    assert _mode_c_skip_row(cand, every, "MSFT", "d")["blocked_cofiring"] == ""
-    # a holder that is NOT on the candidate is no skip at all
-    assert _mode_c_skip_row(cand, {"elsewhere_only"}, "MSFT", "d") is None
-    assert _mode_c_skip_row(cand, set(), "MSFT", "d") is None
-    assert _mode_c_skip_row({}, {"a"}, "MSFT", "d") is None
+    # allowed is exactly the co-firing entry dicts, same objects (the entry
+    # loop consumes them unchanged)
+    assert allowed == [e for e in entries if e["strategy"] in cofire]
+    assert all(any(a is e for e in entries) for a in allowed)
+    # every candidate strategy holds -> row present, NOTHING proceeds
+    every = {s["strategy"] for s in entries}
+    row_all, allowed_all = _mode_c_skip_row(cand, every, "MSFT", "d")
+    assert row_all["cofiring_proceeded"] == "" and allowed_all == []
+    # a holder NOT on the candidate is no skip: all entries proceed
+    for strats in ({"elsewhere_only"}, set()):
+        r, a = _mode_c_skip_row(cand, strats, "MSFT", "d")
+        assert r is None and a == entries
+    assert _mode_c_skip_row({}, {"a"}, "MSFT", "d") == (None, [])
 
 
 def test_b3139_mode_c_branch_builds_its_row_through_the_helper():
-    """S6-B3139r (B3139): the wiring half. The ticker_strategy branch builds
-    its skip row through _mode_c_skip_row and still ends in `continue` - the
-    control flow (whole-candidate skip) is the owner's ruling, not this
-    change's - and the comment claiming co-firing strategies 'can stack' is
-    gone. The old pin for this branch (test_batch510a_mode_c_blocks_only_
-    same_strategy) intersects two literal sets and never reaches the engine
-    (#276b); this one reads the branch itself."""
+    """S6-B3139r (owner ruling 2026-09-30): the wiring half of the
+    per-strategy fix. The ticker_strategy branch unpacks (row, allowed) from
+    _mode_c_skip_row, `continue`s ONLY when nothing may proceed, and rebinds
+    cand to the filtered strategies otherwise - so the entry loop sees
+    exactly the non-holders. The old whole-candidate unconditional continue
+    is gone."""
     from pathlib import Path as _P
     src = (_P(__file__).resolve().parents[2] / "backtest" / "engine" /
            "backtest.py").read_text(encoding="utf-8", errors="replace")
     occ = src[src.index('_bug61_mode == "ticker_strategy":'):]
     occ = occ[:occ.index("else:  # default")]
-    assert "_occ_row = _mode_c_skip_row(cand, _open_strats, ticker, as_of)" in occ
-    assert "self.skipped_trades.append(_occ_row)" in occ and "continue" in occ
-    assert "# on this ticker. Different strategies can stack." not in occ
+    assert "_occ_row, _occ_allowed = _mode_c_skip_row(" in occ
+    assert "self.skipped_trades.append(_occ_row)" in occ
+    assert "if not _occ_allowed:" in occ and "continue" in occ
+    assert 'cand = {**cand, "strategies": _occ_allowed}' in occ
     assert src.count("def _mode_c_skip_row(") == 1
+    assert 'OCCUPANCY_RULE = "per_strategy_v2"' in src
 
 
 # ================================================================ B3139 S6-B3136a: manifests name their strategies
@@ -50982,6 +50992,8 @@ def test_b3139_manifest_records_the_resolved_strategy_names(tmp_path):
             "leg_cap_hours": 4.5}
     mp = rw.build_manifest(spec, {"tag": "t"}, tmp_path / "out", "a" * 40)
     m = _json.loads(mp.read_text(encoding="utf-8"))
+    # S6-B3139r: every manifest stamps the occupancy regime; absence = v1
+    assert m["occupancy_rule"] == "per_strategy_v2", m.get("occupancy_rule")
     want = [ln.strip() for ln in (rw.ROOT / rel).read_text(encoding="utf-8").splitlines()
             if ln.strip() and not ln.startswith("#")]
     assert want, "the subset file is empty - the pin would be vacuous"

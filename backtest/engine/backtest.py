@@ -203,26 +203,39 @@ def _skip_strategy_names(cand, blocking=None) -> str:
     return ",".join(names) if names else "(unknown)"
 
 
-def _mode_c_skip_row(cand, open_strats, ticker, as_of):
-    """S6-B3139r (B3139): the cube-isolation occupancy skip row, or None when
-    no strategy on the candidate holds the ticker (no skip).
+# S6-B3139r (owner ruling 2026-09-30): the occupancy regime this engine
+# implements. v1 (whole_candidate) skipped the WHOLE candidate when ANY of
+# its strategies held the ticker; v2 skips only the holders. Cubes carry the
+# regime in the manifest (run_wave.build_manifest); a manifest WITHOUT the
+# field is a v1 cube - the owner ruled those stand as-is, no re-runs.
+OCCUPANCY_RULE = "per_strategy_v2"
 
-    The mode-c branch skips the WHOLE candidate when ANY of its strategies
-    already holds the ticker - every co-firing strategy that holds nothing is
-    silenced too (MEASURED on the S6-B3134a slice: whole candidates of 10, 4
-    and 12 strategies behind one to six holders). "strategy" names the
-    holders (B2905); "blocked_cofiring" names the silenced strategies ("" when
-    there are none), so the coupling is measurable in every cube. Whether the
-    branch should skip per strategy instead is the owner's ruling (S6-B3139r)."""
-    cand_strats = {s.get("strategy") for s in (cand.get("strategies") or [])}
+
+def _mode_c_skip_row(cand, open_strats, ticker, as_of):
+    """S6-B3139r (owner ruling 2026-09-30, fix-forward): PER-STRATEGY skip.
+
+    Returns (skip_row_or_None, allowed_strategy_entries). Only the
+    strategies already holding the ticker are skipped; co-firing strategies
+    proceed - under v1 they were silenced too (MEASURED on the S6-B3134a
+    slice: whole candidates of 10, 4 and 12 strategies behind one to six
+    holders). The row's "strategy" names the holders (B2905) and
+    "cofiring_proceeded" names the strategies that now enter ("" when every
+    candidate strategy holds) - the same coupling v1's blocked_cofiring
+    measured, recording what proceeds instead of what was silenced. The
+    reason string is unchanged so every "already_open" consumer keeps
+    matching (occupancy_disclosure._OCC_REASON)."""
+    entries = [s for s in (cand.get("strategies") or []) if s]
+    cand_strats = {s.get("strategy") for s in entries}
     held = set(open_strats) & cand_strats
     if not held:
-        return None
-    return {"ticker": ticker, "date": as_of,
-            "strategy": _skip_strategy_names(cand, held),
-            "blocked_cofiring": ",".join(sorted(
-                str(s) for s in (cand_strats - set(open_strats)) if s)),
-            "reason": "ticker_already_open_same_strategy_bug61_mode_c"}
+        return None, entries
+    allowed = [s for s in entries if s.get("strategy") not in held]
+    row = {"ticker": ticker, "date": as_of,
+           "strategy": _skip_strategy_names(cand, held),
+           "cofiring_proceeded": ",".join(sorted(
+               str(s.get("strategy")) for s in allowed if s.get("strategy"))),
+           "reason": "ticker_already_open_same_strategy_bug61_mode_c"}
+    return row, allowed
 
 
 class BacktestEngine:
@@ -2922,19 +2935,22 @@ class BacktestEngine:
                     })
                     continue
             elif _bug61_mode == "ticker_strategy":
-                # B3139 (S6-B3139r): this branch skips the WHOLE candidate when
-                # ANY of its strategies already holds the ticker - co-firing
-                # strategies that hold nothing are not entered either (the
-                # comment here used to say they "can stack"). Per-strategy
-                # skipping would move every isolation cube's trade set and is
-                # the owner's ruling; the skip row names the silenced ones.
+                # S6-B3139r (owner ruling 2026-09-30, fix-forward): skip ONLY
+                # the strategies already holding this ticker; co-firing
+                # strategies proceed on a filtered candidate. The skip row
+                # names the holders and the proceeders; OCCUPANCY_RULE stamps
+                # the regime in every manifest so v1 and v2 cubes are never
+                # conflated (the v1 record stands - no re-runs, owner word).
                 _open_strats = {
                     t.strategy for t in self.open_trades if t.ticker == ticker
                 }
-                _occ_row = _mode_c_skip_row(cand, _open_strats, ticker, as_of)
+                _occ_row, _occ_allowed = _mode_c_skip_row(
+                    cand, _open_strats, ticker, as_of)
                 if _occ_row is not None:
                     self.skipped_trades.append(_occ_row)
-                    continue
+                    if not _occ_allowed:
+                        continue
+                    cand = {**cand, "strategies": _occ_allowed}
             else:  # default "ticker": owner-approved Option A (prior behavior)
                 if ticker in open_tickers:
                     self.skipped_trades.append({
