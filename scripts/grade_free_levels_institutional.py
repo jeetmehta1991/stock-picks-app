@@ -231,7 +231,8 @@ def grade_levels(cube_csv: Path, flags: pd.DataFrame, *, min_n: int = 10,
            # never simulated - only the engine can produce
            # the trades a freed slot would have taken.
            "occupancy": occupancy_disclosure(
-               Path(cube_csv).parent, STRAT),
+               Path(cube_csv).parent, STRAT,
+               window=(rc.IS_START, rc.IS_END)),
            "multiplicity_exposure": {
                "levels_searched_this_pass": len(levels) - 1,
                "note": ("S6-B2444 recording rule; each level's headline is a "
@@ -314,8 +315,9 @@ def main() -> int:
             cube_csv, flags, min_n=a.min_n, ticket="B2569",
             method=("per-config subset re-score per SPECS P7/P8 free_band; "
                     "reproduction gate at production PASSED before grading; "
-                    "IS window only (roster_core.in_sample); holdout never "
-                    "read; absent signal keys default to 0 exactly as the "
+                    "IS window only (roster_core.in_sample, entry-dated); no "
+                    "holdout-ENTERED row scored; absent signal keys "
+                    "default to 0 exactly as the "
                     "engine's s.get did; empty signals_at_entry excluded and "
                     "counted (S6-B2512)"))
         doc["reproduction"] = repro
@@ -329,8 +331,9 @@ def main() -> int:
         doc = grade_levels(
             CUBE, flags, min_n=a.min_n, ticket="S6-B2504",
             method=("subset re-score of output_r5_merged_1_7 per SPECS "
-                    "P7/P8 free_band; IS window only (roster_core.in_sample); "
-                    "holdout never read; absent signal keys default to 0 "
+                    "P7/P8 free_band; IS window only (roster_core.in_sample, "
+                    "entry-dated); no holdout-ENTERED row scored; absent "
+                    "signal keys default to 0 "
                     "exactly as the engine's s.get did"))
         doc["reproduction"] = repro
 

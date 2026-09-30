@@ -49,8 +49,18 @@ LOWER_BOUND_NOTE = (
 )
 
 
-def occupancy_disclosure(cube_dir, strategy: str) -> dict:
+def occupancy_disclosure(cube_dir, strategy: str, window=None) -> dict:
     """The occupancy correction for `strategy`, as a disclosable dict.
+
+    `window` (B3139, S6-B3128a council): an optional (start, end) date
+    pair. When given, only occupancy rows dated in [start, end) are
+    counted - the window an entry-dated free-level leg SCORES (a blocked
+    candidate's `date` is the day it would have entered), so the bound
+    describes the rows actually graded, not the whole cube. A row whose
+    date does not parse is counted IN (a larger count only widens the
+    stated bound, which stays valid), and a file with no date column is
+    counted whole and says so. Without `window` the count is the whole
+    cube, byte-identical to the pre-B3139 behaviour.
 
     Always returns a dict carrying `attribution_available` and
     `lower_bound_note`, so a caller cannot accidentally omit the disclosure by
@@ -73,12 +83,35 @@ def occupancy_disclosure(cube_dir, strategy: str) -> dict:
         return out
     try:
         import pandas as pd
-        sk = pd.read_csv(f, usecols=["strategy", "reason"], low_memory=False)
+        want = {"strategy", "reason"} | ({"date"} if window else set())
+        sk = pd.read_csv(f, usecols=lambda c: c in want, low_memory=False)
+        missing = {"strategy", "reason"} - set(sk.columns)
+        if missing:
+            raise ValueError(f"missing columns {sorted(missing)}")
     except Exception as exc:                            # noqa: BLE001
         out["note"] = f"skipped_trades.csv unreadable ({exc!r}) - see above"
         return out
 
     occ = sk[sk["reason"].astype(str).str.contains(_OCC_REASON, na=False)]
+    if window:
+        lo, hi = window
+        out["window"] = [str(lo), str(hi)]
+        if "date" in occ.columns:
+            dd = pd.to_datetime(occ["date"].astype(str).str[:10],
+                                errors="coerce")
+            undated = dd.isna()
+            inside = undated | ((dd >= pd.Timestamp(lo))
+                                & (dd < pd.Timestamp(hi)))
+            out["window_applied"] = True
+            out["blocked_rows_outside_window"] = int((~inside).sum())
+            out["blocked_rows_undated_counted_in"] = int(undated.sum())
+            occ = occ[inside]
+        else:
+            out["window_applied"] = False
+            out["window_note"] = ("skipped_trades.csv has no date column, "
+                                  "so the whole cube is counted - a larger "
+                                  "count only widens the stated bound, "
+                                  "which stays valid")
     out["blocked_rows_total"] = int(len(occ))
     if not len(occ):
         out["attribution_available"] = True

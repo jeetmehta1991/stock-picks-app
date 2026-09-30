@@ -46,6 +46,15 @@ count and this tool reports it.
 Every number graded here is therefore a LOWER BOUND on the level's trade
 count, and the verdicts are candidates, never admissions.
 
+WINDOW (S6-B3128a, B3135): only rows ENTERED in-sample are read
+(free_level_window, = roster_core.in_sample, the family grader's own
+selector). No holdout-ENTERED row is ever scored, used to rank a level, or
+counted toward the reproduction n; before B3135 this leg read all four
+years of a Step-2 cube (the c14_step2 artifact of 2026-09-25 did). The
+window is ENTRY-dated (B3139): an in-sample entry that exits inside the
+holdout is scored with that exit, and the window block counts those
+(straddle_rows); the occupancy block counts the same window.
+
 Usage (the battery passes exactly this):
   python scripts/grade_free_levels_candle.py --cube <dir> --out <grid.json>
 """
@@ -63,6 +72,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import roster_core as rc  # noqa: E402
 from occupancy_disclosure import (  # noqa: E402
     occupancy_disclosure)
+import free_level_window as flw  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -79,7 +89,7 @@ def keep_row(value, direction: str, bound: float) -> bool:
     return (value < bound) if direction == "lt" else (value > bound)
 
 
-def score_reproduction(prod_per_exit, grid_path) -> dict:
+def score_reproduction(prod_per_exit, grid_path, ted_all=None) -> dict:
     """S6-B3120f (L877): the reproduction gate covers the SCORE, not only
     the fire set. The production row's per-exit sharpe / ci_lo (net basis,
     min_n=1) must EQUAL the landed family grade's is_sharpe / is_ci_lo on
@@ -87,7 +97,10 @@ def score_reproduction(prod_per_exit, grid_path) -> dict:
     leg fails closed (owner ruling 2026-09-02: a re-scorer that cannot
     reproduce the landed baseline is believable about nothing). Returns the
     artifact block; the caller exits 2 on any mismatch, and a missing or
-    unreadable grid IS a mismatch (fail closed, L642)."""
+    unreadable grid IS a mismatch (fail closed, L642). S6-B3128a (B3135): an
+    n mismatch carries the cube's rows for that exit split by window and
+    strategy (flw.gap_breakdown over `ted_all`), so the message names its
+    own cause instead of only its size."""
     try:
         grid = json.loads(Path(grid_path).read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
@@ -108,8 +121,10 @@ def score_reproduction(prod_per_exit, grid_path) -> dict:
             continue
         compared += 1
         if int(row.get("fires", -1)) != int(m["n"]):
+            why = ("" if ted_all is None
+                   else " [" + flw.gap_breakdown(ted_all, ex) + "]")
             mismatches.append(
-                f"{ex}: n {m['n']} vs family fires {row.get('fires')}")
+                f"{ex}: n {m['n']} vs family fires {row.get('fires')}{why}")
             continue
         for key, fam in (("sharpe", fam_sh), ("ci_lo", fam_cl)):
             v = m.get(key)
@@ -184,6 +199,15 @@ def main() -> int:
     if tl.empty:
         print(f"[FAIL] no {strat} rows in {tl_path.name}")
         return 2
+    # S6-B3128a (B3135): the family grade this leg must reproduce counts the
+    # IN-SAMPLE window only (rc.in_sample), so the leg never receives a
+    # holdout row - not for scoring, not for the reproduction gate below
+    tl_all = tl
+    tl = flw.in_sample_only(tl).copy()
+    if tl.empty:
+        print(f"[FAIL] no in-sample {strat} rows in {tl_path.name} "
+              f"({flw.split_windows(tl_all)}) - nothing this leg may grade")
+        return 2
 
     # ---- reproduction gate, at the PRODUCTION bound ----------------------
     vals, unverifiable = [], 0
@@ -212,8 +236,9 @@ def main() -> int:
         return 2
 
     # ---- grade each free level on the exit-expanded cube -----------------
-    ted = pd.read_csv(ted_path, low_memory=False)
-    ted = ted[ted["strategy"].astype(str) == strat].copy()
+    ted_all = pd.read_csv(ted_path, low_memory=False)
+    ted_strat = ted_all[ted_all["strategy"].astype(str) == strat]
+    ted = flw.in_sample_only(ted_strat).copy()
     # S6-B3120f (L877): score on the FAMILY GRADER'S basis - the winsorize +
     # COST_BPS/100 deduction roster_core.load_cube applies (roster_core.py:181
     # is the definition of record). The raw read stays only because this leg
@@ -265,7 +290,7 @@ def main() -> int:
                                "ci_lo": st.get("ci_lo")})
     fam_grid = Path(a.family_grid) if a.family_grid else (
         ROOT / "output_audit" / f"{cube_dir.name}_grid_auto.json")
-    srep = score_reproduction(prod_check, fam_grid)
+    srep = score_reproduction(prod_check, fam_grid, ted_all=ted_all)
     if srep["mismatches"]:
         print("[FAIL] score reproduction (S6-B3120f): the production row does "
               "not reproduce the landed family grade ("
@@ -281,9 +306,13 @@ def main() -> int:
         "levels_searched": [production] + [float(x) for x in levels],
         "basis": ("net: pnl_pct clipped to +/-WINSORIZE then minus "
                   "COST_BPS/100 - roster_core.py:181 mirrored (S6-B3120f)"),
+        "window": {"trade_log": flw.window_disclosure(tl_all, tl, "trade_log"),
+                   "trade_exit_detail": flw.window_disclosure(
+                       ted_strat, ted, "trade_exit_detail")},
         "reproduction": repro,
         "score_reproduction": srep,
-        "occupancy": occupancy_disclosure(cube_dir, strat),
+        "occupancy": occupancy_disclosure(cube_dir, strat,
+                                          window=flw.IS_WINDOW),
         "results": results,
         # S6-B2871b: the shape producer_variant_table.free_band_levels_graded
         # reads - a dict keyed by level name, matching the institutional

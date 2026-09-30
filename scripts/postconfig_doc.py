@@ -213,6 +213,20 @@ def landings_section() -> list[str]:
     return out
 
 
+def _straddle_txt(free: dict) -> str:
+    """B3139 (S6-B3128a council): the free-level window is ENTRY-dated, so
+    an in-sample entry that exits inside the holdout IS scored. Name how
+    many, from the artifact's own window block; an artifact written before
+    the count existed says nothing rather than implying zero (L580)."""
+    w = ((free.get("window") or {}).get("trade_log") or {})
+    s = w.get("straddle_rows")
+    n = s.get("rows") if isinstance(s, dict) else None
+    if n is None:
+        return ""
+    return (f"; {n} in-sample entr{'y' if n == 1 else 'ies'} exit inside "
+            "the holdout and are scored with that exit")
+
+
 def config_section(cube: str, entry: dict, art: dict) -> list[str]:
     grid, spot = art.get("grid"), art.get("spot")
     checks = parse_checks((entry.get("1_cube_sanity") or {}).get("evidence", ""))
@@ -271,7 +285,8 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
                   f"landing):** reproduction {rep.get('covered', '-')} of "
                   f"{rep.get('landed_fires', '-')} landed fires covered "
                   f"(coverage {rep.get('coverage', '-')}); IS window only, "
-                  f"holdout never read ({_grader}).", "",
+                  f"entry-dated: no holdout-ENTERED row is scored"
+                  f"{_straddle_txt(free)} ({_grader}).", "",
                   f"| level | knobs | IS fires | {_pick_col} | is_sharpe "
                   "| is_ci_lo |", "|---|---|---|---|---|---|"]
         def _lv_key(item):

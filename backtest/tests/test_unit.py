@@ -47888,3 +47888,288 @@ def test_b3126_seam_parity_fixes_hold_on_the_live_path():
     assert tg.scan_launch_missing_pool_workers([], blobs=[bare_launch])
     assert tg.scan_launch_missing_pool_workers(
         [], blobs=[bare_launch + " --screen-pool-workers 8"]) == []
+
+
+# ================================================================ B3139 merge batch 1: S6-B3128a, B3139 S6-B3128a council
+import contextlib  # noqa: E402,F401
+import importlib.util  # noqa: E402,F401
+import io  # noqa: E402,F401
+import json  # noqa: E402,F401
+import subprocess  # noqa: E402,F401
+_REPO_B3135 = Path(__file__).resolve().parents[2]
+_SCRIPTS_B3135 = _REPO_B3135 / "scripts"
+if str(_SCRIPTS_B3135) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_B3135))
+
+# ---------------------------------------------------------------- S6-B3128a
+_B3128A_EXITS = ("time_stop_10d", "trailing_stop")
+
+
+def _b3128a_cube(tmp, strat, poison=False):
+    """A deterministic Step-2-shaped cube: 41 in-sample entries (incl. the
+    IS_START day and the last in-sample day) and 15 holdout entries (incl.
+    the HO_START day). `poison` rewrites every holdout row's pnl and signal
+    - output must not move if the holdout is never read."""
+    import datetime as dt
+    is_days = [dt.date(2022, 5, 5)] + [dt.date(2023, 1, 3) + dt.timedelta(days=18 * i)
+                                      for i in range(39)] + [dt.date(2025, 5, 2)]
+    ho_days = [dt.date(2025, 5, 5)] + [dt.date(2025, 6, 2) + dt.timedelta(days=21 * i)
+                                      for i in range(14)]
+    tl, ted = [], []
+    for i, d in enumerate(is_days + ho_days):
+        ho = d >= dt.date(2025, 5, 5)
+        t = "T%02d" % (i % 7)
+        if strat == "bollinger_lower":
+            v = 5.0 if (ho and poison) else 10.0 + (i * 7) % 24
+            sig = {"adx": v, "rsi_2": 3.0, "rsi_14": 30.0,
+                   "vix_percentile": 0.5, "vix_band_low": False,
+                   "vix_band_high": False}
+        else:
+            v = 20.0 if (ho and poison) else 30.0 + (i * 7) % 29
+            sig = {"rsi_14": v}
+        tl.append({"strategy": strat, "ticker": t, "entry_date": d.isoformat(),
+                   "direction": "long", "signals_at_entry": json.dumps(sig)})
+        for k, ex in enumerate(_B3128A_EXITS):
+            pnl = 1e6 if (ho and poison) else float((i * 37 + k * 5) % 11) - 4.0
+            ted.append({"strategy": strat, "ticker": t,
+                        "entry_date": d.isoformat(), "exit_method": ex,
+                        "pnl_pct": pnl, "hold_days": 5})
+    tmp.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(tl).to_csv(tmp / "trade_log.csv", index=False)
+    ted_df = pd.DataFrame(ted)
+    ted_df.to_csv(tmp / "trade_exit_detail.csv", index=False)
+    return ted_df
+
+
+def _b3128a_family_grid(ted_df, path):
+    """The family grade's per-exit IS rows, computed the way the family
+    graders do: net basis (roster_core.py:181), in-sample window, rc.evaluate."""
+    import roster_core as rc
+    d = pd.to_datetime(ted_df["entry_date"].astype(str).str[:10]).dt.date
+    g = rc.in_sample(ted_df.assign(entry_date=d)).copy()
+    g["pnl_pct"] = (g["pnl_pct"].astype(float).clip(-rc.WINSORIZE, rc.WINSORIZE)
+                    - rc.COST_BPS / 100.0)
+    rows = []
+    for ex, gg in g.groupby("exit_method"):
+        st = rc.evaluate(gg["pnl_pct"], gg["hold_days"], min_n=1)
+        rows.append({"exit": ex, "fires": int(len(gg)),
+                     "is_sharpe": st.get("sharpe"), "is_ci_lo": st.get("ci_lo")})
+    path.write_text(json.dumps({"per_exit": rows}), encoding="utf-8")
+
+
+def _b3128a_run(strat, cube, grid, out):
+    script = ("grade_free_levels_bollinger.py" if strat == "bollinger_lower"
+              else "grade_free_levels_candle.py")
+    return subprocess.run(
+        [sys.executable, str(_SCRIPTS_B3135 / script), "--cube", str(cube),
+         "--out", str(out), "--family-grid", str(grid), "--strategy", strat],
+        cwd=str(_REPO_B3135), capture_output=True, text=True)
+
+
+def _b3128a_strip(doc):
+    doc = dict(doc)
+    for k in ("cube", "window", "occupancy"):
+        doc.pop(k, None)
+    sr = dict(doc.get("score_reproduction") or {})
+    sr.pop("family_grid", None)
+    doc["score_reproduction"] = sr
+    return doc
+
+
+def test_b3135_free_level_window_is_the_family_in_sample_rule(monkeypatch):
+    """S6-B3128a: the adapters' window IS roster_core.in_sample - the IS_START
+    day in, the HO_START day out - with the raw columns untouched, and it
+    fails CLOSED if a holdout row ever survives (proven by breaking the rule)."""
+    import roster_core as rc
+    import free_level_window as flw
+    df = pd.DataFrame({"entry_date": ["2022-05-04", "2022-05-05 00:00:00",
+                                      "2025-05-04", "2025-05-05", "2026-01-02"],
+                       "x": [1, 2, 3, 4, 5]})
+    got = flw.in_sample_only(df)
+    assert list(got["x"]) == [2, 3], got
+    assert list(got["entry_date"]) == ["2022-05-05 00:00:00", "2025-05-04"]
+    assert flw.split_windows(df) == {"in_sample": 2, "holdout": 2,
+                                     "outside_both": 1}
+    monkeypatch.setattr(rc, "in_sample", lambda g: g)
+    with pytest.raises(ValueError, match="holdout start"):
+        flw.in_sample_only(df)
+
+
+@pytest.mark.parametrize("strat", ["bollinger_lower", "three_white_soldiers"])
+def test_b3135_free_level_adapters_never_score_a_holdout_entered_row(tmp_path, strat):
+    """S6-B3128a: a Step-2-shaped cube with every HOLDOUT row poisoned
+    (pnl 1e6, signals moved across every free level) grades byte-identically
+    to the clean cube through the real CLI path, reproduces the in-sample
+    family grade, and discloses exactly the holdout rows it excluded."""
+    clean = _b3128a_cube(tmp_path / "clean", strat)
+    _b3128a_cube(tmp_path / "poison", strat, poison=True)
+    grid = tmp_path / "family_grid.json"
+    _b3128a_family_grid(clean, grid)
+    outs = {}
+    for name in ("clean", "poison"):
+        out = tmp_path / f"{name}.json"
+        r = _b3128a_run(strat, tmp_path / name, grid, out)
+        assert r.returncode == 0, (name, r.stdout[-800:], r.stderr[-800:])
+        outs[name] = json.loads(out.read_text(encoding="utf-8"))
+    assert _b3128a_strip(outs["clean"]) == _b3128a_strip(outs["poison"])
+    for name in ("clean", "poison"):
+        w = outs[name]["window"]
+        assert w["trade_log"]["rows_before_window"]["holdout"] == 15
+        assert w["trade_log"]["rows_scored"] == 41
+        assert w["trade_exit_detail"]["rows_scored"] == 41 * len(_B3128A_EXITS)
+        assert outs[name]["score_reproduction"]["mismatches"] == []
+
+
+@pytest.mark.parametrize("strat", ["bollinger_lower", "three_white_soldiers"])
+def test_b3135_unwindowed_adapter_fails_and_names_the_holdout(tmp_path, monkeypatch,
+                                                              strat):
+    """S6-B3128a mutation proof: with the window switched off the same cube
+    FAILS score reproduction, and the message itself names the gap's make-up
+    (in-sample vs holdout, by strategy) - the S6-B3135d mechanism."""
+    import free_level_window as flw
+    clean = _b3128a_cube(tmp_path / "cube", strat)
+    grid = tmp_path / "family_grid.json"
+    _b3128a_family_grid(clean, grid)
+    script = ("grade_free_levels_bollinger.py" if strat == "bollinger_lower"
+              else "grade_free_levels_candle.py")
+    spec = importlib.util.spec_from_file_location("b3135_adapter_" + strat,
+                                                  _SCRIPTS_B3135 / script)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    monkeypatch.setattr(flw, "in_sample_only", lambda df: df)
+    monkeypatch.setattr(sys, "argv", [script, "--cube", str(tmp_path / "cube"),
+                                      "--out", str(tmp_path / "o.json"),
+                                      "--family-grid", str(grid),
+                                      "--strategy", strat])
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        rc_ = mod.main()
+    text = buf.getvalue()
+    assert rc_ == 2, text[-600:]
+    assert "vs family fires" in text, text[-600:]
+    assert "in-sample 41 / holdout 15" in text, text[-600:]
+    assert "by strategy {'%s': 56}" % strat in text, text[-600:]
+    assert not (tmp_path / "o.json").exists()
+
+
+def test_b3135_c14_step2_free_levels_reproduce_on_the_in_sample_window():
+    """S6-B3128a on the real cube that exposed it: the windowed candle
+    adapter reproduces the landed family grade on every exit and records
+    the 191 holdout trades it excluded (skips on a clone without the cube)."""
+    cube = _REPO_B3135 / "output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3"
+    grid = _REPO_B3135 / "output_audit" / (cube.name + "_grid_auto.json")
+    if not (cube / "trade_exit_detail.csv").exists() or not grid.exists():
+        pytest.skip("c14_step2 cube not present on this machine")
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "fl.json"
+        r = subprocess.run([sys.executable,
+                            str(_SCRIPTS_B3135 / "grade_free_levels_candle.py"),
+                            "--cube", str(cube), "--out", str(out)],
+                           cwd=str(_REPO_B3135), capture_output=True, text=True)
+        assert r.returncode == 0, (r.stdout[-800:], r.stderr[-800:])
+        d = json.loads(out.read_text(encoding="utf-8"))
+    assert d["score_reproduction"]["mismatches"] == []
+    assert d["score_reproduction"]["compared_exits"] == 24
+    assert d["window"]["trade_log"]["rows_before_window"] == {
+        "in_sample": 764, "holdout": 191, "outside_both": 0}
+
+
+# ---------------------------------------------------------------- B3139 S6-B3128a council
+def test_b3139_occupancy_disclosure_counts_only_the_scored_window(tmp_path):
+    """S6-B3128a council (5 advisors): the free-level legs score the
+    ENTRY-dated in-sample window, so the occupancy slack they disclose must
+    count the same window - a holdout-dated block cannot free an in-sample
+    entry. Undated rows are counted IN (a larger count only widens a valid
+    bound); a file with no date column is counted whole and says so; and
+    without `window` the result is the pre-B3139 whole-cube count."""
+    import roster_core as rc
+    from occupancy_disclosure import occupancy_disclosure
+    R = "ticker_already_open_same_strategy_bug61_mode_c"
+    S = "bollinger_lower"
+    rows = ([{"date": "2023-03-01", "strategy": S, "reason": R}] * 5
+            + [{"date": "2025-05-05", "strategy": S, "reason": R}] * 3   # HO_START
+            + [{"date": "2025-05-02", "strategy": S, "reason": R}]       # last IS day
+            + [{"date": "not-a-date", "strategy": S, "reason": R}]
+            + [{"date": "2023-03-01", "strategy": S, "reason": "no_next_bar"}])
+    pd.DataFrame(rows).to_csv(tmp_path / "skipped_trades.csv", index=False)
+    win = occupancy_disclosure(tmp_path, S, window=(rc.IS_START, rc.IS_END))
+    assert win["window_applied"] is True
+    assert win["window"] == [str(rc.IS_START), str(rc.IS_END)]
+    assert win["blocked_rows_outside_window"] == 3
+    assert win["blocked_rows_undated_counted_in"] == 1
+    assert win["blocked_rows_total"] == 7 and win["blocked_rows_attributable"] == 7
+    whole = occupancy_disclosure(tmp_path, S)
+    assert whole["blocked_rows_total"] == 10 and "window" not in whole
+    assert not any(k.startswith("window") for k in whole), sorted(whole)
+    pd.DataFrame([{"strategy": S, "reason": R}] * 4).to_csv(
+        tmp_path / "skipped_trades.csv", index=False)
+    nodate = occupancy_disclosure(tmp_path, S, window=(rc.IS_START, rc.IS_END))
+    assert nodate["window_applied"] is False and nodate["blocked_rows_total"] == 4
+    assert "no date column" in nodate["window_note"]
+
+
+def test_b3139_window_block_counts_in_sample_entries_that_exit_in_the_holdout():
+    """S6-B3128a council: the window is ENTRY-dated, so a row entered
+    in-sample that exits inside the holdout is SCORED - the window block now
+    says how many (straddle_rows), and a frame with no exit_date reports
+    None (not measured), never 0 (L580)."""
+    import free_level_window as flw
+    df = pd.DataFrame({
+        "entry_date": ["2024-01-02", "2025-04-30", "2025-05-02", "2025-05-02",
+                       "2025-05-06"],
+        "exit_date":  ["2024-01-10", "2025-05-02", "2025-05-05", "garbage",
+                       "2025-05-20"]})
+    kept = flw.in_sample_only(df)
+    d = flw.window_disclosure(df, kept, "trade_log")
+    assert d["straddle_rows"] == {"rows": 1, "exit_date_unparsed": 1}, d
+    assert "entry-dated" in d["convention"]
+    assert d["rows_scored"] == 4
+    none = flw.window_disclosure(df[["entry_date"]], kept[["entry_date"]], "x")
+    assert none["straddle_rows"] == {"rows": None, "exit_date_unparsed": None}
+
+
+def test_b3139_landing_report_says_holdout_entered_and_names_straddlers():
+    """S6-B3128a council: the owner-facing free-level line no longer claims
+    'holdout never read' (false for an entry-dated window); it says no
+    holdout-ENTERED row is scored and names the straddle count when the
+    artifact carries one - and says nothing, rather than zero, when an older
+    artifact does not."""
+    import postconfig_doc as pd_doc
+    free = {"reproduction": {"landed_fires": 10, "covered": 10, "coverage": 1.0},
+            "grader": "grade_free_levels_bollinger",
+            "window": {"trade_log": {"straddle_rows": {"rows": 3,
+                                                       "exit_date_unparsed": 0}}},
+            "levels": {"baseline_p9_20": {"p9": 20, "is_fires": 10,
+                                          "per_exit_ranked_by_ci_lo": []}}}
+    art = {"grid": None, "spot": None, "lenses": None, "free": free}
+    txt = chr(10).join(pd_doc.config_section("cube_x", {}, art))
+    line = [l for l in txt.splitlines() if "FREE-LEVEL GRADES" in l]
+    assert len(line) == 1, line
+    assert "no holdout-ENTERED row is scored" in line[0]
+    assert "3 in-sample entries exit inside the holdout" in line[0]
+    assert "holdout never read" not in txt
+    old = dict(free, window={})
+    txt2 = chr(10).join(pd_doc.config_section("cube_x", {}, dict(art, free=old)))
+    line2 = [l for l in txt2.splitlines() if "FREE-LEVEL GRADES" in l][0]
+    assert "no holdout-ENTERED row is scored" in line2
+    assert "exit inside the holdout" not in line2
+
+
+def test_b3139_every_free_level_adapter_windows_its_occupancy_block():
+    """S6-B3128a council: all three free-level adapters pass the scored
+    window to occupancy_disclosure (AST: the call carries a `window`
+    keyword), so no leg discloses whole-cube slack beside an in-sample
+    score. A leg added later inherits the check."""
+    import ast
+    legs = sorted(_SCRIPTS_B3135.glob("grade_free_levels_*.py"))
+    assert len(legs) == 3, [p.name for p in legs]
+    for leg in legs:
+        tree = ast.parse(leg.read_text(encoding="utf-8"))
+        calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
+                 and getattr(n.func, "id", None) == "occupancy_disclosure"]
+        assert calls, leg.name
+        for c in calls:
+            assert any(k.arg == "window" for k in c.keywords), (leg.name, c.lineno)
+
+
