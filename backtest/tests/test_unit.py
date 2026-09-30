@@ -50443,3 +50443,179 @@ def test_b3139_roster_renders_the_closed_set_against_the_freeze():
     assert body.index("net_headline(") < body.index("_pm.frozen_closed_set")
 
 
+
+
+# ================================================================ B3139 merge batch 5: B3139 S6-B3139a council
+import contextlib  # noqa: E402,F401
+import importlib.util  # noqa: E402,F401
+import io  # noqa: E402,F401
+import json  # noqa: E402,F401
+import subprocess  # noqa: E402,F401
+_REPO_B3135 = Path(__file__).resolve().parents[2]
+_SCRIPTS_B3135 = _REPO_B3135 / "scripts"
+if str(_SCRIPTS_B3135) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_B3135))
+
+# ---------------------------------------------------------------- B3139 S6-B3139a council
+def _b3139a_bollinger_artifacts():
+    oa = _REPO_B3135 / "output_audit"
+    return (sorted(str(p) for p in oa.glob("output_bl_span*_grid_auto.json"))
+            + sorted(str(p) for p in oa.glob("output_bl_span*_free_levels.json"))
+            + [str(oa / n) for n in ("b3119_bollinger_lower_grid_long.json",
+                                     "b3119_bollinger_lower_grid_short.json",
+                                     "b3117_bollinger_lower_companions_ts10.json",
+                                     "b3119_bollinger_step1_null.json")])
+
+
+def test_b3139_band_gate_reads_every_bollinger_artifact_kind_without_crashing():
+    """S6-B3139a council, on the REAL campaign artifacts: the gate raised
+    TypeError on bollinger's grid_auto files (rows is an INT count). It now
+    classifies all 18 by kind, counts coverage ONLY from the 2 axis grids,
+    reports the 7 free-level evaluations and the 7 landed span configs
+    without counting them, discloses the PHASE0-vs-SPECS P4 band conflict,
+    and names exactly the 6 levels the free-level leg evaluated but no
+    Step-1 row graded (counting those is the owner's, #310)."""
+    import collections
+    import band_coverage_gate as bcg
+    arts = _b3139a_bollinger_artifacts()
+    assert len(arts) == 18, len(arts)
+    rep = bcg.coverage_report("bollinger_lower", arts)
+    kinds = collections.Counter(a["kind"] for a in rep["artifacts"])
+    assert kinds == {"grid_auto": 7, "free_levels": 7, "axis_grid": 2,
+                     "companion_screen": 1, "permutation_null": 1}, kinds
+    assert {a["artifact"] for a in rep["artifacts"] if a["coverage"] == "counted"} == {
+        "b3119_bollinger_lower_grid_long.json", "b3119_bollinger_lower_grid_short.json"}
+    assert {k: len(v) for k, v in rep["free_level_evaluations"].items()} == {"P9 adx ceiling": 7}
+    assert sorted(c["config"]["P4_ema_span"] for c in rep["landed_configs"]) == [
+        9, 20, 21, 50, 100, 150, 250]
+    assert rep["registry_conflicts"]["P4"]["phase0"] == [200]
+    assert rep["registry_conflicts"]["P4"]["specs"] == [9, 20, 21, 50, 100, 150, 200, 250]
+    untested = {p["id"]: p["untested"] for p in rep["params"] if p["untested"]}
+    assert untested == {"P8": ["0.25,0.75"], "P9": [27.51, 23.96, 20.976, 17.69],
+                        "P11": ["edges 5 tighter per band"]}, untested
+    assert rep["complete"] is False and rep["untested_total"] == 6
+
+
+def test_b3139_band_gate_refuses_an_unknown_kind_by_name_and_exits_2(tmp_path):
+    """S6-B3139a council: an artifact of no known kind REFUSES with a named
+    reason (never a crash, never a silent skip); the refusal exits 2 as the
+    module documents (a string SystemExit exits 1 - MEASURED before the fix);
+    str() stays the message, which both Step-2 readers record."""
+    import band_coverage_gate as bcg
+    spec = {"params": [{"id": "P1", "param": "k1", "production": 1, "band": [1]}]}
+    with pytest.raises(SystemExit) as ei:
+        bcg.coverage_report("syn", [], spec=spec, arts=[{"rows": [{"axis": "k1"}]},
+                                                        {"mystery": 1}])
+    assert ei.value.code == 2
+    assert "no known kind" in str(ei.value) and "arts[1]" in str(ei.value)
+    bad = tmp_path / "odd.json"
+    bad.write_text(json.dumps({"mystery": 1}), encoding="utf-8")
+    with pytest.raises(SystemExit) as ei2:
+        bcg.coverage_report("bollinger_lower", [str(bad)])
+    assert "odd.json" in str(ei2.value)
+    hub = [str(_REPO_B3135 / "output_audit" / n) for n in
+           ("b2694_smc_lsr_step1.json", "b2698_momentum_resweep.json")]
+    r = subprocess.run([sys.executable, str(_SCRIPTS_B3135 / "band_coverage_gate.py"),
+                        "--strategy", "smc_liquidity_sweep_reversal", "--artifacts", *hub,
+                        "--declare-step2-failure"], capture_output=True, text=True,
+                       cwd=str(_REPO_B3135))
+    assert r.returncode == 2, (r.returncode, r.stderr[-400:])
+    assert "FAILURE DECLARATION REFUSED" in r.stderr and "swing_length" in r.stderr
+
+
+def test_b3139_string_boolean_band_labels_take_the_boolean_branch():
+    """S6-B3139a, found building: 3 band rows (bollinger_lower B2 / B4 / B6)
+    write a boolean axis as 'require_true' / 'require_false'; the gate matched
+    the literal string against graded levels and read each axis UNTESTED
+    while 26 graded rows sat behind it. The labels now take the boolean
+    branch: covered by any graded row of the axis, untested without one."""
+    import band_coverage_gate as bcg
+    spec = {"params": [
+        {"id": "B2", "param": "defensive_leadership", "production": "not gated",
+         "band": ["require_true"]},
+        {"id": "B4", "param": "dc20_new_high", "production": "not gated",
+         "band": ["require_false"]}]}
+    art = {"rows": [{"axis": "defensive_leadership", "level": True, "is_sharpe": 0.1},
+                    {"axis": "dc20_new_high", "level": False, "is_sharpe": 0.2}]}
+    rep = bcg.coverage_report("syn", [], spec=spec, arts=[art])
+    assert rep["complete"], rep["params"]
+    rep2 = bcg.coverage_report("syn", [], spec=spec, arts=[{"rows": [art["rows"][0]]}])
+    assert [p["id"] for p in rep2["params"] if p["untested"]] == ["B4"]
+
+
+
+
+# ================================================================ B3139 merge batch 6: B3139 S6-B3118a council
+import contextlib  # noqa: E402,F401
+import importlib.util  # noqa: E402,F401
+import io  # noqa: E402,F401
+import json  # noqa: E402,F401
+import subprocess  # noqa: E402,F401
+_REPO_B3135 = Path(__file__).resolve().parents[2]
+_SCRIPTS_B3135 = _REPO_B3135 / "scripts"
+if str(_SCRIPTS_B3135) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_B3135))
+
+# ---------------------------------------------------------------- B3139 S6-B3118a council
+def _b3118a_adapter():
+    spec = importlib.util.spec_from_file_location(
+        "b3118a_adapter", _SCRIPTS_B3135 / "grade_free_levels_bollinger.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _b3118a_frames():
+    """Five long fires, all passing the PRODUCTION leg (flags = mid band, so
+    rsi_14 < 45), SYNTHETIC values chosen so each variant keeps a different,
+    hand-derived set: A 38/vp .50, B 42/.50, C 42/.20, D 33/.20, E 30/.25
+    (E sits ON the quartile edge - boundary-ambiguous for any re-band)."""
+    fires = {"A": (38.0, 0.50), "B": (42.0, 0.50), "C": (42.0, 0.20),
+             "D": (33.0, 0.20), "E": (30.0, 0.25)}
+    tl, ted = [], []
+    for i, (t, (r14, vp)) in enumerate(fires.items()):
+        d = "2023-01-%02d" % (3 + i)
+        sig = {"rsi_2": 50.0, "rsi_14": r14, "vix_percentile": vp}
+        tl.append({"ticker": t, "entry_date": d, "direction": "long",
+                   "signals_at_entry": json.dumps(sig)})
+        for k in range(3):
+            ted.append({"ticker": t, "entry_date": d, "exit_method": "e1",
+                        "pnl_pct": 1.0 + i + k, "hold_days": 5})
+    return pd.DataFrame(tl), pd.DataFrame(ted)
+
+
+def test_b3139_composite_applies_both_tight_levels_jointly():
+    """S6-B3118a (pre-registered before the config-1 read): the composite
+    applies the rsi edges 5 tighter AND the quartile re-band TOGETHER. On the
+    hand-derived fixture the three variants keep three different sets - p11
+    tight {A, D, E}, p8 tight {A, B, D}, composite {A, D} - so a composite
+    that silently ran either single axis would be caught; its recount agrees
+    and E (on the edge) is excluded as boundary-ambiguous."""
+    mod = _b3118a_adapter()
+    tl, ted = _b3118a_frames()
+    out = mod.p11_p8_sections(tl, ted, 1)
+    assert out["p11_tight"]["kept"] == 3, out["p11_tight"]
+    assert out["p8_tight"]["kept"] == 3 and out["p8_tight"]["boundary_ambiguous"] == 1
+    c = out["p8p11_composite"]
+    assert c["kept"] == 2 and c["boundary_ambiguous"] == 1, c
+    assert c["kept_recount_agrees"] is True
+    assert c["reproduction_failures_at_production"] == 0
+    assert c["trial_count"] == {"this_cell": 1, "campaign_cells": 7,
+                                "note": "added to the band's trial count"}
+    assert "never an admission" in c["note"]
+
+
+def test_b3139_composite_null_is_same_size_and_deterministic():
+    """S6-B3118a: the random-deletion null samples EXACTLY as many fires as
+    the composite kept, from the composite's own evaluable population, with
+    the fixed seed - two runs agree to the byte, so the null cannot be
+    re-drawn until it flatters the composite."""
+    mod = _b3118a_adapter()
+    tl, ted = _b3118a_frames()
+    a = mod.p11_p8_sections(tl, ted, 1)["p8p11_composite"]["random_deletion_null"]
+    b = mod.p11_p8_sections(tl, ted, 1)["p8p11_composite"]["random_deletion_null"]
+    assert a == b
+    assert a["seed"] == mod.COMPOSITE_NULL_SEED == 3118
+    assert a["population"] == 4 and a["sampled"] == 2, a
+
+
