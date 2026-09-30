@@ -1,0 +1,167 @@
+{
+ "_doc": "S6-B3135 pre-landing baseline (B3139): worktree phase1b_membership.members() over main's committed data; the post-re-score membership must be diffed against this before batch 4 commits (council, 5 advisors).",
+ "total": 31,
+ "funnel_cells": [
+  "52w_high_breakout_pullback_long",
+  "mfi_oversold_with_smart_money_long",
+  "poc_magnet_long",
+  "smc_bos_retest_entry",
+  "totm_long",
+  "xs_combined_momentum_low_ivol",
+  "xs_momentum_with_smart_money_long"
+ ],
+ "step2_admissions": [
+  "institutional_breakout_confirmation_long",
+  "institutional_committed_growth_long",
+  "institutional_high_conviction_long",
+  "institutional_multi_quarter_persistence_long",
+  "institutional_oversold_long",
+  "institutional_persistence_oversold_long",
+  "institutional_recent_init_momentum_long",
+  "institutional_recent_init_volume_long",
+  "institutional_strong_conviction_long",
+  "pead_long_high_yoy_growth_only",
+  "pead_with_smart_money_long",
+  "smc_breaker_block_long",
+  "three_white_soldiers",
+  "xs_low_beta_with_smart_money_long",
+  "xs_momentum_top_decile"
+ ],
+ "mirrors": [
+  "52w_low_breakdown_pullback_short",
+  "mfi_overbought_short",
+  "pead_short_negative_yoy_growth",
+  "poc_magnet_short",
+  "smc_breaker_block_short",
+  "three_black_crows_short",
+  "totm_short",
+  "xs_combined_momentum_high_ivol_short",
+  "xs_momentum_bottom_decile_short"
+ ],
+ "longs": [
+  "52w_high_breakout_pullback_long",
+  "institutional_breakout_confirmation_long",
+  "institutional_committed_growth_long",
+  "institutional_high_conviction_long",
+  "institutional_multi_quarter_persistence_long",
+  "institutional_oversold_long",
+  "institutional_persistence_oversold_long",
+  "institutional_recent_init_momentum_long",
+  "institutional_recent_init_volume_long",
+  "institutional_strong_conviction_long",
+  "mfi_oversold_with_smart_money_long",
+  "pead_long_high_yoy_growth_only",
+  "pead_with_smart_money_long",
+  "poc_magnet_long",
+  "smc_bos_retest_entry",
+  "smc_breaker_block_long",
+  "three_white_soldiers",
+  "totm_long",
+  "xs_combined_momentum_low_ivol",
+  "xs_low_beta_with_smart_money_long",
+  "xs_momentum_top_decile",
+  "xs_momentum_with_smart_money_long"
+ ],
+ "dual_self": [
+  "smc_bos_retest_entry"
+ ],
+ "roles": {
+  "52w_high_breakout_pullback_long": [
+   "FUNNEL_CELL"
+  ],
+  "52w_low_breakdown_pullback_short": [
+   "FUNNEL_MIRROR"
+  ],
+  "institutional_breakout_confirmation_long": [
+   "STEP2_ADMISSION"
+  ],
+  "institutional_committed_growth_long": [
+   "STEP2_ADMISSION"
+  ],
+  "institutional_high_conviction_long": [
+   "STEP2_ADMISSION"
+  ],
+  "institutional_multi_quarter_persistence_long": [
+   "STEP2_ADMISSION"
+  ],
+  "institutional_oversold_long": [
+   "STEP2_ADMISSION"
+  ],
+  "institutional_persistence_oversold_long": [
+   "STEP2_ADMISSION"
+  ],
+  "institutional_recent_init_momentum_long": [
+   "STEP2_ADMISSION"
+  ],
+  "institutional_recent_init_volume_long": [
+   "STEP2_ADMISSION"
+  ],
+  "institutional_strong_conviction_long": [
+   "STEP2_ADMISSION"
+  ],
+  "mfi_overbought_short": [
+   "FUNNEL_MIRROR"
+  ],
+  "mfi_oversold_with_smart_money_long": [
+   "FUNNEL_CELL"
+  ],
+  "pead_long_high_yoy_growth_only": [
+   "STEP2_ADMISSION"
+  ],
+  "pead_short_negative_yoy_growth": [
+   "ADMISSION_MIRROR"
+  ],
+  "pead_with_smart_money_long": [
+   "STEP2_ADMISSION"
+  ],
+  "poc_magnet_long": [
+   "FUNNEL_CELL"
+  ],
+  "poc_magnet_short": [
+   "FUNNEL_MIRROR"
+  ],
+  "smc_bos_retest_entry": [
+   "FUNNEL_CELL",
+   "DUAL_SELF"
+  ],
+  "smc_breaker_block_long": [
+   "STEP2_ADMISSION"
+  ],
+  "smc_breaker_block_short": [
+   "ADMISSION_MIRROR"
+  ],
+  "three_black_crows_short": [
+   "ADMISSION_MIRROR"
+  ],
+  "three_white_soldiers": [
+   "STEP2_ADMISSION"
+  ],
+  "totm_long": [
+   "FUNNEL_CELL"
+  ],
+  "totm_short": [
+   "FUNNEL_MIRROR"
+  ],
+  "xs_combined_momentum_high_ivol_short": [
+   "FUNNEL_MIRROR"
+  ],
+  "xs_combined_momentum_low_ivol": [
+   "FUNNEL_CELL"
+  ],
+  "xs_low_beta_with_smart_money_long": [
+   "STEP2_ADMISSION"
+  ],
+  "xs_momentum_bottom_decile_short": [
+   "FUNNEL_MIRROR",
+   "ADMISSION_MIRROR"
+  ],
+  "xs_momentum_top_decile": [
+   "STEP2_ADMISSION"
+  ],
+  "xs_momentum_with_smart_money_long": [
+   "FUNNEL_CELL"
+  ]
+ },
+ "gate_closed_count_worktree_code_main_data": 31,
+ "membership_not_closed_by_gate": []
+}
