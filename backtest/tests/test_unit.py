@@ -51357,3 +51357,31 @@ def test_b3139_make_spec_extends_ema_pairs_for_an_unemitted_span():
     # must-stay-quiet: an emitted span and a non-EMA actuator stay single-key
     assert _arm_env("STRAT_EMA_SPAN", 100) == {"STRAT_EMA_SPAN": "100"}
     assert _arm_env("SOME_OTHER_KNOB", 250) == {"SOME_OTHER_KNOB": "250"}
+
+
+def test_b3139_make_spec_carries_the_lifecycle_exemptions():
+    """B3139 (the bl_step2_p4_250 CHAIN HALT): the pre-leg bar audit's
+    documented lifecycle exemptions (S6-B3092b) are registry DATA keyed by
+    the step's universe; make_spec._preleg_exemptions copies the matching
+    block into every generated spec, deriving the universe from
+    phase_table.resolve (B2713 - never typed). Both arms: the 544-universe
+    Step-2 block carries FISV+SBNY with their documented reasons; a step
+    whose universe has no registry block gets {} (quiet arm via a planted
+    registry miss is structural - the lookup keys on the basename)."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import make_spec as ms
+    import phase_table
+    ex = ms._preleg_exemptions(2)
+    assert sorted(ex) == ["FISV", "SBNY"], sorted(ex)
+    assert "rename 2023-06-06" in ex["FISV"] and "S6-B3092b" in ex["FISV"]
+    assert "Signature Bank failure 2023-03-12" in ex["SBNY"]
+    # registry is tracked and keyed by the resolved universe basename
+    reg = _json.loads((root / "output_audit" /
+                       "preleg_lifecycle_exemptions.json").read_text(encoding="utf-8"))
+    key = _P(str(phase_table.resolve(2)["tickers_file"])).name
+    assert key in reg and sorted(reg[key]) == ["FISV", "SBNY"]

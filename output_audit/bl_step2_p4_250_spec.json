@@ -9,6 +9,10 @@
  "allow_engine_drift": false,
  "resume": true,
  "cube_riders": null,
+ "preleg_exemptions": {
+  "FISV": "lifecycle (S6-B3092b): FISV->FI rename 2023-06-06 and FI->FISV return 2025-11 - the FI-period bars live under the FI symbol, one company split across a symbol-keyed cache; gap_days 610 are that FI period exactly (gap_sample starts 2023-06-07). Same bars R5 and every prior Step-2 consumed.",
+  "SBNY": "lifecycle (S6-B3092b): Signature Bank failure 2023-03-12; the 30 gap days (from 2023-03-13) are the exchange->OTC transition, then continuous OTC bars to the window end (973 of 1003 rows). Same bars R5 consumed - the L581 ticker."
+ },
  "arms": [
   {
    "tag": "p4_250",

@@ -104,6 +104,24 @@ def _arm_env(env: str, level) -> dict:
     return out
 
 
+def _preleg_exemptions(step: int) -> dict:
+    """B3139 (found when the bl_step2_p4_250 chain HALTed): the pre-leg bar
+    audit's documented LIFECYCLE exemptions (S6-B3092b) are DATA keyed by the
+    step's universe (output_audit/preleg_lifecycle_exemptions.json, tracked);
+    config 1's hand-built spec carried them and this generator did not, so
+    the same two documented tickers (FISV rename, SBNY failure) refused the
+    next launch. The universe is DERIVED from phase_table.resolve - never
+    typed (B2713). Empty when the registry has no block for the universe."""
+    import json as _json
+    import phase_table
+    tf = Path(str(phase_table.resolve(step)["tickers_file"])).name
+    reg = ROOT / "output_audit" / "preleg_lifecycle_exemptions.json"
+    if not reg.is_file():
+        return {}
+    doc = _json.loads(reg.read_text(encoding="utf-8"))
+    return dict(doc.get(tf) or {})
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--strategy", required=True)
@@ -161,6 +179,7 @@ def main() -> int:
             "allow_engine_drift": False,
             "resume": True,
             "cube_riders": None,
+            "preleg_exemptions": _preleg_exemptions(a.step),
             "arms": [{
                 "tag": tag,
                 "env": _arm_env(env, level),
