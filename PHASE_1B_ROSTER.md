@@ -116,6 +116,7 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
     - `three_white_soldiers`: raw HO sharpe 1.779 -> net 1.483; net all_live_gates=False; failing: psr
 
 **Net near-misses (S6-B3136, owner 2026-09-29: *"1 approve your recommendation"*; 3 of 15 admissions).** Kept admitted. Each is STRUCK if its net PSR is still below the live psr gate (0.95) after 20 more paper trades - the 20 is a CHOSEN number, owner-approved.
+    RESULTS FROZEN (owner 2026-09-30, verbatim: *"once they are in phase 1b roster their results can not be changed. You can add a note to it"*): the recorded raw and net figures do not change; this note rides the row, and the pre-registered strike rule judges STATUS only.
     - `smc_breaker_block_long`: net PSR 0.939 vs gate 0.95; failing: psr (drift: output_audit/b3137_smc_psr_rederived.json (stored drifted: psr 0.939 != 1.0))
     - `pead_with_smart_money_long`: net PSR 0.9336 vs gate 0.95; failing: psr (rescored: output_audit/b3128_admissions_net_rescore.json)
     - `three_white_soldiers`: net PSR 0.9355 vs gate 0.95; failing: psr (rescored: output_audit/b3128_admissions_net_rescore.json)

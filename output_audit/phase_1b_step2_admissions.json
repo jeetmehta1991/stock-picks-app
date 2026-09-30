@@ -36,7 +36,12 @@
     "ruling_verbatim": "1 approve your recommendation",
     "kept": "admitted as a net near-miss by owner ruling; the failing gate(s) and the net PSR are rendered from the re-score, never typed here",
     "strike_rule": "STRUCK if its net PSR is still below the live psr gate (PASSING_CRITERIA min_psr) after 20 more paper trades; the 20 is a CHOSEN number, owner-approved 2026-09-29",
-    "psr_source": "output_audit/b3137_smc_psr_rederived.json"
+    "psr_source": "output_audit/b3137_smc_psr_rederived.json",
+    "results_frozen": {
+     "ruled": "2026-09-30",
+     "ruling_verbatim": "once they are in phase 1b roster their results can not be changed. You can add a note to it",
+     "meaning": "the roster RESULTS (raw and net figures) are FROZEN as recorded - no re-grade, no re-derivation changes them; this note rides the roster row. The pre-registered 2026-09-29 strike rule remains the only path that can change the admission's STATUS, and it judges status, never the recorded figures."
+    }
    }
   },
   {
@@ -161,7 +166,12 @@
     "ruling_verbatim": "1 approve your recommendation",
     "kept": "admitted as a net near-miss by owner ruling; the failing gate(s) and the net PSR are rendered from the re-score, never typed here",
     "strike_rule": "STRUCK if its net PSR is still below the live psr gate (PASSING_CRITERIA min_psr) after 20 more paper trades; the 20 is a CHOSEN number, owner-approved 2026-09-29",
-    "psr_source": "net_rescore"
+    "psr_source": "net_rescore",
+    "results_frozen": {
+     "ruled": "2026-09-30",
+     "ruling_verbatim": "once they are in phase 1b roster their results can not be changed. You can add a note to it",
+     "meaning": "the roster RESULTS (raw and net figures) are FROZEN as recorded - no re-grade, no re-derivation changes them; this note rides the roster row. The pre-registered 2026-09-29 strike rule remains the only path that can change the admission's STATUS, and it judges status, never the recorded figures."
+    }
    }
   },
   {
@@ -861,7 +871,12 @@
     "ruling_verbatim": "1 approve your recommendation",
     "kept": "admitted as a net near-miss by owner ruling; the failing gate(s) and the net PSR are rendered from the re-score, never typed here",
     "strike_rule": "STRUCK if its net PSR is still below the live psr gate (PASSING_CRITERIA min_psr) after 20 more paper trades; the 20 is a CHOSEN number, owner-approved 2026-09-29",
-    "psr_source": "net_rescore"
+    "psr_source": "net_rescore",
+    "results_frozen": {
+     "ruled": "2026-09-30",
+     "ruling_verbatim": "once they are in phase 1b roster their results can not be changed. You can add a note to it",
+     "meaning": "the roster RESULTS (raw and net figures) are FROZEN as recorded - no re-grade, no re-derivation changes them; this note rides the roster row. The pre-registered 2026-09-29 strike rule remains the only path that can change the admission's STATUS, and it judges status, never the recorded figures."
+    }
    }
   }
  ],

@@ -522,6 +522,13 @@ def step2_admissions_section(A, admissions_path=None) -> None:
           f"admissions).** Kept admitted. Each is STRUCK if its net PSR is still "
           f"below the live psr gate ({_gate}) after 20 more paper trades - the 20 "
           "is a CHOSEN number, owner-approved.")
+        _rf = next((a["net_near_miss"].get("results_frozen") for a in _nm
+                    if a["net_near_miss"].get("results_frozen")), None)
+        if _rf:
+            A(f"    RESULTS FROZEN (owner {_rf.get('ruled')}, verbatim: "
+              f"*\"{_rf.get('ruling_verbatim')}\"*): the recorded raw and "
+              "net figures do not change; this note rides the row, and the "
+              "pre-registered strike rule judges STATUS only.")
         for a in _nm:
             net, kind, src = rederived_net(a)
             if net is None:
