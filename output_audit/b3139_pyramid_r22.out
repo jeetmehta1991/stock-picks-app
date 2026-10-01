@@ -1,0 +1,133 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+........................................................................ [ 34%]
+..............................................s......................... [ 38%]
+....................s.................................................s. [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 51%]
+...........................................................F............ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 76%]
+........................................................................ [ 80%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 93%]
+........................................................................ [ 97%]
+..................................                                       [100%]
+================================== FAILURES ===================================
+________ test_b1974_generated_artifact_is_not_older_than_its_generator ________
+
+    def test_b1974_generated_artifact_is_not_older_than_its_generator():
+        """B1974b: a generated artifact is stale the moment its generator changes.
+    
+        Found while proving B1974 output-preserving: regenerating
+        `PHASE_1B_ROSTER.md` changed it, and the OLD code produced the SAME new
+        output - so the change was not the fix. **The committed doc had been stale
+        for 7 commits to its own generator**, and its gate-2 row read 4 where the
+        generator produces 3.
+    
+        The headline (2 roster cells) was unchanged, so nothing looked wrong.
+        **That is the whole failure mode: a stale artifact does not announce
+        itself, it quietly stops being a measurement and becomes a memory.**
+    
+        Cheap by construction - this compares commit timestamps and re-runs
+        nothing. Regenerating the roster reads 4.9M rows.
+        """
+        import subprocess as _sp
+        import pathlib as _p
+    
+        root = _p.Path(__file__).resolve().parents[2]
+    
+        def last_commit(path):
+            out = _sp.run(["git", "log", "-1", "--format=%ct", "--", path],
+                          cwd=root, capture_output=True, text=True)
+            v = out.stdout.strip()
+            return int(v) if v else None
+    
+        # B1974c: an artifact with UNCOMMITTED changes is being regenerated right
+        # now, so it is fresh by definition. Without this the check can never be
+        # green in the pre-commit pyramid that ships the regeneration - the gate
+        # would block the only action that satisfies it, which is a gate that
+        # cannot be obeyed rather than one that cannot fail.
+        dirty = set(_sp.run(["git", "diff", "--name-only", "HEAD"],
+                            cwd=root, capture_output=True, text=True
+                            ).stdout.split())
+    
+        # B1976: a freshness STAMP beats timestamps. An output-preserving
+        # generator change leaves the artifact byte-identical - never dirty,
+        # never re-committed - so the timestamp comparison fires forever with no
+        # satisfying action except a no-op commit. The builder writes the sha256
+        # of each generator source it executed; a matching stamp IS freshness.
+        import hashlib as _hl
+        import json as _json
+    
+        def stamped_fresh(gens):
+            sp = root / "output_audit" / "phase_1b_roster_freshness.json"
+            if not sp.exists():
+                return False
+            try:
+                stamp = _json.loads(sp.read_text(encoding="utf-8"))
+            except ValueError:
+                return False
+            return all(
+                stamp.get(g) == _hl.sha256((root / g).read_bytes()).hexdigest()
+                for g in gens)
+    
+        stale = []
+        for art, gens in sorted(_B1974_GENERATED.items()):
+            if art in dirty:
+                continue          # regenerated in the working tree this turn
+            if stamped_fresh(gens):
+                continue          # generator contents match the last actual run
+            a = last_commit(art)
+            if a is None:
+                continue          # not committed yet; nothing to be stale against
+            for g in gens:
+                t = last_commit(g)
+                if t is not None and t > a:
+                    stale.append(f"{art} (committed {a}) is older than {g} ({t})")
+    
+>       assert not stale, (
+            "GENERATED ARTIFACT OLDER THAN ITS GENERATOR:\n  " +
+            "\n  ".join(stale) +
+            "\nRe-run the generator and commit the result, or the artifact is a "
+            "memory of what the code used to produce. B1974b: PHASE_1B_ROSTER.md "
+            "sat 7 generator-commits stale with a wrong gate-2 count and nothing "
+            "noticed, because its headline was unchanged.")
+E       AssertionError: GENERATED ARTIFACT OLDER THAN ITS GENERATOR:
+E           PHASE_1B_ROSTER.md (committed 1790802501) is older than scripts/roster_core.py (1790877425)
+E         Re-run the generator and commit the result, or the artifact is a memory of what the code used to produce. B1974b: PHASE_1B_ROSTER.md sat 7 generator-commits stale with a wrong gate-2 count and nothing noticed, because its headline was unchanged.
+E       assert not ['PHASE_1B_ROSTER.md (committed 1790802501) is older than scripts/roster_core.py (1790877425)']
+
+backtest\tests\test_unit.py:21826: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b1974_generated_artifact_is_not_older_than_its_generator
+1 failed, 1686 passed, 3 skipped in 1032.64s (0:17:12)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1060
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

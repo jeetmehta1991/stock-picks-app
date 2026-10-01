@@ -3234,5 +3234,13 @@
       "all_live_gates": false,
       "npt_barred": false
     }
-  ]
+  ],
+  "provenance_correction_2026_10_01": {
+    "ticket": "S6-B3139ak",
+    "what_is_wrong": "provenance.subject_holdout_previously_read ('B2668 depth admission') and provenance.disclosure_accepted (the owner's 2026-09-11 quote) were stamped by a LITERAL in scripts/breadth_step2_read.py that described the xs_momentum_top_decile campaign, not this one (S6-B3139ah, fixed B3139q-r18). Both are FALSE for three_white_soldiers.",
+    "true_prior_holdout_read": "three_white_soldiers' own c14 Step-2 read: output_audit/output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3_grid_auto.json - IS-selected exit holdout sharpe -0.051 on 191 of 955 trades, FAIL (landing dce47e5d4, campaign log B3114 update).",
+    "true_owner_word_for_this_read": "this artifact's own ruling_verbatim field: '7 approved proceed (owner 2026-09-26, item-7 registration + read word on the b3113 grid)'.",
+    "label_still_correct": "DISCLOSED-RE-READ stands - the subject's holdout WAS read before this read, by the c14 Step-2 read named above.",
+    "figures_unchanged": "no figure, cell, qualifier or verdict in this artifact is altered - owner ruling 2026-09-30, verbatim: 'once they are in phase 1b roster their results can not be changed. You can add a note to it'"
+  }
 }

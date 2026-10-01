@@ -2196,3 +2196,18 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **Open for the owner after results:** pre-registration item 5 was written for an all-three-
   configs fail; Step 2 closed at two by ruling, so whether this counts toward S6-B2178c's re-raise
   trigger is the owner's to rule when the breadth verdict exists.
+- **Items 5-6 RESULTS, NET basis (B3139q-r19; output_audit/b3139_bollinger_lower_breadth_net_
+  {long,short}.json, production base = R5 cube, the B3119-reviewed 13 axes, IS only):**
+  long 806 trials / 806 graded, base time_stop_10d IS sharpe 0.200 net (0.337 gross) n 577; rank-1
+  by is_ci_lo cot_rut_commercials_net_pct <= -0.0668 @ time_stop_10d IS 2.643, ci_lo 1.693, n 120;
+  joint-shuffle null p = 0.01 (200 perms; null max p95 1.894). Short 780 trials / 754 graded, base
+  IS -0.799 net (-0.676 gross) n 615; rank-1 by is_ci_lo defensive_leadership @ time_stop_10d IS
+  1.558, ci_lo 0.852, n 206; null p = 0.0547 (null max p95 1.693) - the short search is NOT priced
+  below 0.05. Both multiplicity blocks reconcile (806 = 806; 780 = 780).
+- **Controls and caveats:** a GROSS re-run of each leg reproduces the committed B3119 grids exactly
+  (806/806 and 754/754 cells, max is_sharpe diff 0.0). On this pre-B3098 multi-leg R5 cube
+  regime_flip returns figures identical to time_stop_20d on both legs (runbook 4.8) - never read a
+  regime_flip cell as its named exit. The rendered Table D drops 208/806 long and 156/754 short
+  rows (axes adx and below_ema_N, whose signal keys are not SPECS display labels - S6-B3139an);
+  neither leg's top cell is among them (best hidden: long 0.478, short 0.26 ci_lo).
+- **Item 7 (the holdout read) waits for the owner's word** (S6-B3139am).

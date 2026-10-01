@@ -1,9 +1,11 @@
 {
  "metric_code": {
-  "sha256": "3afedaeb36748b7f708ab78c90db111e822f9a403fa73161cc222be3443ce19c",
+  "sha256": "77e66b0cd74b79d6813d851bc5900d4a5710adf9b9e6884b779d3021017afcc1",
   "members": [
    "roster_core.load_cube",
+   "roster_core.net_pnl",
    "roster_core.holdout",
+   "roster_core.in_sample",
    "roster_core.evaluate",
    "walk_forward_r5_cells._sharpe",
    "backtest.results.metrics._sortino_ratio",
@@ -11,12 +13,25 @@
    "rescore_admissions_net.net",
    "rescore_admissions_net.score_both"
   ],
+  "constants": [
+   "roster_core.COST_BPS",
+   "roster_core.CUBE_COLUMNS",
+   "roster_core.CUBE_DTYPES",
+   "roster_core.HO_END",
+   "roster_core.HO_START",
+   "roster_core.IS_END",
+   "roster_core.IS_START",
+   "roster_core.MIN_N",
+   "roster_core.PC",
+   "roster_core.WINSORIZE",
+   "walk_forward_r5_cells.OOS_MIN_N"
+  ],
   "plus": "backtest.config.PASSING_CRITERIA",
   "defined_in": "scripts/roster_core.py metric_code_fingerprint"
  },
  "_doc": "S6-B3134a part C (ii): one-shot LABEL re-score of the graded Phase 1B lines - each line reproduced from its own cube (#290) then scored with the entries the fixed engine would not take removed. Labels only; no line changes; any removal is a per-line owner ruling.",
  "predicate": "backtest/data/eligibility.py (jan1_reason, daily_reason)",
- "generated_utc": "2026-09-30T10:51:16Z",
+ "generated_utc": "2026-10-01T18:49:05Z",
  "rows": [
   {
    "line": "smc_breaker_block_long",

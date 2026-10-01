@@ -24254,7 +24254,7 @@ form in the same batch - dash_c_escape_hits keeps the four shell-consumed
 escapes quiet and fires on every pair that reaches the interpreter, under
 its own ship stamp so older commands are never retro-judged.
 
-## L894 - A GOAL GATED ON OWNER DECISIONS IS CLOSED BY A PACKET, NOT BY MORE AUTONOMOUS WORK (B3139o-packet, 2026-09-30)
+### L894 - A GOAL GATED ON OWNER DECISIONS IS CLOSED BY A PACKET, NOT BY MORE AUTONOMOUS WORK (B3139o-packet, 2026-09-30)
 
 Record-of-fact plus an ordering rule. The B3139 session closed 12 of 27
 addressable tickets in roughly 16 h; the other 15 were DECISION tickets, and
@@ -24275,7 +24275,7 @@ skips excepted) - no new CHECKLIST item (#136). Mechanism: JUDGMENT-ONLY -
 session orchestration ordering is not scannable; durability is this entry
 plus the committed packet precedent.
 
-## L895 - TWO GATE-CAUGHT COMPLIANCE INSTANCES IN ONE POST-COMPACTION TURN (B3139q-r15 close, 2026-10-01)
+### L895 - TWO GATE-CAUGHT COMPLIANCE INSTANCES IN ONE POST-COMPACTION TURN (B3139q-r15 close, 2026-10-01)
 
 Record-of-fact, no new rule. In the first working turn after a compaction
 (boundary entry 108985, 2026-10-01T13:27:00Z per transcript_timeline.py,
@@ -24321,7 +24321,7 @@ rule does not install it). Three catches by a scan that fires at TURN
 CLOSE means the guard arrives after the command already ran; S6-B3139ae
 tickets a pre-execution refusal as the class remedy.
 
-## L896 - A FAIL-CLOSED FIX WROTE A FAIL-SILENT HELPER BESIDE IT (B3139q-r17, 2026-10-01)
+### L896 - A FAIL-CLOSED FIX WROTE A FAIL-SILENT HELPER BESIDE IT (B3139q-r17, 2026-10-01)
 
 Record-of-fact. The S6-B3139w renderer fix was built around one rule -
 an unreadable run manifest must surface as UNKNOWN, never as a silent
@@ -24338,7 +24338,7 @@ mechanism working. The shape worth keeping: applying a rule carefully to
 the function under design does not apply it to the helper written in the
 same breath; the ratchet, not attention, is what reached the second site.
 
-## L897 - A MODULE-NAME GREP FINDS THE TESTS, NOT THE LINES THEY QUOTE (B3139q-r18, 2026-10-01)
+### L897 - A MODULE-NAME GREP FINDS THE TESTS, NOT THE LINES THEY QUOTE (B3139q-r18, 2026-10-01)
 
 Record-of-fact. Before gating S6-B3139ag I grepped the test tree for the
 two breadth modules' NAMES, read the pins my plan predicted, and launched
@@ -24355,3 +24355,53 @@ ordering so an added keyword cannot break it again. COMPLIANCE FAILURE
 against #196 (L801: grep the test tree before landing a change; the miss
 was grepping the wrong KEY - the module, not the edited lines). No new
 item (#136); the gate caught it and the remedy is the query's key.
+
+### L898 - AN OUTPUT-PRESERVING REFACTOR MOVED A FORMULA OUT OF A HASHED FUNCTION (B3139q-r19, 2026-10-01)
+
+B3139q-r18 lifted the NET transform out of roster_core.load_cube into a
+new helper, net_pnl, and the r21 gate confirmed the output byte-identical.
+But load_cube is named in METRIC_CODE_MEMBERS, and the S6-B3136 fingerprint
+hashes each member's SOURCE. So the refactor moved the fingerprint - the one
+roster figure that reads a stamped artifact (smc_breaker_block_long's net
+PSR 0.94) rebuilt as 'pending' - and it left the cost formula in a function
+nothing hashed, so a later cost edit would never have moved a stamp. The
+staleness pin compares COMMIT timestamps, so it passed the r21 gate while
+roster_core.py was uncommitted and failed r22 once r18 had landed
+(output_audit/b3139_pyramid_r22.out: 1 failed, 1686 passed). The coverage
+sweep that followed (EXECUTED, scratchpad probes) found two more holes:
+score_both called in_sample unhashed (it computes the stored is_* figures),
+and 11 constants the members read BY NAME - HO_START/HO_END, IS_START/IS_END,
+COST_BPS, WINSORIZE, MIN_N, OOS_MIN_N, PC and the cube schema - were hashed
+as names, never as values, so a moved holdout window or cost would have
+left every stamped figure reading current. Fixed under S6-B3139ao: net_pnl
+and in_sample joined the members, constant VALUES are hashed, and
+test_b3139ao fails on a member that calls a repo function outside the list
+and on a fingerprint that names its constants without hashing them (both
+mutation-proven). The smc artifact was re-derived under the new code -
+every figure identical, only the stamp moved - and the roster rebuilt
+byte-identical. COMPLIANCE FAILURE against #196: one grep for the
+qualified-name string "roster_core.load_cube" returns the member list
+(1 hit, EXECUTED) and was never run before r18. RULE: an output-preserving
+refactor is not identity-preserving wherever something hashes or lists the
+function by name - grep the function's NAME, not only its callers, before
+moving code out of it.
+
+### L899 - A HEADING FORM NO PARSER READS HID FOUR LESSONS FROM THREE GATES (B3139q-r19, 2026-10-01)
+
+L894 (B3139o-packet) was written as a two-hash heading while L723-L893 use
+three hashes, and L895-L897 copied the nearest example. The banner pin
+(test_b1486), the anchor pin (test_b2526) and the turn gate's orphan scan
+(check_orphan_rule) all parse the three-hash form only, so all four entries
+were invisible to all three at once: the CLAUDE.md banner sat at L893 with
+test_b1486 GREEN, and L895-L897 - each a compliance instance against an
+existing item - were anchored nowhere with test_b2526 GREEN (MEASURED: 169
+three-hash headings from L725 against 4 two-hash; L895, L896 and L897 cited
+0 times in CHECKLIST.md and in SKILL.md). The parser was not the thing to
+widen - 55 assertions in test_unit.py plus 4 scripts read the three-hash
+form - so the writer's degree of freedom is deleted instead: the four
+headings now use three hashes, L895-L898 carry INSTANCE lines under #259,
+#122 and #196, and test_b3139aq refuses a two-hash L heading at or above
+L723 and requires the three-hash parser's maximum to equal the maximum
+under any heading level. COMPLIANCE FAILURE against #275 (a gate keyed on
+one format is blind to the next) - the B2520 banner instance of the same
+class, arriving through the writer this time rather than the reader.

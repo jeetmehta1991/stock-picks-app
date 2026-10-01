@@ -312,11 +312,20 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
 # S6-B3136 (B3139, council): the functions that turn a trade set into the
 # six live gate values, in a FIXED order. A re-derivation artifact stamps
 # their fingerprint; the roster renderer recomputes it and shows 'pending'
-# on a mismatch. BOUNDARY, stated: a change to a callee OUTSIDE this list
-# (scipy, pandas, a helper these call) does not move the fingerprint.
+# on a mismatch. BOUNDARY, stated: a LIBRARY callee (scipy, pandas, numpy)
+# does not move the fingerprint. S6-B3139ao (B3139q-r19): a REPO-defined
+# callee must itself be a member - B3139q-r18 extracted the NET transform
+# from load_cube into net_pnl and left the cost formula unhashed, and
+# in_sample computes the is_* figures score_both stores - so both joined,
+# and test_b3139ao fails the pyramid on the next member that calls a repo
+# function outside this list. The VALUES of the plain-data constants a
+# member reads by name (HO_START, COST_BPS, MIN_N, ...) are hashed too:
+# the source hash carries a constant's name, never its value.
 METRIC_CODE_MEMBERS = (
     "roster_core.load_cube",
+    "roster_core.net_pnl",
     "roster_core.holdout",
+    "roster_core.in_sample",
     "roster_core.evaluate",
     "walk_forward_r5_cells._sharpe",
     "backtest.results.metrics._sortino_ratio",
@@ -326,22 +335,87 @@ METRIC_CODE_MEMBERS = (
 )
 
 
+def _plain(value):
+    """A constant's canonical JSON-able form, or TypeError when it is not
+    plain data - a repr carrying an address would move the hash run to run."""
+    from datetime import datetime as _dt
+    if isinstance(value, bool) or value is None or isinstance(value, (int, float, str)):
+        return value
+    if isinstance(value, (date, _dt)):
+        return value.isoformat()
+    if isinstance(value, dict):
+        return {str(k): _plain(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_plain(v) for v in value]
+    if isinstance(value, (set, frozenset)):
+        return sorted((_plain(v) for v in value), key=repr)
+    raise TypeError(type(value).__name__)
+
+
+def metric_constants(fn) -> dict:
+    """S6-B3139ao: {qualified name: canonical JSON value} for every plain-data
+    constant `fn` reads BY NAME - a global of its own module, or NAME on a
+    REPO module (rescore_admissions_net.net reads rc.COST_BPS). Library
+    modules are outside, as their callees are. Locals are excluded."""
+    import ast
+    import inspect
+    import json as _json
+    import textwrap
+    import types
+    g = fn.__globals__
+    local = set(fn.__code__.co_varnames) | set(fn.__code__.co_cellvars)
+
+    def repo_module(obj):
+        f = getattr(obj, "__file__", None) if isinstance(obj, types.ModuleType) else None
+        if not f:
+            return False
+        p = Path(f).resolve()
+        return REPO in p.parents and ".venv" not in p.parts
+
+    out = {}
+    for node in ast.walk(ast.parse(textwrap.dedent(inspect.getsource(fn)))):
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+            if node.id in local or node.id not in g:
+                continue
+            value, q = g[node.id], f"{fn.__module__.split('.')[-1]}.{node.id}"
+        elif (isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name)
+              and repo_module(g.get(node.value.id))
+              and hasattr(g[node.value.id], node.attr)):
+            mod = g[node.value.id]
+            value, q = getattr(mod, node.attr), f"{mod.__name__.split('.')[-1]}.{node.attr}"
+        else:
+            continue
+        if callable(value) or isinstance(value, types.ModuleType) or inspect.isclass(value):
+            continue
+        try:
+            out[q] = _json.dumps(_plain(value), sort_keys=True)
+        except TypeError:
+            continue
+    return out
+
+
 def metric_code_fingerprint() -> dict:
     """sha256 over the SOURCE of every METRIC_CODE_MEMBERS function (name +
-    source, in order) plus PASSING_CRITERIA (the gate bars). Two runs on
-    the same code agree; a formula edit to any member changes it."""
+    source, in order), the VALUES of the plain-data constants those
+    functions read by name (S6-B3139ao), plus PASSING_CRITERIA (the gate
+    bars). Two runs on the same code agree; a formula edit to any member, or
+    a moved window, cost or floor it reads, changes it."""
     import hashlib
     import importlib
     import inspect
     import json as _json
     h = hashlib.sha256()
+    constants = {}
     for member in METRIC_CODE_MEMBERS:
         mod, _, fn = member.rpartition(".")
         m = sys.modules[__name__] if mod == "roster_core" else importlib.import_module(mod)
         h.update(member.encode("utf-8"))
         h.update(inspect.getsource(getattr(m, fn)).encode("utf-8"))
+        constants.update(metric_constants(getattr(m, fn)))
+    h.update(_json.dumps(constants, sort_keys=True).encode("utf-8"))
     h.update(_json.dumps(PC, sort_keys=True, default=str).encode("utf-8"))
     return {"sha256": h.hexdigest(), "members": list(METRIC_CODE_MEMBERS),
+            "constants": sorted(constants),
             "plus": "backtest.config.PASSING_CRITERIA",
             "defined_in": "scripts/roster_core.py metric_code_fingerprint"}
 

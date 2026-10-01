@@ -2003,6 +2003,8 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Cross-references.** L176, `feedback_silent_failure_pairing_rule`, B1028 pandas-ta failure.
 
+     **INSTANCE (B3139q-r17 / L896):** a fail-closed renderer fix (an unreadable run manifest surfaces as UNKNOWN) shipped a sibling helper, `_step()`, that swallowed the same exception with a bare except-pass; the AST ratchet `test_b2128_silent_except_pass_is_a_shrinking_set` caught it at the gate (129 sites against a ceiling of 128). Applying the rule to the function under design did not apply it to the helper written beside it - the ratchet, not attention, reached the second site.
+
 123. **HARD RULE -- PHASE-LADDER-TIMING-VALIDATION: smoke wall-clock target ≤ 15 min.** (B1028 R5 timing assumption failure 2026-06-27; Council 126 Tier 1.)
 
      Smoke / Phase-1 wall-clock estimates must be EMPIRICALLY VALIDATED before cascade approval. If smoke phase estimate exceeds 15 min, cascade automation is invalid until calibrated.
@@ -3045,6 +3047,10 @@ end-anchored coverage change altering which tickers any prior run would have ser
 **INSTANCE (B3097) - B2046 FIXED A DEFECT THAT FALSIFIED OUTPUTS AND SWEPT NONE OF THE FINDINGS THEY HAD PRODUCED.** Until B2046 (2026-08-23), trade_exit_detail.csv dropped every strategy with fewer than 5 trades. L395 (2026-08-10) had read `swing_length=50` as ZERO smc_breaker_block_long entries from that file; the engine trade log of the same run holds 3. The fix was pinned, but step 1 above - grep the shipped conclusions - was not run, so L395 and its own correction L397 kept the false zero until B3097 re-derived it while closing S6-B1520a. Corrected in place and pinned by test_b3097_l395_and_l397_carry_the_b2046_correction; the account is the L867 addendum.
 
 **INSTANCE (B3139 / L884):** the B2646 PSR units fix re-judged the funnel only and S6-B3122 skipped smc_breaker_block_long as ALREADY-NET, so its pre-fix PSR 1.0 (current code 0.939) stood for a month - the re-check enumerated the population the fix was found in, not every conclusion the old formula wrote.
+
+**INSTANCE (B3139q-r18 / L897):** a pre-gate grep keyed on the edited MODULES' names listed a pin's import line and missed the assertion quoting the literal call text the batch had just extended (`build_frame` gained `basis=basis`); the r20 gate went RED. Grep each CHANGED LINE'S TEXT across the test tree before gating, not the module name.
+
+**INSTANCE (B3139q-r19 / L898):** an output-preserving refactor (the NET transform lifted from `load_cube` into `net_pnl`) moved the metric-code fingerprint and left the cost formula unhashed, because `METRIC_CODE_MEMBERS` lists functions by qualified-name STRING - one grep for "roster_core.load_cube" returns it. Before moving code out of a function, grep its NAME for any registry that hashes or lists it. Mechanism: `test_b3139ao_fingerprint_covers_repo_callees_and_constant_values` (every repo callee of a member is a member; constant values are hashed).
 
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
@@ -4808,6 +4814,8 @@ same defect since B1721b - recorded, never gated.**
 
 **INSTANCE (B3138-B3139 / L885):** three escape-through-heredoc edits in two turns failed visibly; the one whose guard and write sat in DIFFERENT commands wrote a wrong value, the two whose guard and write sat in the SAME process refused before any write - and a transcript replay found 25 such heredocs in the session, most arriving intact. **Mechanically enforced since B3139 (S6-B3138a):** `scan_heredoc_escapes` in `scripts/verify_turn_compliance.py` fires on a backslash pair in a heredoc body fed to an interpreter (git commit/tag messages exempt), active from its ship time (L721).
 
+**INSTANCE (B3139q-r15 / L895):** in the first turn after a compaction, a `python - <<EOF` heredoc body carried a backslash pair - with two more recurrences the same session (instances 2 and 3, recorded in L895's addendum), each caught by the S6-B3138a heredoc scan at turn close, after the command had run; the same turn also broke #322/L870 (a claim about my own actions across the compaction, made before running transcript_timeline.py). S6-B3139ae tickets a pre-execution refusal as the class remedy.
+
 ### #260 - SHOW EVERY CLASS OR CITE NO TOTAL (B1779 / L534)
 
 **MEASURED: I reported "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649".** Three of SEVEN classes
@@ -5226,6 +5234,8 @@ were on screen.
   and reasoning would not have.**
 - Mention-vs-use stays the DEFAULT; `keep_code` is opt-in, and safe only where a mention cannot
   satisfy the gate - here it cannot, because a mention of the class names carries no numbers.
+
+**INSTANCE (B3139q-r19 / L899):** four LEARNINGS headings written in the two-hash form, while every reader parses three hashes, were invisible to the banner pin, the anchor pin and the turn gate's orphan scan at once - the banner sat at L893 and three entries sat unanchored with every pin GREEN. A format the readers depend on was fixed by deleting the writer's freedom (`test_b3139aq_learnings_headings_use_the_parsed_form`) rather than widening ~60 readers.
 
 ### #276 - A GATE'S OWN DIAGNOSTIC IS NOT EVIDENCE ABOUT THE TURN (B1811 / L555)
 

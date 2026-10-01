@@ -46821,6 +46821,7 @@ def test_b3113a_step2_read_subject_cube_control_r5(tmp_path):
         [sys.executable, str(root / "scripts" / "breadth_step2_read.py"),
          "--step1-artifact", str(tmp_path / "absent.json"),
          "--ruling", "pin probe", "--breadth-disposition", "ran",
+         "--prior-read", "none",               # S6-B3139ah: required
          "--out", str(tmp_path / "o.json"), "--cube-dir", str(missing)],
         cwd=str(root), capture_output=True, text=True, timeout=120)
     blob = r.stdout + r.stderr
@@ -50346,6 +50347,104 @@ def test_b3139_metric_code_fingerprint_moves_with_a_formula_and_is_written(monke
     assert '"metric_code": rc.metric_code_fingerprint()' in src
 
 
+def test_b3139ao_fingerprint_covers_repo_callees_and_constant_values(monkeypatch):
+    """S6-B3139ao (B3139q-r19): the fingerprint hashed member SOURCE, so it
+    was blind in two ways. B3139q-r18 extracted the NET transform from
+    load_cube into net_pnl - output-preserving, and it left the cost formula
+    outside every member, so a later cost edit would not have moved a stamp.
+    And a constant read by NAME (HO_START, COST_BPS, MIN_N) was hashed as
+    its name, never its value, so a moved holdout window left every stamped
+    figure reading current. STRUCTURE: every repo-defined function a member
+    calls is itself a member. BEHAVIOUR: the hash moves on a net_pnl source
+    edit, a cost and a window, and returns to base after each."""
+    import ast
+    import importlib
+    import inspect
+    import textwrap
+    from pathlib import Path as _P
+    import roster_core as rc
+
+    def repo_function(obj):
+        if not inspect.isfunction(obj):
+            return False
+        try:
+            p = _P(inspect.getsourcefile(obj)).resolve()
+        except (TypeError, OSError):
+            return False
+        return rc.REPO in p.parents and ".venv" not in p.parts
+
+    hashed = set(rc.METRIC_CODE_MEMBERS)
+    edges, missing = 0, []
+    for member in rc.METRIC_CODE_MEMBERS:
+        mod, _, name = member.rpartition(".")
+        m = rc if mod == "roster_core" else importlib.import_module(mod)
+        f = getattr(m, name)
+        g = f.__globals__
+        for node in ast.walk(ast.parse(textwrap.dedent(inspect.getsource(f)))):
+            if not isinstance(node, ast.Call):
+                continue
+            fx, obj = node.func, None
+            if isinstance(fx, ast.Name):
+                obj = g.get(fx.id)
+            elif isinstance(fx, ast.Attribute) and isinstance(fx.value, ast.Name):
+                obj = getattr(g.get(fx.value.id), fx.attr, None)
+            if obj is None or obj is f or not repo_function(obj):
+                continue
+            edges += 1
+            key = f"{obj.__module__}.{obj.__name__}"
+            if key not in hashed:
+                missing.append(f"{member} -> {key}")
+    assert edges >= 4, f"callee scan saw {edges} repo calls - it is looking at nothing"
+    assert not missing, ("a fingerprint member calls a repo function that is "
+                         f"not itself a member (its source is unhashed): {missing}")
+
+    base = rc.metric_code_fingerprint()
+    assert base == rc.metric_code_fingerprint()
+    for c in ("roster_core.COST_BPS", "roster_core.WINSORIZE", "roster_core.HO_START",
+              "roster_core.HO_END", "roster_core.IS_START", "roster_core.MIN_N"):
+        assert c in base["constants"], c
+    real = inspect.getsource
+    with monkeypatch.context() as mp:
+        mp.setattr(inspect, "getsource",
+                   lambda f: real(f) + ("# edited\n" if f.__name__ == "net_pnl" else ""))
+        assert rc.metric_code_fingerprint()["sha256"] != base["sha256"], "net_pnl edit"
+    with monkeypatch.context() as mp:
+        mp.setattr(rc, "COST_BPS", rc.COST_BPS + 5.0)
+        assert rc.metric_code_fingerprint()["sha256"] != base["sha256"], "cost moved"
+    with monkeypatch.context() as mp:
+        mp.setattr(rc, "HO_START", rc.HO_START.replace(month=6))
+        assert rc.metric_code_fingerprint()["sha256"] != base["sha256"], "window moved"
+    assert rc.metric_code_fingerprint()["sha256"] == base["sha256"]
+
+
+def test_b3139aq_learnings_headings_use_the_parsed_form():
+    """S6-B3139aq (B3139q-r19, L899): L894-L897 were written with a two-hash
+    heading while the banner pin (test_b1486), the anchor pin (test_b2526)
+    and the turn gate's orphan scan read the three-hash form only - so four
+    entries were invisible to all three, the banner sat at L893 with its pin
+    GREEN and three entries sat unanchored. ~60 readers parse three hashes,
+    so the WRITER's freedom is removed instead: from L723, where the
+    three-hash run begins, a two-hash L heading is refused, and the
+    three-hash parser's maximum must equal the maximum under any level."""
+    import re
+    from pathlib import Path as _P
+    ln = (_P(__file__).resolve().parents[2] / "LEARNINGS.md").read_text(
+        encoding="utf-8", errors="ignore")
+    parsed = [int(n) for n in re.findall(r"^### L(\d+)(?:\s|$)", ln, re.M)]
+    anylevel = [int(n) for n in re.findall(r"^#{1,6} L(\d+)\b", ln, re.M)]
+    assert len(parsed) >= 100, (
+        f"three-hash parser saw {len(parsed)} headings - it is looking at nothing")
+    two_hash = sorted(int(n) for n in re.findall(r"^## L(\d+)\b", ln, re.M)
+                      if int(n) >= 723)
+    assert not two_hash, (
+        f"two-hash L headings at or above L723: {two_hash} - every reader "
+        "(test_b1486, test_b2526, check_orphan_rule) parses '### L', so these "
+        "entries are invisible to the banner, anchor and orphan gates (L899)")
+    assert max(parsed) == max(anylevel), (
+        f"newest L heading under any level is L{max(anylevel)} but the "
+        f"three-hash parser's newest is L{max(parsed)} - an entry is invisible")
+
+
 def test_b3139_dropping_an_admission_moves_the_deployable_total(tmp_path):
     """S6-B3136 council: the 31 is DERIVED, never typed. Dropping one admission
     from a copy of the admissions record moves membership by exactly what its
@@ -51630,3 +51729,65 @@ def test_b3139ag_reader_masks_with_the_grid_definition_and_its_basis():
     assert len(bf) == 2, len(bf)
     assert all(any(k.arg == "basis" for k in c.keywords) for c in bf), (
         "every reader build_frame call must pass the recorded basis")
+
+
+def test_b3139ah_reader_provenance_comes_from_the_caller(tmp_path, monkeypatch):
+    """S6-B3139ah: the Step-3 reader stamped every read with ONE campaign's
+    history - 'B2668 depth admission' and that campaign's disclosure quote -
+    so the admitted three_white_soldiers read carries a false prior-read
+    claim. Provenance is now the caller's, recorded verbatim. End to end on
+    the fixture: a re-read records the named prior read + the owner's words
+    and is labelled DISCLOSED-RE-READ; 'none' is a FIRST-READ with no
+    disclosure; a re-read without disclosure words refuses; and the literal
+    is gone from the module's executable constants."""
+    import ast
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import importlib
+    import breadth_step1_grid as bg
+    importlib.reload(bg)
+    import breadth_step2_read as b2
+    importlib.reload(b2)
+    run = _b3139ag_fixture(tmp_path)
+    monkeypatch.setattr(bg, "require_band_ruling", lambda *a, **k: "stub")
+    monkeypatch.setattr(bg, "require_fresh_status", lambda *a, **k: "stub")
+    grid = tmp_path / "grid.json"
+    monkeypatch.setattr(sys, "argv",
+                        ["g", "--strategy", "fx", "--axes", "k:ge",
+                         "--out", str(grid), "--band-ruling", "pin probe",
+                         "--basis", "net", "--cube-dir", str(run)])
+    assert bg.main() == 0
+
+    def _read(out, prior, disclosure):
+        argv = ["r", "--step1-artifact", str(grid), "--ruling", "pin probe",
+                "--breadth-disposition", "ran", "--out", str(out),
+                "--cube-dir", str(run), "--prior-read", prior]
+        if disclosure is not None:
+            argv += ["--disclosure", disclosure]
+        monkeypatch.setattr(sys, "argv", argv)
+        b2.main()
+        return _j.loads(out.read_text(encoding="utf-8"))
+
+    re_read = _read(tmp_path / "re.json", "Step-2 configs 1 and 2", "pin words")
+    pv = re_read["provenance"]
+    assert pv["subject_holdout_previously_read"] == "Step-2 configs 1 and 2"
+    assert pv["disclosure_accepted"] == "pin words"
+    assert pv["label"].startswith("DISCLOSED-RE-READ")
+    assert re_read["basis"] == "net"      # the grid's recorded basis, carried
+    first = _read(tmp_path / "first.json", "none", None)
+    assert first["provenance"]["label"].startswith("FIRST-READ")
+    assert first["provenance"]["disclosure_accepted"] is None
+    with pytest.raises(SystemExit) as e:
+        _read(tmp_path / "bad.json", "an earlier read", "")
+    assert "disclosure" in str(e.value)
+    src = (root / "scripts" / "breadth_step2_read.py").read_text(encoding="utf-8")
+    consts = {n.value for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.Constant) and isinstance(n.value, str)}
+    assert "B2668 depth admission" not in consts, (
+        "another campaign's prior read is back as a literal")
+    importlib.reload(bg)

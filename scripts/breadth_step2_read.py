@@ -11,10 +11,14 @@ the artifact verbatim). The cells come from the Step-1 ARTIFACT's own rows
 what was registered. The frame comes from breadth_step1_grid.build_frame,
 the ONE loader both steps share.
 
-PROVENANCE, on the artifact's face: the subject strategy's holdout was
-previously read (the B2668 depth admission), and the spent-holdout
-disclosure was accepted by the owner 2026-09-11 before this word - this
-read is DISCLOSED-RE-READ, and the label travels with any admission.
+PROVENANCE, on the artifact's face, from the CALLER (S6-B3139ah): which of
+the subject's holdout reads came before this one (--prior-read, 'none' for
+a first read) and the owner's words accepting the spent-holdout disclosure
+(--disclosure, required whenever a prior read exists). The label follows:
+DISCLOSED-RE-READ after a prior read, FIRST-READ otherwise, and it travels
+with any admission. This block was once a literal naming one campaign's
+prior read (B2668) and its disclosure quote, so every later read inherited
+another campaign's history (L868).
 
 CONTROL COMPARISON: for each all-six non-npt qualifier, the same axis at the
 same level is applied to the CONTROL strategy's recorded fires (no depth
@@ -83,6 +87,14 @@ def main() -> int:
     ap.add_argument("--breadth-reason", default="",
                     help="required non-empty when --breadth-disposition=waived")
     ap.add_argument("--out", required=True)
+    # S6-B3139ah: provenance is the CALLER's statement, recorded verbatim -
+    # no default, so a read can never inherit another campaign's history.
+    ap.add_argument("--prior-read", required=True,
+                    help="the subject's earlier holdout read(s), named, or "
+                         "'none' for a first read")
+    ap.add_argument("--disclosure", default="",
+                    help="the owner's words accepting the spent-holdout "
+                         "disclosure - required when --prior-read is not 'none'")
     ap.add_argument("--cube-dir", default=None,
                     help="SUBJECT run-dir override: read"
                          " <dir>/trade_exit_detail.csv + trade_log.csv for the"
@@ -95,6 +107,16 @@ def main() -> int:
         raise SystemExit(
             "REFUSED: --breadth-disposition=waived with no --breadth-reason "
             "- a waiver without its reason is a silent skip (S6-B2848d)")
+    prior = a.prior_read.strip()
+    if not prior:
+        raise SystemExit("REFUSED: empty --prior-read - name the subject's "
+                         "earlier holdout read(s), or 'none' (S6-B3139ah)")
+    first_read = prior.lower() == "none"
+    if not first_read and not a.disclosure.strip():
+        raise SystemExit(
+            "REFUSED: --prior-read names an earlier holdout read but "
+            "--disclosure is empty - a re-read needs the owner's words "
+            "accepting the spent-holdout disclosure (S6-B3139ah)")
     t0 = time.time()
 
     # S6-B3113a: the subject's fires live only in its own cube when the
@@ -212,9 +234,11 @@ def main() -> int:
            "basis": basis, "basis_source": basis_source,
            "step1_artifact": a.step1_artifact,
            "provenance": {
-               "subject_holdout_previously_read": "B2668 depth admission",
-               "disclosure_accepted": "owner 2026-09-11 'I am ok with the disclosure'",
-               "label": "DISCLOSED-RE-READ / GRID-SELECTED"},
+               "subject_holdout_previously_read": prior,
+               "disclosure_accepted": (None if first_read
+                                       else a.disclosure.strip()),
+               "label": ("FIRST-READ / GRID-SELECTED" if first_read
+                         else "DISCLOSED-RE-READ / GRID-SELECTED")},
            "cube_dir": a.cube_dir or "output_r5_merged_1_7 (default)",
            "control_source": "output_r5_merged_1_7 (control's own fires)",
            "cells_read": len(rows),
