@@ -11,12 +11,15 @@ Returns ALL XBRL facts for a company as nested JSON  -  every line item
 ever reported across all filings, with filing dates + period end dates +
 fiscal periods. Structured fundamentals data direct from SEC.
 
-Output: data_prefetch/sec_xbrl/{ticker}.parquet (raw JSON preserved as
-        STRING column 'raw_facts_json'; key line items extracted to flat
-        columns for easy access)
+Output: data_prefetch/sec_xbrl/{ticker}.parquet - one row per (tag, filing)
+        for KEY_TAGS only (all us-gaap). The raw companyfacts JSON is NOT
+        kept (S6-B3139d: 0 of 1,662 cached files carry it), so any other
+        tag - e.g. dei:EntityCommonStockSharesOutstanding, the dated share
+        count - needs a fresh fetch.
 
-CIK mapping: read from existing Polygon reference cache (already has cik
-field for ~1686 tickers) + SEC EDGAR submissions endpoint as fallback.
+CIK mapping: read from the existing Polygon reference cache (load_cik_map;
+it has a cik field for ~1686 tickers). There is no submissions-endpoint
+fallback: a ticker without a cached CIK is skipped.
 
 Run: python scripts/prefetch_sec_xbrl.py
      python scripts/prefetch_sec_xbrl.py --tickers AAPL MSFT (smoke)

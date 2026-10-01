@@ -1,0 +1,150 @@
+{
+ "ticket": "S6-B3139d",
+ "_doc": "Measure-first (council B3139q-r17, owner-approved rec): how often does strat_squeeze_setup_long's share-dependent layer-1 gate - short_interest_pct >= 0.20 with days_to_cover >= 8 - decide differently when short interest is divided by the share count KNOWN at the settlement date instead of today's? The live code divides every 2022-2026 settlement by ONE undated Finnhub profile2 count cached 2026-05. PIT denominator: SEC dei:EntityCommonStockSharesOutstanding (the cover-page count), fetched per company from the companyconcept endpoint with the project's configured SEC contact header; for settlement date D, facts filed on or before D, latest 'end'. A FLIP is a settlement pair where the two denominators disagree at the gate; the base is the pairs where either passes.",
+ "headline": {
+  "band": "core: Finnhub / dei between 0.5 and 2 (same-order counts)",
+  "gate": "short_interest_pct >= 0.20 and days_to_cover >= 8",
+  "flips": 258,
+  "gate_relevant_pairs": 711,
+  "flip_rate": 0.3629,
+  "passes_today_only": 30,
+  "passes_at_the_time_only": 228,
+  "tickers_with_a_flip": 59,
+  "reading": "the bias is one-sided: most flips are names that cleared the gate at the time and fail on today's larger post-dilution count"
+ },
+ "bands_by_per_pair_ratio": {
+  "core_0.5_2": {
+   "si_only": {
+    "gate_relevant_pairs": 1587,
+    "flips": 546,
+    "flip_rate": 0.344,
+    "passes_today_only": 52,
+    "passes_pit_only": 494,
+    "tickers_with_a_flip": 112
+   },
+   "si_and_dtc": {
+    "gate_relevant_pairs": 711,
+    "flips": 258,
+    "flip_rate": 0.3629,
+    "passes_today_only": 30,
+    "passes_pit_only": 228,
+    "tickers_with_a_flip": 59
+   }
+  },
+  "wide_0.1_10": {
+   "si_only": {
+    "gate_relevant_pairs": 2361,
+    "flips": 1279,
+    "flip_rate": 0.5417,
+    "passes_today_only": 593,
+    "passes_pit_only": 686,
+    "tickers_with_a_flip": 151
+   },
+   "si_and_dtc": {
+    "gate_relevant_pairs": 855,
+    "flips": 401,
+    "flip_rate": 0.469,
+    "passes_today_only": 137,
+    "passes_pit_only": 264,
+    "tickers_with_a_flip": 76
+   }
+  },
+  "all": {
+   "si_only": {
+    "gate_relevant_pairs": 2718,
+    "flips": 1602,
+    "flip_rate": 0.5894,
+    "passes_today_only": 843,
+    "passes_pit_only": 759,
+    "tickers_with_a_flip": 173
+   },
+   "si_and_dtc": {
+    "gate_relevant_pairs": 964,
+    "flips": 497,
+    "flip_rate": 0.5156,
+    "passes_today_only": 226,
+    "passes_pit_only": 271,
+    "tickers_with_a_flip": 86
+   }
+  }
+ },
+ "band_note": "the per-ticker suspect filter judges each ticker by its LATEST pair only, so an absurd early fact survives it (BTDR's 20-F reported a count of 1); the per-pair bands bound that - 'all' includes such errors, 'wide' admits heavy real dilution (AAOI 2.34x)",
+ "coverage": {
+  "si_tickers_in_window": 1914,
+  "population_tickers": 756,
+  "population_rule": "any pair with SI/denominator >= 0.1 on the Finnhub or weighted-average denominator",
+  "dei_http_status_counts": {
+   "200": 621,
+   "404": 88,
+   "no-cik": 47
+  },
+  "tickers_without_dei": 147,
+  "tickers_without_finnhub": 3,
+  "unit_or_class_suspect_tickers": {
+   "ACMR": 4.636,
+   "ALGS": 0.145,
+   "ANNX": 4.161,
+   "ARES": 3.188,
+   "AUR": 3.049,
+   "BTOG": 0.026,
+   "COKE": 9.32,
+   "DRUG": 2.164,
+   "EZGO": 3.679,
+   "FOA": 0.136,
+   "FUBO": 0.317,
+   "GENI": 25.725,
+   "HOV": 8.246,
+   "IMRX": 2.492,
+   "LUNR": 2.576,
+   "MBLY": 3.442,
+   "POWL": 3.0,
+   "QS": 6.418,
+   "RXRX": 3.133,
+   "SOUN": 24.409,
+   "UWMC": 15.518
+  },
+  "pairs_measured": 36718,
+  "pairs_after_suspect_exclusion": 35374,
+  "pairs_skipped_zero_dei_fact": 120
+ },
+ "prototype_proxy": {
+  "source": "data_prefetch/sec_xbrl us-gaap WeightedAverageNumberOfSharesOutstandingBasic, filed <= settlement date",
+  "si_pct_term_only": {
+   "gate_relevant_pairs": 4073,
+   "flips": 2850,
+   "flip_rate_of_gate_relevant": 0.6997,
+   "passes_today_only": 878,
+   "passes_pit_only": 1972
+  },
+  "proxy_vs_dei": {
+   "si_pct_term_only": {
+    "gate_relevant_pairs": 3431,
+    "flips": 1698,
+    "flip_rate_of_gate_relevant": 0.4949,
+    "passes_first_only": 1600,
+    "passes_second_only": 98,
+    "tickers_with_a_flip": 192
+   },
+   "si_pct_and_dtc": {
+    "gate_relevant_pairs": 1154,
+    "flips": 451,
+    "flip_rate_of_gate_relevant": 0.3908,
+    "passes_first_only": 421,
+    "passes_second_only": 30,
+    "tickers_with_a_flip": 100
+   }
+  },
+  "reading": "the 10-Q WEIGHTED-AVERAGE count the prototype used runs below the cover-page count (a period average lags dilution), so it overstated the at-the-time passes; the dei figures supersede it"
+ },
+ "not_measured": [
+  "trade-level impact: layer 1 also needs (1c) smart money and layers 2-3 triggers, so changed TRADES need an engine run",
+  "FINRA's own settlement-to-publication lag (S6-B3139ba covers it)",
+  "multi-class issuers are not identified: FINRA short interest is per symbol, while a dei count can be per class or a company total (how SEC's endpoint treats per-class facts is UNVERIFIED here), so such a pair may sit outside the ratio bands or inside them unflagged"
+ ],
+ "owner_fork": "S6-B3139bd: source dated shares (a data task; the squeeze verdicts move) or label short_interest_pct non-PIT (a disclosure)",
+ "scripts": [
+  "scratchpad b3139d_si_pit_measure.py (prototype)",
+  "scratchpad b3139d_dei_measure.py (dei fetch + measure)",
+  "scratchpad b3139d_bands.py (per-pair bands)"
+ ]
+}
