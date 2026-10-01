@@ -339,6 +339,58 @@ def _key_cond(axis: str, op, level) -> str:
     return f"{axis} {op} {level}"
 
 
+def _manifest_step(a: dict):
+    """(step or None, unreadable-reason or None) from the artifact's cube's own
+    run manifest - the ONE reader _step and _holdout_clause share."""
+    d = _cube_dir(a.get("cube"))
+    if d is None or not (d / "run_manifest.json").is_file():
+        return None, None
+    try:
+        m = json.loads((d / "run_manifest.json").read_text(encoding="utf-8"))
+        return (int(m["step"]) if m.get("step") is not None else None), None
+    except (OSError, ValueError, TypeError) as exc:
+        return None, f"{d.name}: {type(exc).__name__}"
+
+
+def _holdout_clause(arts: list) -> str:
+    """S6-B3139af: what the rendered artifacts did with the holdout, derived
+    PER ARTIFACT - its own `window` field first (breadth grids record "IS only
+    ..."), else its cube's run-manifest step (1 = in-sample only; 2 = the
+    config read the holdout once and was judged on the six live gates).
+    Nothing recorded reads UNRECORDED, never a default: the preamble
+    hard-coded "holdout NOT read; no gates (B1608)", false on Step-2 renders."""
+    is_only, read, unknown, other = 0, 0, 0, {}
+    for a in arts:
+        w = a.get("window")
+        if isinstance(w, str) and w.strip().upper().startswith("IS ONLY"):
+            is_only += 1
+            continue
+        step, _bad = _manifest_step(a)
+        if step == 1:
+            is_only += 1
+        elif step == 2:
+            read += 1
+        elif step is None:
+            unknown += 1
+        else:
+            other[step] = other.get(step, 0) + 1
+    parts = []
+    if is_only:
+        parts.append(f"{is_only} in-sample-only artifact(s): holdout NOT read,"
+                     " no gates (B1608)")
+    if read:
+        parts.append(f"{read} Step-2 artifact(s): the holdout was read ONCE per"
+                     " config and judged on the six live gates - see each"
+                     " config's step2 verdict")
+    for s, n in sorted(other.items()):
+        parts.append(f"{n} Step-{s} artifact(s): holdout use not classified by"
+                     " this renderer")
+    if unknown:
+        parts.append(f"{unknown} artifact(s) record no window and no run-manifest"
+                     " step: holdout use UNRECORDED")
+    return "; ".join(parts)
+
+
 def _step(arts: list) -> str:
     """The step the cubes ran at, from their own manifests (S6-B3139w: the
     header said Step-1 unconditionally, on Step-2 cubes too). Several steps
@@ -346,16 +398,13 @@ def _step(arts: list) -> str:
     steps = set()
     unreadable = []
     for a in arts:
-        d = _cube_dir(a.get("cube"))
-        if d is not None and (d / "run_manifest.json").is_file():
-            try:
-                m = json.loads((d / "run_manifest.json").read_text(encoding="utf-8"))
-                if m.get("step") is not None:
-                    steps.add(int(m["step"]))
-            except (OSError, ValueError, TypeError) as exc:
-                # #122: a manifest that cannot be read is REPORTED in the
-                # header, never skipped silently.
-                unreadable.append(f"{d.name}: {type(exc).__name__}")
+        step, bad = _manifest_step(a)
+        if bad:
+            # #122: a manifest that cannot be read is REPORTED in the
+            # header, never skipped silently.
+            unreadable.append(bad)
+        elif step is not None:
+            steps.add(step)
     note = f"; unreadable manifest(s): {', '.join(unreadable)}" if unreadable else ""
     if not steps:
         return f"step UNKNOWN (no readable run manifest recorded{note})"
@@ -549,7 +598,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             "",
             f"{len(rows)} graded cells across {len(arts)} artifact(s)"
             + (f"; reproduction {fires} fires" if fires else "")
-            + "; holdout NOT read; no gates (B1608); npt excluded from ranking.",
+            + "; " + _holdout_clause(arts) + "; npt excluded from ranking.",
             # S6-B3139an: a dropped row is COUNTED, never silent.
             *([f"ROWS NOT RENDERED - {sum(dropped.values())} artifact row(s)"
                " whose axis is neither a Table A label nor a declared signal"

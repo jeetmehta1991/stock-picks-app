@@ -47442,13 +47442,15 @@ def test_b3117_t3_sections_are_battery_wired_and_reproduce():
     assert rsi_leg("short", 96.0, 60.1, "mid", 5.0) is True
 
 
-def _b3120f_classify(src):
-    """GROSS when a module scores trades (calls evaluate) without loading
-    them through roster_core.load_cube and without referencing COST_BPS -
-    the module-level criterion the S6-B3120f sweep ran. BOUNDARY at the live
-    inputs: a module that loads ONE file through load_cube and scores a
-    SECOND file read raw classifies NET here, so a mixed module needs a hand
-    read when it joins the population."""
+def _b3120f_classify(src, scorers=("evaluate",)):
+    """GROSS when a module scores trades (calls one of `scorers`) without
+    loading them through roster_core.load_cube, without calling
+    roster_core.net_pnl (S6-B3139aj: the one NET definition since
+    S6-B3139ag) and without referencing COST_BPS - the module-level
+    criterion the S6-B3120f sweep ran. BOUNDARY at the live inputs: a module
+    that loads ONE file through load_cube and scores a SECOND file read raw
+    classifies NET here, so a mixed module needs a hand read when it joins
+    the population; and a NET transform typed as literals is invisible."""
     import ast
     ev = lc = cost = False
     for n in ast.walk(ast.parse(src)):
@@ -47456,8 +47458,8 @@ def _b3120f_classify(src):
             f = n.func
             nm = (f.attr if isinstance(f, ast.Attribute)
                   else f.id if isinstance(f, ast.Name) else None)
-            ev = ev or nm == "evaluate"
-            lc = lc or nm == "load_cube"
+            ev = ev or nm in scorers
+            lc = lc or nm in ("load_cube", "net_pnl")
         if (isinstance(n, ast.Attribute) and n.attr == "COST_BPS") or (
                 isinstance(n, ast.Name) and n.id == "COST_BPS"):
             cost = True
@@ -47810,10 +47812,43 @@ _B3122_RAW_SCORERS = {
         "grades offline_level_sweep.load, a raw read of the cube (the 2 pead admission reads)",
     "offline_level_sweep.py":
         "reads TRADE_LOG and CUBE with pd.read_csv",
+    # S6-B3139aj (B3139q-r23): the population widened to _sharpe callers made
+    # these 7 visible; each was READ before it was named.
+    "b2698_momentum_resweep.py":
+        "scores smc_lsr_step1.build frames - a raw pd.read_csv of the cube - through rc._sharpe",
+    "r5_gate_ladder_analysis.py":
+        "NET by literal (clip(-300, 300) - 0.20 at line 32), invisible to this classifier; "
+        "leaves the set when S6-B3139ai lifts it onto roster_core.net_pnl",
+    "smc_family_step1.py":
+        "scores smc_lsr_step1.build frames - a raw cube read - through rc._sharpe",
+    "smc_lsr_factorial24.py":
+        "scores smc_lsr_step1.build frames - a raw cube read - through rc._sharpe",
+    "smc_lsr_step1.py":
+        "reads trade_log and the cube with pd.read_csv and scores pnl_pct through rc._sharpe",
+    "smc_obb_step1.py":
+        "scores smc_lsr_step1.build frames - a raw cube read - through rc._sharpe",
+    "walk_forward_r5_cells.py":
+        "defines _sharpe; _friction applies winsorize and cost only when --winsorize / "
+        "--cost-bps are passed (both default 0), so its default scoring is raw",
 }
 
 
-def test_b3122_every_trade_scorer_is_net_or_named_gross():
+def _b3122_census(root):
+    """{module name} under `root` that SCORES trades - calls evaluate OR
+    _sharpe (S6-B3139aj: _sharpe callers were outside the B3122 population,
+    breadth_step1_grid among them while it scored gross) - with no NET
+    marker (load_cube, net_pnl, COST_BPS)."""
+    raw = set()
+    for f in sorted(root.glob("*.py")):
+        src = f.read_text(encoding="utf-8", errors="replace")
+        if "evaluate" not in src and "_sharpe" not in src:
+            continue
+        if _b3120f_classify(src, scorers=("evaluate", "_sharpe")) == "GROSS":
+            raw.add(f.name)
+    return raw
+
+
+def test_b3122_every_trade_scorer_is_net_or_named_gross(tmp_path):
     """B3122 (S6-B3122, L879): test_b3120f's population was the SPECS-registered
     free-level adapters, so the admission-era Step-2 readers - which judged 14 of
     15 admitted lines on raw pnl, with no trading cost at all - sat outside it.
@@ -47821,29 +47856,29 @@ def test_b3122_every_trade_scorer_is_net_or_named_gross():
     evaluate: each is NET (load_cube or COST_BPS in the file) or a named member of
     the frozen raw set. A NEW raw scorer fails; a member that becomes net must
     leave the set (shrink-only). The classifier is test_b3120f's; a known-net
-    family grader is asserted NET here as the live positive control."""
-    import ast
+    family grader is asserted NET here as the live positive control.
+    S6-B3139aj (B3139q-r23): the population is every script calling evaluate
+    OR _sharpe; the 7 scripts that made visible were each READ and named, and
+    the cap re-baselined 10 -> 15 on that wider population (shrink-only from
+    here). Planted modules prove the census both ways."""
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2] / "scripts"
-    raw = set()
-    for f in sorted(root.glob("*.py")):
-        src = f.read_text(encoding="utf-8", errors="replace")
-        if "evaluate" not in src:
-            continue
-        calls = any(
-            isinstance(n, ast.Call) and (
-                (isinstance(n.func, ast.Attribute) and n.func.attr == "evaluate")
-                or (isinstance(n.func, ast.Name) and n.func.id == "evaluate"))
-            for n in ast.walk(ast.parse(src)))
-        if calls and _b3120f_classify(src) == "GROSS":
-            raw.add(f.name)
+    raw = _b3122_census(root)
     new = raw - set(_B3122_RAW_SCORERS)
     fixed = set(_B3122_RAW_SCORERS) - raw
     assert not new, ("a NEW script scores trades on raw pnl (no load_cube, no "
-                     f"COST_BPS) - route it through roster_core.load_cube: {sorted(new)}")
+                     "net_pnl, no COST_BPS) - route it through roster_core.load_cube "
+                     f"or roster_core.net_pnl: {sorted(new)}")
     assert not fixed, ("these scripts now score net or are gone - remove them from "
                        f"_B3122_RAW_SCORERS (shrink-only): {sorted(fixed)}")
-    assert len(_B3122_RAW_SCORERS) <= 10, "the raw-scorer set is shrink-only"
+    assert len(_B3122_RAW_SCORERS) <= 15, "the raw-scorer set is shrink-only"
+    plant = tmp_path / "plant"
+    plant.mkdir()
+    (plant / "raw_sharpe.py").write_text(
+        "import roster_core as rc\nr = rc._sharpe(x, h)\n", encoding="utf-8")
+    (plant / "net_sharpe.py").write_text(
+        "import roster_core as rc\nr = rc._sharpe(rc.net_pnl(x), h)\n", encoding="utf-8")
+    assert _b3122_census(plant) == {"raw_sharpe.py"}, _b3122_census(plant)
     assert all(len(r) >= 30 for r in _B3122_RAW_SCORERS.values())
     # live positive control: a family grader that loads through load_cube is NET
     bol = (root / "grade_bollinger_config.py").read_text(encoding="utf-8")
@@ -51691,6 +51726,35 @@ def test_b3139ax_blank_env_value_is_the_engine_default(tmp_path):
         assert long_leg == "200" and short_leg == "200", (
             repr(blank), long_leg, short_leg)
         assert "TESTED BY RE-SIMULATION" not in inv4, inv4
+
+
+def test_b3139af_preamble_says_what_each_artifact_did_with_the_holdout(tmp_path):
+    """S6-B3139af (B3139q-r23): the Table D preamble hard-coded "holdout NOT
+    read; no gates (B1608)" - true of a Step-1 or breadth render, FALSE on a
+    Step-2 render, where each config read the holdout once and was judged on
+    the six live gates. It now says, per artifact, what the artifact's own
+    `window` field or its cube's run-manifest step records, and UNRECORDED
+    when neither does. Fails on the r22 tree (every branch read NOT read)."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import table_d_render as tdr
+    art = root / "output_audit" / "b3139_bollinger_lower_breadth_net_long.json"
+    first = tdr.build_table("bollinger_lower", [str(art)], top=1).splitlines()[2]
+    assert "1 in-sample-only artifact(s): holdout NOT read, no gates (B1608)" in first, first
+    s2 = tmp_path / "s2"
+    s2.mkdir()
+    out2 = _b3139w_render(s2, {"step": 2, "arms": [
+        {"tag": "p4_9", "env": {"STRAT_EMA_SPAN": "9"}}]})[0]
+    line2 = out2.splitlines()[2]
+    assert "1 Step-2 artifact(s): the holdout was read ONCE per config" in line2, line2
+    assert "holdout NOT read" not in line2, line2
+    none = tmp_path / "none"
+    none.mkdir()
+    line3 = _b3139w_render(none, None)[0].splitlines()[2]
+    assert "holdout use UNRECORDED" in line3 and "holdout NOT read" not in line3, line3
 
 
 def _b3139ag_fixture(tmp_path):

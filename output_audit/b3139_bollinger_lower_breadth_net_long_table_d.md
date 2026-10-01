@@ -1,8 +1,8 @@
-_Rendered by scripts/table_d_render.py from output_audit/b3139_bollinger_lower_breadth_net_long.json, all rows - B3139q-r20 working tree (parent 8710aeac7), 2026-10-01T19:35Z (L803 build stamp)._
+_Rendered by scripts/table_d_render.py from output_audit/b3139_bollinger_lower_breadth_net_long.json, all rows - B3139q-r23 working tree (parent a8f1c5956), 2026-10-01T21:08Z (L803 build stamp)._
 
 # TABLE D (OFFLINE FORM, unified) - bollinger_lower step UNKNOWN (no readable run manifest recorded)
 
-806 graded cells across 1 artifact(s); holdout NOT read; no gates (B1608); npt excluded from ranking.
+806 graded cells across 1 artifact(s); 1 in-sample-only artifact(s): holdout NOT read, no gates (B1608); npt excluded from ranking.
 INVENTORY (one column per Table A row; '-' = breadth axis not applied, production behavior; one-at-a-time design):
   - P1 bb (period, k, recency) identity - lower reclaim: production 20/2.0/3, band ['20/2.0/3'] - resim-only, UNTESTED-OFFLINE (no env knob; engine re-simulation required)
   - P2 bb identity - upper reclaim (mirror): production 20/2.0/3, band ['20/2.0/3'] - resim-only, UNTESTED-OFFLINE (no env knob; engine re-simulation required)
