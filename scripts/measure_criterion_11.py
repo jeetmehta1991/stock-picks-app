@@ -49,7 +49,6 @@ from walk_forward_r5_cells import _sharpe                    # noqa: E402
 
 IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
 HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)
-WINSORIZE, COST_BPS = 300.0, 20.0
 
 
 def gates_pooled(pnl, hold):
@@ -108,7 +107,7 @@ def main() -> int:
                             "exit_method": "category", "regime_at_entry": "category",
                             "pnl_pct": "float32", "hold_days": "float32"})
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-    df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    df["pnl_pct"] = _rc.net_pnl(df["pnl_pct"])
 
     rows = []
     for (strat, direction), g in df.groupby(["strategy", "direction"], observed=True):

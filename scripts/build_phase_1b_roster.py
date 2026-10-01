@@ -64,8 +64,8 @@ from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY,  # noqa: E402
 # gate remains a reported number (roster_core.qualifier_margin).
 
 from roster_core import (                                    # noqa: E402
-    IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD,
-    LIVE_GATES, DEMOTED, evaluate, npt_spanning_exclusion, rank_key,
+    IS_START, IS_END, HO_START, HO_END, MIN_N, FDR_Q, JACCARD,
+    LIVE_GATES, DEMOTED, evaluate, net_pnl, npt_spanning_exclusion, rank_key,
     select_exit, truthful_exit_name,
 )
 
@@ -492,7 +492,7 @@ def step2_admissions_section(A, admissions_path=None) -> None:
           f"{len(_lab)} of {len(adms)} rows carry one).** The Step-2 reads of "
           "record for most admissions scored the cube's RAW pnl_pct (no cost, "
           "no winsor cap - L879). Re-scored READ-ONLY on the roster basis "
-          "(clip +/-300, minus 0.20 per trade; roster_core.py:181) over the "
+          "(clip +/-300, minus 0.20 per trade; roster_core.net_pnl) over the "
           "SAME stored trades, behind a fail-closed reproduction gate "
           "(output_audit/b3128_admissions_net_rescore.json). A label changes "
           "no admission; any removal is a separate per-line owner ruling.")
@@ -591,7 +591,7 @@ def main() -> int:
                                 "exit_method": "category", "ticker": "category",
                                 "pnl_pct": "float32", "hold_days": "float32"})
         df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-        df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+        df["pnl_pct"] = net_pnl(df["pnl_pct"])
         ntick = df.ticker.nunique()
         print(f"[INFO] {label:<7} {cube:<24} rows={len(df):>8} tickers={ntick:>4}")
         for (strat, direction), g in df.groupby(["strategy", "direction"]):

@@ -24427,3 +24427,31 @@ must derive from what ran). RULE: before a reader turns an external string
 into a value, read the CONSUMER's parse of that string - blank, "None",
 "null" and absent each mean something specific to the engine, and the
 reader must give each the meaning the consumer gives it.
+
+### L901 - A REFACTOR VOIDED EVERY LINE CITATION OF THE CODE IT MOVED, AND NO FUNCTION-NAME GREP CAN FIND ONE (B3139q-r24, 2026-10-01)
+
+S6-B3139ai lifted the 19 hand copies of the roster NET transform onto
+roster_core.net_pnl, and its census of line-number citations into
+roster_core.py (EXECUTED: one grep over every .py under scripts/ and
+backtest/) found 18 in live code, 16 of 18 no longer landing on what they
+described. Thirteen named line 181 - the NET formula's line inside
+load_cube until S6-B3139ag (B3139q-r18) lifted it into net_pnl - and now
+point into load_cube's category-unification loop: 7 are basis strings
+written into free-level grade and admissions re-score artifacts, 1 is
+rendered into PHASE_1B_ROSTER.md's net-basis paragraph, 5 are comments or
+docstrings. Three more (lines 171, 215 and 241) had decayed under earlier
+edits; 2 still land. The class is on record - L732's second-order note (a
+sweep's own citations went stale inside one turn) and S6-B3096, which
+re-derived 9 drifted doc citations by hand - but neither left a mechanism,
+and L898's rule for this very refactor (grep the function's NAME before
+moving code out of it) cannot reach a positional reference: a citation of
+line 181 contains neither "load_cube" nor "net_pnl". COMPLIANCE FAILURE
+against #196: the re-check after S6-B3139ag asked what HASHED and what
+CALLED the moved code, never what POINTED at it. Fixed under S6-B3139ai:
+all 18 cite a symbol (net_pnl, evaluate, select_exit, IS_START / IS_END),
+and test_b3139ai_roster_core_is_cited_by_symbol_not_line holds the count at
+zero, with must-fire and must-quiet plants. The repo's other 570
+line citations in code, across 105 files (technical.py 185, screener.py 85, smc_ict.py 58), are counted,
+not read - ticketed S6-B3139bb. RULE: when code moves, the re-check greps
+the moved file's line citations as well as the moved function's name, and
+new text cites a symbol, never a line - a symbol survives an edit above it.

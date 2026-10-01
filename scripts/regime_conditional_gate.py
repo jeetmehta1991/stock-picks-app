@@ -34,6 +34,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from walk_forward_r5_cells import _sharpe, bh_fdr  # noqa: E402
+from roster_core import COST_BPS, WINSORIZE, net_pnl  # noqa: E402  (S6-B3139ai)
 
 REPO = Path(__file__).resolve().parent.parent
 CUBE = REPO / "output_r5_merged_1_7"
@@ -41,7 +42,6 @@ IS = (date(2022, 5, 5), date(2025, 5, 5))
 HO = (date(2025, 5, 5), date(2026, 5, 5))
 MIN_N = 30
 GATE = 0.5
-WINSORIZE, COST_BPS = 300.0, 20.0
 NATIVE = {"long": "bull", "short": "bear"}
 
 
@@ -50,7 +50,7 @@ def main() -> int:
                      usecols=["strategy", "direction", "exit_method", "entry_date",
                               "regime_at_entry", "pnl_pct", "hold_days"], low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-    df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    df["pnl_pct"] = net_pnl(df["pnl_pct"])
     print(f"[INFO] {len(df):,} trades | winsorize +/-{WINSORIZE} cost {COST_BPS}bps")
 
     rows = []

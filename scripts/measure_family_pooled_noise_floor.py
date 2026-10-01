@@ -53,7 +53,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from roster_core import COST_BPS, IS_END, IS_START, WINSORIZE, _sharpe  # noqa: E402
+from roster_core import IS_END, IS_START, _sharpe, net_pnl  # noqa: E402
 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 FAMILY_MAP = ROOT / "output_audit" / "strategy_producer_map.csv"
@@ -167,7 +167,7 @@ def main() -> int:
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
     df = df[(df.exit_method == EXIT) & df.strategy.isin(fam)
             & (df.entry_date >= IS_START) & (df.entry_date < IS_END)]
-    df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    df["pnl_pct"] = net_pnl(df["pnl_pct"])
     pnl = df["pnl_pct"].to_numpy(dtype=np.float64)
     hold = df["hold_days"].to_numpy(dtype=np.float64)
     n_pool = len(pnl)

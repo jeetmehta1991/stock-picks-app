@@ -14,7 +14,7 @@ RULES OF THIS INSTRUMENT
   psr, profit_factor, sortino within 1e-3; holdout_n and full_period_n EXACT)
   or the line is labelled NET-RESCORE-UNAVAILABLE with the mismatch, and no
   net number is published for it.
-- The net basis is roster_core's basis of record (roster_core.py:181):
+- The net basis is roster_core's basis of record (roster_core.net_pnl):
   pnl.clip(-WINSORIZE, WINSORIZE) - COST_BPS/100.
 - Ops: where a row records gate_op it is used; where it does not (the pead
   offline rows), the op-set is SOLVED BY REPRODUCTION over {ge, le, eq} per
@@ -62,7 +62,7 @@ PARAM_KEY_MAP = {
 
 
 def net(pnl: pd.Series) -> pd.Series:
-    return pnl.clip(-rc.WINSORIZE, rc.WINSORIZE) - rc.COST_BPS / 100.0
+    return rc.net_pnl(pnl)
 
 
 def _parse_sig(s):
@@ -326,7 +326,7 @@ def main() -> int:
                  "a separate per-line owner ruling. Fail-closed #290 "
                  "reproduction gate: raw reconstruction must equal the "
                  "recorded admission row before any net figure is published."),
-        "basis": ("net = pnl.clip(+/-%s) - %s/100 per roster_core.py:181"
+        "basis": ("net = pnl.clip(+/-%s) - %s/100 per roster_core.net_pnl"
                   % (rc.WINSORIZE, rc.COST_BPS)),
         "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "rows": out_rows,

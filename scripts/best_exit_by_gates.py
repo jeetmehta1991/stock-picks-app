@@ -49,8 +49,8 @@ from walk_forward_r5_cells import _sharpe                    # noqa: E402
 # The objective difference that justified two scripts is now roster_core.select_exit's
 # `objective=` switch ("gates" here, the owner's 2026-08-04 directive).
 from roster_core import (                                    # noqa: E402
-    IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, LIVE_GATES,
-    evaluate as _core_evaluate, rank_key, select_exit,
+    IS_START, IS_END, HO_START, HO_END, MIN_N, LIVE_GATES,
+    evaluate as _core_evaluate, net_pnl, rank_key, select_exit,
 )
 
 
@@ -75,7 +75,7 @@ def main() -> int:
                      usecols=["strategy", "direction", "exit_method", "entry_date",
                               "ticker", "pnl_pct", "hold_days"], low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-    df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    df["pnl_pct"] = net_pnl(df["pnl_pct"])
 
     rows = []
     # group by (strategy, DIRECTION, exit): a dual strategy's legs have independent edges;

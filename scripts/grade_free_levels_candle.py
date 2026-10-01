@@ -105,7 +105,7 @@ def score_reproduction(prod_per_exit, grid_path, ted_all=None) -> dict:
         grid = json.loads(Path(grid_path).read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         return {"family_grid": str(grid_path).replace("\\", "/"),
-                "basis": "net (roster_core.py:181 mirrored)",
+                "basis": "net (roster_core.net_pnl)",
                 "compared_exits": 0,
                 "mismatches": [f"family grid unreadable: {exc!r}"]}
     mine = {str(r["exit"]): r for r in prod_per_exit}
@@ -137,7 +137,7 @@ def score_reproduction(prod_per_exit, grid_path, ted_all=None) -> dict:
         mismatches.append(
             "no exit compared - the family grid carries no graded rows")
     return {"family_grid": str(grid_path).replace("\\", "/"),
-            "basis": "net (roster_core.py:181 mirrored)",
+            "basis": "net (roster_core.net_pnl)",
             "compared_exits": compared, "mismatches": mismatches}
 
 
@@ -240,12 +240,10 @@ def main() -> int:
     ted_strat = ted_all[ted_all["strategy"].astype(str) == strat]
     ted = flw.in_sample_only(ted_strat).copy()
     # S6-B3120f (L877): score on the FAMILY GRADER'S basis - the winsorize +
-    # COST_BPS/100 deduction roster_core.load_cube applies (roster_core.py:181
+    # COST_BPS/100 deduction roster_core.load_cube applies (roster_core.net_pnl
     # is the definition of record). The raw read stays only because this leg
     # needs signal columns load_cube's usecols drop.
-    ted["pnl_pct"] = (ted["pnl_pct"].astype(float)
-                      .clip(-rc.WINSORIZE, rc.WINSORIZE)
-                      - rc.COST_BPS / 100.0)
+    ted["pnl_pct"] = rc.net_pnl(ted["pnl_pct"].astype(float))
     ted["entry_date"] = ted["entry_date"].astype(str).str[:10]
     covered = covered.copy()
     covered["entry_date"] = covered["entry_date"].astype(str).str[:10]
@@ -305,7 +303,7 @@ def main() -> int:
         "gate_mirrored": f"{KEY} {direction} <level> (strict, per screener.py)",
         "levels_searched": [production] + [float(x) for x in levels],
         "basis": ("net: pnl_pct clipped to +/-WINSORIZE then minus "
-                  "COST_BPS/100 - roster_core.py:181 mirrored (S6-B3120f)"),
+                  "COST_BPS/100 - roster_core.net_pnl (S6-B3120f, S6-B3139ai)"),
         "window": {"trade_log": flw.window_disclosure(tl_all, tl, "trade_log"),
                    "trade_exit_detail": flw.window_disclosure(
                        ted_strat, ted, "trade_exit_detail")},

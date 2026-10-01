@@ -41,10 +41,9 @@ REPO = Path(__file__).resolve().parent.parent
 import sys                                                   # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from roster_core import rank_key                             # noqa: E402
+from roster_core import COST_BPS, WINSORIZE, net_pnl, rank_key                             # noqa: E402
 IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
 OOS_END = date(2026, 5, 5)
-WINSORIZE, COST_BPS = 300.0, 20.0
 
 USE = ["ticker", "strategy", "entry_date", "exit_method", "pnl_pct"]
 
@@ -57,7 +56,7 @@ def load(path: Path, tickers: set[str], strats: set[str]) -> pd.DataFrame:
             frames.append(ch)
     d = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=USE)
     d["entry_date"] = pd.to_datetime(d["entry_date"]).dt.date
-    d["pnl_pct"] = d["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    d["pnl_pct"] = net_pnl(d["pnl_pct"])
     return d
 
 

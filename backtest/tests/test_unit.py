@@ -17954,7 +17954,7 @@ def test_b1800_step1_exit_selection_is_is_only():
         "fix the fixture before trusting this test")
 
     # 4. and the FILTER is what does the work. MEASURED while writing this:
-    #    `select_exit` slices `in_sample()` ITSELF (roster_core.py:241), so the
+    #    `select_exit` slices `in_sample()` ITSELF (roster_core.select_exit), so the
     #    caller's filter is belt-and-braces and passing the raw frame changes
     #    nothing. Neutralise the INTERNAL filter and the holdout-only frame
     #    does select - which is the regression this test guards.
@@ -25096,6 +25096,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # operative clause, not the heading (L548).
         ("EMIT THE CONSOLIDATED ONE-WORD-MENU DECISION PACKET FIRST",
          "B3139/L894: a goal gated on owner decisions is closed by a packet, not more autonomous work"),
+        # B3139q-r24/L901 (with L898): a refactor's re-check greps the moved
+        # function's NAME and the file's LINE CITATIONS - a positional
+        # reference names no function. Pins the operative clause (L548).
+        ("BEFORE MOVING IT, GREP THE FUNCTION'S NAME AND THE FILE'S LINE CITATIONS",
+         "B3139q-r24/L901: a citation finds code by POSITION, which a function-name grep cannot reach"),
         # B2851: the L805 tripwire row - an owner catch on a locked
         # format is evidence the WHOLE rendering drifted; pins the
         # remedy, not the heading (L548).
@@ -26092,7 +26097,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 317 -> 319 at B3139 (the L887/L888 row and the L883 limit).
     # 319 -> 320 at B3139 (the L889 row).
     # 320 -> 321 at B3139 (the L894 packet-first fragment).
-    assert len(gutted) == 321, gutted
+    # 321 -> 322 at B3139q-r24 (the L898/L901 move-the-code fragment).
+    assert len(gutted) == 322, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -28888,8 +28894,8 @@ def test_b2362_power_floor_is_min_n_not_the_holdout_gate():
     """S6-B2362: the runbook twice named the wrong mechanism for BELOW_POWER_FLOOR.
 
     It said n < 30, then my correction said n < 15 citing min_trades_holdout.
-    Both wrong: the power floor is the early return `if n < min_n` at
-    roster_core.py:215, taken BEFORE any gate is computed, and min_n comes from
+    Both wrong: the power floor is the early return `if n < min_n` in
+    roster_core.evaluate, taken BEFORE any gate is computed, and min_n comes from
     --min-n (default 10). min_trades_holdout is a LIVE GATE evaluated only for
     cells that already cleared the floor. This pins the DISTINCTION - a cell
     between the two numbers must come back graded-and-failing, not None.
@@ -47450,7 +47456,8 @@ def _b3120f_classify(src, scorers=("evaluate",)):
     criterion the S6-B3120f sweep ran. BOUNDARY at the live inputs: a module
     that loads ONE file through load_cube and scores a SECOND file read raw
     classifies NET here, so a mixed module needs a hand read when it joins
-    the population; and a NET transform typed as literals is invisible."""
+    the population; and a NET transform typed as literals is invisible here
+    - test_b3139ai_the_net_transform_has_one_definition's AST scan sees one."""
     import ast
     ev = lc = cost = False
     for n in ast.walk(ast.parse(src)):
@@ -47469,7 +47476,7 @@ def _b3120f_classify(src, scorers=("evaluate",)):
 def test_b3120f_free_level_adapters_score_on_the_net_basis_or_are_frozen():
     """S6-B3120f / L877: every battery free-level adapter must score trades
     on the family grader's basis - rows through roster_core.load_cube, which
-    winsorizes pnl_pct and deducts COST_BPS (roster_core.py:181). MEASURED
+    winsorizes pnl_pct and deducts COST_BPS (roster_core.net_pnl). MEASURED
     2026-09-28 on output_bl_span009: the bollinger adapter's raw read scored
     the 308 production trades at breakeven_plus_trail Sharpe 1.036 / ci_lo
     0.660 where the family grader scores the same rows 0.957 / 0.582 - a
@@ -47813,12 +47820,10 @@ _B3122_RAW_SCORERS = {
     "offline_level_sweep.py":
         "reads TRADE_LOG and CUBE with pd.read_csv",
     # S6-B3139aj (B3139q-r23): the population widened to _sharpe callers made
-    # these 7 visible; each was READ before it was named.
+    # these 7 visible; each was READ before it was named. S6-B3139ai lifted
+    # r5_gate_ladder_analysis onto roster_core.net_pnl, so 6 of the 7 remain.
     "b2698_momentum_resweep.py":
         "scores smc_lsr_step1.build frames - a raw pd.read_csv of the cube - through rc._sharpe",
-    "r5_gate_ladder_analysis.py":
-        "NET by literal (clip(-300, 300) - 0.20 at line 32), invisible to this classifier; "
-        "leaves the set when S6-B3139ai lifts it onto roster_core.net_pnl",
     "smc_family_step1.py":
         "scores smc_lsr_step1.build frames - a raw cube read - through rc._sharpe",
     "smc_lsr_factorial24.py":
@@ -47860,7 +47865,8 @@ def test_b3122_every_trade_scorer_is_net_or_named_gross(tmp_path):
     S6-B3139aj (B3139q-r23): the population is every script calling evaluate
     OR _sharpe; the 7 scripts that made visible were each READ and named, and
     the cap re-baselined 10 -> 15 on that wider population (shrink-only from
-    here). Planted modules prove the census both ways."""
+    here). S6-B3139ai: r5_gate_ladder_analysis now calls net_pnl and left the
+    set, 15 -> 14. Planted modules prove the census both ways."""
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2] / "scripts"
     raw = _b3122_census(root)
@@ -47871,7 +47877,7 @@ def test_b3122_every_trade_scorer_is_net_or_named_gross(tmp_path):
                      f"or roster_core.net_pnl: {sorted(new)}")
     assert not fixed, ("these scripts now score net or are gone - remove them from "
                        f"_B3122_RAW_SCORERS (shrink-only): {sorted(fixed)}")
-    assert len(_B3122_RAW_SCORERS) <= 15, "the raw-scorer set is shrink-only"
+    assert len(_B3122_RAW_SCORERS) <= 14, "the raw-scorer set is shrink-only"
     plant = tmp_path / "plant"
     plant.mkdir()
     (plant / "raw_sharpe.py").write_text(
@@ -48079,12 +48085,11 @@ def _b3128a_cube(tmp, strat, poison=False):
 
 def _b3128a_family_grid(ted_df, path):
     """The family grade's per-exit IS rows, computed the way the family
-    graders do: net basis (roster_core.py:181), in-sample window, rc.evaluate."""
+    graders do: net basis (roster_core.net_pnl), in-sample window, rc.evaluate."""
     import roster_core as rc
     d = pd.to_datetime(ted_df["entry_date"].astype(str).str[:10]).dt.date
     g = rc.in_sample(ted_df.assign(entry_date=d)).copy()
-    g["pnl_pct"] = (g["pnl_pct"].astype(float).clip(-rc.WINSORIZE, rc.WINSORIZE)
-                    - rc.COST_BPS / 100.0)
+    g["pnl_pct"] = rc.net_pnl(g["pnl_pct"].astype(float))
     rows = []
     for ex, gg in g.groupby("exit_method"):
         st = rc.evaluate(gg["pnl_pct"], gg["hold_days"], min_n=1)
@@ -51967,3 +51972,182 @@ def test_b3139ah_reader_provenance_comes_from_the_caller(tmp_path, monkeypatch):
     assert "B2668 depth admission" not in consts, (
         "another campaign's prior read is back as a literal")
     importlib.reload(bg)
+
+
+def _b3139ai_net_copies(paths, root):
+    """Every node under `root` carrying HALF of the roster NET transform: a
+    winsor clip (a .clip whose bounds name WINSORIZE or are a +/-300 literal -
+    method or np.clip, positional or keyword) or a subtraction (binary or
+    augmented) of COST_BPS. Either half alone counts, so a two-step
+    clip-then-subtract is seen as well as the one-line form. Returns
+    (hits, unparsed): hits are (relative path, line, enclosing def, kind), and
+    unparsed lists files that failed to parse, so the scan fails CLOSED on
+    them. walk_forward_r5_cells._friction matches neither criterion, by design:
+    its winsorize and cost are CLI parameters that default to 0, and it sits
+    below roster_core in the import order - a friction utility, not the roster
+    basis."""
+    import ast
+
+    def names(node):
+        out = set()
+        for n in ast.walk(node):
+            if isinstance(n, ast.Name):
+                out.add(n.id)
+            elif isinstance(n, ast.Attribute):
+                out.add(n.attr)
+        return out
+
+    def num(node):
+        if (isinstance(node, ast.Constant) and isinstance(node.value, (int, float))
+                and not isinstance(node.value, bool)):
+            return float(node.value)
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
+            v = num(node.operand)
+            return None if v is None else -v
+        return None
+
+    def kind(n):
+        if (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                and n.func.attr == "clip"):
+            for b in list(n.args) + [k.value for k in n.keywords]:
+                v = num(b)
+                if (any(x.endswith("WINSORIZE") for x in names(b))
+                        or (v is not None and abs(v) == 300.0)):
+                    return "winsor clip"
+        if isinstance(n, (ast.BinOp, ast.AugAssign)) and isinstance(n.op, ast.Sub):
+            right = n.right if isinstance(n, ast.BinOp) else n.value
+            if any(x.endswith("COST_BPS") for x in names(right)):
+                return "COST_BPS subtraction"
+        return None
+
+    hits, unparsed = [], []
+    for p in paths:
+        rel = p.relative_to(root).as_posix()
+        try:
+            tree = ast.parse(p.read_text(encoding="utf-8"))
+        except (SyntaxError, UnicodeDecodeError, ValueError) as exc:
+            unparsed.append(f"{rel}: {exc!r}"[:160])
+            continue
+        stack = ["<module>"]
+
+        def visit(node):
+            k = kind(node)
+            if k:
+                hits.append((rel, getattr(node, "lineno", 0), stack[-1], k))
+            is_def = isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            if is_def:
+                stack.append(node.name)
+            for child in ast.iter_child_nodes(node):
+                visit(child)
+            if is_def:
+                stack.pop()
+
+        visit(tree)
+    return hits, unparsed
+
+
+def test_b3139ai_the_net_transform_has_one_definition(tmp_path):
+    """S6-B3139ai (L561: one pattern, one definition). The roster NET basis -
+    winsorize at +/-WINSORIZE, then charge the COST_BPS round trip - is written
+    ONCE, in roster_core.net_pnl. MEASURED at B3139q-r24 by an AST census of
+    every .py under scripts/ and backtest/: 19 hand copies in 17 scripts plus
+    one test fixture, two of them typed as literals that test_b3122's
+    classifier cannot see; every one now calls net_pnl. This scan refuses a
+    NEW copy of either half - a winsor clip, or a COST_BPS subtraction - so a
+    two-step clip-then-subtract is caught as well as the one-line form. The
+    one exemption is an independent ORACLE, which must restate the formula
+    rather than call the code it checks; an exemption with no copy left
+    fails too."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    paths = sorted(list((root / "scripts").rglob("*.py"))
+                   + list((root / "backtest").rglob("*.py")))
+    assert len(paths) >= 900, len(paths)              # the scan is not vacuous
+    hits, unparsed = _b3139ai_net_copies(paths, root)
+    assert not unparsed, f"the scan fails closed on files it cannot parse: {unparsed}"
+    seen = {(h[0], h[2]) for h in hits}
+    # live positive control: the scan sees the ONE definition itself
+    assert ("scripts/roster_core.py", "net_pnl") in seen, sorted(seen)
+    allowed = {
+        ("scripts/roster_core.py", "net_pnl"): "the one definition",
+        ("backtest/tests/test_unit.py",
+         "test_b3139ag_net_basis_is_the_one_roster_transform"):
+            "an independent ORACLE: it restates the formula as literals to "
+            "check build_frame's NET output, so it must not call net_pnl",
+    }
+    extra = sorted({f"{h[0]}:{h[1]} in {h[2]} ({h[3]})" for h in hits
+                    if (h[0], h[2]) not in allowed})
+    assert not extra, ("a copy of the roster NET transform outside "
+                       "roster_core.net_pnl - call roster_core.net_pnl(pnl): "
+                       f"{extra}")
+    gone = sorted(k for k in allowed if k not in seen)
+    assert not gone, f"exemptions with no copy left - remove them: {gone}"
+    # both directions on planted modules
+    plant = tmp_path / "plant"
+    plant.mkdir()
+    cases = {
+        "one_line.py": 'd["p"] = d["p"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0\n',
+        "literal.py": "x = s.clip(-300, 300) - 0.20\n",
+        "two_step.py": ("x = s.clip(lower=-rc.WINSORIZE, upper=rc.WINSORIZE)\n"
+                        "x -= rc.COST_BPS / 100.0\n"),
+        "np_form.py": "import numpy as np\nx = np.clip(s, -300.0, 300.0)\n",
+        "calls_it.py": "import roster_core as rc\nx = rc.net_pnl(s)\n",
+        "ohlc.py": ("bars.append(_bar(px, px + 1.0, px - 0.2, px + 0.8))\n"
+                    "y = z.clip(0, 1) - 0.5\n"),
+    }
+    for name, src in cases.items():
+        (plant / name).write_text(src, encoding="utf-8")
+    got, bad = _b3139ai_net_copies(sorted(plant.glob("*.py")), plant)
+    assert not bad, bad
+    assert {h[0] for h in got} == {"one_line.py", "literal.py", "two_step.py",
+                                   "np_form.py"}, got
+    assert {h[3] for h in got if h[0] == "two_step.py"} == {
+        "winsor clip", "COST_BPS subtraction"}, got
+    (plant / "broken.py").write_text("def f(:\n", encoding="utf-8")
+    _, bad = _b3139ai_net_copies([plant / "broken.py"], plant)
+    assert bad, "an unparseable file must be reported, not skipped"
+
+
+def _b3139ai_line_citations(paths, module):
+    """file:line of every line in `paths` citing `module` by LINE NUMBER (the
+    module's file name, a colon, digits). The pattern is assembled from parts
+    so this helper's own source never matches it."""
+    import re
+    pat = re.compile(r"\b" + re.escape(module) + ":" + "[0-9]+")
+    out = []
+    for p in paths:
+        text = p.read_text(encoding="utf-8", errors="replace")
+        for i, line in enumerate(text.splitlines(), 1):
+            if pat.search(line):
+                out.append(f"{p.name}:{i}")
+    return out
+
+
+def test_b3139ai_roster_core_is_cited_by_symbol_not_line(tmp_path):
+    """S6-B3139ai / L901: a line number is an address that moves. MEASURED at
+    B3139q-r24: 18 citations of a roster_core line sat in live code under
+    scripts/ and backtest/, and 16 of 18 no longer landed on what they
+    described - 13 named the NET formula's line inside load_cube, which
+    S6-B3139ag lifted into net_pnl, so they pointed into a category loop, and
+    7 of those 13 were basis strings written into grade and re-score
+    artifacts. Each now names a symbol (net_pnl, evaluate, select_exit,
+    IS_START / IS_END), which survives an edit above it; a function-name grep
+    (L898) could never have found them. roster_core is the metric core - its
+    source is fingerprinted and refactored often - so its citations are held
+    at zero; the repo's other line citations in code are ticketed
+    S6-B3139bb."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    paths = sorted(list((root / "scripts").rglob("*.py"))
+                   + list((root / "backtest").rglob("*.py")))
+    assert len(paths) >= 900, len(paths)
+    hits = _b3139ai_line_citations(paths, "roster_core.py")
+    assert not hits, ("cite roster_core by SYMBOL (roster_core.net_pnl, "
+                      f"roster_core.evaluate), never by line number: {hits}")
+    # both directions on a planted file (named .txt so this pin's own expected
+    # output is not itself a line citation the S6-B3139bb census would count)
+    plant = tmp_path / "plant.txt"
+    plant.write_text("# see roster_core.py" + ":" + "181\n"
+                     "# see roster_core.net_pnl\n"
+                     "# see other_module.py" + ":" + "12\n", encoding="utf-8")
+    assert _b3139ai_line_citations([plant], "roster_core.py") == ["plant.txt:1"]

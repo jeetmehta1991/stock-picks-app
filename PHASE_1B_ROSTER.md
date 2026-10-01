@@ -98,7 +98,7 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 
 † psr re-derived on CURRENT code, net basis (S6-B3136): the grid's stored value predates the B2646 PSR units fix, so it is not shown; 'pending' = the re-derivation has not run yet.
 
-**Net-basis labels (S6-B3122, owner-approved 2026-09-29; 15 of 15 rows carry one).** The Step-2 reads of record for most admissions scored the cube's RAW pnl_pct (no cost, no winsor cap - L879). Re-scored READ-ONLY on the roster basis (clip +/-300, minus 0.20 per trade; roster_core.py:181) over the SAME stored trades, behind a fail-closed reproduction gate (output_audit/b3128_admissions_net_rescore.json). A label changes no admission; any removal is a separate per-line owner ruling.
+**Net-basis labels (S6-B3122, owner-approved 2026-09-29; 15 of 15 rows carry one).** The Step-2 reads of record for most admissions scored the cube's RAW pnl_pct (no cost, no winsor cap - L879). Re-scored READ-ONLY on the roster basis (clip +/-300, minus 0.20 per trade; roster_core.net_pnl) over the SAME stored trades, behind a fail-closed reproduction gate (output_audit/b3128_admissions_net_rescore.json). A label changes no admission; any removal is a separate per-line owner ruling.
     - `smc_breaker_block_long`: ALREADY-NET
     - `pead_long_high_yoy_growth_only`: raw HO sharpe 1.148 -> net 1.0; net all_live_gates=True
     - `pead_with_smart_money_long`: raw HO sharpe 1.308 -> net 1.138; net all_live_gates=False; failing: psr

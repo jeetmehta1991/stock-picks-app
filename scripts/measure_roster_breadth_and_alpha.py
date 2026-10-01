@@ -39,9 +39,11 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from roster_core import net_pnl  # noqa: E402  (S6-B3139ai)
 
 HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)
-WINSORIZE, COST_BPS, CLUSTER_RHO = 300.0, 20.0, 0.50
+CLUSTER_RHO = 0.50
 
 
 def breadth(panel: pd.DataFrame, label: str) -> dict:
@@ -105,7 +107,7 @@ def main() -> int:
                             "exit_method": "category", "pnl_pct": "float32"})
     df["entry_date"] = pd.to_datetime(df["entry_date"])
     df = df[(df.entry_date >= pd.Timestamp(HO_START)) & (df.entry_date < pd.Timestamp(HO_END))]
-    df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    df["pnl_pct"] = net_pnl(df["pnl_pct"])
 
     series, missing = {}, []
     for label, s, d, e in legs:

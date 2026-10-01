@@ -57,7 +57,6 @@ from walk_forward_r5_cells import _sharpe                    # noqa: E402
 
 SEL_START, SEL_END = date(2023, 5, 5), date(2026, 5, 5)     # exit chosen here
 BEAR_START, BEAR_END = date(2022, 5, 5), date(2023, 5, 5)   # graded here, bear entries only
-WINSORIZE, COST_BPS = 300.0, 20.0
 MIN_N = 30
 
 LIVE_GATES = ("sharpe_per_regime", "profit_factor", "sortino", "psr", "min_trades")
@@ -91,7 +90,7 @@ def main() -> int:
                      usecols=["strategy", "direction", "exit_method", "entry_date",
                               "regime_at_entry", "pnl_pct", "hold_days"], low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-    df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    df["pnl_pct"] = _rc.net_pnl(df["pnl_pct"])
 
     rows = []
     for (strat, direction), g in df.groupby(["strategy", "direction"]):

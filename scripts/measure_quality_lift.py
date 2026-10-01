@@ -51,9 +51,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pandas as pd  # noqa: E402
 
 from walk_forward_r5_cells import bh_fdr  # noqa: E402
+from roster_core import net_pnl  # noqa: E402  (S6-B3139ai)
 
 IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
-WINSORIZE, COST_BPS = 300.0, 20.0     # same friction as the R5 grading (B1377)
 
 
 def stats_of(p) -> dict:
@@ -221,7 +221,7 @@ def main() -> int:
         ch["entry_date"] = pd.to_datetime(ch["entry_date"]).dt.date
         frames.append(ch[(ch.entry_date >= IS_START) & (ch.entry_date < end)])
     tl = pd.concat(frames, ignore_index=True)
-    tl["pnl_pct"] = tl["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    tl["pnl_pct"] = net_pnl(tl["pnl_pct"])
 
     # B1412 (owner correction 2026-07-28): "the guards are eventually based on exit method
     # selected... the gates need to be evaluated on the BEST exit for each strategy and not the
@@ -237,7 +237,7 @@ def main() -> int:
                            usecols=["strategy", "ticker", "entry_date", "exit_method", "pnl_pct"])
         cube["entry_date"] = pd.to_datetime(cube["entry_date"]).dt.date
         cube = cube[(cube.entry_date >= IS_START) & (cube.entry_date < end)]
-        cube["pnl_pct"] = cube["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+        cube["pnl_pct"] = net_pnl(cube["pnl_pct"])
         bestx = (cube.groupby(["strategy", "exit_method"]).pnl_pct.mean()
                      .reset_index().sort_values("pnl_pct", ascending=False)
                      .groupby("strategy").first()["exit_method"].to_dict())

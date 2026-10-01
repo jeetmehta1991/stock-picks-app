@@ -80,7 +80,8 @@ def grade_step2(cube, ho_rows, *, min_n: int, declared_step2: bool,
     The exit is chosen on IN-SAMPLE rows only by rc.select_exit (it slices
     in_sample() itself, so the holdout cannot leak into the choice); that
     exit's holdout rows are evaluated once, with full_period_n = its IS + HO
-    count so min_trades_full_period is a real gate (roster_core.py:265-266),
+    count so min_trades_full_period is a real gate (the B1496 min_trades split
+    in roster_core.evaluate),
     and the six LIVE_GATES decide. Returns a dict that ALWAYS carries
     `holdout_read` (bool) and `gates` (dict of the six, or None) so the
     battery can fail closed on a grid that graded nothing (L642).

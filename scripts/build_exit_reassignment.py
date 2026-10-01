@@ -46,11 +46,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pandas as pd  # noqa: E402
 
 from walk_forward_r5_cells import bh_fdr  # noqa: E402
+from roster_core import net_pnl  # noqa: E402  (S6-B3139ai)
 
 IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
 FOLDS = [(date(2022, 5, 5), date(2023, 5, 5)), (date(2023, 5, 5), date(2024, 5, 5)),
          (date(2024, 5, 5), date(2025, 5, 5))]
-WINSORIZE, COST_BPS = 300.0, 20.0
 SIMPLE_EXITS = {"time_stop_10d", "time_stop_20d", "class_time_stop", "breakeven_plus_trail",
                 "break_even_at_1r", "atr_trail_1x", "atr_trail_2x"}
 
@@ -83,7 +83,7 @@ def main() -> int:
                        usecols=["strategy", "ticker", "entry_date", "exit_method", "pnl_pct"])
     cube["entry_date"] = pd.to_datetime(cube["entry_date"]).dt.date
     cube = cube[(cube.entry_date >= IS_START) & (cube.entry_date < IS_END)]
-    cube["pnl_pct"] = cube["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    cube["pnl_pct"] = net_pnl(cube["pnl_pct"])
 
     cur = {}
     for ch in pd.read_csv(REPO / "output_r5_merged_1_7" / "trade_log.csv", chunksize=200000,

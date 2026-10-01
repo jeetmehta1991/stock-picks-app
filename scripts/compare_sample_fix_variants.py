@@ -48,7 +48,7 @@ from walk_forward_r5_cells import _sharpe, bh_fdr            # noqa: E402
 
 IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
 HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)
-WINSORIZE, COST_BPS, FDR_Q, JACCARD = 300.0, 20.0, 0.05, 0.70
+FDR_Q, JACCARD = 0.05, 0.70
 
 
 def _stats(pnl, hold, min_n, pf_bar, tier="pooled"):
@@ -111,7 +111,7 @@ def main() -> int:
                             "regime_at_entry": "category",
                             "pnl_pct": "float32", "hold_days": "float32"})
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-    df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    df["pnl_pct"] = _rc.net_pnl(df["pnl_pct"])
 
     n_decl = sum(1 for s in df.strategy.unique() if AFF.get(str(s)))
     print(f"  {df.strategy.nunique()} strategies in cube | {n_decl} declare a regime affinity")

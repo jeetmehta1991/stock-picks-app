@@ -3053,6 +3053,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r19 / L898):** an output-preserving refactor (the NET transform lifted from `load_cube` into `net_pnl`) moved the metric-code fingerprint and left the cost formula unhashed, because `METRIC_CODE_MEMBERS` lists functions by qualified-name STRING - one grep for "roster_core.load_cube" returns it. Before moving code out of a function, grep its NAME for any registry that hashes or lists it. Mechanism: `test_b3139ao_fingerprint_covers_repo_callees_and_constant_values` (every repo callee of a member is a member; constant values are hashed).
 
+**INSTANCE (B3139q-r24 / L901):** the re-check after S6-B3139ag (the NET formula lifted from `load_cube` into `net_pnl`) asked what HASHED and what CALLED the moved code, never what POINTED at it: 13 citations of roster_core's line 181 - 7 of them basis strings written into grade and re-score artifacts, 1 rendered into PHASE_1B_ROSTER.md - pointed into a category loop, and 3 more roster_core line citations had decayed under earlier edits (16 of 18 stale, EXECUTED grep). A positional reference names no function, so L898's name grep cannot find it. When code moves, also grep the moved file's line citations; cite a symbol in new text. Pin test_b3139ai_roster_core_is_cited_by_symbol_not_line; the repo's other 570 line citations in code are ticketed S6-B3139bb.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in

@@ -19,6 +19,7 @@ sys.path.insert(0, "scripts")
 import numpy as np
 import pandas as pd
 from walk_forward_r5_cells import _sharpe, bh_fdr
+from roster_core import net_pnl  # noqa: E402  (S6-B3139ai)
 
 C = Path("output_r5_merged_1_7")
 IS = (date(2022, 5, 5), date(2025, 5, 5))
@@ -29,7 +30,7 @@ df = pd.read_csv(C / "trade_exit_detail.csv",
                  usecols=["strategy", "direction", "exit_method", "entry_date", "pnl_pct", "hold_days"],
                  low_memory=False)
 df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-df["pnl_pct"] = df["pnl_pct"].clip(-300, 300) - 0.20
+df["pnl_pct"] = net_pnl(df["pnl_pct"])
 print(f"[INFO] {len(df):,} trades | exits available: {sorted(df.exit_method.unique())}\n")
 
 
@@ -158,6 +159,7 @@ import numpy as np
 import pandas as pd
 sys.path.insert(0, "scripts")
 from walk_forward_r5_cells import _sharpe, bh_fdr
+from roster_core import net_pnl  # noqa: E402  (S6-B3139ai)
 
 C = Path("output_r5_merged_1_7")
 FOLDS = [("F1 22-23 BEARish", date(2022, 5, 5), date(2023, 5, 5)),
@@ -170,7 +172,7 @@ df = pd.read_csv(C / "trade_exit_detail.csv",
                  usecols=["strategy", "direction", "exit_method", "entry_date", "pnl_pct", "hold_days"],
                  low_memory=False)
 df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-df["pnl_pct"] = df["pnl_pct"].clip(-300, 300) - 0.20
+df["pnl_pct"] = net_pnl(df["pnl_pct"])
 
 print("=" * 96)
 print("1a. LONG vs SHORT aggregate by fold  (if shorts lose in the BEAR fold too -> suspect mechanics)")

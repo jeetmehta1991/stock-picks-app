@@ -10,7 +10,7 @@ log, and it governed admission only - `OOS_MIN_N = 30`, a per-fold walk-forward
 floor living in a different module, decided which cells received a Sharpe. So
 `--min-n 10` and `--min-n 20` produced byte-identical results, and every report
 built on them quoted a floor that was never in force. Fixed at B1714
-(`roster_core.py:171` now threads the caller's floor into `_sharpe`).
+(`roster_core.evaluate` now threads the caller's floor into `_sharpe`).
 
 **An inert flag is indistinguishable from an absent one, and strictly worse: the
 absent flag would have raised.** The nearest existing lens, EXECUTABILITY, asks

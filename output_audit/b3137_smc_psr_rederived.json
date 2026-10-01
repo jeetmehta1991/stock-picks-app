@@ -1,6 +1,6 @@
 {
  "metric_code": {
-  "sha256": "77e66b0cd74b79d6813d851bc5900d4a5710adf9b9e6884b779d3021017afcc1",
+  "sha256": "915bb9dec919d5f14fcdf0a176b787153472a50725015d64efc958f214b21aa4",
   "members": [
    "roster_core.load_cube",
    "roster_core.net_pnl",
@@ -31,7 +31,7 @@
  },
  "_doc": "S6-B3134a part C (ii): one-shot LABEL re-score of the graded Phase 1B lines - each line reproduced from its own cube (#290) then scored with the entries the fixed engine would not take removed. Labels only; no line changes; any removal is a per-line owner ruling.",
  "predicate": "backtest/data/eligibility.py (jan1_reason, daily_reason)",
- "generated_utc": "2026-10-01T18:49:05Z",
+ "generated_utc": "2026-10-01T21:56:32Z",
  "rows": [
   {
    "line": "smc_breaker_block_long",
