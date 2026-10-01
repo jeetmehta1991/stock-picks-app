@@ -3242,5 +3242,13 @@
     "true_owner_word_for_this_read": "this artifact's own ruling_verbatim field: '7 approved proceed (owner 2026-09-26, item-7 registration + read word on the b3113 grid)'.",
     "label_still_correct": "DISCLOSED-RE-READ stands - the subject's holdout WAS read before this read, by the c14 Step-2 read named above.",
     "figures_unchanged": "no figure, cell, qualifier or verdict in this artifact is altered - owner ruling 2026-09-30, verbatim: 'once they are in phase 1b roster their results can not be changed. You can add a note to it'"
+  },
+  "cot_release_lag_exposure_2026_10_01": {
+    "ticket": "S6-B3139au",
+    "what": "The admitted cell gates on cot_ndx_mmoney_pctile_3y, a CFTC positioning signal. CFTC reports are dated by their Tuesday positions and published the following Friday; the engine used each report from its Tuesday date (S6-B3139as), so on Tuesday-to-Thursday entries the value came from a report not yet public.",
+    "measurement": "On this artifact's own cube (cube_dir above): the producer reproduces 955 of 955 stored values at as_of = entry_date. Recomputed with a flat 3-day availability lag, 98 of 191 holdout values change and the cell's holdout membership moves from 36 to 30: 14 of the 36 leave and 8 enter (22 switches). In-sample, 400 of 764 values change and membership moves from 307 to 249: 87 leave and 29 enter.",
+    "basis_and_limits": "A FLAT 3-day lag - release dates for holiday weeks and any publication backlog are not in the cached data, so those weeks are unmodelled. The cached ndx file holds only the MICRO E-mini Nasdaq-100 contract (S6-B3139at). These are exposure COUNTS only.",
+    "figures_unchanged": "No performance figure was recomputed and none in this artifact is altered - the line is closed to re-testing, and the owner ruled 2026-09-30: 'once they are in phase 1b roster their results can not be changed. You can add a note to it'.",
+    "measured_by": "scratchpad measure_tws_cot_exposure.py, B3139q-r20"
   }
 }
