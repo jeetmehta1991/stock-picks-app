@@ -21738,7 +21738,10 @@ _B1974_GENERATED = {
     # measured STALE and is ticketed, not listed).
     "STRATEGY_ROSTER.md": ("scripts/build_strategy_roster.py",),
     "VERIFICATION_MATRIX.md": ("scripts/build_verification_matrix.py",),
-    "PASSED_STRATEGY_EXIT_LIST.md": ("scripts/build_passed_strategy_exit_list.py",),
+    # PASSED_STRATEGY_EXIT_LIST.md + its generator ARCHIVED together
+    # (S6-B3136d, owner ruling 2026-09-30;
+    # archive/2026-10-01-superseded-mirror-classifier/) - a pair leaves this
+    # register only when BOTH halves leave the tree in one commit.
     "output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md":
         ("scripts/measure_producer_coverage.py",),
     # B2037 (S6-B1918b): the strategy->key->producer map regenerates from its

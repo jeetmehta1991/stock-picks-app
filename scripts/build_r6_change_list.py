@@ -34,7 +34,19 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from build_passed_strategy_exit_list import parse_roster  # noqa: E402
+def parse_roster():
+    """Relocated verbatim from build_passed_strategy_exit_list.py when that
+    generator was ARCHIVED (S6-B3136d, owner ruling 2026-09-30 "approved";
+    archive/2026-10-01-superseded-mirror-classifier/). This module was its
+    only importer."""
+    r = {}
+    for ln in open(REPO / "STRATEGY_ROSTER.md", encoding="utf-8"):
+        if ln.startswith("|") and "`" in ln:
+            c = [x.strip() for x in ln.strip().strip("|").split("|")]
+            if len(c) >= 11:
+                r[c[1].strip("`")] = {"direction": c[3], "fires": c[5], "signals": c[6],
+                                      "compact": c[8], "affinity": c[9], "category": c[2]}
+    return r
 
 AUD = REPO / "output_audit"
 MIN_FWD_RET = 0.0        # a loosening must admit trades with positive forward return

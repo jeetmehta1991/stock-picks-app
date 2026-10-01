@@ -814,7 +814,10 @@ def check_orphan_rule() -> str | None:
 FIX_WORDS = ("fix:", "fixed", "bugfix", "defect", "root cause", "rca",
              "corrected", "correction")
 # Artifacts whose conclusions are DOWNSTREAM of engine/grading behaviour.
-DOWNSTREAM_ARTIFACTS = ("PHASE_1B_ROSTER.md", "PASSED_STRATEGY_EXIT_LIST.md",
+# PASSED_STRATEGY_EXIT_LIST.md removed from this tuple when it was ARCHIVED
+# with its generator (S6-B3136d, owner ruling 2026-09-30) - a dead name here
+# would make the gate scan a ghost artifact forever.
+DOWNSTREAM_ARTIFACTS = ("PHASE_1B_ROSTER.md",
                         "STRATEGY_OPTIMISATION_PLAN.md", "EXECUTION_QUEUE.md",
                         # B3096: per-strategy campaign records moved out of
                         # the class-level runbook into their own file.
