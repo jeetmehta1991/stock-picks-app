@@ -24337,3 +24337,21 @@ the AST ratchet that enforces #122 caught it at the gate, which is the
 mechanism working. The shape worth keeping: applying a rule carefully to
 the function under design does not apply it to the helper written in the
 same breath; the ratchet, not attention, is what reached the second site.
+
+## L897 - A MODULE-NAME GREP FINDS THE TESTS, NOT THE LINES THEY QUOTE (B3139q-r18, 2026-10-01)
+
+Record-of-fact. Before gating S6-B3139ag I grepped the test tree for the
+two breadth modules' NAMES, read the pins my plan predicted, and launched
+a 20-minute gate - which went RED (output_audit/b3139_pyramid_r20.out,
+1 failed, 1685 passed) on test_b3139_offline_holdout_reads_refuse_a_
+closed_strategy, a pin that quotes the LITERAL call text
+"m, _ = build_frame(strategy, depth, axis_keys)" that the batch had just
+extended with basis=basis. The module-name grep listed that file's import
+line and I never opened the assertion. The query that answers "what does
+this change break" is a grep for each CHANGED LINE'S TEXT across the test
+tree - run after the fact, it returned 2 references (EXECUTED): the
+failing pin and one still-valid prefix. The pin was converted to AST
+ordering so an added keyword cannot break it again. COMPLIANCE FAILURE
+against #196 (L801: grep the test tree before landing a change; the miss
+was grepping the wrong KEY - the module, not the edited lines). No new
+item (#136); the gate caught it and the remedy is the query's key.

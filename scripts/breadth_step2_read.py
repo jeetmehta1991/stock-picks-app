@@ -36,7 +36,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
 from band_coverage_gate import coverage_report  # noqa: E402  (B2704 #299)
-from breadth_step1_grid import BARRED_EXIT, build_frame  # noqa: E402
+from breadth_step1_grid import BARRED_EXIT, _cell_mask, build_frame  # noqa: E402
 
 
 def grade_holdout(sub) -> dict | None:
@@ -120,18 +120,25 @@ def main() -> int:
     if _closed:
         raise SystemExit("REFUSED (S6-B3139g): " + _closed)
     depth = art["depth_base"]
+    # S6-B3139ag: the read scores on the basis its Step-1 grid RECORDED -
+    # never a second flag that could disagree with it. A grid built before
+    # the basis field existed scored raw cube pnl, so absent reads "gross",
+    # and the artifact says where the basis came from.
+    basis = art.get("basis") or "gross"
+    basis_source = ("the Step-1 artifact's recorded basis" if art.get("basis")
+                    else "absent on the Step-1 artifact - grids before "
+                         "S6-B3139ag scored gross")
     cells = sorted({(r["axis"], r["op"], r["level"]) for r in art["rows"]})
     axis_keys = sorted({c[0] for c in cells})
-    m, _ = build_frame(strategy, depth, axis_keys)
+    m, _ = build_frame(strategy, depth, axis_keys, basis=basis)
     print(f"frame {len(m):,} rows; {len(cells)} registered (axis,op,level) cells "
-          f"({time.time()-t0:.0f}s)")
+          f"; basis {basis} ({time.time()-t0:.0f}s)")
 
     def mask(frame, key, op, lev):
-        if op == "ge":
-            return (frame[key] >= lev) & frame[key].notna()
-        if op == "le":
-            return (frame[key] <= lev) & frame[key].notna()
-        return (frame[key] == 1.0) & frame[key].notna()
+        # S6-B3139ag: the grid's ONE mask definition. This local copy handled
+        # ge / le / else ==1.0, so a B3118 eq_false cell read its COMPLEMENT
+        # (0 of 2 committed reads carried eq_false cells - measured).
+        return _cell_mask(frame, key, op, lev) & frame[key].notna()
 
     rows = []
     for key, op, lev in cells:
@@ -163,7 +170,7 @@ def main() -> int:
         ckeys = sorted({q["axis"] for q in quals})
         # S6-B3113a: control on its OWN fires - the R5 default, always
         _g.CUBE, _g.TRADE_LOG = _default_paths
-        cm, _ = build_frame(a.control, None, ckeys)
+        cm, _ = build_frame(a.control, None, ckeys, basis=basis)
         for q in quals:
             base_cell = cm[cm.exit_method == q["exit"]]
             filt = base_cell[mask(base_cell, q["axis"], q["op"], q["level"])]
@@ -202,6 +209,7 @@ def main() -> int:
            "breadth_leg": {"disposition": a.breadth_disposition,
                            "reason": a.breadth_reason.strip()},
            "strategy": strategy, "depth_base": depth,
+           "basis": basis, "basis_source": basis_source,
            "step1_artifact": a.step1_artifact,
            "provenance": {
                "subject_holdout_previously_read": "B2668 depth admission",

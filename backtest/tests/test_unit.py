@@ -46787,6 +46787,7 @@ def test_b3112_breadth_grid_reads_the_subjects_own_cube(tmp_path, monkeypatch):
                         ["breadth_step1_grid.py", "--strategy", "x",
                          "--axes", "k:ge", "--out", str(tmp_path / "o.json"),
                          "--band-ruling", "pin probe",
+                         "--basis", "gross",      # S6-B3139ag: required
                          "--cube-dir", str(missing)])
     with pytest.raises(SystemExit) as e:
         m.main()
@@ -46887,7 +46888,13 @@ def test_b3118_breadth_grid_op_vocabulary_and_leg():
     with _pt.raises(AssertionError):
         bg._axis_spec("x:eq_maybe")
     src = (root / "scripts" / "breadth_step1_grid.py").read_text(encoding="utf-8")
-    assert 'mask = m[key] == 0.0' in src, "eq_false mask branch missing"
+    # S6-B3139ag: the eq_false branch moved into the ONE _cell_mask the grid,
+    # its null and the Step-3 reader share - pinned on BEHAVIOUR now, not on
+    # the text of the line that used to hold it (L748).
+    import pandas as _pd
+    _f = _pd.DataFrame({"x": [0.0, 1.0]})
+    assert bg._cell_mask(_f, "x", "eq_false", 0.0).tolist() == [True, False], (
+        "eq_false must KEEP the false rows")
     assert '"--leg"' in src and 'm["direction"] == a.leg' in src, "per-leg switch missing"
 
 
@@ -47776,8 +47783,10 @@ _B3122_RAW_SCORERS = {
     "b2701_smc_lsr_step2.py":
         "reads output_r5_merged_1_7 raw through smc_lsr_step1.build and scores ho pnl_pct",
     "breadth_step2_read.py":
-        "grades breadth_step1_grid.build_frame, a raw pd.read_csv of the cube (the "
-        "xs_momentum_top_decile and three_white_soldiers admission reads)",
+        "grades breadth_step1_grid.build_frame on the basis its Step-1 artifact "
+        "RECORDED (S6-B3139ag): NET via roster_core.net_pnl when the grid says "
+        "net; raw for the pre-S6-B3139ag grids behind the xs_momentum_top_decile "
+        "and three_white_soldiers admission reads",
     "composite_variant_test.py":
         "reads TRADE_LOG and CUBE with pd.read_csv (the xs_low_beta_with_smart_money_long "
         "admission read)",
@@ -50700,9 +50709,18 @@ def test_b3139_offline_holdout_reads_refuse_a_closed_strategy(tmp_path, monkeypa
     i_load = src.index("m, ev = ols.load(strategy, axes)")
     assert i_band < i_closed < i_load
     import breadth_step2_read as b2
-    src2 = inspect.getsource(b2.main)
-    assert src2.index("_pvt.offline_retest_refusal(strategy)") < \
-        src2.index("m, _ = build_frame(strategy, depth, axis_keys)")
+    # S6-B3139ag: ordered on the AST, not on the call's text - adding the
+    # recorded basis= to the subject build_frame broke the substring form
+    # (L748: a text pin on a call site breaks on any new argument).
+    import ast as _ast
+    import textwrap as _tw
+    tree = _ast.parse(_tw.dedent(inspect.getsource(b2.main)))
+    def _first_line(fname):
+        lines = [n.lineno for n in _ast.walk(tree) if isinstance(n, _ast.Call)
+                 and getattr(n.func, "attr", getattr(n.func, "id", None)) == fname]
+        assert lines, fname
+        return min(lines)
+    assert _first_line("offline_retest_refusal") < _first_line("build_frame")
 
 
 # ================================================================ B3139 S6-B3139h: count mismatches name their make-up
@@ -51462,3 +51480,153 @@ def test_b3139w_missing_manifest_reads_unknown_never_production(tmp_path):
     assert long2 == "200" and short2 == "200", (long2, short2)
     assert "TESTED BY RE-SIMULATION" not in inv4b, inv4b
     assert "run value UNKNOWN" not in inv4b, inv4b
+
+
+def _b3139ag_fixture(tmp_path):
+    """A tiny run dir for the breadth instruments: 40 in-sample fires (2023)
+    plus 6 holdout fires (2025-06) of strategy 'fx', two exits, one axis k
+    = the fire index, and ONE pnl above WINSORIZE so the net clip is
+    exercised. Deterministic - the values carry no meaning beyond shape."""
+    import json as _j
+    import pandas as pd
+    tl, cube = [], []
+    days = ([f"2023-{(i % 12) + 1:02d}-{(i % 27) + 1:02d}" for i in range(40)]
+            + [f"2025-06-{i + 2:02d}" for i in range(6)])
+    for i, d in enumerate(days):
+        tk = f"T{i:02d}"
+        tl.append({"strategy": "fx", "ticker": tk, "entry_date": d,
+                   "signals_at_entry": _j.dumps({"k": float(i)})})
+        for ex, pnl in (("time_stop_10d", ((i * 37) % 11) - 4.0),
+                        ("other_exit", ((i * 13) % 7) - 2.5)):
+            cube.append({"strategy": "fx", "ticker": tk, "entry_date": d,
+                         "direction": "long", "exit_method": ex,
+                         "pnl_pct": 450.0 if (i == 3 and ex == "other_exit")
+                         else pnl, "hold_days": 10})
+    run = tmp_path / "run"
+    run.mkdir()
+    pd.DataFrame(tl).to_csv(run / "trade_log.csv", index=False)
+    pd.DataFrame(cube).to_csv(run / "trade_exit_detail.csv", index=False)
+    return run
+
+
+def test_b3139ag_net_basis_is_the_one_roster_transform(tmp_path, monkeypatch):
+    """S6-B3139ag: the breadth loader's NET basis IS roster_core.net_pnl -
+    the transform load_cube applies (winsorize +/-300, minus the 20 bps round
+    trip) - and an unknown basis refuses. Behavioural on a fixture carrying a
+    450 pnl (the clip must bite); load_cube's use of the ONE definition is
+    pinned on its AST, not its text."""
+    import ast
+    import sys
+    from pathlib import Path as _P
+    import numpy as np
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+    import breadth_step1_grid as bg
+    got = rc.net_pnl(pd.Series([450.0, -500.0, 1.0])).round(6).tolist()
+    assert got == [299.8, -300.2, 0.8], got
+    run = _b3139ag_fixture(tmp_path)
+    monkeypatch.setattr(bg, "CUBE", run / "trade_exit_detail.csv")
+    monkeypatch.setattr(bg, "TRADE_LOG", run / "trade_log.csv")
+    g, _ = bg.build_frame("fx", None, ["k"], basis="gross")
+    n, _ = bg.build_frame("fx", None, ["k"], basis="net")
+    key = ["ticker", "entry_date", "exit_method"]
+    j = g.merge(n, on=key, suffixes=("_g", "_n"))
+    assert len(j) == len(g) == len(n) == 92
+    assert (j["pnl_pct_g"] > 300).sum() == 1          # the clip is exercised
+    want = j["pnl_pct_g"].clip(-300, 300) - 0.2
+    assert np.allclose(j["pnl_pct_n"], want)
+    with pytest.raises(SystemExit) as e:
+        bg.build_frame("fx", None, ["k"], basis="bogus")
+    assert "basis" in str(e.value)
+    src = (root / "scripts" / "roster_core.py").read_text(encoding="utf-8")
+    lc = next(f for f in ast.walk(ast.parse(src))
+              if isinstance(f, ast.FunctionDef) and f.name == "load_cube")
+    calls = {c.func.id for c in ast.walk(lc)
+             if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)}
+    assert "net_pnl" in calls, "load_cube must apply the ONE net definition"
+
+
+def test_b3139ag_grid_generates_a_reconciling_multiplicity_and_null(
+        tmp_path, monkeypatch):
+    """S6-B3139ag: the breadth grid (runbook 3.6 items 5-6) records its basis,
+    prices its own search with the joint-shuffle null, and GENERATES the
+    multiplicity block whose partition reconciles to EVERY searched
+    (cell, exit) - so the Step-3 reader's fail-closed check accepts what the
+    grid writes (the wiring, L654). The c14 precedent's block was typed by
+    hand. The fixture's top quantile holds 8 IS fires, under min_n 10, so the
+    BELOW_POWER_FLOOR bucket is exercised, not just present."""
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import importlib
+    import breadth_step1_grid as bg
+    importlib.reload(bg)
+    import breadth_step2_read as b2
+    run = _b3139ag_fixture(tmp_path)
+    monkeypatch.setattr(bg, "require_band_ruling", lambda *a, **k: "stub")
+    monkeypatch.setattr(bg, "require_fresh_status", lambda *a, **k: "stub")
+    out = tmp_path / "grid.json"
+    monkeypatch.setattr(sys, "argv",
+                        ["breadth_step1_grid.py", "--strategy", "fx",
+                         "--axes", "k:ge", "--out", str(out),
+                         "--band-ruling", "pin probe", "--basis", "net",
+                         "--null-perms", "5", "--cube-dir", str(run)])
+    assert bg.main() == 0
+    rec = _j.loads(out.read_text(encoding="utf-8"))
+    assert rec["basis"] == "net"
+    mult = rec["multiplicity"]
+    assert mult["reconciles"] is True
+    assert mult["searched"] == rec["trials"] > 0
+    assert mult["unpriceable"] >= 1, mult       # a sub-min_n cell, classified
+    nb = rec["permutation_null"]
+    assert nb["n_perms"] == 5 and 0 < nb["p_value"] <= 1
+    assert nb["observed_best_is_sharpe"] == rec["step1_ranking"][0]["is_sharpe"]
+    b2.require_multiplicity(rec, str(out))     # the reader accepts it
+    with pytest.raises(SystemExit):            # negative control
+        b2.require_multiplicity({k: v for k, v in rec.items()
+                                 if k != "multiplicity"}, "no-block")
+    importlib.reload(bg)
+
+
+def test_b3139ag_reader_masks_with_the_grid_definition_and_its_basis():
+    """S6-B3139ag: the Step-3 reader's local mask handled ge / le / else
+    ==1.0, so a B3118 eq_false cell read its COMPLEMENT. It now calls the
+    grid's ONE _cell_mask, and both of its build_frame calls (subject and
+    control) take the basis the Step-1 artifact recorded. The mask's four ops
+    are behavioural; the reader's nested call sites are pinned on the AST."""
+    import ast
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import breadth_step1_grid as bg
+    f = pd.DataFrame({"k": [0.0, 1.0, 0.0]})
+    assert bg._cell_mask(f, "k", "eq_false", 0.0).tolist() == [True, False, True]
+    assert bg._cell_mask(f, "k", "eq_true", 1.0).tolist() == [False, True, False]
+    assert bg._cell_mask(f, "k", "ge", 1.0).tolist() == [False, True, False]
+    assert bg._cell_mask(f, "k", "le", 0.0).tolist() == [True, False, True]
+    src = (root / "scripts" / "breadth_step2_read.py").read_text(encoding="utf-8")
+    main = next(n for n in ast.walk(ast.parse(src))
+                if isinstance(n, ast.FunctionDef) and n.name == "main")
+    mask = next(n for n in ast.walk(main)
+                if isinstance(n, ast.FunctionDef) and n.name == "mask")
+    names = {c.func.id for c in ast.walk(mask)
+             if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)}
+    assert "_cell_mask" in names, "reader mask must use the grid's definition"
+    assert not any(isinstance(n, ast.Compare) for n in ast.walk(mask)), (
+        "the reader's mask re-implements comparisons again")
+    bf = [c for c in ast.walk(main) if isinstance(c, ast.Call)
+          and isinstance(c.func, ast.Name) and c.func.id == "build_frame"]
+    assert len(bf) == 2, len(bf)
+    assert all(any(k.arg == "basis" for k in c.keywords) for c in bf), (
+        "every reader build_frame call must pass the recorded basis")

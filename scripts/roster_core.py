@@ -142,6 +142,14 @@ def truthful_exit_name(exit_name, cube_predates_b1593=True):
                        f"`{true_name}` in every pre-B1593 cube - L461]")
 
 
+def net_pnl(pnl: pd.Series) -> pd.Series:
+    """The roster's NET basis: winsorize at +/-WINSORIZE, then charge the
+    COST_BPS round trip. S6-B3139ag: ONE definition - load_cube and the
+    breadth loader (breadth_step1_grid.build_frame, basis="net") both call
+    it, so the Step-3 BREADTH instruments cannot drift from the roster."""
+    return pnl.clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+
+
 def load_cube(path: Path, extra_columns: list[str] | None = None,
               chunksize: int | None = None) -> pd.DataFrame:
     """Read a cube with the shared conditioning applied exactly once.
@@ -178,7 +186,7 @@ def load_cube(path: Path, extra_columns: list[str] | None = None,
     else:
         df = pd.read_csv(path, usecols=cols, low_memory=False, dtype=dtypes)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-    df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    df["pnl_pct"] = net_pnl(df["pnl_pct"])
     return df
 
 

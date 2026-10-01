@@ -2179,3 +2179,20 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   spends the third and last pre-registered holdout look and launches only on the owner's word
   (S6-B3139ab). If it also fails, D6 closes bollinger_lower NEGATIVE for Phase 1B and
   pre-registration item 5 goes to the owner.
+
+### I.7 Step 2 closed by owner ruling; Step 3 BREADTH opened (2026-10-01)
+
+- **Owner ruling 2026-10-01, verbatim:** *"Lets not run step 2 config 3 and directly go to step 3
+  breadth"*. Config 3 (span 100) is NOT run (S6-B3139ab DROPPED on this ruling). Step 2 closes
+  with 2 of 3 slate configs read, both FAIL 5 of 6 on pooled_sharpe (I.6) - a ruled departure from
+  the 4.8 waterfall, stated here so it is never read as a completed slate (D6 did not fire).
+- **Step 3 BREADTH (runbook 3.6) state at opening:** items 1-4 DONE at B3119 - 13 axes on the
+  production base (R5 cube, span 200), per leg, under the T3 band ruling of 2026-09-27; items 5-6
+  re-run on the NET basis (pre-registration item 1) after S6-B3139ag made both breadth
+  instruments basis-explicit (the B3119 grids scored raw pnl); item 7 - ONE holdout read of the
+  registered cells - waits for its own owner word (runbook 0.6), would be the third look at the
+  bollinger_lower holdout (pre-registration item 3) and carries the DISCLOSED-RE-READ label;
+  items 8-9 follow it.
+- **Open for the owner after results:** pre-registration item 5 was written for an all-three-
+  configs fail; Step 2 closed at two by ruling, so whether this counts toward S6-B2178c's re-raise
+  trigger is the owner's to rule when the breadth verdict exists.
