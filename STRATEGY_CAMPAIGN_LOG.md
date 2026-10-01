@@ -2211,3 +2211,20 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   rows (axes adx and below_ema_N, whose signal keys are not SPECS display labels - S6-B3139an);
   neither leg's top cell is among them (best hidden: long 0.478, short 0.26 ci_lo).
 - **Item 7 (the holdout read) waits for the owner's word** (S6-B3139am).
+- **The long leg's rank-1 axis is NOT point-in-time (B3139q-r20, EXECUTED measurement; S6-B3139ar,
+  owner decision).** The grid reads cot_rut_commercials_net_pct from the R5 trade log's
+  signals_at_entry, stored with as_of = entry_date (1622 of 1622 reproduced) against Tuesday-dated
+  CFTC reports published on Friday. Under a 3-day release lag 366 of 1192 IS fires and 269 of 430
+  holdout fires change value, and the rank-1 cell (le -0.0668 @ time_stop_10d) moves from IS 2.643
+  / ci_lo 1.693 / n 120 to 2.195 / 0.646 / n 44 - 76 of its 120 members were in it on reports not
+  yet public (the re-grade first reproduced 104 of 104 committed COT cells per leg exactly). The
+  file behind the axis holds only the MICRO E-mini Russell 2000 contract, over 67 of ~156
+  in-sample weeks (S6-B3139at). The read must not spend the holdout on these cells as graded:
+  option A recomputes COT axes point-in-time in the shared loader and re-runs items 5-6; option B
+  drops the COT axis and re-runs items 5-6 with the null re-priced (recommended). The short leg's
+  rank-1 cell is not a COT cell.
+- **Table D re-rendered full-length (B3139q-r20, S6-B3139an + S6-B3139z):** 806/806 long and
+  754/754 short rows now render (adx and below_ema_N rows sit in P9's and P3's columns, named as
+  companion rows); bands come from SPECS per the owner's S6-B3139o ruling (P3/P4 the 8-span band,
+  the PHASE0 pre-registration disclosed). Rank 1 is unchanged on both legs; the short leg's top 12
+  changed in 5 positions, where hidden below_ema_9/50 rows outrank the rows shown before.

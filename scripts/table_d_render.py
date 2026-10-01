@@ -31,7 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from producer_variant_table import (  # noqa: E402
-    SPECS, SPECS_PHASE0)
+    SPECS, SPECS_PHASE0, resolved_spec)
 
 
 def _spec(strategy: str) -> dict:
@@ -48,17 +48,17 @@ def _spec(strategy: str) -> dict:
     measured caller demands, and every order flattened is an undocumented
     behavioural decision. The crash is the bug; the merge stays ticketed.
 
-    PHASE0 FIRST, DELIBERATELY - this PRESERVES existing behaviour rather
-    than improving it. MEASURED: flipping to SPECS-first changed what the 2
-    both-registry names render (smc_liquidity_sweep_reversal lost its
-    confirmation_arm column) and test_b2699 caught it. Every precedence
-    order flattened here would be an undocumented behavioural decision, so
-    this fix adds a FALLBACK and changes no existing resolution: names that
-    resolved before resolve identically, and the 6 that CRASHED now work.
-    Reconciling the orders across all four consumers is the merge, and the
-    merge stays ticketed (S6-B2874).
+    S6-B3139z (B3139q-r20): the precedence is now RULED, not preserved -
+    owner ruling S6-B3139o (2026-09-30) "SPECS wins", applied PER PARAM by
+    producer_variant_table.resolved_spec, the one definition this renderer
+    and band_coverage_gate share. The B2874 hazard is why it is per param:
+    a whole-entry SPECS-first flip dropped smc_liquidity_sweep_reversal's
+    confirmation_arm column (test_b2699); the per-param merge keeps every
+    id either registry holds, so no column is lost. PHASE0-first had left
+    this view showing bollinger_lower's P3/P4 band as 1 level while the
+    coverage gate counted the ruled 8.
     """
-    spec = SPECS_PHASE0.get(strategy) or SPECS.get(strategy)
+    spec = resolved_spec(strategy)
     if spec is None:
         raise SystemExit(
             f"no Table A spec for {strategy!r} in EITHER registry - "
@@ -309,9 +309,26 @@ def _row_cells(r: dict, params: list) -> dict:
         vals["leg"] = leg
         vals["confirmation_arm"] = arm
     elif r.get("axis"):
-        p = next(x for x in params if x["param"] == r["axis"])
-        vals[r["axis"]] = _level_cell(p, r["level"])
+        p = next((x for x in params if x["param"] == r["axis"]), None)
+        if p is not None:
+            vals[r["axis"]] = _level_cell(p, r["level"])
+        else:
+            # S6-B3139an: a row keyed by a declared signal key lands in its
+            # param's column, naming the key and its condition.
+            p = next(x for x in params
+                     if r["axis"] in (x.get("signal_keys") or []))
+            vals[p["param"]] = _key_cond(r["axis"], r.get("op"), r["level"])
     return vals
+
+
+def _key_cond(axis: str, op, level) -> str:
+    """S6-B3139an: the cell for a row keyed by a param's signal key."""
+    sym = {"le": "<=", "ge": ">="}.get(op)
+    if sym:
+        return f"{axis} {sym} {level}"
+    if op in ("eq_true", "eq_false"):
+        return f"{axis} = {'true' if op == 'eq_true' else 'false'}"
+    return f"{axis} {op} {level}"
 
 
 def _step(arts: list) -> str:
@@ -341,16 +358,25 @@ def _step(arts: list) -> str:
 def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
     params = _spec(strategy)["params"]
     arts, rows, skips = load(artifact_paths, params)
-    # The OTHER registry's bands, when the strategy sits in both and the
-    # renderer resolved PHASE0 (S6-B2874 precedence) - used only to DISCLOSE
-    # a disagreement in a coverage denominator, never to choose one.
-    _alt = SPECS.get(strategy) if SPECS_PHASE0.get(strategy) else None
-    alt_band = {p["id"]: p.get("band")
-                for p in ((_alt or {}).get("params") or [])}
+    # S6-B3139z: the spec above is the per-param merge with SPECS
+    # authoritative (S6-B3139o). The pre-registration record (SPECS_PHASE0)
+    # is disclosed beside any band it disagrees with - never chosen.
+    _pre = SPECS_PHASE0.get(strategy) if SPECS.get(strategy) else None
+    pre_band = {p["id"]: p.get("band")
+                for p in ((_pre or {}).get("params") or [])}
     # B2708: Table D renders the LIVE Table A inventory - artifact rows for
     # axes an owner ruling has since pruned from the band drop out of the
     # view (their tested history stays in the committed artifacts).
-    known = {p["param"] for p in params}
+    # S6-B3139an: a row's axis is a param's display LABEL or one of its
+    # declared signal_keys - breadth grids key rows by signal name (adx,
+    # below_ema_N), and matching labels alone hid 208 of 806 rows. A row
+    # matching neither is dropped from the view AND COUNTED in the header.
+    known = ({p["param"] for p in params}
+             | {k for p in params for k in (p.get("signal_keys") or [])})
+    dropped: dict[str, int] = {}
+    for r in rows:
+        if r.get("axis") and r["axis"] not in known:
+            dropped[r["axis"]] = dropped.get(r["axis"], 0) + 1
     rows = [r for r in rows if not r.get("axis") or r["axis"] in known]
     skips = [s for s in skips if s.get("axis") in known]
     ranked = sorted((r for r in rows if not r.get("npt_barred")),
@@ -402,6 +428,11 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
         # KeyErrored before reaching them. Fixing the first crash unmasked
         # the second - the defect was hiding behind the defect (L814).
         levs = tested_levels.get(p["param"])
+        # S6-B3139an: rows keyed by this param's signal keys (breadth AND-
+        # conditions on the production base). Their levels are the subject's
+        # own quantiles or flags, not this param's band, so they are NAMED
+        # here and never counted toward the band denominator below.
+        comp = [r for r in rows if r.get("axis") in (p.get("signal_keys") or [])]
         if levs:
             shown = ", ".join(str(x) for x in sorted(levs, key=str))
             # B3082c: name the MECHANISM. Re-simulation is stronger evidence
@@ -421,13 +452,6 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             else:
                 cov = (f" ({len(levs)} of {len(band)} band levels)"
                        if band else "")
-                # S6-B3139w: a denominator from one registry while the other
-                # disagrees is disclosed, never silently chosen - the
-                # PHASE0-first precedence above is deliberate (S6-B2874).
-                alt = alt_band.get(p["id"])
-                if alt is not None and alt != band:
-                    cov += (f" [registry disagreement: promoted SPECS band"
-                            f" {alt} has {len(alt)} levels - S6-B3139z]")
                 line = f"{p['id']} {p['param']}: {how} at {{{shown}}}{cov}"
             rs = resweeps.get(p["param"])
             if rs and rs.get("coverage"):
@@ -442,11 +466,43 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             # that never ran (L580). It is offline-gradable and UNTESTED.
             line = (f"{p['id']} {p['param']}: production {p['production']},"
                     f" free band {p['free_band']} - NOT TESTED in this"
-                    " campaign (offline-gradable; no rows varied it)")
+                    " campaign (offline-gradable; "
+                    + ("no row ran a band level)" if comp
+                       else "no rows varied it)"))
         else:
+            # S6-B3139z: the knob clause reads the row - a resim-only param
+            # with an env knob is not "no env knob".
+            knob = (f"resim via {p['env']}" if p.get("env")
+                    else "no env knob")
             line = (f"{p['id']} {p['param']}: production {p['production']},"
                     f" band {p['band']} - resim-only, UNTESTED-OFFLINE"
-                    " (no env knob; engine re-simulation required)")
+                    f" ({knob}; engine re-simulation required)")
+        # S6-B3139w/z: where the pre-registration record (SPECS_PHASE0)
+        # disagrees with the authoritative band it is disclosed, never chosen.
+        pre = pre_band.get(p["id"])
+        if pre is not None and pre != (p.get("band") or []):
+            line += (f"; band {p.get('band')} per SPECS (pre-registration"
+                     f" SPECS_PHASE0 band {pre}; SPECS wins per owner ruling"
+                     " S6-B3139o)")
+        if comp:
+            by_k: dict[str, list] = {}
+            for r in comp:
+                by_k.setdefault(r["axis"], []).append(r)
+            num = lambda x: ((0, float(x)) if isinstance(x, (int, float))
+                             else (1, str(x)))
+            parts = []
+            for k in sorted(by_k):
+                for o in sorted({r.get("op") for r in by_k[k]}, key=str):
+                    if o in ("eq_true", "eq_false"):
+                        parts.append(_key_cond(k, o, None))
+                        continue
+                    lv = sorted({r["level"] for r in by_k[k]
+                                 if r.get("op") == o}, key=num)
+                    sym = {"le": "<=", "ge": ">="}.get(o, o)
+                    parts.append(f"{k} {sym} {{{', '.join(map(str, lv))}}}")
+            line += (f"; OFFLINE COMPANION ROWS ({len(comp)}, in this column):"
+                     f" {'; '.join(parts)} - AND-conditions on the production"
+                     " base, not counted toward the band levels")
         # S6-B3139w fail-closed half: an actuated axis whose cube left no
         # readable run manifest. The tested-status above still holds; the
         # VALUE the cube ran at is unknown, so production is never assumed
@@ -486,6 +542,13 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             f"{len(rows)} graded cells across {len(arts)} artifact(s)"
             + (f"; reproduction {fires} fires" if fires else "")
             + "; holdout NOT read; no gates (B1608); npt excluded from ranking.",
+            # S6-B3139an: a dropped row is COUNTED, never silent.
+            *([f"ROWS NOT RENDERED - {sum(dropped.values())} artifact row(s)"
+               " whose axis is neither a Table A label nor a declared signal"
+               " key (B2708 prunes them from this view; their history stays"
+               " in the artifacts): "
+               + ", ".join(f"{k} ({v})" for k, v in sorted(dropped.items()))]
+              if dropped else []),
             "INVENTORY (one column per Table A row; '-' = breadth axis not applied,"
             " production behavior; " + _design(rows) + "):",
             *["  - " + x for x in inv],

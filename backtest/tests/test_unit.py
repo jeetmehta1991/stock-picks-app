@@ -40785,15 +40785,24 @@ def test_b2874_table_d_resolves_from_either_registry():
             assert spec.get("no_gate_knob") is not None, (
                 n, "an empty band inventory must DECLARE why it is empty")
 
-    # PHASE0 wins where a name is in BOTH - deliberately, because this fix
-    # adds a FALLBACK and changes no existing resolution. MEASURED: flipping
-    # to SPECS-first dropped confirmation_arm from Table D for
-    # smc_liquidity_sweep_reversal, which test_b2699 caught. A crash fix must
-    # not smuggle in a precedence decision (S6-B2874 keeps the merge).
+    # S6-B3139z (B3139q-r20): where a name is in BOTH registries the
+    # precedence is the owner's ruling S6-B3139o, "SPECS wins", PER PARAM -
+    # not B2874's preserved PHASE0-first (that fix rightly refused to smuggle
+    # a precedence decision into a crash fix; the decision has since been
+    # ruled). Per param, so the B2874 hazard - a whole-entry SPECS-first flip
+    # dropped smc_liquidity_sweep_reversal's confirmation_arm column - cannot
+    # recur: every id either registry holds stays a column (test_b2699).
     both = sorted(set(pvt.SPECS) & set(pvt.SPECS_PHASE0))
     assert both, "fixture stale: no name is in both registries"
     for n in both:
-        assert tdr._spec(n) is pvt.SPECS_PHASE0[n], n
+        spec = tdr._spec(n)
+        assert spec == pvt.resolved_spec(n), n
+        ids = [p["id"] for p in spec["params"]]
+        for p0 in pvt.SPECS_PHASE0[n]["params"]:
+            assert p0["id"] in ids, (n, p0["id"], "a PHASE0-only column was dropped")
+        for s in pvt.SPECS[n]["params"]:
+            assert next(p for p in spec["params"] if p["id"] == s["id"]) == s, (
+                n, s["id"], "the SPECS row must win for an id in both registries")
 
     # a genuinely absent strategy REFUSES with a reason, rather than raising
     # a bare KeyError that reads like a crash
@@ -50443,6 +50452,87 @@ def test_b3139aq_learnings_headings_use_the_parsed_form():
     assert max(parsed) == max(anylevel), (
         f"newest L heading under any level is L{max(anylevel)} but the "
         f"three-hash parser's newest is L{max(parsed)} - an entry is invisible")
+
+
+def test_b3139z_renderer_and_coverage_gate_share_one_resolved_spec():
+    """S6-B3139z (B3139q-r20): band_coverage_gate applied the owner's
+    S6-B3139o ruling ("SPECS wins", per param) while table_d_render resolved
+    PHASE0 first, so the coverage verdict counted bollinger_lower's ruled
+    8-span P3/P4 band while the rendered view showed 1 level. Both now call
+    producer_variant_table.resolved_spec. Fails on the r19 tree, where the
+    renderer returns the PHASE0 entry (P3 band [200])."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import band_coverage_gate as bcg
+    import producer_variant_table as pvt
+    import table_d_render as tdr
+    both = sorted(set(pvt.SPECS) & set(pvt.SPECS_PHASE0))
+    assert len(both) >= 3, both
+    for n in both:
+        assert tdr._spec(n) == bcg._load_spec(n, None) == pvt.resolved_spec(n), n
+    bl = {p["id"]: p for p in tdr._spec("bollinger_lower")["params"]}
+    assert bl["P3"]["band"] == [9, 20, 21, 50, 100, 150, 200, 250]
+    assert all(f"B{i}" in bl for i in range(1, 9)), "PHASE0-only breadth rows kept"
+    art = root / "output_audit" / "b3139_bollinger_lower_breadth_net_long.json"
+    out = tdr.build_table("bollinger_lower", [str(art)], top=3)
+    p3 = next(ln for ln in out.splitlines() if ln.startswith("  - P3 "))
+    assert "band [9, 20, 21, 50, 100, 150, 200, 250] per SPECS" in p3, p3
+    assert "pre-registration SPECS_PHASE0 band [200]" in p3, p3
+
+
+def test_b3139an_signal_key_rows_render_under_their_param(tmp_path):
+    """S6-B3139an (B3139q-r20): Table D kept a row only when its axis equalled
+    a Table A display LABEL, and breadth grids key rows by signal name - so
+    the bollinger NET render hid 208 of 806 long rows (adx under P9 'adx
+    ceiling', below_ema_N under P3), silently. A param now declares its
+    signal_keys: such rows render in its column and are NAMED in its
+    inventory line, never counted toward its band; a row matching neither
+    label nor key is COUNTED in the header. Fails on the r19 tree (598 graded
+    cells, no companion line, no disclosure line)."""
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import table_d_render as tdr
+    art = root / "output_audit" / "b3139_bollinger_lower_breadth_net_long.json"
+    doc = json.loads(art.read_text(encoding="utf-8"))
+    n_rows = len(doc["rows"])
+    out = tdr.build_table("bollinger_lower", [str(art)], top=10 ** 9)
+    lines = out.splitlines()
+    assert f"{n_rows} graded cells across 1 artifact(s)" in out, lines[:3]
+    assert not any(ln.startswith("ROWS NOT RENDERED") for ln in lines)
+    p9 = next(ln for ln in lines if ln.startswith("  - P9 "))
+    assert ("OFFLINE COMPANION ROWS (104, in this column): "
+            "adx <= {18.2, 21.83, 25.142, 28.488}") in p9, p9
+    assert "no row ran a band level" in p9, p9
+    body = [ln for ln in lines if ln.startswith("| ") and not ln.startswith("| rank")]
+    assert any("| adx <= 18.2 |" in ln for ln in body)
+    assert any("| below_ema_9 = true |" in ln for ln in body)
+
+    # must-fire: an undeclared axis is dropped AND counted, never silent
+    extra = dict(doc["rows"][0], axis="undeclared_axis_b3139an")
+    doc["rows"] = doc["rows"] + [extra]
+    p = tmp_path / "with_undeclared.json"
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    out2 = tdr.build_table("bollinger_lower", [str(p)], top=3)
+    head = [ln for ln in out2.splitlines() if ln.startswith("ROWS NOT RENDERED")]
+    assert len(head) == 1 and "undeclared_axis_b3139an (1)" in head[0], head
+    assert f"{n_rows} graded cells" in out2
+
+    # the writer side: a signal key maps to ONE column only
+    spec = json.loads(json.dumps(pvt.SPECS_PHASE0["bollinger_lower"]))
+    by = {q["id"]: q for q in spec["params"]}
+    by["P9"]["signal_keys"] = ["adx", "below_ema_9"]         # P3 owns it
+    assert any("'below_ema_9' also maps to" in e for e in pvt.validate_spec(spec))
+    by["P9"]["signal_keys"] = ["defensive_leadership"]       # B2's label
+    assert any("is B2's label" in e for e in pvt.validate_spec(spec))
+    assert not pvt.validate_spec(pvt.SPECS_PHASE0["bollinger_lower"])
 
 
 def test_b3139_dropping_an_admission_moves_the_deployable_total(tmp_path):

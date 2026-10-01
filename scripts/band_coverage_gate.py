@@ -148,30 +148,11 @@ def _registry_conflicts(strategy: str) -> dict:
 def _load_spec(strategy: str, spec: dict | None):
     if spec is not None:
         return spec
-    from producer_variant_table import SPECS_PHASE0
-    try:
-        from producer_variant_table import SPECS
-    except ImportError:  # pragma: no cover - SPECS always exists today
-        SPECS = {}
-    # S6-B3139o (owner ruling 2026-09-30): SPECS wins. Applied PER PARAM:
-    # where an id exists in both registries, SPECS' row is authoritative
-    # (the ruled case - P3/P4's 8-span band); an id present in only ONE
-    # registry is KEPT, because dropping inventoried params (bollinger's
-    # B1-B8 live only in PHASE0; smc_lsr's arm/leg/momentum rows likewise)
-    # would shrink Table A and weaken the B2704 refusal the inventory
-    # exists for. Non-param keys come from SPECS where present. PHASE0
-    # itself is never edited - it stays the pre-registration record.
-    s, p0 = SPECS.get(strategy), SPECS_PHASE0.get(strategy)
-    if s and p0 and "params" in s and "params" in p0:
-        key = lambda q: q.get("id") or q.get("param")
-        by_id = {key(q): q for q in p0["params"]}
-        by_id.update({key(q): q for q in s["params"]})
-        ids_p0 = [key(q) for q in p0["params"]]
-        merged = [by_id[i] for i in ids_p0]
-        merged += [q for q in s["params"] if key(q) not in set(ids_p0)]
-        entry = {**p0, **s, "params": merged}
-    else:
-        entry = s or p0
+    # S6-B3139o (owner ruling 2026-09-30): SPECS wins, PER PARAM - the merge
+    # now lives in producer_variant_table.resolved_spec, the ONE definition
+    # this gate and table_d_render share (S6-B3139z).
+    from producer_variant_table import resolved_spec
+    entry = resolved_spec(strategy)
     if not entry:
         raise SystemExit(f"REFUSED: no Table A spec for {strategy!r}")
     return entry

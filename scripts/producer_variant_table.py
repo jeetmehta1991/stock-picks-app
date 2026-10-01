@@ -2144,7 +2144,12 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "status": "T3/Q2-APPROVED 2026-09-27; WIRED B3119. Resim spans {9,20,21,50,100,150,250} APPROVED but DECLARED ONLY IN THE CHARTER until the family tools adapter lands (S6-B2883 fail-closed: no resim promise without it) - S6-B3119 leg 3 names the adapter as its blocker",
          "type": "int", "engine_implemented": True,
          "evidence": "config.py:2584; gate span-keyed B3119; persisted canon flags 9/20/21/50/200 measured 200-of-200 (S6-B3117b probe)",
-         "derivation": "resim runs set STRAT_EMA_SPAN=N AND EMA_PAIRS including N (technical.py:768); canon-span ADD-A-CONDITION legs ride the offline grid as below_ema_N axes"},
+         "derivation": "resim runs set STRAT_EMA_SPAN=N AND EMA_PAIRS including N (technical.py:768); canon-span ADD-A-CONDITION legs ride the offline grid as below_ema_N axes",
+         # S6-B3139an: the grid-row axis names this param's offline legs
+         # carry (the persisted canon flags in "evidence"); Table D maps
+         # rows keyed by them to this column instead of dropping them.
+         "signal_keys": ["below_ema_9", "below_ema_20", "below_ema_21",
+                         "below_ema_50", "below_ema_200"]},
         {"id": "P4", "producer": "compute_ema_sma",
          "param": "ema span (price_above_ema_N, LONG leg)", "production": 200,
          "band": [200],
@@ -2200,7 +2205,8 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "status": "T3-APPROVED 2026-09-27 - all four tighter levels",
          "type": "float", "engine_implemented": True,
          "evidence": "charter free-band line (QUANTS retention on 1622 fires: 1298/974/649/326)",
-         "derivation": "TIGHTER = LOWER the ceiling; production included as the offline identity level"},
+         "derivation": "TIGHTER = LOWER the ceiling; production included as the offline identity level",
+         "signal_keys": ["adx"]},  # S6-B3139an: breadth rows carry axis "adx"
         {"id": "P10", "producer": "screener helper (shared, 6 consumers)",
          "param": "days_to_cover cap (borrow guard, SHORT leg)",
          "production": "5.0", "band": ["5.0"],
@@ -2692,6 +2698,30 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
 }
 
 
+def resolved_spec(strategy: str) -> dict | None:
+    """The ONE Table A spec for a strategy, from either registry (S6-B3139z).
+
+    Owner ruling S6-B3139o (2026-09-30): SPECS wins. Applied PER PARAM: where
+    an id exists in both registries SPECS' row is authoritative; an id present
+    in only one is KEPT, because dropping inventoried params (bollinger's
+    B1-B8 live only in PHASE0; smc_lsr's arm/leg/momentum rows likewise) would
+    shrink Table A and weaken the B2704 refusal the inventory exists for.
+    Non-param keys come from SPECS where present; PHASE0 is never edited - it
+    stays the pre-registration record. band_coverage_gate and table_d_render
+    both call this, so the coverage verdict and the rendered view cannot read
+    different bands (they did: S6-B3139z). None when neither registry has it."""
+    s, p0 = SPECS.get(strategy), SPECS_PHASE0.get(strategy)
+    if s and p0 and "params" in s and "params" in p0:
+        key = lambda q: q.get("id") or q.get("param")
+        by_id = {key(q): q for q in p0["params"]}
+        by_id.update({key(q): q for q in s["params"]})
+        ids_p0 = [key(q) for q in p0["params"]]
+        merged = [by_id[i] for i in ids_p0]
+        merged += [q for q in s["params"] if key(q) not in set(ids_p0)]
+        return {**p0, **s, "params": merged}
+    return s or p0
+
+
 def validate_spec(spec: dict) -> list[str]:
     """Formula and Table A must not drift apart. Every P-id in the formula needs
     a params row and every params row needs a formula step - a mechanical check,
@@ -2708,6 +2738,25 @@ def validate_spec(spec: dict) -> list[str]:
         errs.append(f"{i} has a Table A row but no formula step")
     if not spec.get("formula"):
         errs.append("SPEC has no `formula` - it is REQUIRED (B1510 standard)")
+    # S6-B3139an: a grid row's axis maps to ONE column - a signal key that
+    # repeats, or equals another param's label, would credit two columns.
+    _owner: dict = {}
+    for _p in spec["params"]:
+        _keys = _p.get("signal_keys")
+        if _keys is None:
+            continue
+        if not isinstance(_keys, list) or not all(
+                isinstance(k, str) and k for k in _keys):
+            errs.append(f"{_p['id']}: signal_keys must be a list of non-empty strings")
+            continue
+        for _k in _keys:
+            if _k in _owner and _owner[_k] != _p["id"]:
+                errs.append(f"{_p['id']}: signal key {_k!r} also maps to {_owner[_k]}")
+            _owner[_k] = _p["id"]
+    _labels = {_p["param"]: _p["id"] for _p in spec["params"]}
+    for _k, _i in sorted(_owner.items()):
+        if _k in _labels and _labels[_k] != _i:
+            errs.append(f"{_i}: signal key {_k!r} is {_labels[_k]}'s label")
     # S6-B2465: validate_spec returned CLEAN for a spec with no `baseline`,
     # which main() dereferences unconditionally - so the standard 3-section
     # path CRASHED on a spec this function had just approved. A validator
