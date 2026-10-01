@@ -124,13 +124,85 @@ def _factorial_rows(a: dict) -> list:
     return out
 
 
-def load(paths: list) -> tuple[list, list, list]:
+def _cube_dir(cube) -> Path | None:
+    """The run directory an artifact's `cube` field names.
+
+    S6-B3139w. Artifacts record `cube` in four shapes - MEASURED over one
+    Step-2 config's four artifacts: an absolute path to the cube CSV, an
+    absolute directory, a repo-relative directory, and a Windows backslash
+    path. A CSV path resolves to its directory; a relative one to ROOT.
+    """
+    if not cube:
+        return None
+    p = Path(str(cube).replace("\\", "/"))
+    if not p.is_absolute():
+        p = ROOT / p
+    if p.suffix:
+        p = p.parent
+    return p
+
+
+def _run_levels(a: dict, params: list) -> dict:
+    """{param: value} for every env-actuated parameter, read from the cube's
+    OWN run manifest - the value the engine actually ran at.
+
+    S6-B3139w (council 2026-10-01, 5 of 5). A resim-swept axis runs ONE
+    CUBE PER LEVEL, so no row varies it and the row-derived labels below
+    printed the registry PRODUCTION value with NOT TESTED - span 200 for a
+    cube that ran span 9. The source of truth is run_manifest.json ->
+    arms[].env, joined to each param's `env` actuator (two params may share
+    one actuator: P3 and P4 both read STRAT_EMA_SPAN).
+
+    THE FAIL-CLOSED HALF (peer-review guard): when the manifest is absent,
+    unreadable, or records no arm env, every env-actuated param reads
+    UNKNOWN - never the registry production value, which would rebuild the
+    same defect one layer down. When the manifest records an arm env that
+    omits a param's actuator, the engine inherited its default
+    (run_wave.py builds env as {**os.environ, **arm.env}), so the value is
+    production and is labelled as such.
+    """
+    actuated = [p for p in params if p.get("env")]
+    if not actuated:
+        return {}
+    d = _cube_dir(a.get("cube"))
+    env = None
+    if d is not None and (d / "run_manifest.json").is_file():
+        try:
+            m = json.loads((d / "run_manifest.json").read_text(encoding="utf-8"))
+            arms = m.get("arms") or []
+            if arms and isinstance(arms[0].get("env"), dict):
+                env = arms[0]["env"]
+        except (OSError, ValueError):
+            env = None
+    out = {}
+    for p in actuated:
+        if env is None:
+            out[p["param"]] = UNKNOWN
+        elif p["env"] in env:
+            raw = env[p["env"]]
+            try:
+                out[p["param"]] = json.loads(raw)
+            except (TypeError, ValueError):
+                out[p["param"]] = raw
+        else:
+            out[p["param"]] = p.get("production")
+    return out
+
+
+UNKNOWN = "UNKNOWN"
+
+
+def load(paths: list, params: list | None = None) -> tuple[list, list, list]:
     arts = [json.loads(Path(p).read_text(encoding="utf-8")) for p in paths]
     rows, skips = [], []
     for a in arts:
         raw = a.get("rows")
         src = raw if isinstance(raw, list) else _factorial_rows(a)
+        run = _run_levels(a, params or [])
+        a["_run_levels"] = run
         for r in src:
+            if run:
+                r = {**r, "run_levels": run}
             (skips if r.get("is_sharpe") is None else rows).append(r)
     return arts, rows, skips
 
@@ -213,6 +285,13 @@ def _row_cells(r: dict, params: list) -> dict:
     vals = {}
     for p in params:
         vals[p["param"]] = "-" if p["id"].startswith("B") else str(p["production"])
+    # S6-B3139w: the value the cube's engine actually ran at, from its own
+    # run manifest - overrides the registry production default above.
+    for name, level in (r.get("run_levels") or {}).items():
+        p = next((x for x in params if x["param"] == name), None)
+        if p is not None:
+            vals[name] = (UNKNOWN if level == UNKNOWN
+                          else _level_cell(p, level))
     # B3082: a FACTORIAL row varies several axes at once. Without this the
     # loop below would set at most ONE of them and the other tested axes
     # would render at production value - a view that cannot be told apart
@@ -235,9 +314,39 @@ def _row_cells(r: dict, params: list) -> dict:
     return vals
 
 
+def _step(arts: list) -> str:
+    """The step the cubes ran at, from their own manifests (S6-B3139w: the
+    header said Step-1 unconditionally, on Step-2 cubes too). Several steps
+    in one render are named together; none recorded reads 'step UNKNOWN'."""
+    steps = set()
+    unreadable = []
+    for a in arts:
+        d = _cube_dir(a.get("cube"))
+        if d is not None and (d / "run_manifest.json").is_file():
+            try:
+                m = json.loads((d / "run_manifest.json").read_text(encoding="utf-8"))
+                if m.get("step") is not None:
+                    steps.add(int(m["step"]))
+            except (OSError, ValueError, TypeError) as exc:
+                # #122: a manifest that cannot be read is REPORTED in the
+                # header, never skipped silently.
+                unreadable.append(f"{d.name}: {type(exc).__name__}")
+    note = f"; unreadable manifest(s): {', '.join(unreadable)}" if unreadable else ""
+    if not steps:
+        return f"step UNKNOWN (no readable run manifest recorded{note})"
+    return " + ".join(f"Step-{s}" for s in sorted(steps)) + (
+        f" ({note[2:]})" if note else "")
+
+
 def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
-    arts, rows, skips = load(artifact_paths)
     params = _spec(strategy)["params"]
+    arts, rows, skips = load(artifact_paths, params)
+    # The OTHER registry's bands, when the strategy sits in both and the
+    # renderer resolved PHASE0 (S6-B2874 precedence) - used only to DISCLOSE
+    # a disagreement in a coverage denominator, never to choose one.
+    _alt = SPECS.get(strategy) if SPECS_PHASE0.get(strategy) else None
+    alt_band = {p["id"]: p.get("band")
+                for p in ((_alt or {}).get("params") or [])}
     # B2708: Table D renders the LIVE Table A inventory - artifact rows for
     # axes an owner ruling has since pruned from the band drop out of the
     # view (their tested history stays in the committed artifacts).
@@ -259,6 +368,26 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             tested_levels.setdefault(r["axis"], set()).add(r["level"])
         for name, lev in (r.get("levels") or {}).items():
             tested_levels.setdefault(name, set()).add(lev)
+            resim_tested.add(name)
+    # S6-B3139w: a resim-swept axis is one cube per level, so its evidence is
+    # the cube's run manifest, not row variance. A value equal to production
+    # is the axis HELD (the existing branch below says so); UNKNOWN is
+    # carried to its own inventory line, never counted as tested.
+    # Only a NON-production run level is resim evidence: a manifest holding
+    # an actuated param at its default says nothing about whether OFFLINE
+    # rows varied it, so it must not relabel an offline axis as resim.
+    unknown_run: set = set()
+    run_seen: dict[str, set] = {}
+    for a in arts:
+        for name, lev in (a.get("_run_levels") or {}).items():
+            if lev == UNKNOWN:
+                unknown_run.add(name)
+            else:
+                run_seen.setdefault(name, set()).add(lev)
+    prod = {p["param"]: p.get("production") for p in params}
+    for name, levs in run_seen.items():
+        if any(lev != prod.get(name) for lev in levs):
+            tested_levels.setdefault(name, set()).update(levs)
             resim_tested.add(name)
 
     resweeps = {a["axis"]: a for a in arts if a.get("axis")}
@@ -292,6 +421,13 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             else:
                 cov = (f" ({len(levs)} of {len(band)} band levels)"
                        if band else "")
+                # S6-B3139w: a denominator from one registry while the other
+                # disagrees is disclosed, never silently chosen - the
+                # PHASE0-first precedence above is deliberate (S6-B2874).
+                alt = alt_band.get(p["id"])
+                if alt is not None and alt != band:
+                    cov += (f" [registry disagreement: promoted SPECS band"
+                            f" {alt} has {len(alt)} levels - S6-B3139z]")
                 line = f"{p['id']} {p['param']}: {how} at {{{shown}}}{cov}"
             rs = resweeps.get(p["param"])
             if rs and rs.get("coverage"):
@@ -311,6 +447,13 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             line = (f"{p['id']} {p['param']}: production {p['production']},"
                     f" band {p['band']} - resim-only, UNTESTED-OFFLINE"
                     " (no env knob; engine re-simulation required)")
+        # S6-B3139w fail-closed half: an actuated axis whose cube left no
+        # readable run manifest. The tested-status above still holds; the
+        # VALUE the cube ran at is unknown, so production is never assumed
+        # (the row cells read UNKNOWN for the same reason).
+        if not levs and p["param"] in unknown_run:
+            line += ("; run value UNKNOWN - no readable run_manifest.json"
+                     " arm env for this cube, production NOT assumed")
         inv.append(line)
 
     nulls = []
@@ -338,7 +481,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
         else:
             skip_notes.append(f"{ax} SKIP ({s.get('level')}) - UNTESTED, not refuted")
 
-    head = ["# TABLE D (OFFLINE FORM, unified) - " + strategy + " Step-1",
+    head = ["# TABLE D (OFFLINE FORM, unified) - " + strategy + " " + _step(arts),
             "",
             f"{len(rows)} graded cells across {len(arts)} artifact(s)"
             + (f"; reproduction {fires} fires" if fires else "")

@@ -51388,3 +51388,77 @@ def test_b3139_make_spec_carries_the_lifecycle_exemptions():
                        "preleg_lifecycle_exemptions.json").read_text(encoding="utf-8"))
     key = _P(str(phase_table.resolve(2)["tickers_file"])).name
     assert key in reg and sorted(reg[key]) == ["FISV", "SBNY"]
+
+
+def _b3139w_render(tmp_path, manifest):
+    """Render bollinger_lower's Table D over ONE factorial-shape artifact
+    whose cube dir holds `manifest` (None = no manifest file at all)."""
+    import importlib
+    import json as _j
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    m = importlib.import_module("table_d_render")
+    cube = tmp_path / "output_fixture_cube"
+    cube.mkdir()
+    if manifest is not None:
+        (cube / "run_manifest.json").write_text(_j.dumps(manifest),
+                                                encoding="utf-8")
+    art = {"rows": 24, "cube": str(cube / "trade_exit_detail.csv"),
+           "config": {"P4_ema_span": 9},
+           "per_exit": [{"exit": "breakeven_plus_trail", "is_sharpe": 0.694,
+                         "is_ci_lo": 0.554, "fires": 1272, "rank": 1,
+                         "admit": {"full_period_n": 1737}}]}
+    p = tmp_path / "art.json"
+    p.write_text(_j.dumps(art), encoding="utf-8")
+    out = m.build_table("bollinger_lower", [str(p)], top=5)
+    hdr = [ln for ln in out.splitlines() if ln.startswith("| rank |")]
+    row = [ln for ln in out.splitlines() if ln.startswith("| 1 |")]
+    assert len(hdr) == 1 and len(row) == 1, out
+    cols = [c.strip() for c in hdr[0].strip("|").split("|")]
+    cells = [c.strip() for c in row[0].strip("|").split("|")]
+    long_leg = cells[cols.index("ema span (price_above_ema_N, LONG leg)")]
+    short_leg = cells[cols.index("ema span (below_ema_N, SHORT leg)")]
+    inv4 = [ln for ln in out.splitlines() if "- P4 " in ln]
+    assert len(inv4) == 1, out
+    return out, long_leg, short_leg, inv4[0]
+
+
+def test_b3139w_resim_axis_value_comes_from_the_cube_manifest(tmp_path):
+    """S6-B3139w (council 2026-10-01, 5 of 5): a resim-swept axis runs ONE
+    CUBE PER LEVEL, so no row varies it, and table_d_render printed the
+    registry PRODUCTION value (span 200, NOT TESTED) for a cube that ran
+    span 9. The value now comes from the cube's own run_manifest.json arm
+    env, joined to each param's env actuator - P3 AND P4 both read
+    STRAT_EMA_SPAN - and the header names the step the manifest records,
+    not a hard-coded Step-1."""
+    out, long_leg, short_leg, inv4 = _b3139w_render(
+        tmp_path, {"step": 2, "arms": [{"tag": "p4_9",
+                                        "env": {"STRAT_EMA_SPAN": "9"}}]})
+    assert long_leg == "9" and short_leg == "9", (long_leg, short_leg)
+    assert "TESTED BY RE-SIMULATION at {9}" in inv4, inv4
+    assert out.splitlines()[0].endswith("bollinger_lower Step-2"), out[:120]
+
+
+def test_b3139w_missing_manifest_reads_unknown_never_production(tmp_path):
+    """The fail-closed half (council peer review): with NO readable run
+    manifest the run value is UNKNOWN - rendering the registry production
+    value there would rebuild the same defect one layer down. And an arm
+    env that OMITS the actuator inherited the engine default
+    (run_wave.py builds env as {**os.environ, **arm.env}), so THAT case is
+    production and must NOT be relabelled as a resim test."""
+    out, long_leg, short_leg, inv4 = _b3139w_render(tmp_path, None)
+    assert long_leg == "UNKNOWN" and short_leg == "UNKNOWN", (long_leg,
+                                                              short_leg)
+    assert "run value UNKNOWN" in inv4 and "200" not in long_leg, inv4
+    assert "step UNKNOWN" in out.splitlines()[0], out[:120]
+
+    held = tmp_path / "held"
+    held.mkdir()
+    out2, long2, short2, inv4b = _b3139w_render(
+        held, {"step": 2, "arms": [{"tag": "x", "env": {"OTHER_KNOB": "1"}}]})
+    assert long2 == "200" and short2 == "200", (long2, short2)
+    assert "TESTED BY RE-SIMULATION" not in inv4b, inv4b
+    assert "run value UNKNOWN" not in inv4b, inv4b

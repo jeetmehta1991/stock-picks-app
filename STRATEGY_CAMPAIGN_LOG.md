@@ -2155,3 +2155,27 @@ campaign p 0.0199.
   cells not read; (3) up to 3 looks at one holdout, counted in the multiplicity block;
   (4) costs as above; (5) whether an all-three fail counts toward S6-B2178c's re-raise
   trigger remains the owner's, needed only after results.
+
+### I.6 Step-2 waterfall results - configs 1 and 2 (2 of 3 holdout looks spent)
+
+Appended B3139q-r17 (2026-10-01). Window IS 2022-05-05..2025-05-05, holdout
+2025-05-05..2026-05-05, 544 tickers; NET basis (pre-registration item 1). Each verdict is the
+six LIVE_GATES on the holdout of the exit selected on IS rows only
+(rc.select_exit objective=gates), read from each cube's
+output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
+
+| config | span | IS-selected exit | IS n / sharpe | holdout n / sharpe | sortino | PF | psr | full n | gates | verdict |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 9 | breakeven_plus_trail | 1272 / 0.694 | 465 / 0.422 | 1.282 | 1.681 | 0.9999 | 1737 | 5 of 6 | FAIL |
+| 2 | 250 | breakeven_plus_trail | 4116 / 0.425 | 1456 / 0.526 | 1.529 | 1.894 | 1.0 | 5572 | 5 of 6 | FAIL |
+
+- **The failing gate is the same on both: pooled_sharpe** (holdout Sharpe below the 1.0 bar,
+  roster_core min_sharpe_overall). Profit factor, sortino, psr and both trade floors pass on both.
+- **Config 1** landed 2026-09-30 (chain b3131, 5 legs). **Config 2** ran 3 CAP_STOP legs to sim
+  day 914 (INCOMPLETE_MAX_LEGS 2026-10-01 12:22Z), resumed on the owner's word "Continue" from
+  the day-914 checkpoint (chain b3119f_cfg2e, one leg), landed COMPLETE 2026-10-01 16:09:55Z;
+  battery exit 0, 9 of 9 steps recorded, 0 lens findings, landing commit 83faf4be2.
+- **Waterfall state (runbook 4.8):** no config has qualified, so config 3 (span 100) is next. It
+  spends the third and last pre-registered holdout look and launches only on the owner's word
+  (S6-B3139ab). If it also fails, D6 closes bollinger_lower NEGATIVE for Phase 1B and
+  pre-registration item 5 goes to the owner.

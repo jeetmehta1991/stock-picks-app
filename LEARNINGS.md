@@ -24302,3 +24302,38 @@ context feel like observations rather than assertions. No new CHECKLIST
 item (#136): both items exist and their scans fired - the system worked;
 this entry is the required record. Mechanism: existing scans named above;
 durability is their corpus entries.
+
+ADDENDUM (same day, B3139q-r17): INSTANCE 2 of the heredoc class, after
+this entry was written - a probe patcher was passed through a quoted
+python heredoc whose body carried backslash escapes (string-literal
+quotes and a newline escape). The quoted delimiter passed them literally
+and the file view confirmed every insertion, so no damage - luck about the
+transport, not care. COMPLIANCE FAILURE against #259 again; the S6-B3138a
+scan fired on it. Same remedy, applied from this point: a patcher whose
+payload carries ANY backslash is a Write-tool file, run by path.
+
+INSTANCE 3 (same session, minutes after instance 2's remedy was written):
+a commit-message patcher went through a quoted python heredoc carrying
+newline escapes. Landed correctly, verified from the file view; the r18
+gate was stopped and restarted so this record rides the same commit.
+COMPLIANCE FAILURE against #259 a third time - the L570 shape (writing a
+rule does not install it). Three catches by a scan that fires at TURN
+CLOSE means the guard arrives after the command already ran; S6-B3139ae
+tickets a pre-execution refusal as the class remedy.
+
+## L896 - A FAIL-CLOSED FIX WROTE A FAIL-SILENT HELPER BESIDE IT (B3139q-r17, 2026-10-01)
+
+Record-of-fact. The S6-B3139w renderer fix was built around one rule -
+an unreadable run manifest must surface as UNKNOWN, never as a silent
+default - and in the same edit its sibling helper _step() caught the very
+same unreadable-manifest exceptions with a bare except-pass, falling back
+to "step UNKNOWN" without saying a manifest had failed to parse. The full
+pyramid gate (output_audit/b3139_pyramid_r17.out) went RED on
+test_b2128_silent_except_pass_is_a_shrinking_set: 129 sites against a
+frozen ceiling of 128. Fixed before any commit: the helper now names each
+unreadable manifest in the header. COMPLIANCE FAILURE against #122 (every
+swallowed exception is paired with a visible trace); no new item (#136) -
+the AST ratchet that enforces #122 caught it at the gate, which is the
+mechanism working. The shape worth keeping: applying a rule carefully to
+the function under design does not apply it to the helper written in the
+same breath; the ratchet, not attention, is what reached the second site.

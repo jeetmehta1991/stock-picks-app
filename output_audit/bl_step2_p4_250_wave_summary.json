@@ -1,10 +1,10 @@
 {
- "spec_sha256": "c57a7a472511925b",
- "chain_run_id": "stockpicks_chain_b3119f_cfg2d_1790808509",
+ "spec_sha256": "38426e72cb745538",
+ "chain_run_id": "stockpicks_chain_b3119f_cfg2e_1790863418",
  "supersedes": {
-  "archived_to": "bl_step2_p4_250_wave_summary_STALE_1790808544.json",
-  "identity": "2b66f717f53301be",
-  "status": "GATE_REFUSED",
+  "archived_to": "bl_step2_p4_250_wave_summary_STALE_1790863455.json",
+  "identity": "c57a7a472511925b",
+  "status": "INCOMPLETE_MAX_LEGS",
   "declared": true
  },
  "spec": {
@@ -37,8 +37,8 @@
   "_fires_basis": "strategy_optimisation_status.json (build 715abb8e6): projected_step1_fires 149.1 for bollinger_lower - the production-gate expectation per S6-B2848c; a knob swap changes the fire set both ways by construction (L812)",
   "_window_note": "DELIBERATELY ABSENT. phase_table.resolve injects window and universe; typing them is refused (B2713/L788).",
   "_generated_by": "scripts/make_spec.py (S6-B3120a)",
-  "supersedes_summary": "2b66f717f53301be",
-  "supersedes_note": "B3139q-r12c: supersedes the cfg2b GATE_REFUSED summary only - that run's engine was NEVER invoked (B2127 drift refusal on a dirty tree), so no holdout was read and the runbook 0.6 re-read caveat does not bind; the owner's launch word (2026-09-30) stands",
+  "supersedes_summary": "c57a7a472511925b",
+  "supersedes_note": "S6-B3119f RESUMED CONTINUATION (owner word 'Continue' 2026-10-01): the superseded summary is this same spec's own INCOMPLETE_MAX_LEGS record (3 CAP_STOP legs, sim day 914 of 1,003). resume=true picks up output_bl_step2_p4_250_p4_250/engine_state.json at sim_day_index 914 - ONE resumed leg finishes the ~89 remaining days; the engine is NOT re-reading the holdout from day 0. Prior token 2b66f717f53301be was consumed by the 2026-09-30 launch (cfg2d); prior note B3139q-r12c superseded the cfg2b GATE_REFUSED summary (engine never invoked there)",
   "_spec_path": "bl_step2_p4_250_spec.json",
   "window": {
    "start": "2022-05-05",
@@ -57,32 +57,21 @@
  "results": [
   {
    "arm": "p4_250",
-   "status": "INCOMPLETE_MAX_LEGS",
-   "legs": 3,
+   "status": "COMPLETE",
+   "legs": 1,
+   "boundary_carryover": "NOT-APPLICABLE-SINGLE-LEG",
+   "measured_rates": "NOT-APPLICABLE-SINGLE-LEG",
+   "cube_rows": 133728,
+   "elapsed_s": 7537,
+   "postconfig_exit": 0,
    "leg_outcomes": [
     {
      "leg": 1,
-     "outcome": "CAP_STOP",
-     "exit": 1,
-     "status": "wall_time_kill",
-     "simulated_day": 329,
-     "commit_free_gb_at_start": 35.48
-    },
-    {
-     "leg": 2,
-     "outcome": "CAP_STOP",
-     "exit": 1,
-     "status": "wall_time_kill",
-     "simulated_day": 641,
-     "commit_free_gb_at_start": 34.76
-    },
-    {
-     "leg": 3,
-     "outcome": "CAP_STOP",
-     "exit": 1,
-     "status": "wall_time_kill",
-     "simulated_day": 914,
-     "commit_free_gb_at_start": 34.44
+     "outcome": "COMPLETE",
+     "exit": 0,
+     "status": "complete",
+     "simulated_day": 1002,
+     "commit_free_gb_at_start": 33.73
     }
    ]
   }
