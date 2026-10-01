@@ -24274,3 +24274,31 @@ becomes tickets) and Phase 1's depth-first ordering (B2056, decision-gated
 skips excepted) - no new CHECKLIST item (#136). Mechanism: JUDGMENT-ONLY -
 session orchestration ordering is not scannable; durability is this entry
 plus the committed packet precedent.
+
+## L895 - TWO GATE-CAUGHT COMPLIANCE INSTANCES IN ONE POST-COMPACTION TURN (B3139q-r15 close, 2026-10-01)
+
+Record-of-fact, no new rule. In the first working turn after a compaction
+(boundary entry 108985, 2026-10-01T13:27:00Z per transcript_timeline.py,
+EXECUTED), two existing rules were violated and both were caught by the turn
+gate, not by me:
+
+1. COMPLIANCE FAILURE AGAINST #322/L870: the response said the
+   execution-discipline skill was "in context pre-compaction" - a claim about
+   my own actions across a compaction boundary - without running
+   scripts/transcript_timeline.py first. Retracted visibly in the same
+   session; the corrected statement cites the boundary entry. The class
+   mechanism already exists and fired (the #322 scan).
+
+2. COMPLIANCE FAILURE AGAINST #259/L885: a `python - <<EOF` heredoc body
+   carried a backslash pair (`split("\n")`), the exact transport L885
+   records as mangling escapes silently. The remedy is route, not care:
+   backslash-bearing scripts go through the Write tool and run as files
+   (done for every subsequent script this turn). The class mechanism
+   already exists and fired (the S6-B3138a heredoc scan).
+
+Both instances are the L871 shape's neighbours: a post-compaction turn
+works from replayed context that LOOKS complete, and claims about that
+context feel like observations rather than assertions. No new CHECKLIST
+item (#136): both items exist and their scans fired - the system worked;
+this entry is the required record. Mechanism: existing scans named above;
+durability is their corpus entries.
