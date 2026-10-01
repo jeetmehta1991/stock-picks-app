@@ -24405,3 +24405,25 @@ L723 and requires the three-hash parser's maximum to equal the maximum
 under any heading level. COMPLIANCE FAILURE against #275 (a gate keyed on
 one format is blind to the next) - the B2520 banner instance of the same
 class, arriving through the writer this time rather than the reader.
+
+### L900 - A BLANK ENV VALUE WAS READ AS A LEVEL, SO A VIEW CLAIMED A BAND LEVEL THAT NEVER RAN (B3139q-r21, 2026-10-01)
+
+My S6-B3139w reader (table_d_render._run_levels, B3139q-r17) decoded each
+arm's env value with json.loads and kept the raw string when decoding
+failed. Nine of three_white_soldiers' 18 Step-1 candle configs ran with
+CANDLE_MAX_WICK_PCT="" - the engine's unset path, since
+backtest/config.py:2500-2501 parses a blank as None, P5's production value -
+so the reader recorded a level "" beside the rows' None, and the Table D
+inventory claimed P5 "TESTED BY RE-SIMULATION at {, 0.3, None} (3 of 3 band
+levels)" while 0.2 never ran (true: 2 of 3). Found by the S6-B3139z golden
+diff, which compared the current renderer against the committed b3082
+render (made before S6-B3139w, it says 2 of 3). Fixed under S6-B3139ax: a
+blank or whitespace actuator value reads as the param's production value;
+pin test_b3139ax_blank_env_value_is_the_engine_default (a synthetic
+manifest, because the candle cube dirs are untracked - 0 of 18 manifests in
+git). COMPLIANCE FAILURE against #182 (a coverage denominator in a view
+over-claimed; its INSTANCE 2 is the same view) and L861 (a TESTED label
+must derive from what ran). RULE: before a reader turns an external string
+into a value, read the CONSUMER's parse of that string - blank, "None",
+"null" and absent each mean something specific to the engine, and the
+reader must give each the meaning the consumer gives it.

@@ -180,6 +180,14 @@ def _run_levels(a: dict, params: list) -> dict:
             out[p["param"]] = UNKNOWN
         elif p["env"] in env:
             raw = env[p["env"]]
+            # S6-B3139ax: a BLANK value is the engine's unset path - config
+            # parses e.g. CANDLE_MAX_WICK_PCT as `float(raw) if raw else None`
+            # (backtest/config.py:2500-2501) - so the cube ran at production
+            # and "" is not a level. A knob whose parser cannot take a blank
+            # never produced a completed cube, so this cannot mislabel a run.
+            if isinstance(raw, str) and not raw.strip():
+                out[p["param"]] = p.get("production")
+                continue
             try:
                 out[p["param"]] = json.loads(raw)
             except (TypeError, ValueError):

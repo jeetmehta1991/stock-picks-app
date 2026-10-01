@@ -51671,6 +51671,28 @@ def test_b3139w_missing_manifest_reads_unknown_never_production(tmp_path):
     assert "run value UNKNOWN" not in inv4b, inv4b
 
 
+def test_b3139ax_blank_env_value_is_the_engine_default(tmp_path):
+    """S6-B3139ax (B3139q-r21, L900): _run_levels decoded each arm env value
+    with json.loads and KEPT THE RAW STRING on failure, so a blank value - the
+    engine's unset path (backtest/config.py:2500-2501 parses a blank
+    CANDLE_MAX_WICK_PCT as None, P5's production) - became a level "".
+    MEASURED on the local candle cubes: 9 of three_white_soldiers' 18 configs
+    ran CANDLE_MAX_WICK_PCT="", and its Table D read P5 "(3 of 3 band levels)"
+    while 0.2 never ran. Those cube dirs are untracked, so this drives the same
+    branch through the tracked synthetic-manifest fixture: a blank or
+    whitespace actuator value renders production and counts as no test.
+    Fails on the r20 tree (the cells read "")."""
+    for i, blank in enumerate(("", "  ")):
+        d = tmp_path / f"blank{i}"
+        d.mkdir()
+        out, long_leg, short_leg, inv4 = _b3139w_render(
+            d, {"step": 2, "arms": [{"tag": "x",
+                                     "env": {"STRAT_EMA_SPAN": blank}}]})
+        assert long_leg == "200" and short_leg == "200", (
+            repr(blank), long_leg, short_leg)
+        assert "TESTED BY RE-SIMULATION" not in inv4, inv4
+
+
 def _b3139ag_fixture(tmp_path):
     """A tiny run dir for the breadth instruments: 40 in-sample fires (2023)
     plus 6 holdout fires (2025-06) of strategy 'fx', two exits, one axis k
