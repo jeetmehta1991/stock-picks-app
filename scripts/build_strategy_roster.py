@@ -1243,6 +1243,11 @@ def main() -> int:
     OUT_MD.write_text("\n".join(out_lines) + "\n", encoding="utf-8")
     print(f"Wrote {OUT_MD} ({len(out_lines)} lines, {OUT_MD.stat().st_size:,} bytes)")
     print(f"Strategies: {len(rows)}; Glossary entries: {len(glossary)}")
+    # S6-B3139ap: stamp this generator's source, so an output-preserving
+    # edit to it is satisfied by a regeneration (test_b1974's stamp)
+    sys.path.insert(0, str(REPO / "scripts"))
+    from freshness_stamp import stamp_generators  # noqa: E402
+    stamp_generators("scripts/build_strategy_roster.py")
     return 0
 
 

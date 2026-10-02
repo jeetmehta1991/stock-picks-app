@@ -21736,14 +21736,25 @@ _B1974_GENERATED = {
     # generator on commit timestamps - a stale candidate is a FINDING to
     # ticket, never a silent register entry (dashboard_stage_2/index.html
     # measured STALE and is ticketed, not listed).
+    # S6-B3139ap: its generator stamps itself via scripts/freshness_stamp.py.
     "STRATEGY_ROSTER.md": ("scripts/build_strategy_roster.py",),
+    # S6-B3139ap: NO stamp writer. Regenerating needs a canonical backtest
+    # under coverage, and the doc carries hand-added sync banners its
+    # generator never emits (S6-B3139bg), so an edit to the generator is
+    # satisfied only by that full run.
     "VERIFICATION_MATRIX.md": ("scripts/build_verification_matrix.py",),
     # PASSED_STRATEGY_EXIT_LIST.md + its generator ARCHIVED together
     # (S6-B3136d, owner ruling 2026-09-30;
     # archive/2026-10-01-superseded-mirror-classifier/) - a pair leaves this
     # register only when BOTH halves leave the tree in one commit.
-    "output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md":
-        ("scripts/measure_producer_coverage.py",),
+    # S6-B3139ap: output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md left
+    # this register - it was never a generated pair. The report is
+    # HAND-COMPILED ("Compiled: 2026-07-07 (B1223 Council 283)") and no
+    # script writes it; measure_producer_coverage.py writes the 13
+    # per-producer *_coverage_batch_a.json files it cites, and 8 of those 13
+    # are older than that script's last commit, so they join only once
+    # regenerated or classified (S6-B3139be; B2023: a stale candidate is a
+    # finding, never a silent register entry).
     # B2037 (S6-B1918b): the strategy->key->producer map regenerates from its
     # builder; registered at birth so it can never silently outlive it.
     "output_audit/strategy_producer_map.csv":
@@ -21751,6 +21762,38 @@ _B1974_GENERATED = {
     "output_audit/strategy_family_axes.md":
         ("scripts/build_strategy_producer_map.py",),
 }
+
+
+def _b1974_stale(generated, dirty, stamp, last_commit, digest):
+    """The B1974 staleness verdict over INJECTED inputs - the seam the live
+    test and test_b3139ap share. `generated` maps artifact -> generator paths,
+    `dirty` is the set of paths edited in the working tree, `stamp` the
+    freshness stamp, `last_commit(path)` a commit time or None, `digest(path)`
+    a generator source's sha256. Returns the stale descriptions."""
+    stale = []
+    for art, gens in sorted(generated.items()):
+        if art in dirty:
+            continue          # regenerated in the working tree this turn
+        if all(stamp.get(g) == digest(g) for g in gens):
+            continue          # generator contents match the last actual run
+        # S6-B3139ap: an EDITED generator beside an unregenerated artifact is
+        # stale NOW. The commit-time rule below reads the generator's LAST
+        # COMMIT, so a working-tree edit passed the gate before its commit and
+        # failed the gate after it (B3139q-r18's roster_core.py edit passed
+        # r21 and failed r22).
+        edited = sorted(g for g in gens if g in dirty)
+        if edited:
+            stale.append(f"{art} was not regenerated after its generator was "
+                         f"edited ({', '.join(edited)})")
+            continue
+        a = last_commit(art)
+        if a is None:
+            continue          # not committed yet; nothing to be stale against
+        for g in gens:
+            t = last_commit(g)
+            if t is not None and t > a:
+                stale.append(f"{art} (committed {a}) is older than {g} ({t})")
+    return stale
 
 
 def test_b1974_generated_artifact_is_not_older_than_its_generator():
@@ -21797,31 +21840,16 @@ def test_b1974_generated_artifact_is_not_older_than_its_generator():
     import hashlib as _hl
     import json as _json
 
-    def stamped_fresh(gens):
-        sp = root / "output_audit" / "phase_1b_roster_freshness.json"
-        if not sp.exists():
-            return False
-        try:
-            stamp = _json.loads(sp.read_text(encoding="utf-8"))
-        except ValueError:
-            return False
-        return all(
-            stamp.get(g) == _hl.sha256((root / g).read_bytes()).hexdigest()
-            for g in gens)
+    sp = root / "output_audit" / "phase_1b_roster_freshness.json"
+    try:
+        stamp = _json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else {}
+    except ValueError:
+        stamp = {}
 
-    stale = []
-    for art, gens in sorted(_B1974_GENERATED.items()):
-        if art in dirty:
-            continue          # regenerated in the working tree this turn
-        if stamped_fresh(gens):
-            continue          # generator contents match the last actual run
-        a = last_commit(art)
-        if a is None:
-            continue          # not committed yet; nothing to be stale against
-        for g in gens:
-            t = last_commit(g)
-            if t is not None and t > a:
-                stale.append(f"{art} (committed {a}) is older than {g} ({t})")
+    def digest(g):
+        return _hl.sha256((root / g).read_bytes()).hexdigest()
+
+    stale = _b1974_stale(_B1974_GENERATED, dirty, stamp, last_commit, digest)
 
     assert not stale, (
         "GENERATED ARTIFACT OLDER THAN ITS GENERATOR:\n  " +
@@ -52218,3 +52246,82 @@ def test_b3139ad_a_ledger_confirmed_ruling_citation_acknowledges():
         "the phrase acknowledgement regressed")
     assert not _q("Proceeding per the owner, as noted above.", qt), (
         "a non-possessive 'per the owner' no longer acknowledges")
+
+
+def test_b3139ap_an_edited_generator_beside_an_unregenerated_artifact_is_stale(tmp_path):
+    """S6-B3139ap: test_b1974 lagged one gate - it compared COMMIT times, so a
+    generator edited in the working tree beside an unregenerated artifact
+    passed the gate before the commit and failed the gate after it. Driven
+    through the shared seam (_b1974_stale) with planted inputs, each case its
+    own assertion; then the ONE stamp writer (scripts/freshness_stamp.py) is
+    proven read-then-update (B2078) and wired into build_strategy_roster's
+    main by AST."""
+    import ast
+    import hashlib
+    import json
+    import sys
+    from pathlib import Path as _P
+    gen = {"A.md": ("g.py",)}
+    digest = {"g.py": "new"}.__getitem__
+    newer_art = {"A.md": 100, "g.py": 50}.get
+    # MUST FIRE - the lag case: generator edited, artifact untouched, no stamp
+    assert _b1974_stale(gen, {"g.py"}, {}, newer_art, digest), (
+        "an edited generator beside an unregenerated artifact passed")
+    # MUST FIRE - the stamp records an OLDER generator version
+    assert _b1974_stale(gen, {"g.py"}, {"g.py": "old"}, newer_art, digest), (
+        "a stale stamp passed an edited generator")
+    # MUST STAY QUIET - regenerated: the artifact itself is edited too
+    assert not _b1974_stale(gen, {"g.py", "A.md"}, {}, newer_art, digest), (
+        "a regenerated artifact reads stale")
+    # MUST STAY QUIET - output-preserving regeneration: the stamp matches the edit
+    assert not _b1974_stale(gen, {"g.py"}, {"g.py": "new"}, newer_art, digest), (
+        "an output-preserving regeneration reads stale")
+    # MUST STAY QUIET - nothing edited and the artifact is the newer commit
+    assert not _b1974_stale(gen, set(), {}, newer_art, digest), (
+        "a fresh artifact reads stale")
+    # MUST FIRE - the original commit-time rule still holds
+    assert _b1974_stale(gen, set(), {}, {"A.md": 50, "g.py": 100}.get, digest), (
+        "the commit-time rule regressed")
+    # the ONE stamp writer reads before it writes
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import freshness_stamp as fs
+    (tmp_path / "a.py").write_text("x = 1\n", encoding="utf-8")
+    sp = tmp_path / "stamp.json"
+    sp.write_text(json.dumps({"other.py": "kept"}), encoding="utf-8")
+    got = fs.stamp_generators("a.py", stamp_path=sp, root=tmp_path)
+    want = hashlib.sha256((tmp_path / "a.py").read_bytes()).hexdigest()
+    assert got == {"other.py": "kept", "a.py": want}, got
+    assert json.loads(sp.read_text(encoding="utf-8")) == got
+    # wired: build_strategy_roster's main stamps its own source
+    src = (root / "scripts" / "build_strategy_roster.py").read_text(encoding="utf-8")
+    main = next(n for n in ast.parse(src).body
+                if isinstance(n, ast.FunctionDef) and n.name == "main")
+    calls = [c for c in ast.walk(main) if isinstance(c, ast.Call)
+             and getattr(c.func, "id", getattr(c.func, "attr", None)) == "stamp_generators"]
+    assert any(isinstance(a, ast.Constant) and a.value == "scripts/build_strategy_roster.py"
+               for c in calls for a in c.args), "build_strategy_roster does not stamp itself"
+
+
+def test_b3139ap_strategy_roster_header_matches_the_registry():
+    """S6-B3139ap: STRATEGY_ROSTER.md said 223 strategies while 225 were
+    registered - B3078 added two on 2026-09-23 and never regenerated it,
+    against the standing regenerate-on-strategy-change rule. test_b1974 watches
+    generator CODE, not generator INPUTS, so input drift is invisible to it;
+    the header's total is the doc's most-quoted figure, checked here against
+    the live registry. The HEAD-of-B3139q-r26 doc (223) fails this."""
+    import re
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from backtest.signals.screener import ALL_STRATEGIES
+    doc = (root / "STRATEGY_ROSTER.md").read_text(encoding="utf-8")
+    m = re.search(r"\*\*Total strategies:\*\* (\d+)", doc)
+    assert m, "STRATEGY_ROSTER.md lost its 'Total strategies' header"
+    assert int(m.group(1)) == len(ALL_STRATEGIES), (
+        f"STRATEGY_ROSTER.md says {m.group(1)} strategies while "
+        f"len(ALL_STRATEGIES) is {len(ALL_STRATEGIES)} - regenerate it: "
+        "python scripts/build_strategy_roster.py")
