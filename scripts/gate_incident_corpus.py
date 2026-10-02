@@ -1175,6 +1175,13 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
                           "queue_text": "| **S6-B2918** | **OPEN** | P0 "
                           "| **min-trades >= 10, no gates, owner ruling "
                           "B1608.** | _reason:_ OPEN. |"}),
+        # must-QUIET (S6-B3139ad): a possessive citation of a ruling the
+        # LEDGER records - the B3139q-r17 wording, which blocked three closes
+        # while the escape matched only "the owner ruled".
+        ("the owner's ruling (2026-10-01): Continue.", False,
+         {"rows": ["| **S6-B9001** | **EXECUTED** | P2 | **done.** | _reason:_ EXECUTED. |"],
+          "queue_text": "| **S6-B9001** | **OPEN** | P2 | **two ways out.** | _reason:_ OPEN - needs an owner decision between (a) and (b). |\n"
+                        "| **S6-B9002** | **EXECUTED** | P2 | **owner instruction 2026-10-01, verbatim: 'Continue'.** | _reason:_ terminal |"}),
     ],
     "scan_findings_vs_tickets": [
         # same findings, but ticketed - must be QUIET

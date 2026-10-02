@@ -1350,6 +1350,19 @@ def scan_owner_decision_taken(entries, *, rows=None, text=None,
            "owner directive", "per the owner", "the owner ruled",
            "proceeding without the ruling", "proceeding-without-ruling",
            "without waiting for the ruling")
+    # S6-B3139ad: a possessive ruling CITATION also acknowledges - but only
+    # one the LEDGER confirms. "the owner's ruling (2026-10-01): Continue"
+    # read as silence and blocked three closes, because the phrases match
+    # "the owner ruled" and not its possessive. A cited date must sit in a
+    # queue line that names the owner and a ruling word; a cited quote (12+
+    # characters) must sit in a queue line that names the owner. An invented
+    # date or quote still fires (#226): the escape cannot be satisfied by a
+    # citation the ledger does not hold.
+    CITE = re.compile(r"owner(?:'|\u2019)s\s+(?:ruling|directive|instruction|"
+                      r"approval|word)[^.\n]{0,40}?(?:(\d{4}-\d{2}-\d{2})|"
+                      r"[\"\u201c']([^\"\u201d'\n]{12,200})[\"\u201d'])")
+    RULING_WORDS = ("rul", "approv", "directive", "instruction", "verbatim",
+                    "word")
 
     if queue_text is None:
         try:
@@ -1358,6 +1371,28 @@ def scan_owner_decision_taken(entries, *, rows=None, text=None,
         except OSError:
             return []
     blob = _response_text(entries, text).lower()
+    # "per the owner" is a prefix of "per the owner's ruling (<date>)":
+    # followed by an apostrophe it is a CITATION, so it must clear through
+    # the ledger check below, never as an acknowledgement phrase.
+    ack_blob = re.sub(r"per the owner(?='|\u2019)", "", blob)
+    cite_ok = []
+
+    def _cited_on_ledger():
+        if not cite_ok:
+            lines = [" ".join(ln.lower().split()) for ln in queue_text.splitlines()
+                     if "owner" in ln.lower()]
+            ok = False
+            for m in CITE.finditer(blob):
+                d, q = m.group(1), m.group(2)
+                if d and any(d in ln and any(w in ln for w in RULING_WORDS)
+                             for ln in lines):
+                    ok = True
+                    break
+                if q and any(" ".join(q.split()) in ln for ln in lines):
+                    ok = True
+                    break
+            cite_ok.append(ok)
+        return cite_ok[0]
 
     out = []
     for row in rows:
@@ -1376,7 +1411,7 @@ def scan_owner_decision_taken(entries, *, rows=None, text=None,
                  == tid and ln.strip() != row.strip()]
         if not any(m in ln.lower() for ln in prior for m in PENDING):
             continue
-        if any(k in blob for k in ACK):
+        if any(k in ack_blob for k in ACK) or _cited_on_ledger():
             continue
         out.append(
             f"OWNER DECISION TAKEN SILENTLY (S6-B2925 / L829): {tid} is "

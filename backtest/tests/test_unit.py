@@ -52151,3 +52151,70 @@ def test_b3139ai_roster_core_is_cited_by_symbol_not_line(tmp_path):
                      "# see roster_core.net_pnl\n"
                      "# see other_module.py" + ":" + "12\n", encoding="utf-8")
     assert _b3139ai_line_citations([plant], "roster_core.py") == ["plant.txt:1"]
+
+
+def test_b3139ad_a_ledger_confirmed_ruling_citation_acknowledges():
+    """S6-B3139ad: scan_owner_decision_taken's acknowledgement list held
+    phrases ("the owner ruled", "per the owner"), so a correct citation worded
+    as a possessive - "the owner's ruling (2026-10-01): Continue" - read as
+    SILENCE and blocked three consecutive closes until it was reworded (the
+    L509 class on the ESCAPE side, failing in the strict direction). A
+    possessive citation now acknowledges, but only when the LEDGER confirms
+    it: a cited date must sit in a queue line naming the owner and a ruling
+    word; a cited quote (12+ characters) must sit in a queue line naming the
+    owner. A date or a quote the ledger does not hold still fires, so the
+    escape cannot be satisfied by an invented citation (#226). Each case is
+    its own assertion (test_b2557 counts negative arms textually)."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as v
+
+    prior = ("| **S6-B9001** | **OPEN** | P2 | **two ways out.** | _reason:_ "
+             "OPEN - needs an owner decision between (a) and (b). |")
+    ruling = ("| **S6-B9002** | **EXECUTED** | P2 | **owner instruction "
+              "2026-10-01, verbatim: 'Continue with the breadth read as "
+              "planned'.** | _reason:_ terminal |")
+    closed = ("| **S6-B9001** | **EXECUTED** | P2 | **done.** | _reason:_ "
+              "EXECUTED - verified. |")
+    qt = prior + "\n" + ruling
+    _q = lambda text, queue: v.scan_owner_decision_taken(
+        [], rows=[closed], text=text, queue_text=queue)
+
+    # MUST STAY QUIET - the incident, verbatim, against a ledger that records it
+    assert not _q("the owner's ruling (2026-10-01): Continue.", qt), (
+        "the ledger-confirmed possessive citation still reads as silence")
+    # MUST STAY QUIET - a verbatim quote the ledger records
+    assert not _q("Done under the owner's instruction 'continue with the "
+                  "breadth read as planned'.", qt), (
+        "a recorded verbatim quote still reads as silence")
+    # MUST FIRE - a date no ledger line records as an owner ruling
+    assert _q("the owner's ruling (2031-07-04): Continue.", qt), (
+        "an invented date cleared the gate")
+    # MUST FIRE - a quote the ledger does not hold
+    assert _q("Done under the owner's instruction 'ship every config "
+              "tonight without review'.", qt), (
+        "an invented quote cleared the gate")
+    # MUST FIRE - a bare mention of the owner, no ruling cited
+    assert _q("The owner will want to see this result.", qt), (
+        "a bare mention of the owner cleared the gate")
+    # MUST FIRE - the right date, but the ledger line names no owner ruling
+    assert _q("the owner's ruling (2026-10-01): Continue.",
+              prior + "\n| **S6-B9003** | **OPEN** | P2 | **a 2026-10-01 "
+              "measurement.** | _reason:_ OPEN |"), (
+        "a date on a non-ruling line cleared the gate")
+    # MUST FIRE - the common wording "per the owner's ruling" with an
+    # invented date: "per the owner" is a prefix of it, so before this
+    # fix the PHRASE list cleared any date at all
+    assert _q("Closed per the owner's ruling (2031-07-04): Continue.", qt), (
+        "per the owner's + an invented date cleared the gate")
+    # MUST STAY QUIET - the same wording with a date the ledger records
+    assert not _q("Closed per the owner's ruling (2026-10-01): Continue.", qt), (
+        "per the owner's + a recorded date reads as silence")
+    # the phrase list still works unchanged, including a bare 'per the owner'
+    assert not _q("The owner ruled option (a).", qt), (
+        "the phrase acknowledgement regressed")
+    assert not _q("Proceeding per the owner, as noted above.", qt), (
+        "a non-possessive 'per the owner' no longer acknowledges")
