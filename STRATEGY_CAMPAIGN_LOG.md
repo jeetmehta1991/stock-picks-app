@@ -2228,3 +2228,30 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   companion rows); bands come from SPECS per the owner's S6-B3139o ruling (P3/P4 the 8-span band,
   the PHASE0 pre-registration disclosed). Rank 1 is unchanged on both legs; the short leg's top 12
   changed in 5 positions, where hidden below_ema_9/50 rows outrank the rows shown before.
+
+### I.8 Step 3 items 5-6 re-run without the flagged axes (S6-B3139ar, 2026-10-06)
+
+- **Owner ruling 2026-10-06** (packet row 16, recorded in S6-B3139br): option B, every-flagged.
+  Step 3 drops the COT axis cot_rut_commercials_net_pct (read before CFTC released it, S6-B3139as)
+  and the 13F axis institutional_new_positions (rows 1, 3 and 4 of the availability sweep); items
+  5-6 re-run and the null is re-priced.
+- **Run (B3139q-r48):** scripts/breadth_step1_grid.py, 11 axes, NET basis, R5 cube, IS only, joint
+  shuffle null 200 permutations seed 20260928 - every setting of the B3139q-r19 run except the two
+  axes. Artifacts output_audit/b3139ar_bollinger_lower_breadth_net_{long,short}.json and their
+  Table D renders, all rows (650 and 600 non-barred cells). The B3139q-r19 artifacts stay as the
+  record of the 13-axis search.
+- **Control:** both legs reproduce their base (long IS 0.200 n 577, short IS -0.799 n 615), and every
+  row on a retained axis is identical to the committed grid (676 of 676 long, 624 of 624 short).
+  The two dropped axes carried 130 trials on each leg.
+
+| leg | trials (was) | best cell by IS ci_lo | null p (was) | null max p95 (was) |
+|---|---|---|---|---|
+| long | 676 (806) | pct_from_vwap >= 40.4792 @ reverse_signal: IS 1.411, ci_lo 0.911, n 116 | 0.0896 (0.01) | 1.485 (1.894) |
+| short | 650 (780) | defensive_leadership @ time_stop_10d: IS 1.558, ci_lo 0.852, n 206 (unchanged) | 0.0547 (0.0547) | 1.693 (1.693) |
+
+- **Reading:** the long leg's search priced below 0.05 only through the COT cell. Without it, neither
+  leg's best breadth cell beats the joint-shuffle null at 0.05. The null prices the search, never
+  performance (its own label).
+- **Caveat carried from I.7:** on this cube regime_flip returns figures identical to time_stop_20d;
+  the long leg's 4th and 5th rows and the short leg's top two rows are such pairs.
+- **Item 7 (the one holdout read) stays held** for the owner's own word (S6-B3139am).

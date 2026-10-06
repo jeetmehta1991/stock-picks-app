@@ -53121,3 +53121,33 @@ def test_b3139as_at_cot_reads_released_reports_of_one_contract_per_file(tmp_path
         live = _pd.read_parquet(p, columns=["cftc_contract_market_code", "report_date"])
         assert set(live["cftc_contract_market_code"].astype(str)) == {pf.CONTRACT_CODES[slug_of[fname]]}, fname
         assert not _pd.to_datetime(live["report_date"]).duplicated().any(), fname
+
+
+def test_b3139ar_breadth_rerun_drops_flagged_axes_and_matches_retained_rows():
+    """S6-B3139ar (owner ruling 2026-10-06, packet row 16, option B every-flagged,
+    recorded in S6-B3139br): bollinger_lower's Step-3 items 5-6 re-run without
+    the COT axis and the 13F institutional_new_positions axis. Pins the re-run
+    artifacts against the committed 13-axis grids: the flagged axes are gone,
+    every other setting is the same, the base reproduces, every retained row is
+    identical, and the null was re-priced over the narrower search."""
+    import json as _j
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    drop = {"cot_rut_commercials_net_pct", "institutional_new_positions"}
+    for leg in ("long", "short"):
+        old = _j.loads((root / f"output_audit/b3139_bollinger_lower_breadth_net_{leg}.json").read_text(encoding="utf-8"))
+        new = _j.loads((root / f"output_audit/b3139ar_bollinger_lower_breadth_net_{leg}.json").read_text(encoding="utf-8"))
+        assert new["axes"] == [a for a in old["axes"] if a["key"] not in drop], leg
+        for k in ("strategy", "basis", "leg", "quants", "min_coverage", "window", "reproduction", "band_ruling_verbatim"):
+            assert new[k] == old[k], (leg, k)
+        key = lambda r: (r.get("axis"), r.get("op"), str(r.get("level")), r.get("exit"))
+        kept = {key(r): r for r in old["rows"] if r.get("axis") not in drop}
+        assert {key(r): r for r in new["rows"]} == kept, leg
+        # the search shrank by exactly the dropped axes' trials; the unpriceable count is unchanged
+        assert old["trials"] - new["trials"] == sum(1 for r in old["rows"] if r.get("axis") in drop), leg
+        assert old["trials"] - old["graded"] == new["trials"] - new["graded"], leg
+        pn = new["permutation_null"]
+        assert pn["n_perms"] == pn["n_valid_perms"] == 200 and pn["seed"] == old["permutation_null"]["seed"], leg
+        assert new["multiplicity"]["reconciles"] and new["multiplicity"]["searched"] == new["trials"], leg
+    longp = _j.loads((root / "output_audit/b3139ar_bollinger_lower_breadth_net_long.json").read_text(encoding="utf-8"))["permutation_null"]
+    assert longp["p_value"] > 0.05, "the long leg's search is no longer priced below 0.05 once the COT axis is dropped"
