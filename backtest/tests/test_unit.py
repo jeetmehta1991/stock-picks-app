@@ -52823,3 +52823,73 @@ def test_b3139bh_13f_date_column_is_a_filing_date_only_within_the_cap():
     for s, r in art["per_strategy"].items():
         if r.get("gate_has_per_ticker_13f_clause"):
             assert {"gate_closes_under_filed_rule", "gate_closes_under_naive_date_rule"} <= set(r["IS"]), s
+
+
+def test_b3139az_a_count_axis_is_kept_positive_and_a_flag_op_refuses_a_count(tmp_path):
+    """S6-B3139az (council B3139q-r41, 5 of 5: a TYPE bug). The breadth
+    registry wrote institutional_new_positions - a COUNT of new 13F
+    positions, 0..11 on bollinger_lower's 1,622 fires, 74.5 pct of them > 1
+    (MEASURED B3139q-r42) - as `require_true`, and the grid masked eq_true
+    as `== 1.0`, so the registered B6 cells selected fires with EXACTLY one
+    new position. The class fix is one vocabulary word carried through
+    every consumer: the grid's `pos` op keeps value > 0; eq_true on a
+    column holding values outside {0, 1} is REFUSED rather than silently
+    masked (L642 - the absent case is the guarded one); the coverage gate
+    reads `require_positive` as a one-level axis; the registry's B6 row
+    carries it; Table D renders it. The sweep inventory over the committed
+    bollinger artifacts' eq_true axes (below_ema_9/20/21/50,
+    defensive_leadership, institutional_new_positions; dc20_new_high is
+    eq_false) found 1 count among 7: the registered artifacts themselves are
+    frozen campaign evidence and are not rewritten; their re-read rides
+    S6-B3139ar."""
+    import sys
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest as _pt
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import breadth_step1_grid as bg
+    import band_coverage_gate as bcg
+    import producer_variant_table as pvt
+    import table_d_render as tdr
+    # the grid: pos keeps > 0, by behaviour
+    assert bg._axis_spec("institutional_new_positions:pos") == ("institutional_new_positions", "pos")
+    f = _pd.DataFrame({"n": [0.0, 1.0, 2.0, 7.0], "b": [0.0, 1.0, 1.0, 0.0]})
+    assert bg._cell_mask(f, "n", "pos", 0.0).tolist() == [False, True, True, True]
+    # the boolean ops still work on a boolean column
+    assert bg._cell_mask(f, "b", "eq_true", 1.0).tolist() == [False, True, True, False]
+    assert bg._cell_mask(f, "b", "eq_false", 0.0).tolist() == [True, False, False, True]
+    # MUST FIRE: eq_true on a count column is refused, naming the key and the fix
+    with _pt.raises(ValueError, match="institutional.*COUNT.*:pos"):
+        bg._cell_mask(f.rename(columns={"n": "institutional_new_positions"}),
+                      "institutional_new_positions", "eq_true", 1.0)
+    # the coverage gate: require_positive is a one-level axis - covered by a graded row
+    spec = {"params": [{"id": "B6", "param": "institutional_new_positions",
+                        "production": "not gated", "band": ["require_positive"]}]}
+    graded = {"rows": [{"axis": "institutional_new_positions", "level": 0.0, "is_sharpe": 0.3}]}
+    assert bcg.coverage_report("syn", [], spec=spec, arts=[graded])["complete"]
+    assert not bcg.coverage_report("syn", [], spec=spec, arts=[{"rows": []}])["complete"]
+    # the registry: B6 is a count kept positive, and no other registered band
+    # row writes a flag label for a key the bollinger fires hold as a count
+    b6 = [p for p in pvt.SPECS_PHASE0["bollinger_lower"]["params"] if p["id"] == "B6"][0]
+    assert b6["band"] == ["require_positive"] and b6["type"] == "count>0", b6
+    assert pvt.validate_spec(pvt.SPECS["bollinger_lower"]) == []
+    # Table D: the cell reads as a strict inequality
+    assert tdr._key_cond("institutional_new_positions", "pos", None) == "institutional_new_positions > 0"
+    # the sweep inventory, re-derived: every flag-labelled breadth row's key is
+    # boolean on the fires it was registered for (the ONE exception is now :pos)
+    tl_path = root / "output_r5_merged_1_7" / "trade_log.csv"
+    if not tl_path.exists():
+        _pt.skip("R5 merged cube trade log not on this machine")
+    flag_rows = [p for p in pvt.SPECS_PHASE0["bollinger_lower"]["params"]
+                 if any(str(b).startswith("require_") for b in p.get("band", []))]
+    assert {p["id"] for p in flag_rows} >= {"B2", "B4", "B6"}, flag_rows
+    tl = _pd.read_csv(tl_path, low_memory=False, usecols=["strategy", "signals_at_entry"])
+    sig = [bg._parse(s) for s in tl.loc[tl.strategy == "bollinger_lower", "signals_at_entry"].head(2000)]
+    for p in flag_rows:
+        vals = {float(d[p["param"]]) for d in sig if p["param"] in d and d[p["param"]] is not None}
+        if p["band"] == ["require_positive"]:
+            assert max(vals) > 1.0, (p["param"], "registered as a count but the fires hold a boolean")
+        else:
+            assert vals <= {0.0, 1.0}, (p["param"], "registered as a flag but the fires hold a count")

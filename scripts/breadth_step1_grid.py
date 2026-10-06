@@ -60,7 +60,9 @@ def _axis_spec(txt):
     # a keep-FALSE boolean is half the boolean space; the original
     # vocabulary encoded the long-only first subject - the L754 class)
     key, op = txt.rsplit(":", 1)
-    assert op in ("ge", "le", "eq_true", "eq_false"), op
+    # S6-B3139az: `pos` keeps rows with a COUNT > 0; eq_true is for
+    # booleans only and _cell_mask refuses it on a count column
+    assert op in ("ge", "le", "eq_true", "eq_false", "pos"), op
     return key, op
 
 
@@ -118,6 +120,16 @@ def _cell_mask(frame, key, op, lev):
         return frame[key] >= lev
     if op == "le":
         return frame[key] <= lev
+    if op == "pos":
+        return frame[key] > 0
+    # S6-B3139az: the boolean ops are for booleans. A count registered
+    # as a flag (institutional_new_positions, 0..11) was masked `== 1.0`
+    # here and selected EXACTLY-one; fail closed instead of selecting a
+    # level nobody registered (L642 - the absent case is the guarded one)
+    vals = frame[key].dropna().unique()
+    if len(vals) and not set(float(v) for v in vals) <= {0.0, 1.0}:
+        raise ValueError(f"{key}: registered as a flag ({op}) but holds values "
+                         f"{sorted(set(float(v) for v in vals))[:8]} - a COUNT; register it as :pos")
     if op == "eq_false":
         return frame[key] == 0.0
     return frame[key] == 1.0
@@ -169,7 +181,7 @@ def main() -> int:
     ap.add_argument("--depth", default=None,
                     help="base filter key:op:level, e.g. xs_momentum_12_1:ge:0.529")
     ap.add_argument("--axes", required=True,
-                    help="comma-separated key:op list (op in ge|le|eq_true|eq_false)")
+                    help="comma-separated key:op list (op in ge|le|eq_true|eq_false|pos)")
     ap.add_argument("--repro-exit", default="time_stop_10d")
     ap.add_argument("--repro-artifact", default=None,
                     help="admission artifact whose is_sharpe the base must reproduce")
@@ -252,7 +264,7 @@ def main() -> int:
             continue
         if op == "eq_true":
             levels = [1.0]
-        elif op == "eq_false":
+        elif op in ("eq_false", "pos"):
             levels = [0.0]
         else:
             levels = sorted(set(np.round(vals.quantile(QUANTS), 4)))

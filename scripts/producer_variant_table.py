@@ -2084,7 +2084,8 @@ B2  defensive_leadership  require TRUE  (market-context)
 B3  macd_12_26_9_line  <= q             (keep LOW - deeper washout)
 B4  dc20_new_high  require FALSE        (not at a 20-day high)
 B5  pct_from_vwap  >= q                 (keep HIGH; vwap-anchor)
-B6  institutional_new_positions  require TRUE  (smart-money)
+B6  institutional_new_positions  require POSITIVE (> 0; a COUNT 0..11 -
+       S6-B3139az: "require TRUE" masked == 1.0 and read EXACTLY one)
 B7  bb_20_15_pctb  <= q   (Q3-approved: alternate bb geometry (20, 1.5)
        percent-b, persisted on the fires; keep LOW = deeper in band)
 B8  bb_10_20_pctb  <= q   (Q3-approved: alternate bb geometry (10, 2.0))
@@ -2295,10 +2296,13 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "derivation": "BREADTH: as B7"},
         {"id": "B6", "producer": "smart_money (13F flow)",
          "param": "institutional_new_positions", "production": "not gated",
-         "band": ["require_true"], "free_band": ["require_true"],
+         "band": ["require_positive"], "free_band": ["require_positive"],
          "resim_band": [], "env": None, "consumers": [], "sweep_levels": None,
-         "subset_safe": True, "status": "T3-APPROVED; op eq_true",
-         "type": "bool", "engine_implemented": False,
+         "subset_safe": True,
+         "status": "T3-APPROVED; op pos (S6-B3139az: a COUNT 0..11 registered as "
+                   "eq_true was masked == 1.0; the committed B3139 cells read "
+                   "EXACTLY one and their re-read rides S6-B3139ar)",
+         "type": "count>0", "engine_implemented": False,
          "evidence": "b3117 consistent (ts10 +1.82 / bept +4.37)",
          "derivation": "BREADTH: smart-money rep"},
     ],

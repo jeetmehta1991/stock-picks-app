@@ -336,6 +336,8 @@ def _key_cond(axis: str, op, level) -> str:
         return f"{axis} {sym} {level}"
     if op in ("eq_true", "eq_false"):
         return f"{axis} = {'true' if op == 'eq_true' else 'false'}"
+    if op == "pos":  # S6-B3139az: a COUNT kept at > 0
+        return f"{axis} > 0"
     return f"{axis} {op} {level}"
 
 
@@ -550,7 +552,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             parts = []
             for k in sorted(by_k):
                 for o in sorted({r.get("op") for r in by_k[k]}, key=str):
-                    if o in ("eq_true", "eq_false"):
+                    if o in ("eq_true", "eq_false", "pos"):
                         parts.append(_key_cond(k, o, None))
                         continue
                     lv = sorted({r["level"] for r in by_k[k]

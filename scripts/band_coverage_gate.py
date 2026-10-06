@@ -63,7 +63,9 @@ _TOL = 1e-9
 # S6-B3139a (B3139): a boolean axis's band may be written as a STRING label;
 # MEASURED 3 rows (bollinger_lower B2 / B4 / B6) - each read UNTESTED with
 # 26 graded rows behind it until these labels took the boolean branch.
-BOOL_BAND_LABELS = ("require_true", "require_false")
+# S6-B3139az: `require_positive` is a COUNT axis kept at > 0 (one level, like
+# a boolean) - covered by any graded row of the axis, untested without one.
+BOOL_BAND_LABELS = ("require_true", "require_false", "require_positive")
 
 
 class BandCoverageError(SystemExit):
