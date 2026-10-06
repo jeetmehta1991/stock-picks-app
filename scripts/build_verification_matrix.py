@@ -10,7 +10,14 @@ Inputs:
   - backtest/**/*.py source       (for DEC-NNN/BUG-NNN tag locations)
   - backtest/tests/*.py           (per-tier test references)
 
-Output: VERIFICATION_MATRIX.md
+Output: VERIFICATION_MATRIX.md (+ verification_matrix.json, its machine-readable
+        mirror)
+S6-B3139bg: the COMMITTED doc carries a hand-added B1233 sync banner above
+  the generated body (everything before the "# VERIFICATION_MATRIX.md"
+  line) that this script never emits. A regeneration drops it and
+  test_b3139bg fails until the banner is restored or the doc is
+  reclassified; for the same reason the doc sits outside test_b1974's
+  generated-artifact register.
 
 Run:
   python scripts/build_verification_matrix.py

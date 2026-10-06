@@ -21738,11 +21738,10 @@ _B1974_GENERATED = {
     # measured STALE and is ticketed, not listed).
     # S6-B3139ap: its generator stamps itself via scripts/freshness_stamp.py.
     "STRATEGY_ROSTER.md": ("scripts/build_strategy_roster.py",),
-    # S6-B3139ap: NO stamp writer. Regenerating needs a canonical backtest
-    # under coverage, and the doc carries hand-added sync banners its
-    # generator never emits (S6-B3139bg), so an edit to the generator is
-    # satisfied only by that full run.
-    "VERIFICATION_MATRIX.md": ("scripts/build_verification_matrix.py",),
+    # S6-B3139bg: VERIFICATION_MATRIX.md LEFT this register - its generated
+    # body sits under a hand-added sync banner the generator never emits,
+    # and regenerating needs a canonical backtest under coverage; it is
+    # held in _B3139BG_HAND_BANNERED with that reason (test_b3139bg).
     # PASSED_STRATEGY_EXIT_LIST.md + its generator ARCHIVED together
     # (S6-B3136d, owner ruling 2026-09-30;
     # archive/2026-10-01-superseded-mirror-classifier/) - a pair leaves this
@@ -52595,10 +52594,10 @@ def _b3139bf_stamped_paths(gen_path):
             for a in c.args if isinstance(a, ast.Constant)}
 
 
-# S6-B3139bf: register members whose generator has NO stamp writer, with the
-# reason (S6-B3139ap: regenerating VERIFICATION_MATRIX.md needs a canonical
-# backtest under coverage, so a generator edit is satisfied only by that run).
-_B3139BF_NO_STAMP = {"VERIFICATION_MATRIX.md"}
+# S6-B3139bf: register members whose generator has NO stamp writer. Empty
+# since S6-B3139bg moved VERIFICATION_MATRIX.md out of the register; a member
+# added here carries its reason beside it.
+_B3139BF_NO_STAMP = set()
 
 
 def test_b3139bf_the_freshness_stamp_has_one_writer_and_each_generator_stamps_its_register_tuple(tmp_path):
@@ -52738,3 +52737,48 @@ def test_b3139be_coverage_measurements_are_dated_records_outside_the_generated_r
     assert set(m.PRODUCERS) == attributed, (
         f"PRODUCERS {sorted(set(m.PRODUCERS) ^ attributed)} differ from the "
         "measurements attributed to measure_producer_coverage.py")
+
+
+# S6-B3139bg: GENERATED BODY UNDER A HAND-ADDED BANNER. The doc's body is the
+# generator's output as of its last run (commit 55041e556, 2026-07-18) and the
+# lines above the generator's own "# VERIFICATION_MATRIX.md" header are the
+# B1233 doc-sweep banner, which the generator never emits. Regenerating needs a
+# canonical backtest under coverage and would drop the banner, so the doc is
+# held here, outside _B1974_GENERATED, with the ASCII marker of its banner.
+# value = (generator, banner marker, generator's own header line)
+_B3139BG_HAND_BANNERED = {
+    "VERIFICATION_MATRIX.md": ("scripts/build_verification_matrix.py",
+                               "COUNCIL 278-287 SYNC BANNER (B1233 2026-07-07)",
+                               "# VERIFICATION_MATRIX.md"),
+}
+
+
+def test_b3139bg_hand_bannered_generated_docs_sit_outside_the_register_and_keep_their_banner():
+    """S6-B3139bg: for each doc held as generated-body-under-hand-banner: it
+    is in no other register (the generated register would demand a
+    regeneration that drops the banner; the dated-measurement register is a
+    different class); the doc exists and carries BOTH the banner marker and
+    the generator's own header, in that order (banner first); and the
+    generator's source carries no banner text, so the two-source claim is
+    true - a generator that starts emitting the banner, or a regeneration
+    that drops it, fails here with the next step named."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for doc, (gen, marker, header) in _B3139BG_HAND_BANNERED.items():
+        assert doc not in _B1974_GENERATED, (
+            f"{doc} is hand-bannered - regenerating drops the banner; it cannot "
+            "also be in the generated register")
+        assert doc not in _B3139BE_DATED_MEASUREMENTS, f"{doc} is in two classes"
+        text = (root / doc).read_text(encoding="utf-8")
+        assert marker in text, (
+            f"{doc} lost its hand banner ({marker!r}) - a regeneration dropped "
+            "it: restore the banner, or move the doc to _B1974_GENERATED if it "
+            "is now pure generator output")
+        assert header in text, f"{doc} no longer carries the generator header {header!r}"
+        assert text.index(marker) < text.index(header), (
+            f"{doc}: the banner must sit ABOVE the generated body")
+        src = (root / gen).read_text(encoding="utf-8")
+        assert marker not in src, (
+            f"{gen} now emits the banner - the doc is pure generator output; "
+            "move it back to _B1974_GENERATED")
+        assert header in src, f"{gen} no longer emits {header!r}"
