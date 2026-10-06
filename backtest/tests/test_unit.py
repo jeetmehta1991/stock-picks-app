@@ -53015,3 +53015,43 @@ def test_b3139bd_bn_short_interest_is_public_from_publication_and_divides_by_a_d
         s = g["filed"].iloc[0]
         assert si.dated_shares_outstanding(t, s) == float(g[g["filed"] <= s].iloc[-1]["val"])
         assert si.dated_shares_outstanding(t, _d(1990, 1, 1)) is None
+
+
+def test_b3139bh_bq_13f_availability_is_capped_filing_date_with_one_definition():
+    """S6-B3139bh + S6-B3139bq (owner ruling 2026-10-06, packet row 23
+    'capped-a', recorded in S6-B3139br; L902). A 13F row is usable at
+    max(period + 45 d, Date) when Date is a real filing (within 120 d of the
+    period) and at period + 45 d when Date is a backfill stamp. By behaviour on
+    planted rows: an on-time filing (day 30) is still held to day 45; a late
+    filing (day 60) is held to day 60; a backfill (day 400) falls back to day
+    45; a missing Date falls back to day 45. Then wiring: the live per-ticker
+    loader's available_after_ts and the depth precompute both call the ONE
+    definition (AST), and the bulk path keeps period + 45 (its Date is an
+    ingest stamp)."""
+    import ast
+    from pathlib import Path as _P
+    import pandas as _pd
+    import backtest.data.smart_money as sm
+    rp = _pd.Series(_pd.to_datetime(["2024-03-31"] * 4))
+    dt = _pd.Series([_pd.Timestamp("2024-04-30"), _pd.Timestamp("2024-05-30"),
+                     _pd.Timestamp("2025-05-05"), _pd.NaT])
+    got = sm.capped_filing_ts(rp, dt)
+    base = _pd.Timestamp("2024-05-15")
+    assert list(got) == [base, _pd.Timestamp("2024-05-30"), base, base], list(got)
+    assert sm.FILING_LAG_CAP_DAYS == 120 and sm.REPORTING_LAG_DAYS == 45
+    root = _P(__file__).resolve().parents[2]
+    for rel, fn in (("backtest/data/smart_money.py", "_load_institutional_processed"),
+                    ("scripts/build_13f_depth_precompute.py", "load_one")):
+        tree = ast.parse((root / rel).read_text(encoding="utf-8"))
+        f = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == fn)
+        calls = [c for c in ast.walk(f) if isinstance(c, ast.Call)
+                 and getattr(c.func, "id", getattr(c.func, "attr", None)) == "capped_filing_ts"]
+        assert calls, f"{rel}:{fn} no longer applies the capped filing rule"
+    # the live loader on a real file: no row is usable before period + 45 d,
+    # and no backfill-stamped row is pushed past period + 45 d
+    df = sm._load_institutional_processed("MSFT")
+    if df is not None and "Date" in df.columns:
+        lag = (_pd.to_datetime(df["Date"], errors="coerce") - df["report_period_ts"]).dt.days
+        floor = df["report_period_ts"] + _pd.Timedelta(days=45)
+        assert (df["available_after_ts"] >= floor).all()
+        assert (df.loc[lag > 120, "available_after_ts"] == floor[lag > 120]).all()

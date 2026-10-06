@@ -48,6 +48,9 @@ import numpy as np
 import pandas as pd
 
 REPO = Path(__file__).resolve().parent.parent
+import sys  # noqa: E402
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
 SRC_DIR = REPO / "data_prefetch" / "quiver" / "institutional"
 OUT_DIR = REPO / "data_prefetch" / "derived" / "inst_depth_13f"
 SMALLFILER_MAX = 100     # < 100 positions that quarter = discretionary tier
@@ -67,7 +70,12 @@ def load_one(p: Path) -> pd.DataFrame | None:
     if df.empty:
         return None
     df["q"] = pd.to_datetime(df["ReportPeriod"], errors="coerce").dt.date
-    df["filed"] = pd.to_datetime(df["Date"], errors="coerce")
+    # S6-B3139bq (L902): `Date` is a filing only within 120 d of the period;
+    # a later Date is a backfill stamp, which pushed availability_q90 for
+    # pre-2022 quarters to the backfill date (data hidden that was public).
+    # The one rule lives in backtest.data.smart_money.capped_filing_ts.
+    from backtest.data.smart_money import capped_filing_ts
+    df["filed"] = capped_filing_ts(pd.to_datetime(df["ReportPeriod"], errors="coerce"), df["Date"])
     df["Shares"] = pd.to_numeric(df["Shares"], errors="coerce").fillna(0)
     df["Value"] = pd.to_numeric(df["Value"], errors="coerce").fillna(0)
     df = df.dropna(subset=["q"])

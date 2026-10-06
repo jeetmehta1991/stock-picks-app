@@ -379,6 +379,30 @@ def _load_congressional_processed(ticker: str) -> Optional[pd.DataFrame]:
 _INSTITUTIONAL_PROCESSED_CACHE: dict[str, tuple] = {}
 
 
+# S6-B3139bh (owner ruling 2026-10-06, packet row 23 'capped-a'; L902): the
+# per-ticker 13F `Date` is the SEC filing timestamp for recent report periods
+# (lag median 42-45 d for 2022+) and a BACKFILL stamp for old ones (100 pct of
+# 2019-2020 rows more than 120 d after the period; 40-file sample,
+# output_audit/b3139bh_admitted_13f_exposure.json filed_rule). A Date within
+# FILING_LAG_CAP_DAYS of the period is a filing and bounds availability from
+# below; a later Date is not a filing and the DEC-325 fallback (period + 45 d)
+# stands. Exposure of the 9 admitted institutional lines to the change: 6 of
+# 13,843 R5 fires lose their 13F gate (frozen results, note only).
+FILING_LAG_CAP_DAYS = 120
+REPORTING_LAG_DAYS = 45
+
+
+def capped_filing_ts(report_period_ts: pd.Series, date_ts: pd.Series) -> pd.Series:
+    """When a 13F row became usable: max(period + 45 d, Date) when Date is a
+    real filing (within FILING_LAG_CAP_DAYS of the period), else period + 45 d.
+    The ONE definition - the live loader and scripts/build_13f_depth_precompute.py
+    both call it."""
+    base = report_period_ts + pd.Timedelta(days=REPORTING_LAG_DAYS)
+    filed = pd.to_datetime(date_ts, errors="coerce")
+    real = filed.notna() & ((filed - report_period_ts).dt.days <= FILING_LAG_CAP_DAYS)
+    return base.where(~real, filed.where(filed > base, base))
+
+
 def _load_institutional_processed(ticker: str) -> Optional[pd.DataFrame]:
     """Return cached institutional 13F DataFrame with report_period_ts +
     available_after_ts + Shares_num pre-computed. None when no data."""
@@ -409,8 +433,12 @@ def _load_institutional_processed(ticker: str) -> Optional[pd.DataFrame]:
         _INSTITUTIONAL_PROCESSED_CACHE[ticker] = (raw, df)
         return df
     df["report_period"] = df["report_period_ts"].dt.date
-    # Batch 549 OPT-C: vectorized timedelta add (was per-row Python lambda)
-    df["available_after_ts"] = df["report_period_ts"] + pd.Timedelta(days=45)
+    # Batch 549 OPT-C: vectorized (was per-row Python lambda).
+    # S6-B3139bh: a real filing Date bounds availability (capped_filing_ts)
+    if "Date" in df.columns:
+        df["available_after_ts"] = capped_filing_ts(df["report_period_ts"], df["Date"])
+    else:
+        df["available_after_ts"] = df["report_period_ts"] + pd.Timedelta(days=REPORTING_LAG_DAYS)
     df["Shares_num"] = pd.to_numeric(df["Shares"], errors="coerce").fillna(0)
     _INSTITUTIONAL_PROCESSED_CACHE[ticker] = (raw, df)
     return df

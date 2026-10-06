@@ -230,6 +230,15 @@
     "ops": [
      "ge"
     ]
+   },
+   "pit_13f_note": {
+    "ruled": "owner 2026-10-06, packet row 23 'capped-a' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "rule": "a 13F row is usable at max(period + 45 d, Date) when Date is within 120 d of the period, else period + 45 d",
+    "artifact": "output_audit/b3139bh_admitted_13f_exposure.json",
+    "r5_fires": 642,
+    "fires_whose_13f_gate_closes_under_the_capped_rule": 1,
+    "holdout_fires_affected": 0,
+    "basis": "per-ticker 13F clause re-evaluated on every R5 fire"
    }
   },
   {
@@ -288,6 +297,15 @@
     "ops": [
      "ge"
     ]
+   },
+   "pit_13f_note": {
+    "ruled": "owner 2026-10-06, packet row 23 'capped-a' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "rule": "a 13F row is usable at max(period + 45 d, Date) when Date is within 120 d of the period, else period + 45 d",
+    "artifact": "output_audit/b3139bh_admitted_13f_exposure.json",
+    "r5_fires": 1941,
+    "fires_whose_13f_gate_closes_under_the_capped_rule": 0,
+    "holdout_fires_affected": 0,
+    "basis": "per-ticker 13F clause re-evaluated on every R5 fire"
    }
   },
   {
@@ -346,6 +364,15 @@
     "ops": [
      "ge"
     ]
+   },
+   "pit_13f_note": {
+    "ruled": "owner 2026-10-06, packet row 23 'capped-a' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "rule": "a 13F row is usable at max(period + 45 d, Date) when Date is within 120 d of the period, else period + 45 d",
+    "artifact": "output_audit/b3139bh_admitted_13f_exposure.json",
+    "r5_fires": 2473,
+    "fires_whose_13f_gate_closes_under_the_capped_rule": 0,
+    "holdout_fires_affected": 0,
+    "basis": "per-ticker 13F clause re-evaluated on every R5 fire"
    }
   },
   {
@@ -404,6 +431,15 @@
     "ops": [
      "ge"
     ]
+   },
+   "pit_13f_note": {
+    "ruled": "owner 2026-10-06, packet row 23 'capped-a' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "rule": "a 13F row is usable at max(period + 45 d, Date) when Date is within 120 d of the period, else period + 45 d",
+    "artifact": "output_audit/b3139bh_admitted_13f_exposure.json",
+    "r5_fires": 2516,
+    "fires_whose_13f_gate_closes_under_the_capped_rule": 0,
+    "holdout_fires_affected": 0,
+    "basis": "gates on persistent_holders_4q only; snapshot inputs not yet filed 0.01-0.06 pct of rows"
    }
   },
   {
@@ -462,6 +498,15 @@
     "ops": [
      "le"
     ]
+   },
+   "pit_13f_note": {
+    "ruled": "owner 2026-10-06, packet row 23 'capped-a' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "rule": "a 13F row is usable at max(period + 45 d, Date) when Date is within 120 d of the period, else period + 45 d",
+    "artifact": "output_audit/b3139bh_admitted_13f_exposure.json",
+    "r5_fires": 386,
+    "fires_whose_13f_gate_closes_under_the_capped_rule": 0,
+    "holdout_fires_affected": 0,
+    "basis": "per-ticker 13F clause re-evaluated on every R5 fire"
    }
   },
   {
@@ -520,6 +565,15 @@
     "ops": [
      "ge"
     ]
+   },
+   "pit_13f_note": {
+    "ruled": "owner 2026-10-06, packet row 23 'capped-a' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "rule": "a 13F row is usable at max(period + 45 d, Date) when Date is within 120 d of the period, else period + 45 d",
+    "artifact": "output_audit/b3139bh_admitted_13f_exposure.json",
+    "r5_fires": 716,
+    "fires_whose_13f_gate_closes_under_the_capped_rule": 0,
+    "holdout_fires_affected": 0,
+    "basis": "per-ticker 13F clause re-evaluated on every R5 fire"
    }
   },
   {
@@ -578,6 +632,15 @@
     "ops": [
      "ge"
     ]
+   },
+   "pit_13f_note": {
+    "ruled": "owner 2026-10-06, packet row 23 'capped-a' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "rule": "a 13F row is usable at max(period + 45 d, Date) when Date is within 120 d of the period, else period + 45 d",
+    "artifact": "output_audit/b3139bh_admitted_13f_exposure.json",
+    "r5_fires": 2268,
+    "fires_whose_13f_gate_closes_under_the_capped_rule": 0,
+    "holdout_fires_affected": 0,
+    "basis": "per-ticker 13F clause re-evaluated on every R5 fire"
    }
   },
   {
@@ -636,6 +699,15 @@
     "ops": [
      "ge"
     ]
+   },
+   "pit_13f_note": {
+    "ruled": "owner 2026-10-06, packet row 23 'capped-a' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "rule": "a 13F row is usable at max(period + 45 d, Date) when Date is within 120 d of the period, else period + 45 d",
+    "artifact": "output_audit/b3139bh_admitted_13f_exposure.json",
+    "r5_fires": 1075,
+    "fires_whose_13f_gate_closes_under_the_capped_rule": 0,
+    "holdout_fires_affected": 0,
+    "basis": "per-ticker 13F clause re-evaluated on every R5 fire"
    }
   },
   {
@@ -694,6 +766,15 @@
     "ops": [
      "ge"
     ]
+   },
+   "pit_13f_note": {
+    "ruled": "owner 2026-10-06, packet row 23 'capped-a' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "rule": "a 13F row is usable at max(period + 45 d, Date) when Date is within 120 d of the period, else period + 45 d",
+    "artifact": "output_audit/b3139bh_admitted_13f_exposure.json",
+    "r5_fires": 1826,
+    "fires_whose_13f_gate_closes_under_the_capped_rule": 5,
+    "holdout_fires_affected": 0,
+    "basis": "per-ticker 13F clause re-evaluated on every R5 fire"
    }
   },
   {
