@@ -196,7 +196,12 @@ def repartition_by_ticker(snapshot_dfs: list[pd.DataFrame],
         sub_out = sub[[
             "settlement_date", "short_interest",
             "shares_outstanding", "avg_daily_volume",
-        ]]
+        ]].copy()
+        # S6-B3139bn: the publication date beside the settlement date (a
+        # second column, never an overwrite) - the one rule the producer uses
+        from backtest.signals.short_interest import finra_dissemination_date
+        sub_out["dissemination_date"] = [
+            finra_dissemination_date(pd.Timestamp(d).date()) for d in sub_out["settlement_date"]]
         sub_out.to_parquet(out_path, index=False)
         manifest[ticker] = len(sub_out)
     return manifest

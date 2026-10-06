@@ -12365,20 +12365,25 @@ def test_b1240_shares_outstanding_finnhub_fallback_populates_short_interest_pct(
     short_interest_pct via Finnhub profile2 fallback when FINRA shares_outstanding
     is NULL (~100% of FINRA cache rows as of B1214 finding).
     """
+    # SUPERSEDED BY S6-B3139bd (owner ruling 2026-10-06, packet row 22): the
+    # Finnhub fallback was TODAY's share count; the denominator is now the dei
+    # cover-page count FILED on or before the settlement, and a ticker with no
+    # such count emits no short_interest_pct. Kept under its B1240 name so the
+    # lineage stays findable; it now asserts the dated source on the live store.
     from datetime import date
-    from backtest.signals.short_interest import compute_short_interest_signals
-    # AAPL is a canonical test - FINRA data known present but shares_outstanding NULL
-    r = compute_short_interest_signals("AAPL", date(2024, 6, 15))
-    assert "short_interest_pct" in r, (
-        "B1240 fix: short_interest_pct must be emitted for AAPL via Finnhub fallback"
-    )
-    assert r["short_interest_pct"] > 0, (
-        f"B1240 fix: short_interest_pct must be positive; got {r.get('short_interest_pct')}"
-    )
-    # Verify source annotation
-    assert r.get("short_interest_shares_outstanding_source") == "finnhub_profile2", (
-        "B1240 fix: source annotation must indicate finnhub_profile2 fallback"
-    )
+    import pytest as _pt
+    import backtest.signals.short_interest as si
+    store = si._dei_store()
+    if not store:
+        _pt.skip("dei share store not built on this machine")
+    r = si.compute_short_interest_signals("AAPL", date(2024, 6, 15))
+    src = r.get("short_interest_shares_outstanding_source")
+    assert src in ("sec_dei_dated", "none_dated", "finra"), r
+    assert src != "finnhub_profile2", "the undated Finnhub fallback must not return"
+    if src == "sec_dei_dated":
+        assert r["short_interest_pct"] > 0
+    else:
+        assert "short_interest_pct" not in r or src == "finra"
 
 
 def test_b1240_squeeze_setup_long_fires_via_strict_path_post_sprint5_fix():
@@ -52956,3 +52961,57 @@ def test_b3139bi_macro_signals_read_the_vintage_in_force_and_count_a_miss(tmp_pa
     assert in_force["date"].date() <= as_of
     print(f"[bi] RECPROUSM156N as_of {as_of}: vintage {vint} (obs {in_force['date'].date()}) "
           f"vs revised FRED {latest_rev}")
+
+
+def test_b3139bd_bn_short_interest_is_public_from_publication_and_divides_by_a_dated_count(monkeypatch):
+    """S6-B3139bd + S6-B3139bn (owner ruling 2026-10-06, packet rows 22 and
+    26, recorded in S6-B3139br). bn: a FINRA settlement is usable from its
+    PUBLICATION date - FINRA's listed date where data_prefetch/finra/
+    publication_schedule.csv carries it, else 7 NYSE trading days after the
+    settlement (28 of 28 listed rows fit, S6-B3139bj). bd: short_interest_pct
+    divides by the dei cover-page count FILED on or before the settlement;
+    no such count -> no short_interest_pct (excluded, never imputed), and the
+    undated Finnhub count is never consulted. Planted frames and a planted
+    dei store; then the live schedule and the live store."""
+    from datetime import date as _d
+    import pandas as _pd
+    import backtest.signals.short_interest as si
+    # bn: the rule - a scheduled date, a regular Friday, a holiday Monday
+    assert si.finra_dissemination_date(_d(2025, 11, 14)) == _d(2025, 11, 25)   # FINRA's listed date
+    assert si.finra_dissemination_date(_d(2024, 1, 12)) == _d(2024, 1, 24)     # +7 trading days (MLK)
+    assert si.finra_dissemination_date(_d(2024, 1, 15)) == _d(2024, 1, 24)     # non-trading settlement
+    df = _pd.DataFrame({"settlement_date": [_d(2024, 1, 12)], "short_interest": [30e6],
+                        "shares_outstanding": [100e6], "avg_daily_volume": [2e6]})
+    # MUST be empty the day before publication; visible on publication day
+    assert si.compute_short_interest_signals("ZZZZ", _d(2024, 1, 23), df=df) == {}
+    assert si.compute_short_interest_signals("ZZZZ", _d(2024, 1, 24), df=df)["days_to_cover"] == 15.0
+    # bd: a planted dei store - one count filed BEFORE the settlement, one AFTER
+    store = {"QQQQ": _pd.DataFrame({
+        "ticker": ["QQQQ", "QQQQ"], "end": [_d(2023, 10, 20), _d(2024, 1, 20)],
+        "filed": [_d(2023, 11, 1), _d(2024, 2, 1)], "val": [150e6, 60e6]})}
+    monkeypatch.setattr(si, "_dei_store", lambda: store)
+    called = []
+    monkeypatch.setattr(si, "_load_shares_outstanding_from_finnhub", lambda t: called.append(t) or 1e9)
+    q = df.assign(shares_outstanding=[0.0])
+    r = si.compute_short_interest_signals("QQQQ", _d(2024, 2, 5), df=q)
+    assert r["short_interest_shares_outstanding_source"] == "sec_dei_dated"
+    assert r["short_interest_pct"] == 0.2, r            # 30M / 150M - the count filed by 2024-01-12
+    # no dated count -> excluded: no pct, dtc still emitted
+    r2 = si.compute_short_interest_signals("NONE", _d(2024, 2, 5), df=q)
+    assert r2["short_interest_shares_outstanding_source"] == "none_dated"
+    assert "short_interest_pct" not in r2 and r2["days_to_cover"] == 15.0
+    assert called == [], "the undated Finnhub count must never be consulted"
+    # FINRA's own count, when present, is dated at the settlement and wins
+    assert si.compute_short_interest_signals("QQQQ", _d(2024, 2, 5), df=df)[
+        "short_interest_shares_outstanding_source"] == "finra"
+    monkeypatch.undo()
+    # live: the schedule file carries 28 rows and the store, when built, only
+    # ever answers with a count filed on or before the asked settlement
+    sched = si._publication_schedule()
+    assert len(sched) == 28 and sched[_d(2026, 4, 30)] == _d(2026, 5, 11)
+    live = si._dei_store()
+    if live:
+        t, g = next(iter(live.items()))
+        s = g["filed"].iloc[0]
+        assert si.dated_shares_outstanding(t, s) == float(g[g["filed"] <= s].iloc[-1]["val"])
+        assert si.dated_shares_outstanding(t, _d(1990, 1, 1)) is None

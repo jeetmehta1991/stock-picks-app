@@ -114,7 +114,7 @@ def test_batch494_p15_producer_computes_short_interest_pct():
     df = _mock_si_df([
         (date(2024, 1, 15), 30_000_000.0, 100_000_000.0, 2_000_000.0),
     ])
-    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 20), df=df)
+    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 26), df=df)
     assert out["short_interest_pct"] == pytest.approx(0.30, abs=1e-6)
 
 
@@ -124,21 +124,23 @@ def test_batch494_p15_producer_computes_days_to_cover():
     df = _mock_si_df([
         (date(2024, 1, 15), 30_000_000.0, 100_000_000.0, 2_000_000.0),
     ])
-    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 20), df=df)
+    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 26), df=df)
     assert out["days_to_cover"] == pytest.approx(15.0, abs=1e-4)
 
 
 def test_batch494_p15_producer_uses_pit_filter():
-    """Only snapshots with settlement_date <= as_of count; latest of
-    those is the 'current' snapshot."""
+    """Only snapshots PUBLISHED by as_of count (S6-B3139bn: FINRA publishes
+    7 NYSE trading days after settlement); latest of those is the
+    'current' snapshot."""
     from backtest.signals.short_interest import compute_short_interest_signals
     df = _mock_si_df([
         (date(2024, 1, 1),  10_000_000.0, 100_000_000.0, 1_000_000.0),
         (date(2024, 1, 15), 30_000_000.0, 100_000_000.0, 2_000_000.0),
         (date(2024, 2, 1),  50_000_000.0, 100_000_000.0, 1_500_000.0),  # future
     ])
-    # as_of = Jan 20 -> Feb 1 row is in the future + filtered out
-    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 20), df=df)
+    # as_of = Jan 26: the Jan 15 settlement was published Jan 24; the Feb 1
+    # row is published Feb 12 and is filtered out
+    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 26), df=df)
     assert out["short_interest_pct"] == pytest.approx(0.30, abs=1e-6)
     assert out["short_interest_observations"] == 2
 
@@ -149,7 +151,7 @@ def test_batch494_p15_producer_handles_no_shares_outstanding_gracefully():
     df = _mock_si_df([
         (date(2024, 1, 15), 30_000_000.0, 0.0, 2_000_000.0),
     ])
-    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 20), df=df)
+    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 26), df=df)
     assert "short_interest_pct" not in out
     assert out["days_to_cover"] == pytest.approx(15.0, abs=1e-4)
 
@@ -160,7 +162,7 @@ def test_batch494_p15_producer_handles_no_adv_gracefully():
     df = _mock_si_df([
         (date(2024, 1, 15), 30_000_000.0, 100_000_000.0, 0.0),
     ])
-    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 20), df=df)
+    out = compute_short_interest_signals("ZZZZ", date(2024, 1, 26), df=df)
     assert out["short_interest_pct"] == pytest.approx(0.30, abs=1e-6)
     assert "days_to_cover" not in out
 
@@ -183,7 +185,7 @@ def test_batch494_p15_producer_carries_observation_count_and_date():
         (date(2024, 1, 15), 20_000_000.0, 100_000_000.0, 1_500_000.0),
         (date(2024, 1, 31), 30_000_000.0, 100_000_000.0, 2_000_000.0),
     ])
-    out = compute_short_interest_signals("ZZZZ", date(2024, 2, 5), df=df)
+    out = compute_short_interest_signals("ZZZZ", date(2024, 2, 12), df=df)  # Jan 31 published Feb 9
     assert out["short_interest_observations"] == 3
     assert out["short_interest_settlement_date"] == date(2024, 1, 31)
 

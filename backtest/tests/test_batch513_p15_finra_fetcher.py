@@ -173,9 +173,15 @@ def test_batch513_repartition_writes_producer_schema(tmp_path):
     df = parse_finra_csv(_synthetic_finra_csv())
     repartition_by_ticker([df], output_dir=tmp_path)
     saved = pd.read_parquet(tmp_path / "AAPL.parquet")
+    # S6-B3139bn (owner ruling 2026-10-06): the publication date rides beside
+    # the settlement date, written by the producer's one rule
     expected_cols = {"settlement_date", "short_interest",
-                     "shares_outstanding", "avg_daily_volume"}
+                     "shares_outstanding", "avg_daily_volume",
+                     "dissemination_date"}
     assert set(saved.columns) == expected_cols
+    from backtest.signals.short_interest import finra_dissemination_date
+    for s, d in zip(saved["settlement_date"], saved["dissemination_date"]):
+        assert pd.Timestamp(d).date() == finra_dissemination_date(pd.Timestamp(s).date())
 
 
 # ---------------------------------------------------------------------------

@@ -33,16 +33,87 @@ NEW STRATEGIES (deferred to follow-on batch when data lands):
 """
 from __future__ import annotations
 
+import functools
 from datetime import date
 from pathlib import Path
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 
 _SI_CACHE_DIR = (
     Path(__file__).resolve().parent.parent.parent
     / "data_prefetch" / "finra" / "short_interest"
 )
+
+_REPO_SI = Path(__file__).resolve().parent.parent.parent
+# S6-B3139bn (owner ruling 2026-10-06, packet row 26 'publish'): FINRA
+# publishes a settlement's figures 7 NYSE trading days after the settlement
+# date - 28 of 28 rows on FINRA's published schedule fit
+# (output_audit/b3139bj_short_interest_publication_lag.json). A settlement is
+# usable from its publication date, never from the settlement date.
+_PUBLICATION_SCHEDULE_CSV = _REPO_SI / "data_prefetch" / "finra" / "publication_schedule.csv"
+PUBLICATION_LAG_TRADING_DAYS = 7
+# S6-B3139bd (owner ruling 2026-10-06, packet row 22 'source-dated'): the
+# share count short_interest_pct divides by is the dei cover-page count FILED
+# on or before the settlement (scripts/build_dei_shares_store.py).
+_DEI_SHARES_PATH = _REPO_SI / "data_prefetch" / "sec_xbrl" / "dei_shares_outstanding.parquet"
+
+
+@functools.lru_cache(maxsize=1)
+def _nyse_days() -> pd.DatetimeIndex:
+    import pandas_market_calendars as mcal
+    return pd.DatetimeIndex(mcal.get_calendar("NYSE").valid_days("2010-01-01", "2030-12-31")
+                            .tz_localize(None))
+
+
+@functools.lru_cache(maxsize=1)
+def _publication_schedule() -> dict:
+    if not _PUBLICATION_SCHEDULE_CSV.exists():
+        return {}
+    s = pd.read_csv(_PUBLICATION_SCHEDULE_CSV)
+    return {date.fromisoformat(a): date.fromisoformat(b)
+            for a, b in zip(s["settlement_date"], s["publication_date"])}
+
+
+def finra_dissemination_date(settlement: date) -> date:
+    """The date a settlement's short interest became public: FINRA's listed
+    publication date where the schedule carries it, else settlement + 7 NYSE
+    trading days (a settlement on a non-trading day counts from the prior
+    trading day, as the schedule does)."""
+    listed = _publication_schedule().get(settlement)
+    if listed is not None:
+        return listed
+    days = _nyse_days()
+    i = int(np.searchsorted(days.values, np.datetime64(pd.Timestamp(settlement))))
+    k = PUBLICATION_LAG_TRADING_DAYS
+    if i < len(days) and days[i].date() == settlement:
+        return days[i + k].date()
+    return days[i + k - 1].date()
+
+
+@functools.lru_cache(maxsize=1)
+def _dei_store() -> dict:
+    if not _DEI_SHARES_PATH.exists():
+        return {}
+    df = pd.read_parquet(_DEI_SHARES_PATH, columns=["ticker", "end", "filed", "val"])
+    df["end"] = pd.to_datetime(df["end"]).dt.date
+    df["filed"] = pd.to_datetime(df["filed"]).dt.date
+    df = df[df["val"] > 0].sort_values(["ticker", "end", "filed"])
+    return {t: g.reset_index(drop=True) for t, g in df.groupby("ticker")}
+
+
+def dated_shares_outstanding(ticker: str, settlement: date) -> Optional[float]:
+    """The cover-page share count a reader could have seen at `settlement`:
+    among dei facts FILED on or before it, the one with the latest as-of
+    date. None when the ticker has no such fact (excluded, never imputed)."""
+    g = _dei_store().get(ticker.replace(".", "-").upper())
+    if g is None:
+        return None
+    k = g[g["filed"] <= settlement]
+    if k.empty:
+        return None
+    return float(k.iloc[-1]["val"])
 
 # B1240 (2026-07-07 Council 290 S5-B1214 fix):
 # FINRA cache has shares_outstanding = NULL for all rows (upstream data gap).
@@ -135,9 +206,19 @@ def _load_ticker_si(ticker: str) -> pd.DataFrame:
         return empty
     df = df.copy()
     df["settlement_date"] = pd.to_datetime(df["settlement_date"]).dt.date
-    df = df.sort_values("settlement_date").reset_index(drop=True)
+    df = _with_dissemination(df.sort_values("settlement_date").reset_index(drop=True))
     _SI_BY_TICKER[safe_ticker] = df
     return df
+
+
+def _with_dissemination(df: pd.DataFrame) -> pd.DataFrame:
+    """S6-B3139bn: the publication date beside every settlement - read from
+    the file when the prefetcher wrote it, derived by the one rule otherwise."""
+    if "dissemination_date" in df.columns:
+        df = df.copy()
+        df["dissemination_date"] = pd.to_datetime(df["dissemination_date"]).dt.date
+        return df
+    return df.assign(dissemination_date=[finra_dissemination_date(d) for d in df["settlement_date"]])
 
 
 def compute_short_interest_signals(
@@ -165,7 +246,10 @@ def compute_short_interest_signals(
     src = df if df is not None else _load_ticker_si(ticker)
     if src is None or src.empty:
         return {}
-    past = src[src["settlement_date"] <= as_of]
+    if "dissemination_date" not in src.columns:
+        src = _with_dissemination(src)
+    # S6-B3139bn: a settlement is usable from its PUBLICATION date
+    past = src[src["dissemination_date"] <= as_of]
     if past.empty:
         return {}
     most_recent = past.iloc[-1]
@@ -176,16 +260,22 @@ def compute_short_interest_signals(
         "short_interest_observations": int(len(past)),
         "short_interest_settlement_date": most_recent["settlement_date"],
     }
-    # B1240 (2026-07-07 Council 290 S5-B1214 fix): if FINRA shares_outstanding
-    # is missing (upstream data gap, 100% NULL as of 2026-07-07 per B1214/B1239
-    # findings), fall back to Finnhub profile2 shareOutstanding (95.5% Batch A
-    # coverage + 95-102% accuracy). This unblocks strat_squeeze_setup_long
-    # from the graceful-degradation fallback path added in B1229.
-    if so <= 0:
-        finnhub_so = _load_shares_outstanding_from_finnhub(ticker)
-        if finnhub_so and finnhub_so > 0:
-            so = finnhub_so
-            out["short_interest_shares_outstanding_source"] = "finnhub_profile2"
+    # S6-B3139bd (owner ruling 2026-10-06, packet row 22): the denominator is
+    # a count DATED at the settlement - FINRA's own field (100 pct NULL as of
+    # B1214) or the dei cover-page count filed on or before the settlement.
+    # The undated Finnhub profile2 count (B1240) is no longer consulted: it is
+    # TODAY's count and flipped 258 of 711 same-order-band gate decisions
+    # (output_audit/b3139d_short_interest_pit_measure.json). No dated count ->
+    # no short_interest_pct (excluded from the share-dependent layer).
+    if so > 0:
+        out["short_interest_shares_outstanding_source"] = "finra"
+    else:
+        dated = dated_shares_outstanding(ticker, most_recent["settlement_date"])
+        if dated:
+            so = dated
+            out["short_interest_shares_outstanding_source"] = "sec_dei_dated"
+        else:
+            out["short_interest_shares_outstanding_source"] = "none_dated"
     if so > 0:
         out["short_interest_pct"] = round(si / so, 6)
     if adv > 0:
