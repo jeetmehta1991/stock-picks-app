@@ -52663,3 +52663,78 @@ def test_b3139bf_the_freshness_stamp_has_one_writer_and_each_generator_stamps_it
         "output_audit/strategy_producer_map.csv is stale against the registry "
         "(regenerate: python scripts/build_strategy_producer_map.py); "
         f"missing {sorted(expected - in_csv)}, extra {sorted(in_csv - expected)}")
+
+
+# S6-B3139be: DATED MEASUREMENT RECORDS, not generated artifacts. Each file is
+# one audit's measurement (B1211-B1225, Councils 280-283, 2026-07-07) that the
+# hand-compiled PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md quotes; re-running a
+# writer today would measure today's caches under a July report - a NEW
+# audit, not freshness - so these stay OUT of _B1974_GENERATED, and the
+# register says so here rather than by omission (B2023: a stale candidate is
+# a finding, never a silent entry; S6-B3139ap removed the report itself on
+# the same ground). The 9 written by measure_producer_coverage.py were each
+# committed with the last change to THEIR entry of its PRODUCERS table; the
+# script's later commits added other entries or touched earnings_yoy's own
+# (git diff 1fa3a73ba..HEAD, EXECUTED B3139q-r37). Value = the writer, or
+# None for the three that were written inline in their batch and have no
+# tracked generator.
+_B3139BE_DATED_MEASUREMENTS = {
+    "output_audit/short_interest_coverage_batch_a.json": "scripts/measure_producer_coverage.py",
+    "output_audit/pead_coverage_batch_a.json": "scripts/measure_producer_coverage.py",
+    "output_audit/insider_coverage_batch_a.json": "scripts/measure_producer_coverage.py",
+    "output_audit/institutional_coverage_batch_a.json": "scripts/measure_producer_coverage.py",
+    "output_audit/congressional_coverage_batch_a.json": "scripts/measure_producer_coverage.py",
+    "output_audit/sec_edgar_coverage_batch_a.json": "scripts/measure_producer_coverage.py",
+    "output_audit/search_volume_coverage_batch_a.json": "scripts/measure_producer_coverage.py",
+    "output_audit/index_rebalance_coverage_batch_a.json": "scripts/measure_producer_coverage.py",
+    "output_audit/earnings_yoy_coverage_batch_a.json": "scripts/measure_producer_coverage.py",
+    "output_audit/news_coverage_batch_a.json": "scripts/measure_news_coverage_batch_a.py",
+    "output_audit/cot_positioning_coverage_batch_a.json": None,   # B1221, inline
+    "output_audit/cross_asset_coverage_batch_a.json": None,       # B1221, inline
+    "output_audit/cross_sectional_coverage_batch_a.json": None,   # B1225, inline
+}
+
+
+def test_b3139be_coverage_measurements_are_dated_records_outside_the_generated_register():
+    """S6-B3139be: the 13 *_coverage_batch_a.json files are classified, not
+    registered. (i) Every one exists and self-dates - carries its `batch`
+    key, and `measurement_date` where its writer emits one - so a reader
+    sees WHEN it was measured without the git log. (ii) None sits in
+    _B1974_GENERATED, where a commit-time rule would demand a re-measurement
+    on every edit to the measuring script. (iii) The classification is
+    complete both ways: every *_coverage_batch_a.json on disk is listed, and
+    the set measure_producer_coverage.py can write (its PRODUCERS keys) is
+    exactly the set attributed to it - a producer added to the script without
+    a measurement, or a measurement whose entry left the script, fails here.
+    The ticket's premise (13 files, 8 stale against ONE script) was wrong by
+    4: news has its own writer and three were written inline (READ)."""
+    import importlib.util as _iu
+    import json
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    on_disk = {p.relative_to(root).as_posix()
+               for p in (root / "output_audit").glob("*_coverage_batch_a.json")}
+    assert on_disk == set(_B3139BE_DATED_MEASUREMENTS), (
+        f"unclassified {sorted(on_disk - set(_B3139BE_DATED_MEASUREMENTS))}, "
+        f"missing {sorted(set(_B3139BE_DATED_MEASUREMENTS) - on_disk)}")
+    for rel, writer in _B3139BE_DATED_MEASUREMENTS.items():
+        d = json.loads((root / rel).read_text(encoding="utf-8"))
+        assert isinstance(d.get("batch"), str) and d["batch"].startswith("B"), (
+            f"{rel} does not self-date (no batch key)")
+        if writer == "scripts/measure_producer_coverage.py":
+            assert d.get("measurement_date") == "2026-07-07", (
+                f"{rel}: measurement_date moved - a re-measurement is a NEW "
+                "audit; re-date the report that quotes it or revert")
+        assert rel not in _B1974_GENERATED, (
+            f"{rel} is a dated measurement, not a generated artifact")
+        assert writer is None or (root / writer).exists(), f"{rel}: writer {writer} missing"
+    spec = _iu.spec_from_file_location(
+        "mpc_b3139be", root / "scripts" / "measure_producer_coverage.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    attributed = {rel.split("/")[-1].replace("_coverage_batch_a.json", "")
+                  for rel, w in _B3139BE_DATED_MEASUREMENTS.items()
+                  if w == "scripts/measure_producer_coverage.py"}
+    assert set(m.PRODUCERS) == attributed, (
+        f"PRODUCERS {sorted(set(m.PRODUCERS) ^ attributed)} differ from the "
+        "measurements attributed to measure_producer_coverage.py")

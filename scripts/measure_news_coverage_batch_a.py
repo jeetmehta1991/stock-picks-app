@@ -97,9 +97,12 @@ def main() -> int:
     output_path = _REPO / "output_audit" / "news_coverage_batch_a.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output = {
+        # batch / council name the audit DESIGN (Council 280 methodology);
+        # measurement_date is the RUN date (S6-B3139be: it was a typed
+        # "2026-07-07", so any later re-run would still have claimed July)
         "batch": "B1211",
         "council": 280,
-        "measurement_date": "2026-07-07",
+        "measurement_date": date.today().isoformat(),
         "test_dates_2024": [d.isoformat() for d in TEST_DATES],
         "universe_size": len(tickers),
         "per_ticker_categories": {
