@@ -53151,3 +53151,67 @@ def test_b3139ar_breadth_rerun_drops_flagged_axes_and_matches_retained_rows():
         assert new["multiplicity"]["reconciles"] and new["multiplicity"]["searched"] == new["trials"], leg
     longp = _j.loads((root / "output_audit/b3139ar_bollinger_lower_breadth_net_long.json").read_text(encoding="utf-8"))["permutation_null"]
     assert longp["p_value"] > 0.05, "the long leg's search is no longer priced below 0.05 once the COT axis is dropped"
+
+
+def test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter():
+    """S6-B3139ae (owner ruling 2026-10-06, packet row 21 'approve', recorded
+    in S6-B3139br): a Bash command feeding a backslash-bearing heredoc body to
+    an interpreter is REFUSED BEFORE IT RUNS by a PreToolUse hook, with git
+    commit/tag message heredocs exempt. Runs the hook file as a subprocess,
+    exactly as Claude Code does, on a must-fire corpus (the three incidents
+    the ticket names, verbatim from the session transcript at lines 109067,
+    109954 and 110297) and a must-quiet corpus; then checks the settings
+    wiring and that the decision is the one Stop-scan definition."""
+    import ast
+    import json as _j
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    guard = root / "scripts" / "pretooluse_heredoc_guard.py"
+    assert guard.exists(), "the PreToolUse guard is missing"
+
+    def run(payload_text):
+        r = _sp.run([_sys.executable, str(guard)], input=payload_text, capture_output=True,
+                    text=True, encoding="utf-8", cwd=str(root), timeout=60)
+        return r.returncode, r.stderr
+
+    def bash(cmd):
+        return _j.dumps({"tool_name": "Bash", "tool_input": {"command": cmd}})
+
+    must_fire = [
+        'python - <<\'EOF\'\nimport sys, inspect; sys.path.insert(0, "scripts")\nimport wave_identity as wi\nfor fn in ("read_summary","summary_digest","decide","token_line","summary_status"):\n    f = getattr(wi, fn)\n    print(fn, inspect.signature(f), "::", (f.__doc__ or "").strip().split("\\n")[0])\nEOF',
+        'S="C:/Users/jeetm/AppData/Local/Temp/claude/c--Users-jeetm-Github-stock-picks-app/433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0/scratchpad" && python - "$S/b3139d_si_pit_measure.py" <<\'EOF\'\nimport sys\nfrom pathlib import Path\np = Path(sys.argv[1]); s = p.read_text(encoding="utf-8")\na1 = "        pit_sh = float(known.iloc[-1][\\"value\\"])"\nassert s.count(a1) == 1\ns = s.replace(a1, a1 + "\\n        pit_pe = known.iloc[-1][\\"period_end\\"]")\na2 = "                      (si / adv) if adv > 0 else 0.0, fh / pit_sh))"\nassert s.count(a2) == 1\ns = s.replace(a2, "                      (si / adv) if adv > 0 else 0.0, fh / pit_sh,\\n                      (d - pit_pe).days, si, fh, pit_sh))")\ns = s.replace("for t, d, c, p, dtc, ratio in pairs:", "for t, d, c, p, dtc, ratio, *_ in pairs:")\ns = s.replace("    for t, d, c, p, dtc, _ in rows:", "    for t, d, c, p, dtc, *_ in rows:")\na3 = "OUT.write_text(json.dumps(doc"\nassert s.count(a3) == 1\nextra = \'\'\'ages = sorted(x[6] for x in clean)\ndoc["pit_age_days_settlement_minus_period_end"] = {\n    "p50": ages[len(ages)//2], "p90": ages[(len(ages)*9)//10],\n    "max": ages[-1], "over_365": sum(1 for a in ages if a > 365)}\nfl = [x for x in clean if (x[2] >= GATE) != (x[3] >= GATE)]\nstep = max(1, len(fl) // 10)\ndoc["flip_sample"] = [\n    {"t": x[0], "d": str(x[1]), "si": x[7], "finnhub_sh": x[8],\n     "pit_sh": x[9], "cur_pct": round(x[2], 4), "pit_pct": round(x[3], 4),\n     "ratio": round(x[5], 3), "pit_age_d": x[6]} for x in fl[::step][:10]]\n\'\'\'\ns = s.replace(a3, extra + a3)\np.write_text(s, encoding="utf-8")\nprint("patched")\nEOF\n.venv/Scripts/python.exe "$S/b3139d_si_pit_measure.py" "$S/b3139d_si_pit_measure.json" > /dev/null && .venv/Scripts/python.exe -c "\nimport json; d=json.load(open(r\'$S/b3139d_si_pit_measure.json\'))\nprint(\'PIT age:\', d[\'pit_age_days_settlement_minus_period_end\'])\nfor r in d[\'flip_sample\']: print(r)"',
+        'S="C:/Users/jeetm/AppData/Local/Temp/claude/c--Users-jeetm-Github-stock-picks-app/433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0/scratchpad" && python - "$S/msg_r17_3139w.txt" <<\'EOF\'\nimport sys\nfrom pathlib import Path\np = Path(sys.argv[1]); s = p.read_text(encoding="utf-8")\ns = s.replace("b3139_pyramid_r17.out", "b3139_pyramid_r18.out")\nanchor = "ALSO IN THIS COMMIT:"\nassert s.count(anchor) == 1\nadd = ("GATE HISTORY: the r17 gate went RED (1 failed, 1682 passed) on\\n"\n       "test_b2128_silent_except_pass_is_a_shrinking_set - the new _step()\\n"\n       "helper swallowed an unreadable manifest with except-pass (129 vs\\n"\n       "ceiling 128). Fixed: the header now names each unreadable manifest.\\n"\n       "L896 + S6-B3139ac record it (compliance failure against #122).\\n"\n       "S6-B3139ad tickets the owner-decision gate\'s narrow ACK vocabulary.\\n\\n")\ns = s.replace(anchor, add + anchor)\np.write_text(s, encoding="utf-8")\nprint("msg updated", s.count("r18"))\nEOF\necho "r18 pyramid gate running (task blfkebyjy): S6-B3139w fix + ratchet fix, L896, campaign log I.6 and queue rows commit on its green footer (#292)" > .stop_exempt && python scripts/queue_state.py 2>/dev/null | grep -E "EXECUTED|DROPPED|BLOCKED|DEFERRED|OPEN|RUNNING"',
+    ]
+    for c in must_fire:
+        rc, err = run(bash(c))
+        assert rc == 2 and "REFUSED BEFORE RUNNING" in err, (rc, err[:200], c[:80])
+    q = chr(39)
+    bs = chr(92)
+    must_quiet = [
+        "python - <<" + q + "EOF" + q + "\nimport json\nprint(json.dumps({1: 2}))\nEOF",
+        "git commit -q -F - <<" + q + "MSG" + q + "\nB1: fix the " + bs + "n handling\nMSG",
+        "cat > rows.txt <<" + q + "EOF" + q + "\na " + bs + "n b\nEOF",
+        "ls -la",
+    ]
+    for c in must_quiet:
+        rc, err = run(bash(c))
+        assert rc == 0 and not err.strip(), (rc, err[:200], c)
+    # a non-Bash tool is never judged, whatever it carries
+    rc, _ = run(_j.dumps({"tool_name": "Write", "tool_input": {"content": must_fire[0]}}))
+    assert rc == 0
+    # a malformed payload fails OPEN (exit 1 is non-blocking), never exit 2
+    rc, err = run("not json")
+    assert rc == 1 and "not blocking" in err
+    # wiring: a PreToolUse entry on Bash runs this file
+    s = _j.loads((root / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    cmds = [h.get("command", "") for e in s["hooks"]["PreToolUse"]
+            if e.get("matcher") == "Bash" for h in e.get("hooks", [])]
+    assert any("scripts/pretooluse_heredoc_guard.py" in c for c in cmds), cmds
+    # one definition: the guard imports the Stop scan's function and compiles no pattern of its own
+    tree = ast.parse(guard.read_text(encoding="utf-8"))
+    imported = {a.name for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)
+                and n.module == "verify_turn_compliance" for a in n.names}
+    assert imported == {"heredoc_escape_hits"}, imported
+    assert not [n for n in ast.walk(tree) if isinstance(n, ast.Attribute) and n.attr == "compile"]

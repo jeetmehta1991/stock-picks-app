@@ -4821,6 +4821,8 @@ same defect since B1721b - recorded, never gated.**
 
 **INSTANCE (B3139q-r15 / L895):** in the first turn after a compaction, a `python - <<EOF` heredoc body carried a backslash pair - with two more recurrences the same session (instances 2 and 3, recorded in L895's addendum), each caught by the S6-B3138a heredoc scan at turn close, after the command had run; the same turn also broke #322/L870 (a claim about my own actions across the compaction, made before running transcript_timeline.py). S6-B3139ae tickets a pre-execution refusal as the class remedy.
 
+**REFUSED BEFORE IT RUNS since B3139q-r49 (S6-B3139ae, owner ruling 2026-10-06 'approve'):** a PreToolUse hook on Bash, `scripts/pretooluse_heredoc_guard.py`, wired in `.claude/settings.json`, refuses the command when `heredoc_escape_hits` - the same function the Stop scan calls - finds a backslash pair in a heredoc body fed to an interpreter; git commit/tag message heredocs are exempt. MEASURED over this session's transcript: 42 such commands ran after the Stop scan shipped, 23 of them on 2026-10-06, the last in the turn that built the refusal (B3139q-r47's pin-widening command). A record at turn close did not change the habit; a refusal before the command runs is the remedy. The double-quoted `python -c` sibling stays on the Stop scan only, as ruled. The guard fails OPEN on its own error (exit 1 is non-blocking), and its pin runs it as a subprocess on the incident corpus.
+
 ### #260 - SHOW EVERY CLASS OR CITE NO TOTAL (B1779 / L534)
 
 **MEASURED: I reported "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649".** Three of SEVEN classes
