@@ -24,7 +24,7 @@ measure_cot_pit.py, regrade_cot_lagged.py, measure_13f_filing_lag.py, measure_13
 | 8 | adx, bb_10_20_pctb, bb_20_15_pctb, below_ema_9/20/21/50, dc20_new_high, macd_12_26_9_line, pct_from_vwap | OHLCV bars | PRICE-DERIVED | Out of this class (no publication lag); the same-bar convention every gate shares is not audited here |
 | 9 | Insider filings | smart_money.py:507-510 dates rows by fileDate (or Date) | FILING-DATED | Read, not measured |
 
-## Not yet classified (S6-B3139ba)
+## Formerly 'not yet classified' - every member below is classified in slice 2 (S6-B3139ba)
 
 FRED / ALFRED macro series (backtest/data/macro.py), SEC fundamentals and earnings dates (the PEAD
 family), congressional trading (disclosure lag up to 45 days), short interest's own
@@ -35,3 +35,29 @@ settlement-to-publication lag (S6-B3139d covers only its shares denominator), Wi
 
 Two of its 13 axes are LOOKAHEAD (rows 1 and 3 - row 3 was DISPUTED until S6-B3139ay verified it at
 B3139q-r29) and one is mis-specified (row 4). The holdout read (S6-B3139am) waits on the owner's choice for all three (S6-B3139ar).
+
+## Slice 2 (S6-B3139ba, B3139q-r30, 2026-10-05)
+
+**Method.** Each remaining producer's date filter was READ at its function; where a vintage record
+exists (ALFRED), the gap between observation date and publication was MEASURED over
+2022-05-05..2026-05-05 (scratchpad measure_fred_pit.py -> output_audit/b3139ba_fred_pit_measure.json).
+Consumers were traced to the engine call site, not inferred from the producer.
+
+| # | Producer (signal) | Date rule, READ | Class | Evidence / effect |
+|---|---|---|---|---|
+| 10 | FRED macro signals hy_oas / financial_stress / recession_probability / jobless_claims / fed_balance_sheet (macro.py macro_snapshot -> macro_score) | macro.py _fred_value_at: observations filtered `date <= as_of` over data_prefetch/fred/observations - the LATEST-REVISED values, never the ALFRED vintage path, although vintage caches exist for 4 of the 5 series | **LOOKAHEAD** (publication lag AND revision) | MEASURED from the ALFRED vintages: RECPROUSM156N is published 58-119 days after its observation date (median 61) and 97.8% of its 46 dates are later revised (up to 40 vintages); ICSA 4-54 days (median 5), 95.7% of 208 revised; WALCL 1-2 days, 0.0% revised; BAMLH0A0HYM2 same-day on 99.0% of 793 dates, none revised. Consumer: macro_score gates entry for 5 strategies via STRATEGY_REQUIRED_MACRO_REGIME (bollinger_tight, monthly_bias_momentum_long, xs_quality_top_quintile_long, pead_long, adx_initiation; backtest.py the _req_macro block) - 0 of 15 admitted Phase 1B lines are among them (grep of phase_1b_step2_admissions.json). Engine fix is the owner's: S6-B3139bi |
+| 11 | yield_curve_regime (T10Y2Y) | macro.py get_yield_curve -> _fred_series(as_of=as_of) -> the ALFRED vintage filter `realtime_start <= as_of <= realtime_end` | VINTAGE-CORRECT | 5.0% of 955 dates published after their date and 72.7% revised - both handled by the vintage filter. Its fallback (FRED observations, no vintage) runs only on an ALFRED cache miss |
+| 12 | financial_stress_signal (STLFSI4) | same _fred_value_at as row 10 | **LOOKAHEAD + VINTAGE CACHE GAP** | its ALFRED cache holds exactly 100,000 rows ending 2005-01-21, so the vintage path could not serve it either; NFCI's ends 2020-12-25 - 2 of 80 vintage caches end before the window, cause UNKNOWN - RCA NEEDED (S6-B3139bl). Lag unmeasurable from the cache |
+| 13 | PEAD eps (compute_pead_signals, the yoy sleeves) | pead.py compute_pead_signals: `eps_df["filing_date"] <= as_of`, filing_date taken from each Polygon financials row | FILING-DATED | Read, not measured |
+| 14 | earnings dates (fetcher.fetch_earnings_dates / days_to_next_earnings) | fetcher.py: earnings_date = fiscal end_date + 30 days, a PROXY (B998: the cache carries no announcement date) | PROXY, no publication question | an estimate knowable in advance; its error against the true announcement is the recorded B998 caveat, not an availability defect |
+| 15 | congressional trading | smart_money.py congressional_signal: `disclosure_dt <= as_of` (DEC-324) | DISCLOSURE-DATED | Read, not measured |
+| 16 | short interest - publication side (the shares denominator is S6-B3139bd) | short_interest.py compute_short_interest_signals: `settlement_date <= as_of`; the FINRA cache's columns are settlement_date, short_interest, shares_outstanding, avg_daily_volume - no dissemination date | **LOOKAHEAD** (lag unmeasured) | FINRA disseminates a settlement's figures days after the settlement date and the cache cannot say when. Consumer: strat_squeeze_setup_long layer 1. S6-B3139bj |
+| 17 | Wikipedia pageviews | sentiment.py get_wikipedia_pageviews: `date <= as_of` | NOT CONSUMED by the engine | sentiment_snapshot is called without a ticker at backtest.py (the `sent = sentiment_snapshot(as_of)` line), so its ticker branch never runs |
+| 18 | Apewisdom mentions | sentiment.py get_apewisdom_mentions takes no as_of - it reads the latest snapshot | NOT CONSUMED; NOT POINT-IN-TIME by construction | same branch as row 17; must gain an as_of before any consumer is wired. S6-B3139bk |
+| 19 | news sentiment | news_sentiment.py compute_news_sentiment_signals: `published_date <= as_of` | PUBLICATION-DATED | Read, not measured |
+| 20 | Google Trends (search_volume) | search_volume.py compute_search_volume_signals: `d <= as_of` on week-START dates (1,417 cached tickers; every date is a Sunday) - a week's index is readable from its first day | LOOKAHEAD-IF-CONSUMED (up to 6 days plus Google's own delay) | 0 strategy gates read its keys: the only screener hits are the injector call (inject_search_volume_signals) |
+
+**What it means.** Of the 11 producers in this slice, 3 carry a live look-ahead in an engine path
+(rows 10, 12 and 16), 1 is a look-ahead with no consumer (row 20), 2 are not consumed (rows 17-18, one
+of them not point-in-time at all), and 5 are sound or proxies by design (rows 11, 13, 14, 15, 19).
+No admitted Phase 1B line gates on any of the three live look-aheads.

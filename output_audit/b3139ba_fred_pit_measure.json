@@ -1,0 +1,104 @@
+{
+ "ticket": "S6-B3139ba",
+ "_doc": "For each FRED series the macro signals read through backtest/data/macro.py _fred_value_at (observation date <= as_of over the latest-revised FRED observations), what that filter ignores, measured from the ALFRED vintage cache over 2022-05-05..2026-05-05: publication_lag_days = realtime_start minus the observation date on each date's FIRST vintage (days the value was unknowable after its date); share_of_dates_revised = dates carrying more than one vintage. T10Y2Y is included as the control: yield_curve_regime reads it through the vintage path, which applies realtime_start <= as_of <= realtime_end and is not exposed.",
+ "window": [
+  "2022-05-05",
+  "2026-05-05"
+ ],
+ "series": {
+  "BAMLH0A0HYM2": {
+   "signal": "hy_oas_signal",
+   "alfred_cache": "present",
+   "obs_dates_in_window": 793,
+   "rows_without_realtime_start": 0,
+   "fred_observation_rows_in_window": 784,
+   "publication_lag_days": {
+    "min": 0,
+    "median": 0.0,
+    "p90": 0.0,
+    "max": 3
+   },
+   "share_published_after_obs_date": 0.0101,
+   "share_of_dates_revised": 0.0,
+   "max_vintages_one_date": 1
+  },
+  "STLFSI4": {
+   "signal": "financial_stress_signal",
+   "alfred_cache": "present",
+   "obs_dates_in_window": 0,
+   "rows_without_realtime_start": 0,
+   "publication_lag_days": "n/a"
+  },
+  "RECPROUSM156N": {
+   "signal": "recession_probability_signal",
+   "alfred_cache": "present",
+   "obs_dates_in_window": 46,
+   "rows_without_realtime_start": 0,
+   "fred_observation_rows_in_window": 46,
+   "publication_lag_days": {
+    "min": 58,
+    "median": 61.0,
+    "p90": 63.5,
+    "max": 119
+   },
+   "share_published_after_obs_date": 1.0,
+   "share_of_dates_revised": 0.9783,
+   "max_vintages_one_date": 40
+  },
+  "ICSA": {
+   "signal": "jobless_claims_signal",
+   "alfred_cache": "present",
+   "obs_dates_in_window": 208,
+   "rows_without_realtime_start": 0,
+   "fred_observation_rows_in_window": 208,
+   "publication_lag_days": {
+    "min": 4,
+    "median": 5.0,
+    "p90": 5.0,
+    "max": 54
+   },
+   "share_published_after_obs_date": 1.0,
+   "share_of_dates_revised": 0.9567,
+   "max_vintages_one_date": 7
+  },
+  "WALCL": {
+   "signal": "fed_balance_sheet_signal",
+   "alfred_cache": "present",
+   "obs_dates_in_window": 208,
+   "rows_without_realtime_start": 0,
+   "fred_observation_rows_in_window": 208,
+   "publication_lag_days": {
+    "min": 1,
+    "median": 1.0,
+    "p90": 1.0,
+    "max": 2
+   },
+   "share_published_after_obs_date": 1.0,
+   "share_of_dates_revised": 0.0,
+   "max_vintages_one_date": 1
+  },
+  "T10Y2Y": {
+   "signal": "yield_curve_regime (vintage path)",
+   "alfred_cache": "present",
+   "obs_dates_in_window": 955,
+   "rows_without_realtime_start": 0,
+   "fred_observation_rows_in_window": 999,
+   "publication_lag_days": {
+    "min": 0,
+    "median": 0.0,
+    "p90": 0.0,
+    "max": 3
+   },
+   "share_published_after_obs_date": 0.0503,
+   "share_of_dates_revised": 0.7267,
+   "max_vintages_one_date": 5
+  }
+ },
+ "vintage_cache_gaps": {
+  "STLFSI4": "100,000 rows ending 2005-01-21",
+  "NFCI": "ends 2020-12-25",
+  "count": "2 of 80 data_prefetch/alfred files end before the window"
+ },
+ "consumers": "macro_snapshot -> macro_score -> STRATEGY_REQUIRED_MACRO_REGIME (5 strategies: bollinger_tight, monthly_bias_momentum_long, xs_quality_top_quintile_long, pead_long, adx_initiation); 0 of 15 admitted Phase 1B lines",
+ "script": "scratchpad measure_fred_pit.py"
+}
