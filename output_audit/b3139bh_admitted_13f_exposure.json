@@ -1,0 +1,406 @@
+{
+ "_doc": "S6-B3139bh preparation (council B3139q-r41, \"the one thing first\"): the\nADMITTED institutional lines' exposure to the 13F look-ahead, read-only.\n\nTwo 13F producers feed the nine admitted institutional strategies, both\nmaking a holding usable at ReportPeriod + 45 days with no check that it was\nFILED (the per-ticker `Date` column is the SEC filing timestamp, verified\nS6-B3139ay):\n  1. smart_money.institutional_signal -> institutional_new_positions /\n     institutional_increased / institutional_buy (7 of the 9 gate on these).\n     Measured here per FIRE in the R5 merged cube: the stored value is\n     reproduced with the live function (control), then recomputed under the\n     FILED rule (available_after <= as_of AND Date <= as_of, bulk first then\n     per-ticker, the live precedence) and the strategy's own 13F gate\n     expression is re-evaluated. A fire whose 13F gate closes under the filed\n     rule is a trade that could not have been taken.\n  2. scripts/build_institutional_persistence_precompute.py -> yearly\n     snapshots feeding persistent_holders_4q / committed_growth_holders\n     (2 of the 9). Rebuilding a snapshot under the filed rule is ~1 h per\n     snapshot (the builder's own estimate), so this script measures the\n     INPUT exposure only: of the 13F rows each snapshot consumed, how many\n     carry Date > snapshot date (not yet public). That is an upper bound on\n     the rows that could move those two strategies' snapshot values.\n\nWrites output_audit/b3139bh_admitted_13f_exposure.json. Nothing in the\nengine, the roster or the admissions is touched.",
+ "generated_batch": "B3139q-r42",
+ "cube": "output_r5_merged_1_7\\trade_log.csv",
+ "filed_rule": {
+  "definition": "a row is usable at max(ReportPeriod + 45 d, Date) when Date <= ReportPeriod + LAG_CAP, else at ReportPeriod + 45 d (Date is then a backfill stamp, not a filing)",
+  "lag_cap_days": 120,
+  "why": "MEASURED on 40 random per-ticker files (217,960 rows): share of rows with Date within 45 d of the period - 2019 0.0, 2020 0.0, 2021 0.631, 2022 0.768, 2023 0.923, 2024 0.952, 2025 0.914; share > 120 d - 2019 1.0, 2020 1.0, 2021 0.173, 2022 0.060, 2023 0.032, 2024 0.019, 2025 0.007. S6-B3139ay's own sample carried the same tell: its 3 pre-2021 rows sat in the >365 band, UNMAPPED."
+ },
+ "windows": {
+  "IS": [
+   "2022-05-05",
+   "2025-05-05"
+  ],
+  "HO": [
+   "2025-05-05",
+   "2026-05-05"
+  ]
+ },
+ "per_strategy": {
+  "institutional_oversold_long": {
+   "fires": 386,
+   "exit": "r_multiple_2r",
+   "combination": {
+    "sector_strongest_rs": 0.0517,
+    "strategy": "institutional_oversold_long"
+   },
+   "gate_has_per_ticker_13f_clause": true,
+   "IS": {
+    "fires": 293,
+    "live_reproduces_stored": 293,
+    "stored_gate_open": 293,
+    "perticker_plus45_equals_stored": 293,
+    "perticker_plus45_gate_open": 293,
+    "value_changed_under_filed_rule": 78,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 135
+   },
+   "HO": {
+    "fires": 93,
+    "live_reproduces_stored": 93,
+    "stored_gate_open": 93,
+    "perticker_plus45_equals_stored": 88,
+    "perticker_plus45_gate_open": 92,
+    "value_changed_under_filed_rule": 34,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 1
+   },
+   "ALL": {
+    "fires": 386,
+    "live_reproduces_stored": 386,
+    "stored_gate_open": 386,
+    "perticker_plus45_equals_stored": 381,
+    "perticker_plus45_gate_open": 385,
+    "value_changed_under_filed_rule": 112,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 136
+   }
+  },
+  "institutional_breakout_confirmation_long": {
+   "fires": 642,
+   "exit": "r_multiple_2r",
+   "combination": {
+    "xs_max_anomaly": 0.0719,
+    "strategy": "institutional_breakout_confirmation_long"
+   },
+   "gate_has_per_ticker_13f_clause": true,
+   "IS": {
+    "fires": 502,
+    "live_reproduces_stored": 502,
+    "stored_gate_open": 502,
+    "perticker_plus45_equals_stored": 502,
+    "perticker_plus45_gate_open": 502,
+    "value_changed_under_filed_rule": 98,
+    "gate_closes_under_filed_rule": 1,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 332
+   },
+   "HO": {
+    "fires": 140,
+    "live_reproduces_stored": 140,
+    "stored_gate_open": 140,
+    "perticker_plus45_equals_stored": 137,
+    "perticker_plus45_gate_open": 138,
+    "value_changed_under_filed_rule": 47,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 6
+   },
+   "ALL": {
+    "fires": 642,
+    "live_reproduces_stored": 642,
+    "stored_gate_open": 642,
+    "perticker_plus45_equals_stored": 639,
+    "perticker_plus45_gate_open": 640,
+    "value_changed_under_filed_rule": 145,
+    "gate_closes_under_filed_rule": 1,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 338
+   }
+  },
+  "institutional_persistence_oversold_long": {
+   "fires": 716,
+   "exit": "time_stop_10d",
+   "combination": {
+    "institutional_new_positions": 187.0,
+    "strategy": "institutional_persistence_oversold_long"
+   },
+   "gate_has_per_ticker_13f_clause": true,
+   "IS": {
+    "fires": 517,
+    "live_reproduces_stored": 517,
+    "stored_gate_open": 517,
+    "perticker_plus45_equals_stored": 517,
+    "perticker_plus45_gate_open": 517,
+    "value_changed_under_filed_rule": 161,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 225
+   },
+   "HO": {
+    "fires": 199,
+    "live_reproduces_stored": 199,
+    "stored_gate_open": 199,
+    "perticker_plus45_equals_stored": 199,
+    "perticker_plus45_gate_open": 199,
+    "value_changed_under_filed_rule": 80,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 4
+   },
+   "ALL": {
+    "fires": 716,
+    "live_reproduces_stored": 716,
+    "stored_gate_open": 716,
+    "perticker_plus45_equals_stored": 716,
+    "perticker_plus45_gate_open": 716,
+    "value_changed_under_filed_rule": 241,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 229
+   }
+  },
+  "institutional_recent_init_momentum_long": {
+   "fires": 2268,
+   "exit": "r_multiple_2r",
+   "combination": {
+    "xs_max_anomaly": 0.0752,
+    "strategy": "institutional_recent_init_momentum_long"
+   },
+   "gate_has_per_ticker_13f_clause": true,
+   "IS": {
+    "fires": 1657,
+    "live_reproduces_stored": 1657,
+    "stored_gate_open": 1657,
+    "perticker_plus45_equals_stored": 1657,
+    "perticker_plus45_gate_open": 1657,
+    "value_changed_under_filed_rule": 416,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 736
+   },
+   "HO": {
+    "fires": 611,
+    "live_reproduces_stored": 611,
+    "stored_gate_open": 611,
+    "perticker_plus45_equals_stored": 611,
+    "perticker_plus45_gate_open": 611,
+    "value_changed_under_filed_rule": 248,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 21
+   },
+   "ALL": {
+    "fires": 2268,
+    "live_reproduces_stored": 2268,
+    "stored_gate_open": 2268,
+    "perticker_plus45_equals_stored": 2268,
+    "perticker_plus45_gate_open": 2268,
+    "value_changed_under_filed_rule": 664,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 757
+   }
+  },
+  "institutional_recent_init_volume_long": {
+   "fires": 1075,
+   "exit": "r_multiple_2r",
+   "combination": {
+    "xs_max_anomaly": 0.0819,
+    "strategy": "institutional_recent_init_volume_long"
+   },
+   "gate_has_per_ticker_13f_clause": true,
+   "IS": {
+    "fires": 789,
+    "live_reproduces_stored": 789,
+    "stored_gate_open": 789,
+    "perticker_plus45_equals_stored": 789,
+    "perticker_plus45_gate_open": 789,
+    "value_changed_under_filed_rule": 223,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 338
+   },
+   "HO": {
+    "fires": 286,
+    "live_reproduces_stored": 286,
+    "stored_gate_open": 286,
+    "perticker_plus45_equals_stored": 286,
+    "perticker_plus45_gate_open": 286,
+    "value_changed_under_filed_rule": 98,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 10
+   },
+   "ALL": {
+    "fires": 1075,
+    "live_reproduces_stored": 1075,
+    "stored_gate_open": 1075,
+    "perticker_plus45_equals_stored": 1075,
+    "perticker_plus45_gate_open": 1075,
+    "value_changed_under_filed_rule": 321,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 348
+   }
+  },
+  "institutional_strong_conviction_long": {
+   "fires": 1826,
+   "exit": "time_stop_10d",
+   "combination": {
+    "xs_max_anomaly": 0.0691,
+    "strategy": "institutional_strong_conviction_long"
+   },
+   "gate_has_per_ticker_13f_clause": true,
+   "IS": {
+    "fires": 1236,
+    "live_reproduces_stored": 1236,
+    "stored_gate_open": 1236,
+    "perticker_plus45_equals_stored": 1236,
+    "perticker_plus45_gate_open": 1236,
+    "value_changed_under_filed_rule": 464,
+    "gate_closes_under_filed_rule": 5,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 481
+   },
+   "HO": {
+    "fires": 590,
+    "live_reproduces_stored": 590,
+    "stored_gate_open": 590,
+    "perticker_plus45_equals_stored": 590,
+    "perticker_plus45_gate_open": 590,
+    "value_changed_under_filed_rule": 242,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 27
+   },
+   "ALL": {
+    "fires": 1826,
+    "live_reproduces_stored": 1826,
+    "stored_gate_open": 1826,
+    "perticker_plus45_equals_stored": 1826,
+    "perticker_plus45_gate_open": 1826,
+    "value_changed_under_filed_rule": 706,
+    "gate_closes_under_filed_rule": 5,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 508
+   }
+  },
+  "institutional_high_conviction_long": {
+   "fires": 2473,
+   "exit": "time_stop_10d",
+   "combination": {
+    "xs_max_anomaly": 0.0791,
+    "strategy": "institutional_high_conviction_long"
+   },
+   "gate_has_per_ticker_13f_clause": true,
+   "IS": {
+    "fires": 1735,
+    "live_reproduces_stored": 1735,
+    "stored_gate_open": 1735,
+    "perticker_plus45_equals_stored": 1735,
+    "perticker_plus45_gate_open": 1735,
+    "value_changed_under_filed_rule": 545,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 617
+   },
+   "HO": {
+    "fires": 738,
+    "live_reproduces_stored": 738,
+    "stored_gate_open": 738,
+    "perticker_plus45_equals_stored": 738,
+    "perticker_plus45_gate_open": 738,
+    "value_changed_under_filed_rule": 311,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 24
+   },
+   "ALL": {
+    "fires": 2473,
+    "live_reproduces_stored": 2473,
+    "stored_gate_open": 2473,
+    "perticker_plus45_equals_stored": 2473,
+    "perticker_plus45_gate_open": 2473,
+    "value_changed_under_filed_rule": 856,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 641
+   }
+  },
+  "institutional_committed_growth_long": {
+   "fires": 1941,
+   "exit": "time_stop_10d",
+   "combination": {
+    "xs_max_anomaly": 0.0705,
+    "strategy": "institutional_committed_growth_long"
+   },
+   "gate_has_per_ticker_13f_clause": true,
+   "IS": {
+    "fires": 1275,
+    "live_reproduces_stored": 1275,
+    "stored_gate_open": 1275,
+    "perticker_plus45_equals_stored": 1275,
+    "perticker_plus45_gate_open": 1275,
+    "value_changed_under_filed_rule": 422,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 28
+   },
+   "HO": {
+    "fires": 666,
+    "live_reproduces_stored": 666,
+    "stored_gate_open": 666,
+    "perticker_plus45_equals_stored": 549,
+    "perticker_plus45_gate_open": 666,
+    "value_changed_under_filed_rule": 284,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 1
+   },
+   "ALL": {
+    "fires": 1941,
+    "live_reproduces_stored": 1941,
+    "stored_gate_open": 1941,
+    "perticker_plus45_equals_stored": 1824,
+    "perticker_plus45_gate_open": 1941,
+    "value_changed_under_filed_rule": 706,
+    "gate_closes_under_filed_rule": 0,
+    "gate_opens_under_filed_rule": 0,
+    "gate_closes_under_naive_date_rule": 29
+   }
+  },
+  "institutional_multi_quarter_persistence_long": {
+   "fires": 2516,
+   "exit": "time_stop_10d",
+   "combination": {
+    "xs_max_anomaly": 0.0668,
+    "strategy": "institutional_multi_quarter_persistence_long"
+   },
+   "gate_has_per_ticker_13f_clause": false,
+   "note": "gates on persistent_holders_4q (snapshot producer) only - see snapshot_input_exposure"
+  }
+ },
+ "snapshot_input_exposure": {
+  "2022-01-01": {
+   "tickers": 483,
+   "tickers_without_file": 0,
+   "rows_consumed": 83951,
+   "rows_not_yet_filed_at_snapshot": 21,
+   "share": 0.0003
+  },
+  "2023-01-01": {
+   "tickers": 483,
+   "tickers_without_file": 0,
+   "rows_consumed": 251001,
+   "rows_not_yet_filed_at_snapshot": 33,
+   "share": 0.0001
+  },
+  "2024-01-01": {
+   "tickers": 483,
+   "tickers_without_file": 0,
+   "rows_consumed": 667686,
+   "rows_not_yet_filed_at_snapshot": 346,
+   "share": 0.0005
+  },
+  "2025-01-01": {
+   "tickers": 483,
+   "tickers_without_file": 0,
+   "rows_consumed": 1675185,
+   "rows_not_yet_filed_at_snapshot": 281,
+   "share": 0.0002
+  },
+  "2026-01-01": {
+   "tickers": 483,
+   "tickers_without_file": 0,
+   "rows_consumed": 3641174,
+   "rows_not_yet_filed_at_snapshot": 2047,
+   "share": 0.0006
+  }
+ },
+ "elapsed_s": 419.9
+}

@@ -24455,3 +24455,55 @@ line citations in code, across 105 files (technical.py 185, screener.py 85, smc_
 not read - ticketed S6-B3139bb. RULE: when code moves, the re-check greps
 the moved file's line citations as well as the moved function's name, and
 new text cites a symbol, never a line - a symbol survives an edit above it.
+
+
+### L902 - A DATE COLUMN VERIFIED ON A SAMPLE WAS A FILING DATE FOR THE RECENT HALF AND A BACKFILL STAMP FOR THE OLD HALF, AND EVERY FIGURE BUILT ON IT CARRIED THE SAMPLE'S VERDICT (B3139q-r42, 2026-10-06)
+
+**What happened.** S6-B3139ay verified the per-ticker 13F `Date` column
+against SEC and recorded "13 of 13 mapped rows match: Date is the filing
+timestamp". S6-B3139aw then measured bollinger_lower's exposure to the
++45-day availability rule with Date used UNCONDITIONALLY (894 of 1,192 IS
+values change) and S6-B3139bh carried "11.35% of rows are late filers seen
+before they were public" into an owner decision with an engine fix built on
+Date. Measuring the ADMITTED institutional lines the same way gave 2,892 of
+13,843 fires losing their 13F gate. Then one number refused to fit: at the
+2022-01-01 persistence snapshot, 79.6% of the rows it consumed carried a
+Date AFTER the snapshot - impossible for filings of quarters ending by
+2021-09-30. A 40-file sample (217,960 rows, output_audit/b3139bh_admitted_13f_exposure.json
+filed_rule.why) settled it: the lag Date minus ReportPeriod has a median of
+42-45 days for 2022+ periods (92-95% within 45 d from 2023) and a median of
+1,466-6,305 days for 2020 and earlier (100% over 120 d) - a backfill stamp,
+not a filing. ay's OWN sample held the tell: its three pre-2021 rows sat in
+the ">365" band as UNMAPPED, and "13 of 13" was the MAPPED subset.
+
+**Under a capped rule** (Date is a filing date only within 120 d of the
+period, otherwise ReportPeriod + 45 - the only reading the data supports):
+admitted lines lose 6 of 13,843 fires' 13F gates (naive: 2,892);
+bollinger's IS values move on 258 of 1,192 fires and 0 registered cells
+switch (naive: 894 and 71). The owner decision bh rested on a figure that
+was 480x too large for the admitted lines.
+
+**Root cause.** A verification's verdict was carried past its population.
+"13 of 13 match" was true of the rows that could be mapped; the rows that
+could not were the half of the column that is not a filing date, and they
+were in the same artifact, one band over. Every downstream measurement used
+the column as if the verdict covered it. Compliance failure against #256 (a
+ticket's number re-derived before it is worked - here the number's SCOPE
+was the stale part) and #222 (a column's meaning read from a verification
+summary rather than from the data's own distribution).
+
+**RULE.** Before building a rule on a column whose meaning was verified by
+sampling, print the column's distribution over the WHOLE population it
+will govern - here one groupby of (Date - ReportPeriod) by report year -
+and check the verification's UNMAPPED / failed band as carefully as its
+matched one: the rows a verifier could not place are where the second
+meaning of a column lives. A naive and a capped reading, reported side by
+side, is the cheapest proof that a verdict's scope held. Pin:
+test_b3139bh_13f_date_column_is_a_filing_date_only_within_the_cap (the
+data fact the capped rule rests on, measured on fixed files).
+
+**Also recorded, same batch, compliance failures and no new class:** #259
+(two heredocs this turn carried backslash pairs - the memory update and a
+probe; the fix is the Write tool and a file), and #306's sibling: a
+background task reported "completed, exit 0" for a resolver I had killed,
+because a trailing pipe masked the exit.

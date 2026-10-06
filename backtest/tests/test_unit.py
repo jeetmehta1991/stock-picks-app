@@ -25143,6 +25143,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # reference names no function. Pins the operative clause (L548).
         ("BEFORE MOVING IT, GREP THE FUNCTION'S NAME AND THE FILE'S LINE CITATIONS",
          "B3139q-r24/L901: a citation finds code by POSITION, which a function-name grep cannot reach"),
+        ("READ THE VERIFIER'S UNMAPPED OR FAILED BAND AS CAREFULLY AS ITS MATCHED ONE",
+         "B3139q-r42/L902: a verdict carried past its mapped rows - the 13F Date column's second meaning sat in ay's UNMAPPED band"),
         # B2851: the L805 tripwire row - an owner catch on a locked
         # format is evidence the WHOLE rendering drifted; pins the
         # remedy, not the heading (L548).
@@ -26140,7 +26142,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 319 -> 320 at B3139 (the L889 row).
     # 320 -> 321 at B3139 (the L894 packet-first fragment).
     # 321 -> 322 at B3139q-r24 (the L898/L901 move-the-code fragment).
-    assert len(gutted) == 322, gutted
+    # 322 -> 323 at B3139q-r42 (the L902 verified-by-sampling column fragment;
+    # same-call with its tripwire row per B2130).
+    assert len(gutted) == 323, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -52776,3 +52780,46 @@ def test_b3139bk_apewisdom_reader_is_point_in_time_and_returns_only_columns_the_
         live = sm.get_apewisdom_mentions("AMD", _d(2026, 5, 6))
         assert live.get("snapshot_date") == "2026-05-06", live
         assert sm.get_apewisdom_mentions("AMD", _d(2026, 5, 4)) == {"signal": "no_data"}
+
+
+def test_b3139bh_13f_date_column_is_a_filing_date_only_within_the_cap():
+    """S6-B3139bh / L902: the per-ticker 13F `Date` column is a filing
+    timestamp for recent report periods and a BACKFILL stamp for old ones -
+    S6-B3139ay verified "13 of 13 mapped rows match" and its three pre-2021
+    rows sat UNMAPPED in the >365-day band. Any availability rule built on
+    the column must cap the lag (output_audit/b3139bh_admitted_13f_exposure.json
+    filed_rule: 120 d); without the cap the admitted institutional lines'
+    exposure read 2,892 of 13,843 fires, with it 6. Pinned on five fixed
+    per-ticker files (deterministic, not a random sample): for 2019-2020
+    periods at least 95 pct of rows carry a lag over 120 d; for 2023+ periods
+    at least 85 pct carry a lag within 45 d. The artifact's recorded cap is
+    the one the measurement used."""
+    import json
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest as _pt
+    root = _P(__file__).resolve().parents[2]
+    d = root / "data_prefetch" / "quiver" / "institutional"
+    files = [d / f"{t}.parquet" for t in ("MSFT", "GRMN", "LIN", "FTAI", "PRI")]
+    if not all(p.exists() for p in files):
+        _pt.skip("per-ticker 13F history not on this machine")
+    parts = []
+    for p in files:
+        df = _pd.read_parquet(p, columns=["ReportPeriod", "Date"])
+        rp = _pd.to_datetime(df["ReportPeriod"], errors="coerce")
+        fd = _pd.to_datetime(df["Date"], errors="coerce")
+        parts.append(_pd.DataFrame({"year": rp.dt.year, "lag": (fd - rp).dt.days}).dropna())
+    a = _pd.concat(parts)
+    old = a[a.year.between(2019, 2020)]
+    new = a[a.year >= 2023]
+    assert len(old) >= 100 and len(new) >= 1000, (len(old), len(new))
+    assert (old.lag > 120).mean() >= 0.95, (
+        "pre-2021 Dates read as filings now - re-measure L902 before trusting a Date rule")
+    assert (new.lag <= 45).mean() >= 0.85, (
+        "2023+ Dates no longer look like filings - the store changed shape")
+    art = json.loads((root / "output_audit" / "b3139bh_admitted_13f_exposure.json").read_text(encoding="utf-8"))
+    assert art["filed_rule"]["lag_cap_days"] == 120
+    # the artifact reports both readings, naive beside capped, for every measured line
+    for s, r in art["per_strategy"].items():
+        if r.get("gate_has_per_ticker_13f_clause"):
+            assert {"gate_closes_under_filed_rule", "gate_closes_under_naive_date_rule"} <= set(r["IS"]), s

@@ -4713,6 +4713,8 @@ evidence, not two.**
 
 ### #256 - A TICKET IS A CLAIM ABOUT A PAST MOMENT; RE-DERIVE BEFORE WORKING IT (B1776 / L531)
 
+**INSTANCE (B3139q-r42 / L902):** a verification's verdict carried past its mapped rows - S6-B3139ay's "13 of 13 match: Date is the filing timestamp" was true of the MAPPED rows, and the UNMAPPED band one row over held the half of the column that is a backfill stamp; aw and bh then built figures on the whole column (894 of 1,192; 2,892 of 13,843) that the capped reading puts at 258 and 6. Compliance failure against #256 and #222, no new item: print a verified column's distribution over the population a rule will govern, and read the verifier's failed band as carefully as its matched one.
+
 **EXTENSION (B1827 / L559) - A FIGURE YOU REPEAT IS RE-DERIVED, NOT CARRIED.**
 
 `#256` says re-derive a TICKET's number before working it. **The same applies to a number you keep
