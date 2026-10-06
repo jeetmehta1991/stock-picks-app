@@ -2255,3 +2255,34 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **Caveat carried from I.7:** on this cube regime_flip returns figures identical to time_stop_20d;
   the long leg's 4th and 5th rows and the short leg's top two rows are such pairs.
 - **Item 7 (the one holdout read) stays held** for the owner's own word (S6-B3139am).
+
+### I.9 Step 3 item 7 - the one holdout read, both legs (S6-B3139am, 2026-10-06)
+
+- **Owner word 2026-10-06, verbatim:** *"S6-B3139am read"* - given against packet row 17, which
+  named this the THIRD look at the bollinger_lower holdout (after Step-2 configs 1 and 2). Label
+  DISCLOSED-RE-READ / GRID-SELECTED on both artifacts; controls as ruled in row 17.
+- **Defect fixed before the read:** the per-leg filter sat in breadth_step1_grid.main(), outside
+  the shared loader build_frame, so breadth_step2_read graded a per-leg Step-1 artifact's cells on
+  BOTH legs' fires. build_frame now owns the filter and the reader takes the leg its Step-1 artifact
+  recorded. Control: both I.8 grids re-run on the moved filter reproduce their committed rows, null
+  and ranking exactly (676 of 676 long, 624 of 624 short).
+- **Read:** scripts/breadth_step2_read.py over every registered cell of the I.8 artifacts, NET
+  basis, six LIVE_GATES. Artifacts output_audit/b3139am_bollinger_lower_step2_read_{long,short}.json.
+
+| leg | cell-exits read | all-six qualifiers | over cells | IS sharpe < 0 among them | best by holdout ci_lo |
+|---|---|---|---|---|---|
+| long | 676 | 26 | 9 (axes adx, bb_10_20_pctb, bb_20_15_pctb, pct_from_vwap) | 7 | adx <= 25.142 @ time_stop_10d: HO 1.684, ci_lo 0.850, psr 1.000, PF 2.478, n 149 / 495, IS 0.262 |
+| short | 624 (598 holdout-gradable) | 2 | 1 (defensive_leadership) | 0 | defensive_leadership @ r_multiple_3r: HO 1.333, ci_lo -0.042, n 62 / 268, IS 0.851 |
+
+- **Control comparison (item 8), same axis and level on the control's own fires:** on
+  pead_long_high_yoy_growth_only, adx <= 25.142 @ time_stop_10d lifts holdout sharpe +0.567 and
+  pct_from_vwap >= 40.4792 @ class_time_stop lifts +1.107 - those filters improve an unrelated long
+  strategy too, so part of their effect is market structure, not bollinger_lower's edge;
+  bb_10_20_pctb <= 0.1828 @ class_time_stop LOWERS the control (-0.121). On
+  pead_short_negative_yoy_growth, defensive_leadership @ r_multiple_3r lifts +0.268.
+- **Caveats carried:** the search was not priced below 0.05 at Step 1 (I.8: long p 0.0896, short p
+  0.0547); 26 of 676 long cell-exits clearing the gates is a holdout scan of the whole registered
+  set, not one pre-chosen line; 7 of the 26 carry a negative in-sample Sharpe (IS-holdout
+  inversion); one long row is regime_flip, identical to time_stop_20d on this cube (I.6); band
+  coverage is incomplete on both legs, so no failure verdict is declarable for the short leg.
+- **Admission is the owner's decision** (S6-B3139bt). Nothing is admitted by this read.

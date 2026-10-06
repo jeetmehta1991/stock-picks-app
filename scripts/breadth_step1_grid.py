@@ -69,8 +69,11 @@ def _axis_spec(txt):
 BASES = ("gross", "net")
 
 
+LEGS = ("both", "long", "short")
+
+
 def build_frame(strategy: str, depth: str | None, axis_keys: list[str],
-                basis: str = "gross"):
+                basis: str = "gross", leg: str = "both"):
     """B2678: the joined fires+cube frame both steps read - ONE loader so
     Step-1 and Step-2 cannot drift. Returns (m, depth_tuple).
 
@@ -82,6 +85,11 @@ def build_frame(strategy: str, depth: str | None, axis_keys: list[str],
     its holdout read share the basis by construction. Anything else refuses."""
     if basis not in BASES:
         raise SystemExit(f"REFUSED: basis {basis!r} not in {BASES} (S6-B3139ag)")
+    # S6-B3139am: the per-leg filter belongs to the ONE loader. It lived in
+    # this module's main(), so the Step-2 reader - the other caller - graded
+    # a per-leg Step-1 artifact's cells on BOTH legs' fires.
+    if leg not in LEGS:
+        raise SystemExit(f"REFUSED: leg {leg!r} not in {LEGS} (S6-B3139am)")
     tl = pd.read_csv(TRADE_LOG, low_memory=False,
                      usecols=["strategy", "ticker", "entry_date", "signals_at_entry"])
     fam = tl[tl.strategy == strategy].drop_duplicates(["ticker", "entry_date"]).copy()
@@ -112,6 +120,8 @@ def build_frame(strategy: str, depth: str | None, axis_keys: list[str],
         dk, dop, dlev = dep
         keepm = (m[dk] >= dlev) if dop == "ge" else (m[dk] <= dlev)
         m = m[keepm & m[dk].notna()]
+    if leg != "both":
+        m = m[m["direction"] == leg]
     return m, dep
 
 
@@ -225,11 +235,10 @@ def main() -> int:
     axes = [_axis_spec(x) for x in a.axes.split(",")]
 
     m, _dep = build_frame(a.strategy, a.depth, [k for k, _ in axes],
-                          basis=a.basis)
+                          basis=a.basis, leg=a.leg)
     print(f"frame ready: cube rows {len(m):,} after depth base, basis "
           f"{a.basis} ({time.time()-t0:.0f}s)")
-    if a.leg != "both":
-        m = m[m["direction"] == a.leg]
+    if a.leg != "both":   # applied inside build_frame (S6-B3139am)
         print(f"leg filter: {a.leg} -> cube rows {len(m):,} (B3118 per-leg)")
 
     # ---- REPRODUCTION GATE (fail-closed) ------------------------------------

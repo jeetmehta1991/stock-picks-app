@@ -46962,7 +46962,9 @@ def test_b3118_breadth_grid_op_vocabulary_and_leg():
     _f = _pd.DataFrame({"x": [0.0, 1.0]})
     assert bg._cell_mask(_f, "x", "eq_false", 0.0).tolist() == [True, False], (
         "eq_false must KEEP the false rows")
-    assert '"--leg"' in src and 'm["direction"] == a.leg' in src, "per-leg switch missing"
+    # S6-B3139am: the filter moved into build_frame, which main() calls with leg=a.leg
+    assert ('"--leg"' in src and 'm["direction"] == leg' in src
+            and "leg=a.leg" in src), "per-leg switch missing"
 
 
 def test_b3118_bollinger_phase0_spec_validates_clean():
@@ -53215,3 +53217,56 @@ def test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter():
                 and n.module == "verify_turn_compliance" for a in n.names}
     assert imported == {"heredoc_escape_hits"}, imported
     assert not [n for n in ast.walk(tree) if isinstance(n, ast.Attribute) and n.attr == "compile"]
+
+
+def test_b3139am_breadth_loader_owns_the_leg_filter_and_the_reader_passes_it(tmp_path, monkeypatch):
+    """S6-B3139am prerequisite: the per-leg filter is applied INSIDE the one
+    breadth loader, so the Step-2 reader cannot grade a per-leg Step-1
+    artifact's cells on both legs' fires (the defect: the filter sat in the
+    grid's main(), and the reader - the loader's other caller - never applied
+    it). Behaviour on a mixed-direction fixture, the refusal on an unknown
+    leg, and both callers' leg argument by AST."""
+    import ast
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import breadth_step1_grid as bg
+    run = _b3139ag_fixture(tmp_path)
+    cube = pd.read_csv(run / "trade_exit_detail.csv")
+    short_tk = {f"T{i:02d}" for i in range(0, 46, 3)}
+    cube.loc[cube.ticker.isin(short_tk), "direction"] = "short"
+    cube.to_csv(run / "trade_exit_detail.csv", index=False)
+    monkeypatch.setattr(bg, "CUBE", run / "trade_exit_detail.csv")
+    monkeypatch.setattr(bg, "TRADE_LOG", run / "trade_log.csv")
+    both, _ = bg.build_frame("fx", None, ["k"], basis="net")
+    lo, _ = bg.build_frame("fx", None, ["k"], basis="net", leg="long")
+    sh, _ = bg.build_frame("fx", None, ["k"], basis="net", leg="short")
+    assert set(both.direction) == {"long", "short"}
+    assert set(lo.direction) == {"long"} and set(sh.direction) == {"short"}
+    assert len(lo) + len(sh) == len(both) and len(sh) == 2 * len(short_tk)
+    key = ["ticker", "entry_date", "exit_method"]
+    want = both[both.direction == "long"].sort_values(key).reset_index(drop=True)
+    assert lo.sort_values(key).reset_index(drop=True).equals(want)
+    with pytest.raises(SystemExit) as e:
+        bg.build_frame("fx", None, ["k"], basis="net", leg="up")
+    assert "leg" in str(e.value)
+
+    def leg_kw(path, fn):
+        tree = ast.parse((root / "scripts" / path).read_text(encoding="utf-8"))
+        main = next(f for f in ast.walk(tree)
+                    if isinstance(f, ast.FunctionDef) and f.name == "main")
+        out = []
+        for c in ast.walk(main):
+            if isinstance(c, ast.Call) and getattr(c.func, "id", None) == fn:
+                kw = {k.arg: ast.unparse(k.value) for k in c.keywords}
+                out.append((ast.unparse(c.args[0]), kw.get("leg")))
+        return out
+    assert leg_kw("breadth_step1_grid.py", "build_frame") == [("a.strategy", "a.leg")]
+    calls = dict(leg_kw("breadth_step2_read.py", "build_frame"))
+    assert calls["strategy"] == "leg", calls
+    rsrc = (root / "scripts" / "breadth_step2_read.py").read_text(encoding="utf-8")
+    assert 'art.get("leg")' in rsrc

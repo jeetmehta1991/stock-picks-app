@@ -152,7 +152,11 @@ def main() -> int:
                          "S6-B3139ag scored gross")
     cells = sorted({(r["axis"], r["op"], r["level"]) for r in art["rows"]})
     axis_keys = sorted({c[0] for c in cells})
-    m, _ = build_frame(strategy, depth, axis_keys, basis=basis)
+    # S6-B3139am: grade the leg the Step-1 artifact RECORDED. An artifact
+    # without the key predates per-leg grids (B3118) and was graded on both.
+    leg = art.get("leg") or "both"
+    m, _ = build_frame(strategy, depth, axis_keys, basis=basis, leg=leg)
+    print(f"leg {leg} (from the Step-1 artifact)")
     print(f"frame {len(m):,} rows; {len(cells)} registered (axis,op,level) cells "
           f"; basis {basis} ({time.time()-t0:.0f}s)")
 
@@ -230,7 +234,7 @@ def main() -> int:
            "ruling_verbatim": a.ruling,
            "breadth_leg": {"disposition": a.breadth_disposition,
                            "reason": a.breadth_reason.strip()},
-           "strategy": strategy, "depth_base": depth,
+           "strategy": strategy, "depth_base": depth, "leg": leg,
            "basis": basis, "basis_source": basis_source,
            "step1_artifact": a.step1_artifact,
            "provenance": {
