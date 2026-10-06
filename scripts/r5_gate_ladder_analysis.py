@@ -19,11 +19,11 @@ sys.path.insert(0, "scripts")
 import numpy as np
 import pandas as pd
 from walk_forward_r5_cells import _sharpe, bh_fdr
-from roster_core import net_pnl  # noqa: E402  (S6-B3139ai)
+from roster_core import HO_END, HO_START, IS_END, IS_START, net_pnl  # noqa: E402  (S6-B3139ai, S6-B3139bc)
 
 C = Path("output_r5_merged_1_7")
-IS = (date(2022, 5, 5), date(2025, 5, 5))
-HO = (date(2025, 5, 5), date(2026, 5, 5))
+IS = (IS_START, IS_END)
+HO = (HO_START, HO_END)
 MIN_N = 30
 
 df = pd.read_csv(C / "trade_exit_detail.csv",
@@ -159,14 +159,14 @@ import numpy as np
 import pandas as pd
 sys.path.insert(0, "scripts")
 from walk_forward_r5_cells import _sharpe, bh_fdr
-from roster_core import net_pnl  # noqa: E402  (S6-B3139ai)
+from roster_core import HO_END, HO_START, IS_END, IS_START, net_pnl  # noqa: E402  (S6-B3139ai, S6-B3139bc)
 
 C = Path("output_r5_merged_1_7")
 FOLDS = [("F1 22-23 BEARish", date(2022, 5, 5), date(2023, 5, 5)),
          ("F2 23-24", date(2023, 5, 5), date(2024, 5, 5)),
          ("F3 24-25", date(2024, 5, 5), date(2025, 5, 5)),
          ("F4 25-26 HOLDOUT", date(2025, 5, 5), date(2026, 5, 5))]
-IS = (date(2022, 5, 5), date(2025, 5, 5)); HO = (date(2025, 5, 5), date(2026, 5, 5))
+IS = (IS_START, IS_END); HO = (HO_START, HO_END)
 
 df = pd.read_csv(C / "trade_exit_detail.csv",
                  usecols=["strategy", "direction", "exit_method", "entry_date", "pnl_pct", "hold_days"],

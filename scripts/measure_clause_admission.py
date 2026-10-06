@@ -69,7 +69,7 @@ import pandas as pd  # noqa: E402
 from backtest.signals.screener import ALL_STRATEGIES, screen_instrument  # noqa: E402
 import measure_fire_count as MFC  # noqa: E402  (reuse its producer stack + loaders)
 
-IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)   # holdout (>= IS_END) never touched
+from roster_core import IS_END, IS_START  # noqa: E402  (holdout (>= IS_END) never touched)
 
 
 def clauses_of(strategy: str, source: str) -> list[tuple[str, str, float | None]]:

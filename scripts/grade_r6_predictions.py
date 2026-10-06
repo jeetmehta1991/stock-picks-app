@@ -41,9 +41,8 @@ REPO = Path(__file__).resolve().parent.parent
 import sys                                                   # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from roster_core import COST_BPS, WINSORIZE, net_pnl, rank_key                             # noqa: E402
-IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
-OOS_END = date(2026, 5, 5)
+from roster_core import COST_BPS, HO_END, IS_END, IS_START, WINSORIZE, net_pnl, rank_key                             # noqa: E402
+OOS_END = HO_END
 
 USE = ["ticker", "strategy", "entry_date", "exit_method", "pnl_pct"]
 

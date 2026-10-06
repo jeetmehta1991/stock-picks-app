@@ -40,14 +40,12 @@ sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
-from roster_core import rank_key                            # noqa: E402
+from roster_core import HO_END, HO_START, IS_END, IS_START, rank_key  # noqa: E402
 import roster_core as _rc                                   # noqa: E402
 from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY as AFF  # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
 from walk_forward_r5_cells import _sharpe, bh_fdr            # noqa: E402
 
-IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
-HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)
 FDR_Q, JACCARD = 0.05, 0.70
 
 

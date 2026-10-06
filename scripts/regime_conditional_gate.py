@@ -34,12 +34,12 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from walk_forward_r5_cells import _sharpe, bh_fdr  # noqa: E402
-from roster_core import COST_BPS, WINSORIZE, net_pnl  # noqa: E402  (S6-B3139ai)
+from roster_core import COST_BPS, HO_END, HO_START, IS_END, IS_START, WINSORIZE, net_pnl  # noqa: E402  (S6-B3139ai, S6-B3139bc)
 
 REPO = Path(__file__).resolve().parent.parent
 CUBE = REPO / "output_r5_merged_1_7"
-IS = (date(2022, 5, 5), date(2025, 5, 5))
-HO = (date(2025, 5, 5), date(2026, 5, 5))
+IS = (IS_START, IS_END)
+HO = (HO_START, HO_END)
 MIN_N = 30
 GATE = 0.5
 NATIVE = {"long": "bull", "short": "bear"}

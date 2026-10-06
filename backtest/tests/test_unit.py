@@ -52325,3 +52325,75 @@ def test_b3139ap_strategy_roster_header_matches_the_registry():
         f"STRATEGY_ROSTER.md says {m.group(1)} strategies while "
         f"len(ALL_STRATEGIES) is {len(ALL_STRATEGIES)} - regenerate it: "
         "python scripts/build_strategy_roster.py")
+
+
+def _b3139bc_window_copies(paths):
+    """Module-level assignments in `paths` that bind a roster-window NAME
+    (IS_START, IS_END, HO_START, HO_END, OOS_START, OOS_END) to a value
+    containing a date(...) call - a hand-typed copy of the window roster_core
+    defines once. Returns (hits, unparsed); unparsed files are reported, not
+    skipped. Tuple-named copies (IS = (date(..), date(..))) are counted under
+    the same rule when the target name is IS or HO."""
+    import ast
+    NAMES = {"IS_START", "IS_END", "HO_START", "HO_END", "OOS_START", "OOS_END", "IS", "HO"}
+    hits, unparsed = [], []
+    for p in paths:
+        try:
+            tree = ast.parse(p.read_text(encoding="utf-8"))
+        except (SyntaxError, UnicodeDecodeError, ValueError) as exc:
+            unparsed.append(f"{p.name}: {exc!r}"[:120])
+            continue
+        for node in tree.body:
+            if not isinstance(node, ast.Assign):
+                continue
+            targets = set()
+            for t in node.targets:
+                for e in ast.walk(t):
+                    if isinstance(e, ast.Name):
+                        targets.add(e.id)
+            if not targets & NAMES:
+                continue
+            has_date_call = any(isinstance(c, ast.Call) and getattr(c.func, "id", None) == "date"
+                                for c in ast.walk(node.value))
+            if has_date_call:
+                hits.append((p.name, node.lineno, sorted(targets & NAMES)))
+    return hits, unparsed
+
+
+def test_b3139bc_the_roster_window_has_one_definition(tmp_path):
+    """S6-B3139bc (L561 one definition): the IS / holdout window is defined once,
+    in roster_core (IS_START, IS_END, HO_START, HO_END). MEASURED at B3139q-r34:
+    12 scripts carried hand-typed copies of those dates - the S6-B3136 fingerprint
+    hashes roster_core's window VALUES, so a moved boundary would have left every
+    copy on the old one with no stamp moving. Each now imports the names. The one
+    survivor is classified: phase_1a_beta_is_oos_report.py splits at 2024-06-30,
+    a different window by design. Yearly FOLDS lists and bear_regime's SEL/BEAR
+    sub-windows bind other names and are outside this scan (a lower bound)."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    paths = sorted(p for p in (root / "scripts").glob("*.py") if p.name != "roster_core.py")
+    assert len(paths) >= 300, len(paths)
+    hits, unparsed = _b3139bc_window_copies(paths)
+    assert not unparsed, unparsed
+    allowed = {"phase_1a_beta_is_oos_report.py": "a different split (IS_END 2024-06-30), by design"}
+    extra = sorted(h for h in hits if h[0] not in allowed)
+    assert not extra, ("a hand-typed copy of the roster window - import it from "
+                       f"roster_core instead: {extra}")
+    gone = sorted(k for k in allowed if k not in {h[0] for h in hits})
+    assert not gone, f"exemptions with no copy left - remove them: {gone}"
+    # the definition itself is seen (positive control on roster_core)
+    rc_hits, _ = _b3139bc_window_copies([root / "scripts" / "roster_core.py"])
+    assert {n for h in rc_hits for n in h[2]} >= {"IS_START", "IS_END", "HO_START", "HO_END"}, rc_hits
+    # both directions on plants
+    plant = tmp_path / "p"
+    plant.mkdir()
+    (plant / "copy.py").write_text("from datetime import date\nIS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)\n", encoding="utf-8")
+    (plant / "tuple.py").write_text("from datetime import date\nHO = (date(2025, 5, 5), date(2026, 5, 5))\n", encoding="utf-8")
+    (plant / "imported.py").write_text("from roster_core import IS_START, IS_END\nIS = (IS_START, IS_END)\n", encoding="utf-8")
+    (plant / "other.py").write_text("from datetime import date\nBEAR_START = date(2022, 5, 5)\nW0 = date(2022, 5, 5)\n", encoding="utf-8")
+    got, bad = _b3139bc_window_copies(sorted(plant.glob("*.py")))
+    assert not bad
+    assert {h[0] for h in got} == {"copy.py", "tuple.py"}, got
+    (plant / "broken.py").write_text("def f(:\n", encoding="utf-8")
+    _, bad = _b3139bc_window_copies([plant / "broken.py"])
+    assert bad

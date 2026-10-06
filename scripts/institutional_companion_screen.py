@@ -56,7 +56,7 @@ from walk_forward_r5_cells import bh_fdr  # noqa: E402  (canonical FDR)
 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
-IS_END = date(2025, 5, 5)          # roster_core.IS_START / IS_END boundary
+from roster_core import IS_END  # noqa: E402  (the one roster boundary, S6-B3139bc)
 FAMILY_PREFIX = "institutional_"
 
 

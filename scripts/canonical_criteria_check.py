@@ -36,12 +36,12 @@ from backtest.results.metrics import (                       # noqa: E402
     _cost_sensitivity_sharpe, _chow_test, _adf_test,
 )
 from walk_forward_r5_cells import _sharpe                    # noqa: E402
-from roster_core import net_pnl  # noqa: E402  (S6-B3139ai)
+from roster_core import HO_END, HO_START, net_pnl  # noqa: E402  (S6-B3139ai, S6-B3139bc)
 
 # B1439: --cube makes this usable on ANY cube run, not just R5. Hardcoding it meant
 # grading a new run required a parallel implementation of the criteria.
 DEFAULT_CUBE = "output_r5_merged_1_7"
-HO = (date(2025, 5, 5), date(2026, 5, 5))
+HO = (HO_START, HO_END)
 
 
 def main() -> int:

@@ -46,9 +46,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pandas as pd  # noqa: E402
 
 from walk_forward_r5_cells import bh_fdr  # noqa: E402
-from roster_core import net_pnl  # noqa: E402  (S6-B3139ai)
+from roster_core import IS_END, IS_START, net_pnl  # noqa: E402  (S6-B3139ai, S6-B3139bc)
 
-IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
 FOLDS = [(date(2022, 5, 5), date(2023, 5, 5)), (date(2023, 5, 5), date(2024, 5, 5)),
          (date(2024, 5, 5), date(2025, 5, 5))]
 SIMPLE_EXITS = {"time_stop_10d", "time_stop_20d", "class_time_stop", "breakeven_plus_trail",
