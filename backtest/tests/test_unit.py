@@ -52397,3 +52397,157 @@ def test_b3139bc_the_roster_window_has_one_definition(tmp_path):
     (plant / "broken.py").write_text("def f(:\n", encoding="utf-8")
     _, bad = _b3139bc_window_copies([plant / "broken.py"])
     assert bad
+
+
+# S6-B3139bb (B3139q-r35): every file under scripts/ and backtest/ that cites a
+# line NUMBER of a module (`<name>.py:<N>`), with its count. Frozen and
+# shrink-only per file: a line citation decays silently when code is inserted
+# above it (L901 - 16 of 18 roster_core citations had decayed; a 30-row
+# hand-read sample of this population found 17 of 30 pointing at code the
+# citing text does not describe). A file leaves this dict when its last
+# citation is converted to a symbol. (Citations OF roster_core - the other
+# direction - are held at zero by test_b3139ai_roster_core_is_cited_by_symbol_not_line.)
+_B3139BB_LINE_CITATIONS = {
+    "backtest/agents/toolkits/our_trader_toolkit.py": 1,
+    "backtest/config.py": 11,
+    "backtest/data/cache.py": 1,
+    "backtest/data/signal_loader.py": 13,
+    "backtest/diagnostics/section_01_wiring_trace.py": 7,
+    "backtest/engine/backtest.py": 3,
+    "backtest/engine/exit_strategies.py": 2,
+    "backtest/engine/improvements.py": 1,
+    "backtest/engine/multiple_testing_correction.py": 2,
+    "backtest/results/metrics.py": 1,
+    "backtest/run_phase1a.py": 2,
+    "backtest/signals/macro_events.py": 1,
+    "backtest/signals/screener.py": 32,
+    "backtest/signals/technical.py": 1,
+    "backtest/tests/test_b1057_naming_bug_and_instrumentation.py": 1,
+    "backtest/tests/test_b1062_monitor_schema_contract.py": 3,
+    "backtest/tests/test_b1079_pivot43_closed_trade_reconstruction.py": 4,
+    "backtest/tests/test_b1081_pivot44_checkpoint_cadence_parity.py": 3,
+    "backtest/tests/test_b1124_calendar_lru_cache_correctness.py": 1,
+    "backtest/tests/test_batch363_smart_money_engine_fix.py": 3,
+    "backtest/tests/test_batch365_silent_gap_hardening.py": 1,
+    "backtest/tests/test_batch459_verification_matrix_scripts_layer.py": 1,
+    "backtest/tests/test_batch460_equity_curve_distinct_definitions.py": 1,
+    "backtest/tests/test_batch461_portfolio_metrics_single_source.py": 2,
+    "backtest/tests/test_batch491_audit_pattern3_closures.py": 4,
+    "backtest/tests/test_batch492_0a_rr_vs_profit_factor.py": 1,
+    "backtest/tests/test_batch495_pattern3_closures.py": 6,
+    "backtest/tests/test_batch558_phase1a_beta_institutional_cluster_verdict.py": 1,
+    "backtest/tests/test_batch561_sector_history_2023_expansion.py": 2,
+    "backtest/tests/test_batch576_drift_closure.py": 1,
+    "backtest/tests/test_batch582_year_high_bug_fix.py": 1,
+    "backtest/tests/test_batch616_low_priority_refactor.py": 1,
+    "backtest/tests/test_batch626_force_index_walk.py": 1,
+    "backtest/tests/test_batch636_three_white_soldiers_walk.py": 1,
+    "backtest/tests/test_batch688_macd_docstring_honesty.py": 1,
+    "backtest/tests/test_engine_parity_tier2.py": 4,
+    "backtest/tests/test_exit_distribution_sanity.py": 1,
+    "backtest/tests/test_integration.py": 21,
+    "backtest/tests/test_silent_gap_pyramid.py": 1,
+    "backtest/tests/test_smc_spof_sentinel.py": 9,
+    "backtest/tests/test_sprint2_acceptance.py": 1,
+    "backtest/tests/test_unit.py": 43,
+    "scripts/aws_chunk_launch.py": 1,
+    "scripts/b1019_phase_1_runtime_monitor.py": 1,
+    "scripts/b748c_data_quality_investigation.py": 1,
+    "scripts/b974_classify_signal_orphan_17.py": 17,
+    "scripts/b987_tranche_2_stage5_candidates.py": 2,
+    "scripts/backfill_quiet_strategies.py": 1,
+    "scripts/build_dashboard_stage_2.py": 2,
+    "scripts/build_strategy_roster.py": 29,
+    "scripts/candle_grid_feasibility.py": 1,
+    "scripts/composite_variant_test.py": 2,
+    "scripts/diagnose_smc_lsr.py": 2,
+    "scripts/eligibility_leak.py": 1,
+    "scripts/eligibility_sensitivity.py": 3,
+    "scripts/feasibility_rung.py": 1,
+    "scripts/free_level_window.py": 2,
+    "scripts/gate_incident_corpus.py": 1,
+    "scripts/grade_bollinger_config.py": 3,
+    "scripts/grade_free_levels_bollinger.py": 6,
+    "scripts/grade_free_levels_candle.py": 3,
+    "scripts/grade_free_levels_institutional.py": 4,
+    "scripts/grade_institutional_config.py": 2,
+    "scripts/instrument_breaker_block.py": 3,
+    "scripts/ledger_lock.py": 1,
+    "scripts/measure_fire_count.py": 3,
+    "scripts/occupancy_disclosure.py": 1,
+    "scripts/offline_gradability_census.py": 1,
+    "scripts/offline_level_sweep.py": 3,
+    "scripts/or_arm_attribution.py": 2,
+    "scripts/phase_1_add_investigation_columns.py": 2,
+    "scripts/phase_1_analysis_turn_3.py": 1,
+    "scripts/phase_1_correction_vol_spike_naming.py": 3,
+    "scripts/phase_1_investigation_turn_1_ichimoku.py": 3,
+    "scripts/phase_1_investigation_turn_2.py": 9,
+    "scripts/phase_1_investigation_turn_3_ict_smc.py": 6,
+    "scripts/phase_1_investigation_turn_5_chart_pattern.py": 6,
+    "scripts/phase_1_investigation_turn_6_final.py": 4,
+    "scripts/phase_1_investigation_turn_7_silent_misses.py": 4,
+    "scripts/phase_1_investigation_turn_8_adjacent_family.py": 2,
+    "scripts/pit_universe_discipline_audit.py": 2,
+    "scripts/postconfig_doc.py": 2,
+    "scripts/preleg_bar_audit.py": 2,
+    "scripts/prepopulate_cache_index.py": 1,
+    "scripts/prescreen_persistence_configs.py": 1,
+    "scripts/probe_disabled_strategies.py": 1,
+    "scripts/producer_collision_audit.py": 2,
+    "scripts/producer_sandbox.py": 2,
+    "scripts/producer_variant_table.py": 88,
+    "scripts/rebuild_cube_from_trade_log.py": 2,
+    "scripts/roster_core.py": 2,
+    "scripts/run_dec505_walk_forward_smc.py": 1,
+    "scripts/run_postconfig.py": 1,
+    "scripts/smc_cache_divergence_by_primitive.py": 2,
+    "scripts/smc_lsr_step1.py": 2,
+    "scripts/smc_obb_step1.py": 1,
+    "scripts/smoke_candle_step05.py": 1,
+    "scripts/spot_check_bollinger.py": 4,
+    "scripts/spot_check_smc_family.py": 1,
+    "scripts/spot_check_smc_obb.py": 1,
+    "scripts/table_a_bands.py": 107,
+    "scripts/table_d_render.py": 2,
+    "scripts/tighten_breaker_block.py": 2,
+    "scripts/verify_payload_coverage.py": 1,
+    "scripts/verify_turn_compliance.py": 2
+}
+
+
+def _b3139bb_line_citation_counts(root):
+    """Per-file count of `<module>.py:<N>` citations under scripts/ and
+    backtest/ - the one definition the freeze above was measured with."""
+    import re
+    pat = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*\.py:[0-9]+")
+    out = {}
+    for base in ("scripts", "backtest"):
+        for p in sorted((root / base).rglob("*.py")):
+            n = len(pat.findall(p.read_text(encoding="utf-8", errors="replace")))
+            if n:
+                out[p.relative_to(root).as_posix()] = n
+    return out
+
+
+def test_b3139bb_line_citations_in_code_only_shrink(tmp_path):
+    """S6-B3139bb: no file gains a line-number citation, and no file not in
+    the freeze starts citing lines. MEASURED at B3139q-r35: 570 citations in
+    105 files; the hand-read sample error rate is in the freeze's comment.
+    A file whose count fell is reported so the dict can be lowered (shrink-only
+    means the freeze follows the cleanup, never the other way)."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    now = _b3139bb_line_citation_counts(root)
+    grew = {f: (n, _B3139BB_LINE_CITATIONS.get(f, 0)) for f, n in now.items()
+            if n > _B3139BB_LINE_CITATIONS.get(f, 0)}
+    assert not grew, ("a NEW line-number citation in code - cite the symbol "
+                      f"(function, constant) instead; file: (now, frozen) = {grew}")
+    shrank = sorted(f for f, n in _B3139BB_LINE_CITATIONS.items() if now.get(f, 0) < n)
+    assert not shrank, f"citations were cleaned up - lower the freeze for: {shrank}"
+    # both directions on a planted tree
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "backtest").mkdir()
+    (tmp_path / "scripts" / "a.py").write_text("# see technical.py" + ":" + "12\n", encoding="utf-8")
+    (tmp_path / "scripts" / "b.py").write_text("# see technical.compute_macd\n", encoding="utf-8")
+    assert _b3139bb_line_citation_counts(tmp_path) == {"scripts/a.py": 1}
