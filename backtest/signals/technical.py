@@ -146,7 +146,7 @@ def compute_pivots(df: pd.DataFrame) -> dict:
         "below_cpr": today < cpr_bottom,
         # Camarilla flags (BUG-09 RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10:
         # below_cam_s3 + below_cam_s4 added for symmetry with above_cam_r3/r4;
-        # screener.py:153 references below_cam_s3 which previously returned None)
+        # screener.strat_camarilla_s3_bounce references below_cam_s3 which previously returned None)
         "near_cam_s3": near(cs3), "near_cam_s4": near(cs4),
         "near_cam_r3": near(cr3), "above_cam_r3": today > cr3,
         "above_cam_r4": today > cr4,

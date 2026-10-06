@@ -2,7 +2,7 @@
 """S6-B3134a part C (owner-approved A + C, 2026-09-29): the GRADER-SIDE
 eligibility guard. It asks, of every entry already in a cube, the question
 the fixed engine asks on the screen day (entry_date = as_of,
-backtest.py:3681/3781), through the SAME predicate the engine uses
+backtest.BacktestEngine._process_day/3781), through the SAME predicate the engine uses
 (backtest/data/eligibility.py - jan1_reason / daily_reason, L593):
 
   carry:<reason>   the ticker was NOT in its year's Jan-1 set. The pre-B3135

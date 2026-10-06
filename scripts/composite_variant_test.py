@@ -6,7 +6,7 @@ offline test of the _has_smart_money_buy composite's tightened variants.
 VARIANTS (tightenings of the recorded fire population - subset-safe, zero
 engine hours; the two loosenings ceo_buy/director_only_buy need the next cube):
   baseline : insider_cluster_active|cfo_buy|large_dollar_buy|inst_strong|inst_buy
-             (screener.py:7695-7703, read at build)
+             (screener._has_smart_money_buy, read at build)
   v1_drop_inst_buy      : events OR strong (institutional_buy leg removed)
   v2_strong_replaces_buy: events OR strong (SET-IDENTICAL to v1 by
              construction, since strong is a strict subset of buy inside an
@@ -18,7 +18,7 @@ engine hours; the two loosenings ceo_buy/director_only_buy need the next cube):
 
 POPULATION: the 7 hard-gate consumers of the composite (8 call sites minus
 strat_52w_high_breakout_with_smart_money_long, where the composite is
-annotation-only per B1195 - fires = base_fires, screener.py:7823).
+annotation-only per B1195 - fires = base_fires, screener.strat_52w_high_breakout_with_smart_money_long).
 
 GRADING per strategy x variant x exit, per the recorded owner test plan:
 IS sharpe (min 10) AND the six live holdout gates (roster_core.evaluate).

@@ -24,7 +24,7 @@ MONITOR_PATH = REPO / "scripts" / "b1019_phase_1_runtime_monitor.py"
 
 def test_b1062_monitor_requires_exit_reason_not_exit_method():
     """B1062 PIVOT #37 fix: monitor's required-column list must include
-    'exit_reason' (canonical engine column per writer.py:50)."""
+    'exit_reason' (canonical engine column per writer.write_all_outputs._build_combo_id)."""
     content = MONITOR_PATH.read_text()
     # The required list must contain exit_reason
     assert '"exit_reason"' in content, (
@@ -58,7 +58,7 @@ def test_b1062_writer_emits_exit_reason_in_trade_log():
     from backtest.results import writer
     source = inspect.getsource(writer)
     # exit_reason must be used in trade_log construction/processing
-    # (per writer.py:50, 516, 519)
+    # (per writer.write_all_outputs._build_combo_id, 516, 519)
     assert 'exit_reason' in source, (
         "B1062: writer.py must reference 'exit_reason' for trade_log "
         "schema (canonical column name)"

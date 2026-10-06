@@ -1245,7 +1245,7 @@ def test_bug273_institutional_signal_with_synthetic_bulk():
 
 
 def test_b918_screener_institutional_new_positions_wiring():
-    """B918 regression: screener.py:7979 must read 'new_positions' (plural).
+    """B918 regression: screener.screen_instrument must read 'new_positions' (plural).
 
     BUG (commit 82290e2c00 2026-05-25): screener wired
         signals['institutional_new_positions'] = int(inst.get('new_pos', 0) or 0)
@@ -1281,7 +1281,7 @@ def test_b918_screener_institutional_new_positions_wiring():
     # Static source-of-truth assertion: the binding line must read the SAME
     # key that institutional_signal() returns. The actual bug was a typo on
     # this line. Post-B921 (engine path unification per Council 39), the
-    # binding moved from screener.py:7979 -> signal_loader.py
+    # binding moved from screener.screen_instrument -> signal_loader.py
     # inject_institutional_signals(). Both source-paths checked so test
     # remains valid if binding moves again.
     import re
@@ -1628,22 +1628,22 @@ if __name__ == "__main__":
 # bug IDs are listed here so the dashboard promotion-path grep finds them in
 # test code (per CHECKLIST #82 same-commit verification rule).
 #
-# BUG-02:  days/crisis_flag UnboundLocalError fix in backtest.py:265 (regime
+# BUG-02:  days/crisis_flag UnboundLocalError fix in backtest.BacktestEngine._process_day (regime
 #          context tests cover the no-crisis branch)
 # BUG-03:  ClosedTrade canonical single-definition; test_*_trade_capture_*
 #          imports + uses the canonical ClosedTrade with full schema
-# BUG-04:  avoid direction skip in backtest.py:337 (covered by direction-routing
+# BUG-04:  avoid direction skip in backtest.BacktestEngine._process_day (covered by direction-routing
 #          tests via backtest engine smoke)
 # BUG-05:  strategies_triggered key consistency in pipeline.py (covered by
 #          agent-pipeline tests where they exist; smoke runs exercise the path)
-# BUG-11:  williams_r short default in screener.py:213 (covered by screener
+# BUG-11:  williams_r short default in screener.strat_hull_rsi (covered by screener
 #          unit tests for williams_r strategy)
 # BUG-22:  run_phase1a.py docstring text correction (no test needed; verified
 #          via grep absence per BUG_REGISTER row)
 # BUG-08:  ema_50_200_bullish signal key defined in compute_ema_sma at
-#          technical.py:395 (already fixed implicitly; cross-reference here)
+#          technical.compute_ema_sma (already fixed implicitly; cross-reference here)
 # BUG-09:  below_cam_s3 + below_cam_s4 signal keys added to compute_pivots at
-#          technical.py:124 (Phase 3 batch 1; tested via test_bug_009_below_cam_s3)
+#          technical.compute_pivots (Phase 3 batch 1; tested via test_bug_009_below_cam_s3)
 # ============================================================================
 
 
@@ -1675,7 +1675,7 @@ def test_bug_008_ema_50_200_bullish_signal_key_exists():
 def test_bug_009_below_cam_s3_signal_key_exists():
     """BUG-09: below_cam_s3 signal must be defined in compute_all_signals.
 
-    Pass 53 v8h+1 Phase 3 fix 2026-05-10. screener.py:153 references
+    Pass 53 v8h+1 Phase 3 fix 2026-05-10. screener.strat_camarilla_s3_bounce references
     below_cam_s3 (Camarilla S3 breakdown) but compute_pivots only had ABOVE
     versions (above_cam_r3/r4) - missing BELOW versions. Fix adds
     below_cam_s3 + below_cam_s4 for symmetry. Verify both keys present.
@@ -1740,7 +1740,7 @@ def test_bug_001_crisis_flag_predefined():
     """BUG-01: crisis_flag must be defined before line 299 to prevent NameError.
 
     Pass 53 v8h+1 Phase 3 Batch 2 cross-reference 2026-05-10. The fix at
-    backtest.py:267 pre-defines crisis_flag at function scope so it's available
+    backtest.BacktestEngine._process_day pre-defines crisis_flag at function scope so it's available
     even when regime != "crisis" (inner-loop branch wouldn't set it).
     """
     import inspect
@@ -1755,7 +1755,7 @@ def test_bug_006_short_borrow_single_source():
     """BUG-06: short borrow cost applied centrally in apply_transaction_costs only.
 
     Pass 53 v8h+1 Phase 3 Batch 2 cross-reference 2026-05-10. DEC-295 fix
-    consolidated borrow cost into one location (improvements.py:84). exit_manager
+    consolidated borrow cost into one location (improvements.apply_transaction_costs). exit_manager
     `_pnl` is gross-only with explicit comment confirming this.
     """
     import inspect
@@ -1790,7 +1790,7 @@ def test_bug_012_dedup_strategy_count_priority():
     """BUG-12: deduplication picks highest strategy_count, not first-fire long bias.
 
     Pass 53 v8h+1 Phase 3 Batch 2 cross-reference 2026-05-10. Candidates are
-    sorted by strategy_count desc; dedup at backtest.py:368 picks the candidate
+    sorted by strategy_count desc; dedup at backtest.BacktestEngine._process_day picks the candidate
     with most signal confluence, not direction-biased.
     """
     import inspect
@@ -2083,7 +2083,7 @@ def test_bug_030_vix_crisis_tightens_stops():
     """BUG-30: VIX crisis (Level 5 CB) tightens stops per documented behavior.
 
     Pass 53 v8h+1 Phase 3 Batch 3 cross-reference 2026-05-10. Original bug
-    claimed inconsistency between docs and code. exit_manager.py:218-222
+    claimed inconsistency between docs and code. exit_manager.check_circuit_breakers_all
     correctly tightens stops on VIX crisis additively (does not exit position).
     Documentation at exit_manager.py:15 confirms this is the intended behavior.
     """
@@ -6651,7 +6651,7 @@ def test_batch370_max_open_positions_59_with_regime_caps_preserved():
     assert regime_position_count_cap("neutral") == 25, "Batch 203 neutral cap must stay 25"
     assert regime_position_count_cap("bear")    == 15, "Batch 203 bear cap must stay 15"
     assert regime_position_count_cap("crisis")  == 10, "Batch 203 crisis cap must stay 10"
-    # Effective cap calculation per engine/backtest.py:1634
+    # Effective cap calculation per engine/backtest.BacktestEngine._process_day
     base = LIVE_TRADING_RULES["max_open_positions"]
     assert min(base, regime_position_count_cap("bull"))    == 40
     assert min(base, regime_position_count_cap("neutral")) == 25
@@ -10211,7 +10211,7 @@ def test_batch375_dec426_5_gate_wired_to_config_not_hardcoded():
 
 def test_batch375_dec134_fx_exposure_already_engine_consumed():
     """Batch 375 DEC-134 audit closure: compute_fx_exposure_pct exists at
-    metrics.py:1558 AND consumed by results/writer.py for output writing.
+    metrics.compute_fx_exposure_pct AND consumed by results/writer.py for output writing.
     Already fully engine-wired; this test pins the wiring."""
     from pathlib import Path
     repo = Path(__file__).resolve().parents[2]
@@ -12064,8 +12064,8 @@ def test_batch805_resample_pit_pin_multi_timeframe():
     slices df to [<=as_of].
 
     Per B770 audit (output_audit/pattern_u_pit_audit_B770_VERDICT.md):
-    Backtest engine at backtest/engine/backtest.py:824 and pool worker at
-    backtest/signals/screener.py:7819 BOTH slice `df[df.index.date <= as_of]`
+    Backtest engine at backtest/engine/backtest.BacktestEngine._process_day and pool worker at
+    backtest/signals/screener.screen_instrument BOTH slice `df[df.index.date <= as_of]`
     before passing to compute_weekly_bias. The resample then respects the
     slice boundary -- weekly_close = close of as_of bar (Wed), NOT Fri close.
 
@@ -12220,7 +12220,7 @@ def test_b1046_f15_monitor_handles_partial_csv_write_pin():
 # B1045 Council 141 Audit-B - Row 34 wire: dec_constants_verification.json
 # consumer.
 #
-# Producer: backtest/results/writer.py:1063 emits a dict mapping
+# Producer: backtest/results/writer.write_all_outputs emits a dict mapping
 # DEC_NAME__DEC-NNN -> type(value).__name__ for ~62 canonical DEC constants
 # imported from backtest.config + backtest.engine.improvements +
 # backtest.data.smart_money. Pre-B1045 the producer ran on every backtest
@@ -12231,7 +12231,7 @@ def test_b1046_f15_monitor_handles_partial_csv_write_pin():
 # rather than fail the pyramid.
 #
 # This test promotes the JSON from forensic-only to pyramid pre-flight gate
-# by asserting: (1) the import block at writer.py:962-999 is structurally
+# by asserting: (1) the import block at writer.write_all_outputs is structurally
 # parseable, (2) every DEC constant it imports actually resolves to a
 # non-None value via real import path - i.e., the live source-of-truth
 # (writer.py import block) and the runtime (backtest.config et al.) agree.
@@ -12826,7 +12826,7 @@ def test_b1261_eng3_parquet_failure_writes_marker(tmp_path, monkeypatch):
 
 def test_b1273_fix1_dc20_bullets_are_lists():
     """FIX-1a: strat_dc20_break_retest context bullets are LISTS (the bare
-    strings at screener.py:3159 were the only such call site and broke the
+    strings at screener.strat_dc20_break_retest were the only such call site and broke the
     rung-2 parquet write via pyarrow mixed-type rejection)."""
     from backtest.signals.screener import strat_dc20_break_retest
     s = {"resistance_break_retest": True, "vol_below_avg": True,
@@ -14099,7 +14099,7 @@ def test_b1561_guard_flag_defaults_on():
 # first bar (ABAT 2023-09-21, ABVX 2023-10-20) -- they re-fetched on every
 # run forever. Staleness lives at the END of a window; a late start just
 # means less history, which downstream already rejects
-# (screener.py:8556, len(df) < 30 -> insufficient_history).
+# (screener.screen_instrument, len(df) < 30 -> insufficient_history).
 # ---------------------------------------------------------------------------
 
 def test_b1562_short_history_ticker_is_served_not_fetched():
@@ -15633,7 +15633,7 @@ def test_b1624_unevaluable_gate_is_not_a_pass():
     `min_trades_full_period=True` while `full_period_n=1` - obviously failing -
     returned False. **"Unknown" scored better than "known bad".** Reachable:
     every exit-SELECTION caller omits the argument
-    (build_phase_1b_roster.py:221, roster_core.select_exit, best_exit_by_gates,
+    (build_phase_1b_roster.main, roster_core.select_exit, best_exit_by_gates,
     bear_regime_stress_test), so the gate auto-passed for all of them and
     n_gates read one higher than the number of gates actually evaluated.
     """
@@ -23373,7 +23373,7 @@ def test_b2017_engine_banner_carries_no_hand_maintained_count():
 
 def test_b2018_grader_ohlcv_loader_coerces_string_dates():
     """B2018: META.parquet (rewritten 2026-05-20, unlike the May-06 cohort)
-    stores its date column as str. The engine normalizes at cache.py:335, but
+    stores its date column as str. The engine normalizes at cache.get_ohlcv_bulk, but
     the grader's _load_ohlcv did not - get_indexer(Timestamp, method="pad")
     then raises TypeError on exactly that one file, killing the whole grade.
     Any loader that feeds Timestamp lookups must return a DatetimeIndex.
@@ -25060,7 +25060,7 @@ def test_b2120_time_stop_exception_logs_and_keeps_trade(monkeypatch, caplog):
     # Force ONLY the guarded batch282 path: a real override arms the hard
     # time-stop for this strategy, and the slippage helper it then calls
     # raises. (A raising .get() was too broad - it detonated first in
-    # update_trailing_stop's UNGUARDED consumer at exit_manager.py:486,
+    # update_trailing_stop's UNGUARDED consumer at exit_manager.update_trailing_stop,
     # which is a separate S6-B2118a tranche-2 observation.)
     import backtest.engine.improvements as _imp
 
@@ -26436,7 +26436,7 @@ def test_b2133_worktree_refuses_when_the_data_dirs_are_not_visible(tmp_path):
     fall back to the live tree silently.
 
     THE TRAP THIS CLOSES: the engine anchors CACHE_DIR on its own module path
-    (backtest/data/cache.py:31) and cache dirs are gitignored, so a bare
+    (backtest/data/cache.CACHE_DIR) and cache dirs are gitignored, so a bare
     worktree sees zero cached OHLCV - the run then completes having done
     nothing, which is the 7.3-hour B2118 pilot failure in a new costume.
     """
@@ -28391,7 +28391,7 @@ def test_b2299_step1_report_states_the_criterion_not_a_floor():
     """S6-B2299 (L696): the findings report must not print a Step-1 VERDICT.
 
     WHY. Step-1 admission is min-trades >= 10 plus a ranked list with NO gates
-    (owner ruling 2026-08-17 / B1608, stated at tighten_breaker_block.py:383).
+    (owner ruling 2026-08-17 / B1608, stated at tighten_breaker_block.main).
     postconfig_doc.py used to emit '**VERDICT: best cell is_ci_lo X BELOW the
     0.333 selection-noise yardstick**' - a PHASE-1B per-cell floor (B2009) printed
     as a Step-1 verdict. The owner corrected that framing FOUR times and it kept
@@ -34350,7 +34350,7 @@ def test_b2612_institutional_grader_emits_six_gates_on_a_step2_cube(tmp_path):
     the battery passed it (fail-open). Now, on a cube DECLARED Step-2:
 
       * the exit is chosen on IS rows only by rc.select_exit (plan mechanism,
-        the tighten_breaker_block.py:338-353 precedent);
+        the tighten_breaker_block.main precedent);
       * that exit's holdout rows are read ONCE and the six LIVE_GATES decide;
       * the Step-1 pre-registered exit is RECORDED beside it and a mismatch is
         DISCLOSED, never re-rolled, never a second holdout read;
@@ -35406,7 +35406,7 @@ def test_b2634_pead_phase0_draft_validates_and_stays_out_of_the_battery():
     draft = m.SPECS_PHASE0["pead_long_high_yoy_growth_only"]
     assert m.validate_spec(draft) == []
     # the reachability finding is structural: NO param may promise a resim
-    # level, because no env knob exists (signal_loader.py:238/278 pass no
+    # level, because no env knob exists (signal_loader.inject_earnings_surprise_yoy_signals/278 pass no
     # args) - the S6-B2569a unrunnable-level class caught at Phase 0
     for p in draft["params"]:
         assert p["resim_band"] == [], (p["id"], "a resim level with no knob")
@@ -38453,7 +38453,7 @@ def test_b2819_equal_lows_registered_via_the_shared_grader():
 def test_b2820_inverse_fvg_registered_with_one_honest_knob():
     """S6-B2752 subject 3 of 3: smc_inverse_fvg is a registered family whose
     SPECS entry declares exactly the knob that reaches its keys - and NOT the
-    three smc knobs, which the fvg derivation never reads (smc_ict.py:296-360:
+    three smc knobs, which the fvg derivation never reads (smc_ict.compute_smc_signals:
     fvg() takes no parameters; the inverse logic is a hardcoded 20-event tail
     with hardcoded 0.20 tolerance). Declaring an unreaching knob is the
     S6-B2136 manifest lie; the NEGATIVE is pinned so it cannot creep back.
@@ -39825,7 +39825,7 @@ def test_b2875_a_multiline_quoted_message_is_not_a_launch():
     NAMING a runner is not judged a launch (B2028b). That fix excluded the
     newline from both character classes, so a MULTI-LINE `git commit -m` body
     was never blanked and every runner name inside it tokenized as a launch -
-    MEASURED, a message quoting run_phase1a.py:648 was reported as a launch
+    MEASURED, a message quoting run_phase1a.main was reported as a launch
     missing --screen-pool-workers. B2028b's own incident was single-line and
     the fix inherited that shape (the L536 class).
 
@@ -43711,7 +43711,7 @@ def test_b2919_below_power_is_terminal_na(monkeypatch, tmp_path):
 
     # S6-B3120g (B3125): run_family derives its grader / spot-check /
     # free-levels out-paths from run_postconfig.ROOT at CALL time
-    # (run_postconfig.py:617-618/685), so without this redirect every
+    # (run_postconfig.run_family/685), so without this redirect every
     # full-suite run left three 36-byte stubs (cube_grid_auto.json,
     # cube_spot_check.json, cube_free_levels.json) in the PRODUCTION
     # output_audit - invisible to the pyramid's tree fingerprint because
@@ -43745,11 +43745,11 @@ def test_b2919_below_power_is_terminal_na(monkeypatch, tmp_path):
 
     # S6-B3032: the family's OWN key set, not an empty dict.
     # run_family builds its label as p[k] for every key the family
-    # declares (run_postconfig.py:619), so {} raises KeyError on the
+    # declares (run_postconfig.run_family), so {} raises KeyError on the
     # first one. institutional_committed_growth_long declares four:
     # P4 min_consecutive_quarters, P5 growth_lookback_quarters,
     # P6 growth_multiple, P9 ema_span. These values mirror the B2612
-    # harness this fixture claims to mirror (test_unit.py:30813).
+    # harness this fixture claims to mirror (test_unit.test_b2569_battery_runs_free_levels_on_every_institutional_landing).
     _p = {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
           "growth_multiple": 1.1, "ema_span": 200}
 
@@ -43855,7 +43855,7 @@ def test_b3082_table_d_reads_the_factorial_artifact_shape(tmp_path):
     #    reasoning that fires is identical across all 24 exits so it could
     #    not be a trade count. THE REASONING WAS WRONG and the pin defended
     #    it green (L706 - a pin can encode a mistake and protect it).
-    #    grade_candle_config.py:268 builds full_n from
+    #    grade_candle_config.grade builds full_n from
     #    cube.groupby("exit_method").size() and line 279 sets "fires" to
     #    len(g) over is_rows grouped the same way: BOTH count CUBE ROWS,
     #    i.e. trades. The value is constant across exits BY CONSTRUCTION -
@@ -51756,7 +51756,7 @@ def test_b3139w_missing_manifest_reads_unknown_never_production(tmp_path):
 def test_b3139ax_blank_env_value_is_the_engine_default(tmp_path):
     """S6-B3139ax (B3139q-r21, L900): _run_levels decoded each arm env value
     with json.loads and KEPT THE RAW STRING on failure, so a blank value - the
-    engine's unset path (backtest/config.py:2500-2501 parses a blank
+    engine's unset path (backtest/config._candle_wick_raw parses a blank
     CANDLE_MAX_WICK_PCT as None, P5's production) - became a level "".
     MEASURED on the local candle cubes: 9 of three_white_soldiers' 18 configs
     ran CANDLE_MAX_WICK_PCT="", and its Table D read P5 "(3 of 3 band levels)"
@@ -52422,111 +52422,43 @@ def test_b3139bc_the_roster_window_has_one_definition(tmp_path):
 # citation is converted to a symbol. (Citations OF roster_core - the other
 # direction - are held at zero by test_b3139ai_roster_core_is_cited_by_symbol_not_line.)
 _B3139BB_LINE_CITATIONS = {
-    "backtest/agents/toolkits/our_trader_toolkit.py": 1,
-    "backtest/config.py": 11,
-    "backtest/data/cache.py": 1,
-    "backtest/data/signal_loader.py": 13,
-    "backtest/diagnostics/section_01_wiring_trace.py": 7,
-    "backtest/engine/backtest.py": 3,
-    "backtest/engine/exit_strategies.py": 2,
-    "backtest/engine/improvements.py": 1,
-    "backtest/engine/multiple_testing_correction.py": 2,
-    "backtest/results/metrics.py": 1,
-    "backtest/run_phase1a.py": 2,
+    "backtest/config.py": 4,
+    "backtest/diagnostics/section_01_wiring_trace.py": 3,
+    "backtest/engine/backtest.py": 2,
+    "backtest/engine/multiple_testing_correction.py": 1,
+    "backtest/run_phase1a.py": 1,
     "backtest/signals/macro_events.py": 1,
-    "backtest/signals/screener.py": 32,
-    "backtest/signals/technical.py": 1,
-    "backtest/tests/test_b1057_naming_bug_and_instrumentation.py": 1,
-    "backtest/tests/test_b1062_monitor_schema_contract.py": 3,
-    "backtest/tests/test_b1079_pivot43_closed_trade_reconstruction.py": 4,
-    "backtest/tests/test_b1081_pivot44_checkpoint_cadence_parity.py": 3,
-    "backtest/tests/test_b1124_calendar_lru_cache_correctness.py": 1,
-    "backtest/tests/test_batch363_smart_money_engine_fix.py": 3,
-    "backtest/tests/test_batch365_silent_gap_hardening.py": 1,
+    "backtest/signals/screener.py": 1,
+    "backtest/tests/test_b1062_monitor_schema_contract.py": 1,
     "backtest/tests/test_batch459_verification_matrix_scripts_layer.py": 1,
-    "backtest/tests/test_batch460_equity_curve_distinct_definitions.py": 1,
-    "backtest/tests/test_batch461_portfolio_metrics_single_source.py": 2,
-    "backtest/tests/test_batch491_audit_pattern3_closures.py": 4,
-    "backtest/tests/test_batch492_0a_rr_vs_profit_factor.py": 1,
-    "backtest/tests/test_batch495_pattern3_closures.py": 6,
-    "backtest/tests/test_batch558_phase1a_beta_institutional_cluster_verdict.py": 1,
-    "backtest/tests/test_batch561_sector_history_2023_expansion.py": 2,
-    "backtest/tests/test_batch576_drift_closure.py": 1,
-    "backtest/tests/test_batch582_year_high_bug_fix.py": 1,
-    "backtest/tests/test_batch616_low_priority_refactor.py": 1,
-    "backtest/tests/test_batch626_force_index_walk.py": 1,
-    "backtest/tests/test_batch636_three_white_soldiers_walk.py": 1,
-    "backtest/tests/test_batch688_macd_docstring_honesty.py": 1,
-    "backtest/tests/test_engine_parity_tier2.py": 4,
+    "backtest/tests/test_batch491_audit_pattern3_closures.py": 1,
+    "backtest/tests/test_batch495_pattern3_closures.py": 2,
     "backtest/tests/test_exit_distribution_sanity.py": 1,
-    "backtest/tests/test_integration.py": 21,
-    "backtest/tests/test_silent_gap_pyramid.py": 1,
+    "backtest/tests/test_integration.py": 5,
     "backtest/tests/test_smc_spof_sentinel.py": 9,
-    "backtest/tests/test_sprint2_acceptance.py": 1,
-    "backtest/tests/test_unit.py": 43,
+    "backtest/tests/test_unit.py": 9,
     "scripts/aws_chunk_launch.py": 1,
-    "scripts/b1019_phase_1_runtime_monitor.py": 1,
-    "scripts/b748c_data_quality_investigation.py": 1,
     "scripts/b974_classify_signal_orphan_17.py": 17,
-    "scripts/b987_tranche_2_stage5_candidates.py": 2,
-    "scripts/backfill_quiet_strategies.py": 1,
-    "scripts/build_dashboard_stage_2.py": 2,
+    "scripts/b987_tranche_2_stage5_candidates.py": 1,
     "scripts/build_strategy_roster.py": 29,
-    "scripts/candle_grid_feasibility.py": 1,
-    "scripts/composite_variant_test.py": 2,
-    "scripts/diagnose_smc_lsr.py": 2,
-    "scripts/eligibility_leak.py": 1,
-    "scripts/eligibility_sensitivity.py": 3,
-    "scripts/feasibility_rung.py": 1,
-    "scripts/free_level_window.py": 2,
     "scripts/gate_incident_corpus.py": 1,
-    "scripts/grade_bollinger_config.py": 3,
-    "scripts/grade_free_levels_bollinger.py": 6,
-    "scripts/grade_free_levels_candle.py": 3,
-    "scripts/grade_free_levels_institutional.py": 4,
-    "scripts/grade_institutional_config.py": 2,
-    "scripts/instrument_breaker_block.py": 3,
-    "scripts/ledger_lock.py": 1,
-    "scripts/measure_fire_count.py": 3,
-    "scripts/occupancy_disclosure.py": 1,
-    "scripts/offline_gradability_census.py": 1,
-    "scripts/offline_level_sweep.py": 3,
-    "scripts/or_arm_attribution.py": 2,
+    "scripts/grade_free_levels_institutional.py": 1,
+    "scripts/offline_level_sweep.py": 1,
     "scripts/phase_1_add_investigation_columns.py": 2,
     "scripts/phase_1_analysis_turn_3.py": 1,
-    "scripts/phase_1_correction_vol_spike_naming.py": 3,
-    "scripts/phase_1_investigation_turn_1_ichimoku.py": 3,
-    "scripts/phase_1_investigation_turn_2.py": 9,
+    "scripts/phase_1_correction_vol_spike_naming.py": 2,
+    "scripts/phase_1_investigation_turn_1_ichimoku.py": 2,
+    "scripts/phase_1_investigation_turn_2.py": 4,
     "scripts/phase_1_investigation_turn_3_ict_smc.py": 6,
     "scripts/phase_1_investigation_turn_5_chart_pattern.py": 6,
-    "scripts/phase_1_investigation_turn_6_final.py": 4,
+    "scripts/phase_1_investigation_turn_6_final.py": 3,
     "scripts/phase_1_investigation_turn_7_silent_misses.py": 4,
     "scripts/phase_1_investigation_turn_8_adjacent_family.py": 2,
-    "scripts/pit_universe_discipline_audit.py": 2,
-    "scripts/postconfig_doc.py": 2,
-    "scripts/preleg_bar_audit.py": 2,
-    "scripts/prepopulate_cache_index.py": 1,
-    "scripts/prescreen_persistence_configs.py": 1,
-    "scripts/probe_disabled_strategies.py": 1,
-    "scripts/producer_collision_audit.py": 2,
-    "scripts/producer_sandbox.py": 2,
-    "scripts/producer_variant_table.py": 88,
-    "scripts/rebuild_cube_from_trade_log.py": 2,
+    "scripts/postconfig_doc.py": 1,
+    "scripts/producer_variant_table.py": 79,
     "scripts/roster_core.py": 2,
-    "scripts/run_dec505_walk_forward_smc.py": 1,
-    "scripts/run_postconfig.py": 1,
-    "scripts/smc_cache_divergence_by_primitive.py": 2,
-    "scripts/smc_lsr_step1.py": 2,
-    "scripts/smc_obb_step1.py": 1,
-    "scripts/smoke_candle_step05.py": 1,
-    "scripts/spot_check_bollinger.py": 4,
-    "scripts/spot_check_smc_family.py": 1,
-    "scripts/spot_check_smc_obb.py": 1,
-    "scripts/table_a_bands.py": 107,
-    "scripts/table_d_render.py": 2,
-    "scripts/tighten_breaker_block.py": 2,
-    "scripts/verify_payload_coverage.py": 1,
-    "scripts/verify_turn_compliance.py": 2
+    "scripts/smc_lsr_step1.py": 1,
+    "scripts/table_a_bands.py": 107
 }
 
 

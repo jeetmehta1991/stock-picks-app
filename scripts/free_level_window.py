@@ -2,14 +2,14 @@
 
 WHY. A free-level leg must reproduce the landed family grade before it
 grades anything, and the family graders select on the IN-SAMPLE window only
-(grade_bollinger_config.py:232 `rc.in_sample(cube)`; the candle grader has
+(grade_bollinger_config.grade `rc.in_sample(cube)`; the candle grader has
 the same design). The candle and bollinger adapters scored EVERY row, so on
 a 4-year Step-2 cube they counted the holdout year too: MEASURED on
 output_candle_tws_c14_step2, 955 rows per exit against the family's 764 -
 the 191 holdout-entered trades. Before the S6-B3120f score gate existed that
 leg wrote holdout-contaminated candidate rankings; after it, the leg fails
 closed on every Step-2 cube. The institutional adapter already windowed
-(grade_free_levels_institutional.py:246, rc.in_sample). This module
+(grade_free_levels_institutional.grade_levels, rc.in_sample). This module
 makes that the rule for every adapter: the window is roster_core.in_sample
 (one definition, L593), applied at load, so an adapter never RECEIVES a
 holdout-ENTERED row - not for scoring, not for the signal reproduction

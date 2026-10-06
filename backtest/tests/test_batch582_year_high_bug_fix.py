@@ -8,7 +8,7 @@ QUIET status in STRATEGY_ROSTER.md:
   "This is logically a high incidence category. Why is this quiet.
    Some thing is seriously wrong. Lets start with this."
 
-ROOT CAUSE: technical.py:1085 had
+ROOT CAUSE: technical.compute_volume had
   year_high = df["high"].tail(252).max()
 which INCLUDES today's intraday high. So `today_close >= year_high`
 effectively required today_close == today_high == max-of-252d.

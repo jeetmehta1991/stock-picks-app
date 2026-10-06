@@ -8,9 +8,9 @@ SCOPE: 4 strategies
   4. halloween_seasonal_long (1 fire, HIGH) — CRITICAL: 300x underfire
 
 PRODUCER FILES REVIEWED:
-  - technical.py:1307-1378 compute_bollinger (bb_reclaim signals)
-  - technical.py:1488-1520 compute_squeeze (squeeze_fire_up/dn)
-  - calendar_effects.py:136-197 compute_calendar_signals (halloween_first_day)
+  - technical.compute_bollinger compute_bollinger (bb_reclaim signals)
+  - technical.compute_squeeze compute_squeeze (squeeze_fire_up/dn)
+  - calendar_effects.compute_calendar_signals compute_calendar_signals (halloween_first_day)
 
 FINDINGS:
 
@@ -40,7 +40,7 @@ squeeze_breakout:
   Rate ~0.065/ticker/year = reasonable for canonical LazyBear TTM squeeze.
 
 halloween_seasonal_long — CRITICAL FINDING:
-  Producer VERIFIED correct via calendar_effects.py:196:
+  Producer VERIFIED correct via calendar_effects.compute_calendar_signals:
     out["is_halloween_period_first_day"] = bool(as_of.month == 11 and tdm == 1)
   Test coverage: test_batch723_calendar_state_to_event.py passes.
 
@@ -56,7 +56,7 @@ halloween_seasonal_long — CRITICAL FINDING:
 
   ROOT CAUSE HYPOTHESES (ordered by likelihood):
     (a) @lru_cache on _cached_calendar_signals(str(as_of)) may return
-        stale/wrong values for certain dates (screener.py:6500). Cache
+        stale/wrong values for certain dates (screener._cached_calendar_signals). Cache
         invalidation issue?
     (b) tdm (trading day of month) calculation edge case around US
         holidays or DST transitions

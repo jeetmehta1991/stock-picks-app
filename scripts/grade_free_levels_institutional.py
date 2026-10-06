@@ -21,7 +21,7 @@ baseline, nothing it reports about any level is believable"):
   unverifiable - never silently failed and never silently kept.
 
 FAITHFUL TO THE ENGINE, measured not assumed:
-  * the gate (screener.py:6646-6648) reads BOTH counts via s.get(key, 0), so
+  * the gate (screener.strat_institutional_committed_growth_long) reads BOTH counts via s.get(key, 0), so
     an absent KEY inside a present dict defaults to 0 HERE TOO (the B1230
     no-artifact-row fallback, 3.8 pct of R5 fired rows) - the engine read the
     same 0. An absent/empty DICT is different: the engine read live signals
@@ -63,7 +63,7 @@ TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
 OUT = ROOT / "output_audit" / "b2504_free_levels_institutional.json"
 STRAT = "institutional_committed_growth_long"
 
-# production thresholds (screener.py:6648) and the FREE levels (SPECS P7/P8)
+# production thresholds (screener.strat_institutional_committed_growth_long) and the FREE levels (SPECS P7/P8)
 P7_PROD, P8_PROD = 3, 5
 
 # B2574 COVERAGE FLOOR: the reproduction gate can PASS on a SUBPOPULATION.
@@ -105,7 +105,7 @@ def spec_levels() -> list[tuple[str, int, int]]:
 
 
 def keep_row(committed: float, increased: float, p7: int, p8: int) -> bool:
-    """The strategy's OR gate at (p7, p8) - mirrors screener.py:6646-6648.
+    """The strategy's OR gate at (p7, p8) - mirrors screener.strat_institutional_committed_growth_long.
 
     Raising p7 leaves the fallback arm untouched (committed==0 rows still
     pass via increased); raising p8 leaves the primary arm untouched. A row

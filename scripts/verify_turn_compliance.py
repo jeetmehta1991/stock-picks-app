@@ -2411,7 +2411,7 @@ def scan_discipline_not_loaded(entries, *, tool_text=None,
 
     B1883 (S6-B1813d): THE RATIONALE BELOW IS STALE AND THE CHECK IS NOT.
     Since B1744 the hook injects the FULL SKILL BODY - see
-    `inject_tier3_discipline.py:72` emitting "FULL SKILL, auto-injected
+    `inject_tier3_discipline.main` emitting "FULL SKILL, auto-injected
     every turn", with SKILL.md at ~119 KB. **A stale rationale is worse
     than a wrong check: the reader believes the reason and stops asking.**
     The check still earns its place - loading the body is not invoking
@@ -4605,7 +4605,7 @@ def _segment_is_launch(cmd: str) -> bool:
     # B2875: the double-quoted span may SPAN NEWLINES. B2028b excluded \n from
     # both character classes, so a MULTI-LINE `git commit -m "..."` message was
     # never blanked and every runner name inside it tokenized as a launch -
-    # MEASURED, a commit message quoting run_phase1a.py:648 was reported as a
+    # MEASURED, a commit message quoting run_phase1a.main was reported as a
     # launch missing --screen-pool-workers. B2028b's own incident was a
     # single-line message, and the fix inherited that shape (the L536 class: a
     # rule learned on one form does not reach the other). The single-quoted arm

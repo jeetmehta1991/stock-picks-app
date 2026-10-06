@@ -3,7 +3,7 @@ per CHECKLIST #105; first of 4 B623 REMOVE_OK regime-affinity candidates
 per owner directive 2026-06-08.
 
 Source: backtest/signals/screener.py:strat_force_index_breakout (B626
-F1+F2+(a)); backtest/signals/technical.py:1206-1213 (Elder Force Index
+F1+F2+(a)); backtest/signals/technical.compute_volume (Elder Force Index
 producer); R5_VALIDATION_MANIFEST.md M1 (regime entry deferred to R5).
 Per CHECKLIST #77 source-of-truth declaration.
 

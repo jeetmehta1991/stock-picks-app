@@ -451,7 +451,7 @@ def build(cubes: list[str] | None = None) -> str:
 
     # S6-B2330 (owner directive 2026-08-28): TABLE D, the Step-1 ranked list,
     # regenerated here because this function already runs at EVERY landing via
-    # run_wave.py:289 - the auto-update the owner asked for needs no new watcher
+    # run_wave.run_arm - the auto-update the owner asked for needs no new watcher
     # and no cron. Rendered through producer_variant_table.table_d, which owns
     # the columns: Table C's docstring records that hand-retyping a locked table
     # dropped four columns three times, so the renderer is the only source.

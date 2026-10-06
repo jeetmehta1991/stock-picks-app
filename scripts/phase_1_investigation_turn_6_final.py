@@ -8,7 +8,7 @@ PRODUCER VERIFICATIONS (via live tests):
   ADX:          WORKS. AAPL adx=15.8, SPY adx=22.7; adx_di_bull emits
   MACD cross:   WORKS (0 fires today = no fresh cross events, expected)
   52w signals:  WORKS. NVDA + SPY emit near_52w_high, break_52w_high, year_high
-  Golden cross: technical.py:757 emits f'ema_{fast}_{slow}_golden_cross'
+  Golden cross: technical.compute_ema_sma emits f'ema_{fast}_{slow}_golden_cross'
   Pivots:       compute_pivots in technical.py; near_s1/r1/cam_r4 signals
 
 CRITICAL FINDING #1 - INDEX REBALANCE DATA FILE MISSING:

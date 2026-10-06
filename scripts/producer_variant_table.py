@@ -477,7 +477,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "param": "min_committed_growth", "production": 3, "sweep_levels": [],
              # S6-B2569a STRIKE (owner-approved 2026-09-03, B2578): resim
              # levels 1 and 2 REMOVED. The threshold is the literal
-             # `n_grow >= 3` at screener.py:6648 with NO env knob, so the
+             # `n_grow >= 3` at screener.strat_institutional_committed_growth_long with NO env knob, so the
              # looser levels were scheduled with no mechanism (L752 class:
              # scheduled-with-mechanism or struck). NOT-MEASURED-BY-DESIGN
              # until a knob exists; the free (tighter) levels grade on every
@@ -491,7 +491,7 @@ fires =  ( P7  OR  P8 )  AND  P9
             {"id": "P8", "producer": "strat_institutional_committed_growth_long",
              "param": "fallback_min_increased", "production": 5, "sweep_levels": [],
              # S6-B2569a STRIKE (B2578): resim levels 2 and 3 REMOVED - the
-             # literal `n_incr >= 5` at screener.py:6648 has no env knob.
+             # literal `n_incr >= 5` at screener.strat_institutional_committed_growth_long has no env knob.
              "band": [5, 6],
              "free_band": [5, 6], "resim_band": [],
              "subset_safe": None, "status": "UNTESTED",
@@ -736,7 +736,7 @@ B1  monthly_momentum_6m       >= q   (momentum cluster rep - the ONE
         #
         # ENGINE-REACHABILITY FINDING (the S6-B2569a class, found at Phase 0
         # instead of after 11 configs): BOTH engine call sites pass NO
-        # parameters - signal_loader.py:238 compute_yoy_surprise_signal(
+        # parameters - signal_loader.inject_earnings_surprise_yoy_signals compute_yoy_surprise_signal(
         # ticker, df, as_of) and :278 compute_pead_signals(ticker, df,
         # as_of) - so every knob below is a Python default with no env knob.
         # A resim sweep as coded would produce IDENTICAL cubes (the L387
@@ -911,7 +911,7 @@ FORMULA_SMC_LSR = (
 # was the ADMITTED smc_breaker_block_long, so launch_refusals correctly refused
 # hub-1 (no SPECS entry = the battery fails closed at landing AFTER the engine
 # spend, S6-B2573b) while the only launchable smc strategy was the one B2731
-# refuses as banked. FAMILIES is DERIVED from SPECS (run_postconfig.py:732), so
+# refuses as banked. FAMILIES is DERIVED from SPECS (run_postconfig.FAMILIES), so
 # this entry registers the battery family too.
 SPECS["smc_liquidity_sweep_reversal"] = {
     "gate": ("(smc_liquidity_swept_dn) AND (smc_choch_bullish OR "
@@ -1040,7 +1040,7 @@ SPECS["smc_liquidity_sweep_reversal"] = {
 # recorded fires (the shared smc_family_step1 grader) and depth lives in the
 # producer knobs. CORRECTION to the B2752 row recorded here: this strategy IS
 # swing-reachable - smc_equal_lows_swept rides the liquidity primitive, which
-# takes swings (smc_ict.py:503) - the row's 'neither is swing-reachable'
+# takes swings (smc_ict.compute_smc_signals) - the row's 'neither is swing-reachable'
 # brushed it with inverse_fvg's fvg-only reach.
 FORMULA_SMC_ELS = (
     "=============================== PRODUCER LAYER ===============================\n"
@@ -1175,7 +1175,7 @@ SPECS["smc_equal_lows_sweep_long"] = {
 # B2820 (S6-B2752): smc_inverse_fvg REGISTERED - subject 3 of 3, closing the
 # owner's 'before' ruling. THE HONEST KNOB SET IS ONE: the inverse-fvg keys
 # are derived from _smc.fvg(ohlc) with NO parameter, a hardcoded 20-event
-# tail and a hardcoded 0.20 zone tolerance (smc_ict.py:296-360 READ this
+# tail and a hardcoded 0.20 zone tolerance (smc_ict.compute_smc_signals READ this
 # batch) - none of SMC_SWING_LENGTH / SMC_LIQUIDITY_RANGE_PCT /
 # SMC_EVENT_RECENCY_BARS reaches them, and declaring them would be the
 # S6-B2136 manifest lie. The one engine lever is the trend legs' span
@@ -2937,7 +2937,7 @@ def knob_is_read(knob: str, root: Path) -> bool:
     """A knob is PROVEN when a reader module literally reads it from the
     environment - the same code-presence shape verify_engine_implemented uses
     for engine anchors. A typo'd knob (SMC_SWING_LEN) proves nothing. The
-    read may wrap (config.py:2511 `os.environ.get(<newline> "SMC_OB_..."`),
+    read may wrap (config.SMC_OB_CLOSE_MITIGATION `os.environ.get(<newline> "SMC_OB_..."`),
     so the match is whitespace-tolerant - measured at B2578 when the literal
     needle refused a knob the engine does read."""
     import re as _re
@@ -3969,7 +3969,7 @@ D_AXIS_FAMILIES = {
     # the 18-config campaign rather than after it.
     #
     # BOTH LEGS share ONE entry because they share one producer and the
-    # same four env knobs (technical.py:2143-2150), so `detect` keys on
+    # same four env knobs (technical.compute_candles), so `detect` keys on
     # P2_n_bars, which only the candle grader emits. It is listed FIRST
     # so its detect key is tested before smc's catch-all default.
     "candle_anatomy": {
@@ -4899,7 +4899,7 @@ if __name__ == "__main__":
 # applied three more times"; MEASURED at B2752a it is not (L800) - P3 has no env
 # knob, and the gate's PRIMARY key is persisted on 0 of 1340 fires. Both facts
 # are inventoried here rather than smoothed over. FAMILIES is DERIVED from SPECS
-# (run_postconfig.py:732), so this registers the battery family too.
+# (run_postconfig.FAMILIES), so this registers the battery family too.
 SPECS["smc_order_block_bounce"] = {
     "gate": ("(smc_ob_bullish_tap_recent_5d AND rsi_14<45 AND "
              "price_above_ema_200) | short mirror + borrow gate "

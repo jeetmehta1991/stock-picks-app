@@ -11,7 +11,7 @@ Two engine paths consumed TIER 2 producers divergently pre-B921:
 
   Path A (canonical):  backtest.py -> screen_instrument()
                        Calls institutional_signal() + 8 other TIER 2 producers
-                       inline at screener.py:7962-8050. This path is what R4
+                       inline at screener.screen_instrument. This path is what R4
                        (May 31 2026) executed.
 
   Path B (diagnostic): scripts/measure_fire_count.py
@@ -42,7 +42,7 @@ blocks commit.
 
 PRIOR ART
 ---------
-- screener.py:7962-7985 institutional_signal injection (B330 wired; B918
+- screener.screen_instrument institutional_signal injection (B330 wired; B918
   fixed `new_pos` -> `new_positions` typo 2026-06-19)
 - smart_money.py:institutional_signal() producer (2-source bulk + per-ticker
   fallback per B294 / BUG-273)
@@ -79,7 +79,7 @@ def inject_news_sentiment_signals(
     """Inject news sentiment signals (Batch 253 DEC-411).
 
     B932 (2026-06-19) P0 commit 11/11 LAST EXTRACTION: extracted from
-    screener.py:8068-8076. Council 43 sequence "scariest last" position
+    screener.screen_instrument. Council 43 sequence "scariest last" position
     due to vendor SPOF risk (BB news_sentiment vendor risk acknowledged)
     + 1.05M article cache size.
 
@@ -112,12 +112,12 @@ def inject_institutional_persistence_signals(
 ) -> dict[str, Any]:
     """Inject multi-quarter institutional persistence signals (Batch 344/333b).
 
-    B931 (2026-06-19) P0 commit 10/11: extracted from screener.py:7989-7997.
+    B931 (2026-06-19) P0 commit 10/11: extracted from screener.screen_instrument.
     Council 43 sequence MAY-REVERT TAG pending B906 owner decision.
 
     B906 CONTEXT (carried forward from B922 / B925):
         institutional_persistent_holders_long is in B906 MEASUREMENT_DISPUTED
-        set (backtest/config.py:1134). Dispute scope is CUBE-MEASUREMENT-
+        set (backtest/config.MEASUREMENT_DISPUTED). Dispute scope is CUBE-MEASUREMENT-
         VALIDITY (R4=0 vs cube-projected fires divergence), NOT
         extraction-pattern. B921 institutional_signal extraction was
         approved under same logic; B931 persistence extraction follows
@@ -156,7 +156,7 @@ def inject_short_interest_signals(
 ) -> dict[str, Any]:
     """Inject FINRA short-interest signals (Batch 519 P15).
 
-    B930 (2026-06-19) P0 commit 9/11: extracted from screener.py:7931-7937.
+    B930 (2026-06-19) P0 commit 9/11: extracted from screener.screen_instrument.
     Council 43 sequence. 2-arg signature.
 
     Produces signal keys:
@@ -189,7 +189,7 @@ def inject_search_volume_signals(
 ) -> dict[str, Any]:
     """Inject Google Trends search-volume signals (Batch 471 P13).
 
-    B929 (2026-06-19) P0 commit 8/11: extracted from screener.py:8100-8105
+    B929 (2026-06-19) P0 commit 8/11: extracted from screener.screen_instrument
     (Batch 471 wiring per Da-Engelberg-Gao 2011 RFS attention effect).
     Council 43 sequence "boring next" position. 2-arg signature
     (no df dependency).
@@ -221,7 +221,7 @@ def inject_earnings_surprise_yoy_signals(
 ) -> dict[str, Any]:
     """Inject YoY earnings surprise signals (Batch 507 M6 Path-2 sleeves).
 
-    B928 (2026-06-19) P0 commit 7/11: extracted from screener.py:7916-7922
+    B928 (2026-06-19) P0 commit 7/11: extracted from screener.screen_instrument
     (Batch 507 wiring). Council 43 sequence; additive on PEAD per Foster-
     Olsen-Shevlin 1984. Same df-requirement signature as PEAD producer.
 
@@ -261,7 +261,7 @@ def inject_pead_signals(
 ) -> dict[str, Any]:
     """Inject Post-Earnings Announcement Drift (PEAD) signals.
 
-    B927 (2026-06-19) P0 commit 6/11: extracted from screener.py:7904-7910
+    B927 (2026-06-19) P0 commit 6/11: extracted from screener.screen_instrument
     (Batch 209 wiring per Bernard-Thomas 1989 PEAD effect). Council 43
     sequence "boring first / risky last"; pead is first in remaining 6
     extractions because it has lowest data-source SPOF risk + ~4 strategies
@@ -307,7 +307,7 @@ def inject_classification_change_signals(
 ) -> dict[str, Any]:
     """Inject GICS classification-change signals into per-ticker signals dict.
 
-    B924 (2026-06-19) P0 commit 4/5: extracted from screener.py:7952-7961
+    B924 (2026-06-19) P0 commit 4/5: extracted from screener.screen_instrument
     (Batch 332 wiring). Council 41 sequence; ~10 strategies consume the
     classification_change_* keys.
 
@@ -341,7 +341,7 @@ def inject_insider_buying_signals(
 ) -> dict[str, Any]:
     """Inject Form-4 insider buying cluster signals into per-ticker signals dict.
 
-    B923 (2026-06-19) P0 commit 3/5: extracted from screener.py:7941-7947
+    B923 (2026-06-19) P0 commit 3/5: extracted from screener.screen_instrument
     (Batch 222 wiring). Council 41 sequence; highest-leverage extraction
     after institutional_signal because ~10 strategies consume the keys
     `insider_cluster_active` + `insider_director_buyers_30d` +
@@ -405,7 +405,7 @@ def inject_insider_signal_keys(
     unchanged. Strategy gates default False via s.get(key, False).
 
     PIT semantics: smart_money.insider_signal() applies as_of cutoff
-    internally per smart_money.py:519+ insider_signal() docstring.
+    internally per smart_money.insider_signal+ insider_signal() docstring.
     """
     try:
         from backtest.data.smart_money import insider_signal
@@ -424,7 +424,7 @@ def inject_institutional_signals(
 ) -> dict[str, Any]:
     """Inject 13F institutional signals into per-ticker signals dict.
 
-    Mirrors the institutional_signal block at screener.py:7962-7985
+    Mirrors the institutional_signal block at screener.screen_instrument
     (post-B918 fix). Mutates + returns signals dict for caller convenience.
 
     Produces signal keys (consumed by 7+ strategies per CLAUDE.md

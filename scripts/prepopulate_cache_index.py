@@ -26,7 +26,7 @@ except Exception:
 
 # Add all tickers that have cached Parquet files
 # BUG-73 RESOLVED-IMPLEMENTED Batch 129 2026-05-12: write canonical index
-# format {start, end, rows} that cache.py reads (`backtest/data/cache.py:246+`).
+# format {start, end, rows} that cache.py reads (`backtest/data/cache.get_ohlcv+`).
 # Prior format `{"cached": True, "path": ...}` was incompatible - cache.py
 # couldn't determine date coverage from the prepopulated entries and
 # treated them as misses, causing race conditions during parallel runs.

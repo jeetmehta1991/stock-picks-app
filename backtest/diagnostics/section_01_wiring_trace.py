@@ -267,9 +267,9 @@ def _walk_with_for_context(node: ast.AST, for_stack: list[ast.For]):
 # real ticker confirming signal fires).
 WIRED_VIA_CALL_GRAPH = {
     # B986: sc_13d_filed_within_30d wired via compute_sec_edgar_signals
-    # called from screener.py:8170-8176; smoke verified XRX/BEN/NEXT
+    # called from screener.screen_instrument; smoke verified XRX/BEN/NEXT
     # 2026-06-21 (all fire True with documented SC 13D activist
-    # filings). Producer at sec_edgar_extractor.py:206
+    # filings). Producer at sec_edgar_extractor.sc_13d_filed_within_days
     # (sc_13d_filed_within_days with lookback_days=30 kwarg via
     # compute_sec_edgar_signals line 327). Data path data_prefetch/
     # sec_edgar_decoded/SC_13D/*.parquet. Section 1 detection gap:
@@ -280,9 +280,9 @@ WIRED_VIA_CALL_GRAPH = {
         "compute_sec_edgar_signals (B531 wire-in; screener.py:8170-8176)",
     ),
     # B986: cap_band wired via cap_band_from_market_cap at
-    # screener.py:219; in-place assign at screener.py:7934
+    # screener.cap_band_from_market_cap; in-place assign at screener.py:7934
     # (signals["cap_band"] = cap_band_from_market_cap(info.get(
-    # "market_cap"))). Strategy consumes at screener.py:6520
+    # "market_cap"))). Strategy consumes at screener.strat_january_effect_small_cap_long
     # (strat_january_effect_long s.get("cap_band") check). Section 1
     # detection gap: producer lives IN screener.py which is explicitly
     # skipped (line 279) to avoid self-referencing audit cycles.

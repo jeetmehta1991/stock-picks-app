@@ -622,7 +622,7 @@ def main():
     # B1432 MODE ASSERT (generalized from B1431, which checked only 2 of 6 gates).
     #
     # CUBE_MODE_REQUIRED is the SINGLE definition of what a cube run is, derived
-    # from the canonical R5 invocation at scripts/aws_chunk_launch.py:92-95 - not
+    # from the canonical R5 invocation at scripts/aws_chunk_launch.USERDATA_TEMPLATE - not
     # from memory, and not from whichever flags last caused harm. Every entry is
     # correctness-critical for per-(strategy x exit) measurement:
     #

@@ -758,7 +758,7 @@ def test_tier7_data_integrity_bear_composite_inputs_present():
         f"FRED prefetch cache empty at {fred_obs_dir}. "
         f"Bear composite will silently score 0 on yield-curve signal."
     )
-    # Yield curve specifically (T10Y2Y -> file 'yield_curve.parquet' per macro.py:39)
+    # Yield curve specifically (T10Y2Y -> file 'yield_curve.parquet' per macro.SERIES_MAP)
     yc_path = fred_obs_dir / "T10Y2Y.parquet"
     assert yc_path.exists() or (fred_obs_dir / "yield_curve.parquet").exists(), (
         f"T10Y2Y / yield_curve series missing from {fred_obs_dir}. "

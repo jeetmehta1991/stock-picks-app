@@ -25,7 +25,7 @@ Checks per ticker (the four the ticket names, measured over the window):
                          mid-window delisting (TWTR, ATVI, PXD, MRO in the
                          b2944 universe) is a sound, complete history, so
                          edge absence is reported, never failed
-                         (cache.py:302's delisted-complete class; R5
+                         (cache.get_ohlcv_bulk's delisted-complete class; R5
                          graded this same universe without complaint)
   zero_volume_share    - share of window rows with volume == 0
   ABSENT (info)        - cache exists but zero rows in the window
@@ -76,7 +76,7 @@ def audit_frame(df, expected_days: list, *, max_nan_share: float,
     row: dict = {"rows": 0 if df is None else int(len(df)), "defects": []}
     if df is None or len(df) == 0:
         # A ticker with a cache file but no bars in the window is the
-        # delisted-before-window class (cache.py:302's "delisted, complete"):
+        # delisted-before-window class (cache.get_ohlcv_bulk's "delisted, complete"):
         # the engine trades nothing on it, exactly as R5 did over this same
         # universe. Reported, never failed - only a corrupt bar poisons a run.
         row["verdict"] = "ABSENT"

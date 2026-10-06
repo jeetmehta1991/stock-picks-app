@@ -115,7 +115,7 @@ EXPLORATORY_STRATEGIES = frozenset({
     # base survivor per the owner-approved 10->1.
     # B1035 (2026-06-27) Council 129 Option-6 owner-approved per directive
     # 'Approve all recs council this'. F3 sub-agent reconcile of B984 vs
-    # B748d: producer EXISTS-RELIABLE at sec_edgar_extractor.py:239-344
+    # B748d: producer EXISTS-RELIABLE at sec_edgar_extractor.eight_k_item_filed_within_days
     # + B748d pin test 8 verified AAL 2026-03-16 fires; B984 disablement
     # rationale (CC-B 8-K population-mixing carry) was citation-slip from
     # EV-7 deletion which screener.py:3454-3456 explicitly distinguishes.

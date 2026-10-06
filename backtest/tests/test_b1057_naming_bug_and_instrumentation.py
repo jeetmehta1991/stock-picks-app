@@ -21,7 +21,7 @@ def test_b1057_pool_init_prewarms_REAL_quiver_datasets():
 
     B1055 had a typo: pre-warmed 'insidertrading' (phantom; only used by
     pre-warm code itself) and 'sec13f' (real but not the hot path).
-    Real hot datasets per smart_money.py:498/675/1640/1807:
+    Real hot datasets per smart_money._load_insider_processed/675/1640/1807:
       insiders + sec13fchanges (HOT 1M + 500k rows)
       sec13f + patentmomentum + corporatedonors (cold but real)
     """

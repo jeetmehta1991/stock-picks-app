@@ -4,7 +4,7 @@ the ladder's STEP 0.5 for the candle pair - count fires at PRODUCTION params
 on live cached OHLCV for 6 megacaps. A zero here is a producer defect, not a
 search (SS11.2 step 0.5).
 
-Fidelity: the pattern legs are re-stated from technical.py:2104-2111 VERBATIM
+Fidelity: the pattern legs are re-stated from technical.compute_candles VERBATIM
 (strict inequalities over the last 3 bars) and rsi_14 uses the same Wilder
 form the producer emits; the borrow-trap leg of the short is DATA-DEPENDENT
 (days_to_cover) and is NOT evaluated here - both counts are reported and the

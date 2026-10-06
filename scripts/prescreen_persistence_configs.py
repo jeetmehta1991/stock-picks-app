@@ -75,7 +75,7 @@ SWEEP_UNIVERSE = REPO / "output_audit" / "_sweep_200.txt"
 SNAPSHOTS = ["2022-01-01", "2023-01-01", "2024-01-01",
              "2025-01-01", "2026-01-01"]
 
-PRIMARY_MIN = 3        # committed_growth_holders >= 3 (screener.py:6648)
+PRIMARY_MIN = 3        # committed_growth_holders >= 3 (screener.strat_institutional_committed_growth_long)
 PRODUCTION = {"INST_MIN_CONSECUTIVE_QUARTERS": "4",
               "INST_GROWTH_LOOKBACK_QUARTERS": "4",
               "INST_GROWTH_MULTIPLE": "1.10"}

@@ -21,8 +21,8 @@ candle grader's council-driven rules carry over:
     is refused (fail closed, L642).
  3. SPAN PRODUCIBILITY IS CHECKED: the gate reads price_above_ema_{span} /
     below_ema_{span}, which compute_ema_sma emits only for spans present in
-    EMA_PAIRS (technical.py:768, env-driven; default
-    "9:21,20:50,50:200,100:150", config.py:2524). A span absent from the
+    EMA_PAIRS (technical.compute_ema_sma, env-driven; default
+    "9:21,20:50,50:200,100:150", config.EMA_PAIRS). A span absent from the
     pairs would produce a ZERO-FIRE cube that graded clean - refused here
     with the pairs named.
 
@@ -56,7 +56,7 @@ FAMILY = (STRAT,)
 # values serialise as STRINGS, so comparison is by VALUE, not spelling.
 ENV_OF = {"ema_span": "STRAT_EMA_SPAN"}
 
-DEFAULT_EMA_PAIRS = "9:21,20:50,50:200,100:150"   # config.py:2524
+DEFAULT_EMA_PAIRS = "9:21,20:50,50:200,100:150"   # config.EMA_PAIRS
 
 
 def _norm(v) -> str:

@@ -6,7 +6,7 @@ FINDING (queue framing was wrong by inspection):
   merge_batch_outputs.py / run_t0_close_out.py / verify_batch_69_phase_3.py).
   Direct grep across the repo non-test code shows the actual layout:
 
-    backtest/results/metrics.py:2718  - SINGLE COMPUTATION
+    backtest/results/metrics.compute_portfolio_metrics_from_curves  - SINGLE COMPUTATION
       compute_portfolio_metrics_from_curves(eq_curve, bench_curve, capital)
         returns the canonical portfolio_metrics dict.
 
@@ -18,7 +18,7 @@ FINDING (queue framing was wrong by inspection):
       load_json("portfolio_metrics.json") -- consumes the file produced
       by writer.py. Does NOT recompute.
 
-    backtest/engine/backtest.py:2364  - comment only, no compute/read
+    backtest/engine/backtest.BacktestEngine.save_all_outputs  - comment only, no compute/read
     backtest/engine/portfolio.py:~143 - docstring referencing the chain
 
   scripts/merge_batch_outputs.py / run_t0_close_out.py /

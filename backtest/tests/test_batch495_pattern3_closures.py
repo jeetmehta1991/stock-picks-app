@@ -18,8 +18,8 @@ Three closures in this batch:
 
   (3) Item 0 partial: AU1 Batch 457 closed 2 of 4 live-impact
       placeholders (PSR in optimize_strategies_from_cube.py:130 +
-      cube_populator.py:159). Two remain: exit_context.py:335
-      exit_regime default + run_phase_1b_alpha_smoke.py:129 regime
+      cube_populator.compute_cell_metrics). Two remain: exit_context.py:335
+      exit_regime default + run_phase_1b_alpha_smoke.iterate_winners regime
       hardcode. This batch ships the BANNED-PATTERN preflight guard
       so any NEW placeholder addition surfaces in CI as a test
       failure -- complements the AU1 fixes by preventing regression.
@@ -83,14 +83,14 @@ def test_batch495_0c_walk_forward_chronological_coverage_in_au6_pyramid():
 # Allow-list of placeholder sites that are documented + intentional.
 # Format: (relative_path_posix, marker_substring).
 ALLOWED_PLACEHOLDER_SITES = {
-    # Documented at exit_context.py:335 -- defaults to entry regime
+    # Documented at exit_context.build_entry_context -- defaults to entry regime
     # because PIT-correct exit-day regime requires a separate lookup
     # that's not yet implemented. Owner-gated to implement properly.
     # Until then, the placeholder is intentional + tested via the
     # exit-regime parity tests.
     ("backtest/engine/exit_context.py",
      "placeholder; defaults to entry regime"),
-    # Documented at screener.py:3797 -- category stored in each fn
+    # Documented at screener.STRATEGY_CATEGORIES -- category stored in each fn
     # rather than this lookup dict. Doc-comment, not behavior.
     ("backtest/signals/screener.py",
      "placeholder  -  category stored in each fn"),

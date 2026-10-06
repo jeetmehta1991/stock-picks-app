@@ -712,7 +712,7 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
 def test_bug_005_strategies_triggered_key_consistent():
     """BUG-005 Batch 145: strategies_triggered key mismatch - agent
     cache always wrong. RESOLVED via BUG-05 cross-ref in
-    backtest/agents/pipeline.py:149-150 - strategies_triggered key
+    backtest/agents/pipeline.run_technical_agent - strategies_triggered key
     consistently used in caller signature + function body; no key
     mismatch.
     """
@@ -727,7 +727,7 @@ def test_bug_022_023_strategy_count_references_are_current():
     docstring both said "60 strategies" - stale per layered-roster
     expansion. RESOLVED via current text referencing
     "Layer 1 baseline; full layered roster ~108-133 per
-    CANONICAL_FACTS.md F-002" in run_phase1a.py:147 and screener.py:7+.
+    CANONICAL_FACTS.md F-002" in run_phase1a.main and screener.py:7+.
     Sister bugs share single fix.
     """
     # B2017 SUPERSESSION: this pin originally asserted the "~108-133 per
@@ -747,7 +747,7 @@ def test_bug_022_023_strategy_count_references_are_current():
 
 def test_bug_007_no_agents_flag_wired_in_run_phase1a():
     """BUG-007 Batch 143: API key guard blocks no-agent run. RESOLVED
-    via --no-agents flag in run_phase1a.py:131 + agents=not args.no_agents
+    via --no-agents flag in run_phase1a.main + agents=not args.no_agents
     at line 164. QUIVER_API_KEY is "optional - smart money signals"
     (line 42); engine handles missing keys gracefully via zeroed sm dict.
     Phase 1A baseline (per CLAUDE.md) is rules-only no-agents.
@@ -836,7 +836,7 @@ def test_bug_013_yfinance_earnings_live_calls_removed():
 def test_bug_012_dedup_ordering_by_strategy_count_removes_long_bias():
     """BUG-012 Batch 138: deduplication order bias - shorts never fire
     when long strategy fires first. RESOLVED via BUG-12 cross-ref in
-    backtest/engine/backtest.py:933 - dedup ordering by strategy_count
+    backtest/engine/backtest.BacktestEngine._process_day - dedup ordering by strategy_count
     desc (not arbitrary long-before-short) means shorts CAN win when
     they have higher signal confluence.
     """
@@ -851,7 +851,7 @@ def test_bug_006_double_borrow_cost_single_sourced():
     via DEC-295 fix (Pass 50) - centralized in apply_transaction_costs
     via SHORT_ANNUAL_BORROW_RATE (single source); exit_manager.py:_pnl
     is now gross-only. Cross-ref BUG-06 RESOLVED in
-    backtest/engine/improvements.py:122.
+    backtest/engine/improvements.apply_transaction_costs.
     """
     from pathlib import Path
     src = Path("backtest/engine/improvements.py").read_text(encoding="utf-8")
@@ -863,7 +863,7 @@ def test_bug_006_double_borrow_cost_single_sourced():
 def test_bug_004_avoid_direction_routed_to_skip_not_short():
     """BUG-004 Batch 136: avoid direction falls into triggered_short
     bucket -> inflates confidence tier. RESOLVED via BUG-04 cross-ref
-    in backtest/engine/backtest.py:889 - avoid direction now appended
+    in backtest/engine/backtest.BacktestEngine._process_day - avoid direction now appended
     to skipped_trades with reason="avoid_conflicting_signals" instead
     of falling through to short bucket.
     """
@@ -890,9 +890,9 @@ def test_bug_003_closedtrade_dataclass_deduplicated():
 def test_bug_002_days_variable_defined_before_use_in_close_trade():
     """BUG-002 Batch 134: days variable used before definition ->
     UnboundLocalError on every trade close. RESOLVED via BUG-214 fix
-    (Pass 48) at backtest/engine/exit_manager.py:427-428 - days
+    (Pass 48) at backtest/engine/exit_manager.close_trade - days
     computed BEFORE _pnl() call. Also cross-referenced as BUG-02
-    RESOLVED in backtest/engine/backtest.py:590.
+    RESOLVED in backtest/engine/backtest.BacktestEngine._process_day.
     """
     from pathlib import Path
     em_src = Path("backtest/engine/exit_manager.py").read_text(encoding="utf-8")
@@ -909,7 +909,7 @@ def test_bug_002_days_variable_defined_before_use_in_close_trade():
 def test_bug_001_crisis_flag_hoisted_before_use():
     """BUG-001 Batch 133: crisis_flag used before definition -> NameError
     crash. RESOLVED-IMPLEMENTED via BUG-01 cross-reference in
-    backtest/engine/backtest.py:592 - crisis_flag hoisted to function
+    backtest/engine/backtest.BacktestEngine._process_day - crisis_flag hoisted to function
     scope so it's defined before line 299 (was UnboundLocalError when
     regime != crisis and inner-loop set never executed).
     """
@@ -993,7 +993,7 @@ def test_bug_073_prepopulate_cache_index_writes_canonical_format():
     """BUG-073 Batch 129: prepopulate_cache_index.py wrote
     `{"cached": True, "path": ...}` which is INCOMPATIBLE with the
     cache.py reader expecting `{"start", "end", "rows"}` per
-    backtest/data/cache.py:246+. Cache.py treated prepopulated entries
+    backtest/data/cache.get_ohlcv+. Cache.py treated prepopulated entries
     as misses, causing race conditions during parallel batch runs.
     RESOLVED-IMPLEMENTED Batch 129: prepopulate script now reads each
     Parquet's date index + row count to construct the canonical
@@ -1129,7 +1129,7 @@ def test_bug_080_exit_slippage_applied_at_cb_and_trailing_exits():
     """BUG-080 Batch 124: "Exit slippage never applied; only entry
     slippage charged" was flagged HIGH/OPEN. RESOLVED-IMPLEMENTED Pass
     53 v8h+1 Phase 3 Batch 15 (2026-05-10): `apply_exit_slippage`
-    helper added to `backtest/engine/improvements.py:460+` and called
+    helper added to `backtest/engine/improvements.apply_exit_slippage+` and called
     at both exit sites in `process_day_exits`:
       - line 533-534: circuit-breaker exit (cb_exit_price)
       - line 593-594: trailing-stop exit (ts_exit_price)
@@ -1191,7 +1191,7 @@ def test_bug_052_risk_agent_vix_floor_resolved_via_bug_26_fix():
 def test_bug_244_mae_mfe_updated_before_circuit_breaker_check():
     """BUG-244 Batch 121: "close_trade circuit breaker exits skip MAE/MFE
     update on day of exit (passes 0.0)" was flagged HIGH/OPEN/Pass-48.
-    But `process_day_exits` in `backtest/engine/exit_manager.py:509-520`
+    But `process_day_exits` in `backtest/engine/exit_manager.process_day_exits`
     updates `trade.max_adverse_excursion` + `trade.max_favourable_excursion`
     using today's high/low BEFORE the circuit-breaker check at line 523.
     So when a CB exit fires at line 528+ and calls `close_trade`, the
@@ -1933,7 +1933,7 @@ def test_bug_110_engine_enforces_entry_gap_filter():
     """BUG-110 Batch 97: "Entry gap filter not enforced; trades opened
     despite exceeding ATR limit" was flagged HIGH/OPEN. RESOLVED-
     IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 16 (2026-05-10) at
-    `backtest/engine/backtest.py:876-890`:
+    `backtest/engine/backtest.BacktestEngine._process_day`:
       - validate_entry_zone(next_open, close, atr, category, direction)
         called per candidate
       - non-valid trades appended to skipped_trades with the
@@ -1974,10 +1974,10 @@ def test_bug_103_engine_consumes_smart_money_score_in_tier_assignment():
     OPEN. The smart_money_score helper is now consumed in the engine
     hot path:
       - backtest/engine/backtest.py:38 imports smart_money_score
-      - backtest.py:905 calls sm = smart_money_score(ticker, as_of) per
+      - backtest.BacktestEngine._process_day calls sm = smart_money_score(ticker, as_of) per
         candidate (when QUIVER_API_KEY env present; falls back to zero
         dict otherwise so the rest of the pipeline still runs)
-      - backtest.py:908 sm is passed to _assign_confidence_tier()
+      - backtest.BacktestEngine._process_day sm is passed to _assign_confidence_tier()
       - _assign_confidence_tier consumes sm.composite_signal +
         sm.score for tier mapping (AVOID / EXCEPTIONAL / VERY_HIGH /
         MEDIUM gates)
@@ -2127,7 +2127,7 @@ def test_bug_104_writer_consumes_tier_sized_portfolio_summary():
     """BUG-104 Batch 93: position sizing rules from config never applied
     to backtest PnL aggregation. RESOLVED-IMPLEMENTED via
     `compute_portfolio_summary(df_trades, reference_capital, tier_sizes)`
-    in `backtest/results/metrics.py:2487+`, called from `writer.py:251`
+    in `backtest/results/metrics.compute_portfolio_summary+`, called from `writer.py:251`
     in the standard output pipeline. The summary:
       - maps each trade's confidence_tier to position_size_pct using
         the tier_sizes dict (EXCEPTIONAL:0.05 / VERY_HIGH:0.04 /

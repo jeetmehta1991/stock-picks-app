@@ -142,7 +142,7 @@ def main() -> int:
         # Ghosts are LEGITIMATE in two cases:
         # 1. Strategies registered via non-ALL_STRATEGIES paths
         #    (e.g. lead_lag_sector_rotation -> screen_lead_lag_sector()
-        #    at screener.py:4096; called from screen_universe).
+        #    at screener.screen_lead_lag_sector; called from screen_universe).
         # 2. Class 7 NEW_STRATEGY Approved candidates awaiting wiring
         #    (e.g. news_sentiment_shift_short B571 Approved).
         # Report them but don't fail.

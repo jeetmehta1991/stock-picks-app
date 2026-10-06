@@ -175,7 +175,7 @@ TRAILING_STOP = {
     "trail_pct":         0.15,   # trails at 15% below highest close (long)
     "reset_on":          "close", # trailing stop resets on closing price only
     # Batch 281: breakeven_move_at_1r flag now actually present. The logic
-    # at exit_manager.py:291-302 was added in Batch 262 but gated on this
+    # at exit_manager.update_trailing_stop was added in Batch 262 but gated on this
     # key with default False -> never fired. Now defaults True.
     "breakeven_move_at_1r": True,
     # B1429 (owner-approved 2026-07-31, Council "A + E"): was atr_trail_1x.
@@ -489,7 +489,7 @@ CIRCUIT_BREAKERS = {
     "level_5_tightened_pct":   0.05,  # tightened trailing stop when VIX > 40
     # BUG-30 RESOLVED-IMPLEMENTED Batch 114 2026-05-12 (owner-approved
     # option C 2026-05-12): config-toggleable Level-5 tighten. Resolves
-    # the code-vs-spec contradiction (regime_filter.py:113 documents
+    # the code-vs-spec contradiction (regime_filter.get_regime_context documents
     # crisis as "Do NOT tighten stops (causes whipsawing)" but
     # exit_manager.py Level-5 path DOES tighten when vix >=
     # level_5_vix_crisis). Default True preserves current behavior
@@ -631,7 +631,7 @@ PASSING_CRITERIA = {
     "min_trades_full_period":  75,    # > 75 across all 544 tickers over the FULL 4-year
                                       # span. GRAIN FLAG RESOLVED, owner ruling 2026-08-29
                                       # third set: told that the gate COUNTS over 4 years
-                                      # (tighten_breaker_block.py:348 sums the whole frame,
+                                      # (tighten_breaker_block.main sums the whole frame,
                                       # not the 3-year IS leg), the owner chose to keep the
                                       # COUNTER and restore the 4-year-sized BAR - "revert
                                       # back to 75". History: 100 (B1492) -> 75 -> 60 -> 75.
@@ -1255,7 +1255,7 @@ DEPRECATED_STRATEGIES: set[str] = set()
 #     Option-6 owner-approved per directive 'Approve all recs council
 #     this. Has everything been implemented from wiring audit'. F2
 #     sub-agent runtime probe on AAPL 2024-06-30 confirmed producer
-#     EXISTS at screener.py:8257-8272 (inline orchestrator block
+#     EXISTS at screener.screen_instrument (inline orchestrator block
 #     calling volume_profile.compute_period_pocs); emits
 #     naked_poc_count=6 + naked_poc_nearest_distance_pct=0.079 on
 #     real bars. B975 disablement was a FALSE-POSITIVE driven by
@@ -1284,7 +1284,7 @@ STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = set()
 # sets above, and deliberately NOT folded into MISSING_PRODUCER.
 #
 # These strategies have a producer that WORKS. `get_classification_change_signals`
-# (backtest/data/universe.py:605) is implemented, wired via signal_loader.py:312, pinned
+# (backtest/data/universe.get_classification_change_signals) is implemented, wired via signal_loader.py:312, pinned
 # by test_batch557_phase1a_beta_classification_cluster_verdict.py, and emits all six keys.
 # What is missing is DATA: `Backtesting universe/sector_history.csv` spans 2018-09-24 ->
 # 2023-03-17, so the entire 2022-05-05..2026-05-05 backtest window contains just
@@ -2504,7 +2504,7 @@ CANDLE_MAX_WICK_PCT = float(_candle_wick_raw) if _candle_wick_raw else None
 # factorial, 2026-09-12): the two remaining hub-1 producer knobs reach the
 # engine through the same pattern as SMC_SWING_LENGTH (B1616 lineage).
 # DEFAULTS REPRODUCE CURRENT BEHAVIOUR EXACTLY - 0.01 and 90 are the
-# smc_ict.py:196/:198 signature defaults; an unset env is a no-op.
+# smc_ict.compute_smc_signals/:198 signature defaults; an unset env is a no-op.
 # Pinned by test_b2706_smc_depth_knobs_reach_the_engine_and_bite.
 SMC_LIQUIDITY_RANGE_PCT: float = float(
     os.environ.get("SMC_LIQUIDITY_RANGE_PCT", "0.01"))
@@ -2543,7 +2543,7 @@ EMA_PAIRS: tuple = _parse_ema_pairs(
 #
 # EVERY DEFAULT BELOW REPRODUCES PRE-B1616 BEHAVIOUR EXACTLY:
 #   close_mitigation False  = the vendored `ob` default the engine relied on
-#   tail_n           20     = the hardcoded literal at smc_ict.py:274
+#   tail_n           20     = the hardcoded literal at smc_ict.compute_smc_signals
 #   age_bars_max     None   = no age filter existed in the breaker loop
 #   break_pct_max    None   = `close > top` was a strict inequality, uncapped
 # `test_b1616_engine_defaults_are_byte_identical` pins that (CHECKLIST #205).

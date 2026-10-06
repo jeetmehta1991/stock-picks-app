@@ -303,7 +303,7 @@ def get_ohlcv_bulk(
         # starting late simply holds less history. This applies the principle
         # already documented below for the row-count check -- "cache should
         # serve what it has; downstream filters reject if insufficient" --
-        # which is enforced at screener.py:8556 (len(df) < 30 ->
+        # which is enforced at screener.screen_instrument (len(df) < 30 ->
         # insufficient_history) and by the >=200-bar signal requirement.
         # B1564: `end` is the last OBSERVED bar; `fetched_through` is the last
         # date we ASKED for. A delisted ticker (ABMD, ACCD, ADS) has a final bar

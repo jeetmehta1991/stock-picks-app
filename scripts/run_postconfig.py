@@ -1420,7 +1420,7 @@ def main() -> int:
                    "precompute the engine consumed); equivalence collapse "
                    "requires >= 2 combinations - N/A on evidence")
     elif grid:
-        # tighten_breaker_block.py:549-550: carried = members of the RANKED
+        # tighten_breaker_block.main: carried = members of the RANKED
         # classes; distinct = outcome classes among ALL enumerated combinations
         steps["6b_equivalence_class_check"] = (
             "DONE", f"AUTO (B2192): the grader collapses identical outcomes - "

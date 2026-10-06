@@ -653,7 +653,7 @@ PYRAMID_OVERRIDES: dict[str, dict[str, str]] = {
     # ----------------------------------------------------------------------
     #
     # BUG-001 (crisis_flag UnboundLocalError) - per-function fix at function
-    # scope hoisting in backtest.py:269. Unit test test_bug_001 covers the
+    # scope hoisting in backtest.BacktestEngine._finalize_open_trades. Unit test test_bug_001 covers the
     # regression. Other layers N/A.
     "BUG-001": {
         "smoke": "N/A", "integration": "N/A", "system": "N/A",
@@ -662,7 +662,7 @@ PYRAMID_OVERRIDES: dict[str, dict[str, str]] = {
         "snapshot": "N/A", "contract": "N/A", "compatibility": "N/A",
     },
     # BUG-006 (Double borrow cost on short trades) - per-function fix at
-    # improvements.py:84 (DEC-295 single-source borrow rate); exit_manager._pnl
+    # improvements.apply_transaction_costs (DEC-295 single-source borrow rate); exit_manager._pnl
     # gross-only by design. Unit test test_bug_006 covers regression. Owner
     # called this out specifically 2026-05-10 as the example protocol violation.
     "BUG-006": {

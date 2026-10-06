@@ -125,7 +125,7 @@ def test_b1079_pivot43_csv_roundtrip_preserves_dataclass(tmp_path):
 def test_b1079_pivot43_dec088_ct_ticker_access_works(tmp_path):
     """B1079 PIVOT #43 CRITICAL: after reload, engine MUST be able to
     iterate self.closed_trades + access ct.ticker without AttributeError
-    (the exact bug that crashed B1078 at backtest.py:1583)."""
+    (the exact bug that crashed B1078 at backtest.BacktestEngine._process_day)."""
     from backtest.engine.backtest import BacktestEngine
     from backtest.engine.exit_manager import ClosedTrade
     original = _make_closed_trade()
@@ -137,7 +137,7 @@ def test_b1079_pivot43_dec088_ct_ticker_access_works(tmp_path):
         BacktestEngine._csv_row_to_closed_trade(r)
         for r in reloaded_df.to_dict(orient="records")
     ]
-    # Mimic backtest.py:1583 DEC-088 stopout cooldown filter
+    # Mimic backtest.BacktestEngine._process_day DEC-088 stopout cooldown filter
     target_ticker = "NVDA"
     matches = [ct for ct in closed_trades if ct.ticker == target_ticker]
     assert len(matches) == 1, (
@@ -161,7 +161,7 @@ def test_b1079_pivot43_asdict_works_for_get_trade_log(tmp_path):
         BacktestEngine._csv_row_to_closed_trade(r)
         for r in reloaded_df.to_dict(orient="records")
     ]
-    # Mimic backtest.py:2615 get_trade_log
+    # Mimic backtest.BacktestEngine._assign_confidence_tier get_trade_log
     result_df = pd.DataFrame([asdict(t) for t in closed_trades])
     assert len(result_df) == 1
     assert "ticker" in result_df.columns
@@ -348,7 +348,7 @@ def test_b1079_pivot43_integration_dec088_cooldown_after_resume(tmp_path):
     eng._resumed_closed_trades_count = 0
     eng.closed_trades = []
     eng._load_resume_checkpoint()
-    # Now invoke the EXACT pattern from backtest.py:1582-1593
+    # Now invoke the EXACT pattern from backtest.BacktestEngine._process_day
     target_ticker = "NVDA"
     cooldown_breach = False
     for ct in eng.closed_trades:

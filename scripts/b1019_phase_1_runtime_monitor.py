@@ -363,7 +363,7 @@ def _check_b2_schema(trade_log_path: Path) -> dict[str, Any]:
             except Exception:
                 df = pd.read_csv(trade_log_path)
         # B1062 PIVOT #37 fix: engine writes "exit_reason" (canonical
-        # column name per writer.py:50 + 516). "exit_method" appears only
+        # column name per writer.write_all_outputs._build_combo_id + 516). "exit_method" appears only
         # in downstream cube aggregate exit_method_multi_dim_cube.csv NOT
         # in trade_log_checkpoint.csv. B1058 + B1060 both HALTed at this
         # schema-name mismatch as b2_viol=1. B1059 (PIVOT #36) reduced

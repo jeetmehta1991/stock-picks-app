@@ -5,16 +5,16 @@ post-B1079 Phase 4 spot interrupt at sim_day=50.
 
 ROOT CAUSE (B1079 r5_full_20260629_155837 forensics):
   Phase 4 spot-interrupted at i=50 (sim_day_index=50)
-  engine_state.json was WRITTEN at i=50 per backtest.py:865
+  engine_state.json was WRITTEN at i=50 per backtest.BacktestEngine.run
     'if i > 0 and (i == 50 or i % 100 == 0)'
     -> trades_so_far=610, status='running'
-  trade_log_checkpoint.csv was NOT WRITTEN per pre-fix backtest.py:830
+  trade_log_checkpoint.csv was NOT WRITTEN per pre-fix backtest.BacktestEngine.run
     'if i > 0 and i % 100 == 0 and self.closed_trades'  # pre-B1081
     -> i=50 does not match i%100==0
   Resume infra B1076 _load_resume_checkpoint requires BOTH files
   -> FileNotFoundError + Phase 4 partial work LOST
 
-FIX (backtest.py:830):
+FIX (backtest.BacktestEngine.run):
   Match engine_state.json cadence:
     'if i > 0 and (i == 50 or i % 100 == 0) and self.closed_trades'
   Now both writers fire at the same boundary set.

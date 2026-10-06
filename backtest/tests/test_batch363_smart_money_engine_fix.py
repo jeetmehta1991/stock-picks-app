@@ -2,7 +2,7 @@
 
 Source (per CHECKLIST #77 canonical-source attribution):
 - Owner approval 2026-05-25 of Batch 362c root-cause diagnosis:
-  backtest.py:1308 gated smart_money_score on QUIVER_API_KEY env var,
+  backtest.BacktestEngine._process_day gated smart_money_score on QUIVER_API_KEY env var,
   but the function reads from data_prefetch/quiver/ cache only
   (NO live API per DEC-497 HARD CUT line 132 of smart_money.py).
   Result: 2026-05-24 Phase 1A-beta trade_log had 0% fire rate on
@@ -11,7 +11,7 @@ Source (per CHECKLIST #77 canonical-source attribution):
   "smart money lift >=3pp" passing criterion.
 
 Code path:
-- Pre-fix (backtest.py:1308): if os.environ.get("QUIVER_API_KEY"):
+- Pre-fix (backtest.BacktestEngine._process_day): if os.environ.get("QUIVER_API_KEY"):
                               sm = smart_money_score(...)
 - Post-fix: sm = smart_money_score(...) unconditionally; try/except
             falls back to sentinel zeros on hard exception.
@@ -97,7 +97,7 @@ def test_batch363_smart_money_score_dict_keys_match_engine_assignment():
     saved = os.environ.pop("QUIVER_API_KEY", None)
     try:
         result = smart_money_score("NONEXISTENT_TICKER", date(2024, 6, 15))
-        # The engine assignments per backtest.py:1710-1716 read these keys:
+        # The engine assignments per backtest.BacktestEngine._process_day read these keys:
         engine_keys = ["score", "congressional_signal", "insider_signal",
                        "institutional_signal", "composite_signal"]
         for k in engine_keys:

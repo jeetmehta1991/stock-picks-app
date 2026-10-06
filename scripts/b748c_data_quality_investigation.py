@@ -56,7 +56,7 @@ def _t1a_active_tickers() -> set:
 def investigate_sec_edgar() -> dict:
     """CHECKLIST #44(a): identify path + probe runtime + cross-check fires.
 
-    The producer at backtest/signals/sec_edgar_extractor.py:178 reads from
+    The producer at backtest/signals/sec_edgar_extractor._load_decoded reads from
     `data_prefetch/sec_edgar/{form}/{TICKER}.parquet` via `_load_decoded`.
     """
     base = _REPO / "data_prefetch" / "sec_edgar"

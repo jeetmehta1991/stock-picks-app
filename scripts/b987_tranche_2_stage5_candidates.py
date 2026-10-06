@@ -13,7 +13,7 @@ total; #71-75 = 5 candidates per B834). Tranche 2 broadens to Sharpe
 
 CRITICAL PRE-FLIGHT FINDING:
   Tranche 1 #71+#72 ALREADY SHIPPED via B835 (verified via git log
-  c340df6be + backtest/config.py:306,309). CLAUDE.md banner +
+  c340df6be + backtest/config.STRATEGY_EXIT_OVERRIDE,309). CLAUDE.md banner +
   EXECUTION_QUEUE B834 row stale. Council 91 brief based on stale
   banner; Tranche 1 actually 5-of-5 COMPLETE (B835 + B886).
 

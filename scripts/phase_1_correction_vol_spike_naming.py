@@ -3,7 +3,7 @@
 
 Owner correction: 'vol_spike_17x - isnt its 70% more than average vs 17 times?'
 
-Confirmed via backtest/signals/technical.py:1578-1583:
+Confirmed via backtest/signals/technical.compute_volume:
   vol_spike_12x = ratio >= 1.2   # 20% above average
   vol_spike_15x = ratio >= 1.5   # 50% above average
   vol_spike_17x = ratio >  1.7   # 70% above average

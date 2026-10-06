@@ -54,7 +54,7 @@ AGE_BARS_MAX = [60, 120, 180, 250, None]         # None = production (no cap)
 # The plan's own derivation already said rank 1-4; the band never spanned it (L473).
 # 20 is RETAINED as the production anchor per plan design-rule 7.
 TAIL_N = [1, 2, 3, 5, 10, 20]                    # 20 = production
-# P2 close_mitigation (READ smc.py:380). False = mitigated on high/low (production);
+# P2 close_mitigation (READ smc.smc.ob). False = mitigated on high/low (production);
 # True = mitigated only on CLOSE, strictly fewer mitigations => strictly fewer fires.
 CLOSE_MITIGATION = [True, False]                 # False = production
 
@@ -82,7 +82,7 @@ def _load_ohlcv(ticker: str) -> pd.DataFrame | None:
             if not isinstance(df.index, pd.DatetimeIndex):
                 # Not every cache file is datetime-indexed: META.parquet
                 # (rewritten 2026-05-20) stores str dates. The engine
-                # normalizes at cache.py:335; a reader that skips this
+                # normalizes at cache.get_ohlcv_bulk; a reader that skips this
                 # crashes in get_indexer(Timestamp) on that one file (B2018).
                 idx = pd.to_datetime(df.index)
                 df.index = idx.tz_localize(None) if idx.tz is not None else idx

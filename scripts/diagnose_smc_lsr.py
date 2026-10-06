@@ -25,7 +25,7 @@ trades. A TIGHTER level can only remove fires, so the survivor set is a strict
 subset of what the engine already recorded and every statistic over it is
 honest. The grader must therefore never offer a level looser than the cube's.
 
-HOW PRODUCTION DECIDES, reproduced exactly (smc_ict.py:263, :458-466, :503-509):
+HOW PRODUCTION DECIDES, reproduced exactly (smc_ict.compute_smc_signals, :458-466, :503-509):
     current_idx = len(ohlc) - 1                     # a POSITION
     _most_recent_event_within(series, current_idx, recency_bars)
         -> the LAST non-zero event's VALUE, if current_idx - its_index <= recency
@@ -107,7 +107,7 @@ def diagnose_fire(df: pd.DataFrame, when, swing_length: int = 20,
     if i < MIN_BARS:
         return None
     sub = df.iloc[:i + 1]
-    current_idx = len(sub) - 1           # smc_ict.py:263
+    current_idx = len(sub) - 1           # smc_ict.compute_smc_signals
     try:
         swings = _smc.swing_highs_lows(sub, swing_length=swing_length)
         bos_df = _smc.bos_choch(sub, swings)

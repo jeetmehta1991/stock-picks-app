@@ -12,7 +12,7 @@ from measured distributions, never chosen):
                    recent OB event (0 = newest). Sets the tail(N) level.
   - n_ob_events  : total OB events available at that bar.
 
-Replicates the production breaker logic EXACTLY as read from smc_ict.py:266-298
+Replicates the production breaker logic EXACTLY as read from smc_ict.compute_smc_signals
 (bearish OB, mitigated, close above its top). PIT is preserved by recomputing
 swings/ob per bar on ohlc.iloc[:i+1], the same slicing production uses.
 
@@ -46,7 +46,7 @@ def _load(ticker: str) -> pd.DataFrame:
                 df = df.set_index("date")
             if not isinstance(df.index, pd.DatetimeIndex):
                 # B2047 (S6-B2018b): META.parquet stores str dates; coerce as
-                # the engine does (cache.py:335) or Timestamp lookups explode.
+                # the engine does (cache.get_ohlcv_bulk) or Timestamp lookups explode.
                 _i = pd.to_datetime(df.index)
                 df.index = _i.tz_localize(None) if _i.tz is not None else _i
             return df.sort_index()
@@ -84,7 +84,7 @@ def instrument(df: pd.DataFrame, start: str, end: str, swing_length: int = 20,
             if pd.isna(ob_val) or ob_val == 0 or pd.isna(top) or pd.isna(bot):
                 continue
             is_mitigated = (not pd.isna(mit)) and mit > 0 and int(mit) < i
-            # production bullish-breaker condition, smc_ict.py:283-284
+            # production bullish-breaker condition, smc_ict.compute_smc_signals
             if is_mitigated and ob_val == -1 and close > float(top):
                 qualifying.append({
                     "rank": rank_from_new,

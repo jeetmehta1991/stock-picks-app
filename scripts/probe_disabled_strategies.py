@@ -9,7 +9,7 @@ nobody reaches, guarded by a condition that never holds, or shadowed by an earli
 every one of those failures reads identically to success in the source.
 
 WHAT THIS DOES
-Calls `screen_instrument()` -- the function that owns the skip loop (screener.py:8520) -- on
+Calls `screen_instrument()` -- the function that owns the skip loop (screener.screen_instrument) -- on
 synthetic but permissive inputs, and asserts that no disabled strategy appears among the returned
 candidates while at least one ENABLED strategy does. The second half matters: if the probe fires
 nothing at all, "no disabled strategy fired" is vacuously true and proves nothing, which is the

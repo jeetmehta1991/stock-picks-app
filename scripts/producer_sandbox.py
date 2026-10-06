@@ -24,7 +24,7 @@ import pandas as pd
 
 from backtest.signals.smc_ict import compute_smc_signals
 
-# Production defaults, READ from smc_ict.py:75-82 at B1500. The isolation gate
+# Production defaults, READ from smc_ict.compute_smc_signals at B1500. The isolation gate
 # below pins these - if the source defaults drift, Gate 0 fails loudly rather
 # than silently comparing against a stale baseline.
 PRODUCTION_DEFAULTS = {
@@ -50,7 +50,7 @@ def _load_ohlcv(ticker: str) -> pd.DataFrame:
                 df = df.set_index("date")
             if not isinstance(df.index, pd.DatetimeIndex):
                 # B2047 (S6-B2018b): META.parquet stores str dates; coerce as
-                # the engine does (cache.py:335) or Timestamp lookups explode.
+                # the engine does (cache.get_ohlcv_bulk) or Timestamp lookups explode.
                 _i = pd.to_datetime(df.index)
                 df.index = _i.tz_localize(None) if _i.tz is not None else _i
             return df.sort_index()

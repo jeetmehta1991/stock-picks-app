@@ -164,7 +164,7 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=20260915)
     # B2820: production defaults rather than required - smc_inverse_fvg's
     # keys are knob-independent (fvg takes no swings; the inverse logic is
-    # lookback/tolerance-hardcoded, smc_ict.py:296-360), so forcing its
+    # lookback/tolerance-hardcoded, smc_ict.compute_smc_signals), so forcing its
     # battery call to invent knob values would be the S6-B2136 lie in
     # reverse. A family whose keys DO ride the knobs passes them via the
     # tools flags exactly as before.

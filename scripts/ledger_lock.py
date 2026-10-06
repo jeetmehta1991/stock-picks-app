@@ -15,7 +15,7 @@ hardware, and the owner ordered it built (2026-08-26).
 
 DESIGN (both halves matter):
 - MUTUAL EXCLUSION: filelock.FileLock on <ledger>.lock around the whole
-  read-modify-write. filelock is already a live dependency (cache.py:48).
+  read-modify-write. filelock is already a live dependency (cache._save_index).
 - ATOMIC REPLACE: the new content goes to a temp file in the same directory,
   then os.replace() - readers (postconfig_report, verify_postconfig_complete)
   stay lock-free and can never see a torn file: they read the old version or

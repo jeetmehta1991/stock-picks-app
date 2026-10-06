@@ -18,7 +18,7 @@ It RANKS and ADMITS. It never REJECTS. There is no reject path in this file:
 no --strict, no refuse branch, and a readable cube always exits 0. The reason
 is measured, not stylistic: a tighter config FREES OCCUPANCY (the engine
 blocks a fire while the same strategy already holds that ticker,
-backtest.py:2522-2538), so a tighter cell can admit trades present in NO cube
+backtest.BacktestEngine._process_day), so a tighter cell can admit trades present in NO cube
 and - since what it then takes can block later fires the count keeps - no
 count here is a bound in either direction (L812, S6-B3139r; this said LOWER
 BOUND until B3139). A cell under the floor offline may clear it live and one

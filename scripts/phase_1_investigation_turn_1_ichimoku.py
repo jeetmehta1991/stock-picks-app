@@ -9,7 +9,7 @@ INVESTIGATION SCOPE: 3 strategies flagged HIGH for producer investigation
   2. ichimoku_cloud_breakdown (0 fires; SHORT mirror)
   3. ichimoku_tk_cross (17 fires; 2-gate simple)
 
-PRODUCER CODE REVIEWED: technical.py:962-1036 compute_ichimoku()
+PRODUCER CODE REVIEWED: technical.compute_ichimoku compute_ichimoku()
 
 FINDINGS:
 

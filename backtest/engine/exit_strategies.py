@@ -52,7 +52,7 @@ def _pnl(entry: float, exit_p: float, direction: str) -> float:
     improvements.apply_transaction_costs via SHORT_ANNUAL_BORROW_RATE per
     DEC-295 (Pass 50 single-source-of-truth rule). The "short comparison
     optimistic" claim was based on misreading - sister function in
-    exit_manager.py:167 has explicit docstring confirming this design.
+    exit_manager._pnl has explicit docstring confirming this design.
     """
     if direction == "long":
         return (exit_p - entry) / entry * 100
@@ -567,7 +567,7 @@ def exit_earnings_blackout(df_full, entry_date, entry_price, direction, atr,
             from backtest.data.fetcher import fetch_earnings_dates
             # B1009 INV-057 fix (2026-06-22 Council 103 Option-6 owner-
             # approved 'Approve all proceed council this'): pass
-            # as_of=entry_date for PIT compliance. fetcher.py:255-258
+            # as_of=entry_date for PIT compliance. fetcher.fetch_earnings_dates
             # applies PIT filter only when as_of is provided; previously
             # passing None returned the FULL earnings calendar 2020-2026
             # at backtest time = positive lookahead bias. Per Council

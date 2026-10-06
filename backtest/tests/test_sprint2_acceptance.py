@@ -1,16 +1,16 @@
-"""Sprint 2 (DEC-491/492/493) acceptance tests — Pass 53 Day-9 v8h.
+"""Sprint 2 (DEC-491/492/493) acceptance tests - Pass 53 Day-9 v8h.
 
-DEC-503 type 9 — Acceptance. Closes the testing-pyramid gap owner identified
+DEC-503 type 9 - Acceptance. Closes the testing-pyramid gap owner identified
 2026-05-07. Verifies all 3 trade-capture fragility fixes work TOGETHER as
 a coherent Sprint 2 deliverable, not just in isolation.
 
 Acceptance criteria:
 - DEC-491 + DEC-492: trade_log.parquet preserves nested signals_at_entry
-  through write→read roundtrip; trade_log.csv preserves them as JSON
+  through write->read roundtrip; trade_log.csv preserves them as JSON
   strings (lossy but readable)
 - DEC-493: every closed_trade has unique trade_id; collision test
   on synthetic trade volume
-- All 3 land together (DEC-594 same-commit) — verified via grep for
+- All 3 land together (DEC-594 same-commit) - verified via grep for
   consistent DEC-491/492/493 references in same code paths
 """
 
@@ -25,7 +25,7 @@ import pytest
 
 
 # ---------------------------------------------------------------------------
-# A1 — Combined Sprint 2 acceptance: parquet roundtrip with all 3 features
+# A1 - Combined Sprint 2 acceptance: parquet roundtrip with all 3 features
 # ---------------------------------------------------------------------------
 def test_sprint2_combined_acceptance_parquet_roundtrip(tmp_path):
     """End-to-end: build trades with mixed-type signals + trade_id, write
@@ -60,7 +60,7 @@ def test_sprint2_combined_acceptance_parquet_roundtrip(tmp_path):
             "initial_stop":98.0,
             "highest_close":101.0 + i * 0.3,
             "trailing_stop_at_exit":99.0,
-            # DEC-492: mixed-type signals — was previously filtered to numeric only
+            # DEC-492: mixed-type signals - was previously filtered to numeric only
             "signals_at_entry": {
                 "rsi":        28 + i,                           # numeric
                 "regime_tag": "oversold",                       # string
@@ -86,11 +86,11 @@ def test_sprint2_combined_acceptance_parquet_roundtrip(tmp_path):
     except Exception as exc:
         pytest.skip(f"writer integration failed: {exc}")
 
-    # ── DEC-491 acceptance: parquet emitted ──
+    # -- DEC-491 acceptance: parquet emitted --
     pq = tmp_path / "trade_log.parquet"
     assert pq.exists(), "DEC-491: trade_log.parquet not emitted"
 
-    # ── DEC-491 acceptance: parquet roundtrip preserves nested types ──
+    # -- DEC-491 acceptance: parquet roundtrip preserves nested types --
     df_pq = pd.read_parquet(pq)
     assert len(df_pq) == 5
     sig0 = df_pq["signals_at_entry"].iloc[0]
@@ -107,14 +107,14 @@ def test_sprint2_combined_acceptance_parquet_roundtrip(tmp_path):
         "DEC-492: list signal lost in roundtrip"
     )
 
-    # ── DEC-493 acceptance: every trade has unique trade_id ──
+    # -- DEC-493 acceptance: every trade has unique trade_id --
     trade_ids = df_pq["trade_id"].tolist()
     assert all(tid for tid in trade_ids), "DEC-493: trade_id missing"
     assert len(set(trade_ids)) == len(trade_ids), (
         "DEC-493: trade_id collision in 5-trade sample"
     )
 
-    # ── CSV companion: human-readable, lossy ──
+    # -- CSV companion: human-readable, lossy --
     csv = tmp_path / "trade_log.csv"
     assert csv.exists()
     df_csv = pd.read_csv(csv)
@@ -127,7 +127,7 @@ def test_sprint2_combined_acceptance_parquet_roundtrip(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# A2 — DEC-493 collision stress test (10k synthetic trades)
+# A2 - DEC-493 collision stress test (10k synthetic trades)
 # ---------------------------------------------------------------------------
 def test_dec493_no_collisions_at_10k_trades():
     """Per DEC-493 spec: collision test on 10k synthetic trades."""
@@ -156,7 +156,7 @@ def test_dec493_no_collisions_at_10k_trades():
 
 
 # ---------------------------------------------------------------------------
-# A3 — DEC-491 backwards-compat: existing CSV consumers don't break
+# A3 - DEC-491 backwards-compat: existing CSV consumers don't break
 # ---------------------------------------------------------------------------
 def test_dec491_csv_backwards_compat_basic_fields_readable(tmp_path):
     """Existing scripts that read trade_log.csv with pd.read_csv must continue
@@ -205,10 +205,10 @@ def test_dec491_csv_backwards_compat_basic_fields_readable(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# A4 — DEC-492 acceptance: engine no longer drops string signals
+# A4 - DEC-492 acceptance: engine no longer drops string signals
 # ---------------------------------------------------------------------------
 def test_dec492_engine_signals_filter_completely_removed():
-    """The pre-fix code at backtest.py:476 had a literal
+    """The pre-fix code at backtest.BacktestEngine._process_day had a literal
     `if isinstance(v, (bool, int, float))` filter on signals_at_entry. Verify
     via source inspection that this filter is gone in the OpenTrade construction
     block."""

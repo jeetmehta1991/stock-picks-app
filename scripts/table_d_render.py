@@ -109,7 +109,7 @@ def _factorial_rows(a: dict) -> list:
             "cube": a.get("cube"),
             # B3088 RETRACTION of B3082b. That comment said per_exit carries
             # no per-cell trade counts and rendered '-'. IT DOES CARRY THEM,
-            # under a misleading name. grade_candle_config.py:268 builds
+            # under a misleading name. grade_candle_config.grade builds
             # full_n as cube.groupby("exit_method").size() and line 279 sets
             # "fires" to len(g) over is_rows grouped the same way - BOTH are
             # counts of CUBE ROWS, i.e. trades. VERIFIED across 18 of 18
@@ -182,7 +182,7 @@ def _run_levels(a: dict, params: list) -> dict:
             raw = env[p["env"]]
             # S6-B3139ax: a BLANK value is the engine's unset path - config
             # parses e.g. CANDLE_MAX_WICK_PCT as `float(raw) if raw else None`
-            # (backtest/config.py:2500-2501) - so the cube ran at production
+            # (backtest/config._candle_wick_raw) - so the cube ran at production
             # and "" is not a level. A knob whose parser cannot take a blank
             # never produced a completed cube, so this cannot mislabel a run.
             if isinstance(raw, str) and not raw.strip():

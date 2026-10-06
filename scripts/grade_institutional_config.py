@@ -20,7 +20,7 @@ METHOD (identical to the smc grader's Step-1 leg, S6-B2409 vocabulary):
   * the holdout is counted (holdout_n) per exit and, ONLY on a cube declared
     Step-2 (--step2, which the battery passes when run_postconfig.derive_step
     says 2), read ONCE by grade_step2: the exit the cube's own IS selects
-    (rc.select_exit, objective gates - the tighten_breaker_block.py:338-353
+    (rc.select_exit, objective gates - the tighten_breaker_block.main
     mechanism) is evaluated on the holdout with full_period_n, and the six
     LIVE_GATES decide PASS / FAIL (S6-B2409: clearing them IS qualification).
     B2612 / S6-B2612a: before this leg existed a Step-2 cube was graded
@@ -56,7 +56,7 @@ import roster_core as rc  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 STRAT = "institutional_committed_growth_long"
-P7_PROD, P8_PROD = 3, 5   # screener.py:6648 production levels (S6-B2504)
+P7_PROD, P8_PROD = 3, 5   # screener.strat_institutional_committed_growth_long production levels (S6-B2504)
 
 
 def refuse_nonproduction(p7: int, p8: int) -> str | None:

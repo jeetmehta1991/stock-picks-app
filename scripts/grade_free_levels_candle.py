@@ -10,8 +10,8 @@ those levels silently ungraded.
 
 THE AXIS. P6 is the rsi_14 bound, and it is OFFLINE: no env knob, and the
 engine's gate reads a value persisted per trade.
-  * three_white_soldiers  screener.py:2607  rsi_14 < 60   (a CEILING)
-  * three_black_crows_short screener.py:2637 rsi_14 > 40  (a FLOOR)
+  * three_white_soldiers  screener.strat_three_white_soldiers  rsi_14 < 60   (a CEILING)
+  * three_black_crows_short screener.strat_three_black_crows_short rsi_14 > 40  (a FLOOR)
 Every free level TIGHTENS (the ceiling drops, the floor rises), so each level
 selects a STRICT SUBSET of trades already in the cube. MEASURED at B2904 on
 output_r5_merged_1_7/trade_log.csv: rsi_14 is present in signals_at_entry for
@@ -33,7 +33,7 @@ unverifiable - never silently failed and never silently kept.
 THE OCCUPANCY DISCLOSURE, WHICH IS THE HONEST LIMIT OF THIS WHOLE METHOD.
 A subset of SIGNALS is not a subset of TRADES (L812). Under cube_isolation the
 engine drops a candidate when the same strategy already holds that ticker
-(backtest.py:2497-2511), so REMOVING trades at a tighter level FREES occupancy
+(backtest.BacktestEngine._process_day), so REMOVING trades at a tighter level FREES occupancy
 and would admit trades that exist in no cube. This tool cannot simulate that -
 only the engine can - so it REPORTS the bound rather than pretending to it.
 MEASURED on output_r5_merged_1_7: 391,782 of 444,226 skip rows are occupancy

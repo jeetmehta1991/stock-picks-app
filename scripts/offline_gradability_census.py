@@ -89,7 +89,7 @@ def main() -> int:
     from backtest.signals import screener
     from backtest.signals.screener import ALL_STRATEGIES
     # disabled sets live in backtest.config (screener imports them at its
-    # own call sites, screener.py:8478-8480); absent name = empty, LOGGED
+    # own call sites, screener.validate_strategy_roster); absent name = empty, LOGGED
     disabled = set()
     for _name in ("DEPRECATED_STRATEGIES", "STRATEGIES_DISABLED_DATA_SCARCITY",
                   "STRATEGIES_DISABLED_DUPLICATE",

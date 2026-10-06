@@ -381,7 +381,7 @@ def _build_factor_universe_ohlcv(
 
     Returns dict of {ticker: OHLCV DataFrame} containing:
       - All T1a tickers already in t1a_ohlcv_cache (passed in)
-      - SPY benchmark (force-include for beta + IVOL per #66; cross_sectional.py:141
+      - SPY benchmark (force-include for beta + IVOL per #66; cross_sectional.compute_cross_sectional_features
         requires benchmark="SPY" in dict; without it, xs_beta_decile + xs_ivol_decile
         keys never emitted -> factor strategies depending on them silent-zero-fire)
       - T2 spinoffs + recent IPOs PIT-active in [start, end] window (#65 owner directive
@@ -622,7 +622,7 @@ def _precompute_tier2_panel(
     per as_of across business days in [start, end]. Returns dict[date,
     dict[ticker, dict[xs_*_decile, int]]].
 
-    Same producer as backtest engine invokes (screener.py:7954):
+    Same producer as backtest engine invokes (screener.screen_universe):
         from backtest.signals.cross_sectional import compute_cross_sectional_features
         xs_features = compute_cross_sectional_features(ohlcv_dict, as_of)
 
@@ -947,7 +947,7 @@ def measure_strategies(
         # B779 (2026-06-15 owner directive): sample_cadence_days changed
         # 21 -> 1 (daily rebalance). Owner override of B776 monthly default;
         # matches backtest engine's per-day cross_sectional invocation in
-        # screener.py:7954. Cost: ~21x compute vs monthly; engine-cadence-parity
+        # screener.screen_universe. Cost: ~21x compute vs monthly; engine-cadence-parity
         # accepted per directive.
         # B781 #65 + #66: build BROADER factor-universe ohlcv_dict (T1a + T2 + T3
         # + SPY benchmark) before TIER 2 panel pre-build. Owner directive 58(e)

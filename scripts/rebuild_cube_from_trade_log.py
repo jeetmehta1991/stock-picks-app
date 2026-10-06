@@ -3,7 +3,7 @@
 Source (per CHECKLIST #77 canonical-source attribution):
 - Discovery 2026-05-25 Batch 359: the cube engine ALREADY EXISTS
   (backtest/engine/exit_strategies.py::run_exit_comparison) and IS called
-  from BacktestEngine.save_all_outputs (backtest.py:1996-2051), producing
+  from BacktestEngine.save_all_outputs (backtest.BacktestEngine.save_all_outputs), producing
   trade_exit_detail.csv natively. BUT the merge job
   (scripts/merge_batch_outputs.py) does NOT propagate trade_exit_detail
   through to the merged output — see BUILD_PLAN_PROGRESS.md line 63.
@@ -127,7 +127,7 @@ def rebuild_cube(trade_log_path: Path, ohlcv_dir: Path,
 
     # Group by strategy so run_exit_comparison receives all that strategy's
     # trades together (matches the engine's per-strategy call pattern at
-    # backtest.py:2042 + supports its per-strategy summary stats).
+    # backtest.BacktestEngine.save_all_outputs + supports its per-strategy summary stats).
     n_strategies = tl["strategy"].nunique()
     for i_strat, (strategy, strat_df) in enumerate(tl.groupby("strategy"), 1):
         trades_data: list = []

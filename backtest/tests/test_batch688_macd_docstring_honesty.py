@@ -4,7 +4,7 @@
 Pre-B688 the T1 (`strat_macd_crossover`) and T2 (`strat_macd_fast_crossover`)
 `_strat3` bullets described "MACD 12/26/9 crossed above zero -- momentum
 turning positive" which is the CENTERLINE-cross semantic (MACD line crosses
-zero). The producer at technical.py:558 computes
+zero). The producer at technical.compute_macd computes
 `crossover_up = (mh > 0 and pmh <= 0)` where `mh = histogram = MACD_line -
 signal_line`. Histogram sign change = SIGNAL-LINE cross (MACD line crossed
 above/below signal line), NOT centerline cross.

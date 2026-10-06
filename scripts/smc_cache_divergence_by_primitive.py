@@ -66,7 +66,7 @@ def load(ticker: str):
                 df = df.set_index("date")
             if not isinstance(df.index, pd.DatetimeIndex):
                 # B2047 (S6-B2018b): META.parquet stores str dates; coerce as
-                # the engine does (cache.py:335) or Timestamp lookups explode.
+                # the engine does (cache.get_ohlcv_bulk) or Timestamp lookups explode.
                 _i = pd.to_datetime(df.index)
                 df.index = _i.tz_localize(None) if _i.tz is not None else _i
             return df.sort_index()
@@ -117,7 +117,7 @@ def main() -> int:
             # B1542: the module docstring names `prime_all_tickers(ohlcv_dict)`,
             # which DOES NOT EXIST. The real API is per-ticker
             # `prime_ticker_primitives(ticker, full_ohlc, swing_length=20)` -
-            # the same call the engine makes at backtest.py:736.
+            # the same call the engine makes at backtest.BacktestEngine.run.
             pc.reset_cache()
             pc.prime_ticker_primitives(t, df, swing_length=20)
             if not pc.is_primed(t):

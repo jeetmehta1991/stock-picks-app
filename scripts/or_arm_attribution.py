@@ -6,9 +6,9 @@ SHORT strategies by adding `smc_bos_bearish` as an OR-ALTERNATIVE, to raise
 fire counts after the B1186 SPY probe found the library treating price action
 as break-of-structure rather than as a sweep:
 
-  strat_smc_equal_highs_sweep_short (screener.py:4584)
+  strat_smc_equal_highs_sweep_short (screener.strat_smc_equal_highs_sweep_short)
       (smc_equal_highs_swept OR smc_bos_bearish) AND smc_fvg_bearish_active
-  strat_turtle_soup_short (screener.py:4812)
+  strat_turtle_soup_short (screener.strat_turtle_soup_short)
       (smc_liquidity_swept_up OR smc_bos_bearish) AND below_prev_high
       AND close_below_open
 

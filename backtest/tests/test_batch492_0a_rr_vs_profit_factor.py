@@ -3,7 +3,7 @@ R:R-gate-uses-profit-factor-as-proxy.
 
 Source: per CHECKLIST #77 owner directive 2026-05-27.
 Queue row: EXECUTION_QUEUE.md item 0a.
-Production reference: scripts/optimize_strategies_from_cube.py:159
+Production reference: scripts/optimize_strategies_from_cube._dec426_verdict
   `"rr_>=_2.0":   stats["profit_factor"] >= GATE_RR_MIN`
 
 Audit finding (Batch 448 broad Pattern 3 sweep):

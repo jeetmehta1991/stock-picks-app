@@ -2,8 +2,8 @@
 
 Source: per CHECKLIST #77 owner directive 2026-05-27 (test extensively).
 Queue rows: EXECUTION_QUEUE.md items 0d + 0f + M3 paperwork.
-Engine references: backtest/engine/backtest.py:282-286 (liquidity gate),
-                   backtest/engine/regime_filter.py:151-203 (classify_regime).
+Engine references: backtest/engine/backtest.BacktestEngine._build_liquid_universe (liquidity gate),
+                   backtest/engine/regime_filter.classify_regime (classify_regime).
 
 Closes two PENDING audit-gap items via direct invariant tests:
 
@@ -49,7 +49,7 @@ def test_batch491_0d_liquidity_min_avg_volume_threshold_in_config():
 
 def test_batch491_0d_below_floor_avg_volume_rejected_by_filter_logic():
     """Synthetic OHLCV: 30 rows, close=10 (above min_price), volume below
-    the floor. The engine's liquidity gate at backtest.py:284-286 reads
+    the floor. The engine's liquidity gate at backtest.BacktestEngine._build_liquid_universe reads
     `avg_vol = sliced["volume"].tail(20).mean()` and skips when below
     LIQUIDITY["min_avg_volume"]. Replicate that condition + assert the
     `continue` branch fires.

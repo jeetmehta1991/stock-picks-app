@@ -20,7 +20,7 @@ VERIFICATION SCHEME
 1. Direct producer call: institutional_signal(ticker, as_of) -> dict
 2. Via signal_loader: inject_institutional_signals({}, ticker, as_of)
    -> signal_keys derived from producer dict
-3. Assert signal_keys produced by (2) match the canonical screener.py:7975-7983
+3. Assert signal_keys produced by (2) match the canonical screener.screen_instrument
    binding logic over the producer output of (1).
 
 This catches any future divergence in:
@@ -53,7 +53,7 @@ PARITY_FIXTURE_DATES = [
 
 
 def _canonical_screener_logic(inst: dict) -> dict:
-    """Mirror the canonical screener.py:7975-7983 binding logic for comparison.
+    """Mirror the canonical screener.screen_instrument binding logic for comparison.
 
     This is the EXACT same logic that screener.py used pre-B921 + that
     signal_loader.inject_institutional_signals uses post-B921. The parity
@@ -138,7 +138,7 @@ from backtest.signals.insider_buying import compute_insider_cluster_signals
 
 
 def _canonical_screener_insider_logic(insider: dict) -> dict:
-    """Mirror screener.py:7944-7945 insider-cluster binding logic.
+    """Mirror screener.screen_instrument insider-cluster binding logic.
 
     Pre-B923 inline:
         insider = compute_insider_cluster_signals(ticker, as_of)
@@ -238,7 +238,7 @@ from backtest.data.universe import get_classification_change_signals
 
 
 def _canonical_screener_classification_logic(cc_out: dict) -> dict:
-    """Mirror screener.py:7954-7956 classification-change binding logic.
+    """Mirror screener.screen_instrument classification-change binding logic.
 
     Pre-B924 inline:
         cc_out = get_classification_change_signals(ticker, as_of)

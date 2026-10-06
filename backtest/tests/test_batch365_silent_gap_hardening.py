@@ -5,7 +5,7 @@ evaluability gate.
 Source (per CHECKLIST #77 canonical-source attribution):
 - Owner approval 2026-05-25 of 3 hardening items after Batch 363 silent
   gap diagnosis: smart_money_score was at 0% fire rate in every prior
-  Phase 1A run because the engine gate at backtest.py:1308 was wrong.
+  Phase 1A run because the engine gate at backtest.BacktestEngine._process_day was wrong.
   BUG-296 fire-rate monitor was emitting warnings every run -- but no
   one read them.
 

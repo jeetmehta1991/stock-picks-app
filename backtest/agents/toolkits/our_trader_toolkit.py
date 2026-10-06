@@ -29,7 +29,7 @@ class OurTraderToolkit:
 
     Batch 373 (2026-05-26) Sprint 7 Phase B prep: accept an optional
     `circuit_breaker_log` list (the engine's `self.circuit_breaker_log`
-    on BacktestEngine; see backtest/engine/backtest.py:126) so that
+    on BacktestEngine; see backtest/engine/backtest.BacktestEngine.__init__) so that
     get_per_ticker_cooldown can resolve real stop-out history from the
     Stage 2 engine without requiring Portfolio API changes. Sprint 7
     Phase B wiring (when langgraph_pipeline calls this toolkit) must

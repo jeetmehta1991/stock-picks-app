@@ -21,12 +21,12 @@ The strategy is a DUAL, so the leg comes from the sampled row's own
 THREE LEGS per sampled (ticker, entry_date):
   leg A  RAW ARITHMETIC - EMA recomputed here from cached closes with
          pandas ewm(span=N, adjust=False), the producer's own recursion
-         (technical.py:772), then close-vs-EMA compared directly. No
+         (technical.compute_ema_sma), then close-vs-EMA compared directly. No
          producer import - a check that only called the producer would
          agree by construction (the vacuous-fixture class, L582/L684).
   leg B  PRODUCTION     - backtest.signals.technical.compute_ema_sma on the
          same PIT slice, with EMA_PAIRS exported so the span's key is
-         emitted (technical.py:768), i.e. the code the engine ran.
+         emitted (technical.compute_ema_sma), i.e. the code the engine ran.
   leg C  RECORD         - the cube's persisted price_above_ema_{N} /
          below_ema_{N} at entry.
 
@@ -55,7 +55,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 STRAT = "bollinger_lower"
-DEFAULT_EMA_PAIRS = "9:21,20:50,50:200,100:150"   # config.py:2524
+DEFAULT_EMA_PAIRS = "9:21,20:50,50:200,100:150"   # config.EMA_PAIRS
 
 
 def _key(direction: str, span: int) -> str:
@@ -135,7 +135,7 @@ def main() -> int:
 
     # leg B must see the span's key: export EMA_PAIRS containing it, then
     # reload config so the module attribute the producer reads at call time
-    # (technical.py:768) carries it.
+    # (technical.compute_ema_sma) carries it.
     spans_in_default = {9, 21, 20, 50, 200, 100, 150}
     pairs = DEFAULT_EMA_PAIRS if span in spans_in_default else (
         DEFAULT_EMA_PAIRS + f",2:{span}")

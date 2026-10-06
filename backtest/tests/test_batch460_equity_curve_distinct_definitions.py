@@ -23,7 +23,7 @@ FINDING (not a bug -- a documentation gap):
      - NOT interchangeable with #1 (different unit, different shape,
        different scope)
 
-  3. Generic max_drawdown(equity_curve: Sequence[float])  (quant_audit.py:69)
+  3. Generic max_drawdown(equity_curve: Sequence[float])  (quant_audit.max_drawdown)
      - utility function callable with EITHER #1 (equity_dollar values) OR
        #2 (compounded multiplier values) -- both yield correct peak-to-
        trough percentages.

@@ -9,7 +9,7 @@ create one: a canonical FAIL that passes under a variant is a RESCUE found by
 trying extra paths and is reported only.
 
 VARIANTS (the S6-B3134 rows' own definitions; every rule keyed on the SCREEN
-DAY, which is the recorded entry_date - backtest.py:3622/3722 book entries
+DAY, which is the recorded entry_date - backtest.BacktestEngine._process_day/3722 book entries
 with entry_date=as_of and fill at the next open):
   b1     SBNY entries with entry_date > 2023-03-15 (its T1a removed_date).
   b2     FISV entries within its first 20 bars on/after 2025-11-11 (the first
@@ -21,7 +21,7 @@ with entry_date=as_of and fill at the next open):
          out on the removal date itself).
   b4     the OPEN-TRADE CARRY (S6-B3134a Leak 2): entries screened while the
          ticker was OUTSIDE its year's Jan-1 eligibility set - a replica of
-         backtest.py:495-518 (>=30 bars, last close >= min_price, 20-bar mean
+         backtest.BacktestEngine._build_liquid_universe (>=30 bars, last close >= min_price, 20-bar mean
          volume >= min_avg_volume, T1a-master tickers must be PIT members on
          Jan 1). Clock: Jan 1 of the entry year. b3 and b4 use DIFFERENT
          clocks and overlap without either containing the other.
@@ -97,7 +97,7 @@ def _ohlcv(ticker: str, start: dt.date, end: dt.date):
 
 
 def jan1_sets(tickers, years=YEARS) -> tuple[dict, dict]:
-    """Replica of backtest.py:495-518 - {year: eligible set} plus the reason
+    """Replica of backtest.BacktestEngine._build_liquid_universe - {year: eligible set} plus the reason
     each (ticker, year) failed. ONE loader per ticker, so peak memory stays
     one frame."""
     from backtest.config import LIQUIDITY, DATA_LOAD_START

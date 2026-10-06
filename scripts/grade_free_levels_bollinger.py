@@ -26,11 +26,11 @@ named; none silent.
 
 P11 TIGHT (each rsi edge -5 long / +5 short, T3-approved): the production
 leg is rsi_2<5 or rsi_14<thr_long per vix band {low:40, mid:45, high:50}
-(short: rsi_2>95 or rsi_14>thr_short {60,55,50}), screener.py:1855-1863
+(short: rsi_2>95 or rsi_14>thr_short {60,55,50}), screener.strat_bollinger_lower
 verbatim. Tightening kills the rsi_2 escape arm outright (<0 / >100 are
 unsatisfiable - DISCLOSED, not hidden), so the tight level is effectively
 rsi_14 vs thr-/+5. The vix band re-derives from PERSISTED vix_percentile
-(technical.py:2727-2731: low pct<1/3, mid <2/3, else high); vix_percentile
+(technical.compute_macro_overlays: low pct<1/3, mid <2/3, else high); vix_percentile
 is persisted ROUNDED to 4dp, so rows within 0.00005 of either boundary are
 BOUNDARY-AMBIGUOUS - excluded and counted, never guessed.
 
@@ -149,7 +149,7 @@ def score_reproduction(prod_per_exit, grid_path, ted_all=None) -> dict:
 
 
 # ---- S6-B3117: the P11 / P8 single-axis enumerations (T3-approved) --------
-THR_LONG = {"low": 40.0, "mid": 45.0, "high": 50.0}    # screener.py:1866-1871
+THR_LONG = {"low": 40.0, "mid": 45.0, "high": 50.0}    # screener.strat_bollinger_lower
 THR_SHORT = {"low": 60.0, "mid": 55.0, "high": 50.0}
 BOUNDARY_EPS = 0.00005      # vix_percentile persists round(pct, 4)
 # S6-B3118a (B3139): the composite's random-deletion null draws with a FIXED
@@ -163,7 +163,7 @@ COMPOSITE_CELLS_IN_CAMPAIGN = 7   # one per landed Step-1 span (pre-registered K
 
 def vix_band(vp: float, lo: float, hi: float) -> str | None:
     """Band from the persisted percentile, producer comparisons verbatim
-    (technical.py:2727-2731); None = BOUNDARY-AMBIGUOUS within the 4dp
+    (technical.compute_macro_overlays); None = BOUNDARY-AMBIGUOUS within the 4dp
     rounding sliver of either edge."""
     if abs(vp - lo) <= BOUNDARY_EPS or abs(vp - hi) <= BOUNDARY_EPS:
         return None
@@ -176,7 +176,7 @@ def vix_band(vp: float, lo: float, hi: float) -> str | None:
 
 def rsi_leg(direction: str, rsi2: float, rsi14: float, band: str,
             edge_shift: float) -> bool:
-    """The strategy's rsi leg (screener.py:1891/1894 verbatim), with the
+    """The strategy's rsi leg (screener.strat_bollinger_lower/1894 verbatim), with the
     T3 tight shift applied to BOTH edges of the row's direction. At -5/+5
     the rsi_2 escape arm (5 -> 0 / 95 -> 100) is unsatisfiable - kept in
     the expression so the disclosure is the arithmetic, not a footnote."""
@@ -222,7 +222,7 @@ def p11_p8_sections(tl, ted, min_n) -> dict:
             n_baddir += 1
             continue
         # the PRODUCTION band is the engine's own branch on the PERSISTED
-        # flags (screener.py:1866-1871): low if vix_band_low, elif high,
+        # flags (screener.strat_bollinger_lower): low if vix_band_low, elif high,
         # ELSE mid - absent flags mean mid there too, mirrored exactly.
         # (First draft re-derived it from vix_percentile and drew 22
         # reproduction failures on span 9 - the flags are the branch input,

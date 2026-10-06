@@ -18,7 +18,7 @@ Refactor table:
   5. strat_turtle_soup_short:
        not s.get(above_prev_high,     True)  -> below_prev_high (B616 NEW)
 
-Producer additions (technical.py:139):
+Producer additions (technical.compute_pivots):
   above_prev_low  = today > L  (strict-less-than convention; symmetric
                                 to existing above_prev_high)
   below_prev_high = today < H  (symmetric to existing below_prev_low)

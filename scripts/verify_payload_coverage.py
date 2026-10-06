@@ -33,7 +33,7 @@ PAYLOAD_KEY = "payload/r5_payload.tar"
 
 def check_local_cache_serveable(tickers) -> list:
     """B1349 FIX (batch-3 BRK-B/BF-B bug): the engine seeks OHLCV at the
-    _cache_path ENCODED name (cache.py:57 maps -/. -> _), so BRK-B -> BRK_B.parquet.
+    _cache_path ENCODED name (cache._cache_path maps -/. -> _), so BRK-B -> BRK_B.parquet.
     A file present under the raw name (BRK-B.parquet) is NEVER served. Since
     launches now ship the local cache as a refresh overlay, verify each roster
     ticker's _cache_path-encoded file exists in the LOCAL cache (authoritative

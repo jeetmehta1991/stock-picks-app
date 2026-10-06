@@ -23,7 +23,7 @@ exists for):
   3. JOIN. Every cube row must find its magnitudes. An unmatched row would be
      silently dropped from the subset and quietly shrink the denominator.
   4. TRUNCATION. Subsetting is exact only if the engine recorded EVERY
-     candidate that fired. `backtest.py:2417` bypasses max_candidates_per_day
+     candidate that fired. `backtest.BacktestEngine._process_day` bypasses max_candidates_per_day
      under cube isolation, so an isolation cube is safe; a NON-isolation cube
      truncates at the cap, and the trades a tighter level would have freed were
      never simulated. MEASURED for pead: max 48 fires on one day against a cap
@@ -62,7 +62,7 @@ import roster_core as rc  # noqa: E402
 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
-CANDIDATE_CAP = 30          # backtest.py:171 default; bypassed under isolation
+CANDIDATE_CAP = 30          # backtest.BacktestEngine.__init__ default; bypassed under isolation
 
 
 def parse_axis(spec: str) -> dict:

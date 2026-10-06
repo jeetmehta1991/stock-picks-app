@@ -11,7 +11,7 @@ per-fire de-duplication and the bool->float coercion; a fresh copy would have
 had to rediscover all three. So `build` was PARAMETERIZED (S6-B2752a) and this
 grader calls it.
 
-HUB-2'S GATE, read at screener.py:4693 not recalled:
+HUB-2'S GATE, read at screener.strat_smc_order_block_bounce not recalled:
     long  = smc_ob_bullish_tap_recent_5d AND rsi_14 < 45 AND price_above_ema_200
     short = smc_ob_bearish_tap_recent_5d AND rsi_14 > 55 AND below_ema_200
                                           AND NOT _short_borrow_trap_active

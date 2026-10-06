@@ -8,8 +8,8 @@ Static (AST-only) defensive lint that flags two collision classes across the
 
   1) NAME-COLLISION: two `compute_*` functions whose names differ ONLY by
      pluralization, casing, or one trailing character. The B705 ICT review
-     surfaced `compute_po3_signal` (singular, multi_timeframe.py:194) vs
-     `compute_po3_signals` (plural, ict_producers.py:46). Both currently
+     surfaced `compute_po3_signal` (singular, multi_timeframe.compute_po3_signal) vs
+     `compute_po3_signals` (plural, ict_producers.compute_po3_signals). Both currently
      wire correctly because each strategy explicitly imports the right one,
      but a future refactor that re-routes one of them is a class-of-bug
      risk. Flagging the names earns a one-line action: rename, or document

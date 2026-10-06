@@ -11,7 +11,7 @@ Investigation surfaced 3 facts:
     drift)
   - 2 ghost strategies in approvals NOT in ALL_STRATEGIES:
     (a) lead_lag_sector_rotation - registered via non-ALL_STRATEGIES
-        path (screen_lead_lag_sector() at screener.py:4096); the real
+        path (screen_lead_lag_sector() at screener.screen_lead_lag_sector); the real
         engine roster is 206 not 205
     (b) news_sentiment_shift_short - Class 7 Approved B571 awaiting
         wiring

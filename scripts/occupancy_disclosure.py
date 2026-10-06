@@ -10,7 +10,7 @@ direction that matters:
 
 Under `cube_isolation` the engine forces `_bug61_mode = "ticker_strategy"` and
 DROPS a candidate whenever the same strategy already holds an open position on
-that ticker (backtest/engine/backtest.py:2497-2511). So REMOVING trades at a
+that ticker (backtest/engine/backtest.BacktestEngine._process_day). So REMOVING trades at a
 tighter level FREES occupancy, and fires that were blocked while a position was
 open can now open instead. Those trades exist in NO cube. Only the engine can
 produce them.

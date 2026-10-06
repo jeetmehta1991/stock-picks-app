@@ -11,7 +11,7 @@ Audit findings:
       strat_institutional_recent_init_momentum_long
       strat_institutional_recent_init_volume_long
   - Producer `institutional_signal` (smart_money.py) wired into
-    screener.py:4313 emitting 5 keys: institutional_signal,
+    screener.screen_instrument emitting 5 keys: institutional_signal,
     institutional_strong_buy, institutional_buy, institutional_negative,
     institutional_new_positions, institutional_increased.
   - Empirical threshold-crossing rates (5 tickers x 48 monthly dates =

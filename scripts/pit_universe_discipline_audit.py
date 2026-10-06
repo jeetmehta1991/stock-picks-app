@@ -13,9 +13,9 @@ honors the PIT universe at each per-bar as_of, or whether some engines
 collapse to the END-snapshot (current S&P 500).
 
 A direct read of the two consumers shows a DISCREPANCY:
-  - backtest/engine/backtest.py:332 -- uses `get_sp500_constituents_pit(ref_date)`
+  - backtest/engine/backtest.BacktestEngine._build_liquid_universe -- uses `get_sp500_constituents_pit(ref_date)`
     to build a per-year liquid set with PIT intersection. PIT-correct.
-  - scripts/measure_fire_count.py:593 -- `tickers_full = _load_t1a_tickers(end)`.
+  - scripts/measure_fire_count.measure_strategies -- `tickers_full = _load_t1a_tickers(end)`.
     PIT filter applied at END date -> universe collapses to END-snapshot.
     Silently excludes 111 historical-removed names from every B660 measurement.
 

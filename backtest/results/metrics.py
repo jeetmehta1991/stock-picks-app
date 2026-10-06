@@ -1393,7 +1393,7 @@ def smart_money_composite_score(
     """DEC-332 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
     (owner-approved Path C 20-DEC bundle). Smart money composite scoring
     using canonical Pass 53 B1 weights from config (moved from hardcoded
-    magic in `backtest/data/smart_money.py:470-529`).
+    magic in `backtest/data/smart_money.get_institutional_positions`).
 
     Veto case: cong=sell AND insider=cluster_sell -> score = -5 override.
     Score labels by threshold (>=6/>=4/>=2/>=1/0/<0/<=-4).

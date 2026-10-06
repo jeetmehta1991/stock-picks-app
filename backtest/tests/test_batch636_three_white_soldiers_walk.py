@@ -4,7 +4,7 @@ strat_three_black_crows_short.
 
 Source: backtest/signals/screener.py:strat_three_white_soldiers (B636
 F2 docstring) + strat_three_black_crows_short (B636 F1 Class 7 NEW);
-backtest/signals/technical.py:1479-1486 (Nison 1991 three_white
+backtest/signals/technical.compute_candles (Nison 1991 three_white
 _soldiers + three_black_crows producer pair). Per CHECKLIST #77.
 
 Owner-directed B option: F1 (Class 7 NEW SHORT mirror) + F2 (docstring).

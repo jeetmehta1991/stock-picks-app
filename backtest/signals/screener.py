@@ -959,7 +959,7 @@ def strat_camarilla_r4_breakout(s):
       double costs. B641 re-anchors to R4/S4 (the canonical
       breakout levels): producer signals `above_cam_r4` /
       `below_cam_s4` already emitted by compute_pivots
-      (technical.py:134-135 -- BUG-09 RESOLVED-IMPLEMENTED Pass 53
+      (technical.compute_pivots -- BUG-09 RESOLVED-IMPLEMENTED Pass 53
       symmetric pair). Strategy function renamed from
       `strat_camarilla_r3_breakout` -> `strat_camarilla_r4
       _breakout`; registry key renamed `camarilla_r3_breakout` ->
@@ -1042,7 +1042,7 @@ def strat_prev_day_low_bounce(s):
 def strat_macd_crossover(s):
     # B688 (2026-06-10 docstring honesty fix per B687 reviewer Finding #3
     # closure ticket S4-B687-T1-T2-MACD-DEFINITION-DOCSTRING-FIX):
-    # producer `macd_12_26_9_crossover_up` at technical.py:558 computes
+    # producer `macd_12_26_9_crossover_up` at technical.compute_macd computes
     # `mh > 0 and pmh <= 0` where mh = histogram = MACD_line - signal_line,
     # so the signal fires when the histogram changes sign, which is the
     # signal-line cross (MACD line crosses above/below the signal line),
@@ -1851,9 +1851,9 @@ def strat_bollinger_lower(s):
     # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer)
     # B3119 (owner-approved 2026-09-27 "Q2 approved one line change fix.
     # I want to test various spans"): span-keyed form, identical at the
-    # 200 default; engine-actuated via STRAT_EMA_SPAN (config.py:2584),
+    # 200 default; engine-actuated via STRAT_EMA_SPAN (config.STRAT_EMA_SPAN),
     # the :4418/:4453/:6724 pattern. Producer emission for non-canon
-    # spans rides env EMA_PAIRS (technical.py:768).
+    # spans rides env EMA_PAIRS (technical.compute_ema_sma).
     above_200 = s.get(f"price_above_ema_{_cfg.STRAT_EMA_SPAN}", False)
     below_200 = s.get(f"below_ema_{_cfg.STRAT_EMA_SPAN}", False)
     # B1147 (2026-07-03 Council 258 LOOSEN per CSV MED action: widen
@@ -2452,7 +2452,7 @@ def strat_morning_star(s):
     removed the trend gates so the strategy fires on canonical Nison
     turns: pattern + RSI-not-overbought/oversold band only.
 
-    Producer pair compute_candles in technical.py:1460-1475 (Nison strict
+    Producer pair compute_candles in technical.compute_candles (Nison strict
     4-condition AND - bar -3 directional + bar -2 small body <30pct of
     range + bar -1 directional + bar -1 close past bar -3 midpoint;
     B559 OPT-C operator-precedence fix).
@@ -2528,7 +2528,7 @@ def strat_hammer_at_support_long(s):
     exhausted + buyers stepping in. Symmetric to shooting_star (small
     body + long upper wick at resistance).
 
-    Producer: technical.py:1623 `hammer = lwk>2*body and uwk<body and
+    Producer: technical.compute_candles `hammer = lwk>2*body and uwk<body and
     body>0` (Nison canonical hammer definition; already emitted +
     consumed by W3/W5 pivot strategies as confluence-gate; no producer
     change needed).
@@ -2598,7 +2598,7 @@ def strat_three_white_soldiers(s):
       F1 - Class 7 NEW missing-inverse wired: `strat_three_black
         _crows_short` added per `feedback_long_short_inverse_audit` +
         `feedback_wire_new_strategies_on_the_spot`. Producer signal
-        `three_black_crows` exists (technical.py:1483-1486) but no
+        `three_black_crows` exists (technical.compute_candles) but no
         SHORT strategy consumed it pre-B636. Nison documents the
         bearish mirror as a canonical reversal pattern with the same
         playbook semantics.
@@ -2639,7 +2639,7 @@ def strat_three_black_crows_short(s):
     LONG side's RSI<60 cap).
 
     Producer: `three_black_crows` from compute_candle_signals
-    (technical.py:1483-1486) - same B-T-C strict-monotone bearish
+    (technical.compute_candles) - same B-T-C strict-monotone bearish
     3-bar pattern.
 
     Regime affinity: Batch 291 direction-aware default
@@ -2794,7 +2794,7 @@ def strat_golden_cross_volume(s):
     # B1190 (2026-07-06 Council 278 owner-approved MODIFIED): vol_spike_2x -> vol_above_avg
     # (1.0x; owner picked vol_above_avg over drop entirely). Retains volume confirmation
     # at Shannon canonical 'above-average volume' level per B1179 htf_aligned_breakout_long
-    # precedent. Producer emits vol_above_avg (technical.py:171 area).
+    # precedent. Producer emits vol_above_avg (technical.compute_pivots area).
     fl = (s.get("ema_50_200_golden_cross") and s.get("vol_above_avg"))
     fs = (s.get("ema_50_200_death_cross") and s.get("vol_above_avg")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
@@ -3829,7 +3829,7 @@ def strat_insider_cluster_concentrated_sell_short(s):
     """B1010 (2026-06-22) Class 7 NEW per Council 103 Option-6 owner-
     approved 'Approve all proceed council this.' SHORT-only mirror of
     insider_cluster_long sleeves using `concentrated_sell` (>50% of
-    insider's holdings dumped per smart_money.py:601-635) -- the only
+    insider's holdings dumped per smart_money.insider_signal) -- the only
     economically-defensible SHORT mirror per B662 SM-1 walk +
     `feedback_asymmetric_data_sources_break_mechanical_inverse`.
 
@@ -4382,7 +4382,7 @@ def strat_smc_inverse_fvg(s):
     #
     # B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
     # silent-gap repair. Previously read 'force_index_breakout' but
-    # producer technical.py:1658-1660 emits force_index_positive /
+    # producer technical.compute_volume emits force_index_positive /
     # force_index_cross_up / force_index_cross_dn (NO _breakout). Aligned
     # with force_index_cross_up for bullish-direction Force Index event.
     vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_cross_up", False)
@@ -4686,7 +4686,7 @@ def strat_smc_bos_continuation(s):
 
     B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
     silent-gap repair. Previously read 'force_index_breakout' but producer
-    technical.py:1658-1660 emits force_index_positive / force_index_cross_up
+    technical.compute_volume emits force_index_positive / force_index_cross_up
     / force_index_cross_dn (NO _breakout). Aligned with force_index_cross_up.
     """
     vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_cross_up", False)
@@ -4812,10 +4812,10 @@ def strat_turtle_soup_long(s):
     direction.
 
     Producer signals (all Layer 2A wired):
-      - smc_liquidity_swept_dn (smc_ict.py:341)
-      - above_prev_low / below_prev_high (technical.py:139; above_prev_low
+      - smc_liquidity_swept_dn (smc_ict.compute_smc_signals)
+      - above_prev_low / below_prev_high (technical.compute_pivots; above_prev_low
         added in B616 as positive symmetric pair to existing below_prev_low)
-      - close_above_open (technical.py:153)
+      - close_above_open (technical.compute_pivots)
 
     B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
     `not s.get("below_prev_low", True)` -> `above_prev_low` (B616 NEW
@@ -5439,7 +5439,7 @@ def strat_short_borrow_trap_avoid(s):
     B671 Round 2 Q5 (2026-06-10 owner-approved): SM-5's avoid emission is
     now actually consulted by ALL SHORT strategies via centralized gate in
     _strat() / _strat3() helpers. Pre-B671 SM-5 was an orphan emitter
-    (engine dropped avoid output per backtest.py:1457-1466 skipped_trades
+    (engine dropped avoid output per backtest.BacktestEngine._process_day skipped_trades
     path); post-B671 every SHORT strategy fire is gated by
     _short_borrow_trap_active(s) consult per reviewer F5 architectural
     concern.
@@ -5590,7 +5590,7 @@ def strat_avwap_20high_rejection_short(s):
     pct_from_20h = s.get("pct_from_avwap_20high", 0.0)
     fires = (
         # B2025 (S6-B1250-ENG6): the one site the B612 sweep missed - the
-        # producer co-emits above/below on every path (technical.py:426+444),
+        # producer co-emits above/below on every path (technical.compute_vwap+444),
         # so this positive gate is the exact replacement for the old negated
         # default-True form (missing-key behavior preserved: no fire).
         s.get("below_avwap_20high", False)
@@ -5750,7 +5750,7 @@ def strat_inverted_cup_and_handle_short(s):
     O'Neil CANSLIM cup-and-handle bullish setup but inverted topology.
 
     Producer signal inverted_cup_handle_detected from B686 NEW
-    detect_inverted_cup_and_handle in chart_patterns.py:179+.
+    detect_inverted_cup_and_handle in chart_patterns.detect_cup_and_handle+.
 
     Symmetric gate structure with CP-1 cup_and_handle_long (B685
     Pattern A WAVE 2 swept; post-fix design):
@@ -7800,7 +7800,7 @@ def strat_bollinger_tight_with_smart_money_long(s):
 
     B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
     silent-gap repair. Strategy previously read 'bb_squeeze' (default=False)
-    but producer compute_bollinger (technical.py:1301) emits per-band keys
+    but producer compute_bollinger (technical.compute_bollinger) emits per-band keys
     like 'bb_20_20_squeeze' / 'bb_20_15_squeeze' / 'bb_10_20_squeeze' via
     f'{key}_squeeze'. NO bare 'bb_squeeze' key exists -> strategy returned
     False forever. Aligned with bb_squeeze_volume sister-strategy convention
@@ -7827,7 +7827,7 @@ def strat_mfi_oversold_with_smart_money_long(s):
 
     B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
     silent-gap repair. Strategy previously read 'mfi_14_oversold' but
-    producer technical.py:1650 emits 'mfi_oversold' (mfi_v < 20). NO
+    producer technical.compute_volume emits 'mfi_oversold' (mfi_v < 20). NO
     'mfi_14_oversold' key produced anywhere. Sister strategy strat_mfi_oversold
     correctly reads 'mfi_oversold' - this sleeve clone introduced naming drift."""
     # B1199 (2026-07-06 Council 278 owner-approved): swap mfi_oversold (mfi<20)
@@ -7966,7 +7966,7 @@ def strat_squeeze_breakout_with_smart_money_long(s):
 
     B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
     silent-gap repair. Strategy previously read 'squeeze_on_release' but
-    producer compute_squeeze (technical.py:1488-1492) emits
+    producer compute_squeeze (technical.compute_squeeze) emits
     squeeze_in/squeeze_momentum/squeeze_positive/squeeze_fire_up/squeeze_fire_dn.
     NO 'squeeze_on_release' key. Aligned with canonical Lazy Bear
     squeeze-fire-up breakout signal."""
@@ -8039,7 +8039,7 @@ def strat_macd_bullish_with_smart_money_long(s):
 
     B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
     silent-gap repair. Strategy previously read 'macd_bullish_cross' (no
-    such key produced anywhere). Producer compute_macd (technical.py:597-632)
+    such key produced anywhere). Producer compute_macd (technical.compute_macd)
     emits per-MACD-tuple keys via f'{key}_crossover_up' where key=
     f'macd_{fast}_{slow}_{sig}'. Aligned with canonical (12,26,9) MACD
     crossover_up signal."""
@@ -8934,7 +8934,7 @@ def screen_instrument(
     # institutional 13F signal into the per-ticker signals dict so
     # screener strategies can gate on it as the PRIMARY trigger.
     # Previously, institutional_signal was computed post-screen in the
-    # engine (smart_money_score call at backtest.py:1309) and only used
+    # engine (smart_money_score call at backtest.BacktestEngine._process_day) and only used
     # for tier adjustment - NOT for strategy firing.
     # Cohen-Frazzini-Malloy 2008 RFS: institutional new-buys forecast
     # 1-month alpha; Bushee-Goodman 2007 JAR: cluster-buys particularly.
@@ -9230,7 +9230,7 @@ def screen_instrument(
     # strategy_count and distorting candidate ranking - a ticker with
     # mixed/conflicting signals could rank above one with strong directional
     # conviction. Source-side counterpart to BUG-04 (consumer-side filter
-    # at backtest.py:410). avoid signals are kept in the candidate dict for
+    # at backtest.BacktestEngine._process_day). avoid signals are kept in the candidate dict for
     # downstream diagnostics but excluded from all_triggered / strategy_count.
     triggered_avoid = []
 
@@ -9430,13 +9430,13 @@ def _pool_init(ohlcv_dict: dict, info_dict: dict) -> None:
     # B1055 originally pre-warmed "insidertrading" (PHANTOM dataset; no
     # call site uses it) and "sec13f" (called only at line 1807, not the
     # hot path). B1056 forensics revealed:
-    #   smart_money.py:498  calls insiders     (1M rows; HOT)
-    #   smart_money.py:675  calls sec13fchanges (500k rows; HOT)
-    #   smart_money.py:701  calls sec13fchanges (HOT)
-    #   smart_money.py:1640 calls insiders     (HOT)
-    #   smart_money.py:1726 calls patentmomentum
-    #   smart_money.py:1764 calls corporatedonors
-    #   smart_money.py:1807 calls sec13f
+    #   smart_money._load_insider_processed  calls insiders     (1M rows; HOT)
+    #   smart_money.get_institutional_positions  calls sec13fchanges (500k rows; HOT)
+    #   smart_money._institutional_signal_from_bulk  calls sec13fchanges (HOT)
+    #   smart_money.get_insider_transactions_pertkr calls insiders     (HOT)
+    #   smart_money.get_patent_momentum calls patentmomentum
+    #   smart_money.get_corporate_donations calls corporatedonors
+    #   smart_money.get_sec13f_holdings calls sec13f
     # B1057 fix: pre-warm ALL real datasets. The dataset NAME matters;
     # B1055 had a string typo (used Quiver API endpoint path 'insidertrading'
     # instead of cache key 'insiders'). Per HONEST-FINDING PIVOT #34 +

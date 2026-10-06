@@ -44,7 +44,7 @@ def test_halloween_dates_recognized():
     """Producer must recognize 4 halloween-first-days in 2022-2025.
 
     Simplified check: source contains month=11 + tdm=1 logic per Turn 2
-    calendar_effects.py:196 finding.
+    calendar_effects.compute_calendar_signals finding.
     """
     cal_file = REPO / "backtest" / "signals" / "calendar_effects.py"
     if not cal_file.exists():

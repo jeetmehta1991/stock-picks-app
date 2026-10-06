@@ -7,7 +7,7 @@ LIQUIDITY-SWEEP condition; pointing hub-2 at either is the B2724 defect, where
 25 of 50 rows reported engine_agrees on a condition the strategy does not read.
 One checker per family, registered through the SPECS `tools` block (L754).
 
-HUB-2'S GATE, read at screener.py:4693 not recalled:
+HUB-2'S GATE, read at screener.strat_smc_order_block_bounce not recalled:
     long  = smc_ob_bullish_tap_recent_5d AND rsi_14 < 45 AND price_above_ema_200
     short = smc_ob_bearish_tap_recent_5d AND rsi_14 > 55 AND below_ema_200
                                           AND NOT _short_borrow_trap_active

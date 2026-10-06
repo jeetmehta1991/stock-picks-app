@@ -20,7 +20,7 @@ corner must reproduce the landed set exactly, and the script REFUSES if it
 does not.
 
 WHAT IT IS NOT A BOUND ON, stated because it changes how the number may be
-used (S6-B3139r; this section said LOWER BOUND until B3139). A tighter config FREES OCCUPANCY (backtest.py:2522-2538 blocks a fire
+used (S6-B3139r; this section said LOWER BOUND until B3139). A tighter config FREES OCCUPANCY (backtest.BacktestEngine._process_day blocks a fire
 while the same strategy already holds that ticker), so a tighter cell can
 admit trades present in NO cube - and each such trade can block later fires
 the count keeps. Survivor counts here are therefore NOT a bound in either

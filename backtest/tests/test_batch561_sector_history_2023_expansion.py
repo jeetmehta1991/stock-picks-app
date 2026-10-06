@@ -73,7 +73,7 @@ def reload_sector_history():
     """sector_history.csv is module-level cached in universe.py.
     Reload to pick up CSV changes between test runs."""
     # B1485 (S6-B1481a): was importlib.reload(u). The INTENT here is cache invalidation,
-    # not a disk read (L331 - read the intent before substituting). universe.py:547 holds
+    # not a disk read (L331 - read the intent before substituting). universe._SECTOR_HISTORY_CACHE holds
     # _SECTOR_HISTORY_CACHE as a module global, so nulling it invalidates exactly what this
     # fixture wants while leaving every other binding in the process intact. Reload would
     # rebind the whole module for every importer, which is the L330 hazard.
@@ -164,7 +164,7 @@ def test_batch561_cons_disc_to_staples_cohort():
 def test_batch561_window_expiry_at_91_days():
     """B1486 (S6-B1485a): RECLASSIFIED from live-defect to STALE PIN.
 
-    This pinned a 90-day expiry window. `universe.py:608` reads
+    This pinned a 90-day expiry window. `universe.get_classification_change_signals` reads
         lookback_days: int = 180,  # B1142: was 90 (Council 254 LOOSEN per Turn 9)
     so the window was deliberately widened 90 -> 180, owner-approved, and the test was
     never updated. At 92 days `classification_changed_recent=True` is CORRECT behaviour.

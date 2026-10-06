@@ -373,7 +373,7 @@ class BacktestEngine:
         # B1089 Council 215 Fix 1 owner directive 2026-06-30 "Progress and
         # data to be saved every 30 minutes": time-based checkpoint cadence
         # in addition to sim_day-based (B1081 PIVOT #44 fix). Paired-writer
-        # block at backtest.py:838+873 fires on EITHER trigger; timestamp
+        # block at backtest.BacktestEngine.run+873 fires on EITHER trigger; timestamp
         # resets ONLY after both writers succeed (atomic-pair semantics per
         # Council 214). 1800s = 30 min per owner.
         import time as _time_init

@@ -98,7 +98,7 @@ def build(cube_dir: Path | None = None, strat: str = STRAT,
 def current_gate_rows(m: pd.DataFrame) -> pd.DataFrame:
     """The rows the CURRENT gate would fire on - a SELECTION, not an estimate.
 
-    current: swept AND (choch OR bos), per leg (screener.py:4722).
+    current: swept AND (choch OR bos), per leg (screener.strat_smc_liquidity_sweep_reversal).
     Exact on two counts, both READ rather than assumed: exits are per-trade
     independent (exit_strategies.py:4), so dropping rows changes no survivor;
     and the pre-B2075 gate was strictly LOOSER, so every trade the current

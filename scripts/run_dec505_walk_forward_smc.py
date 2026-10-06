@@ -20,7 +20,7 @@ Scope (Phase B canary single-ticker proof of harness, NOT full universe):
     scope post-R5.
 
 Phase B short-circuit handling:
-  Per B1038 Council 131 Option-A, `backtest/signals/smc_ict.py:127`
+  Per B1038 Council 131 Option-A, `backtest/signals/smc_ict.compute_smc_signals`
   short-circuits compute_smc_signals to return {} when
   backtest.config.SMC_PHASE != "PRODUCTION". This script monkey-patches
   SMC_PHASE = "PRODUCTION" for the duration of the run only (does NOT
