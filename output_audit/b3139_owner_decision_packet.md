@@ -42,3 +42,30 @@ the word because recorded values change (chairman's call: hold — #310's record
 split case sits on the ask side). Anchoring caveat (L700): the menus above are
 mine; every row links its evidence so you can re-derive rather than take the
 bold word.
+
+---
+
+# PACKET 2 (B3139q-r31, 2026-10-06, HEAD 6dea508f9) - the 10 decisions open now, one reply closes them
+
+Every implementable ticket the B3139q-r22 council ordered is EXECUTED (au, aw, af, aj, ai, d, ad,
+ap, av, ay, ba - commits 57e2aad4d..6dea508f9). What is OPEN is a decision, or rides one. Menus
+are mine (L700): every row names the artifact to re-derive from.
+
+**Suggested order: #16 first** (#17 and #20 ride it), **then #18** (#19 rides it). #23 and #24 are
+independent of the Step-3 read and can be answered in the same reply.
+
+| # | Ticket | Menu (reply with the bold word) | Recommendation | Staged already |
+|---|---|---|---|---|
+| 16 | S6-B3139ar | bollinger_lower Step-3 axes: **B** (drop the COT axis, re-run breadth items 5-6, re-price the null) / A (recompute COT point-in-time in the breadth loader, re-run 5-6). And the breadth of the drop: **every-flagged** axis (COT, 13F institutional_new_positions - rows 1, 3, 4 of the availability sweep) / COT-only | B, every-flagged (council 5 of 5 for B; 2 of 5 for every-flagged, adopted) | scratchpad measure_cot_pit.py + regrade_cot_lagged.py reproduce 104 of 104 committed COT cells per leg and give the lagged re-grade; output_audit/b3139aw_availability_sweep.md names every flagged axis (slices 1-2) |
+| 17 | S6-B3139am | the ONE holdout read of the registered NET cells: **hold** until #16 is ruled and items 5-6 re-run / read-now. With the word, two choices: the item-8 control strategy (precedent pead_long_high_yoy_growth_only, long-only) and your disclosure wording for a THIRD look at this holdout | hold, then read; controls pead_long_high_yoy_growth_only (long leg) and pead_short_negative_yoy_growth (short leg) | reader built, needs --prior-read (the two Step-2 reads) and --disclosure (your words); IS rank-1 cells in the ticket row |
+| 18 | S6-B3139as | COT availability (Tuesday positions released Friday) in BOTH producers, backtest/signals/cot_positioning.py and backtest/data/sentiment.py get_cot_report: **fix-both** / label | fix-both - it moves every COT figure, the admitted three_white_soldiers c14 line among them (its banked result stays frozen with a note, per your 2026-09-30 ruling) | both call sites named; the regrade instrument exists |
+| 19 | S6-B3139at | rides #18. COT files: **re-fetch** (E-mini contracts for rut and ndx; one contract per file; pin one row per report date) / leave | re-fetch after #18 | census of every cftc file in the ticket row |
+| 20 | S6-B3139az | rides #16. Count-valued axes registered as flags (13F new positions read as exactly-one): **fix** (registry value-type field; require-TRUE on a count maps to > 0; pin; sweep the other count-as-flag rows) / leave | fix | the two sites are named in the row |
+| 21 | S6-B3139ae | PreToolUse refusal for a backslash-bearing heredoc fed to an interpreter (git-message heredocs exempt; must-fire and must-quiet corpus): **approve** / decline (the Stop-time scan stays the record) | approve - three incidents in one session, each caught after the command ran | the Stop-time scan S6-B3138a; the three incident commands for the corpus |
+| 22 | S6-B3139bd | short interest's share denominator: **source-dated** (SEC dei cover-page count known at each settlement; 147 of 756 gate-band tickers need a stated fallback) / label-non-PIT | source-dated - 258 of 711 squeeze-gate decisions flip (36.3%), one-sided | output_audit/b3139d_short_interest_pit_measure.json; the dei fetch path proven on 609 of 709 requests |
+| 23 | S6-B3139bh | 13F availability (the live rule uses ReportPeriod + 45 days; `Date` is the SEC filing timestamp, 13 of 13 resolved rows): **c** (fix for new campaigns, measure the admitted lines' exposure first) then **a** (engine: available at the filing Date) / b (label non-PIT) | c then a | output_audit/b3139ay_13f_date_verification.json; DEC-325 (2026-05-11) already ruled the filing-date filter |
+| 24 | S6-B3139bi | the five FRED macro signals behind macro_score read revised values before publication (recession probability a median 61 days early, 97.8% revised; claims 5 days, 95.7% revised): **vintage** (route _fred_value_at through the ALFRED vintage filter the yield curve already uses; fallback logged) / label | vintage - 0 of 15 admitted lines gate on macro_score; S6-B3139bl (re-prefetch of 2 truncated vintage caches) runs first without a ruling | output_audit/b3139ba_fred_pit_measure.json |
+| 25 | S6-B2202a (BLOCKED) | TaskScheduler Operational log: run your 2-step elevated-shell card **when convenient** | - | card in the ticket row |
+
+No reply needed (implementable, worked one at a time in this order): S6-B3139bl, bj, bb, bc, bf,
+be, bg, bk - each is hygiene or a measurement that moves no verdict.
