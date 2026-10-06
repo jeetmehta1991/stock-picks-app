@@ -52782,3 +52782,65 @@ def test_b3139bg_hand_bannered_generated_docs_sit_outside_the_register_and_keep_
             f"{gen} now emits the banner - the doc is pure generator output; "
             "move it back to _B1974_GENERATED")
         assert header in src, f"{gen} no longer emits {header!r}"
+
+
+def test_b3139bk_apewisdom_reader_is_point_in_time_and_returns_only_columns_the_store_holds(tmp_path, monkeypatch):
+    """S6-B3139bk: get_apewisdom_mentions took no as_of and returned
+    match.iloc[0] - the ticker's FIRST row in file order, whatever its
+    snapshot_date - from a store that accumulates one dated snapshot per
+    prefetch day; it also coined `mentions_24h` and `sentiment` from columns
+    the store does not hold (always 0 / 0.0). Now: as_of is required, the row
+    comes from the latest snapshot on or before it, and the keys are the
+    store's own columns with NaN as None. Planted store with two snapshot
+    dates; the signature refuses a dateless call; the one caller
+    (sentiment_snapshot's ticker branch) passes as_of, checked by AST; and the
+    live store, when present, answers 2026-05-06 with that day's snapshot."""
+    import ast
+    import inspect
+    from datetime import date as _d
+    import pandas as pd
+    import pytest
+    import backtest.data.sentiment as sm
+    p = tmp_path / "global.parquet"
+    pd.DataFrame([
+        {"rank": 3, "ticker": "AMD", "name": "AMD", "mentions": 100, "upvotes": 10,
+         "rank_24h_ago": 5, "mentions_24h_ago": 80.0, "snapshot_date": "2026-05-05"},
+        {"rank": 1, "ticker": "AMD", "name": "AMD", "mentions": 200, "upvotes": 20,
+         "rank_24h_ago": 3, "mentions_24h_ago": 100.0, "snapshot_date": "2026-05-06"},
+        {"rank": 2, "ticker": "MU", "name": "Micron", "mentions": 150, "upvotes": 15,
+         "rank_24h_ago": 0, "mentions_24h_ago": None, "snapshot_date": "2026-05-05"},
+    ]).to_parquet(p, index=False)
+    monkeypatch.setattr(sm, "PREFETCH_APEWISDOM", p)
+    # MUST read no_data before the first snapshot - not the latest row
+    assert sm.get_apewisdom_mentions("AMD", _d(2026, 5, 4)) == {"signal": "no_data"}
+    # the first snapshot's day reads THAT snapshot, not the later one
+    r = sm.get_apewisdom_mentions("AMD", _d(2026, 5, 5))
+    assert (r["signal"], r["mentions"], r["rank"], r["snapshot_date"]) == (
+        "tracked", 100, 3, "2026-05-05"), r
+    # after both: the latest by snapshot date, not by row order (file order
+    # puts the 05-05 row first - the old reader's answer)
+    r = sm.get_apewisdom_mentions("AMD", _d(2026, 5, 9))
+    assert (r["mentions"], r["rank"], r["snapshot_date"]) == (200, 1, "2026-05-06"), r
+    assert set(r) == {"signal", "mentions", "upvotes", "rank", "rank_24h_ago",
+                      "mentions_24h_ago", "snapshot_date"}, (
+        "keys are the store's columns - no coined mentions_24h / sentiment")
+    assert r["mentions_24h_ago"] == 100.0 and r["rank_24h_ago"] == 3
+    # a ticker absent from the latest snapshot at as_of
+    r = sm.get_apewisdom_mentions("MU", _d(2026, 5, 6))
+    assert r["signal"] == "no_mentions" and r["snapshot_date"] == "2026-05-06", r
+    # NaN reads None, not 0
+    assert sm.get_apewisdom_mentions("MU", _d(2026, 5, 5))["mentions_24h_ago"] is None
+    # a dateless call is refused by the signature
+    with pytest.raises(TypeError):
+        sm.get_apewisdom_mentions("AMD")
+    # the one caller passes as_of
+    calls = [c for c in ast.walk(ast.parse(inspect.getsource(sm.sentiment_snapshot)))
+             if isinstance(c, ast.Call) and getattr(c.func, "id", None) == "get_apewisdom_mentions"]
+    assert calls and all(any(getattr(a, "id", None) == "as_of" for a in c.args)
+                         for c in calls), "sentiment_snapshot must pass as_of"
+    # the live store (when present): the 2026-05-06 snapshot answers for that day
+    monkeypatch.undo()
+    if sm.PREFETCH_APEWISDOM.exists():
+        live = sm.get_apewisdom_mentions("AMD", _d(2026, 5, 6))
+        assert live.get("snapshot_date") == "2026-05-06", live
+        assert sm.get_apewisdom_mentions("AMD", _d(2026, 5, 4)) == {"signal": "no_data"}

@@ -356,31 +356,56 @@ def get_cnn_components(as_of: date) -> dict:
     return out
 
 
-def get_apewisdom_mentions(ticker: str) -> dict:
-    """Apewisdom WSB+r/stocks ticker mentions (Pass 53 Batch 12-a).
+def get_apewisdom_mentions(ticker: str, as_of: date) -> dict:
+    """Apewisdom WSB+r/stocks ticker mentions (Pass 53 Batch 12-a), point in
+    time (S6-B3139bk): the ticker's row in the LATEST snapshot taken on or
+    before `as_of`. The store (global.parquet) accumulates one snapshot per
+    prefetch day with a `snapshot_date` per row, and a snapshot is available
+    from its own date; the first is 2026-05-05, so every earlier as_of reads
+    no_data. The old reader took the first row for the ticker in file order,
+    whatever its date, and coined `mentions_24h` / `sentiment` from columns
+    the store does not hold (always 0 / 0.0); the store's own columns are
+    returned instead, NaN as None.
 
-    Returns dict with mentions / mentions_24h / rank / sentiment for ticker;
-    returns {"signal": "no_data"} if not in latest snapshot.
+    Returns {"signal": "no_data"} with no snapshot on or before as_of,
+    {"signal": "no_mentions", ...} when that snapshot has no row for the
+    ticker, else signal / mentions / upvotes / rank / rank_24h_ago /
+    mentions_24h_ago / snapshot_date.
     """
     if not PREFETCH_APEWISDOM.exists():
         return {"signal": "no_data"}
     try:
         df = pd.read_parquet(PREFETCH_APEWISDOM)
-        if df.empty or "ticker" not in df.columns:
+        if df.empty or "ticker" not in df.columns or "snapshot_date" not in df.columns:
             return {"signal": "no_data"}
+        snap = pd.to_datetime(df["snapshot_date"]).dt.date
+        df = df[snap <= as_of]
+        if df.empty:
+            return {"signal": "no_data"}
+        snap = pd.to_datetime(df["snapshot_date"]).dt.date
+        latest = snap.max()
+        df = df[snap == latest]
         match = df[df["ticker"].astype(str).str.upper() == ticker.upper()]
         if match.empty:
-            return {"signal": "no_mentions", "mentions": 0}
+            return {"signal": "no_mentions", "mentions": 0,
+                    "snapshot_date": latest.isoformat()}
         row = match.iloc[0]
+
+        def _num(col, cast):
+            v = row[col] if col in df.columns else None
+            return None if v is None or pd.isna(v) else cast(v)
+
         return {
             "signal": "tracked",
-            "mentions": int(row.get("mentions", 0) or 0),
-            "mentions_24h": int(row.get("mentions_24h", 0) or 0),
-            "rank": int(row.get("rank", 999) or 999),
-            "sentiment": float(row.get("sentiment", 0) or 0),
+            "mentions": _num("mentions", int),
+            "upvotes": _num("upvotes", int),
+            "rank": _num("rank", int),
+            "rank_24h_ago": _num("rank_24h_ago", int),
+            "mentions_24h_ago": _num("mentions_24h_ago", float),
+            "snapshot_date": latest.isoformat(),
         }
     except Exception as exc:
-        logger.debug("get_apewisdom_mentions(%s): %s", ticker, exc)
+        logger.debug("get_apewisdom_mentions(%s, %s): %s", ticker, as_of, exc)
         return {"signal": "no_data"}
 
 
@@ -545,11 +570,11 @@ def sentiment_snapshot(as_of: date, ticker: Optional[str] = None) -> dict:
     apewisdom = None
     wikipedia = None
     if ticker:
-        apewisdom = get_apewisdom_mentions(ticker)
+        apewisdom = get_apewisdom_mentions(ticker, as_of)
         wikipedia = get_wikipedia_pageviews(ticker, as_of)
         # Apewisdom rank (lower = more mentions)
         ape_sig = apewisdom.get("signal", "no_data")
-        if ape_sig == "tracked" and apewisdom.get("rank", 999) <= 50:
+        if ape_sig == "tracked" and (apewisdom.get("rank") or 999) <= 50:
             # Top-50 meme stock  -  signal mixed (could be retail buy or pump-and-dump)
             score += 0  # neutral; presence is information, direction is not
         # Wikipedia pageviews spike  -  high attention often precedes movement
