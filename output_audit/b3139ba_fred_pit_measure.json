@@ -25,9 +25,18 @@
   "STLFSI4": {
    "signal": "financial_stress_signal",
    "alfred_cache": "present",
-   "obs_dates_in_window": 0,
+   "obs_dates_in_window": 209,
    "rows_without_realtime_start": 0,
-   "publication_lag_days": "n/a"
+   "fred_observation_rows_in_window": 208,
+   "publication_lag_days": {
+    "min": 5,
+    "median": 6.0,
+    "p90": 42.40000000000012,
+    "max": 188
+   },
+   "share_published_after_obs_date": 1.0,
+   "share_of_dates_revised": 1.0,
+   "max_vintages_one_date": 202
   },
   "RECPROUSM156N": {
    "signal": "recession_probability_signal",
@@ -95,9 +104,23 @@
   }
  },
  "vintage_cache_gaps": {
-  "STLFSI4": "100,000 rows ending 2005-01-21",
-  "NFCI": "ends 2020-12-25",
-  "count": "2 of 80 data_prefetch/alfred files end before the window"
+  "at_B3139q-r30": {
+   "STLFSI4": "100,000 rows ending 2005-01-21",
+   "NFCI": "ends 2020-12-25",
+   "count": "2 of 80 data_prefetch/alfred files ended before the window"
+  },
+  "at_B3139q-r32 (S6-B3139bl)": "both re-fetched through scripts/prefetch_alfred_mirror.py: STLFSI4 48,539 rows 2020-01-03..2026-09-25 (24,516 in the window), NFCI 57,149 rows (23,739 in the window); the STLFSI4 figures under 'series' are measured on the new cache",
+  "still_no_vintages": [
+   "DFII10",
+   "DFII30",
+   "DFII5",
+   "DGS20",
+   "DGS3",
+   "T5YIFR",
+   "VIXCLS",
+   "VXVCLS"
+  ],
+  "still_no_vintages_note": "ALFRED returned no observations for these 8 of 90 FRED series; none of them is read by a macro.py signal"
  },
  "consumers": "macro_snapshot -> macro_score -> STRATEGY_REQUIRED_MACRO_REGIME (5 strategies: bollinger_tight, monthly_bias_momentum_long, xs_quality_top_quintile_long, pead_long, adx_initiation); 0 of 15 admitted Phase 1B lines",
  "script": "scratchpad measure_fred_pit.py"
