@@ -89,7 +89,42 @@ def _load_cot_series(filename: str) -> pd.DataFrame:
         return pd.DataFrame()
     df = df.dropna(subset=["report_date"])
     df["d"] = df["report_date"].dt.date
+    # S6-B3139as: a report is usable from its RELEASE date, not its positions date
+    df["release"] = [cot_release_date(x) for x in df["d"]]
     return df.sort_values("d")
+
+
+@lru_cache(maxsize=1)
+def _federal_holidays() -> frozenset:
+    from pandas.tseries.holiday import USFederalHolidayCalendar
+    return frozenset(d.date() for d in USFederalHolidayCalendar().holidays("2000-01-01", "2035-12-31"))
+
+
+def cot_release_date(report_date: date) -> date:
+    """S6-B3139as (owner ruling 2026-10-06, packet row 18 'fix-both'): the date
+    a COT report became public. CFTC publishes Tuesday positions on the Friday
+    of the same week at 3:30 p.m. ET (before the equity close, so usable on that
+    day's bar); in a week holding a US federal holiday between the positions
+    date and that Friday the release moves to the next federal business day
+    after the Friday. A MODEL of the schedule: the cached files carry no release
+    timestamps, and the 2025 federal shutdown backlog (reports released weeks
+    late) is not represented - an availability floor, not the true date, for
+    those weeks."""
+    import datetime as _dt
+    hol = _federal_holidays()
+    friday = report_date + _dt.timedelta(days=(4 - report_date.weekday()) % 7)
+    d = report_date + _dt.timedelta(days=1)
+    held = False
+    while d <= friday:
+        if d in hol:
+            held = True
+        d += _dt.timedelta(days=1)
+    if not held:
+        return friday
+    nxt = friday + _dt.timedelta(days=1)
+    while nxt.weekday() >= 5 or nxt in hol:
+        nxt += _dt.timedelta(days=1)
+    return nxt
 
 
 def _commercials_columns(df: pd.DataFrame) -> tuple[str | None, str | None]:
@@ -131,7 +166,7 @@ def compute_cot_series_signals(series: str, as_of: date) -> dict:
     df = _load_cot_series(SERIES_FILE_MAP[series])
     if df.empty:
         return {}
-    pit = df[df["d"] <= as_of]
+    pit = df[df["release"] <= as_of]  # S6-B3139as: released by as_of
     if pit.empty:
         return {}
     out: dict = {}

@@ -476,7 +476,10 @@ def get_cot_report(as_of: date) -> dict:
         if df.empty or "report_date" not in df.columns:
             return {"signal": "not_available", "commercial_net": None}
         df["report_date"] = pd.to_datetime(df["report_date"]).dt.date
-        df = df[df["report_date"] <= as_of]
+        # S6-B3139as (owner ruling 2026-10-06, packet row 18): released by as_of,
+        # by the one rule in backtest/signals/cot_positioning.py
+        from backtest.signals.cot_positioning import cot_release_date
+        df = df[[cot_release_date(d) <= as_of for d in df["report_date"]]]
         if df.empty:
             return {"signal": "not_available", "commercial_net": None}
         latest = df.iloc[-1]
@@ -679,10 +682,9 @@ def get_cftc_cot(contract_slug: str, as_of: Optional[date] = None) -> pd.DataFra
     Args:
         contract_slug: one of CFTC_CONTRACT_SLUGS (e.g. 'vix_futures',
             'treasury_10y', 'gold').
-        as_of: if provided, returns rows with report_date <= as_of (PIT cutoff).
-            CFTC reports are released weekly with a 3-day lag from Tuesday
-            close; for strict PIT correctness consumer should subtract 3 days
-            from as_of when filtering.
+        as_of: if provided, returns the reports RELEASED by as_of (S6-B3139as:
+            cot_release_date in backtest/signals/cot_positioning.py - the
+            Friday of the positions week, later in a federal-holiday week).
 
     Returns DataFrame or empty if contract not found.
     """
@@ -697,7 +699,10 @@ def get_cftc_cot(contract_slug: str, as_of: Optional[date] = None) -> pd.DataFra
         if as_of is not None and "report_date" in df.columns:
             df = df.copy()
             df["report_date"] = pd.to_datetime(df["report_date"], errors="coerce")
-            df = df[df["report_date"] <= pd.Timestamp(as_of)]
+            df = df.dropna(subset=["report_date"])
+            # S6-B3139as: released by as_of, by the one rule
+            from backtest.signals.cot_positioning import cot_release_date
+            df = df[[cot_release_date(x.date()) <= as_of for x in df["report_date"]]]
         return df
     except Exception as exc:
         logger.debug("get_cftc_cot(%s): %s", contract_slug, exc)

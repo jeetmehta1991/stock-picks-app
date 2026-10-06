@@ -958,6 +958,17 @@
      "ruling_verbatim": "once they are in phase 1b roster their results can not be changed. You can add a note to it",
      "meaning": "the roster RESULTS (raw and net figures) are FROZEN as recorded - no re-grade, no re-derivation changes them; this note rides the roster row. The pre-registered 2026-09-29 strike rule remains the only path that can change the admission's STATUS, and it judges status, never the recorded figures."
     }
+   },
+   "pit_cot_note": {
+    "ruled": "owner 2026-10-06, packet rows 18-19 'fix-both' + 're-fetch' (S6-B3139br): note only, results frozen per 2026-09-30",
+    "finding": "the breadth gate cot_ndx_mmoney_pctile_3y was computed on the MICRO E-mini Nasdaq-100 (code 209747) and read each report on its positions date, about 3 days before CFTC released it",
+    "rule_now": "the standard E-mini Nasdaq-100 (code 209742), usable from its release date (cot_release_date)",
+    "artifact": "output_audit/b3139as_at_tws_cot_exposure.json",
+    "control": "955 of 955 fires reproduce the stored value",
+    "in_sample": "gate open on 307 of 764 fires before, 148 after (256 close, 97 open)",
+    "holdout": "gate open on 36 of 191 fires before, 130 after (8 close, 102 open)",
+    "attribution": "the contract switch alone moves IS to 114 and HO to 135 gate-open fires; the release-date lag moves the rest",
+    "consequence": "the admitted breadth line is not reproducible on corrected data; its frozen metrics stand only as a record"
    }
   }
  ],

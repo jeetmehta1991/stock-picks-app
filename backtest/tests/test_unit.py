@@ -53055,3 +53055,69 @@ def test_b3139bh_bq_13f_availability_is_capped_filing_date_with_one_definition()
         floor = df["report_period_ts"] + _pd.Timedelta(days=45)
         assert (df["available_after_ts"] >= floor).all()
         assert (df.loc[lag > 120, "available_after_ts"] == floor[lag > 120]).all()
+
+
+def test_b3139as_at_cot_reads_released_reports_of_one_contract_per_file(tmp_path, monkeypatch):
+    """S6-B3139as + S6-B3139at (owner ruling 2026-10-06, packet rows 18-19,
+    recorded in S6-B3139br). as: a COT report is usable from its RELEASE -
+    the Friday of the positions week, or the next federal business day when a
+    federal holiday sits between the positions date and that Friday - in BOTH
+    readers (cot_positioning, sentiment.get_cot_report and the uncalled
+    sentiment.get_cftc_cot - one definition).
+    at: every COT file the repo can read (19 slugs; 7 feed the engine) comes
+    from one CFTC contract code, one row per report date. By behaviour on a planted file, by the
+    release calendar, by AST on the second reader, and on the live files."""
+    import ast
+    import inspect
+    from datetime import date as _d
+    from pathlib import Path as _P
+    import pandas as _pd
+    import backtest.signals.cot_positioning as cp
+    import backtest.data.sentiment as sm
+    r = cp.cot_release_date
+    assert r(_d(2024, 3, 5)) == _d(2024, 3, 8)      # ordinary Tuesday -> Friday
+    assert r(_d(2024, 11, 26)) == _d(2024, 12, 2)   # Thanksgiving week -> Monday
+    assert r(_d(2024, 12, 24)) == _d(2024, 12, 30)  # Christmas week -> Monday
+    assert r(_d(2025, 7, 1)) == _d(2025, 7, 7)      # Independence Day week -> Monday
+    # planted single-contract file: 30 weekly Tuesdays; the last is invisible
+    # Wednesday and Thursday and visible on its Friday release
+    tue = _pd.date_range("2024-01-02", periods=30, freq="7D")
+    df = _pd.DataFrame({"report_date": tue, "open_interest_all": 1000.0,
+                        "lev_money_positions_long": [100.0 + i for i in range(29)] + [0.0],
+                        "lev_money_positions_short": 50.0,
+                        "dealer_positions_long_all": 10.0, "dealer_positions_short_all": 5.0})
+    df.to_parquet(tmp_path / "cot_x.parquet", index=False)
+    monkeypatch.setattr(cp, "_COT_DIR", tmp_path)
+    monkeypatch.setitem(cp.SERIES_FILE_MAP, "xx", "cot_x.parquet")
+    cp._load_cot_series.cache_clear()
+    last = tue[-1].date()
+    wed, thu, fri = (last + _pd.Timedelta(days=k) for k in (1, 2, 3))
+    before = cp.compute_cot_series_signals("xx", thu)
+    after = cp.compute_cot_series_signals("xx", fri)
+    assert before != after, "the last report must change the signal only on its release Friday"
+    assert cp.compute_cot_series_signals("xx", wed) == before
+    cp._load_cot_series.cache_clear()
+    monkeypatch.undo()
+    cp._load_cot_series.cache_clear()
+    # the other two readers call the one rule
+    for fn in (sm.get_cot_report, sm.get_cftc_cot):
+        calls = [c for c in ast.walk(ast.parse(inspect.getsource(fn)))
+                 if isinstance(c, ast.Call) and getattr(c.func, "id", None) == "cot_release_date"]
+        assert calls, f"sentiment.{fn.__name__} must filter on cot_release_date"
+    # at: every series the engine reads has a code, and its live file holds
+    # exactly that code with one row per report date
+    root = _P(__file__).resolve().parents[2]
+    import importlib.util as _iu
+    spec = _iu.spec_from_file_location("pf_cftc_b3139at", root / "scripts" / "prefetch_cftc_cot.py")
+    pf = _iu.module_from_spec(spec)
+    spec.loader.exec_module(pf)
+    slug_of = {f"cot_{k}.parquet": k for k in pf.CONTRACT_CODES}
+    assert set(cp.SERIES_FILE_MAP.values()) <= set(slug_of), "an engine series has no contract code"
+    assert set(pf.CONTRACT_CODES) == set(sm.CFTC_CONTRACT_SLUGS), "every readable slug carries exactly one code"
+    for fname in sorted(slug_of):
+        p = root / "data_prefetch" / "cftc" / fname
+        if not p.exists():
+            continue
+        live = _pd.read_parquet(p, columns=["cftc_contract_market_code", "report_date"])
+        assert set(live["cftc_contract_market_code"].astype(str)) == {pf.CONTRACT_CODES[slug_of[fname]]}, fname
+        assert not _pd.to_datetime(live["report_date"]).duplicated().any(), fname

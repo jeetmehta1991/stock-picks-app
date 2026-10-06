@@ -1,0 +1,51 @@
+{
+ "_doc": "S6-B3139as + S6-B3139at: exposure of the ADMITTED three_white_soldiers c14\nbreadth line (gate cot_ndx_mmoney_pctile_3y >= 0.637) to the two COT fixes.\nThree phases, all on the live producer with its data dir pointed at a temp copy:\n  old            committed HEAD file (name-matched, Micro contract) + positions-date availability\n  contract_only  re-fetched E-mini file (code 209742) + positions-date availability\n  full           re-fetched E-mini file + release-date availability (the landed rule)\nControl: the 'old' phase must reproduce the value stored at entry on every fire.\nWrites output_audit/b3139as_at_tws_cot_exposure.json. Read-only otherwise.",
+ "strategy": "three_white_soldiers",
+ "admission_ticket": "S6-B3114b",
+ "gate": "cot_ndx_mmoney_pctile_3y >= 0.637",
+ "trade_log": "output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3/trade_log.csv",
+ "control": {
+  "fires": 955,
+  "stored_present": 955,
+  "old_phase_reproduces_stored": 955
+ },
+ "old_file_contract_codes": [
+  "209747"
+ ],
+ "old_file_contract_names": [
+  "MICRO E-MINI NASDAQ-100 INDEX"
+ ],
+ "new_file_contract_codes": [
+  "209742"
+ ],
+ "windows": {
+  "IS": {
+   "fires": 764,
+   "gate_open_old": 307,
+   "contract_only": {
+    "gate_open": 114,
+    "closes": 265,
+    "opens": 72
+   },
+   "full": {
+    "gate_open": 148,
+    "closes": 256,
+    "opens": 97
+   }
+  },
+  "HO": {
+   "fires": 191,
+   "gate_open_old": 36,
+   "contract_only": {
+    "gate_open": 135,
+    "closes": 3,
+    "opens": 102
+   },
+   "full": {
+    "gate_open": 130,
+    "closes": 8,
+    "opens": 102
+   }
+  }
+ }
+}

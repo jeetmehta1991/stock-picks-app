@@ -34,6 +34,38 @@ OUT_DIR = Path("data_prefetch/cftc")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Map of (label -> {dataset, contract_market_name_filter, slug_for_filename})
+# S6-B3139at (owner ruling 2026-10-06, packet row 19 're-fetch'): the seven
+# series backtest/signals/cot_positioning.py reads are fetched by CFTC
+# CONTRACT CODE - stable across renames, one contract per file. The name
+# filters below matched the MICRO contracts for ndx and rut (the standard
+# E-minis are named "NASDAQ MINI" and "RUSSELL E-MINI") and mixed the micro
+# into sp500 and gold. Codes confirmed against CFTC's API at B3139q-r47
+# (each 404 weekly reports 2019-01-08..2026-09-29).
+CONTRACT_CODES = {
+    "emini_sp500": "13874A",      # E-MINI S&P 500
+    "emini_nasdaq100": "209742",  # NASDAQ MINI (the E-mini Nasdaq-100)
+    "emini_russell2k": "239742",  # RUSSELL E-MINI (Russell 2000)
+    "emini_dow": "124603",        # DJIA x $5
+    "dxy_dollar_idx": "098662",   # USD INDEX
+    "gold": "088691",             # GOLD (COMEX)
+    "copper": "085692",           # COPPER- #1
+    # The remaining slugs, read by backtest/data/sentiment.py get_cftc_cot.
+    # Each code is the primary contract already in the file; eur_usd, jpy_usd,
+    # silver and ust_bond had cross-rates, micros or the ultra bond mixed in.
+    "vix_futures": "1170E1",      # VIX FUTURES
+    "treasury_10y": "043602",     # UST 10Y NOTE
+    "treasury_5y": "044601",      # UST 5Y NOTE
+    "treasury_2y": "042601",      # UST 2Y NOTE
+    "ust_bond": "020601",         # UST BOND (the ultra bond has its own file)
+    "ultra_treasury": "020604",   # ULTRA UST BOND
+    "fed_funds_30d": "045601",    # FED FUNDS
+    "eur_usd": "099741",          # EURO FX
+    "jpy_usd": "097741",          # JAPANESE YEN
+    "wti_crude": "067411",        # CRUDE OIL, LIGHT SWEET-WTI
+    "silver": "084691",           # SILVER
+    "natural_gas": "023651",      # NAT GAS NYME
+}
+
 CONTRACTS = [
     # -- Equity indices (TFF) --
     ("emini_sp500",     DATASET_TFF, "E-MINI S&P 500"),
@@ -63,7 +95,7 @@ CONTRACTS = [
 
 
 def fetch_contract(dataset: str, contract_filter: str,
-                    limit_per_page: int = 50000) -> pd.DataFrame:
+                    limit_per_page: int = 50000, code: str | None = None) -> pd.DataFrame:
     """Fetch all rows for a contract via Socrata API.
 
     Uses ``$where`` filter on contract_market_name (case-insensitive contains).
@@ -78,7 +110,8 @@ def fetch_contract(dataset: str, contract_filter: str,
     while True:
         url = f"{CFTC_BASE}/{dataset}.json"
         params = {
-            "$where": f"upper(contract_market_name) like '%{contract_filter.upper()}%'",
+            "$where": (f"cftc_contract_market_code = '{code}'" if code else
+                       f"upper(contract_market_name) like '%{contract_filter.upper()}%'"),
             "$limit": limit_per_page,
             "$offset": offset,
             "$order": "report_date_as_yyyy_mm_dd",
@@ -117,10 +150,25 @@ def main():
     print()
     success_count = 0
     fail_count = 0
+    only = None
+    if "--only" in sys.argv:
+        only = set(sys.argv[sys.argv.index("--only") + 1].split(","))
+    done = set()
     for slug, dataset, contract_filter in CONTRACTS:
+        if (only is not None and slug not in only) or slug in done:
+            continue
+        done.add(slug)
         out_path = OUT_DIR / f"cot_{slug}.parquet"
         try:
-            df = fetch_contract(dataset, contract_filter)
+            code = CONTRACT_CODES.get(slug)
+            df = fetch_contract(dataset, contract_filter, code=code)
+            if code and not df.empty:
+                # S6-B3139at: one contract, one row per report date - fail closed
+                codes = set(df["cftc_contract_market_code"].astype(str))
+                if codes != {code}:
+                    raise ValueError(f"{slug}: codes {sorted(codes)} != {{{code}}}")
+                if df["report_date"].duplicated().any():
+                    raise ValueError(f"{slug}: repeated report dates")
             if df.empty:
                 print(f"  [SKIP] {slug} ({contract_filter}): no rows returned "
                       f"- check filter")
