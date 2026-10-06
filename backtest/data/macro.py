@@ -17,6 +17,7 @@ clear "run scripts/prefetch_fred.py" / "run scripts/prefetch_alfred_mirror.py"
 guidance message. Live API calls live exclusively in scripts/prefetch_*.py.
 """
 
+import functools
 import logging
 from datetime import date, timedelta
 from pathlib import Path
@@ -534,26 +535,58 @@ _REPO_ROOT_MACRO = Path(__file__).parent.parent.parent
 PREFETCH_FRED_DIR = _REPO_ROOT_MACRO / "data_prefetch" / "fred" / "observations"
 
 
-def _fred_value_at(series_id: str, as_of: date) -> Optional[float]:
-    """Latest FRED observation value at-or-before `as_of` from prefetch cache.
+# S6-B3139bi (owner ruling 2026-10-06, packet row 24 'vintage'): the macro
+# signals read the value AS FIRST PUBLISHED. The old reader took the latest
+# FRED observation dated on or before as_of - a REVISED value, and for the
+# monthly recession probability one published a median 61 days later
+# (output_audit/b3139ba_fred_pit_measure.json). A vintage miss returns None
+# (the signal reads 'unknown', score 0) and is COUNTED - it never falls back
+# to the revised observation, which would be the same look-ahead wearing a
+# log line (#122). MEASURED B3139q-r44, weekly as-of probes 2021-11..2026-05:
+# BAMLH0A0HYM2 misses 79 of 236 weeks (FRED keeps 3 years of ICE history, so
+# its vintages start 2023-05-08), STLFSI4 54 of 236 (vintages start
+# 2022-11-10), RECPROUSM156N / ICSA / WALCL 0 of 236.
+_VINTAGE_MISSES: dict = {}
 
-    Returns None if cache miss or no observations on/before as_of.
-    """
-    path = PREFETCH_FRED_DIR / f"{series_id}.parquet"
+
+@functools.lru_cache(maxsize=None)
+def _alfred_frame(series_id: str):
+    """The ALFRED vintage store for one series, parsed once per process;
+    None when the series has no vintage file."""
+    path = ALFRED_DIR / f"{series_id}.parquet"
     if not path.exists():
         return None
-    try:
-        df = pd.read_parquet(path)
-        if df.empty or "date" not in df.columns or "value" not in df.columns:
-            return None
-        df["date"] = pd.to_datetime(df["date"]).dt.date
-        df = df[df["date"] <= as_of]
-        if df.empty:
-            return None
-        return float(df.iloc[-1]["value"])
-    except Exception as exc:
-        logger.debug("_fred_value_at(%s, %s): %s", series_id, as_of, exc)
-        return None
+    df = pd.read_parquet(path, columns=["date", "realtime_start", "realtime_end", "value"])
+    df = df.dropna(subset=["value"]).copy()
+    df["date"] = pd.to_datetime(df["date"])
+    df["realtime_start"] = pd.to_datetime(df["realtime_start"])
+    df["realtime_end"] = pd.to_datetime(df["realtime_end"])
+    return df.sort_values(["date", "realtime_start"]).reset_index(drop=True)
+
+
+def vintage_miss_counts() -> dict:
+    """Per-series count of _fred_value_at calls that found no vintage value."""
+    return dict(_VINTAGE_MISSES)
+
+
+def _fred_value_at(series_id: str, as_of: date) -> Optional[float]:
+    """The latest observation dated on or before `as_of` IN THE VINTAGE IN
+    FORCE ON `as_of` (realtime_start <= as_of <= realtime_end) - the value a
+    reader could have seen that day. None, counted, when no vintage covers
+    `as_of`; never the revised FRED observation."""
+    df = _alfred_frame(series_id)
+    if df is not None:
+        t = pd.Timestamp(as_of)
+        v = df[(df["realtime_start"] <= t) & (df["realtime_end"] >= t) & (df["date"] <= t)]
+        if not v.empty:
+            return float(v.iloc[-1]["value"])
+    n = _VINTAGE_MISSES.get(series_id, 0) + 1
+    _VINTAGE_MISSES[series_id] = n
+    if n == 1:
+        logger.warning("macro: no ALFRED vintage for %s as of %s - the signal reads "
+                       "unknown (S6-B3139bi; misses are counted, see vintage_miss_counts)",
+                       series_id, as_of)
+    return None
 
 
 def hy_oas_signal(as_of: date) -> dict:

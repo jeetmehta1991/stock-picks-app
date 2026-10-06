@@ -52893,3 +52893,66 @@ def test_b3139az_a_count_axis_is_kept_positive_and_a_flag_op_refuses_a_count(tmp
             assert max(vals) > 1.0, (p["param"], "registered as a count but the fires hold a boolean")
         else:
             assert vals <= {0.0, 1.0}, (p["param"], "registered as a flag but the fires hold a count")
+
+
+def test_b3139bi_macro_signals_read_the_vintage_in_force_and_count_a_miss(tmp_path, monkeypatch):
+    """S6-B3139bi (owner ruling 2026-10-06, packet row 24 'vintage'): the five
+    macro signals behind macro_score read the value AS FIRST PUBLISHED. On a
+    planted ALFRED store: an observation is invisible before its vintage's
+    realtime_start; a later revision replaces it only from the revision's own
+    realtime_start; an as_of before any vintage returns None and is counted -
+    the revised FRED observation is never used as a fallback (the old reader
+    took exactly that). Then on the live store: RECPROUSM156N at 2024-06-03
+    returns the value of the vintage in force that day, which differs from
+    the latest FRED observation for the same month when it was revised."""
+    from datetime import date as _d
+    import pandas as _pd
+    import backtest.data.macro as mm
+    store = tmp_path / "alfred"
+    store.mkdir()
+    _pd.DataFrame({
+        "series_id": ["X"] * 3,
+        "date": _pd.to_datetime(["2024-01-01", "2024-01-01", "2024-02-01"]),
+        "realtime_start": ["2024-01-20", "2024-02-20", "2024-02-20"],
+        "realtime_end": ["2024-02-19", "9999-12-31", "9999-12-31"],
+        "value": [10.0, 12.0, 20.0],
+    }).to_parquet(store / "X.parquet", index=False)
+    monkeypatch.setattr(mm, "ALFRED_DIR", store)
+    mm._alfred_frame.cache_clear()
+    monkeypatch.setattr(mm, "_VINTAGE_MISSES", {})
+    try:
+        # MUST be None (and counted): before the first vintage was published
+        assert mm._fred_value_at("X", _d(2024, 1, 10)) is None
+        assert mm.vintage_miss_counts() == {"X": 1}
+        # the first release, as published
+        assert mm._fred_value_at("X", _d(2024, 2, 1)) == 10.0
+        # after the revision's own publication: the revised January value is
+        # superseded by the newer February observation, both from the new vintage
+        assert mm._fred_value_at("X", _d(2024, 2, 25)) == 20.0
+        # a series with no vintage file at all: None, counted, no fallback
+        assert mm._fred_value_at("NOSUCH", _d(2024, 2, 25)) is None
+        assert mm.vintage_miss_counts()["NOSUCH"] == 1
+    finally:
+        mm._alfred_frame.cache_clear()
+    monkeypatch.undo()
+    mm._alfred_frame.cache_clear()
+    root = mm.ALFRED_DIR
+    fred = mm.PREFETCH_FRED_DIR / "RECPROUSM156N.parquet"
+    if not (root / "RECPROUSM156N.parquet").exists() or not fred.exists():
+        import pytest as _pt
+        _pt.skip("ALFRED / FRED prefetch not on this machine")
+    as_of = _d(2024, 6, 3)
+    vint = mm._fred_value_at("RECPROUSM156N", as_of)
+    assert vint is not None
+    f = _pd.read_parquet(fred)
+    f["date"] = _pd.to_datetime(f["date"]).dt.date
+    latest_rev = float(f[f["date"] <= as_of].iloc[-1]["value"])
+    al = mm._alfred_frame("RECPROUSM156N")
+    t = _pd.Timestamp(as_of)
+    in_force = al[(al.realtime_start <= t) & (al.realtime_end >= t) & (al.date <= t)].iloc[-1]
+    assert vint == float(in_force["value"])
+    # the vintage reader does not read the FRED file: its observation dates
+    # can run past the vintage's latest one (published later)
+    assert in_force["date"].date() <= as_of
+    print(f"[bi] RECPROUSM156N as_of {as_of}: vintage {vint} (obs {in_force['date'].date()}) "
+          f"vs revised FRED {latest_rev}")
