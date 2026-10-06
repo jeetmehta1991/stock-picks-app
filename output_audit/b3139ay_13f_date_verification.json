@@ -1,0 +1,468 @@
+{
+ "ticket": "S6-B3139ay",
+ "_doc": "What does the 13F `Date` column hold? Read-only check against SEC for a stratified sample of rows from the per-ticker files the live signal reads (data_prefetch/quiver/institutional/<T>.parquet): every 30th file, 7 rows per filing-delay band (Date - ReportPeriod: <=45, 46-90, 91-365, >365 days), distinct funds. Each fund was resolved through SEC full-text search to a CIK whose display name matches it, then that filer's submissions JSON gave its 13F-HR and 13F-HR/A filings for the report period. EXACT = a filing's acceptanceDateTime equals Date to the second; DATE = only the calendar date matches a filing date; NONE = filings found for the period but neither matches; UNMAPPED = no CIK or no 13F for the period found - unknown, never counted as a mismatch.",
+ "verdict": "13 of 13 mapped rows match the 13F filing (11 to the second, 2 by date), 0 contradict; 15 of 28 rows did not resolve on SEC. On every row that could be mapped, `Date` is the SEC filing timestamp of the 13F-HR that carries the holding; the unmapped rows are unknown, not contradictions.",
+ "totals": {
+  "UNMAPPED": 15,
+  "DATE": 2,
+  "EXACT": 11
+ },
+ "by_band": {
+  "<=45": {
+   "UNMAPPED": 4,
+   "DATE": 2,
+   "EXACT": 1
+  },
+  "46-90": {
+   "UNMAPPED": 4,
+   "EXACT": 3
+  },
+  "91-365": {
+   "UNMAPPED": 2,
+   "EXACT": 5
+  },
+  ">365": {
+   "UNMAPPED": 5,
+   "EXACT": 2
+  }
+ },
+ "consequence": "the live per-ticker path (backtest/data/smart_money.py _load_institutional_processed) makes a holding available at ReportPeriod + 45 days, so a holding filed later is used before it was public; DEC-325 (owner-approved 2026-05-11) already ruled the point-in-time lookup filters by the SEC filing date when one is available, and its implementation (get_institutional_positions) looks for filing_date / fileDate columns, never Date. The reconciliation is the owner's: S6-B3139bh.",
+ "rows": [
+  {
+   "band": "<=45",
+   "fund": "&PARTNERS",
+   "ticker": "ARES",
+   "report_period": "2023-09-30",
+   "date": "2023-10-06 14:18:01",
+   "gap_days": 6,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "<=45",
+   "fund": "Bogart Wealth, LLC",
+   "ticker": "FTAI",
+   "report_period": "2021-09-30",
+   "date": "2021-10-15 00:00:00",
+   "gap_days": 15,
+   "ciks": [
+    "0001715740"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2021-10-15",
+     "acceptance": "2021-10-15T19:58:55.000Z"
+    }
+   ],
+   "class": "DATE",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "<=45",
+   "fund": "Dempze Nancy E",
+   "ticker": "XYL",
+   "report_period": "2024-03-31",
+   "date": "2024-05-14 00:00:00",
+   "gap_days": 44,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "<=45",
+   "fund": "HFG Advisors, Inc.",
+   "ticker": "TNP",
+   "report_period": "2025-09-30",
+   "date": "2025-11-12 14:19:31",
+   "gap_days": 43,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "<=45",
+   "fund": "MERIDIAN MANAGEMENT CO",
+   "ticker": "CRL",
+   "report_period": "2023-09-30",
+   "date": "2023-11-03 15:14:28",
+   "gap_days": 34,
+   "ciks": [
+    "0000806097"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2023-11-03",
+     "acceptance": "2023-11-03T15:14:28.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "<=45",
+   "fund": "Perigon Wealth Management, LLC",
+   "ticker": "LIN",
+   "report_period": "2021-12-31",
+   "date": "2022-02-11 00:00:00",
+   "gap_days": 42,
+   "ciks": [
+    "0001575239"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2022-02-11",
+     "acceptance": "2022-02-11T00:52:53.000Z"
+    }
+   ],
+   "class": "DATE",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "<=45",
+   "fund": "Steigerwald, Gordon & Koch Inc.",
+   "ticker": "DD",
+   "report_period": "2024-09-30",
+   "date": "2024-10-09 14:46:30",
+   "gap_days": 9,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "46-90",
+   "fund": "1060 Capital, LLC",
+   "ticker": "ANF",
+   "report_period": "2022-03-31",
+   "date": "2022-05-16 12:31:08",
+   "gap_days": 46,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "46-90",
+   "fund": "Blume Capital Management, Inc.",
+   "ticker": "CVE",
+   "report_period": "2022-09-30",
+   "date": "2022-11-15 20:40:20",
+   "gap_days": 46,
+   "ciks": [
+    "0001587192"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2022-11-15",
+     "acceptance": "2022-11-15T20:40:20.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "46-90",
+   "fund": "Daventry Group, LP",
+   "ticker": "OSH",
+   "report_period": "2022-06-30",
+   "date": "2022-08-15 17:50:37",
+   "gap_days": 46,
+   "ciks": [
+    "0001823718"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2022-08-15",
+     "acceptance": "2022-08-15T17:50:37.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "46-90",
+   "fund": "HARMONY ASSET MANAGEMENT LLC",
+   "ticker": "CVE",
+   "report_period": "2024-12-31",
+   "date": "2025-02-15 02:22:19",
+   "gap_days": 46,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "46-90",
+   "fund": "MEKETA INVESTMENT GROUP INC /ADV",
+   "ticker": "ARES",
+   "report_period": "2024-12-31",
+   "date": "2025-02-15 01:23:46",
+   "gap_days": 46,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "46-90",
+   "fund": "Pinnacle Financial Partners, Inc.",
+   "ticker": "BMY",
+   "report_period": "2025-12-31",
+   "date": "2026-02-17 19:30:59",
+   "gap_days": 48,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "46-90",
+   "fund": "Strive Financial Group ,LLC",
+   "ticker": "BMY",
+   "report_period": "2025-12-31",
+   "date": "2026-02-17 23:10:05",
+   "gap_days": 48,
+   "ciks": [
+    "0002090040"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR/A",
+     "filingDate": "2026-05-15",
+     "acceptance": "2026-05-15T16:01:45.000Z"
+    },
+    {
+     "form": "13F-HR",
+     "filingDate": "2026-02-18",
+     "acceptance": "2026-02-17T23:10:05.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "91-365",
+   "fund": "3Chopt Investment Partners, LLC",
+   "ticker": "LIN",
+   "report_period": "2022-12-31",
+   "date": "2023-05-24 14:13:47",
+   "gap_days": 144,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "91-365",
+   "fund": "CAPE COD FIVE CENTS SAVINGS BANK",
+   "ticker": "BMY",
+   "report_period": "2025-03-31",
+   "date": "2025-07-21 17:07:23",
+   "gap_days": 112,
+   "ciks": [
+    "0001054646"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2025-07-21",
+     "acceptance": "2025-07-21T17:07:23.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "91-365",
+   "fund": "Darwin Wealth Management, LLC",
+   "ticker": "BMY",
+   "report_period": "2024-12-31",
+   "date": "2025-08-15 16:01:37",
+   "gap_days": 227,
+   "ciks": [
+    "0001663224"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR/A",
+     "filingDate": "2025-09-02",
+     "acceptance": "2025-08-29T22:01:15.000Z"
+    },
+    {
+     "form": "13F-HR",
+     "filingDate": "2025-08-15",
+     "acceptance": "2025-08-15T16:01:37.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "91-365",
+   "fund": "Goldstone Financial Group, LLC",
+   "ticker": "GIS",
+   "report_period": "2024-03-31",
+   "date": "2025-01-15 13:58:48",
+   "gap_days": 290,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": "91-365",
+   "fund": "MONETA GROUP INVESTMENT ADVISORS LLC",
+   "ticker": "COKE",
+   "report_period": "2024-03-31",
+   "date": "2024-08-13 18:49:03",
+   "gap_days": 135,
+   "ciks": [
+    "0001120927"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2024-08-13",
+     "acceptance": "2024-08-13T18:49:03.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "91-365",
+   "fund": "Prospera Financial Services Inc",
+   "ticker": "ARES",
+   "report_period": "2024-03-31",
+   "date": "2024-08-13 19:47:52",
+   "gap_days": 135,
+   "ciks": [
+    "0001541625"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2024-08-13",
+     "acceptance": "2024-08-13T19:47:52.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": "91-365",
+   "fund": "Swedbank AB",
+   "ticker": "A",
+   "report_period": "2023-12-31",
+   "date": "2024-12-09 17:31:10",
+   "gap_days": 344,
+   "ciks": [
+    "0000946431"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2024-12-06",
+     "acceptance": "2024-12-09T17:31:10.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": ">365",
+   "fund": "ABN AMRO Bank N.V.",
+   "ticker": "CB",
+   "report_period": "2023-03-31",
+   "date": "2025-08-28 11:17:17",
+   "gap_days": 881,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": ">365",
+   "fund": "BRIGHTON SECURITIES CORP.",
+   "ticker": "QCOM",
+   "report_period": "2024-12-31",
+   "date": "2026-03-06 15:30:45",
+   "gap_days": 430,
+   "ciks": [
+    "0000014213"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2026-03-06",
+     "acceptance": "2026-03-06T15:30:45.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": ">365",
+   "fund": "Clark Wealth Partners",
+   "ticker": "BMY",
+   "report_period": "2024-12-31",
+   "date": "2026-02-04 01:32:14",
+   "gap_days": 400,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": ">365",
+   "fund": "Financial Synergies Wealth Advisors, Inc.",
+   "ticker": "NBL",
+   "report_period": "2019-03-31",
+   "date": "2024-04-05 10:01:19",
+   "gap_days": 1832,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": ">365",
+   "fund": "Kingsview Wealth Management, LLC",
+   "ticker": "LIN",
+   "report_period": "2022-03-31",
+   "date": "2024-02-08 17:52:29",
+   "gap_days": 679,
+   "ciks": [
+    "0001791965"
+   ],
+   "filings_for_period": [
+    {
+     "form": "13F-HR",
+     "filingDate": "2024-02-08",
+     "acceptance": "2024-02-08T17:52:29.000Z"
+    }
+   ],
+   "class": "EXACT",
+   "matched_form": "13F-HR"
+  },
+  {
+   "band": ">365",
+   "fund": "PFW Advisors LLC",
+   "ticker": "PRI",
+   "report_period": "2019-09-30",
+   "date": "2024-10-09 18:27:19",
+   "gap_days": 1836,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  },
+  {
+   "band": ">365",
+   "fund": "Silphium Asset Management Ltd",
+   "ticker": "GRMN",
+   "report_period": "2014-03-31",
+   "date": "2025-01-30 17:37:42",
+   "gap_days": 3958,
+   "ciks": [],
+   "filings_for_period": [],
+   "class": "UNMAPPED"
+  }
+ ],
+ "script": "scratchpad verify_13f_date.py (responses cached in scratchpad b3139ay_cache)"
+}
