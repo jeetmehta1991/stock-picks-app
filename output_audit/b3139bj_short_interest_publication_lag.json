@@ -1,0 +1,33 @@
+{
+ "ticket": "S6-B3139bj",
+ "_doc": "Short interest's PUBLICATION lag and its effect on strat_squeeze_setup_long's layer-1 gate (short_interest_pct >= 0.20 and days_to_cover >= 8). The live code (backtest/signals/short_interest.py) uses a settlement's figures from the settlement date; FINRA publishes them later. RULE: FINRA's schedule page (fetched 2026-10-06; Nov 2025 .. Dec 2026, 28 rows) gives publication = settlement + 7 NYSE trading days on 28 of 28 rows. MODEL LIMIT: earlier years' schedules are not online and the CDN's Last-Modified stamps are a Monday batch job (probed), so 2022-05 .. 2025-10 publication dates are modelled by the rule. EFFECT: for every gate-band ticker (any settlement at SI/shares >= 0.10 on the live Finnhub denominator) and every NYSE trading day in the window, the gate was evaluated on the latest settlement usable under each rule, with the SAME denominator on both sides so the lag is the only difference; a flip is a ticker-day where the decisions differ, over the ticker-days where either passes.",
+ "window": [
+  "2022-05-05",
+  "2026-05-05"
+ ],
+ "rule": {
+  "scheduled_rows": 28,
+  "trading_day_lag_fit": {
+   "7": 28
+  },
+  "k_used": 7,
+  "k_fits_all_rows": true
+ },
+ "model_limit": "2022-05..2025-10 publication dates are MODELLED as settlement + k NYSE trading days; only Nov 2025 onward uses FINRA's listed dates",
+ "population": {
+  "tickers_in_gate_band": 643,
+  "ticker_days": 644929
+ },
+ "gate": "short_interest_pct >= 0.20 and days_to_cover >= 8, Finnhub denominator on both sides",
+ "effect": {
+  "gate_relevant_ticker_days": 14938,
+  "flips": 4165,
+  "flip_rate": 0.2788,
+  "passes_only_under_the_live_rule": 2184,
+  "passes_only_under_publication": 1981,
+  "tickers_with_a_flip": 113
+ },
+ "reading": "two-sided: under the live rule a position can be opened on figures not yet public (passes_only_under_the_live_rule), and the prior snapshot stays in force for 7 trading days under publication (passes_only_under_publication)",
+ "relation": "independent of S6-B3139bd's denominator finding (258 of 711 settlement-pair decisions flip on the share count); the two compound on the same gate",
+ "script": "scratchpad measure_finra_pub_lag.py"
+}
