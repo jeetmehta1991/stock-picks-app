@@ -23588,19 +23588,34 @@ def test_b2035_exit_collapse_key_includes_hold_days():
 
 def test_b2037_strategy_producer_map_carries_its_controls():
     """B2037 (S6-B1918b): the machine-readable strategy->key->producer map
-    must keep both calibration controls: the two known consumed-never-produced
-    candle arms (ENG7) read UNRESOLVED, and the worked example's SMC key
-    resolves to its runtime-observed producer. A map without its controls is
-    indistinguishable from a stale or miswired one."""
+    must keep its calibration controls: a key known to resolve, a key known
+    to be consumed by no per-ticker producer, and the worked example's SMC key
+    resolving to its runtime-observed producer. A map without its controls is
+    indistinguishable from a stale or miswired one.
+
+    S6-B3139bf (B3139q-r36) re-based the controls on the LIVE map. The
+    original control - the ENG7 candle arm `hanging_man` reads UNRESOLVED -
+    became false on 2026-08-23 when B2111 produced it (commit 8b131b3a7),
+    and the SMC control's key was renamed to its retest EVENT the same day
+    (e24bfe20d); both kept passing for six weeks because the committed CSV
+    was never regenerated, so this test was pinning a stale snapshot's
+    controls, not the map's. A control read from a committed artifact is only
+    as live as the artifact (the b3139ap class)."""
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2]
     txt = (root / "output_audit" / "strategy_producer_map.csv").read_text(
         encoding="utf-8")
-    assert "shooting_star_short,hanging_man,UNRESOLVED," in txt, (
-        "the known dead candle arm must read UNRESOLVED - if it resolved, a "
-        "producer appeared (close ENG7) or the map is guessing")
-    assert ("smc_breaker_block_long,smc_breaker_block_bullish,T2_smc,"
-            "compute_smc_signals" in txt)
+    assert "shooting_star_short,hanging_man,T1_technical,compute_candles" in txt, (
+        "the ENG7 candle arm is PRODUCED since B2111 and must resolve to "
+        "compute_candles - UNRESOLVED here means the map is stale (the "
+        "committed map read UNRESOLVED until B3139q-r36) or the producer left")
+    assert "xs_quality_top_quintile_long,xs_quality_top_tercile,UNRESOLVED," in txt, (
+        "a panel-built cross-sectional key is emitted by no per-ticker "
+        "producer and must read UNRESOLVED - if it resolved, the map is guessing")
+    assert ("smc_breaker_block_long,smc_breaker_block_bullish_retest_recent_5d,"
+            "T2_smc,compute_smc_signals" in txt), (
+        "the breaker long consumes the retest EVENT key since e24bfe20d and "
+        "compute_smc_signals emits it (smc_ict.py)")
     header = txt.splitlines()[0]
     assert header == "strategy,key,tier,producer"
 
@@ -52551,3 +52566,100 @@ def test_b3139bb_line_citations_in_code_only_shrink(tmp_path):
     (tmp_path / "scripts" / "a.py").write_text("# see technical.py" + ":" + "12\n", encoding="utf-8")
     (tmp_path / "scripts" / "b.py").write_text("# see technical.compute_macd\n", encoding="utf-8")
     assert _b3139bb_line_citation_counts(tmp_path) == {"scripts/a.py": 1}
+
+
+def _b3139bf_stamp_writers(root):
+    """Files under scripts/ and backtest/ (tests excluded) that name the
+    shared freshness stamp - the only way to write it is to name it."""
+    out = []
+    for base in ("scripts", "backtest"):
+        for p in sorted((root / base).rglob("*.py")):
+            if "/tests/" in p.as_posix():
+                continue
+            if "phase_1b_roster_freshness" in p.read_text(encoding="utf-8", errors="replace"):
+                out.append(p.relative_to(root).as_posix())
+    return out
+
+
+def _b3139bf_stamped_paths(gen_path):
+    """The repo-relative paths a generator's main() passes to
+    stamp_generators, by AST - empty when main never calls it."""
+    import ast
+    src = gen_path.read_text(encoding="utf-8")
+    main = next((n for n in ast.parse(src).body
+                 if isinstance(n, ast.FunctionDef) and n.name == "main"), None)
+    if main is None:
+        return set()
+    return {a.value for c in ast.walk(main) if isinstance(c, ast.Call)
+            and getattr(c.func, "id", getattr(c.func, "attr", None)) == "stamp_generators"
+            for a in c.args if isinstance(a, ast.Constant)}
+
+
+# S6-B3139bf: register members whose generator has NO stamp writer, with the
+# reason (S6-B3139ap: regenerating VERIFICATION_MATRIX.md needs a canonical
+# backtest under coverage, so a generator edit is satisfied only by that run).
+_B3139BF_NO_STAMP = {"VERIFICATION_MATRIX.md"}
+
+
+def test_b3139bf_the_freshness_stamp_has_one_writer_and_each_generator_stamps_its_register_tuple(tmp_path):
+    """S6-B3139bf: three things, each the class behind one past defect.
+    (a) ONE file names the stamp - B2078 found two writers, one of them
+    deleting the other's entry on every run (the L603 class); now only
+    scripts/freshness_stamp.py names it, with a planted second writer proving
+    the scan sees one. (b) By AST, every stamping generator in _B1974_GENERATED
+    passes stamp_generators EXACTLY its register tuple - a generator that
+    stamps fewer sources than the register lists would read fresh after an
+    edit to the unstamped one. (c) Input drift, the b3139ap class, instance 2:
+    the producer map's strategy set equals what its generator's static-key
+    pass yields today. MEASURED this batch: the committed CSV sat stale from
+    2026-08-23 (B2103, 215 strategies) to 2026-10-06 (221 after regeneration:
+    6 strategies added, 0 removed; within existing strategies 8 gate-key rows
+    dropped and 3 added; 2 keys moved UNRESOLVED -> T1_technical) while
+    test_b1974, which watches generator CODE, stayed green. The 4 registered strategies with no static
+    `s.get` key (the index-rebalance four) are absent from the CSV by the
+    generator's own rule and are not drift."""
+    import csv
+    import importlib.util as _iu
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    # (a) one writer
+    assert _b3139bf_stamp_writers(root) == ["scripts/freshness_stamp.py"], (
+        "the shared freshness stamp must have ONE writer (B2078): "
+        f"{_b3139bf_stamp_writers(root)}")
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "backtest" / "tests").mkdir(parents=True)
+    (tmp_path / "scripts" / "w.py").write_text(
+        'SP = "phase_1b_roster_" + "freshness.json"\n', encoding="utf-8")
+    (tmp_path / "scripts" / "w2.py").write_text(
+        'SP = "output_audit/phase_1b_roster_freshness.json"\n', encoding="utf-8")
+    (tmp_path / "backtest" / "tests" / "t.py").write_text(
+        'SP = "phase_1b_roster_freshness.json"\n', encoding="utf-8")
+    assert _b3139bf_stamp_writers(tmp_path) == ["scripts/w2.py"], (
+        "the scan must see a literal second writer and ignore tests")
+    # (b) every stamping generator stamps exactly its register tuple
+    for artifact, gens in _B1974_GENERATED.items():
+        if artifact in _B3139BF_NO_STAMP:
+            assert not _b3139bf_stamped_paths(root / gens[0]), (
+                f"{gens[0]} now stamps - remove {artifact} from _B3139BF_NO_STAMP")
+            continue
+        got = _b3139bf_stamped_paths(root / gens[0])
+        assert got == set(gens), (
+            f"{gens[0]} stamps {sorted(got)} but the register lists "
+            f"{sorted(gens)} for {artifact} - an unstamped generator reads "
+            "fresh after its own edit")
+    # (c) the producer map's strategy set is what its generator yields today
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    spec = _iu.spec_from_file_location(
+        "bspm_b3139bf", root / "scripts" / "build_strategy_producer_map.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    expected = {n for n, keys in m.strategy_static_keys().items() if keys}
+    with (root / "output_audit" / "strategy_producer_map.csv").open(
+            encoding="utf-8", newline="") as f:
+        in_csv = {r["strategy"] for r in csv.DictReader(f)}
+    assert in_csv == expected, (
+        "output_audit/strategy_producer_map.csv is stale against the registry "
+        "(regenerate: python scripts/build_strategy_producer_map.py); "
+        f"missing {sorted(expected - in_csv)}, extra {sorted(in_csv - expected)}")

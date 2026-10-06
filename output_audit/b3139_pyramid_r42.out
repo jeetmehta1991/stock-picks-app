@@ -1,0 +1,67 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+........................................................................ [ 33%]
+..............................................s......................... [ 38%]
+....................s.................................................s. [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+.......................F................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 76%]
+........................................................................ [ 80%]
+........................................................................ [ 84%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 97%]
+................................................                         [100%]
+================================== FAILURES ===================================
+____________ test_b2037_strategy_producer_map_carries_its_controls ____________
+
+    def test_b2037_strategy_producer_map_carries_its_controls():
+        """B2037 (S6-B1918b): the machine-readable strategy->key->producer map
+        must keep both calibration controls: the two known consumed-never-produced
+        candle arms (ENG7) read UNRESOLVED, and the worked example's SMC key
+        resolves to its runtime-observed producer. A map without its controls is
+        indistinguishable from a stale or miswired one."""
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        txt = (root / "output_audit" / "strategy_producer_map.csv").read_text(
+            encoding="utf-8")
+>       assert "shooting_star_short,hanging_man,UNRESOLVED," in txt, (
+            "the known dead candle arm must read UNRESOLVED - if it resolved, a "
+            "producer appeared (close ENG7) or the map is guessing")
+E       AssertionError: the known dead candle arm must read UNRESOLVED - if it resolved, a producer appeared (close ENG7) or the map is guessing
+E       assert 'shooting_star_short,hanging_man,UNRESOLVED,' in 'strategy,key,tier,producer\n52w_high_breakout,break_52w_high,T1_technical,compute_volume\n52w_high_breakout,break_52w...ng,price_above_ema_200,T1_technical,compute_ema_sma\nxs_quality_top_quintile_long,xs_quality_top_tercile,UNRESOLVED,\n'
+
+backtest\tests\test_unit.py:23599: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2037_strategy_producer_map_carries_its_controls
+1 failed, 1700 passed, 3 skipped in 1010.08s (0:16:50)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1041
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

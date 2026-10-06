@@ -978,25 +978,15 @@ def main() -> int:
     print(f"[MIRRORS] registered {len(mirrors_reg)} | dual-self {len(mirrors_dual)} | "
           f"long-only-excused {len(mirrors_asym)} | needs-creation {len(mirrors_new)}")
     # B1976: freshness stamp - sha256 of the generator sources this run
-    # actually executed. The staleness gate accepts a matching stamp as
-    # freshness, because an OUTPUT-PRESERVING generator change leaves the
-    # artifact byte-identical and never re-committed, and a commit-timestamp
-    # comparison then fires forever with no satisfying action except a
-    # no-op commit.
-    # B2078: READ-THEN-UPDATE, never overwrite - the stamp file is SHARED
-    # (build_strategy_producer_map.py stamps itself here too, B2058), and
-    # this writer's fresh-dict form silently DELETED the other generator's
-    # entry on every roster run, resurrecting the timestamp gate for an
-    # artifact that was provably fresh. Two writers for one artifact, one
-    # of them lossy - the L603 class, inside the freshness machinery.
-    import hashlib as _hl
-    _sp = REPO / "output_audit" / "phase_1b_roster_freshness.json"
-    _stamp = json.loads(_sp.read_text(encoding="utf-8")) if _sp.exists() else {}
-    _stamp.update({f: _hl.sha256((REPO / f).read_bytes()).hexdigest()
-                   for f in ("scripts/build_phase_1b_roster.py",
-                             "scripts/roster_core.py",
-                             "scripts/walk_forward_r5_cells.py")})
-    _sp.write_text(json.dumps(_stamp, indent=1), encoding="utf-8")
+    # actually executed, so an OUTPUT-PRESERVING generator change (artifact
+    # byte-identical, never re-committed) is satisfied by a regeneration.
+    # B2078 found this file's own fresh-dict writer deleting the other
+    # generator's entry on every run; S6-B3139bf moved every writer onto the
+    # ONE read-then-update writer in scripts/freshness_stamp.py.
+    from freshness_stamp import stamp_generators  # noqa: E402
+    stamp_generators("scripts/build_phase_1b_roster.py",
+                     "scripts/roster_core.py",
+                     "scripts/walk_forward_r5_cells.py")
     print(f"[OK] wrote {args.output} + {args.json}")
     return 0
 

@@ -10,9 +10,9 @@ every registered generator, so a writer reads it and updates its own keys,
 never overwriting the others' (B2078 - a fresh-dict writer once deleted
 another generator's entry on every run).
 
-build_phase_1b_roster.py and build_strategy_producer_map.py still carry the
-inline writers this module replaces; moving them onto it is ticketed
-(S6-B3139bf), because each move re-runs that generator.
+Callers: build_strategy_roster.py (S6-B3139ap), build_phase_1b_roster.py and
+build_strategy_producer_map.py (S6-B3139bf, which retired their inline
+writers). test_b3139bf holds the writer count at one.
 """
 from __future__ import annotations
 
