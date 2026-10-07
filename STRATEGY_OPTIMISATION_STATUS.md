@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 76295d505 at 2026-10-06 18:39:09 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit b4dca8e0b at 2026-10-06 23:22:04 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -19,8 +19,8 @@
 | DONE - admitted to Phase 1B | 15 |
 | IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | 7 |
 | IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded, with Step 2 scheduled (S6-B2420) | 7 |
-| DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 2 |
-| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 1 |
+| DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 3 |
+| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 0 |
 | STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 42 |
 | NOT-STARTED | 135 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
@@ -33,7 +33,7 @@
 
 | stream | meaning | count |
 |---|---|---|
-| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 10 |
+| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 9 |
 | BOTH | tightenable AND fire-starved | 27 |
 | LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 121 |
 | NONE | no numeric knob and not starved - a BREADTH candidate | 27 |
@@ -44,8 +44,8 @@
 |---|---|
 | news_sentiment | 6 |
 | momentum | 5 |
-| mean_reversion | 4 |
 | confluence | 4 |
+| mean_reversion | 3 |
 | candle | 3 |
 | smc | 3 |
 | pivot | 2 |
@@ -115,7 +115,7 @@
 | cpr_narrow_momentum_short | confluence | 1696 | 155.9 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | three_black_crows_short | candle | 1674 | 153.9 | YES | 100.0% | - | DONE-OWNER-CLOSED |
 | parabolic_sar_flip_short | trend | 1672 | 153.7 |  | 100.0% | NONE | NOT-STARTED |
-| bollinger_lower | mean_reversion | 1622 | 149.1 | YES | 100.0% | TIGHTEN | IN-CAMPAIGN |
+| bollinger_lower | mean_reversion | 1622 | 149.1 | YES | 100.0% | - | DONE-OWNER-CLOSED |
 | parabolic_sar_flip | trend | 1618 | 148.7 |  | 100.0% | NONE | NOT-STARTED |
 | smc_breaker_block_short | smc | 1598 | 0.0 | YES | 0.0% | - | DONE-OWNER-CLOSED |
 | three_white_soldiers | candle | 1596 | 146.7 | YES | 100.0% | - | DONE-ADMITTED |

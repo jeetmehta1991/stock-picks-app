@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "76295d505",
-    "generated_at": "2026-10-06 18:39:09"
+    "source_commit": "b4dca8e0b",
+    "generated_at": "2026-10-06 23:22:04"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -30,6 +30,7 @@
     "total": 31
   },
   "owner_closures": [
+    "bollinger_lower",
     "smc_breaker_block_short",
     "three_black_crows_short"
   ],
@@ -349,7 +350,7 @@
       "projected_step1_fires": 149.1,
       "projected_current_gate": 149.1,
       "reopen_candidate": false,
-      "stream": "TIGHTEN",
+      "stream": "-",
       "tightenable_keys": {
         "adx": 1.0
       },
@@ -368,7 +369,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "IN-CAMPAIGN"
+      "status": "DONE-OWNER-CLOSED"
     },
     {
       "strategy": "bollinger_tight",

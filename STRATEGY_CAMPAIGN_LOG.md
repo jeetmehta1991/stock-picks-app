@@ -2286,3 +2286,16 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   inversion); one long row is regime_flip, identical to time_stop_20d on this cube (I.6); band
   coverage is incomplete on both legs, so no failure verdict is declarable for the short leg.
 - **Admission is the owner's decision** (S6-B3139bt). Nothing is admitted by this read.
+
+### I.10 Campaign closed by owner ruling, nothing admitted (S6-B3139bt, 2026-10-06)
+
+- **Owner word 2026-10-06, verbatim:** *"Close"* - answering S6-B3139bt (admit adx <= 25.142, admit
+  bb_10_20_pctb <= 0.1828, or close). bollinger_lower is closed for Phase 1B on both legs: Step 2
+  read 2 of 3 configs (both FAIL 5 of 6 on pooled_sharpe; config 3 not run by the 2026-10-01
+  ruling), and the Step-3 breadth read (I.9) is spent. No line is admitted.
+- **Record:** output_audit/owner_campaign_closures.json carries the closure, so the strategy status
+  view reads DONE-OWNER-CLOSED - terminal, out of every work lane, reopened only on the owner's word.
+  The campaign's Table A file and artifacts stay as its record.
+- **Pre-registration item 5 is now the owner's question** (S6-B2178c): whether this closure counts
+  toward that ticket's re-raise trigger. It was written for an all-three-configs fail; Step 2 ended
+  at two by ruling, and Step 3 found holdout qualifiers that were not admitted.

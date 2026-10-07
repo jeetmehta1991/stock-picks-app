@@ -19,6 +19,14 @@
       "recorded_in": "EXECUTION_QUEUE.md - the S6-B1545a, S6-B2115a and S6-B2411 rows marked DROPPED by the owner's 2026-09-03 scope ruling (L758 / CHECKLIST #295)",
       "scope": "the short mirror of the finalised smc_breaker_block_long admission; excluded from the S6-B2420 short-leg Step-2 programme for this reason",
       "tickets": ["S6-B3135a", "S6-B2420"]
+    },
+    {
+      "strategy": "bollinger_lower",
+      "ruled": "2026-10-06",
+      "ruling_verbatim": "Close",
+      "owner_question_answered": "S6-B3139bt - admit a line from the bollinger_lower Step-3 holdout read (adx or bb_10_20_pctb), or admit nothing and close? - the owner chose close",
+      "scope": "both legs. Step 2 closed at 2 of 3 configs by the 2026-10-01 ruling (both FAIL 5 of 6, pooled_sharpe 0.422 and 0.526); the Step-3 breadth read is spent (campaign log I.9: long 26 of 676 cell-exits pass, short 2 of 624). Nothing is admitted; no further configs, grids or holdout reads",
+      "tickets": ["S6-B3139bt", "S6-B3139am"]
     }
   ]
 }

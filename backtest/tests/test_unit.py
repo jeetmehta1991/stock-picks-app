@@ -38712,7 +38712,10 @@ def test_b2825_status_groups_are_mutually_exclusive():
     by = collections.defaultdict(set)
     for r in rows:
         by[r["status"]].add(r["strategy"])
-    assert by["DONE-OWNER-CLOSED"] == _closed & _mirrors == _closed
+    # S6-B3139bt: a closure ends ANY strategy's campaign (the register's
+    # semantics); the first two records were mirrors, which is not a rule
+    assert by["DONE-OWNER-CLOSED"] == _closed
+    assert _closed & _mirrors <= by["DONE-OWNER-CLOSED"]
     assert by["IN-ROSTER-MIRROR"] == _mirrors - _closed
     assert st["IN-ROSTER-FUNNEL"] == 7 and st["IN-ROSTER-MIRROR"] == 7
     assert d["phase1b_roster"]["total"] == 31
@@ -50102,12 +50105,17 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
     import phase1b_membership as pm
     import build_strategy_status as bss
     reg = bss.load_owner_closures(_REPO_B3135)
-    assert sorted(reg) == ["smc_breaker_block_short", "three_black_crows_short"]
+    assert sorted(reg) == ["bollinger_lower", "smc_breaker_block_short",
+                           "three_black_crows_short"]
+    # S6-B3139bt: a closure can end a NON-member's campaign (owner "Close",
+    # 2026-10-06); the mirror closures below are the members
+    assert reg["bollinger_lower"]["ruling_verbatim"] == "Close"
     assert reg["three_black_crows_short"]["ruling_verbatim"] == (
         "4 close and mark it as done")
     mem = pm.members(_REPO_B3135)
     mirrors = {n for n in mem if pm.roster_status(n, mem) == "IN-ROSTER-MIRROR"}
-    assert len(mirrors) == 9 and set(reg) <= mirrors
+    assert len(mirrors) == 9
+    assert set(reg) - {"bollinger_lower"} <= mirrors and "bollinger_lower" not in mem
     pop = bss.closed_populations(_REPO_B3135)
     got = {n for n in mirrors if bss.status_for(
         n, admitted=pop["admitted"], roster_status=pm.roster_status(n, mem),
