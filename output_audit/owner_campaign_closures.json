@@ -26,7 +26,12 @@
       "ruling_verbatim": "Close",
       "owner_question_answered": "S6-B3139bt - admit a line from the bollinger_lower Step-3 holdout read (adx or bb_10_20_pctb), or admit nothing and close? - the owner chose close",
       "scope": "both legs. Step 2 closed at 2 of 3 configs by the 2026-10-01 ruling (both FAIL 5 of 6, pooled_sharpe 0.422 and 0.526); the Step-3 breadth read is spent (campaign log I.9: long 26 of 676 cell-exits pass, short 2 of 624). Nothing is admitted; no further configs, grids or holdout reads",
-      "tickets": ["S6-B3139bt", "S6-B3139am"]
+      "tickets": ["S6-B3139bt", "S6-B3139am", "S6-B3139by"],
+      "reconfirmed": {
+        "ruled": "2026-10-07",
+        "ruling_verbatim": "Ok close the strategy",
+        "after": "S6-B3139bw: the holdout chance test (scripts/breadth_holdout_null.py, 300 within-period shuffles) put the long qualifiers at chance (26 vs median 27, p 0.53; best lower bound 0.850, p 0.25 family-wise) and the short at chance (2 vs mean 2.0, p 0.42). The first closure had been recommended on an in-sample test (L904); this one rests on the holdout's own test."
+      }
     }
   ]
 }

@@ -2325,3 +2325,12 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   conservative. The closure (I.10) stands on this evidence; reopening stays the owner's word.
 - **Owner ruling the same day:** S6-B3139bu declined ("1 decline") - a closure of a strategy not on
   the roster is recorded in the status view and not enforced by a refusal.
+
+### I.12 Closure reconfirmed on the holdout's own test (S6-B3139by, 2026-10-07)
+
+- **Owner word 2026-10-07, verbatim:** *"Ok close the strategy"*, given after the I.11 chance test.
+  The I.10 closure stands, now resting on the holdout's own evidence rather than the in-sample test
+  first cited for it (L904). The closure record in output_audit/owner_campaign_closures.json carries a
+  `reconfirmed` entry with these words. No open ticket is campaign work on bollinger_lower: of 14
+  non-terminal tickets, 2 name it, and both are programme-level (S6-B2178c, the re-raise question;
+  S6-B3139bx, the chance test inside every read).
