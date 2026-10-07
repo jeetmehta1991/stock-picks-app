@@ -24507,3 +24507,34 @@ data fact the capped rule rests on, measured on fixed files).
 probe; the fix is the Write tool and a file), and #306's sibling: a
 background task reported "completed, exit 0" for a resolver I had killed,
 because a trailing pipe masked the exit.
+
+### L903 - A SWEEP FOR EVERY READER OF A REGISTER WAS CUT AT ITS FIRST 12 HITS, AND THE PIN PAST THE CUT TURNED THE GATE RED (B3139q-r51/r52, 2026-10-07)
+
+**What happened.** Before landing the owner's closure of bollinger_lower (S6-B3139bt) - a change that
+makes "bollinger_lower is owner-closed" true - I searched the test tree for every reader of
+output_audit/owner_campaign_closures.json, and piped the grep through `head -12`. The first 12 hits
+ended before test_b3137_owner_closure_register_is_strict_and_matches_the_roster, which hard-lists the
+register's members. I fixed the one pin I saw (test_b2825), ran the pyramid, and gate r61 went RED on
+the pin I had cut off: 1 failed of 1,716, about 18 minutes lost. The full search, re-run after,
+returned 24 lines and exactly one more pin.
+
+**Why it is not a new class.** L801 already says to grep the test tree for the subject BEFORE landing
+a change that makes a statement true, and #270 says to read a population end to end. I did the
+first and broke the second inside it: the search was the right search, truncated. This is a
+**compliance failure against item #270** (and against L801's instruction, which the truncation
+voided). The same command also carried a backslash pair inside a double-quoted `python -c`
+payload (transcript entry 120150), a **compliance failure against item #259**; the PreToolUse
+refusal shipped this session (S6-B3139ae) covers heredocs only, by the owner's ruling, so the -c
+form still runs and is caught at the close.
+
+**The rule.** A search whose purpose is COMPLETENESS - every reader, every pin, every caller - takes
+no `head`. Count first (`grep -c`), then print all of it; if the count is too large to read, narrow
+the pattern, never the output. A `head` is for a glance, and a glance cannot support "only X
+asserts this".
+
+**Mechanism.** No new gate. scan_partial_read fires on a population VERDICT beside a truncation
+marker; here the verdict came only after the full re-read, so the truncated search itself carried
+no verdict and was invisible to it - the pyramid is what caught the consequence. Detection of a
+completeness search cut by `head` is JUDGMENT-ONLY: a grep piped to head looks identical whether
+it is a glance or a sweep, and only the intent separates them. Durability: L801's tripwire row
+and #270 stand; this entry is their instance.

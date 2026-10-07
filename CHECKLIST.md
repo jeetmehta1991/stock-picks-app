@@ -5094,6 +5094,8 @@ generalising from a slice**, which no amount of care inside the slice can detect
 
 **INSTANCE (B3139 / L887):** the pyramid gate's read-set treated every mid-run move under output_audit as external while four tests in the suite rewrite output_audit/workflow_state.json - a verdict about who writes the watched directory, built into a mechanism with the writers never enumerated; its first full run read SUSPECT and could never have read anything else.
 
+**INSTANCE (B3139q-r52 / L903):** a search for EVERY reader of the owner-closures register, run before landing a closure, was piped through `head -12`; the pin past the cut (test_b3137) turned the gate red. A completeness search takes no head - count first, then print all, and narrow the pattern rather than the output.
+
 ### #271 - COUNT TICKETS, NOT ROWS (B1795 / L545)
 
 **AMENDED B2525 (L737): the rule is right and its GATE sees one surface only.**
