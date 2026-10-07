@@ -2299,3 +2299,29 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **Pre-registration item 5 is now the owner's question** (S6-B2178c): whether this closure counts
   toward that ticket's re-raise trigger. It was written for an all-three-configs fail; Step 2 ended
   at two by ruling, and Step 3 found holdout qualifiers that were not admitted.
+
+### I.11 Were the Step-3 holdout qualifiers noise? Measured after the closure (S6-B3139bw, 2026-10-07)
+
+- **Owner question 2026-10-07, verbatim:** *"i closed because you said qualifying cells were just
+  noise in step 3. Is that true?"* The closing recommendation had led with the Step-1 in-sample
+  search test (p 0.0896) - evidence about the wrong sample (L904). This section is the holdout's own test.
+- **Method:** scripts/breadth_holdout_null.py re-scores the read's own 650 long and 600 short non-npt
+  cell-exits on the read's own frame and grade, after 300 joint shuffles of the signal vectors within
+  each period (seed 20261007): each cell keeps its exact in-sample and holdout trade counts; only the
+  link between a fire's signals and its outcome is broken. Reproduction: the qualifier sets match
+  the read exactly, and two independent scratch runs gave identical numbers.
+
+| leg | qualifiers | chance (shuffled) | p | best holdout lower bound | best-of-shuffle median / p95 | p |
+|---|---|---|---|---|---|---|
+| long | 26 over 9 cells | median 27, mean 29.6 | 0.53 | 0.850 (adx <= 25.142 @ time_stop_10d) | 0.62 / 1.20 | 0.25 |
+| short | 2 over 1 cell | mean 2.0, median 1 | 0.42 | 0.069 | 0.02 / 0.56 | 0.41 |
+
+- **Why chance produces so many:** the unfiltered long leg already ran a holdout Sharpe of 0.828 at
+  time_stop_10d over 237 trades (0 of 25 exits pass the six gates unfiltered), so a random subset of
+  45-196 of those trades crosses the 1.0 bar by sampling alone.
+- **Reading:** on this holdout neither the number of qualifiers nor the best cell is distinguishable
+  from what random filters of the same sizes produce. The null's known bias - random subsets spread
+  over time while real filters cluster - makes its p-values too small if anything, so this verdict is
+  conservative. The closure (I.10) stands on this evidence; reopening stays the owner's word.
+- **Owner ruling the same day:** S6-B3139bu declined ("1 decline") - a closure of a strategy not on
+  the roster is recorded in the status view and not enforced by a refusal.

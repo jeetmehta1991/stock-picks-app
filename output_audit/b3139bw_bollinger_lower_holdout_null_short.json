@@ -1,0 +1,249 @@
+{
+ "_doc": "S6-B3139bw (owner question 2026-10-07, \"i closed because you said qualifying\ncells were just noise in step 3. Is that true?\"): is a breadth Step-2 holdout\nread's qualifier set beyond what chance produces?\n\nNothing new is selected. The read's OWN registered cells are re-scored on the\nread's OWN frame (breadth_step1_grid.build_frame, the leg and basis the Step-1\nartifact recorded) with the reader's OWN grade (breadth_step2_read.grade_holdout).\n\n1. REPRODUCTION, fail closed: the all-six non-npt qualifier set must equal the\n   read artifact's qualifier set exactly.\n2. BASELINE: the unfiltered leg's holdout grade per exit.\n3. NULL: K joint shuffles of the signal vectors across fires WITHIN each period\n   (in-sample, holdout). Each cell keeps its exact in-sample and holdout trade\n   counts and the axes keep their joint structure; only the link between a\n   fire's signals and its outcome is broken. Recorded per shuffle: the number\n   of all-six qualifiers, the distinct cells with one, each observed\n   qualifier's holdout Sharpe (a per-cell p, valid only for a PRE-CHOSEN cell),\n   and the best holdout lower bound over every cell-exit (the FAMILY-WISE\n   statistic: the observed best was picked as the best of all cell-exits).\n\nProvenance (B1801 / #201): every null figure here - the shuffle medians,\npercentiles and p-values - is SYNTHETIC: drawn from rng shuffles of the read's\nown data, so it prices chance and never performance. The OBSERVED figures\n(qualifier set, holdout grades, baseline) are measured.\n\nDirection of the null's known bias: random subsets spread over time, while a\nreal filter's trades cluster, so a real no-edge filter is MORE variable than\nthis null - its p-values are, if anything, too small. A \"not beyond chance\"\nverdict from it is therefore conservative.\n\nusage: breadth_holdout_null.py --step1-artifact A --read-artifact R\n                               --perms K [--seed S] --out O\n",
+ "strategy": "bollinger_lower",
+ "leg": "short",
+ "basis": "net",
+ "n_perms": 300,
+ "seed": 20261007,
+ "null_label": "SYNTHETIC null (rng shuffles of the read's own data) - prices chance, never performance; observed figures are measured",
+ "cell_exits_scored": 600,
+ "registered_cells": 24,
+ "fires": {
+  "IS": 615,
+  "HO": 193,
+  "OUT": 0
+ },
+ "observed": {
+  "qualifiers": 2,
+  "cells_with_a_qualifier": 1
+ },
+ "null_qualifiers": {
+  "mean": 1.9866666666666666,
+  "median": 1.0,
+  "p95": 8.0,
+  "max": 29,
+  "p_value": 0.4219269102990033
+ },
+ "null_cells_with_a_qualifier": {
+  "mean": 1.0266666666666666,
+  "p95": 3.0,
+  "p_value": 0.5415282392026578
+ },
+ "family_best_ci_lo": {
+  "observed": 0.069,
+  "at": [
+   "defensive_leadership",
+   "eq_true",
+   1.0,
+   "breakeven_plus_trail"
+  ],
+  "null_median": 0.0165,
+  "null_p95": 0.56105,
+  "p_value": 0.4119601328903654
+ },
+ "baseline_unfiltered_by_exit": {
+  "atr_trail_1x": {
+   "holdout_sharpe": -2.502,
+   "ci_lo": -3.602,
+   "holdout_n": 193,
+   "profit_factor": 0.425,
+   "all_live_gates": false
+  },
+  "atr_trail_2x": {
+   "holdout_sharpe": -0.443,
+   "ci_lo": -1.083,
+   "holdout_n": 193,
+   "profit_factor": 0.772,
+   "all_live_gates": false
+  },
+  "atr_trail_mae_conditional": {
+   "holdout_sharpe": -2.502,
+   "ci_lo": -3.602,
+   "holdout_n": 193,
+   "profit_factor": 0.425,
+   "all_live_gates": false
+  },
+  "atr_trail_vix_conditional": {
+   "holdout_sharpe": -1.268,
+   "ci_lo": -2.214,
+   "holdout_n": 193,
+   "profit_factor": 0.59,
+   "all_live_gates": false
+  },
+  "break_even_at_1r": {
+   "holdout_sharpe": -1.322,
+   "ci_lo": -2.182,
+   "holdout_n": 193,
+   "profit_factor": 0.49,
+   "all_live_gates": false
+  },
+  "breakeven_plus_trail": {
+   "holdout_sharpe": 0.269,
+   "ci_lo": -0.254,
+   "holdout_n": 193,
+   "profit_factor": 1.245,
+   "all_live_gates": false
+  },
+  "chandelier_3x": {
+   "holdout_sharpe": -7.298,
+   "ci_lo": -9.104,
+   "holdout_n": 193,
+   "profit_factor": 0.045,
+   "all_live_gates": false
+  },
+  "class_time_stop": {
+   "holdout_sharpe": -0.063,
+   "ci_lo": -0.911,
+   "holdout_n": 193,
+   "profit_factor": 0.973,
+   "all_live_gates": false
+  },
+  "earnings_blackout": {
+   "holdout_sharpe": -0.224,
+   "ci_lo": -0.539,
+   "holdout_n": 193,
+   "profit_factor": 0.768,
+   "all_live_gates": false
+  },
+  "fixed_4r_2r": {
+   "holdout_sharpe": -0.596,
+   "ci_lo": -1.115,
+   "holdout_n": 193,
+   "profit_factor": 0.692,
+   "all_live_gates": false
+  },
+  "hybrid_50pct_target": {
+   "holdout_sharpe": -0.138,
+   "ci_lo": -0.528,
+   "holdout_n": 193,
+   "profit_factor": 0.895,
+   "all_live_gates": false
+  },
+  "ma_exit_ema9": {
+   "holdout_sharpe": -3.526,
+   "ci_lo": -5.36,
+   "holdout_n": 193,
+   "profit_factor": 0.47,
+   "all_live_gates": false
+  },
+  "mfe_lockin_trail": {
+   "holdout_sharpe": -2.525,
+   "ci_lo": -3.665,
+   "holdout_n": 193,
+   "profit_factor": 0.439,
+   "all_live_gates": false
+  },
+  "multi_tier_partial": {
+   "holdout_sharpe": -1.984,
+   "ci_lo": -3.109,
+   "holdout_n": 193,
+   "profit_factor": 0.531,
+   "all_live_gates": false
+  },
+  "r_multiple_2r": {
+   "holdout_sharpe": -0.015,
+   "ci_lo": -0.906,
+   "holdout_n": 193,
+   "profit_factor": 0.995,
+   "all_live_gates": false
+  },
+  "r_multiple_3r": {
+   "holdout_sharpe": -0.123,
+   "ci_lo": -0.89,
+   "holdout_n": 193,
+   "profit_factor": 0.945,
+   "all_live_gates": false
+  },
+  "regime_flip": {
+   "holdout_sharpe": 0.276,
+   "ci_lo": -0.242,
+   "holdout_n": 193,
+   "profit_factor": 1.209,
+   "all_live_gates": false
+  },
+  "reverse_signal": {
+   "holdout_sharpe": -0.273,
+   "ci_lo": -0.733,
+   "holdout_n": 193,
+   "profit_factor": 0.781,
+   "all_live_gates": false
+  },
+  "smart_money_reversal": {
+   "holdout_sharpe": -2.502,
+   "ci_lo": -3.602,
+   "holdout_n": 193,
+   "profit_factor": 0.425,
+   "all_live_gates": false
+  },
+  "smc_mitigation_zone": {
+   "holdout_sharpe": -3.517,
+   "ci_lo": -5.193,
+   "holdout_n": 193,
+   "profit_factor": 0.436,
+   "all_live_gates": false
+  },
+  "time_stop_10d": {
+   "holdout_sharpe": 0.206,
+   "ci_lo": -0.502,
+   "holdout_n": 193,
+   "profit_factor": 1.113,
+   "all_live_gates": false
+  },
+  "time_stop_20d": {
+   "holdout_sharpe": 0.276,
+   "ci_lo": -0.242,
+   "holdout_n": 193,
+   "profit_factor": 1.209,
+   "all_live_gates": false
+  },
+  "trailing_10pct": {
+   "holdout_sharpe": -0.406,
+   "ci_lo": -0.87,
+   "holdout_n": 193,
+   "profit_factor": 0.73,
+   "all_live_gates": false
+  },
+  "trailing_15pct": {
+   "holdout_sharpe": -0.623,
+   "ci_lo": -0.979,
+   "holdout_n": 193,
+   "profit_factor": 0.547,
+   "all_live_gates": false
+  },
+  "trailing_5pct": {
+   "holdout_sharpe": -0.816,
+   "ci_lo": -1.535,
+   "holdout_n": 193,
+   "profit_factor": 0.645,
+   "all_live_gates": false
+  }
+ },
+ "per_qualifier": [
+  {
+   "axis": "defensive_leadership",
+   "op": "eq_true",
+   "level": 1.0,
+   "exit": "r_multiple_3r",
+   "holdout_sharpe": 1.333,
+   "ci_lo": -0.042,
+   "holdout_n": 62,
+   "null_median_sharpe": -0.106,
+   "null_p95_sharpe": 0.72015,
+   "p_value_if_prechosen": 0.0033222591362126247
+  },
+  {
+   "axis": "defensive_leadership",
+   "op": "eq_true",
+   "level": 1.0,
+   "exit": "r_multiple_2r",
+   "holdout_sharpe": 1.302,
+   "ci_lo": -0.344,
+   "holdout_n": 62,
+   "null_median_sharpe": 0.031,
+   "null_p95_sharpe": 0.9656500000000006,
+   "p_value_if_prechosen": 0.016611295681063124
+  }
+ ],
+ "step1_artifact": "output_audit/b3139ar_bollinger_lower_breadth_net_short.json",
+ "read_artifact": "output_audit/b3139am_bollinger_lower_step2_read_short.json"
+}

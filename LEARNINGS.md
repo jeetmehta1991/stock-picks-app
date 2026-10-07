@@ -24538,3 +24538,48 @@ no verdict and was invisible to it - the pyramid is what caught the consequence.
 completeness search cut by `head` is JUDGMENT-ONLY: a grep piped to head looks identical whether
 it is a glance or a sweep, and only the intent separates them. Durability: L801's tripwire row
 and #270 stand; this entry is their instance.
+
+### L904 - THE EVIDENCE GIVEN FOR CLOSING ANSWERED A DIFFERENT QUESTION: AN IN-SAMPLE SEARCH TEST WAS CITED AGAINST HOLDOUT QUALIFIERS (B3139q-r53, 2026-10-07)
+
+**What happened.** Recommending that the owner close bollinger_lower after its Step-3 holdout read
+(S6-B3139bt, transcript entry 120094), my first reason was "The Step-1 search never beat the
+random-shuffle test (long p 0.0896)". That test prices the IN-SAMPLE search. The decision was about
+the HOLDOUT read's 26 long qualifiers. The owner closed, then asked: "i closed because you said
+qualifying cells were just noise in step 3. Is that true?" I had not written "noise" about them -
+the same message said a positive lower bound means the edge is "unlikely to be noise", and the best
+cell's was 0.850 - but the reason I led with invited that reading and could not support it.
+
+**The right test, run after** (scripts/breadth_holdout_null.py, 300 joint shuffles of the signal
+vectors within each period, seed 20261007; output_audit/b3139bw_bollinger_lower_holdout_null_{long,short}.json):
+long 26 qualifiers against a chance median of 27 (p 0.53); short 2 against a chance mean of 2.0
+(p 0.42); the best long lower bound, 0.850, against a best-of-shuffle median of 0.62 (p 0.25). The
+unfiltered long leg already ran a holdout Sharpe of 0.828 at time_stop_10d over 237 trades and
+passed the six gates at 0 of 25 exits, so random subsets cross the 1.0 bar by sampling alone. The
+conclusion survives; the evidence given for it at the time did not establish it.
+
+**Compliance failure against item #228** (L503 and its B2459 addendum: an answer - here a
+recommendation's evidence - that is true of a different question is still a miss). The cited
+statistic was correct and correctly labelled "Step-1"; it was evidence about the wrong sample.
+
+**The rule.** Before citing a statistic for a decision, name the sample it was computed on and the
+sample the decision is about. If they differ, it is context, not evidence, and the decision needs
+its own test - for a holdout scan, a chance test on that holdout.
+
+**Retroactive sweep.** scratchpad sweep_l904.py listed every recommendation paragraph since the
+last compaction (entry 118658): 7 paragraphs, 3 distinct recommendations plus 1 false match. The am
+recommendation (twice restated) used the in-sample test to decide whether to SPEND the holdout look -
+the right question for that test. The bt recommendation is the 1 instance.
+
+**Mechanism.** Detection is JUDGMENT-ONLY. Attempted: a scan flagging a recommendation that cites a
+Step-1 or in-sample statistic beside a holdout decision. It cannot work: the am recommendation in
+this very sweep has that shape and is correct, because there the statistic served the decision
+whether to look; the two differ only in which decision the statistic serves, which no text scan
+reads. The mechanizable slice is built: every breadth read can now carry its own chance test
+(scripts/breadth_holdout_null.py, pinned by test_b3139bw); running it by default inside the reader
+is S6-B3139bx.
+
+**Same batch, caught before commit:** breadth_holdout_null.py first shipped without the word
+SYNTHETIC on its shuffle figures, and gate r64 went RED on test_b1719 (B1801 / #201's provenance
+half: a figure drawn from rng carries its label where it is quoted). The script now says it in its
+docstring and writes a null_label field; both artifacts were regenerated and their numbers
+compared field by field with the unlabelled run.

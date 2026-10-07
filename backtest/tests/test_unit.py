@@ -53278,3 +53278,73 @@ def test_b3139am_breadth_loader_owns_the_leg_filter_and_the_reader_passes_it(tmp
     assert calls["strategy"] == "leg", calls
     rsrc = (root / "scripts" / "breadth_step2_read.py").read_text(encoding="utf-8")
     assert 'art.get("leg")' in rsrc
+
+
+def test_b3139bw_breadth_holdout_null_reproduces_refuses_and_is_deterministic(tmp_path, monkeypatch):
+    """S6-B3139bw: scripts/breadth_holdout_null.py prices a breadth Step-2 read
+    against chance on the read's own cells. On a fixture built so that cells
+    DO qualify (the qualifier path is exercised, not an empty set): the
+    reproduction passes, a read whose qualifier set differs REFUSES, a leg
+    mismatch REFUSES, the same seed gives identical output, and the shuffles
+    keep each cell's holdout trade count (the null's defining property)."""
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    import numpy as np
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import breadth_step1_grid as bg
+    import breadth_holdout_null as bhn
+    tl, cube = [], []
+    days = ([f"2023-{(i % 12) + 1:02d}-{(i % 27) + 1:02d}" for i in range(60)]
+            + [f"2025-{(i % 10) + 6:02d}-{(i % 27) + 1:02d}" for i in range(60)])
+    for i, d in enumerate(days):
+        tk = f"T{i:03d}"
+        tl.append({"strategy": "fx", "ticker": tk, "entry_date": d,
+                   "signals_at_entry": _j.dumps({"k": float(i % 30)})})
+        for ex, pnl in (("time_stop_10d", 3.0 if i % 5 else -2.0),
+                        ("other_exit", 1.0 if i % 2 else -1.2)):
+            cube.append({"strategy": "fx", "ticker": tk, "entry_date": d,
+                         "direction": "long", "exit_method": ex,
+                         "pnl_pct": pnl, "hold_days": 10})
+    pd.DataFrame(tl).to_csv(tmp_path / "trade_log.csv", index=False)
+    pd.DataFrame(cube).to_csv(tmp_path / "trade_exit_detail.csv", index=False)
+    monkeypatch.setattr(bg, "CUBE", tmp_path / "trade_exit_detail.csv")
+    monkeypatch.setattr(bg, "TRADE_LOG", tmp_path / "trade_log.csv")
+    art = {"strategy": "fx", "depth_base": None, "basis": "net", "leg": "long",
+           "rows": [{"axis": "k", "op": "ge", "level": lv} for lv in (0.0, 5.0, 10.0)]}
+    cells, _keys, F, _period, by_exit = bhn.prepare(art)
+    q = bhn.qualifiers(bhn.score(cells, F, by_exit))
+    assert q, "the fixture must produce qualifiers, or the qualifier path is untested"
+    read = {"leg": "long", "qualifiers": [
+        {"axis": a, "op": o, "level": lv, "exit": ex} for a, o, lv, ex in sorted(q)]}
+    out1 = bhn.run(art, read, perms=4, seed=7)
+    out2 = bhn.run(art, read, perms=4, seed=7)
+    assert out1["observed"]["qualifiers"] == len(q)
+    assert _j.dumps(out1, sort_keys=True, default=str) == _j.dumps(out2, sort_keys=True, default=str)
+    for k in ("null_qualifiers", "family_best_ci_lo", "baseline_unfiltered_by_exit", "per_qualifier"):
+        assert k in out1
+    bad = {"leg": "long", "qualifiers": read["qualifiers"][1:]}
+    with pytest.raises(SystemExit) as e:
+        bhn.run(art, bad, perms=1, seed=7)
+    assert "reproduction failed" in str(e.value)
+    with pytest.raises(SystemExit) as e:
+        bhn.run(art, {"leg": "short", "qualifiers": []}, perms=1, seed=7)
+    assert "different legs" in str(e.value)
+    # the null's defining property: a shuffle within period keeps every cell's
+    # holdout and in-sample counts
+    groups = {p: np.flatnonzero(_period == p) for p in ("IS", "HO")}
+    rng = np.random.default_rng(3)
+    perm = np.arange(len(F))
+    for idx in groups.values():
+        perm[idx] = rng.permutation(idx)
+    Fs = F.copy()
+    Fs[_keys] = F[_keys].to_numpy()[perm]
+    for key, op, lv in cells:
+        for p, idx in groups.items():
+            a_ = (bg._cell_mask(F, key, op, lv).to_numpy()[idx]).sum()
+            b_ = (bg._cell_mask(Fs, key, op, lv).to_numpy()[idx]).sum()
+            assert a_ == b_, (key, lv, p)

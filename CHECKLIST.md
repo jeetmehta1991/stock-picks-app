@@ -3986,6 +3986,8 @@ answered, not only misses about code.
 the 2 that were rather than the 7 that were not, until re-asked; the 30-turn audit answered with 3
 turns.
 
+**INSTANCE (B3139q-r53 / L904):** the evidence I led with for closing bollinger_lower after its holdout read was the IN-SAMPLE search test (p 0.0896); the decision was about the holdout qualifiers. True of a different question. The holdout's own chance test, run after (scripts/breadth_holdout_null.py), puts the 26 qualifiers at chance (p 0.53) and the best cell at p 0.25 family-wise - the conclusion held, the evidence given for it did not establish it. Name the sample a statistic was computed on and the sample the decision is about before citing it.
+
 ### #229 - A LIMITATION YOU HAVE NOT TESTED IS AN OMISSION YOU HAVE NOT NOTICED (B1729 / L504)
 
 I told the owner the execution-discipline skill loads as *"12 of 644 lines"*, framed the missing
