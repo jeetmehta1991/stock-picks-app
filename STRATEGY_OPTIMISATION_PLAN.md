@@ -979,7 +979,13 @@ meaning.
 7. **THE HOLDOUT READ** - ONE holdout read of every registered cell, on the owner's explicit word
    (Step 3's own read, or the Step-2 read when the cells were registered before it)
    (`scripts/breadth_step2_read.py`, fail-closed `--ruling`; a DISCLOSED-RE-READ label when the
-   subject's holdout was previously read).
+   subject's holdout was previously read). **The read's qualifiers need their own chance pricing
+   (L904):** item 6's null prices the IN-SAMPLE search, so it says nothing about how many holdout
+   qualifiers chance alone produces - a leg whose unfiltered holdout already runs well crosses the
+   gates by sampling. `scripts/breadth_holdout_null.py` (fail-closed reproduction of the read's
+   qualifier set, then K within-period shuffles; family-wise best-ci_lo statistic; SYNTHETIC null
+   label; pinned by test_b3139bw) is hand-run beside the read today; running it by default inside
+   the reader is S6-B3139bx (owner-gated on its ~13 min/leg cost).
 8. **CONTROL-FAMILY COMPARISON** - every all-six qualifier gets the same axis/level/exit applied to a
    CONTROL strategy's fires (§3.5).
 9. **ADMISSION PROPOSAL** - options with labels riding (the B2660 doctrine); the ruling is the owner's;
