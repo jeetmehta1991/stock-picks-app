@@ -24583,3 +24583,34 @@ SYNTHETIC on its shuffle figures, and gate r64 went RED on test_b1719 (B1801 / #
 half: a figure drawn from rng carries its label where it is quoted). The script now says it in its
 docstring and writes a null_label field; both artifacts were regenerated and their numbers
 compared field by field with the unlabelled run.
+
+### L905 - THE PICK FOR THE NEXT CAMPAIGN WAS RECOMMENDED WITHOUT OPENING THE SUBJECT'S SOURCE, AND ITS DOCSTRING HELD AN OWNER-RULED DEPLOYMENT BAR (B3139q-r57, 2026-10-07)
+
+**What happened.** Asked which strategy to tighten next for Phase 1B, I ranked the TIGHTEN lane from
+the status view and the committed b3116 ranking, read every candidate's ledger records - and never
+opened the subject's code. The owner chose my pick ("pairs_mean_reversion_long lets proceed"). The
+Table A step then surfaced what one file-open would have: the strategy's docstring (added B2085,
+owner-approved F24 re-scope 2026-08-23, registered in EXPLORATORY_STRATEGIES - 58 members,
+backtest/engine/multiple_testing_correction.py:70) declares it EXPLORATORY, the LONG leg only of a
+dollar-neutral pairs trade whose hedge leg does not exist in Stage 2, with no deployment until the
+hedge leg is built (Stage 3+). Material to "likely to get qualified": an admitted line would be a
+banked measurement with the tag riding (the B2668 precedent), not a deployable Phase 1B strategy.
+Disclosed at T2, before any engine hour or holdout look was spent; the campaign waits at T3 with the
+fact in front of the owner.
+
+**Why it is not a new class.** The L802 rule says a recommendation to start work reads the item's
+completion record first. I read the ledger half of the record and skipped the registration half -
+EXPLORATORY_STRATEGIES membership and the docstring that carries the owner's own re-scope ruling
+ARE recorded facts about the subject. **Compliance failure against item #26** (assumption
+validation: "likely to qualify for Phase 1B" rested on the unvalidated assumption that the
+candidate is deployable, and the subject's source was the one source I did not open). The
+registries to check before naming a strategy as work: EXPLORATORY_STRATEGIES, the
+STRATEGIES_DISABLED_* sets, the owner-closure register, the roster - and the strat_ docstring,
+which is where owner re-scope rulings live in this codebase.
+
+**Mechanism.** JUDGMENT-ONLY for detection. Attempted: a scan flagging a recommendation turn that
+never Read the subject's source file - it cannot work, because a source read in an earlier turn or
+session satisfies the duty invisibly, and most recommendation turns legitimately cite committed
+artifacts instead of re-opening code. The durable half already exists: #26 and the L802 tripwire
+row; this entry is their instance, and the b3116 ranking artifact's known gap (no EXPLORATORY
+column) is recorded on the campaign ticket rather than patched retroactively.

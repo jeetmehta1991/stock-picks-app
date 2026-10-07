@@ -102,6 +102,11 @@ State compliance visibly: "Checklist: ✅ [each item]"
     e. If a claim cannot be verified, flag it as ASSUMPTION and ask the owner to validate before proceeding
     f. Re-verify pricing and capability claims separately for every recommendation — they change frequently
     NEVER recommend based on stale memory. Re-verify in the current session.
+    INSTANCE (B3139q-r57 / L905): the next-campaign pick was recommended from the ledger and the
+    b3116 ranking without opening the subject's source; its docstring carried the owner's F24
+    re-scope (EXPLORATORY, long-leg-only, no deployment until the Stage-3 hedge leg). The subject's
+    source and its registry memberships (EXPLORATORY_STRATEGIES, disabled sets, owner closures) are
+    claims a start-work recommendation depends on - validate them per (a)-(c).
 
 27. RELEVANCE CHECK BEFORE EVERY RECOMMENDATION — no exceptions:
     a. State the specific question or problem being solved
