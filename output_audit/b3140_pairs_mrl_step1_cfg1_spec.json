@@ -1,0 +1,23 @@
+{
+ "wave": "pairs_mrl_step1",
+ "strategy_subset": "output_audit/_subset_pairs_mean_reversion_long.txt",
+ "step": 1,
+ "leg_cap_hours": 4.5,
+ "max_legs": 3,
+ "step1_cube": true,
+ "pool_workers": 4,
+ "allow_engine_drift": false,
+ "resume": false,
+ "cube_riders": null,
+ "arms": [
+  {
+   "tag": "production",
+   "env": {},
+   "note": "S6-B3140 Step 1, config 1 of 1 (owner word 2026-10-08 'proceed with step 1'). PRODUCTION config: the campaign's three gate thresholds (pair_count_active > 0, pair_half_life >= 5, pair_zscore_signed < -2) are subset-safe, so the 125 tighter level-combinations grade OFFLINE from this one cube (charter factorial, strategy_optimisation/tighten/pairs_mean_reversion_long.md); the two fire-adding producer knobs (P2.1 EG significance, P2.2 z-window) are DEFINED-NO-ACTUATOR and cannot run. No env overrides: the engine runs the registered strategy as-is.",
+   "env_note": "empty by design - production config; EXPLORATORY registration rides (B2085/F24: long leg only, no deployment before the Stage-3 hedge leg), surfaced to the owner pre-T3 and at T3"
+  }
+ ],
+ "fires_at_production": 587,
+ "_fires_basis": "EXECUTED 2026-10-08 (B3139q-r58): R5 merged trade_log.csv, strategy pairs_mean_reversion_long, unique (ticker, entry_date) fires inside the ruled Step-1 shape - entry_date in [2024-05-05, 2025-05-05) AND ticker in output_audit/_sweep_200.txt - = 587 of the 5,036 full-cube fires (1,304 in-window over all 544 tickers). A prior-cube count at IDENTICAL gates, so an estimate of this run's landings, not a floor: occupancy differs run to run (L812).",
+ "_campaign": "S6-B3140 W-T tighten campaign; T3 band words = the owner's 'proceed with step 1' + 'also register b breadth axes at T3' (both 2026-10-08) on the Table A bands displayed B3139q-r57; breadth B-axes REGISTERED (output_audit/b3140_pairs_breadth_axes_t3.json: 125 census axes, both ops, 53 below-coverage keys RESIM-ONLY excluded) and ride the free-levels landing leg via breadth_step1_grid; the section 3.6 consistency screen remains available before any Step-3 breadth read."
+}

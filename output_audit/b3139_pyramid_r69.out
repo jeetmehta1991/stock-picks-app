@@ -1,0 +1,376 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+........................................................................ [ 33%]
+..............................................s......................... [ 37%]
+....................s.................................................s. [ 41%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 58%]
+........................................................................ [ 62%]
+..........................................................F............. [ 67%]
+........................................................................ [ 71%]
+...............F........................................................ [ 75%]
+.......F................................................................ [ 79%]
+....................................................F................... [ 83%]
+F....................................................................... [ 88%]
+.........................................F.............................. [ 92%]
+........................................................................ [ 96%]
+.............................................................            [100%]
+================================== FAILURES ===================================
+_ test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten _
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-2403/test_b2579_battery_families_an0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000019A12AC5470>
+
+    def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten(
+            tmp_path, monkeypatch):
+        """B2579 (S6-B2573a/c/d): the post-config battery's per-family plumbing is
+        DERIVED from one declaration, and a knob's blast radius is MEASURED.
+    
+        Before this, `run_postconfig.FAMILIES` held two hand-written closures and
+        every grader flag, cube path, PYTHONPATH and window rule was typed twice
+        (once per family); a third strategy meant six more hand-written pieces,
+        and the four institutional configs that landed ungraded pre-B2520 are what
+        a missing piece costs. Now each SPECS entry carries a `tools` adapter
+        block, `family_entry` builds the row from it, `family_refusal` says why an
+        incomplete block is NOT a family (fail closed, L642), and R8's consumer
+        half is a measurement (`knob_consumers` tokenizes the tree) pinned equal
+        to the declaration - drift refuses at launch AND fails step 7 at landing.
+        """
+        import copy
+        import importlib.util
+        import json
+        import types
+        from pathlib import Path
+    
+        root = Path(__file__).resolve().parents[2]
+    
+        def load(name, rel):
+            spec = importlib.util.spec_from_file_location(name, root / rel)
+            m = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(m)
+            return m
+    
+        pvt = load("pvt_b2579", "scripts/producer_variant_table.py")
+    
+        # ---- (1) S6-B2573d: declared consumer list == the measured one, for
+        # every env knob AND every env actuator in every SPECS entry.
+        n_knobs = 0
+        for sname, spec in pvt.SPECS.items():
+            for row in spec["params"]:
+                if row.get("env"):
+                    dec = pvt.declared_consumers(spec, row["env"])
+                    got = pvt.knob_consumers(row["env"])
+                    assert dec == got, (sname, row["env"], dec, got)
+                    assert got, (sname, row["env"], "a declared knob nothing reads")
+                    n_knobs += 1
+            for k in (spec.get("env_actuators") or {}):
+                dec, got = pvt.declared_consumers(spec, k), pvt.knob_consumers(k)
+                assert dec == got, (sname, k, dec, got)
+                n_knobs += 1
+        assert n_knobs >= 11, n_knobs
+        # A mention inside a module docstring is prose, not a consumer. MEASURED
+        # instances: demand_pruning.py:13 names STRAT_EMA_SPAN in its docstring
+        # (a hand-written list had it as a consumer - the tokenizer caught it),
+        # spot_check_institutional.py names INST_PERSIST_CACHE_TAG in its.
+        assert "backtest/signals/demand_pruning.py" not in pvt.knob_consumers("STRAT_EMA_SPAN")
+        assert "scripts/spot_check_institutional.py" not in pvt.knob_consumers("INST_PERSIST_CACHE_TAG")
+        assert pvt.knob_consumers("NO_SUCH_KNOB_XYZ") == []
+        assert pvt.declared_consumers(pvt.SPECS["smc_breaker_block_long"],
+                                      "NO_SUCH_KNOB_XYZ") is None
+        # B2579b: the scripts/ half reads the AST, not the file's text. MEASURED
+        # the moment B2579 landed - knob_consumers' own docstring names
+        # `environ.get("SMC_SWING_LENGTH")` as its example, and the regex version
+        # made THIS module report itself as a consumer (L748: a good comment names
+        # the exact token your matcher greps). A docstring is not a read; a real
+        # os.environ access is, whatever spelling it uses.
+        assert "scripts/producer_variant_table.py" not in pvt.knob_consumers("SMC_SWING_LENGTH")
+        assert pvt._env_reads(
+            root / "scripts" / "build_institutional_persistence_precompute.py") >= {
+            "INST_MIN_CONSECUTIVE_QUARTERS", "INST_GROWTH_LOOKBACK_QUARTERS",
+            "INST_GROWTH_MULTIPLE", "INST_PERSIST_CACHE_TAG"}
+        fake_script = tmp_path / "fake_env_script.py"
+        fake_script.write_text(
+            '"""doc example: os.environ.get(\'DOC_ONLY_KNOB\')"""\n'
+            "import os\n"
+            "a = os.environ.get('GET_KNOB')\n"
+            "b = os.environ['SUB_KNOB']\n"
+            "c = os.getenv('GETENV_KNOB')\n"
+            "d = os.environ.pop('POP_KNOB', None)\n"
+            "e = 'MENTIONED_KNOB'\n", encoding="utf-8")
+        assert pvt._env_reads(fake_script) == {
+            "GET_KNOB", "SUB_KNOB", "GETENV_KNOB", "POP_KNOB"}, pvt._env_reads(fake_script)
+        unparseable = tmp_path / "broken.py"
+        unparseable.write_text("def (:\n", encoding="utf-8")
+        assert pvt._env_reads(unparseable) == frozenset()
+    
+        # ---- (2) the launch gate refuses DRIFT and an undeclared list
+        good = json.loads((root / "output_audit" / "b2527_icg_span50_spec.json")
+                          .read_text(encoding="utf-8"))
+        # B2717: identity is EXACT - a spec loaded from disk carries its own
+        # basename, which run_wave.main stamps on the live path.
+        good["_spec_path"] = "b2527_icg_span50_spec.json"
+        # B2738 (B2450/L721 disposal): icg is ADMITTED since 2026-09-10, so
+        # B2731 refuses this historical spec. This block tests consumer DRIFT,
+        # so the override rides the fixture and the drift assertions stay exact.
+        good["owner_override_retest_admitted"] = {
+            "institutional_committed_growth_long": "test fixture: drift cases"}
+        assert pvt.launch_refusals(good, root) == []
+        inst = pvt.SPECS["institutional_committed_growth_long"]
+        row = [p for p in inst["params"]
+               if p.get("env") == "INST_MIN_CONSECUTIVE_QUARTERS"][0]
+        saved = list(row["consumers"])
+        row["consumers"] = saved + ["scripts/nope.py"]
+        assert any("consumer DRIFT" in e for e in pvt.launch_refusals(good, root))
+        del row["consumers"]
+        assert any("declares no `consumers` list" in e
+                   for e in pvt.launch_refusals(good, root))
+        row["consumers"] = saved
+        assert pvt.launch_refusals(good, root) == []
+        # B2579c (#122): a file the tokenizer cannot read is UNMEASURABLE, not
+        # "does not use this knob" - the swallow that used to be a bare `except:
+        # pass` now records the file and the launch gate refuses while any is
+        # unmeasurable, because under-stating a blast radius lets a launch through.
+        broken = tmp_path / "broken_tokens.py"
+        broken.write_text("x = '''unterminated\n", encoding="utf-8")
+        pvt._UNMEASURABLE.clear()
+        pvt._code_tokens(broken)
+        assert str(broken) in pvt._UNMEASURABLE, pvt._UNMEASURABLE
+        assert any("UNMEASURABLE" in e for e in pvt.launch_refusals(good, root))
+        pvt._UNMEASURABLE.clear()
+        assert pvt.launch_refusals(good, root) == []
+    
+        # ---- (3) FAMILIES is derived from SPECS, and family_refusal names the
+        # shapes an incomplete adapter block can take.
+        rp = load("run_postconfig_b2579", "scripts/run_postconfig.py")
+        # S6-B2732a: hub-1 registered, so the DERIVED set grew to three. This is
+        # a contract change, not a loosening - the assertion stays EXACT so a
+        # silent registration still fails here.
+        # S6-B2752g: smc_order_block_bounce added DELIBERATELY at B2752e - a
+        # freeze exists so a new family is a decision, never a side effect.
+        # B2819 (S6-B2752): smc_equal_lows_sweep_long added DELIBERATELY -
+        # subject 2 of 3, registered through the shared no-free-axis grader.
+        # B2820 (S6-B2752 CLOSED): smc_inverse_fvg added DELIBERATELY - subject
+        # 3 of 3, one honest knob (STRAT_EMA_SPAN; the fvg internals take none).
+>       assert set(rp.FAMILIES) == {"smc_breaker_block_long",
+                                    # B3119: bollinger_lower promoted with
+                                    # its adapter for the owner-approved
+                                    # span campaign (2026-09-27)
+                                    "bollinger_lower",
+                                    "institutional_committed_growth_long",
+                                    "smc_liquidity_sweep_reversal",
+                                    "smc_order_block_bounce",
+                                    "smc_equal_lows_sweep_long",
+                                    "smc_inverse_fvg",
+                                    # B2900: the candle pair completed its
+                                    # adapter (grade_candle_config.py) and
+                                    # is DELIBERATELY registered - owner
+                                    # ruling "Candle goes first".
+                                    "three_white_soldiers",
+                                    "three_black_crows_short"}, sorted(rp.FAMILIES)
+E       AssertionError: ['bollinger_lower', 'institutional_committed_growth_long', 'pairs_mean_reversion_long', 'smc_breaker_block_long', 'smc_equal_lows_sweep_long', 'smc_inverse_fvg', ...]
+E       assert {'bollinger_l...rse_fvg', ...} == {'bollinger_l...eversal', ...}
+E         
+E         Extra items in the left set:
+E         'pairs_mean_reversion_long'
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:33499: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[knob_consumers] UNMEASURABLE C:\Users\jeetm\AppData\Local\Temp\pytest-of-jeetm\pytest-2403\test_b2579_battery_families_an0\broken_tokens.py: TokenError
+___________ test_b2752f_leverage_does_not_price_an_unreachable_axis ___________
+
+    def test_b2752f_leverage_does_not_price_an_unreachable_axis():
+        """S6-B2752f: an axis the engine cannot REACH costs no engine runs.
+    
+        B2767 built leverage() because a coarse read inflated an engine-run count
+        8x; L796 names the DIRECTION as what makes that dangerous, since an
+        inflated cost always argues for not running something. On its second
+        subject the helper did it again - 30 engine runs against a true 10,
+        multiplying in a knob with no env actuator and no call-site plumbing.
+        Reported rather than dropped: an omitted axis is invisible at close.
+        """
+        import sys
+        from pathlib import Path as _P
+        d = _P(__file__).resolve().parents[2] / "scripts"
+        if str(d) not in sys.path:
+            sys.path.insert(0, str(d))
+        import producer_variant_table as pvt
+    
+        got = pvt.leverage(pvt.SPECS["smc_order_block_bounce"])
+        assert got["engine_runs"] == 10, got
+        assert got["free_combos"] == 32, got
+        assert got["unreachable_axes"] == ["P3 tap_window"], got
+    
+        # a synthetic spec proves the RULE rather than this one entry
+        synthetic = {"params": [
+            {"id": "P1", "param": "a", "band": [1, 2, 3], "subset_safe": False,
+             "engine_implemented": True},
+            {"id": "P2", "param": "b", "band": [1, 2, 3, 4], "subset_safe": False,
+             "engine_implemented": False},
+            {"id": "P3", "param": "c", "band": [1, 2], "subset_safe": True,
+             "engine_implemented": True},
+        ]}
+        s = pvt.leverage(synthetic)
+        assert s["engine_runs"] == 3, s        # 3, not 12
+        assert s["free_combos"] == 2, s
+        assert s["unreachable_axes"] == ["P2 b"], s
+    
+        # and every OTHER registered spec is unaffected - the sweep, asserted
+        others = {k: pvt.leverage(v)["unreachable_axes"]
+                  for k, v in pvt.SPECS.items() if k != "smc_order_block_bounce"}
+>       assert all(v == [] for v in others.values()), others
+E       AssertionError: {'bollinger_lower': [], 'institutional_committed_growth_long': [], 'pairs_mean_reversion_long': ['P5 EG cointegration ...cance', 'P6 z-score rolling window (bars)', 'P7 half-life admission bounds (days)'], 'smc_breaker_block_long': [], ...}
+E       assert False
+E        +  where False = all(<generator object test_b2752f_leverage_does_not_price_an_unreachable_axis.<locals>.<genexpr> at 0x0000019B97AC9080>)
+
+backtest\tests\test_unit.py:37944: AssertionError
+__________ test_b2941_every_battery_family_has_a_table_d_axis_entry ___________
+
+    def test_b2941_every_battery_family_has_a_table_d_axis_entry():
+        """S6-B2941 / L833: R1 was mechanized at B2883 and R2 never was.
+    
+        MEASURED: the candle pair passed every launch-readiness probe while
+        having NO Table D axis family, so a candle cfg fell through _d_family to
+        smc's catch-all and would have rendered six columns of dashes with all
+        four candle knobs invisible - after 18 engine runs.
+    
+        No check could have caught it: 8 battery families, 3 axis entries, and
+        nothing declared which strategies an entry serves. `serves` makes the
+        coverage a statement a test can read.
+        """
+        import sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        for p in (str(root), str(root / "scripts")):
+            if p not in sys.path:
+                sys.path.insert(0, p)
+        from producer_variant_table import D_AXIS_FAMILIES as D, _d_family
+        from run_postconfig import FAMILIES
+    
+        claimed = {}
+        for name, fam in D.items():
+            for s in fam.get("serves", ()):
+                assert s not in claimed, (s, name, claimed[s],
+                                          "claimed by two axis entries")
+                claimed[s] = name
+    
+        missing = sorted(set(FAMILIES) - set(claimed))
+>       assert not missing, (
+            missing, "battery families with NO Table D axis entry - their configs "
+            "fall through _d_family to smc's columns and render dashes (L833)")
+E       AssertionError: (['pairs_mean_reversion_long'], "battery families with NO Table D axis entry - their configs fall through _d_family to smc's columns and render dashes (L833)")
+E       assert not ['pairs_mean_reversion_long']
+
+backtest\tests\test_unit.py:41807: AssertionError
+___________ test_b3120d_strat_constant_scripts_are_a_shrinking_set ____________
+
+    def test_b3120d_strat_constant_scripts_are_a_shrinking_set():
+        """S6-B3120d / L754/#291: one-strategy tooling (a module-level STRAT
+        constant under scripts/) is FROZEN at the B3120 census and shrink-only -
+        new tooling arrives through the FAMILIES adapter registry, never as the
+        next STRAT script. Every member carries its reason here (#280: a bare
+        integer is for a population too large to enumerate; this one is not).
+        """
+        import re
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        FROZEN = {
+            # adapter-dispatched family legs (registered in SPECS tools blocks):
+            "grade_bollinger_config.py", "grade_free_levels_bollinger.py",
+            "spot_check_bollinger.py", "grade_institutional_config.py",
+            "grade_free_levels_institutional.py", "spot_check_institutional.py",
+            # pre-adapter smc standalone step tools (superseded by the smc
+            # family registration; retired when their outputs stop being cited):
+            "smc_lsr_step1.py", "smc_obb_step1.py", "spot_check_smc_lsr.py",
+            "spot_check_smc_obb.py", "diagnose_smc_lsr.py",
+            # cross-checker that pins one strategy's describing artifacts:
+            "verify_describing_artifacts.py",
+        }
+        live = set()
+        for p in sorted((root / "scripts").glob("*.py")):
+            try:
+                src = p.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            if re.search(r"^STRAT\s*=\s*", src, re.M):
+                live.add(p.name)
+        new = live - FROZEN
+>       assert not new, (
+            f"NEW one-strategy script(s) {sorted(new)} - the 13th STRAT tool "
+            "(L754/#291). Route it through the FAMILIES adapter registry "
+            "(run_postconfig.FAMILIES + the SPECS tools block) instead.")
+E       AssertionError: NEW one-strategy script(s) ['grade_free_levels_pairs.py', 'grade_pairs_config.py', 'spot_check_pairs.py'] - the 13th STRAT tool (L754/#291). Route it through the FAMILIES adapter registry (run_postconfig.FAMILIES + the SPECS tools block) instead.
+E       assert not {'grade_free_levels_pairs.py', 'grade_pairs_config.py', 'spot_check_pairs.py'}
+
+backtest\tests\test_unit.py:47443: AssertionError
+_______ test_b3139_every_free_level_adapter_windows_its_occupancy_block _______
+
+    def test_b3139_every_free_level_adapter_windows_its_occupancy_block():
+        """S6-B3128a council: all three free-level adapters pass the scored
+        window to occupancy_disclosure (AST: the call carries a `window`
+        keyword), so no leg discloses whole-cube slack beside an in-sample
+        score. A leg added later inherits the check."""
+        import ast
+        legs = sorted(_SCRIPTS_B3135.glob("grade_free_levels_*.py"))
+>       assert len(legs) == 3, [p.name for p in legs]
+E       AssertionError: ['grade_free_levels_bollinger.py', 'grade_free_levels_candle.py', 'grade_free_levels_institutional.py', 'grade_free_levels_pairs.py']
+E       assert 4 == 3
+E        +  where 4 = len([WindowsPath('C:/Users/jeetm/Github/stock-picks-app/scripts/grade_free_levels_bollinger.py'), WindowsPath('C:/Users/je...ree_levels_institutional.py'), WindowsPath('C:/Users/jeetm/Github/stock-picks-app/scripts/grade_free_levels_pairs.py')])
+
+backtest\tests\test_unit.py:48363: AssertionError
+_______________ test_b3139bb_line_citations_in_code_only_shrink _______________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-2403/test_b3139bb_line_citations_in0')
+
+    def test_b3139bb_line_citations_in_code_only_shrink(tmp_path):
+        """S6-B3139bb: no file gains a line-number citation, and no file not in
+        the freeze starts citing lines. MEASURED at B3139q-r35: 570 citations in
+        105 files; the hand-read sample error rate is in the freeze's comment.
+        A file whose count fell is reported so the dict can be lowered (shrink-only
+        means the freeze follows the cleanup, never the other way)."""
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        now = _b3139bb_line_citation_counts(root)
+        grew = {f: (n, _B3139BB_LINE_CITATIONS.get(f, 0)) for f, n in now.items()
+                if n > _B3139BB_LINE_CITATIONS.get(f, 0)}
+>       assert not grew, ("a NEW line-number citation in code - cite the symbol "
+                          f"(function, constant) instead; file: (now, frozen) = {grew}")
+E       AssertionError: a NEW line-number citation in code - cite the symbol (function, constant) instead; file: (now, frozen) = {'scripts/grade_free_levels_pairs.py': (3, 0), 'scripts/producer_variant_table.py': (88, 79)}
+E       assert not {'scripts/grade_free_levels_pairs.py': (3, 0), 'scripts/producer_variant_table.py': (88, 79)}
+
+backtest\tests\test_unit.py:52509: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten
+FAILED backtest/tests/test_unit.py::test_b2752f_leverage_does_not_price_an_unreachable_axis
+FAILED backtest/tests/test_unit.py::test_b2941_every_battery_family_has_a_table_d_axis_entry
+FAILED backtest/tests/test_unit.py::test_b3120d_strat_constant_scripts_are_a_shrinking_set
+FAILED backtest/tests/test_unit.py::test_b3139_every_free_level_adapter_windows_its_occupancy_block
+FAILED backtest/tests/test_unit.py::test_b3139bb_line_citations_in_code_only_shrink
+6 failed, 1708 passed, 3 skipped in 1172.54s (0:19:32)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1202
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

@@ -33501,6 +33501,11 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
                                 # its adapter for the owner-approved
                                 # span campaign (2026-09-27)
                                 "bollinger_lower",
+                                # B3140: pairs family registered with its
+                                # three adapters for the owner-launched
+                                # Step-1 campaign (2026-10-08, "proceed
+                                # with step 1")
+                                "pairs_mean_reversion_long",
                                 "institutional_committed_growth_long",
                                 "smc_liquidity_sweep_reversal",
                                 "smc_order_block_bounce",
@@ -48360,7 +48365,8 @@ def test_b3139_every_free_level_adapter_windows_its_occupancy_block():
     score. A leg added later inherits the check."""
     import ast
     legs = sorted(_SCRIPTS_B3135.glob("grade_free_levels_*.py"))
-    assert len(legs) == 3, [p.name for p in legs]
+    # B3140: + grade_free_levels_pairs.py (the fourth family's leg)
+    assert len(legs) == 4, [p.name for p in legs]
     for leg in legs:
         tree = ast.parse(leg.read_text(encoding="utf-8"))
         calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)

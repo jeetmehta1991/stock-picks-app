@@ -2726,6 +2726,159 @@ def resolved_spec(strategy: str) -> dict | None:
     return s or p0
 
 
+SPECS["pairs_mean_reversion_long"] = {  # B3140 F1 - written from the owner-launched Step-1 campaign (T3 word 2026-10-08 "proceed with step 1" on the Table A bands displayed B3139q-r57). ENGINE leg runs, so SPECS is the registry and the full tools adapter is owed NOW (the B2897 rule); ZERO engine knobs - every campaign axis is OFFLINE. EXPLORATORY registration rides (B2085/F24 owner re-scope: LONG leg only of a dollar-neutral pair, hedge leg absent in Stage 2, NO deployment before Stage 3) - any admitted line is a BANKED measurement with the tag riding (B2668 precedent).
+    "gate": ("pair_count_active > 0 AND pair_zscore_signed < -2.0 AND "
+             "pair_half_life >= 5 (screener strat_pairs_mean_reversion_long)"),
+    "formula": """
+ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in
+the producer->gate derivation (each tunable step is a Table A row with that
+id). The breadth B-axes ARE T3-REGISTERED (owner verbatim 2026-10-08 "also
+register b breadth axes at T3") but carry NO B<n> rows here: the engine
+registry strips breadth inventory (the test_b2752f rule - an unreachable
+axis in SPECS would price into leverage()); the registration lives in
+output_audit/b3140_pairs_breadth_axes_t3.json (125 census axes, both ops,
+53 below-coverage keys RESIM-ONLY excluded) and rides the free-levels leg
+via breadth_step1_grid --cube-dir per landing. The charter's dotted
+sub-ids P2.1/P2.2/P2.3 are producer knobs with no actuator and carry no
+P-rows here (test_b2752f: SPECS is the engine surface); their inventory
+lives in the PRODUCER LAYER prose below and the charter
+(validate_spec's id regex takes flat ids; the charter rows are cited per
+param).
+
+=============================== PRODUCER LAYER ===============================
+
+P1  pair signal block (pairs_trading.compute_pair_signals_for_ticker)
+       over the T5b cointegrated-pairs
+       precompute (build_t5b_pairs_precompute.py annual snapshots); emits
+       pair_count_active / pair_zscore_signed / pair_half_life /
+       pair_counterparty; identity UNACTUATED - held at production here
+  producer knobs, DEFINED-NO-ACTUATOR, carrying NO P-rows here (the
+  test_b2752f rule: SPECS is the ENGINE surface, so an axis the engine
+  cannot reach is inventoried in prose and the charter, never as a param):
+  EG cointegration significance 0.05
+  (pairs_trading.engle_granger_cointegration; charter P2.1 - bracket 0.01
+  is FIRE-ADDING via a precompute re-run); z-score rolling window 60 bars
+  (pairs_trading.pair_zscore; charter P2.2 - 40/90 unpersisted); half-life
+  admission bounds 5-30 days (pairs_trading.find_cointegrated_pairs;
+  charter P2.3 - wider [3-45] needs a precompute re-run, tighter inner
+  cuts ride P3's offline axis)
+
+=============================== STRATEGY LAYER ===============================
+
+P2  pair_count_active  > 0    [EXISTING-THRESHOLD - offline depth axis]
+P3  pair_half_life     >= 5   [EXISTING-THRESHOLD - offline depth axis]
+P4  pair_zscore_signed < -2   [EXISTING-THRESHOLD - offline depth axis]
+
+long_fires = P2 AND P4 AND P3   (LONG leg only - B2085/F24)
+""",
+    "baseline": {"artifact": "output_r5_merged_1_7", "fires": 5036,
+                 "tickers": 544, "holdout_n": 1261,
+                 "window": "2022-05-05..2026-05-05"},
+    "params": [
+        {"id": "P1", "producer": "pairs_trading.compute_pair_signals_for_ticker"
+                                 " -> screener emit",
+         "param": "pairs precompute identity (T5b cointegrated pairs)",
+         "production": "EG 0.05 / z-window 60 / hl-bounds 5-30",
+         "band": ["EG 0.05 / z-window 60 / hl-bounds 5-30"],
+         "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": False,
+         "status": "identity UNACTUATED - held at production (producer knobs: PRODUCER LAYER prose)",
+         "type": "identity", "engine_implemented": True,
+         "evidence": "pairs_trading.compute_pair_signals_for_ticker; screener.py pairs block",
+         "derivation": "held at production in SPEC - no actuator, no resim "
+                       "promise (S6-B2569a)"},
+        {"id": "P2", "producer": "screener strategy gate",
+         "param": "pair_count_active floor", "production": 0,
+         "band": [0, 4, 6, 9, 13],
+         "free_band": [0, 4, 6, 9, 13], "resim_band": [],
+         "env": None, "consumers": ["backtest/signals/screener.py"],
+         "sweep_levels": None, "subset_safe": True,
+         "status": "T3-APPROVED 2026-10-08 (owner word 'proceed with step 1' "
+                   "on the displayed bands) - all four tighter levels",
+         "type": "int", "engine_implemented": True,
+         "evidence": "charter free-band line (QUANTS retention on 5036 fires: "
+                     "4152/3331/2251/1168)",
+         "derivation": "TIGHTER = RAISE the floor (keep >= level, CLOSED - "
+                       "build_table_a's free-band retention computation); "
+                       "production gate is > 0; "
+                       "production included as the offline identity level",
+         "signal_keys": ["pair_count_active"]},
+        {"id": "P3", "producer": "screener strategy gate",
+         "param": "pair_half_life floor (days)", "production": 5,
+         "band": [5, 6.94, 8.59, 10.08, 11.96],
+         "free_band": [5, 6.94, 8.59, 10.08, 11.96], "resim_band": [],
+         "env": None, "consumers": ["backtest/signals/screener.py"],
+         "sweep_levels": None, "subset_safe": True,
+         "status": "T3-APPROVED 2026-10-08 - all four tighter levels",
+         "type": "float", "engine_implemented": True,
+         "evidence": "charter free-band line (QUANTS retention on 5036 fires: "
+                     "4031/3027/2017/1008)",
+         "derivation": "TIGHTER = RAISE the floor (keep >= level); production "
+                       "included as the offline identity level",
+         "signal_keys": ["pair_half_life"]},
+        {"id": "P4", "producer": "screener strategy gate",
+         "param": "pair_zscore_signed ceiling", "production": -2.0,
+         "band": [-2.0, -2.1619, -2.3749, -2.6313, -3.0505],
+         "free_band": [-2.0, -2.1619, -2.3749, -2.6313, -3.0505],
+         "resim_band": [],
+         "env": None, "consumers": ["backtest/signals/screener.py"],
+         "sweep_levels": None, "subset_safe": True,
+         "status": "T3-APPROVED 2026-10-08 - all four tighter levels",
+         "type": "float", "engine_implemented": True,
+         "evidence": "charter free-band line (QUANTS retention on 5036 fires: "
+                     "4029/3022/2016/1008)",
+         "derivation": "TIGHTER = LOWER the ceiling (keep <= level, closed); "
+                       "production gate is < -2.0 strict; production included "
+                       "as the offline identity level",
+         "signal_keys": ["pair_zscore_signed"]},
+    ],
+    "tools": {
+        # ZERO engine knobs: every campaign axis is OFFLINE (P2-P4 grade
+        # from persisted signals; P5-P7 are DEFINED-NO-ACTUATOR). keys is
+        # EMPTY by construction - the battery's _flag_args emits nothing and
+        # params_from_manifest returns {} (no missing keys).
+        "keys": {},
+        "grid_keys": ["combo"],
+        # production is the only runnable configuration
+        "single_combination": True,
+        "spot_check": {"script": "spot_check_pairs.py", "cube": "",
+                       "strategy_flag": "--strategy",
+                       "flags": {},
+                       "extra": ["--n", "50"],
+                       "window": False, "precompute_check": False,
+                       "pythonpath": None,
+                       "note": "AUTO (S6-B3140); three legs - raw spread "
+                               "z-score arithmetic from the T5b snapshot "
+                               "row, compute_pair_signals_for_ticker on the "
+                               "engine's input shape, the cube record; "
+                               "LONG-only (B2085/F24), no direction branch"},
+        "grade": {"script": "grade_pairs_config.py",
+                  "cube": "",
+                  "flags": {},
+                  "extra": [],
+                  "step2_flag": "--step2",
+                  "preregistered_flag": "--preregistered-exit",
+                  "pythonpath": None,
+                  "note": "AUTO (S6-B3140); roster_core-delegated; the arm "
+                          "is verified EMPTY-env (zero-knob family - an env "
+                          "key present means an unregistered configuration, "
+                          "fail closed L642)"},
+        "free_levels": {"script": "grade_free_levels_pairs.py",
+                        "note": "AUTO (S6-B3140); reproduction-gated P2/P3/P4 "
+                                "axes plus the charter's 125-combination "
+                                "depth factorial; producer knobs "
+                                "DEFINED-NO-ACTUATOR, named, not gradable; "
+                                "breadth B-axes T3-REGISTERED (owner verbatim "
+                                "2026-10-08) and graded by the riding "
+                                "breadth_step1_grid leg (b3140 registration "
+                                "artifact) - each free-axis family named, "
+                                "none silent (#290); occupancy DISCLOSED, "
+                                "never simulated (L812)"},
+    },
+}
+
+
 def validate_spec(spec: dict) -> list[str]:
     """Formula and Table A must not drift apart. Every P-id in the formula needs
     a params row and every params row needs a formula step - a mechanical check,
@@ -4003,6 +4156,17 @@ D_AXIS_FAMILIES = {
         "detect": "P4_ema_span",
         "d1": (("span", "cfg", "P4_ema_span"),),
         "d2": (("P4 ema_span", "cfg", "P4_ema_span"),),
+    },
+    # B3140: the pairs family - ZERO engine knobs, one production
+    # configuration. Without this a pairs cfg falls through _d_family to
+    # smc's columns and renders six dashes (the L833/L790 class). detect
+    # keys on P1_pairs_identity, which only grade_pairs_config emits; the
+    # P2/P3/P4 offline threshold axes ride the free-levels artifact.
+    "pairs_mean_reversion": {
+        "serves": ("pairs_mean_reversion_long",),
+        "detect": "P1_pairs_identity",
+        "d1": (("cfg", "cfg", "P1_pairs_identity"),),
+        "d2": (("P1 identity", "cfg", "P1_pairs_identity"),),
     },
     "smc_breaker_block": {
         # S6-B2941: records the CURRENT fallback for the four non-breaker

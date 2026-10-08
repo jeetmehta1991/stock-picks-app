@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "a491f8905",
-    "generated_at": "2026-10-07 11:15:38"
+    "source_commit": "33b57c28e",
+    "generated_at": "2026-10-08 12:33:22"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -2456,15 +2456,21 @@
         "pair_zscore_signed": 1.0
       },
       "tickets": [
-        "S6-B3116b"
+        "S6-B3116b",
+        "S6-B3140",
+        "S6-B3140a"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3140"
+      ],
       "mention_tickets": [
-        "S6-B3116b"
+        "S6-B3116b",
+        "S6-B3140",
+        "S6-B3140a"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "STALLED-CAMPAIGN"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "pairs_mean_reversion_short",
