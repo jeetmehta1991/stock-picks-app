@@ -18,6 +18,10 @@
    "env_note": "empty by design - production config; zero engine knobs registered for this family; EXPLORATORY registration rides (B2085/F24: long leg only, no deployment before the Stage-3 hedge leg)"
   }
  ],
+ "preleg_exemptions": {
+  "FISV": "owner 'relaunch' 2026-10-09: ticker renamed FISV->FI June 2023 (the CDAY->DAY class); post-rename history lives under FI, pre-rename rows are PIT-sound - gap_share 0.6082 is the rename edge, not corruption (audit output_audit/pairs_mrl_step2_preleg_bar_audit.json)",
+  "SBNY": "owner 'relaunch' 2026-10-09: Signature Bank failure March 2023; halt-then-delist interior gaps (30 days); pre-collapse rows are PIT-sound history - the L581 outlier class is mitigated by roster_core.net_pnl winsorization at grading"
+ },
  "fires_at_production": 5036,
  "_fires_basis": "EXECUTED 2026-10-08 (B3139q-r58): R5 merged trade_log.csv, strategy pairs_mean_reversion_long, unique (ticker, entry_date) fires over the FULL 4y window across all 544 tickers = 5,036 - the same shape this Step-2 run re-simulates. A prior-cube count at IDENTICAL gates, an estimate not a floor (L812).",
  "_campaign": "S6-B3140 W-T tighten campaign, Step 2 config 1 of 6 under the owner's all-combinations condition; ~19h DERIVED-NAIVE (Step 1 measured 1.78h over 200 ticker-years, x10.9 to 2,176), UNCAPPED per B3133/B3141 (the 5h cap binds Step-1 only), legged at 4.5h for resume granularity; at landing the battery auto-grades the 125 offline combinations + the T3-registered breadth axes on the cube's IS; the holdout reads are the production line (preregistered time_stop_10d) and the S6-B3140c row - the 5 producer-combo cubes to follow are IS-only without a further owner word."
