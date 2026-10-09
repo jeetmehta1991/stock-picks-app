@@ -1,0 +1,24 @@
+{
+ "wave": "pairs_mrl_step2",
+ "strategy_subset": "output_audit/_subset_pairs_mean_reversion_long.txt",
+ "step": 2,
+ "leg_cap_hours": 4.5,
+ "max_legs": 8,
+ "step1_cube": false,
+ "pool_workers": 4,
+ "allow_engine_drift": false,
+ "resume": false,
+ "cube_riders": null,
+ "arms": [
+  {
+   "tag": "production",
+   "env": {},
+   "preregistered_exit": "time_stop_10d",
+   "note": "S6-B3140 Step 2, config 1 of 6 (owner words 2026-10-08: 'B approved as long as all combinations can be evaluated and not just the registered cell' + 2026-10-09: 'Lets proceed with step 2 run'). PRODUCTION config at the ruled Step-2 shape (4y x 544, resolver-owned). preregistered_exit = time_stop_10d, Step 1's rank-1 production exit (is_ci_lo 0.659, output_pairs_mrl_step1_production_grid_auto.json) per the B2612 contract - the grader records any IS re-selection mismatch, one holdout read. The SEPARATE pre-registered candidate-row read is S6-B3140c (count >= 13 / half-life >= 10.08 / z <= -3.0505 at r_multiple_3r), GRID-SELECTED label riding, executed at landing via the reproduction-gated read. Configs 2-6 (the producer-knob combos EG {0.01} x z-window {40,90} and bounds [3-45]) chain AFTER the S6-B3141a actuators land - their fires exist in no current cube.",
+   "env_note": "empty by design - production config; zero engine knobs registered for this family; EXPLORATORY registration rides (B2085/F24: long leg only, no deployment before the Stage-3 hedge leg)"
+  }
+ ],
+ "fires_at_production": 5036,
+ "_fires_basis": "EXECUTED 2026-10-08 (B3139q-r58): R5 merged trade_log.csv, strategy pairs_mean_reversion_long, unique (ticker, entry_date) fires over the FULL 4y window across all 544 tickers = 5,036 - the same shape this Step-2 run re-simulates. A prior-cube count at IDENTICAL gates, an estimate not a floor (L812).",
+ "_campaign": "S6-B3140 W-T tighten campaign, Step 2 config 1 of 6 under the owner's all-combinations condition; ~19h DERIVED-NAIVE (Step 1 measured 1.78h over 200 ticker-years, x10.9 to 2,176), UNCAPPED per B3133/B3141 (the 5h cap binds Step-1 only), legged at 4.5h for resume granularity; at landing the battery auto-grades the 125 offline combinations + the T3-registered breadth axes on the cube's IS; the holdout reads are the production line (preregistered time_stop_10d) and the S6-B3140c row - the 5 producer-combo cubes to follow are IS-only without a further owner word."
+}

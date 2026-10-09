@@ -26657,6 +26657,18 @@ def test_b2149_prerun_gate_refuses_without_the_supervisor(tmp_path, monkeypatch)
     over = g.check_supervisor_and_cap({"leg_cap_hours": 6.0})
     assert any("exceeds the owner" in p for p in over), over
 
+    # (2b) B3141 (owner verbatim 2026-10-08 "Run in step 2 is uncapped",
+    # restating B3133): the SAME over-cap manifest at step 2 is QUIET on
+    # the cap clause; an ABSENT step stays Step-1-scoped (fail closed,
+    # L642); and step 2 with NO declared cap still refuses - leg chunking
+    # is retained for resume granularity, never as the ceiling.
+    s2 = g.check_supervisor_and_cap(
+        {"leg_cap_hours": 6.0, "step": 2, "fires_at_production": 12})
+    assert not any("exceeds the owner" in p for p in s2), s2
+    s2_nocap = g.check_supervisor_and_cap(
+        {"step": 2, "fires_at_production": 12})
+    assert any("declares NO leg cap" in p for p in s2_nocap), s2_nocap
+
     # (3) #226 prove-it-can-fail: an engine source with no supervisor must
     #     REFUSE both on the watchdog and on the heartbeat.
     eng = root / "backtest" / "engine" / "backtest.py"

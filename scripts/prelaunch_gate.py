@@ -232,10 +232,19 @@ def check_supervisor_and_cap(manifest: dict) -> list[str]:
             "manifest declares NO leg cap (leg_cap_hours / max_run_hours) - "
             f"the owner cap of {OWNER_LOCAL_CAP_HOURS}h cannot be enforced "
             "against an undeclared bound. Refusing to launch.")
-    elif float(cap) > OWNER_LOCAL_CAP_HOURS:
+    elif (float(cap) > OWNER_LOCAL_CAP_HOURS
+          and int(manifest.get("step") or 1) != 2):
+        # B3141 (owner verbatim 2026-10-08: "5h cap does not exist for step
+        # 2. Run in step 2 is uncapped."), restating B3133 ("5h cap on run
+        # applies only for step 1 and not step 2"): the ceiling binds STEP-1
+        # runs ONLY. A manifest with NO step field is treated as Step 1
+        # (fail CLOSED, L642 - the absent case must not become the uncapped
+        # escape), and the absent-CAP refusal above stays for EVERY step:
+        # Step 2 keeps leg chunking for RESUME GRANULARITY, not as a ceiling.
         probs.append(
             f"leg cap {cap}h exceeds the owner's standing local cap of "
-            f"{OWNER_LOCAL_CAP_HOURS}h (ruling 2026-08-24). Refusing to launch.")
+            f"{OWNER_LOCAL_CAP_HOURS}h (ruling 2026-08-24; binds Step-1 "
+            "only, B3133/B3141). Refusing to launch.")
 
     # (d) B2849 (S6-B2848c, owner-approved 2026-09-17): the ladder's 0.5
     # smoke made mechanical - the manifest must RECORD that fires exist at
