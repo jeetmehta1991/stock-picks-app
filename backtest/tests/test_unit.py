@@ -53517,3 +53517,119 @@ def test_b3140c_c16_reruns_queue_readers_when_the_queue_moved_after_the_gate(tmp
     src = (_Path(__file__).resolve().parents[2] / "scripts" / "preflight.py").read_text(encoding="utf-8")
     call = "all_violations += check_queue_readers_after_stamp(files)"
     assert src.count(call) == 1 and src.index(call) > src.index("def main(")
+
+
+def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path):
+    """S6-B3141a (owner route A 2026-10-10): the pairs producer knobs P5
+    (Engle-Granger significance) and P6 (z-window). Defaults reproduce
+    production exactly; each knob CHANGES the producer output on real data
+    (L751 - two values that must differ do differ); a looser significance
+    is refused at import; the battery adapter reads both knobs from the
+    manifest and fails closed on a missing or off-band one."""
+    import json as _j
+    import os as _os
+    import subprocess as _sp
+    import sys as _sys
+    from datetime import date as _date
+    from pathlib import Path as _Path
+    import pandas as _pd
+    root = _Path(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    from backtest.signals import pairs_trading as pt
+    from backtest import config as cfg
+    import run_postconfig as rp
+    import grade_pairs_config as gpc
+
+    assert (cfg.PAIRS_EG_SIGNIFICANCE, cfg.PAIRS_Z_WINDOW) == (0.05, 60)
+    assert pt.pair_slice_bars(60) == 90 and pt.pair_slice_bars(90) == 120
+    assert pt.pair_slice_bars(40) == 90
+
+    # real data: ticker A at 2025-03-03 has pairs on both sides of p=0.01
+    ohlcv = root / "data_prefetch" / "polygon" / "ohlcv_daily" / "A.parquet"
+    snap = root / "data_prefetch" / "derived" / "cointegrated_pairs_t1a" / "2025-01-01.parquet"
+    assert ohlcv.exists() and snap.exists(), "pin needs the T5b snapshot + A ohlcv"
+    df = _pd.read_parquet(ohlcv)
+    df["d"] = _pd.to_datetime(df["date"]).dt.date
+    as_of = _date(2025, 3, 3)
+    df = df[df.d <= as_of].sort_values("d")
+
+    def run(w, s, explicit=True):
+        n = pt.pair_slice_bars(w)
+        tc = _pd.Series(df["close"].values[-n:], index=df["d"].values[-n:])
+        if not explicit:
+            return pt.compute_pair_signals_for_ticker("A", as_of, tc)
+        return pt.compute_pair_signals_for_ticker("A", as_of, tc, window=w,
+                                                  significance=s)
+    base = run(60, 0.05)
+    assert base == run(60, 0.05, explicit=False)
+    strict = run(60, 0.01)
+    assert 0 < strict["pair_count_active"] < base["pair_count_active"]
+    assert run(40, 0.05)["pair_zscore_signed"] != base["pair_zscore_signed"]
+    w90 = run(90, 0.05)
+    assert w90.get("pair_zscore_signed") not in (None, 0.0)
+    assert w90["pair_zscore_signed"] != base["pair_zscore_signed"]
+
+    env = {**_os.environ, "PAIRS_EG_SIGNIFICANCE": "0.1"}
+    r = _sp.run([_sys.executable, "-c", "import backtest.config"], cwd=root,
+                env=env, capture_output=True, text=True)
+    assert r.returncode != 0 and "PAIRS_EG_SIGNIFICANCE" in r.stderr
+
+    fam = "pairs_mean_reversion_long"
+    assert rp.family_refusal(fam) == ""
+    vals, _ = rp.params_from_manifest(fam, {"arms": [{"env": {
+        "PAIRS_EG_SIGNIFICANCE": "0.01", "PAIRS_Z_WINDOW": "90"}}]})
+    assert vals == {"eg_significance": "0.01", "z_window": "90"}
+    missing, why = rp.params_from_manifest(fam, {"arms": [{"env": {
+        "PAIRS_EG_SIGNIFICANCE": "0.01"}}]})
+    assert missing is None and "z_window" in why
+    tools = rp._tools(fam)
+    args = rp._flag_args(tools["grade"], tools, vals)
+    assert args == ["--eg-significance", "0.01", "--z-window", "90"]
+
+    ok, _ = gpc.arm_knobs({"PAIRS_EG_SIGNIFICANCE": "0.01", "PAIRS_Z_WINDOW": "40"})
+    assert ok == {"P5_eg_significance": 0.01, "P6_z_window": 40}
+    assert gpc.arm_knobs({})[0] == {"P5_eg_significance": 0.05, "P6_z_window": 60}
+    assert gpc.arm_knobs({"PAIRS_Z_WINDOW": "75"})[0] is None
+    assert gpc.arm_knobs({"SMC_SWING_LENGTH": "20"})[0] is None
+    cube = tmp_path / "c"
+    cube.mkdir()
+    (cube / "run_manifest.json").write_text(_j.dumps({"arms": [{"env": {
+        "PAIRS_EG_SIGNIFICANCE": "0.01", "PAIRS_Z_WINDOW": "90"}}]}),
+        encoding="utf-8")
+    assert gpc.verify_manifest(cube, {"P5_eg_significance": 0.01,
+                                      "P6_z_window": 90})[0] is None
+    assert gpc.verify_manifest(cube, {"P5_eg_significance": 0.05,
+                                      "P6_z_window": 90})[0].startswith("[FAIL]")
+
+    r = _sp.run([_sys.executable, str(root / "scripts" / "make_spec.py"),
+                 "--strategy", fam, "--param", "P6", "--levels", "40",
+                 "--with", "P5=0.01", "--wave-prefix", "t_b3141a", "--dry"],
+                cwd=root, capture_output=True, text=True,
+                env={**_os.environ, "PYTHONPATH": _os.pathsep.join(
+                    [str(root), str(root / "scripts")])})
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "t_b3141a_p6_40_p5_0p01_spec.json" in r.stdout
+    r = _sp.run([_sys.executable, str(root / "scripts" / "make_spec.py"),
+                 "--strategy", fam, "--param", "P6", "--levels", "40",
+                 "--with", "P5=0.2", "--wave-prefix", "t_b3141a", "--dry"],
+                cwd=root, capture_output=True, text=True,
+                env={**_os.environ, "PYTHONPATH": _os.pathsep.join(
+                    [str(root), str(root / "scripts")])})
+    assert r.returncode == 2 and "outside P5" in r.stdout
+
+    # L908: the spot check's leg C (the cube's recorded z) is COMPARED - the
+    # landed production Step-1 cube agrees at its true window and disagrees
+    # on every sampled trade at a wrong one (it agreed 15 of 20 before)
+    s1 = root / "output_pairs_mrl_step1_production"
+    assert (s1 / "trade_log.csv").exists(), "pin needs the config-1 Step-1 cube"
+    seen = {}
+    for w in (60, 40):
+        out = tmp_path / f"sc{w}.json"
+        r = _sp.run([_sys.executable, str(root / "scripts" / "spot_check_pairs.py"),
+                     "--cube", str(s1), "--n", "6", "--eg-significance", "0.05",
+                     "--z-window", str(w), "--strategy", fam, "--out", str(out)],
+                    cwd=root, capture_output=True, text=True,
+                    env={**_os.environ, "PYTHONPATH": str(root)})
+        seen[w] = _j.loads(out.read_text(encoding="utf-8"))
+    assert seen[60]["agree"] == 6 and seen[60]["disagree"] == 0, seen[60]
+    assert seen[40]["agree"] == 0 and seen[40]["disagree"] == 6, seen[40]

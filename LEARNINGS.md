@@ -24666,3 +24666,23 @@ tree - 39.1 s for all 55, measured - and the commit is refused on any failure. L
 (the pyramid_gate APPEND_TOLERANT prefix) are exempt so the unattended B2520 commit cannot stall (L873).
 Pin: test_b3140c_c16_reruns_queue_readers_when_the_queue_moved_after_the_gate. Fix of the instance: the
 status view rebuilt by scripts/build_strategy_status.py from the current ledger.
+
+### L908 - A SPOT CHECK NAMED THREE LEGS AND COMPARED TWO; ITS NEGATIVE CONTROL WAS NEVER RUN (B3139q-r68, 2026-10-10)
+
+**What happened.** scripts/spot_check_pairs.py (built at S6-B3140) documents three legs - raw arithmetic
+(A), the production producer (B) and the cube's record (C) - and its agreement test compared A with B
+and the recorded peer only. Leg C's z-score was fetched and checked for None, never compared. Building
+the z-window knob (S6-B3141a) I ran the checker on the production Step-1 cube told the WRONG window
+(40): it agreed on 15 of 20, because a wrong window only surfaced when the max-|z| peer happened to
+move. After adding the leg-C comparison: 20 of 20 agree at the true window, 0 of 20 at the wrong one.
+
+**Why it happened.** The checker was validated only on cubes it should PASS. A must-fire case - the
+right cube with a wrong declared configuration - was never run, so the missing comparison could not
+show. The docstring's three legs read as three comparisons.
+
+**Compliance failure against item #226** (prove it can fail: a check observed only passing has not been
+tested). Not a new class.
+
+**Mechanism.** test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite now runs the spot checker on
+the landed config-1 Step-1 cube twice - at the true window it must agree on every sampled trade, at a
+wrong window it must disagree on every one - so a dropped leg-C comparison turns the pin red.

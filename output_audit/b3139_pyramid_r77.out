@@ -1,0 +1,96 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+........................................................................ [ 33%]
+..............................................s......................... [ 37%]
+....................s.................................................s. [ 41%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 58%]
+...................................................................F.... [ 62%]
+........................................................................ [ 66%]
+........................................................................ [ 71%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+........................................................................ [ 87%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+................................................................         [100%]
+================================== FAILURES ===================================
+_______________ test_b2465_table_a_renders_every_required_field _______________
+
+    def test_b2465_table_a_renders_every_required_field():
+        """S6-B2465: a required Table A field was pinned in the SPEC, not the OUTPUT.
+    
+        CHECKLIST #183 locks Table A's columns and names "a source-line `evidence`
+        field" among them. test_b1510 asserts `evidence` exists on every params row
+        - in the dict. `table_a()` never emitted it, so the owner-locked artifact
+        shipped a column short from the day it landed, and nothing could see it:
+        the data was present, the pin was green, and the table was wrong.
+    
+        This asserts against the RENDERED text, which is the artifact the standard
+        actually describes.
+        """
+        import sys
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2]
+        sys.path.insert(0, str(root / "scripts"))
+        import producer_variant_table as pvt
+    
+        required = ["ID", "producer", "parameter", "production", "band tested",
+                    "subset-safe", "status", "evidence", "why this band"]
+    
+        for name, spec in pvt.SPECS.items():
+            rows = pvt.table_a(spec)
+            header = rows[0]
+            for col in required:
+                assert col in header, (
+                    f"{name}: Table A header is missing the required column "
+                    f"{col!r} (CHECKLIST #183)")
+            # every params row must carry its evidence INTO the rendered line
+            body = chr(10).join(rows[2:])
+            for p in spec["params"]:
+                assert str(p["evidence"]) in body, (
+                    f"{name}/{p['id']}: evidence {p['evidence']!r} is in the SPEC "
+                    "but not in the rendered table - the B1510 defect exactly")
+            # column count must match the header, or the table is malformed
+            ncols = header.count("|") - 1
+            for line in rows[2:]:
+>               assert line.count("|") - 1 == ncols, (
+                    f"{name}: a Table A row has {line.count('|') - 1} cells "
+                    f"against {ncols} header columns")
+E               AssertionError: pairs_mean_reversion_long: a Table A row has 12 cells against 10 header columns
+E               assert (13 - 1) == 10
+E                +  where 13 = <built-in method count of str object at 0x000001B568536740>('|')
+E                +    where <built-in method count of str object at 0x000001B568536740> = '| P5 | `pairs_trading.compute_pair_signals_for_ticker` | `Engle-Granger cointegration significance` | 0.050 | 0.010, ...ubset-safe: fewer pairs change pair_count_active and which pair carries the max |z|, so the fire set moves both ways |'.count
+
+backtest\tests\test_unit.py:30208: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2465_table_a_renders_every_required_field
+1 failed, 1716 passed, 3 skipped in 1007.72s (0:16:47)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1039
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

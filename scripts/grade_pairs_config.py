@@ -55,10 +55,37 @@ PAIRS_LONG = "pairs_mean_reversion_long"
 FAMILY = (PAIRS_LONG,)
 
 
-def verify_manifest(cube_dir: Path) -> tuple[str | None, str]:
-    """(refusal or None, disclosure). Zero-knob family: the landed arm must
-    declare an EMPTY env block - the production config is the only
-    registered configuration (S6-B3140)."""
+# S6-B3141a: the two producer knobs (P5 / P6) and their registered bands.
+# An arm env may carry ONLY these keys, at band values; an absent key means
+# the production value (an EMPTY env is config 1, the production cube).
+KNOBS = {"PAIRS_EG_SIGNIFICANCE": ("P5_eg_significance", float, (0.01, 0.05), 0.05),
+         "PAIRS_Z_WINDOW": ("P6_z_window", int, (40, 60, 90), 60)}
+
+
+def arm_knobs(env: dict) -> tuple[dict | None, str]:
+    """({config key: value} or None, refusal) for an arm's env block."""
+    extra = sorted(set(env) - set(KNOBS))
+    if extra:
+        return None, (f"[FAIL] the landed arm declares env keys {extra} that "
+                      "this family does not register (S6-B3141a registers "
+                      f"{sorted(KNOBS)}) - fail closed, L642")
+    out = {}
+    for envk, (cfgk, typ, band, prod) in KNOBS.items():
+        raw = env.get(envk)
+        val = prod if raw is None else typ(raw)
+        if val not in band:
+            return None, (f"[FAIL] {envk}={raw!r} is not a registered band "
+                          f"level {list(band)} (S6-B3141a) - fail closed")
+        out[cfgk] = val
+    return out, ""
+
+
+def verify_manifest(cube_dir: Path, expect: dict | None = None
+                    ) -> tuple[str | None, str]:
+    """(refusal or None, disclosure). The landed arm's env may carry only
+    the two registered producer knobs at band values (S6-B3141a; an EMPTY
+    env is the production config); `expect` - the knob values the battery
+    passed by flag - must equal what the arm ran."""
     mf = cube_dir / "run_manifest.json"
     if not mf.exists():
         return (f"[FAIL] no run_manifest.json in {cube_dir} - the arm cannot "
@@ -70,13 +97,16 @@ def verify_manifest(cube_dir: Path) -> tuple[str | None, str]:
     arms = man.get("arms") or []
     arm = (arms[0] or {}) if arms else {}
     env = dict(arm.get("env") or {})
-    if env:
-        return ("[FAIL] the landed arm declares env keys "
-                f"{sorted(env)} but this family registers ZERO engine knobs "
-                "- the cube would be graded under a label Table A does not "
-                "carry (fail closed, L642; S6-B3140)"), ""
-    return None, ("arms[0].env verified EMPTY - the production config, the "
-                  "only registered configuration of this zero-knob family")
+    knobs, why = arm_knobs(env)
+    if knobs is None:
+        return why, ""
+    if expect is not None and any(expect[k] != knobs[k] for k in expect):
+        return (f"[FAIL] the battery passed {expect} but the landed arm ran "
+                f"{knobs} - the cube would be graded under the wrong label "
+                "(fail closed, L642)"), ""
+    return None, ("arms[0].env verified against the registered pairs knobs: "
+                  + " ".join(f"{k}={v}" for k, v in knobs.items())
+                  + (" (EMPTY env = the production config)" if not env else ""))
 
 
 def resolve_strategy(cube, cube_dir: Path) -> tuple[str, list]:
@@ -256,6 +286,10 @@ def main() -> int:
                     help="grade a cube with no landed arm (a hand-built "
                          "subset). The artifact records that the arm was "
                          "NOT verified - never pass this at landing.")
+    ap.add_argument("--eg-significance", type=float, default=None,
+                    help="P5 knob value the battery read from the manifest")
+    ap.add_argument("--z-window", type=int, default=None,
+                    help="P6 knob value the battery read from the manifest")
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
@@ -264,12 +298,22 @@ def main() -> int:
     if not cube.exists():
         print(f"[FAIL] no cube at {cube}")
         return 2
-    config = {"P1_pairs_identity": "production"}
+    expect = {}
+    if a.eg_significance is not None:
+        expect["P5_eg_significance"] = a.eg_significance
+    if a.z_window is not None:
+        expect["P6_z_window"] = a.z_window
+    knobs = {"P5_eg_significance": expect.get("P5_eg_significance", 0.05),
+             "P6_z_window": expect.get("P6_z_window", 60)}
+    ident = ("production" if knobs == {"P5_eg_significance": 0.05,
+                                        "P6_z_window": 60}
+             else f"eg{knobs['P5_eg_significance']}_zw{knobs['P6_z_window']}")
+    config = {"P1_pairs_identity": ident, **knobs}
     if a.no_manifest_check:
-        disclosure = ("NOT VERIFIED (--no-manifest-check): the production "
-                      "label is an UNCHECKED stamp on this artifact")
+        disclosure = ("NOT VERIFIED (--no-manifest-check): the knob "
+                      "labels are an UNCHECKED stamp on this artifact")
     else:
-        refusal, disclosure = verify_manifest(cube.parent)
+        refusal, disclosure = verify_manifest(cube.parent, expect or None)
         if refusal:
             print(refusal)
             return 2

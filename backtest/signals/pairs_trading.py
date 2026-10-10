@@ -276,11 +276,22 @@ def _load_pair_snapshots(pairs_dir):
     return snapshots
 
 
+def pair_slice_bars(window: int) -> int:
+    """Close bars handed to pair_zscore per leg (S6-B3141a). pair_zscore
+    needs window+1 joint bars, so the historical fixed 90 could never score
+    a 90-bar window. max(90, window + 30) keeps production (window 60)
+    byte-identical at 90 and gives a wider window the bars it needs; the
+    screener and the spot check call this, so the slice has one definition."""
+    return max(90, int(window) + 30)
+
+
 def compute_pair_signals_for_ticker(
     ticker: str,
     as_of,
     ticker_close,
     pairs_dir=None,
+    window: int | None = None,
+    significance: float | None = None,
 ) -> dict:
     """Look up cointegrated pairs for `ticker` at `as_of` from T5b precompute
     parquet. For each pair, fetch counterparty close history and compute
@@ -298,6 +309,12 @@ def compute_pair_signals_for_ticker(
     filesystem probes -> 1 probe per backtest session.
     """
     from pathlib import Path
+    from backtest import config as _cfg
+    if window is None:
+        window = _cfg.PAIRS_Z_WINDOW
+    if significance is None:
+        significance = _cfg.PAIRS_EG_SIGNIFICANCE
+    n_bars = pair_slice_bars(window)
     if pairs_dir is None:
         pairs_dir = Path(__file__).parent.parent.parent / "data_prefetch" / "derived" / "cointegrated_pairs_t1a"
     cached_snapshots = _load_pair_snapshots(pairs_dir)
@@ -321,6 +338,11 @@ def compute_pair_signals_for_ticker(
     if pairs_df.empty:
         return {}
     mine = pairs_df[(pairs_df["ticker_a"] == ticker) | (pairs_df["ticker_b"] == ticker)]
+    if significance < 0.05 and not mine.empty:
+        # S6-B3141a: a stricter Engle-Granger level is the stored pvalue
+        # filtered; at the production 0.05 nothing is filtered, so the
+        # snapshot rows rounded UP to 0.05 keep their production behaviour.
+        mine = mine[mine["pvalue"] < significance]
     if mine.empty:
         return {"pair_count_active": 0}
     best_z = 0.0
@@ -356,13 +378,15 @@ def compute_pair_signals_for_ticker(
         try:
             sliced = peer_df[peer_df["date_dt"] <= as_of]
             peer_close = pd.Series(
-                sliced["close"].values[-90:],
-                index=sliced["date_dt"].values[-90:],
+                sliced["close"].values[-n_bars:],
+                index=sliced["date_dt"].values[-n_bars:],
             )
             if is_a:
-                z = pair_zscore(ticker_close, peer_close, row["hedge_ratio"], row["intercept"])
+                z = pair_zscore(ticker_close, peer_close, row["hedge_ratio"],
+                                row["intercept"], window=window)
             else:
-                z = pair_zscore(peer_close, ticker_close, row["hedge_ratio"], row["intercept"])
+                z = pair_zscore(peer_close, ticker_close, row["hedge_ratio"],
+                                row["intercept"], window=window)
             if z is None:
                 continue
             if abs(z) > abs(best_z):

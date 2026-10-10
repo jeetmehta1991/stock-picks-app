@@ -2739,11 +2739,10 @@ axis in SPECS would price into leverage()); the registration lives in
 output_audit/b3140_pairs_breadth_axes_t3.json (125 census axes, both ops,
 53 below-coverage keys RESIM-ONLY excluded) and rides the free-levels leg
 via breadth_step1_grid --cube-dir per landing. The charter's dotted
-sub-ids P2.1/P2.2/P2.3 are producer knobs with no actuator and carry no
-P-rows here (test_b2752f: SPECS is the engine surface); their inventory
-lives in the PRODUCER LAYER prose below and the charter
-(validate_spec's id regex takes flat ids; the charter rows are cited per
-param).
+sub-ids P2.1 (EG significance) and P2.2 (z-window) are ACTUATED since
+S6-B3141a (owner route A, 2026-10-10) and carry the flat P-rows P5 / P6
+below (validate_spec's id regex takes flat ids); P2.3 (half-life admission
+bounds) still has no actuator and stays in the PRODUCER LAYER prose.
 
 =============================== PRODUCER LAYER ===============================
 
@@ -2752,13 +2751,14 @@ P1  pair signal block (pairs_trading.compute_pair_signals_for_ticker)
        precompute (build_t5b_pairs_precompute.py annual snapshots); emits
        pair_count_active / pair_zscore_signed / pair_half_life /
        pair_counterparty; identity UNACTUATED - held at production here
-  producer knobs, DEFINED-NO-ACTUATOR, carrying NO P-rows here (the
-  test_b2752f rule: SPECS is the ENGINE surface, so an axis the engine
-  cannot reach is inventoried in prose and the charter, never as a param):
-  EG cointegration significance 0.05
-  (pairs_trading.engle_granger_cointegration; charter P2.1 - bracket 0.01
-  is FIRE-ADDING via a precompute re-run); z-score rolling window 60 bars
-  (pairs_trading.pair_zscore; charter P2.2 - 40/90 unpersisted); half-life
+P5  EG cointegration significance 0.05 [ENGINE KNOB, env
+       PAIRS_EG_SIGNIFICANCE; charter P2.1] - band {0.01, 0.05}; 0.01 is an
+       exact read-time filter on the snapshot's stored pvalue (no
+       precompute re-run), a looser level is refused at import
+P6  z-score rolling window 60 bars [ENGINE KNOB, env PAIRS_Z_WINDOW;
+       charter P2.2] - band {40, 60, 90}; the close slice follows it
+       (pairs_trading.pair_slice_bars: 90 at production)
+  still DEFINED-NO-ACTUATOR, NO P-row (the test_b2752f rule): half-life
   admission bounds 5-30 days (pairs_trading.find_cointegrated_pairs;
   charter P2.3 - wider [3-45] needs a precompute re-run, tighter inner
   cuts ride P3's offline axis)
@@ -2783,7 +2783,7 @@ long_fires = P2 AND P4 AND P3   (LONG leg only - B2085/F24)
          "free_band": None, "resim_band": None, "env": None,
          "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
          "subset_safe": False,
-         "status": "identity UNACTUATED - held at production (producer knobs: PRODUCER LAYER prose)",
+         "status": "identity held at production; its EG significance and z-window components are actuated as P5 / P6 (S6-B3141a)",
          "type": "identity", "engine_implemented": True,
          "evidence": "pairs_trading.compute_pair_signals_for_ticker; screener.py pairs block",
          "derivation": "held at production in SPEC - no actuator, no resim "
@@ -2832,19 +2832,50 @@ long_fires = P2 AND P4 AND P3   (LONG leg only - B2085/F24)
                        "production gate is < -2.0 strict; production included "
                        "as the offline identity level",
          "signal_keys": ["pair_zscore_signed"]},
+        {"id": "P5", "producer": "pairs_trading.compute_pair_signals_for_ticker",
+         "param": "Engle-Granger cointegration significance",
+         "env": "PAIRS_EG_SIGNIFICANCE", "production": 0.05,
+         "band": [0.01, 0.05], "free_band": [], "resim_band": [0.01, 0.05],
+         "consumers": ["backtest/config.py",
+                       "backtest/signals/pairs_trading.py"],
+         "sweep_levels": [0.01], "subset_safe": False,
+         "status": "ACTUATED S6-B3141a (owner route A 2026-10-10); charter "
+                   "P2.1 band", "type": "float", "engine_implemented": True,
+         "evidence": "config.PAIRS_EG_SIGNIFICANCE; pairs_trading."
+                     "compute_pair_signals_for_ticker pvalue filter",
+         "derivation": "charter P2.1: 0.05 the T5b PVAL_THRESHOLD; 0.01 the "
+                       "stricter conventional level. NOT subset-safe: fewer "
+                       "pairs change pair_count_active and which pair "
+                       "carries the max absolute z, so the fire set moves both ways"},
+        {"id": "P6", "producer": "pairs_trading.pair_zscore",
+         "param": "pair z-score rolling window (bars)",
+         "env": "PAIRS_Z_WINDOW", "production": 60,
+         "band": [40, 60, 90], "free_band": [], "resim_band": [40, 60, 90],
+         "consumers": ["backtest/config.py",
+                       "backtest/signals/pairs_trading.py",
+                       "backtest/signals/screener.py"],
+         "sweep_levels": [40, 90], "subset_safe": False,
+         "status": "ACTUATED S6-B3141a (owner route A 2026-10-10); charter "
+                   "P2.2 band", "type": "int", "engine_implemented": True,
+         "evidence": "config.PAIRS_Z_WINDOW; pairs_trading.pair_slice_bars",
+         "derivation": "charter P2.2: 60 the pair_zscore default, 40/90 "
+                       "bracket it; the z-series is not persisted per "
+                       "window, so every level is an engine run"},
     ],
     "tools": {
-        # ZERO engine knobs: every campaign axis is OFFLINE (P2-P4 grade
-        # from persisted signals; P5-P7 are DEFINED-NO-ACTUATOR). keys is
-        # EMPTY by construction - the battery's _flag_args emits nothing and
-        # params_from_manifest returns {} (no missing keys).
-        "keys": {},
+        # S6-B3141a: TWO engine knobs (P5 EG significance, P6 z-window);
+        # the threshold axes P2-P4 stay OFFLINE. An arm must declare BOTH
+        # env keys (params_from_manifest fails closed on a missing one), so
+        # the landed config-1 production cube (empty env) is not re-batteryable
+        # under this block - its grades were taken before the knobs existed.
+        "keys": {"P5": "eg_significance", "P6": "z_window"},
         "grid_keys": ["combo"],
         # production is the only runnable configuration
         "single_combination": True,
         "spot_check": {"script": "spot_check_pairs.py", "cube": "",
                        "strategy_flag": "--strategy",
-                       "flags": {},
+                       "flags": {"P5": "--eg-significance",
+                                 "P6": "--z-window"},
                        "extra": ["--n", "50"],
                        "window": False, "precompute_check": False,
                        "pythonpath": None,
@@ -2855,15 +2886,16 @@ long_fires = P2 AND P4 AND P3   (LONG leg only - B2085/F24)
                                "LONG-only (B2085/F24), no direction branch"},
         "grade": {"script": "grade_pairs_config.py",
                   "cube": "",
-                  "flags": {},
+                  "flags": {"P5": "--eg-significance", "P6": "--z-window"},
                   "extra": [],
                   "step2_flag": "--step2",
                   "preregistered_flag": "--preregistered-exit",
                   "pythonpath": None,
                   "note": "AUTO (S6-B3140); roster_core-delegated; the arm "
-                          "is verified EMPTY-env (zero-knob family - an env "
-                          "key present means an unregistered configuration, "
-                          "fail closed L642)"},
+                          "env is verified against the two registered knobs "
+                          "at band values and against the flags the battery "
+                          "passed (S6-B3141a; any other key fails closed, "
+                          "L642)"},
         "free_levels": {"script": "grade_free_levels_pairs.py",
                         "note": "AUTO (S6-B3140); reproduction-gated P2/P3/P4 "
                                 "axes plus the charter's 125-combination "
@@ -4165,8 +4197,12 @@ D_AXIS_FAMILIES = {
     "pairs_mean_reversion": {
         "serves": ("pairs_mean_reversion_long",),
         "detect": "P1_pairs_identity",
-        "d1": (("cfg", "cfg", "P1_pairs_identity"),),
-        "d2": (("P1 identity", "cfg", "P1_pairs_identity"),),
+        "d1": (("cfg", "cfg", "P1_pairs_identity"),
+               ("eg", "cfg", "P5_eg_significance"),
+               ("zw", "cfg", "P6_z_window")),
+        "d2": (("P1 identity", "cfg", "P1_pairs_identity"),
+               ("P5 EG sig", "cfg", "P5_eg_significance"),
+               ("P6 z-window", "cfg", "P6_z_window")),
     },
     "smc_breaker_block": {
         # S6-B2941: records the CURRENT fallback for the four non-breaker

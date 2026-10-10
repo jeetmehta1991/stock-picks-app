@@ -2511,6 +2511,27 @@ SMC_LIQUIDITY_RANGE_PCT: float = float(
 SMC_EVENT_RECENCY_BARS: int = int(
     os.environ.get("SMC_EVENT_RECENCY_BARS", "90"))
 
+# S6-B3141a (owner route A, 2026-10-10 "A"): the PAIRS PRODUCER actuators -
+# the charter's P2.1 Engle-Granger significance and P2.2 z-score window,
+# DEFINED-NO-ACTUATOR until now. Same pattern as SMC_SWING_LENGTH (B1616).
+# DEFAULTS REPRODUCE CURRENT BEHAVIOUR EXACTLY: 0.05 is the T5b precompute's
+# PVAL_THRESHOLD and 60 the pair_zscore signature default; an unset env is a
+# no-op. SIGNIFICANCE can only TIGHTEN: the snapshots hold pairs with
+# p < 0.05 and their stored pvalue, so a stricter level is an exact read-time
+# filter (up to the snapshot's 5-decimal rounding) and a looser one would
+# need a precompute re-run - refused at import (fail closed, L642).
+# Pinned by test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite.
+PAIRS_EG_SIGNIFICANCE: float = float(
+    os.environ.get("PAIRS_EG_SIGNIFICANCE", "0.05"))
+PAIRS_Z_WINDOW: int = int(os.environ.get("PAIRS_Z_WINDOW", "60"))
+if not (0.0 < PAIRS_EG_SIGNIFICANCE <= 0.05):
+    raise ValueError(
+        f"PAIRS_EG_SIGNIFICANCE={PAIRS_EG_SIGNIFICANCE}: must be in (0, 0.05] "
+        "- the T5b snapshots keep only p < 0.05, so a looser level needs a "
+        "precompute re-run (S6-B3141a)")
+if not (10 <= PAIRS_Z_WINDOW <= 250):
+    raise ValueError(f"PAIRS_Z_WINDOW={PAIRS_Z_WINDOW}: must be in [10, 250]")
+
 # B2016 / S6-B1518a second half (owner-approved 2026-08-22 F1, "approve all
 # your recs" with E1). The producer's EMA/SMA pair list, env-overridable so a
 # P6 sweep can change spans without editing technical.py. The DEFAULT is the

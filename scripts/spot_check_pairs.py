@@ -21,7 +21,8 @@ owner re-scope), so no direction branch exists.
 THREE LEGS per sampled (ticker, entry_date):
   leg A  RAW ARITHMETIC - the spread z-score recomputed HERE from the T5b
          snapshot row (hedge_ratio, intercept) and cached closes of both
-         legs: spread = A - (intercept + hedge*B), rolling(60) mean/std,
+         legs: spread = A - (intercept + hedge*B), rolling(--z-window)
+         mean/std (60 at production; S6-B3141a),
          z = (last - mean)/std, signed by which side the ticker is. No
          producer import - a check that only called the producer would
          agree by construction (the vacuous-fixture class, L582/L684).
@@ -71,9 +72,10 @@ def _snapshot_for(as_of):
     return latest
 
 
-def _closes_to(tk: str, as_of, cache: dict):
-    """Last-90 close series of `tk` ending at as_of, indexed by date -
-    the shape the producer builds for the peer leg."""
+def _closes_to(tk: str, as_of, cache: dict, n_bars: int = 90):
+    """Last-n_bars close series of `tk` ending at as_of, indexed by date -
+    the shape the producer builds for the peer leg (n_bars follows the
+    z-window, pairs_trading.pair_slice_bars; 90 at production)."""
     key = tk.replace(".", "-")
     df = cache.get(key)
     if df is None:
@@ -92,10 +94,12 @@ def _closes_to(tk: str, as_of, cache: dict):
     sl = df[df["date_dt"] <= as_of]
     if sl.empty:
         return None
-    return pd.Series(sl["close"].values[-90:], index=sl["date_dt"].values[-90:])
+    return pd.Series(sl["close"].values[-n_bars:],
+                     index=sl["date_dt"].values[-n_bars:])
 
 
-def _leg_a(tk: str, peer: str, as_of, cache: dict):
+def _leg_a(tk: str, peer: str, as_of, cache: dict, window: int = 60,
+           significance: float = 0.05):
     """(signed z, snapshot half_life) recomputed here, or (None, why)."""
     snap = _snapshot_for(as_of)
     if snap is None:
@@ -106,18 +110,26 @@ def _leg_a(tk: str, peer: str, as_of, cache: dict):
     if row.empty:
         return None, f"pair ({tk},{peer}) not in snapshot {Path(snap).name}"
     r = row.iloc[0]
+    if significance < 0.05 and not float(r["pvalue"]) < significance:
+        # the recorded pair could not exist under the declared level: a
+        # finding, not a skip (the engine ran a different knob, or this
+        # script was told the wrong one)
+        return {"z_signed": float("nan"), "half_life": float(r["half_life"]),
+                "filtered_out": float(r["pvalue"])}, ""
     is_a = r["ticker_a"] == tk
-    a_ser = _closes_to(str(r["ticker_a"]), as_of, cache)
-    b_ser = _closes_to(str(r["ticker_b"]), as_of, cache)
+    from backtest.signals.pairs_trading import pair_slice_bars
+    n_bars = pair_slice_bars(window)
+    a_ser = _closes_to(str(r["ticker_a"]), as_of, cache, n_bars)
+    b_ser = _closes_to(str(r["ticker_b"]), as_of, cache, n_bars)
     if a_ser is None or b_ser is None:
         return None, "cached closes unavailable for a leg"
     df = pd.concat([a_ser, b_ser], axis=1, join="inner").dropna()
-    if len(df) < 61:
+    if len(df) < window + 1:
         return None, f"only {len(df)} joint bars (< window+1)"
     spread = df.iloc[:, 0] - (float(r["intercept"])
                               + float(r["hedge_ratio"]) * df.iloc[:, 1])
-    mean = spread.rolling(60).mean().iloc[-1]
-    std = spread.rolling(60).std().iloc[-1]
+    mean = spread.rolling(window).mean().iloc[-1]
+    std = spread.rolling(window).std().iloc[-1]
     if not (float(std) > 0):
         return None, "zero/NaN rolling std"
     z = (float(spread.iloc[-1]) - float(mean)) / float(std)
@@ -125,13 +137,20 @@ def _leg_a(tk: str, peer: str, as_of, cache: dict):
     return {"z_signed": signed, "half_life": float(r["half_life"])}, ""
 
 
-def _leg_b(tk: str, as_of, ohlc: pd.DataFrame, i: int):
-    """The PRODUCTION path on the engine's own input shape."""
-    from backtest.signals.pairs_trading import compute_pair_signals_for_ticker
+def _leg_b(tk: str, as_of, ohlc: pd.DataFrame, i: int, window: int = 60,
+           significance: float = 0.05):
+    """The PRODUCTION path on the engine's own input shape, with the
+    declared knobs passed EXPLICITLY (never read from this process's env),
+    so a cube whose engine ran other knobs disagrees instead of matching."""
+    from backtest.signals.pairs_trading import (
+        compute_pair_signals_for_ticker, pair_slice_bars)
+    n = pair_slice_bars(window)
     sl = ohlc.iloc[:i + 1]
-    dates = [ts.date() for ts in sl.index[-90:]]
-    ticker_close = pd.Series(sl["close"].values[-90:], index=dates)
-    return compute_pair_signals_for_ticker(tk, as_of, ticker_close) or {}
+    dates = [ts.date() for ts in sl.index[-n:]]
+    ticker_close = pd.Series(sl["close"].values[-n:], index=dates)
+    return compute_pair_signals_for_ticker(
+        tk, as_of, ticker_close, window=window,
+        significance=significance) or {}
 
 
 def _leg_c(row):
@@ -156,6 +175,10 @@ def main() -> int:
                     help="resolved from the cube manifest when absent "
                          "(the S6-B2917 no-default rule)")
     ap.add_argument("--n", type=int, default=50)
+    ap.add_argument("--z-window", type=int, default=60,
+                    help="P6 pair z-score window the engine ran (S6-B3141a)")
+    ap.add_argument("--eg-significance", type=float, default=0.05,
+                    help="P5 Engle-Granger level the engine ran (S6-B3141a)")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
@@ -221,8 +244,11 @@ def main() -> int:
                 continue
             i = int(hit)
             as_of = ohlc.index[i].date()
-            a_leg, why = _leg_a(tk, peer, as_of, peer_cache)
-            b_leg = _leg_b(tk, as_of, ohlc, i)
+            a_leg, why = _leg_a(tk, peer, as_of, peer_cache,
+                                window=a.z_window,
+                                significance=a.eg_significance)
+            b_leg = _leg_b(tk, as_of, ohlc, i, window=a.z_window,
+                           significance=a.eg_significance)
             c_z = (rec or {}).get("pair_zscore_signed")
             c_hl = (rec or {}).get("pair_half_life")
             if a_leg is None or not b_leg or c_z is None:
@@ -238,9 +264,14 @@ def main() -> int:
             # gate condition (z < -2.0) equal across A and B.
             gate_a = a_leg["z_signed"] < -2.0
             gate_b = (b_z is not None) and (float(b_z) < -2.0)
+            # S6-B3141a: leg C's recorded z is COMPARED, not only fetched -
+            # without it a cube whose engine ran another z-window agreed
+            # whenever the max-|z| peer happened not to move (MEASURED:
+            # 15 of 20 agreed on the production cube checked at window 40)
             num_ok = (b_peer == peer
                       and b_z is not None
-                      and abs(a_leg["z_signed"] - float(b_z)) <= Z_TOL)
+                      and abs(a_leg["z_signed"] - float(b_z)) <= Z_TOL
+                      and abs(a_leg["z_signed"] - float(c_z)) <= Z_TOL)
             hl_ok = (c_hl is None
                      or abs(a_leg["half_life"] - float(c_hl)) <= 1e-6)
             if num_ok and gate_a == gate_b and hl_ok:

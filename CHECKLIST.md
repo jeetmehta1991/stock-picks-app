@@ -3804,6 +3804,8 @@ it; B1119's original 22-batch lapse.
 
 ### #226 - BEFORE TRUSTING A GATE'S PASS, PROVE IT CAN FAIL (B1707 / L501)
 
+**INSTANCE (B3139q-r68 / L908):** spot_check_pairs.py named three legs and compared two - leg C (the cube's recorded z) was fetched, never compared - so the production cube checked at a WRONG z-window agreed on 15 of 20. A must-fire run (right cube, wrong declared knob) had never been made; after the fix 0 of 20 agree at the wrong window, pinned in test_b3141a.
+
 **INSTANCE (B3120/L876):** the free-level grader's p8-tight draft re-derived vix bands from `vix_percentile` while the engine branches on the PERSISTED `vix_band_low`/`vix_band_high` flags; the reproduction gate returned 22 failures on the smoke - the fail arm firing on my own draft - and one probed row gave the diagnosis (plus the L724 lowercase-true re-hit). Rebuilt on the flag branch: 0 reproduction failures on 7 of 7 cubes.
 
 **EXTENSION (B1836 / L561) - A SILENT GATE AND A CORRECT ONE ARE THE SAME OBSERVATION.**

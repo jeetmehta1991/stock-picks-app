@@ -9071,8 +9071,11 @@ def screen_instrument(
     # Batch 253: pairs trading signals (DEC-369). Reads T5b precompute
     # parquet. Graceful no-op when precompute missing (fires 0 trades).
     try:
-        from backtest.signals.pairs_trading import compute_pair_signals_for_ticker
-        ticker_close = pd.Series(df["close"].values[-90:], index=df.index[-90:])
+        from backtest.signals.pairs_trading import (
+            compute_pair_signals_for_ticker, pair_slice_bars)
+        # S6-B3141a: the slice follows the z-window knob (90 at production)
+        _pn = pair_slice_bars(_cfg.PAIRS_Z_WINDOW)
+        ticker_close = pd.Series(df["close"].values[-_pn:], index=df.index[-_pn:])
         pair_out = compute_pair_signals_for_ticker(ticker, as_of, ticker_close)
         if pair_out:
             signals.update(pair_out)
