@@ -25837,6 +25837,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L702: if the value exists in source, the extractor is the defect"),
         ("A DETECTOR'S READING UNIT MUST SPAN THE RULE'S PRESCRIBED FORM",
          "L713: a detector blind to the compliant form"),
+        ("NAME THE LEG A STATISTIC WAS COMPUTED ON AND THE LEG THE DECISION IS ABOUT, PER USE",
+         "L906: an in-sample statistic sized against a holdout gate"),
         ("ELEMENT ZERO IS THE MOST SEDUCTIVE PARTIAL READ",
          "L714: a schema question on [0] assumes homogeneity"),
         ("A SCAN ANCHORED TO ABSOLUTE LINE NUMBERS GOES BLIND WHEN CODE IS INSERTED ABOVE IT",
@@ -26149,7 +26151,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 321 -> 322 at B3139q-r24 (the L898/L901 move-the-code fragment).
     # 322 -> 323 at B3139q-r42 (the L902 verified-by-sampling column fragment;
     # same-call with its tripwire row per B2130).
-    assert len(gutted) == 323, gutted
+    # 323 -> 324 at B3139q-r64 (the L906 name-the-leg fragment; same-call with its tripwire row per B2130).
+    assert len(gutted) == 324, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

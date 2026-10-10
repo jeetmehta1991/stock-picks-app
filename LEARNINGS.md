@@ -24614,3 +24614,28 @@ session satisfies the duty invisibly, and most recommendation turns legitimately
 artifacts instead of re-opening code. The durable half already exists: #26 and the L802 tripwire
 row; this entry is their instance, and the b3116 ranking artifact's known gap (no EXPLORATORY
 column) is recorded on the campaign ticket rather than patched retroactively.
+
+### L906 - A SECOND INSTANCE OF L904 TWO DAYS AFTER IT: AN IN-SAMPLE SHARPE WAS MEASURED AGAINST THE HOLDOUT GATE IN A NEXT-CAMPAIGN PICK (B3139q-r64, 2026-10-09)
+
+**What happened.** Asked which tightening strategy would likely clear the gates next, I ranked the open
+TIGHTEN/BOTH rows on in-sample Sharpe (is_sharpe in output_audit/b1453_phase_1b_roster.json) and told the
+owner the best was about 0.5 against a 1.0 gate, so tightening would have to roughly double it. The 1.0
+gate is pooled_sharpe on the HOLDOUT. The owner caught it: "Our gate is shapre of 1 in holdout and not in
+sample". Re-ranked on the holdout leg of the same artifact (34 of 34 rows read), the gap for the closest
+usable candidate, news_sentiment_long, is 0.236 (holdout Sharpe 0.764, n 173), not a doubling, and my
+first pick, naked_poc_retest_long, ranked 8th rather than 1st.
+
+**Why it happened.** I chose the in-sample column on purpose, to keep the holdout out of selection (L636),
+then reused that same column to size the distance to the gate. A sound reason for one use carried the
+column into a second use it does not serve: selection and gap-to-gate are two different questions, and
+the second is defined on the gate's own leg.
+
+**Compliance failure against item #228** (L904's rule, two days old: name the sample a statistic was
+computed on and the sample the decision is about before citing it), and against item #256's grain
+extension (L718: a leg label is grain). Not a new class - the second instance of L904, which is L570's
+authoring-is-not-installing shape: the rule was in the loaded skill and in CHECKLIST as an INSTANCE line.
+
+**Mechanism.** JUDGMENT-ONLY for detection, for the reason L904 already recorded: a scan cannot tell
+whether an in-sample figure is serving selection (correct) or gap-to-gate (wrong), and this very answer
+used the same column both ways. Durability: the instance is anchored as a CHECKLIST #228 INSTANCE line in
+the same commit, and S6-B3142 carries the re-rank.
