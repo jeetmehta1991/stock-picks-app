@@ -6080,5 +6080,43 @@
    "status": "DONE",
    "evidence": "AUTO (B2520) VERDICT (denominators from output_pairs_mrl_s1_p5_0p01_p6_40_p5_0p01_p6_40_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 12408 IS rows (12408 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.582 is_sharpe 0.857 fires 517 - Step-1: ranking only, no admission (B1608)"
   }
+ },
+ "output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(11928 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, GOOGL, TSLA, AAPL); M1_content_sha=PASS(fe8c022591ce26a2); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 3555add020bb); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=PASS(pairs_mean_reversion_long: manifest arms[0] eg_significance=); step2_grade_auto=PASS(exit 0; eg_significance=0.01 z_window=60 -> output_pairs_mrl); step2_free_levels=PASS(exit 0; reproduction-gated free levels -> output_pairs_mrl_s); step4_spot_check_auto=PASS(exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk); step7_engine_implemented=PASS(2 of 2 declared knobs read from the environment + consumer l); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (S6-B3140); roster_core-delegated; the arm env is verified against the two registered knobs at band values and against the flags the battery passed (S6-B3141a; any other key fails closed, L642): grade_pairs_config at manifest eg_significance=0.01 z_window=60 -> output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60_grid_auto.json; free levels reproduction-gated -> output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60_free_levels.json"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "AUTO (S6-B3140); three legs - raw spread z-score arithmetic from the T5b snapshot row, compute_pair_signals_for_ticker on the engine's input shape, the cube record; LONG-only (B2085/F24), no direction branch: spot_check_pairs at manifest eg_significance=0.01 z_window=60; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60_spot_check.json"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520): lenses 11 run: 0 WARN / 0 FAIL / 11 INFO -> output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60_lenses.json"
+  },
+  "6_post_fix_recheck": {
+   "status": "N/A",
+   "evidence": "no lens finding (11 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence"
+  },
+  "6b_equivalence_class_check": {
+   "status": "N/A",
+   "evidence": "1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence"
+  },
+  "7_implement_in_engine": {
+   "status": "N/A",
+   "evidence": "Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 2 of 2 declared knobs read from the environment + consumer lists match the tree"
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520) VERDICT (denominators from output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 11928 IS rows (11928 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.6 is_sharpe 0.882 fires 497 - Step-1: ranking only, no admission (B1608)"
+  }
  }
 }
