@@ -1,0 +1,82 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+........................................................................ [ 33%]
+..............................................s......................... [ 37%]
+....................s.................................................s. [ 41%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 58%]
+........................................................................ [ 62%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+.....................................F.................................. [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+..............................................................           [100%]
+================================== FAILURES ===================================
+________________ test_b2829_in_campaign_requires_a_live_ticket ________________
+
+    def test_b2829_in_campaign_requires_a_live_ticket():
+        """B2829: a concluded campaign does not own a strategy forever.
+    
+        Artifact-level invariant: every IN-CAMPAIGN row carries at least one
+        live_campaign_ticket whose CURRENT ledger state (canonical reducer) is
+        non-terminal. And the plan's status section carries no live totals -
+        counts live only in the stamped view (the L639 fix by construction),
+        with the driver loop's freshness precondition stated once.
+        """
+        import json
+        import sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        d = root / "scripts"
+        if str(d) not in sys.path:
+            sys.path.insert(0, str(d))
+        import queue_state as qs
+        states = {k: (v.get("state") if isinstance(v, dict) else v)
+                  for k, v in qs.tickets().items()}
+        art = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                         .read_text(encoding="utf-8"))
+        LIVE = ("OPEN", "BLOCKED", "DEFERRED", "RUNNING")
+        for r in art["rows"]:
+            if r["status"] == "IN-CAMPAIGN":
+                lv = r.get("live_campaign_tickets") or []
+                assert lv, (r["strategy"], "IN-CAMPAIGN with no live ticket")
+>               assert any(states.get(t) in LIVE for t in lv), (r["strategy"], lv)
+E               AssertionError: ('camarilla_s3_bounce', ['S6-B3142'])
+E               assert False
+E                +  where False = any(<generator object test_b2829_in_campaign_requires_a_live_ticket.<locals>.<genexpr> at 0x00000255C48AFA60>)
+
+backtest\tests\test_unit.py:38824: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2829_in_campaign_requires_a_live_ticket
+1 failed, 1714 passed, 3 skipped in 1010.53s (0:16:50)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1042
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

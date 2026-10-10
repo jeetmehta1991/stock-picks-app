@@ -736,6 +736,84 @@ def check_queue_row_is_not_a_draft() -> list[str]:
     return violations
 
 
+# C16 (B3139q-r66 / L907): the queue is the one file C6's freshness test
+# exempts, because its row records the pyramid's own outcome and must follow
+# the run. But tests READ the queue: MEASURED 2026-10-10, 55 unit tests read
+# EXECUTION_QUEUE.md, queue_state or the status view built from it, 13 of
+# them ticket STATE. Closing S6-B3142 after gate r74 left test_b2829 red at
+# HEAD for two commits (eaf1064f2, c3399e15a) with every gate green. So when
+# the staged queue is newer than the last green pyramid, the queue-reading
+# subset re-runs on the working tree (39.1 s measured for all 55).
+# EXEMPT: a commit whose added queue lines are all landing-supervisor rows
+# (the pyramid_gate APPEND_TOLERANT prefix) - the unattended B2520 commit
+# must not stall on a refusal it cannot act on (L873).
+QUEUE_READER_MARKERS = ("EXECUTION_QUEUE.md", "queue_state", "tickets()",
+                        "strategy_optimisation_status.json")
+LANDING_ROW_PREFIX = "| **S6-LANDING-"
+
+
+def queue_reading_tests(test_path: Path | None = None) -> list[str]:
+    """Node ids of the unit tests whose body reads the queue or its state."""
+    import ast
+    test_path = test_path or (REPO_ROOT / "backtest" / "tests" / "test_unit.py")
+    src = test_path.read_text(encoding="utf-8")
+    lines = src.splitlines()
+    out = []
+    for n in ast.parse(src).body:
+        if isinstance(n, ast.FunctionDef) and n.name.startswith("test_"):
+            body = "\n".join(lines[n.lineno - 1:n.end_lineno])
+            if any(m in body for m in QUEUE_READER_MARKERS):
+                rel = test_path.relative_to(REPO_ROOT).as_posix()
+                out.append(f"{rel}::{n.name}")
+    return out
+
+
+def check_queue_readers_after_stamp(paths, *, added_lines=None, run=None,
+                                    stamp_ts=None) -> list[str]:
+    """C16: a queue staged after the last green pyramid re-runs the tests
+    that read it. `run(ids) -> (exit_code, tail)` and `added_lines` are
+    injectable for the pin; production calls pytest on the working tree."""
+    import json
+    queue = [Path(p) for p in paths
+             if Path(p).name == C6_QUEUE_EXEMPT and Path(p).exists()]
+    if not queue:
+        return []
+    if stamp_ts is None:
+        try:
+            stamp = json.loads((REPO_ROOT / ".pyramid_stamp")
+                               .read_text(encoding="utf-8"))
+            stamp_ts = float(stamp.get("timestamp", 0))
+        except Exception:
+            return []          # C6 already refuses a missing/unreadable stamp
+    if all(q.stat().st_mtime <= stamp_ts for q in queue):
+        return []
+    if added_lines is None:
+        added_lines = [l for f, l in get_staged_added_lines()
+                       if Path(f).name == C6_QUEUE_EXEMPT]
+    rows = [l for l in added_lines if l.strip()]
+    if rows and all(l.startswith(LANDING_ROW_PREFIX) for l in rows):
+        return []
+    ids = queue_reading_tests()
+    if not ids:
+        return ["C16 QUEUE-READERS | the queue-reading test selector found "
+                "0 tests - the selector is broken, refusing (L687)"]
+    if run is None:
+        def run(node_ids):
+            r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p",
+                                "no:cacheprovider"] + node_ids,
+                               capture_output=True, text=True, cwd=REPO_ROOT)
+            tail = (r.stdout.strip().splitlines() or [""])[-1]
+            return r.returncode, tail
+    code, tail = run(ids)
+    if code != 0:
+        return [f"C16 QUEUE-READERS | EXECUTION_QUEUE.md changed after the "
+                f"last green pyramid and {len(ids)} tests read it; they "
+                f"FAILED on the working tree ({tail}). A queue row can move a "
+                f"pin (L907) - fix the input it moved (often a stale "
+                f"generated view: scripts/build_strategy_status.py) first."]
+    return []
+
+
 def check_pyramid_artifact_has_verdict(read=None) -> list[str]:
     """C15 (B2683 / L782): a STAGED gate-era pyramid artifact must carry its
     verdict token. pyramid_gate.py writes pytest stdout into --out while
@@ -932,6 +1010,9 @@ def main() -> int:
         # C14 (B2608 / L765): no drafting marker in an append-only ledger row
         all_violations += check_queue_row_is_not_a_draft()
         all_violations += check_pyramid_artifact_has_verdict()
+        # C16 (B3139q-r66 / L907): queue-reading pins re-run when the
+        # queue moved after the last green pyramid
+        all_violations += check_queue_readers_after_stamp(files)
         # C15 (B2852 / L805): generated artifacts never hand-edited
         all_violations += check_generated_artifact_matches_generator(files)
 

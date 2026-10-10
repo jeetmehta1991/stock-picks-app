@@ -25839,6 +25839,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L713: a detector blind to the compliant form"),
         ("NAME THE LEG A STATISTIC WAS COMPUTED ON AND THE LEG THE DECISION IS ABOUT, PER USE",
          "L906: an in-sample statistic sized against a holdout gate"),
+        ("A QUEUE ROW IS A TEST INPUT - A ROW APPENDED AFTER THE GATE CAN MOVE A PIN",
+         "L907: a closing queue row after the gate moved a pin"),
         ("ELEMENT ZERO IS THE MOST SEDUCTIVE PARTIAL READ",
          "L714: a schema question on [0] assumes homogeneity"),
         ("A SCAN ANCHORED TO ABSOLUTE LINE NUMBERS GOES BLIND WHEN CODE IS INSERTED ABOVE IT",
@@ -26152,7 +26154,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 322 -> 323 at B3139q-r42 (the L902 verified-by-sampling column fragment;
     # same-call with its tripwire row per B2130).
     # 323 -> 324 at B3139q-r64 (the L906 name-the-leg fragment; same-call with its tripwire row per B2130).
-    assert len(gutted) == 324, gutted
+    # 324 -> 325 at B3139q-r66 (the L907 queue-row-is-a-test-input fragment; same-call with its tripwire row per B2130).
+    assert len(gutted) == 325, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -53369,3 +53372,148 @@ def test_b3139bw_breadth_holdout_null_reproduces_refuses_and_is_deterministic(tm
             a_ = (bg._cell_mask(F, key, op, lv).to_numpy()[idx]).sum()
             b_ = (bg._cell_mask(Fs, key, op, lv).to_numpy()[idx]).sum()
             assert a_ == b_, (key, lv, p)
+
+
+def test_b3140c_declared_row_holdout_read_reproduces_then_reads_once(tmp_path):
+    """S6-B3140c (B3139q-r66): the declared-row holdout reader refuses an
+    adapter without AXES/passes/parse_signals, a combo absent from the
+    artifact, a score that does not reproduce, a logged signal that fails
+    the production gate, and a second read; a reproducing row is read once
+    with full_period_n = in-sample n + holdout n at the declared exit."""
+    import json as _j
+    import sys as _sys
+    from pathlib import Path as _Path
+    import pandas as _pd
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2] / "scripts"))
+    import declared_row_holdout_read as dr
+    import roster_core as rc
+
+    def sig(c, h, z):
+        return _j.dumps({"pair_count_active": c, "pair_half_life": h,
+                         "pair_zscore_signed": z})
+    tl, ted = [], []
+    is_pnl = [3.0, -1.0, 4.0, 2.5, -0.5, 5.0, 1.5, -2.0, 3.5, 2.0, 0.5, 4.5]
+    for i, p in enumerate(is_pnl):
+        d = f"2023-0{1 + i % 9}-1{i % 9}"
+        tl.append({"strategy": "pairs_mean_reversion_long", "ticker": f"T{i}",
+                   "entry_date": d, "signals_at_entry": sig(14, 11.0, -3.2)})
+        for ex, k in (("r_multiple_3r", 1.0), ("time_stop_10d", 0.5)):
+            ted.append({"strategy": "pairs_mean_reversion_long", "ticker": f"T{i}",
+                        "entry_date": d, "exit_method": ex, "pnl_pct": p * k,
+                        "hold_days": 5})
+    for i in range(4):
+        d = f"2023-1{i % 3}-0{i + 1}"
+        tl.append({"strategy": "pairs_mean_reversion_long", "ticker": f"U{i}",
+                   "entry_date": d, "signals_at_entry": sig(5, 6.0, -2.5)})
+        ted.append({"strategy": "pairs_mean_reversion_long", "ticker": f"U{i}",
+                    "entry_date": d, "exit_method": "r_multiple_3r",
+                    "pnl_pct": 9.0, "hold_days": 5})
+    ho_pnl = [-1.0, 2.0, -3.0, 1.0, -2.0, 0.5]
+    for i, p in enumerate(ho_pnl):
+        d = f"2025-0{6 + i % 3}-1{i}"
+        tl.append({"strategy": "pairs_mean_reversion_long", "ticker": f"H{i}",
+                   "entry_date": d, "signals_at_entry": sig(13, 10.08, -3.0505)})
+        ted.append({"strategy": "pairs_mean_reversion_long", "ticker": f"H{i}",
+                    "entry_date": d, "exit_method": "r_multiple_3r",
+                    "pnl_pct": p, "hold_days": 5})
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    _pd.DataFrame(tl).to_csv(cube / "trade_log.csv", index=False)
+    _pd.DataFrame(ted).to_csv(cube / "trade_exit_detail.csv", index=False)
+
+    net = rc.net_pnl(_pd.Series(is_pnl, dtype=float))
+    ev = rc.evaluate(net, _pd.Series([5.0] * len(is_pnl)), min_n=3)
+    combo = {"pair_count_active": 13.0, "pair_half_life": 10.08,
+             "pair_zscore_signed": -3.0505}
+    def art(sharpe):
+        a = {"strategy": "pairs_mean_reversion_long",
+             "grader": "scripts/grade_free_levels_pairs.py",
+             "factorial": {"results": [{"combo": combo, "trades_kept": 12,
+                 "per_exit": [{"exit": "r_multiple_3r", "n": 12,
+                               "sharpe": sharpe,
+                               "ci_lo": round(ev["ci_lo"], 3)}]}]}}
+        p = tmp_path / f"fl_{sharpe}.json"
+        p.write_text(_j.dumps(a), encoding="utf-8")
+        return p
+    good = art(round(ev["sharpe"], 3))
+    lv = ["pair_count_active=13", "pair_half_life=10.08",
+          "pair_zscore_signed=-3.0505"]
+
+    with pytest.raises(dr.Refused, match="lacks"):
+        dr.load_adapter("scripts/roster_core.py")
+    with pytest.raises(dr.Refused, match="not a factorial row"):
+        dr.read(cube, good, ["pair_count_active=9"] + lv[1:],
+                "r_multiple_3r", min_n=3)
+    with pytest.raises(dr.Refused, match="score reproduction"):
+        dr.read(cube, art(round(ev["sharpe"], 3) + 0.5), lv,
+                "r_multiple_3r", min_n=3)
+
+    rec = dr.read(cube, good, lv, "r_multiple_3r", min_n=3)
+    assert rec["score_reproduction"]["equal"] is True
+    assert rec["reproduction"]["failed_reproduction"] == 0
+    assert rec["holdout_n"] == 6
+    assert rec["full_period_n"] == 12 + 6
+    assert set(rec["gates"]) == set(rc.LIVE_GATES)
+    assert rec["verdict"] in ("PASS", "FAIL")
+    assert "GRID-SELECTED" in rec["labels"]
+
+    out = tmp_path / "read.json"
+    out.write_text("{}", encoding="utf-8")
+    assert dr.main(["--cube", str(cube), "--free-levels", str(good),
+                    "--exit", "r_multiple_3r", "--out", str(out)]
+                   + [x for l in lv for x in ("--level", l)]) == 3
+
+    bad_tl = _pd.DataFrame(tl)
+    bad_tl.loc[0, "signals_at_entry"] = sig(14, 11.0, -1.0)
+    bad_tl.to_csv(cube / "trade_log.csv", index=False)
+    with pytest.raises(dr.Refused, match="signal reproduction"):
+        dr.read(cube, good, lv, "r_multiple_3r", min_n=3)
+
+
+def test_b3140c_c16_reruns_queue_readers_when_the_queue_moved_after_the_gate(tmp_path):
+    """L907 / #292: preflight C16 re-runs the queue-reading tests when the
+    staged EXECUTION_QUEUE.md is newer than the last green pyramid; quiet
+    when the queue is older, when every added row is a landing-supervisor
+    row, and when the re-run passes. The selector must find the pin that
+    caught the incident (test_b2829)."""
+    import os as _os
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2] / "scripts"))
+    import preflight as pf
+
+    ids = pf.queue_reading_tests()
+    assert len(ids) >= 50, len(ids)
+    assert any(i.endswith("::test_b2829_in_campaign_requires_a_live_ticket") for i in ids)
+
+    q = tmp_path / "EXECUTION_QUEUE.md"
+    q.write_text("x", encoding="utf-8")
+    _os.utime(q, (2_000_000_000, 2_000_000_000))
+    calls = []
+    def red(node_ids):
+        calls.append(len(node_ids))
+        return 1, "1 failed, 54 passed"
+    def green(node_ids):
+        return 0, "55 passed"
+    closing = ["| **S6-X** | **EXECUTED** | P2 | closed | _reason:_ EXECUTED |"]
+    landing = ["| **S6-LANDING-abc** | **EXECUTED** | P2 | landed | _reason:_ x |"]
+
+    v = pf.check_queue_readers_after_stamp([q], added_lines=closing, run=red,
+                                           stamp_ts=1_000_000_000)
+    assert len(v) == 1 and v[0].startswith("C16 QUEUE-READERS"), v
+    assert calls == [len(ids)]
+    assert pf.check_queue_readers_after_stamp([q], added_lines=closing, run=green,
+                                              stamp_ts=1_000_000_000) == []
+    assert pf.check_queue_readers_after_stamp([q], added_lines=closing, run=red,
+                                              stamp_ts=3_000_000_000) == []
+    assert pf.check_queue_readers_after_stamp([q], added_lines=landing, run=red,
+                                              stamp_ts=1_000_000_000) == []
+    assert pf.check_queue_readers_after_stamp([q], added_lines=landing + closing,
+                                              run=red, stamp_ts=1_000_000_000)
+    other = tmp_path / "NOTES.md"
+    other.write_text("x", encoding="utf-8")
+    assert pf.check_queue_readers_after_stamp([other], added_lines=closing, run=red,
+                                              stamp_ts=1_000_000_000) == []
+    src = (_Path(__file__).resolve().parents[2] / "scripts" / "preflight.py").read_text(encoding="utf-8")
+    call = "all_violations += check_queue_readers_after_stamp(files)"
+    assert src.count(call) == 1 and src.index(call) > src.index("def main(")

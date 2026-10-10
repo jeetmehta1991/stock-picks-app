@@ -5761,6 +5761,8 @@ S6-B2573a adapter pin exists; the pin holds the contract that exists.
 
 ### #292 - A PYRAMID IS A MEASUREMENT OF ONE TREE; AN EDIT DURING THE RUN VOIDS IT (B2580 / L755)
 
+**INSTANCE 3 (B3139q-r66 / L907), compliance failure against this item:** gate r74 ran GREEN, then the row closing S6-B3142 was appended and committed; the status view still listed that ticket as live, and test_b2829 was red at HEAD for two commits. Preflight C6 exempts the queue while 55 tests read it - C16 (check_queue_readers_after_stamp) now re-runs those tests when the queue moved after the gate.
+
 **INSTANCE 2 (B3129 / L880), compliance failure against this item:** the item's list names scripts/, backtest/, root .md and .claude/; tracked output_audit artifacts are TEST INPUTS for artifact-level pins, so writes there during a run move what the suite measures - the run's verdict describes no single state - even though the tree fingerprint (which excludes output_audit by design for the landing hook, L841) reads SAME. The gate run was discarded and the tree re-gated stable. Mechanizable slice ticketed S6-B3130a: pyramid_gate discloses oa_modified beside oa_created - a disclosure, never a refusal (L721).
 
 **Run every pyramid through `scripts/pyramid_gate.py -- <pytest args>`.** It fingerprints the tree

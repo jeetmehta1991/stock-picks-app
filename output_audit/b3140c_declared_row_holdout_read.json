@@ -1,0 +1,66 @@
+{
+  "ticket": "S6-B3140c",
+  "strategy": "pairs_mean_reversion_long",
+  "cube": "output_pairs_mrl_step2_production",
+  "free_levels_artifact": "output_audit/output_pairs_mrl_step2_production_free_levels.json",
+  "adapter": "scripts/grade_free_levels_pairs.py (S6-B3140)",
+  "declared_levels": {
+    "pair_count_active": 13.0,
+    "pair_half_life": 10.08,
+    "pair_zscore_signed": -3.0505
+  },
+  "declared_exit": "r_multiple_3r",
+  "min_n": 10,
+  "basis": "net (roster_core.net_pnl); windows roster_core IS/HO, entry-dated",
+  "reproduction": {
+    "covered_rows": 5622,
+    "unverifiable_rows": 0,
+    "rows_by_window": {
+      "in_sample": 4283,
+      "holdout": 1339,
+      "outside_both": 0
+    },
+    "failed_reproduction": 0
+  },
+  "score_reproduction": {
+    "artifact": {
+      "n": 101,
+      "sharpe": 1.523,
+      "ci_lo": 0.564
+    },
+    "re_derived": {
+      "n": 101,
+      "sharpe": 1.523,
+      "ci_lo": 0.564
+    },
+    "equal": true
+  },
+  "holdout_n": 34,
+  "full_period_n": 135,
+  "labels": [
+    "GRID-SELECTED",
+    "EXPLORATORY (B2085/F24)",
+    "OCCUPANCY: offline trade set, not a bound (S6-B3139r)"
+  ],
+  "coverage_disclosure": "PARTIAL COVERAGE: config 1 of 6 producer-knob configs run (EG x z-window, S6-B3141a unbuilt); read spent on owner word 'Read it now' 2026-10-10 against the S6-B2886 band-coverage refusal",
+  "rule": "PASS iff all six roster_core.LIVE_GATES clear on the holdout at the declared exit; one read, no re-roll",
+  "sharpe": -0.65,
+  "sortino": -1.871,
+  "psr": 0.2411,
+  "profit_factor": 0.711,
+  "payoff": 2.74,
+  "expectancy": -0.9467,
+  "win_rate": 0.206,
+  "p": 0.7865369083410514,
+  "ci_lo": -2.262,
+  "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": false,
+    "sortino": false,
+    "psr": false,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+  },
+  "gates_passed": 2,
+  "verdict": "FAIL"
+}

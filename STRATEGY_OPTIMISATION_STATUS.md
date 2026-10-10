@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 936e38f81 at 2026-10-10 01:49:04 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit c3399e15a at 2026-10-10 09:11:20 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -20,8 +20,8 @@
 | IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | 7 |
 | IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded, with Step 2 scheduled (S6-B2420) | 7 |
 | DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 3 |
-| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 5 |
-| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 39 |
+| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 1 |
+| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 43 |
 | NOT-STARTED | 133 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
@@ -89,7 +89,7 @@
 | institutional_insider_combo_long | smart_money_combo | 2751 | 2.0 | YES | 0.8% | - | PRUNED-DUPLICATE |
 | institutional_buy_momentum_long | - | 2644 | 243.0 |  | 100.0% | - | PRUNED-DUPLICATE |
 | po3_bearish | - | 2624 | 241.2 |  | 100.0% | NONE | NOT-STARTED |
-| williams_r_oversold | momentum | 2535 | 233.0 |  | 100.0% | TIGHTEN | IN-CAMPAIGN |
+| williams_r_oversold | momentum | 2535 | 233.0 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | institutional_multi_quarter_persistence_long | institutional_persistence | 2516 | 231.2 |  | 100.0% | - | DONE-ADMITTED |
 | institutional_high_conviction_long | - | 2473 | 227.3 |  | 100.0% | - | DONE-ADMITTED |
 | mmsm_short | ict | 2456 | 225.7 |  | 100.0% | NONE | NOT-STARTED |
@@ -111,7 +111,7 @@
 | turtle_soup_short | ict | 1880 | 28.6 | YES | 16.5% | LOOSEN | STALLED-CAMPAIGN |
 | tema_dema | trend | 1876 | 124.2 | YES | 72.0% | NONE | NOT-STARTED |
 | institutional_strong_conviction_long | institutional_persistence | 1826 | 167.8 |  | 100.0% | - | DONE-ADMITTED |
-| naked_poc_retest_long | volume_profile | 1788 | 164.3 |  | 100.0% | TIGHTEN | IN-CAMPAIGN |
+| naked_poc_retest_long | volume_profile | 1788 | 164.3 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | cpr_narrow_momentum_short | confluence | 1696 | 155.9 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | three_black_crows_short | candle | 1674 | 153.9 | YES | 100.0% | - | DONE-OWNER-CLOSED |
 | parabolic_sar_flip_short | trend | 1672 | 153.7 |  | 100.0% | NONE | NOT-STARTED |
@@ -150,7 +150,7 @@
 | smc_inverse_fvg | smc | 953 | 87.6 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | smc_breaker_block_long | smc | 948 | 0.0 | YES | 0.0% | - | DONE-ADMITTED |
 | roc_burst | momentum | 918 | 84.4 |  | 100.0% | LOOSEN | NOT-STARTED |
-| news_sentiment_long | news_sentiment | 906 | 83.3 |  | 100.0% | BOTH | IN-CAMPAIGN |
+| news_sentiment_long | news_sentiment | 906 | 83.3 |  | 100.0% | BOTH | STALLED-CAMPAIGN |
 | golden_cross_9_21 | trend | 889 | 81.7 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
 | donchian_breakdown_short | breakout | 872 | 80.1 |  | 100.0% | LOOSEN | NOT-STARTED |
 | pead_short | event_driven | 872 | 80.1 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
@@ -208,7 +208,7 @@
 | mfi_oversold_with_smart_money_long | smart_money_sleeve | 244 | 22.4 | YES | 100.0% | - | IN-ROSTER-FUNNEL |
 | doji_at_support | candle | 232 | 21.3 |  | 100.0% | LOOSEN | NOT-STARTED |
 | smc_ote_long | smc | 231 | 21.2 |  | 100.0% | LOOSEN | STALLED-CAMPAIGN |
-| camarilla_s3_bounce | pivot | 228 | 21.0 |  | 100.0% | BOTH | IN-CAMPAIGN |
+| camarilla_s3_bounce | pivot | 228 | 21.0 |  | 100.0% | BOTH | STALLED-CAMPAIGN |
 | xs_combined_momentum_low_ivol | factor | 212 | 19.5 |  | 100.0% | - | IN-ROSTER-FUNNEL |
 | 52w_high_breakout_with_smart_money_vol_below_long | smart_money_sleeve | 203 | 18.7 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | ichimoku_cloud_breakdown | trend | 197 | 7.8 | YES | 43.1% | LOOSEN | NOT-STARTED |

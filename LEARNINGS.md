@@ -24639,3 +24639,30 @@ authoring-is-not-installing shape: the rule was in the loaded skill and in CHECK
 whether an in-sample figure is serving selection (correct) or gap-to-gate (wrong), and this very answer
 used the same column both ways. Durability: the instance is anchored as a CHECKLIST #228 INSTANCE line in
 the same commit, and S6-B3142 carries the re-rank.
+
+### L907 - A CLOSING QUEUE ROW APPENDED AFTER A GREEN GATE TURNED HEAD RED FOR TWO COMMITS; THE COMMIT GATE EXEMPTS THE ONE FILE 55 TESTS READ (B3139q-r66, 2026-10-10)
+
+**What happened.** Gate r74 ran GREEN, then I appended the row closing S6-B3142 as EXECUTED and committed
+(eaf1064f2). The strategy status view, rebuilt by the landing battery while S6-B3142 was still DEFERRED,
+listed camarilla_s3_bounce as IN-CAMPAIGN under that ticket, so test_b2829 (an IN-CAMPAIGN row needs a
+LIVE ticket) went red at HEAD - and stayed red through c3399e15a. Every gate passed both commits. Gate r75
+(output_audit/b3139_pyramid_r75.out) caught it: 1 failed, 1714 passed, 3 skipped.
+
+**Why it happened.** Preflight C6 checks that staged files a pin reads are not newer than the last green
+pyramid, and exempts EXECUTION_QUEUE.md on the stated ground that its row records the pyramid's outcome
+and must follow the run. But tests read the queue: 55 unit tests read EXECUTION_QUEUE.md, queue_state or
+the status view built from it, 13 of them ticket STATE (AST sweep of backtest/tests/test_unit.py, this
+batch). A closing row is a state change those tests see, so the exemption admitted exactly the edit that
+moves a pin. CHECKLIST #292 already says the batch's queue rows go in BEFORE the gate run, not after -
+the exemption's docstring and the item contradict each other, and I followed the docstring.
+
+**Compliance failure against item #292** (queue rows before the gate), with the enforcement layer
+contradicting the item (L499 shape: the mechanism's own description licensed the violation).
+
+**Mechanism.** Preflight C16 (check_queue_readers_after_stamp): when the staged queue is newer than the
+last green pyramid, the queue-reading tests are selected by AST over test_unit.py (shared function
+queue_reading_tests, so the selector and the measurement are one definition) and re-run on the working
+tree - 39.1 s for all 55, measured - and the commit is refused on any failure. Landing-supervisor rows
+(the pyramid_gate APPEND_TOLERANT prefix) are exempt so the unattended B2520 commit cannot stall (L873).
+Pin: test_b3140c_c16_reruns_queue_readers_when_the_queue_moved_after_the_gate. Fix of the instance: the
+status view rebuilt by scripts/build_strategy_status.py from the current ledger.

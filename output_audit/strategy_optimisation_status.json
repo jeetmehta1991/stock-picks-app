@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "936e38f81",
-    "generated_at": "2026-10-10 01:49:04"
+    "source_commit": "c3399e15a",
+    "generated_at": "2026-10-10 09:11:20"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -523,15 +523,13 @@
       "tickets": [
         "S6-B3142"
       ],
-      "live_campaign_tickets": [
-        "S6-B3142"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3142"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "IN-CAMPAIGN"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "classification_change_recent_long",
@@ -2255,16 +2253,14 @@
         "S6-B3116b",
         "S6-B3142"
       ],
-      "live_campaign_tickets": [
-        "S6-B3142"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3116b",
         "S6-B3142"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "IN-CAMPAIGN"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "news_momentum_long",
@@ -2371,15 +2367,13 @@
       "tickets": [
         "S6-B3142"
       ],
-      "live_campaign_tickets": [
-        "S6-B3142"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3142"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "IN-CAMPAIGN"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "news_sentiment_shift_long",
@@ -4561,9 +4555,7 @@
         "S6-B3117a",
         "S6-B3142"
       ],
-      "live_campaign_tickets": [
-        "S6-B3142"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383",
         "S6-B3117a",
@@ -4571,7 +4563,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "IN-CAMPAIGN"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "williams_stoch_dual",
