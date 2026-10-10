@@ -25841,6 +25841,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L906: an in-sample statistic sized against a holdout gate"),
         ("A QUEUE ROW IS A TEST INPUT - A ROW APPENDED AFTER THE GATE CAN MOVE A PIN",
          "L907: a closing queue row after the gate moved a pin"),
+        ("A GATE'S TEXT SEAM IS A PROBE - IT GETS THE VERDICT, NEVER THE WRITE",
+         "L910: a draft check wrote the production landing ledger"),
         ("ELEMENT ZERO IS THE MOST SEDUCTIVE PARTIAL READ",
          "L714: a schema question on [0] assumes homogeneity"),
         ("A SCAN ANCHORED TO ABSOLUTE LINE NUMBERS GOES BLIND WHEN CODE IS INSERTED ABOVE IT",
@@ -26155,7 +26157,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 323 -> 324 at B3139q-r64 (the L906 name-the-leg fragment; same-call with its tripwire row per B2130).
     # 324 -> 325 at B3139q-r66 (the L907 queue-row-is-a-test-input fragment; same-call with its tripwire row per B2130).
-    assert len(gutted) == 325, gutted
+    assert len(gutted) == 326, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -53633,3 +53635,113 @@ def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path):
         seen[w] = _j.loads(out.read_text(encoding="utf-8"))
     assert seen[60]["agree"] == 6 and seen[60]["disagree"] == 0, seen[60]
     assert seen[40]["agree"] == 0 and seen[40]["disagree"] == 6, seen[40]
+
+
+def test_b3148_a_draft_probe_never_writes_the_production_ledger(tmp_path, monkeypatch):
+    """S6-B3148 / L910: a turn gate that WRITES a ledger when the response
+    carries a report must not write when its text is INJECTED against the
+    production ledger. A draft-check harness called scan_undelivered_landing
+    with text=<draft> and the default path, so checking a draft marked a
+    landing reported_to_owner=true before the owner saw it - 3 of 3 delivery
+    records on 2026-10-10, one with no report sent before a compaction. The
+    probe keeps its VERDICT (it still learns the draft would clear the gate);
+    only the write is withheld. A caller-supplied path is an explicit request
+    and still writes, which test_b2520_stop_hook_blocks_until_a_landing_is_reported
+    relies on."""
+    _b2520_scripts_on_path()
+    import ast as _ast
+    import inspect as _insp
+    import json as _j
+    import postconfig_landing as pl
+    import run_serial_chain as rsc
+    import verify_turn_compliance as vtc
+    land = tmp_path / "landings.jsonl"
+    pl.append_landing({"cube": "output_x", "ts": "t", "fingerprint": "1:2",
+                       "source": "engine-hook", "battery_exit": 0, "blocking": [],
+                       "findings": [], "committed": True, "pushed": True,
+                       "reported_to_owner": False}, land)
+    halts = tmp_path / "halts.jsonl"
+    halts.write_text(_j.dumps({"wave": "w1", "reason": "r", "remaining": [],
+                               "reported_to_owner": False}) + "\n", encoding="utf-8")
+    # the DEFAULT ledgers point at the temp files: the probe below exercises
+    # the production-path branch without touching output_audit
+    monkeypatch.setattr(pl, "LANDINGS", land)
+    monkeypatch.setattr(rsc, "HALTS", halts)
+    # the probe: injected text, default ledger -> verdict clears, nothing written
+    assert vtc.scan_undelivered_landing([], text="LANDING REPORT: output_x") == []
+    assert [e["cube"] for e in pl.undelivered(land)] == ["output_x"]
+    assert len(pl.read_landings(land)) == 1
+    assert vtc.scan_chain_halt([], text="CHAIN HALT REPORT: w1") == []
+    assert [e["wave"] for e in rsc.undelivered_halts(halts)] == ["w1"]
+    # the verdict half is intact: a probe without the report still FIRES
+    assert vtc.scan_undelivered_landing([], text="other work")
+    assert vtc.scan_chain_halt([], text="other work")
+    # a caller-supplied path is an explicit request and still writes
+    assert vtc.scan_undelivered_landing(
+        [], text="LANDING REPORT: output_x", landings=land) == []
+    assert pl.undelivered(land) == []
+    assert vtc.scan_chain_halt([], text="CHAIN HALT REPORT: w1", halts=halts) == []
+    assert rsc.undelivered_halts(halts) == []
+    # CLASS pin: every scan_ gate that can mark a ledger reported carries the
+    # probe guard - a future writer inherits the check unwritten (B2092 form)
+    tree = _ast.parse(_insp.getsource(vtc))
+    writers = []
+    for fn in tree.body:
+        if not (isinstance(fn, _ast.FunctionDef) and fn.name.startswith("scan_")):
+            continue
+        marks = [c for c in _ast.walk(fn) if isinstance(c, _ast.Call)
+                 and isinstance(c.func, _ast.Attribute)
+                 and c.func.attr.startswith("mark_")]
+        if not marks:
+            continue
+        writers.append(fn.name)
+        guarded = any(isinstance(c, _ast.Compare) and isinstance(c.left, _ast.Name)
+                      and c.left.id == "text" and isinstance(c.ops[0], _ast.IsNot)
+                      for c in _ast.walk(fn))
+        assert guarded, (f"{fn.name} marks a ledger reported with no "
+                         f"`text is not None` probe guard (S6-B3148)")
+    # positive control: the finder sees both known writers
+    assert {"scan_chain_halt", "scan_undelivered_landing"} <= set(writers), writers
+
+
+def test_b3149_pairs_identity_label_states_only_the_precompute_build(tmp_path):
+    """S6-B3149: the pairs P1 identity label read 'EG 0.05 / z-window 60 /
+    hl-bounds 5-30'. The precompute never uses a z-window - that is the
+    signal-time P6 knob - so every rendered row of a P6 config carried a
+    window contradicting its own P6 cell (72 of 96 Table D rows on
+    2026-10-10, and the same string in POSTCONFIG_REPORT.md). The label now
+    names only what build_t5b_pairs_precompute.py applies, and a rendered
+    P6=90 row states no other window."""
+    import ast as _ast
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    _b2520_scripts_on_path()
+    import producer_variant_table as pvt
+    root = _P(__file__).resolve().parents[2]
+    params = {p["id"]: p for p in pvt.SPECS["pairs_mean_reversion_long"]["params"]}
+    label = str(params["P1"]["production"])
+    assert params["P1"]["band"] == [params["P1"]["production"]]
+    # the components another param ACTUATES are not restated by the identity
+    assert params["P6"]["env"] == "PAIRS_Z_WINDOW" and "z-window" not in label.lower(), label
+    # what it does state is read from the precompute, not typed from memory
+    src = (root / "scripts" / "build_t5b_pairs_precompute.py").read_text(encoding="utf-8")
+    pval = next(n.value.value for n in _ast.parse(src).body
+                if isinstance(n, _ast.Assign) and isinstance(n.value, _ast.Constant)
+                and any(getattr(t, "id", "") == "PVAL_THRESHOLD" for t in n.targets))
+    assert f"p<{pval}" in label and "5-30" in label, (label, pval)
+    assert "[5, 30]" in src, "the precompute's half-life bounds moved - update the label"
+    # behaviour: render the landed P6=90 grid and read the P6=90 rows
+    grid = root / "output_audit" / "output_pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90_grid_auto.json"
+    out = tmp_path / "td.md"
+    r = _sp.run([_sys.executable, str(root / "scripts" / "table_d_render.py"),
+                 "--strategy", "pairs_mean_reversion_long", "--artifacts", str(grid),
+                 "--out", str(out)], cwd=root, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr[-800:]
+    rows = [ln for ln in out.read_text(encoding="utf-8").splitlines()
+            if ln.startswith("| ") and ln[2:3].isdigit()]
+    assert len(rows) == 24, len(rows)
+    for ln in rows:
+        cells = [c.strip() for c in ln.strip("|").split("|")]
+        assert cells[6] == "90" and cells[5] == "0.01", cells
+        assert not any("z-window" in c for c in cells), cells

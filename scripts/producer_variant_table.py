@@ -2778,12 +2778,12 @@ long_fires = P2 AND P4 AND P3   (LONG leg only - B2085/F24)
         {"id": "P1", "producer": "pairs_trading.compute_pair_signals_for_ticker"
                                  " -> screener emit",
          "param": "pairs precompute identity (T5b cointegrated pairs)",
-         "production": "EG 0.05 / z-window 60 / hl-bounds 5-30",
-         "band": ["EG 0.05 / z-window 60 / hl-bounds 5-30"],
+         "production": "T5b build: EG p<0.05, half-life 5-30d",
+         "band": ["T5b build: EG p<0.05, half-life 5-30d"],
          "free_band": None, "resim_band": None, "env": None,
          "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
          "subset_safe": False,
-         "status": "identity held at production; its EG significance and z-window components are actuated as P5 / P6 (S6-B3141a)",
+         "status": "snapshot identity held at production - the precompute keeps EG p<0.05 and half-life 5-30d (build_t5b_pairs_precompute.py PVAL_THRESHOLD / step 4); the read-time EG filter and the signal z-window are P5 / P6 (S6-B3141a). S6-B3149: the label used to carry z-window 60, which the precompute never uses, so every P6 row printed a window that contradicted its own P6 cell",
          "type": "identity", "engine_implemented": True,
          "evidence": "pairs_trading.compute_pair_signals_for_ticker; screener.py pairs block",
          "derivation": "held at production in SPEC - no actuator, no resim "

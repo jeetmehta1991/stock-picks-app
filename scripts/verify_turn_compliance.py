@@ -4967,7 +4967,13 @@ def scan_undelivered_landing(entries, *, text=None, landings=None) -> list[str]:
     # STATEFUL - the must-QUIET arm passed, and re-running it with the report
     # removed stayed quiet because the previous call had already marked it.
     # A seam that mutates its input proves nothing on the second call.
-    if delivered and not in_memory:
+    # S6-B3148 (L910): an INJECTED text judged against the PRODUCTION ledger
+    # is a probe - a draft check, a dry run - not the turn's final response.
+    # It keeps the verdict and never writes: a draft-check harness marked 3 of
+    # 3 landings reported on 2026-10-10 before the owner saw them, one with no
+    # report sent at all. A caller-supplied path is an explicit request.
+    probe = text is not None and landings is None
+    if delivered and not in_memory and not probe:
         try:
             _pl.mark_reported(delivered, path, by="verify_turn_compliance")
         except Exception as _exc:
@@ -5016,7 +5022,11 @@ def scan_chain_halt(entries, *, text=None, halts=None) -> list[str]:
     body = _response_text(entries, text, keep_code=True)
     delivered = [ev["wave"] for ev in pending
                  if f"chain halt report: {ev['wave'].lower()}" in body]
-    if delivered and not in_memory:
+    # S6-B3148 (L910): the same probe rule as scan_undelivered_landing - an
+    # injected text against the production ledger gets the verdict, never
+    # the write.
+    probe = text is not None and halts is None
+    if delivered and not in_memory and not probe:
         try:
             _rsc.mark_halt_reported(delivered, path, by="verify_turn_compliance")
         except Exception as _exc:

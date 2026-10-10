@@ -4058,6 +4058,8 @@ to that shape only.**
 
 ### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
 
+**INSTANCE (B3139q-r68b / L909), compliance failure against this item:** the L908 Phase-5 commit (f5afa5e5f) was followed by a queue-only commit in the same turn, so the one-commit-deep gate could not see its members; the same close reported a five-config chain as five running when 1 of 5 ran (compliance failure against #122, the L738 level-per-member rule).
+
 **Owner directive: prose alone will not suffice - a rule earns its place only when something
 enforces it.** THREE consecutive rules shipped as prose and needed the owner to ask before a gate
 existed: B1723 (skill dropped from a 3-artifact request), B1725 (skills documented, never invoked),
@@ -4385,6 +4387,9 @@ the opposite direction.**
   probe agree, suspect the probe before believing the result.**
 - **The symmetry, stated once:** STARVING a gate manufactures false failures; OVER-SUPPLYING it
   manufactures false passes. **Neither is a measurement of the gate.**
+
+
+**INSTANCE (B3139q-r68k / L910), compliance failure against this item:** the text= seam of scan_undelivered_landing and scan_chain_halt still wrote the production ledger, so a draft check marked 3 of 3 pairs landings reported before delivery; both now withhold the write on a probe, pinned by test_b3148_a_draft_probe_never_writes_the_production_ledger.
 
 ### #242 - EACH NEW NUMBERED RULE NAMES ITS OWN ENFORCER (B1762 / L518)
 

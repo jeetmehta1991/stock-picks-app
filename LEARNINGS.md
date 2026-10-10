@@ -24686,3 +24686,58 @@ tested). Not a new class.
 **Mechanism.** test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite now runs the spot checker on
 the landed config-1 Step-1 cube twice - at the true window it must agree on every sampled trade, at a
 wrong window it must disagree on every one - so a dropped leg-C comparison turns the pin red.
+
+### L909 - A CHAIN WAS REPORTED AS FIVE CONFIGS RUNNING WHILE ONE RAN, AND THE PHASE-5 COMMIT WAS NOT THE TURN'S LAST (B3139q-r68b, 2026-10-10)
+
+**What happened.** Three slips in one close, each caught by an existing gate. (1) After launching chain
+b3146 I wrote that all five Step-1 configs were running. The system evidence I had printed showed ONE
+run_phase1a lineage, for config 1, under a serial chain that starts the next config only when the
+previous one lands: 1 of 5 running, 4 of 5 queued. (2) The L908 Phase-5 members landed in f5afa5e5f and
+a queue-only commit (5dd2591b4) followed in the same turn, so the one-commit-deep evidence window could
+not see them. (3) One backslash-bearing heredoc was attempted; the pre-run guard refused it and it
+never ran.
+
+**Compliance failures against item #122** (L738's rule, filed under it: name the LEVEL verified per
+member - registered, started, running, doing work), **item #231** (the L628 / L815 ordering: the
+Phase-5 commit is the turn's last) and **item #259** (L885: a backslash payload goes in a file).
+
+**Mechanism.** Already gated: scan_partial_read caught (1) as a population verdict, the miss-capture
+scan caught (2), and scan_heredoc_escapes plus the PreToolUse guard caught (3). No new mechanism.
+
+**Why this entry sat uncommitted at its close.** These docs are pinned (the banner by test_b1486) so
+committing them needs a fresh full pyramid, and a pyramid beside the live b3146 wave is refused
+(B3108, L873). The members were written to the working tree and were committed under a green gate at
+B3139q-r68k, the first window with no engine running: chain b3146 died during config 4
+(S6-B3140) - ticket S6-B3147.
+
+### L910 - A DRAFT CHECK WROTE THE PRODUCTION LANDING LEDGER: 3 OF 3 LANDINGS WERE MARKED REPORTED BY A DRY RUN, ONE BEFORE ANY REPORT WAS SENT (B3139q-r68k, 2026-10-10)
+
+**What happened.** To prove a close before sending it (L668), a scratchpad harness ran every turn-gate
+scan that accepts text= over the draft. scan_undelivered_landing appends a reported_to_owner=true record
+when the text carries the cube's LANDING REPORT line, and its text= seam did not withhold that write -
+only its landings= seam did (B2520's own comment says the in-memory seam must not write; the text seam
+was never held to it). MEASURED by joining the session transcript against
+output_audit/postconfig_landings.jsonl: 3 of 3 delivery records written since the harness existed came
+from it. Configs 1 and 2 were marked 12 s and 11 s before the real response went out (17:07:52Z vs
+17:08:04Z; 18:37:02Z vs 18:37:13Z). Config 3 was marked at 20:37:02Z and no response carried its report
+before the 20:38:22Z compaction, so the ledger said reported while the owner had seen nothing - and the
+B2520 Stop gate, which blocks a close until the report is delivered, would have stayed silent.
+
+**Rule.** A gate's text seam is a probe. Judging injected text against the production ledger yields the
+verdict and never the write; the write belongs to the one call that judges the real final response.
+
+**Compliance failure against item #241** (a gate must be askable on fixed input without touching the
+live record) and against L689's rule (a dry run that drives production code IS production code).
+
+**Sweep.** An AST pass over the 70 scan_/check_ gates in scripts/verify_turn_compliance.py found 3 that
+can write state: scan_undelivered_landing and scan_chain_halt write on matched response text and both
+had the hole; scan_deferral_trigger_fired has no text seam and its in-memory seams already withhold
+its write.
+
+**Mechanism.** Both writers now compute probe = text is not None and the ledger argument is None, and
+skip the write on a probe. test_b3148_a_draft_probe_never_writes_the_production_ledger pins the probe
+branch (verdict kept, nothing written), the explicit-path branch (still writes), and the class: every
+scan_ gate that calls a mark_ function carries the guard, with a positive control on both known
+writers. It failed on the unfixed code before it passed. The harness now passes in-memory ledgers as
+well. The false config-3 record was removed from the working tree before any commit; the real gate
+writes it when this turn's response carries the report.
