@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "76897c3dd",
-    "generated_at": "2026-10-08 15:02:07"
+    "source_commit": "936e38f81",
+    "generated_at": "2026-10-10 01:49:04"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -520,12 +520,18 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "tickets": [
+        "S6-B3142"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3142"
+      ],
+      "mention_tickets": [
+        "S6-B3142"
+      ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "classification_change_recent_long",
@@ -2246,15 +2252,19 @@
         "naked_poc_nearest_distance_pct": 1.0
       },
       "tickets": [
-        "S6-B3116b"
+        "S6-B3116b",
+        "S6-B3142"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3142"
+      ],
       "mention_tickets": [
-        "S6-B3116b"
+        "S6-B3116b",
+        "S6-B3142"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "STALLED-CAMPAIGN"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "news_momentum_long",
@@ -2358,12 +2368,18 @@
         "news_article_count": 1.0,
         "news_sentiment_mean": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "tickets": [
+        "S6-B3142"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3142"
+      ],
+      "mention_tickets": [
+        "S6-B3142"
+      ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "news_sentiment_shift_long",
@@ -4542,16 +4558,20 @@
       },
       "tickets": [
         "S6-B2383",
-        "S6-B3117a"
+        "S6-B3117a",
+        "S6-B3142"
       ],
-      "live_campaign_tickets": [],
+      "live_campaign_tickets": [
+        "S6-B3142"
+      ],
       "mention_tickets": [
         "S6-B2383",
-        "S6-B3117a"
+        "S6-B3117a",
+        "S6-B3142"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "STALLED-CAMPAIGN"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "williams_stoch_dual",

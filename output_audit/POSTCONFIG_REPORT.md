@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-53 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+54 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_pairs_mrl_step2_production).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_pairs_mrl_step2_production | 2026-10-10T02:04:44 | engine-hook | 0 | none | 0 | 3228db554 | True | **NO** |
 | output_pairs_mrl_step1_production | 2026-10-08T15:03:45 | engine-hook | 0 | none | 0 | 15cedb837 | True | yes 2026-10-08T15:08:50 |
 | output_bl_step2_p4_250_p4_250 | 2026-10-01T12:09:48 | engine-hook | 0 | none | 0 | 83faf4be2 | True | yes 2026-10-01T12:13:38 |
 | output_bl_step2_p4_9_p4_9 | 2026-09-30T01:39:14 | engine-hook | 2 | 2_grade_with_config_params | 0 | 26a133ccf | True | yes 2026-09-30T10:57:02 |
@@ -451,7 +452,7 @@ _850 ranked outcomes across 85 graded configs; 824 distinct signatures._
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 134928 cube rows across 6 leg(s | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 0 of 0 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
