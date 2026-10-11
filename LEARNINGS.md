@@ -24741,3 +24741,38 @@ scan_ gate that calls a mark_ function carries the guard, with a positive contro
 writers. It failed on the unfixed code before it passed. The harness now passes in-memory ledgers as
 well. The false config-3 record was removed from the working tree before any commit; the real gate
 writes it when this turn's response carries the report.
+
+### L911 - A ONE-OFF MITIGATION WAS APPLIED TO ONE TASK WHILE THE LAUNCHER KEPT GENERATING THE DEFECT, AND THE NEXT CHAIN DIED THE SAME WAY (B3139q-r68m, 2026-10-11)
+
+**What happened.** Chain b3146 (pairs route A) died at 2026-10-10T20:47Z during config 4 with task result
+0xC000013A, the status a console control event leaves - a window closed or a Ctrl+C. Its task ran
+cmd.exe under an interactive logon, so the chain's console was a window on the desktop. This exact class had
+been diagnosed in S6-B3006: chain b2944b died the same way and was fixed by re-pointing THAT ONE TASK at a
+hand-written hidden .vbs (output_audit/_b2944b_chain_hidden.vbs). The fix was recorded EXECUTED and never
+reached scripts/launch_detached.py, which kept registering cmd.exe: a sweep of the machine's scheduled tasks
+found 2 of 2 chains it launched afterwards (b3142, b3146) with the visible-console action, and only the
+hand-fixed b2944b with the hidden one. The machine then sat idle from the death to the owner's next word
+(20:47Z to about 01:30Z, roughly 4.7 h, DERIVED from the heartbeat and the hook timestamp).
+
+**A second slip in the diagnosis.** Reporting the death one turn earlier, I filed its cause as UNKNOWN and
+asked the owner whether a window had been closed, without searching the ledger for the class. S6-B3006 and
+the launch_chain_noconsole.py docstring both carried the mechanism; one grep for 0xC000013A finds them.
+
+**Compliance failures against item #237** (a class fixed at one site leaves the site you were not chasing -
+here the site was the GENERATOR of the defect, the launcher) and **item #26** (search the prior art before
+calling a cause unknown).
+
+**Rule.** When a mitigation is applied to an artifact that something else GENERATES - a task, a config, a
+spec, a manifest - the fix is not done until the generator emits the fixed form. A record that says
+EXECUTED over a hand-patched instance describes one artifact, and the next one the generator writes is the
+old defect with a fresh timestamp.
+
+**Mechanism.** scripts/launch_detached.py now routes every registration (chain, single wave, selftest)
+through hidden_wrapper_text / _hidden_action: wscript runs the batch file with window style 0 and WAITS, so
+the task still reads Running and still returns the chain's exit code (the b2944b wrapper did not wait, which
+would make every chain read finished at once). test_b3153_detached_tasks_run_hidden pins three layers - the
+wrapper really runs a batch file and returns its exit code through wscript, every launch path registers
+wscript.exe with a wrapper naming its .cmd, and no _register_and_start call site in the module passes a
+literal cmd.exe executable (AST, positive control). It failed against the launcher at HEAD and against a
+non-waiting wrapper before passing. The sender of the b3146 console event stays UNVERIFIED; the surface it
+needed no longer exists.

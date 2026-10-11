@@ -31,6 +31,12 @@ thing actually running. --chain writes output_audit/_<batch>_chain.cmd
 not parse or a batch whose chain task is already Running, registers
 stockpicks_chain_<batch>_<ts> with the chain-sized ExecutionTimeLimit, and
 records the OBSERVED task state in output_audit/_<batch>_chain_task.json.
+
+S6-B3153 (L911): every task this file registers runs a hidden VBScript
+wrapper (hidden_wrapper_text) instead of cmd.exe. An interactive task's
+cmd.exe console is a window on the desktop, and closing it ends the chain
+with 0xC000013A. The wrapper waits for the batch file, so the task still
+reads Running and still returns the chain's exit code.
 """
 from __future__ import annotations
 
@@ -50,6 +56,38 @@ def _run_ps(script: str) -> subprocess.CompletedProcess:
     return subprocess.run(
         ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
          "-File", str(ps1)], capture_output=True, text=True)
+
+
+def hidden_wrapper_text(target: Path) -> str:
+    """S6-B3153 (L911): the VBScript a task runs INSTEAD of cmd.exe, so the
+    batch file's console is created HIDDEN (window style 0) and nothing on
+    the desktop can close it. An interactive task running `cmd.exe /c x.cmd`
+    puts a console window on the desktop, and closing that window ends the
+    whole tree with 0xC000013A (STATUS_CONTROL_C_EXIT) - measured on chains
+    b2197 (S6-B2202), b2944b (S6-B3006) and b3146 (S6-B3140). S6-B3006 fixed
+    b2944b by re-pointing that ONE task at a hand-written .vbs; this launcher
+    kept registering cmd.exe, so the next two chains it launched (b3142,
+    b3146) carried the window again and b3146 died of it at config 4.
+
+    bWaitOnReturn=True is load-bearing: wscript stays alive for the batch
+    file's whole life, so the task reads Running (chain_task_running relies
+    on that state) and WScript.Quit hands the .cmd's exit code back as the
+    task's LastTaskResult. The b2944b wrapper passed False, which makes a
+    chain read Ready with result 0 seconds after launch."""
+    return ("' S6-B3153: run the batch file with NO visible console window.\r\n"
+            "Dim rc\r\n"
+            f'rc = CreateObject("WScript.Shell").Run("""{target}""", 0, True)\r\n'
+            "WScript.Quit rc\r\n")
+
+
+def _hidden_action(cmd: Path) -> tuple[str, str]:
+    """(exe, args) for a task that runs `cmd` with no visible window; writes
+    <cmd stem>_hidden.vbs beside it. Every _register_and_start call in this
+    file goes through here - pinned by test_b3153_detached_tasks_run_hidden,
+    which refuses a literal cmd.exe executable at any call site."""
+    vbs = cmd.with_name(cmd.stem + "_hidden.vbs")
+    vbs.write_text(hidden_wrapper_text(cmd), encoding="utf-8", newline="")
+    return "wscript.exe", f'//B //Nologo "{vbs}"'
 
 
 def _register_and_start(name: str, exe: str, args: str,
@@ -108,10 +146,15 @@ def launch(spec_path: str, hardened: bool = False) -> int:
     spec = json.loads((ROOT / spec_path).read_text(encoding="utf-8"))
     name = f"stockpicks_wave_{spec['wave']}_{int(time.time())}"
     log = ROOT / "output_audit" / f"{spec['wave']}_detached.log"
-    args = (f'/c "cd /d {ROOT} && set PYTHONPATH=. && '
-            f'{sys.executable} scripts\\run_wave.py --spec {spec_path} '
-            f'>> {log} 2>&1"')
-    r = _register_and_start(name, "cmd.exe", args, hardened=hardened)
+    # S6-B3153: the same command as before, written to a .cmd that the
+    # hidden wrapper runs - no console window for a desktop click to close.
+    cmd = ROOT / "output_audit" / f"_{spec['wave']}_wave.cmd"
+    cmd.write_text("\r\n".join([
+        "@echo off", f"cd /d {ROOT}", "set PYTHONPATH=.",
+        f'"{sys.executable}" scripts\\run_wave.py --spec {spec_path} >> "{log}" 2>&1',
+        "exit /b %ERRORLEVEL%"]) + "\r\n", encoding="utf-8", newline="")
+    exe, args = _hidden_action(cmd)
+    r = _register_and_start(name, exe, args, hardened=hardened)
     out = (r.stdout or "") + (r.stderr or "")
     # B2559 (S6-B2529a): `registered_and_started` alone was emitted whether or
     # not the task existed. The success line now carries `state=`, written only
@@ -190,7 +233,8 @@ def launch_chain(batch: str, specs: list[str], wait_for: str | None,
     name = f"stockpicks_chain_{batch}_{int(time.time())}"
     cmd.write_text(chain_cmd_text(specs, log, wait_for, task_name=name),
                    encoding="utf-8")
-    r = _register_and_start(name, "cmd.exe", f'/c "{cmd}"', hardened=hardened,
+    exe, args = _hidden_action(cmd)
+    r = _register_and_start(name, exe, args, hardened=hardened,
                             time_limit_hours=time_limit_hours)
     out = (r.stdout or "") + (r.stderr or "")
     ok = (r.returncode == 0 and "registered_and_started" in out and "state=" in out)
@@ -198,6 +242,7 @@ def launch_chain(batch: str, specs: list[str], wait_for: str | None,
                        or "register_failed" in ln), out.strip()[:200])
     record = {"task": name, "batch": batch, "order": waves, "specs": specs,
               "wait_for": wait_for, "cmd_file": cmd.name,
+              "action": f"{exe} {args}",
               "time_limit_hours": time_limit_hours, "hardened": hardened,
               "verified_task": state_line.strip(), "launched": ok,
               "log": str(log).replace("\\", "/"),
@@ -223,8 +268,11 @@ def selftest(hardened: bool = False) -> int:
     proof = ROOT / "output_audit" / "_detached_selftest.txt"
     proof.unlink(missing_ok=True)
     name = f"stockpicks_selftest_{int(time.time())}"
-    r = _register_and_start(name, "cmd.exe", f'/c echo detached> "{proof}"',
-                            hardened=hardened)
+    cmd = ROOT / "output_audit" / "_detached_selftest.cmd"
+    cmd.write_text(f'@echo off\r\necho detached> "{proof}"\r\n',
+                   encoding="utf-8", newline="")
+    exe, args = _hidden_action(cmd)
+    r = _register_and_start(name, exe, args, hardened=hardened)
     deadline = time.time() + 30
     while time.time() < deadline and not proof.exists():
         time.sleep(1)

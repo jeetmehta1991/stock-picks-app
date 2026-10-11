@@ -4205,6 +4205,9 @@ search executed, with a zero-findings answer stated as such (a zero is a finding
 *Lineage:* B1970 (the collector had the same bold-requirement as the gate being fixed);
 B1971 (the sweep that found this item undefined); L603/L605.
 
+
+**INSTANCE (B3139q-r68m / L911), compliance failure against this item:** S6-B3006 fixed the 0xC000013A console-kill class on ONE scheduled task by hand while scripts/launch_detached.py, the generator of such tasks, kept registering a visible cmd.exe console - 2 of 2 later chains carried it and b3146 died of it. The fix now lives in the launcher, pinned by test_b3153_detached_tasks_run_hidden.
+
 ### #238 - THE COMPLIANCE STATEMENT MUST CITE ITEMS, NOT EXIST (B1758 / L514)
 
 **`check_compliance_marker` asserted only `commit_made and not marker`** - that a compliance BLOCK

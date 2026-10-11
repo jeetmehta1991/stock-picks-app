@@ -25843,6 +25843,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L907: a closing queue row after the gate moved a pin"),
         ("A GATE'S TEXT SEAM IS A PROBE - IT GETS THE VERDICT, NEVER THE WRITE",
          "L910: a draft check wrote the production landing ledger"),
+        ("A FIX TO A GENERATED ARTIFACT IS NOT DONE UNTIL THE GENERATOR EMITS THE FIXED FORM",
+         "L911: a one-off mitigation left the launcher generating the defect"),
         ("ELEMENT ZERO IS THE MOST SEDUCTIVE PARTIAL READ",
          "L714: a schema question on [0] assumes homogeneity"),
         ("A SCAN ANCHORED TO ABSOLUTE LINE NUMBERS GOES BLIND WHEN CODE IS INSERTED ABOVE IT",
@@ -26157,7 +26159,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 323 -> 324 at B3139q-r64 (the L906 name-the-leg fragment; same-call with its tripwire row per B2130).
     # 324 -> 325 at B3139q-r66 (the L907 queue-row-is-a-test-input fragment; same-call with its tripwire row per B2130).
-    assert len(gutted) == 326, gutted
+    assert len(gutted) == 327, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -53745,3 +53747,78 @@ def test_b3149_pairs_identity_label_states_only_the_precompute_build(tmp_path):
         cells = [c.strip() for c in ln.strip("|").split("|")]
         assert cells[6] == "90" and cells[5] == "0.01", cells
         assert not any("z-window" in c for c in cells), cells
+
+
+def test_b3153_detached_tasks_run_hidden(tmp_path, monkeypatch):
+    """S6-B3153 / L911: an interactive task running cmd.exe shows a console
+    window on the desktop, and closing it kills the chain with 0xC000013A
+    (b2197, b2944b, b3146). S6-B3006 fixed ONE task by hand; this launcher
+    kept registering cmd.exe and the next chain died the same way. Pinned at
+    three layers: (1) BEHAVIOUR - the generated wrapper really runs the batch
+    file and hands back its exit code (wscript waits; a fire-and-forget
+    wrapper would return 0 at once); (2) ROUTING - the chain, single-wave and
+    selftest registrations all pass wscript.exe and a wrapper that names
+    their .cmd; (3) CLASS - no _register_and_start call site in the module
+    passes a literal cmd.exe executable (AST, with a positive control)."""
+    import ast as _ast
+    import inspect as _insp
+    import json as _j
+    import shutil as _sh
+    import subprocess as _sp
+    import pytest as _pt
+    _b2520_scripts_on_path()
+    import launch_detached as ld
+    # (1) behaviour, on the real wscript host
+    if _sh.which("wscript.exe") is None:
+        _pt.skip("no Windows Script Host on this machine")
+    proof = tmp_path / "ran.txt"
+    cmd = tmp_path / "_probe.cmd"
+    cmd.write_text(f'@echo off\r\necho hidden> "{proof}"\r\nexit /b 3\r\n',
+                   encoding="utf-8", newline="")
+    exe, args = ld._hidden_action(cmd)
+    vbs = cmd.with_name("_probe_hidden.vbs")
+    assert exe == "wscript.exe" and str(vbs) in args and "//B" in args
+    body = vbs.read_text(encoding="utf-8")
+    assert ", 0, True)" in body and str(cmd) in body and "WScript.Quit rc" in body
+    r = _sp.run(["wscript.exe", "//B", "//Nologo", str(vbs)], timeout=60)
+    assert r.returncode == 3, r.returncode          # the batch file's own exit code
+    assert proof.read_text(encoding="utf-8").strip() == "hidden"
+    # (2) routing - every launch path registers the hidden wrapper
+    seen = []
+
+    class _Done:
+        returncode = 0
+        stdout = "registered_and_started t state=Running last_result=267009"
+        stderr = ""
+
+    def fake_register(name, exe, args, hardened=False, time_limit_hours=12):
+        seen.append((name, exe, args))
+        return _Done()
+    (tmp_path / "output_audit").mkdir()
+    (tmp_path / "output_audit" / "s1_spec.json").write_text(
+        _j.dumps({"wave": "w1"}), encoding="utf-8")
+    monkeypatch.setattr(ld, "ROOT", tmp_path)
+    monkeypatch.setattr(ld, "_register_and_start", fake_register)
+    monkeypatch.setattr(ld, "chain_task_running", lambda batch: None)
+    monkeypatch.setattr(ld, "_run_ps", lambda script: _Done())
+    assert ld.launch_chain("bt", ["output_audit/s1_spec.json"], None, 30) == 0
+    assert ld.launch("output_audit/s1_spec.json") == 0
+    assert ld.selftest() == 1        # the fake scheduler never writes the proof
+    assert len(seen) == 3, seen
+    for name, exe, args in seen:
+        assert exe == "wscript.exe" and "//B" in args, (name, exe, args)
+        vbs = Path(args.split('"')[1])
+        assert vbs.is_file() and vbs.parent == tmp_path / "output_audit", args
+        target = vbs.with_name(vbs.stem[: -len("_hidden")] + ".cmd")
+        assert target.is_file() and str(target) in vbs.read_text(encoding="utf-8")
+    rec = _j.loads((tmp_path / "output_audit" / "_bt_chain_task.json").read_text(encoding="utf-8"))
+    assert rec["action"].startswith("wscript.exe //B //Nologo"), rec
+    # (3) class pin over the module's AST
+    tree = _ast.parse(_insp.getsource(ld))
+    calls = [c for c in _ast.walk(tree) if isinstance(c, _ast.Call)
+             and getattr(c.func, "id", "") == "_register_and_start"]
+    assert len(calls) >= 3, len(calls)       # positive control: the finder sees them
+    for c in calls:
+        exe_arg = c.args[1] if len(c.args) > 1 else None
+        assert not (isinstance(exe_arg, _ast.Constant) and "cmd.exe" in str(exe_arg.value)), (
+            f"a task registered with a visible cmd.exe console at line {c.lineno}")
