@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit f79994463 at 2026-10-10 21:40:14 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 522c827c3 at 2026-10-11 03:37:43 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -20,8 +20,8 @@
 | IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | 7 |
 | IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded, with Step 2 scheduled (S6-B2420) | 7 |
 | DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 3 |
-| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 1 |
-| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 43 |
+| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 0 |
+| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 44 |
 | NOT-STARTED | 133 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
@@ -75,7 +75,7 @@
 |---|---|---|---|---|---|---|---|
 | camarilla_r4_breakout | pivot | 5774 | 282.4 | YES | 53.2% | NONE | NOT-STARTED |
 | pairs_mean_reversion_short | pairs | 5698 | 410.0 | YES | 78.3% | TIGHTEN | NOT-STARTED |
-| pairs_mean_reversion_long | pairs | 5036 | 462.9 | YES | 100.0% | TIGHTEN | IN-CAMPAIGN |
+| pairs_mean_reversion_long | pairs | 5036 | 462.9 | YES | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
 | stochrsi_overbought_short | momentum | 4287 | 394.0 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | macd_fast_crossover | momentum | 4070 | 374.1 |  | 100.0% | NONE | STALLED-CAMPAIGN |
 | r1_break_retest | pivot | 3371 | 309.8 |  | 100.0% | NONE | STALLED-CAMPAIGN |
