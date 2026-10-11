@@ -1,0 +1,15 @@
+{
+  "strategy": "pairs_mean_reversion_long",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05",
+  "seed": 42,
+  "sampled": 50,
+  "agree": 50,
+  "disagree": 0,
+  "skipped": 0,
+  "execution_failures": 0,
+  "config": {
+    "config": "production (zero-knob family)"
+  },
+  "detail": [],
+  "note": "leg A recomputes the spread z-score from the T5b snapshot row and cached closes, independent of the producer; leg B is compute_pair_signals_for_ticker on the engine's own input shape (screener.py pairs block); leg C is the persisted record. LONG-only strategy (B2085/F24), no direction branch. A DISAGREE is a finding about either side, not a cause without a probe (#189)"
+}
