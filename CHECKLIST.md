@@ -4909,6 +4909,8 @@ primitive, or a test that pins the set. Prose in LEARNINGS carries nothing.**
 
 **INSTANCE (B3139 / L893):** scan_heredoc_escapes shipped without the B2689 one-report rule its sibling scan_shell_substitution carries, so an in-turn hit could never clear; its author tripped it three hours later (S6-B3139u).
 
+**INSTANCE (B3139q-r68w / L912):** the breadth holdout null kept the R5 default cube while the grid (S6-B3112c) and the read (S6-B3113a) learned the subject's run-dir, so on the b3154 run-dir it reproduced 64 qualifiers against the read's 133 and refused; it now takes cube_dir from both artifacts and refuses on disagreement (S6-B3158), and test_b3158_every_build_frame_caller_redirects_to_the_subject_run_dir freezes the caller set at the three chain stages and requires each to rebind the frame's cube inside a function.
+
 ### #263 - THE LEDGER HAS SIX MUTUALLY EXCLUSIVE CLASSES (B1784 / L537)
 
 **OWNER RULING 2026-08-20:** *"Lets use those 6 classes itself. Replace DONE with EXECUTED. Done

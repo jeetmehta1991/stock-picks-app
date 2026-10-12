@@ -25845,6 +25845,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L910: a draft check wrote the production landing ledger"),
         ("A FIX TO A GENERATED ARTIFACT IS NOT DONE UNTIL THE GENERATOR EMITS THE FIXED FORM",
          "L911: a one-off mitigation left the launcher generating the defect"),
+        ("A STAGE THAT RE-SCORES ANOTHER STAGE'S ARTIFACT TAKES ITS SUBJECT FROM THAT ARTIFACT",
+         "L912: the holdout null kept the R5 default while the grid and the read took the run-dir"),
         ("ELEMENT ZERO IS THE MOST SEDUCTIVE PARTIAL READ",
          "L714: a schema question on [0] assumes homogeneity"),
         ("A SCAN ANCHORED TO ABSOLUTE LINE NUMBERS GOES BLIND WHEN CODE IS INSERTED ABOVE IT",
@@ -26159,7 +26161,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same-call with its tripwire row per B2130).
     # 323 -> 324 at B3139q-r64 (the L906 name-the-leg fragment; same-call with its tripwire row per B2130).
     # 324 -> 325 at B3139q-r66 (the L907 queue-row-is-a-test-input fragment; same-call with its tripwire row per B2130).
-    assert len(gutted) == 327, gutted
+    # 327 -> 328 at B3139q-r68w (the L912 re-score-takes-its-subject-from-the-artifact
+    # fragment; same-call with its tripwire row per B2130).
+    assert len(gutted) == 328, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -53822,3 +53826,183 @@ def test_b3153_detached_tasks_run_hidden(tmp_path, monkeypatch):
         exe_arg = c.args[1] if len(c.args) > 1 else None
         assert not (isinstance(exe_arg, _ast.Constant) and "cmd.exe" in str(exe_arg.value)), (
             f"a task registered with a visible cmd.exe console at line {c.lineno}")
+
+
+def test_b3158_holdout_null_scores_the_reads_own_cube(tmp_path, monkeypatch):
+    """S6-B3158: breadth_holdout_null.run scores the run-dir the READ scored
+    (the grid's and the read's recorded cube_dir), not the R5 default. Two
+    fixture cubes with DISJOINT qualifier sets (A qualifies on time_stop_10d,
+    B on other_exit): with the default pointed at A and both artifacts naming
+    B, the reproduction can pass only if the null scores B. A grid/read
+    cube_dir disagreement REFUSES; artifacts naming neither keep the default."""
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import breadth_step1_grid as bg
+    import breadth_holdout_null as bhn
+
+    def write(d, flip):
+        d.mkdir()
+        tl, cube = [], []
+        days = ([f"2023-{(i % 12) + 1:02d}-{(i % 27) + 1:02d}" for i in range(60)]
+                + [f"2025-{(i % 10) + 6:02d}-{(i % 27) + 1:02d}" for i in range(60)])
+        for i, day in enumerate(days):
+            tk = f"T{i:03d}"
+            tl.append({"strategy": "fx", "ticker": tk, "entry_date": day,
+                       "signals_at_entry": _j.dumps({"k": float(i % 30)})})
+            ts = (-2.0 if i % 5 else 3.0) if flip else (3.0 if i % 5 else -2.0)
+            ot = (3.0 if i % 5 else -2.0) if flip else (1.0 if i % 2 else -1.2)
+            for ex, pnl in (("time_stop_10d", ts), ("other_exit", ot)):
+                cube.append({"strategy": "fx", "ticker": tk, "entry_date": day,
+                             "direction": "long", "exit_method": ex,
+                             "pnl_pct": pnl, "hold_days": 10})
+        pd.DataFrame(tl).to_csv(d / "trade_log.csv", index=False)
+        pd.DataFrame(cube).to_csv(d / "trade_exit_detail.csv", index=False)
+        return d
+
+    a_dir = write(tmp_path / "default_cube", False)
+    b_dir = write(tmp_path / "subject_cube", True)
+    rows = [{"axis": "k", "op": "ge", "level": lv} for lv in (0.0, 5.0, 10.0)]
+
+    def point(d):
+        monkeypatch.setattr(bg, "CUBE", d / "trade_exit_detail.csv")
+        monkeypatch.setattr(bg, "TRADE_LOG", d / "trade_log.csv")
+
+    def quals(d):
+        point(d)
+        cells, _k, F, _p, by_exit = bhn.prepare(
+            {"strategy": "fx", "depth_base": None, "basis": "net", "leg": "long",
+             "rows": rows})
+        return bhn.qualifiers(bhn.score(cells, F, by_exit))
+
+    qa, qb = quals(a_dir), quals(b_dir)
+    assert qa and qb and not (qa & qb), (qa, qb)
+    as_read = lambda q: [{"axis": x, "op": o, "level": lv, "exit": ex}
+                         for x, o, lv, ex in sorted(q)]
+    art = {"strategy": "fx", "depth_base": None, "basis": "net", "leg": "long",
+           "rows": rows, "cube_dir": str(b_dir)}
+    read = {"leg": "long", "cube_dir": str(b_dir), "qualifiers": as_read(qb)}
+    point(a_dir)
+    out = bhn.run(art, read, perms=1, seed=7)
+    assert out["observed"]["qualifiers"] == len(qb)
+    assert _P(out["cube_dir"]) == b_dir.resolve()
+    point(a_dir)
+    with pytest.raises(SystemExit) as e:
+        bhn.run(art, dict(read, cube_dir="output_r5_merged_1_7 (default)"),
+                perms=1, seed=7)
+    assert "S6-B3158" in str(e.value)
+    point(a_dir)
+    art0 = {k: v for k, v in art.items() if k != "cube_dir"}
+    out0 = bhn.run(art0, {"leg": "long", "qualifiers": as_read(qa)}, perms=1, seed=7)
+    assert out0["observed"]["qualifiers"] == len(qa)
+    assert out0["cube_dir"].startswith("output_r5_merged_1_7")
+
+
+def test_b3158_every_build_frame_caller_redirects_to_the_subject_run_dir(tmp_path):
+    """S6-B3158 class pin (L912, #262/#305): every breadth-chain stage that
+    builds its frame with breadth_step1_grid.build_frame redirects that frame
+    to the subject's run-dir - the grid (S6-B3112c), the read (S6-B3113a)
+    and the holdout null (S6-B3158). build_frame reads the R5 module
+    defaults unless the caller rebinds them, so a stage that never does
+    scores the R5 frame on a run-dir subject. Two properties, both read from
+    CODE: the module references cube_dir (an attribute or the exact string
+    key - a docstring does not count), AND it rebinds CUBE inside a function
+    (a module-level default does not count). The first alone was satisfied
+    by an f-string inside a refusal message (L684: the pin's own mutation B
+    passed), which is why the second exists. A module importing build_frame
+    under any name counts as a caller. The caller set is frozen, so a fourth
+    scorer fails here until it is reviewed for the same defect. The fixture
+    tree proves every failure shape is flagged (#226) through the same
+    helper the live assertion uses (#276b)."""
+    import ast
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+
+    def _targets(node):
+        for t in node.targets if isinstance(node, ast.Assign) else [node.target]:
+            yield from (t.elts if isinstance(t, ast.Tuple) else [t])
+
+    def callers(scripts_dir):
+        out = {}
+        for p in sorted(scripts_dir.rglob("*.py")):
+            if "__pycache__" in p.parts:
+                continue
+            try:
+                tree = ast.parse(p.read_text(encoding="utf-8", errors="replace"))
+            except SyntaxError:
+                continue
+            nodes = list(ast.walk(tree))
+            calls = any(isinstance(n, ast.Call) and (
+                (isinstance(n.func, ast.Name) and n.func.id == "build_frame")
+                or (isinstance(n.func, ast.Attribute)
+                    and n.func.attr == "build_frame")) for n in nodes)
+            imports = any(isinstance(n, ast.ImportFrom)
+                          and any(al.name == "build_frame" for al in n.names)
+                          for n in nodes)
+            if not (calls or imports):
+                continue
+            names = any(
+                (isinstance(n, ast.Attribute) and n.attr == "cube_dir")
+                or (isinstance(n, ast.Constant) and n.value == "cube_dir")
+                for n in nodes)
+            rebinds = any(
+                isinstance(sub, (ast.Assign, ast.AugAssign, ast.AnnAssign))
+                and any((isinstance(t, ast.Name) and t.id == "CUBE")
+                        or (isinstance(t, ast.Attribute) and t.attr == "CUBE")
+                        for t in _targets(sub))
+                for fn in nodes
+                if isinstance(fn, (ast.FunctionDef, ast.AsyncFunctionDef))
+                for sub in ast.walk(fn))
+            out[p.relative_to(scripts_dir).as_posix()] = (names, rebinds)
+        return out
+
+    fx = tmp_path / "scripts"
+    fx.mkdir()
+    (fx / "bare.py").write_text(
+        "import breadth_step1_grid as bg\nm, _ = bg.build_frame('s', None, [])\n",
+        encoding="utf-8")
+    (fx / "prose_only.py").write_text(
+        '"""cube_dir is honoured here (it is not)."""\n'
+        "from breadth_step1_grid import build_frame\n"
+        "m, _ = build_frame('s', None, [])\n", encoding="utf-8")
+    (fx / "aliased.py").write_text(
+        "from breadth_step1_grid import build_frame as bf\nm, _ = bf('s', None, [])\n",
+        encoding="utf-8")
+    (fx / "message_only.py").write_text(
+        "import breadth_step1_grid as bg\n"
+        "def run(art):\n"
+        "    if not art:\n"
+        "        raise SystemExit(f\"no {art.get('cube_dir')!r}\")\n"
+        "    return bg.build_frame('s', None, [])\n", encoding="utf-8")
+    (fx / "module_default_only.py").write_text(
+        "import breadth_step1_grid as bg\n"
+        "CUBE = 'output_r5_merged_1_7/trade_exit_detail.csv'\n"
+        "def run(a):\n"
+        "    print(a.cube_dir)\n"
+        "    return bg.build_frame('s', None, [])\n", encoding="utf-8")
+    (fx / "redirects.py").write_text(
+        "import breadth_step1_grid as bg\n"
+        "def run(art):\n"
+        "    d = art.get('cube_dir')\n"
+        "    bg.CUBE, bg.TRADE_LOG = d + '/c.csv', d + '/t.csv'\n"
+        "    return bg.build_frame('s', None, [])\n", encoding="utf-8")
+    (fx / "no_call.py").write_text("x = 1\n", encoding="utf-8")
+    assert callers(fx) == {
+        "aliased.py": (False, False), "bare.py": (False, False),
+        "message_only.py": (True, False),
+        "module_default_only.py": (True, False),
+        "prose_only.py": (False, False), "redirects.py": (True, True)}
+
+    live = callers(root / "scripts")
+    assert set(live) == {"breadth_step1_grid.py", "breadth_step2_read.py",
+                         "breadth_holdout_null.py"}, (
+        f"build_frame callers changed: {sorted(live)} - a new scorer must "
+        "redirect its frame to the subject run-dir recorded as cube_dir "
+        "(S6-B3158); review it, then add it here")
+    bad = {k: v for k, v in live.items() if v != (True, True)}
+    assert not bad, f"(names cube_dir, rebinds CUBE in a function): {bad}"

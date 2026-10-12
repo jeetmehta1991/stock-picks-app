@@ -96,9 +96,45 @@ def max_ci_lo(res: dict, keys=None):
     return max(xs) if xs else None
 
 
+_DEFAULT_CUBE_TAG = "output_r5_merged_1_7"
+
+
+def subject_cube(art: dict, read: dict):
+    """S6-B3158: score the SAME frame the read scored. The grid
+    (breadth_step1_grid --cube-dir, S6-B3112c) and the read
+    (breadth_step2_read --cube-dir, S6-B3113a) both take a subject run-dir and
+    RECORD it as `cube_dir`; this null - the third member of the chain - had no
+    override and always scored the R5 default, so on a run-dir subject its
+    reproduction gate refused (MEASURED on the b3154 cube: 64 qualifiers here
+    against the read's 133). The run-dir is taken from the two artifacts, not a
+    flag, so it cannot be mistyped. Returns the subject run-dir, or None when
+    both name the R5 default or neither records one (artifacts that predate the
+    field). FAILS CLOSED when they disagree: a null priced on a frame its read
+    did not score prices nothing."""
+    def _norm(v):
+        if not v or str(v).startswith(_DEFAULT_CUBE_TAG):
+            return None
+        p = Path(str(v))
+        return (p if p.is_absolute() else ROOT / p).resolve()
+    a_dir, r_dir = _norm(art.get("cube_dir")), _norm(read.get("cube_dir"))
+    if a_dir != r_dir:
+        raise SystemExit(f"REFUSED (S6-B3158): the Step-1 grid scored "
+                         f"{art.get('cube_dir')!r} but the read scored "
+                         f"{read.get('cube_dir')!r} - the null must price the "
+                         "read's own frame")
+    return r_dir
+
+
 def run(art: dict, read: dict, perms: int, seed: int) -> dict:
     if (art.get("leg") or "both") != (read.get("leg") or "both"):
         raise SystemExit("REFUSED: the read and the Step-1 artifact name different legs")
+    sub = subject_cube(art, read)
+    if sub is not None:
+        cube_f, log_f = sub / "trade_exit_detail.csv", sub / "trade_log.csv"
+        for f in (cube_f, log_f):
+            if not f.exists():
+                raise SystemExit(f"REFUSED (S6-B3158): subject run-dir file missing: {f}")
+        bg.CUBE, bg.TRADE_LOG = cube_f, log_f
     cells, axis_keys, F, period, by_exit = prepare(art)
     obs = score(cells, F, by_exit)
     got = qualifiers(obs)
@@ -152,6 +188,7 @@ def run(art: dict, read: dict, perms: int, seed: int) -> dict:
         return float((1 + (arr >= o).sum()) / (1 + len(arr))) if len(arr) else None
     return {
         "_doc": __doc__, "strategy": art["strategy"], "leg": art.get("leg") or "both",
+        "cube_dir": str(sub) if sub is not None else f"{_DEFAULT_CUBE_TAG} (default)",
         "basis": art.get("basis") or "gross", "n_perms": perms, "seed": seed,
         "null_label": ("SYNTHETIC null (rng shuffles of the read's own data) - "
                        "prices chance, never performance; observed figures are measured"),
