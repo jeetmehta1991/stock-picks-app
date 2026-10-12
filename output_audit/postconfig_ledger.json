@@ -6232,5 +6232,43 @@
    "status": "DONE",
    "evidence": "AUTO (B2520) VERDICT (denominators from output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 18288 IS rows (18288 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.545 is_sharpe 0.776 fires 762 - Step-1: ranking only, no admission (B1608)"
   }
+ },
+ "output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(84288 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, GOOGL, META, TSLA, AAPL); M1_content_sha=PASS(b4a04b096c05a4ac); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2022-05-05 .. 2026-05-04); M4_holdout_touch=SKIP(21912 entries past 2025-05-05 (not declared a Step-1 cube; p); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha a1aa7373ca8c); step_derivation=PASS(Step-2: manifest window.end 2026-05-05 > HO_START 2025-05-05); M9_universe_artifact=PASS(exit 0 on output_audit/r5_universe_544.txt (verifier is non-); family_dispatch=PASS(pairs_mean_reversion_long: manifest arms[0] eg_significance=); step2_grade_auto=PASS(exit 0; eg_significance=0.01 z_window=60 -> output_pairs_mrl); step2_free_levels=PASS(exit 0; reproduction-gated free levels -> output_pairs_mrl_s); step4_spot_check_auto=PASS(exit 0; n_sampled None seed 42: 49 agree / 1 DISAGREE / 0 sk); step7_engine_implemented=PASS(2 of 2 declared knobs read from the environment + consumer l); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=SKIP; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (S6-B3140); roster_core-delegated; the arm env is verified against the two registered knobs at band values and against the flags the battery passed (S6-B3141a; any other key fails closed, L642): grade_pairs_config at manifest eg_significance=0.01 z_window=60 -> output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_grid_auto.json; Step-2 gate verdict present: step2 block: FAIL on breakeven_plus_trail; free levels reproduction-gated -> output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_free_levels.json"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "AUTO (S6-B3140); three legs - raw spread z-score arithmetic from the T5b snapshot row, compute_pair_signals_for_ticker on the engine's input shape, the cube record; LONG-only (B2085/F24), no direction branch: spot_check_pairs at manifest eg_significance=0.01 z_window=60; n_sampled None seed 42: 49 agree / 1 DISAGREE / 0 skipped; execution failures 0; artifact output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_spot_check.json"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520): lenses 11 run: 1 WARN / 0 FAIL / 10 INFO -> output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_lenses.json; findings: spot_check_disagreements WARN: 49 agree / 1 DISAGREE / 0 skipped in output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_sp"
+  },
+  "6_post_fix_recheck": {
+   "status": "OPEN",
+   "evidence": "1 lens finding(s) need a recheck with evidence (#196): spot_check_disagreements WARN"
+  },
+  "6b_equivalence_class_check": {
+   "status": "N/A",
+   "evidence": "1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence"
+  },
+  "7_implement_in_engine": {
+   "status": "DONE",
+   "evidence": "engine check PASS on a Step-2 cube: 2 of 2 declared knobs read from the environment + consumer lists match the tree"
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520) VERDICT (denominators from output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 62376 IS rows (84288 cube rows, 21912 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.484 is_sharpe 0.58 fires 2599 - Step-2 admission on the IS-selected exit breakeven_plus_trail: holdout n 913 of full-period 3512, holdout sharpe 0.592, gates 5 of 6 PASS -> FAIL; pre-registered exit breakeven_plus_trail matches (S6-B2409: clearing the six live gates IS qualification)"
+  }
  }
 }
