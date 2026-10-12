@@ -1,0 +1,195 @@
+{
+ "cube": "output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60",
+ "step": "6_post_fix_recheck",
+ "finding": "spot_check_disagreements WARN (49 agree / 1 DISAGREE)",
+ "probe": {
+  "ticker": "CVNA",
+  "entry_date": "2026-02-12",
+  "peer": "ULTA",
+  "window": 60,
+  "significance": 0.01,
+  "snapshot_hedge_ratio": 1.392026,
+  "snapshot_intercept": -4.446924,
+  "z_with_prefetch_closes_leg_A": -1.1644,
+  "z_with_engine_closes_leg_B_C": -2.2426,
+  "fires_below": -2.0,
+  "formation_source": "data_prefetch/polygon/ohlcv_daily (build_t5b_pairs_precompute.py OHLCV_DIR)",
+  "engine_ticker_source": "backtest/data/cache/ohlcv (backtest/data/cache.py CACHE_DIR)",
+  "peer_source": "data_prefetch/polygon/ohlcv_daily (pairs_trading.compute_pair_signals_for_ticker)"
+ },
+ "class_sweep": {
+  "universe": 544,
+  "agree_within_1pct_every_date": 459,
+  "constant_scale_mismatch": {
+   "CVNA": {
+    "ratio": 5.0,
+    "dates": 1110
+   }
+  },
+  "final_bar_2026_05_05_only": 84,
+  "final_bar_tickers": [
+   "AAL",
+   "AAPL",
+   "ACN",
+   "ADBE",
+   "ADM",
+   "AEE",
+   "AKAM",
+   "AMGN",
+   "ANET",
+   "AON",
+   "APH",
+   "APTV",
+   "ARE",
+   "AXON",
+   "BALL",
+   "BEN",
+   "BG",
+   "CARR",
+   "CE",
+   "CEG",
+   "CHTR",
+   "CMG",
+   "CMS",
+   "CNC",
+   "CRL",
+   "CSGP",
+   "DOW",
+   "DTE",
+   "DVA",
+   "ENPH",
+   "EOG",
+   "ES",
+   "EVRG",
+   "EXPD",
+   "FDS",
+   "FE",
+   "FIS",
+   "GLW",
+   "HII",
+   "HPE",
+   "HPQ",
+   "HRL",
+   "HSIC",
+   "IDXX",
+   "INTU",
+   "IQV",
+   "IRM",
+   "J",
+   "JBL",
+   "KHC",
+   "KKR",
+   "KLAC",
+   "KMB",
+   "LDOS",
+   "LEN",
+   "LH",
+   "LUV",
+   "MOS",
+   "MPC",
+   "MTCH",
+   "NOW",
+   "NXPI",
+   "ORCL",
+   "PAYC",
+   "PAYX",
+   "PEG",
+   "PFE",
+   "POOL",
+   "PRU",
+   "PYPL",
+   "QCOM",
+   "QRVO",
+   "RCL",
+   "ROK",
+   "SOLV",
+   "SWKS",
+   "TECH",
+   "TER",
+   "UDR",
+   "VLTO",
+   "VRSK",
+   "VRTX",
+   "WST",
+   "XRAY"
+  ],
+  "other_mismatch": {},
+  "missing_a_file": [],
+  "window": [
+   "2021-12-01",
+   "2026-05-05"
+  ]
+ },
+ "consequence": {
+  "reproduction": "PASS 6 of 6 recorded step2 fields",
+  "recorded": {
+   "exit": "breakeven_plus_trail",
+   "holdout_n": 913,
+   "full_period_n": 3512,
+   "sharpe": 0.592,
+   "passed": 5,
+   "verdict": "FAIL"
+  },
+  "cvna_entries": [
+   "2026-01-02",
+   "2026-02-02",
+   "2026-02-04",
+   "2026-02-11",
+   "2026-02-12"
+  ],
+  "cvna_is": 0,
+  "cvna_holdout": 5,
+  "without_cvna": {
+   "exit": "breakeven_plus_trail",
+   "holdout_n": 908,
+   "full_period_n": 3507,
+   "sharpe": 0.61,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "passed": 5,
+   "verdict": "FAIL"
+  },
+  "verdict_unchanged": true
+ },
+ "s6_b3155_scope_cvna_trades_per_pairs_cube": {
+  "output_pairs_mrl_s1_p5_0p01_p6_40_p5_0p01_p6_40": {
+   "trades": 517,
+   "cvna_as_ticker": 0
+  },
+  "output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60": {
+   "trades": 497,
+   "cvna_as_ticker": 0
+  },
+  "output_pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90": {
+   "trades": 476,
+   "cvna_as_ticker": 0
+  },
+  "output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05": {
+   "trades": 819,
+   "cvna_as_ticker": 0
+  },
+  "output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05": {
+   "trades": 762,
+   "cvna_as_ticker": 0
+  },
+  "output_pairs_mrl_step1_production": {
+   "trades": 797,
+   "cvna_as_ticker": 0
+  },
+  "output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60": {
+   "trades": 3512,
+   "cvna_as_ticker": 5
+  },
+  "output_pairs_mrl_step2_production": {
+   "trades": 5622,
+   "cvna_as_ticker": 6
+  }
+ },
+ "generated_by": "B3139q-r68s scratchpad dispose_b3154_step6.py (read-only measurement + one ledger row)"
+}
