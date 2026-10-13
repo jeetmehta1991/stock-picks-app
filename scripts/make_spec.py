@@ -98,7 +98,18 @@ def fires_at_production(strategy: str):
 def _env_value(level) -> str:
     """The env-string encoding of a level - ONE definition, shared by the
     arm env (_arm_env) and config identity (_env_key, S6-B3154a), so the
-    two cannot drift."""
+    two cannot drift. S6-B3161: written in the ENGINE's parse convention
+    (backtest/config.py). str(level) wrote None as 'None' and a bool as
+    'True'/'False'; the None-able knobs parse `float(raw) if raw else None`
+    or `int(raw) if raw else None`, so 'None' raised at config import, and
+    SMC_OB_CLOSE_MITIGATION is on only for '1', so a swept True ran as
+    False. None -> '' (the unset form - the b2944 candle specs ran with it)
+    and a bool -> '1' / '0'. Pinned by
+    test_b3161_every_spec_level_round_trips_through_the_engine_parser."""
+    if level is None:
+        return ""
+    if isinstance(level, bool):
+        return "1" if level else "0"
     return str(level)
 
 

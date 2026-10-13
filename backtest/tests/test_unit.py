@@ -54508,3 +54508,74 @@ def test_b3154a_step2_spec_is_sized_from_the_configs_own_step1(tmp_path):
             "spec['arms'][0]['preregistered_exit']",
             "spec['arms'][0]['preregistered_note']", "spec['_fires_basis']"}
     assert need <= targets, sorted(need - targets)
+
+
+
+def test_b3161_every_spec_level_round_trips_through_the_engine_parser():
+    """S6-B3161: make_spec writes each swept level into the arm env through
+    _env_value, and the engine parses that env in backtest/config.py. For
+    EVERY SPECS env actuator the config module reads, EVERY allowed level
+    (resim_band + production) must come back as itself - same value, same
+    None-ness, same bool-ness. str(level) wrote None as 'None' (ValueError
+    at config import for the None-able knobs) and True as 'True'
+    (SMC_OB_CLOSE_MITIGATION reads only '1', so True ran as False). The
+    population is DERIVED from SPECS at test time (L801); an actuator read
+    somewhere other than backtest/config.py is named in READ_ELSEWHERE with
+    the file that reads it, and that file must still read it."""
+    import json as _j
+    import subprocess as _sp
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import make_spec as ms
+    from producer_variant_table import SPECS
+    READ_ELSEWHERE = {   # read at precompute build time, not by the engine
+        "INST_MIN_CONSECUTIVE_QUARTERS": "build_institutional_persistence_precompute.py",
+        "INST_GROWTH_LOOKBACK_QUARTERS": "build_institutional_persistence_precompute.py",
+        "INST_GROWTH_MULTIPLE": "build_institutional_persistence_precompute.py",
+    }
+    cases, seen = [], set()
+    for entry in SPECS.values():
+        for p in entry.get("params", []):
+            env = p.get("env")
+            if not env or env in READ_ELSEWHERE:
+                continue
+            for lev in list(p.get("resim_band") or []) + [p.get("production")]:
+                k = (env, _j.dumps(lev))
+                if k not in seen:
+                    seen.add(k)
+                    cases.append([env, ms._env_value(lev), lev])
+    envs = {c[0] for c in cases}
+    assert len(envs) >= 14, sorted(envs)    # never vacuously empty (#226)
+    assert any(c[2] is None for c in cases), "no None level in the population"
+    assert any(isinstance(c[2], bool) for c in cases), "no bool level in the population"
+    child = """
+import importlib, json, os, sys
+sys.path.insert(0, sys.argv[1])
+import backtest.config as c
+out = []
+for env, val, _lev in json.loads(sys.stdin.read()):
+    os.environ[env] = val
+    try:
+        importlib.reload(c)
+        out.append(["ok", getattr(c, env)])
+    except Exception as exc:
+        out.append(["raised", type(exc).__name__ + ": " + str(exc)[:80]])
+    del os.environ[env]
+print(json.dumps(out))
+"""
+    r = _sp.run([_s.executable, "-c", child, str(root)], input=_j.dumps(cases),
+                capture_output=True, text=True, cwd=str(root), timeout=300)
+    assert r.returncode == 0, r.stderr[-800:]
+    got = _j.loads(r.stdout.strip().splitlines()[-1])
+    assert len(got) == len(cases)
+    bad = [(env, val, lev, g) for (env, val, lev), g in zip(cases, got)
+           if not (g[0] == "ok" and g[1] == lev
+                   and isinstance(g[1], bool) == isinstance(lev, bool)
+                   and (g[1] is None) == (lev is None))]
+    assert not bad, bad
+    for env, where in READ_ELSEWHERE.items():
+        src = (root / "scripts" / where).read_text(encoding="utf-8")
+        assert f'environ.get("{env}"' in src, (env, where)
