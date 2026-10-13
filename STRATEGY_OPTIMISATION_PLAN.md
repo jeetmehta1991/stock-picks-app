@@ -1471,9 +1471,20 @@ instance is recorded in the campaign log).
  "resume": true,
  "fires_at_production": "<the family step-0.5 smoke count at production params>",
  "arms": [{"tag": "step2_<config>",
-           "env": {"<FAMILY_KNOB>": "<config value>"}}]}
+           "env": {"<FAMILY_KNOB>": "<config value>"},
+           "preregistered_exit": "<this config's Step-1 step1_ranking[0] exit>"}]}
 ```
 
+- **Generate it; do not type it (S6-B3154a).** `scripts/make_spec.py --step 2` (the Step-1 arguments:
+  `--strategy`, `--param`, `--levels`, `--with`, `--wave-prefix`) writes this spec SIZED from the
+  config's own COMPLETE Step-1 cube: `max_legs` = ceil(that cube's engine hours x the family's largest
+  measured Step-2/Step-1 ratio x `STEP2_LEG_MARGIN` / `leg_cap_hours`), the arm's `preregistered_exit` =
+  that cube's grid `step1_ranking[0]` exit (the B2612 record `run_postconfig.preregistered_exit` reads
+  from the arm), and `_fires_basis` stamped with the grain it was measured at. It refuses when the
+  config has no complete Step-1 cube, its grid has no ranking, or no Step-2 ratio has been measured
+  anywhere; a family with no ratio of its own borrows the largest other family's, labelled
+  CROSS-FAMILY. A knob at its production level counts as the knob unset (the engine reads an unset
+  knob as production).
 - **`step1_cube: false` - set it explicitly, and know what it reaches.** A Step-1 marking arms the
   **holdout-touch FAIL** in run_postconfig - correct for a Step-1 search, which must not touch the
   holdout, and **WRONG for Step 2, which grades ON the holdout by design.** The spec field selects the

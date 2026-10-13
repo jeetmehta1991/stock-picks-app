@@ -54362,3 +54362,149 @@ def test_b3157_monitor_retirement_tracks_each_job_by_id():
         v._live_cron_jobs([{"kind": "create", "job": "x"}, "delete"])
     # 9. a report about a LIVE run never fires, whatever is armed
     assert v.scan_monitor_not_retired(arm, text="The wave is at sim-day 206.") == []
+
+
+
+def test_b3154a_step2_spec_is_sized_from_the_configs_own_step1(tmp_path):
+    """S6-B3154a: make_spec --step 2 sizes the spec instead of defaulting it.
+    On a fixture repo: the config's own COMPLETE Step-1 cube (matched by
+    strategy + arm env) supplies the Step-1 hours and its grid's
+    step1_ranking[0] exit; the family's LARGEST measured Step-2/Step-1 ratio
+    (completed Step-2 waves of the family, each with its own Step-1 sibling)
+    projects the run; max_legs = ceil(projection x margin / leg cap).
+    Refusals, each fail-closed: no Step-1 sibling, an incomplete sibling, a
+    grid without a ranking, and no measured ratio anywhere; a STALE or
+    `supersedes` summary is never a measurement, a malformed engine_state is
+    not a complete run, and a family with no ratio of its own borrows the
+    largest other family's, labelled. WIRING (L654): main() calls the sizer
+    under `a.step == 2`, before the consumer's launch gate, and writes the
+    sized fields into the spec."""
+    import ast as _ast
+    import json as _j
+    import math
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import make_spec as ms
+
+    oa = tmp_path / "output_audit"
+    oa.mkdir()
+
+    def put(rel, obj):
+        p = tmp_path / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(obj if isinstance(obj, str) else _j.dumps(obj), encoding="utf-8")
+
+    def cube(name, hours, status="complete"):
+        put(f"{name}/engine_state.json", {"status": status})
+        put(f"{name}/run_heartbeat.json", {"elapsed_hours": hours})
+
+    put("output_audit/_subset_fx.txt", "fx_strategy\n")
+    put("output_audit/_subset_gx.txt", "gx_strategy\n")
+    s1 = {"wave": "fx_s1", "strategy_subset": "output_audit/_subset_fx.txt",
+          "step": 1, "arms": [{"tag": "c1", "env": {"FX_K": "5"}},
+                              {"tag": "c0", "env": {"FX_K": "3"}}]}
+    put("output_audit/fx_s1_spec.json", s1)
+    cube("output_fx_s1_c1", 2.0)
+    cube("output_fx_s1_c0", 1.0)
+    put("output_audit/output_fx_s1_c1_grid_auto.json",
+        {"step1_ranking": [{"exit": "time_stop_10d", "is_ci_lo": 0.5, "is_sharpe": 0.9},
+                           {"exit": "ma_exit_ema9", "is_ci_lo": 0.4}]})
+
+    def s2(wave, tag, env):
+        return {"wave": wave, "strategy_subset": "output_audit/_subset_fx.txt",
+                "step": 2, "arms": [{"tag": tag, "env": env}]}
+
+    # two measured family ratios that DIFFER: c0 10 h / 1 h = 10.0 and
+    # c1 6 h / 2 h = 3.0 - the sizer must take the LARGER
+    put("output_audit/fx_s2_c0_wave_summary.json",
+        {"spec": s2("fx_s2_c0", "c0", {"FX_K": "3"}),
+         "results": [{"arm": "c0", "status": "COMPLETE", "elapsed_s": 36000}]})
+    put("output_audit/fx_s2_c1_wave_summary.json",
+        {"spec": s2("fx_s2_c1", "c1", {"FX_K": "5"}),
+         "results": [{"arm": "c1", "status": "COMPLETE", "elapsed_s": 21600}]})
+    # neither of these is a measurement: a STALE copy, a supersedes resume
+    put("output_audit/fx_s2_c0_wave_summary_STALE_1.json",
+        {"spec": s2("fx_s2_c0", "c0", {"FX_K": "3"}),
+         "results": [{"arm": "c0", "status": "COMPLETE", "elapsed_s": 999999}]})
+    put("output_audit/fx_s2_c9_wave_summary.json",
+        {"spec": s2("fx_s2_c9", "c0", {"FX_K": "3"}), "supersedes": "x",
+         "results": [{"arm": "c0", "status": "COMPLETE", "elapsed_s": 999999}]})
+
+    rows = ms.measured_ratios(tmp_path)
+    assert sorted(r["ratio"] for r in rows) == [3.0, 10.0], rows
+    sizing, why = ms.step2_sizing(tmp_path, "fx_strategy", {"FX_K": "5"}, 4.5)
+    assert why is None, why
+    want = math.ceil(2.0 * 10.0 * ms.STEP2_LEG_MARGIN / 4.5)
+    assert sizing["max_legs"] == want, (sizing["max_legs"], want)
+    assert sizing["preregistered_exit"] == "time_stop_10d"
+    assert "output_fx_s1_c1_grid_auto.json" in sizing["preregistered_note"]
+    assert "this family's" in sizing["_capacity_note"]
+    # IDENTITY: a knob AT its production level is the knob unset (the
+    # engine reads unset as production) - both directions
+    hit = ms.step1_siblings(tmp_path, "fx_strategy",
+                            {"FX_K": "3", "FX_P": "7"}, production={"FX_P": 7})
+    assert [s["cube"] for s in hit] == ["output_fx_s1_c0"], hit
+    assert ms.step1_siblings(tmp_path, "fx_strategy",
+                             {"FX_K": "3", "FX_P": "7"}, production={}) == []
+    assert ms.step1_siblings(tmp_path, "fx_strategy",
+                             {"FX_K": "3", "FX_P": "7"},
+                             production={"FX_P": 8}) == []
+    # refusals, each with its reason
+    none, why = ms.step2_sizing(tmp_path, "fx_strategy", {"FX_K": "9"}, 4.5)
+    assert none is None and "no COMPLETE Step-1 cube" in why
+    cube("output_fx_s1_c1", 2.0, status="running")
+    none, why = ms.step2_sizing(tmp_path, "fx_strategy", {"FX_K": "5"}, 4.5)
+    assert none is None and "no COMPLETE Step-1 cube" in why
+    cube("output_fx_s1_c1", 2.0)
+    put("output_audit/output_fx_s1_c1_grid_auto.json", {"rows": []})
+    none, why = ms.step2_sizing(tmp_path, "fx_strategy", {"FX_K": "5"}, 4.5)
+    assert none is None and "step1_ranking" in why
+    put("output_audit/output_fx_s1_c1_grid_auto.json",
+        {"step1_ranking": [{"exit": "time_stop_10d"}]})
+    # a family with no Step-2 run of its own borrows the largest, LABELLED
+    put("output_audit/gx_s1_spec.json",
+        {"wave": "gx_s1", "strategy_subset": "output_audit/_subset_gx.txt",
+         "step": 1, "arms": [{"tag": "g1", "env": {"GX": "1"}}]})
+    cube("output_gx_s1_g1", 3.0)
+    put("output_audit/output_gx_s1_g1_grid_auto.json",
+        {"step1_ranking": [{"exit": "regime_flip"}]})
+    sizing, why = ms.step2_sizing(tmp_path, "gx_strategy", {"GX": "1"}, 4.5)
+    assert why is None and "CROSS-FAMILY" in sizing["_capacity_note"]
+    assert sizing["max_legs"] == math.ceil(3.0 * 10.0 * ms.STEP2_LEG_MARGIN / 4.5)
+    # no measured ratio anywhere: refused, never guessed
+    (oa / "fx_s2_c0_wave_summary.json").unlink()
+    (oa / "fx_s2_c1_wave_summary.json").unlink()
+    none, why = ms.step2_sizing(tmp_path, "fx_strategy", {"FX_K": "5"}, 4.5)
+    assert none is None and "UNMEASURED" in why
+    # a malformed engine_state (valid JSON, not a dict) is not a complete run
+    put("output_bad/engine_state.json", "[1]")
+    put("output_bad/run_heartbeat.json", {"elapsed_hours": 1.0})
+    assert ms._complete_hours(tmp_path / "output_bad") is None
+    # the grain stamp names both grains from the phase table
+    g = ms.fires_grain(2)
+    assert "Step-1 grain" in g and "this spec runs Step 2" in g
+    # WIRING (L654): a pin on the callee is not a pin on the wiring
+    tree = _ast.parse((root / "scripts" / "make_spec.py").read_text(encoding="utf-8"))
+    fn = next(n for n in _ast.walk(tree)
+              if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    calls = {}
+    for c in _ast.walk(fn):
+        if isinstance(c, _ast.Call) and isinstance(c.func, _ast.Name):
+            calls.setdefault(c.func.id, c.lineno)
+    assert "step2_sizing" in calls and "launch_refusals" in calls, sorted(calls)
+    assert calls["step2_sizing"] < calls["launch_refusals"], calls
+    guard = [n for n in _ast.walk(fn) if isinstance(n, _ast.If)
+             and _ast.unparse(n.test).replace(" ", "") == "a.step==2"
+             and any(isinstance(c, _ast.Call)
+                     and getattr(c.func, "id", "") == "step2_sizing"
+                     for c in _ast.walk(n))]
+    assert len(guard) == 1, "step2_sizing must run under `if a.step == 2`"
+    targets = {_ast.unparse(t) for n in _ast.walk(guard[0])
+               if isinstance(n, _ast.Assign) for t in n.targets}
+    need = {"spec['max_legs']", "spec['_capacity_note']",
+            "spec['arms'][0]['preregistered_exit']",
+            "spec['arms'][0]['preregistered_note']", "spec['_fires_basis']"}
+    assert need <= targets, sorted(need - targets)

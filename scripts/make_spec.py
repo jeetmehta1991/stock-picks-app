@@ -26,6 +26,13 @@ REFUSALS (fail-closed, each with its reason):
     refuses a manifest without one - B2849 - so generation refuses first);
   - launch_refusals non-empty on the built draft (printed verbatim).
 
+STEP 2 (S6-B3154a): a --step 2 spec is SIZED, not defaulted - max_legs from
+the config's own Step-1 engine elapsed x the family's largest measured
+Step-2/Step-1 ratio x STEP2_LEG_MARGIN, preregistered_exit from that Step-1
+grid's step1_ranking[0], and the fires basis stamped with its grain. Refused
+when the config has no COMPLETE Step-1 cube, its grid has no ranking, or no
+Step-2 ratio has been measured anywhere. A Step-1 spec is unchanged.
+
 Usage:
   python scripts/make_spec.py --strategy bollinger_lower --param P4 \
       --levels 50 --wave-prefix bl_demo [--step 1] [--dry] \
@@ -88,6 +95,13 @@ def fires_at_production(strategy: str):
     return int(round(float(fires))), basis
 
 
+def _env_value(level) -> str:
+    """The env-string encoding of a level - ONE definition, shared by the
+    arm env (_arm_env) and config identity (_env_key, S6-B3154a), so the
+    two cannot drift."""
+    return str(level)
+
+
 def _arm_env(env: str, level) -> dict:
     """The arm's full env: the actuator plus any COMPANION the producer
     needs to emit the swept level. B3139 (found launching Step-2 config 2):
@@ -99,7 +113,7 @@ def _arm_env(env: str, level) -> dict:
     extend EMA_PAIRS with the production-200 pairing (the b3119 precedent's
     '200:250' form). Keyed on the ACTUATOR, shared by every EMA-gated
     strategy - never on a strategy name."""
-    out = {env: str(level)}
+    out = {env: _env_value(level)}
     if env == "STRAT_EMA_SPAN":
         if str(ROOT) not in sys.path:
             sys.path.insert(0, str(ROOT))
@@ -129,6 +143,213 @@ def _preleg_exemptions(step: int) -> dict:
         return {}
     doc = _json.loads(reg.read_text(encoding="utf-8"))
     return dict(doc.get(tf) or {})
+
+
+# ---------------------------------------------------------------------------
+# S6-B3154a: a Step-2 spec is SIZED from the config's own Step-1 run.
+# ---------------------------------------------------------------------------
+# The generator hardcoded max_legs 3 (13.5 h at 4.5 h legs) while every
+# measured Step-2 run needed 5-6 legs, wrote no preregistered_exit, and
+# stamped fires_at_production with no grain - so each Step-2 launch finished
+# its spec by hand (B3131 3 -> 6; B3154 3 -> 8 + preregistered_exit), the
+# typing surface L788 exists to delete. Spare legs are never run (run_wave's
+# leg loop breaks once the cube exists); under-sizing ends INCOMPLETE_MAX_LEGS
+# and needs a resume relaunch, so the projection uses the LARGEST measured
+# ratio.
+# CHOSEN, not measured: 1.5. Criterion - capacity must EXCEED the projection
+# (runbook section 4.9 Step 2.2); the two hand-sized precedents ran 1.39x
+# (bl span 9: 27 h over 19.4 h, bl_step2_p4_9_spec.json; pairs config 2:
+# 36.0 h over 22.90 h, pairs_mrl_step2_p5_0p01_p6_60_spec.json), and per-leg
+# rates inside one run varied up to 1.79x (pairs production leg 1 73.93
+# s/sim-day vs leg 2 132.24, output_audit/b3142r_chain_detached.log B2127
+# rate lines).
+STEP2_LEG_MARGIN = 1.5
+
+
+def _subset_strategy(root: Path, spec: dict):
+    """The ONE strategy a spec's strategy_subset file names, or None."""
+    p = root / str(spec.get("strategy_subset") or "")
+    try:
+        names = [x.strip() for x in p.read_text(encoding="utf-8").splitlines()
+                 if x.strip()]
+    except OSError:
+        return None
+    return names[0] if len(names) == 1 else None
+
+
+def _production_env(strategy: str) -> dict:
+    """{env actuator: production level} for a SPECS family; {} for a
+    strategy with no SPECS entry. Basis (S6-B3154a probe over the 17 SPECS
+    actuators): an unset knob reads its os.environ.get default - in
+    backtest/config.py for 14, and at precompute build time in
+    build_institutional_persistence_precompute.py for the 3 INST_* knobs.
+    10 of the 14 engine defaults equal the production level as _env_value
+    writes it; the other 4 are the None/False knobs, whose encoding
+    S6-B3161 aligns with the engine's parse."""
+    from producer_variant_table import SPECS
+    entry = SPECS.get(strategy) or {}
+    return {p["env"]: p.get("production") for p in entry.get("params", [])
+            if p.get("env")}
+
+
+def _env_key(env: dict, production: dict | None = None) -> tuple:
+    """A config's identity: its env with every knob AT its production
+    level dropped (in _env_value's encoding), so {} and {K: production}
+    are ONE config - the engine reads an unset knob as production."""
+    prod = {str(k): _env_value(v) for k, v in (production or {}).items()}
+    return tuple(sorted((str(k), str(v)) for k, v in (env or {}).items()
+                        if prod.get(str(k)) != str(v)))
+
+
+def _spec_step(spec: dict) -> int:
+    """A spec's step: the declared `step`, else run_wave's own reading of
+    step1_cube (default True -> Step 1)."""
+    if str(spec.get("step")) in ("1", "2"):
+        return int(spec["step"])
+    return 1 if spec.get("step1_cube", True) else 2
+
+
+def _complete_hours(cube: Path):
+    """Engine wall hours of a COMPLETE single run (engine_state status
+    'complete' + run_heartbeat elapsed_hours > 0), else None - a killed run's
+    partial hours would under-size the projection."""
+    try:
+        st = json.loads((cube / "engine_state.json").read_text(encoding="utf-8"))
+        hb = json.loads((cube / "run_heartbeat.json").read_text(encoding="utf-8"))
+        h = float(hb.get("elapsed_hours"))
+        done = st.get("status") == "complete"
+    except (OSError, ValueError, TypeError, AttributeError):
+        return None
+    return h if done and h > 0 else None
+
+
+def step1_siblings(root: Path, strategy: str, env: dict,
+                   production: dict | None = None) -> list:
+    """Every COMPLETE Step-1 cube of THIS config: a Step-1 spec under
+    output_audit/ naming the same strategy whose arm carries the same env,
+    compared by _env_key (a knob AT production matches the knob unset;
+    `production` defaults to the strategy's SPECS levels); its cube is
+    output_<wave>_<tag>."""
+    if production is None:
+        production = _production_env(strategy)
+    want, out = _env_key(env, production), []
+    for f in sorted((root / "output_audit").glob("*_spec.json")):
+        try:
+            spec = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if (not isinstance(spec, dict) or _spec_step(spec) != 1
+                or _subset_strategy(root, spec) != strategy):
+            continue
+        for arm in spec.get("arms") or []:
+            if _env_key(arm.get("env"), production) != want:
+                continue
+            cube = root / f"output_{spec.get('wave')}_{arm.get('tag')}"
+            h = _complete_hours(cube)
+            if h is not None:
+                out.append({"cube": cube.name, "hours": h, "spec": f.name,
+                            "mtime": (cube / "run_heartbeat.json").stat().st_mtime})
+    return out
+
+
+def measured_ratios(root: Path) -> list:
+    """Step-2 wall hours / the config's own Step-1 hours, for every COMPLETE
+    Step-2 wave summary (not a `supersedes` resume - its elapsed covers only
+    the resumed legs) whose config has a Step-1 sibling. A STALE summary is
+    never read: run_wave.archive_stale_summary renames it
+    <wave>_wave_summary_STALE_<ts>.json, which this glob's suffix excludes."""
+    rows = []
+    for f in sorted((root / "output_audit").glob("*_wave_summary.json")):
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        spec = d.get("spec") if isinstance(d, dict) else None
+        if (not isinstance(spec, dict) or d.get("supersedes")
+                or _spec_step(spec) != 2):
+            continue
+        strat = _subset_strategy(root, spec)
+        if not strat:
+            continue
+        arms = {x.get("tag"): x for x in spec.get("arms") or []}
+        for r in d.get("results") or []:
+            if r.get("status") != "COMPLETE" or not r.get("elapsed_s"):
+                continue
+            arm = arms.get(r.get("arm"))
+            sibs = step1_siblings(root, strat, (arm or {}).get("env")) if arm else []
+            if not sibs:
+                continue
+            s1 = max(sibs, key=lambda s: s["mtime"])
+            h2 = float(r["elapsed_s"]) / 3600
+            rows.append({"strategy": strat, "summary": f.name, "arm": r.get("arm"),
+                         "step2_hours": round(h2, 3), "step1_cube": s1["cube"],
+                         "step1_hours": s1["hours"],
+                         "ratio": round(h2 / s1["hours"], 3)})
+    return rows
+
+
+def step2_sizing(root: Path, strategy: str, env: dict, leg_cap_hours: float):
+    """(sizing, None) or (None, refusal reason) for a Step-2 spec of the
+    config `env`. sizing = max_legs, _capacity_note, preregistered_exit,
+    preregistered_note. The Step-1 sibling chosen when several exist is the
+    LATEST (a re-run of a config supersedes the earlier run)."""
+    import math
+    sibs = step1_siblings(root, strategy, env)
+    if not sibs:
+        return None, (f"no COMPLETE Step-1 cube of this config ({strategy}, env "
+                      f"{dict(env)}) - Step 2 follows the config's own Step 1, "
+                      "which supplies both the sizing and the preregistered exit")
+    s1 = max(sibs, key=lambda s: s["mtime"])
+    grid = root / "output_audit" / f"{s1['cube']}_grid_auto.json"
+    try:
+        rank0 = (json.loads(grid.read_text(encoding="utf-8")).get("step1_ranking")
+                 or [None])[0]
+    except (OSError, ValueError):
+        rank0 = None
+    if not isinstance(rank0, dict) or not rank0.get("exit"):
+        return None, (f"{grid.name} carries no step1_ranking - the preregistered "
+                      "exit (B2612) is the Step-1 rank-1 exit, so it cannot be "
+                      "derived")
+    rows = measured_ratios(root)
+    fam = [r for r in rows if r["strategy"] == strategy]
+    pool, scope = (fam, "this family's") if fam else (rows, "CROSS-FAMILY (this "
+                                                     "family has no completed Step-2 run)")
+    if not pool:
+        return None, ("no completed Step-2 run with a Step-1 sibling exists "
+                      "anywhere - the Step-2/Step-1 ratio is UNMEASURED, and "
+                      "sizing from a guess is what this generator replaces")
+    top = max(pool, key=lambda r: r["ratio"])
+    proj = s1["hours"] * top["ratio"]
+    legs = max(1, math.ceil(proj * STEP2_LEG_MARGIN / leg_cap_hours))
+    note = (f"GENERATED (S6-B3154a): projection {proj:.2f} h = this config's own "
+            f"Step-1 engine elapsed {s1['hours']} h ({s1['cube']}/run_heartbeat."
+            f"json) x {scope} largest measured Step-2/Step-1 ratio "
+            f"{top['ratio']} ({top['summary']}: {top['step2_hours']} h over "
+            f"{top['step1_cube']} {top['step1_hours']} h; {len(pool)} measured). "
+            f"max_legs = ceil({proj:.2f} x {STEP2_LEG_MARGIN} / {leg_cap_hours}) = "
+            f"{legs}; capacity {legs * leg_cap_hours:.1f} h. Spare legs are "
+            "never run - run_wave's leg loop breaks once the cube exists.")
+    pre_note = (f"B2612 contract: this config's Step-1 rank-1 exit, read from "
+                f"output_audit/{grid.name} step1_ranking[0] (is_ci_lo "
+                f"{rank0.get('is_ci_lo')}, is_sharpe {rank0.get('is_sharpe')}). "
+                "Recorded beside the grader's IS selection - never a selector; "
+                "one holdout read. GENERATED (S6-B3154a).")
+    return {"max_legs": legs, "_capacity_note": note,
+            "preregistered_exit": rank0["exit"],
+            "preregistered_note": pre_note}, None
+
+
+def fires_grain(step: int) -> str:
+    """The grain a fire projection was measured at vs the grain this spec runs
+    at, from phase_table (never typed)."""
+    import phase_table
+    s1, sp = phase_table.resolve(1), phase_table.resolve(step)
+    w1, wp = s1["window"], sp["window"]
+    return (f"GRAIN: measured at Step-1 grain ({s1['universe_n']} tickers, "
+            f"{w1['start']}..{w1['end']}); this spec runs Step {step} "
+            f"({sp['universe_n']} tickers, {wp['start']}..{wp['end']}). The "
+            "field gates only > 0 (prelaunch_gate, B2849) - it is not a "
+            f"Step-{step} fire count (S6-B3154a).")
 
 
 def main() -> int:
@@ -236,6 +457,16 @@ def main() -> int:
                              "refused (B2713/L788)."),
             "_generated_by": "scripts/make_spec.py (S6-B3120a)",
         }
+        if a.step == 2:
+            sizing, why = step2_sizing(ROOT, a.strategy, arm_env,
+                                       float(spec["leg_cap_hours"]))
+            if sizing is None:
+                return refuse(f"Step-2 sizing for level {level!r}: {why}")
+            spec["max_legs"] = sizing["max_legs"]
+            spec["_capacity_note"] = sizing["_capacity_note"]
+            spec["arms"][0]["preregistered_exit"] = sizing["preregistered_exit"]
+            spec["arms"][0]["preregistered_note"] = sizing["preregistered_note"]
+            spec["_fires_basis"] = f"{basis} | {fires_grain(a.step)}"
         errs = launch_refusals(spec, ROOT)
         if errs:
             return refuse(f"the consumer's own gate refuses the draft for "
@@ -245,7 +476,9 @@ def main() -> int:
             out.write_text(json.dumps(spec, indent=1), encoding="utf-8")
         written.append(out.name)
         print(f"[OK] {out.name}: {env}={level} "
-              f"(launch_refusals clean; fires_at_production {fires})")
+              f"(launch_refusals clean; fires_at_production {fires})"
+              + (f"; max_legs {spec['max_legs']}, preregistered_exit "
+                 f"{spec['arms'][0]['preregistered_exit']}" if a.step == 2 else ""))
     print("launch: PYTHONPATH=.:scripts python scripts/launch_detached.py "
           f"--chain --batch <bNNNN> --specs {' '.join(written)}")
     return 0
