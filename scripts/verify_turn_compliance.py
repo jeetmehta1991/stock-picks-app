@@ -4783,7 +4783,103 @@ QUIET_MARKERS = ("nothing running", "nothing owed", "chain paused",
                  "no process", "not reappeared", "nothing is running")
 
 
-def scan_monitor_not_retired(entries, *, text=None, events=None) -> list[str]:
+_CRON_JOB_RE = re.compile(r"\bjob\s+([0-9a-f]{6,})\b", re.I)
+_CRON_EXPIRY_RE = re.compile(r"auto-expires after\s+(\d+)\s+days?", re.I)
+
+
+def _iso_age_s(now, then) -> float:
+    """Seconds from ISO timestamp `then` to `now`; 0.0 when either does not
+    parse - an unparseable age never ages an arm out (fail toward LIVE)."""
+    import datetime as _dt
+    try:
+        a = _dt.datetime.fromisoformat(str(now).replace("Z", "+00:00"))
+        b = _dt.datetime.fromisoformat(str(then).replace("Z", "+00:00"))
+        return (a - b).total_seconds()
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _cron_lifecycle_events(entries) -> tuple:
+    """S6-B3157: the transcript's cron lifecycle IN ORDER, plus its latest
+    timestamp. One event per CronCreate whose RESULT names a job (a create that
+    errored armed nothing) with the job id, its arm time, whether the harness
+    called it session-only and the expiry it stated; one per CronDelete naming
+    its job id (success and 'No scheduled job' both mean the job is gone); and
+    one wherever the Claude Code `version` changes - a new version is a new
+    process, and a session-only cron dies with its process."""
+    results = {}
+    for e in entries or ():
+        if not isinstance(e, dict) or e.get("type") != "user":
+            continue
+        for c in (e.get("message") or {}).get("content") or ():
+            if isinstance(c, dict) and c.get("type") == "tool_result":
+                cc = c.get("content")
+                results[c.get("tool_use_id")] = (
+                    cc if isinstance(cc, str) else " ".join(
+                        str(x.get("text") or "") for x in (cc or ())
+                        if isinstance(x, dict)))
+    events, prev_version, latest = [], None, None
+    for e in entries or ():
+        if not isinstance(e, dict):
+            continue
+        latest = e.get("timestamp") or latest
+        ver = e.get("version")
+        if ver:
+            if prev_version is not None and ver != prev_version:
+                events.append({"kind": "version", "ts": e.get("timestamp"),
+                               "version": ver})
+            prev_version = ver
+        if e.get("type") != "assistant":
+            continue
+        for c in (e.get("message") or {}).get("content") or ():
+            if not (isinstance(c, dict) and c.get("type") == "tool_use"):
+                continue
+            nm = str(c.get("name", "")).lower()
+            res = results.get(c.get("id")) or ""
+            if "croncreate" in nm:
+                m = _CRON_JOB_RE.search(res)
+                if not m:
+                    continue                  # the create failed: nothing armed
+                x = _CRON_EXPIRY_RE.search(res)
+                events.append({"kind": "create", "job": m.group(1).lower(),
+                               "ts": e.get("timestamp"),
+                               "session_only": "session-only" in res.lower(),
+                               "expire_days": int(x.group(1)) if x else None})
+            elif "crondelete" in nm:
+                job = str((c.get("input") or {}).get("id") or "").lower()
+                if job:
+                    events.append({"kind": "delete", "job": job})
+    return events, latest
+
+
+def _live_cron_jobs(events, now=None) -> list:
+    """The cron jobs still LIVE after `events`: created, never deleted by id,
+    not past their own stated expiry at `now`, and - when session-only - not
+    outlived by a version change (a restart). Raises on an event it does not
+    know, so a malformed seam blocks loudly instead of passing silently."""
+    live = {}
+    for ev in events or ():
+        kind = ev.get("kind") if isinstance(ev, dict) else None
+        if kind == "create":
+            if ev.get("job"):
+                live[str(ev["job"]).lower()] = dict(ev)
+        elif kind == "delete":
+            live.pop(str(ev.get("job") or "").lower(), None)
+        elif kind == "version":
+            for job in [j for j, arm in live.items() if arm.get("session_only")]:
+                live.pop(job)
+        else:
+            raise ValueError(f"unknown cron lifecycle event: {ev!r}")
+    out = []
+    for arm in live.values():
+        days = arm.get("expire_days")
+        if days and now and arm.get("ts") and _iso_age_s(now, arm["ts"]) > days * 86400:
+            continue
+        out.append(arm)
+    return out
+
+
+def scan_monitor_not_retired(entries, *, text=None, events=None, now=None) -> list[str]:
     """L862: the ARM half of a monitor's lifecycle is gated; the DISARM half was not.
 
     `feedback_batch_run_update_cadence` step 2 has said "On completion:
@@ -4794,42 +4890,45 @@ def scan_monitor_not_retired(entries, *, text=None, events=None) -> list[str]:
 
     Distinct from `scan_monitor_without_stall_check`, which judges an arm's
     PROMPT and is TURN-SCOPED - a cron armed hours earlier is invisible to it.
-    This counts arms and retirements across the SESSION and fires only when the
+    This reads arms and retirements across the SESSION and fires only when the
     response itself says the watched thing has stopped, so a live run's monitor
     is never flagged.
-    """
-    import json as _j3
 
+    S6-B3157: it used to count CronCreate CALLS minus CronDelete CALLS over the
+    whole transcript, which failed BOTH ways. A session-only cron dies with its
+    process and leaves no CronDelete, so arms from earlier processes read as
+    live for days (517a91a8, e8e0f9f1, 6ecb0375); and every delete - of any id,
+    of a job already gone - was a credit, so after no-op deletes the count
+    stood at 36 creates to 38 deletes and the NEXT live arm would have read as
+    retired. Jobs are now tracked BY ID (_cron_lifecycle_events,
+    _live_cron_jobs): an arm is live until a CronDelete names it, its stated
+    expiry passes, or - session-only - a version change marks a new process.
+    Residual, stated: a restart that keeps the version leaves its dead arms
+    reading live; a CronDelete of the id retires them (its 'No scheduled job'
+    result is proof enough), and the message names the ids. `events`
+    (lifecycle dicts) and `now` are the seams; the same reducer runs either way.
+    """
     t = _response_text(entries, text)
     if not t or not any(m in t for m in QUIET_MARKERS):
         return []
     if events is None:
-        events = []
-        for e in entries or ():
-            if e.get("type") != "assistant":
-                continue
-            for c in (e.get("message") or {}).get("content") or ():
-                if not (isinstance(c, dict) and c.get("type") == "tool_use"):
-                    continue
-                nm = str(c.get("name", "")).lower()
-                if "croncreate" in nm:
-                    events.append("create")
-                elif "crondelete" in nm:
-                    events.append("delete")
-        _j3  # imported for symmetry with sibling collectors; unused here
-    outstanding = events.count("create") - events.count("delete")
-    if outstanding <= 0:
+        events, latest = _cron_lifecycle_events(entries)
+        now = latest if now is None else now
+    live = _live_cron_jobs(events, now)
+    if not live:
         return []
-    return ["MONITOR NOT RETIRED (B3084 / L862): this response reports that the "
-            "watched run has stopped while %d cron arm(s) from this session "
-            "have no matching CronDelete. The standing rule "
+    ids = ", ".join(f"{arm['job']} (armed {arm.get('ts') or '?'})" for arm in live)
+    return ["MONITOR NOT RETIRED (B3084 / L862, S6-B3157): this response reports "
+            "that the watched run has stopped while cron job(s) %s are still "
+            "LIVE - no CronDelete of that id, not past their stated expiry, and "
+            "no restart since they were armed. The standing rule "
             "feedback_batch_run_update_cadence step 2 is "
             "'On completion: PushNotification + CronDelete the job' - the arm "
             "half is gated by #185 and the disarm half was enforced by "
             "remembering. A monitor that outlives its subject keeps firing a "
             "prompt frozen at the moment it was armed, and repetition on a "
-            "timer reads as corroboration (L839). Delete it, or say in the "
-            "response why it must stay armed." % outstanding]
+            "timer reads as corroboration (L839). Delete it (CronDelete with "
+            "that id), or say in the response why it must stay armed." % ids]
 
 
 def scan_monitor_pattern_unverified(entries, *, blobs=None) -> list[str]:

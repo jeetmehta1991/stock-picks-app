@@ -89,7 +89,7 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
     "scan_monitor_not_retired": (
         "Chain paused by owner instruction, nothing running, nothing owed.",
         True,
-        {"events": ["create"]},
+        {"events": [{"kind": "create", "job": "524950bc", "ts": "2026-09-23T18:13:00Z", "session_only": True, "expire_days": 7}]},
     ),
     "scan_monitor_without_stall_check": (
         "PERIODIC UNCONDITIONAL RUN REPORT - B1849 causal test. Report EVERY "
@@ -789,9 +789,16 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
     # the arm was retired, and the run is still live.
     "scan_monitor_not_retired": [
         ("Chain paused by owner instruction, nothing running, nothing owed.",
-         False, {"events": ["create", "delete"]}),
+         False, {"events": [{"kind": "create", "job": "524950bc", "ts": "2026-09-23T18:13:00Z", "session_only": True, "expire_days": 7}, {"kind": "delete", "job": "524950bc"}]}),
         ("The wave is at sim-day 206 and advancing normally.",
-         False, {"events": ["create"]}),
+         False, {"events": [{"kind": "create", "job": "524950bc", "ts": "2026-09-23T18:13:00Z", "session_only": True, "expire_days": 7}]}),
+        # S6-B3157: a session-only arm outlived by a restart died with
+        # its process - QUIET; and deletes of OTHER ids retire nothing,
+        # so the old count (1 create vs 2 deletes) no longer hides it.
+        ("Chain paused by owner instruction, nothing running, nothing owed.",
+         False, {"events": [{"kind": "create", "job": "524950bc", "ts": "2026-09-23T18:13:00Z", "session_only": True, "expire_days": 7}, {"kind": "version", "ts": "2026-09-23T20:00:00Z", "version": "2.1.274"}]}),
+        ("Chain paused by owner instruction, nothing running, nothing owed.",
+         True, {"events": [{"kind": "delete", "job": "517a91a8"}, {"kind": "delete", "job": "e8e0f9f1"}, {"kind": "create", "job": "524950bc", "ts": "2026-09-23T18:13:00Z", "session_only": True, "expire_days": 7}]}),
     ],
     "scan_monitor_without_stall_check": [
         ("monitor armed", False,

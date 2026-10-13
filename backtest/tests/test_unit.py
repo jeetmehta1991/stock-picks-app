@@ -43981,18 +43981,22 @@ def test_b3084_monitor_not_retired_fires_and_stays_quiet():
 
     quiet = "Chain paused by owner instruction, nothing running, nothing owed."
     live = "The wave is at sim-day 206 and advancing normally."
+    # S6-B3157: events are per-JOB lifecycle dicts, not bare tokens
+    _arm = {"kind": "create", "job": "524950bc", "ts": "2026-09-23T18:13:00Z",
+            "session_only": True, "expire_days": 7}
+    _del = {"kind": "delete", "job": "524950bc"}
 
     # FIRES: the report says it stopped and an arm is outstanding
-    out = v.scan_monitor_not_retired([], text=quiet, events=["create"])
+    out = v.scan_monitor_not_retired([], text=quiet, events=[_arm])
     assert out, out
     assert "MONITOR NOT RETIRED" in out[0], out[0]
 
     # QUIET: the arm was retired in the same session
     assert not v.scan_monitor_not_retired(
-        [], text=quiet, events=["create", "delete"])
+        [], text=quiet, events=[_arm, _del])
 
     # QUIET: the run is still live, so its monitor SHOULD stay armed
-    assert not v.scan_monitor_not_retired([], text=live, events=["create"])
+    assert not v.scan_monitor_not_retired([], text=live, events=[_arm])
 
     # QUIET: nothing was ever armed
     assert not v.scan_monitor_not_retired([], text=quiet, events=[])
@@ -47737,7 +47741,10 @@ _B3121_SEAMS_SOUND = {
         "dict-of-bools seam by design: members are supplied and "
         "require_each judges them the same either way",
     ("scan_monitor_not_retired", "events"):
-        "list seam of create/delete tokens; the same count runs either way",
+        "list seam of per-job lifecycle dicts (create/delete/version, S6-B3157); "
+        "the same _live_cron_jobs reducer runs on the injected list and on the "
+        "list _cron_lifecycle_events builds from the transcript, and an unknown "
+        "event shape raises",
     ("scan_deferral_trigger_fired", "audit_doc"):
         "fired-list seam matching the built shape; in_memory disables the "
         "state write-back so corpus cases stay stateless",
@@ -54267,3 +54274,91 @@ def test_b3156_direct_battery_refuses_beside_a_live_process(tmp_path):
     finally:
         p.kill()
         p.wait(timeout=60)
+
+
+
+def test_b3157_monitor_retirement_tracks_each_job_by_id():
+    """S6-B3157: scan_monitor_not_retired tracks cron jobs BY ID. The old count
+    (CronCreate calls minus CronDelete calls over the whole transcript) failed
+    both ways - a session-only arm that died with an earlier process read as
+    live for days, and any delete (another id, a job already gone) was a
+    credit, so two no-op deletes left 36 creates to 38 deletes and the NEXT
+    live arm read as retired. Driven through the LIVE collector on
+    transcript-shaped entries carrying the real CronCreate result wording
+    (copied from this session's transcript), and through the events seam;
+    both run the same reducer. The DURABLE result wording in case 7 is
+    SYNTHETIC - the contract under test is only that a result without
+    'session-only' survives a restart."""
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as v
+    quiet = "Chain paused by owner instruction, nothing running, nothing owed."
+
+    def asst(i, ts, ver, name, inp):
+        return {"type": "assistant", "timestamp": ts, "version": ver,
+                "message": {"content": [{"type": "tool_use", "id": f"t{i}",
+                                         "name": name, "input": inp}]}}
+
+    def res(i, ts, ver, text):
+        return {"type": "user", "timestamp": ts, "version": ver,
+                "message": {"content": [{"type": "tool_result",
+                                         "tool_use_id": f"t{i}", "content": text}]}}
+
+    made = ("Scheduled recurring job {job} (7,22,37,52 * * * *). Session-only "
+            "(not written to disk, dies when Claude exits). Auto-expires after "
+            "7 days. Use CronDelete to cancel sooner.")
+    gone = "<tool_use_error>No scheduled job with id '{job}'</tool_use_error>"
+    v1, v2 = "2.1.280", "2.1.292"
+    arm = [asst(1, "2026-10-10T15:09:00Z", v1, "CronCreate",
+                {"cron": "7,22,37,52 * * * *", "prompt": "check", "recurring": True}),
+           res(1, "2026-10-10T15:09:01Z", v1, made.format(job="6ecb0375"))]
+    ev, latest = v._cron_lifecycle_events(arm)
+    assert ev == [{"kind": "create", "job": "6ecb0375", "ts": "2026-10-10T15:09:00Z",
+                   "session_only": True, "expire_days": 7}], ev
+    assert latest == "2026-10-10T15:09:01Z"
+    # 1. a live arm, never deleted: FIRES and names the job
+    out = v.scan_monitor_not_retired(arm, text=quiet)
+    assert out and "6ecb0375" in out[0], out
+    # 2. THE TICKET: the process restarted (a version change) -> dead, QUIET
+    assert v.scan_monitor_not_retired(
+        arm + [res(9, "2026-10-10T20:49:08Z", v2, "x")], text=quiet) == []
+    # 3. retired by a delete of THAT id: QUIET
+    assert v.scan_monitor_not_retired(
+        arm + [asst(2, "2026-10-10T16:00:00Z", v1, "CronDelete", {"id": "6ecb0375"}),
+               res(2, "2026-10-10T16:00:01Z", v1, "Cancelled job 6ecb0375")],
+        text=quiet) == []
+    # 4. THE PRE-PAID HOLE: deletes of OTHER ids, both already gone, retire
+    #    nothing - the old count read 1 create vs 2 deletes as clear
+    prepaid = [asst(3, "2026-10-10T14:00:00Z", v1, "CronDelete", {"id": "517a91a8"}),
+               res(3, "2026-10-10T14:00:01Z", v1, gone.format(job="517a91a8")),
+               asst(4, "2026-10-10T14:01:00Z", v1, "CronDelete", {"id": "e8e0f9f1"}),
+               res(4, "2026-10-10T14:01:01Z", v1, gone.format(job="e8e0f9f1"))] + arm
+    out = v.scan_monitor_not_retired(prepaid, text=quiet)
+    assert out and "6ecb0375" in out[0], out
+    # 5. a create that ERRORED armed nothing
+    assert v.scan_monitor_not_retired(
+        [asst(5, "2026-10-10T15:09:00Z", v1, "CronCreate", {"cron": "x", "prompt": "p"}),
+         res(5, "2026-10-10T15:09:01Z", v1,
+             "<tool_use_error>invalid cron expression</tool_use_error>")],
+        text=quiet) == []
+    # 6. past the expiry its own result stated: dead, QUIET
+    assert v.scan_monitor_not_retired(
+        arm + [res(8, "2026-10-18T15:10:00Z", v1, "later")], text=quiet) == []
+    # 7. a DURABLE job survives a restart: still live, FIRES
+    out = v.scan_monitor_not_retired(
+        [asst(6, "2026-10-10T15:09:00Z", v1, "CronCreate",
+              {"cron": "0 * * * *", "prompt": "p", "durable": True}),
+         res(6, "2026-10-10T15:09:01Z", v1, "Scheduled recurring job abcd1234 "
+             "(0 * * * *). Durable (written to disk). Auto-expires after 7 days."),
+         res(9, "2026-10-10T20:49:08Z", v2, "x")], text=quiet)
+    assert out and "abcd1234" in out[0], out
+    # 8. one reducer for both paths, and a malformed event blocks loudly
+    assert v._live_cron_jobs(ev) == [ev[0]]
+    with pytest.raises(ValueError):
+        v._live_cron_jobs([{"kind": "create", "job": "x"}, "delete"])
+    # 9. a report about a LIVE run never fires, whatever is armed
+    assert v.scan_monitor_not_retired(arm, text="The wave is at sim-day 206.") == []
