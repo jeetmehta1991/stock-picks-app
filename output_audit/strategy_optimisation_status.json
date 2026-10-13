@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "aa06d154a",
-    "generated_at": "2026-10-13 11:29:37"
+    "source_commit": "426af29c0",
+    "generated_at": "2026-10-13 12:29:34"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -23,11 +23,11 @@
   ],
   "phase1b_roster": {
     "funnel_cells": 7,
-    "step2_admissions": 15,
-    "mirrors": 9,
-    "long": 22,
-    "short": 9,
-    "total": 31
+    "step2_admissions": 16,
+    "mirrors": 10,
+    "long": 23,
+    "short": 10,
+    "total": 33
   },
   "owner_closures": [
     "bollinger_lower",
@@ -2461,7 +2461,7 @@
       "projected_step1_fires": 462.9,
       "projected_current_gate": 462.9,
       "reopen_candidate": false,
-      "stream": "TIGHTEN",
+      "stream": "-",
       "tightenable_keys": {
         "pair_count_active": 1.0,
         "pair_half_life": 1.0,
@@ -2478,9 +2478,11 @@
         "S6-B3140",
         "S6-B3140a"
       ],
-      "admitted": false,
-      "roster_roles": [],
-      "status": "STALLED-CAMPAIGN"
+      "admitted": true,
+      "roster_roles": [
+        "STEP2_ADMISSION"
+      ],
+      "status": "DONE-ADMITTED"
     },
     {
       "strategy": "pairs_mean_reversion_short",
@@ -2497,12 +2499,22 @@
         "pair_half_life": 1.0,
         "pair_zscore_signed": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "tickets": [
+        "S6-B3145",
+        "S6-B3145b"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3145b"
+      ],
+      "mention_tickets": [
+        "S6-B3145",
+        "S6-B3145b"
+      ],
       "admitted": false,
-      "roster_roles": [],
-      "status": "NOT-STARTED"
+      "roster_roles": [
+        "ADMISSION_MIRROR"
+      ],
+      "status": "IN-ROSTER-MIRROR"
     },
     {
       "strategy": "parabolic_sar_flip",

@@ -1,0 +1,192 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 33%]
+..............................................s......................... [ 37%]
+....................s.................................................s. [ 41%]
+........................................................................ [ 45%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 62%]
+........................................................................ [ 66%]
+........................................................................ [ 70%]
+........................................F............................... [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+..........................................................F............. [ 91%]
+........................................................................ [ 95%]
+........................................................................ [ 99%]
+..........                                                               [100%]
+================================== FAILURES ===================================
+_____________ test_b2836_table_a_directory_is_complete_and_honest _____________
+
+    def test_b2836_table_a_directory_is_complete_and_honest():
+        """B2836 (owner-directed 2026-09-16): the strategy_optimisation/ Table A
+        charter. The expected roster is DERIVED from the stamped status view (the
+        defining source, L697), never hand-listed; the generator's two judgment
+        mechanisms are pinned in both directions (#226)."""
+        import json
+        import sys
+        from pathlib import Path as _P
+        import pandas as pd
+        root = _P(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import build_table_a as bta
+    
+        view = json.loads((root / "output_audit" /
+                           "strategy_optimisation_status.json")
+                          .read_text(encoding="utf-8"))
+        tighten = {r["strategy"] for r in view["rows"] if r["stream"] == "TIGHTEN"}
+        # B3139 (batch 4): an owner-closed strategy leaves the TIGHTEN stream
+        # (DONE-OWNER-CLOSED, the 2026-09-29 ruling-4 effect) but its Table A
+        # file is a historical deliverable and stays - a closure closes the
+        # campaign, it does not delete its record.
+        owner_closed = {r["strategy"] for r in view["rows"]
+                        if r["status"] == "DONE-OWNER-CLOSED"}
+        d = root / "strategy_optimisation" / "tighten"
+        files = {p.stem for p in d.glob("*.md")}
+        assert tighten <= files, (tighten - files,
+                                  "every TIGHTEN row has a Table A file")
+>       assert files - tighten <= owner_closed, (
+            files - tighten - owner_closed,
+            "a non-TIGHTEN Table A file is allowed only for an owner-closed row")
+E       AssertionError: ({'pairs_mean_reversion_long'}, 'a non-TIGHTEN Table A file is allowed only for an owner-closed row')
+E       assert {'bollinger_l..._crows_short'} <= {'bollinger_l..._crows_short'}
+E         
+E         Extra items in the left set:
+E         'pairs_mean_reversion_long'
+
+backtest\tests\test_unit.py:38971: AssertionError
+_________ test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite __________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-2580/test_b3141a_pairs_producer_kno0')
+
+    def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path):
+        """S6-B3141a (owner route A 2026-10-10): the pairs producer knobs P5
+        (Engle-Granger significance) and P6 (z-window). Defaults reproduce
+        production exactly; each knob CHANGES the producer output on real data
+        (L751 - two values that must differ do differ); a looser significance
+        is refused at import; the battery adapter reads both knobs from the
+        manifest and fails closed on a missing or off-band one."""
+        import json as _j
+        import os as _os
+        import subprocess as _sp
+        import sys as _sys
+        from datetime import date as _date
+        from pathlib import Path as _Path
+        import pandas as _pd
+        root = _Path(__file__).resolve().parents[2]
+        _sys.path.insert(0, str(root / "scripts"))
+        from backtest.signals import pairs_trading as pt
+        from backtest import config as cfg
+        import run_postconfig as rp
+        import grade_pairs_config as gpc
+    
+        assert (cfg.PAIRS_EG_SIGNIFICANCE, cfg.PAIRS_Z_WINDOW) == (0.05, 60)
+        assert pt.pair_slice_bars(60) == 90 and pt.pair_slice_bars(90) == 120
+        assert pt.pair_slice_bars(40) == 90
+    
+        # real data: ticker A at 2025-03-03 has pairs on both sides of p=0.01
+        ohlcv = root / "data_prefetch" / "polygon" / "ohlcv_daily" / "A.parquet"
+        snap = root / "data_prefetch" / "derived" / "cointegrated_pairs_t1a" / "2025-01-01.parquet"
+        assert ohlcv.exists() and snap.exists(), "pin needs the T5b snapshot + A ohlcv"
+        df = _pd.read_parquet(ohlcv)
+        df["d"] = _pd.to_datetime(df["date"]).dt.date
+        as_of = _date(2025, 3, 3)
+        df = df[df.d <= as_of].sort_values("d")
+    
+        def run(w, s, explicit=True):
+            n = pt.pair_slice_bars(w)
+            tc = _pd.Series(df["close"].values[-n:], index=df["d"].values[-n:])
+            if not explicit:
+                return pt.compute_pair_signals_for_ticker("A", as_of, tc)
+            return pt.compute_pair_signals_for_ticker("A", as_of, tc, window=w,
+                                                      significance=s)
+        base = run(60, 0.05)
+        assert base == run(60, 0.05, explicit=False)
+        strict = run(60, 0.01)
+        assert 0 < strict["pair_count_active"] < base["pair_count_active"]
+        assert run(40, 0.05)["pair_zscore_signed"] != base["pair_zscore_signed"]
+        w90 = run(90, 0.05)
+        assert w90.get("pair_zscore_signed") not in (None, 0.0)
+        assert w90["pair_zscore_signed"] != base["pair_zscore_signed"]
+    
+        env = {**_os.environ, "PAIRS_EG_SIGNIFICANCE": "0.1"}
+        r = _sp.run([_sys.executable, "-c", "import backtest.config"], cwd=root,
+                    env=env, capture_output=True, text=True)
+        assert r.returncode != 0 and "PAIRS_EG_SIGNIFICANCE" in r.stderr
+    
+        fam = "pairs_mean_reversion_long"
+        assert rp.family_refusal(fam) == ""
+        vals, _ = rp.params_from_manifest(fam, {"arms": [{"env": {
+            "PAIRS_EG_SIGNIFICANCE": "0.01", "PAIRS_Z_WINDOW": "90"}}]})
+        assert vals == {"eg_significance": "0.01", "z_window": "90"}
+        missing, why = rp.params_from_manifest(fam, {"arms": [{"env": {
+            "PAIRS_EG_SIGNIFICANCE": "0.01"}}]})
+        assert missing is None and "z_window" in why
+        tools = rp._tools(fam)
+        args = rp._flag_args(tools["grade"], tools, vals)
+        assert args == ["--eg-significance", "0.01", "--z-window", "90"]
+    
+        ok, _ = gpc.arm_knobs({"PAIRS_EG_SIGNIFICANCE": "0.01", "PAIRS_Z_WINDOW": "40"})
+        assert ok == {"P5_eg_significance": 0.01, "P6_z_window": 40}
+        assert gpc.arm_knobs({})[0] == {"P5_eg_significance": 0.05, "P6_z_window": 60}
+        assert gpc.arm_knobs({"PAIRS_Z_WINDOW": "75"})[0] is None
+        assert gpc.arm_knobs({"SMC_SWING_LENGTH": "20"})[0] is None
+        cube = tmp_path / "c"
+        cube.mkdir()
+        (cube / "run_manifest.json").write_text(_j.dumps({"arms": [{"env": {
+            "PAIRS_EG_SIGNIFICANCE": "0.01", "PAIRS_Z_WINDOW": "90"}}]}),
+            encoding="utf-8")
+        assert gpc.verify_manifest(cube, {"P5_eg_significance": 0.01,
+                                          "P6_z_window": 90})[0] is None
+        assert gpc.verify_manifest(cube, {"P5_eg_significance": 0.05,
+                                          "P6_z_window": 90})[0].startswith("[FAIL]")
+    
+        r = _sp.run([_sys.executable, str(root / "scripts" / "make_spec.py"),
+                     "--strategy", fam, "--param", "P6", "--levels", "40",
+                     "--with", "P5=0.01", "--wave-prefix", "t_b3141a", "--dry"],
+                    cwd=root, capture_output=True, text=True,
+                    env={**_os.environ, "PYTHONPATH": _os.pathsep.join(
+                        [str(root), str(root / "scripts")])})
+>       assert r.returncode == 0, r.stdout + r.stderr
+E       AssertionError: REFUSED (make_spec, S6-B3120a): the consumer's own gate refuses the draft for level 40: ["pairs_mean_reversion_long: ALREADY ADMITTED to Phase 1B - a strategy in the roster is CLOSED to further optimisation testing (owner ruling 2026-09-12: 'We stop testing the strategies once they are in the phase 1B unless you get specific over rides from me'; and 2026-09-29, for every roster member including graded funnel cells and mirrors: '2 yes. No more retesting'). MEASURED COST OF THE INSTANCE THAT PRODUCED THIS GATE: 2.41 h of engine time graded an admitted strategy while the actual campaign subject rode along ungraded (S6-B2731). To override, put the owner's words in the spec under owner_override_retest_admitted['pairs_mean_reversion_long']"]
+E         pandas-ta not installed  -  using manual implementations
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe', 'C:\\Users\\jeetm\\Git...test_admitted[\'pairs_mean_reversion_long\']"]\n', stderr='pandas-ta not installed  -  using manual implementations\n').returncode
+
+backtest\tests\test_unit.py:53668: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2836_table_a_directory_is_complete_and_honest
+FAILED backtest/tests/test_unit.py::test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite
+2 failed, 1733 passed, 3 skipped in 1177.03s (0:19:37)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1204
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=battery 97%
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

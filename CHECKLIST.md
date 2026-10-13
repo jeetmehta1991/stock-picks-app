@@ -5116,6 +5116,8 @@ generalising from a slice**, which no amount of care inside the slice can detect
 
 **INSTANCE (B3139q-r52 / L903):** a search for EVERY reader of the owner-closures register, run before landing a closure, was piped through `head -12`; the pin past the cut (test_b3137) turned the gate red. A completeness search takes no head - count first, then print all, and narrow the pattern rather than the output.
 
+**INSTANCE (B3139q-r69e / L913):** the same shape six days later - before landing an admission, the name grep L801 requires ran through `head -20`, and test_b3141a sat past the cut; gate r96 went RED. L903 rested its durability on L801's tripwire row, which never said to read the grep whole - the row now does (pinned by test_b2123). A second ripple, test_b2836, names no strategy at all; its remedy was the previous admission's ripple commit (B3116), now step 9 of the runbook's admission procedure (6.3), with test_b3167 holding the README lane count to the directory.
+
 ### #271 - COUNT TICKETS, NOT ROWS (B1795 / L545)
 
 **AMENDED B2525 (L737): the rule is right and its GATE sees one surface only.**

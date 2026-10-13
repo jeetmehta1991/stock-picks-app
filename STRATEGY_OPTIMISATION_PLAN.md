@@ -1964,6 +1964,15 @@ sets the CRITERION - it does not waive the per-step approvals (§0.6).
    deployment, S6-B2411; that ticket was DROPPED when the owner finalised the strategy on 2026-09-03.)
 8. **Report the verdict WITH its denominator** (#182): *"N of M combinations passed, across X of Y
    applicable producers"* - computed by the table generator, never hand-counted.
+9. **Land the admission's RIPPLES in the same batch** (S6-B3145 / L913): the admission makes "X is
+   admitted" true, and fixtures elsewhere encoded the opposite. (a) Grep the test tree for the
+   subject's name as a COMPLETENESS search - count first, never `head` it (L903, L913) - and rebuild
+   each fixture that named it for the property the admission changes (L801); a registry freeze is
+   updated by NAME, never widened. (b) Read the previous admission's ripple commits - the cheapest
+   ripple list there is (B3115 -> B3116). (c) The row leaves the TIGHTEN lane, so its Table A
+   charter in `strategy_optimisation/tighten/` moves to `archive/<date>-<subject>-admission-table-a/`,
+   with any live SPECS `evidence` citation and the `strategy_optimisation/README.md` count following
+   it (B3116; test_b2836 holds file-set == lane-set, test_b3167 the README count).
 
 **Once admitted, a line is BANKED:** it is closed to re-testing absent the owner's explicit override
 (§1.3).

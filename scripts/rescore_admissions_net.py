@@ -278,6 +278,19 @@ def reproduce_tws_line(adm: dict):
             "reproduced": tgt, **sc}, sub
 
 
+def already_net_reason(adm: dict, art: dict):
+    """S6-B3145: the reason an admission needs NO re-score, or None. Decided
+    from the EVIDENCE - the admission's read of record records basis 'net'
+    (breadth_step1_grid.build_frame basis net calls roster_core.net_pnl, the
+    basis of record) - never from a strategy-name constant (#291). The first
+    such line, smc_breaker_block_long, keeps its own branch in main(): its
+    grid predates a basis field."""
+    if str((art or {}).get("basis")) == "net":
+        return (f"read of record {adm.get('grid_artifact')} graded on the net "
+                f"basis ({(art or {}).get('basis_source') or 'basis recorded on the artifact'})")
+    return None
+
+
 def main() -> int:
     import argparse
     ap = argparse.ArgumentParser()
@@ -287,9 +300,10 @@ def main() -> int:
     a = ap.parse_args()
     only = set(a.only.split(",")) if a.only else None
     prior = {}
+    prior_doc = None
     if only and OUT.is_file():
-        prior = {r["strategy"]: r
-                 for r in json.load(open(OUT, encoding="utf-8"))["rows"]}
+        prior_doc = json.load(open(OUT, encoding="utf-8"))
+        prior = {r["strategy"]: r for r in prior_doc["rows"]}
     doc = json.load(open(ADMISSIONS, encoding="utf-8"))
     out_rows = []
     for adm in doc["admissions"]:
@@ -304,6 +318,11 @@ def main() -> int:
                                        "roster_core.load_cube (net basis)"})
             continue
         art = json.load(open(ROOT / adm["grid_artifact"], encoding="utf-8"))
+        why = already_net_reason(adm, art)
+        if why:
+            out_rows.append({"strategy": strat, "status": "ALREADY-NET",
+                             "reason": why})
+            continue
         if strat == "three_white_soldiers":
             res = rescore_tws_line(adm)
         else:
@@ -332,7 +351,19 @@ def main() -> int:
         "rows": out_rows,
     }
     from roster_core import stamp_metric_code as _smc  # S6-B3139i
-    _smc(payload)
+    if prior_doc is None:
+        _smc(payload)
+    else:
+        # S6-B3145: --only CARRIES rows an earlier run computed; stamping the
+        # payload with today's fingerprint would claim them for code that did
+        # not compute them. Keep the earlier run's provenance and record this
+        # run - its rows and its own stamp - as an amendment.
+        for _k in ("basis", "generated_utc", "metric_code"):
+            payload[_k] = prior_doc.get(_k)
+        _amend = {"utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                  "rows": sorted(only)}
+        _smc(_amend)
+        payload["amendments"] = list(prior_doc.get("amendments") or []) + [_amend]
     OUT.write_text(json.dumps(payload, indent=1, default=str) + "\n",
                    encoding="utf-8", newline="\n")
     n_res = sum(1 for r in out_rows if r["status"] == "RESCORED")

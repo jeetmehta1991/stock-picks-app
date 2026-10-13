@@ -1618,6 +1618,50 @@
     "n_gates_evaluable": 6,
     "all_live_gates": false
    }
+  },
+  {
+   "strategy": "pairs_mean_reversion_long",
+   "status": "ALREADY-NET",
+   "reason": "read of record output_audit/b3145_pairs_prod_breadth_step3_read.json graded on the net basis (the Step-1 artifact's recorded basis)"
+  }
+ ],
+ "metric_code": null,
+ "amendments": [
+  {
+   "utc": "2026-10-13T16:19:02Z",
+   "rows": [
+    "pairs_mean_reversion_long"
+   ],
+   "metric_code": {
+    "sha256": "915bb9dec919d5f14fcdf0a176b787153472a50725015d64efc958f214b21aa4",
+    "members": [
+     "roster_core.load_cube",
+     "roster_core.net_pnl",
+     "roster_core.holdout",
+     "roster_core.in_sample",
+     "roster_core.evaluate",
+     "walk_forward_r5_cells._sharpe",
+     "backtest.results.metrics._sortino_ratio",
+     "backtest.results.metrics._deflated_sharpe",
+     "rescore_admissions_net.net",
+     "rescore_admissions_net.score_both"
+    ],
+    "constants": [
+     "roster_core.COST_BPS",
+     "roster_core.CUBE_COLUMNS",
+     "roster_core.CUBE_DTYPES",
+     "roster_core.HO_END",
+     "roster_core.HO_START",
+     "roster_core.IS_END",
+     "roster_core.IS_START",
+     "roster_core.MIN_N",
+     "roster_core.PC",
+     "roster_core.WINSORIZE",
+     "walk_forward_r5_cells.OOS_MIN_N"
+    ],
+    "plus": "backtest.config.PASSING_CRITERIA",
+    "defined_in": "scripts/roster_core.py metric_code_fingerprint"
+   }
   }
  ]
 }

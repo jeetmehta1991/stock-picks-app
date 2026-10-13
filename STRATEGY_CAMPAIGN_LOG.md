@@ -20,7 +20,8 @@
 - **F. CANDLE FAMILY (three_white_soldiers / three_black_crows_short - IN CAMPAIGN)** - F.1, F.2, F.3, F.4, F.5, F.6
 - **G. FAMILY EXAMPLES OF CLASS-LEVEL COMMANDS AND ARTIFACTS** - G.1, G.2, G.3, G.4, G.5, G.6, G.7, G.8
 - **H. SHARED LAUNCH MEASUREMENTS (both families)** - H.1, H.2
-- **I. BOLLINGER FAMILY (bollinger_lower - IN CAMPAIGN)** - I.1, I.2, I.3, I.4, I.5
+- **I. BOLLINGER FAMILY (bollinger_lower - IN CAMPAIGN)** - I.1, I.2, I.3, I.4, I.5, I.6, I.7, I.8, I.9, I.10, I.11, I.12
+- **J. PAIRS FAMILY (pairs_mean_reversion_long / pairs_mean_reversion_short - ADMITTED 2026-10-13)** - J.1, J.2
 
 ---
 
@@ -2334,3 +2335,48 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   `reconfirmed` entry with these words. No open ticket is campaign work on bollinger_lower: of 14
   non-terminal tickets, 2 name it, and both are programme-level (S6-B2178c, the re-raise question;
   S6-B3139bx, the chance test inside every read).
+
+## J. PAIRS FAMILY (pairs_mean_reversion_long / pairs_mean_reversion_short - ADMITTED 2026-10-13)
+
+### J.1 The campaign in one place (the tickets carry the figures)
+
+- **Step 1, route A** - five configs over the Engle-Granger significance and the z-score window:
+  S6-B3140 (5 of 5 landed and reported).
+- **Step 2** - the production config (S6-B3140) and route-A config 2 (S6-B3154, chain b3154; its one
+  holdout read failed pooled_sharpe at 5 of 6 gates). The step-2 spec sizing that launch needed by hand
+  is now generated (S6-B3154a).
+- **Step 3 BREADTH, items 1-9 on both Step-2 cubes** - S6-B3145: the in-sample grid and its
+  multiplicity price (items 5-6), the ONE holdout read, DISCLOSED-RE-READ (item 7), the control
+  comparison on pead_long_high_yoy_growth_only (item 8), the read's own chance price
+  (scripts/breadth_holdout_null.py, 300 shuffles per subject), and the admission
+  proposal (item 9).
+- **Open on the family:** S6-B3155 (the pairs signal mixes two OHLCV caches; the admitted cell holds no
+  CVNA fire), S6-B3140b (Table D cannot see the free-levels factorial).
+
+### J.2 Step 4 - ADMITTED by owner ruling (S6-B3145, 2026-10-13)
+
+- **Owner, verbatim:** *"Recommended: A Approved. Fable mode. Add to phase 1B strategy roster"* - option A of the item-9 proposal.
+- **The line:** production config (PAIRS_EG_SIGNIFICANCE 0.05, PAIRS_Z_WINDOW 60) + breadth
+  `cot_copper_commercials_net_pct >= -0.14 at multi_tier_partial`, the section 6.3 pick (the highest holdout Sharpe of the all-six qualifiers on both
+  subjects). NET basis: holdout Sharpe 4.024, ci_lo 1.878, psr 1, PF
+  5.194, sortino 12.541, n 39 of 1890 full period; in-sample Sharpe
+  -0.22. Rendered in PHASE_1B_ROSTER.md from the read artifact; deployable total 33
+  distinct.
+- **Labels:** GRID-SELECTED-OWNER-RULED, DISCLOSED-RE-READ, IS-HOLDOUT-INVERSION, CONTROL-THIN (the
+  control holds 5 holdout trades under the filter, so attribution to the pairs signal is
+  unmeasured), ONE-EPISODE-HOLDOUT.
+- **ONE-EPISODE-HOLDOUT, measured after the ruling and before the row landed:** all 39 holdout trades
+  entered 2025-05-05..2025-05-08 - 4 entry days, 39 tickers - one
+  episode at the start of the holdout. Option B (route-A config 2 + atr_pct >= 4.365 at
+  ma_exit_ema9) has 166 holdout trades over 101 entry days across
+  13 months; a swap was put to the owner (S6-B3145a).
+- **Point in time:** both Step-2 cubes ran on code containing the COT release-date fix
+  265c12ccb (S6-B3139as); 0 of 39 holdout entries fall in a
+  deliberately wide 2025 shutdown-backlog window.
+- **Mirror:** `pairs_mean_reversion_short` REGISTERED and counted; the copper COT filter is not
+  mechanically mirrored. It is a roster member and stays closed at launch until the owner extends the
+  S6-B2420 Step-2 override to it (S6-B3145b).
+- **Table A charter:** archived to `archive/2026-10-13-pairs-admission-table-a/` when the row left
+  the TIGHTEN lane on admission (S6-B3167; the B3116 precedent for three_white_soldiers).
+- **Evidence:** output_audit/b3145_pairs_admission_checks.json, output_audit/b3145_pairs_prod_holdout_null.json,
+  output_audit/b3145_pairs_breadth_step3_read_checks.json. Admission is not deployment.

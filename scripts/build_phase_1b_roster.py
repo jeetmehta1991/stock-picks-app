@@ -324,6 +324,8 @@ def rederived_net(adm: dict, root=None):
     nr = adm.get("net_rescore") or {}
     if nr.get("status") == "RESCORED" and nr.get("net"):
         return nr["net"], "rescored", nr.get("artifact") or "net_rescore"
+    if nr.get("status") == "ALREADY-NET" and nr.get("net_source"):
+        return _already_net(adm, nr["net_source"], root)
     src = (adm.get("net_near_miss") or {}).get("psr_source")
     if not src or src == "net_rescore":
         return None, None, "no current-code net re-score recorded"
@@ -334,13 +336,9 @@ def rederived_net(adm: dict, root=None):
     # S6-B3136 (B3139, council): a figure is current only while the metric
     # code that computed it is - a stamp that is absent or differs from
     # today's fingerprint reads 'pending', never the stale figure
-    import roster_core as _rc
-    stamp = ((doc.get("metric_code") or {}).get("sha256") or "")
-    now = _rc.metric_code_fingerprint()["sha256"]
-    if stamp != now:
-        return None, None, (f"{src}: metric code "
-                            f"{'unstamped' if not stamp else stamp[:12]} != current "
-                            f"{now[:12]} - re-derive before quoting")
+    why = _stale_stamp(doc, src)
+    if why:
+        return None, None, why
     rows = doc.get("rows") or []
     row = next((x for x in rows if x.get("line") == adm["strategy"]), None)
     if row is None:
@@ -352,6 +350,47 @@ def rederived_net(adm: dict, root=None):
     if row.get("identity_reproduced") and fresh:
         return fresh, "drift", f"{src} (stored drifted: {'; '.join(map(str, row.get('reason') or []))})"
     return None, None, f"{src}: NOT-REPRODUCED ({row.get('reason')})"
+
+
+def _stale_stamp(doc: dict, src: str):
+    """S6-B3136: a figure is current only while the metric code that computed
+    it is. None when doc's metric-code stamp equals today's fingerprint, else
+    the reason - ONE definition for every re-derivation reader here (the
+    near-miss path and the S6-B3145 ALREADY-NET path)."""
+    import roster_core as _rc
+    stamp = ((doc.get("metric_code") or {}).get("sha256") or "")
+    now = _rc.metric_code_fingerprint()["sha256"]
+    if stamp != now:
+        return (f"{src}: metric code "
+                f"{'unstamped' if not stamp else stamp[:12]} != current "
+                f"{now[:12]} - re-derive before quoting")
+    return None
+
+
+def _already_net(adm: dict, src: str, root: Path):
+    """S6-B3145: an admission graded NATIVELY on the roster's net basis by its
+    own breadth read (breadth_step1_grid.build_frame, basis net, calls
+    roster_core.net_pnl - one definition) needs no re-score: the admitted row
+    of that read IS its net figure. Current only while the read's metric-code
+    stamp equals today's fingerprint (S6-B3136); the row is found by the same
+    exact combination + exit match the renderer uses."""
+    p = root / src
+    if not p.exists():
+        return None, None, f"{src} not found"
+    doc = json.loads(p.read_text(encoding="utf-8"))
+    why = _stale_stamp(doc, src)
+    if why:
+        return None, None, why
+    want = adm.get("combination") or {}
+    hit = [r for r in (doc.get("qualifiers") or [])
+           if all(r.get(k) == v for k, v in want.items()) and r.get("exit") == adm.get("exit")]
+    if len(hit) != 1:
+        return None, None, f"{src}: {len(hit)} rows match the admitted combination + exit"
+    r = hit[0]
+    return ({"sharpe": _admission_ho_sharpe(r), "ci_lo": r.get("ci_lo"), "psr": r.get("psr"),
+             "profit_factor": r.get("profit_factor"), "sortino": r.get("sortino"),
+             "n": r.get("holdout_n"), "all_live_gates": r.get("all_live_gates") is True},
+            "already-net", src)
 
 
 def _psr_cell(adm: dict, r: dict, fmt) -> str:

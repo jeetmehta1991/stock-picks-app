@@ -1,0 +1,188 @@
+{
+ "_doc": "S6-B3145 Step 4: write output_audit/b3145_pairs_admission_checks.json - the\nmeasured facts the owner-ruled admission (option A) rides on, persisted so the\nadmission note, the campaign log and the banner quote an artifact (L832), never\ntool output. Read-only on every input; deterministic; --dry-run prints only.\n\nEvery figure is computed here with the READ's own frame and grade\n(breadth_step1_grid.build_frame + breadth_step2_read.grade_holdout - the\nread_checks.py instrument), the null and checks artifacts, git, and the\nroster builder's own mirror classifier.",
+ "ticket": "S6-B3145",
+ "ruling_verbatim": "Recommended: A Approved. Fable mode. Add to phase 1B strategy roster",
+ "ruled": "2026-10-13",
+ "admitted_option_A": {
+  "cube": "output_pairs_mrl_step2_production",
+  "read_artifact": "output_audit/b3145_pairs_prod_breadth_step3_read.json",
+  "combination": {
+   "axis": "cot_copper_commercials_net_pct",
+   "op": "ge",
+   "level": -0.14
+  },
+  "exit": "multi_tier_partial",
+  "reproduced": {
+   "sharpe": 4.024,
+   "n": 39,
+   "ci_lo": 1.878,
+   "psr": 1.0,
+   "profit_factor": 5.194,
+   "sortino": 12.541,
+   "all_live_gates": true
+  },
+  "is_sharpe": -0.22,
+  "full_n": 1890,
+  "holdout_time": {
+   "first_entry": "2025-05-05",
+   "last_entry": "2025-05-08",
+   "distinct_entry_days": 4,
+   "distinct_tickers": 39,
+   "by_month": {
+    "2025-05": 39
+   }
+  },
+  "in_sample_time": {
+   "n": 1851,
+   "by_quarter": {
+    "2022Q2": 14,
+    "2022Q3": 441,
+    "2022Q4": 217,
+    "2023Q2": 89,
+    "2023Q3": 117,
+    "2023Q4": 321,
+    "2024Q1": 119,
+    "2024Q3": 34,
+    "2024Q4": 1,
+    "2025Q1": 71,
+    "2025Q2": 427
+   }
+  },
+  "shutdown_window": {
+   "window": [
+    "2025-10-01",
+    "2026-01-31"
+   ],
+   "bounds_basis": "UNVERIFIED general-knowledge bounds, deliberately wide: the true 2025 shutdown-backlog COT release dates are not in the repo",
+   "holdout_entries_inside": 0,
+   "all_six_without_them": true
+  },
+  "pit_cot_fix_in_frozen_code": {
+   "fix": "265c12ccb",
+   "frozen_sha": "cb0a06bb563a3ede1b77390e47db46246d36dbd9",
+   "contains_fix": true
+  },
+  "metric_code": {
+   "read_stamp": "915bb9dec919d5f14fcdf0a176b787153472a50725015d64efc958f214b21aa4",
+   "current": "915bb9dec919d5f14fcdf0a176b787153472a50725015d64efc958f214b21aa4"
+  }
+ },
+ "option_B_for_comparison": {
+  "cube": "output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60",
+  "read_artifact": "output_audit/b3145_pairs_cfg2_breadth_step3_read.json",
+  "combination": {
+   "axis": "atr_pct",
+   "op": "ge",
+   "level": 4.365
+  },
+  "exit": "ma_exit_ema9",
+  "reproduced": {
+   "sharpe": 1.6,
+   "n": 166,
+   "ci_lo": 0.098,
+   "psr": 0.9989,
+   "profit_factor": 2.116,
+   "sortino": 5.56,
+   "all_live_gates": true
+  },
+  "is_sharpe": 0.621,
+  "full_n": 687,
+  "holdout_time": {
+   "first_entry": "2025-05-07",
+   "last_entry": "2026-05-04",
+   "distinct_entry_days": 101,
+   "distinct_tickers": 82,
+   "by_month": {
+    "2025-05": 15,
+    "2025-06": 3,
+    "2025-07": 14,
+    "2025-08": 6,
+    "2025-09": 3,
+    "2025-10": 9,
+    "2025-11": 17,
+    "2025-12": 2,
+    "2026-01": 15,
+    "2026-02": 46,
+    "2026-03": 16,
+    "2026-04": 17,
+    "2026-05": 3
+   }
+  },
+  "in_sample_time": {
+   "n": 521,
+   "by_quarter": {
+    "2022Q2": 54,
+    "2022Q3": 32,
+    "2022Q4": 36,
+    "2023Q1": 55,
+    "2023Q2": 29,
+    "2023Q3": 11,
+    "2023Q4": 30,
+    "2024Q1": 16,
+    "2024Q2": 9,
+    "2024Q3": 41,
+    "2024Q4": 19,
+    "2025Q1": 49,
+    "2025Q2": 140
+   }
+  },
+  "shutdown_window": {
+   "window": [
+    "2025-10-01",
+    "2026-01-31"
+   ],
+   "bounds_basis": "UNVERIFIED general-knowledge bounds, deliberately wide: the true 2025 shutdown-backlog COT release dates are not in the repo",
+   "holdout_entries_inside": 43,
+   "all_six_without_them": true
+  },
+  "pit_cot_fix_in_frozen_code": {
+   "fix": "265c12ccb",
+   "frozen_sha": "7b6c876d5668e6fb715775fa849533611944462a",
+   "contains_fix": true
+  },
+  "metric_code": {
+   "read_stamp": "915bb9dec919d5f14fcdf0a176b787153472a50725015d64efc958f214b21aa4",
+   "current": "915bb9dec919d5f14fcdf0a176b787153472a50725015d64efc958f214b21aa4"
+  }
+ },
+ "chance_price_prod": {
+  "null_artifact": "output_audit/b3145_pairs_prod_holdout_null.json",
+  "n_perms": 300,
+  "seed": 20261007,
+  "family_best_ci_lo": {
+   "observed": 1.878,
+   "at": [
+    "cot_copper_commercials_net_pct",
+    "ge",
+    -0.14,
+    "multi_tier_partial"
+   ],
+   "null_median": 0.5455000000000001,
+   "null_p95": 1.00825,
+   "p_value": 0.009966777408637873
+  },
+  "qualifiers": {
+   "observed": 207,
+   "median": 12.5,
+   "p95": 29.0,
+   "max": 70,
+   "p_value": 0.0033222591362126247
+  },
+  "null_label": "SYNTHETIC null (rng shuffles of the read's own data) - prices chance, never performance; observed figures are measured"
+ },
+ "control": {
+  "class": "CONTROL-THIN",
+  "control_filtered_ho_n": 5,
+  "subject_lift": 6.205,
+  "control_lift": null,
+  "control_strategy": "pead_long_high_yoy_growth_only"
+ },
+ "cvna": {
+  "cvna_in_holdout_rows": false,
+  "all_six_without_cvna": true
+ },
+ "mirror": {
+  "status": "REGISTERED",
+  "name": "pairs_mean_reversion_short"
+ }
+}

@@ -25945,6 +25945,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L883 (B3139): the cause gate keys on hedged phrases only"),
         ("HOLD THE DATA ENVIRONMENT FIXED FIRST",
          "L889 (B3139): a cross-tree comparison measured the data gap"),
+        # B3139q-r69e: the L913 clause amended into the L801 row - an
+        # amendment needs its own fragment (B2591).
+        ("THE GREP IS A COMPLETENESS SEARCH - COUNT FIRST, NEVER HEAD IT",
+         "L913 (B3139q-r69e): the admission's name grep was cut at head -20 "
+         "and the fixture past the cut turned the gate red"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26163,7 +26168,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 324 -> 325 at B3139q-r66 (the L907 queue-row-is-a-test-input fragment; same-call with its tripwire row per B2130).
     # 327 -> 328 at B3139q-r68w (the L912 re-score-takes-its-subject-from-the-artifact
     # fragment; same-call with its tripwire row per B2130).
-    assert len(gutted) == 328, gutted
+    # 328 -> 329 at B3139q-r69e (the L913 completeness-sweep clause in the
+    # L801 row).
+    assert len(gutted) == 329, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -30520,7 +30527,10 @@ def test_b2417_admission_mirror_is_counted_in_the_rollup():
     # B3115 (owner ruling 2026-09-26): three_white_soldiers admitted at
     # the c14 breadth line; its declared mirror joins the roll-up -> 3.
     assert "three_black_crows_short" in adm_lines[0], adm_lines[0]
-    assert "(3)" in adm_lines[0], adm_lines[0]
+    # S6-B3145 (owner ruling 2026-10-13): pairs_mean_reversion_long admitted;
+    # its registered mirror pairs_mean_reversion_short is counted here too.
+    assert "pairs_mean_reversion_short" in adm_lines[0], adm_lines[0]
+    assert "(4)" in adm_lines[0], adm_lines[0]
 
     tot = [l for l in doc.splitlines() if l.startswith("**Deployable total:")]
     assert len(tot) == 1, tot
@@ -30534,7 +30544,9 @@ def test_b2417_admission_mirror_is_counted_in_the_rollup():
     # B2685: 28 -> 29 (xs_low_beta_with_smart_money_long admitted, S6-B2674a).
     # B3115: three_white_soldiers c14 breadth admission + its declared
     # mirror three_black_crows_short (owner 2026-09-26) -> 31.
-    assert "= 31 distinct strategies" in tot[0], tot[0]
+    # S6-B3145 (owner ruling 2026-10-13): pairs_mean_reversion_long admission
+    # + its registered mirror pairs_mean_reversion_short -> 33.
+    assert "= 33 distinct strategies" in tot[0], tot[0]
 
     # reachability (B2208): the generator derives the roll-up from the
     # admissions record, not from a hand count
@@ -38748,8 +38760,10 @@ def test_b2825_status_groups_are_mutually_exclusive():
     assert by["DONE-OWNER-CLOSED"] == _closed
     assert _closed & _mirrors <= by["DONE-OWNER-CLOSED"]
     assert by["IN-ROSTER-MIRROR"] == _mirrors - _closed
-    assert st["IN-ROSTER-FUNNEL"] == 7 and st["IN-ROSTER-MIRROR"] == 7
-    assert d["phase1b_roster"]["total"] == 31
+    # S6-B3145 (owner 2026-10-13): + pairs_mean_reversion_short (an in-roster
+    # mirror) and + pairs_mean_reversion_long -> 8 mirrors, 33 in total
+    assert st["IN-ROSTER-FUNNEL"] == 7 and st["IN-ROSTER-MIRROR"] == 8
+    assert d["phase1b_roster"]["total"] == 33
     ro = sorted(r["strategy"] for r in rows if r["reopen_candidate"])
     assert ro == ["institutional_insider_combo_long",
                   "institutional_volume_confirmation_long"], ro
@@ -38963,7 +38977,11 @@ def test_b2836_table_a_directory_is_complete_and_honest():
                               "every TIGHTEN row has a Table A file")
     assert files - tighten <= owner_closed, (
         files - tighten - owner_closed,
-        "a non-TIGHTEN Table A file is allowed only for an owner-closed row")
+        "a non-TIGHTEN Table A file is allowed only for an owner-closed row; "
+        "an ADMITTED row's charter leaves the lane for "
+        "archive/<date>-<subject>-admission-table-a/, with any live SPECS "
+        "evidence citation and the README count (B3116 three_white_soldiers, "
+        "S6-B3145 pairs_mean_reversion_long) - never widen this exemption")
     for p in d.glob("*.md"):
         t = p.read_text(encoding="utf-8")
         assert "Build (L803/#309)" in t, p.name
@@ -50133,6 +50151,15 @@ def test_b3137_status_precedence_puts_owner_closure_above_the_mirror_lane():
     assert _b3137_main_calls(cut2)[0].count("load_owner_closures") == 0
 
 
+# S6-B3145 (owner ruling 2026-10-13, "Recommended: A Approved. ... Add to
+# phase 1B strategy roster"): members that joined the roster AFTER the
+# S6-B2420 override register and the S6-B3135 freeze. Named, never a wildcard:
+# the mirror stays CLOSED at launch until the owner extends S6-B2420 to it
+# (S6-B3145b), and the frozen file is unchanged (changing it is an owner ruling).
+_B3145_AWAITING_OVERRIDE = {"pairs_mean_reversion_short"}
+_B3145_POST_FREEZE = {"pairs_mean_reversion_long", "pairs_mean_reversion_short"}
+
+
 def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path):
     """S6-B3135a: every record carries the owner's words and date, and the
     register fails CLOSED (L642) - a missing file, unparseable JSON, a record
@@ -50153,7 +50180,7 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
         "4 close and mark it as done")
     mem = pm.members(_REPO_B3135)
     mirrors = {n for n in mem if pm.roster_status(n, mem) == "IN-ROSTER-MIRROR"}
-    assert len(mirrors) == 9
+    assert len(mirrors) == 10      # 9 + the S6-B3145 mirror (owner 2026-10-13)
     assert set(reg) - {"bollinger_lower"} <= mirrors and "bollinger_lower" not in mem
     pop = bss.closed_populations(_REPO_B3135)
     got = {n for n in mirrors if bss.status_for(
@@ -50165,7 +50192,7 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
                    "poc_magnet_short", "totm_short",
                    "xs_combined_momentum_high_ivol_short",
                    "xs_momentum_bottom_decile_short",
-                   "pead_short_negative_yoy_growth"}, got
+                   "pead_short_negative_yoy_growth"} | _B3145_AWAITING_OVERRIDE, got
     with pytest.raises(FileNotFoundError):
         bss.load_owner_closures(tmp_path)
     (tmp_path / "output_audit").mkdir()
@@ -50186,7 +50213,8 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
 
 def test_b3137_the_whole_phase1b_roster_is_closed_at_launch(monkeypatch):
     """S6-B3135 (owner ruling 2026-09-29, '2 yes. No more retesting'): the
-    launch gate's CLOSED set is every one of the 31 roster members - read
+    launch gate's CLOSED set is every roster member (31 at S6-B3135; 33 since
+    S6-B3145, owner 2026-10-13) - read
     through the one membership reader - not the admissions file plus one
     roster line (18 of 31 before this batch). must-FIRE on each of the 13
     members the old gate let through; must-QUIET on a non-member (the live
@@ -50198,7 +50226,8 @@ def test_b3137_the_whole_phase1b_roster_is_closed_at_launch(monkeypatch):
     adm, why = pvt.phase1b_admitted(root)
     assert not why, why
     mem = pm.members(root)
-    assert len(mem) == 31 and set(mem) <= adm, sorted(set(mem) - adm)
+    assert len(mem) == 33 and set(mem) <= adm, sorted(set(mem) - adm)
+    assert _B3145_POST_FREEZE <= set(mem)
     old_hole = {"52w_high_breakout_pullback_long",
                 "52w_low_breakdown_pullback_short", "mfi_overbought_short",
                 "mfi_oversold_with_smart_money_long", "poc_magnet_long",
@@ -50224,7 +50253,9 @@ def test_b3137_the_whole_phase1b_roster_is_closed_at_launch(monkeypatch):
     monkeypatch.setattr(pm, "frozen_closed_set", lambda *a, **k: set())
     adm0, why0 = pvt.phase1b_admitted(root)
     assert not why0 and old_hole.isdisjoint(adm0), sorted(old_hole & adm0)
-    assert len(adm0) == 18, len(adm0)
+    # 18 before S6-B3145; the admissions file now carries the pairs long and
+    # the roster line its mirror (owner 2026-10-13) - named, never a wildcard
+    assert len(adm0) == 20 and _B3145_POST_FREEZE <= adm0, len(adm0)
     # fail CLOSED: an unreadable membership refuses everything, member or not
     def _boom(*a, **k):
         raise FileNotFoundError("b1453 sidecar missing")
@@ -50252,7 +50283,15 @@ def test_b3137_s6_b2420_overrides_open_exactly_the_seven_short_legs():
     mem = pm.members(root)
     mirrors = {n for n in mem if pm.roster_status(n, mem) == "IN-ROSTER-MIRROR"}
     closed = set(bss.load_owner_closures(root))
-    assert set(ov) == mirrors - closed, sorted(set(ov) ^ (mirrors - closed))
+    # the S6-B3145 mirror was admitted after S6-B2420 and is NOT on its
+    # register: it stays CLOSED at launch until the owner extends it (S6-B3145b)
+    assert _B3145_AWAITING_OVERRIDE <= mirrors - closed
+    assert set(ov) == mirrors - closed - _B3145_AWAITING_OVERRIDE, sorted(
+        set(ov) ^ (mirrors - closed - _B3145_AWAITING_OVERRIDE))
+    for s in sorted(_B3145_AWAITING_OVERRIDE):
+        r = pvt._admitted_retest_refusals(
+            {"owner_override_retest_admitted": ov}, root, [s])
+        assert len(r) == 1 and "ALREADY ADMITTED" in r[0], (s, r)
     assert len(ov) == 7
     for s, words in ov.items():
         assert "Approve all other recs" in words and "3 yes approve" in words
@@ -50343,7 +50382,8 @@ def test_b3137_rederived_net_never_shows_a_stale_stored_psr(tmp_path, monkeypatc
 
 def test_b3137_after_costs_headline_on_the_real_roster(tmp_path):
     """S6-B3136's headline, derived: 7 funnel cells (net basis by
-    construction) + 15 admissions = 22 long lines; 19 clear all six gates on
+    construction) + 16 admissions = 23 long lines (S6-B3145 added the pairs
+    line, 2026-10-13); 20 clear all six gates on
     current code; three_white_soldiers and pead_with_smart_money_long miss;
     smc_breaker_block_long misses once its re-derivation exists and is named
     undetermined until then - never counted either way."""
@@ -50354,7 +50394,8 @@ def test_b3137_after_costs_headline_on_the_real_roster(tmp_path):
     cells = json.loads((root / "output_audit" / "b1453_phase_1b_roster.json")
                        .read_text(encoding="utf-8"))["roster"]
     res = b.net_clearance(adms, cells)
-    assert res["total"] == 22 and len(res["clear"]) == 19, res
+    assert res["total"] == 23 and len(res["clear"]) == 20, res
+    assert "pairs_mean_reversion_long" in res["clear"], res
     assert {"three_white_soldiers", "pead_with_smart_money_long"} <= set(res["miss"])
     assert "smc_breaker_block_long" in set(res["miss"]) | set(res["undetermined"])
     for a in adms:
@@ -50362,9 +50403,9 @@ def test_b3137_after_costs_headline_on_the_real_roster(tmp_path):
             a["net_near_miss"] = dict(a["net_near_miss"],
                                       psr_source=str(_b3137_drift_doc(tmp_path)))
     res = b.net_clearance(adms, cells)
-    assert (len(res["clear"]), len(res["miss"]), res["undetermined"]) == (19, 3, [])
+    assert (len(res["clear"]), len(res["miss"]), res["undetermined"]) == (20, 3, [])
     line = b.net_headline(res)
-    assert "19 of 22 long lines clear all six live gates" in line
+    assert "20 of 23 long lines clear all six live gates" in line
     assert all(f"`{m}`" in line for m in _B3137_NEAR)
 
 
@@ -50398,11 +50439,19 @@ def test_b3137_the_rendered_table_shows_the_rederived_psr(tmp_path):
     raw = {a["strategy"]: ((a.get("net_rescore") or {}).get("raw") or {}).get("psr")
            for a in src["admissions"]}
     rows = [l for l in out if l.startswith("| `")]
-    assert len(rows) == len(src["admissions"]) == 15, len(rows)
+    assert len(rows) == len(src["admissions"]) == 16, len(rows)   # + S6-B3145
+    by = {x["strategy"]: x for x in src["admissions"]}
     for l in rows:
         name, cell = l.split("`")[1], l.split("|")[11].strip()
+        nr = by[name].get("net_rescore") or {}
         if name == "smc_breaker_block_long":
             assert cell == "0.94" + chr(0x2020), cell
+        elif nr.get("status") == "ALREADY-NET" and nr.get("net_source"):
+            # S6-B3145: graded natively on the net basis - its fresh
+            # current-code figure is its own read's row (rederived_net)
+            fresh, kind, _ = b.rederived_net(by[name])
+            assert kind == "already-net" and cell == f"{fresh['psr']:.2f}", (
+                name, cell, fresh)
         else:
             assert cell == f"{raw[name]:.2f}", (name, cell, raw[name])
 
@@ -50432,14 +50481,15 @@ def test_b3139_headline_moves_with_the_smc_figure_not_a_literal(tmp_path):
     """S6-B3136 council: the literal '19 of 22' pin passes whether smc is a
     miss or undetermined, so these MUTATION pins make the headline prove it
     is derived: a re-derivation at psr 0.96 clearing all six gates renders
-    20 of 22; the same figure under a STALE metric-code stamp, an unstamped
-    artifact or an absent one renders smc 'Not yet re-derived' (19 of 22,
+    21 of 23 (20 of 22 before the S6-B3145 pairs line, 2026-10-13); the same
+    figure under a STALE metric-code stamp, an unstamped artifact or an
+    absent one renders smc 'Not yet re-derived' (20 of 23,
     one undetermined) - never the figure."""
     b, adms, cells = _b3139_roster_inputs()
     ok = _b3139_with_smc_source(adms, _b3137_drift_doc(tmp_path, psr=0.96, clears=True))
     res = b.net_clearance(ok, cells)
-    assert (len(res["clear"]), res["total"], res["undetermined"]) == (20, 22, []), res
-    assert "20 of 22 long lines clear all six live gates" in b.net_headline(res)
+    assert (len(res["clear"]), res["total"], res["undetermined"]) == (21, 23, []), res
+    assert "21 of 23 long lines clear all six live gates" in b.net_headline(res)
     for stamp in ("0" * 64, None):
         (tmp_path / str(stamp)[:1]).mkdir()
         stale = _b3139_with_smc_source(
@@ -50447,7 +50497,7 @@ def test_b3139_headline_moves_with_the_smc_figure_not_a_literal(tmp_path):
                                    stamp=stamp))
         res = b.net_clearance(stale, cells)
         assert res["undetermined"] == ["smc_breaker_block_long"], (stamp, res)
-        assert len(res["clear"]) == 19, (stamp, res)
+        assert len(res["clear"]) == 20, (stamp, res)
         line = b.net_headline(res)
         assert "Not yet re-derived (1): `smc_breaker_block_long`" in line, line
         net, kind, src = b.rederived_net(
@@ -50455,7 +50505,7 @@ def test_b3139_headline_moves_with_the_smc_figure_not_a_literal(tmp_path):
         assert net is None and "re-derive before quoting" in src, src
     absent = _b3139_with_smc_source(adms, tmp_path / "absent.json")
     res = b.net_clearance(absent, cells)
-    assert res["undetermined"] == ["smc_breaker_block_long"] and len(res["clear"]) == 19
+    assert res["undetermined"] == ["smc_breaker_block_long"] and len(res["clear"]) == 20
 
 
 def test_b3139_psr_cell_reads_pending_under_a_stale_metric_code_stamp(tmp_path):
@@ -50754,13 +50804,17 @@ def test_b3139_launch_gate_parser_reads_the_same_names_from_the_new_render(tmp_p
 # ---------------------------------------------------------------- B3139 S6-B3135 council
 def test_b3139_the_frozen_closed_set_is_the_rulings_31_names():
     """S6-B3135 council: the tracked frozen file carries the owner's words and
-    exactly the 31 names the derived membership holds today, and nothing has
+    exactly the 31 names the derived membership held at the freeze (each later
+    admission is named beside it, never a wildcard), and nothing has
     been removed since the freeze. Changing the file is an owner ruling."""
     import phase1b_membership as pm
     doc = json.loads((_REPO_B3135 / pm.FROZEN).read_text(encoding="utf-8"))
     assert doc["ruling_verbatim"] == "2 yes. No more retesting" and doc["ruled"] == "2026-09-29"
     assert doc["n"] == len(doc["names"]) == 31
-    assert set(doc["names"]) == pm.frozen_closed_set() == set(pm.members())
+    # the freeze guards REMOVAL; an admission ruled after it GROWS the derived
+    # membership, and every such name is named with its ruling (S6-B3145)
+    assert set(doc["names"]) == pm.frozen_closed_set() <= set(pm.members())
+    assert set(pm.members()) - pm.frozen_closed_set() == _B3145_POST_FREEZE
     assert pm.removed_since_freeze() == []
 
 
@@ -53534,7 +53588,8 @@ def test_b3140c_c16_reruns_queue_readers_when_the_queue_moved_after_the_gate(tmp
     assert src.count(call) == 1 and src.index(call) > src.index("def main(")
 
 
-def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path):
+def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path, monkeypatch,
+                                                               capsys):
     """S6-B3141a (owner route A 2026-10-10): the pairs producer knobs P5
     (Engle-Granger significance) and P6 (z-window). Defaults reproduce
     production exactly; each knob CHANGES the producer output on real data
@@ -53622,8 +53677,34 @@ def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path):
                 cwd=root, capture_output=True, text=True,
                 env={**_os.environ, "PYTHONPATH": _os.pathsep.join(
                     [str(root), str(root / "scripts")])})
-    assert r.returncode == 0, r.stdout + r.stderr
-    assert "t_b3141a_p6_40_p5_0p01_spec.json" in r.stdout
+    # S6-B3145 (owner ruling 2026-10-13): the pairs long is ADMITTED, so the
+    # LIVE draft is refused by the consumer's closed-set gate. make_spec's own
+    # band checks run first and accepted P6=40 + P5=0.01 - an off-band level
+    # is refused earlier, with "outside", below.
+    assert r.returncode == 2, r.stdout + r.stderr
+    assert "the consumer's own gate refuses the draft" in r.stdout, r.stdout
+    assert "ALREADY ADMITTED" in r.stdout, r.stdout
+    # L801 / L913: this fixture named its subject for a property the
+    # admission changed. The plumbing arm runs in the world BEFORE the
+    # admission - the one fact removed is the admission itself and every
+    # other gate stays live, so a clean draft here also proves the
+    # closed-set refusal above was the only one.
+    import make_spec as _ms
+    import producer_variant_table as _pvt
+    _live_admitted = _pvt.phase1b_admitted
+
+    def _before_admission(root_arg=None):
+        names, why = _live_admitted(root_arg)
+        assert fam in names, "positive control: the live set holds the admission"
+        return frozenset(names) - {fam}, why
+    monkeypatch.setattr(_pvt, "phase1b_admitted", _before_admission)
+    monkeypatch.setattr(_sys, "argv", [
+        "make_spec.py", "--strategy", fam, "--param", "P6", "--levels", "40",
+        "--with", "P5=0.01", "--wave-prefix", "t_b3141a", "--dry"])
+    capsys.readouterr()
+    assert _ms.main() == 0
+    out = capsys.readouterr().out
+    assert "t_b3141a_p6_40_p5_0p01_spec.json" in out, out
     r = _sp.run([_sys.executable, str(root / "scripts" / "make_spec.py"),
                  "--strategy", fam, "--param", "P6", "--levels", "40",
                  "--with", "P5=0.2", "--wave-prefix", "t_b3141a", "--dry"],
@@ -54669,3 +54750,166 @@ def test_b3163_power_state_is_disclosed_at_gate_ends_and_in_the_header():
     assert "; power=" in bws.banner()
     st = bws.build()
     assert st["power"] in ("ac", "unknown") or st["power"].startswith("battery "), st
+
+
+
+def test_b3145_already_net_admission_reads_its_own_read(tmp_path):
+    """S6-B3145: an admission graded NATIVELY on the roster's net basis by its
+    own breadth read (net_rescore ALREADY-NET + net_source) reads its net
+    figure from that read's admitted row - current only while the read's
+    metric-code stamp equals today's fingerprint, found by the renderer's exact
+    combination + exit match. Before this, rederived_net accepted RESCORED only,
+    so such a line printed as 'not yet re-derived' in the roster's after-costs
+    headline. An ALREADY-NET block WITHOUT net_source keeps the old path."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import build_phase_1b_roster as b
+    import roster_core as rc
+    now = rc.metric_code_fingerprint()["sha256"]
+    row = {"axis": "x_axis", "op": "ge", "level": 0.5, "exit": "time_stop_10d",
+           "holdout_sharpe": 1.7, "ci_lo": 0.2, "psr": 0.99, "profit_factor": 2.0,
+           "sortino": 2.5, "holdout_n": 40, "all_live_gates": True}
+    other = dict(row, level=0.6, holdout_sharpe=9.9)
+    (tmp_path / "read.json").write_text(_j.dumps(
+        {"metric_code": {"sha256": now}, "qualifiers": [row, other]}), encoding="utf-8")
+    adm = {"strategy": "s", "direction": "long", "exit": "time_stop_10d",
+           "combination": {"axis": "x_axis", "op": "ge", "level": 0.5},
+           "net_rescore": {"status": "ALREADY-NET", "net_source": "read.json"}}
+    net, kind, src = b.rederived_net(adm, root=tmp_path)
+    assert kind == "already-net" and src == "read.json", (kind, src)
+    assert net["sharpe"] == 1.7 and net["n"] == 40 and net["all_live_gates"] is True, net
+    # a row that FAILED its gates reads as failed, never as passed
+    (tmp_path / "read.json").write_text(_j.dumps(
+        {"metric_code": {"sha256": now},
+         "qualifiers": [dict(row, all_live_gates=False)]}), encoding="utf-8")
+    net, kind, _ = b.rederived_net(adm, root=tmp_path)
+    assert kind == "already-net" and net["all_live_gates"] is False, net
+    # a stale stamp reads pending, never the stored figure
+    (tmp_path / "read.json").write_text(_j.dumps(
+        {"metric_code": {"sha256": "0" * 64}, "qualifiers": [row]}), encoding="utf-8")
+    net, kind, src = b.rederived_net(adm, root=tmp_path)
+    assert net is None and "re-derive before quoting" in src, src
+    # an ambiguous row reads nothing
+    (tmp_path / "read.json").write_text(_j.dumps(
+        {"metric_code": {"sha256": now}, "qualifiers": [row, dict(row)]}), encoding="utf-8")
+    assert b.rederived_net(adm, root=tmp_path)[0] is None
+    # ALREADY-NET with no net_source keeps the old path
+    bare = dict(adm, net_rescore={"status": "ALREADY-NET"})
+    assert b.rederived_net(bare, root=tmp_path) == (
+        None, None, "no current-code net re-score recorded")
+    # LIVE: the admitted pairs line reads its own read and clears after costs
+    doc = _j.loads((root / "output_audit" / "phase_1b_step2_admissions.json")
+                   .read_text(encoding="utf-8"))
+    pairs = [x for x in doc["admissions"] if x["strategy"] == "pairs_mean_reversion_long"]
+    assert len(pairs) == 1, len(pairs)
+    net, kind, _ = b.rederived_net(pairs[0])
+    assert kind == "already-net" and net["all_live_gates"] is True, (kind, net)
+    res = b.net_clearance(doc["admissions"], [])
+    assert "pairs_mean_reversion_long" in res["clear"], res
+
+
+
+def test_b3145_rescore_reads_a_net_basis_read_as_already_net():
+    """S6-B3145: rescore_admissions_net decides ALREADY-NET from the read of
+    record's own basis field, never a strategy name - a net-basis read needs no
+    re-score; a gross or unlabelled read still goes to the reproduction-gated
+    re-score. LIVE: the committed re-score artifact carries the pairs line as
+    ALREADY-NET with the reason naming its read."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import rescore_admissions_net as ran
+    adm = {"strategy": "s", "grid_artifact": "output_audit/x_read.json"}
+    why = ran.already_net_reason(adm, {"basis": "net", "basis_source": "the Step-1 artifact"})
+    assert why and "x_read.json" in why and "net" in why, why
+    assert ran.already_net_reason(adm, {"basis": "gross"}) is None
+    assert ran.already_net_reason(adm, {}) is None
+    rows = _j.loads((root / "output_audit" / "b3128_admissions_net_rescore.json")
+                    .read_text(encoding="utf-8"))["rows"]
+    pr = [r for r in rows if r["strategy"] == "pairs_mean_reversion_long"]
+    assert len(pr) == 1 and pr[0]["status"] == "ALREADY-NET", pr
+    assert "b3145_pairs_prod_breadth_step3_read.json" in pr[0]["reason"], pr
+
+
+
+def test_b3145_rescore_only_keeps_the_carried_rows_provenance(tmp_path, monkeypatch):
+    """S6-B3145: rescore_admissions_net --only carries rows an earlier run
+    computed; the payload must keep THAT run's basis, generated_utc and
+    metric_code stamp (null when it had none) and record this run as an
+    amendment carrying its own stamp - never re-stamp carried rows as current
+    (MEASURED: 7 of 10 fingerprint members identical between the 2026-09-29
+    run and today). A full run (no --only) still stamps the payload."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import rescore_admissions_net as ran
+    import roster_core as rc
+    now = rc.metric_code_fingerprint()["sha256"]
+    (tmp_path / "oa").mkdir()
+    (tmp_path / "oa" / "b_read.json").write_text(_j.dumps({"basis": "net"}), encoding="utf-8")
+    adm = tmp_path / "adm.json"
+    adm.write_text(_j.dumps({"admissions": [
+        {"strategy": "a", "grid_artifact": "oa/a.json", "exit": "x"},
+        {"strategy": "b", "grid_artifact": "oa/b_read.json", "exit": "x"}]}), encoding="utf-8")
+    out = tmp_path / "out.json"
+    carried = {"strategy": "a", "status": "RESCORED", "net": {"sharpe": 1.0}}
+    out.write_text(_j.dumps({"basis": "old basis", "generated_utc": "2026-09-29T00:00:00Z",
+                             "metric_code": None, "rows": [carried]}), encoding="utf-8")
+    monkeypatch.setattr(ran, "ADMISSIONS", adm)
+    monkeypatch.setattr(ran, "OUT", out)
+    monkeypatch.setattr(ran, "ROOT", tmp_path)
+    monkeypatch.setattr(_s, "argv", ["rescore_admissions_net.py", "--only", "b"])
+    assert ran.main() == 0
+    doc = _j.loads(out.read_text(encoding="utf-8"))
+    assert doc["metric_code"] is None and doc["basis"] == "old basis", doc
+    assert doc["generated_utc"] == "2026-09-29T00:00:00Z", doc
+    assert [r["strategy"] for r in doc["rows"]] == ["a", "b"] and doc["rows"][0] == carried
+    assert doc["rows"][1]["status"] == "ALREADY-NET", doc["rows"][1]
+    am = doc["amendments"]
+    assert len(am) == 1 and am[0]["rows"] == ["b"] and am[0]["metric_code"]["sha256"] == now, am
+    # a FULL run (no --only) still stamps its own payload, with no amendment
+    monkeypatch.setattr(_s, "argv", ["rescore_admissions_net.py"])
+    adm.write_text(_j.dumps({"admissions": [
+        {"strategy": "b", "grid_artifact": "oa/b_read.json", "exit": "x"}]}), encoding="utf-8")
+    assert ran.main() == 0
+    doc = _j.loads(out.read_text(encoding="utf-8"))
+    assert doc["metric_code"]["sha256"] == now and "amendments" not in doc, doc
+
+
+def test_b3167_admission_ripples_live_where_the_next_admission_reads():
+    """S6-B3167 / L913: an admission's ripples are written where the next
+    admission meets them. The README's tighten-lane count is checked against
+    the DIRECTORY (an admission archives a lane charter, B3116, and the count
+    must follow it - a hand count drifts silently), the archived pairs charter
+    sits in the archive and not the lane, and the runbook's admission
+    procedure (6.3) carries the ripple step."""
+    import re as _re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    lane = root / "strategy_optimisation" / "tighten"
+    n_files = len(list(lane.glob("*.md")))
+    readme = (root / "strategy_optimisation" / "README.md").read_text(encoding="utf-8")
+    got = _re.findall(r"# tighten/ \((\d+) files;", readme)
+    assert len(got) == 1, got
+    assert int(got[0]) == n_files, (got[0], n_files,
+                                    "the README lane count must follow the directory")
+    assert not (lane / "pairs_mean_reversion_long.md").exists()
+    arch = (root / "archive" / "2026-10-13-pairs-admission-table-a" /
+            "pairs_mean_reversion_long.md")
+    assert arch.is_file(), arch
+    assert "## Table A - parameter inventory" in arch.read_text(encoding="utf-8")
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    s63 = plan[plan.index("### 6.3 Which combination advances"):
+               plan.index("## 7. THE LOCKED REPORTING STANDARD")]
+    assert "9. **Land the admission's RIPPLES in the same batch**" in s63
+    assert "never `head` it" in s63 and "admission-table-a" in s63

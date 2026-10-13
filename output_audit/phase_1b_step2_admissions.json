@@ -970,6 +970,36 @@
     "attribution": "the contract switch alone moves IS to 114 and HO to 135 gate-open fires; the release-date lag moves the rest",
     "consequence": "the admitted breadth line is not reproducible on corrected data; its frozen metrics stand only as a record"
    }
+  },
+  {
+   "ticket": "S6-B3145",
+   "ruled": "2026-10-13",
+   "ruling_verbatim": "Recommended: A Approved. Fable mode. Add to phase 1B strategy roster",
+   "strategy": "pairs_mean_reversion_long",
+   "direction": "long",
+   "config": {
+    "campaign": "pairs_mean_reversion_long Step 3 BREADTH (S6-B3145, runbook 3.6 items 1-9) on the production Step-2 cube",
+    "axes": "production producer + breadth cot_copper_commercials_net_pct >= -0.14",
+    "producer_combination": "production defaults PAIRS_EG_SIGNIFICANCE=0.05, PAIRS_Z_WINDOW=60 (backtest/config.py)"
+   },
+   "grid_artifact": "output_audit/b3145_pairs_prod_breadth_step3_read.json",
+   "combination": {
+    "axis": "cot_copper_commercials_net_pct",
+    "op": "ge",
+    "level": -0.14
+   },
+   "exit": "multi_tier_partial",
+   "universe": "production Step-2 cube output_pairs_mrl_step2_production (544-ticker universe; 1890 cell trades full period)",
+   "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+   "review_status": "GRID-SELECTED-OWNER-RULED / DISCLOSED-RE-READ / IS-HOLDOUT-INVERSION / CONTROL-THIN / ONE-EPISODE-HOLDOUT",
+   "review_note": "All six gates at multi_tier_partial on the b3145 production read, NET basis: HO sharpe 4.024 psr 1 PF 5.194 sortino 12.541 n 39/1890; ci_lo 1.878 reported (not a gate). LABELS travel: the holdout was a DISCLOSED-RE-READ (spent by the production Step-2 read); the cell is the section 6.3 pick, the highest holdout Sharpe of all 340 all-six qualifiers across both Step-3 subjects (GRID-SELECTED-OWNER-RULED); IS sharpe is -0.22 (inversion). CHANCE: the production read's 207 qualifiers sit beyond its 300-shuffle null (p 0.0033), and this cell's ci_lo 1.878 beats the shuffled family's best-ci_lo 95th percentile 1.0083 (p 0.01); the null's own stated bias makes these p values if anything too small. CONTROL-THIN: the control (pead_long_high_yoy_growth_only) holds 5 holdout trades under the filter, so attribution to the pairs signal is unmeasured; where a copper COT variant is measurable on the control its lift is partly or fully shared. ONE-EPISODE-HOLDOUT (measured after the owner's ruling, before this row landed): all 39 holdout trades entered 2025-05-05..2025-05-08 - 4 entry days, 39 tickers - one episode at the start of the holdout; in-sample entries cluster in episodes too (2025Q2 427 of 1851). The owner was offered a swap to option B (route-A config 2 + atr_pct >= 4.365 at ma_exit_ema9: 166 holdout trades over 101 entry days across 13 months) - S6-B3145a. PIT: both Step-2 cubes ran on code containing the COT release-date fix 265c12ccb (S6-B3139as); 0 of 39 holdout entries fall in a deliberately wide 2025 shutdown-backlog window. CVNA (S6-B3155): no CVNA fire in the cell's holdout rows. MIRROR: pairs_mean_reversion_short REGISTERED and counted per the standing mirror policy; the copper COT filter is NOT mechanically mirrored (no economic mirror ruled for the short leg), so the short rides pattern-only with no holdout evidence of its own - asymmetry surfaced per CHECKLIST (m); both legs carry the EXPLORATORY tag (multiple_testing_correction.EXPLORATORY_STRATEGIES). Evidence output_audit/b3145_pairs_admission_checks.json. Admission is not deployment.",
+   "net_rescore": {
+    "status": "ALREADY-NET",
+    "ruled": "S6-B3145: graded natively on the roster's net basis by its own breadth read (breadth_step1_grid.build_frame basis net calls roster_core.net_pnl - one definition); no separate re-score is owed",
+    "basis": "net = pnl.clip(+/-300.0) - 20.0/100 per roster_core.net_pnl",
+    "net_source": "output_audit/b3145_pairs_prod_breadth_step3_read.json"
+   },
+   "admission_checks": "output_audit/b3145_pairs_admission_checks.json"
   }
  ],
  "pruned_collinear_b2666": [

@@ -24786,3 +24786,41 @@ needed no longer exists.
 **Rule.** A stage that re-scores another stage's artifact takes its subject FROM THAT ARTIFACT - run-dir, strategy, leg, basis - never from a flag or a module default, and refuses when two upstream artifacts disagree. A default is silently right on every old subject and silently wrong on the first new one; what separated the two here was a fail-closed reproduction gate written for a different purpose. When a subject becomes configurable on one stage of a chain, sweep every stage that scores it in the same batch.
 
 **Mechanism.** breadth_holdout_null.subject_cube reads cube_dir from BOTH the Step-1 artifact and the read, refuses on disagreement (S6-B3158) and points the frame at that run-dir; artifacts naming neither keep the R5 default. test_b3158_holdout_null_scores_the_reads_own_cube drives run() with two fixture cubes whose qualifier sets are disjoint and the default pointed at the wrong one, so the reproduction passes only if the null scores the read's cube; it failed with the override disabled and the file was restored byte-identical (sha256). test_b3158_every_build_frame_caller_redirects_to_the_subject_run_dir pins the CLASS: every scripts module that calls build_frame must reference cube_dir as code (an attribute or the exact string key, never a docstring) AND rebind CUBE inside a function, and the caller set is frozen at the three chain stages so a fourth scorer fails until it is reviewed for the same defect. Its first form checked only the reference, and its own mutation exposed that: with every double-quoted cube_dir key renamed it still PASSED, because the refusal message's f-string reads art.get('cube_dir') - to the AST a mention inside a message is code, and it says nothing about use (L684's shape: a pin that can fail, but not for the reason it claims). The rebind requirement is what the override-disabled mutation removes; a fixture tree proves a bare caller, a docstring-only mention, a message-only mention, a module-level default and an aliased import are each flagged.
+
+### L913 - THE ADMISSION'S NAME GREP RAN AND WAS CUT AT HEAD -20; THE FIXTURE PAST THE CUT TURNED THE GATE RED, AND THE SECOND RIPPLE NAMED NO STRATEGY (B3139q-r69e, 2026-10-13)
+
+**What happened.** Before landing the owner's admission of pairs_mean_reversion_long (S6-B3145) I
+searched the test tree for the subject's name - transcript line 135868, 15:37:04Z, 15 min 42 s
+before the admission patch ran at 15:52:46Z - in one grep that also carried the roster-count
+literals, piped through `head -20`. The view ended at test_unit.py line 53444, and test_b3141a,
+which uses the pairs long as make_spec's subject, sat past the cut. Gate r96 (1,177 s) went RED on
+2 of 1,735: test_b3141a, because make_spec now refuses the admitted strategy at the consumer's
+closed-set gate, and test_b2836, because the long left the TIGHTEN lane while its Table A charter
+stayed in it. One extra gate cycle is the cost.
+
+**Why it is not a new class.** L903, six days earlier, is this shape exactly - a completeness search
+cut by head, the pin past the cut turning the gate red - so the first ripple is a **compliance
+failure against item #270**, its second instance. L903's durability claim was the weak point: it
+said "L801's tripwire row and #270 stand", and L801's row says to grep the name without saying to
+read the grep whole, so the no-head rule never reached the row consulted at the moment of landing.
+That row now carries it.
+
+**The second ripple is the part a name grep cannot reach.** test_b2836 names no strategy: it holds
+the lane directory's file-set equal to the status view's TIGHTEN set, and an admission moves a row
+out of TIGHTEN. Its remedy was on record - B3116 archived three_white_soldiers' charter after the
+B3115 admission and called that "the fifth L801 ripple" - but only in a commit message and a test
+comment, and the test's own failure text ("allowed only for an owner-closed row") pointed the other
+way: my first instinct was to widen the exemption, which would have reversed B3116.
+
+**Rule.** An admission lands with its ripples: grep the test tree for the subject's name end to end
+(count first, no head); read the previous admission's ripple commits, the cheapest ripple list there
+is; and move a lane charter to archive with the citations that follow it. Where a gate is the place
+the next person meets a ripple, its failure text names the remedy, not only the rule.
+
+**Mechanism.** JUDGMENT-ONLY for detection, for L903's reason: a grep piped to head looks the same
+whether it is a glance or a sweep. The slices that are mechanizable ship here: test_b2836's failure
+text names the B3116 remedy; the L801 tripwire row carries the completeness clause, pinned by
+test_b2123; the runbook's admission procedure (6.3) gained step 9; and test_b3167 holds the README's
+lane count equal to the directory and pins step 9. Deletion considered and declined: a generator
+that archives a terminal row's charter itself would have acted on 2 of 16 admissions so far (the two
+ruled after the lane directory existed), and the failing test now prints the move.

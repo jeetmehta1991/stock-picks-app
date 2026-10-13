@@ -95,10 +95,11 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 | `xs_momentum_top_decile` | long | **GRID-SELECTED-OWNER-RULED / CONTROL-REFUTED-ATTRIBUTION / DISCLOSED-RE-READ** | campaign=B2673/B2678 breadth (two-legs 11.2b2), axes=pct_from_vwap stacked on the depth-admitted base; xs_momentum_12_1=0.529, pct_from_vwap=36.6266 | `time_stop_10d` |   1.93 |   0.52 |   3.08 |   1.20 | +2.085 |   1.00 |   4.83 |   4.83 | 0.719 |   4.19 | 32 | 84 | `xs_momentum_bottom_decile_short` |
 | `xs_low_beta_with_smart_money_long` | long | **MEASUREMENT-SURFACED-OWNER-RULED / IS-HOLDOUT-INVERSION** | campaign=B2674 composite variant test (owner-ruled measurement), axes=none - baseline admission;  | `time_stop_10d` |  -0.20 |  -0.70 |   1.51 |   0.33 | +0.510 |   0.99 |   2.29 |   2.16 | 0.658 |   1.62 | 73 | 452 | LONG-ONLY-DATA |
 | `three_white_soldiers` | long | **GRID-SELECTED-OWNER-RULED / DISCLOSED-RE-READ / IS-HOLDOUT-INVERSION** | campaign=candle_tws c14 breadth (S6-B3112c, runbook 3.6 full nine items), axes=producer c14 (n_bars 3, body 0.5, step 0.0, wick 0.3) + breadth B1 cot_ndx_mmoney_pctile_3y >= 0.637, producer_combination=CANDLE_N_BARS=3, CANDLE_MIN_BODY_PCT=0.5, CANDLE_MIN_STEP_PCT=0.0, CANDLE_MAX_WICK_PCT=0.3; axis=cot_ndx_mmoney_pctile_3y, op=ge, level=0.637 | `class_time_stop` |  -0.42 |      - |   1.78 |  -0.16 |      - |   0.97 |   2.15 |   2.87 |     - |      - | 36 | 343 | `three_black_crows_short` |
+| `pairs_mean_reversion_long` | long | **GRID-SELECTED-OWNER-RULED / DISCLOSED-RE-READ / IS-HOLDOUT-INVERSION / CONTROL-THIN / ONE-EPISODE-HOLDOUT** | campaign=pairs_mean_reversion_long Step 3 BREADTH (S6-B3145, runbook 3.6 items 1-9) on the production Step-2 cube, axes=production producer + breadth cot_copper_commercials_net_pct >= -0.14, producer_combination=production defaults PAIRS_EG_SIGNIFICANCE=0.05, PAIRS_Z_WINDOW=60 (backtest/config.py); axis=cot_copper_commercials_net_pct, op=ge, level=-0.14 | `multi_tier_partial` |  -0.22 |      - |   4.02 |   1.88 |      - |   1.00 |   5.19 |  12.54 |     - |      - | 39 | 1890 | `pairs_mean_reversion_short` |
 
 † psr re-derived on CURRENT code, net basis (S6-B3136): the grid's stored value predates the B2646 PSR units fix, so it is not shown; 'pending' = the re-derivation has not run yet.
 
-**Net-basis labels (S6-B3122, owner-approved 2026-09-29; 15 of 15 rows carry one).** The Step-2 reads of record for most admissions scored the cube's RAW pnl_pct (no cost, no winsor cap - L879). Re-scored READ-ONLY on the roster basis (clip +/-300, minus 0.20 per trade; roster_core.net_pnl) over the SAME stored trades, behind a fail-closed reproduction gate (output_audit/b3128_admissions_net_rescore.json). A label changes no admission; any removal is a separate per-line owner ruling.
+**Net-basis labels (S6-B3122, owner-approved 2026-09-29; 16 of 16 rows carry one).** The Step-2 reads of record for most admissions scored the cube's RAW pnl_pct (no cost, no winsor cap - L879). Re-scored READ-ONLY on the roster basis (clip +/-300, minus 0.20 per trade; roster_core.net_pnl) over the SAME stored trades, behind a fail-closed reproduction gate (output_audit/b3128_admissions_net_rescore.json). A label changes no admission; any removal is a separate per-line owner ruling.
     - `smc_breaker_block_long`: ALREADY-NET
     - `pead_long_high_yoy_growth_only`: raw HO sharpe 1.148 -> net 1.0; net all_live_gates=True
     - `pead_with_smart_money_long`: raw HO sharpe 1.308 -> net 1.138; net all_live_gates=False; failing: psr
@@ -114,14 +115,15 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
     - `xs_momentum_top_decile`: raw HO sharpe 3.085 -> net 2.938; net all_live_gates=True
     - `xs_low_beta_with_smart_money_long`: raw HO sharpe 1.51 -> net 1.323; net all_live_gates=True
     - `three_white_soldiers`: raw HO sharpe 1.779 -> net 1.483; net all_live_gates=False; failing: psr
+    - `pairs_mean_reversion_long`: ALREADY-NET
 
-**Net near-misses (S6-B3136, owner 2026-09-29: *"1 approve your recommendation"*; 3 of 15 admissions).** Kept admitted. Each is STRUCK if its net PSR is still below the live psr gate (0.95) after 20 more paper trades - the 20 is a CHOSEN number, owner-approved.
+**Net near-misses (S6-B3136, owner 2026-09-29: *"1 approve your recommendation"*; 3 of 16 admissions).** Kept admitted. Each is STRUCK if its net PSR is still below the live psr gate (0.95) after 20 more paper trades - the 20 is a CHOSEN number, owner-approved.
     RESULTS FROZEN (owner 2026-09-30, verbatim: *"once they are in phase 1b roster their results can not be changed. You can add a note to it"*): the recorded raw and net figures do not change; this note rides the row, and the pre-registered strike rule judges STATUS only.
     - `smc_breaker_block_long`: net PSR 0.939 vs gate 0.95; failing: psr (drift: output_audit/b3137_smc_psr_rederived.json (stored drifted: psr 0.939 != 1.0))
     - `pead_with_smart_money_long`: net PSR 0.9336 vs gate 0.95; failing: psr (rescored: output_audit/b3128_admissions_net_rescore.json)
     - `three_white_soldiers`: net PSR 0.9355 vs gate 0.95; failing: psr (rescored: output_audit/b3128_admissions_net_rescore.json)
 
-**PROVISIONAL-UNREVIEWED (1 of 15).** These admissions come from a Step-2 config whose four JUDGMENT post-config steps have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436 / L721). The five AUTO steps DID run and are DONE. The completeness gate now BLOCKS such a config (S6-B2440). The row stands, marked, until the pilot review clears it; if that review changes the verdict, the admission is revisited.
+**PROVISIONAL-UNREVIEWED (1 of 16).** These admissions come from a Step-2 config whose four JUDGMENT post-config steps have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436 / L721). The five AUTO steps DID run and are DONE. The completeness gate now BLOCKS such a config (S6-B2440). The row stands, marked, until the pilot review clears it; if that review changes the verdict, the admission is revisited.
     - `smc_breaker_block_long`: S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited.
 
 **S6-B2410 (2026-08-30)** - owner verbatim: *"Lets retain the break_pct_max 0.02, close_mitigation True, age_bars_max None, exit time_stop_10d, tail_n (20) combination"* - strategy `smc_breaker_block_long`, 544 tickers (output_audit/r5_universe_544.txt), 4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout); artifact `output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json`.
@@ -139,6 +141,7 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 **S6-B2678b (2026-09-11)** - owner verbatim: *"re-rule S6-B2678a to option C on the strengthened evidence"* - strategy `xs_momentum_top_decile`, R5 merged cube output_r5_merged_1_7 (544-ticker universe; 255 fires), 4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout); artifact `output_audit/b2684_topdecile_breadth_admission_grid.json`.
 **S6-B2674a (2026-09-11)** - owner verbatim: *"All open tickets implement now"* - strategy `xs_low_beta_with_smart_money_long`, R5 merged cube output_r5_merged_1_7 (544-ticker universe; 452 fires), 4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout); artifact `output_audit/b2685_xslowbeta_admission_grid.json`.
 **S6-B3114b (2026-09-26)** - owner verbatim: *"Approved add this cell to the phase 1B roster along with the mirror short strategy"* - strategy `three_white_soldiers`, c14 Step-2 cube output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3 (544-ticker universe; 343 cell trades full period), 4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout); artifact `output_audit/b3114_tws_c14_breadth_step2_read.json`.
+**S6-B3145 (2026-10-13)** - owner verbatim: *"Recommended: A Approved. Fable mode. Add to phase 1B strategy roster"* - strategy `pairs_mean_reversion_long`, production Step-2 cube output_pairs_mrl_step2_production (544-ticker universe; 1890 cell trades full period), 4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout); artifact `output_audit/b3145_pairs_prod_breadth_step3_read.json`.
 
 **Read the evidence shape honestly (L636).** These cells come from a parameter SEARCH (300 combinations per config; no multiplicity correction at the grid stage per owner ruling D2, psr being the remaining significance-style control), and the gates are computed on the 1-year holdout except the full-period trade count. Where a holdout Sharpe far exceeds its in-sample value on a small holdout n, the margin is fragile - the IS and holdout confidence lower bounds are rendered beside the point estimates so the interval width is never hidden. Engine wiring of an admitted combination is tracked separately (S6-B2411); admission to this document is not deployment.
 
@@ -147,7 +150,7 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is retained irrespective of its own cube result. The single excuse is a **long-only DATA SOURCE** (13F / insider / congressional / buyback), where a mechanical inverse is economically false rather than merely untested (B611 reversal).
 
 - **REGISTERED and retained, funnel cells (6):** `52w_low_breakdown_pullback_short`, `mfi_overbought_short`, `poc_magnet_short`, `totm_short`, `xs_combined_momentum_high_ivol_short`, `xs_momentum_bottom_decile_short`
-- **REGISTERED and retained, Step-2 admissions (3):** `smc_breaker_block_short`, `pead_short_negative_yoy_growth`, `three_black_crows_short`
+- **REGISTERED and retained, Step-2 admissions (4):** `smc_breaker_block_short`, `pead_short_negative_yoy_growth`, `three_black_crows_short`, `pairs_mean_reversion_short`
 - **LONG-ONLY DATA, mirror excused, funnel cells (0):**
     - none
 - **LONG-ONLY DATA, mirror excused, Step-2 admissions (11):**
@@ -165,9 +168,9 @@ Owner standing directive: *promoted longs carry short mirrors by default* - the 
 - **DUAL - own short branch is the mirror, nothing to create (1):** `smc_bos_retest_entry`
 - **NEEDS CREATION (0; funnel 0 + Step-2 admissions 0):** none
 
-**Deployable total: 7 graded cells + 6 funnel mirrors + 1 dual self-mirrors + 15 Step-2 admissions + 3 admission mirrors = 31 distinct strategies** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
+**Deployable total: 7 graded cells + 6 funnel mirrors + 1 dual self-mirrors + 16 Step-2 admissions + 4 admission mirrors = 33 distinct strategies** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
 
-**After costs (S6-B3136, owner-approved 2026-09-29): 19 of 22 long lines clear all six live gates on current code.** Missing: `smc_breaker_block_long`, `pead_with_smart_money_long`, `three_white_soldiers` - net near-misses kept admitted under the forward strike rule.
+**After costs (S6-B3136, owner-approved 2026-09-29): 20 of 23 long lines clear all six live gates on current code.** Missing: `smc_breaker_block_long`, `pead_with_smart_money_long`, `three_white_soldiers` - net near-misses kept admitted under the forward strike rule.
 
 **Closed to re-testing (owner 2026-09-29: *"2 yes. No more retesting"*): 31 names frozen in `output_audit/phase1b_closed_set_frozen.json`; removed from the derived membership since the freeze: none.**
 
