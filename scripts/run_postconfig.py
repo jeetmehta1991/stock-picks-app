@@ -1228,7 +1228,7 @@ def ledger_contradictions(ledger: dict) -> list[str]:
             and asserts_non_execution(_current_claim(_old_evidence(v)))]
 
 
-def main() -> int:
+def _main_unguarded() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cube", required=True)
     ap.add_argument("--step1-cube", action="store_true")
@@ -1500,6 +1500,39 @@ def main() -> int:
         print(f"[OK] ledger: all {len(STEPS)} steps recorded for {cube_dir.name}"
               f" ({'FAIL present' if fails else 'no FAIL'})")
     return 2 if fails else 0
+
+
+def main() -> int:
+    """S6-B3156: a battery run by hand (the runbook's run_postconfig.py --cube
+    form) refuses to start beside another battery on the SAME cube - two
+    batteries race over its ledger rows and per-cube artifacts - and holds the
+    in-flight marker while it runs. The supervisor (postconfig_landing.py)
+    already holds both for the battery it starts and marks that child
+    POSTCONFIG_SUPERVISED=1, so the child skips this. Exit 3 = refused."""
+    pre = argparse.ArgumentParser(add_help=False)
+    pre.add_argument("--cube")
+    known, _rest = pre.parse_known_args()
+    if not known.cube or os.environ.get("POSTCONFIG_SUPERVISED") == "1":
+        return _main_unguarded()
+    cube_dir = Path(known.cube)
+    if not cube_dir.is_absolute():
+        cube_dir = ROOT / known.cube
+    from verify_postconfig_complete import (battery_in_flight, claim_inflight,
+                                            release_inflight)
+    st = battery_in_flight(cube_dir, exclude=(os.getpid(), os.getppid()))
+    if st["state"] in ("live", "unknown"):
+        who = (f"pid(s) {', '.join(str(p) for p in st['pids'])}"
+               if st["state"] == "live" else st["why"])
+        print(f"REFUSED (S6-B3156): a post-config battery is "
+              f"{'already running' if st['state'] == 'live' else 'possibly running'}"
+              f" on {cube_dir.name} ({who}); a second battery on one cube races "
+              "the first over its ledger rows and artifacts - wait for it to end.")
+        return 3
+    claim = claim_inflight(cube_dir, source="run_postconfig")
+    try:
+        return _main_unguarded()
+    finally:
+        release_inflight(cube_dir, claim)
 
 
 if __name__ == "__main__":

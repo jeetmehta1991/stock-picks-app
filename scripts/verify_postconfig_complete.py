@@ -136,6 +136,178 @@ def leg_keys(ledger: dict, cube: str) -> list:
     return legs or [cube]
 
 
+# ---------------------------------------------------------------------------
+# S6-B3156: is a post-config battery RUNNING on a cube right now?
+# ---------------------------------------------------------------------------
+# The supervisor appends its landing record only at the END of a battery, so
+# this gate counted a cube whose battery was still running as owing every step
+# and printed its remedy - and that remedy, postconfig_landing.py --cube <dir>
+# --force, followed mid-battery started a SECOND battery on the same cube,
+# because nothing refused one (found at the b3154 landing, B3139q-r68s).
+# Liveness is read from the PROCESS TABLE - the B3099 lesson behind
+# pyramid_gate._engine_inflight: a marker or heartbeat says a writer once ran,
+# only the table says it runs now - and an unreadable table is 'unknown', which
+# every caller treats as possibly running (fail closed). The marker the
+# claimant writes supplies only the START TIME, so a hung battery cannot hide
+# an incomplete ledger forever.
+INFLIGHT_MARKER = "postconfig_inflight.json"
+BATTERY_SCRIPTS = ("postconfig_landing.py", "run_postconfig.py")
+# CHOSEN, not measured: 2 h. Criterion - more than 5x the longest battery on
+# record when the bound was set: 1,296 s across 74 landing events in
+# output_audit/postconfig_landings.jsonl (median 32 s, p95 567 s; measured
+# 2026-10-13 at B3139q-r68x), rounded up to a whole hour. A live battery older
+# than this BLOCKS with an investigate message, never the --force remedy.
+INFLIGHT_STALE_S = 2 * 3600
+_UNREAD = object()
+
+
+def _process_rows():
+    """(pid, argv) for every running python - pyramid_gate's reader, one
+    definition (L593). None when the table cannot be read. The test seam."""
+    try:
+        import pyramid_gate as _pg
+        return _pg._python_argvs()
+    except Exception:                               # noqa: BLE001 - fail closed
+        return None
+
+
+def _battery_cube(argv):
+    """The cube DIR NAME a python argv runs a battery on, or None. The script
+    is found past interpreter options (pyramid_gate._script_index), so `-c`
+    code that merely names a battery script is not a run of it (B1603). Both
+    `--cube X` and `--cube=X`; a path reduces to its last component, and a
+    path naming the cube file itself to its parent - how the supervisor reduces
+    it, so every spelling of one cube compares equal."""
+    if not argv:
+        return None
+    try:
+        import pyramid_gate as _pg
+        si = _pg._script_index(argv)
+    except Exception:                               # noqa: BLE001
+        return None
+    if si is None:
+        return None
+    if str(argv[si]).replace("\\", "/").rsplit("/", 1)[-1] not in BATTERY_SCRIPTS:
+        return None
+    rest = [str(x) for x in argv[si + 1:]]
+    for j, tok in enumerate(rest):
+        if tok == "--cube" and j + 1 < len(rest):
+            val = rest[j + 1]
+        elif tok.startswith("--cube="):
+            val = tok.split("=", 1)[1]
+        else:
+            continue
+        parts = [p for p in val.replace("\\", "/").split("/") if p]
+        if not parts:
+            return None
+        if parts[-1] == "trade_exit_detail.csv" and len(parts) > 1:
+            return parts[-2]
+        return parts[-1]
+    return None
+
+
+def read_inflight_marker(cube_dir):
+    """The claimant's marker, None when absent, {'unreadable': True} when
+    present but not a JSON object (it still says a battery once started)."""
+    p = pathlib.Path(cube_dir) / INFLIGHT_MARKER
+    if not p.is_file():
+        return None
+    try:
+        m = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {"unreadable": True}
+    return m if isinstance(m, dict) else {"unreadable": True}
+
+
+def battery_in_flight(cube_dir, *, rows=_UNREAD, now=None, exclude=()) -> dict:
+    """Is a post-config battery RUNNING on this cube? Returns {state, pids,
+    marker, age_s, why} with state one of:
+
+      live     a python process runs a battery script naming this cube (the
+               venv launcher and its interpreter both appear); age_s comes from
+               the marker when the marker's pid is one of them, else None
+      unknown  the process table is unreadable, or a python whose command line
+               cannot be read exists and nothing matched - callers treat it as
+               possibly running (fail closed)
+      stale    no such process, but a marker remains: a battery started and
+               never finished (killed) - NOT running
+      none     neither
+
+    `rows` (pass None for an unreadable table), `now` and `exclude` (the
+    caller's own pids) are the seams. Never raises."""
+    import time as _t
+    marker = None
+    try:
+        cube = pathlib.Path(cube_dir).name
+        marker = read_inflight_marker(cube_dir)
+        rows = _process_rows() if rows is _UNREAD else rows
+        if rows is None:
+            return {"state": "unknown", "pids": [], "marker": marker,
+                    "age_s": None, "why": "process table unreadable"}
+        ex = {int(x) for x in exclude if x}
+        pids = sorted({int(pid) for pid, argv in rows
+                       if int(pid) not in ex and _battery_cube(argv) == cube})
+        if pids:
+            age = None
+            if marker and marker.get("pid") in pids:
+                try:
+                    age = ((_t.time() if now is None else now)
+                           - float(marker["started"]))
+                except (KeyError, TypeError, ValueError):
+                    age = None
+            return {"state": "live", "pids": pids, "marker": marker,
+                    "age_s": age, "why": ""}
+        blind = [pid for pid, argv in rows if argv is None and int(pid) not in ex]
+        if blind:
+            return {"state": "unknown", "pids": [], "marker": marker, "age_s": None,
+                    "why": f"python pid {blind[0]} has an unreadable command line"}
+        if marker is not None:
+            return {"state": "stale", "pids": [], "marker": marker,
+                    "age_s": None, "why": "a marker with no running battery"}
+        return {"state": "none", "pids": [], "marker": None, "age_s": None,
+                "why": ""}
+    except Exception as exc:                        # noqa: BLE001 - never raise
+        return {"state": "unknown", "pids": [], "marker": marker, "age_s": None,
+                "why": f"in-flight check failed: {exc!r}"}
+
+
+def claim_inflight(cube_dir, *, source: str, fingerprint=None) -> dict:
+    """Write THIS process's marker into the cube dir (temp file + os.replace,
+    so a reader never sees half a marker) and return it. The supervisor and an
+    unsupervised battery claim before the battery starts and release in a
+    finally; a kill skips the release, which is why liveness never comes from
+    the marker (a killed claimant's marker reads 'stale')."""
+    import os
+    import time as _t
+    m = {"pid": os.getpid(), "started": _t.time(),
+         "started_iso": _t.strftime("%Y-%m-%dT%H:%M:%S"),
+         "source": source, "fingerprint": fingerprint}
+    p = pathlib.Path(cube_dir) / INFLIGHT_MARKER
+    tmp = p.with_name(f"{p.name}.{os.getpid()}.tmp")
+    try:
+        tmp.write_text(json.dumps(m, sort_keys=True), encoding="utf-8")
+        os.replace(tmp, p)
+    except OSError as exc:
+        m["write_error"] = repr(exc)
+    return m
+
+
+def release_inflight(cube_dir, claim) -> bool:
+    """Remove the marker only while it is still THIS claim's (same pid and
+    start) - a later claimant's marker is never deleted. True when removed."""
+    if not claim:
+        return False
+    cur = read_inflight_marker(cube_dir)
+    if (not cur or cur.get("pid") != claim.get("pid")
+            or cur.get("started") != claim.get("started")):
+        return False
+    try:
+        (pathlib.Path(cube_dir) / INFLIGHT_MARKER).unlink()
+        return True
+    except OSError:
+        return False
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -157,6 +329,7 @@ def main() -> int:
         cubes = [c for c in cubes if c == a.only]
 
     incomplete = []
+    dir_of = {}
     for c in cubes:
         # S6-B2918: EVERY graded leg of a paired cube must be complete -
         # checking one leg would let the other ship ungraded.
@@ -165,6 +338,42 @@ def main() -> int:
             missing = [s for s in STEPS if not is_closed(entry.get(s))]
             if missing:
                 incomplete.append((k, missing))
+                dir_of[k] = c
+
+    # S6-B3156: a cube whose battery is RUNNING is being dispositioned now -
+    # blocking on it forced a wait the turn cannot shorten, and the --force
+    # remedy printed for it started a SECOND battery. Live and younger than
+    # INFLIGHT_STALE_S -> IN FLIGHT (not blocking); live and older -> HUNG
+    # (blocks, investigate, never --force); an unreadable table or a stale
+    # marker -> blocks as before, with a note saying which.
+    inflight, hung, notes = [], [], {}
+    if incomplete:
+        rows = _process_rows()
+        states: dict = {}
+        still = []
+        for k, missing in incomplete:
+            c = dir_of[k]
+            if c not in states:
+                states[c] = battery_in_flight(ROOT / c, rows=rows)
+            st = states[c]
+            if st["state"] == "live":
+                age = st.get("age_s")
+                if age is not None and age > INFLIGHT_STALE_S:
+                    hung.append((k, missing, st))
+                else:
+                    inflight.append((k, st))
+                continue
+            if st["state"] == "unknown":
+                notes[k] = (f"whether a battery is running on {c} is UNKNOWN "
+                            f"({st.get('why')}) - check before re-running it")
+            elif st["state"] == "stale":
+                mk = st.get("marker") or {}
+                notes[k] = (f"a battery started {mk.get('started_iso', '?')} "
+                            f"(pid {mk.get('pid', '?')}) is no longer running "
+                            "and never finished")
+            still.append((k, missing))
+        incomplete = still
+    live_keys = {k for k, _st in inflight}
 
     if not a.quiet:
         print("=== POST-CONFIG LEDGER (B1699) ===")
@@ -191,14 +400,16 @@ def main() -> int:
             # every SKIPPED toward completion, so this line printed COMPLETE for
             # a config the gate then blocked on three lines later - a reader
             # must never see a label contradicting the number beside it (L558).
-            mark = "COMPLETE" if all(
-                is_closed(e.get(s)) for s in STEPS) else "INCOMPLETE"
+            mark = ("COMPLETE" if all(is_closed(e.get(s)) for s in STEPS)
+                    else "IN FLIGHT" if c in live_keys else "INCOMPLETE")
             tail = f"  [{len(skipped)} SKIPPED: {', '.join(skipped)}]" if skipped else ""
             if na:
                 tail += f"  [{len(na)} N/A: {', '.join(na)}]"
             print(f"  {mark:10} {c}: {ran} of {len(STEPS)} RUN{tail}")
-        print(f"\n  {len(cubes)} cubes | {len(incomplete)} incomplete | "
-              f"{total_skipped} step(s) SKIPPED")
+        print(f"\n  {len(cubes)} cubes | {len(incomplete) + len(hung)} incomplete | "
+              f"{total_skipped} step(s) SKIPPED"
+              + (f" | {len(inflight)} IN FLIGHT, not blocking (S6-B3156)"
+                 if inflight else ""))
         if total_skipped:
             print("  NOTE (B2520): a SKIPPED step satisfies this gate for NO "
                   "step. A deferral is NOT a disposition and BLOCKS - only DONE "
@@ -206,6 +417,14 @@ def main() -> int:
                   "scripts/postconfig_landing.py --cube <dir> --force to record "
                   "every step from the battery.")
 
+    if not a.quiet:
+        for k, st in inflight:
+            age = st.get("age_s")
+            print(f"  IN FLIGHT (S6-B3156) {k}: battery running now (pid "
+                  f"{', '.join(str(p) for p in st['pids'])}; age "
+                  + ("unknown" if age is None else f"{age:.0f} s")
+                  + ") - not blocking; its supervisor is recording these steps "
+                  "and appends its landing record when it ends")
     if incomplete:
         print("\nBLOCK: a finished cube owes a complete post-config ledger. "
               "The runbook calls skipping a step a silent miss, so a step with no "
@@ -214,9 +433,18 @@ def main() -> int:
               "a reason - scripts/postconfig_landing.py --cube <dir> --force "
               "records every step from the battery.")
         for c, missing in incomplete:
-            print(f"  {c}: {', '.join(missing)}")
-        return 2
-    return 0
+            print(f"  {c}: {', '.join(missing)}"
+                  + (f"  [S6-B3156: {notes[c]}]" if c in notes else ""))
+    if hung:
+        print(f"\nBLOCK (S6-B3156): a post-config battery has been RUNNING for "
+              f"more than {INFLIGHT_STALE_S // 3600} h - over 5x the longest "
+              "battery on record when the bound was set. Investigate that "
+              "process; do NOT start a second battery (the supervisor refuses "
+              "one while it runs).")
+        for k, missing, st in hung:
+            print(f"  {k}: pid(s) {', '.join(str(p) for p in st['pids'])} running "
+                  f"{st['age_s'] / 3600:.1f} h; open: {', '.join(missing)}")
+    return 2 if (incomplete or hung) else 0
 
 
 if __name__ == "__main__":

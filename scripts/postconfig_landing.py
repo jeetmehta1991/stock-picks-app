@@ -214,7 +214,7 @@ def run_battery(cube_dir: Path, *, step1: bool, step2: bool) -> int:
     elif step2:
         cmd.append("--step2-cube")
     print(f"[landing] battery: {' '.join(cmd[1:])}", flush=True)
-    return subprocess.run(cmd, cwd=str(ROOT)).returncode
+    return subprocess.run(cmd, cwd=str(ROOT), env=dict(os.environ, POSTCONFIG_SUPERVISED="1")).returncode
 
 
 def render_report() -> tuple[bool, str]:
@@ -534,8 +534,8 @@ def toast(title: str, body: str) -> tuple[bool, str]:
 
 
 # ---------------------------------------------------------------------------
-def land(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
-         no_git: bool, no_notify: bool, step1: bool, step2: bool) -> int:
+def _land_unguarded(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
+                    no_git: bool, no_notify: bool, step1: bool, step2: bool) -> int:
     cube = cube_dir.name
     fp = fingerprint(cube_dir)
     if fp is None:
@@ -617,6 +617,50 @@ def land(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
     print(f"  {rec}; reported_to_owner=false until the owner sees it in a turn")
     print(f"=== END LANDING {cube} ({int(time.time() - t0)}s) ===", flush=True)
     return battery_exit
+
+
+def land(cube_dir: Path, *, source: str, if_not_landed: bool, force: bool,
+         no_git: bool, no_notify: bool, step1: bool, step2: bool) -> int:
+    """S6-B3156: the ONE entry point refuses a SECOND battery on a cube whose
+    battery is already running - whoever asks: the engine hook, run_wave, a
+    manual --force, or someone following the turn gate's printed remedy - since
+    two batteries race over the cube's ledger rows and per-cube artifacts. The
+    check precedes the --if-not-landed no-op on purpose: a battery in flight
+    has not appended its landing record yet, so the fingerprint test alone
+    would start another. Liveness comes from the process table
+    (verify_postconfig_complete.battery_in_flight) with this process and its
+    parent (the venv launcher) excluded; an unreadable table refuses too (fail
+    closed). While the battery runs this process holds the in-flight marker the
+    turn gate reads for its START TIME, and run_battery marks the battery child
+    POSTCONFIG_SUPERVISED=1 so the child does not refuse its own supervisor.
+    Exit 3 = refused."""
+    kw = dict(source=source, if_not_landed=if_not_landed, force=force,
+              no_git=no_git, no_notify=no_notify, step1=step1, step2=step2)
+    if fingerprint(cube_dir) is None:
+        return _land_unguarded(cube_dir, **kw)      # fails closed and says why
+    from verify_postconfig_complete import (battery_in_flight, claim_inflight,
+                                            release_inflight)
+    st = battery_in_flight(cube_dir, exclude=(os.getpid(), os.getppid()))
+    if st["state"] in ("live", "unknown"):
+        who = (f"pid(s) {', '.join(str(p) for p in st['pids'])}"
+               if st["state"] == "live" else st["why"])
+        print(f"[landing] REFUSED (S6-B3156): a post-config battery is "
+              f"{'already running' if st['state'] == 'live' else 'possibly running'}"
+              f" on {cube_dir.name} ({who}). A second battery on one cube races "
+              "the first over its ledger rows and artifacts; the running one "
+              "appends its own landing record when it ends.", flush=True)
+        return 3
+    if st["state"] == "stale":
+        mk = st["marker"] or {}
+        print(f"[landing] note (S6-B3156): {cube_dir.name} carries the in-flight "
+              f"marker of a battery that is no longer running (pid "
+              f"{mk.get('pid')}, started {mk.get('started_iso')}) - it never "
+              "finished; this landing replaces it", flush=True)
+    claim = claim_inflight(cube_dir, source=source, fingerprint=fingerprint(cube_dir))
+    try:
+        return _land_unguarded(cube_dir, **kw)
+    finally:
+        release_inflight(cube_dir, claim)
 
 
 def main() -> int:

@@ -708,19 +708,46 @@ def _python_argvs():
     return rows
 
 
+def _script_index(argv):
+    """S6-B3159: the index of the SCRIPT in a python argv, found past the
+    interpreter's own options (-u, -B, -O, -X utf8, -W ignore, ...) - the old
+    reading assumed argv[1], so `python -u scripts/run_wave.py` named no
+    runner. None for `-c` code and `-m` module runs (code that merely NAMES a
+    script is not a run of it, B1603's rule - pool workers start as `-c`), and
+    None when no script follows the options. Short options may be clustered
+    (`-uB`); -W and -X take their argument attached or as the next token."""
+    i, n = 1, len(argv or ())
+    while i < n:
+        tok = str(argv[i])
+        if tok.startswith("--"):
+            i += 2 if tok == "--check-hash-based-pycs" else 1
+            continue
+        if tok.startswith("-") and len(tok) > 1:
+            if tok[1] in "WX":
+                i += 1 if len(tok) > 2 else 2
+                continue
+            if "c" in tok[1:] or "m" in tok[1:]:
+                return None
+            i += 1
+            continue
+        return i
+    return None
+
+
 def _runner_label(argv):
     """The runner a python argv executes - 'run_wave:<spec>' or
     'run_phase1a:<out dir>' - or None. Decided by the SCRIPT argument only:
     `-c` code that merely NAMES a runner is not a launch (B1603's rule),
     and `-m pytest` is not a runner."""
-    if not argv or len(argv) < 2 or str(argv[1]).startswith("-"):
+    si = _script_index(argv)          # S6-B3159: past interpreter options
+    if si is None:
         return None
-    name = str(argv[1]).replace("\\", "/").rsplit("/", 1)[-1]
+    name = str(argv[si]).replace("\\", "/").rsplit("/", 1)[-1]
     if name not in RUNNER_SCRIPTS:
         return None
     for flag in ("--output-dir", "--spec"):
-        if flag in argv[2:]:
-            i = argv.index(flag, 2)
+        if flag in argv[si + 1:]:
+            i = argv.index(flag, si + 1)
             if i + 1 < len(argv):
                 return f"{name[:-3]}:" + str(argv[i + 1]).replace(
                     "\\", "/").rstrip("/").rsplit("/", 1)[-1]

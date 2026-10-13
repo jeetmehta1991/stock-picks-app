@@ -54006,3 +54006,264 @@ def test_b3158_every_build_frame_caller_redirects_to_the_subject_run_dir(tmp_pat
         "(S6-B3158); review it, then add it here")
     bad = {k: v for k, v in live.items() if v != (True, True)}
     assert not bad, f"(names cube_dir, rebinds CUBE in a function): {bad}"
+
+
+
+def test_b3159_script_index_skips_interpreter_options():
+    """S6-B3159: the process-table readers find the SCRIPT past the
+    interpreter's own options - the old reading took argv[1], so
+    `python -u scripts/run_wave.py ...` named no runner and an engine launched
+    that way read as not in flight. `-c` code and `-m` modules still name no
+    script (B1603's rule; pool workers start as `-c`), and the unflagged forms
+    keep their old answer."""
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import pyramid_gate as pg
+    py = "C:/r/.venv/Scripts/python.exe"
+    assert pg._script_index([py, "scripts/run_wave.py", "--spec", "s.json"]) == 1
+    assert pg._script_index([py, "-u", "scripts/run_wave.py"]) == 2
+    assert pg._script_index([py, "-uB", "-X", "utf8", "-Wignore", "x.py"]) == 5
+    assert pg._script_index([py, "-X", "frozen_modules=off", "x.py"]) == 3
+    assert pg._script_index([py, "--check-hash-based-pycs", "never", "x.py"]) == 3
+    for quiet in ([py, "-c", "print('scripts/run_wave.py')"], [py, "-m", "pytest"],
+                  [py, "-Bc", "x"], [py, "-mpytest"], [py, "-u"], [py], []):
+        assert pg._script_index(quiet) is None, quiet
+    # the runner label reads through it: the flagged launch is now visible
+    assert pg._runner_label([py, "-u", "scripts/run_wave.py", "--spec",
+                             "output_audit/s_zz.json"]) == "run_wave:s_zz.json"
+    assert pg._runner_label([py, "-u", "backtest/run_phase1a.py", "--output-dir",
+                             "C:/r/output_zz"]) == "run_phase1a:output_zz"
+    assert pg._runner_label([py, "-c", "import backtest.run_phase1a"]) is None
+
+
+def test_b3156_battery_in_flight_reads_the_process_table(tmp_path):
+    """S6-B3156: whether a post-config battery is RUNNING on a cube is read
+    from the PROCESS TABLE - a marker says a battery once started, only the
+    table says it runs now (the B3099 lesson). Both battery scripts and both
+    --cube spellings match, a path naming the cube file reduces to its cube,
+    `-c` code naming the script does not count, the caller's own pids are
+    excluded, an unreadable table or command line is 'unknown' (fail closed),
+    a marker with no process is 'stale', and the marker supplies the AGE and
+    is released only by the claim that wrote it."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import verify_postconfig_complete as vpc
+
+    cube = tmp_path / "output_b3156_fx"
+    cube.mkdir()
+    py = "C:/v/python.exe"
+    sup = (101, [py, "C:/r/scripts/postconfig_landing.py", "--cube", str(cube),
+                 "--if-not-landed"])
+    bat = (102, [py, "-u", "scripts/run_postconfig.py",
+                 f"--cube={cube}/trade_exit_detail.csv", "--write-ledger"])
+    other = (103, [py, "scripts/postconfig_landing.py", "--cube",
+                   str(tmp_path / "output_other")])
+    dash_c = (104, [py, "-c", "print('scripts/postconfig_landing.py --cube "
+                              "output_b3156_fx')"])
+    assert vpc.battery_in_flight(cube, rows=[])["state"] == "none"
+    assert vpc.battery_in_flight(cube, rows=None)["state"] == "unknown"
+    assert vpc.battery_in_flight(cube, rows=[other, dash_c])["state"] == "none"
+    st = vpc.battery_in_flight(cube, rows=[sup, other, dash_c])
+    assert st["state"] == "live" and st["pids"] == [101] and st["age_s"] is None
+    assert vpc.battery_in_flight(cube, rows=[bat])["pids"] == [102]
+    assert vpc.battery_in_flight(cube, rows=[sup], exclude=(101,))["state"] == "none"
+    assert vpc.battery_in_flight(cube, rows=[(105, None)])["state"] == "unknown"
+    # the marker: written by the claimant, read for the AGE, released by its owner
+    claim = vpc.claim_inflight(cube, source="test", fingerprint="1:2")
+    mk = _j.loads((cube / vpc.INFLIGHT_MARKER).read_text(encoding="utf-8"))
+    assert mk["pid"] == claim["pid"] and mk["source"] == "test"
+    live = (claim["pid"], sup[1])
+    st = vpc.battery_in_flight(cube, rows=[live], now=claim["started"] + 30)
+    assert st["state"] == "live" and abs(st["age_s"] - 30) < 1e-6
+    # killed: the marker survives, the process does not -> stale, not running
+    st = vpc.battery_in_flight(cube, rows=[])
+    assert st["state"] == "stale" and st["marker"]["pid"] == claim["pid"]
+    assert vpc.release_inflight(cube, dict(claim, started=claim["started"] + 1)) is False
+    assert (cube / vpc.INFLIGHT_MARKER).exists(), "a foreign claim deleted the marker"
+    assert vpc.release_inflight(cube, claim) is True
+    assert vpc.battery_in_flight(cube, rows=[])["state"] == "none"
+    # an unreadable marker still says a battery once started
+    (cube / vpc.INFLIGHT_MARKER).write_text("{torn", encoding="utf-8")
+    assert vpc.battery_in_flight(cube, rows=[])["state"] == "stale"
+
+
+def test_b3156_ledger_gate_waits_on_a_live_battery_and_blocks_a_hung_or_dead_one(
+        tmp_path, monkeypatch, capsys):
+    """S6-B3156: verify_postconfig_complete (the #223 turn gate) must not block
+    on a cube whose battery is RUNNING and must not print the --force remedy
+    for it - followed mid-battery that remedy started a SECOND battery. A live
+    battery older than INFLIGHT_STALE_S blocks with an investigate message and
+    no --force; a finished-but-incomplete cube blocks exactly as before; an
+    unreadable table blocks and says the in-flight state is UNKNOWN; a killed
+    battery's leftover marker blocks and says it never finished."""
+    import json as _j
+    import sys as _s
+    import time as _t
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import verify_postconfig_complete as vpc
+
+    cube = tmp_path / "output_b3156_gate"
+    cube.mkdir()
+    (cube / "trade_exit_detail.csv").write_text("h\n1\n", encoding="utf-8")
+    monkeypatch.setattr(vpc, "ROOT", tmp_path)
+    monkeypatch.setattr(vpc, "LEDGER", tmp_path / "ledger.json")   # absent: all open
+    monkeypatch.setattr(_s, "argv", ["verify_postconfig_complete.py"])
+
+    def battery(pid):
+        return (pid, ["python.exe", "scripts/postconfig_landing.py", "--cube", str(cube)])
+
+    # 1. no battery anywhere: blocks with the --force remedy, unchanged
+    monkeypatch.setattr(vpc, "_process_rows", lambda: [])
+    assert vpc.main() == 2
+    out = capsys.readouterr().out
+    assert "--force records every step" in out and "output_b3156_gate:" in out
+    # 2. a live, fresh battery: NOT blocking, says IN FLIGHT, no --force remedy
+    claim = vpc.claim_inflight(cube, source="test")
+    monkeypatch.setattr(vpc, "_process_rows", lambda: [battery(claim["pid"])])
+    assert vpc.main() == 0
+    out = capsys.readouterr().out
+    assert "IN FLIGHT (S6-B3156) output_b3156_gate" in out and "--force" not in out
+    monkeypatch.setattr(_s, "argv", ["verify_postconfig_complete.py", "--quiet"])
+    assert vpc.main() == 0                    # the turn gate's own call shape
+    capsys.readouterr()
+    monkeypatch.setattr(_s, "argv", ["verify_postconfig_complete.py"])
+    # 3. live but older than the bound: blocks, investigate, never --force
+    mk = _j.loads((cube / vpc.INFLIGHT_MARKER).read_text(encoding="utf-8"))
+    mk["started"] = _t.time() - vpc.INFLIGHT_STALE_S - 60
+    (cube / vpc.INFLIGHT_MARKER).write_text(_j.dumps(mk), encoding="utf-8")
+    assert vpc.main() == 2
+    out = capsys.readouterr().out
+    assert "BLOCK (S6-B3156)" in out and "--force" not in out, out
+    # 4. the table cannot be read: blocks, and says whether one runs is UNKNOWN
+    monkeypatch.setattr(vpc, "_process_rows", lambda: None)
+    assert vpc.main() == 2
+    assert "is UNKNOWN" in capsys.readouterr().out
+    # 5. a killed battery's marker, no process: blocks, says it never finished
+    monkeypatch.setattr(vpc, "_process_rows", lambda: [])
+    assert vpc.main() == 2
+    out = capsys.readouterr().out
+    assert "no longer running and never finished" in out and "--force" in out
+
+
+def test_b3156_supervisor_refuses_a_second_concurrent_battery(tmp_path, monkeypatch):
+    """S6-B3156: postconfig_landing.land() refuses (exit 3) while another
+    battery runs on the same cube - before the --if-not-landed no-op, since a
+    battery in flight has no landing record yet, and --force does not bypass
+    it - runs the battery when only its OWN pids (itself and the venv launcher)
+    name the cube, holds the in-flight marker for exactly the battery's
+    duration, and hands its battery child POSTCONFIG_SUPERVISED=1; a by-hand
+    run_postconfig refuses beside a live battery, skips the check when
+    supervised, and claims the marker while it runs."""
+    import importlib.util as _iu
+    import os as _os
+    import sys as _s
+    root = _b2520_scripts_on_path()
+    import verify_postconfig_complete as vpc
+    monkeypatch.setenv("POSTCONFIG_LANDINGS_PATH", str(tmp_path / "landings.jsonl"))
+    spec = _iu.spec_from_file_location("pl_b3156", root / "scripts" / "postconfig_landing.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    real_run_battery = m.run_battery
+
+    cube = tmp_path / "output_b3156_sup"
+    cube.mkdir()
+    (cube / "trade_exit_detail.csv").write_text("h\n1\n", encoding="utf-8")
+    seen = []
+    monkeypatch.setattr(m, "run_battery", lambda d, *, step1, step2:
+                        (seen.append(vpc.read_inflight_marker(d)), 0)[1])
+    monkeypatch.setattr(m, "ledger_steps", lambda c: ({}, []))
+    monkeypatch.setattr(m, "lens_findings", lambda c: [])
+    monkeypatch.setattr(m, "render_report", lambda: (True, "stub"))
+    kw = dict(source="manual", if_not_landed=True, force=False, no_git=True,
+              no_notify=True, step1=True, step2=False)
+    argv = ["python.exe", "scripts/postconfig_landing.py", "--cube", str(cube)]
+
+    # another battery on this cube: refused, nothing run, nothing recorded
+    monkeypatch.setattr(vpc, "_process_rows", lambda: [(999991, argv)])
+    assert m.land(cube, **kw) == 3
+    assert m.land(cube, **dict(kw, force=True, if_not_landed=False)) == 3
+    assert seen == [] and m.read_landings() == []
+    assert not (cube / vpc.INFLIGHT_MARKER).exists()
+    # an unreadable table refuses too (fail closed)
+    monkeypatch.setattr(vpc, "_process_rows", lambda: None)
+    assert m.land(cube, **kw) == 3 and seen == []
+    # only our own pids name the cube: runs, marker is ours during, gone after
+    own = [(_os.getpid(), argv), (_os.getppid(), argv)]
+    monkeypatch.setattr(vpc, "_process_rows", lambda: own)
+    assert m.land(cube, **kw) == 0
+    assert len(seen) == 1 and seen[0]["pid"] == _os.getpid(), seen
+    assert not (cube / vpc.INFLIGHT_MARKER).exists()
+    assert len(m.read_landings()) == 1
+
+    # a by-hand battery: refuses beside a live one, skips when supervised
+    import run_postconfig as rp
+    hand = []
+    monkeypatch.setattr(rp, "_main_unguarded", lambda: (
+        hand.append(vpc.read_inflight_marker(cube)), 0)[1])
+    monkeypatch.setattr(_s, "argv", ["run_postconfig.py", "--cube", str(cube)])
+    monkeypatch.setattr(vpc, "_process_rows", lambda: [(999991, argv)])
+    monkeypatch.delenv("POSTCONFIG_SUPERVISED", raising=False)
+    assert rp.main() == 3 and hand == []
+    monkeypatch.setenv("POSTCONFIG_SUPERVISED", "1")
+    assert rp.main() == 0 and hand == [None]       # supervised: no check, no claim
+    monkeypatch.delenv("POSTCONFIG_SUPERVISED")
+    monkeypatch.setattr(vpc, "_process_rows", lambda: [])
+    assert rp.main() == 0 and hand[-1]["pid"] == _os.getpid()
+    assert not (cube / vpc.INFLIGHT_MARKER).exists()
+
+    # the supervisor's battery child is told it is supervised
+    calls = []
+
+    class _Done:
+        returncode = 0
+    monkeypatch.setattr(m.subprocess, "run", lambda cmd, **k: (calls.append(k), _Done())[1])
+    assert real_run_battery(cube, step1=True, step2=False) == 0
+    assert calls and (calls[0].get("env") or {}).get("POSTCONFIG_SUPERVISED") == "1"
+
+
+def test_b3156_direct_battery_refuses_beside_a_live_process(tmp_path):
+    """S6-B3156, on the LIVE path: a real python process whose script is a
+    battery script naming the cube is seen by the real process-table reader
+    (positive control first), and a by-hand run_postconfig.py on that cube
+    then refuses with exit 3 and claims nothing. The stand-in process runs a
+    file NAMED postconfig_landing.py that only sleeps, so no battery runs."""
+    import subprocess as _sp
+    import sys as _s
+    import time as _t
+    root = _b2520_scripts_on_path()
+    import verify_postconfig_complete as vpc
+    cube = tmp_path / "output_b3156_direct"
+    cube.mkdir()
+    (cube / "trade_exit_detail.csv").write_text("h1,h2\na,1\n", encoding="utf-8")
+    fake = tmp_path / "fake"
+    fake.mkdir()
+    stand_in = fake / "postconfig_landing.py"
+    stand_in.write_text("import time\ntime.sleep(120)\n", encoding="utf-8")
+    base = getattr(_s, "_base_executable", None) or _s.executable
+    p = _sp.Popen([base, str(stand_in), "--cube", str(cube)])
+    try:
+        for _ in range(100):
+            if vpc.battery_in_flight(cube)["state"] == "live":
+                break
+            _t.sleep(0.1)
+        st = vpc.battery_in_flight(cube)
+        assert st["state"] == "live" and p.pid in st["pids"], st
+        r = _sp.run([_s.executable, str(root / "scripts" / "run_postconfig.py"),
+                     "--cube", str(cube), "--step1-cube"],
+                    cwd=str(root), capture_output=True, text=True, timeout=600)
+        assert r.returncode == 3, (r.stdout[-800:], r.stderr[-800:])
+        assert "REFUSED (S6-B3156)" in r.stdout
+        assert not (cube / vpc.INFLIGHT_MARKER).exists()
+    finally:
+        p.kill()
+        p.wait(timeout=60)

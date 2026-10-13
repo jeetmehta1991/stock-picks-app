@@ -1481,7 +1481,7 @@ instance is recorded in the campaign log).
   True)`, default TRUE). On a real engine
   landing that call is a no-op: the engine hook lands the cube first with NO step flag, and
   `run_postconfig.derive_step` takes the step from the manifest window, where a window ending after
-  HO_START is Step 2 (`run_postconfig.py:398-417`; `postconfig_landing.py:451-457`). So a copied Step-1
+  HO_START is Step 2 (`run_postconfig.py:398-417`; `_postconfig_landing_hook` in `backtest/run_phase1a.py`, which passes no step flag - cited by symbol since its old `postconfig_landing.py` line pair had drifted, S6-B3160). So a copied Step-1
   spec arms the failing check only on the FALLBACK path, where run_wave's call is the landing. (The
   pre-B3096 text said a copied Step-1 spec arms a check guaranteed to fail; that holds only on the
   fallback path.)
@@ -1619,7 +1619,7 @@ the owner asked six times to have removed. L736 / CHECKLIST #288.)*
 (`run_phase1a.py:713`; `POSTCONFIG_LANDING=0` opts out, logged; a run that dies before writing a cube is
 the monitor's case, L641) -> `scripts/postconfig_landing.py`, ONE supervisor shared by every launch path
 and idempotent per cube fingerprint (so `run_wave.py`'s own call after a real engine run is a no-op,
-after a substitute engine IS the landing, and a manual call behaves the same) -> `scripts/run_postconfig.py`
+after a substitute engine IS the landing, and a manual call behaves the same; it refuses, exit 3, to start a second battery while one runs on the same cube, S6-B3156) -> `scripts/run_postconfig.py`
 (every step written on every run, FAIL included; `FAMILIES` fails CLOSED on a strategy with no
 registered grader) -> `output_audit/postconfig_ledger.json` -> `output_audit/POSTCONFIG_REPORT.md` (the
 ONE report, B2211, re-rendered on every landing by `scripts/postconfig_doc.py` (`build()`), with a
@@ -1643,7 +1643,7 @@ pending a short cube: S6-B2118b resolved it by instrumenting the borrow-trap blo
 helper's own definition (`_BORROW_TRAP_COUNTER`, `backtest/signals/screener.py:141`), so it needs no
 short cube - though its row keeps a trigger: the first wave containing a SHORT strategy raises it to
 P1. The runner by hand:
-`PYTHONPATH=".;scripts" python scripts/run_postconfig.py --cube output_<dir> [--step1-cube] [--write-ledger]`.
+`PYTHONPATH=".;scripts" python scripts/run_postconfig.py --cube output_<dir> [--step1-cube] [--write-ledger]`. Beside a battery already running on that cube it refuses, exit 3 (S6-B3156).
 
 ### 5.2 The nine steps, and the rule
 
