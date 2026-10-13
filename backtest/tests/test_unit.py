@@ -54579,3 +54579,52 @@ print(json.dumps(out))
     for env, where in READ_ELSEWHERE.items():
         src = (root / "scripts" / where).read_text(encoding="utf-8")
         assert f'environ.get("{env}"' in src, (env, where)
+
+
+
+def test_b3151_band_order_is_total_and_seed_independent():
+    """S6-B3151: _band_key gave every non-numeric string the same key, so a
+    band of strings rendered in SET order - which moves with PYTHONHASHSEED -
+    and a no-op regeneration of POSTCONFIG_REPORT.md looked like a change.
+    (1) Over every SPECS free_band, distinct values get DISTINCT keys (a total
+    order, so set iteration can never decide the text); (2) the known orders:
+    numbers < booleans < text < None; (3) the rendered cells are identical in
+    two child processes under different PYTHONHASHSEED values."""
+    import json as _j
+    import os as _o
+    import subprocess as _sp
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pv
+    bands = [(f"{s}.{p['id']}", p["free_band"]) for s, e in pv.SPECS.items()
+             for p in e.get("params", []) if p.get("free_band")]
+    assert len(bands) >= 10, len(bands)             # never vacuously empty (#226)
+    assert any(all(isinstance(v, str) for v in fb) for _n, fb in bands), \
+        "no all-string band left to exercise the tie case"
+    for name, fb in bands:
+        vals = {repr(v) for v in fb}
+        assert len({pv._band_key(v) for v in vals}) == len(vals), (name, sorted(vals))
+    assert pv._band_str({"'short'", "'long'"}) == "long,short"
+    assert pv._band_str({"None", "True", "False", "'b'", "2.5", "-1"}) == \
+        "-1,2.5,False,True,b,None"
+    # numeric text sorts as a NUMBER: as text, "'10'" < "'9'" would print 10,9
+    assert pv._band_str({"'10'", "'9'"}) == "9,10"
+    child = """
+import json, sys
+sys.path.insert(0, sys.argv[1])
+import producer_variant_table as pv
+print(json.dumps([pv._band_str({repr(v) for v in p["free_band"]})
+                  for e in pv.SPECS.values() for p in e.get("params", [])
+                  if p.get("free_band")]))
+"""
+    outs = []
+    for seed in ("1", "2"):
+        r = _sp.run([_s.executable, "-c", child, str(root / "scripts")],
+                    env=dict(_o.environ, PYTHONHASHSEED=seed),
+                    capture_output=True, text=True, cwd=str(root), timeout=300)
+        assert r.returncode == 0, r.stderr[-600:]
+        outs.append(_j.loads(r.stdout.strip().splitlines()[-1]))
+    assert outs[0] == outs[1], [x for x in zip(outs[0], outs[1]) if x[0] != x[1]]

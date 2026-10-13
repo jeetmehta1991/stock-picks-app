@@ -4044,13 +4044,24 @@ def _band_key(x: str):
     ONE definition, used by both the in-row P1-P6 column and the
     Parameters-tested block - two sorts of the same values diverge the moment
     someone edits one (L593).
+
+    S6-B3151: a TOTAL order. Every non-numeric string used to share the key
+    (1, 1.0) - a repr like "'1/3'" carries its quotes, so float() failed even
+    on numeric text - and tied values kept their SET order, which moves with
+    PYTHONHASHSEED: a no-op regeneration of POSTCONFIG_REPORT.md printed the
+    bl_ rows' P8 band in two orders, and the 3 all-string bands among the 16
+    SPECS free bands were exposed. Now: numbers (quotes stripped) <
+    booleans < other text by its value < None.
     """
     if x == "None":
-        return (2, 0.0)
+        return (3, 0.0, "")
+    t = x.strip("'")
     try:
-        return (0, float(x))
+        return (0, float(t), "")
     except ValueError:
-        return (1, 0.0) if x == "False" else (1, 1.0)
+        if t in ("False", "True"):
+            return (1, 0.0 if t == "False" else 1.0, "")
+        return (2, 0.0, t)
 
 
 def _band_str(vals) -> str:
