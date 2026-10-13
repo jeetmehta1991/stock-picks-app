@@ -54628,3 +54628,44 @@ print(json.dumps([pv._band_str({repr(v) for v in p["free_band"]})
         assert r.returncode == 0, r.stderr[-600:]
         outs.append(_j.loads(r.stdout.strip().splitlines()[-1]))
     assert outs[0] == outs[1], [x for x in zip(outs[0], outs[1]) if x[0] != x[1]]
+
+
+
+def test_b3163_power_state_is_disclosed_at_gate_ends_and_in_the_header():
+    """S6-B3163: a long run on a laptop's battery has a hard horizon - on
+    2026-10-13 a battery sleep froze a pyramid and two holdout nulls for
+    10h17m03s and nothing recorded the power source. pyramid_gate._power_state
+    is the ONE definition: its forms on the seam, a live call that never
+    raises, the gate's run() sampling it at BOTH ends and writing both lines,
+    and the turn header carrying it."""
+    import ast as _ast
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import pyramid_gate as pg
+    import build_workflow_state as bws
+    assert pg._power_state({"ACLineStatus": 1, "BatteryLifePercent": 100}) == "ac"
+    assert pg._power_state({"ACLineStatus": 0, "BatteryLifePercent": 63}) == "battery 63%"
+    assert pg._power_state({"ACLineStatus": 0, "BatteryLifePercent": 255}) == "battery ?%"
+    assert pg._power_state({"ACLineStatus": 255, "BatteryLifePercent": 50}) == "unknown"
+    assert pg._power_state({"ACLineStatus": "x"}) == "unknown"
+    live = pg._power_state()
+    assert live in ("ac", "unknown") or live.startswith("battery "), live
+    tree = _ast.parse((root / "scripts" / "pyramid_gate.py").read_text(encoding="utf-8"))
+    run = next(n for n in _ast.walk(tree)
+               if isinstance(n, _ast.FunctionDef) and n.name == "run")
+    calls = [c for c in _ast.walk(run) if isinstance(c, _ast.Call)
+             and getattr(c.func, "id", "") == "_power_state"]
+    assert len(calls) >= 2, len(calls)            # start AND end
+    lits = {c.value for c in _ast.walk(run)
+            if isinstance(c, _ast.Constant) and isinstance(c.value, str)}
+    # implicitly concatenated f-string pieces merge, so a literal can read
+    # "<newline>power_start=" - match inside each literal, not equality
+    assert (any("power_start=" in s for s in lits)
+            and any("power_end=" in s for s in lits)), sorted(
+        x for x in lits if "power" in x)
+    assert "; power=" in bws.banner()
+    st = bws.build()
+    assert st["power"] in ("ac", "unknown") or st["power"].startswith("battery "), st

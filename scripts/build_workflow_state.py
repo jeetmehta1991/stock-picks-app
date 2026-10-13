@@ -69,6 +69,7 @@ def build() -> dict:
     open_rows.sort(key=lambda r: (r["prio"], r["state"] != "RUNNING", r["id"]))
 
     engine = pg._engine_inflight()
+    power = pg._power_state()           # S6-B3163: one definition
     workable = [r for r in open_rows if r["state"] == "OPEN"]
     if engine and engine not in ("none", "unknown"):
         next_action = f"engine run in flight ({engine}) - await its landing; no pyramid beside it (B3108)"
@@ -87,6 +88,7 @@ def build() -> dict:
     state = {
         "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "engine_inflight": engine,
+        "power": power,
         "open_tickets": open_rows[:5],
         "n_nonterminal": len(open_rows),
         "next_mandated_action": next_action,
@@ -109,7 +111,8 @@ def banner() -> str:
     try:
         st = build()
         lines = [f"[WORKFLOW STATE (D1, S6-B3120e) - derived {st['generated_utc']}"
-                 f"; engine_inflight={st['engine_inflight']}]",
+                 f"; engine_inflight={st['engine_inflight']}"
+                 f"; power={st.get('power', 'unknown')}]",
                  f"  NEXT: {st['next_mandated_action']}"]
         for r in st["open_tickets"]:
             lines.append(f"  {r['prio']} {r['state']:8s} {r['id']}: "

@@ -499,6 +499,10 @@ def run(out: Path, root: Path, pytest_args: list[str],
     before = fingerprint(root)
     t0 = time.time()
     chain_start = _chain_inflight()
+    power_start = _power_state()
+    if power_start.startswith("battery"):
+        print(f"[power] S6-B3163: the gate starts ON BATTERY ({power_start}) - a "
+              "battery sleep suspends this run until the machine wakes")
     # B2856 (S6-B2854b): a stopper needs the TREE, not the wrapper. TaskStop
     # on the launching shell orphans this process and its pytest child (four
     # processes were hand-killed at B2854, two racing on one artifact). The
@@ -553,6 +557,7 @@ def run(out: Path, root: Path, pytest_args: list[str],
         # reads as in flight although it barely overlapped. Record BOTH
         # ends: 'none' on both is the only honest all-clear.
         chain_end = _chain_inflight()
+        power_end = _power_state()
         chain = chain_start if chain_start != "none" else chain_end
         engine_end = _engine_inflight()
         engine = engine_start if engine_start != "none" else engine_end
@@ -563,6 +568,8 @@ def run(out: Path, root: Path, pytest_args: list[str],
                      f"chain_inflight={chain}\n"
                      f"chain_inflight_start={chain_start}\n"
                      f"chain_inflight_end={chain_end}\n"
+                     f"power_start={power_start}\n"
+                     f"power_end={power_end}\n"
                      f"engine_inflight={engine}\n"
                      f"engine_inflight_start={engine_start}\n"
                      f"engine_inflight_end={engine_end}\n"
@@ -811,6 +818,46 @@ def _engine_dead_within_window(now=None, rows=None, root=None) -> str:
         dead = sorted(d for d, pid in _engine_heartbeats(root, now)
                       if pid not in pids)
         return ",".join(dead) if dead else "none"
+    except Exception:
+        return "unknown"
+
+
+def _power_state(status: dict | None = None) -> str:
+    """S6-B3163: the machine's power source as the OS reports it - "ac",
+    "battery N%" or "unknown". Disclosed at gate start and end and in the
+    turn's WORKFLOW STATE header, because a long run on a laptop's battery
+    has a hard horizon: on 2026-10-13 a sleep with Sleep Reason Battery
+    (Kernel-Power 42) froze a pyramid and two holdout nulls for 10h17m03s.
+    A DISCLOSURE, never a refusal (L721; #310). `status` is the test seam -
+    GetSystemPowerStatus's ACLineStatus / BatteryLifePercent. Never raises:
+    a disclosure that could break what it annotates would be worse than none.
+    """
+    try:
+        if status is None:
+            if sys.platform != "win32":
+                return "unknown"
+            import ctypes
+
+            class _SPS(ctypes.Structure):
+                _fields_ = [("ACLineStatus", ctypes.c_ubyte),
+                            ("BatteryFlag", ctypes.c_ubyte),
+                            ("BatteryLifePercent", ctypes.c_ubyte),
+                            ("SystemStatusFlag", ctypes.c_ubyte),
+                            ("BatteryLifeTime", ctypes.c_ulong),
+                            ("BatteryFullLifeTime", ctypes.c_ulong)]
+            s = _SPS()
+            if not ctypes.windll.kernel32.GetSystemPowerStatus(ctypes.byref(s)):
+                return "unknown"
+            status = {"ACLineStatus": s.ACLineStatus,
+                      "BatteryLifePercent": s.BatteryLifePercent}
+        ac = status.get("ACLineStatus")
+        if ac == 1:
+            return "ac"
+        if ac == 0:
+            pct = status.get("BatteryLifePercent")
+            ok = isinstance(pct, int) and not isinstance(pct, bool) and 0 <= pct <= 100
+            return f"battery {pct}%" if ok else "battery ?%"
+        return "unknown"
     except Exception:
         return "unknown"
 
