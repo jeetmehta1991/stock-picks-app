@@ -49,6 +49,7 @@ from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
 from walk_forward_r5_cells import _sharpe, bh_fdr            # noqa: E402
 from backtest.signals.screener import ALL_STRATEGIES         # noqa: E402
+from backtest.engine.multiple_testing_correction import EXPLORATORY_STRATEGIES  # noqa: E402
 from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY,  # noqa: E402
                              STRATEGIES_DISABLED_MISSING_PRODUCER, DEPRECATED_STRATEGIES)
 
@@ -608,6 +609,66 @@ def step2_admissions_section(A, admissions_path=None) -> None:
     A("")
 
 
+
+def _num3(v):
+    """None renders '-': an absent measurement is never a zero (L580)."""
+    return f"{v:.3f}" if isinstance(v, (int, float)) and not isinstance(v, bool) else "-"
+
+
+def mirror_evidence_lines(retained, r5_rows, exploratory) -> list:
+    """S6-B3168 (standing directive 2026-07-25, B1380 / L914): every retained
+    mirror is shown with its OWN measured holdout result and its code-level
+    EXPLORATORY status, beside the statement that structural symmetry is not
+    economic symmetry. The roster printed names only, for 10 of 10 mirrors,
+    so a mirror kept against a negative result read like one kept on none.
+    `retained` is [(mirror, long)], `r5_rows` maps a strategy to this run's
+    R5 grade row (the funnel's selector, gates and net basis), `exploratory`
+    is backtest.engine.multiple_testing_correction.EXPLORATORY_STRATEGIES.
+    A mirror with no R5 grade says so; nothing absent renders as a number."""
+    out = [
+        "**Each retained mirror's OWN measured holdout result** (standing directive "
+        "2026-07-25; S6-B3168). Structural symmetry is not economic symmetry: equity "
+        "drift, borrow cost and unbounded squeeze risk mean a mirror is not expected to "
+        "earn its long's return, so each is judged on its own result below - and keeping "
+        "one whose result is negative is a deliberate override of that evidence, not an "
+        "absence of data. Source: this run's R5 grade (best exit by in-sample gates, net "
+        "of costs - the funnel's selector and gates). EXPLORATORY = listed in "
+        "`backtest.engine.multiple_testing_correction.EXPLORATORY_STRATEGIES` "
+        "(do-not-deploy; outside the multiple-testing family).",
+        "",
+        "| mirror | mirror of | EXPLORATORY | R5 exit | holdout Sharpe | lower bound "
+        "| holdout trades | live gates | R5 verdict |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for m, long_ in retained:
+        exp = "yes" if m in exploratory else "**no**"
+        r = r5_rows.get(m) or {}
+        h = r.get("holdout")
+        if not h:
+            out.append(f"| `{m}` | `{long_}` | {exp} | - | - | - | - | - | no R5 grade |")
+            continue
+        n = h.get("n")
+        gates = (f"{h.get('n_gates')} of {h.get('n_gates_evaluable')}"
+                 if h.get("n_gates") is not None else "-")
+        out.append(f"| `{m}` | `{long_}` | {exp} | {r.get('exit') or '-'} "
+                   f"| {_num3(h.get('sharpe'))} | {_num3(h.get('ci_lo'))} "
+                   f"| {n if n is not None else '-'} | {gates} "
+                   f"| {r.get('verdict') or '-'} |")
+    return out
+
+
+def exploratory_admissions_line(adms, exploratory) -> str:
+    """S6-B3168 / L914: an admitted line the code tags EXPLORATORY (do-not-
+    deploy, outside the multiple-testing family) shows that status on the
+    roster - 0 of 2 such admissions did."""
+    tagged = [a["strategy"] for a in adms if a.get("strategy") in exploratory]
+    return (f"**Code-tagged EXPLORATORY admissions ({len(tagged)} of {len(adms)}; "
+            "S6-B3168):** "
+            + (", ".join(f"`{s}`" for s in tagged) if tagged else "none")
+            + " - listed in `EXPLORATORY_STRATEGIES`: do-not-deploy and outside the "
+              "multiple-testing family; the status rides with the admission.")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--output", default="PHASE_1B_ROSTER.md")
@@ -876,6 +937,9 @@ def main() -> int:
     # roster and the mirrors - identity from the admissions file, metrics
     # re-derived from each admission's own grading artifact.
     step2_admissions_section(A)
+    # S6-B3168 / L914: the code's EXPLORATORY status rides with the admissions.
+    A(exploratory_admissions_line(load_admissions(), EXPLORATORY_STRATEGIES))
+    A("")
     A("## Symmetric short mirrors")
     A("")
     A("Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is "
@@ -933,6 +997,22 @@ def main() -> int:
     A(f"- **NEEDS CREATION ({len(_new_all)}; funnel {len(mirrors_new)} + Step-2 "
       f"admissions {len(adm_mirrors_new)}):** " +
       (", ".join(f"`{m}`" for m in _new_all) if _new_all else "none"))
+    A("")
+    # S6-B3168 / L914: each retained mirror's OWN measured result and its
+    # code-level EXPLORATORY status, beside the asymmetry statement.
+    _long_of = {}
+    for _r in kept:
+        if _r.get("mirror_status") == "REGISTERED" and _r.get("mirror"):
+            _long_of.setdefault(_r["mirror"], _r["strategy"])
+    for _a in _adms:
+        _ms, _mn = mirror_status(_a["strategy"])
+        if _ms == "REGISTERED" and _mn:
+            _long_of.setdefault(_mn, _a["strategy"])
+    _r5 = {_r["strategy"]: _r for _r in rows if _r.get("cube") == "R5"}
+    for _line in mirror_evidence_lines(
+            [(m, _long_of.get(m, "?")) for m in mirrors_reg + adm_mirrors_reg],
+            _r5, EXPLORATORY_STRATEGIES):
+        A(_line)
     A("")
     A(f"**Deployable total: {len(kept)} graded cells + {len(mirrors_reg)} funnel mirrors "
       f"+ {len(mirrors_dual)} dual self-mirrors + {len(_adms)} Step-2 admissions "
@@ -1005,6 +1085,7 @@ def main() -> int:
          "dup_of": dup_of,
          "mirrors": {"registered": mirrors_reg, "long_only_data": mirrors_asym,
                      "dual_self": mirrors_dual, "needs_creation": mirrors_new,
+                     "admissions_registered": adm_mirrors_reg,
                      "admissions_long_only_data": adm_mirrors_asym,
                      "admissions_needs_creation": adm_mirrors_new},
          "roster": [{k: v for k, v in r.items() if k != "trades"} for r in kept],

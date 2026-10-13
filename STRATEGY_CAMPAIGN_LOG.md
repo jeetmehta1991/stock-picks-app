@@ -2375,7 +2375,9 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   deliberately wide 2025 shutdown-backlog window.
 - **Mirror:** `pairs_mean_reversion_short` REGISTERED and counted; the copper COT filter is not
   mechanically mirrored. It is a roster member and stays closed at launch until the owner extends the
-  S6-B2420 Step-2 override to it (S6-B3145b).
+  S6-B2420 Step-2 override to it (S6-B3145b). Its own R5 holdout (net, best exit by in-sample
+  gates) is Sharpe -0.184, lower bound -0.375, 1,378 trades, 2 of 6 gates - DROP; the
+  default-add directive keeps it as a stated override (S6-B3168).
 - **Table A charter:** archived to `archive/2026-10-13-pairs-admission-table-a/` when the row left
   the TIGHTEN lane on admission (S6-B3167; the B3116 precedent for three_white_soldiers).
 - **Evidence:** output_audit/b3145_pairs_admission_checks.json, output_audit/b3145_pairs_prod_holdout_null.json,

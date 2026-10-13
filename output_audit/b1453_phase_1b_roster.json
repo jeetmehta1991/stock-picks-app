@@ -48,6 +48,12 @@
       "smc_bos_retest_entry"
     ],
     "needs_creation": [],
+    "admissions_registered": [
+      "smc_breaker_block_short",
+      "pead_short_negative_yoy_growth",
+      "three_black_crows_short",
+      "pairs_mean_reversion_short"
+    ],
     "admissions_long_only_data": [
       "pead_with_smart_money_long",
       "institutional_breakout_confirmation_long",

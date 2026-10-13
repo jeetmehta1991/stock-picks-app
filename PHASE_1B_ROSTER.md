@@ -145,6 +145,8 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 
 **Read the evidence shape honestly (L636).** These cells come from a parameter SEARCH (300 combinations per config; no multiplicity correction at the grid stage per owner ruling D2, psr being the remaining significance-style control), and the gates are computed on the 1-year holdout except the full-period trade count. Where a holdout Sharpe far exceeds its in-sample value on a small holdout n, the margin is fragile - the IS and holdout confidence lower bounds are rendered beside the point estimates so the interval width is never hidden. Engine wiring of an admitted combination is tracked separately (S6-B2411); admission to this document is not deployment.
 
+**Code-tagged EXPLORATORY admissions (2 of 16; S6-B3168):** `xs_momentum_top_decile`, `pairs_mean_reversion_long` - listed in `EXPLORATORY_STRATEGIES`: do-not-deploy and outside the multiple-testing family; the status rides with the admission.
+
 ## Symmetric short mirrors
 
 Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is retained irrespective of its own cube result. The single excuse is a **long-only DATA SOURCE** (13F / insider / congressional / buyback), where a mechanical inverse is economically false rather than merely untested (B611 reversal).
@@ -167,6 +169,21 @@ Owner standing directive: *promoted longs carry short mirrors by default* - the 
     - `xs_low_beta_with_smart_money_long` - consumes `cfo_buy`, `insider_cluster_active`, `institutional_buy`, `institutional_strong_buy`, `large_dollar_buy`
 - **DUAL - own short branch is the mirror, nothing to create (1):** `smc_bos_retest_entry`
 - **NEEDS CREATION (0; funnel 0 + Step-2 admissions 0):** none
+
+**Each retained mirror's OWN measured holdout result** (standing directive 2026-07-25; S6-B3168). Structural symmetry is not economic symmetry: equity drift, borrow cost and unbounded squeeze risk mean a mirror is not expected to earn its long's return, so each is judged on its own result below - and keeping one whose result is negative is a deliberate override of that evidence, not an absence of data. Source: this run's R5 grade (best exit by in-sample gates, net of costs - the funnel's selector and gates). EXPLORATORY = listed in `backtest.engine.multiple_testing_correction.EXPLORATORY_STRATEGIES` (do-not-deploy; outside the multiple-testing family).
+
+| mirror | mirror of | EXPLORATORY | R5 exit | holdout Sharpe | lower bound | holdout trades | live gates | R5 verdict |
+|---|---|---|---|---|---|---|---|---|
+| `52w_low_breakdown_pullback_short` | `52w_high_breakout_pullback_long` | **no** | hybrid_50pct_target | -0.307 | -0.887 | 73 | 3 of 6 | DROP |
+| `mfi_overbought_short` | `mfi_oversold_with_smart_money_long` | yes | - | - | - | - | - | no R5 grade |
+| `poc_magnet_short` | `poc_magnet_long` | yes | - | - | - | - | - | no R5 grade |
+| `totm_short` | `totm_long` | yes | - | - | - | - | - | no R5 grade |
+| `xs_combined_momentum_high_ivol_short` | `xs_combined_momentum_low_ivol` | yes | - | - | - | - | - | no R5 grade |
+| `xs_momentum_bottom_decile_short` | `xs_momentum_with_smart_money_long` | **no** | hybrid_50pct_target | -0.184 | -0.518 | 322 | 2 of 6 | DROP |
+| `smc_breaker_block_short` | `smc_breaker_block_long` | **no** | hybrid_50pct_target | -0.298 | -0.568 | 427 | 2 of 6 | DROP |
+| `pead_short_negative_yoy_growth` | `pead_long_high_yoy_growth_only` | **no** | class_time_stop | -1.019 | -1.286 | 496 | 2 of 6 | DROP |
+| `three_black_crows_short` | `three_white_soldiers` | **no** | hybrid_50pct_target | -0.686 | -0.915 | 470 | 2 of 6 | DROP |
+| `pairs_mean_reversion_short` | `pairs_mean_reversion_long` | yes | breakeven_plus_trail | -0.184 | -0.375 | 1378 | 2 of 6 | DROP |
 
 **Deployable total: 7 graded cells + 6 funnel mirrors + 1 dual self-mirrors + 16 Step-2 admissions + 4 admission mirrors = 33 distinct strategies** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
 

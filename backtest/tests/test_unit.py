@@ -25950,6 +25950,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("THE GREP IS A COMPLETENESS SEARCH - COUNT FIRST, NEVER HEAD IT",
          "L913 (B3139q-r69e): the admission's name grep was cut at head -20 "
          "and the fixture past the cut turned the gate red"),
+        # B3139q-r69f: the L914 row - pin the REMEDY it names (L548).
+        ("READ THE DIRECTIVE ITSELF AND CHECK EACH OF ITS CLAUSES AT EXECUTION - THE STEP IS A PARAPHRASE",
+         "L914 (B3139q-r69f): a runbook step paraphrased the mirror directive "
+         "and dropped two of its clauses"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26170,7 +26174,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # fragment; same-call with its tripwire row per B2130).
     # 328 -> 329 at B3139q-r69e (the L913 completeness-sweep clause in the
     # L801 row).
-    assert len(gutted) == 329, gutted
+    # 329 -> 330 at B3139q-r69f (the L914 read-the-directive-not-the-step row).
+    assert len(gutted) == 330, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -54913,3 +54918,80 @@ def test_b3167_admission_ripples_live_where_the_next_admission_reads():
                plan.index("## 7. THE LOCKED REPORTING STANDARD")]
     assert "9. **Land the admission's RIPPLES in the same batch**" in s63
     assert "never `head` it" in s63 and "admission-table-a" in s63
+
+
+def test_b3168_roster_shows_each_mirrors_own_result_and_exploratory():
+    """S6-B3168 / L914 (owner question 2026-10-13, 'Has the mirror short also
+    been added to the roster as per requirements?'): the standing mirror
+    directive (2026-07-25) says to report a retained mirror's OWN measured
+    holdout result and to state, beside the mirror list, that structural
+    symmetry is not economic symmetry. The roster printed names only, for 10
+    of 10 mirrors. Behaviour first (the two pure renderers, both directions,
+    an absent grade never a number), then the committed roster against the
+    builder's own JSON - DERIVED, never hand-listed - and the runbook step
+    that now carries the two clauses."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import build_phase_1b_roster as b
+    from backtest.engine.multiple_testing_correction import EXPLORATORY_STRATEGIES as E
+
+    rows = {"m1": {"exit": "x_exit", "verdict": "DROP", "holdout": {
+        "sharpe": -0.184, "ci_lo": -0.375, "n": 1378, "n_gates": 2,
+        "n_gates_evaluable": 6}}}
+    out = b.mirror_evidence_lines([("m1", "l1"), ("m2", "l2")], rows, {"m1"})
+    assert any("Structural symmetry is not economic symmetry" in l for l in out), out
+    r1 = [l for l in out if l.startswith("| `m1` |")]
+    r2 = [l for l in out if l.startswith("| `m2` |")]
+    assert len(r1) == 1 and len(r2) == 1, out
+    c1 = [c.strip() for c in r1[0].strip("|").split("|")]
+    assert c1 == ["`m1`", "`l1`", "yes", "x_exit", "-0.184", "-0.375", "1378",
+                  "2 of 6", "DROP"], c1
+    c2 = [c.strip() for c in r2[0].strip("|").split("|")]
+    assert c2[2] == "**no**" and c2[-1] == "no R5 grade", c2
+    assert "0.000" not in r2[0] and "None" not in r2[0], r2[0]
+    line = b.exploratory_admissions_line(
+        [{"strategy": "a"}, {"strategy": "b"}], {"b"})
+    assert "(1 of 2;" in line and "`b`" in line and "`a`" not in line, line
+
+    doc = (root / "PHASE_1B_ROSTER.md").read_text(encoding="utf-8").splitlines()
+    sc = _j.loads((root / "output_audit" / "b1453_phase_1b_roster.json")
+                  .read_text(encoding="utf-8"))
+    retained = sc["mirrors"]["registered"] + sc["mirrors"]["admissions_registered"]
+    assert "pairs_mean_reversion_short" in retained, retained
+    r5 = {r["strategy"]: r for r in sc["all_rows"] if r["cube"] == "R5"}
+    i0 = next(i for i, l in enumerate(doc)
+              if l.startswith("**Each retained mirror's OWN measured holdout result**"))
+    body = []
+    for l in doc[i0 + 1:]:
+        if l.startswith("| `"):
+            body.append(l)
+        elif body:
+            break
+    got = {}
+    for l in body:
+        c = [x.strip() for x in l.strip("|").split("|")]
+        got[c[0].strip("`")] = c
+    assert sorted(got) == sorted(retained), (sorted(got), sorted(retained))
+    for m in retained:
+        c = got[m]
+        assert c[2] == ("yes" if m in E else "**no**"), (m, c)
+        h = (r5.get(m) or {}).get("holdout")
+        if h:
+            assert c[4] == f"{h['sharpe']:.3f}" and c[6] == str(h["n"]), (m, c, h)
+        else:
+            assert c[-1] == "no R5 grade", (m, c)
+    adm = _j.loads((root / "output_audit" / "phase_1b_step2_admissions.json")
+                   .read_text(encoding="utf-8"))["admissions"]
+    want = [x["strategy"] for x in adm if x["strategy"] in E]
+    el = [l for l in doc if l.startswith("**Code-tagged EXPLORATORY admissions (")]
+    assert len(el) == 1 and f"({len(want)} of {len(adm)};" in el[0], el
+    assert all(f"`{s}`" in el[0] for s in want), (want, el)
+
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    s63 = plan[plan.index("### 6.3 Which combination advances"):
+               plan.index("## 7. THE LOCKED REPORTING STANDARD")]
+    assert "already registered owes the same two clauses" in s63

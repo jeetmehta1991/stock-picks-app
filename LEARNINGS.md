@@ -24824,3 +24824,35 @@ test_b2123; the runbook's admission procedure (6.3) gained step 9; and test_b316
 lane count equal to the directory and pins step 9. Deletion considered and declined: a generator
 that archives a terminal row's charter itself would have acted on 2 of 16 admissions so far (the two
 ruled after the lane directory existed), and the failing test now prints the move.
+
+### L914 - A RUNBOOK STEP PARAPHRASED A STANDING DIRECTIVE AND DROPPED TWO OF ITS CLAUSES; THE ADMISSION FOLLOWED THE STEP AND THE MIRROR'S OWN NEGATIVE RESULT WENT UNREPORTED (B3139q-r69f, 2026-10-13)
+
+**What happened.** The owner asked whether the pairs admission's mirror short had been added "as per
+requirements". Read clause by clause against the standing mirror directive (owner 2026-07-25, B1380),
+pairs_mean_reversion_short met 3 of 5: added and counted, not excusable (the pairs signal is
+price-based, not a long-only data source), and tagged EXPLORATORY in code. Two clauses were unmet: the
+directive says to report a mirror's OWN measured holdout result, and to say beside the mirror list that
+structural symmetry is not economic symmetry. Its own R5 grade (net, best exit by in-sample gates) is
+holdout Sharpe -0.184, lower bound -0.375, 1,378 trades, 2 of 6 gates, DROP - so keeping it is a
+deliberate override of negative evidence, and the admission never said so. The roster printed names
+only for 10 of 10 retained mirrors; rendered, 6 of them carry an R5 grade and 6 of those
+6 are negative, 5 of 10 are not EXPLORATORY-tagged in code, and 0 of 2
+code-EXPLORATORY admissions had shown that status on the roster.
+
+**Why.** The admission followed runbook 6.3 step 6 - count the registered mirror short - and that step
+carries the directive's EXPLORATORY and asymmetry clauses only for a mirror that has to be CREATED,
+never for one already registered. Following a step that implements a directive feels like following
+the directive, and the clauses the step dropped are invisible from inside it. Compliance failure
+against CHECKLIST (m), the economic-symmetry check the dropped clause belongs to.
+
+**Rule.** When a procedure step implements a standing owner directive, read the directive itself at
+execution and check each of its clauses - the step is a paraphrase, and a paraphrase keeps the clause
+someone needed that day. Where a dropped clause is a reporting duty, put it in the generator that
+produces the report, so it holds for every member without anyone remembering it.
+
+**Mechanism.** build_phase_1b_roster now renders, on every regeneration, each retained mirror's own R5
+holdout result and code-level EXPLORATORY status beside the asymmetry statement, plus the
+code-EXPLORATORY admissions; pinned by test_b3168 (mutation proof 5 of 5), which also pins runbook 6.3
+step 6's new clause. The 5 untagged mirrors are not tagged here: EXPLORATORY membership feeds the
+cube's multiple-testing family count (multiple_testing_correction.py, cube_eligible_for_multiple_testing),
+so tagging moves a verdict input and is the owner's (S6-B3168a).

@@ -1955,7 +1955,11 @@ sets the CRITERION - it does not waive the per-step approvals (§0.6).
    render time by exact combination + exit match (never hand-copied), refusing loudly when the evidence
    row cannot be located or did not PASS.
 6. **Count the REGISTERED mirror short** (S6-B2417); a missing mirror is created under the standing
-   mirror directive (§1.3), tagged EXPLORATORY with its economic asymmetry surfaced.
+   mirror directive (§1.3), tagged EXPLORATORY with its economic asymmetry surfaced. **A mirror that is
+   already registered owes the same two clauses** (S6-B3168 / L914): the roster shows each retained
+   mirror's OWN measured holdout result and its code-level EXPLORATORY status beside the statement that
+   structural symmetry is not economic symmetry - build_phase_1b_roster renders them on every
+   regeneration - so a mirror kept against a negative result is an override said out loud.
 7. **The remaining ADMISSION step, where the admitted parameters are real engine knobs, is a
    REPRODUCTION CHECK** (battery step 7, §5.3): re-run the config with the candidate's env knobs set and
    confirm it reproduces. **Engine wiring of an admitted line's ADDED gates is NEW-GATE work** (§0.6):
