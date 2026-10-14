@@ -1,0 +1,327 @@
+{
+ "ticket": "S6-B3155a",
+ "date": "2026-05-05",
+ "evidence": "output_audit/b3155a_final_bar_third_source.json",
+ "generator": "scripts/final_bar_exposure.py",
+ "partial_priced": {
+  "n": 661,
+  "in_step2_universe": 446,
+  "definition": "PARTIAL_SESSION repair rows + unconfirmed_partial_bars + no_prefetch_differs (CVNA excluded: full session in a 5.0x scale)"
+ },
+ "cubes": {
+  "R5": {
+   "rows": 4917172,
+   "exit_on_date": 96730,
+   "exit_on_date_partial_priced": 82636,
+   "exit_reasons_top8": {
+    "end_of_data": 42520,
+    "no_upcoming_earnings": 12010,
+    "max_days": 9364,
+    "time_stop_20d": 3988,
+    "regime_flip_max_days_20": 3988,
+    "time_stop_10d": 1480,
+    "class_time_stop_institutional_persistence_30d": 783,
+    "class_time_stop_momentum_25d": 741
+   },
+   "strategies_distinct": 189
+  },
+  "R6b": {
+   "rows": 299754,
+   "exit_on_date": 5962,
+   "exit_on_date_partial_priced": 5245,
+   "exit_reasons_top8": {
+    "end_of_data": 2675,
+    "no_upcoming_earnings": 685,
+    "max_days": 620,
+    "time_stop_20d": 285,
+    "regime_flip_max_days_20": 285,
+    "time_stop_10d": 98,
+    "class_time_stop_trend_50d": 84,
+    "class_time_stop_breakout_25d": 70
+   },
+   "strategies_distinct": 14
+  },
+  "Group1": {
+   "rows": 37102,
+   "exit_on_date": 674,
+   "exit_on_date_partial_priced": 566,
+   "exit_reasons_top8": {
+    "end_of_data": 258,
+    "max_days": 82,
+    "no_upcoming_earnings": 64,
+    "time_stop_20d": 33,
+    "regime_flip_max_days_20": 33,
+    "class_time_stop_volume_profile_30d": 27,
+    "time_stop_10d": 21,
+    "class_time_stop_factor_30d": 10
+   },
+   "strategies_distinct": 3
+  }
+ },
+ "admitted": {
+  "lines": 16,
+  "counted": 15,
+  "not_exposed": [
+   "smc_breaker_block_long"
+  ],
+  "unavailable": [],
+  "touched": 12,
+  "rows_touched_total": 38,
+  "max_rows_one_line": 9,
+  "per_line": [
+   {
+    "strategy": "smc_breaker_block_long",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout)",
+    "status": "NOT-EXPOSED",
+    "reason": "window ends 2026-04-30, before 2026-05-05"
+   },
+   {
+    "strategy": "pead_long_high_yoy_growth_only",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 988,
+    "join_unmatched": 0,
+    "exit_on_date": 9,
+    "exit_on_date_partial_priced": 9,
+    "tickers": [
+     "AAL",
+     "ARE",
+     "AXP",
+     "CBRE",
+     "CSGP",
+     "EFX",
+     "IBM",
+     "NDAQ",
+     "RMD"
+    ]
+   },
+   {
+    "strategy": "pead_with_smart_money_long",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 215,
+    "join_unmatched": 0,
+    "exit_on_date": 0,
+    "exit_on_date_partial_priced": 0,
+    "tickers": []
+   },
+   {
+    "strategy": "institutional_breakout_confirmation_long",
+    "exit": "r_multiple_2r",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 128,
+    "join_unmatched": 0,
+    "exit_on_date": 1,
+    "exit_on_date_partial_priced": 1,
+    "tickers": [
+     "OGN"
+    ]
+   },
+   {
+    "strategy": "institutional_committed_growth_long",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 387,
+    "join_unmatched": 0,
+    "exit_on_date": 7,
+    "exit_on_date_partial_priced": 5,
+    "tickers": [
+     "CEG",
+     "CMCSA",
+     "LLY",
+     "OGN",
+     "TER"
+    ]
+   },
+   {
+    "strategy": "institutional_high_conviction_long",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 492,
+    "join_unmatched": 0,
+    "exit_on_date": 7,
+    "exit_on_date_partial_priced": 3,
+    "tickers": [
+     "OGN",
+     "QCOM",
+     "TER"
+    ]
+   },
+   {
+    "strategy": "institutional_multi_quarter_persistence_long",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 505,
+    "join_unmatched": 0,
+    "exit_on_date": 6,
+    "exit_on_date_partial_priced": 4,
+    "tickers": [
+     "CEG",
+     "CMCSA",
+     "LLY",
+     "TER"
+    ]
+   },
+   {
+    "strategy": "institutional_oversold_long",
+    "exit": "r_multiple_2r",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 156,
+    "join_unmatched": 0,
+    "exit_on_date": 2,
+    "exit_on_date_partial_priced": 1,
+    "tickers": [
+     "CVX"
+    ]
+   },
+   {
+    "strategy": "institutional_persistence_oversold_long",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 145,
+    "join_unmatched": 0,
+    "exit_on_date": 4,
+    "exit_on_date_partial_priced": 4,
+    "tickers": [
+     "CME",
+     "MPC",
+     "PSX",
+     "SO"
+    ]
+   },
+   {
+    "strategy": "institutional_recent_init_momentum_long",
+    "exit": "r_multiple_2r",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 454,
+    "join_unmatched": 0,
+    "exit_on_date": 4,
+    "exit_on_date_partial_priced": 2,
+    "tickers": [
+     "HPQ",
+     "OGN"
+    ]
+   },
+   {
+    "strategy": "institutional_recent_init_volume_long",
+    "exit": "r_multiple_2r",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 215,
+    "join_unmatched": 0,
+    "exit_on_date": 2,
+    "exit_on_date_partial_priced": 2,
+    "tickers": [
+     "OGN",
+     "TER"
+    ]
+   },
+   {
+    "strategy": "institutional_strong_conviction_long",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 366,
+    "join_unmatched": 0,
+    "exit_on_date": 4,
+    "exit_on_date_partial_priced": 2,
+    "tickers": [
+     "OGN",
+     "TER"
+    ]
+   },
+   {
+    "strategy": "xs_momentum_top_decile",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 84,
+    "join_unmatched": 0,
+    "exit_on_date": 2,
+    "exit_on_date_partial_priced": 2,
+    "tickers": [
+     "MPC",
+     "PSX"
+    ]
+   },
+   {
+    "strategy": "xs_low_beta_with_smart_money_long",
+    "exit": "time_stop_10d",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_r5_merged_1_7",
+    "rows": 452,
+    "join_unmatched": 0,
+    "exit_on_date": 3,
+    "exit_on_date_partial_priced": 3,
+    "tickers": [
+     "CME",
+     "SO",
+     "XOM"
+    ]
+   },
+   {
+    "strategy": "three_white_soldiers",
+    "exit": "class_time_stop",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3",
+    "rows": 343,
+    "join_unmatched": 0,
+    "exit_on_date": 0,
+    "exit_on_date_partial_priced": 0,
+    "tickers": []
+   },
+   {
+    "strategy": "pairs_mean_reversion_long",
+    "exit": "multi_tier_partial",
+    "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+    "reproduction": "RESCORED",
+    "status": "COUNTED",
+    "cube": "output_pairs_mrl_step2_production",
+    "rows": 1890,
+    "join_unmatched": 0,
+    "exit_on_date": 0,
+    "exit_on_date_partial_priced": 0,
+    "tickers": []
+   }
+  ]
+ },
+ "generated_utc": "2026-10-14T12:39:23Z"
+}

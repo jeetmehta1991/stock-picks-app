@@ -55346,3 +55346,208 @@ def test_b3168a_every_retained_mirror_is_tagged_exploratory():
     s63 = plan[plan.index("### 6.3 Which combination advances"):
                plan.index("## 7. THE LOCKED REPORTING STANDARD")]
     assert "TAGGED EXPLORATORY in code, like a created one" in s63
+
+
+# S6-B3155a (B3139q-r69n): the 2026-05-05 final bar. Every entry names its
+# reason (L747 - a shrink-only register of NAMED members, never a count).
+_B3155A_FINAL_BAR_EXCEPTIONS = {
+    "CVNA": ("a constant 5.0x price scale on every earlier bar; its repair was "
+             "dropped with S6-B3155 on the owner's ruling 2026-10-13, and a "
+             "one-row repair would splice two price bases (B3139q-r69n)"),
+    "AVB": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
+    "BK": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
+    "CTRA": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
+    "EA": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
+    "EQR": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
+    "QRVO": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
+    "WBD": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
+}
+
+
+def test_b3155a_repaired_final_bars_hold_the_confirmed_full_session():
+    """S6-B3155a (owner ruling 2026-10-14, "S6-B3155a b"): the engine cache's
+    2026-05-05 bar was a partial session, confirmed against a third source
+    (Yahoo), and was repaired from the prefetch for runs launched after the
+    repair. (1) The committed evidence REPRODUCES from the committed raw read
+    through the committed classifier (L593: the code that measured it, not a
+    re-implementation); (2) every repair row's engine file ends on the bar it
+    names and holds the prefetch values - the nearest whole share in an
+    integer column; (3) the repair log carries every repair row, and CVNA -
+    repaired, then excluded by the per-ticker prior-bar check and restored
+    from git - is recorded as reverted (B3139q-r69n)."""
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import final_bar_third_source_check as fb
+    oa = root / "output_audit"
+    ev = _j.loads((oa / "b3155a_final_bar_third_source.json").read_text(encoding="utf-8"))
+    raw = _j.loads((oa / "b3155a_final_bar_third_source_raw.json").read_text(encoding="utf-8"))
+    again = fb.classify(raw)
+    for k in ("counts", "calibration", "repair", "other_verdicts",
+              "unconfirmed_partial_bars", "no_prefetch_differs"):
+        assert again[k] == ev[k], k
+    assert len(ev["repair"]) >= 400, len(ev["repair"])     # a vacuous-pass guard
+    assert ev["other_verdicts"]["CONFIRMED_PRIOR_DIFFERS"] == ["CVNA"]
+    final = pd.Timestamp(ev["date"])
+    for r in ev["repair"]:
+        e = pd.read_parquet(root / r["engine_file"])
+        assert pd.Timestamp(e["date"].iloc[-1]).normalize() == final, r["ticker"]
+        want = dict(r["prefetch"])
+        if str(e["volume"].dtype).startswith("int"):
+            want["volume"] = float(round(want["volume"]))
+        got = {f: float(e[f].iloc[-1]) for f in ("open", "high", "low", "close", "volume")}
+        assert got == want, (r["ticker"], got, want)
+    log = _j.loads((oa / "b3155a_final_bar_repair_log.json").read_text(encoding="utf-8"))
+    assert sorted(x["ticker"] for x in log["entries"]) == sorted(r["ticker"] for r in ev["repair"])
+    assert [x["ticker"] for x in log["reverted"]] == ["CVNA"]
+
+
+def test_b3155a_step2_universe_final_bars_agree_with_the_prefetch():
+    """S6-B3155a CLASS PIN: for every ticker of the RULED Step-2 universe
+    (phase_table.resolve(2) - never a typed list), the engine cache's bar on
+    the window's end date equals the prefetch cache's bar: prices within 1e-6
+    relative, volume within 1 pct. The 1 pct is CHOSEN against the population
+    this pin runs on, MEASURED at B3139q-r69n after the repair: the largest
+    volume gap among the agreeing tickers is 0.034 pct, while the unrepaired
+    partial bars differ by 52 to 80 pct. Disagreements must equal the named
+    register EXACTLY - an unregistered one fails, and so does a stale entry
+    (L587). A ruled ticker with no prefetch bar on the end date fails, naming
+    S6-B3155c: its final bar cannot be confirmed in-repo."""
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    for p in (root, root / "scripts"):
+        if str(p) not in sys.path:
+            sys.path.insert(0, str(p))
+    from backtest.data.cache import _cache_path
+    from final_bar_third_source_check import prefetch_file
+    from phase_table import resolve
+    s2 = resolve(2)
+    end = pd.Timestamp(s2["window"]["end"])
+    tickers = (root / s2["tickers_file"]).read_text().split()
+    compared, disagree, no_prefetch = 0, {}, []
+    for t in tickers:
+        ef = _cache_path(t)
+        if not ef.exists():
+            continue
+        e = pd.read_parquet(ef)
+        e = e[pd.to_datetime(e["date"]).dt.normalize() == end]
+        if len(e) != 1:
+            continue              # no bar on the end date: delisted before it
+        pf = prefetch_file(t)
+        p = pd.read_parquet(pf) if pf is not None else None
+        if p is not None:
+            p = p[pd.to_datetime(p["date"]).dt.normalize() == end]
+        if p is None or len(p) != 1:
+            no_prefetch.append(t)
+            continue
+        compared += 1
+        px = max(abs(float(e[f].iloc[0]) / float(p[f].iloc[0]) - 1.0)
+                 for f in ("open", "high", "low", "close"))
+        vg = abs(float(e["volume"].iloc[0]) / float(p["volume"].iloc[0]) - 1.0)
+        if px > 1e-6 or vg > 0.01:
+            disagree[t] = (px, vg)
+    assert compared >= 500, compared                      # a vacuous-pass guard
+    assert not no_prefetch, f"no prefetch bar to confirm against - S6-B3155c: {no_prefetch}"
+    unregistered = sorted(set(disagree) - set(_B3155A_FINAL_BAR_EXCEPTIONS))
+    stale = sorted(set(_B3155A_FINAL_BAR_EXCEPTIONS) - set(disagree))
+    assert not unregistered, f"final bar disagrees with the prefetch: {unregistered}"
+    assert not stale, f"register entries that no longer disagree - remove them: {stale}"
+    assert all(str(v).strip() for v in _B3155A_FINAL_BAR_EXCEPTIONS.values())
+
+
+def test_b3155a_repair_refuses_moved_or_spliced_bars_and_keeps_integer_columns_whole(tmp_path):
+    """The repair script's guarantees, through its own main() on temp files:
+    (a) a dry run writes nothing; (b) ALL OR NOTHING - one row whose engine
+    bar moved since the evidence read refuses the whole run; (c) one row
+    whose PRIOR bar differs between the caches is refused (B3139q-r69n - CVNA's 5.0x
+    scale became a fake -80 pct day before this check existed); (d) --apply
+    rewrites only the final row - the nearest whole share in an integer column
+    (MEASURED at B3139q-r69n: pyarrow truncated 6213415.903644 to 6213415 for
+    VXX, caught by the read-back) - and every other row, the schema and its
+    metadata stay identical; (e) a re-run is a no-op that keeps the log."""
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    import pyarrow.parquet as pq
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import repair_final_bar_partial_session as rp
+
+    dates = pd.to_datetime(["2026-05-01", "2026-05-04", "2026-05-05"]).astype("datetime64[ms]")
+
+    def frame(rows, int_volume=False):
+        df = pd.DataFrame(rows, columns=["open", "high", "low", "close", "volume"])
+        df.insert(0, "date", dates)
+        if int_volume:
+            df["volume"] = df["volume"].astype("int64")
+        return df
+
+    full = [[10.0, 11.0, 9.5, 10.5, 1000.0], [10.5, 11.5, 10.0, 11.0, 1200.0],
+            [11.0, 12.5, 10.8, 12.2, 1500.6]]
+    partial_last = [11.0, 11.6, 10.8, 11.3, 600.0]
+
+    def write(name, rows, int_volume=False, prefetch=False):
+        f = tmp_path / f"{name}.parquet"
+        df = frame(rows, int_volume)
+        if prefetch:
+            df["date"] = df["date"].dt.strftime("%Y-%m-%d")
+        df.to_parquet(f, index=False)
+        return f
+
+    def bar(rows):
+        return dict(zip(("open", "high", "low", "close", "volume"), rows[-1]))
+
+    eng_a = write("eng_a", full[:2] + [partial_last])
+    eng_b = write("eng_b", full[:2] + [partial_last], int_volume=True)
+    pre = write("pre", full, prefetch=True)
+    scaled = [[v * 5 if i < 4 else v for i, v in enumerate(r)] for r in full[:2]] + [partial_last]
+    eng_c = write("eng_c", scaled)
+
+    def row(t, ef, before):
+        return {"ticker": t, "engine_file": str(ef), "prefetch_file": str(pre),
+                "shape": "PARTIAL_SESSION", "engine_before": before, "prefetch": bar(full)}
+
+    def evidence(name, rows):
+        f = tmp_path / f"{name}.json"
+        f.write_text(_j.dumps({"date": "2026-05-05", "prior": "2026-05-04", "repair": rows}))
+        return str(f)
+
+    log = str(tmp_path / "log.json")
+    pa_before = bar(full[:2] + [partial_last])
+    good = evidence("good", [row("A", eng_a, pa_before),
+                             row("B", eng_b, {**pa_before, "volume": 600.0})])
+    snap = {f: f.read_bytes() for f in (eng_a, eng_b, eng_c)}
+
+    assert rp.main(["--evidence", good, "--log", log]) == 0              # (a)
+    assert all(f.read_bytes() == b for f, b in snap.items())
+    moved = evidence("moved", [row("A", eng_a, {**pa_before, "close": 11.31}),
+                               row("B", eng_b, {**pa_before, "volume": 600.0})])
+    assert rp.main(["--evidence", moved, "--log", log, "--apply"]) == 2  # (b)
+    assert all(f.read_bytes() == b for f, b in snap.items())
+    spliced = evidence("spliced", [row("A", eng_a, pa_before),
+                                   row("C", eng_c, pa_before)])
+    assert rp.main(["--evidence", spliced, "--log", log, "--apply"]) == 2  # (c)
+    assert all(f.read_bytes() == b for f, b in snap.items())
+
+    old_a, old_b = pq.read_table(eng_a), pq.read_table(eng_b)
+    assert rp.main(["--evidence", good, "--log", log, "--apply"]) == 0   # (d)
+    new_a, new_b = pq.read_table(eng_a), pq.read_table(eng_b)
+    for old, new in ((old_a, new_a), (old_b, new_b)):
+        assert new.schema == old.schema and new.schema.metadata == old.schema.metadata
+        assert new.slice(0, 2).equals(old.slice(0, 2))
+    assert rp._bar_of(new_a, 2) == bar(full)
+    assert rp._bar_of(new_b, 2) == {**bar(full), "volume": 1501.0}       # nearest, not 1500
+    after = {f: f.read_bytes() for f in (eng_a, eng_b)}
+    assert rp.main(["--evidence", good, "--log", log, "--apply"]) == 0   # (e)
+    assert all(f.read_bytes() == b for f, b in after.items())
+    rec = _j.loads(_P(log).read_text(encoding="utf-8"))
+    assert sorted(e["ticker"] for e in rec["entries"]) == ["A", "B"]
+    assert len(rec["runs"]) == 2 and rec["runs"][-1]["already_repaired"] == 2
