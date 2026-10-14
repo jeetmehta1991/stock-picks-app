@@ -2493,3 +2493,16 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 
 - **Registration waits on the owner's word** (every B-row is NEW-GATE; S6-B3117 precedent:
   SPECS rows land after the T3 ruling, bands = QUANTS on the subject's own fires at grid time).
+
+### K.6 B-row registration (2026-10-14, B3139q-r69u)
+
+- **Owner, verbatim:** "Approve all recs" = register B1-B6, strike B7-B9; the P6 looser
+  distance levels 0.03/0.04/0.05 stand APPROVED (RESIM, adapter-pending S6-B3171a).
+- **Registered (SPECS_PHASE0, validate_spec CLEAN):** B1 vix_term_backwardation eq_true,
+  B2 po3_accum_range_pct ge, B3 xs_beta ge, B4 cot_rut_commercials_net_pct le,
+  B5 xs_momentum_decile ge, B6 pct_from_avwap_20low ge (coverage caveat 91.8pct < 0.98,
+  expected COVERAGE-REFUSED at grid time). Struck: sector_strongest_rs, near_r1_wide,
+  pair_zscore_signed. Bands = QUANTS on the subject's own IS fires at grid time.
+- **Pins:** test_b3171 SPECS pin extended (B-rows, struck-absent, caveat, resim-mutation RED).
+- **Next:** breadth Step-1 grid (IS-only, net basis, leg long, 100-perm null); the Step-2
+  holdout read waits on the owner's own word.

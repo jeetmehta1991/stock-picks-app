@@ -2057,8 +2057,10 @@ FORMULA_TWS = (
 SPECS_PHASE0.update({"naked_poc_retest_long": {  # S6-B3171 F1 (B3139q-r69r) - written from the owner's T3 band words (2026-10-14, verbatim in the rows); offline depth leg first, engine legs adapter-gated, so PHASE0 is the registry (the bollinger B3118 pattern)
     "formula": """
 ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in
-the producer->gate derivation. B<n> rows join only when REGISTERED at a T3
-review - none registered at the 2026-10-14 review (census in Table A).
+the producer->gate derivation. B<n> = a breadth companion axis. SIX B-rows
+REGISTERED on the owner's word 2026-10-14, verbatim: "Approve all recs"
+(the B3139q-r69t mini band review); three reps STRUCK on the same word:
+sector_strongest_rs (le), near_r1_wide (eq_false), pair_zscore_signed (ge).
 
 =============================== PRODUCER LAYER ===============================
 
@@ -2097,14 +2099,35 @@ P5  naked_poc_count > 0   [EXISTING-THRESHOLD; tighter floors 1, 2 offline -
 P6  naked_poc_nearest_distance_pct < 0.02   [EXISTING-THRESHOLD; tighter
        ceilings offline, QUANTS on the 1788 surviving fires. OWNER T3
        2026-10-14, verbatim: "P3 add looser bands" -> looser ceilings, RESIM
-       by construction; the LEVELS 0.03 / 0.04 / 0.05 are PROPOSED at
-       1.5x / 2x / 2.5x of production (criterion stated), pending the owner's
-       own numbers, and HELD ADAPTER-PENDING as P2]
+       by construction; the LEVELS 0.03 / 0.04 / 0.05 (1.5x/2x/2.5x of
+       production, criterion stated) APPROVED by the owner's word 2026-10-14
+       "Approve all recs", and HELD ADAPTER-PENDING as P2]
 
 fires = P5 AND P6 AND price_above_ema_200
         (backtest/signals/screener.py strat_naked_poc_retest_long; the P6
         ceiling and the P2-P4 knobs are env-actuated at S6-B3171 with
         defaults equal to production)
+
+=============================== BREADTH LAYER ===============================
+
+B1  vix_term_backwardation  eq_true   (vol-regime rep; folds vix_term_contango,
+       vix_vix3m_ratio)
+B2  po3_accum_range_pct     ge QUANTS (po3 rep; folds po3_accumulation_active
+       eq_false)
+B3  xs_beta                 ge QUANTS (ticker-volatility rep; folds atr_pct,
+       bb_10_20 bandwidth + squeeze, xs_beta_decile, xs_max_anomaly,
+       xs_avoid_high_max)
+B4  cot_rut_commercials_net_pct  le QUANTS (cot rep; the copper members carry
+       the OPPOSITE sign - asymmetry surfaced)
+B5  xs_momentum_decile      ge QUANTS (momentum rep; folds the top_decile +
+       top_quintile booleans - the admitted strategy's own signal, noted)
+B6  pct_from_avwap_20low    ge QUANTS (avwap rep; FLAGGED adjacent to the P6
+       distance axis; IS coverage 1,263 of 1,375 = 91.8pct, BELOW the grid's
+       0.98 floor - expected COVERAGE-REFUSED at grid time, recorded)
+
+All six: AND-legs on persisted signals, levels = retention quantiles on the
+subject's own IS fires at grid time (QUANTS); a SCREEN promoted by the owner's
+word, never a gate until a Step-2 read says so.
 """,
     "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1788,
                  "tickers": 544, "holdout_n": 413, "band": "T",
@@ -2185,13 +2208,73 @@ fires = P5 AND P6 AND price_above_ema_200
          "sweep_levels": None, "subset_safe": True,
          "signal_keys": ["naked_poc_nearest_distance_pct"],
          "status": "ACTUATED (S6-B3171, default = production); OWNER T3 "
-                   "'add looser bands' -> 0.03 / 0.04 / 0.05 PROPOSED at "
-                   "1.5x/2x/2.5x production, RESIM, held ADAPTER-PENDING "
-                   "(B2883) as P2, values pending the owner's own numbers",
+                   "'add looser bands' -> 0.03 / 0.04 / 0.05 APPROVED "
+                   "(owner 2026-10-14 'Approve all recs') at 1.5x/2x/2.5x "
+                   "production, RESIM, held ADAPTER-PENDING (B2883) as P2",
          "type": "numeric", "engine_implemented": True,
          "evidence": "screener gate; config.py NAKED_POC_MAX_DISTANCE_PCT; "
                      "Table A free-band row (QUANTS on the surviving fires)",
          "derivation": "tighter QUANTS offline; looser bracket resim"},
+        {"id": "B1", "producer": "macro (VIX term structure)",
+         "param": "vix_term_backwardation", "production": "not gated",
+         "band": ["require_true"],
+         "free_band": ["require_true"], "resim_band": [],
+         "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "signal_keys": ["vix_term_backwardation"],
+         "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op eq_true",
+         "type": "bool", "engine_implemented": False,
+         "evidence": "b3171_npoc_companions_consistent.json (ts10 +2.766 / bept +7.561, joint rank 1)",
+         "derivation": "BREADTH (3.6): vol-regime rep; folds vix_term_contango, vix_vix3m_ratio"},
+        {"id": "B2", "producer": "smc/po3 producer",
+         "param": "po3_accum_range_pct", "production": "not gated",
+         "band": ["q20", "q40", "q60", "q80"],
+         "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+         "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "signal_keys": ["po3_accum_range_pct"],
+         "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op ge",
+         "type": "float>=q", "engine_implemented": False,
+         "evidence": "b3171 consistent (ts10 +2.432 / bept +7.626)",
+         "derivation": "BREADTH: po3 rep; folds po3_accumulation_active (eq_false)"},
+        {"id": "B3", "producer": "cross_sectional (beta)",
+         "param": "xs_beta", "production": "not gated",
+         "band": ["q20", "q40", "q60", "q80"],
+         "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+         "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "signal_keys": ["xs_beta"],
+         "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op ge",
+         "type": "float>=q", "engine_implemented": False,
+         "evidence": "b3171 consistent (ts10 +2.441 / bept +6.179)",
+         "derivation": "BREADTH: ticker-volatility rep; folds atr_pct, bb_10_20 bandwidth + squeeze, xs_beta_decile, xs_max_anomaly, xs_avoid_high_max"},
+        {"id": "B4", "producer": "cot (CFTC positioning)",
+         "param": "cot_rut_commercials_net_pct", "production": "not gated",
+         "band": ["q20", "q40", "q60", "q80"],
+         "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+         "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "signal_keys": ["cot_rut_commercials_net_pct"],
+         "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op le",
+         "type": "float<=q", "engine_implemented": False,
+         "evidence": "b3171 consistent (ts10 -2.104 / bept -6.840)",
+         "derivation": "BREADTH: cot rep (keep LOW); the copper members carry the OPPOSITE sign - asymmetry surfaced"},
+        {"id": "B5", "producer": "cross_sectional (12-1 momentum decile)",
+         "param": "xs_momentum_decile", "production": "not gated",
+         "band": ["q20", "q40", "q60", "q80"],
+         "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+         "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "signal_keys": ["xs_momentum_decile"],
+         "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op ge",
+         "type": "float>=q", "engine_implemented": False,
+         "evidence": "b3171 consistent (ts10 +2.679 / bept +5.519)",
+         "derivation": "BREADTH: momentum rep; folds xs_momentum_top_decile + top_quintile - the admitted top_decile strategy's own signal, noted"},
+        {"id": "B6", "producer": "technical.py avwap",
+         "param": "pct_from_avwap_20low", "production": "not gated",
+         "band": ["q20", "q40", "q60", "q80"],
+         "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+         "env": None, "consumers": [], "sweep_levels": None,
+         "subset_safe": True, "signal_keys": ["pct_from_avwap_20low"],
+         "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op ge; IS coverage 1263 of 1375 (91.8pct) is BELOW the grid's 0.98 floor - expected COVERAGE-REFUSED at grid time, recorded on the artifact, not silently dropped",
+         "type": "float>=q", "engine_implemented": False,
+         "evidence": "b3171 consistent (ts10 +1.704 / bept +6.197)",
+         "derivation": "BREADTH: avwap rep; FLAGGED adjacent to the P6 distance axis"},
     ],
 }})
 

@@ -55740,7 +55740,31 @@ def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
     assert by_id["P6"]["env"] == "NAKED_POC_MAX_DISTANCE_PCT"
     assert by_id["P6"]["free_band"] == [0.0028, 0.0059, 0.0096, 0.0141, 0.02]
     assert by_id["P6"]["resim_band"] == []    # looser levels held for the adapter
-    assert "0.03 / 0.04 / 0.05 PROPOSED" in by_id["P6"]["status"]
+    assert "0.03 / 0.04 / 0.05 APPROVED" in by_id["P6"]["status"]
+    # B3139q-r69u: six B-rows registered on the owner's word 2026-10-14
+    # ('Approve all recs'); three reps struck on the same word.
+    QUANTS = ["q20", "q40", "q60", "q80"]
+    want = {"B1": ("vix_term_backwardation", ["require_true"]),
+            "B2": ("po3_accum_range_pct", QUANTS),
+            "B3": ("xs_beta", QUANTS),
+            "B4": ("cot_rut_commercials_net_pct", QUANTS),
+            "B5": ("xs_momentum_decile", QUANTS),
+            "B6": ("pct_from_avwap_20low", QUANTS)}
+    for bid, (param, band) in want.items():
+        row = by_id[bid]
+        assert row["param"] == param and row["band"] == band, (bid, row)
+        assert row["resim_band"] == [] and row["subset_safe"] is True
+        assert "Approve all recs" in row["status"], bid
+    struck = {"sector_strongest_rs", "near_r1_wide", "pair_zscore_signed"}
+    assert not struck & {p["param"] for p in spec["params"]}
+    assert "STRUCK" in spec["formula"]      # the strike is recorded
+    assert "91.8pct" in by_id["B6"]["status"]  # the coverage caveat rides
+    # Prove the registration can fail (#226): a B-row given a resim level
+    # must be refused by validate_spec while the tools block is a stub.
+    mutant_b = copy.deepcopy(spec)
+    mb = next(p for p in mutant_b["params"] if p["id"] == "B2")
+    mb["resim_band"] = ["q10"]
+    assert pvt.validate_spec(mutant_b), "a B-row resim level must be refused"
     mutant = copy.deepcopy(spec)
     mp = next(p for p in mutant["params"] if p["id"] == "P2")
     mp["band"] = [126, 252]
