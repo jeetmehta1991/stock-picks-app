@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "536c3423e",
-    "generated_at": "2026-10-14 10:45:21"
+    "source_commit": "c6b86b5e0",
+    "generated_at": "2026-10-14 11:33:01"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -2245,7 +2245,7 @@
       "strategy": "naked_poc_retest_long",
       "family": "volume_profile",
       "r5_fires": 1788,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 1.0,
       "projected_step1_fires": 164.3,
       "projected_current_gate": 164.3,

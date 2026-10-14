@@ -7078,15 +7078,20 @@ def strat_naked_poc_retest_long(s):
     """Batch 255: Naked POC retest long. Within 2% of an untested
     period POC + bullish bias. Levels act as magnetic attractors.
     Batch 314 Cat-3 B loosen: 1% -> 2% (owner-approved 2026-05-24)."""
+    # S6-B3171 (owner T3 band 2026-10-14): the ceiling is env-actuated
+    # (NAKED_POC_MAX_DISTANCE_PCT, default 0.02 = the prior literal) so the
+    # owner's looser resim levels are runnable; read at call time via _cfg.
     fires = (
         s.get("naked_poc_count", 0) > 0
-        and s.get("naked_poc_nearest_distance_pct", 1.0) < 0.02
+        and s.get("naked_poc_nearest_distance_pct", 1.0) < _cfg.NAKED_POC_MAX_DISTANCE_PCT
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "volume_profile",
-        ["naked_poc_nearest_distance_pct<0.02", "price_above_ema_200"],
-        ["Within 2% of naked POC (untested institutional level)",
-         f"{s.get('naked_poc_count', 0)} naked POCs identified (6-period)",
+        [f"naked_poc_nearest_distance_pct<{_cfg.NAKED_POC_MAX_DISTANCE_PCT}",
+         "price_above_ema_200"],
+        [f"Within {_cfg.NAKED_POC_MAX_DISTANCE_PCT:.1%} of naked POC (untested institutional level)",
+         f"{s.get('naked_poc_count', 0)} naked POCs identified "
+         f"({_cfg.NAKED_POC_N_PERIODS}-period)",
          "Above 200 EMA (regime gate)"])
 
 
@@ -9186,7 +9191,11 @@ def screen_instrument(
         vp_out = compute_volume_profile(df, lookback_days=60)
         if vp_out:
             signals.update(vp_out)
-        period_pocs = compute_period_pocs(df, period_lookback=252, n_periods=6)
+        # S6-B3171: the three producer knobs come from config (env-actuated,
+        # defaults = production; n_bins was the function default 40, now passed).
+        period_pocs = compute_period_pocs(
+            df, period_lookback=_cfg.NAKED_POC_LOOKBACK,
+            n_periods=_cfg.NAKED_POC_N_PERIODS, n_bins=_cfg.NAKED_POC_N_BINS)
         if period_pocs:
             close = float(df["close"].iloc[-1])
             signals["naked_poc_count"] = len(period_pocs)

@@ -2425,5 +2425,29 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   Producer knobs P2.1-P2.3 (period_lookback, n_periods, n_bins) and the P1.1 ema-span SWAP are
   RESIM-side, DEFINED-NO-ACTUATOR - they need the SPECS entry and env actuators before any engine leg.
   Every B-row census key is NEW-GATE (standing owner rule 2026-08-10): none runs without the T3 word.
-- **T3 OWNER BAND REVIEW: PENDING.** No grid runs before the word. SPECS_PHASE0 entry is written at F1
-  from the approved band (the bollinger B3118 precedent).
+- **T3 OWNER BAND REVIEW: words received 2026-10-14 - see K.3.** The SPECS_PHASE0 entry is written
+  (F1, the bollinger B3118 precedent).
+
+### K.3 T3 band words received (2026-10-14, recorded at B3139q-r69r)
+
+- **Owner, verbatim:** "P2.2 need lower bands than 126. Quarterly, monthly and weekly" /
+  "P2.3 add 20" / "P3 add looser bands".
+- **Recorded as:** period_lookback band [5, 21, 63, 126, 252] (weekly 5 / monthly 21 / quarterly 63
+  trading days - the words landed on the row holding 126, which Table A numbers P2.1; the owner
+  wrote P2.2); n_bins band [20, 30, 40, 50]; distance ceiling gains RESIM looser levels, values
+  0.03 / 0.04 / 0.05 PROPOSED at 1.5x/2x/2.5x production (criterion stated), pending the owner's
+  own numbers. Open reading question (flagged, non-blocking): if the three words meant CHUNK
+  duration, the cut is n_periods 4/12/50 at lookback 252.
+- **Measured pairing constraint** (volume_profile.py:166-173 - a chunk under 5 bars is skipped;
+  pinned by test_b3171): lookback 5 yields zero POCs at every banded n_periods; lookback 21 yields
+  POCs only at n_periods 4.
+- **Actuation (B2866):** NAKED_POC_LOOKBACK, NAKED_POC_N_PERIODS, NAKED_POC_N_BINS,
+  NAKED_POC_MAX_DISTANCE_PCT - env-backed in backtest/config.py, consumed at the screener
+  naked-POC block and gate; defaults are production, behaviour identical with no env set
+  (pinned both ways by test_b3171).
+- **SPECS_PHASE0 entry written (F1);** the engine resim levels are held ADAPTER-PENDING in the
+  entry (validate_spec B2883 refuses resim levels without a complete battery adapter) and land
+  with S6-B3171a before any engine leg.
+- **NEXT:** the offline Step-1 grid (F3) on the free band - 4 tighter distance ceilings + count
+  floors 1/2 (no-bite verified at grid time) x 24 exits, in-sample only, permutation null,
+  next_pivot_target barred. Engine legs wait on the adapter and the owner's budget word.

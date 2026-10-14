@@ -2615,4 +2615,20 @@ del _raw
 # change of which emitted signal the strategy consumes.
 STRAT_EMA_SPAN: int = int(os.environ.get("STRAT_EMA_SPAN", "200"))
 
+# S6-B3171 (owner T3 band words 2026-10-14): the naked-POC producer's knobs
+# and the distance gate's ceiling, env-actuated for engine resim legs
+# (B2866: a band whose parameter does not exist is not a band). Defaults ARE
+# production - with no env set, behaviour is identical to the literals they
+# replace (the screener naked-POC block). Blank-safe parse per the
+# CANDLE_MAX_WICK_PCT precedent (L900: a blank env once read as a level).
+_npoc_raw = os.environ.get("NAKED_POC_LOOKBACK", "").strip()
+NAKED_POC_LOOKBACK: int = int(_npoc_raw) if _npoc_raw else 252
+_npoc_raw = os.environ.get("NAKED_POC_N_PERIODS", "").strip()
+NAKED_POC_N_PERIODS: int = int(_npoc_raw) if _npoc_raw else 6
+_npoc_raw = os.environ.get("NAKED_POC_N_BINS", "").strip()
+NAKED_POC_N_BINS: int = int(_npoc_raw) if _npoc_raw else 40
+_npoc_raw = os.environ.get("NAKED_POC_MAX_DISTANCE_PCT", "").strip()
+NAKED_POC_MAX_DISTANCE_PCT: float = float(_npoc_raw) if _npoc_raw else 0.02
+del _npoc_raw
+
 USE_SMC_PANEL_CACHE = False

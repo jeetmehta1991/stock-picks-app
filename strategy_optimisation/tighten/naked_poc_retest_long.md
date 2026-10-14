@@ -1,10 +1,10 @@
 # Table A - naked_poc_retest_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 536c3423e | commit 536c3423e at 2026-10-14 10:45:30 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build c6b86b5e0 | commit c6b86b5e0 at 2026-10-14 11:51:01 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** TIGHTEN | **family:** volume_profile | **status:** IN-CAMPAIGN | **R5 fires:** 1788 | **surviving fires (T1):** 1788 (unchanged since R5 - filter is identity)
+**Lane:** TIGHTEN | **family:** volume_profile | **status:** IN-CAMPAIGN | **R5 fires:** 1788 | **surviving fires (T1):** 1788 (code changed since R5; the status build's survival filter measured survives_pct 1.0 - every fire kept)
 
-**SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+**SPECS entry:** registered in producer_variant_table
 
 ## Formula (Section 1 of the SS6/#183 locked artifact)
 
@@ -22,7 +22,7 @@ P3  naked_poc_nearest_distance_pct < 0.02   [EXISTING-THRESHOLD]
 Gate body, VERBATIM from backtest/signals/screener.py strat_naked_poc_retest_long (docstring and return dropped):
 
 ```python
-fires = s.get('naked_poc_count', 0) > 0 and s.get('naked_poc_nearest_distance_pct', 1.0) < 0.02 and s.get('price_above_ema_200', False)
+fires = s.get('naked_poc_count', 0) > 0 and s.get('naked_poc_nearest_distance_pct', 1.0) < _cfg.NAKED_POC_MAX_DISTANCE_PCT and s.get('price_above_ema_200', False)
 ```
 
 ## Table A - parameter inventory (canonical shape - READY FOR OWNER BAND REVIEW)
@@ -36,12 +36,12 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
 | P1.1 | BAND | ema span (the 200 in above/below_ema_200) - producer_variant_table.SPECS['bollinger_lower'] P3/P4; backtest/signals/technical.py compute_ema_sma | SPECS bollinger_lower P3/P4 (T3/Q2-APPROVED 2026-09-27): production 200 + resim spans [9, 20, 21, 50, 100, 150, 250] | 200 | 9, 20, 21, 50, 100, 150, 200, 250 | canon-span FLAGS (above/below ema 9/20/21/50/200) ARE persisted - measured 200-of-200 bollinger fires, S6-B3117b; offline as ADD-A-CONDITION legs only. The SWAP of the gate span, and non-canon spans, are RESIM | the whole band except production (resim_band [9, 20, 21, 50, 100, 150, 250]); env STRAT_EMA_SPAN | T3 review before any grid |
 | P2 | STRATEGY | naked_poc_count `> 0` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 0` | production + 1 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P2.1 | BAND | period_lookback (bars) - backtest/signals/volume_profile.py:152-168 | BRACKET production (1y; half-year alt) | 252 | 126, 252 | none - POC set at other windows unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P2.2 | BAND | n_periods (POC chunks) - volume_profile.py:155 | BRACKET production | 6 | 4, 6, 8 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P2.3 | BAND | n_bins (price bins) - volume_profile.py:156 | BRACKET production | 40 | 30, 40, 50 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2.1 | BAND | period_lookback (bars) - backtest/signals/volume_profile.py:152-168 | OWNER T3 BAND (2026-10-14, S6-B3171), verbatim: 'P2.2 need lower bands than 126. Quarterly, monthly and weekly' -> 63/21/5 trading days joined to the prior bracket (the words landed on the row holding 126). MEASURED PAIRING CONSTRAINT (compute_period_pocs' own guard skips a chunk under 5 bars; pinned test_b3171): lookback 5 yields ZERO POCs at every banded n_periods; 21 yields POCs only at n_periods 4 | 252 | 5, 21, 63, 126, 252 | none - POC set at other windows unpersisted | the whole band except production; env NAKED_POC_LOOKBACK | T3 review before any grid |
+| P2.2 | BAND | n_periods (POC chunks) - volume_profile.py:155 | BRACKET production | 6 | 4, 6, 8 | none | the whole band except production; env NAKED_POC_N_PERIODS | T3 review before any grid |
+| P2.3 | BAND | n_bins (price bins) - volume_profile.py:156 | BRACKET production + OWNER T3 (2026-10-14, S6-B3171), verbatim: 'P2.3 add 20' | 40 | 20, 30, 40, 50 | none | the whole band except production; env NAKED_POC_N_BINS | T3 review before any grid |
 | P2.4 | BAND | count floor (> N naked POCs) - backtest/signals/screener.py:7004 | BRACKET production; naked_poc_count IS persisted | 0 | 0, 1, 2 | TIGHTER floors (> 1, > 2) - subset on the persisted count | none on this knob | T3 review before any grid |
 | P3 | STRATEGY | naked_poc_nearest_distance_pct `< 0.02` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `< 0.02` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
@@ -55,8 +55,8 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (literal grep) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| naked_poc_count | backtest/signals/screener.py | `> 0` | 100.0% | TIGHTER = RAISE the floor: 6 -> 1788 (100%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
-| naked_poc_nearest_distance_pct | backtest/signals/screener.py | `< 0.02` | 100.0% | TIGHTER = LOWER the ceiling: 0.0028 -> 364 (20%); 0.0059 -> 719 (40%); 0.0096 -> 1069 (60%); 0.0141 -> 1428 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
+| naked_poc_count | backtest/signals/screener.py | `> 0` | 100.0% | TIGHTER = RAISE the floor: 6 -> 1788 (100%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry |
+| naked_poc_nearest_distance_pct | backtest/signals/screener.py | `< 0.02` | 100.0% | TIGHTER = LOWER the ceiling: 0.0028 -> 364 (20%); 0.0059 -> 719 (40%); 0.0096 -> 1069 (60%); 0.0141 -> 1428 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
@@ -776,18 +776,18 @@ breadth producers are an engine-side design act, never an offline sweep.
 |---|---|---|---|---|
 | P1.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** |
 | P2 | naked_poc_count > 0 | 2 | subset-safe | no - derives offline |
-| P2.1 | period_lookback (bars) | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.2 | n_periods (POC chunks) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.3 | n_bins (price bins) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| P2.1 | period_lookback (bars) | 5 | **FIRE-ADDING** | **YES** |
+| P2.2 | n_periods (POC chunks) | 3 | **FIRE-ADDING** | **YES** |
+| P2.3 | n_bins (price bins) | 4 | **FIRE-ADDING** | **YES** |
 | P2.4 | count floor (> N naked POCs) | 3 | subset-safe | no - derives offline |
 | P3 | naked_poc_nearest_distance_pct < 0.02 | 5 | subset-safe | no - derives offline |
 
 ```
-FULL FACTORIAL     8 x 2 x 2 x 3 x 3 x 3 x 5 = 4320
+FULL FACTORIAL     8 x 2 x 5 x 3 x 4 x 3 x 5 = 14400
 offline gradings   30 level-combinations x 24 exits = 720
-ENGINE RUNS        8 (actuated fire-adding axes only)
-PENDING ACTUATION  18 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-STEP-1 SERIAL COST 8 x 3.66 h = 29 h at the ruled 1y x 200-ticker shape
+ENGINE RUNS        480 (actuated fire-adding axes only)
+PENDING ACTUATION  1 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+STEP-1 SERIAL COST 480 x 3.66 h = 1,757 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 

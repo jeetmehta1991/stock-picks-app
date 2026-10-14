@@ -55643,3 +55643,115 @@ def test_b3155d_daily_bar_fetches_end_at_the_last_completed_session():
         calls = {n.func.id for n in _ast.walk(tree)
                  if isinstance(n, _ast.Call) and isinstance(n.func, _ast.Name)}
         assert "last_completed_session" in calls, name
+
+
+def test_b3171_naked_poc_band_actuators_default_to_production():
+    """S6-B3171 (owner T3 band words 2026-10-14): the naked-POC knobs are
+    env-actuated (B2866) with defaults equal to the production literals they
+    replaced; the strategy gate reads the distance ceiling from config at
+    call time; the screener call site passes all three producer knobs from
+    config (read from the AST, never the text - L748). The pairing constraint
+    is pinned from the producer's own guard (volume_profile.py: a chunk under
+    5 bars is skipped) on a SYNTHETIC 300-bar frame - the STRUCTURE is the
+    claim, no value from it is quoted (#201): lookback 5 yields zero POCs at
+    every banded n_periods and lookback 21 yields POCs only at n_periods 4."""
+    import ast
+    import sys
+    from pathlib import Path
+    import numpy as np
+    import pandas as pd
+    root = Path(__file__).resolve().parents[2]
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    from backtest import config as cfg
+    assert (cfg.NAKED_POC_LOOKBACK, cfg.NAKED_POC_N_PERIODS,
+            cfg.NAKED_POC_N_BINS, cfg.NAKED_POC_MAX_DISTANCE_PCT) == (252, 6, 40, 0.02)
+    from backtest.signals import screener as sc
+    fn = sc.ALL_STRATEGIES["naked_poc_retest_long"]
+    s = {"naked_poc_count": 3, "naked_poc_nearest_distance_pct": 0.03,
+         "price_above_ema_200": True}
+    assert fn(s)["fires"] is False            # 0.03 is over the 0.02 default
+    old = sc._cfg.NAKED_POC_MAX_DISTANCE_PCT
+    try:
+        sc._cfg.NAKED_POC_MAX_DISTANCE_PCT = 0.05
+        assert fn(s)["fires"] is True         # the env knob reaches the gate
+    finally:
+        sc._cfg.NAKED_POC_MAX_DISTANCE_PCT = old
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    calls = [n for n in ast.walk(ast.parse(src))
+             if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+             and n.func.id == "compute_period_pocs"]
+    assert len(calls) == 1, len(calls)        # one call site, the inline producer
+    kw = {k.arg: ast.unparse(k.value) for k in calls[0].keywords}
+    assert kw.get("period_lookback") == "_cfg.NAKED_POC_LOOKBACK", kw
+    assert kw.get("n_periods") == "_cfg.NAKED_POC_N_PERIODS", kw
+    assert kw.get("n_bins") == "_cfg.NAKED_POC_N_BINS", kw
+    from backtest.signals.volume_profile import compute_period_pocs
+    days = pd.date_range("2024-01-01", periods=300, freq="B")
+    base = np.linspace(100.0, 120.0, 300)
+    df = pd.DataFrame({"date": days, "open": base, "high": base * 1.01,
+                       "low": base * 0.99, "close": base,
+                       "volume": np.full(300, 1_000_000.0)})
+    for n_per in (4, 6, 8):
+        assert compute_period_pocs(df, period_lookback=5, n_periods=n_per) == []
+    assert compute_period_pocs(df, period_lookback=21, n_periods=4) != []
+    for n_per in (6, 8):
+        assert compute_period_pocs(df, period_lookback=21, n_periods=n_per) == []
+
+
+def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
+    """S6-B3171 F1: the SPECS_PHASE0 entry validates CLEAN; the owner's T3
+    band rows ride in table_a_bands with their env knobs named (lookback
+    gains 63/21/5, n_bins gains 20, each basis quoting the owner verbatim);
+    the engine resim levels are HELD (resim_band empty) because validate_spec
+    (B2883) refuses resim levels without a complete battery adapter - the
+    hold is load-bearing: planting one resim level on the lookback row must
+    turn validate_spec red (proved by mutation here, not assumed)."""
+    import copy
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import table_a_bands as tab
+    spec = pvt.SPECS_PHASE0["naked_poc_retest_long"]
+    errs = pvt.validate_spec(spec)
+    assert errs == [], errs
+    rows = {r["param"]: r for r in tab.PRODUCER_BANDS["naked_poc_count"]}
+    lb = rows["period_lookback (bars)"]
+    assert lb["band"] == [5, 21, 63, 126, 252]
+    assert lb["env"] == "NAKED_POC_LOOKBACK"
+    assert "Quarterly, monthly and weekly" in lb["basis"]
+    assert "ZERO POCs" in lb["basis"]         # the pairing constraint rides
+    nb = rows["n_bins (price bins)"]
+    assert nb["band"] == [20, 30, 40, 50]
+    assert nb["env"] == "NAKED_POC_N_BINS"
+    assert "P2.3 add 20" in nb["basis"]
+    assert rows["n_periods (POC chunks)"]["env"] == "NAKED_POC_N_PERIODS"
+    by_id = {p["id"]: p for p in spec["params"]}
+    assert by_id["P6"]["env"] == "NAKED_POC_MAX_DISTANCE_PCT"
+    assert by_id["P6"]["free_band"] == [0.0028, 0.0059, 0.0096, 0.0141, 0.02]
+    assert by_id["P6"]["resim_band"] == []    # looser levels held for the adapter
+    assert "0.03 / 0.04 / 0.05 PROPOSED" in by_id["P6"]["status"]
+    mutant = copy.deepcopy(spec)
+    mp = next(p for p in mutant["params"] if p["id"] == "P2")
+    mp["band"] = [126, 252]
+    mp["free_band"], mp["resim_band"] = [252], [126]
+    bad = pvt.validate_spec(mutant)
+    assert bad, "a resim level with the stub tools block must be refused (B2883)"
+    # The detectors still SEE the env-actuated ceiling (S6-B3171 extended the
+    # shared compare pattern; the gate now reads _cfg, resolved to production):
+    import build_strategy_status as bss
+    import build_table_a as bta
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    keys = bss.numeric_thresholds(src)["naked_poc_retest_long"]
+    assert "naked_poc_nearest_distance_pct" in keys, keys
+    assert "naked_poc_count" in keys, keys
+    depth = bta.depth_comparisons(src)["naked_poc_retest_long"]
+    assert ("naked_poc_nearest_distance_pct", "<", 0.02) in depth, depth
+    # control: a literal-threshold gate from the B2841 incident still parses
+    cmf = bta.depth_comparisons(src).get("cmf_flip", [])
+    assert any(k == "po3_accum_range_pct" for k, _, _ in cmf), cmf

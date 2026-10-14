@@ -129,9 +129,10 @@ def declared_families(src: str) -> dict:
 def numeric_thresholds(src: str) -> dict:
     """Signal keys the entry condition compares to a NUMBER, per strategy.
 
-    A LOWER BOUND by construction: a threshold reached through a helper, or
-    compared against a config constant rather than a literal, is invisible to a
-    source pattern. Stated in the artifact so the count is never read as total.
+    A LOWER BOUND by construction: a threshold reached through a helper is
+    invisible to a source pattern; one read inline from config as _cfg.<NAME>
+    is matched since S6-B3171 (resolved to production by build_table_a).
+    Stated in the artifact so the count is never read as total.
     """
     out = {}
     for n in ast.walk(ast.parse(src)):
@@ -139,7 +140,8 @@ def numeric_thresholds(src: str) -> dict:
             continue
         body = ast.unparse(n)
         keys = set(re.findall(
-            r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"][^)]*\)\s*[<>]=?\s*-?[0-9.]+", body))
+            r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"][^)]*\)\s*[<>]=?\s*"
+            r"(?:-?[0-9.]+|_cfg\.[A-Z0-9_]+)", body))  # S6-B3171: config-read RHS
         if keys:
             out[n.name[len("strat_"):]] = sorted(keys)
     return out

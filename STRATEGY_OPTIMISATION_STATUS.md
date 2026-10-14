@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 536c3423e at 2026-10-14 10:45:21 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit c6b86b5e0 at 2026-10-14 11:33:01 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -111,7 +111,7 @@
 | turtle_soup_short | ict | 1880 | 28.6 | YES | 16.5% | LOOSEN | STALLED-CAMPAIGN |
 | tema_dema | trend | 1876 | 124.2 | YES | 72.0% | NONE | NOT-STARTED |
 | institutional_strong_conviction_long | institutional_persistence | 1826 | 167.8 |  | 100.0% | - | DONE-ADMITTED |
-| naked_poc_retest_long | volume_profile | 1788 | 164.3 |  | 100.0% | TIGHTEN | IN-CAMPAIGN |
+| naked_poc_retest_long | volume_profile | 1788 | 164.3 | YES | 100.0% | TIGHTEN | IN-CAMPAIGN |
 | cpr_narrow_momentum_short | confluence | 1696 | 155.9 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | three_black_crows_short | candle | 1674 | 153.9 | YES | 100.0% | - | DONE-OWNER-CLOSED |
 | parabolic_sar_flip_short | trend | 1672 | 153.7 |  | 100.0% | NONE | NOT-STARTED |

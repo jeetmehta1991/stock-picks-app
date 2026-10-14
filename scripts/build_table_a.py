@@ -53,8 +53,12 @@ from table_a_bands import (LEG_DEFN, PRODUCER_BANDS, STRATEGY_EXTRAS,  # noqa: E
 # production gates were missing from Table A depth (cmf_flip's
 # po3_accum_range_pct >= 0.0458, pairs_short's ppo_signal >= -0.858). One
 # nested-paren level is now allowed.
+# S6-B3171 extends the RHS: a gate that reads its threshold from config
+# (s.get(key) < _cfg.NAME) is matched and resolved to the production value
+# by _resolve_rhs - the S6-B3120h precedent one token to the right.
 _NUM_CMP = (r"s\.get\(f?['\"]([a-zA-Z0-9_{}.]+)['\"]"
-            r"(?:[^()]|\([^()]*\))*\)\s*([<>]=?)\s*(-?[0-9.]+)")
+            r"(?:[^()]|\([^()]*\))*\)\s*([<>]=?)\s*"
+            r"(-?[0-9.]+|_cfg\.[A-Z0-9_]+)")
 
 # S6-B3120h: a SPAN-KEYED gate reads its signal through an f-string whose
 # placeholder is a config constant - s.get(f"price_above_ema_{_cfg.
@@ -68,6 +72,17 @@ _NUM_CMP = (r"s\.get\(f?['\"]([a-zA-Z0-9_{}.]+)['\"]"
 def _resolve_fstring_key(key: str) -> str:
     from backtest import config as _bt_cfg
     return key.replace("{_cfg.STRAT_EMA_SPAN}", str(_bt_cfg.STRAT_EMA_SPAN))
+
+
+def _resolve_rhs(v: str) -> float:
+    """S6-B3171 (the S6-B3120h precedent, comparison side): a threshold the
+    gate reads from config resolves to its production value, so an
+    env-actuated ceiling stays visible to Table A and the stream detector
+    instead of silently dropping (the L875 class)."""
+    if v.startswith("_cfg."):
+        from backtest import config as _bt_cfg
+        return float(getattr(_bt_cfg, v[len("_cfg."):]))
+    return float(v)
 
 OUT_DIR = ROOT / "strategy_optimisation"
 STATUS_JSON = ROOT / "output_audit" / "strategy_optimisation_status.json"
@@ -91,7 +106,7 @@ def depth_comparisons(src: str) -> dict:
         rows = re.findall(_NUM_CMP, body)
         if rows:
             out[n.name[len("strat_"):]] = [
-                (_resolve_fstring_key(k), op, float(v)) for k, op, v in rows]
+                (_resolve_fstring_key(k), op, _resolve_rhs(v)) for k, op, v in rows]
     return out
 
 
@@ -332,7 +347,10 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
          f"**status:** {row['status']} | **R5 fires:** {row['r5_fires']} | "
          f"**surviving fires (T1):** {n_all}"
          + (f" (survives_pct {row['survives_pct']})" if filtered else
-            " (unchanged since R5 - filter is identity)"),
+            (" (code changed since R5; the status build's survival filter"
+             f" measured survives_pct {row['survives_pct']} - every fire kept)"
+             if row.get("changed_since_r5") else
+             " (unchanged since R5 - filter is identity)")),
          "",
          f"**SPECS entry:** {'registered in producer_variant_table' if in_specs else 'NONE - build at R1 before any engine leg (W-T T0)'}",
          "",

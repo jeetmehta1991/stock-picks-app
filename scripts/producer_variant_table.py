@@ -2054,6 +2054,140 @@ FORMULA_TWS = (
     "              measured retention quantiles on the 1,596 R5 fires)\n")
 
 
+SPECS_PHASE0.update({"naked_poc_retest_long": {  # S6-B3171 F1 (B3139q-r69r) - written from the owner's T3 band words (2026-10-14, verbatim in the rows); offline depth leg first, engine legs adapter-gated, so PHASE0 is the registry (the bollinger B3118 pattern)
+    "formula": """
+ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in
+the producer->gate derivation. B<n> rows join only when REGISTERED at a T3
+review - none registered at the 2026-10-14 review (census in Table A).
+
+=============================== PRODUCER LAYER ===============================
+
+P1  price_above_ema_200  (span 200, compute_ema_sma; the gate reads the
+       LITERAL key - the S6-B3117b STRAT_EMA_SPAN wiring-gap note applies
+       exactly as on bollinger_lower, so the identity is held at production
+       here: canon-span flags persisted on the fires are offline
+       ADD-A-CONDITION legs; the gate-span SWAP is RESIM, owner-pending)
+P2  period_lookback  (bars the POC window spans;
+       volume_profile.py compute_period_pocs)  [OWNER T3 2026-10-14, verbatim: "P2.2
+       need lower bands than 126. Quarterly, monthly and weekly" -> 63, 21, 5
+       trading days; the words landed on the row holding 126. MEASURED
+       PAIRING CONSTRAINT (compute_period_pocs' own guard skips a chunk
+       under 5 bars; pinned test_b3171): lookback 5 yields ZERO POCs at every
+       banded n_periods; 21 yields POCs only at n_periods 4. ENGINE BAND
+       [5, 21, 63, 126] HELD ADAPTER-PENDING - validate_spec (B2883) refuses
+       resim levels without a complete battery adapter; the adapter is
+       S6-B3171a, owed before any engine leg]
+P3  n_periods  (POC chunks the window splits into; a
+       compute_period_pocs argument)
+       [band 4/6/8; engine levels ADAPTER-PENDING as P2]
+P4  n_bins  (price bins per chunk profile; a compute_period_pocs
+       argument)
+       [OWNER T3 2026-10-14, verbatim: "P2.3 add 20" -> band 20/30/40/50;
+       engine levels ADAPTER-PENDING as P2]
+
+=============================== STRATEGY LAYER ===============================
+
+P5  naked_poc_count > 0   [EXISTING-THRESHOLD; tighter floors 1, 2 offline -
+       subset on the persisted count]
+P6  naked_poc_nearest_distance_pct < 0.02   [EXISTING-THRESHOLD; tighter
+       ceilings offline, QUANTS on the 1788 surviving fires. OWNER T3
+       2026-10-14, verbatim: "P3 add looser bands" -> looser ceilings, RESIM
+       by construction; the LEVELS 0.03 / 0.04 / 0.05 are PROPOSED at
+       1.5x / 2x / 2.5x of production (criterion stated), pending the owner's
+       own numbers, and HELD ADAPTER-PENDING as P2]
+
+fires = P5 AND P6 AND price_above_ema_200
+        (backtest/signals/screener.py strat_naked_poc_retest_long; the P6
+        ceiling and the P2-P4 knobs are env-actuated at S6-B3171 with
+        defaults equal to production)
+""",
+    "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1788,
+                 "tickers": 544, "holdout_n": 413, "band": "T",
+                 "window": "2022-05-05..2026-05-05"},
+    "gate": ("naked_poc_count > 0 AND naked_poc_nearest_distance_pct < "
+             "NAKED_POC_MAX_DISTANCE_PCT (default 0.02) AND "
+             "price_above_ema_200 (screener strat_naked_poc_retest_long)"),
+    "tools": {},  # pre-engine stub; the COMPLETE adapter lands in SPECS with
+                  # S6-B3171a before any engine leg (the B2897 pattern)
+    "params": [
+        {"id": "P1", "producer": "technical.py compute_ema_sma -> screener emit",
+         "param": "ema span (the 200 in price_above_ema_200)",
+         "production": 200, "band": [200],
+         "free_band": None, "resim_band": None, "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": False,
+         "status": "HELD AT PRODUCTION - the gate reads the literal key "
+                   "(S6-B3117b wiring gap, owner-pending); canon-span flags "
+                   "are offline ADD-A-CONDITION legs via the B-row census",
+         "type": "identity", "engine_implemented": False,
+         "evidence": "screener gate; S6-B3117b",
+         "derivation": "held at production in PHASE0 - no resim promise (S6-B2569a)"},
+        {"id": "P2", "producer": "volume_profile.py compute_period_pocs",
+         "param": "period_lookback (bars)",
+         "production": 252, "band": [252],
+         "free_band": [252], "resim_band": [], "env": "NAKED_POC_LOOKBACK",
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "sweep_levels": None, "subset_safe": False,
+         "status": "ACTUATED (S6-B3171, default = production); OWNER T3 BAND "
+                   "[5, 21, 63, 126, 252] held ADAPTER-PENDING (B2883) - "
+                   "resim levels land with the S6-B3171a adapter; pairing "
+                   "constraint pinned by test_b3171",
+         "type": "numeric", "engine_implemented": True,
+         "evidence": "volume_profile.py compute_period_pocs; config.py NAKED_POC_LOOKBACK",
+         "derivation": "band held to production until the adapter lands"},
+        {"id": "P3", "producer": "volume_profile.py compute_period_pocs",
+         "param": "n_periods (POC chunks)",
+         "production": 6, "band": [6],
+         "free_band": [6], "resim_band": [], "env": "NAKED_POC_N_PERIODS",
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "sweep_levels": None, "subset_safe": False,
+         "status": "ACTUATED (S6-B3171, default = production); band [4, 6, 8] "
+                   "held ADAPTER-PENDING (B2883) as P2",
+         "type": "numeric", "engine_implemented": True,
+         "evidence": "volume_profile.py compute_period_pocs (n_periods); config.py NAKED_POC_N_PERIODS",
+         "derivation": "as P2"},
+        {"id": "P4", "producer": "volume_profile.py compute_period_pocs",
+         "param": "n_bins (price bins)",
+         "production": 40, "band": [40],
+         "free_band": [40], "resim_band": [], "env": "NAKED_POC_N_BINS",
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "sweep_levels": None, "subset_safe": False,
+         "status": "ACTUATED (S6-B3171, default = production); OWNER T3 BAND "
+                   "[20, 30, 40, 50] held ADAPTER-PENDING (B2883) as P2",
+         "type": "numeric", "engine_implemented": True,
+         "evidence": "volume_profile.py compute_period_pocs (n_bins); config.py NAKED_POC_N_BINS",
+         "derivation": "as P2"},
+        {"id": "P5", "producer": "screener naked-POC block (count of unretested POCs)",
+         "param": "count floor (> N naked POCs)",
+         "production": 0, "band": [0, 1, 2],
+         "free_band": [0, 1, 2], "resim_band": [], "env": None,
+         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
+         "subset_safe": True, "signal_keys": ["naked_poc_count"],
+         "status": "OFFLINE - tighter floors are subsets of the persisted count; "
+                   "measured no-bite at Table A (every surviving fire holds 6+ "
+                   "POCs) is VERIFIED, not assumed, at grid time",
+         "type": "numeric", "engine_implemented": True,
+         "evidence": "screener gate; Table A free-band row",
+         "derivation": "QUANTS + bracket floors on the surviving fires"},
+        {"id": "P6", "producer": "screener naked-POC block (distance to nearest naked POC)",
+         "param": "distance ceiling (naked_poc_nearest_distance_pct)",
+         "production": 0.02, "band": [0.0028, 0.0059, 0.0096, 0.0141, 0.02],
+         "free_band": [0.0028, 0.0059, 0.0096, 0.0141, 0.02],
+         "resim_band": [], "env": "NAKED_POC_MAX_DISTANCE_PCT",
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "sweep_levels": None, "subset_safe": True,
+         "signal_keys": ["naked_poc_nearest_distance_pct"],
+         "status": "ACTUATED (S6-B3171, default = production); OWNER T3 "
+                   "'add looser bands' -> 0.03 / 0.04 / 0.05 PROPOSED at "
+                   "1.5x/2x/2.5x production, RESIM, held ADAPTER-PENDING "
+                   "(B2883) as P2, values pending the owner's own numbers",
+         "type": "numeric", "engine_implemented": True,
+         "evidence": "screener gate; config.py NAKED_POC_MAX_DISTANCE_PCT; "
+                     "Table A free-band row (QUANTS on the surviving fires)",
+         "derivation": "tighter QUANTS offline; looser bracket resim"},
+    ],
+}})
+
 SPECS_PHASE0.update({"bollinger_lower": {  # B3118 F1 - written from the owner-approved T3 band (2026-09-27 "Approve your recommendation"); offline campaign, no engine leg owed, so PHASE0 is the registry (tools adapter not on the critical path)
     "formula": """
 ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in
