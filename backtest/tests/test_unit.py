@@ -48884,6 +48884,70 @@ def _b3139_private(rel, name):
     return mod
 
 
+# S6-B3164: reason cells from the ledger - each LEADING wording verbatim,
+# some tails shortened - hand-labelled (True = the row waits on the owner).
+# Workable rows that MENTION a ruling are the must-quiet half - a citation
+# or a second clause never gates a row.
+_B3164_REASONS = [
+    ("OPEN - owner decision: leave / confirm-and-repair / repair-and-regrade", True),
+    ("OPEN - owner decision: one word, extend / keep", True),
+    ("OPEN - owner decision: changes the set of cells the one-way sweep reads", True),
+    ("OPEN - needs your ruling on the fix (it changes CVNA trade sets)", True),
+    ("needs owner ruling - this is a rule change and cannot be made without it", True),
+    ("awaiting owner go per-rung sweep: 20 configs (P1 4 x P6 5)", True),
+    ("OPEN - the step-2 read needs its own explicit owner word even after a ruling", True),
+    ("not built pending approval six classes: DONE / DROPPED / BLOCKED", True),
+    ("OPEN - option (a) is display-only and can ship in its own batch; option (b) "
+     "needs the owner's word", False),
+    ("OPEN - implementable without a ruling (display-only, #310); lands next batch", False),
+    ("OPEN - test-only fix, implemented in the next batch", False),
+    ("OPEN - fix lands with its pin in the batch that takes it; the campaign's "
+     "results remain fully readable in the landed artifacts meanwhile", False),
+    ("OPEN - implementing next batch (B2848).", False),
+    ("not started - each names no artifact, so no join can confirm it", False),
+]
+
+
+def test_b3164_next_skips_rows_that_wait_on_the_owner(tmp_path, monkeypatch):
+    """S6-B3164 option (a), display-only: the workflow-state NEXT line never
+    names an OPEN row whose reason's first clause says it waits on the
+    owner. (1) the classifier on verbatim ledger wordings, both directions;
+    (2) build() on a synthetic ledger - a gated P1 is skipped for a workable
+    P2, and an all-gated ledger says so instead of naming one as work;
+    (3) the live ledger: NEXT names a workable row whenever one exists."""
+    bws = _b3139_private("build_workflow_state.py", "bws_b3164")
+    for text, want in _B3164_REASONS:
+        assert bws.awaits_owner(text) is want, (want, text)
+    import queue_state as qs
+    import pyramid_gate as pg
+    monkeypatch.setenv("WORKFLOW_STATE_OUT", str(tmp_path / "ws.json"))
+    monkeypatch.setattr(pg, "_engine_inflight", lambda: "none")
+    monkeypatch.setattr(pg, "_power_state", lambda: "ac")
+
+    def ledger(rows):
+        (tmp_path / "EXECUTION_QUEUE.md").write_text("\n".join(
+            f"| **{t}** | **OPEN** | {p} | **head {t}** | _reason:_ {r} |"
+            for t, p, r in rows) + "\n", encoding="utf-8")
+        monkeypatch.setattr(qs, "tickets", lambda: {t: "OPEN" for t, _, _ in rows})
+        monkeypatch.setattr(bws, "ROOT", tmp_path)
+        return bws.build()
+
+    st = ledger([("S6-B9001", "P1", "OPEN - owner decision: one word, a / b"),
+                 ("S6-B9002", "P2", "OPEN - test-only fix, next batch")])
+    assert st["next_mandated_action"].startswith("work S6-B9002"), st
+    assert [r["awaits_owner"] for r in st["open_tickets"]] == [True, False]
+    assert "[awaits owner]" in bws.banner()
+    st = ledger([("S6-B9001", "P1", "OPEN - owner decision: one word, a / b")])
+    assert st["next_mandated_action"].startswith("nothing workable OPEN; 1 OPEN"), st
+    assert "S6-B9001" in st["next_mandated_action"]
+    monkeypatch.undo()
+    monkeypatch.setenv("WORKFLOW_STATE_OUT", str(tmp_path / "ws_live.json"))
+    live = bws.build()
+    gated = {r["id"] for r in live["open_tickets"] if r["awaits_owner"]}
+    assert not any(live["next_mandated_action"].startswith(f"work {g} ") for g in gated), live
+
+
+
 def test_b3139_workflow_state_writes_follow_the_env_override(tmp_path, monkeypatch):
     """S6-B3130a (B3139): build() writes its file copy where
     WORKFLOW_STATE_OUT points and NOT to its production path. MEASURED: the

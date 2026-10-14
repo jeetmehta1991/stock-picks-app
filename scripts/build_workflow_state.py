@@ -34,6 +34,29 @@ OUT = ROOT / "output_audit" / "workflow_state.json"
 ENV_OUT = "WORKFLOW_STATE_OUT"
 _NONTERMINAL = ("OPEN", "RUNNING", "BLOCKED")
 
+# S6-B3164 option (a), DISPLAY ONLY: an OPEN row whose reason's LEADING
+# clause says it waits on the owner is not the next piece of work - NEXT
+# skips it and the banner marks it. MEASURED over the ledger at B3139q-r69k:
+# 910 OPEN rows, 848 with a reason cell, 804 distinct leading wordings - so
+# the match keys on DECISION-PENDING forms, never on a citation of a ruling
+# already made (the scan_owner_decision_taken rule, L586), and reads only
+# the first clause, so a later clause about another option (S6-B3164's own
+# reason) does not gate a workable row. The six-class vocabulary is
+# unchanged: an awaiting-owner CLASS would be a ruling (option (b), L524).
+OWNER_PENDING_FORMS = (
+    "owner decision:", "owner decision -", "needs your ruling",
+    "needs the owner", "needs owner", "needs an owner", "awaiting owner",
+    "awaiting the owner", "awaits the owner", "awaiting your",
+    "pending approval", "pending the owner", "explicit owner word",
+    "owner go")
+
+
+def awaits_owner(reason: str) -> bool:
+    """True when the reason's FIRST clause (up to ';' or '|') names a
+    decision pending with the owner."""
+    lead = re.split(r"[;|]", (reason or "").lower(), maxsplit=1)[0]
+    return any(f in lead for f in OWNER_PENDING_FORMS)
+
 
 def out_path() -> Path:
     """Where build() writes its file copy: WORKFLOW_STATE_OUT when set,
@@ -61,16 +84,25 @@ def build() -> dict:
     for m in pat.finditer(text):            # later rows overwrite - same rule
         meta[m.group(1)] = (m.group(2),
                             m.group(3).replace("**", "").strip())
+    # S6-B3164: each ticket's LAST reason cell (display data, same rule)
+    reason: dict[str, str] = {}
+    for line in text.splitlines():
+        mm = re.match(r"^\|\s*\*\*(" + qs.TICKET_ID + r")\*\*\s*\|", line)
+        if mm and "_reason:_" in line:
+            reason[mm.group(1)] = line.rsplit("_reason:_", 1)[1].strip().rstrip("|").strip()
     open_rows = [
         {"id": tid, "state": st,
          "prio": meta.get(tid, ("P?", ""))[0],
-         "head": meta.get(tid, ("P?", ""))[1]}
+         "head": meta.get(tid, ("P?", ""))[1],
+         "awaits_owner": st == "OPEN" and awaits_owner(reason.get(tid, ""))}
         for tid, st in states.items() if st in _NONTERMINAL]
     open_rows.sort(key=lambda r: (r["prio"], r["state"] != "RUNNING", r["id"]))
 
     engine = pg._engine_inflight()
     power = pg._power_state()           # S6-B3163: one definition
-    workable = [r for r in open_rows if r["state"] == "OPEN"]
+    workable = [r for r in open_rows
+                if r["state"] == "OPEN" and not r["awaits_owner"]]
+    gated = [r for r in open_rows if r["awaits_owner"]]
     if engine and engine not in ("none", "unknown"):
         next_action = f"engine run in flight ({engine}) - await its landing; no pyramid beside it (B3108)"
     elif any(r["state"] == "RUNNING" for r in open_rows):
@@ -79,6 +111,9 @@ def build() -> dict:
     elif workable:
         top = workable[0]
         next_action = f"work {top['id']} ({top['prio']}): {top['head'][:80]}"
+    elif gated:
+        next_action = (f"nothing workable OPEN; {len(gated)} OPEN row(s) await "
+                       "the owner: " + ", ".join(r["id"] for r in gated[:4]))
     elif open_rows:
         next_action = ("nothing OPEN; blocked on "
                        + ", ".join(r["id"] for r in open_rows[:3]))
@@ -115,7 +150,8 @@ def banner() -> str:
                  f"; power={st.get('power', 'unknown')}]",
                  f"  NEXT: {st['next_mandated_action']}"]
         for r in st["open_tickets"]:
-            lines.append(f"  {r['prio']} {r['state']:8s} {r['id']}: "
+            mark = " [awaits owner]" if r.get("awaits_owner") else ""
+            lines.append(f"  {r['prio']} {r['state']:8s} {r['id']}{mark}: "
                          f"{r['head'][:90]}")
         return "\n".join(lines).encode("ascii", "replace").decode("ascii") + "\n\n"
     except Exception:
