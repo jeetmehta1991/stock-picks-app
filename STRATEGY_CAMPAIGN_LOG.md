@@ -2363,8 +2363,8 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   owner 2026-10-13 (*"B3145a B3155 B3145b drop these as the strategies have already been admitted"*);
   its final-bar half is not pairs-only and is carried as S6-B3155a
   (output_audit/b3155a_final_bar_cache_probe.json), EXECUTED at B3139q-r69n on the owner's
-  ruling 2026-10-14 (*"S6-B3155a b"*): 493 engine-cache final bars confirmed partial against
-  Yahoo and rewritten from the prefetch for runs launched after the repair; the pairs admitted
+  ruling 2026-10-14 (*"S6-B3155a b"*): 493 engine-cache final bars confirmed wrong against
+  Yahoo (479 partial sessions, 14 stale volumes) and rewritten from the prefetch for runs launched after the repair; the pairs admitted
   line has 0 graded exits on that bar (output_audit/b3155a_final_bar_exposure.json).
 
 ### J.2 Step 4 - ADMITTED by owner ruling (S6-B3145, 2026-10-13)
