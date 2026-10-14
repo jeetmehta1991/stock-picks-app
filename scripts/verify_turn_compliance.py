@@ -5637,9 +5637,18 @@ def dash_c_escape_hits(cmd: str) -> list[str]:
     """S6-B3139v: one line per double-quoted `python -c "..."` payload in
     `cmd` carrying a backslash pair the SHELL DOES NOT CONSUME (it reaches
     the interpreter); [] when every pair is shell-consumed or none exists.
-    A single-quoted -c payload is untouched by bash and stays out of scope."""
+    A single-quoted -c payload is untouched by bash and stays out of scope.
+
+    S6-B3144 (owner ruling 2026-10-13, "Approve all other recommendations"):
+    the PreToolUse guard now REFUSES on this function before a command runs,
+    so a heredoc BODY is stripped first - it is data the command carries (a
+    commit message quoting such a payload), not a -c that runs (B1979). The
+    heredoc's own head line is kept, so a -c on that line is still read.
+    LIMIT: a -c line inside a heredoc fed to bash itself is not seen."""
+    text = _HEREDOC_RE.sub(lambda h: h.group(0).split("\n", 1)[0] + "\n",
+                           str(cmd or ""))
     out = []
-    for m in _DASH_C_RE.finditer(str(cmd or "")):
+    for m in _DASH_C_RE.finditer(text):
         pairs = sorted({p for p in _ESCAPE_PAIR_RE.findall(m.group(1))
                         if p not in _SHELL_CONSUMED})
         if pairs:
@@ -5669,6 +5678,20 @@ def scan_heredoc_escapes(entries, *, cmds=None, active_from=None) -> list[str]:
         cut = active_from or HEREDOC_ESCAPES_ACTIVE_FROM
         dcut = active_from or DASH_C_ACTIVE_FROM
         cmds, dash_cmds = [], []
+        # S6-B3144: a command the PreToolUse guard REFUSED never ran - the
+        # record counts what RAN, the guard what WOULD run. Linked by
+        # tool_use id to the harness's refusal result (is_error, the guard's
+        # own path and REFUSED BEFORE RUNNING); a guard that failed open left
+        # no such result, so its command still fires here.
+        refused = set()
+        for d in (entries or ()):
+            c0 = (d.get("message") or {}).get("content") if isinstance(d, dict) else None
+            for b in (c0 if isinstance(c0, list) else ()):
+                if (isinstance(b, dict) and b.get("type") == "tool_result"
+                        and b.get("is_error")
+                        and "pretooluse_heredoc_guard" in str(b.get("content"))
+                        and "REFUSED BEFORE RUNNING" in str(b.get("content"))):
+                    refused.add(b.get("tool_use_id"))
         for d in _turn_entries(entries):
             if not isinstance(d, dict) or d.get("type") != "assistant":
                 continue
@@ -5677,7 +5700,8 @@ def scan_heredoc_escapes(entries, *, cmds=None, active_from=None) -> list[str]:
                 continue
             for blk in (d.get("message") or {}).get("content") or ():
                 if (isinstance(blk, dict) and blk.get("type") == "tool_use"
-                        and str(blk.get("name") or "").lower() == "bash"):
+                        and str(blk.get("name") or "").lower() == "bash"
+                        and blk.get("id") not in refused):
                     c = str((blk.get("input") or {}).get("command") or "")
                     if ts >= cut:
                         cmds.append(c)

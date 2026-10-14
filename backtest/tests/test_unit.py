@@ -51571,6 +51571,11 @@ def test_b3139_dash_c_python_escape_fires_and_shell_escapes_stay_quiet():
         assert vtc.dash_c_escape_hits(quiet) == [], quiet
     assert vtc.scan_heredoc_escapes(
         [], cmds=['python -c "print(\\"ok\\", \\"\\$HOME\\")"']) == []
+    # S6-B3144: a heredoc BODY quoting a -c payload is data (B1979) - the
+    # guard refuses on this function, so a quoted example must not block a
+    # commit; a -c on the heredoc's HEAD line is still read
+    assert vtc.dash_c_escape_hits("git commit -F - <<'MSG'\n" + bad + "\nMSG") == []
+    assert vtc.dash_c_escape_hits(bad + " <<'EOF'\nignored\nEOF"), "the head line is read"
     # its own ship stamp, and the live branch windows -c separately
     assert vtc.DASH_C_ACTIVE_FROM > vtc.HEREDOC_ESCAPES_ACTIVE_FROM
 
@@ -53264,6 +53269,36 @@ def test_b3139ar_breadth_rerun_drops_flagged_axes_and_matches_retained_rows():
     assert longp["p_value"] > 0.05, "the long leg's search is no longer priced below 0.05 once the COT axis is dropped"
 
 
+def test_b3144_a_refused_command_is_not_a_turn_end_incident():
+    """S6-B3144: once the guard refuses a command BEFORE it runs, the turn-end
+    record must not count it - nothing ran, and counting it blocked a close
+    with no remedy. Linked by tool_use id to the harness's refusal result;
+    the same command with no refusal, or one that RAN, still fires - a guard
+    that failed open is exactly what the record is for."""
+    import verify_turn_compliance as vtc
+    q, bs = chr(39), chr(92)
+    cmd = "python -c " + chr(34) + "print(" + q + "a" + bs + "tb" + q + ")" + chr(34)
+    assert vtc.dash_c_escape_hits(cmd), cmd
+    use = {"type": "assistant", "timestamp": "2099-01-01T00:00:00.000Z",
+           "message": {"content": [{"type": "tool_use", "id": "tu_1",
+                                    "name": "Bash", "input": {"command": cmd}}]}}
+    refusal = {"type": "user", "message": {"content": [{
+        "type": "tool_result", "tool_use_id": "tu_1", "is_error": True,
+        "content": ("PreToolUse:Bash hook error: [python scripts/"
+                    "pretooluse_heredoc_guard.py]: REFUSED BEFORE RUNNING "
+                    "(S6-B3144 / #259 / L893): 1 double-quoted python -c payload")}]}}
+    assert vtc.scan_heredoc_escapes([use, refusal]) == [], "a refused command never ran"
+    assert vtc.scan_heredoc_escapes([use]), "a command with no refusal still fires"
+    ran = {"type": "user", "message": {"content": [{
+        "type": "tool_result", "tool_use_id": "tu_1", "content": "a b"}]}}
+    assert vtc.scan_heredoc_escapes([use, ran]), "a command that RAN still fires"
+    other = {"type": "user", "message": {"content": [{
+        "type": "tool_result", "tool_use_id": "tu_2", "is_error": True,
+        "content": refusal["message"]["content"][0]["content"]}]}}
+    assert vtc.scan_heredoc_escapes([use, other]), "a refusal of ANOTHER call clears nothing"
+
+
+
 def test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter():
     """S6-B3139ae (owner ruling 2026-10-06, packet row 21 'approve', recorded
     in S6-B3139br): a Bash command feeding a backslash-bearing heredoc body to
@@ -53295,6 +53330,13 @@ def test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter():
         'S="C:/Users/jeetm/AppData/Local/Temp/claude/c--Users-jeetm-Github-stock-picks-app/433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0/scratchpad" && python - "$S/b3139d_si_pit_measure.py" <<\'EOF\'\nimport sys\nfrom pathlib import Path\np = Path(sys.argv[1]); s = p.read_text(encoding="utf-8")\na1 = "        pit_sh = float(known.iloc[-1][\\"value\\"])"\nassert s.count(a1) == 1\ns = s.replace(a1, a1 + "\\n        pit_pe = known.iloc[-1][\\"period_end\\"]")\na2 = "                      (si / adv) if adv > 0 else 0.0, fh / pit_sh))"\nassert s.count(a2) == 1\ns = s.replace(a2, "                      (si / adv) if adv > 0 else 0.0, fh / pit_sh,\\n                      (d - pit_pe).days, si, fh, pit_sh))")\ns = s.replace("for t, d, c, p, dtc, ratio in pairs:", "for t, d, c, p, dtc, ratio, *_ in pairs:")\ns = s.replace("    for t, d, c, p, dtc, _ in rows:", "    for t, d, c, p, dtc, *_ in rows:")\na3 = "OUT.write_text(json.dumps(doc"\nassert s.count(a3) == 1\nextra = \'\'\'ages = sorted(x[6] for x in clean)\ndoc["pit_age_days_settlement_minus_period_end"] = {\n    "p50": ages[len(ages)//2], "p90": ages[(len(ages)*9)//10],\n    "max": ages[-1], "over_365": sum(1 for a in ages if a > 365)}\nfl = [x for x in clean if (x[2] >= GATE) != (x[3] >= GATE)]\nstep = max(1, len(fl) // 10)\ndoc["flip_sample"] = [\n    {"t": x[0], "d": str(x[1]), "si": x[7], "finnhub_sh": x[8],\n     "pit_sh": x[9], "cur_pct": round(x[2], 4), "pit_pct": round(x[3], 4),\n     "ratio": round(x[5], 3), "pit_age_d": x[6]} for x in fl[::step][:10]]\n\'\'\'\ns = s.replace(a3, extra + a3)\np.write_text(s, encoding="utf-8")\nprint("patched")\nEOF\n.venv/Scripts/python.exe "$S/b3139d_si_pit_measure.py" "$S/b3139d_si_pit_measure.json" > /dev/null && .venv/Scripts/python.exe -c "\nimport json; d=json.load(open(r\'$S/b3139d_si_pit_measure.json\'))\nprint(\'PIT age:\', d[\'pit_age_days_settlement_minus_period_end\'])\nfor r in d[\'flip_sample\']: print(r)"',
         'S="C:/Users/jeetm/AppData/Local/Temp/claude/c--Users-jeetm-Github-stock-picks-app/433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0/scratchpad" && python - "$S/msg_r17_3139w.txt" <<\'EOF\'\nimport sys\nfrom pathlib import Path\np = Path(sys.argv[1]); s = p.read_text(encoding="utf-8")\ns = s.replace("b3139_pyramid_r17.out", "b3139_pyramid_r18.out")\nanchor = "ALSO IN THIS COMMIT:"\nassert s.count(anchor) == 1\nadd = ("GATE HISTORY: the r17 gate went RED (1 failed, 1682 passed) on\\n"\n       "test_b2128_silent_except_pass_is_a_shrinking_set - the new _step()\\n"\n       "helper swallowed an unreadable manifest with except-pass (129 vs\\n"\n       "ceiling 128). Fixed: the header now names each unreadable manifest.\\n"\n       "L896 + S6-B3139ac record it (compliance failure against #122).\\n"\n       "S6-B3139ad tickets the owner-decision gate\'s narrow ACK vocabulary.\\n\\n")\ns = s.replace(anchor, add + anchor)\np.write_text(s, encoding="utf-8")\nprint("msg updated", s.count("r18"))\nEOF\necho "r18 pyramid gate running (task blfkebyjy): S6-B3139w fix + ratchet fix, L896, campaign log I.6 and queue rows commit on its green footer (#292)" > .stop_exempt && python scripts/queue_state.py 2>/dev/null | grep -E "EXECUTED|DROPPED|BLOCKED|DEFERRED|OPEN|RUNNING"',
     ]
+    # S6-B3144 (owner ruling 2026-10-13): the double-quoted python -c sibling
+    # is refused too - the origin incident verbatim (transcript line 125541,
+    # 2026-10-10T13:14Z), refused under its OWN ticket's message
+    incident = 'for f in LEARNINGS.md CHECKLIST.md CLAUDE.md .claude/skills/execution-discipline/SKILL.md backtest/tests/test_unit.py; do python -c "import sys;b=open(sys.argv[1],\'rb\').read();c=b.count(b\'\\r\\n\');print(sys.argv[1],\'crlf\',c,\'bareLF\',b.count(b\'\\n\')-c)" "$f"; done'
+    must_fire.append(incident)
+    rc, err = run(bash(incident))
+    assert rc == 2 and "S6-B3144" in err and "python -c" in err, (rc, err[:200])
     for c in must_fire:
         rc, err = run(bash(c))
         assert rc == 2 and "REFUSED BEFORE RUNNING" in err, (rc, err[:200], c[:80])
@@ -53305,6 +53347,13 @@ def test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter():
         "git commit -q -F - <<" + q + "MSG" + q + "\nB1: fix the " + bs + "n handling\nMSG",
         "cat > rows.txt <<" + q + "EOF" + q + "\na " + bs + "n b\nEOF",
         "ls -la",
+        # S6-B3144 must-quiet: single-quoted -c is untouched by bash; a
+        # payload holding only pairs bash consumes; a commit heredoc QUOTING
+        # the incident (a heredoc body is data, B1979)
+        "python -c " + q + "print(" + bs + "\"a" + bs + "nb" + bs + "\")" + q,
+        "python -c \"print(" + bs + "\"ok" + bs + "\")\"",
+        "git commit -q -F - <<" + q + "MSG" + q + "\nB1: the probe ran " + incident
+        + "\nMSG",
     ]
     for c in must_quiet:
         rc, err = run(bash(c))
@@ -53324,7 +53373,7 @@ def test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter():
     tree = ast.parse(guard.read_text(encoding="utf-8"))
     imported = {a.name for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)
                 and n.module == "verify_turn_compliance" for a in n.names}
-    assert imported == {"heredoc_escape_hits"}, imported
+    assert imported == {"heredoc_escape_hits", "dash_c_escape_hits"}, imported
     assert not [n for n in ast.walk(tree) if isinstance(n, ast.Attribute) and n.attr == "compile"]
 
 
