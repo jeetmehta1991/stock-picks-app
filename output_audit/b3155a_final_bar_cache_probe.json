@@ -1,0 +1,252 @@
+{
+  "_doc": "S6-B3155a (B3139q-r69g): the final-bar half of the dropped S6-B3155. On 2026-05-05, the last bar of the R5 / Step-2 window, 84 of 544 tickers' engine cache (backtest/data/cache/ohlcv) and prefetch cache (data_prefetch/polygon/ohlcv_daily) disagree by more than 1pct; every other date agrees. The engine prices every mark and exit from the engine cache.",
+  "generated_by": "B3139q-r69g scratchpad probe_final_bar_exposure.py + probe_final_bar_which_cache.py + probe_final_bar_admitted.py, combined by persist_b3155a_probe.py (read-only)",
+  "final_bar": "2026-05-05",
+  "final_bar_tickers_source": "output_audit/output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_spotcheck_recheck.json class_sweep.final_bar_tickers",
+  "which_cache": {
+    "method": "per ticker, each cache's 2026-05-05 volume over the median of its own prior 20 bars, the final-bar close ratio, and the prior bar's agreement",
+    "tickers_with_final_bar_in_both": 84,
+    "engine_cache_volume_ratio": {
+      "median": 0.482,
+      "min": 0.173,
+      "max": 2.349,
+      "below_1": 71,
+      "n": 84
+    },
+    "prefetch_cache_volume_ratio": {
+      "median": 1.352,
+      "min": 0.567,
+      "max": 4.402,
+      "below_1": 22,
+      "n": 84
+    },
+    "final_close_abs_diff": {
+      "median": 0.0141,
+      "max": 0.0491
+    },
+    "prior_bar_agrees_within_0p1pct": 84,
+    "reading": "HYPOTHESIS with executed evidence: the engine cache's final bar for these tickers looks like a partial session (depressed volume against its own history while the prefetch cache's looks like a full session). Not confirmed against a third source - no local file holds the 2026-05-05 close (data_prefetch/polygon/prev is dated 2026-05-14)."
+  },
+  "exposure_roster_cubes": {
+    "R5": {
+      "rows": 4917172,
+      "last_exit_date": "2026-05-05",
+      "exit_on_final_bar": 96730,
+      "exit_on_final_bar_t84": 15153,
+      "t84_exit_reasons": {
+        "end_of_data": 6982,
+        "no_upcoming_earnings": 2488,
+        "max_days": 1522,
+        "time_stop_20d": 799,
+        "regime_flip_max_days_20": 799,
+        "time_stop_10d": 292,
+        "trailing_stop": 199,
+        "atr_trailing_stop": 175
+      },
+      "t84_strategies_distinct": 173,
+      "t84_top_strategies": {
+        "pairs_mean_reversion_long": 604,
+        "camarilla_r4_breakout": 383,
+        "stochrsi_overbought_short": 383,
+        "po3_bearish": 360,
+        "pairs_mean_reversion_short": 337,
+        "smc_liquidity_sweep_reversal": 277
+      }
+    },
+    "R6b": {
+      "rows": 299754,
+      "last_exit_date": "2026-05-05",
+      "exit_on_final_bar": 5962,
+      "exit_on_final_bar_t84": 918,
+      "t84_exit_reasons": {
+        "end_of_data": 408,
+        "no_upcoming_earnings": 139,
+        "max_days": 78,
+        "time_stop_20d": 55,
+        "regime_flip_max_days_20": 55,
+        "atr_trailing_stop": 24,
+        "time_stop_10d": 19,
+        "class_time_stop_trend_50d": 18
+      },
+      "t84_strategies_distinct": 14,
+      "t84_top_strategies": {
+        "camarilla_r4_breakout": 189,
+        "break_retest_volume": 90,
+        "institutional_volume_confirmation_long": 89,
+        "dc20_break_retest": 82,
+        "awesome_oscillator": 78,
+        "cmf_flip": 75
+      }
+    },
+    "Group1": {
+      "rows": 37102,
+      "last_exit_date": "2026-05-05",
+      "exit_on_final_bar": 674,
+      "exit_on_final_bar_t84": 176,
+      "t84_exit_reasons": {
+        "end_of_data": 70,
+        "max_days": 23,
+        "no_upcoming_earnings": 22,
+        "time_stop_20d": 10,
+        "regime_flip_max_days_20": 10,
+        "time_stop_10d": 8,
+        "class_time_stop_factor_30d": 5,
+        "atr_trailing_stop": 4
+      },
+      "t84_strategies_distinct": 3,
+      "t84_top_strategies": {
+        "xs_combined_momentum_high_ivol_short": 72,
+        "poc_magnet_short": 64,
+        "news_sentiment_short": 40
+      }
+    }
+  },
+  "exposure_admitted_upper_bound": {
+    "method": "each admission's (strategy, exit) rows in the cube it was graded on, its companion filters NOT applied - an upper bound on its holdout rows priced on the disputed bar",
+    "admissions": [
+      {
+        "strategy": "smc_breaker_block_long",
+        "exit": "time_stop_10d",
+        "exposed": false,
+        "why": "admitted window 2022-05-06 .. 2026-04-30 ends before 2026-05-05"
+      },
+      {
+        "strategy": "pead_long_high_yoy_growth_only",
+        "exit": "time_stop_10d",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 2116,
+        "exit_on_final_bar": 12,
+        "exit_on_final_bar_t84": 3,
+        "exposed": true
+      },
+      {
+        "strategy": "pead_with_smart_money_long",
+        "exit": "time_stop_10d",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 656,
+        "exit_on_final_bar": 2,
+        "exit_on_final_bar_t84": 0,
+        "exposed": false
+      },
+      {
+        "strategy": "institutional_breakout_confirmation_long",
+        "exit": "r_multiple_2r",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 642,
+        "exit_on_final_bar": 6,
+        "exit_on_final_bar_t84": 0,
+        "exposed": false
+      },
+      {
+        "strategy": "institutional_committed_growth_long",
+        "exit": "time_stop_10d",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 1941,
+        "exit_on_final_bar": 26,
+        "exit_on_final_bar_t84": 3,
+        "exposed": true
+      },
+      {
+        "strategy": "institutional_high_conviction_long",
+        "exit": "time_stop_10d",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 2473,
+        "exit_on_final_bar": 26,
+        "exit_on_final_bar_t84": 4,
+        "exposed": true
+      },
+      {
+        "strategy": "institutional_multi_quarter_persistence_long",
+        "exit": "time_stop_10d",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 2516,
+        "exit_on_final_bar": 24,
+        "exit_on_final_bar_t84": 3,
+        "exposed": true
+      },
+      {
+        "strategy": "institutional_oversold_long",
+        "exit": "r_multiple_2r",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 386,
+        "exit_on_final_bar": 5,
+        "exit_on_final_bar_t84": 0,
+        "exposed": false
+      },
+      {
+        "strategy": "institutional_persistence_oversold_long",
+        "exit": "time_stop_10d",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 716,
+        "exit_on_final_bar": 4,
+        "exit_on_final_bar_t84": 1,
+        "exposed": true
+      },
+      {
+        "strategy": "institutional_recent_init_momentum_long",
+        "exit": "r_multiple_2r",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 2268,
+        "exit_on_final_bar": 15,
+        "exit_on_final_bar_t84": 1,
+        "exposed": true
+      },
+      {
+        "strategy": "institutional_recent_init_volume_long",
+        "exit": "r_multiple_2r",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 1075,
+        "exit_on_final_bar": 5,
+        "exit_on_final_bar_t84": 1,
+        "exposed": true
+      },
+      {
+        "strategy": "institutional_strong_conviction_long",
+        "exit": "time_stop_10d",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 1826,
+        "exit_on_final_bar": 18,
+        "exit_on_final_bar_t84": 2,
+        "exposed": true
+      },
+      {
+        "strategy": "xs_momentum_top_decile",
+        "exit": "time_stop_10d",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 253,
+        "exit_on_final_bar": 2,
+        "exit_on_final_bar_t84": 1,
+        "exposed": true
+      },
+      {
+        "strategy": "xs_low_beta_with_smart_money_long",
+        "exit": "time_stop_10d",
+        "cube": "output_r5_merged_1_7",
+        "rows_strategy_exit": 452,
+        "exit_on_final_bar": 3,
+        "exit_on_final_bar_t84": 0,
+        "exposed": false
+      },
+      {
+        "strategy": "three_white_soldiers",
+        "exit": "class_time_stop",
+        "cube": "output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3",
+        "rows_strategy_exit": 955,
+        "exit_on_final_bar": 0,
+        "exit_on_final_bar_t84": 0,
+        "exposed": false
+      },
+      {
+        "strategy": "pairs_mean_reversion_long",
+        "exit": "multi_tier_partial",
+        "cube": "output_pairs_mrl_step2_production",
+        "rows_strategy_exit": 5622,
+        "exit_on_final_bar": 42,
+        "exit_on_final_bar_t84": 7,
+        "exposed": true
+      }
+    ],
+    "exposed": 10,
+    "of": 16
+  }
+}

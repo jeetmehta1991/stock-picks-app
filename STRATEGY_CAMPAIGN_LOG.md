@@ -2300,6 +2300,13 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **Pre-registration item 5 is now the owner's question** (S6-B2178c): whether this closure counts
   toward that ticket's re-raise trigger. It was written for an all-three-configs fail; Step 2 ended
   at two by ruling, and Step 3 found holdout qualifiers that were not admitted.
+- **Item 5 answered 2026-10-13** (owner, approving the recommendation: *"Approve all other
+  recommendations"*): the closure does NOT count toward S6-B2178c's re-raise trigger. The
+  trigger is a second programme at the institutional shape - 16 configs, 5 of 15 clean positive,
+  nothing clearing the bar; bollinger_lower ran 7 Step-1 configs (I.2), read 2 Step-2 configs
+  (I.6), and its Step-3 read found 26 long qualifiers clearing the six gates (I.9; none admitted,
+  and I.11 measured them indistinguishable from chance) - a different shape. S6-B2178c stays
+  DEFERRED, trigger unfired; its b2182 package is redrafted before any re-raise.
 
 ### I.11 Were the Step-3 holdout qualifiers noise? Measured after the closure (S6-B3139bw, 2026-10-07)
 
@@ -2350,8 +2357,11 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   comparison on pead_long_high_yoy_growth_only (item 8), the read's own chance price
   (scripts/breadth_holdout_null.py, 300 shuffles per subject), and the admission
   proposal (item 9).
-- **Open on the family:** S6-B3155 (the pairs signal mixes two OHLCV caches; the admitted cell holds no
-  CVNA fire), S6-B3140b (Table D cannot see the free-levels factorial).
+- **Open on the family:** S6-B3140b (Table D cannot see the free-levels factorial). S6-B3155 (the
+  pairs signal mixes two OHLCV caches; the admitted cell holds no CVNA fire) was DROPPED by the
+  owner 2026-10-13 (*"B3145a B3155 B3145b drop these as the strategies have already been admitted"*);
+  its final-bar half is not pairs-only and is carried as S6-B3155a
+  (output_audit/b3155a_final_bar_cache_probe.json).
 
 ### J.2 Step 4 - ADMITTED by owner ruling (S6-B3145, 2026-10-13)
 
@@ -2369,13 +2379,14 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   entered 2025-05-05..2025-05-08 - 4 entry days, 39 tickers - one
   episode at the start of the holdout. Option B (route-A config 2 + atr_pct >= 4.365 at
   ma_exit_ema9) has 166 holdout trades over 101 entry days across
-  13 months; a swap was put to the owner (S6-B3145a).
+  13 months; a swap was put to the owner (S6-B3145a), who DROPPED it 2026-10-13 (the words
+  under J.1): option A stands.
 - **Point in time:** both Step-2 cubes ran on code containing the COT release-date fix
   265c12ccb (S6-B3139as); 0 of 39 holdout entries fall in a
   deliberately wide 2025 shutdown-backlog window.
 - **Mirror:** `pairs_mean_reversion_short` REGISTERED and counted; the copper COT filter is not
-  mechanically mirrored. It is a roster member and stays closed at launch until the owner extends the
-  S6-B2420 Step-2 override to it (S6-B3145b). Its own R5 holdout (net, best exit by in-sample
+  mechanically mirrored. It is a roster member and stays closed at launch: the owner DROPPED the
+  S6-B2420 Step-2 override extension 2026-10-13 (S6-B3145b, the words under J.1). Its own R5 holdout (net, best exit by in-sample
   gates) is Sharpe -0.184, lower bound -0.375, 1,378 trades, 2 of 6 gates - DROP; the
   default-add directive keeps it as a stated override (S6-B3168).
 - **Table A charter:** archived to `archive/2026-10-13-pairs-admission-table-a/` when the row left

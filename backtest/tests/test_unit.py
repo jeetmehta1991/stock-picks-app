@@ -50159,9 +50159,11 @@ def test_b3137_status_precedence_puts_owner_closure_above_the_mirror_lane():
 # S6-B3145 (owner ruling 2026-10-13, "Recommended: A Approved. ... Add to
 # phase 1B strategy roster"): members that joined the roster AFTER the
 # S6-B2420 override register and the S6-B3135 freeze. Named, never a wildcard:
-# the mirror stays CLOSED at launch until the owner extends S6-B2420 to it
-# (S6-B3145b), and the frozen file is unchanged (changing it is an owner ruling).
-_B3145_AWAITING_OVERRIDE = {"pairs_mean_reversion_short"}
+# the mirror stays CLOSED at launch BY RULING - the owner dropped the S6-B2420
+# extension to it the same day ("B3145a B3155 B3145b drop these as the strategies have already been admitted",
+# S6-B3145b DROPPED) - and the frozen file is unchanged (changing it is an
+# owner ruling).
+_B3145_CLOSED_MIRROR = {"pairs_mean_reversion_short"}
 _B3145_POST_FREEZE = {"pairs_mean_reversion_long", "pairs_mean_reversion_short"}
 
 
@@ -50197,7 +50199,7 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
                    "poc_magnet_short", "totm_short",
                    "xs_combined_momentum_high_ivol_short",
                    "xs_momentum_bottom_decile_short",
-                   "pead_short_negative_yoy_growth"} | _B3145_AWAITING_OVERRIDE, got
+                   "pead_short_negative_yoy_growth"} | _B3145_CLOSED_MIRROR, got
     with pytest.raises(FileNotFoundError):
         bss.load_owner_closures(tmp_path)
     (tmp_path / "output_audit").mkdir()
@@ -50289,11 +50291,12 @@ def test_b3137_s6_b2420_overrides_open_exactly_the_seven_short_legs():
     mirrors = {n for n in mem if pm.roster_status(n, mem) == "IN-ROSTER-MIRROR"}
     closed = set(bss.load_owner_closures(root))
     # the S6-B3145 mirror was admitted after S6-B2420 and is NOT on its
-    # register: it stays CLOSED at launch until the owner extends it (S6-B3145b)
-    assert _B3145_AWAITING_OVERRIDE <= mirrors - closed
-    assert set(ov) == mirrors - closed - _B3145_AWAITING_OVERRIDE, sorted(
-        set(ov) ^ (mirrors - closed - _B3145_AWAITING_OVERRIDE))
-    for s in sorted(_B3145_AWAITING_OVERRIDE):
+    # register: it stays CLOSED at launch by the owner's 2026-10-13 ruling
+    # (S6-B3145b DROPPED)
+    assert _B3145_CLOSED_MIRROR <= mirrors - closed
+    assert set(ov) == mirrors - closed - _B3145_CLOSED_MIRROR, sorted(
+        set(ov) ^ (mirrors - closed - _B3145_CLOSED_MIRROR))
+    for s in sorted(_B3145_CLOSED_MIRROR):
         r = pvt._admitted_retest_refusals(
             {"owner_override_retest_admitted": ov}, root, [s])
         assert len(r) == 1 and "ALREADY ADMITTED" in r[0], (s, r)
@@ -54995,3 +54998,45 @@ def test_b3168_roster_shows_each_mirrors_own_result_and_exploratory():
     s63 = plan[plan.index("### 6.3 Which combination advances"):
                plan.index("## 7. THE LOCKED REPORTING STANDARD")]
     assert "already registered owes the same two clauses" in s63
+
+
+# S6-B3168a (owner ruling 2026-10-13, "Approve all other recommendations"):
+# a retained roster mirror is TAGGED EXPLORATORY in code until a bear-inclusive
+# window tests it (the standing mirror directive, 2026-07-25). A mirror that is
+# ever left untagged names its evidence here; the register is empty today.
+_B3168A_UNTAGGED_MIRROR_EXEMPT = {}
+
+
+def test_b3168a_every_retained_mirror_is_tagged_exploratory():
+    """S6-B3168a: 5 of 10 retained Phase-1B roster mirrors were missing from
+    EXPLORATORY_STRATEGIES, so the cube's multiple-testing family counted them
+    as confirmatory candidates while the directive treats them as unvalidated
+    by construction. The CLASS is held here - every retained mirror, derived
+    from the roster's own JSON, is tagged or exempt with its evidence named -
+    then the behaviour the tag buys, the five by name, and the runbook clause."""
+    import json as _j
+    from pathlib import Path as _P
+    from backtest.engine.multiple_testing_correction import (
+        EXPLORATORY_STRATEGIES as E, cube_eligible_for_multiple_testing as elig)
+    root = _P(__file__).resolve().parents[2]
+    sc = _j.loads((root / "output_audit" / "b1453_phase_1b_roster.json")
+                  .read_text(encoding="utf-8"))
+    retained = sc["mirrors"]["registered"] + sc["mirrors"]["admissions_registered"]
+    # a vacuous-pass guard: the population exists (10 at S6-B3168)
+    assert "pairs_mean_reversion_short" in retained and len(retained) >= 10, retained
+    for s, why in _B3168A_UNTAGGED_MIRROR_EXEMPT.items():
+        assert s in retained and str(why).strip(), (s, why)
+    untagged = sorted(m for m in retained
+                      if m not in E and m not in _B3168A_UNTAGGED_MIRROR_EXEMPT)
+    assert not untagged, f"retained mirrors not tagged EXPLORATORY: {untagged}"
+    for m in retained:
+        if m in E:
+            assert elig(m) is False, m
+    assert {"52w_low_breakdown_pullback_short", "xs_momentum_bottom_decile_short",
+            "smc_breaker_block_short", "pead_short_negative_yoy_growth",
+            "three_black_crows_short"} <= set(E)
+    assert elig("pead_long") is True
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    s63 = plan[plan.index("### 6.3 Which combination advances"):
+               plan.index("## 7. THE LOCKED REPORTING STANDARD")]
+    assert "TAGGED EXPLORATORY in code, like a created one" in s63

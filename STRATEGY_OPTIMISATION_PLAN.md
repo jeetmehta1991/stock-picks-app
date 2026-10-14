@@ -1960,6 +1960,8 @@ sets the CRITERION - it does not waive the per-step approvals (§0.6).
    mirror's OWN measured holdout result and its code-level EXPLORATORY status beside the statement that
    structural symmetry is not economic symmetry - build_phase_1b_roster renders them on every
    regeneration - so a mirror kept against a negative result is an override said out loud.
+   **A registered mirror is also TAGGED EXPLORATORY in code, like a created one** (S6-B3168a, owner
+   2026-10-13: 5 of 10 retained mirrors were untagged); test_b3168a holds the class.
 7. **The remaining ADMISSION step, where the admitted parameters are real engine knobs, is a
    REPRODUCTION CHECK** (battery step 7, §5.3): re-run the config with the candidate's env knobs set and
    confirm it reproduces. **Engine wiring of an admitted line's ADDED gates is NEW-GATE work** (§0.6):

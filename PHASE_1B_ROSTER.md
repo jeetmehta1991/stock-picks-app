@@ -174,15 +174,15 @@ Owner standing directive: *promoted longs carry short mirrors by default* - the 
 
 | mirror | mirror of | EXPLORATORY | R5 exit | holdout Sharpe | lower bound | holdout trades | live gates | R5 verdict |
 |---|---|---|---|---|---|---|---|---|
-| `52w_low_breakdown_pullback_short` | `52w_high_breakout_pullback_long` | **no** | hybrid_50pct_target | -0.307 | -0.887 | 73 | 3 of 6 | DROP |
+| `52w_low_breakdown_pullback_short` | `52w_high_breakout_pullback_long` | yes | hybrid_50pct_target | -0.307 | -0.887 | 73 | 3 of 6 | DROP |
 | `mfi_overbought_short` | `mfi_oversold_with_smart_money_long` | yes | - | - | - | - | - | no R5 grade |
 | `poc_magnet_short` | `poc_magnet_long` | yes | - | - | - | - | - | no R5 grade |
 | `totm_short` | `totm_long` | yes | - | - | - | - | - | no R5 grade |
 | `xs_combined_momentum_high_ivol_short` | `xs_combined_momentum_low_ivol` | yes | - | - | - | - | - | no R5 grade |
-| `xs_momentum_bottom_decile_short` | `xs_momentum_with_smart_money_long` | **no** | hybrid_50pct_target | -0.184 | -0.518 | 322 | 2 of 6 | DROP |
-| `smc_breaker_block_short` | `smc_breaker_block_long` | **no** | hybrid_50pct_target | -0.298 | -0.568 | 427 | 2 of 6 | DROP |
-| `pead_short_negative_yoy_growth` | `pead_long_high_yoy_growth_only` | **no** | class_time_stop | -1.019 | -1.286 | 496 | 2 of 6 | DROP |
-| `three_black_crows_short` | `three_white_soldiers` | **no** | hybrid_50pct_target | -0.686 | -0.915 | 470 | 2 of 6 | DROP |
+| `xs_momentum_bottom_decile_short` | `xs_momentum_with_smart_money_long` | yes | hybrid_50pct_target | -0.184 | -0.518 | 322 | 2 of 6 | DROP |
+| `smc_breaker_block_short` | `smc_breaker_block_long` | yes | hybrid_50pct_target | -0.298 | -0.568 | 427 | 2 of 6 | DROP |
+| `pead_short_negative_yoy_growth` | `pead_long_high_yoy_growth_only` | yes | class_time_stop | -1.019 | -1.286 | 496 | 2 of 6 | DROP |
+| `three_black_crows_short` | `three_white_soldiers` | yes | hybrid_50pct_target | -0.686 | -0.915 | 470 | 2 of 6 | DROP |
 | `pairs_mean_reversion_short` | `pairs_mean_reversion_long` | yes | breakeven_plus_trail | -0.184 | -0.375 | 1378 | 2 of 6 | DROP |
 
 **Deployable total: 7 graded cells + 6 funnel mirrors + 1 dual self-mirrors + 16 Step-2 admissions + 4 admission mirrors = 33 distinct strategies** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.

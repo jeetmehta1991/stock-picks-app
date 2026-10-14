@@ -68,6 +68,19 @@ import numpy as np
 # (looser gate set, different EMA windows), the EXPLORATORY marker
 # can be re-evaluated.
 EXPLORATORY_STRATEGIES = frozenset({
+    # S6-B3168a (owner ruling 2026-10-13, "Approve all other recommendations"):
+    # the 5 retained Phase-1B roster mirrors this set did not list, tagged per
+    # the standing mirror directive (2026-07-25, B1380) - a mirror is
+    # unvalidated by construction until a bear-inclusive window tests it (the
+    # B1382 precedent above). Each carries a NEGATIVE own R5 holdout grade on
+    # PHASE_1B_ROSTER.md (S6-B3168). A tag reopens nothing:
+    # smc_breaker_block_short and three_black_crows_short stay owner-closed.
+    # test_b3168a holds the class: every retained mirror is listed here.
+    "52w_low_breakdown_pullback_short",
+    "xs_momentum_bottom_decile_short",
+    "smc_breaker_block_short",
+    "pead_short_negative_yoy_growth",
+    "three_black_crows_short",
     # B2669 (2026-09-10) owner-instructed mirror shorts - unvalidated-by-
     # construction (L229); totm_short also inherits Pattern-AA (B830).
     "totm_short",
@@ -156,6 +169,11 @@ EXPLORATORY_STRATEGIES = frozenset({
     # unchanged at 7 BH-FDR. Intersection with the 14 Step-2 admissions is
     # ONE name (xs_momentum_top_decile, already EXPLORATORY-tagged); 0 of 33
     # are asserted True by any existing test.
+    # CORRECTION (S6-B3168, B3139q-r69f): build_phase_1b_roster now READS this
+    # set to DISPLAY each admission's and each retained mirror's EXPLORATORY
+    # status; its BH-FDR funnel still never consults it, so a membership edit
+    # moves that status column and no verdict or count. The intersection
+    # figure above is B2770's; the live one renders on PHASE_1B_ROSTER.md.
     "activist_13d_long",
     "bollinger_upper_short",
     "classification_change_recent_long",
