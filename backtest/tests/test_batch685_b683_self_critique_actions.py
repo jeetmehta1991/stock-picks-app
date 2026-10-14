@@ -44,8 +44,10 @@ Class 7 NEW additions (6):
   (6)  'hammer_at_support_long' in ALL_STRATEGIES
 
 Class 7 NEW fire-logic (6):
-  (7)  H&S top SHORT fires when head_shoulders_top_detected + below_ema_200
-  (8)  H&S top SHORT does NOT fire when below_ema_200 missing (B630 default-False)
+  (7)  H&S top SHORT fires when head_shoulders_top_detected + the neckline
+       break (B2088, owner-approved) + below_ema_200
+  (8)  H&S top SHORT does NOT fire when below_ema_200 missing (B630 default-False);
+       the neckline break is PRESENT so the case isolates this gate (S6-B3170)
   (9)  Triangle descending SHORT fires when triangle_descending_detected + below_ema_200
   (10) Triangle descending SHORT does NOT fire when below_ema_200 missing
   (11) Hammer at support LONG fires on hammer + near_s1 + rsi_14<35
@@ -114,7 +116,10 @@ def test_batch685_hammer_at_support_long_in_registry():
 def test_batch685_head_and_shoulders_top_short_fires_on_pattern_plus_below_ema():
     """Pin (7)."""
     from backtest.signals.screener import strat_head_and_shoulders_top_short
-    s = {"head_shoulders_top_detected": True, "below_ema_200": True}
+    # S6-B3170: since B2088 (owner-approved rec 5) the gate also requires the
+    # neckline BREAK; test_b2088 owns that gate both ways, this pin feeds it.
+    s = {"head_shoulders_top_detected": True,
+         "head_shoulders_top_neckline_break": True, "below_ema_200": True}
     out = strat_head_and_shoulders_top_short(s)
     assert out["fires"] is True
     assert out["direction"] == "short"
@@ -123,7 +128,10 @@ def test_batch685_head_and_shoulders_top_short_fires_on_pattern_plus_below_ema()
 def test_batch685_head_and_shoulders_top_short_no_fire_without_below_ema():
     """Pin (8): B630 producer-additive default-False; missing key -> no fire."""
     from backtest.signals.screener import strat_head_and_shoulders_top_short
-    s = {"head_shoulders_top_detected": True}  # below_ema_200 ABSENT
+    # S6-B3170: the neckline break is PRESENT, so a quiet result is this
+    # gate's doing - without it the case was quiet for B2088's reason (L703).
+    s = {"head_shoulders_top_detected": True,
+         "head_shoulders_top_neckline_break": True}  # below_ema_200 ABSENT
     out = strat_head_and_shoulders_top_short(s)
     assert out["fires"] is False, "B685 regression: SHORT fired without below_ema_200 (silent gap)"
 
