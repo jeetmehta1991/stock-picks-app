@@ -49,7 +49,8 @@ if not POLYGON_KEY:
 
 # Meta Platforms (formerly FB) acquired the META ticker on 2022-06-09.
 META_PLATFORMS_START = date(2022, 6, 9)
-END_DATE = date.today()
+from session_window import last_completed_session  # noqa: E402 - S6-B3155d
+END_DATE = last_completed_session()  # S6-B3155d: the endpoint INCLUDES {end}; never an unclosed session
 
 TARGETS = [
     Path("data_prefetch/polygon/ohlcv_daily/META.parquet"),

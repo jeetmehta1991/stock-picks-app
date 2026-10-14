@@ -2805,6 +2805,8 @@ Phase-1 population of 25, a planning number derived from an over-scoped verdict.
 **INSTANCE 2 - THE DENOMINATOR CAN BE A RENDERED VIEW, NOT A SENTENCE (B3082 / L861).** Every example above is a prose sentence, so this item was never applied to a TABLE - yet Table D's inventory preamble IS the TESTED/UNTESTED enumeration this rule demands. MEASURED 2026-09-23 on 18 three_white_soldiers artifacts: it decided TESTED by asking whether a parameter COULD be graded offline rather than whether any row VARIED it, so three axes tested by engine re-simulation read UNTESTED and an axis nothing touched read TESTED at its four band levels. **Apply #182 to any rendered view that enumerates coverage**, and never let a label fall back to the space that was AVAILABLE when the subset USED is empty. ENFORCED BY test_b3082_inventory_labels_come_from_evidence_not_band_shape.
 **INSTANCE 3 (B3139q-r21 / L900) - THE VIEW'S READER DISAGREED WITH THE ENGINE ABOUT WHAT A BLANK MEANS.** The S6-B3139w run-level reader kept a manifest's blank env value as a level "", while the engine parses a blank CANDLE_MAX_WICK_PCT as None (backtest/config.py:2500-2501, P5's production) - so three_white_soldiers' inventory claimed P5 "(3 of 3 band levels)" with 0.2 never run (true 2 of 3). Before a reader turns an external string into a level, read the CONSUMER's parse of that string. ENFORCED BY test_b3139ax_blank_env_value_is_the_engine_default.
 
+**INSTANCE 4 (B3139q-r69o / L916) - THE NUMERATOR'S MEMBERSHIP TEST WAS THE SYMPTOM, NOT THE DEFECT.** S6-B3155a told the owner a partial final bar affected 84 of 544 tickers; the 84 were the tickers whose close moved more than 1pct after the snapshot, while a partial session corrupts the whole bar. Measured by the full bar against the prefetch and confirmed by a third source, 446 of the 544 carried one - and the owner had ruled on 84. A denominator can be right while the numerator is a proxy: before quoting how many members a defect has, name the property its mechanism corrupts in every instance and count by that. Mechanism: test_b3155a's class pin compares all five fields of every ruled ticker's final bar.
+
 **#183 PRODUCER-OPTIMISATION ARTIFACT STANDARD (B1510, owner-locked).** Every strategy entering
 S6-OPT-196 is reported through `scripts/producer_variant_table.py` in ONE 3-section artifact, so
 results are comparable across strategies and nothing is reported ad hoc:
@@ -4152,6 +4154,8 @@ earlier, on a file where 12-of-16-unwired had already been measured once.
 
 **Phase-5 application:** `scan_miss_capture_complete` requires **LEARNINGS + CHECKLIST-or-explicit-
 citation + queue ticket** on any stated miss, enumerated through the primitive.
+
+**INSTANCE (B3139q-r69o / L917) - A PRECONDITION THAT HOLDS FOR 1,687 OF 1,688 IS STILL CHECKED PER ROW.** A one-row cache repair relied on the population fact that both caches' prior bars agree; CVNA, the one exception (a 5.0x scale whose repair the owner had dropped), was spliced into a fake -80pct day and caught before commit only because it was missing from a disagreement list. Mechanism: the per-row prior-bar refusal in both scripts/final_bar_third_source_check.py and scripts/repair_final_bar_partial_session.py, pinned by test_b3155a's behaviour pin.
 
 ### #235 - CITING A RULE IS NOT THE RULE RUNNING (B1753 / L511)
 

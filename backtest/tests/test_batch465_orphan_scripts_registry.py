@@ -46,6 +46,12 @@ REPO = Path(__file__).resolve().parents[2]
 # CLASSIFICATION REGISTRY (one entry per orphan script)
 # --------------------------------------------------------------------------
 CLASSIFICATION: dict[str, tuple[str, str]] = {
+    "scripts/final_bar_exposure.py": (
+        "b",
+        "S6-B3155a (B3139q-r69n) exposure of frozen graded output to the partial "
+        "2026-05-05 final bar; read-only evidence for the owner's (b)/(c) choice. "
+        "Retain as the documented procedure for any future final-bar dispute.",
+    ),
     "scripts/aws_batch395_upload_data.py": (
         "a",
         "Batch 395 one-time S3 upload of data_prefetch + universe csvs; "

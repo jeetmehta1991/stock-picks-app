@@ -51,7 +51,8 @@ CHECKPOINT_FILE = Path("backtest/data/cache/polygon/_checkpoint_ohlcv.json")
 UNIVERSE_CSV = Path("Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv")
 
 # 5-year window per DEC-482 (Polygon Stocks Starter limit)
-END_DATE = date.today()
+from session_window import last_completed_session  # noqa: E402 - S6-B3155d
+END_DATE = last_completed_session()  # S6-B3155d: the endpoint INCLUDES {end}; never an unclosed session
 START_DATE = END_DATE - timedelta(days=5 * 365 + 30)  # 5y + 30d buffer
 
 RATE_LIMIT_SLEEP = 0.05  # Polygon Stocks Starter: unlimited; small sleep for politeness

@@ -52,7 +52,8 @@ CACHE_DIR = Path("data_prefetch/polygon/ohlcv_daily")
 CHECKPOINT_FILE = Path("data_prefetch/polygon/_checkpoint_ohlcv_master.json")
 UNIVERSE_CSV = Path("Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv")
 
-END_DATE = date.today()
+from session_window import last_completed_session  # noqa: E402 - S6-B3155d
+END_DATE = last_completed_session()  # S6-B3155d: the endpoint INCLUDES {end}; never an unclosed session
 START_DATE = END_DATE - timedelta(days=5 * 365 + 30)
 
 RATE_LIMIT_SLEEP = 0.05

@@ -25958,6 +25958,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("RE-DERIVE EVERY CLAIM FOR THE NEW SUBJECT BEFORE IT SHIPS, ABSENCE CLAIMS FIRST",
          "L915 (B3139q-r69m): two admission notes denied their mirror's "
          "measured evidence; one copied the other"),
+        # B3139q-r69o: the L916 and L917 rows - pin the REMEDY each names (L548).
+        ("MEASURE MEMBERSHIP BY THE PROPERTY THE DEFECT'S MECHANISM CORRUPTS IN EVERY INSTANCE, AGAINST AN UNDISPUTED CONTROL",
+         "L916 (B3139q-r69o): a defect's population sized by the noticed symptom"),
+        ("CHECK THE PRECONDITION ON EVERY ROW THE OPERATION TOUCHES",
+         "L917 (B3139q-r69o): a population precondition never checked per member"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26180,7 +26185,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # L801 row).
     # 329 -> 330 at B3139q-r69f (the L914 read-the-directive-not-the-step row).
     # 330 -> 331 at B3139q-r69m (the L915 re-derive-a-copied-claim row).
-    assert len(gutted) == 331, gutted
+    # 331 -> 333 at B3139q-r69o (the L916 and L917 rows; same-call with the
+    # skill edit per B2130).
+    assert len(gutted) == 333, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -55551,3 +55558,88 @@ def test_b3155a_repair_refuses_moved_or_spliced_bars_and_keeps_integer_columns_w
     rec = _j.loads(_P(log).read_text(encoding="utf-8"))
     assert sorted(e["ticker"] for e in rec["entries"]) == ["A", "B"]
     assert len(rec["runs"]) == 2 and rec["runs"][-1]["already_repaired"] == 2
+
+
+def _b3155d_clock_ends(src: str) -> list:
+    """(line, name) of every assignment whose target names a window END and
+    whose value is a bare clock call - date.today(), datetime.now(),
+    Timestamp.today() and kin. Read from the AST, never the text (L748)."""
+    import ast
+    clock = {"today", "now", "utcnow"}
+    out = []
+    for node in ast.walk(ast.parse(src)):
+        if isinstance(node, ast.Assign):
+            targets, value = node.targets, node.value
+        elif isinstance(node, ast.AnnAssign) and node.value is not None:
+            targets, value = [node.target], node.value
+        else:
+            continue
+        if not (isinstance(value, ast.Call) and isinstance(value.func, ast.Attribute)
+                and value.func.attr in clock):
+            continue
+        for t in targets:
+            if isinstance(t, ast.Name) and "end" in t.id.lower():
+                out.append((node.lineno, t.id))
+    return out
+
+
+def test_b3155d_daily_bar_fetches_end_at_the_last_completed_session():
+    """S6-B3155d: Polygon's /v2/aggs/ticker/{T}/range/1/day/{start}/{end}
+    INCLUDES {end}, so a daily-bar fetch whose window ends at the clock's date
+    writes a PARTIAL bar when it runs during a session - the mechanism behind
+    S6-B3155a's 479 partial 2026-05-05 bars. (1) last_completed_session on
+    injected moments: a trading day before 20:00 ET gives the prior session,
+    20:00 the day itself; a weekend and a holiday walk back; an aware UTC
+    moment converts. (2) CLASS, structural: no .py under scripts/ or backtest/
+    that calls the daily-range endpoint assigns a window end straight from the
+    clock, and the three sites this batch fixed call the helper; the scan is
+    proved on planted sources in both directions. SCOPE: the per-ticker range
+    endpoint, the one that takes a window; the grouped-daily endpoint takes one
+    date per call, and its three callers (read at B3139q-r69o) ask for fixed
+    past dates - prefetch_polygon_grouped_daily ends 2026-04-15,
+    probe_api_catalog asks for 2025-01-15 - or for D-21 and D-252 of each
+    monthly snapshot (build_tier3_screener), never the current day."""
+    import sys
+    from datetime import date, datetime
+    from pathlib import Path as _P
+    from zoneinfo import ZoneInfo
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    from session_window import last_completed_session as lcs
+    et, utc = ZoneInfo("America/New_York"), ZoneInfo("UTC")
+    cases = [
+        (datetime(2026, 5, 5, 15, 59, tzinfo=et), date(2026, 5, 4)),   # in session
+        (datetime(2026, 5, 5, 19, 59, tzinfo=et), date(2026, 5, 4)),   # post-market open
+        (datetime(2026, 5, 5, 20, 0, tzinfo=et), date(2026, 5, 5)),    # final
+        (datetime(2026, 5, 4, 10, 0, tzinfo=et), date(2026, 5, 1)),    # Monday -> Friday
+        (datetime(2026, 5, 9, 12, 0, tzinfo=et), date(2026, 5, 8)),    # Saturday
+        (datetime(2026, 5, 26, 9, 0, tzinfo=et), date(2026, 5, 22)),   # Memorial Day walked
+        (datetime(2026, 5, 6, 0, 30, tzinfo=utc), date(2026, 5, 5)),   # 20:30 ET in UTC
+    ]
+    for now, want in cases:
+        assert lcs(now) == want, (now.isoformat(), lcs(now), want)
+
+    planted_bad = "from datetime import date\nEND_DATE = date.today()\n"
+    planted_good = "END_DATE = last_completed_session()\nstamp = date.today()\n"
+    assert _b3155d_clock_ends(planted_bad) == [(2, "END_DATE")]
+    assert _b3155d_clock_ends(planted_good) == []
+    fetchers, offenders = [], []
+    for p in sorted(list((root / "scripts").glob("*.py"))
+                    + list((root / "backtest").rglob("*.py"))):
+        if "tests" in p.parts:
+            continue                       # fixtures quote the old form on purpose
+        src = p.read_text(encoding="utf-8", errors="replace")
+        if "/range/1/day/" not in src:
+            continue
+        fetchers.append(p.name)
+        offenders += [(p.name, ln, n) for ln, n in _b3155d_clock_ends(src)]
+    assert len(fetchers) >= 3, fetchers                # a vacuous-pass guard
+    assert not offenders, f"a daily-bar window ends at the clock's date: {offenders}"
+    import ast as _ast
+    for name in ("prefetch_polygon_ohlcv_daily.py", "prefetch_polygon_ohlcv_master.py",
+                 "fix_meta_ticker_corruption.py"):
+        tree = _ast.parse((root / "scripts" / name).read_text(encoding="utf-8"))
+        calls = {n.func.id for n in _ast.walk(tree)
+                 if isinstance(n, _ast.Call) and isinstance(n.func, _ast.Name)}
+        assert "last_completed_session" in calls, name
