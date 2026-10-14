@@ -2506,3 +2506,17 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **Pins:** test_b3171 SPECS pin extended (B-rows, struck-absent, caveat, resim-mutation RED).
 - **Next:** breadth Step-1 grid (IS-only, net basis, leg long, 100-perm null); the Step-2
   holdout read waits on the owner's own word.
+
+### K.7 Breadth Step-1 grid + permutation price (2026-10-14, B3139q-r69v)
+
+- **Run:** breadth_step1_grid.py, 5 of 6 registered axes (B6 COVERAGE-REFUSED at 0.919 vs the
+  0.98 floor, recorded), IS only, NET basis, leg long, 442 trials / 442 graded, reproduction OK
+  (base ts10 net IS 0.325 over 1,375). Artifact output_audit/b3171_npoc_breadth_step1.json;
+  band ruling verbatim on its face; status stamp d576e819d.
+- **Price:** observed best 2.431 vs 100-perm null q95 1.0225, p 0.0099 (SYNTHETIC; prices the
+  search). The depth leg priced at p 0.6733 - breadth carries the information, depth does not.
+- **Ranked head:** vix_term_backwardation require_true @ time_stop_10d IS 2.431 ci_lo 1.578
+  n 146/173; cot_rut_commercials_net_pct le -0.0812 @ ts10 1.682 n 313/444; xs_beta ge 1.2485
+  1.332; po3_accum_range_pct ge 0.1011 1.293; xs_momentum_decile ge 9 1.116.
+- **Next gate (owner's word):** the ONE Step-2 holdout read of the registered cells
+  (breadth_step2_read.py --ruling; holdout null runs inside it; DISCLOSED-RE-READ rides).
