@@ -2357,7 +2357,8 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   comparison on pead_long_high_yoy_growth_only (item 8), the read's own chance price
   (scripts/breadth_holdout_null.py, 300 shuffles per subject), and the admission
   proposal (item 9).
-- **Open on the family:** S6-B3140b (Table D cannot see the free-levels factorial). S6-B3155 (the
+- **Open on the family:** none. S6-B3140b was EXECUTED at B3139q-r69l - Table D now reads the
+  free-levels factorial, and output_audit/b3140_pairs_step1_table_d.md is re-rendered. S6-B3155 (the
   pairs signal mixes two OHLCV caches; the admitted cell holds no CVNA fire) was DROPPED by the
   owner 2026-10-13 (*"B3145a B3155 B3145b drop these as the strategies have already been admitted"*);
   its final-bar half is not pairs-only and is carried as S6-B3155a

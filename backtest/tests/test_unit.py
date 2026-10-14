@@ -53635,6 +53635,71 @@ def test_b3139bx_every_holdout_read_carries_its_own_chance_price(tmp_path, monke
 
 
 
+def test_b3140b_table_d_reads_the_offline_factorial_block():
+    """S6-B3140b (option ii): table_d_render reads an OFFLINE factorial
+    (factorial.results) - the pairs campaign's main result, which rendered
+    as 'NOT TESTED'. Behaviour on a synthetic block (keys to labels,
+    'production' to the production value, an unmapped key refuses, the
+    production combination skipped when its grid is alongside), then the
+    REAL pairs Step-1 artifacts: P2/P3/P4 read TESTED (never by
+    re-simulation), the OFFLINE FACTORIAL note is present, no production
+    cell is rendered twice, and the committed render is current."""
+    import glob
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import table_d_render as t
+    params = [{"id": "P2", "param": "floor A", "signal_keys": ["ka"],
+               "production": 0},
+              {"id": "P3", "param": "floor B", "signal_keys": ["kb"],
+               "production": 5}]
+    art = {"cube": "x", "factorial": {"results": [
+        {"combo": {"ka": "production", "kb": "production"}, "is_production": True,
+         "per_exit": [{"exit": "e1", "n": 50, "sharpe": 1.0, "ci_lo": 0.2}]},
+        {"combo": {"ka": 4.0, "kb": "production"}, "is_production": False,
+         "per_exit": [{"exit": "e1", "n": 20, "sharpe": 1.5, "ci_lo": 0.1},
+                      {"exit": "e2", "n": 20, "sharpe": 0.9, "ci_lo": -0.1}]}]}}
+    assert t._is_factorial_block(art) and not t._is_factorial_block({"rows": 5})
+    rows = t._factorial_block_rows(art, params)
+    assert len(rows) == 3 and all(r["offline_factorial"] for r in rows)
+    assert rows[0]["levels"] == {"floor A": 0, "floor B": 5}, rows[0]
+    assert rows[1]["levels"] == {"floor A": 4.0, "floor B": 5}
+    assert (rows[1]["is_sharpe"], rows[1]["is_ci_lo"], rows[1]["is_n"]) == (1.5, 0.1, 20)
+    assert len(t._factorial_block_rows(art, params, skip_production=True)) == 2
+    bad = {"factorial": {"results": [{"combo": {"zz": 1.0}, "per_exit": []}]}}
+    with pytest.raises(SystemExit) as e:
+        t._factorial_block_rows(bad, params)
+    assert "S6-B3140b" in str(e.value) and "zz" in str(e.value)
+    # the REAL pairs Step-1 render: 6 configs x {grid, free levels, breadth}
+    paths = sorted(glob.glob(str(root / "output_audit" / "output_pairs_mrl_s*_*.json")))
+    paths = [p for p in paths if p.endswith(("_grid_auto.json", "_free_levels.json",
+                                            "_breadth_grid_long.json"))
+             and "_step2_" not in p]
+    assert len(paths) == 18, len(paths)
+    # all rows, as the CLI renders it (S6-B2700) - the committed file's form
+    md = t.build_table("pairs_mean_reversion_long", paths, top=10**9)
+    inv = [l for l in md.splitlines() if l.startswith("  - P")]
+    for pid in ("P2", "P3", "P4"):
+        ln = [l for l in inv if l.startswith(f"  - {pid} ")]
+        assert len(ln) == 1 and ": TESTED at " in ln[0], ln
+        assert "RE-SIMULATION" not in ln[0] and "NOT TESTED" not in ln[0], ln
+    assert any(l.startswith("OFFLINE FACTORIAL - ") for l in md.splitlines())
+    sp = t._spec("pairs_mean_reversion_long")["params"]
+    prod = {p["param"]: p.get("production") for p in sp}
+    _arts, rws, _sk = t.load(paths, sp)
+    off = [r for r in rws if r.get("offline_factorial")]
+    assert off, "the factorial block contributed no rows"
+    twice = [r for r in off if all(prod.get(k) == v for k, v in r["levels"].items())]
+    assert not twice, "a production cell rendered twice"
+    committed = (root / "output_audit" / "b3140_pairs_step1_table_d.md").read_text(encoding="utf-8")
+    assert committed == md, "the committed pairs Table D is stale against the renderer"
+
+
+
 def test_b3140c_declared_row_holdout_read_reproduces_then_reads_once(tmp_path):
     """S6-B3140c (B3139q-r66): the declared-row holdout reader refuses an
     adapter without AXES/passes/parse_signals, a combo absent from the

@@ -124,6 +124,75 @@ def _factorial_rows(a: dict) -> list:
     return out
 
 
+def _is_factorial_block(a: dict) -> bool:
+    """S6-B3140b: the artifact keeps an OFFLINE factorial under
+    factorial.results (the pairs free-levels grader's shape)."""
+    return isinstance((a.get("factorial") or {}).get("results"), list)
+
+
+def _factorial_block_rows(a: dict, params: list,
+                          skip_production: bool = False) -> list:
+    """S6-B3140b: one row per (combination, carried exit) of an OFFLINE
+    factorial graded from ONE cube - a third artifact shape beside SWEEP
+    and the engine FACTORIAL corner. load() used to send it to the corner
+    reader, which found no per_exit and returned 0 rows, so a 125-
+    combination campaign rendered its axes as NOT TESTED.
+
+    A combination keys each axis by its signal key; the row's levels are
+    keyed by the param's Table A label, and 'production' reads the param's
+    production value. The figures are the grader's IN-SAMPLE ones (its
+    ranking key is the in-sample lower bound). Rows carry
+    `offline_factorial`, so the inventory says TESTED, never TESTED BY
+    RE-SIMULATION - no engine ran per combination. `skip_production` drops
+    the production combination when the same cube's grid is in the render
+    (it is that grid's production cell; shown once). A key mapping to no
+    Table A param REFUSES the render: this shape has no axis field for the
+    B2708 drop count to count it under, so dropping it would be silent."""
+    by_key: dict = {}
+    for p in params:
+        by_key[p["param"]] = p
+        for k in (p.get("signal_keys") or []):
+            by_key.setdefault(k, p)
+    out = []
+    for c in (a.get("factorial") or {}).get("results") or []:
+        if c.get("is_production") and skip_production:
+            continue
+        levels = {}
+        for key, lev in (c.get("combo") or {}).items():
+            p = by_key.get(key)
+            if p is None:
+                raise SystemExit(
+                    f"REFUSED (S6-B3140b): factorial key {key!r} maps to no "
+                    f"Table A param label or signal key: {sorted(by_key)}")
+            levels[p["param"]] = (p.get("production") if lev == "production"
+                                  else lev)
+        for pe in c.get("per_exit") or []:
+            out.append({"exit": pe.get("exit"), "is_sharpe": pe.get("sharpe"),
+                        "is_ci_lo": pe.get("ci_lo"), "is_n": pe.get("n"),
+                        "levels": levels, "cube": a.get("cube"),
+                        "offline_factorial": True})
+    return out
+
+
+def _offline_factorial_note(arts: list) -> str:
+    """S6-B3140b: what the offline factorial blocks contribute, derived
+    from the artifacts themselves."""
+    blocks = [a for a in arts if _is_factorial_block(a)]
+    res = [c for a in blocks for c in a["factorial"]["results"]]
+    kept = max((len(c.get("per_exit") or []) for c in res), default=0)
+    empty = sum(1 for c in res if not c.get("per_exit"))
+    ev = [c.get("exits_evaluable") for c in res if c.get("exits_evaluable") is not None]
+    return (f"OFFLINE FACTORIAL - {len(res)} combination(s) across {len(blocks)} "
+            "artifact(s), each graded offline from ONE cube (no engine run per "
+            f"combination). A combination carries at most its top {kept} of up to "
+            f"{max(ev) if ev else '-'} evaluable exits by in-sample lower bound, as "
+            "the grader recorded them, so its other exits are not in this view; "
+            f"{empty} carry none (no exit evaluable) and add no row. "
+            "Its production combination is the grid's production cell when that "
+            "grid is rendered alongside, and is shown once. IS n is the "
+            "combination's in-sample trade count.")
+
+
 def _cube_dir(cube) -> Path | None:
     """The run directory an artifact's `cube` field names.
 
@@ -202,10 +271,22 @@ UNKNOWN = "UNKNOWN"
 
 def load(paths: list, params: list | None = None) -> tuple[list, list, list]:
     arts = [json.loads(Path(p).read_text(encoding="utf-8")) for p in paths]
+    # S6-B3140b: cubes whose production cell a grid or sweep artifact in
+    # this render already carries
+    carried = {_cube_dir(a.get("cube")) for a in arts
+               if not _is_factorial_block(a)
+               and (isinstance(a.get("rows"), list) or a.get("per_exit"))}
     rows, skips = [], []
     for a in arts:
         raw = a.get("rows")
-        src = raw if isinstance(raw, list) else _factorial_rows(a)
+        if isinstance(raw, list):
+            src = raw
+        elif _is_factorial_block(a):
+            src = _factorial_block_rows(
+                a, params or [],
+                skip_production=_cube_dir(a.get("cube")) in carried)
+        else:
+            src = _factorial_rows(a)
         run = _run_levels(a, params or [])
         a["_run_levels"] = run
         for r in src:
@@ -453,7 +534,9 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             tested_levels.setdefault(r["axis"], set()).add(r["level"])
         for name, lev in (r.get("levels") or {}).items():
             tested_levels.setdefault(name, set()).add(lev)
-            resim_tested.add(name)
+            # S6-B3140b: no engine ran per offline-factorial combination
+            if not r.get("offline_factorial"):
+                resim_tested.add(name)
     # S6-B3139w: a resim-swept axis is one cube per level, so its evidence is
     # the cube's run manifest, not row variance. A value equal to production
     # is the axis HELD (the existing branch below says so); UNKNOWN is
@@ -621,7 +704,10 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                "24 exit methods, and it varies across configs. full n equals "
                "IS n wherever holdout_n is 0 - Step 1 does not read the "
                "holdout."]
-              if any(r.get("levels") for r in ranked) else []),
+              if any(r.get("levels") and not r.get("offline_factorial")
+                     for r in ranked) else []),
+            *([_offline_factorial_note(arts)]
+              if any(r.get("offline_factorial") for r in ranked) else []),
             *(["COUNTS - %d of %d ranked rows carry no IS n, so their tier "
                "reads '-'. An absent count is never rendered as 0 or as THIN "
                "(L580)." % (sum(1 for r in ranked if r.get("is_n") is None),
