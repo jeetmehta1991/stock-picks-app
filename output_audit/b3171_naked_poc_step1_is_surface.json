@@ -1,0 +1,278 @@
+{
+  "strategy": "naked_poc_retest_long",
+  "axes": [
+    {
+      "key": "naked_poc_count",
+      "op": "ge",
+      "levels": [
+        1.0,
+        2.0,
+        3.0
+      ]
+    },
+    {
+      "key": "naked_poc_nearest_distance_pct",
+      "op": "le",
+      "levels": [
+        0.0028,
+        0.0059,
+        0.0096,
+        0.0141,
+        0.02
+      ]
+    }
+  ],
+  "production_levels": [
+    1.0,
+    0.02
+  ],
+  "evidence": {
+    "landed_fires": 1788,
+    "coverage": 1.0,
+    "cube_rows": 46488,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 58,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": true
+  },
+  "reproduction": 1.0,
+  "cells_total": 15,
+  "cells_graded": 15,
+  "trials_searched": 390,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        1.0,
+        0.0028
+      ],
+      "is_trades": 281,
+      "is_cube_rows": 7306,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.62,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        2.0,
+        0.0028
+      ],
+      "is_trades": 281,
+      "is_cube_rows": 7306,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.62,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        3.0,
+        0.0028
+      ],
+      "is_trades": 281,
+      "is_cube_rows": 7306,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.62,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        1.0,
+        0.0059
+      ],
+      "is_trades": 567,
+      "is_cube_rows": 14742,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.558,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        1.0,
+        0.02
+      ],
+      "is_trades": 1375,
+      "is_cube_rows": 35750,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.558,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        2.0,
+        0.0059
+      ],
+      "is_trades": 567,
+      "is_cube_rows": 14742,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.558,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        2.0,
+        0.02
+      ],
+      "is_trades": 1375,
+      "is_cube_rows": 35750,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.558,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        3.0,
+        0.0059
+      ],
+      "is_trades": 567,
+      "is_cube_rows": 14742,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.558,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        3.0,
+        0.02
+      ],
+      "is_trades": 1375,
+      "is_cube_rows": 35750,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.558,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        1.0,
+        0.0096
+      ],
+      "is_trades": 831,
+      "is_cube_rows": 21606,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.552,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        2.0,
+        0.0096
+      ],
+      "is_trades": 831,
+      "is_cube_rows": 21606,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.552,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        3.0,
+        0.0096
+      ],
+      "is_trades": 831,
+      "is_cube_rows": 21606,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.552,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        1.0,
+        0.0141
+      ],
+      "is_trades": 1108,
+      "is_cube_rows": 28808,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.536,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        2.0,
+        0.0141
+      ],
+      "is_trades": 1108,
+      "is_cube_rows": 28808,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.536,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        3.0,
+        0.0141
+      ],
+      "is_trades": 1108,
+      "is_cube_rows": 28808,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.536,
+      "exits_evaluated": 26
+    }
+  ],
+  "preregistration_candidate": {
+    "levels": [
+      1.0,
+      0.0028
+    ],
+    "is_trades": 281,
+    "is_cube_rows": 7306,
+    "best_exit": "breakeven_plus_trail",
+    "is_sharpe": 0.62,
+    "exits_evaluated": 26
+  },
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above",
+  "permutation_null": {
+    "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+    "n_perms": 100,
+    "seed": 13,
+    "null_none_count": 0,
+    "null_max_is_sharpe_quantiles": {
+      "0.5": 0.653,
+      "0.9": 0.853,
+      "0.95": 0.917,
+      "0.99": 1.071
+    },
+    "observed_best_is_sharpe": 0.62,
+    "p_value_best": 0.6733
+  },
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 15,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 15,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 1.57,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis",
+    "reconciles": true,
+    "permutation_null": {
+      "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+      "n_perms": 100,
+      "seed": 13,
+      "null_none_count": 0,
+      "null_max_is_sharpe_quantiles": {
+        "0.5": 0.653,
+        "0.9": 0.853,
+        "0.95": 0.917,
+        "0.99": 1.071
+      },
+      "observed_best_is_sharpe": 0.62,
+      "p_value_best": 0.6733
+    },
+    "significance_basis": "permutation_null",
+    "trials_searched": 390
+  },
+  "band_ruling_verbatim": "T3 2026-10-14, owner verbatim: 'P2.2 need lower bands than 126. Quarterly, monthly and weekly' / 'P2.3 add 20' / 'P3 add looser bands'; re-read ruling 2026-10-14, owner verbatim: 'Chunks. Then offline step 1 grid' - the chunk words moved to n_periods (engine side, adapter-pending); the offline depth free band = tighter distance ceilings (QUANTS) + count floors, production included",
+  "status_stamp_at_run": "1c2630261"
+}

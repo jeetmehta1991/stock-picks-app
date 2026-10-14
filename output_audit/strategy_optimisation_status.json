@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "c6b86b5e0",
-    "generated_at": "2026-10-14 11:33:01"
+    "source_commit": "1c2630261",
+    "generated_at": "2026-10-14 13:06:48"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",

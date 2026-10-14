@@ -1,6 +1,6 @@
 # Table A - cmf_flip
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build c6b86b5e0 | commit c6b86b5e0 at 2026-10-14 11:51:01 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build c6b86b5e0 | commit 1c2630261 at 2026-10-14 12:57:20 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** mean_reversion | **status:** STALLED-CAMPAIGN | **R5 fires:** 2994 | **surviving fires (T1):** 2250 (survives_pct 0.7515)
 

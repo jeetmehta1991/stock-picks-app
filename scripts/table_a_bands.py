@@ -305,13 +305,13 @@ PRODUCER_BANDS = {
     # ---- naked poc ---------------------------------------------------------
     "naked_poc_count": [
         {"param": "period_lookback (bars)", "production": 252,
-         "band": [5, 21, 63, 126, 252],
-         "basis": "OWNER T3 BAND (2026-10-14, S6-B3171), verbatim: 'P2.2 need lower bands than 126. Quarterly, monthly and weekly' -> 63/21/5 trading days joined to the prior bracket (the words landed on the row holding 126). MEASURED PAIRING CONSTRAINT (compute_period_pocs' own guard skips a chunk under 5 bars; pinned test_b3171): lookback 5 yields ZERO POCs at every banded n_periods; 21 yields POCs only at n_periods 4",
+         "band": [126, 252],
+         "basis": "BRACKET production (1y; half-year alt). The owner's 2026-10-14 T3 words were re-read onto n_periods by the owner's word 'Chunks' (2026-10-14, B3139q-r69s) - chunk durations, not window lengths - so this row returns to its prior bracket; the env actuator stays",
          "offline": "none - POC set at other windows unpersisted",
          "resim": "the whole band except production", "env": "NAKED_POC_LOOKBACK",
          "evidence": "backtest/signals/volume_profile.py:152-168"},
-        {"param": "n_periods (POC chunks)", "production": 6, "band": [4, 6, 8],
-         "basis": "BRACKET production", "offline": "none",
+        {"param": "n_periods (POC chunks)", "production": 6, "band": [4, 6, 8, 12, 50],
+         "basis": "BRACKET production + OWNER T3 (2026-10-14, S6-B3171), verbatim: 'P2.2 need lower bands than 126. Quarterly, monthly and weekly', re-read as CHUNK durations by the owner's word 'Chunks' (2026-10-14) -> chunks of 63/21/5 bars over the 252-bar window = n_periods 4 (already banded) / 12 / 50. MEASURED PAIRING CONSTRAINT (compute_period_pocs' own guard skips a chunk under 5 bars; pinned test_b3171): n_periods 50 pairs only with lookback 252 - at lookback 126 the chunks are 2 bars and ZERO POCs exist", "offline": "none",
          "resim": "the whole band except production", "env": "NAKED_POC_N_PERIODS",
          "evidence": "volume_profile.py:155"},
         {"param": "n_bins (price bins)", "production": 40, "band": [20, 30, 40, 50],

@@ -55653,8 +55653,9 @@ def test_b3171_naked_poc_band_actuators_default_to_production():
     config (read from the AST, never the text - L748). The pairing constraint
     is pinned from the producer's own guard (volume_profile.py: a chunk under
     5 bars is skipped) on a SYNTHETIC 300-bar frame - the STRUCTURE is the
-    claim, no value from it is quoted (#201): lookback 5 yields zero POCs at
-    every banded n_periods and lookback 21 yields POCs only at n_periods 4."""
+    claim, no value from it is quoted (#201): weekly chunks (n_periods 50,
+    the owner's Chunks re-read) exist only at lookback 252 - at 126 the
+    chunks are 2 bars, all skipped."""
     import ast
     import sys
     from pathlib import Path
@@ -55693,17 +55694,19 @@ def test_b3171_naked_poc_band_actuators_default_to_production():
     df = pd.DataFrame({"date": days, "open": base, "high": base * 1.01,
                        "low": base * 0.99, "close": base,
                        "volume": np.full(300, 1_000_000.0)})
-    for n_per in (4, 6, 8):
-        assert compute_period_pocs(df, period_lookback=5, n_periods=n_per) == []
-    assert compute_period_pocs(df, period_lookback=21, n_periods=4) != []
-    for n_per in (6, 8):
-        assert compute_period_pocs(df, period_lookback=21, n_periods=n_per) == []
+    # the owner's "Chunks" re-read (B3139q-r69s): weekly chunks = n_periods 50
+    # pairs only with lookback 252 (126 gives 2-bar chunks, all skipped).
+    assert compute_period_pocs(df, period_lookback=252, n_periods=50) != []
+    assert compute_period_pocs(df, period_lookback=126, n_periods=50) == []
+    assert compute_period_pocs(df, period_lookback=252, n_periods=12) != []
+    assert compute_period_pocs(df, period_lookback=126, n_periods=12) != []
 
 
 def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
     """S6-B3171 F1: the SPECS_PHASE0 entry validates CLEAN; the owner's T3
-    band rows ride in table_a_bands with their env knobs named (lookback
-    gains 63/21/5, n_bins gains 20, each basis quoting the owner verbatim);
+    band rows ride in table_a_bands with their env knobs named (n_periods
+    gains 12/50 under the owner's Chunks re-read, n_bins gains 20, the
+    basis quoting the owner verbatim);
     the engine resim levels are HELD (resim_band empty) because validate_spec
     (B2883) refuses resim levels without a complete battery adapter - the
     hold is load-bearing: planting one resim level on the lookback row must
@@ -55721,15 +55724,18 @@ def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
     assert errs == [], errs
     rows = {r["param"]: r for r in tab.PRODUCER_BANDS["naked_poc_count"]}
     lb = rows["period_lookback (bars)"]
-    assert lb["band"] == [5, 21, 63, 126, 252]
+    assert lb["band"] == [126, 252]   # the owner's Chunks re-read (r69s)
     assert lb["env"] == "NAKED_POC_LOOKBACK"
-    assert "Quarterly, monthly and weekly" in lb["basis"]
-    assert "ZERO POCs" in lb["basis"]         # the pairing constraint rides
+    assert "Chunks" in lb["basis"]    # the re-read is recorded on the row
+    np_row = rows["n_periods (POC chunks)"]
+    assert np_row["band"] == [4, 6, 8, 12, 50]
+    assert "Quarterly, monthly and weekly" in np_row["basis"]
+    assert "ZERO POCs" in np_row["basis"]     # the pairing constraint rides
     nb = rows["n_bins (price bins)"]
     assert nb["band"] == [20, 30, 40, 50]
     assert nb["env"] == "NAKED_POC_N_BINS"
     assert "P2.3 add 20" in nb["basis"]
-    assert rows["n_periods (POC chunks)"]["env"] == "NAKED_POC_N_PERIODS"
+    assert np_row["env"] == "NAKED_POC_N_PERIODS"
     by_id = {p["id"]: p for p in spec["params"]}
     assert by_id["P6"]["env"] == "NAKED_POC_MAX_DISTANCE_PCT"
     assert by_id["P6"]["free_band"] == [0.0028, 0.0059, 0.0096, 0.0141, 0.02]

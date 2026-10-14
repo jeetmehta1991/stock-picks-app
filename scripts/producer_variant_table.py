@@ -2068,18 +2068,23 @@ P1  price_above_ema_200  (span 200, compute_ema_sma; the gate reads the
        here: canon-span flags persisted on the fires are offline
        ADD-A-CONDITION legs; the gate-span SWAP is RESIM, owner-pending)
 P2  period_lookback  (bars the POC window spans;
-       volume_profile.py compute_period_pocs)  [OWNER T3 2026-10-14, verbatim: "P2.2
-       need lower bands than 126. Quarterly, monthly and weekly" -> 63, 21, 5
-       trading days; the words landed on the row holding 126. MEASURED
-       PAIRING CONSTRAINT (compute_period_pocs' own guard skips a chunk
-       under 5 bars; pinned test_b3171): lookback 5 yields ZERO POCs at every
-       banded n_periods; 21 yields POCs only at n_periods 4. ENGINE BAND
-       [5, 21, 63, 126] HELD ADAPTER-PENDING - validate_spec (B2883) refuses
-       resim levels without a complete battery adapter; the adapter is
-       S6-B3171a, owed before any engine leg]
+       volume_profile.py compute_period_pocs)  [prior bracket 126/252; the
+       owner's 2026-10-14 words were re-read onto P3 by the owner's word
+       "Chunks" (B3139q-r69s). ENGINE LEVEL 126 HELD ADAPTER-PENDING -
+       validate_spec (B2883) refuses resim levels without a complete
+       battery adapter; the adapter is S6-B3171a, owed before any
+       engine leg]
 P3  n_periods  (POC chunks the window splits into; a
        compute_period_pocs argument)
-       [band 4/6/8; engine levels ADAPTER-PENDING as P2]
+       [OWNER T3 2026-10-14, verbatim: "P2.2 need lower bands than 126.
+       Quarterly, monthly and weekly", re-read as CHUNK durations by the
+       owner's word "Chunks" (2026-10-14, B3139q-r69s) -> chunks of
+       63/21/5 bars over the 252-bar window = n_periods 4 (already
+       banded) / 12 / 50; band 4/6/8/12/50. MEASURED PAIRING CONSTRAINT
+       (compute_period_pocs' own guard skips a chunk under 5 bars;
+       pinned test_b3171): n_periods 50 pairs only with lookback 252 -
+       at lookback 126 the chunks are 2 bars and ZERO POCs exist.
+       Engine levels ADAPTER-PENDING as P2]
 P4  n_bins  (price bins per chunk profile; a compute_period_pocs
        argument)
        [OWNER T3 2026-10-14, verbatim: "P2.3 add 20" -> band 20/30/40/50;
@@ -2128,10 +2133,10 @@ fires = P5 AND P6 AND price_above_ema_200
          "free_band": [252], "resim_band": [], "env": "NAKED_POC_LOOKBACK",
          "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
          "sweep_levels": None, "subset_safe": False,
-         "status": "ACTUATED (S6-B3171, default = production); OWNER T3 BAND "
-                   "[5, 21, 63, 126, 252] held ADAPTER-PENDING (B2883) - "
-                   "resim levels land with the S6-B3171a adapter; pairing "
-                   "constraint pinned by test_b3171",
+         "status": "ACTUATED (S6-B3171, default = production); prior bracket "
+                   "[126, 252] held ADAPTER-PENDING (B2883) - the owner's "
+                   "2026-10-14 words were re-read onto P3 (word: Chunks, "
+                   "B3139q-r69s); resim levels land with the S6-B3171a adapter",
          "type": "numeric", "engine_implemented": True,
          "evidence": "volume_profile.py compute_period_pocs; config.py NAKED_POC_LOOKBACK",
          "derivation": "band held to production until the adapter lands"},
@@ -2141,8 +2146,10 @@ fires = P5 AND P6 AND price_above_ema_200
          "free_band": [6], "resim_band": [], "env": "NAKED_POC_N_PERIODS",
          "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
          "sweep_levels": None, "subset_safe": False,
-         "status": "ACTUATED (S6-B3171, default = production); band [4, 6, 8] "
-                   "held ADAPTER-PENDING (B2883) as P2",
+         "status": "ACTUATED (S6-B3171, default = production); OWNER T3 BAND "
+                   "[4, 6, 8, 12, 50] (the Chunks re-read, B3139q-r69s) held "
+                   "ADAPTER-PENDING (B2883) as P2; pairing constraint pinned "
+                   "by test_b3171",
          "type": "numeric", "engine_implemented": True,
          "evidence": "volume_profile.py compute_period_pocs (n_periods); config.py NAKED_POC_N_PERIODS",
          "derivation": "as P2"},

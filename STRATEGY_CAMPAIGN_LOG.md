@@ -2451,3 +2451,20 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **NEXT:** the offline Step-1 grid (F3) on the free band - 4 tighter distance ceilings + count
   floors 1/2 (no-bite verified at grid time) x 24 exits, in-sample only, permutation null,
   next_pivot_target barred. Engine legs wait on the adapter and the owner's budget word.
+
+### K.4 Chunks re-read + offline Step-1 grid (2026-10-14, B3139q-r69s)
+
+- **Owner, verbatim:** "Chunks" / "Then offline step 1 grid". The T3 quarterly/monthly/weekly words
+  are chunk durations: n_periods band [4, 6, 8, 12, 50] (chunks of 63/21/5 trading days over the
+  252-bar window; 4 was already banded); the lookback row returns to its prior bracket [126, 252].
+  Pairing (compute_period_pocs' own guard; pinned test_b3171): n_periods 50 pairs only with
+  lookback 252. Engine side stays ADAPTER-PENDING (S6-B3171a).
+- **Step-1 grid (F3):** output_audit/b3171_naked_poc_step1_is_surface.json + Table D (offline form)
+  beside it. Reproduction 1.0000, coverage 1.0000, 15 of 15 cells, 390 trials, in-sample window
+  2022-05-05..2025-05-05, holdout not read.
+- **Result - the depth surface is FLAT.** Best cell [count ge 1, distance le 0.0028]: IS Sharpe
+  0.620 over 281 IS trades (breakeven_plus_trail) vs production 0.558 over 1,375. Count floors'
+  no-bite verified at grid time (ranked rows identical in triplets). The 100-perm permutation null
+  (synthetic, prices the search) puts best-of-grid q95 at 0.917 - observed 0.620, p 0.6733.
+- **Recommendation delivered in-turn:** do not spend the Step-2 holdout read on the depth cell;
+  the fork (breadth leg / spend the read / engine legs) is the owner's word.
