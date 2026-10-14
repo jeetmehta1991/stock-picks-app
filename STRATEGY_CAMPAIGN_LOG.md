@@ -2397,3 +2397,33 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   the TIGHTEN lane on admission (S6-B3167; the B3116 precedent for three_white_soldiers).
 - **Evidence:** output_audit/b3145_pairs_admission_checks.json, output_audit/b3145_pairs_prod_holdout_null.json,
   output_audit/b3145_pairs_breadth_step3_read_checks.json. Admission is not deployment.
+
+## K. VOLUME_PROFILE FAMILY (naked_poc_retest_long - IN CAMPAIGN)
+
+### K.1 Pick and baseline (B3139q-r69q, owner word 2026-10-14: "Lets start with naked poc retest long")
+
+- **Why this strategy:** the only pure-TIGHTEN-lane strategy already at 5 of 6 admission gates at the
+  production config. Baseline from the roster artifact (output_audit/b1453_phase_1b_roster.json, R5 row,
+  holdout leg, net basis): holdout Sharpe 0.555 (gap 0.445 to the 1.0 gate), PF 2.209, sortino 1.907,
+  psr 1.0, holdout n 413, full-period n 1788; in-sample Sharpe 0.524 - sign-agreeing, no IS/holdout
+  inversion. Best exit (in-sample selection): breakeven_plus_trail.
+- **Duplicate check:** max Jaccard of fire sets vs the admitted lines 0.4955 (vs
+  institutional_multi_quarter_persistence_long), below the 0.70 de-dup bar - measured at S6-B3116b
+  (output_audit/b3116_tighten_lane_rank.json).
+- **Gate body (screener.py, verbatim in Table A):** naked_poc_count > 0 AND
+  naked_poc_nearest_distance_pct < 0.02 AND price_above_ema_200.
+
+### K.2 Campaign state (W-T, runbook section 3.2)
+
+- **T0 CONTEXT:** done - status row quoted in S6-B3171; prior tickets were a ranking read (S6-B3116b)
+  and a process close (S6-B3142), no prior grid, so the campaign starts at Step 0 artifacts intact.
+- **T1 SURVIVAL:** identity - changed_since_r5 False; surviving fires 1788 of 1788.
+- **T2 TABLE A:** regenerated this batch (strategy_optimisation/tighten/naked_poc_retest_long.md).
+  Depth free band, measured on the surviving fires: naked_poc_nearest_distance_pct tighter ceilings
+  0.0028 / 0.0059 / 0.0096 / 0.0141 retaining 20/40/60/80 pct of fires; naked_poc_count floor at 6
+  retains 1788 of 1788 (the count knob has NO offline bite on these fires - stated to the owner at T3).
+  Producer knobs P2.1-P2.3 (period_lookback, n_periods, n_bins) and the P1.1 ema-span SWAP are
+  RESIM-side, DEFINED-NO-ACTUATOR - they need the SPECS entry and env actuators before any engine leg.
+  Every B-row census key is NEW-GATE (standing owner rule 2026-08-10): none runs without the T3 word.
+- **T3 OWNER BAND REVIEW: PENDING.** No grid runs before the word. SPECS_PHASE0 entry is written at F1
+  from the approved band (the bollinger B3118 precedent).
