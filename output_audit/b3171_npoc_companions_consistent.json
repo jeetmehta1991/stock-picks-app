@@ -1,0 +1,164 @@
+{
+ "_doc": "S6-B3171 naked_poc_retest_long companion screen - consistent FDR survivors (same effect sign under BOTH exits ts10 + bept; IS window only, holdout untouched). Sources: b3171_npoc_companions_ts10.json (24 survivors) + _bept.json (67); a SCREEN, never a gate.",
+ "entries": 1375,
+ "signals_tested": 522,
+ "survivors_ts10": 24,
+ "survivors_bept": 67,
+ "consistent_both_exits": 22,
+ "consistent": [
+  {
+   "key": "vix_term_backwardation",
+   "kind": "bool",
+   "effect_ts10": 2.766,
+   "effect_bept": 7.561,
+   "n": 1375
+  },
+  {
+   "key": "vix_term_contango",
+   "kind": "bool",
+   "effect_ts10": -2.766,
+   "effect_bept": -7.561,
+   "n": 1375
+  },
+  {
+   "key": "po3_accum_range_pct",
+   "kind": "numeric",
+   "effect_ts10": 2.432,
+   "effect_bept": 7.626,
+   "n": 1375
+  },
+  {
+   "key": "cot_rut_commercials_net_pct",
+   "kind": "numeric",
+   "effect_ts10": -2.104,
+   "effect_bept": -6.84,
+   "n": 1375
+  },
+  {
+   "key": "xs_beta",
+   "kind": "numeric",
+   "effect_ts10": 2.441,
+   "effect_bept": 6.179,
+   "n": 1374
+  },
+  {
+   "key": "atr_pct",
+   "kind": "numeric",
+   "effect_ts10": 2.15,
+   "effect_bept": 6.171,
+   "n": 1375
+  },
+  {
+   "key": "xs_momentum_decile",
+   "kind": "numeric",
+   "effect_ts10": 2.679,
+   "effect_bept": 5.519,
+   "n": 1375
+  },
+  {
+   "key": "bb_10_20_bandwidth",
+   "kind": "numeric",
+   "effect_ts10": 1.68,
+   "effect_bept": 6.361,
+   "n": 1375
+  },
+  {
+   "key": "xs_max_anomaly",
+   "kind": "numeric",
+   "effect_ts10": 2.149,
+   "effect_bept": 5.819,
+   "n": 1374
+  },
+  {
+   "key": "xs_momentum_top_decile",
+   "kind": "bool",
+   "effect_ts10": 2.47,
+   "effect_bept": 5.48,
+   "n": 1375
+  },
+  {
+   "key": "pct_from_avwap_20low",
+   "kind": "numeric",
+   "effect_ts10": 1.704,
+   "effect_bept": 6.197,
+   "n": 1263
+  },
+  {
+   "key": "xs_beta_decile",
+   "kind": "numeric",
+   "effect_ts10": 1.743,
+   "effect_bept": 5.743,
+   "n": 1374
+  },
+  {
+   "key": "vix_vix3m_ratio",
+   "kind": "numeric",
+   "effect_ts10": 2.067,
+   "effect_bept": 4.837,
+   "n": 1375
+  },
+  {
+   "key": "cot_copper_commercials_pctile_3y",
+   "kind": "numeric",
+   "effect_ts10": 2.283,
+   "effect_bept": 2.906,
+   "n": 1375
+  },
+  {
+   "key": "xs_momentum_top_quintile",
+   "kind": "bool",
+   "effect_ts10": 1.661,
+   "effect_bept": 3.332,
+   "n": 1375
+  },
+  {
+   "key": "xs_avoid_high_max",
+   "kind": "bool",
+   "effect_ts10": -1.46,
+   "effect_bept": -3.27,
+   "n": 1374
+  },
+  {
+   "key": "cot_copper_commercials_net_pct",
+   "kind": "numeric",
+   "effect_ts10": 1.844,
+   "effect_bept": 2.828,
+   "n": 1375
+  },
+  {
+   "key": "sector_strongest_rs",
+   "kind": "numeric",
+   "effect_ts10": -0.982,
+   "effect_bept": -3.597,
+   "n": 1375
+  },
+  {
+   "key": "near_r1_wide",
+   "kind": "bool",
+   "effect_ts10": -1.361,
+   "effect_bept": -2.94,
+   "n": 1375
+  },
+  {
+   "key": "po3_accumulation_active",
+   "kind": "bool",
+   "effect_ts10": -1.207,
+   "effect_bept": -2.86,
+   "n": 1375
+  },
+  {
+   "key": "pair_zscore_signed",
+   "kind": "numeric",
+   "effect_ts10": 0.939,
+   "effect_bept": 3.034,
+   "n": 1294
+  },
+  {
+   "key": "bb_10_20_squeeze",
+   "kind": "bool",
+   "effect_ts10": -1.223,
+   "effect_bept": -2.44,
+   "n": 1375
+  }
+ ]
+}

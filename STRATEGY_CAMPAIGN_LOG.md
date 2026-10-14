@@ -2468,3 +2468,28 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   (synthetic, prices the search) puts best-of-grid q95 at 0.917 - observed 0.620, p 0.6733.
 - **Recommendation delivered in-turn:** do not spend the Step-2 holdout read on the depth cell;
   the fork (breadth leg / spend the read / engine legs) is the owner's word.
+
+### K.5 Breadth leg items 1-2: companion screen + clusters (2026-10-14, B3139q-r69t)
+
+- **Owner, verbatim:** "Proceed with A" - the runbook 3.6 breadth leg.
+- **Screen (item 1):** institutional_companion_screen.py --family naked_poc, IS window only,
+  defaults min-side 100 / min-n 500. 1,375 unique IS entries x 522 signals per exit; BH-FDR
+  q=0.05 per run. Survivors 24 (time_stop_10d) / 67 (breakeven_plus_trail); 22 in both, 22 of 22
+  sign-consistent. Artifacts: output_audit/b3171_npoc_companions_{ts10,bept,consistent}.json
+  (+ ranked .md beside each run). Effects GROSS of trading cost; a SCREEN, never a gate.
+- **Clusters (item 2, one rep per producer family, criterion = highest joint |effect|, #165):**
+
+  | cluster | rep (proposed op) | ts10 / bept effect | members folded |
+  |---|---|---|---|
+  | vol regime | vix_term_backwardation eq_true | +2.77 / +7.56 | vix_term_contango, vix_vix3m_ratio |
+  | po3 | po3_accum_range_pct ge | +2.43 / +7.63 | po3_accumulation_active (eq_false) |
+  | ticker volatility | xs_beta ge | +2.44 / +6.18 | atr_pct, bb_10_20_bandwidth, bb_10_20_squeeze, xs_beta_decile, xs_max_anomaly, xs_avoid_high_max |
+  | cot | cot_rut_commercials_net_pct le | -2.10 / -6.84 | cot_copper_commercials_net_pct, _pctile_3y (OPPOSITE sign: copper keeps HIGH) |
+  | momentum | xs_momentum_decile ge | +2.68 / +5.52 | xs_momentum_top_decile, xs_momentum_top_quintile |
+  | avwap | pct_from_avwap_20low ge | +1.70 / +6.20 | (none; FLAGGED adjacent to the depth distance axis) |
+  | sector | sector_strongest_rs le | -0.98 / -3.60 | (none) |
+  | pivots | near_r1_wide eq_false | -1.36 / -2.94 | (none) |
+  | pairs | pair_zscore_signed ge | +0.94 / +3.03 | (none) |
+
+- **Registration waits on the owner's word** (every B-row is NEW-GATE; S6-B3117 precedent:
+  SPECS rows land after the T3 ruling, bands = QUANTS on the subject's own fires at grid time).
