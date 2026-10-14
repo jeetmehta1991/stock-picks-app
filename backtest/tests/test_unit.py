@@ -53500,6 +53500,77 @@ def test_b3139bw_breadth_holdout_null_reproduces_refuses_and_is_deterministic(tm
             assert a_ == b_, (key, lv, p)
 
 
+def test_b3139bx_every_holdout_read_carries_its_own_chance_price(tmp_path, monkeypatch):
+    """S6-B3139bx (owner ruling 2026-10-13, 'Approve all other recommendations'
+    - option (a) wire, 300 shuffles): breadth_step2_read.py runs the holdout
+    null itself and records it in the read artifact. Driven END TO END through
+    main() on the S6-B3139bw fixture - a real read and the REAL null, whose
+    reproduction gate must pass on the read the reader just made - with the
+    shuffle count shrunk through the module constant. Then a forced refusal
+    still writes the read (the look is spent either way), status REFUSED,
+    and exits non-zero; the constants hold the ruling."""
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import breadth_step1_grid as bg
+    import breadth_step2_read as b2
+    import breadth_holdout_null as bhn
+    assert b2.NULL_PERMS == 300 and b2.NULL_SEED == 20261007
+    nsrc = (root / "scripts" / "breadth_holdout_null.py").read_text(encoding="utf-8")
+    assert "default=20261007" in nsrc, "the read's seed must be the null CLI's own default"
+    # the S6-B3139bw fixture: cells that DO qualify, so reproduction is exercised
+    tl, cube = [], []
+    days = ([f"2023-{(i % 12) + 1:02d}-{(i % 27) + 1:02d}" for i in range(60)]
+            + [f"2025-{(i % 10) + 6:02d}-{(i % 27) + 1:02d}" for i in range(60)])
+    for i, d in enumerate(days):
+        tk = f"T{i:03d}"
+        tl.append({"strategy": "fx", "ticker": tk, "entry_date": d,
+                   "signals_at_entry": _j.dumps({"k": float(i % 30)})})
+        for ex, pnl in (("time_stop_10d", 3.0 if i % 5 else -2.0),
+                        ("other_exit", 1.0 if i % 2 else -1.2)):
+            cube.append({"strategy": "fx", "ticker": tk, "entry_date": d,
+                         "direction": "long", "exit_method": ex,
+                         "pnl_pct": pnl, "hold_days": 10})
+    pd.DataFrame(tl).to_csv(tmp_path / "trade_log.csv", index=False)
+    pd.DataFrame(cube).to_csv(tmp_path / "trade_exit_detail.csv", index=False)
+    monkeypatch.setattr(bg, "CUBE", tmp_path / "trade_exit_detail.csv")
+    monkeypatch.setattr(bg, "TRADE_LOG", tmp_path / "trade_log.csv")
+    art = {"strategy": "fx", "depth_base": None, "basis": "net", "leg": "long",
+           "multiplicity": {"reconciles": True},
+           "rows": [{"axis": "k", "op": "ge", "level": lv} for lv in (0.0, 5.0, 10.0)]}
+    s1 = tmp_path / "step1.json"
+    s1.write_text(_j.dumps(art), encoding="utf-8")
+    out = tmp_path / "read.json"
+    monkeypatch.setattr(sys, "argv", [
+        "breadth_step2_read.py", "--step1-artifact", str(s1), "--ruling", "pin probe",
+        "--control", "fx", "--breadth-disposition", "ran", "--prior-read", "none",
+        "--out", str(out)])
+    monkeypatch.setattr(b2, "NULL_PERMS", 3)
+    assert b2.main() == 0
+    rec = _j.loads(out.read_text(encoding="utf-8"))
+    hn = rec["holdout_null"]
+    assert hn["status"] == "OK" and hn["n_perms"] == 3, hn.get("status")
+    assert hn["observed"]["qualifiers"] == rec["qualifiers_all_six_non_npt"] > 0, hn["observed"]
+    assert "_doc" not in hn and hn["generator"] == "scripts/breadth_holdout_null.py"
+    # a refusal still writes the read, marked, and the reader exits non-zero
+    def _refuse(*_a, **_k):
+        raise SystemExit("REFUSED: reproduction failed - pin probe")
+    monkeypatch.setattr(bhn, "run", _refuse)
+    out.unlink()
+    assert b2.main() == 3
+    rec2 = _j.loads(out.read_text(encoding="utf-8"))
+    assert rec2["holdout_null"]["status"] == "REFUSED", rec2["holdout_null"]
+    assert "reproduction failed" in rec2["holdout_null"]["reason"]
+    assert rec2["qualifiers"] == rec["qualifiers"]
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    assert "runs INSIDE the reader since S6-B3139bx" in plan
+
+
+
 def test_b3140c_declared_row_holdout_read_reproduces_then_reads_once(tmp_path):
     """S6-B3140c (B3139q-r66): the declared-row holdout reader refuses an
     adapter without AXES/passes/parse_signals, a combo absent from the

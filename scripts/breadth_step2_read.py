@@ -27,6 +27,14 @@ exit) is reported beside the subject's. A control that shows the same lift
 says the axis is general market structure, not the subject's edge. The
 control's holdout was also previously read (its own campaign) - same
 disclosed label.
+
+CHANCE PRICE (S6-B3139bx, owner ruling 2026-10-13, option (a) wire): every
+read runs scripts/breadth_holdout_null.run on its own qualifiers at
+NULL_PERMS joint shuffles and records the block as `holdout_null` - status
+OK with the null's figures, or REFUSED with the null's own reason, in which
+case the reader exits 3 after writing the read (L904: a holdout
+qualifier's chance price is the holdout's own test, never the in-sample
+search's).
 """
 from __future__ import annotations
 
@@ -69,6 +77,41 @@ def require_multiplicity(art: dict, source: str) -> None:
             f"REFUSED: {source} multiplicity.reconciles = "
             f"{mult.get('reconciles')!r} - a non-reconciled Step-1 cannot "
             "feed a holdout read (S6-B2836a)")
+
+
+# S6-B3139bx: the owner's ruling fixes the count; the seed is the null
+# CLI's own default, so a hand re-run with defaults reproduces the block.
+NULL_PERMS = 300
+NULL_SEED = 20261007
+
+
+def attach_holdout_null(art: dict, rec: dict, perms: int | None = None,
+                        seed: int | None = None, runner=None) -> bool:
+    """S6-B3139bx: price this read's qualifiers against chance with
+    breadth_holdout_null.run (the one definition) and write the block into
+    rec['holdout_null']. The null's subject - leg, run-dir, qualifier set -
+    comes from `rec`, the record being written, never from a flag (L912).
+    Returns False when the null REFUSES (its reproduction gate, a leg or
+    run-dir mismatch); the refusal is recorded either way, never skipped.
+    `perms` / `seed` default to the module constants read at CALL time."""
+    perms = NULL_PERMS if perms is None else perms
+    seed = NULL_SEED if seed is None else seed
+    if runner is None:
+        from breadth_holdout_null import run as runner
+    t0 = time.time()
+    try:
+        out = runner(art, rec, perms, seed)
+    except SystemExit as e:
+        rec["holdout_null"] = {"status": "REFUSED", "reason": str(e),
+                               "n_perms": perms, "seed": seed,
+                               "generator": "scripts/breadth_holdout_null.py"}
+        return False
+    out = dict(out)
+    out.pop("_doc", None)    # the null's docstring travels in its own file
+    out.update({"status": "OK", "generator": "scripts/breadth_holdout_null.py",
+                "seconds": round(time.time() - t0)})
+    rec["holdout_null"] = out
+    return True
 
 
 def main() -> int:
@@ -254,10 +297,20 @@ def main() -> int:
                                "holdout sharpe",
                        "rows": controls},
            "rows": rows}
+    # S6-B3139bx: every read carries its own chance price (L904), priced on
+    # this record's own qualifiers and frame (L912)
+    print(f"holdout null: {NULL_PERMS} shuffles (S6-B3139bx)")
+    null_ok = attach_holdout_null(art, rec)
+    print(f"holdout null: {rec['holdout_null']['status']} "
+          f"({time.time()-t0:.0f}s)")
     from roster_core import stamp_metric_code as _smc  # S6-B3139i
     _smc(rec)
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     print(f"wrote {a.out}")
+    if not null_ok:
+        print("REFUSED (S6-B3139bx): the holdout null refused - "
+              + rec["holdout_null"]["reason"], file=sys.stderr)
+        return 3
     return 0
 
 

@@ -984,8 +984,11 @@ meaning.
    qualifiers chance alone produces - a leg whose unfiltered holdout already runs well crosses the
    gates by sampling. `scripts/breadth_holdout_null.py` (fail-closed reproduction of the read's
    qualifier set, then K within-period shuffles; family-wise best-ci_lo statistic; SYNTHETIC null
-   label; pinned by test_b3139bw) is hand-run beside the read today; running it by default inside
-   the reader is S6-B3139bx (owner-gated on its ~13 min/leg cost).
+   label; pinned by test_b3139bw) runs INSIDE the reader since S6-B3139bx (owner ruling 2026-10-13,
+   option (a) wire): every read prices its qualifiers at 300 shuffles (~13 min per leg, measured
+   B3139q-r53), takes the null's subject from its own record (L912), and writes the block into
+   the read artifact as `holdout_null` - status OK, or REFUSED with the null's reason and a
+   non-zero exit after the read is recorded (test_b3139bx).
 8. **CONTROL-FAMILY COMPARISON** - every all-six qualifier gets the same axis/level/exit applied to a
    CONTROL strategy's fires (§3.5).
 9. **ADMISSION PROPOSAL** - options with labels riding (the B2660 doctrine); the ruling is the owner's;
