@@ -24856,3 +24856,13 @@ code-EXPLORATORY admissions; pinned by test_b3168 (mutation proof 5 of 5), which
 step 6's new clause. The 5 untagged mirrors are not tagged here: EXPLORATORY membership feeds the
 cube's multiple-testing family count (multiple_testing_correction.py, cube_eligible_for_multiple_testing),
 so tagging moves a verdict input and is the owner's (S6-B3168a).
+
+### L915 - A COPIED NOTE CARRIED ITS SOURCE'S CLAIMS INTO A NEW SUBJECT; TWO ADMISSION NOTES DENIED THEIR MIRROR'S MEASURED EVIDENCE (B3139q-r69m, 2026-10-13)
+
+**What happened.** Writing the closing batch for S6-B3168, I found that 2 of 16 Phase-1B admission notes said the admitted line's mirror short "rides pattern-only" with "no holdout evidence of its own". Both mirrors are graded in R5: three_black_crows_short at holdout Sharpe -0.686 over 470 trades (2 of 6 gates) and pairs_mean_reversion_short at -0.184 over 1,378 trades (2 of 6 gates). The pairs note (B3139q-r69e, mine) copied the three_white_soldiers note's sentence (B3115). The source note also called its mirror EXPLORATORY while the code did not list it (true only since S6-B3168a) and said engine wiring "rides S6-B2411", a ticket the owner DROPPED on 2026-09-03; the roster builder printed the same stale S6-B2411 claim on every regeneration.
+
+**Why.** A copied sentence re-asserts its source's facts about a different subject, and the copy FEELS like consistency rather than a claim. The worst claim to copy is an ABSENCE: nothing in the new context contradicts "no evidence of its own", so it ships unchecked while the evidence sits one roster lookup away. Compliance failure against CHECKLIST #166 (an absence stated with no search behind it) and against the A COPY IS A FRESH SHIPMENT OF OLD CODE rule (L645).
+
+**Rule.** Before a note, review or record adapted from an earlier one ships, re-derive every claim in it for the new subject - absence claims first, then status claims (a tag, a ticket a thing rides on). A claim that something rides on a ticket is a claim about that ticket's state: check the reducer.
+
+**Mechanism.** test_b3169: no admission note denies a retained mirror's evidence when the roster JSON carries its R5 grade; the two corrected notes carry their mirror's grade, read from that JSON; and no admission note or roster-builder sentence says work rides, is tracked or is ticketed under a ticket the ledger holds EXECUTED or DROPPED. The phrasings matched are those three - a lower bound, derived from these incidents. Durability: the skill's tripwire row, pinned by test_b2123.

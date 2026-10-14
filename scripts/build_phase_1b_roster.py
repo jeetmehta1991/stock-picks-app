@@ -605,7 +605,8 @@ def step2_admissions_section(A, admissions_path=None) -> None:
       "Sharpe far exceeds its in-sample value on a small holdout n, the margin is fragile - "
       "the IS and holdout confidence lower bounds are rendered beside the point estimates so "
       "the interval width is never hidden. Engine wiring of an admitted combination is "
-      "tracked separately (S6-B2411); admission to this document is not deployment.")
+      "not tracked - S6-B2411 was DROPPED by the owner's 2026-09-03 scope ruling - and "
+      "admission to this document is not deployment.")
     A("")
 
 

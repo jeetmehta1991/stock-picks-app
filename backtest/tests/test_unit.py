@@ -25954,6 +25954,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("READ THE DIRECTIVE ITSELF AND CHECK EACH OF ITS CLAUSES AT EXECUTION - THE STEP IS A PARAPHRASE",
          "L914 (B3139q-r69f): a runbook step paraphrased the mirror directive "
          "and dropped two of its clauses"),
+        # B3139q-r69m: the L915 row - pin the REMEDY it names (L548).
+        ("RE-DERIVE EVERY CLAIM FOR THE NEW SUBJECT BEFORE IT SHIPS, ABSENCE CLAIMS FIRST",
+         "L915 (B3139q-r69m): two admission notes denied their mirror's "
+         "measured evidence; one copied the other"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26175,7 +26179,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 328 -> 329 at B3139q-r69e (the L913 completeness-sweep clause in the
     # L801 row).
     # 329 -> 330 at B3139q-r69f (the L914 read-the-directive-not-the-step row).
-    assert len(gutted) == 330, gutted
+    # 330 -> 331 at B3139q-r69m (the L915 re-derive-a-copied-claim row).
+    assert len(gutted) == 331, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -55247,6 +55252,58 @@ def test_b3168_roster_shows_each_mirrors_own_result_and_exploratory():
     s63 = plan[plan.index("### 6.3 Which combination advances"):
                plan.index("## 7. THE LOCKED REPORTING STANDARD")]
     assert "already registered owes the same two clauses" in s63
+
+
+def test_b3169_admission_notes_do_not_deny_measured_mirror_evidence():
+    """S6-B3169 / L915: 2 of 16 admission notes said the mirror short had
+    'no holdout evidence of its own' - the pairs note copied the
+    three_white_soldiers sentence - while R5 grades both mirrors. CLASS,
+    derived from the roster JSON, never listed: (1) no admission note field
+    denies a retained mirror's evidence when the JSON carries its R5 grade;
+    (2) the two corrected notes carry their mirror's holdout Sharpe as the
+    JSON holds it; (3) no admission note or roster-builder text says work
+    rides / is tracked / is ticketed under a ticket the ledger holds
+    EXECUTED or DROPPED. (1) and (3) match the phrasings these incidents
+    used - a lower bound, not every way to say it. A double-quoted span in
+    a note is a mention (B1738): the CORRECTED stamps quote the retracted
+    claims, and the pin's first run fired on exactly those."""
+    import json as _j
+    import re
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import queue_state as qs
+    adm = _j.loads((root / "output_audit" / "phase_1b_step2_admissions.json")
+                   .read_text(encoding="utf-8"))["admissions"]
+    sc = _j.loads((root / "output_audit" / "b1453_phase_1b_roster.json")
+                  .read_text(encoding="utf-8"))
+    retained = sc["mirrors"]["registered"] + sc["mirrors"]["admissions_registered"]
+    r5 = {r["strategy"]: r for r in sc["all_rows"] if r["cube"] == "R5"}
+    graded = {m: r5[m]["holdout"] for m in retained
+              if (r5.get(m) or {}).get("holdout")}
+    assert len(graded) >= 6, sorted(graded)        # a vacuous-pass guard
+    deny = re.compile(r"no holdout evidence|no (?:measured )?evidence of its own", re.I)
+    # a double-quoted span is a MENTION, not a claim (B1738): each CORRECTED
+    # stamp quotes what its note used to say. Never stripped from the builder
+    # source, where every sentence is itself a quoted string literal.
+    fields = [(x["strategy"], re.sub(r'"[^"]*"', "", v))
+              for x in adm for v in x.values() if isinstance(v, str)]
+    assert not [s for s, v in fields if deny.search(v)], "a note denies measured evidence"
+    by = {x["strategy"]: x.get("review_note") or "" for x in adm}
+    for long_, mirror in (("three_white_soldiers", "three_black_crows_short"),
+                          ("pairs_mean_reversion_long", "pairs_mean_reversion_short")):
+        assert mirror in graded, mirror
+        assert f"Sharpe {graded[mirror]['sharpe']:.3f}" in by[long_], (long_, mirror)
+    claim = re.compile(r"(?:\brides|tracked separately \(|\bticketed(?: as)?)\s*(S6-[A-Za-z0-9]+)")
+    texts = [v for _s, v in fields]
+    texts.append((root / "scripts" / "build_phase_1b_roster.py").read_text(encoding="utf-8"))
+    states = qs.tickets()
+    stale = sorted({(t, states.get(t)) for txt in texts for t in claim.findall(txt)
+                    if states.get(t) in ("EXECUTED", "DROPPED")})
+    assert not stale, stale
+
 
 
 # S6-B3168a (owner ruling 2026-10-13, "Approve all other recommendations"):
