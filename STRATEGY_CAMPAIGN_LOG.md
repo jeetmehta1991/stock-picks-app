@@ -2545,3 +2545,17 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   configs, 523-601 h (~22-25 days), not recommended. Local serial chain; no cloud spend.
 - **Critical path:** S6-B3171a adapter (DEFERRED -> OPEN, trigger fired) lands first;
   launch then waits on the owner's slate word ("11" / name knobs / "all 143").
+
+### K.10 Engine adapter complete (2026-10-15, B3139q-r69y..r70b, S6-B3171a)
+
+- **Four pieces, four gated batches:** grade_npoc_config.py (r69y, commit 3a30a2c36),
+  spot_check_npoc.py (r69z, 3659e8033 - the B2870 drift gate caught the undeclared consumer
+  and was fed same batch), grade_free_levels_npoc.py (r70a, 153b3b45d - the leg-population
+  freeze earned its fifth member; compliance note vs #196/L801 in the queue), SPECS promotion
+  (r70b: PHASE0 -> SPECS moved-never-copied, complete tools block, resim bands LIVE,
+  validate_spec CLEAN + family_refusal green executed).
+- **Each leg mutation-proven in its own batch** (ENV_OF drift / wrong-window leg A /
+  fail-open landed bound / stripped tools block - every proof RED then restored
+  byte-identical).
+- **Launch state:** waits on the owner's slate word only ("11" / name knobs / "all 143");
+  prelaunch gate + detached chain + per-landing battery are the launch turn's checklist.

@@ -2054,7 +2054,7 @@ FORMULA_TWS = (
     "              measured retention quantiles on the 1,596 R5 fires)\n")
 
 
-SPECS_PHASE0.update({"naked_poc_retest_long": {  # S6-B3171 F1 (B3139q-r69r) - written from the owner's T3 band words (2026-10-14, verbatim in the rows); offline depth leg first, engine legs adapter-gated, so PHASE0 is the registry (the bollinger B3118 pattern)
+SPECS["naked_poc_retest_long"] = {  # S6-B3171 F1 (B3139q-r69r), PROMOTED PHASE0 -> SPECS at B3139q-r70b on the owner's "Engine" word (moved, never copied - the B2897 pattern): the S6-B3171a adapter is complete (grade / spot_check / free_levels legs shipped r69y-r70a), so the engine resim levels are live and family_refusal is green
     "formula": """
 ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in
 the producer->gate derivation. B<n> = a breadth companion axis. SIX B-rows
@@ -2135,8 +2135,38 @@ word, never a gate until a Step-2 read says so.
     "gate": ("naked_poc_count > 0 AND naked_poc_nearest_distance_pct < "
              "NAKED_POC_MAX_DISTANCE_PCT (default 0.02) AND "
              "price_above_ema_200 (screener strat_naked_poc_retest_long)"),
-    "tools": {},  # pre-engine stub; the COMPLETE adapter lands in SPECS with
-                  # S6-B3171a before any engine leg (the B2897 pattern)
+    "tools": {
+        "keys": {"P2": "lookback", "P3": "n_periods",
+                 "P4": "n_bins", "P6": "max_distance_pct"},
+        # S6-B3171a: the ENGINE axes - the four env-actuated knobs the slate
+        # sweeps. P5 (count floor, env=None) is OFFLINE and lives in the
+        # free_levels leg, exactly the split B2897 ruled for the candle P6.
+        "grid_keys": ["combo"],
+        "single_combination": False,
+        "spot_check": {"script": "spot_check_npoc.py", "cube": "",
+                       "strategy_flag": "--strategy",
+                       "flags": {"P2": "--lookback", "P3": "--n-periods",
+                                 "P4": "--n-bins",
+                                 "P6": "--max-distance-pct"},
+                       "extra": ["--n", "50"],
+                       "window": False, "precompute_check": False,
+                       "pythonpath": None,
+                       "note": "AUTO (S6-B3171a, B3139q-r69z)"},
+        "grade": {"script": "grade_npoc_config.py", "cube": "",
+                  "flags": {"P2": "--lookback", "P3": "--n-periods",
+                            "P4": "--n-bins", "P6": "--max-distance-pct"},
+                  "extra": [],
+                  "step2_flag": "--step2",
+                  "preregistered_flag": "--preregistered-exit",
+                  "pythonpath": None,
+                  "note": "AUTO (S6-B3171a, B3139q-r69y)"},
+        # B2569/#290: the per-landing free-level leg (P5 floors + P6 tighter
+        # ceilings), reproduction-gated at the LANDED bounds.
+        "free_levels": {"script": "grade_free_levels_npoc.py",
+                        "note": "AUTO (S6-B3171a, B3139q-r70a); "
+                                "reproduction-gated; occupancy DISCLOSED "
+                                "rather than simulated (L812)"},
+    },
     "params": [
         {"id": "P1", "producer": "technical.py compute_ema_sma -> screener emit",
          "param": "ema span (the 200 in price_above_ema_200)",
@@ -2147,46 +2177,47 @@ word, never a gate until a Step-2 read says so.
          "status": "HELD AT PRODUCTION - the gate reads the literal key "
                    "(S6-B3117b wiring gap, owner-pending); canon-span flags "
                    "are offline ADD-A-CONDITION legs via the B-row census",
-         "type": "identity", "engine_implemented": False,
-         "evidence": "screener gate; S6-B3117b",
+         "type": "identity", "engine_implemented": True,
+         "evidence": "screener gate; S6-B3117b (the span-200 signal is "
+                     "engine-produced; only the SWAP is unbuilt, and no "
+                     "other span is in the band - B3139q-r70b)",
          "derivation": "held at production in PHASE0 - no resim promise (S6-B2569a)"},
         {"id": "P2", "producer": "volume_profile.py compute_period_pocs",
          "param": "period_lookback (bars)",
-         "production": 252, "band": [252],
-         "free_band": [252], "resim_band": [], "env": "NAKED_POC_LOOKBACK",
+         "production": 252, "band": [126, 252],
+         "free_band": [252], "resim_band": [126], "env": "NAKED_POC_LOOKBACK",
          "consumers": ["backtest/config.py", "backtest/signals/screener.py",
                        "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": False,
-         "status": "ACTUATED (S6-B3171, default = production); prior bracket "
-                   "[126, 252] held ADAPTER-PENDING (B2883) - the owner's "
-                   "2026-10-14 words were re-read onto P3 (word: Chunks, "
-                   "B3139q-r69s); resim levels land with the S6-B3171a adapter",
+         "status": "ACTUATED (S6-B3171); resim level 126 LIVE with the "
+                   "S6-B3171a adapter (B3139q-r70b) - the owner's 2026-10-14 "
+                   "words were re-read onto P3 (word: Chunks, B3139q-r69s)",
          "type": "numeric", "engine_implemented": True,
          "evidence": "volume_profile.py compute_period_pocs; config.py NAKED_POC_LOOKBACK",
          "derivation": "band held to production until the adapter lands"},
         {"id": "P3", "producer": "volume_profile.py compute_period_pocs",
          "param": "n_periods (POC chunks)",
-         "production": 6, "band": [6],
-         "free_band": [6], "resim_band": [], "env": "NAKED_POC_N_PERIODS",
+         "production": 6, "band": [4, 6, 8, 12, 50],
+         "free_band": [6], "resim_band": [4, 8, 12, 50], "env": "NAKED_POC_N_PERIODS",
          "consumers": ["backtest/config.py", "backtest/signals/screener.py",
                        "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": False,
-         "status": "ACTUATED (S6-B3171, default = production); OWNER T3 BAND "
-                   "[4, 6, 8, 12, 50] (the Chunks re-read, B3139q-r69s) held "
-                   "ADAPTER-PENDING (B2883) as P2; pairing constraint pinned "
-                   "by test_b3171",
+         "status": "ACTUATED (S6-B3171); OWNER T3 BAND [4, 6, 8, 12, 50] "
+                   "(the Chunks re-read, B3139q-r69s) LIVE with the S6-B3171a "
+                   "adapter (B3139q-r70b); pairing constraint pinned by "
+                   "test_b3171 - n_periods 50 pairs only with lookback 252",
          "type": "numeric", "engine_implemented": True,
          "evidence": "volume_profile.py compute_period_pocs (n_periods); config.py NAKED_POC_N_PERIODS",
          "derivation": "as P2"},
         {"id": "P4", "producer": "volume_profile.py compute_period_pocs",
          "param": "n_bins (price bins)",
-         "production": 40, "band": [40],
-         "free_band": [40], "resim_band": [], "env": "NAKED_POC_N_BINS",
+         "production": 40, "band": [20, 30, 40, 50],
+         "free_band": [40], "resim_band": [20, 30, 50], "env": "NAKED_POC_N_BINS",
          "consumers": ["backtest/config.py", "backtest/signals/screener.py",
                        "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": False,
-         "status": "ACTUATED (S6-B3171, default = production); OWNER T3 BAND "
-                   "[20, 30, 40, 50] held ADAPTER-PENDING (B2883) as P2",
+         "status": "ACTUATED (S6-B3171); OWNER T3 BAND [20, 30, 40, 50] LIVE "
+                   "with the S6-B3171a adapter (B3139q-r70b)",
          "type": "numeric", "engine_implemented": True,
          "evidence": "volume_profile.py compute_period_pocs (n_bins); config.py NAKED_POC_N_BINS",
          "derivation": "as P2"},
@@ -2204,17 +2235,18 @@ word, never a gate until a Step-2 read says so.
          "derivation": "QUANTS + bracket floors on the surviving fires"},
         {"id": "P6", "producer": "screener naked-POC block (distance to nearest naked POC)",
          "param": "distance ceiling (naked_poc_nearest_distance_pct)",
-         "production": 0.02, "band": [0.0028, 0.0059, 0.0096, 0.0141, 0.02],
+         "production": 0.02,
+         "band": [0.0028, 0.0059, 0.0096, 0.0141, 0.02, 0.03, 0.04, 0.05],
          "free_band": [0.0028, 0.0059, 0.0096, 0.0141, 0.02],
-         "resim_band": [], "env": "NAKED_POC_MAX_DISTANCE_PCT",
+         "resim_band": [0.03, 0.04, 0.05], "env": "NAKED_POC_MAX_DISTANCE_PCT",
          "consumers": ["backtest/config.py", "backtest/signals/screener.py",
                        "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": True,
          "signal_keys": ["naked_poc_nearest_distance_pct"],
-         "status": "ACTUATED (S6-B3171, default = production); OWNER T3 "
-                   "'add looser bands' -> 0.03 / 0.04 / 0.05 APPROVED "
-                   "(owner 2026-10-14 'Approve all recs') at 1.5x/2x/2.5x "
-                   "production, RESIM, held ADAPTER-PENDING (B2883) as P2",
+         "status": "ACTUATED (S6-B3171); OWNER T3 'add looser bands' -> "
+                   "0.03 / 0.04 / 0.05 APPROVED (owner 2026-10-14 'Approve "
+                   "all recs') at 1.5x/2x/2.5x production, RESIM, LIVE with "
+                   "the S6-B3171a adapter (B3139q-r70b)",
          "type": "numeric", "engine_implemented": True,
          "evidence": "screener gate; config.py NAKED_POC_MAX_DISTANCE_PCT; "
                      "Table A free-band row (QUANTS on the surviving fires)",
@@ -2226,7 +2258,7 @@ word, never a gate until a Step-2 read says so.
          "env": None, "consumers": [], "sweep_levels": None,
          "subset_safe": True, "signal_keys": ["vix_term_backwardation"],
          "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op eq_true",
-         "type": "bool", "engine_implemented": False,
+         "type": "bool", "engine_implemented": True,
          "evidence": "b3171_npoc_companions_consistent.json (ts10 +2.766 / bept +7.561, joint rank 1)",
          "derivation": "BREADTH (3.6): vol-regime rep; folds vix_term_contango, vix_vix3m_ratio"},
         {"id": "B2", "producer": "smc/po3 producer",
@@ -2236,7 +2268,7 @@ word, never a gate until a Step-2 read says so.
          "env": None, "consumers": [], "sweep_levels": None,
          "subset_safe": True, "signal_keys": ["po3_accum_range_pct"],
          "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op ge",
-         "type": "float>=q", "engine_implemented": False,
+         "type": "float>=q", "engine_implemented": True,
          "evidence": "b3171 consistent (ts10 +2.432 / bept +7.626)",
          "derivation": "BREADTH: po3 rep; folds po3_accumulation_active (eq_false)"},
         {"id": "B3", "producer": "cross_sectional (beta)",
@@ -2246,7 +2278,7 @@ word, never a gate until a Step-2 read says so.
          "env": None, "consumers": [], "sweep_levels": None,
          "subset_safe": True, "signal_keys": ["xs_beta"],
          "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op ge",
-         "type": "float>=q", "engine_implemented": False,
+         "type": "float>=q", "engine_implemented": True,
          "evidence": "b3171 consistent (ts10 +2.441 / bept +6.179)",
          "derivation": "BREADTH: ticker-volatility rep; folds atr_pct, bb_10_20 bandwidth + squeeze, xs_beta_decile, xs_max_anomaly, xs_avoid_high_max"},
         {"id": "B4", "producer": "cot (CFTC positioning)",
@@ -2256,7 +2288,7 @@ word, never a gate until a Step-2 read says so.
          "env": None, "consumers": [], "sweep_levels": None,
          "subset_safe": True, "signal_keys": ["cot_rut_commercials_net_pct"],
          "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op le",
-         "type": "float<=q", "engine_implemented": False,
+         "type": "float<=q", "engine_implemented": True,
          "evidence": "b3171 consistent (ts10 -2.104 / bept -6.840)",
          "derivation": "BREADTH: cot rep (keep LOW); the copper members carry the OPPOSITE sign - asymmetry surfaced"},
         {"id": "B5", "producer": "cross_sectional (12-1 momentum decile)",
@@ -2266,7 +2298,7 @@ word, never a gate until a Step-2 read says so.
          "env": None, "consumers": [], "sweep_levels": None,
          "subset_safe": True, "signal_keys": ["xs_momentum_decile"],
          "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op ge",
-         "type": "float>=q", "engine_implemented": False,
+         "type": "float>=q", "engine_implemented": True,
          "evidence": "b3171 consistent (ts10 +2.679 / bept +5.519)",
          "derivation": "BREADTH: momentum rep; folds xs_momentum_top_decile + top_quintile - the admitted top_decile strategy's own signal, noted"},
         {"id": "B6", "producer": "technical.py avwap",
@@ -2276,11 +2308,11 @@ word, never a gate until a Step-2 read says so.
          "env": None, "consumers": [], "sweep_levels": None,
          "subset_safe": True, "signal_keys": ["pct_from_avwap_20low"],
          "status": "T3-APPROVED 2026-10-14 (owner verbatim: 'Approve all recs'); op ge; IS coverage 1263 of 1375 (91.8pct) is BELOW the grid's 0.98 floor - expected COVERAGE-REFUSED at grid time, recorded on the artifact, not silently dropped",
-         "type": "float>=q", "engine_implemented": False,
+         "type": "float>=q", "engine_implemented": True,
          "evidence": "b3171 consistent (ts10 +1.704 / bept +6.197)",
          "derivation": "BREADTH: avwap rep; FLAGGED adjacent to the P6 distance axis"},
     ],
-}})
+}
 
 SPECS_PHASE0.update({"bollinger_lower": {  # B3118 F1 - written from the owner-approved T3 band (2026-09-27 "Approve your recommendation"); offline campaign, no engine leg owed, so PHASE0 is the registry (tools adapter not on the critical path)
     "formula": """
@@ -4416,6 +4448,21 @@ D_AXIS_FAMILIES = {
                ("P3 body", "cfg", "P3_min_body_pct"),
                ("P4 step", "cfg", "P4_min_step_pct"),
                ("P5 wick", "cfg", "P5_max_wick_pct")),
+    },
+    # B3139q-r70b (S6-B3171a): the naked-POC (volume_profile) family -
+    # four engine knobs. Without this an npoc cfg falls through _d_family
+    # to smc's columns and renders dashes (the L833/L790 class the R2 rung
+    # exists for). detect keys on P2_lookback, which only grade_npoc_config
+    # emits.
+    "naked_poc": {
+        "serves": ("naked_poc_retest_long",),
+        "detect": "P2_lookback",
+        "d1": (("lookback", "cfg", "P2_lookback"),
+               ("ceiling", "cfg", "P6_max_distance_pct")),
+        "d2": (("P2 lookback", "cfg", "P2_lookback"),
+               ("P3 n_periods", "cfg", "P3_n_periods"),
+               ("P4 n_bins", "cfg", "P4_n_bins"),
+               ("P6 ceiling", "cfg", "P6_max_distance_pct")),
     },
     # B3119: the bollinger span family - one engine knob. Without
     # this a span cfg falls through _d_family to smc's columns and

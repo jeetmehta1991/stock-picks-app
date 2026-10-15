@@ -33571,7 +33571,11 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
                                 # is DELIBERATELY registered - owner
                                 # ruling "Candle goes first".
                                 "three_white_soldiers",
-                                "three_black_crows_short"}, sorted(rp.FAMILIES)
+                                "three_black_crows_short",
+                                # B3139q-r70b: the volume_profile
+                                # family (S6-B3171a adapter complete
+                                # on the owner's "Engine" word).
+                                "naked_poc_retest_long"}, sorted(rp.FAMILIES)
     # B2897: FAMILY_REFUSALS was EMPTY for its whole life - every SPECS
     # member was already a family, so the ledger of "why this is not a
     # family" named nobody. Promoting the candle pair with an incomplete
@@ -55708,10 +55712,10 @@ def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
     band rows ride in table_a_bands with their env knobs named (n_periods
     gains 12/50 under the owner's Chunks re-read, n_bins gains 20, the
     basis quoting the owner verbatim);
-    the engine resim levels are HELD (resim_band empty) because validate_spec
-    (B2883) refuses resim levels without a complete battery adapter - the
-    hold is load-bearing: planting one resim level on the lookback row must
-    turn validate_spec red (proved by mutation here, not assumed)."""
+    the engine resim levels are LIVE (r70b: the S6-B3171a adapter is
+    complete, the entry PROMOTED to SPECS, family_refusal green) and the
+    B2883 refusal still bites: STRIPPING the tools block must turn
+    validate_spec red (proved by mutation here, not assumed)."""
     import copy
     import sys
     from pathlib import Path
@@ -55720,7 +55724,9 @@ def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
         sys.path.insert(0, str(root / "scripts"))
     import producer_variant_table as pvt
     import table_a_bands as tab
-    spec = pvt.SPECS_PHASE0["naked_poc_retest_long"]
+    spec = pvt.SPECS["naked_poc_retest_long"]   # PROMOTED at r70b
+    assert "naked_poc_retest_long" not in pvt.SPECS_PHASE0, (
+        "moved, never copied - duplication is what makes a family droppable")
     errs = pvt.validate_spec(spec)
     assert errs == [], errs
     rows = {r["param"]: r for r in tab.PRODUCER_BANDS["naked_poc_count"]}
@@ -55740,8 +55746,17 @@ def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
     by_id = {p["id"]: p for p in spec["params"]}
     assert by_id["P6"]["env"] == "NAKED_POC_MAX_DISTANCE_PCT"
     assert by_id["P6"]["free_band"] == [0.0028, 0.0059, 0.0096, 0.0141, 0.02]
-    assert by_id["P6"]["resim_band"] == []    # looser levels held for the adapter
+    assert by_id["P6"]["resim_band"] == [0.03, 0.04, 0.05]  # LIVE (r70b)
     assert "0.03 / 0.04 / 0.05 APPROVED" in by_id["P6"]["status"]
+    # the adapter is COMPLETE and the family is a battery family (B2883):
+    import run_postconfig as _rp
+    assert _rp.family_refusal("naked_poc_retest_long") == "", (
+        _rp.family_refusal("naked_poc_retest_long"))
+    tools = spec["tools"]
+    assert tools["grade"]["script"] == "grade_npoc_config.py"
+    assert tools["spot_check"]["script"] == "spot_check_npoc.py"
+    assert tools["free_levels"]["script"] == "grade_free_levels_npoc.py"
+    assert set(tools["grade"]["flags"]) == {"P2", "P3", "P4", "P6"}
     # B3139q-r69u: six B-rows registered on the owner's word 2026-10-14
     # ('Approve all recs'); three reps struck on the same word.
     QUANTS = ["q20", "q40", "q60", "q80"]
@@ -55767,11 +55782,9 @@ def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
     mb["resim_band"] = ["q10"]
     assert pvt.validate_spec(mutant_b), "a B-row resim level must be refused"
     mutant = copy.deepcopy(spec)
-    mp = next(p for p in mutant["params"] if p["id"] == "P2")
-    mp["band"] = [126, 252]
-    mp["free_band"], mp["resim_band"] = [252], [126]
+    mutant["tools"] = {}        # a half-written adapter must still be refused
     bad = pvt.validate_spec(mutant)
-    assert bad, "a resim level with the stub tools block must be refused (B2883)"
+    assert bad, "resim levels with a STRIPPED tools block must be refused (B2883)"
     # The detectors still SEE the env-actuated ceiling (S6-B3171 extended the
     # shared compare pattern; the gate now reads _cfg, resolved to production):
     import build_strategy_status as bss
