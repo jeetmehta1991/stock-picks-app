@@ -6,15 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (165 entries), 1767 named checks have run and 17 have ever returned non-PASS.**
+**Across the entire ledger (166 entries), 1782 named checks have run and 18 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-60 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60).
+60 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60 | 2026-10-12T08:23:34 | engine-hook | 0 | 6_post_fix_recheck | 1: spot_check_disagreements WARN: 49 agree / 1 DISAGREE / 0 skipped in output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_spot_check.json | b80363ea6 | True | **NO** |
+| output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60 | 2026-10-12T08:23:34 | engine-hook | 0 | 6_post_fix_recheck | 1: spot_check_disagreements WARN: 49 agree / 1 DISAGREE / 0 skipped in output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_spot_check.json | b80363ea6 | True | yes 2026-10-12T08:58:30 |
 | output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05 | 2026-10-11T03:33:22 | engine-hook | 0 | none | 0 | 522c827c3 | True | yes 2026-10-11T03:51:11 |
 | output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05 | 2026-10-11T00:43:18 | engine-hook | 0 | none | 0 | 205915808 | True | yes 2026-10-11T00:47:46 |
 | output_pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90 | 2026-10-10T16:33:31 | engine-hook | 0 | none | 0 | b948dca36 | True | yes 2026-10-10T17:36:06 |
