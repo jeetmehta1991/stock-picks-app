@@ -6312,39 +6312,39 @@
  "output_npoc_s1_p3_4_p3_4": {
   "1_cube_sanity": {
    "status": "DONE",
-   "evidence": "run_postconfig: cube_exists=PASS(11808 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, GOOGL, TSLA, AAPL); M1_content_sha=PASS(c4392a94ef66e0d1); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha a0e4ada3d191); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=FAIL(family naked_poc_retest_long: manifest arms[0] lacks ['lookb); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+   "evidence": "run_postconfig: cube_exists=PASS(11808 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, GOOGL, TSLA, AAPL); M1_content_sha=PASS(c4392a94ef66e0d1); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha a0e4ada3d191); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=FAIL(family naked_poc_retest_long: manifest arms[0] lacks ['lookb); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence) | run_wave verified 11808 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg"
   },
   "3_outlier_discrepancy_sweep": {
    "status": "DONE",
    "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
   },
   "2_grade_with_config_params": {
-   "status": "FAIL",
-   "evidence": "family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)"
+   "status": "DONE",
+   "evidence": "MANUAL COMPLETION (B3139q-r70k, S6-B3171b part b): LEG 1 output_audit/output_npoc_s1_p3_4_p3_4_grid_auto.json (grade_npoc_config.py --no-manifest-check, flag vector 252/4/40/0.02 - the manifest records only NAKED_POC_N_PERIODS=4, which matches the flag; the other three knobs ran at their env defaults, backtest/config.py:2624-2632): 24 of 24 exits graded on 11,808 IS rows, 0 holdout rows, best breakeven_plus_trail is_ci_lo 0.224 / is_sharpe 0.499 over 492 fires; LEG 2 output_audit/output_npoc_s1_p3_4_p3_4_free_levels.json (grade_free_levels_npoc.py --disclose-landed-ceiling 0.02, stamped on the artifact; S6-B3173): reproduction 492 covered / 0 unverifiable / 0 failed, max covered dist 0.01993; score reproduction 24 of 24 exits, 0 mismatches; free levels graded 6 of 6 || battery's FAIL text, preserved in full: family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)"
   },
   "4_three_leg_spot_check": {
-   "status": "FAIL",
-   "evidence": "family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)"
+   "status": "DONE",
+   "evidence": "MANUAL COMPLETION (B3139q-r70k, S6-B3171b part b): output_audit/output_npoc_s1_p3_4_p3_4_spot_check.json (spot_check_npoc.py, flag vector 252/4/40/0.02): sampled 50, agree 50, disagree 0, skipped 0, execution failures 0 || battery's FAIL text, preserved in full: family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)"
   },
   "5_adversarial_lens_review": {
    "status": "DONE",
-   "evidence": "AUTO (B2520): lenses 11 run: 1 WARN / 0 FAIL / 10 INFO -> output_npoc_s1_p3_4_p3_4_lenses.json; findings: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read"
+   "evidence": "AUTO (B2520): lenses 11 run: 1 WARN / 0 FAIL / 10 INFO -> output_npoc_s1_p3_4_p3_4_lenses.json; findings: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read || NOTE (B3139q-r70k): the WARN's missing spot-check artifact now exists - output_audit/output_npoc_s1_p3_4_p3_4_spot_check.json (spot_check_npoc.py, flag vector 252/4/40/0.02): sampled 50, agree 50, disagree 0, skipped 0, execution failures 0"
   },
   "6_post_fix_recheck": {
-   "status": "OPEN",
-   "evidence": "1 lens finding(s) need a recheck with evidence (#196): spot_check_disagreements WARN"
+   "status": "DONE",
+   "evidence": "MANUAL COMPLETION (B3139q-r70k, S6-B3171b part b): the lens finding (spot_check_disagreements WARN: no spot-check artifact) is rechecked - the artifact now exists, output_audit/output_npoc_s1_p3_4_p3_4_spot_check.json (spot_check_npoc.py, flag vector 252/4/40/0.02): sampled 50, agree 50, disagree 0, skipped 0, execution failures 0; the manifest gap behind every FAIL here is fixed for configs 3-11 (companion-pinned specs, commit e077a2510; config 3 launched as npoc_s1_p3_8_p2_252_p4_40_p6_0p02) and leg 2 runs via the S6-B3173 flag (commit 2fd3f325c) || battery's OPEN text, preserved in full: 1 lens finding(s) need a recheck with evidence (#196): spot_check_disagreements WARN"
   },
   "6b_equivalence_class_check": {
-   "status": "FAIL",
-   "evidence": "family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)"
+   "status": "N/A",
+   "evidence": "MANUAL COMPLETION (B3139q-r70k, S6-B3171b part b): one combination per cube (step1_combinations_carried=1, step1_distinct_outcomes=1 in the grid) - equivalence collapse needs at least 2 combinations, the N/A the battery records for single-combination families || battery's FAIL text, preserved in full: family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)"
   },
   "7_implement_in_engine": {
-   "status": "FAIL",
-   "evidence": "family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)"
+   "status": "DONE",
+   "evidence": "MANUAL COMPLETION (B3139q-r70k, S6-B3171b part b): all four swept knobs are engine-implemented env actuators (NAKED_POC_LOOKBACK/_N_PERIODS/_N_BINS/_MAX_DISTANCE_PCT, backtest/config.py:2624-2632, read by backtest/signals/screener.py); the battery's FAIL was the manifest params cascade, not a missing implementation || battery's FAIL text, preserved in full: family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)"
   },
   "8_verdict_with_denominators": {
-   "status": "OPEN",
-   "evidence": "no grid artifact - step 2 produced nothing to derive a verdict from (family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642))"
+   "status": "DONE",
+   "evidence": "MANUAL COMPLETION (B3139q-r70k, S6-B3171b part b): Step-1 verdict, denominators stated: leg 1 graded 24 of 24 exits, best breakeven_plus_trail is_ci_lo 0.224 over 492 of 11,808 IS rows; leg 2 graded 6 of 6 free levels - P6 dist<0.0028 keeps 97 best breakeven_plus_trail ci_lo 0.159 n 97; P6 dist<0.0059 keeps 173 best breakeven_plus_trail ci_lo 0.256 n 173; P6 dist<0.0096 keeps 266 best breakeven_plus_trail ci_lo 0.115 n 266; P6 dist<0.0141 keeps 370 best breakeven_plus_trail ci_lo 0.158 n 370; P5 count>1 keeps 492 best breakeven_plus_trail ci_lo 0.224 n 492; P5 count>2 keeps 492 best breakeven_plus_trail ci_lo 0.224 n 492; 0 of 11,808 rows in the holdout window; ranked list only, no gates (B1608) || battery's OPEN text, preserved in full: no grid artifact - step 2 produced nothing to derive a verdict from (family naked_poc_retest_long: manifest arms[0] lacks ['lookback', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642))"
   }
  }
 }
