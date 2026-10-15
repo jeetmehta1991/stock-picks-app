@@ -1,0 +1,105 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+..............................................s......................... [ 36%]
+....................s.................................................s. [ 41%]
+........................................................................ [ 45%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
+.........................................................F.............. [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+...........................                                              [100%]
+================================== FAILURES ===================================
+____________ test_b2891_closure_claim_auditor_is_a_real_instrument ____________
+
+    def test_b2891_closure_claim_auditor_is_a_real_instrument():
+        """S6-B2891 / L819: the closure-claim sweep must be a NAMED, committed,
+        re-runnable instrument - B2854's rule that a population nobody can
+        re-derive is a count, not a sweep.
+    
+        Both directions per #226: it must FIND a row asserting closure and stay
+        QUIET on one that does not, and it must flag the absence of a denominator
+        rather than pretending to judge whether the figure is true (L819's own
+        limit: a measured closure figure and an assumed one are both integers)."""
+        import sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import audit_closure_claims as acc
+    
+        # must-FIRE: a closure phrase with NO denominator is flagged as no-scope
+        bad = "| **S6-B9001** | **EXECUTED** | P1 | **this closes the class.** |"
+        hits = acc.closure_claims(bad)
+        assert len(hits) == 1, hits
+        assert hits[0]["ticket"] == "S6-B9001"
+        assert hits[0]["has_denominator"] is False
+    
+        # must-FIRE: the same claim WITH a scope is still found, but not no-scope
+        good = ("| **S6-B9002** | **EXECUTED** | P1 | **this closes the class: "
+                "2 of 18 entries refused.** |")
+        hits = acc.closure_claims(good)
+        assert len(hits) == 1 and hits[0]["has_denominator"] is True, hits
+    
+        # must-QUIET: an ordinary row asserting no closure
+        plain = "| **S6-B9003** | **OPEN** | P2 | **measure the thing.** |"
+        assert acc.closure_claims(plain) == []
+    
+        # bold-independent row id (L603/B1969: requiring bold drops 48 real rows)
+        unbold = "| S6-B9004 | EXECUTED | P1 | this closes the class. |"
+        assert [h["ticket"] for h in acc.closure_claims(unbold)] == ["S6-B9004"]
+    
+        # the live ledger: every closure claim in it must name a scope. This is
+        # the assertion that bites going forward - a new unscoped closure row
+        # fails the pyramid instead of being found by the next owner question.
+        text = (root / "EXECUTION_QUEUE.md").read_text(
+            encoding="utf-8", errors="replace")
+        live = acc.closure_claims(text, since="S6-B2850")
+        unscoped = [h["ticket"] for h in live if not h["has_denominator"]]
+>       assert not unscoped, (
+            f"{unscoped} assert a class is closed and name no N of M. A closure "
+            "figure is the least-verified number there is (L819) - give it its "
+            "denominator or drop the claim")
+E       AssertionError: ['S6-B3171'] assert a class is closed and name no N of M. A closure figure is the least-verified number there is (L819) - give it its denominator or drop the claim
+E       assert not ['S6-B3171']
+
+backtest\tests\test_unit.py:40267: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2891_closure_claim_auditor_is_a_real_instrument
+1 failed, 1751 passed, 3 skipped in 692.28s (0:11:32)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=705
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=ac
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

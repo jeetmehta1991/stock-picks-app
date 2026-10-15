@@ -2559,3 +2559,14 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   byte-identical).
 - **Launch state:** waits on the owner's slate word only ("11" / name knobs / "all 143");
   prelaunch gate + detached chain + per-landing battery are the launch turn's checklist.
+
+### K.11 Slate approved - 11-config Step-1 chain (2026-10-15, B3139q-r70c)
+
+- **Owner, verbatim:** "11 approved". make_spec.py generated 11 Step-1 specs
+  (launch_refusals clean on each; fires_at_production 164 per config from the status
+  artifact): P2 lookback 126; P3 n_periods 4/8/12/50; P4 n_bins 20/30/50; P6 ceiling
+  0.03/0.04/0.05. Window/universe injected by phase_table at launch (B2713).
+- **Launch:** detached hidden chain (launch_detached --chain, the r68m launcher),
+  commit-then-launch so the last full pyramid precedes the wave; hourly monitor cron armed
+  in the launch turn; battery + landing report per config automatic (B2520).
+- **ETA:** 40.3-46.2 h serial (charter cost line / B2107 measured rate).
