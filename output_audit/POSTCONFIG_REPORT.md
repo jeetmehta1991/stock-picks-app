@@ -6,15 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (166 entries), 1782 named checks have run and 18 have ever returned non-PASS.**
+**Across the entire ledger (166 entries), 1797 named checks have run and 19 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-61 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_npoc_s1_p2_126_p2_126).
+61 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_npoc_s1_p2_126_p2_126 | 2026-10-15T15:23:18 | engine-hook | 2 | 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 1: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 00034d5cf | True | **NO** |
+| output_npoc_s1_p2_126_p2_126 | 2026-10-15T15:23:18 | engine-hook | 2 | 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 1: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 00034d5cf | True | yes 2026-10-15T15:39:56 |
 | output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60 | 2026-10-12T08:23:34 | engine-hook | 0 | 6_post_fix_recheck | 1: spot_check_disagreements WARN: 49 agree / 1 DISAGREE / 0 skipped in output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_spot_check.json | b80363ea6 | True | yes 2026-10-12T08:58:30 |
 | output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05 | 2026-10-11T03:33:22 | engine-hook | 0 | none | 0 | 522c827c3 | True | yes 2026-10-11T03:51:11 |
 | output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05 | 2026-10-11T00:43:18 | engine-hook | 0 | none | 0 | 205915808 | True | yes 2026-10-11T00:47:46 |
@@ -174,6 +174,7 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | `pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.039 | 0.694 | 0.66 | 0.436 | P1_pairs_identity=eg0.05_zw40 P5_eg_significance=0.050 P6_z_window=40 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
 | `pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.215 | 0.898 | 0.776 | 0.545 | P1_pairs_identity=eg0.05_zw90 P5_eg_significance=0.050 P6_z_window=90 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
 | `pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.207 | 0.58 | 0.58 | 0.484 | P1_pairs_identity=eg0.01_zw60 P5_eg_significance=0.010 P6_z_window=60 / breakeven_plus_trail | 2022-05-05..2026-05-04 |
+| `npoc_s1_p2_126_p2_126` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(not swept); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.216 | 0.523 | 0.523 | 0.262 | P2_lookback=126 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
 
 **Parameters tested** - distinct values each config exercised per axis, read from the result rows themselves. `1 value` = the axis was PINNED and contributed no search; an axis absent from the artifact reads `not recorded`, never `1`. **P1 `swing_length` and P6 `span` are the CROSS-CONFIG axes** - they define which config a cube IS and are held FIXED within it, so they show a value rather than a count. Recorded in the artifact since B2138; anything graded before that reads `not recorded`, which is what let a swing-10 cube be re-graded as swing-20 (S6-B2136).
 
@@ -288,6 +289,10 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | `pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
 | `pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
 
+| config | P1 ema span (the 200 in price_above_ema_200) | P2 period_lookback (bars) | P3 n_periods (POC chunks) | P4 n_bins (price bins) | P5 count floor (> N naked POCs) | P6 distance ceiling (naked_poc_nearest_distance_pct) | B1 vix_term_backwardation | B2 po3_accum_range_pct | B3 xs_beta | B4 cot_rut_commercials_net_pct | B5 xs_momentum_decile | B6 pct_from_avwap_20low |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `npoc_s1_p2_126_p2_126` | 200(not swept) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
+
 ## TABLE D - STEP-1 RANKED LIST (top 25)
 
 _Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admission is min-trades >= 10 plus this list, with NO gates applied (owner ruling B1608). `n` = fires in-sample, placed beside the sort key on purpose. `tier` = DEEP n>=100 / MID 30-99 / THIN 10-29. `dup` = this row's (ci_lo, sharpe, n, exit) signature appears in more than one config - one discovery, several parameter pairs, NOT independent confirmations. `cls` = equivalence-class size. Nothing here is filtered._
@@ -326,20 +331,21 @@ _**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one unified table, no s
 | 24 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.03 | 50 | time_stop_10d | +0.613 | 22 | THIN | - | 2.865 | 1 | 0 | 22 | BELOW_POWER_FLOOR | yes |
 | 25 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 120 | 0.03 | 20 | earnings_blackout | +0.604 | 15 | THIN | 1 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 
-_910 ranked outcomes across 91 graded configs; 884 distinct signatures._
+_920 ranked outcomes across 92 graded configs; 894 distinct signatures._
 
 **Best within each depth tier** (the comparison a rank order hides):
 
 | tier | best is_ci_lo | at n | rows |
 |---|---|---|---|
-| DEEP | +0.659 | 797 | 628 |
+| DEEP | +0.659 | 797 | 638 |
 | MID | +0.656 | 33 | 191 |
 | THIN | +1.250 | 14 | 91 |
 
-## Index - 91 graded config(s), newest first
+## Index - 92 graded config(s), newest first
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_npoc_s1_p2_126_p2_126 | 0.262 | 559 | 0/24 exits | 3/9 **OPEN: 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators** |
 | output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60 | 0.484 | 2599 | 0/24 exits | 9/9 |
 | output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05 | 0.545 | 762 | 0/24 exits | 9/9 |
 | output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05 | 0.436 | 819 | 0/24 exits | 9/9 |
@@ -433,6 +439,92 @@ _910 ranked outcomes across 91 graded configs; 884 distinct signatures._
 | output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 combinations | 9/9 |
 
 ## Per-config findings
+
+### output_npoc_s1_p2_126_p2_126
+
+**Configuration:** P2_lookback=126, P3_n_periods=6, P4_n_bins=40, P6_max_distance_pct=0.02
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.262** (is_sharpe 0.523, 559 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 3 of 9 steps closed** (3 DONE with evidence, 0 N/A with a reason). **6 step(s) NOT closed (2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators) - this cube BLOCKS the turn gate until each is DONE with evidence or N/A with a reason; SKIPPED is not a disposition (B2520).**
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | FAIL **<-- NOT CLOSED** | family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642) / prior: family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642) |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS / battery re-run 2026-10-15 15:42: DONE - AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | FAIL **<-- NOT CLOSED** | family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642) / prior: family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642) |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 11 run: 1 WARN / 0 FAIL / 10 INFO -> output_npoc_s1_p2_126_p2_126_lenses.json; findings: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read / battery re-run 2026-10-15 15:42: DONE - AUTO (B2520): lenses 11 run: 1 WARN / 0 FAIL / 10 INFO -> output_npoc_s1_p2_126_p2_126_lenses.json; findings: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read |
+| 6_post_fix_recheck | OPEN **<-- NOT CLOSED** | 1 lens finding(s) need a recheck with evidence (#196): spot_check_disagreements WARN / prior: 1 lens finding(s) need a recheck with evidence (#196): spot_check_disagreements WARN |
+| 6b_equivalence_class_check | FAIL **<-- NOT CLOSED** | family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642) / prior: family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642) |
+| 7_implement_in_engine | FAIL **<-- NOT CLOSED** | family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642) / prior: family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642) |
+| 8_verdict_with_denominators | OPEN **<-- NOT CLOSED** | no grid artifact - step 2 produced nothing to derive a verdict from (family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)) / prior: no grid artifact - step 2 produced nothing to derive a verdict from (family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 13416 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | dc97ab184bde56fb | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha 2b28d78251d2 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_npoc_s1_p2_126_p2_126_spot_check.json.
+
+**Adversarial lenses (step 5) - 11 lenses, 1 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family naked_poc_retest_long)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 559 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.29 (2024Q2) over 5 quarters of 559 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.08 of 559 entries across 177 tickers; WARN > 0.30 |
+| eligibility_leak | INFO | 0 of 559 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped) |
+| selection_margin | INFO | no ranked row in the grid artifact |
+| empty_signals_share | INFO | 0 of 559 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/559 (0.0%) from replay_atr_fallback.json) |
+| grading_provenance | INFO | grading surface UNCHANGED since freeze (27 files, digest f69d287e1d22) |
+| direction_consistency | INFO | directions ['long'] (single direction) |
+| spot_check_disagreements | WARN **<-- NOT INFO** | no spot-check artifact - step 4 produced nothing to read |
+| min_trades_floor | INFO | 559 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 24 exits enumerated (population field `per_exit`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | 0.262 | 0.523 | 559 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.035 | 0.238 | 559 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.054 | 0.136 | 559 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.157 | 0.053 | 559 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.203 | 0.051 | 559 | class_time_stop | 1 | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p2_126_p2_126_grid_auto.json._
 
 ### output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60
 

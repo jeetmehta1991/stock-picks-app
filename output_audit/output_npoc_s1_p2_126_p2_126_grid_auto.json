@@ -1,0 +1,555 @@
+{
+ "config": {
+  "P2_lookback": 126,
+  "P3_n_periods": 6,
+  "P4_n_bins": 40,
+  "P6_max_distance_pct": 0.02
+ },
+ "strategy": "naked_poc_retest_long",
+ "cube_riders": [],
+ "grader": "scripts/grade_npoc_config.py (S6-B3171a)",
+ "cube": "output_npoc_s1_p2_126_p2_126/trade_exit_detail.csv",
+ "manifest_check": "NOT VERIFIED (--no-manifest-check): the four knobs are an UNCHECKED stamp on this artifact",
+ "note": "S6-B3171a: Step-1 ranking via roster_core.evaluate per exit on the IS rows - the SAME code every admitted strategy was graded by; is_ci_lo is the ranking key, not a gate (B1608); the holdout is counted and read only under --step2.",
+ "window": {
+  "is": [
+   "2022-05-05",
+   "2025-05-05"
+  ],
+  "holdout": [
+   "2025-05-05",
+   "2026-05-05"
+  ],
+  "cube_entry_min": "2024-05-06",
+  "cube_entry_max": "2025-05-02"
+ },
+ "rows": 13416,
+ "rows_all_strategies": 13416,
+ "is_rows": 13416,
+ "holdout_rows": 0,
+ "min_n": 10,
+ "results": [
+  {
+   "combo": {
+    "P2_lookback": 126,
+    "P3_n_periods": 6,
+    "P4_n_bins": 40,
+    "P6_max_distance_pct": 0.02
+   },
+   "verdict": "RANKED",
+   "n_exits_graded": 24,
+   "n_exits_ranked": 24
+  }
+ ],
+ "step1_combinations_carried": 1,
+ "step1_distinct_outcomes": 1,
+ "step1_ranking": [
+  {
+   "exit": "breakeven_plus_trail",
+   "fires": 559,
+   "is_sharpe": 0.523,
+   "is_ci_lo": 0.262,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 1
+  },
+  {
+   "exit": "hybrid_50pct_target",
+   "fires": 559,
+   "is_sharpe": 0.238,
+   "is_ci_lo": 0.035,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 2
+  },
+  {
+   "exit": "earnings_blackout",
+   "fires": 559,
+   "is_sharpe": 0.136,
+   "is_ci_lo": -0.054,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 3
+  },
+  {
+   "exit": "trailing_10pct",
+   "fires": 559,
+   "is_sharpe": 0.053,
+   "is_ci_lo": -0.157,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 4
+  },
+  {
+   "exit": "class_time_stop",
+   "fires": 559,
+   "is_sharpe": 0.051,
+   "is_ci_lo": -0.203,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 5
+  },
+  {
+   "exit": "trailing_15pct",
+   "fires": 559,
+   "is_sharpe": -0.052,
+   "is_ci_lo": -0.214,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 6
+  },
+  {
+   "exit": "time_stop_20d",
+   "fires": 559,
+   "is_sharpe": 0.038,
+   "is_ci_lo": -0.266,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 7
+  },
+  {
+   "exit": "regime_flip",
+   "fires": 559,
+   "is_sharpe": -0.052,
+   "is_ci_lo": -0.39,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 8
+  },
+  {
+   "exit": "fixed_4r_2r",
+   "fires": 559,
+   "is_sharpe": -0.105,
+   "is_ci_lo": -0.429,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 9
+  },
+  {
+   "exit": "time_stop_10d",
+   "fires": 559,
+   "is_sharpe": -0.013,
+   "is_ci_lo": -0.435,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 10
+  }
+ ],
+ "multiplicity": {
+  "method": "benjamini-hochberg",
+  "q": 0.1,
+  "searched": 24,
+  "graded": 0,
+  "unpriceable": 0,
+  "no_candidate": 0,
+  "scored_unpriced": 24,
+  "unclassified": 0,
+  "rejected": 0,
+  "threshold": null,
+  "smallest_p": null,
+  "uncorrected_p05": 0,
+  "expected_best_under_null_se": null,
+  "expected_best_if_all_searched_counted_se": 1.79,
+  "report_only": true,
+  "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis; NO per-row p-values and no permutation null supplied - this grid's significance is UNPRICED, which is not the same as nothing having been graded",
+  "reconciles": true,
+  "significance_basis": "none_available"
+ },
+ "per_exit": [
+  {
+   "exit": "breakeven_plus_trail",
+   "fires": 559,
+   "is_sharpe": 0.523,
+   "is_ci_lo": 0.262,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 1
+  },
+  {
+   "exit": "hybrid_50pct_target",
+   "fires": 559,
+   "is_sharpe": 0.238,
+   "is_ci_lo": 0.035,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 2
+  },
+  {
+   "exit": "earnings_blackout",
+   "fires": 559,
+   "is_sharpe": 0.136,
+   "is_ci_lo": -0.054,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 3
+  },
+  {
+   "exit": "trailing_10pct",
+   "fires": 559,
+   "is_sharpe": 0.053,
+   "is_ci_lo": -0.157,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 4
+  },
+  {
+   "exit": "class_time_stop",
+   "fires": 559,
+   "is_sharpe": 0.051,
+   "is_ci_lo": -0.203,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 5
+  },
+  {
+   "exit": "trailing_15pct",
+   "fires": 559,
+   "is_sharpe": -0.052,
+   "is_ci_lo": -0.214,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 6
+  },
+  {
+   "exit": "time_stop_20d",
+   "fires": 559,
+   "is_sharpe": 0.038,
+   "is_ci_lo": -0.266,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 7
+  },
+  {
+   "exit": "regime_flip",
+   "fires": 559,
+   "is_sharpe": -0.052,
+   "is_ci_lo": -0.39,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 8
+  },
+  {
+   "exit": "fixed_4r_2r",
+   "fires": 559,
+   "is_sharpe": -0.105,
+   "is_ci_lo": -0.429,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 9
+  },
+  {
+   "exit": "time_stop_10d",
+   "fires": 559,
+   "is_sharpe": -0.013,
+   "is_ci_lo": -0.435,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 10
+  },
+  {
+   "exit": "break_even_at_1r",
+   "fires": 559,
+   "is_sharpe": -0.125,
+   "is_ci_lo": -0.506,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 11
+  },
+  {
+   "exit": "atr_trail_2x",
+   "fires": 559,
+   "is_sharpe": -0.19,
+   "is_ci_lo": -0.566,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 12
+  },
+  {
+   "exit": "next_pivot_target",
+   "fires": 559,
+   "is_sharpe": -0.243,
+   "is_ci_lo": -0.712,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 13
+  },
+  {
+   "exit": "r_multiple_3r",
+   "fires": 559,
+   "is_sharpe": -0.286,
+   "is_ci_lo": -0.755,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 14
+  },
+  {
+   "exit": "trailing_5pct",
+   "fires": 559,
+   "is_sharpe": -0.505,
+   "is_ci_lo": -0.865,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 15
+  },
+  {
+   "exit": "ma_exit_ema9",
+   "fires": 559,
+   "is_sharpe": -0.408,
+   "is_ci_lo": -0.968,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 16
+  },
+  {
+   "exit": "chandelier_3x",
+   "fires": 559,
+   "is_sharpe": -0.555,
+   "is_ci_lo": -1.009,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 17
+  },
+  {
+   "exit": "r_multiple_2r",
+   "fires": 559,
+   "is_sharpe": -0.492,
+   "is_ci_lo": -1.042,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 18
+  },
+  {
+   "exit": "atr_trail_vix_conditional",
+   "fires": 559,
+   "is_sharpe": -1.035,
+   "is_ci_lo": -1.577,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 19
+  },
+  {
+   "exit": "atr_trail_1x",
+   "fires": 559,
+   "is_sharpe": -1.884,
+   "is_ci_lo": -2.519,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 20
+  },
+  {
+   "exit": "reverse_signal",
+   "fires": 559,
+   "is_sharpe": -1.884,
+   "is_ci_lo": -2.519,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 21
+  },
+  {
+   "exit": "multi_tier_partial",
+   "fires": 559,
+   "is_sharpe": -1.879,
+   "is_ci_lo": -2.529,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 22
+  },
+  {
+   "exit": "mfe_lockin_trail",
+   "fires": 559,
+   "is_sharpe": -2.064,
+   "is_ci_lo": -2.722,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 23
+  },
+  {
+   "exit": "smc_mitigation_zone",
+   "fires": 559,
+   "is_sharpe": -3.266,
+   "is_ci_lo": -4.128,
+   "class_size": 1,
+   "admit": {
+    "holdout_n": 0,
+    "full_period_n": 559,
+    "verdict": "RANKED"
+   },
+   "rank": 24
+  }
+ ],
+ "results_n_exits": 24,
+ "step2": {
+  "holdout_read": false,
+  "holdout_rows": 0,
+  "selected_exit": null,
+  "selection": null,
+  "preregistered_exit": null,
+  "mismatch": null,
+  "gates": null,
+  "verdict": "NOT_GRADED",
+  "rule": "S6-B2409: PASS = all six LIVE_GATES clear on the holdout of the IS-selected exit; FAIL otherwise; margin is a number, not a gate",
+  "reason": "cube not declared Step-2 (--step2 absent) - the holdout (0 rows) is not read; a Step-1 cube with holdout rows is M4_holdout_touch's finding"
+ },
+ "metric_code": {
+  "sha256": "915bb9dec919d5f14fcdf0a176b787153472a50725015d64efc958f214b21aa4",
+  "members": [
+   "roster_core.load_cube",
+   "roster_core.net_pnl",
+   "roster_core.holdout",
+   "roster_core.in_sample",
+   "roster_core.evaluate",
+   "walk_forward_r5_cells._sharpe",
+   "backtest.results.metrics._sortino_ratio",
+   "backtest.results.metrics._deflated_sharpe",
+   "rescore_admissions_net.net",
+   "rescore_admissions_net.score_both"
+  ],
+  "constants": [
+   "roster_core.COST_BPS",
+   "roster_core.CUBE_COLUMNS",
+   "roster_core.CUBE_DTYPES",
+   "roster_core.HO_END",
+   "roster_core.HO_START",
+   "roster_core.IS_END",
+   "roster_core.IS_START",
+   "roster_core.MIN_N",
+   "roster_core.PC",
+   "roster_core.WINSORIZE",
+   "walk_forward_r5_cells.OOS_MIN_N"
+  ],
+  "plus": "backtest.config.PASSING_CRITERIA",
+  "defined_in": "scripts/roster_core.py metric_code_fingerprint"
+ }
+}

@@ -3,7 +3,7 @@
  "step": 1,
  "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
  "family": "naked_poc_retest_long",
- "ts": "2026-10-15T15:23:05",
+ "ts": "2026-10-15T15:42:06",
  "lenses": [
   {
    "lens": "holdout_untouched",
