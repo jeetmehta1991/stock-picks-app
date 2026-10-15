@@ -55785,3 +55785,88 @@ def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
     # control: a literal-threshold gate from the B2841 incident still parses
     cmf = bta.depth_comparisons(src).get("cmf_flip", [])
     assert any(k == "po3_accum_range_pct" for k, _, _ in cmf), cmf
+def test_b3171a_npoc_grade_leg_refusals_bite_and_knobs_match_the_registry():
+    """S6-B3171a: the grade leg for the volume_profile family (the owner's
+    "Engine" word 2026-10-15 sequenced it). Arms mirror test_b2900: the
+    manifest verifier must-QUIET on a match and must-FIRE on every mismatch
+    shape, and ENV_OF must equal the SPECS entry's own env knobs by P-id so a
+    knob rename cannot silently split the grader from the registry (L613).
+    The family_refusal == '' wiring arm lands with the SPECS promotion batch,
+    not here - asserting it now would fail on the PHASE0 stub by design."""
+    import sys
+    import json as _j
+    import tempfile
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import pandas as _pd
+    import producer_variant_table as pvt
+    import grade_npoc_config as gnc
+
+    # ---- registry drift: ENV_OF is the SPECS entry's env map, by P-id ----
+    spec = pvt.SPECS_PHASE0.get("naked_poc_retest_long") or pvt.SPECS.get(
+        "naked_poc_retest_long")
+    assert spec is not None
+    by_id = {p["id"]: p for p in spec["params"]}
+    want = {"lookback": by_id["P2"]["env"], "n_periods": by_id["P3"]["env"],
+            "n_bins": by_id["P4"]["env"], "max_distance_pct": by_id["P6"]["env"]}
+    assert gnc.ENV_OF == want, (gnc.ENV_OF, want)
+
+    # ---- value-normalised comparison ----
+    assert gnc._norm("0.020") == gnc._norm(0.02) == gnc._norm("0.02")
+    assert gnc._norm("252") == gnc._norm(252)
+    assert gnc._norm("") == gnc._norm(None) == ""
+
+    # ---- verify_manifest: must-QUIET on a match, must-FIRE otherwise ----
+    d = _P(tempfile.mkdtemp())
+    good = {"NAKED_POC_LOOKBACK": "252", "NAKED_POC_N_PERIODS": "6",
+            "NAKED_POC_N_BINS": "40", "NAKED_POC_MAX_DISTANCE_PCT": "0.02"}
+    flags = {"lookback": 252, "n_periods": 6, "n_bins": 40,
+             "max_distance_pct": 0.02}
+
+    def _write(env, extra=None):
+        man = {"arms": [{"env": env}]}
+        if extra:
+            man.update(extra)
+        (d / "run_manifest.json").write_text(_j.dumps(man), encoding="utf-8")
+
+    _write(good)
+    refusal, disclosure = gnc.verify_manifest(d, flags)
+    assert refusal is None, refusal
+    assert "verified" in disclosure
+
+    # must-FIRE: a value mismatch names the offending knob
+    _write(dict(good, NAKED_POC_LOOKBACK="126"))
+    refusal, _ = gnc.verify_manifest(d, flags)
+    assert refusal and "NAKED_POC_LOOKBACK" in refusal, refusal
+
+    # must-FIRE: an absent knob names itself
+    short = dict(good)
+    del short["NAKED_POC_N_BINS"]
+    _write(short)
+    refusal, _ = gnc.verify_manifest(d, flags)
+    assert refusal and "NAKED_POC_N_BINS" in refusal, refusal
+
+    # must-FIRE: no env block fails CLOSED (L642)
+    _write({})
+    refusal, _ = gnc.verify_manifest(d, flags)
+    assert refusal and "no `env` block" in refusal, refusal
+
+    # must-FIRE: no manifest at all
+    (d / "run_manifest.json").unlink()
+    refusal, _ = gnc.verify_manifest(d, flags)
+    assert refusal and "run_manifest" in refusal, refusal
+
+    # ---- resolve_strategy: manifest-first, fail-closed on a stranger ----
+    cube = _pd.DataFrame({"strategy": ["naked_poc_retest_long"] * 3})
+    (d / "sub.txt").write_text("naked_poc_retest_long\n", encoding="utf-8")
+    _write(good, {"strategy_subset": str(d / "sub.txt")})
+    graded, riders = gnc.resolve_strategy(cube, d)
+    assert graded == "naked_poc_retest_long" and riders == [], (graded, riders)
+    # a cube carrying a stranger with nothing declared is refused
+    (d / "run_manifest.json").unlink()
+    bad_cube = _pd.DataFrame({"strategy": ["naked_poc_retest_long", "smc_breaker_block_long"]})
+    import pytest as _pt
+    with _pt.raises(SystemExit):
+        gnc.resolve_strategy(bad_cube, d)
