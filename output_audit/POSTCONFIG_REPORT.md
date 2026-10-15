@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-60 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+61 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_npoc_s1_p2_126_p2_126).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_npoc_s1_p2_126_p2_126 | 2026-10-15T15:23:18 | engine-hook | 2 | 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 1: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 00034d5cf | True | **NO** |
 | output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60 | 2026-10-12T08:23:34 | engine-hook | 0 | 6_post_fix_recheck | 1: spot_check_disagreements WARN: 49 agree / 1 DISAGREE / 0 skipped in output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_spot_check.json | b80363ea6 | True | yes 2026-10-12T08:58:30 |
 | output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05 | 2026-10-11T03:33:22 | engine-hook | 0 | none | 0 | 522c827c3 | True | yes 2026-10-11T03:51:11 |
 | output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05 | 2026-10-11T00:43:18 | engine-hook | 0 | none | 0 | 205915808 | True | yes 2026-10-11T00:47:46 |
