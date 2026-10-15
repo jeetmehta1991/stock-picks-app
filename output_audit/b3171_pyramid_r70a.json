@@ -1,0 +1,67 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+..............................................s......................... [ 36%]
+....................s.................................................s. [ 41%]
+........................................................................ [ 45%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 82%]
+F....................................................................... [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+...........................                                              [100%]
+================================== FAILURES ===================================
+_______ test_b3139_every_free_level_adapter_windows_its_occupancy_block _______
+
+    def test_b3139_every_free_level_adapter_windows_its_occupancy_block():
+        """S6-B3128a council: all three free-level adapters pass the scored
+        window to occupancy_disclosure (AST: the call carries a `window`
+        keyword), so no leg discloses whole-cube slack beside an in-sample
+        score. A leg added later inherits the check."""
+        import ast
+        legs = sorted(_SCRIPTS_B3135.glob("grade_free_levels_*.py"))
+        # B3140: + grade_free_levels_pairs.py (the fourth family's leg)
+>       assert len(legs) == 4, [p.name for p in legs]
+E       AssertionError: ['grade_free_levels_bollinger.py', 'grade_free_levels_candle.py', 'grade_free_levels_institutional.py', 'grade_free_levels_npoc.py', 'grade_free_levels_pairs.py']
+E       assert 5 == 4
+E        +  where 5 = len([WindowsPath('C:/Users/jeetm/Github/stock-picks-app/scripts/grade_free_levels_bollinger.py'), WindowsPath('C:/Users/je...s/grade_free_levels_npoc.py'), WindowsPath('C:/Users/jeetm/Github/stock-picks-app/scripts/grade_free_levels_pairs.py')])
+
+backtest\tests\test_unit.py:48437: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3139_every_free_level_adapter_windows_its_occupancy_block
+1 failed, 1751 passed, 3 skipped in 677.03s (0:11:17)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=689
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=ac
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

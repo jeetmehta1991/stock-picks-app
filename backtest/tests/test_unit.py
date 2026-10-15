@@ -48434,7 +48434,8 @@ def test_b3139_every_free_level_adapter_windows_its_occupancy_block():
     import ast
     legs = sorted(_SCRIPTS_B3135.glob("grade_free_levels_*.py"))
     # B3140: + grade_free_levels_pairs.py (the fourth family's leg)
-    assert len(legs) == 4, [p.name for p in legs]
+    # B3139q-r70a: + grade_free_levels_npoc.py (the fifth, S6-B3171a)
+    assert len(legs) == 5, [p.name for p in legs]
     for leg in legs:
         tree = ast.parse(leg.read_text(encoding="utf-8"))
         calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
@@ -55932,3 +55933,67 @@ def test_b3171a_npoc_spot_check_leg_a_matches_the_producer_and_can_fail():
     assert sc._leg_c(row_true, 0.02) is True
     assert sc._leg_c(row_false, 0.02) is False
     assert sc._leg_c(row_none, 0.02) is None
+def test_b3171a_npoc_free_levels_bound_comes_from_the_landed_arm():
+    """S6-B3171a piece 3: the free-levels leg's reproduction bound is the
+    LANDED arm's NAKED_POC_MAX_DISTANCE_PCT - P6 is engine-swept in this
+    family, so a hardcoded production constant would re-grade every
+    looser-ceiling cube against the wrong gate (the delta from the candle
+    leg, whose rsi axis was never engine-swept). Arms: landed_ceiling fails
+    CLOSED on a missing manifest, a missing knob and an unparseable value,
+    and returns the landed float on a good one; the module's code carries NO
+    numeric literal 0.02 (docstrings excluded), so the bound cannot silently
+    regress to production; parse_signals' three states pinned."""
+    import sys
+    import ast as _ast
+    import json as _j
+    import tempfile
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import grade_free_levels_npoc as gfl
+
+    d = _P(tempfile.mkdtemp())
+    # must-FIRE: no manifest at all
+    c, why = gfl.landed_ceiling(d)
+    assert c is None and "run_manifest" in why, (c, why)
+    # must-FIRE: manifest without the knob fails CLOSED
+    (d / "run_manifest.json").write_text(
+        _j.dumps({"arms": [{"env": {"NAKED_POC_LOOKBACK": "252"}}]}),
+        encoding="utf-8")
+    c, why = gfl.landed_ceiling(d)
+    assert c is None and "NAKED_POC_MAX_DISTANCE_PCT" in why, (c, why)
+    # must-FIRE: unparseable value
+    (d / "run_manifest.json").write_text(
+        _j.dumps({"arms": [{"env": {"NAKED_POC_MAX_DISTANCE_PCT": "wide"}}]}),
+        encoding="utf-8")
+    c, why = gfl.landed_ceiling(d)
+    assert c is None and "unparseable" in why, (c, why)
+    # must-QUIET: the landed value comes back as a float
+    (d / "run_manifest.json").write_text(
+        _j.dumps({"arms": [{"env": {"NAKED_POC_MAX_DISTANCE_PCT": "0.04"}}]}),
+        encoding="utf-8")
+    c, why = gfl.landed_ceiling(d)
+    assert c == 0.04 and why == "", (c, why)
+
+    # no literal production bound in CODE (docstrings excluded): the bound's
+    # only source is the manifest
+    src = _P(gfl.__file__).read_text(encoding="utf-8")
+    tree = _ast.parse(src)
+    doc_nodes = set()
+    for node in _ast.walk(tree):
+        if isinstance(node, (_ast.Module, _ast.FunctionDef,
+                             _ast.AsyncFunctionDef, _ast.ClassDef)):
+            body = getattr(node, "body", [])
+            if body and isinstance(body[0], _ast.Expr) and isinstance(
+                    body[0].value, _ast.Constant):
+                doc_nodes.add(id(body[0].value))
+    bad = [n for n in _ast.walk(tree)
+           if isinstance(n, _ast.Constant) and id(n) not in doc_nodes
+           and isinstance(n.value, float) and abs(n.value - 0.02) < 1e-12]
+    assert not bad, "a literal 0.02 crept into the code path"
+
+    # parse_signals: the three states
+    assert gfl.parse_signals("{'naked_poc_count': 2}") == {"naked_poc_count": 2}
+    assert gfl.parse_signals("") is None
+    assert gfl.parse_signals("not a dict") is None
