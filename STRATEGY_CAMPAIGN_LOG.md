@@ -2520,3 +2520,18 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   1.332; po3_accum_range_pct ge 0.1011 1.293; xs_momentum_decile ge 9 1.116.
 - **Next gate (owner's word):** the ONE Step-2 holdout read of the registered cells
   (breadth_step2_read.py --ruling; holdout null runs inside it; DISCLOSED-RE-READ rides).
+
+### K.8 Step-2 holdout read (2026-10-15Z, B3139q-r69w)
+
+- **Owner, verbatim:** "Read". One read of the 17 registered cells x 24 exits (442 cells, 425
+  gradable non-npt), NET basis, DISCLOSED-RE-READ provenance recorded.
+  Artifact output_audit/b3171_npoc_breadth_step2_read.json.
+- **Result - READ LEG NEGATIVE:** 0 of 425 clear all six gates. IS rank-1
+  (vix_term_backwardation @ ts10, IS 2.431) -> holdout 0.261 ci_lo -1.634 n 27 (IS/HO
+  inversion). Closest: same axis @ class_time_stop, holdout 1.283 pf 3.294 n 27/173, fails
+  psr only (INCOMPUTABLE at n 27); not rescuable, the read is spent.
+- **Chance price (internal 300-shuffle holdout null, SYNTHETIC):** null mean 0.30 qualifiers
+  (p95 2.0) vs 0 observed; family-best ci_lo 0.341 at p 0.236 - chance-shaped.
+- **Standing after the read:** depth leg FLAT (p 0.6733), breadth read NEGATIVE; the
+  engine-side axes were never run (no failure verdict, #299) and stay adapter-pending
+  (S6-B3171a). The campaign-disposition fork is the owner's word.
