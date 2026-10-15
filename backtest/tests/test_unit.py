@@ -55870,3 +55870,65 @@ def test_b3171a_npoc_grade_leg_refusals_bite_and_knobs_match_the_registry():
     import pytest as _pt
     with _pt.raises(SystemExit):
         gnc.resolve_strategy(bad_cube, d)
+def test_b3171a_npoc_spot_check_leg_a_matches_the_producer_and_can_fail():
+    """S6-B3171a piece 2: the spot check's raw-arithmetic leg A must agree
+    with the PRODUCER (compute_period_pocs + the screener's condition) on a
+    SYNTHETIC deterministic frame - the STRUCTURE is the claim, no value from
+    it is quoted (#201). The frame is built so the agreement is falsifiable:
+    its early bars and late bars concentrate volume at different price zones,
+    so a leg A reading the WRONG window (head instead of tail) flips the
+    condition and the assert goes red (#226 - the mutation this pin watches
+    for). Leg C's three states (True / False / None) are pinned on literal
+    records."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    import numpy as _np
+    import pandas as _pd
+    import spot_check_npoc as sc
+    from backtest.signals.volume_profile import compute_period_pocs
+
+    n = 600
+    ix = _pd.date_range("2023-01-02", periods=n, freq="B")
+    # early zone ~50, late zone ~100 with a heavy-volume shelf at ~95
+    px = _np.concatenate([_np.full(n - 252, 50.0), _np.full(252, 100.0)])
+    vol = _np.concatenate([_np.full(n - 252, 1e6), _np.full(252, 1e6)])
+    vol[-120:-60] = 8e6                      # the shelf the POC should find
+    px2 = px.copy()
+    px2[-120:-60] = 95.0
+    df = _pd.DataFrame({"open": px2, "high": px2 * 1.01, "low": px2 * 0.99,
+                        "close": px2, "volume": vol}, index=ix)
+    df.loc[df.index[-1], ["open", "high", "low", "close"]] = [95.5, 96.5,
+                                                              94.6, 95.5]
+    i = len(df) - 1
+
+    # the producer's own condition on the same slice (the screener's math)
+    pocs = compute_period_pocs(df.iloc[:i + 1], period_lookback=252,
+                               n_periods=6, n_bins=40)
+    assert pocs, "fixture defect: the producer found no POCs"
+    close = float(df["close"].iloc[-1])
+    prod_dist = min(abs(close - p) / close for p in pocs)
+
+    for ceiling in (0.02, 0.2, 0.0001):
+        a_leg = sc._leg_a(df, i, 252, 6, 40, ceiling)
+        assert a_leg == (prod_dist < ceiling), (
+            ceiling, a_leg, prod_dist,
+            "leg A disagrees with the producer's condition on the fixture")
+    # the tight ceiling must actually bite (the condition has both outcomes)
+    assert sc._leg_a(df, i, 252, 6, 40, 0.2) is True
+    assert sc._leg_a(df, i, 252, 6, 40, 0.0001) is False
+    # a slice shorter than the lookback cannot decide
+    assert sc._leg_a(df.iloc[:100], 99, 252, 6, 40, 0.02) is None
+
+    # leg C: the three record states
+    row_true = {"signals_at_entry":
+                "{'naked_poc_count': 3, 'naked_poc_nearest_distance_pct': 0.01}"}
+    row_false = {"signals_at_entry": "{'naked_poc_count': 0}"}
+    row_none = {"signals_at_entry": "{'rsi_14': 55.0}"}
+    assert sc._leg_c(row_true, 0.02) is True
+    assert sc._leg_c(row_false, 0.02) is False
+    assert sc._leg_c(row_none, 0.02) is None

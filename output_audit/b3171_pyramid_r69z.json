@@ -1,0 +1,125 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+..............................................s......................... [ 36%]
+....................s.................................................s. [ 41%]
+........................................................................ [ 45%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
+..................................................F..................... [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+..................F..................................................... [ 94%]
+........................................................................ [ 98%]
+..........................                                               [100%]
+================================== FAILURES ===================================
+___________ test_b2870_consumer_drift_is_checked_on_both_registries ___________
+
+    def test_b2870_consumer_drift_is_checked_on_both_registries():
+        """S6-B2870 (council-directed 2026-09-19): the consumer-drift refusal lived
+        in launch_refusals, which enumerates SPECS alone, so a SPECS_PHASE0 entry
+        could declare a blast radius that is fiction - or declare NONE at all - and
+        validate_spec still returned CLEAN. MEASURED before the fix: three live
+        rows (smc_liquidity_sweep_reversal's SMC_SWING_LENGTH,
+        SMC_LIQUIDITY_RANGE_PCT, SMC_EVENT_RECENCY_BARS) declared no consumers
+        list and validated clean. The fix MOVES the check into validate_spec, which
+        is called on both registries, so coverage is structural rather than a
+        second pin population somebody must remember to widen. Both directions
+        per #226.
+    
+        SCOPE, stated explicitly: this pins the consumer/drift class ONLY. PHASE0
+        entries legitimately lack `baseline` and `formula` blocks (they are
+        pre-engine inventory), and 59 such errors stand across the 14 PHASE0
+        entries by design - making PHASE0 strict wholesale is a different decision
+        and is not taken here."""
+        import copy
+        import sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import producer_variant_table as pvt
+    
+        def _drift_errs(spec):
+            return [e for e in pvt.validate_spec(spec)
+                    if "consumers" in e or "DRIFT" in e]
+    
+        # must-QUIET: no live entry in EITHER registry declares a fictional or
+        # absent blast radius. This is the state the backfill established.
+        both = dict(pvt.SPECS)
+        both.update(pvt.SPECS_PHASE0)
+        live = {s: _drift_errs(spec) for s, spec in both.items()}
+>       assert not any(live.values()), {k: v for k, v in live.items() if v}
+E       AssertionError: {'naked_poc_retest_long': ["knob NAKED_POC_LOOKBACK consumer DRIFT - the entry declares ['backtest/config.py', 'backte...s/screener.py', 'scripts/spot_check_npoc.py'] (S6-B2573d/B2870; re-measure with knob_consumers and update the entry)"]}
+E       assert not True
+E        +  where True = any(dict_values([[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ["knob NAKED_POC_LOOKBACK.../screener.py', 'scripts/spot_check_npoc.py'] (S6-B2573d/B2870; re-measure with knob_consumers and update the entry)"]]))
+E        +    where dict_values([[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ["knob NAKED_POC_LOOKBACK.../screener.py', 'scripts/spot_check_npoc.py'] (S6-B2573d/B2870; re-measure with knob_consumers and update the entry)"]]) = <built-in method values of dict object at 0x000001C2BA41D700>()
+E        +      where <built-in method values of dict object at 0x000001C2BA41D700> = {'bollinger_lower': [], 'institutional_breakout_confirmation_long': [], 'institutional_committed_growth_long': [], 'institutional_high_conviction_long': [], ...}.values
+
+backtest\tests\test_unit.py:39764: AssertionError
+____ test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band ____
+
+    def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
+        """S6-B3171 F1: the SPECS_PHASE0 entry validates CLEAN; the owner's T3
+        band rows ride in table_a_bands with their env knobs named (n_periods
+        gains 12/50 under the owner's Chunks re-read, n_bins gains 20, the
+        basis quoting the owner verbatim);
+        the engine resim levels are HELD (resim_band empty) because validate_spec
+        (B2883) refuses resim levels without a complete battery adapter - the
+        hold is load-bearing: planting one resim level on the lookback row must
+        turn validate_spec red (proved by mutation here, not assumed)."""
+        import copy
+        import sys
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import producer_variant_table as pvt
+        import table_a_bands as tab
+        spec = pvt.SPECS_PHASE0["naked_poc_retest_long"]
+        errs = pvt.validate_spec(spec)
+>       assert errs == [], errs
+E       AssertionError: ["knob NAKED_POC_LOOKBACK consumer DRIFT - the entry declares ['backtest/config.py', 'backtest/signals/screener.py'] b...ls/screener.py', 'scripts/spot_check_npoc.py'] (S6-B2573d/B2870; re-measure with knob_consumers and update the entry)"]
+E       assert ['knob NAKED_...e the entry)'] == []
+E         
+E         Left contains 4 more items, first extra item: "knob NAKED_POC_LOOKBACK consumer DRIFT - the entry declares ['backtest/config.py', 'backtest/signals/screener.py'] bu...als/screener.py', 'scripts/spot_check_npoc.py'] (S6-B2573d/B2870; re-measure with knob_consumers and update the entry)"
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:55724: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2870_consumer_drift_is_checked_on_both_registries
+FAILED backtest/tests/test_unit.py::test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band
+2 failed, 1749 passed, 3 skipped in 663.71s (0:11:03)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=675
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=ac
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

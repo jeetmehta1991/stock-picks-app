@@ -2154,7 +2154,8 @@ word, never a gate until a Step-2 read says so.
          "param": "period_lookback (bars)",
          "production": 252, "band": [252],
          "free_band": [252], "resim_band": [], "env": "NAKED_POC_LOOKBACK",
-         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py",
+                       "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": False,
          "status": "ACTUATED (S6-B3171, default = production); prior bracket "
                    "[126, 252] held ADAPTER-PENDING (B2883) - the owner's "
@@ -2167,7 +2168,8 @@ word, never a gate until a Step-2 read says so.
          "param": "n_periods (POC chunks)",
          "production": 6, "band": [6],
          "free_band": [6], "resim_band": [], "env": "NAKED_POC_N_PERIODS",
-         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py",
+                       "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": False,
          "status": "ACTUATED (S6-B3171, default = production); OWNER T3 BAND "
                    "[4, 6, 8, 12, 50] (the Chunks re-read, B3139q-r69s) held "
@@ -2180,7 +2182,8 @@ word, never a gate until a Step-2 read says so.
          "param": "n_bins (price bins)",
          "production": 40, "band": [40],
          "free_band": [40], "resim_band": [], "env": "NAKED_POC_N_BINS",
-         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py",
+                       "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": False,
          "status": "ACTUATED (S6-B3171, default = production); OWNER T3 BAND "
                    "[20, 30, 40, 50] held ADAPTER-PENDING (B2883) as P2",
@@ -2204,7 +2207,8 @@ word, never a gate until a Step-2 read says so.
          "production": 0.02, "band": [0.0028, 0.0059, 0.0096, 0.0141, 0.02],
          "free_band": [0.0028, 0.0059, 0.0096, 0.0141, 0.02],
          "resim_band": [], "env": "NAKED_POC_MAX_DISTANCE_PCT",
-         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py",
+                       "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": True,
          "signal_keys": ["naked_poc_nearest_distance_pct"],
          "status": "ACTUATED (S6-B3171, default = production); OWNER T3 "
