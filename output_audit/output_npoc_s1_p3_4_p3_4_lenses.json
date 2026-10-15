@@ -1,0 +1,64 @@
+{
+ "cube": "output_npoc_s1_p3_4_p3_4",
+ "step": 1,
+ "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
+ "family": "naked_poc_retest_long",
+ "ts": "2026-10-15T18:45:18",
+ "lenses": [
+  {
+   "lens": "holdout_untouched",
+   "level": "INFO",
+   "evidence": "0 of 492 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class)"
+  },
+  {
+   "lens": "period_concentration",
+   "level": "INFO",
+   "evidence": "max quarter share 0.29 (2024Q2) over 5 quarters of 492 entries; WARN > 0.5"
+  },
+  {
+   "lens": "ticker_concentration",
+   "level": "INFO",
+   "evidence": "top-5 tickers carry 0.07 of 492 entries across 175 tickers; WARN > 0.30"
+  },
+  {
+   "lens": "eligibility_leak",
+   "level": "INFO",
+   "evidence": "0 of 492 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped)"
+  },
+  {
+   "lens": "selection_margin",
+   "level": "INFO",
+   "evidence": "no ranked row in the grid artifact"
+  },
+  {
+   "lens": "empty_signals_share",
+   "level": "INFO",
+   "evidence": "0 of 492 trade_log rows carry an empty signals_at_entry (S6-B2512 class)"
+  },
+  {
+   "lens": "replay_atr_proxy",
+   "level": "INFO",
+   "evidence": "ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/492 (0.0%) from replay_atr_fallback.json)"
+  },
+  {
+   "lens": "grading_provenance",
+   "level": "INFO",
+   "evidence": "grading surface MOVED since freeze: freeze f69d287e1d22 (27) -> now 3202c84a7fcc (27) - DISCLOSED, not refused (L857b); each landing's own code identity is its graded_with stamp"
+  },
+  {
+   "lens": "direction_consistency",
+   "level": "INFO",
+   "evidence": "directions ['long'] (single direction)"
+  },
+  {
+   "lens": "spot_check_disagreements",
+   "level": "WARN",
+   "evidence": "no spot-check artifact - step 4 produced nothing to read"
+  },
+  {
+   "lens": "min_trades_floor",
+   "level": "INFO",
+   "evidence": "492 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here)"
+  }
+ ]
+}
