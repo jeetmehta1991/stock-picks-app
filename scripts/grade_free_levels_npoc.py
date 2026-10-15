@@ -74,11 +74,23 @@ def parse_signals(raw):
     return d if isinstance(d, dict) and d else None
 
 
-def landed_ceiling(cube_dir: Path) -> tuple[float | None, str]:
+def landed_ceiling(cube_dir: Path,
+                   disclosed: float | None = None) -> tuple[float | None, str]:
     """(the landed arm's NAKED_POC_MAX_DISTANCE_PCT, or None + reason).
     Fail-closed: P6 is engine-swept, so the reproduction bound MUST come from
     the manifest - defaulting to 0.02 would re-grade a looser-ceiling cube
-    against the wrong gate (L642)."""
+    against the wrong gate (L642).
+
+    S6-B3173 (B3139q-r70i, L919): `disclosed` answers ONE absence only - a
+    manifest that EXISTS and records no NAKED_POC_MAX_DISTANCE_PCT (the
+    1-of-4-knob specs of S6-B3171, whose engine read its env default,
+    backtest/config.py NAKED_POC_MAX_DISTANCE_PCT). The declared value comes
+    back WITH a disclosure string the caller stamps on the artifact, and the
+    reproduction gate then tests it against every covered row. A missing or
+    unreadable manifest, an unparseable value, and a declaration that
+    CONTRADICTS a recorded value all still fail closed - the same narrow
+    escape leg 1 carries as grade_npoc_config --no-manifest-check.
+    """
     mf = cube_dir / "run_manifest.json"
     if not mf.exists():
         return None, f"no run_manifest.json in {cube_dir}"
@@ -90,14 +102,23 @@ def landed_ceiling(cube_dir: Path) -> tuple[float | None, str]:
     env = dict((arms[0] or {}).get("env") or {}) if arms else {}
     raw = env.get("NAKED_POC_MAX_DISTANCE_PCT")
     if raw is None or str(raw).strip() == "":
-        return None, ("the landed arm declares no NAKED_POC_MAX_DISTANCE_PCT "
-                      "- P6 is engine-swept, so the reproduction bound is "
-                      "unknowable without it (fail closed, L642)")
+        if disclosed is None:
+            return None, ("the landed arm declares no NAKED_POC_MAX_DISTANCE_PCT "
+                          "- P6 is engine-swept, so the reproduction bound is "
+                          "unknowable without it (fail closed, L642)")
+        return float(disclosed), (
+            f"DISCLOSED (--disclose-landed-ceiling {disclosed}): the landed "
+            "arm records no NAKED_POC_MAX_DISTANCE_PCT, so this bound is the "
+            "hand run's declaration, not the manifest's; the reproduction "
+            "gate tested it against every covered row (S6-B3173)")
     try:
-        return float(raw), ""
+        val = float(raw)
     except (TypeError, ValueError):
         return None, f"NAKED_POC_MAX_DISTANCE_PCT unparseable: {raw!r}"
-
+    if disclosed is not None and float(disclosed) != val:
+        return None, (f"--disclose-landed-ceiling {disclosed} contradicts the "
+                      f"manifest's NAKED_POC_MAX_DISTANCE_PCT {val} (refused)")
+    return val, ""
 
 def score_reproduction(prod_per_exit, grid_path, ted_all=None) -> dict:
     """S6-B3120f: the reproduction gate covers the SCORE, not only the fire
@@ -152,6 +173,11 @@ def main() -> int:
                          "(default output_audit/<cube>_grid_auto.json)")
     ap.add_argument("--strategy", default=None,
                     help="override the manifest's graded strategy (hand runs)")
+    ap.add_argument("--disclose-landed-ceiling", type=float, default=None,
+                    help="S6-B3173 hand runs only: the ceiling the engine "
+                         "ran when the manifest records none - stamped on "
+                         "the artifact, refused if it contradicts a "
+                         "recorded value")
     a = ap.parse_args()
 
     cube_dir = Path(a.cube)
@@ -174,7 +200,7 @@ def main() -> int:
               "grades the naked-POC free axes only (fail closed, L642)")
         return 2
 
-    ceiling, why = landed_ceiling(cube_dir)
+    ceiling, why = landed_ceiling(cube_dir, a.disclose_landed_ceiling)
     if ceiling is None:
         print(f"[FAIL] {why}")
         return 2
@@ -216,6 +242,9 @@ def main() -> int:
              "unverifiable_rows": int(unverifiable),
              "rows_total": int(len(tl)),
              "landed_ceiling": ceiling,
+             "landed_ceiling_source": why or "run_manifest.json arms[0].env",
+             "max_covered_dist": (float(covered["_dist"].max())
+                                  if len(covered) else None),
              "gate_mirrored": (f"{KEY_COUNT} > 0 AND {KEY_DIST} < {ceiling} "
                                "(strict, per screener.py)"),
              "failed_reproduction": int(len(failed))}

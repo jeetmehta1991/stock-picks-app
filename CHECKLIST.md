@@ -4157,6 +4157,8 @@ citation + queue ticket** on any stated miss, enumerated through the primitive.
 
 **INSTANCE (B3139q-r69o / L917) - A PRECONDITION THAT HOLDS FOR 1,687 OF 1,688 IS STILL CHECKED PER ROW.** A one-row cache repair relied on the population fact that both caches' prior bars agree; CVNA, the one exception (a 5.0x scale whose repair the owner had dropped), was spliced into a fake -80pct day and caught before commit only because it was missing from a disagreement list. Mechanism: the per-row prior-bar refusal in both scripts/final_bar_third_source_check.py and scripts/repair_final_bar_partial_session.py, pinned by test_b3155a's behaviour pin.
 
+**INSTANCE (B3139q-r70i / L919) - A STEP WITH TWO LEGS IS DONE ONLY WHEN EACH LEG RAN.** A hand completion recorded config 1's step 2 DONE on the family grade while its free-level leg (B2569) had never run, and verify_postconfig_complete passed it because it read the status word. Mechanism: leg2_gap in scripts/verify_postconfig_complete.py refuses a DONE step 2 without its leg-2 artifact when the family declares tools.free_levels, pinned by test_b3173_done_step2_owes_its_leg2_artifact.
+
 ### #235 - CITING A RULE IS NOT THE RULE RUNNING (B1753 / L511)
 
 **INSTANCE 2 (L860, B3074, 2026-09-23).** The other half of re-implementing-is-not-running: RE-VERIFYING a blocker is not re-asking whether it still APPLIES. Three tickets stayed held behind the chain-contamination rule after an owner pause had already dissolved it, because a blocker verified TRUE keeps the authority of having been checked. State a blocker as its CONDITION - no config in flight - never as the EVENT expected to produce it, and after any state change run the blocker audit rather than re-reading the row.

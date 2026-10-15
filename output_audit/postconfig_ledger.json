@@ -6282,7 +6282,7 @@
   },
   "2_grade_with_config_params": {
    "status": "DONE",
-   "evidence": "MANUAL COMPLETION (B3139q-r70g, S6-B3171b part b): the battery fails closed on this cube's 1-of-4-knob manifest (its FAIL text preserved below); the step was completed by the hand re-grade with the full flag vector 126/6/40/0.02, which is what the engine ran because the NAKED_POC_* env actuators default to production (config.py:2624-2641); --no-manifest-check disclosure recorded on the artifact. | prior: family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642) | prior: family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the  || NOW: output_audit/output_npoc_s1_p2_126_p2_126_grid_auto.json (grade_npoc_config.py, committed 9b5b57bdf): 24 exits graded on 13,416 IS rows, 0 holdout rows, best breakeven_plus_trail is_ci_lo 0.262 / is_sharpe 0.523 over 559 fires"
+   "evidence": "CORRECTED (B3139q-r70i, S6-B3173 / L919): the r70g hand completion recorded this step DONE on leg 1 alone; leg 2 ran at r70i. LEG 1: output_audit/output_npoc_s1_p2_126_p2_126_grid_auto.json (grade_npoc_config.py --no-manifest-check, flag vector 126/6/40/0.02 - the env actuators default to 252/6/40/0.02, backtest/config.py:2624-2632 - committed 9b5b57bdf): 24 exits graded on 13,416 IS rows, 0 holdout rows, best breakeven_plus_trail is_ci_lo 0.262 / is_sharpe 0.523 over 559 fires. LEG 2: output_audit/output_npoc_s1_p2_126_p2_126_free_levels.json (grade_free_levels_npoc.py --disclose-landed-ceiling 0.02, the disclosure stamped on the artifact): reproduction 559 covered / 0 unverifiable / 0 failed at count>0 AND dist<0.02, max covered dist 0.01957; score reproduction 24 of 24 exits, 0 mismatches; free levels graded 6 of 6 (P6 0.0028/0.0059/0.0096/0.0141, P5 1/2). The battery's own FAIL text (manifest lacks 3 of 4 knobs, fail closed) is in git at 9b5b57bdf; the r70g copy cut it at 400 of 570 characters."
   },
   "4_three_leg_spot_check": {
    "status": "DONE",
@@ -6294,7 +6294,7 @@
   },
   "6_post_fix_recheck": {
    "status": "DONE",
-   "evidence": "MANUAL COMPLETION (B3139q-r70g, S6-B3171b part b): the battery fails closed on this cube's 1-of-4-knob manifest (its FAIL text preserved below); the step was completed by the hand re-grade with the full flag vector 126/6/40/0.02, which is what the engine ran because the NAKED_POC_* env actuators default to production (config.py:2624-2641); --no-manifest-check disclosure recorded on the artifact. | prior: 1 lens finding(s) need a recheck with evidence (#196): spot_check_disagreements WARN | prior: 1 lens finding(s) need a recheck with evidence (#196): spot_check_disagreements WARN || NOW: the fix (9 unlaunched specs regenerated with companion pins, commit e077a2510) plus the recheck (the two hand artifacts above) - the class instance on THIS cube is unfixable by design (its manifest is the record) and its grading debt is paid by the artifacts named"
+   "evidence": "CORRECTED (B3139q-r70i, S6-B3173 / L919): the recheck now covers both legs - leg 1 grid_auto plus spot check 50 of 50 agree (committed 9b5b57bdf) and leg 2 free_levels (reproduction 559/0/0, score 24 of 24 exits). The spec fix for configs 3-11 is commit e077a2510. The class check leg2_gap in scripts/verify_postconfig_complete.py now refuses a DONE step 2 whose leg-2 artifact is absent."
   },
   "6b_equivalence_class_check": {
    "status": "N/A",
@@ -6306,7 +6306,7 @@
   },
   "8_verdict_with_denominators": {
    "status": "DONE",
-   "evidence": "MANUAL COMPLETION (B3139q-r70g, S6-B3171b part b): the battery fails closed on this cube's 1-of-4-knob manifest (its FAIL text preserved below); the step was completed by the hand re-grade with the full flag vector 126/6/40/0.02, which is what the engine ran because the NAKED_POC_* env actuators default to production (config.py:2624-2641); --no-manifest-check disclosure recorded on the artifact. | prior: no grid artifact - step 2 produced nothing to derive a verdict from (family naked_poc_retest_long: manifest arms[0] lacks ['n_periods', 'n_bins', 'max_distance_pct'] (neither the NAKED_POC_LOOKBACK + NAKED_POC_N_PERIODS + NAKED_POC_N_BINS + NAKED_POC_MAX_DISTANCE_PCT env keys nor the plain keys; a pre-B2138 cube has this shape) (fail closed, L642)) | prior: no grid artifact - step 2 produced nothi || NOW: Step-1 verdict, denominators stated: 24 of 24 exits graded; best exit breakeven_plus_trail is_ci_lo 0.262 over 559 of 13,416 IS rows; 0 of 13,416 rows in the holdout window (M4_holdout_touch PASS); ranked list only, no gates at Step 1 (B1608)"
+   "evidence": "CORRECTED (B3139q-r70i, S6-B3173 / L919): Step-1 verdict, denominators stated: leg 1 graded 24 of 24 exits, best breakeven_plus_trail is_ci_lo 0.262 over 559 of 13,416 IS rows; leg 2 graded 6 of 6 free levels - none of the 4 tighter P6 ceilings beats production's 0.262 in-sample lower bound (best 0.222 at dist<0.0141, n 437) and both P5 floors keep 559 of 559 trades (non-binding); 0 of 13,416 rows in the holdout window; ranked list only, no gates (B1608)."
   }
  }
 }

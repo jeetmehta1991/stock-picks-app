@@ -56010,3 +56010,109 @@ def test_b3171a_npoc_free_levels_bound_comes_from_the_landed_arm():
     assert gfl.parse_signals("{'naked_poc_count': 2}") == {"naked_poc_count": 2}
     assert gfl.parse_signals("") is None
     assert gfl.parse_signals("not a dict") is None
+
+
+def test_b3173_disclosed_landed_ceiling_answers_one_absence_only():
+    """S6-B3173 (B3139q-r70i, L919): the leg-2 grader's disclosed ceiling is
+    accepted for exactly ONE absence - a manifest that exists and records no
+    NAKED_POC_MAX_DISTANCE_PCT - and is stamped; every other failure stays
+    closed (L642), and a declaration contradicting a recorded value is
+    refused. Wiring (L654): main() declares the flag and passes it."""
+    import ast as _ast
+    import json as _j
+    import sys
+    import tempfile
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import grade_free_levels_npoc as gfl
+
+    d = _P(tempfile.mkdtemp())
+    # must-FIRE: a disclosure cannot stand in for a missing manifest
+    c, why = gfl.landed_ceiling(d, 0.03)
+    assert c is None and "run_manifest" in why, (c, why)
+    # must-QUIET: knob absent from an existing manifest -> declared + stamped
+    (d / "run_manifest.json").write_text(
+        _j.dumps({"arms": [{"env": {"NAKED_POC_LOOKBACK": "126"}}]}),
+        encoding="utf-8")
+    c, why = gfl.landed_ceiling(d, 0.03)
+    assert c == 0.03 and "DISCLOSED" in why, (c, why)
+    # must-FIRE: the same manifest with no declaration still fails closed
+    c, why = gfl.landed_ceiling(d)
+    assert c is None and "NAKED_POC_MAX_DISTANCE_PCT" in why, (c, why)
+    # must-FIRE: a declaration contradicting a recorded value is refused
+    (d / "run_manifest.json").write_text(
+        _j.dumps({"arms": [{"env": {"NAKED_POC_MAX_DISTANCE_PCT": "0.04"}}]}),
+        encoding="utf-8")
+    c, why = gfl.landed_ceiling(d, 0.03)
+    assert c is None and "contradicts" in why, (c, why)
+    # must-QUIET: an agreeing declaration changes nothing
+    c, why = gfl.landed_ceiling(d, 0.04)
+    assert c == 0.04 and why == "", (c, why)
+    # must-FIRE: an unparseable recorded value is not rescued
+    (d / "run_manifest.json").write_text(
+        _j.dumps({"arms": [{"env": {"NAKED_POC_MAX_DISTANCE_PCT": "wide"}}]}),
+        encoding="utf-8")
+    c, why = gfl.landed_ceiling(d, 0.03)
+    assert c is None and "unparseable" in why, (c, why)
+
+    tree = _ast.parse(_P(gfl.__file__).read_text(encoding="utf-8"))
+    flags = [n for n in _ast.walk(tree) if isinstance(n, _ast.Call)
+             and getattr(n.func, "attr", None) == "add_argument" and n.args
+             and getattr(n.args[0], "value", None) == "--disclose-landed-ceiling"]
+    assert len(flags) == 1, "the --disclose-landed-ceiling flag is not declared"
+    main_fn = next(n for n in tree.body
+                   if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    calls = [n for n in _ast.walk(main_fn) if isinstance(n, _ast.Call)
+             and getattr(n.func, "id", None) == "landed_ceiling"]
+    assert len(calls) == 1 and len(calls[0].args) == 2, \
+        "main() does not pass the declaration to landed_ceiling"
+
+
+def test_b3173_done_step2_owes_its_leg2_artifact():
+    """S6-B3173 (B3139q-r70i, L919): verify_postconfig_complete refuses a DONE
+    step 2 whose family declares tools.free_levels while the leg-2 artifact
+    is absent - the hand-completion bypass of run_postconfig's ok2-and-okf.
+    Both directions, and the call site in main() (L654)."""
+    import ast as _ast
+    import json as _j
+    import sys
+    import tempfile
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_postconfig_complete as vpc
+
+    oa = _P(tempfile.mkdtemp())
+    key = "output_b3173_fixture"
+    (oa / f"{key}_grid_auto.json").write_text(
+        _j.dumps({"strategy": "S"}), encoding="utf-8")
+    entry = {"2_grade_with_config_params":
+             {"status": "DONE", "evidence": "leg 1 only"}}
+
+    def declares(_s):
+        return {"free_levels": {"script": "grade_free_levels_x.py"}}
+
+    # must-FIRE: DONE, the family declares leg 2, the artifact is absent
+    g = vpc.leg2_gap(key, entry, oa=oa, tools_of=declares)
+    assert g and "never ran" in g and f"{key}_free_levels.json" in g, g
+    # must-QUIET: the artifact exists
+    (oa / f"{key}_free_levels.json").write_text("{}", encoding="utf-8")
+    assert vpc.leg2_gap(key, entry, oa=oa, tools_of=declares) is None
+    (oa / f"{key}_free_levels.json").unlink()
+    # must-QUIET: the family declares no free-level leg
+    assert vpc.leg2_gap(key, entry, oa=oa, tools_of=lambda _s: {}) is None
+    # must-QUIET: a step that is not DONE is is_closed()'s to block, not this
+    fail = {"2_grade_with_config_params": {"status": "FAIL", "evidence": "x"}}
+    assert vpc.leg2_gap(key, fail, oa=oa, tools_of=declares) is None
+
+    tree = _ast.parse(_P(vpc.__file__).read_text(encoding="utf-8"))
+    main_fn = next(n for n in tree.body
+                   if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    calls = [n for n in _ast.walk(main_fn) if isinstance(n, _ast.Call)
+             and getattr(n.func, "id", None) == "leg2_gap"]
+    # two sites: the BLOCK verdict and the per-cube COMPLETE mark, which
+    # must agree (S6-B2440 / L558)
+    assert len(calls) == 2, f"main() consults leg2_gap at {len(calls)} sites, not 2"

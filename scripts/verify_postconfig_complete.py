@@ -112,6 +112,57 @@ def is_closed(row) -> bool:
                     row.get("note") or "").strip())
 
 
+_TOOLS: dict = {}
+
+
+def _family_tools(strategy: str) -> dict:
+    """The battery tools block for a strategy - SPECS[...]["tools"], the
+    registry run_postconfig._tools reads; {} for a strategy outside it."""
+    if strategy not in _TOOLS:
+        scripts = str(ROOT / "scripts")
+        if scripts not in sys.path:
+            sys.path.insert(0, scripts)
+        import producer_variant_table as pvt
+        _TOOLS[strategy] = (pvt.SPECS.get(strategy) or {}).get("tools") or {}
+    return _TOOLS[strategy]
+
+
+def leg2_gap(key: str, entry: dict, *, oa: pathlib.Path | None = None,
+             tools_of=None) -> str | None:
+    """S6-B3173 (B3139q-r70i, L919): a DONE step 2 owes BOTH legs.
+
+    B2569 made step 2 two legs on every landing, and the battery writes DONE
+    only when both ran (run_postconfig: ok2 and okf). A HAND completion
+    bypasses that: config 1 of S6-B3171 was recorded DONE on the family
+    grade alone, and is_closed() - which reads the status word and its
+    evidence - passed it. So a DONE step 2 whose family declares
+    tools.free_levels must have its leg-2 artifact on disk.
+
+    The family is read from the leg-1 artifact's own strategy field; an
+    entry without a readable leg-1 artifact is not judged here. MEASURED at
+    landing over the 166-key ledger: 103 DONE step-2 entries, 11 of them
+    with no leg-1 artifact under their key (pre-adapter probe and smc-era
+    cubes, none a hand completion), and 1 of the 59 free-level-family
+    entries without its leg-2 artifact - the hand-completed one."""
+    row = entry.get("2_grade_with_config_params")
+    if not isinstance(row, dict) or row.get("status") != "DONE":
+        return None
+    oa = oa if oa is not None else ROOT / "output_audit"
+    art = oa / f"{key}_free_levels.json"
+    if art.exists():
+        return None
+    try:
+        strat = json.loads((oa / f"{key}_grid_auto.json")
+                           .read_text(encoding="utf-8")).get("strategy")
+    except (OSError, ValueError):
+        return None
+    if not strat or not (tools_of or _family_tools)(strat).get("free_levels"):
+        return None
+    return (f"2_grade_with_config_params [DONE, but leg 2 never ran: "
+            f"{art.name} is absent while {strat} declares tools.free_levels "
+            "- S6-B3173]")
+
+
 def completed_cubes() -> list[str]:
     """A cube that exists is a config that finished and owes a ledger entry."""
     out = []
@@ -336,6 +387,9 @@ def main() -> int:
         for k in leg_keys(ledger, c):
             entry = ledger.get(k, {})
             missing = [s for s in STEPS if not is_closed(entry.get(s))]
+            gap = leg2_gap(k, entry)
+            if gap:
+                missing.append(gap)
             if missing:
                 incomplete.append((k, missing))
                 dir_of[k] = c
@@ -386,7 +440,12 @@ def main() -> int:
         total_skipped = 0
         for c in [k for c0 in cubes for k in leg_keys(ledger, c0)]:
             e = ledger.get(c, {})
-            ran = sum(1 for s in STEPS if e.get(s, {}).get("status") == "DONE")
+            # S6-B3173: a DONE step 2 whose leg 2 never ran is not a step
+            # that RAN, and the mark below must say what the verdict says
+            # (S6-B2440 / L558 - a label never contradicts its number).
+            gap = leg2_gap(c, e)
+            ran = (sum(1 for s in STEPS if e.get(s, {}).get("status") == "DONE")
+                   - (1 if gap else 0))
             # S6-B2443: SKIPPED and N/A are DIFFERENT facts and the gate already
             # treats them differently for judgment steps, so the display must
             # not lump them under one word (same label-vs-truth class as the
@@ -401,6 +460,7 @@ def main() -> int:
             # a config the gate then blocked on three lines later - a reader
             # must never see a label contradicting the number beside it (L558).
             mark = ("COMPLETE" if all(is_closed(e.get(s)) for s in STEPS)
+                    and not gap
                     else "IN FLIGHT" if c in live_keys else "INCOMPLETE")
             tail = f"  [{len(skipped)} SKIPPED: {', '.join(skipped)}]" if skipped else ""
             if na:
