@@ -2535,3 +2535,13 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **Standing after the read:** depth leg FLAT (p 0.6733), breadth read NEGATIVE; the
   engine-side axes were never run (no failure verdict, #299) and stay adapter-pending
   (S6-B3171a). The campaign-disposition fork is the owner's word.
+
+### K.9 Engine leg ruled + slate costed (2026-10-15, B3139q-r69x)
+
+- **Owner, verbatim:** "Engine" + "How many configs will be run? Whats the ETA?"
+- **Slate arithmetic (derived from the registered bands, pairing guard applied):**
+  single-axis = 11 configs, 40.3-46.2 h serial (~2 days) at 3.66-4.2 h/config (charter
+  cost line / B2107 measured rate), each under the 5 h Step-1 cap; full factorial = 143
+  configs, 523-601 h (~22-25 days), not recommended. Local serial chain; no cloud spend.
+- **Critical path:** S6-B3171a adapter (DEFERRED -> OPEN, trigger fired) lands first;
+  launch then waits on the owner's slate word ("11" / name knobs / "all 143").
