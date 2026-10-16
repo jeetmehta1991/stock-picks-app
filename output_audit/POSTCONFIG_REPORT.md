@@ -10,11 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-68 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02).
+68 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T16:29:34 | engine-hook | 0 | none | 0 | ff914e7da | True | **NO** |
+| output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T16:29:34 | engine-hook | 0 | none | 0 | ff914e7da | True | yes 2026-10-16T16:44:18 |
 | output_npoc_s1_p4_30_p2_252_p3_6_p6_0p02_p4_30_p2_252_p3_6_p6_0p02 | 2026-10-16T11:19:26 | engine-hook | 0 | none | 0 | 9ec36536e | True | yes 2026-10-16T11:28:32 |
 | output_npoc_s1_p4_20_p2_252_p3_6_p6_0p02_p4_20_p2_252_p3_6_p6_0p02 | 2026-10-16T07:20:10 | engine-hook | 0 | none | 0 | 1e7cdacfb | True | yes 2026-10-16T07:31:55 |
 | output_npoc_s1_p3_50_p2_252_p4_40_p6_0p02_p3_50_p2_252_p4_40_p6_0p02 | 2026-10-16T04:41:31 | engine-hook | 0 | none | 0 | dcaaf9fde | True | yes 2026-10-16T05:31:28 |
