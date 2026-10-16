@@ -25963,6 +25963,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L916 (B3139q-r69o): a defect's population sized by the noticed symptom"),
         ("CHECK THE PRECONDITION ON EVERY ROW THE OPERATION TOUCHES",
          "L917 (B3139q-r69o): a population precondition never checked per member"),
+        # B3139q-r70s: the L921 row - pin the REMEDY it names (L548).
+        ("POST THE TESTED FILE VERBATIM - AN EDIT AFTER THE TEST RE-OPENS THE TEST",
+         "L921 (B3139q-r70s): a close tested as a draft was posted as a rewrite"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26187,7 +26190,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 330 -> 331 at B3139q-r69m (the L915 re-derive-a-copied-claim row).
     # 331 -> 333 at B3139q-r69o (the L916 and L917 rows; same-call with the
     # skill edit per B2130).
-    assert len(gutted) == 333, gutted
+    # 333 -> 334 at B3139q-r70s (the L921 post-the-tested-draft row; same-call
+    # with the skill edit per B2130).
+    assert len(gutted) == 334, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

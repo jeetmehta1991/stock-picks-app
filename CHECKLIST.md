@@ -5491,6 +5491,8 @@ the directive's wording, and prose counts passed for two days).
 `scan_ticket_counts_missing` (verify_turn_compliance.py, require_each) plus
 the existing `scan_missing_skill_confirmation` and `scan_compliance_is_content`.
 
+**INSTANCE (B3139q-r70s / L921) - A MANDATED BLOCK IS COPIED, NOT RE-AUTHORED; A TESTED DRAFT IS POSTED VERBATIM.** A close re-authored the ticket table as "Tickets by class" with a "Change" column and scan_ticket_counts_missing refused it (7 of 8 members); the corrected close was drafted to a file and tested (33 scans, 0 fired), then posted as a rewording that carried a miss marker, and scan_miss_capture_complete refused that. Session sweep: 2,624 ticket tables, 48 without an accepted header, 9 without a delta column. Mechanism: scan_ticket_counts_missing for the labels; the draft-versus-post half is JUDGMENT-ONLY for detection, durability pinned by test_b2123 (the skill's L921 tripwire row).
+
 ### #283 - A NAME-KEYED TERMINAL ARTIFACT ON DISK AT LAUNCH IS THE PRIOR ATTEMPT'S (B2193 / L649)
 
 Before launching (or waiting on) any run whose status artifact is keyed by a reused name
