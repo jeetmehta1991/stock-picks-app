@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-66 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+67 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_npoc_s1_p4_30_p2_252_p3_6_p6_0p02_p4_30_p2_252_p3_6_p6_0p02 | 2026-10-16T11:19:26 | engine-hook | 0 | none | 0 | 9ec36536e | True | yes 2026-10-16T11:28:32 |
 | output_npoc_s1_p4_20_p2_252_p3_6_p6_0p02_p4_20_p2_252_p3_6_p6_0p02 | 2026-10-16T07:20:10 | engine-hook | 0 | none | 0 | 1e7cdacfb | True | yes 2026-10-16T07:31:55 |
 | output_npoc_s1_p3_50_p2_252_p4_40_p6_0p02_p3_50_p2_252_p4_40_p6_0p02 | 2026-10-16T04:41:31 | engine-hook | 0 | none | 0 | dcaaf9fde | True | yes 2026-10-16T05:31:28 |
 | output_npoc_s1_p3_12_p2_252_p4_40_p6_0p02_p3_12_p2_252_p4_40_p6_0p02 | 2026-10-16T01:47:16 | engine-hook | 0 | none | 0 | b1820500d | True | yes 2026-10-16T02:31:31 |
@@ -521,7 +522,7 @@ _980 ranked outcomes across 98 graded configs; 954 distinct signatures._
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12384 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
