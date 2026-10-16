@@ -1,0 +1,19 @@
+{
+  "strategy": "naked_poc_retest_long",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02",
+  "seed": 42,
+  "sampled": 50,
+  "agree": 50,
+  "disagree": 0,
+  "skipped": 0,
+  "execution_failures": 0,
+  "config": {
+    "lookback": 252,
+    "n_periods": 6,
+    "n_bins": 40,
+    "max_distance_pct": 0.02,
+    "ema_span": 9
+  },
+  "detail": [],
+  "note": "leg A is raw bin arithmetic, independent of the producer; leg B is compute_period_pocs on the same PIT slice through the env->config chain; a DISAGREE is a finding about either side and is not a cause without a probe (#189)"
+}
