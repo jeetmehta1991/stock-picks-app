@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-63 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+64 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_npoc_s1_p3_12_p2_252_p4_40_p6_0p02_p3_12_p2_252_p4_40_p6_0p02 | 2026-10-16T01:47:16 | engine-hook | 0 | none | 0 | b1820500d | True | yes 2026-10-16T02:31:31 |
 | output_npoc_s1_p3_8_p2_252_p4_40_p6_0p02_p3_8_p2_252_p4_40_p6_0p02 | 2026-10-15T22:26:59 | engine-hook | 0 | none | 0 | a321cc471 | True | yes 2026-10-15T22:31:47 |
 | output_npoc_s1_p3_4_p3_4 | 2026-10-15T18:45:29 | engine-hook | 2 | 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 1: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 6c128e1c4 | True | yes 2026-10-15T18:51:20 |
 | output_npoc_s1_p2_126_p2_126 | 2026-10-15T15:42:17 | manual | 2 | 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 1: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 9b5b57bdf | True | yes 2026-10-15T15:46:39 |
@@ -509,7 +510,7 @@ _950 ranked outcomes across 95 graded configs; 924 distinct signatures._
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 13824 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
