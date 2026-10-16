@@ -53,7 +53,8 @@ FAMILY = (LONG,)
 
 # the launcher's contract: one env knob per swept axis (S6-B3171 actuators).
 # Arm env values serialise as STRINGS ("252", "0.02"); comparison is by VALUE.
-ENV_OF = {"lookback": "NAKED_POC_LOOKBACK",
+ENV_OF = {"ema_span": "STRAT_EMA_SPAN",
+          "lookback": "NAKED_POC_LOOKBACK",
           "n_periods": "NAKED_POC_N_PERIODS",
           "n_bins": "NAKED_POC_N_BINS",
           "max_distance_pct": "NAKED_POC_MAX_DISTANCE_PCT"}
@@ -291,6 +292,9 @@ def main() -> int:
     ap.add_argument("--max-distance-pct", type=float, required=True,
                     help="REQUIRED so a forgotten flag cannot silently mean "
                          "production (S6-B3171a; production 0.02)")
+    ap.add_argument("--ema-span", type=int, required=True,
+                    help="the STRAT_EMA_SPAN the engine ran - REQUIRED like "
+                         "every swept knob (S6-B3175; production 200)")
     ap.add_argument("--min-n", type=int, default=10)
     ap.add_argument("--top-n", type=int, default=10)
     ap.add_argument("--note", default="")
@@ -310,12 +314,14 @@ def main() -> int:
     if not cube.exists():
         print(f"[FAIL] no cube at {cube}")
         return 2
-    config = {"P2_lookback": a.lookback, "P3_n_periods": a.n_periods,
-              "P4_n_bins": a.n_bins, "P6_max_distance_pct": a.max_distance_pct}
-    flags = {"lookback": a.lookback, "n_periods": a.n_periods,
-             "n_bins": a.n_bins, "max_distance_pct": a.max_distance_pct}
+    config = {"P1_ema_span": a.ema_span, "P2_lookback": a.lookback,
+              "P3_n_periods": a.n_periods, "P4_n_bins": a.n_bins,
+              "P6_max_distance_pct": a.max_distance_pct}
+    flags = {"ema_span": a.ema_span, "lookback": a.lookback,
+             "n_periods": a.n_periods, "n_bins": a.n_bins,
+             "max_distance_pct": a.max_distance_pct}
     if a.no_manifest_check:
-        disclosure = ("NOT VERIFIED (--no-manifest-check): the four knobs are "
+        disclosure = ("NOT VERIFIED (--no-manifest-check): the five knobs are "
                       "an UNCHECKED stamp on this artifact")
     else:
         refusal, disclosure = verify_manifest(cube.parent, flags)

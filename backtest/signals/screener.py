@@ -7081,18 +7081,20 @@ def strat_naked_poc_retest_long(s):
     # S6-B3171 (owner T3 band 2026-10-14): the ceiling is env-actuated
     # (NAKED_POC_MAX_DISTANCE_PCT, default 0.02 = the prior literal) so the
     # owner's looser resim levels are runnable; read at call time via _cfg.
+    # S6-B3175 (owner 2026-10-16): the regime-gate EMA span is env-actuated the
+    # same way (STRAT_EMA_SPAN, default 200 = the prior literal key).
     fires = (
         s.get("naked_poc_count", 0) > 0
         and s.get("naked_poc_nearest_distance_pct", 1.0) < _cfg.NAKED_POC_MAX_DISTANCE_PCT
-        and s.get("price_above_ema_200", False)
+        and s.get(f"price_above_ema_{_cfg.STRAT_EMA_SPAN}", False)
     )
     return _strat(fires, "long", "volume_profile",
         [f"naked_poc_nearest_distance_pct<{_cfg.NAKED_POC_MAX_DISTANCE_PCT}",
-         "price_above_ema_200"],
+         f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"],
         [f"Within {_cfg.NAKED_POC_MAX_DISTANCE_PCT:.1%} of naked POC (untested institutional level)",
          f"{s.get('naked_poc_count', 0)} naked POCs identified "
          f"({_cfg.NAKED_POC_N_PERIODS}-period)",
-         "Above 200 EMA (regime gate)"])
+         f"Above {_cfg.STRAT_EMA_SPAN} EMA (regime gate)"])
 
 
 # ---------------------------------------------------------------------------

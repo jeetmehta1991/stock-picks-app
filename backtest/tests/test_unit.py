@@ -55767,7 +55767,10 @@ def test_b3171_naked_poc_specs_entry_validates_and_carries_the_owner_band():
     assert tools["grade"]["script"] == "grade_npoc_config.py"
     assert tools["spot_check"]["script"] == "spot_check_npoc.py"
     assert tools["free_levels"]["script"] == "grade_free_levels_npoc.py"
-    assert set(tools["grade"]["flags"]) == {"P2", "P3", "P4", "P6"}
+    assert set(tools["grade"]["flags"]) == {"P1", "P2", "P3", "P4", "P6"}
+    assert set(tools["spot_check"]["flags"]) == {"P1", "P2", "P3", "P4", "P6"}
+    assert by_id["P1"]["env"] == "STRAT_EMA_SPAN"   # S6-B3175
+    assert by_id["P1"]["resim_band"] == [9, 20, 50, 100, 150]
     # B3139q-r69u: six B-rows registered on the owner's word 2026-10-14
     # ('Approve all recs'); three reps struck on the same word.
     QUANTS = ["q20", "q40", "q60", "q80"]
@@ -55834,7 +55837,8 @@ def test_b3171a_npoc_grade_leg_refusals_bite_and_knobs_match_the_registry():
         "naked_poc_retest_long")
     assert spec is not None
     by_id = {p["id"]: p for p in spec["params"]}
-    want = {"lookback": by_id["P2"]["env"], "n_periods": by_id["P3"]["env"],
+    want = {"ema_span": by_id["P1"]["env"],
+            "lookback": by_id["P2"]["env"], "n_periods": by_id["P3"]["env"],
             "n_bins": by_id["P4"]["env"], "max_distance_pct": by_id["P6"]["env"]}
     assert gnc.ENV_OF == want, (gnc.ENV_OF, want)
 
@@ -55845,9 +55849,10 @@ def test_b3171a_npoc_grade_leg_refusals_bite_and_knobs_match_the_registry():
 
     # ---- verify_manifest: must-QUIET on a match, must-FIRE otherwise ----
     d = _P(tempfile.mkdtemp())
-    good = {"NAKED_POC_LOOKBACK": "252", "NAKED_POC_N_PERIODS": "6",
+    good = {"STRAT_EMA_SPAN": "200",
+            "NAKED_POC_LOOKBACK": "252", "NAKED_POC_N_PERIODS": "6",
             "NAKED_POC_N_BINS": "40", "NAKED_POC_MAX_DISTANCE_PCT": "0.02"}
-    flags = {"lookback": 252, "n_periods": 6, "n_bins": 40,
+    flags = {"ema_span": 200, "lookback": 252, "n_periods": 6, "n_bins": 40,
              "max_distance_pct": 0.02}
 
     def _write(env, extra=None):
@@ -55872,6 +55877,14 @@ def test_b3171a_npoc_grade_leg_refusals_bite_and_knobs_match_the_registry():
     _write(short)
     refusal, _ = gnc.verify_manifest(d, flags)
     assert refusal and "NAKED_POC_N_BINS" in refusal, refusal
+
+    # must-FIRE (S6-B3175): a cube that never recorded the span - every
+    # config landed before the fifth knob - refuses rather than assuming 200
+    nospan = dict(good)
+    del nospan["STRAT_EMA_SPAN"]
+    _write(nospan)
+    refusal, _ = gnc.verify_manifest(d, flags)
+    assert refusal and "STRAT_EMA_SPAN" in refusal, refusal
 
     # must-FIRE: no env block fails CLOSED (L642)
     _write({})
@@ -56187,3 +56200,39 @@ def test_b3179_live_campaign_ticket_past_the_third_counts():
     assert m.live_campaign_tickets(camp, states) == []
     import inspect
     assert "live_campaign_tickets(tickets_all, ticket_states)" in inspect.getsource(m)
+
+
+def test_b3175_npoc_ema_span_reaches_the_gate_and_the_spot_check(monkeypatch):
+    """S6-B3175 (L751, two values that must differ, asserted to differ).
+
+    The naked-POC regime gate reads price_above_ema_<STRAT_EMA_SPAN>: a signal
+    row above its 50-EMA and below its 200-EMA fires at span 50 and not at
+    span 200, and the reported signal names the span the gate read. The spot
+    check's record leg applies the same span. Default 200 keeps production.
+    """
+    import sys
+    from pathlib import Path as _P
+    import backtest.config as _cfg
+    from backtest.signals.screener import strat_naked_poc_retest_long as strat
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import spot_check_npoc as scn
+
+    s = {"naked_poc_count": 3, "naked_poc_nearest_distance_pct": 0.01,
+         "price_above_ema_50": True, "price_above_ema_200": False}
+    monkeypatch.setattr(_cfg, "STRAT_EMA_SPAN", 50)
+    at_50 = strat(s)
+    monkeypatch.setattr(_cfg, "STRAT_EMA_SPAN", 200)
+    at_200 = strat(s)
+    assert at_50["fires"] is True and at_200["fires"] is False, (at_50, at_200)
+    assert "price_above_ema_50" in at_50["signals_used"], at_50["signals_used"]
+    assert "price_above_ema_200" in at_200["signals_used"], at_200["signals_used"]
+    assert strat(dict(s, price_above_ema_200=True))["fires"] is True
+
+    row = {"signals_at_entry": repr(s)}
+    assert scn._leg_c(row, 0.02, 50) is True
+    assert scn._leg_c(row, 0.02, 200) is False
+    assert scn._leg_c(row, 0.02, 100) is None      # flag not recorded: skipped
+    assert scn._leg_c(row, 0.005, 50) is False     # distance still binds
+    assert scn._leg_c(row, 0.02) is True           # no span: the EMA is not part

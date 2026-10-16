@@ -22,16 +22,21 @@ THREE LEGS per sampled (ticker, entry_date):
          chunk's POC is the midpoint of its highest-volume price bin with
          each bar's volume spread uniformly across the bins its low..high
          overlaps, and the condition is POC count > 0 AND the nearest POC
-         within `max_distance_pct` of the entry close. The held ema-200 axis
-         is NOT part of the family condition (it is P1, held at production),
-         exactly as the candle check excluded its held rsi axis.
+         within `max_distance_pct` of the entry close, AND (S6-B3175, P1 swept)
+         when a span is given - the CLI requires --ema-span - the entry close
+         above that EMA computed from the raw closes as compute_ema_sma does
+         (close.ewm(span, adjust=False)); measured before shipping on config
+         6's cube: 527 of 527 recorded flags reproduced at each of spans
+         9/20/50/100/150/200.
   leg B  PRODUCTION     - volume_profile.compute_period_pocs on the same PIT
          slice, with the knobs exported to the environment and
          backtest.config reloaded, then passed exactly as the screener
          passes them (screener.py's naked-POC block) - i.e. the engine's own
-         env -> config -> producer chain.
+         env -> config -> producer chain; the span's flag comes from
+         technical.compute_ema_sma on the same slice (S6-B3175).
   leg C  RECORD         - the cube's own signals_at_entry naked_poc_count /
-         naked_poc_nearest_distance_pct, under the same condition.
+         naked_poc_nearest_distance_pct and price_above_ema_<span>, under the
+         same condition (a span the record never stored is SKIPPED).
 
 PIT: the slice ends AT the entry bar (df.iloc[:i+1]) - the engine's signal
 convention, MEASURED at B2865 on the same signal path (the prior-bar
@@ -63,7 +68,8 @@ LONG = "naked_poc_retest_long"
 
 
 def _leg_a(df: pd.DataFrame, i: int, lookback: int, n_periods: int,
-           n_bins: int, max_dist: float) -> bool | None:
+           n_bins: int, max_dist: float,
+           ema_span: int | None = None) -> bool | None:
     """The naked-POC condition re-derived from raw bars. None when the slice
     cannot decide (too short, zero close) - counted as SKIPPED, never guessed."""
     sl = df.iloc[:i + 1]
@@ -102,7 +108,10 @@ def _leg_a(df: pd.DataFrame, i: int, lookback: int, n_periods: int,
     if close <= 0:
         return None
     dist = min(abs(close - p) / close for p in pocs)
-    return dist < max_dist
+    if not dist < max_dist or ema_span is None:
+        return dist < max_dist
+    ema = float(sl["close"].ewm(span=ema_span, adjust=False).mean().iloc[-1])
+    return close > ema
 
 
 def _leg_b(df: pd.DataFrame, i: int, max_dist: float) -> bool | None:
@@ -123,10 +132,19 @@ def _leg_b(df: pd.DataFrame, i: int, max_dist: float) -> bool | None:
     if close <= 0:
         return None
     dist = min(abs(close - p) / close for p in pocs)
-    return dist < max_dist
+    if not dist < max_dist:
+        return False
+    from backtest.signals.technical import compute_ema_sma
+    key = f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"
+    try:
+        flag = compute_ema_sma(sl).get(key)
+    except Exception:
+        return None
+    return None if flag is None else bool(flag)
 
 
-def _leg_c(row, max_dist: float) -> bool | None:
+def _leg_c(row, max_dist: float,
+           ema_span: int | None = None) -> bool | None:
     """The RECORD: what the cube persisted at entry."""
     raw = row.get("signals_at_entry")
     if not isinstance(raw, str) or not raw.strip():
@@ -148,7 +166,10 @@ def _leg_c(row, max_dist: float) -> bool | None:
     dist = d.get("naked_poc_nearest_distance_pct")
     if dist is None:
         return None
-    return float(dist) < max_dist
+    if not float(dist) < max_dist or ema_span is None:
+        return float(dist) < max_dist
+    above = d.get(f"price_above_ema_{ema_span}")
+    return None if above is None else bool(above)
 
 
 def main() -> int:
@@ -164,6 +185,7 @@ def main() -> int:
     ap.add_argument("--n-periods", type=int, required=True)
     ap.add_argument("--n-bins", type=int, required=True)
     ap.add_argument("--max-distance-pct", type=float, required=True)
+    ap.add_argument("--ema-span", type=int, required=True)
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
@@ -189,6 +211,7 @@ def main() -> int:
     os.environ["NAKED_POC_N_PERIODS"] = str(a.n_periods)
     os.environ["NAKED_POC_N_BINS"] = str(a.n_bins)
     os.environ["NAKED_POC_MAX_DISTANCE_PCT"] = str(a.max_distance_pct)
+    os.environ["STRAT_EMA_SPAN"] = str(a.ema_span)
     import importlib
     import backtest.config as _cfg
     importlib.reload(_cfg)
@@ -232,9 +255,9 @@ def main() -> int:
                 continue
             i = int(hit)
             a_leg = _leg_a(ohlc, i, a.lookback, a.n_periods, a.n_bins,
-                           a.max_distance_pct)
+                           a.max_distance_pct, a.ema_span)
             b_leg = _leg_b(ohlc, i, a.max_distance_pct)
-            c_leg = _leg_c(r, a.max_distance_pct)
+            c_leg = _leg_c(r, a.max_distance_pct, a.ema_span)
             if a_leg is None or b_leg is None:
                 skipped += 1
                 continue
@@ -260,7 +283,8 @@ def main() -> int:
         "skipped": skipped,
         "execution_failures": failures,
         "config": {"lookback": a.lookback, "n_periods": a.n_periods,
-                   "n_bins": a.n_bins, "max_distance_pct": a.max_distance_pct},
+                   "n_bins": a.n_bins, "max_distance_pct": a.max_distance_pct,
+                   "ema_span": a.ema_span},
         "detail": details[:25],
         "note": ("leg A is raw bin arithmetic, independent of the producer; "
                  "leg B is compute_period_pocs on the same PIT slice through "

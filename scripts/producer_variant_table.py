@@ -294,7 +294,8 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
                            "backtest/signals/screener.py",
-                           "scripts/spot_check_bollinger.py"],
+                           "scripts/spot_check_bollinger.py",
+                           "scripts/spot_check_npoc.py"],
              "production": 200, "type": "int", "band": [9, 20, 21, 50, 100, 150, 200],
              "derivation": "ALL spans the producer emits (READ technical.py:750 pairs "
                            "(9,21),(20,50),(50,200)). B1507 widened from [50,200] - the "
@@ -505,7 +506,8 @@ fires =  ( P7  OR  P8 )  AND  P9
                            "backtest/config.py",
                            "backtest/engine/exit_strategies.py",
                            "backtest/signals/screener.py",
-                           "scripts/spot_check_bollinger.py"],
+                           "scripts/spot_check_bollinger.py",
+                           "scripts/spot_check_npoc.py"],
              "band": [9, 20, 50, 100, 150, 200],
              "free_band": [], "resim_band": [9, 20, 50, 100, 150, 200],
              "subset_safe": False, "status": "UNTESTED",
@@ -1228,7 +1230,8 @@ SPECS["smc_inverse_fvg"] = {
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
                        "backtest/signals/screener.py",
-                       "scripts/spot_check_bollinger.py"],
+                       "scripts/spot_check_bollinger.py",
+                       "scripts/spot_check_npoc.py"],
          "production": 200, "type": "int", "band": [9, 20, 21, 50, 200],
          "derivation": ("the ONLY engine knob reaching this gate - the fvg "
                         "internals take no parameters (smc_ict.py:296-360); "
@@ -2064,11 +2067,13 @@ sector_strongest_rs (le), near_r1_wide (eq_false), pair_zscore_signed (ge).
 
 =============================== PRODUCER LAYER ===============================
 
-P1  price_above_ema_200  (span 200, compute_ema_sma; the gate reads the
-       LITERAL key - the S6-B3117b STRAT_EMA_SPAN wiring-gap note applies
-       exactly as on bollinger_lower, so the identity is held at production
-       here: canon-span flags persisted on the fires are offline
-       ADD-A-CONDITION legs; the gate-span SWAP is RESIM, owner-pending)
+P1  price_above_ema_<span>  (compute_ema_sma; the gate reads
+       price_above_ema_{STRAT_EMA_SPAN}, env-actuated at S6-B3175 with default
+       200 = production) [OWNER 2026-10-16, verbatim: "P1 - need configs to
+       include ema bands" and "run spans 9, 20, 50, 100, 150" -> band
+       9/20/50/100/150/200; every span is in the default EMA_PAIRS emitted
+       set, so no EMA_PAIRS companion is needed; RESIM by construction - the
+       gate span changes which bars fire]
 P2  period_lookback  (bars the POC window spans;
        volume_profile.py compute_period_pocs)  [prior bracket 126/252; the
        owner's 2026-10-14 words were re-read onto P3 by the owner's word
@@ -2103,10 +2108,10 @@ P6  naked_poc_nearest_distance_pct < 0.02   [EXISTING-THRESHOLD; tighter
        production, criterion stated) APPROVED by the owner's word 2026-10-14
        "Approve all recs", and HELD ADAPTER-PENDING as P2]
 
-fires = P5 AND P6 AND price_above_ema_200
+fires = P5 AND P6 AND price_above_ema_<P1 span>
         (backtest/signals/screener.py strat_naked_poc_retest_long; the P6
-        ceiling and the P2-P4 knobs are env-actuated at S6-B3171 with
-        defaults equal to production)
+        ceiling and the P2-P4 knobs are env-actuated at S6-B3171 and the P1
+        span at S6-B3175, all with defaults equal to production)
 
 =============================== BREADTH LAYER ===============================
 
@@ -2134,18 +2139,21 @@ word, never a gate until a Step-2 read says so.
                  "window": "2022-05-05..2026-05-05"},
     "gate": ("naked_poc_count > 0 AND naked_poc_nearest_distance_pct < "
              "NAKED_POC_MAX_DISTANCE_PCT (default 0.02) AND "
-             "price_above_ema_200 (screener strat_naked_poc_retest_long)"),
+             "price_above_ema_{STRAT_EMA_SPAN} (default 200; screener "
+             "strat_naked_poc_retest_long)"),
     "tools": {
-        "keys": {"P2": "lookback", "P3": "n_periods",
+        "keys": {"P1": "ema_span", "P2": "lookback", "P3": "n_periods",
                  "P4": "n_bins", "P6": "max_distance_pct"},
-        # S6-B3171a: the ENGINE axes - the four env-actuated knobs the slate
+        # S6-B3171a: the ENGINE axes - the env-actuated knobs the slate (P1
+        # joined at S6-B3175)
         # sweeps. P5 (count floor, env=None) is OFFLINE and lives in the
         # free_levels leg, exactly the split B2897 ruled for the candle P6.
         "grid_keys": ["combo"],
         "single_combination": False,
         "spot_check": {"script": "spot_check_npoc.py", "cube": "",
                        "strategy_flag": "--strategy",
-                       "flags": {"P2": "--lookback", "P3": "--n-periods",
+                       "flags": {"P1": "--ema-span",
+                                 "P2": "--lookback", "P3": "--n-periods",
                                  "P4": "--n-bins",
                                  "P6": "--max-distance-pct"},
                        "extra": ["--n", "50"],
@@ -2153,7 +2161,8 @@ word, never a gate until a Step-2 read says so.
                        "pythonpath": None,
                        "note": "AUTO (S6-B3171a, B3139q-r69z)"},
         "grade": {"script": "grade_npoc_config.py", "cube": "",
-                  "flags": {"P2": "--lookback", "P3": "--n-periods",
+                  "flags": {"P1": "--ema-span",
+                            "P2": "--lookback", "P3": "--n-periods",
                             "P4": "--n-bins", "P6": "--max-distance-pct"},
                   "extra": [],
                   "step2_flag": "--step2",
@@ -2169,19 +2178,26 @@ word, never a gate until a Step-2 read says so.
     },
     "params": [
         {"id": "P1", "producer": "technical.py compute_ema_sma -> screener emit",
-         "param": "ema span (the 200 in price_above_ema_200)",
-         "production": 200, "band": [200],
-         "free_band": None, "resim_band": None, "env": None,
-         "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
-         "subset_safe": False,
-         "status": "HELD AT PRODUCTION - the gate reads the literal key "
-                   "(S6-B3117b wiring gap, owner-pending); canon-span flags "
-                   "are offline ADD-A-CONDITION legs via the B-row census",
-         "type": "identity", "engine_implemented": True,
-         "evidence": "screener gate; S6-B3117b (the span-200 signal is "
-                     "engine-produced; only the SWAP is unbuilt, and no "
-                     "other span is in the band - B3139q-r70b)",
-         "derivation": "held at production in PHASE0 - no resim promise (S6-B2569a)"},
+         "param": "ema span (the N in price_above_ema_N; production 200)",
+         "production": 200, "band": [9, 20, 50, 100, 150, 200],
+         "free_band": [200], "resim_band": [9, 20, 50, 100, 150],
+         "env": "STRAT_EMA_SPAN",
+         "consumers": ["backtest/config.py",
+                       "backtest/engine/exit_strategies.py",
+                       "backtest/signals/screener.py",
+                       "scripts/spot_check_bollinger.py",
+                       "scripts/spot_check_npoc.py"],
+         "sweep_levels": None, "subset_safe": False,
+         "status": "ACTUATED (S6-B3175); OWNER 2026-10-16 'P1 - need configs "
+                   "to include ema bands' + 'run spans 9, 20, 50, 100, 150' - "
+                   "resim levels LIVE with the fifth adapter knob",
+         "type": "numeric", "engine_implemented": True,
+         "evidence": "screener strat_naked_poc_retest_long reads "
+                     "price_above_ema_{_cfg.STRAT_EMA_SPAN}; config.py "
+                     "STRAT_EMA_SPAN; pinned by test_b3175",
+         "derivation": "owner-named spans; all five sit in the default "
+                       "EMA_PAIRS emitted set {9,20,21,50,100,150,200}, so "
+                       "make_spec adds no EMA_PAIRS companion"},
         {"id": "P2", "producer": "volume_profile.py compute_period_pocs",
          "param": "period_lookback (bars)",
          "production": 252, "band": [126, 252],
@@ -2400,7 +2416,8 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
                        "backtest/signals/screener.py",
-                       "scripts/spot_check_bollinger.py"],
+                       "scripts/spot_check_bollinger.py",
+                       "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": False,
          "status": "T3/Q2-APPROVED 2026-09-27; WIRED B3119. Resim spans {9,20,21,50,100,150,250} APPROVED but DECLARED ONLY IN THE CHARTER until the family tools adapter lands (S6-B2883 fail-closed: no resim promise without it) - S6-B3119 leg 3 names the adapter as its blocker",
          "type": "int", "engine_implemented": True,
@@ -2420,7 +2437,8 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "consumers": ["backtest/config.py",
                        "backtest/engine/exit_strategies.py",
                        "backtest/signals/screener.py",
-                       "scripts/spot_check_bollinger.py"],
+                       "scripts/spot_check_bollinger.py",
+                       "scripts/spot_check_npoc.py"],
          "sweep_levels": None, "subset_safe": False,
          "status": "T3/Q2-APPROVED 2026-09-27; WIRED B3119 (as P3 - adapter-gated resim)",
          "type": "int", "engine_implemented": True,
