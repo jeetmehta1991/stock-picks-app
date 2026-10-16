@@ -19715,10 +19715,16 @@ def test_b1869_authored_then_violated_ledger():
     assert "### L570" in lea, "L570 was removed from LEARNINGS.md"
 
     i = lea.index("### L570")
-    entry = lea[i:i + 8000]   # B2372: widened - instance 3 appends past 4000
+    # B3139q-r70t: instance 6 sits past 8000 chars - slice to the next
+    # heading instead of a byte count (structure, not a range - L715).
+    j = lea.find("\n### L", i + 5)
+    entry = lea[i:j if j > 0 else len(lea)]   # B2372: was 4000, then 8000
     # S6-B3047: instance 5 - #318/L856 authored, then broken ONE TURN
     # later inside the very decision it was written about.
-    for instance in ("S6-B1762f", "L567", "B2372", "B2395", "B3047"):
+    # B3139q-r70t: instance 6 - L921 authored, then broken on 2 of the next
+    # 3 closes (posted text rewritten after its draft was tested).
+    for instance in ("S6-B1762f", "L567", "B2372", "B2395", "B3047",
+                     "B3139q-r70t"):
         assert instance in entry, (
             f"L570 no longer names {instance}. The entry's whole value is the "
             "COUNT of times a rule was cited and not applied - an instance "
@@ -56157,3 +56163,27 @@ def test_b3174_fenced_markdown_table_is_refused():
     names = {n.id for n in _ast.walk(main_fn) if isinstance(n, _ast.Name)}
     assert "scan_fenced_markdown_table" in names, \
         "the gate is defined but not wired into main()"
+
+
+def test_b3179_live_campaign_ticket_past_the_third_counts():
+    """S6-B3179: campaign live-ness is judged over EVERY naming ticket.
+
+    campaign_tickets once returned lists cut to their first three ids and the
+    status builder judged live-ness on that cut, so a live ticket sorting
+    fourth or later read STALLED-CAMPAIGN - 3 of 225 strategies flipped,
+    naked_poc_retest_long among them. Both arms (#226): the fourth ticket
+    live reads live; every ticket terminal reads stalled.
+    """
+    m = _b2811_mod()
+    q = "\n".join(
+        f"| **S6-B900{i}** | **OPEN** | P1 | Step 1 campaign for "
+        f"toy_strategy_long, part {i} | _reason:_ OPEN |" for i in range(1, 5))
+    camp, _ = m.campaign_tickets(q, "toy_strategy_long")
+    assert camp == ["S6-B9001", "S6-B9002", "S6-B9003", "S6-B9004"], camp
+    states = {"S6-B9001": "EXECUTED", "S6-B9002": "EXECUTED",
+              "S6-B9003": "DROPPED", "S6-B9004": "OPEN"}
+    assert m.live_campaign_tickets(camp, states) == ["S6-B9004"]
+    states["S6-B9004"] = "EXECUTED"
+    assert m.live_campaign_tickets(camp, states) == []
+    import inspect
+    assert "live_campaign_tickets(tickets_all, ticket_states)" in inspect.getsource(m)

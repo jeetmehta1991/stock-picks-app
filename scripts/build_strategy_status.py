@@ -206,7 +206,18 @@ def campaign_tickets(qtext: str, name: str) -> tuple:
         low = line.lower()
         if any(v in low for v in CAMPAIGN_VOCAB):
             camp.add(m.group(1))
-    return sorted(camp)[:3], sorted(ment)[:3]
+    return sorted(camp), sorted(ment)
+
+
+LIVE_TICKET_STATES = ("OPEN", "BLOCKED", "DEFERRED", "RUNNING")
+
+
+def live_campaign_tickets(tickets, ticket_states) -> list:
+    """The naming campaign tickets whose CURRENT ledger state is
+    non-terminal, judged over EVERY naming ticket. S6-B3179: live-ness was
+    once judged on a list already cut to three ids for display, so a live
+    ticket sorting fourth or later read STALLED-CAMPAIGN (3 of 225 flipped)."""
+    return [t for t in tickets if ticket_states.get(t) in LIVE_TICKET_STATES]
 
 
 def classify_stream(tightenable: bool, projected: float) -> str:
@@ -410,14 +421,14 @@ def main() -> int:
                     ok += 1
             survives = round(ok / fires, 4)
 
-        tickets, mentions = campaign_tickets(qtext, name)
+        tickets_all, mentions_all = campaign_tickets(qtext, name)
+        # the record shows the first three ids; live-ness reads them all
+        tickets, mentions = tickets_all[:3], mentions_all[:3]
         # B2829 (owner-directed "statuses latest, no misses" 2026-09-16): a
         # campaign is LIVE only while a naming ticket's CURRENT ledger state
         # is non-terminal. Before this, a ticket EXECUTED long ago flagged
         # IN-CAMPAIGN forever - the ticket-state half of L804's class.
-        live_tickets = [t for t in tickets
-                        if ticket_states.get(t) in ("OPEN", "BLOCKED",
-                                                    "DEFERRED", "RUNNING")]
+        live_tickets = live_campaign_tickets(tickets_all, ticket_states)
         # B2825 status precedence - one status per strategy, MUTUALLY
         # EXCLUSIVE by construction; a terminal disposition beats a campaign
         # mention, and the stream lane below is voided for terminal rows.
