@@ -327,6 +327,18 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {},
     ),
+    # L920 (B3139q-r70l): the verbatim Table A response, owner-caught
+    # 2026-10-16 "Table A has not been displayed/printed correctly. hard to read".
+    "scan_fenced_markdown_table": (
+        "Here is Table A for naked_poc_retest_long, printed by its renderer.\n\n"
+        + chr(96) * 3 + "text\n## Section 2 - Table A: parameter inventory\n\n"
+        "| ID | producer | parameter | production | band tested | subset-safe | status | sweep (OAT) | evidence | why this band |\n"
+        "|---|---|---|---|---|---|---|---|---|---|\n"
+        "| P2 | volume_profile.py compute_period_pocs | period_lookback (bars) | 252 | 126, 252 | FREE: 252<br>RESIM: 126 | **ACTUATED (S6-B3171)** | - | config.py NAKED_POC_LOOKBACK | as P2 |\n"
+        + chr(96) * 3,
+        True,
+        {},
+    ),
     "scan_deferral_trigger_fired": (
         "MEASURED 2026-09-22: S6-B2620b's trigger reads 'exceeds 5' and the count is 8 - it crossed on 2026-09-21 and stood over the line for three commits, while S6-B2933 had measured 5 on 09-14 and written into the row that it sat ONE landing away. HOW IT SURFACED IS THE LESSON: not a sweep, but the turn gate refusing a close for naming GIT_QUEUE_EXEMPT without inspecting it.",
         True,
@@ -696,6 +708,23 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
                         "findings": ["empty_signals_share WARN: 23 of 373"],
                         "committed": False, "pushed": False,
                         "reported_to_owner": False}]}),
+    ],
+    "scan_fenced_markdown_table": [
+        # must-QUIET: the same table as markdown, outside any fence
+        ("Here is Table A.\n\n| ID | parameter | production |\n|---|---|---|\n| P2 | lookback | 252 |",
+         False,
+         {}),
+        # must-QUIET: a fenced grader printout carries no table separator
+        (chr(96) * 3 + "text\n[OK] naked_poc_retest_long - reproduction 559 covered / 0 failed\n"
+         "     P6 dist<0.0028 keeps 111 best breakeven_plus_trail ci_lo 0.142 n 111\n" + chr(96) * 3,
+         False,
+         {}),
+        # must-FIRE: the 2026-10-15 Table D, fenced the same way
+        (chr(96) * 3 + "text\n# TABLE D (OFFLINE FORM, unified) - naked_poc_retest_long Step-1\n\n"
+         "| rank | exit | IS sharpe | IS ci_lo |\n|---|---|---|---|\n| 1 | breakeven_plus_trail | 0.523 | 0.262 |\n"
+         + chr(96) * 3,
+         True,
+         {}),
     ],
     "scan_retyped_locked_table": [
         ("| # | config | P1 leg | P2 n_bars | exit | is_ci_lo | n | tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict | npt_excl |",

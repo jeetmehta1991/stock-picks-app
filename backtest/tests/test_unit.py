@@ -56116,3 +56116,39 @@ def test_b3173_done_step2_owes_its_leg2_artifact():
     # two sites: the BLOCK verdict and the per-cube COMPLETE mark, which
     # must agree (S6-B2440 / L558)
     assert len(calls) == 2, f"main() consults leg2_gap at {len(calls)} sites, not 2"
+
+
+def test_b3174_fenced_markdown_table_is_refused():
+    """L920 (B3139q-r70l, owner-caught 2026-10-16: "Table A has not been
+    displayed/printed correctly. hard to read"): a markdown table inside a
+    code fence renders as raw pipes. scan_fenced_markdown_table fires on a
+    fenced block carrying a table separator row, stays quiet on the same
+    table as markdown and on a fenced printout with no table, and is wired
+    into main()'s scan tuple (L654)."""
+    import ast as _ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as vtc
+
+    fence = chr(96) * 3
+    table = "| ID | parameter | production |\n|---|---|---|\n| P2 | lookback | 252 |"
+    # must-FIRE: the table inside a fence
+    hits = vtc.scan_fenced_markdown_table(
+        [], text=fence + "text\n" + table + "\n" + fence)
+    assert hits and "code fence" in hits[0].lower(), hits
+    # must-QUIET: the same table as markdown
+    assert vtc.scan_fenced_markdown_table([], text="Table A:\n\n" + table) == []
+    # must-QUIET: a fenced printout with no separator row
+    assert vtc.scan_fenced_markdown_table(
+        [], text=fence + "text\n[OK] reproduction 559 covered / 0 failed\n"
+        + fence) == []
+
+    tree = _ast.parse(_P(vtc.__file__).read_text(encoding="utf-8"))
+    main_fn = next(n for n in tree.body
+                   if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    names = {n.id for n in _ast.walk(main_fn) if isinstance(n, _ast.Name)}
+    assert "scan_fenced_markdown_table" in names, \
+        "the gate is defined but not wired into main()"

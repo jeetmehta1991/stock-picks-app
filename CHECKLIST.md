@@ -5552,6 +5552,8 @@ artifacts), pinned by test_b2199_table_c_is_printed_with_every_locked_column.
 
 **AND A SLICE OF THE PRINTED RENDER IS A SECOND RENDERER (B2596 / L762).** Printing the locked table satisfies this item; post-processing that print does not. MEASURED 2026-09-03: an awk taking four columns from every matching row of `scripts/show_table_c.py` matched BOTH of its tables and produced twelve rows with a free-levels cell in the median column. Quote from the printed table; if you must slice it, select the target table's section first (L705's rule, which reads as a rule about assertions and is a rule about the expression).
 
+**INSTANCE (B3139q-r70l / L920) - A TABLE PRINTED FROM ITS RENDERER MUST ALSO ARRIVE AS A TABLE.** Table A and Table D were pasted verbatim from their renderers inside code fences, so the owner read raw pipes - owner-caught 2026-10-16, 'hard to read'; a transcript sweep found 5 such responses from 2026-09-26 on. Mechanism: scan_fenced_markdown_table in scripts/verify_turn_compliance.py, pinned by test_b3174_fenced_markdown_table_is_refused.
+
 
 ### #188 - A TEST'S LITERAL EXPECTED-SET CITES ITS DERIVATION (S6-B2306, council-chosen remedy 2026-08-27)
 

@@ -4387,6 +4387,44 @@ def scan_retyped_locked_table(entries, *, text=None) -> list[str]:
     return out
 
 
+def scan_fenced_markdown_table(entries, *, text=None) -> list[str]:
+    """L920 (B3139q-r70l, owner-caught 2026-10-16): a markdown table goes out
+    as MARKDOWN, never inside a code fence.
+
+    Owner, verbatim: "Table A has not been displayed/printed correctly. hard
+    to read". I had printed Table A from its renderer and pasted it verbatim
+    - #285 satisfied - inside a fence, so the reader saw raw pipes, bold
+    markers and <br> tags instead of a table. MEASURED by a sweep of the
+    session transcript: 5 of 7,909 assistant text blocks carried a fenced
+    table, 4 of them Table D and 1 Table A, the first on 2026-09-26. The
+    fence was chosen to keep the response gates off the renderer's prose
+    (B1738, mention-not-use): the gates' convenience bought at the reader's
+    cost - L586's chilling effect, arriving at the delivery layer.
+
+    The SHAPE is detectable: a fenced block whose body holds a markdown table
+    separator row. QUIET on an unfenced table and on a fenced printout with
+    no separator row (a grader's [OK] lines, a log excerpt). FIRES on any
+    fenced block carrying one.
+    """
+    import re as _re
+    t = _response_text(entries, text, keep_code=True)
+    if not t:
+        return []
+    sep = _re.compile(r"^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$",
+                      _re.M)
+    for body in _re.findall(r"```[^\n]*\n(.*?)```", t, flags=_re.S):
+        if sep.search(body):
+            return ["MARKDOWN TABLE INSIDE A CODE FENCE (L920 / #285): a "
+                    "fenced block in this response carries a table separator "
+                    "row, so the reader sees raw pipes instead of a table - "
+                    "owner-caught on Table A, 2026-10-16: 'hard to read'. "
+                    "Paste the renderer's table as markdown, outside any "
+                    "fence; a fence is for logs and printouts. If a gate "
+                    "misfires on the table's prose, fix the gate - never hide "
+                    "the table from it (L586)."]
+    return []
+
+
 def scan_locked_format_edit_without_source_open(entries, *, text=None,
                                                 written=None,
                                                 opened=None) -> list[str]:
@@ -5828,6 +5866,9 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B3138a (B3139): #259's detectable slice - a backslash
                 # pair in a heredoc body fed to an interpreter.
                 scan_heredoc_escapes,
+                # L920 (B3139q-r70l): a markdown table inside a code
+                # fence renders as raw pipes - owner-caught on Table A.
+                scan_fenced_markdown_table,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):
