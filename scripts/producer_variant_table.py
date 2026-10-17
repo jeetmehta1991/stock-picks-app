@@ -5331,8 +5331,13 @@ def engine_split(spec: dict) -> dict:
       engine_configs  the full engine grid - per engine-bearing axis, its
                       resim levels PLUS production (production is a run too,
                       and it carries the axis's offline levels);
-      offline_cells   full_factorial - engine_configs, graded from an engine
-                      config's cube and never run themselves.
+      offline_cells   full_factorial - engine_configs - unreachable_cells,
+                      graded from an engine config's cube and never run
+                      themselves;
+      unreachable_cells  level-combinations holding a level of an axis the
+                      engine cannot reach - neither run nor graded. S6-B3189:
+                      offline_cells was full - engine and so counted these as
+                      free gradings (0 of 11 SPECS affected when fixed).
     leverage() is a different quantity (resim levels only, production
     EXCLUDED) and is printed beside these, never in place of them. With no
     per-level field anywhere, engine_configs reproduces the old product of
@@ -5346,7 +5351,7 @@ def engine_split(spec: dict) -> dict:
     # backing several rows is ONE physical axis - MEASURED, bollinger_lower's
     # P3 and P4 both read STRAT_EMA_SPAN, and counting each row squared the
     # span axis (8 x 8 = 64 engine configs for 8 settable spans).
-    seen_env, shared = {}, set()
+    seen_env, shared, unreach_lv = {}, set(), {}
     for p in params:
         _env = p.get("env")
         if _env and _env in seen_env:
@@ -5375,6 +5380,7 @@ def engine_split(spec: dict) -> dict:
             eng_factors.append((p["id"], len(eng)))
         elif resim:
             unreachable.append(f"{p['id']} {p['param']}")
+            unreach_lv[p["id"]] = len(resim)
         if eng and off:
             cls = "MIXED - offline AND engine levels"
         elif eng:
@@ -5398,8 +5404,12 @@ def engine_split(spec: dict) -> dict:
     full = _m.prod(len(p.get("band") or []) for p in axes) if axes else 0
     engine = _m.prod(n for _, n in eng_factors) if eng_factors else 1
     assert engine <= max(full, 1), (engine, full)
+    gradable = (_m.prod(len(p.get("band") or []) - unreach_lv.get(p["id"], 0)
+                        for p in axes) if axes else 0)
     return {"rows": rows, "full_factorial": full, "engine_configs": engine,
-            "offline_cells": full - engine, "shared_rows": sorted(shared),
+            "offline_cells": gradable - engine,
+            "unreachable_cells": full - gradable,
+            "shared_rows": sorted(shared),
             "full_expr": " x ".join(str(len(p.get("band") or [])) for p in axes) or "0",
             "full_expr_ids": " x ".join(f"{len(p.get('band') or [])} ({p['id']})"
                                       for p in axes) or "0",
@@ -5556,7 +5566,9 @@ def main() -> int:
         print(f"ENGINE CONFIGS   {split['engine_expr']} = {split['engine_configs']}"
               "  (the full engine grid: per engine-bearing axis, its resim "
               "levels plus production)")
-        print(f"OFFLINE CELLS    {split['full_factorial']} - {split['engine_configs']} = "
+        _u = split["unreachable_cells"]
+        print(f"OFFLINE CELLS    {split['full_factorial']} - {split['engine_configs']}"
+              + (f" - {_u}" if _u else "") + " = "
               f"{split['offline_cells']}  (graded from an engine config's cube, "
               "never run)")
         print(f"LEVERAGE RUNS    {lev['engine_runs']}  (leverage(), basis "
@@ -5565,7 +5577,8 @@ def main() -> int:
         if split["unreachable"]:
             print(f"UNREACHABLE      {', '.join(split['unreachable'])} - resim "
                   "levels DEFINED with no engine plumbing, not counted "
-                  "(S6-B2752f)")
+                  f"(S6-B2752f); {_u} level-combinations neither run nor "
+                  "graded (S6-B3189)")
         print(f"BASIS            {split['basis']} (S6-B3182: free_band / "
               "resim_band decide where any param carries them)")
         print("```")

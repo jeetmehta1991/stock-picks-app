@@ -1,6 +1,6 @@
 # Table A - shooting_star_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:35:17 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** candle | **status:** STALLED-CAMPAIGN | **R5 fires:** 250 | **surviving fires (T1):** 250 (unchanged since R5 - filter is identity)
 
@@ -669,32 +669,33 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 ## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
 
-| axis | parameter | n levels | class | own engine run? |
-|---|---|---|---|---|
-| P1.1 | mirror of touch_lower | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.1.1 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.1.2 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.1.3 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P3.1.1 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P3.1.2 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P3.1.3 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P4.1.1 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P4.1.2 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P4.1.3 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P5.1 | proximity tolerance to R1 (abs dist/leve | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P6.1 | proximity tolerance to R2 (abs dist/leve | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P7.1.1 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P7.1.2 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P7.1.3 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P8 | rsi_14 > 65 | 5 | subset-safe | no - derives offline |
-| P8.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P9 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| axis | parameter | n levels | class | own engine run? | engine | offline | pending |
+|---|---|---|---|---|---|---|---|
+| P1.1 | mirror of touch_lower | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P2.1.1 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P2.1.2 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P2.1.3 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P3.1.1 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P3.1.2 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P3.1.3 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P4.1.1 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P4.1.2 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P4.1.3 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P5.1 | proximity tolerance to R1 (abs dist/leve | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 3 |
+| P6.1 | proximity tolerance to R2 (abs dist/leve | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 3 |
+| P7.1.1 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P7.1.2 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P7.1.3 | implicit anatomy knobs (min body/wick/st | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P8 | rsi_14 > 65 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
+| P8.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P9 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
 FULL FACTORIAL     3 x 3 x 3 x 3 x 3 x 3 x 3 x 3 x 3 x 3 x 4 x 4 x 3 x 3 x 3 x 5 x 3 x 1 = 382637520
-offline gradings   5 level-combinations x 24 exits = 120
-ENGINE RUNS        1 (actuated fire-adding axes only)
-PENDING ACTUATION  76527504 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+offline gradings   4 level-combinations x 24 exits = 96 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  382637515 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 4 + 382637515 = 382637520 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

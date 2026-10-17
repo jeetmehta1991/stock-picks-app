@@ -40054,6 +40054,12 @@ def test_b2862_table_a_factorial_counts_every_band_axis():
     assert tb.band_axes({"param": "x", "band": "anything", "axes": [7]}) == [7]
 
     # --- the render layer: every band row appears in its own footer --------
+    # S6-B3189: each file's strategy and its CURRENT stream - a file in a lane
+    # its strategy has left is a historical deliverable (see below)
+    import json as _json
+    _streams = {r["strategy"]: r["stream"] for r in _json.loads(
+        (root / "output_audit" / "strategy_optimisation_status.json")
+        .read_text(encoding="utf-8"))["rows"]}
     files = sorted((root / "strategy_optimisation").rglob("*.md"))
     assert len(files) >= 30, len(files)
     checked = 0
@@ -40081,20 +40087,32 @@ def test_b2862_table_a_factorial_counts_every_band_axis():
         assert not re.search(r"^check\s+\d+ x \d+ =", txt, re.M), (
             f"{f.name}: the 'check' line cannot fail by construction - it is "
             "decoration reading as verification (S6-B2862)")
-        # THREE-BUCKET INVARIANT, read back off the RENDERED footer: subset-safe
-        # x actuated-fire-adding x unactuated-fire-adding must tile the axis
-        # set. Unlike the old 'check' line this CAN fail, because the buckets
-        # are selected by three different predicates rather than by negation.
-        mf = re.search(r"offline gradings\s+(\d+) level-combinations", txt)
-        mr = re.search(r"ENGINE RUNS\s+([\d,]+)", txt)
-        mp = re.search(r"PENDING ACTUATION\s+([\d,]+)", txt)
-        assert mf and mr and mp, f"{f.name}: footer missing a bucket line"
-        _free = int(mf.group(1))
-        _runs = int(mr.group(1).replace(",", ""))
-        _pend = int(mp.group(1).replace(",", ""))
-        assert _free * _runs * _pend == int(m.group(2).replace(",", "")), (
-            f"{f.name}: buckets do not tile the factorial - free={_free} "
-            f"runs={_runs} pending={_pend} vs {m.group(2)}")
+        # S6-B3189: the footer is an ADDITIVE partition (engine runs + offline
+        # gradings + pending = FULL FACTORIAL), re-derived here from its
+        # per-axis count columns and never trusted from its own TILING line
+        # (L679). It replaces the S6-B2862 product tiling, which could not
+        # represent an axis holding offline AND pending levels and printed
+        # multiplication factors as counts. It CAN fail: the three columns
+        # are three classes per axis, and their sum must equal n.
+        _lane = "BOTH" if f.parent.name == "both" else "TIGHTEN"
+        if _streams.get(f.stem) == _lane:
+            _probs = _b3189_footer_problems(txt)
+            assert not _probs, (f.name, _probs)
+        else:
+            # a HISTORICAL deliverable: its strategy left the lane (a closure
+            # closes the campaign, it does not delete its record - B3139
+            # batch 4), so the generator no longer rewrites it and it keeps the
+            # S6-B2862 product footer it was written with - 4 of 38 footered
+            # files when S6-B3189 landed. A CURRENT file without the additive
+            # footer lands in the branch above and fails there.
+            assert "TILING " not in txt, f.name
+            mf = re.search(r"offline gradings\s+(\d+) level-combinations", txt)
+            mr = re.search(r"ENGINE RUNS\s+([\d,]+)", txt)
+            mp = re.search(r"PENDING ACTUATION\s+([\d,]+)", txt)
+            assert mf and mr and mp, f"{f.name}: footer missing a bucket line"
+            assert (int(mf.group(1)) * int(mr.group(1).replace(",", ""))
+                    * int(mp.group(1).replace(",", ""))
+                    == int(m.group(2).replace(",", ""))), f.name
         # an axis with NO actuator must never be sold as an engine run. Before
         # S6-B2862 the footer inferred "no actuator" from n == 1, which held
         # only because a prose band silently scored 1.
@@ -57090,3 +57108,178 @@ def test_b3181_landings_append_is_churn_a_hand_edit_is_not():
     live = m.landings_change_is_append_only()
     assert isinstance(live, bool)
     assert (lines[0] in m.split_churn(lines)[1]) == live, live
+
+
+def _b3189_footer_problems(txt: str) -> list:
+    """S6-B3189: re-derive a Table A factorial footer from its per-axis count
+    columns (engine / offline / pending) and list every disagreement with the
+    printed figures. An empty list means the footer is self-consistent."""
+    import re
+    probs = []
+    m = re.search(r"FULL FACTORIAL\s+(.+?) = ([0-9,]+)", txt)
+    if not m:
+        return ["no FULL FACTORIAL line"]
+    full = int(m.group(2).replace(",", ""))
+    got = {}
+    for key, rx in (("offline", r"offline gradings\s+(\d+) level-combinations"),
+                    ("runs", r"ENGINE RUNS\s+(\d+)"),
+                    ("pending", r"PENDING ACTUATION\s+(\d+)")):
+        mm = re.search(rx, txt)
+        if mm:
+            got[key] = int(mm.group(1))
+        else:
+            probs.append("no %s line" % key)
+    mt = re.search(r"TILING\s+(\d+) \+ (\d+) \+ (\d+) = (\d+)", txt)
+    if not mt:
+        probs.append("no TILING line")
+    sec = txt.split("## Factorial", 1)[-1]
+    rows = [ln for ln in sec.splitlines()
+            if re.match(r"^\| P\d+(?:\.\d+)* \| ", ln)]
+    if not rows:
+        return probs if full == 0 else probs + ["no axis rows"]
+    fact = runs = grad = nopend = 1
+    for ln in rows:
+        cells = [c.strip() for c in ln.strip().strip("|").split("|")]
+        if len(cells) != 8:
+            probs.append("axis row with %d cells: %s" % (len(cells), ln[:60]))
+            continue
+        if cells[5:] == ["-", "-", "-"]:
+            continue        # shares an env knob - counted once on its first row
+        n, eng, off, pnd = (int(cells[2]), int(cells[5]), int(cells[6]),
+                            int(cells[7]))
+        if eng + off + pnd != n:
+            probs.append("%s: %d + %d + %d != %d" % (cells[0], eng, off, pnd, n))
+        fact *= n
+        runs *= eng
+        grad *= eng + off
+        nopend *= n - pnd
+    if fact != full:
+        probs.append("axis n product %d != FULL FACTORIAL %d" % (fact, full))
+    if got.get("runs") != runs:
+        probs.append("ENGINE RUNS %s != engine column product %d"
+                     % (got.get("runs"), runs))
+    if got.get("offline") != grad - runs:
+        probs.append("offline %s != %d - %d" % (got.get("offline"), grad, runs))
+    if got.get("pending") != full - nopend:
+        probs.append("pending %s != %d - %d" % (got.get("pending"), full, nopend))
+    if mt and [int(x) for x in mt.groups()] != [runs, grad - runs,
+                                                 full - nopend, full]:
+        probs.append("TILING line disagrees with the columns: " + mt.group(0))
+    return probs
+
+
+def test_b3189_band_levels_are_classed_one_by_one():
+    """S6-B3189: a Table A axis's levels are classed ONE BY ONE - engine,
+    offline or pending - and the footer is their ADDITIVE partition. The
+    TIGHTER prose prefix used to class every level of stochrsi_oversold's
+    threshold offline, k < 25 (looser than production k < 20) included; and
+    the footer printed multiplication factors as counts. Registry rule, the
+    import-time validator (each defect refused for its OWN reason, every
+    legitimate env form accepted - #226 both directions), the uo_oversold
+    argument fix, and the rendered footer re-derived from its columns with
+    two mutations that must fire."""
+    import re
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    import table_a_bands as tb
+
+    def knob(leg, param):
+        rows = [r for r in tb.PRODUCER_BANDS[leg] if r["param"] == param]
+        assert len(rows) == 1, (leg, param, len(rows))
+        return rows[0]
+
+    # (1) the registry rule: the two mixed knobs, level by level
+    assert tb.band_level_classes(
+        knob("stochrsi_oversold", "oversold threshold on k")) == [(4, 1, 2, 1)]
+    assert tb.band_level_classes(
+        knob("stochrsi_overbought", "overbought threshold on k")) == [(4, 1, 2, 1)]
+    # a one-sided TIGHTER knob keeps every non-production level offline
+    assert tb.band_level_classes(
+        knob("williams_r_oversold", "oversold threshold")) == [(3, 1, 2, 0)]
+    # (2) uo_oversold: evidence and env back in their own slots
+    uo = knob("uo_oversold", "oversold threshold")
+    assert uo["env"] is None, uo["env"]
+    assert str(uo["evidence"]).startswith("backtest/signals/technical.py"), (
+        uo["evidence"])
+
+    # (3) the validator: the live registry passes ...
+    tb._b3189_validate_levels_and_env()
+    base = {"param": "x", "production": 20, "band": [10, 15, 20, 25],
+            "basis": "b", "offline": "TIGHTER (k < 15)", "resim": "LOOSER",
+            "env": None, "evidence": "technical.py stochrsi block"}
+    ok = dict(base, free_band=[10, 15, 20], resim_band=[25])
+
+    def refused(row, why):
+        with pytest.raises(ValueError, match=why):
+            tb._b3189_validate_levels_and_env({"leg": [row]})
+
+    # ... and each defect is refused for its OWN reason (must-fire)
+    refused(dict(base), "both sides")
+    refused(dict(base, band=[20, 25, 30], production=25), "both sides")
+    refused(dict(base, band="[20, 25, 30]", production=25), "both sides")
+    refused(dict(ok, resim_band=[25, 20]), "sits in resim_band")
+    refused(dict(ok, free_band=[10, 20]), "do not partition")
+    refused(dict(ok, free_band=[10, 15, 20, 25]), "both free and resim")
+    refused(dict(ok, env="backtest/signals/technical.py"),
+            "is not an env-variable name")
+    refused(dict(ok, evidence=None), "evidence None is empty")
+    # must-quiet: per-level fields, a one-sided band, every live env form
+    tb._b3189_validate_levels_and_env({"leg": [ok]})
+    tb._b3189_validate_levels_and_env({"leg": [dict(base, band=[10, 15, 20])]})
+    for env in ("STRAT_EMA_SPAN", "SMC_SWING_LENGTH / SMC_EVENT_RECENCY_BARS",
+                "SMC_* (registered)"):
+        tb._b3189_validate_levels_and_env({"leg": [dict(ok, env=env)]})
+
+    # (4) the rendered footer: the MIXED row, re-derived from its columns
+    txt = (root / "strategy_optimisation" / "tighten" /
+           "stochrsi_oversold.md").read_text(encoding="utf-8")
+    assert not _b3189_footer_problems(txt), _b3189_footer_problems(txt)
+    foot = txt.split("## Factorial", 1)[1]
+    row = [ln for ln in foot.splitlines()
+           if ln.startswith("| P") and "| oversold threshold on k |" in ln]
+    assert len(row) == 1, row
+    assert "MIXED - offline AND pending levels" in row[0], row[0]
+    assert row[0].endswith("| 4 | MIXED - offline AND pending levels | "
+                           "no - production only; 2 offline; 1 pending "
+                           "(DEFINED-NO-ACTUATOR) | 1 | 2 | 1 |"), row[0]
+    # must-fire: move a level between classes on that row
+    bad = txt.replace(row[0], row[0][:-len("| 1 | 2 | 1 |")] + "| 1 | 3 | 1 |")
+    assert any("!=" in p for p in _b3189_footer_problems(bad)), bad[-400:]
+    # must-fire: a printed count the columns do not support
+    bad2 = re.sub(r"PENDING ACTUATION\s+(\d+)",
+                  lambda mm: "PENDING ACTUATION  %d" % (int(mm.group(1)) + 1),
+                  txt, count=1)
+    assert any(p.startswith("pending") for p in _b3189_footer_problems(bad2))
+
+
+def test_b3189_engine_split_excludes_unreachable_cells():
+    """S6-B3189 (d): engine_split counted OFFLINE CELLS as full - engine, so a
+    level of an axis the engine cannot reach read as a free grading. The
+    unreachable cells are now their own count and the three partition FULL;
+    the live SPECS carry none, so their offline figure is unchanged."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    spec = {"params": [
+        {"id": "P1", "param": "a", "production": 5, "band": [3, 5, 7],
+         "free_band": [5], "resim_band": [3, 7], "engine_implemented": False},
+        {"id": "P2", "param": "b", "production": 1, "band": [1, 2],
+         "free_band": [1, 2], "resim_band": []}]}
+    s = pvt.engine_split(spec)
+    assert s["full_factorial"] == 6 and s["unreachable"] == ["P1 a"], s
+    assert s["engine_configs"] == 1, s
+    assert s["unreachable_cells"] == 4, s   # P1 at 3 or 7, either P2 level
+    assert s["offline_cells"] == 1, s       # P1 at 5 with P2 at 2
+    assert (s["engine_configs"] + s["offline_cells"] + s["unreachable_cells"]
+            == s["full_factorial"]), s
+    for k, sp in pvt.SPECS.items():
+        r = pvt.engine_split(sp)
+        assert r["unreachable_cells"] == 0, k
+        assert r["offline_cells"] == r["full_factorial"] - r["engine_configs"], k

@@ -1,6 +1,6 @@
 # Table A - stochrsi_overbought_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build fbc05c3fb | commit 153b3b45d at 2026-10-15 08:46:07 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:47:33 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 4287 | **surviving fires (T1):** 4287 (unchanged since R5 - filter is identity)
 
@@ -768,20 +768,21 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 ## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
 
-| axis | parameter | n levels | class | own engine run? |
-|---|---|---|---|---|
-| P1.1 | cross guard band (k > 20 on cross_dn) | 2 | subset-safe | no - derives offline |
-| P2.1 | overbought threshold on k | 4 | subset-safe | no - derives offline |
-| P2.2 | period (rsi+stoch length) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P3 | rsi_14 > 45 | 5 | subset-safe | no - derives offline |
-| P3.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P4 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| axis | parameter | n levels | class | own engine run? | engine | offline | pending |
+|---|---|---|---|---|---|---|---|
+| P1.1 | cross guard band (k > 20 on cross_dn) | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P2.1 | overbought threshold on k | 4 | MIXED - offline AND pending levels | no - production only; 2 offline; 1 pending (DEFINED-NO-ACTUATOR) | 1 | 2 | 1 |
+| P2.2 | period (rsi+stoch length) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P3 | rsi_14 > 45 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
+| P3.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P4 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
 FULL FACTORIAL     2 x 4 x 3 x 5 x 3 x 1 = 360
-offline gradings   40 level-combinations x 24 exits = 960
-ENGINE RUNS        1 (actuated fire-adding axes only)
-PENDING ACTUATION  9 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+offline gradings   29 level-combinations x 24 exits = 696 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  330 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 29 + 330 = 360 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

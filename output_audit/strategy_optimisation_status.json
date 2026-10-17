@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "3ca05f86b",
-    "generated_at": "2026-10-17 07:27:47"
+    "source_commit": "1667c8859",
+    "generated_at": "2026-10-17 08:22:24"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -387,7 +387,8 @@
         "S6-B3140b",
         "S6-B3151",
         "S6-B3154a",
-        "S6-B3180"
+        "S6-B3180",
+        "S6-B3189"
       ],
       "live_campaign_tickets": [
         "S6-B2178c"
@@ -416,6 +417,7 @@
         "S6-B3151",
         "S6-B3154a",
         "S6-B3180",
+        "S6-B3189",
         "S6-B3191"
       ],
       "admitted": false,
@@ -3064,13 +3066,15 @@
       "tickets": [
         "S6-B2644c",
         "S6-B3135",
-        "S6-B3135a"
+        "S6-B3135a",
+        "S6-B3189"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2644c",
         "S6-B3135",
-        "S6-B3135a"
+        "S6-B3135a",
+        "S6-B3189"
       ],
       "admitted": false,
       "roster_roles": [
@@ -4413,7 +4417,6 @@
         "S6-B3194"
       ],
       "live_campaign_tickets": [
-        "S6-B3189",
         "S6-B3194"
       ],
       "mention_tickets": [
@@ -4531,7 +4534,8 @@
         "S6-B3136",
         "S6-B3161",
         "S6-B3168a",
-        "S6-B3169"
+        "S6-B3169",
+        "S6-B3189"
       ],
       "live_campaign_tickets": [
         "S6-B2420"
@@ -4560,7 +4564,8 @@
         "S6-B3136",
         "S6-B3161",
         "S6-B3168a",
-        "S6-B3169"
+        "S6-B3169",
+        "S6-B3189"
       ],
       "admitted": false,
       "roster_roles": [
@@ -5088,7 +5093,6 @@
         "S6-B3194"
       ],
       "live_campaign_tickets": [
-        "S6-B3189",
         "S6-B3194"
       ],
       "mention_tickets": [
@@ -5168,13 +5172,15 @@
       "tickets": [
         "S6-B2644c",
         "S6-B3135",
-        "S6-B3135a"
+        "S6-B3135a",
+        "S6-B3189"
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2644c",
         "S6-B3135",
-        "S6-B3135a"
+        "S6-B3135a",
+        "S6-B3189"
       ],
       "admitted": false,
       "roster_roles": [

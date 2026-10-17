@@ -114,6 +114,8 @@ PRODUCER_BANDS = {
          "evidence": "backtest/signals/technical.py:574-600"},
         {"param": "oversold threshold on k", "production": 20,
          "band": [10, 15, 20, 25],
+         # S6-B3189: k < 25 is LOOSER than production k < 20 - engine-only
+         "free_band": [10, 15, 20], "resim_band": [25],
          "basis": "BRACKET canon 20; stochrsi_k IS persisted",
          "offline": "TIGHTER (k < 15, k < 10) - subset on persisted stochrsi_k",
          "resim": "LOOSER (k < 25)", "env": None,
@@ -122,6 +124,8 @@ PRODUCER_BANDS = {
     "stochrsi_overbought": [
         {"param": "overbought threshold on k", "production": 80,
          "band": [75, 80, 85, 90],
+         # S6-B3189: k > 75 is LOOSER than production k > 80 - engine-only
+         "free_band": [80, 85, 90], "resim_band": [75],
          "basis": "BRACKET canon 80; stochrsi_k IS persisted",
          "offline": "TIGHTER (k > 85, k > 90) - subset on persisted stochrsi_k",
          "resim": "LOOSER (k > 75)", "env": None,
@@ -430,7 +434,9 @@ PRODUCER_BANDS.update({
         _K("oversold threshold", 30, "[20, 25, 30]",
            "BRACKET canon 30; the uo value itself is persisted where emitted",
            "TIGHTER (< 25, < 20) where `uo` is persisted on the fires",
-           "LOOSER; and the (7,14,28) period triple", None,
+           # S6-B3189: this call passed None as evidence and the code
+           # location as env, so the table read it as an actuator
+           "LOOSER; and the (7,14,28) period triple",
            "backtest/signals/technical.py:751"),
         _K("period triple", "(7, 14, 28)", "[(7,14,28), (5,10,20), (14,28,56)]",
            "BRACKET canon triple", "none - other triples unpersisted",
@@ -847,3 +853,144 @@ def _b2862_validate_every_band_is_countable() -> None:
 
 
 _b2862_validate_every_band_is_countable()
+
+
+# ---------------------------------------------------------------------------
+# S6-B3189 (B3139q-r71j): a band's levels are classed ONE BY ONE.
+#
+# build_table_a's footer classed a whole axis from its offline PROSE: a note
+# starting "TIGHTER" made EVERY level an offline grading, so stochrsi_oversold's
+# k < 25 - looser than production k < 20, which only the engine can produce -
+# counted as free. MEASURED B3139q-r71g: 2 of 110 band knobs hold a looser level
+# inside a TIGHTER-noted band (the two stochRSI thresholds); the other 9 a prose
+# test flagged band only production plus tighter levels. The rule lives HERE,
+# beside the data, so the footer and this validator cannot disagree: a knob
+# whose levels are not all one class carries free_band (offline levels,
+# production included) and resim_band (engine-only levels), as SPECS does
+# (engine_split, S6-B3182).
+# ---------------------------------------------------------------------------
+
+def _numeric_levels(band):
+    """The band's levels as numbers, or None when it is not a plain numeric
+    list. Accepts a list, or a string '[a, b, ...]' with an optional ' pct'."""
+    if isinstance(band, list):
+        vals = band
+    elif isinstance(band, str):
+        s = band.strip()
+        if s.endswith(" pct"):
+            s = s[:-4].strip()
+        if not (s.startswith("[") and s.endswith("]")):
+            return None
+        try:
+            vals = [float(x) for x in s[1:-1].split(",")]
+        except ValueError:
+            return None
+    else:
+        return None
+    if not vals or any(isinstance(v, bool) or not isinstance(v, (int, float))
+                       for v in vals):
+        return None
+    return [float(v) for v in vals]
+
+
+def band_level_classes(row: dict) -> list:
+    """[(n, engine, offline, pending)] for each axis of a band row (S6-B3189).
+
+    engine  = the levels the engine runs: production, plus every
+              non-production level when the row has an env actuator;
+    offline = levels graded from a run's cube (subsets of its fires);
+    pending = non-production levels that need an env knob that does not exist.
+    The three partition n. A row carrying free_band / resim_band is classed
+    level by level; any other row is ONE class - TIGHTER-noted rows offline,
+    actuated rows engine, the rest pending - exactly as the footer read it
+    before."""
+    counts = band_axes(row)
+    act = bool(row.get("env"))
+    if "free_band" in row or "resim_band" in row:
+        prod = row.get("production")
+        off = len([b for b in (row.get("free_band") or []) if b != prod])
+        resim = len(row.get("resim_band") or [])
+        n = counts[0]
+        return [(n, 1 + resim, off, 0)] if act else [(n, 1, off, resim)]
+    if str(row.get("offline", "")).startswith("TIGHTER"):
+        return [(n, 1, n - 1, 0) for n in counts]
+    if act:
+        return [(n, n, 0, 0) for n in counts]
+    return [(n, 1, 0, n - 1) for n in counts]
+
+
+_ENV_CHARS = set("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
+
+
+def _env_ok(env) -> bool:
+    """None, or env-variable names joined by ' / ' - each upper snake case
+    with an optional trailing '*' family glob - optionally followed by ONE
+    parenthesised note: the forms the registry already uses ('STRAT_EMA_SPAN',
+    'SMC_SWING_LENGTH / SMC_EVENT_RECENCY_BARS', 'SMC_* (registered)'). A
+    code location or evidence text is refused."""
+    if env is None:
+        return True
+    if not isinstance(env, str):
+        return False
+    s = env
+    if s.endswith(")") and " (" in s:
+        s = s[:s.index(" (")]
+    for t in s.split(" / "):
+        body = t[:-1] if t.endswith("*") else t
+        if not body or not ("A" <= body[0] <= "Z") or \
+                any(c not in _ENV_CHARS for c in body):
+            return False
+    return True
+
+
+def _b3189_validate_levels_and_env(bands=None) -> None:
+    """Runs at import (S6-B3189): every env is a name, every evidence is
+    present, per-level fields partition their band, and no TIGHTER-noted
+    numeric band sits on both sides of production without them (one side of
+    production is then LOOSER, and a looser level is never an offline
+    grading). `bands` is the test seam; None reads PRODUCER_BANDS."""
+    bad = []
+    for leg, rows in (PRODUCER_BANDS if bands is None else bands).items():
+        for r in rows:
+            tag = "%s/%s" % (leg, r.get("param"))
+            if not _env_ok(r.get("env")):
+                bad.append("%s: env %r is not an env-variable name - evidence or "
+                           "a code location in the env slot reads as an actuator"
+                           % (tag, r.get("env")))
+            ev = r.get("evidence")
+            if not (isinstance(ev, str) and ev.strip()):
+                bad.append("%s: evidence %r is empty" % (tag, ev))
+            prod = r.get("production")
+            if "free_band" in r or "resim_band" in r:
+                band = r.get("band")
+                free = list(r.get("free_band") or [])
+                resim = list(r.get("resim_band") or [])
+                if not isinstance(band, list):
+                    bad.append("%s: per-level fields need a list band" % tag)
+                    continue
+                if prod in resim:
+                    bad.append("%s: production %r sits in resim_band" % (tag, prod))
+                if set(free) & set(resim):
+                    bad.append("%s: levels both free and resim: %r"
+                               % (tag, sorted(set(free) & set(resim))))
+                if (len(set(band)) != len(band) or prod not in band
+                        or (set(free) | set(resim) | {prod}) != set(band)):
+                    bad.append("%s: free_band %r + resim_band %r + production %r "
+                               "do not partition band %r" % (tag, free, resim,
+                                                             prod, band))
+                continue
+            if str(r.get("offline", "")).startswith("TIGHTER"):
+                lv = _numeric_levels(r.get("band"))
+                if lv and isinstance(prod, (int, float)) and \
+                        not isinstance(prod, bool) and \
+                        any(x < prod for x in lv) and any(x > prod for x in lv):
+                    bad.append("%s: a TIGHTER-noted band %r sits on both sides of "
+                               "production %r - one side is LOOSER and needs the "
+                               "engine; add free_band / resim_band"
+                               % (tag, r.get("band"), prod))
+    if bad:
+        raise ValueError("S6-B3189 - band levels or env misfiled:\n  "
+                         + "\n  ".join(bad))
+
+
+_b3189_validate_levels_and_env()

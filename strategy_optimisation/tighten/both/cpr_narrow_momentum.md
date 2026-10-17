@@ -1,6 +1,6 @@
 # Table A - cpr_narrow_momentum
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:35:17 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** confluence | **status:** NOT-STARTED | **R5 fires:** 1001 | **surviving fires (T1):** 1001 (unchanged since R5 - filter is identity)
 
@@ -817,26 +817,27 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 ## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
 
-| axis | parameter | n levels | class | own engine run? |
-|---|---|---|---|---|
-| P1.1 | buffer pct (price vs cpr_top) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.1 | buffer pct (price below cpr_bottom by) | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P3.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** |
-| P4.1 | width threshold (cpr_width < rng * X) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P5.1 | span triple (fast, slow, signal) | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P6.1 | span triple (mirror of the bearish entry | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P7.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | shares env STRAT_EMA_SPAN with P3.1 - ONE knob, counted once |
-| P8 | rsi_14 < 50 | 4 | subset-safe | no - derives offline |
-| P8.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P9 | rsi_14 > 50 | 2 | subset-safe | no - derives offline |
-| P9.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P10 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| axis | parameter | n levels | class | own engine run? | engine | offline | pending |
+|---|---|---|---|---|---|---|---|
+| P1.1 | buffer pct (price vs cpr_top) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P2.1 | buffer pct (price below cpr_bottom by) | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 1 |
+| P3.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** | 8 | 0 | 0 |
+| P4.1 | width threshold (cpr_width < rng * X) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P5.1 | span triple (fast, slow, signal) | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 1 |
+| P6.1 | span triple (mirror of the bearish entry | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 1 |
+| P7.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | shares env STRAT_EMA_SPAN with P3.1 - ONE knob, counted once | - | - | - |
+| P8 | rsi_14 < 50 | 4 | subset-safe | no - derives offline | 1 | 3 | 0 |
+| P8.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P9 | rsi_14 > 50 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P9.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P10 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
 FULL FACTORIAL     3 x 2 x 8 x 3 x 2 x 2 x 4 x 3 x 2 x 3 x 1 = 41472
-offline gradings   8 level-combinations x 24 exits = 192
-ENGINE RUNS        8 (actuated fire-adding axes only)
-PENDING ACTUATION  648 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+offline gradings   56 level-combinations x 24 exits = 1344 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        8 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  41408 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             8 + 56 + 41408 = 41472 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 8 x 3.66 h = 29 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

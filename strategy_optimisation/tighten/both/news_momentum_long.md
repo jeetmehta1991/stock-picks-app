@@ -1,8 +1,8 @@
 # Table A - news_momentum_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:35:17 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 113 | **surviving fires (T1):** 113 (unchanged since R5 - filter is identity)
+**Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 113 | **surviving fires (T1):** 113 (code changed since R5; the status build's survival filter measured survives_pct 1.0 - every fire kept)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
 
@@ -584,20 +584,21 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 ## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
 
-| axis | parameter | n levels | class | own engine run? |
-|---|---|---|---|---|
-| P1.1 | (structural) c > o - optional min body p | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.1 | range-position cutoff | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P3.1 | breakout tolerance (close >= upper * (1- | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P4.1 | volume ratio floor (vol / avg) | 4 | subset-safe | no - derives offline |
-| P5 | news_sentiment_5d >= 0.3 | 5 | subset-safe | no - derives offline |
-| P6 | news_volume_zscore_5d >= 0.9091 | 5 | subset-safe | no - derives offline |
+| axis | parameter | n levels | class | own engine run? | engine | offline | pending |
+|---|---|---|---|---|---|---|---|
+| P1.1 | (structural) c > o - optional min body p | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P2.1 | range-position cutoff | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P3.1 | breakout tolerance (close >= upper * (1- | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 3 |
+| P4.1 | volume ratio floor (vol / avg) | 4 | subset-safe | no - derives offline | 1 | 3 | 0 |
+| P5 | news_sentiment_5d >= 0.3 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
+| P6 | news_volume_zscore_5d >= 0.9091 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
 
 ```
 FULL FACTORIAL     3 x 3 x 4 x 4 x 5 x 5 = 3600
-offline gradings   100 level-combinations x 24 exits = 2400
-ENGINE RUNS        1 (actuated fire-adding axes only)
-PENDING ACTUATION  36 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+offline gradings   99 level-combinations x 24 exits = 2376 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  3500 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 99 + 3500 = 3600 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

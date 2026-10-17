@@ -1,6 +1,6 @@
 # Table A - news_reversal_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:35:17 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 60 | **surviving fires (T1):** 60 (unchanged since R5 - filter is identity)
 
@@ -626,21 +626,22 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 ## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
 
-| axis | parameter | n levels | class | own engine run? |
-|---|---|---|---|---|
-| P1.1 | mirror of close_above_open | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P2.1 | mirror of top_40pct | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
-| P3 | news_count_5d >= 3 | 5 | subset-safe | no - derives offline |
-| P4 | news_sentiment_5d >= 0.3 | 5 | subset-safe | no - derives offline |
-| P5 | news_sentiment_shift < -0.2 | 5 | subset-safe | no - derives offline |
-| P6 | pct_change_5d > 0.08 | 5 | subset-safe | no - derives offline |
-| P7 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| axis | parameter | n levels | class | own engine run? | engine | offline | pending |
+|---|---|---|---|---|---|---|---|
+| P1.1 | mirror of close_above_open | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P2.1 | mirror of top_40pct | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P3 | news_count_5d >= 3 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
+| P4 | news_sentiment_5d >= 0.3 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
+| P5 | news_sentiment_shift < -0.2 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
+| P6 | pct_change_5d > 0.08 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
+| P7 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
 FULL FACTORIAL     3 x 3 x 5 x 5 x 5 x 5 x 1 = 5625
-offline gradings   625 level-combinations x 24 exits = 15000
-ENGINE RUNS        1 (actuated fire-adding axes only)
-PENDING ACTUATION  9 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+offline gradings   624 level-combinations x 24 exits = 14976 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  5000 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 624 + 5000 = 5625 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

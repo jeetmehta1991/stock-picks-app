@@ -1,8 +1,8 @@
 # Table A - news_sentiment_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:35:17 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 906 | **surviving fires (T1):** 906 (unchanged since R5 - filter is identity)
+**Lane:** BOTH | **family:** news_sentiment | **status:** STALLED-CAMPAIGN | **R5 fires:** 906 | **surviving fires (T1):** 906 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
 
@@ -768,17 +768,18 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 ## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
 
-| axis | parameter | n levels | class | own engine run? |
-|---|---|---|---|---|
-| P1.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** |
-| P2 | news_article_count >= 3 | 5 | subset-safe | no - derives offline |
-| P3 | news_sentiment_mean > 0.3 | 5 | subset-safe | no - derives offline |
+| axis | parameter | n levels | class | own engine run? | engine | offline | pending |
+|---|---|---|---|---|---|---|---|
+| P1.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** | 8 | 0 | 0 |
+| P2 | news_article_count >= 3 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
+| P3 | news_sentiment_mean > 0.3 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
 
 ```
 FULL FACTORIAL     8 x 5 x 5 = 200
-offline gradings   25 level-combinations x 24 exits = 600
-ENGINE RUNS        8 (actuated fire-adding axes only)
-PENDING ACTUATION  1 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+offline gradings   192 level-combinations x 24 exits = 4608 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        8 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  0 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             8 + 192 + 0 = 200 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 8 x 3.66 h = 29 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

@@ -1,6 +1,6 @@
 # Table A - smc_mitigation_block_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 2daa28d28 | commit d1e93ff7f at 2026-09-29 01:35:17 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** smc | **status:** NOT-STARTED | **R5 fires:** 15 | **surviving fires (T1):** 15 (unchanged since R5 - filter is identity)
 
@@ -511,19 +511,20 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 ## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
 
-| axis | parameter | n levels | class | own engine run? |
-|---|---|---|---|---|
-| P1.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** |
-| P2.1.1 | smc family knobs (swing_length, event_re | 5 | **FIRE-ADDING** | **YES** |
-| P2.1.2 | smc family knobs (swing_length, event_re | 3 | **FIRE-ADDING** | shares env SMC_SWING_LENGTH / SMC_EVENT_RECENCY_BARS with P2.1.1 - ONE knob, counted once |
-| P3 | rsi_14 < 50 | 5 | subset-safe | no - derives offline |
-| P3.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) |
+| axis | parameter | n levels | class | own engine run? | engine | offline | pending |
+|---|---|---|---|---|---|---|---|
+| P1.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** | 8 | 0 | 0 |
+| P2.1.1 | smc family knobs (swing_length, event_re | 5 | **FIRE-ADDING** | **YES** | 5 | 0 | 0 |
+| P2.1.2 | smc family knobs (swing_length, event_re | 3 | **FIRE-ADDING** | shares env SMC_SWING_LENGTH / SMC_EVENT_RECENCY_BARS with P2.1.1 - ONE knob, counted once | - | - | - |
+| P3 | rsi_14 < 50 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
+| P3.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 
 ```
 FULL FACTORIAL     8 x 5 x 5 x 3 = 600
-offline gradings   5 level-combinations x 24 exits = 120
-ENGINE RUNS        40 (actuated fire-adding axes only)
-PENDING ACTUATION  3 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+offline gradings   160 level-combinations x 24 exits = 3840 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        40 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  400 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             40 + 160 + 400 = 600 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 40 x 3.66 h = 146 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

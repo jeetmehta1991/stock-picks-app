@@ -1,6 +1,6 @@
 # Table A - naked_poc_retest_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 197af29ae | commit 019086e75 at 2026-10-17 06:06:13 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:47:33 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** volume_profile | **status:** IN-CAMPAIGN | **R5 fires:** 1788 | **surviving fires (T1):** 1788 (code changed since R5; the status build's survival filter measured survives_pct 1.0 - every fire kept)
 
@@ -772,21 +772,22 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 ## Factorial - configs this table implies (computed from the rows above; pairs with the Formula in Section 1)
 
-| axis | parameter | n levels | class | own engine run? |
-|---|---|---|---|---|
-| P1.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** |
-| P2 | naked_poc_count > 0 | 2 | subset-safe | no - derives offline |
-| P2.1 | period_lookback (bars) | 2 | **FIRE-ADDING** | **YES** |
-| P2.2 | n_periods (POC chunks) | 5 | **FIRE-ADDING** | **YES** |
-| P2.3 | n_bins (price bins) | 4 | **FIRE-ADDING** | **YES** |
-| P2.4 | count floor (> N naked POCs) | 3 | subset-safe | no - derives offline |
-| P3 | naked_poc_nearest_distance_pct < 0.02 | 5 | subset-safe | no - derives offline |
+| axis | parameter | n levels | class | own engine run? | engine | offline | pending |
+|---|---|---|---|---|---|---|---|
+| P1.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** | 8 | 0 | 0 |
+| P2 | naked_poc_count > 0 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P2.1 | period_lookback (bars) | 2 | **FIRE-ADDING** | **YES** | 2 | 0 | 0 |
+| P2.2 | n_periods (POC chunks) | 5 | **FIRE-ADDING** | **YES** | 5 | 0 | 0 |
+| P2.3 | n_bins (price bins) | 4 | **FIRE-ADDING** | **YES** | 4 | 0 | 0 |
+| P2.4 | count floor (> N naked POCs) | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
+| P3 | naked_poc_nearest_distance_pct < 0.02 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
 
 ```
 FULL FACTORIAL     8 x 2 x 2 x 5 x 4 x 3 x 5 = 9600
-offline gradings   30 level-combinations x 24 exits = 720
-ENGINE RUNS        320 (actuated fire-adding axes only)
-PENDING ACTUATION  1 level-combinations are DEFINED but have no env knob - they are a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+offline gradings   9280 level-combinations x 24 exits = 222720 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        320 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  0 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             320 + 9280 + 0 = 9600 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 320 x 3.66 h = 1,171 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
