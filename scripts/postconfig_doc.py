@@ -115,16 +115,58 @@ GROUPS = [
 ]
 
 
+_CHECK_TOKEN = re.compile(r"(\w+)=(PASS|FAIL|WARN|SKIP)\(")
+_SEG = " | "
+_WAVE_PREFIX = "run_wave verified"
+
+
+def split_wave_note(evidence: str) -> tuple[str, str]:
+    """S6-B3187: (the evidence without run_wave's note, that note).
+
+    The evidence is ' | '-separated SEGMENTS: the battery's packed checks,
+    run_wave's appended note ('run_wave verified N cube rows across K
+    leg(s); M6 boundary drops ...'), and history the ledger keeps (' | prior:',
+    ' | battery re-run ...'). A value read up to the next ';' swallowed the
+    note into the LAST check - MEASURED 2026-10-17, 69 parsed values across
+    the ledger and 60 report rows read '... evidence) | run_wave verified N
+    cube rows across K leg(s'. Only the note segment is removed; history
+    stays (a first version cut everything after the note and dropped 106
+    historical checks from 8 rows). Returns the LAST note, the latest run."""
+    segs = (evidence or "").split(_SEG)
+    notes = [s for s in segs if s.startswith(_WAVE_PREFIX)]
+    rest = [s for s in segs if not s.startswith(_WAVE_PREFIX)]
+    return _SEG.join(rest), (notes[-1] if notes else "")
+
+
 def parse_checks(evidence: str) -> list[tuple[str, str, str]]:
     """Split the packed step-1 evidence string into (name, outcome, value).
 
     The truncation the owner saw came from 14 checks sharing one string. This
     fixes it at the READING end, so every historical ledger entry stays
     parseable without a schema migration.
+
+    S6-B3187: a value runs to the NEXT CHECK TOKEN, not to the next ';' - a
+    value may hold '; ' itself (M5's winsorize count, the step-2 knob
+    vector), and the old split cut it there. Exactly ONE ')' is stripped:
+    the writer closes each value with one, so a value ending 'leg(s)' keeps
+    its own (stripping every ')' printed 'leg(s'). run_wave's appended note
+    is a segment of its own (split_wave_note) and is never a check.
     """
+    # ' | ' is a hard boundary: a value never crosses a segment, so a
+    # battery re-run's first check is never swallowed by the value before
+    # it (the old split did that 3 times in the ledger - MEASURED: totals
+    # 1945 -> 1948 checks, non-PASS unchanged at 20).
     out = []
-    for m in re.finditer(r"(\w+)=(PASS|FAIL|WARN|SKIP)\(([^;]*)", evidence or ""):
-        out.append((m.group(1), m.group(2), m.group(3).rstrip(") ")))
+    for seg in (evidence or "").split(_SEG):
+        if seg.startswith(_WAVE_PREFIX):
+            continue
+        toks = list(_CHECK_TOKEN.finditer(seg))
+        for i, m in enumerate(toks):
+            end = toks[i + 1].start() if i + 1 < len(toks) else len(seg)
+            val = seg[m.end():end].rstrip().rstrip(";").rstrip()
+            if val.endswith(")"):
+                val = val[:-1]
+            out.append((m.group(1), m.group(2), val.strip()))
     return out
 
 
@@ -359,6 +401,14 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
             clean = val.replace("|", "/")
             lines.append(f"| {meaning} | {clean} | {outcome}{mark} | {alarm} |")
         lines.append("")
+
+    # S6-B3187: run_wave's own verification, appended to step 1 after ' | ',
+    # renders as itself - never as the tail of the last check's value.
+    _note = split_wave_note(
+        (entry.get("1_cube_sanity") or {}).get("evidence", ""))[1]
+    if _note:
+        lines += ["**Orchestrator check (run_wave, appended to step 1):** "
+                  + _note.replace("|", "/"), ""]
 
     if spot:
         agree = spot.get("agree", 0)

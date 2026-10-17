@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 197af29ae at 2026-10-16 12:50:56 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 42ea94879 at 2026-10-17 06:39:53 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -20,9 +20,9 @@
 | IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | 7 |
 | IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded, with Step 2 scheduled (S6-B2420) | 8 |
 | DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 3 |
-| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 1 |
-| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 42 |
-| NOT-STARTED | 132 |
+| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | 4 |
+| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | 41 |
+| NOT-STARTED | 130 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
 | CONTAINED-IN-REPRESENTATIVE (b2647) | 1 |
@@ -89,12 +89,12 @@
 | institutional_insider_combo_long | smart_money_combo | 2751 | 2.0 | YES | 0.8% | - | PRUNED-DUPLICATE |
 | institutional_buy_momentum_long | - | 2644 | 243.0 |  | 100.0% | - | PRUNED-DUPLICATE |
 | po3_bearish | - | 2624 | 241.2 |  | 100.0% | NONE | NOT-STARTED |
-| williams_r_oversold | momentum | 2535 | 233.0 |  | 100.0% | TIGHTEN | STALLED-CAMPAIGN |
+| williams_r_oversold | momentum | 2535 | 233.0 |  | 100.0% | TIGHTEN | IN-CAMPAIGN |
 | institutional_multi_quarter_persistence_long | institutional_persistence | 2516 | 231.2 |  | 100.0% | - | DONE-ADMITTED |
 | institutional_high_conviction_long | - | 2473 | 227.3 |  | 100.0% | - | DONE-ADMITTED |
 | mmsm_short | ict | 2456 | 225.7 |  | 100.0% | NONE | NOT-STARTED |
 | institutional_cluster_long | - | 2451 | 225.3 |  | 100.0% | - | PRUNED-DUPLICATE |
-| stochrsi_oversold | momentum | 2433 | 223.6 |  | 100.0% | TIGHTEN | NOT-STARTED |
+| stochrsi_oversold | momentum | 2433 | 223.6 |  | 100.0% | TIGHTEN | IN-CAMPAIGN |
 | dc20_break_retest | breakout | 2414 | 109.7 | YES | 49.4% | NONE | NOT-STARTED |
 | institutional_persistence_momentum_long | institutional_persistence | 2324 | 213.6 |  | 100.0% | - | PRUNED-DUPLICATE |
 | avwap_252_breakout | vwap | 2294 | 210.8 |  | 100.0% | NONE | STALLED-CAMPAIGN |
@@ -235,7 +235,7 @@
 | pivot_fib_confluence | confluence | 91 | 8.4 |  | 100.0% | LOOSEN | NOT-STARTED |
 | xs_quality_top_quintile_long | factor | 89 | 8.2 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | judas_swing_short | ict | 84 | 7.7 |  | 100.0% | LOOSEN | NOT-STARTED |
-| avwap_20high_rejection_short | vwap | 81 | 7.4 | YES | 100.0% | LOOSEN | NOT-STARTED |
+| avwap_20high_rejection_short | vwap | 81 | 7.4 | YES | 100.0% | LOOSEN | IN-CAMPAIGN |
 | xs_low_beta_long | factor | 78 | 7.2 |  | 100.0% | LOOSEN | NOT-STARTED |
 | 52wl_break_retest_short | breakout | 77 | 0.0 | YES | 0.0% | LOOSEN | NOT-STARTED |
 | mfi_oversold | mean_reversion | 77 | 7.1 |  | 100.0% | LOOSEN | NOT-STARTED |

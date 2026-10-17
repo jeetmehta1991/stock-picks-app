@@ -56631,3 +56631,161 @@ def test_b3182_factorial_splits_a_mixed_knob_per_level(monkeypatch, capsys):
     s = pvt.engine_split(coarse)
     assert s["basis"] == "subset_safe" and s["engine_configs"] == 3, s
     assert s["full_factorial"] == 6 and s["offline_cells"] == 3, s
+
+
+_B3187_SPAN20_EVIDENCE = "run_postconfig: cube_exists=PASS(15816 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, GOOGL, TSLA, AAPL); M1_content_sha=PASS(40413eea7ae62b61); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 77b8841dd465); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=PASS(naked_poc_retest_long: manifest arms[0] ema_span=20 lookback); step2_grade_auto=PASS(exit 0; ema_span=20 lookback=252 n_periods=6 n_bins=40 max_d); step2_free_levels=PASS(exit 0; reproduction-gated free levels -> output_npoc_s1_p1_); step4_spot_check_auto=PASS(exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk); step7_engine_implemented=PASS(5 of 5 declared knobs read from the environment + consumer l); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence) | run_wave verified 15816 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg"
+
+
+def test_b3187_report_reader_keeps_values_whole_and_the_wave_note_apart():
+    """S6-B3187: POSTCONFIG_REPORT.md read the step-1 evidence wrongly.
+
+    Verbatim incident (#240): the span-20 cube's committed step-1 evidence.
+    The old reader took each value up to the next ';', so a value holding '; '
+    (M5's winsorize count, the step-2 knob vector) was cut there, and
+    run_wave's note - appended after ' | ', not '; ' - bled into the LAST
+    check: 'evidence) | run_wave verified 15816 cube rows across 1 leg(s'
+    (60 report rows). And where a battery re-run segment followed a value
+    with no ';' between, the old reader SWALLOWED the re-run's first check -
+    3 ledger rows, falsifiability 1945 -> 1948 checks with non-PASS unchanged
+    at 20. The writer cut values mid-token ('HO_START 2025-05-0'); it now
+    cuts on a word boundary with a visible ' ...', inside the SAME 60
+    characters (a longer value could expose a phrase ledger_contradictions
+    reads as non-execution).
+    """
+    import importlib.util as _ilu
+    import json as _json
+    import re as _re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location("pcd_b3187", root / "scripts" / "postconfig_doc.py")
+    pcd = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(pcd)
+
+    got = {n: (o, v) for n, o, v in pcd.parse_checks(_B3187_SPAN20_EVIDENCE)}
+    assert got["ledger_status_matches_evidence"] == (
+        "PASS", "0 row(s) claim DONE with contradicting evidence"), got[
+            "ledger_status_matches_evidence"]
+    assert "0 beyond winsorize 300.0" in got["M5_pnl_integrity"][1]
+    assert "ema_span=20 lookback=252" in got["step2_grade_auto"][1]
+    assert "50 agree / 0 DISAGREE" in got["step4_spot_check_auto"][1]
+    assert not any("run_wave" in v for _, v in got.values())
+    rest, note = pcd.split_wave_note(_B3187_SPAN20_EVIDENCE)
+    assert note.startswith("run_wave verified 15816 cube rows across 1 leg(s); "
+                           "M6 boundary drops"), note
+    assert "run_wave" not in rest
+
+    # a re-run segment's first check is not swallowed by the value before it
+    hist = ("run_postconfig: a=PASS(x) | battery re-run T: DONE - "
+            "run_postconfig: cube_exists=PASS(9 rows); one_strategy=PASS(1 strategies)")
+    old = list(_re.finditer(r"(\w+)=(PASS|FAIL|WARN|SKIP)\(([^;]*)", hist))
+    assert len(old) == 2, "the old split's defect, reproduced"
+    assert [n for n, _, _ in pcd.parse_checks(hist)] == ["a", "cube_exists", "one_strategy"]
+
+    # live ledger: the fix may RECOVER swallowed checks, never change an outcome
+    led = _json.loads((root / "output_audit" / "postconfig_ledger.json").read_text(encoding="utf-8"))
+    bad_new, tot_new = pcd.falsifiability(led)
+    bad_old = tot_old = 0
+    for ent in led.values():
+        for row in ent.values():
+            if not isinstance(row, dict):
+                continue
+            for m in _re.finditer(r"(\w+)=(PASS|FAIL|WARN|SKIP)\(([^;]*)",
+                                  row.get("evidence", "")):
+                tot_old += 1
+                bad_old += m.group(2) != "PASS"
+    assert bad_new == bad_old and tot_new >= tot_old, (bad_old, tot_old, bad_new, tot_new)
+
+    # the writer: inside 60 characters, a cut is VISIBLE and never mid-token
+    import sys as _sys
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import run_postconfig as rp
+    v = "Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-05 (boundary)"
+    cut = rp._evidence_cut(v)
+    assert cut.endswith(" ...") and len(cut) <= 64 and "2025-05-0 " not in cut + " ", cut
+    assert cut == "Step-1: manifest window.end 2025-05-05 <= HO_START ...", cut
+    assert rp._evidence_cut("0 fills before entry") == "0 fills before entry"
+    import inspect as _insp
+    assert "_evidence_cut(ev)" in _insp.getsource(rp), "the packer uses the cut"
+
+
+def test_b3186_status_record_keeps_full_ticket_lists():
+    """S6-B3186: the status record stored the FIRST THREE campaign and
+    mention tickets while its own methodology note said mention_tickets is
+    the unfiltered list - a reader could not tell a capped record from a
+    complete one (L558); 24 of 225 strategies carry more than three. The
+    lists are now complete (ticket_fields), and the record is wired through
+    it with no slice left on either list (AST, so prose cannot satisfy it).
+    """
+    import ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+    five = [f"S6-B90{i}" for i in range(5)]
+    six = [f"S6-B91{i}" for i in range(6)]
+    t, m = bss.ticket_fields(five, six)
+    assert t == five and m == six and t is not five and m is not six
+    tree = ast.parse((root / "scripts" / "build_strategy_status.py").read_text(encoding="utf-8"))
+    sliced = [n.lineno for n in ast.walk(tree)
+              if isinstance(n, ast.Subscript) and isinstance(n.value, ast.Name)
+              and n.value.id in ("tickets_all", "mentions_all")]
+    assert sliced == [], f"a ticket list is sliced again at lines {sliced}"
+    calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
+             and getattr(n.func, "id", None) == "ticket_fields"
+             and [getattr(a, "id", None) for a in n.args] == ["tickets_all", "mentions_all"]]
+    assert len(calls) == 1, "the record builder must route both lists through ticket_fields"
+
+
+def test_b3173a_table_d_reads_free_level_artifacts():
+    """S6-B3173a: Table D renders the free levels a landing's battery graded.
+
+    load() read rows lists, offline factorial blocks and engine corners; a
+    free-levels artifact is none of these, so it contributed 0 rows and the
+    INVENTORY read its graded thresholds NOT TESTED (59 of 67 free-levels
+    artifacts, MEASURED 2026-10-17). Verbatim incident: the span-20 naked-POC
+    config - its free-levels artifact holds the 0.0096 distance ceiling at
+    in-sample CI-lo 0.313 over 373 trades. Each family's level-key form
+    (candle p6, bollinger p9, institutional p7 + p8, naked-POC axis + level)
+    loads; an unknown key REFUSES; the production entry is shown once.
+    """
+    import json
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import table_d_render as tdr
+    oa = root / "output_audit"
+    c = oa / ("output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_"
+              "p1_20_p2_252_p3_6_p4_40_p6_0p02")
+    md = tdr.build_table("naked_poc_retest_long",
+                         [str(c) + "_grid_auto.json", str(c) + "_free_levels.json"], 10**6)
+    lines = md.splitlines()
+    rows = [l for l in lines if l.startswith("| 1 |")]
+    assert rows and "| 0.0096 |" in rows[0] and "| 0.313 | 373 |" in rows[0], rows
+    inv = {l.strip()[2:4]: l for l in lines if l.strip().startswith("- P")}
+    assert "TESTED at {0.0028, 0.0059, 0.0096, 0.0141}" in inv["P6"], inv["P6"]
+    assert "NOT TESTED" not in inv["P5"], inv["P5"]
+    assert any(l.startswith("OFFLINE FREE LEVELS") and "kept per level: 6" in l for l in lines)
+    prod = [l for l in lines if "| breakeven_plus_trail | 0.509 | 0.257 | 659 | 659 |" in l]
+    assert len(prod) == 1, "the production cell appears once"
+
+    for fam, glob in (("three_white_soldiers", "output_candle_tws_c01_*_free_levels.json"),
+                      ("bollinger_lower", "output_bl_span009_span009_free_levels.json"),
+                      ("institutional_committed_growth_long", "output_icg_cfg1_free_levels.json"),
+                      ("naked_poc_retest_long", "output_npoc_s1_p2_126_p2_126_free_levels.json")):
+        files = sorted(oa.glob(glob))
+        assert files, (fam, glob)
+        params = tdr._spec(fam)["params"]
+        _arts, got, _skips = tdr.load([str(files[0])], params)
+        labels = {p["param"] for p in params}
+        assert got, (fam, files[0].name)
+        assert all(r.get("offline_free_level") and set(r["levels"]) <= labels for r in got), fam
+
+    bad = {"levels": {"x": {"p99": 1, "per_exit_ranked_by_ci_lo": []}}}
+    with pytest.raises(SystemExit, match="REFUSED .S6-B3173a."):
+        tdr._free_level_rows(bad, tdr._spec("bollinger_lower")["params"])

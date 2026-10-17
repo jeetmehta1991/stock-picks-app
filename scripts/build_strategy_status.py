@@ -306,6 +306,18 @@ def closed_populations(root=ROOT) -> dict:
             "contained": contained, "disabled": disabled}
 
 
+def ticket_fields(tickets_all: list, mentions_all: list) -> tuple[list, list]:
+    """S6-B3186: the campaign and mention ticket lists a status record
+    stores - COMPLETE, in queue order.
+
+    The record kept the first three ids while its own methodology note said
+    mention_tickets keeps the unfiltered list, so a reader could not tell a
+    capped record from a complete one (L558) - 24 of 225 strategies carry
+    more than three (B3139q-r70t). Nothing renders these lists (the MD view
+    shows status counts only), so the cap bought nothing."""
+    return list(tickets_all), list(mentions_all)
+
+
 def status_for(name: str, *, admitted, roster_status, owner_closed, disabled,
                pruned, closed_neg, contained, live_tickets, tickets) -> str:
     """B2825 precedence - ONE status per strategy, mutually exclusive by
@@ -422,8 +434,8 @@ def main() -> int:
             survives = round(ok / fires, 4)
 
         tickets_all, mentions_all = campaign_tickets(qtext, name)
-        # the record shows the first three ids; live-ness reads them all
-        tickets, mentions = tickets_all[:3], mentions_all[:3]
+        # S6-B3186: the record keeps the FULL lists (ticket_fields)
+        tickets, mentions = ticket_fields(tickets_all, mentions_all)
         # B2829 (owner-directed "statuses latest, no misses" 2026-09-16): a
         # campaign is LIVE only while a naming ticket's CURRENT ledger state
         # is non-terminal. Before this, a ticket EXECUTED long ago flagged

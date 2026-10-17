@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -174,6 +175,104 @@ def _factorial_block_rows(a: dict, params: list,
     return out
 
 
+_PID_KEY = re.compile(r"^p(\d+)$")
+
+
+def _is_levels_block(a: dict) -> bool:
+    """S6-B3173a: a FREE-LEVELS artifact - a `levels` container and no
+    graded rows list or offline factorial block of its own."""
+    return (isinstance(a.get("levels"), (dict, list))
+            and not isinstance(a.get("rows"), list)
+            and not _is_factorial_block(a))
+
+
+def _free_level_rows(a: dict, params: list,
+                     skip_production: bool = False) -> list:
+    """S6-B3173a: one row per (free level, carried exit) of a free-levels
+    artifact - a fourth shape beside SWEEP, the engine FACTORIAL corner and
+    the OFFLINE factorial block. load() sent it to the corner reader,
+    which found no per_exit and returned 0 rows, so the levels a landing's
+    battery had graded rendered NOT TESTED. MEASURED 2026-10-17: 59 of 67
+    free-levels artifacts carry this shape (candle 21, institutional 20,
+    bollinger 9, naked-POC 9); the other 8 are the pairs factorial block.
+
+    The level is named two ways, both measured: a lowercase param-id key
+    (candle p6, bollinger p9, institutional p7 + p8) or an `axis` id with
+    its `level` (naked-POC P5 / P6, plus a `base` entry that IS the
+    production cell). A key or axis mapping to no Table A param REFUSES the
+    render (the S6-B3140b rule - dropping it would be silent). The
+    production entry is skipped when its cube's grid is in the render. Rows
+    carry `offline_free_level`: graded offline from the config's cube, so
+    never TESTED BY RE-SIMULATION."""
+    by_id = {p["id"]: p for p in params}
+    raw = a.get("levels")
+    entries = list(raw.values()) if isinstance(raw, dict) else list(raw or [])
+    out = []
+    for e in entries:
+        if not isinstance(e, dict):
+            continue
+        levels, prod_flags = {}, []
+        if "axis" in e:
+            ax = str(e.get("axis"))
+            if ax == "base":
+                prod_flags.append(True)
+            else:
+                p = by_id.get(ax)
+                if p is None:
+                    raise SystemExit(
+                        f"REFUSED (S6-B3173a): free-level axis {ax!r} maps to "
+                        f"no Table A param id: {sorted(by_id)}")
+                levels[p["param"]] = e.get("level")
+                prod_flags.append(e.get("level") == p.get("production"))
+        for k, v in e.items():
+            m = _PID_KEY.match(str(k))
+            if not m:
+                continue
+            p = by_id.get(f"P{m.group(1)}")
+            if p is None:
+                raise SystemExit(
+                    f"REFUSED (S6-B3173a): free-level key {k!r} maps to no "
+                    f"Table A param id: {sorted(by_id)}")
+            levels[p["param"]] = v
+            prod_flags.append(v == p.get("production"))
+        if skip_production and prod_flags and all(prod_flags):
+            continue
+        for pe in e.get("per_exit_ranked_by_ci_lo") or []:
+            # the per-exit fields are spelled two ways as well, MEASURED:
+            # sharpe / ci_lo (candle, bollinger, naked-POC) and is_sharpe /
+            # is_ci_lo (institutional). Read by KEY PRESENCE - an `or` would
+            # take a real 0.0 for absent (L580 / the B1972 class).
+            sh = pe["sharpe"] if "sharpe" in pe else pe.get("is_sharpe")
+            lo = pe["ci_lo"] if "ci_lo" in pe else pe.get("is_ci_lo")
+            out.append({"exit": pe.get("exit"), "is_sharpe": sh,
+                        "is_ci_lo": lo, "is_n": pe.get("n"),
+                        "levels": levels, "cube": a.get("cube"),
+                        "offline_free_level": True})
+    return out
+
+
+def _free_level_note(arts: list) -> str:
+    """S6-B3173a: the free-levels contribution, derived from the artifacts -
+    including the exit cap each grader applied, MEASURED per artifact."""
+    blocks = [a for a in arts if _is_levels_block(a)]
+    caps, n_lv = set(), 0
+    for a in blocks:
+        raw = a.get("levels")
+        ents = list(raw.values()) if isinstance(raw, dict) else list(raw or [])
+        n_lv += len(ents)
+        for e in ents:
+            if isinstance(e, dict):
+                caps.add(len(e.get("per_exit_ranked_by_ci_lo") or []))
+    cap_s = "/".join(str(c) for c in sorted(caps)) or "-"
+    return (f"OFFLINE FREE LEVELS - {n_lv} level(s) across {len(blocks)} "
+            "artifact(s), each graded offline from its config's cube (no engine "
+            "run per level). A level carries only the exits its grader kept, "
+            f"ranked by in-sample lower bound (kept per level: {cap_s}), so its "
+            "other exits are not in this view; the production level is the "
+            "grid's production cell when that grid is rendered alongside, and "
+            "is shown once. IS n is the level's in-sample trade count.")
+
+
 def _offline_factorial_note(arts: list) -> str:
     """S6-B3140b: what the offline factorial blocks contribute, derived
     from the artifacts themselves."""
@@ -283,6 +382,10 @@ def load(paths: list, params: list | None = None) -> tuple[list, list, list]:
             src = raw
         elif _is_factorial_block(a):
             src = _factorial_block_rows(
+                a, params or [],
+                skip_production=_cube_dir(a.get("cube")) in carried)
+        elif _is_levels_block(a):
+            src = _free_level_rows(
                 a, params or [],
                 skip_production=_cube_dir(a.get("cube")) in carried)
         else:
@@ -535,7 +638,8 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
         for name, lev in (r.get("levels") or {}).items():
             tested_levels.setdefault(name, set()).add(lev)
             # S6-B3140b: no engine ran per offline-factorial combination
-            if not r.get("offline_factorial"):
+            # S6-B3173a: nor per offline free level
+            if not (r.get("offline_factorial") or r.get("offline_free_level")):
                 resim_tested.add(name)
     # S6-B3139w: a resim-swept axis is one cube per level, so its evidence is
     # the cube's run manifest, not row variance. A value equal to production
@@ -705,9 +809,12 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                "IS n wherever holdout_n is 0 - Step 1 does not read the "
                "holdout."]
               if any(r.get("levels") and not r.get("offline_factorial")
+                     and not r.get("offline_free_level")
                      for r in ranked) else []),
             *([_offline_factorial_note(arts)]
               if any(r.get("offline_factorial") for r in ranked) else []),
+            *([_free_level_note(arts)]
+              if any(r.get("offline_free_level") for r in ranked) else []),
             *(["COUNTS - %d of %d ranked rows carry no IS n, so their tier "
                "reads '-'. An absent count is never rendered as 0 or as THIN "
                "(L580)." % (sum(1 for r in ranked if r.get("is_n") is None),

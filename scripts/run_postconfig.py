@@ -1221,6 +1221,27 @@ def asserts_non_execution(claim: str) -> bool:
                for t in _CONTRA_EDGE)
 
 
+def _evidence_cut(ev, cap: int = 60) -> str:
+    """S6-B3187 (L580): one check's value inside the packed step-1 string.
+
+    The 60-character budget is KEPT: ledger_contradictions reads this
+    string for non-execution phrases, so a longer value could expose one
+    the cut hides today - widening is a behaviour change, not a display
+    fix. What changes is HOW it cuts: on a word boundary when one sits in
+    the last third, and always with a visible ' ...', so a cut value can
+    no longer read as complete. MEASURED before the change, in a landed
+    cube's evidence: 'Step-1: manifest window.end 2025-05-05 <= HO_START
+    2025-05-0' - a mid-token cut that printed a wrong date."""
+    ev = str(ev)
+    if len(ev) <= cap:
+        return ev
+    head = ev[:cap]
+    sp = head.rfind(" ")
+    if sp >= (cap * 2) // 3:
+        head = head[:sp]
+    return head.rstrip() + " ..."
+
+
 def ledger_contradictions(ledger: dict) -> list[str]:
     return [f"{c}/{n}" for c, steps in ledger.items()
             if isinstance(steps, dict) for n, v in steps.items()
@@ -1363,7 +1384,7 @@ def _main_unguarded() -> int:
     sanity_fails = [n for n, st, _ in results
                     if st == "FAIL" and n not in _GRADER_CHECKS + _LEDGER_WIDE
                     and n != "family_dispatch"]
-    summary = "; ".join(f"{n}={st}({ev[:60]})" for n, st, ev in results)
+    summary = "; ".join(f"{n}={st}({_evidence_cut(ev)})" for n, st, ev in results)
     steps: dict[str, tuple[str, str]] = {}
     steps["1_cube_sanity"] = ("FAIL" if sanity_fails else "DONE",
                               "run_postconfig: " + summary)
