@@ -2077,10 +2077,8 @@ P1  price_above_ema_<span>  (compute_ema_sma; the gate reads
 P2  period_lookback  (bars the POC window spans;
        volume_profile.py compute_period_pocs)  [prior bracket 126/252; the
        owner's 2026-10-14 words were re-read onto P3 by the owner's word
-       "Chunks" (B3139q-r69s). ENGINE LEVEL 126 HELD ADAPTER-PENDING -
-       validate_spec (B2883) refuses resim levels without a complete
-       battery adapter; the adapter is S6-B3171a, owed before any
-       engine leg]
+       "Chunks" (B3139q-r69s). ENGINE LEVEL 126 RAN as Step-1 config 1
+       (npoc_s1_p2_126) once the S6-B3171a adapter landed (B3139q-r70b)]
 P3  n_periods  (POC chunks the window splits into; a
        compute_period_pocs argument)
        [OWNER T3 2026-10-14, verbatim: "P2.2 need lower bands than 126.
@@ -2091,11 +2089,13 @@ P3  n_periods  (POC chunks the window splits into; a
        (compute_period_pocs' own guard skips a chunk under 5 bars;
        pinned test_b3171): n_periods 50 pairs only with lookback 252 -
        at lookback 126 the chunks are 2 bars and ZERO POCs exist.
-       Engine levels ADAPTER-PENDING as P2]
+       Engine levels 4 / 8 / 12 / 50 RAN as Step-1 configs 2-5]
 P4  n_bins  (price bins per chunk profile; a compute_period_pocs
        argument)
        [OWNER T3 2026-10-14, verbatim: "P2.3 add 20" -> band 20/30/40/50;
-       engine levels ADAPTER-PENDING as P2]
+       engine levels 20 and 30 RAN as Step-1 configs 6-7; 50 NOT RUN - the
+       owner stopped the chain after config 7 (2026-10-16, verbatim:
+       "Finish config 7, then stop")]
 
 =============================== STRATEGY LAYER ===============================
 
@@ -2106,7 +2106,9 @@ P6  naked_poc_nearest_distance_pct < 0.02   [EXISTING-THRESHOLD; tighter
        2026-10-14, verbatim: "P3 add looser bands" -> looser ceilings, RESIM
        by construction; the LEVELS 0.03 / 0.04 / 0.05 (1.5x/2x/2.5x of
        production, criterion stated) APPROVED by the owner's word 2026-10-14
-       "Approve all recs", and HELD ADAPTER-PENDING as P2]
+       "Approve all recs"; NOT RUN - configs 9-11, dropped when the owner
+       stopped the chain after config 7 (2026-10-16, "Finish config 7,
+       then stop")]
 
 fires = P5 AND P6 AND price_above_ema_<P1 span>
         (backtest/signals/screener.py strat_naked_poc_retest_long; the P6
@@ -2210,7 +2212,9 @@ word, never a gate until a Step-2 read says so.
                    "words were re-read onto P3 (word: Chunks, B3139q-r69s)",
          "type": "numeric", "engine_implemented": True,
          "evidence": "volume_profile.py compute_period_pocs; config.py NAKED_POC_LOOKBACK",
-         "derivation": "band held to production until the adapter lands"},
+         "derivation": ("prior bracket - 126 is half the 252-bar production "
+                        "window; the owner's 2026-10-14 lower-band words were "
+                        "re-read onto P3 (word: Chunks, B3139q-r69s)")},
         {"id": "P3", "producer": "volume_profile.py compute_period_pocs",
          "param": "n_periods (POC chunks)",
          "production": 6, "band": [4, 6, 8, 12, 50],
@@ -2224,7 +2228,11 @@ word, never a gate until a Step-2 read says so.
                    "test_b3171 - n_periods 50 pairs only with lookback 252",
          "type": "numeric", "engine_implemented": True,
          "evidence": "volume_profile.py compute_period_pocs (n_periods); config.py NAKED_POC_N_PERIODS",
-         "derivation": "as P2"},
+         "derivation": ("owner T3 2026-10-14 'P2.2 need lower bands than 126. "
+                        "Quarterly, monthly and weekly', re-read as chunk "
+                        "durations (word: Chunks, B3139q-r69s): 63/21/5-bar "
+                        "chunks of the 252-bar window = n_periods 4/12/50, "
+                        "beside production 6 and 8")},
         {"id": "P4", "producer": "volume_profile.py compute_period_pocs",
          "param": "n_bins (price bins)",
          "production": 40, "band": [20, 30, 40, 50],
@@ -2236,7 +2244,7 @@ word, never a gate until a Step-2 read says so.
                    "with the S6-B3171a adapter (B3139q-r70b)",
          "type": "numeric", "engine_implemented": True,
          "evidence": "volume_profile.py compute_period_pocs (n_bins); config.py NAKED_POC_N_BINS",
-         "derivation": "as P2"},
+         "derivation": "owner T3 2026-10-14 'P2.3 add 20' -> 20 joins the 30/40/50 bracket"},
         {"id": "P5", "producer": "screener naked-POC block (count of unretested POCs)",
          "param": "count floor (> N naked POCs)",
          "production": 0, "band": [0, 1, 2],
@@ -3857,6 +3865,19 @@ def leverage(spec: dict) -> dict:
     # an omitted axis is invisible at close (L785).
     unreachable = [q for q in params if q.get("engine_implemented") is False]
     params = [q for q in params if q.get("engine_implemented") is not False]
+    # S6-B3182 sweep: S6-B3120h's rule - ONE env knob backing several rows
+    # is ONE axis. MEASURED: bollinger_lower's P3 and P4 both read
+    # STRAT_EMA_SPAN, so this priced 7 x 7 = 49 engine runs for 7 settable
+    # resim spans (1 of 11 SPECS entries carries a shared knob).
+    _seen_env, _axes = set(), []
+    for q in params:
+        _e = q.get("env")
+        if _e and _e in _seen_env:
+            continue
+        if _e:
+            _seen_env.add(_e)
+        _axes.append(q)
+    params = _axes
     engine = free = 1
     for q in params:
         if per_level:
@@ -5291,6 +5312,165 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
     return rows
 
 
+def engine_split(spec: dict) -> dict:
+    """S6-B3182 (L796 / L825): the factorial's engine / offline split, PER LEVEL.
+
+    --factorial decided 'own engine run?' and ENGINE RUNS from each param's
+    single subset_safe flag and never read resim_band. MEASURED 2026-10-16 on
+    naked_poc_retest_long: P6 (distance ceiling) printed 'no - derives
+    offline' for all 8 levels and ENGINE RUNS 240, while P6's resim_band holds
+    three looser ceilings only the engine can produce. Same precedence as
+    leverage(): where ANY param carries free_band / resim_band the per-level
+    fields decide and subset_safe is ignored (a param without either field
+    falls back to its own subset_safe); an axis the engine cannot reach
+    (engine_implemented False) costs no runs and is reported, not dropped.
+
+    Counts, each with the definition a reader must quote it with (L664 - three
+    figures circulated for one quantity before this):
+      full_factorial  every level of every applicable axis;
+      engine_configs  the full engine grid - per engine-bearing axis, its
+                      resim levels PLUS production (production is a run too,
+                      and it carries the axis's offline levels);
+      offline_cells   full_factorial - engine_configs, graded from an engine
+                      config's cube and never run themselves.
+    leverage() is a different quantity (resim levels only, production
+    EXCLUDED) and is printed beside these, never in place of them. With no
+    per-level field anywhere, engine_configs reproduces the old product of
+    the non-subset-safe bands exactly.
+    """
+    import math as _m
+    params = [p for p in (spec.get("params") or []) if p.get("status") != "N/A"]
+    per_level = any(("free_band" in q or "resim_band" in q) for q in params)
+    rows, eng_factors, unreachable = [], [], []
+    # S6-B3120h's rule (build_table_a counts once per env name): ONE env knob
+    # backing several rows is ONE physical axis - MEASURED, bollinger_lower's
+    # P3 and P4 both read STRAT_EMA_SPAN, and counting each row squared the
+    # span axis (8 x 8 = 64 engine configs for 8 settable spans).
+    seen_env, shared = {}, set()
+    for p in params:
+        _env = p.get("env")
+        if _env and _env in seen_env:
+            shared.add(p["id"])
+            _note = (f"shares env {_env} with {seen_env[_env]} - ONE knob, "
+                     "counted once")
+            rows.append({"param": p, "class": _note, "need": _note,
+                         "engine_levels": [], "offline_levels": []})
+            continue
+        if _env:
+            seen_env[_env] = p["id"]
+        band = list(p.get("band") or [])
+        prod = p.get("production")
+        if per_level and ("free_band" in p or "resim_band" in p):
+            resim = list(p.get("resim_band") or [])
+            free = list(p.get("free_band") or [])
+        elif p.get("subset_safe") is True:
+            resim, free = [], band
+        else:
+            resim, free = [b for b in band if b != prod], [prod]
+        reachable = p.get("engine_implemented") is not False
+        off = [b for b in free if b != prod]
+        eng = []
+        if resim and reachable:
+            eng = list(resim) + ([] if prod in resim else [prod])
+            eng_factors.append((p["id"], len(eng)))
+        elif resim:
+            unreachable.append(f"{p['id']} {p['param']}")
+        if eng and off:
+            cls = "MIXED - offline AND engine levels"
+        elif eng:
+            cls = "**FIRE-ADDING**"
+        elif resim:
+            cls = "DEFINED-NO-ACTUATOR"
+        else:
+            cls = "subset-safe"
+        if eng:
+            need = (f"**ENGINE: {', '.join(_fmt(b) for b in resim)}**"
+                    + (f"; offline: {', '.join(_fmt(b) for b in off)}" if off else "")
+                    + f" (production {_fmt(prod)} is the baseline run)")
+        elif resim:
+            need = (f"no - resim levels {', '.join(_fmt(b) for b in resim)} are "
+                    "DEFINED with no engine plumbing (not counted)")
+        else:
+            need = "no - derives offline"
+        rows.append({"param": p, "class": cls, "need": need,
+                     "engine_levels": eng, "offline_levels": off})
+    axes = [p for p in params if p["id"] not in shared]
+    full = _m.prod(len(p.get("band") or []) for p in axes) if axes else 0
+    engine = _m.prod(n for _, n in eng_factors) if eng_factors else 1
+    assert engine <= max(full, 1), (engine, full)
+    return {"rows": rows, "full_factorial": full, "engine_configs": engine,
+            "offline_cells": full - engine, "shared_rows": sorted(shared),
+            "full_expr": " x ".join(str(len(p.get("band") or [])) for p in axes) or "0",
+            "full_expr_ids": " x ".join(f"{len(p.get('band') or [])} ({p['id']})"
+                                      for p in axes) or "0",
+            "engine_expr": " x ".join(f"{n} ({pid})" for pid, n in eng_factors) or "1",
+            "unreachable": unreachable,
+            "basis": "per_level" if per_level else "subset_safe"}
+
+
+def _per_exit_rows(data: dict):
+    """S6-B3173c: the measured rows of a PER-EXIT grid, or None.
+
+    The family graders (grade_<family>_config.py) write `results` as ONE
+    combination carrying only {combo, n_exits_graded, n_exits_ranked,
+    verdict: RANKED} and put every measured value in the top-level `per_exit`
+    list (exit, rank, fires, is_sharpe, is_ci_lo, class_size); a Step-2 run
+    adds a `step2` holdout block. Table B read `results` alone, so such a grid
+    rendered as fires 0 with every metric none and 'non-gradable: 1' - an
+    unmeasured value shown as a measured 0 (L580). MEASURED 2026-10-17: 67 of
+    100 grid artifacts under output_audit/ have this shape (candle 21, icg 20,
+    bollinger 9, naked-POC 9, pairs 8); the other 33 are the tighten-grid
+    shape table_b was written for."""
+    res, pe = data.get("results"), data.get("per_exit")
+    if (isinstance(pe, list) and isinstance(res, list) and res
+            and all(isinstance(r, dict) and r.get("verdict") == "RANKED"
+                    for r in res)):
+        return pe
+    return None
+
+
+def table_b_per_exit(data: dict, rows: list) -> list[str]:
+    """S6-B3173c: Table B for a per-exit grid - the in-sample exit RANKING in
+    the grid's own rank order (the ordering key first, L558), then the Step-2
+    holdout read when the grid carries one. Step 1 gates nothing (owner ruling
+    B1608), so no Step-1 row here can say PASS."""
+    combo = ((data.get("results") or [{}])[0] or {}).get("combo") or {}
+    out = ["**Combination:** " + (", ".join(f"{k}={_fmt(v)}"
+                                            for k, v in combo.items()) or "-"),
+           f"**Rows:** {_measured_fmt(data.get('is_rows'))} in-sample, "
+           f"{_measured_fmt(data.get('holdout_rows'))} holdout", "",
+           "### In-sample exit ranking (Step 1 ranks; it gates nothing - "
+           "owner ruling B1608)", "",
+           "| rank | exit | fires | IS CI-lo | IS Sharpe | exits in its identical class |",
+           "|---|---|---|---|---|---|"]
+    for r in sorted(rows, key=lambda r: (r.get("rank") is None, r.get("rank") or 0)):
+        out.append(f"| {_measured_fmt(r.get('rank'))} | {r.get('exit', '-')} | "
+                   f"{_measured_fmt(r.get('fires'))} | {_measured_fmt(r.get('is_ci_lo'))} | "
+                   f"{_measured_fmt(r.get('is_sharpe'))} | "
+                   f"{_measured_fmt(r.get('class_size'))} |")
+    s2 = data.get("step2")
+    if isinstance(s2, dict):
+        fail = ", ".join(k for k, v in (s2.get("gates") or {}).items()
+                         if not v) or "-"
+        out += ["", "### Holdout read (Step 2) of the in-sample-selected exit", "",
+                "| exit | ho n | full n | **Sharpe** | **PF** | **Sortino** | "
+                "**PSR** | win% | payoff | expectancy | p | CI-lo | gates | "
+                "failing | verdict |",
+                "|" + "---|" * 15,
+                f"| {s2.get('selected_exit', '-')} | "
+                f"{_measured_fmt(s2.get('holdout_n'))} | "
+                f"{_measured_fmt(s2.get('full_period_n'))} | "
+                f"{_measured_fmt(s2.get('sharpe'))} | "
+                f"{_measured_fmt(s2.get('profit_factor'))} | "
+                f"{_measured_fmt(s2.get('sortino'))} | {_measured_fmt(s2.get('psr'))} | "
+                f"{_measured_fmt(s2.get('win_rate'))} | {_measured_fmt(s2.get('payoff'))} | "
+                f"{_measured_fmt(s2.get('expectancy'))} | {_measured_fmt(s2.get('p'))} | "
+                f"{_measured_fmt(s2.get('ci_lo'))} | "
+                f"{_measured_fmt(s2.get('gates_passed'))}/{len(GATE_ORDER)} | {fail} | "
+                f"{s2.get('verdict', '-')} |"]
+    return out
+
+
 def table_b(results: list[dict], keys: list[str]) -> list[str]:
     """Every metric roster_core.evaluate() computes, split GATED vs DIAGNOSTIC.
 
@@ -5349,10 +5529,8 @@ def main() -> int:
             for e in errs:
                 print(f"  {e}")
             return 1
-        applicable = [p for p in spec["params"] if p["status"] != "N/A"]
-        fact = math.prod(len(p["band"]) for p in applicable)
-        free = math.prod(len(p["band"]) for p in applicable if p["subset_safe"])
-        runs = math.prod(len(p["band"]) for p in applicable if not p["subset_safe"])
+        split = engine_split(spec)
+        lev = leverage(spec)
         print(f"# {a.strategy} - FORMULA + FACTORIAL (never shown apart)")
         print("")
         print("## Boolean producer formula (READ from source)")
@@ -5365,18 +5543,31 @@ def main() -> int:
         print("")
         print("| | parameter | production | band VALUES | n | class | own engine run? |")
         print("|---|---|---|---|---|---|---|")
-        for p in applicable:
-            cls = "subset-safe" if p["subset_safe"] else "**FIRE-ADDING**"
-            need = "no - derives offline" if p["subset_safe"] else "**YES**"
+        # S6-B3182: the class and the engine column are PER LEVEL
+        # (engine_split) - a knob can hold offline and engine levels at once.
+        for row in split["rows"]:
+            p = row["param"]
             vals = ", ".join(_fmt(b) for b in p["band"]) or "-"
-            print(f"| {p['id']} | `{p['param']}` | {_fmt(p['production'])} | {vals} | {len(p['band'])} | {cls} | {need} |")
-        expr = " x ".join(str(len(p["band"])) for p in applicable)
+            print(f"| {p['id']} | `{p['param']}` | {_fmt(p['production'])} | {vals} | {len(p['band'])} | {row['class']} | {row['need']} |")
         print("")
         print("```")
-        print(f"FULL FACTORIAL   {expr} = {fact}")
-        print(f"offline per run  {free}")
-        print(f"ENGINE RUNS      {runs}")
-        print(f"check            {runs} x {free} = {runs * free}")
+        print(f"FULL FACTORIAL   {split['full_expr']} = {split['full_factorial']}"
+              "  (every level of every applicable axis)")
+        print(f"ENGINE CONFIGS   {split['engine_expr']} = {split['engine_configs']}"
+              "  (the full engine grid: per engine-bearing axis, its resim "
+              "levels plus production)")
+        print(f"OFFLINE CELLS    {split['full_factorial']} - {split['engine_configs']} = "
+              f"{split['offline_cells']}  (graded from an engine config's cube, "
+              "never run)")
+        print(f"LEVERAGE RUNS    {lev['engine_runs']}  (leverage(), basis "
+              f"{lev['basis']}: resim levels only, production EXCLUDED - a "
+              "ranking input, not a grid size)")
+        if split["unreachable"]:
+            print(f"UNREACHABLE      {', '.join(split['unreachable'])} - resim "
+                  "levels DEFINED with no engine plumbing, not counted "
+                  "(S6-B2752f)")
+        print(f"BASIS            {split['basis']} (S6-B3182: free_band / "
+              "resim_band decide where any param carries them)")
         print("```")
         return 0
 
@@ -5395,8 +5586,8 @@ def main() -> int:
     applicable = [p for p in spec["params"] if p["status"] != "N/A"]
     # Factorial + free subspace computed from the inventory, never hand-counted
     # (L368: hand-counting reintroduces the error #182 exists to prevent).
-    factorial = math.prod(len(p["band"]) for p in applicable)
-    free_space = math.prod(len(p["band"]) for p in applicable if p["subset_safe"])
+    split = engine_split(spec)                     # S6-B3182: per level
+    per_exit = _per_exit_rows(data)                # S6-B3173c
     gradable = [r for r in results if r["verdict"] in ("PASS", "FAIL")]
     passed = [r for r in results if r["verdict"] == "PASS"]
 
@@ -5418,16 +5609,43 @@ def main() -> int:
            "## Section 2 - Table A: parameter inventory", ""]
     out += table_a(spec)
     out += ["", "## Section 3 - Table B: combination results", ""]
-    out += table_b(results, keys)
-    out += ["", "## Verdict (CHECKLIST #182 - denominator required)", "",
-            f"**{len(passed)} of {len(results)} combinations passed, across "
-            f"{len(tested)} of {len(applicable)} applicable producers.**", "",
-            f"- graded: {len(gradable)} | non-gradable: {len(results) - len(gradable)}",
-            f"- **FULL FACTORIAL = {factorial}** "
-            f"({' x '.join(str(len(p['band'])) + ' (' + p['id'] + ')' for p in applicable)}); "
-            f"combinations run = {len(results)} = **{100 * len(results) / factorial:.0f}% of factorial**",
-            f"- free (subset-safe) subspace = {free_space} | "
-            f"needs engine resim = {factorial - free_space}",
+    if per_exit is not None:
+        # S6-B3173c: a per-exit grid renders its RANKING (and its holdout
+        # read), never a phantom combination row at 0 fires.
+        out += table_b_per_exit(data, per_exit)
+        _ranked = [r for r in per_exit if r.get("rank") is not None]
+        _top = min(_ranked, key=lambda r: r["rank"]) if _ranked else None
+        _s2 = data.get("step2")
+        verdict = [
+            f"**Step 1 ranks; it gates nothing (owner ruling B1608): "
+            f"{len(_ranked)} of {len(per_exit)} exits ranked** on "
+            f"{_measured_fmt(data.get('is_rows'))} in-sample rows"
+            + (f"; rank 1 = {_top.get('exit')} (IS CI-lo "
+               f"{_measured_fmt(_top.get('is_ci_lo'))}, IS Sharpe "
+               f"{_measured_fmt(_top.get('is_sharpe'))}, fires "
+               f"{_measured_fmt(_top.get('fires'))})" if _top else "") + ".", ""]
+        if isinstance(_s2, dict):
+            verdict += [f"**Step-2 holdout read: {_s2.get('verdict', '-')}** - "
+                        f"{_measured_fmt(_s2.get('gates_passed'))} of "
+                        f"{len(GATE_ORDER)} gates on the in-sample-selected "
+                        f"exit {_s2.get('selected_exit', '-')}.", ""]
+    else:
+        out += table_b(results, keys)
+        verdict = [f"**{len(passed)} of {len(results)} combinations passed, "
+                   f"across {len(tested)} of {len(applicable)} applicable "
+                   "producers.**", "",
+                   f"- graded: {len(gradable)} | non-gradable: "
+                   f"{len(results) - len(gradable)}"]
+    out += ["", "## Verdict (CHECKLIST #182 - denominator required)", ""]
+    out += verdict
+    out += [
+            f"- **FULL FACTORIAL = {split['full_factorial']}** "
+            f"({split['full_expr_ids']}); "
+            f"combinations run = {len(results)} = "
+            f"**{100 * len(results) / max(split['full_factorial'], 1):.0f}% of factorial**",
+            f"- engine configs (the full engine grid, per level - S6-B3182) = "
+            f"{split['engine_configs']} | offline cells = {split['offline_cells']} "
+            f"(basis {split['basis']})",
             f"- UNTESTED producers: "
             f"{', '.join(p['id'] + ' ' + p['param'] for p in spec['params'] if p['status'] == 'UNTESTED') or 'none'}",
             "", "*Generated by `scripts/producer_variant_table.py` - regenerate, do not hand-edit.*"]

@@ -56479,3 +56479,155 @@ def test_b3184_committed_specs_name_only_tracked_subset_files():
             missing.setdefault(s, []).append(rel)
     assert "output_audit/_subset_naked_poc_retest_long.txt" in named, sorted(named)
     assert missing == {}, missing
+
+
+def _pvt_main_out(monkeypatch, capsys, argv):
+    """Run producer_variant_table.main in-process with `argv`; return stdout."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    monkeypatch.setattr(sys, "argv", ["producer_variant_table.py"] + argv)
+    capsys.readouterr()
+    rc = pvt.main()
+    return rc, capsys.readouterr().out
+
+
+def test_b3173b_registered_family_text_claims_no_pending_adapter():
+    """S6-B3173b: a REGISTERED family's SPECS text cannot say its adapter is owed.
+
+    naked_poc_retest_long was promoted into SPECS at B3139q-r70b, adapter
+    complete, while its formula still read 'ENGINE LEVEL 126 HELD
+    ADAPTER-PENDING ... the adapter is S6-B3171a, owed before any engine leg'
+    (P3, P4 and P6 'ADAPTER-PENDING as P2') and P2's derivation 'band held to
+    production until the adapter lands' - which Table A rendered as current
+    after config 1 had RUN lookback 126. Every SPECS entry is a registered
+    battery family (family_refusal clean), so none of its strings may claim the
+    adapter is pending. SPECS_PHASE0 is out of scope by construction: it is the
+    pre-engine inventory, where adapter-gated text is the truth.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import run_postconfig as rp
+    PENDING = ("ADAPTER-PENDING", "until the adapter lands",
+               "owed before any engine leg")
+    incident = ("ENGINE LEVEL 126 HELD ADAPTER-PENDING - validate_spec (B2883) "
+                "refuses resim levels without a complete battery adapter; the "
+                "adapter is S6-B3171a, owed before any engine leg")
+    assert sum(m in incident for m in PENDING) == 2, "the matcher sees the incident"
+    stale = []
+    for name, s in pvt.SPECS.items():
+        assert rp.family_refusal(name) == "", (name, rp.family_refusal(name))
+        texts = [s.get("formula", "")] + [
+            str(q.get(k, "")) for q in s.get("params") or []
+            for k in ("status", "derivation", "evidence")]
+        stale += [(name, m) for t in texts for m in PENDING if m in t]
+    assert stale == [], stale
+    npoc = pvt.SPECS["naked_poc_retest_long"]
+    by = {q["id"]: q for q in npoc["params"]}
+    assert "ENGINE LEVEL 126 RAN as Step-1 config 1" in npoc["formula"]
+    assert "50 NOT RUN" in npoc["formula"], "P4's dropped level is recorded"
+    assert by["P3"]["derivation"] != "as P2" and by["P4"]["derivation"] != "as P2"
+    assert pvt.validate_spec(npoc) == [], pvt.validate_spec(npoc)
+
+
+def test_b3173c_table_b_renders_a_per_exit_grid(monkeypatch, capsys):
+    """S6-B3173c: Table B renders a per-exit grid's RANKING, never a 0-fire row.
+
+    Verbatim incident: --results on output_npoc_s1_p2_126_p2_126_grid_auto.json
+    rendered config 1 as fires 0, every metric none, 'non-gradable: 1', while
+    the grid's per_exit carries 24 exits at 559 fires each (L580 - an
+    unmeasured value shown as a measured 0). MEASURED 2026-10-17: 67 of 100
+    grids under output_audit/ have this shape. Also the Step-2 shape (a
+    `step2` holdout block beside the RANKED results) and the tighten-grid shape
+    table_b was written for, which must render as before.
+    """
+    from pathlib import Path as _P
+    oa = _P(__file__).resolve().parents[2] / "output_audit"
+
+    def _section3(out):
+        a, b = out.index("## Section 3"), out.index("## Verdict")
+        return out[a:b], out[b:]
+
+    rc, out = _pvt_main_out(monkeypatch, capsys, [
+        "--strategy", "naked_poc_retest_long",
+        "--results", str(oa / "output_npoc_s1_p2_126_p2_126_grid_auto.json")])
+    assert rc == 0, out
+    s3, verdict = _section3(out)
+    import re as _re
+    rows = [l for l in s3.splitlines() if _re.match(r"^\| \d+ \| ", l)]
+    assert len(rows) == 24, len(rows)
+    assert rows[0] == "| 1 | breakeven_plus_trail | 559 | 0.262 | 0.523 | 1 |", rows[0]
+    assert [int(r.split("|")[1]) for r in rows] == list(range(1, 25)), "rank order"
+    assert [r.split("|")[3].strip() for r in rows] == ["559"] * 24, "fires per exit"
+    assert "non-gradable" not in verdict
+    assert "24 of 24 exits ranked" in verdict and "combinations passed" not in verdict
+
+    rc, out = _pvt_main_out(monkeypatch, capsys, [
+        "--strategy", "bollinger_lower",
+        "--results", str(oa / "output_bl_step2_p4_9_p4_9_grid_auto.json")])
+    s3, verdict = _section3(out)
+    ho = [l for l in s3.splitlines() if l.startswith("| breakeven_plus_trail | 465 |")]
+    assert len(ho) == 1, s3[-900:]
+    assert "| 5/6 | pooled_sharpe | FAIL |" in ho[0], ho[0]
+    assert "Step-2 holdout read: FAIL" in verdict, verdict[:400]
+
+    rc, out = _pvt_main_out(monkeypatch, capsys, [
+        "--strategy", "smc_breaker_block_long",
+        "--results", str(oa / "output_b2197_sw20sp20_sw20sp20_grid_auto.json")])
+    s3, verdict = _section3(out)
+    assert "combinations passed" in verdict and "non-gradable" in verdict
+    assert "In-sample exit ranking" not in s3, "a tighten grid keeps its own table"
+
+
+def test_b3182_factorial_splits_a_mixed_knob_per_level(monkeypatch, capsys):
+    """S6-B3182 (L796 / L825): --factorial reads free_band / resim_band PER LEVEL.
+
+    Verbatim incident: naked_poc_retest_long's P6 (distance ceiling) printed
+    'no - derives offline' for all 8 levels and ENGINE RUNS 240 (6 x 2 x 5 x 4)
+    while its resim_band holds 0.03 / 0.04 / 0.05 that only the engine can
+    produce. Each count now prints with its definition, leverage() beside them
+    with its own (L664), and one env knob backing two rows counts ONCE in both
+    SPECS readers (S6-B3120h's rule): bollinger_lower's P3 and P4 share
+    STRAT_EMA_SPAN, so 8 engine configs, not 64, and leverage 7, not 49.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    rc, out = _pvt_main_out(monkeypatch, capsys, [
+        "--strategy", "naked_poc_retest_long", "--factorial"])
+    assert rc == 0, out
+    fac = out[out.index("## Factorial"):]
+    p6 = [l for l in fac.splitlines() if l.startswith("| P6 |")]
+    assert len(p6) == 1, fac[:600]
+    assert "MIXED" in p6[0] and "**ENGINE: 0.030, 0.040, 0.050**" in p6[0], p6[0]
+    assert "derives offline" not in p6[0], p6[0]
+    lines = fac.splitlines()
+    eng = [l for l in lines if l.startswith("ENGINE CONFIGS")]
+    assert eng and "6 (P1) x 2 (P2) x 5 (P3) x 4 (P4) x 4 (P6) = 960" in eng[0], eng
+    assert "resim levels plus production" in eng[0], eng[0]
+    lev = [l for l in lines if l.startswith("LEVERAGE RUNS")]
+    assert lev and lev[0].split()[2] == "180" and "production EXCLUDED" in lev[0], lev
+    assert not [l for l in lines if l.startswith("ENGINE RUNS")], "the undefined label"
+
+    bl = pvt.engine_split(pvt.SPECS["bollinger_lower"])
+    assert bl["engine_configs"] == 8 and bl["shared_rows"] == ["P4"], bl["engine_configs"]
+    assert pvt.leverage(pvt.SPECS["bollinger_lower"])["engine_runs"] == 7
+
+    coarse = {"params": [
+        {"id": "P1", "param": "a", "band": [1, 2, 3], "production": 1,
+         "subset_safe": False, "status": "x"},
+        {"id": "P2", "param": "b", "band": [5, 6], "production": 5,
+         "subset_safe": True, "status": "x"}]}
+    s = pvt.engine_split(coarse)
+    assert s["basis"] == "subset_safe" and s["engine_configs"] == 3, s
+    assert s["full_factorial"] == 6 and s["offline_cells"] == 3, s
