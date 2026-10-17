@@ -57445,3 +57445,99 @@ def test_b3195_offline_sweep_refuses_a_looser_level():
             m.sweep("pead_long_high_yoy_growth_only", axes, (60.0, 0.05),
                     0.99, 0.999, 30)
         assert "[80.0]" in str(e.value), str(e.value)
+
+
+def test_b3200_npoc_table_d_carries_the_p1_ema_span_band():
+    """S6-B3200 (L928 / #303 INSTANCE 3): the naked_poc axis registry was
+    written at B3139q-r70b and the P1 ema_span band landed later (B3139q-r71e,
+    STRAT_EMA_SPAN), so Table D had NO COLUMN for the axis 5 of 12 npoc Step-1
+    configs swept - every EMA config rendered identical production axes while
+    the grid artifacts carry cfg.P1_ema_span. Contract + behaviour, per the
+    test_b2505 institutional precedent; a pre-band grid renders None (the
+    registry's None-as-production convention)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import producer_variant_table as pvt
+
+    fam = pvt.D_AXIS_FAMILIES["naked_poc"]
+    d2_keys = [k for (_lbl, _src, k) in fam["d2"]]
+    assert d2_keys == ["P1_ema_span", "P2_lookback", "P3_n_periods",
+                       "P4_n_bins", "P6_max_distance_pct"], d2_keys
+
+    def _grid(name, cfg):
+        return (name, {"config": cfg, "step1_ranking": [
+            {"exit": "breakeven_plus_trail", "is_ci_lo": 0.2, "fires": 500,
+             "is_sharpe": 0.5, "class_size": 1,
+             "admit": {"holdout_n": 0, "full_period_n": 500,
+                       "verdict": "RANKED"}}]})
+    base = {"P2_lookback": 252, "P3_n_periods": 6, "P4_n_bins": 40,
+            "P6_max_distance_pct": 0.02}
+    grids = dict([_grid("npoc_e20", dict(base, P1_ema_span=20)),
+                  _grid("npoc_e150", dict(base, P1_ema_span=150)),
+                  _grid("npoc_oldgrid", dict(base))])
+    out = pvt.table_d(grids)
+    hdr = [l for l in out if l.startswith("| # | config |")]
+    assert hdr, out
+    assert "P1 ema_span" in hdr[0], hdr[0]
+    e20 = [l for l in out if "npoc_e20" in l and "breakeven" in l]
+    assert e20 and "| 20 | 252 |" in e20[0], e20
+    e150 = [l for l in out if "npoc_e150" in l and "breakeven" in l]
+    assert e150 and "| 150 | 252 |" in e150[0], e150
+    old = [l for l in out if "npoc_oldgrid" in l and "breakeven" in l]
+    assert old and "| None | 252 |" in old[0], old
+
+
+def test_b3201_show_table_d_default_emits_no_d2():
+    """S6-B3201 (L928 / #303 INSTANCE 3): test_b2725 removed TABLE D-2 from
+    the LANDING report, and scripts/show_table_d.py - the CLI the owner's
+    'show table d' ask routes through - kept printing it beside the unified
+    table, recreating the two-table shape the owner rejected. D-2 now prints
+    only under the explicit --axes flag. Both directions, through the live
+    main() with discovery monkeypatched (no disk scan)."""
+    import contextlib
+    import importlib.util
+    import io
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    spec = importlib.util.spec_from_file_location(
+        "show_table_d_b3201", root / "scripts" / "show_table_d.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    grid = {"npoc_cfgx": {
+        "config": {"P1_ema_span": 20, "P2_lookback": 252, "P3_n_periods": 6,
+                   "P4_n_bins": 40, "P6_max_distance_pct": 0.02},
+        "step1_ranking": [
+            {"exit": "breakeven_plus_trail", "is_ci_lo": 0.2, "fires": 500,
+             "is_sharpe": 0.5, "class_size": 1,
+             "admit": {"holdout_n": 0, "full_period_n": 500,
+                       "verdict": "RANKED"}}]}}
+    mod.discover = lambda: dict(grid)
+
+    def _run(argv):
+        old_argv = _sys.argv
+        _sys.argv = ["show_table_d.py"] + argv
+        buf = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buf):
+                rc = mod.main()
+        finally:
+            _sys.argv = old_argv
+        return rc, buf.getvalue()
+
+    rc, out = _run([])
+    assert rc == 0 and "| # | config |" in out, out[-400:]   # the table printed
+    assert "TABLE D-2" not in out, (
+        "the default still re-emits the superseded D-2 beside the unified "
+        "table - the shape the owner rejected at B2725")
+    rc2, out2 = _run(["--axes"])
+    assert rc2 == 0 and "TABLE D-2" in out2, (
+        "the --axes escape is dead - the pin could never fail")

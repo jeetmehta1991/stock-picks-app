@@ -4540,7 +4540,15 @@ D_AXIS_FAMILIES = {
         "detect": "P2_lookback",
         "d1": (("lookback", "cfg", "P2_lookback"),
                ("ceiling", "cfg", "P6_max_distance_pct")),
-        "d2": (("P2 lookback", "cfg", "P2_lookback"),
+        # S6-B3200 (L928 / #303 instance 3): the P1 ema_span band landed
+        # at B3139q-r71e (STRAT_EMA_SPAN; grids carry cfg.P1_ema_span),
+        # AFTER this entry was written - so the axis 5 of 12 Step-1
+        # configs swept had no column. None in the P1 column = the grid
+        # predates the band and ran at the production span 200
+        # (config.STRAT_EMA_SPAN default), the registry's None-as-
+        # production convention.
+        "d2": (("P1 ema_span", "cfg", "P1_ema_span"),
+               ("P2 lookback", "cfg", "P2_lookback"),
                ("P3 n_periods", "cfg", "P3_n_periods"),
                ("P4 n_bins", "cfg", "P4_n_bins"),
                ("P6 ceiling", "cfg", "P6_max_distance_pct")),

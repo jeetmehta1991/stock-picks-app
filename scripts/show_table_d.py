@@ -58,6 +58,11 @@ def main() -> int:
                     help="rows to show (default 20, the owner's ask)")
     ap.add_argument("--only", default="",
                     help="comma-separated config names to include")
+    ap.add_argument("--axes", action="store_true",
+                    help="ALSO print the axes-only TABLE D-2 view. "
+                         "SUPERSEDED at B2725 - its columns are in Table "
+                         "D itself, so the default emits ONE table per "
+                         "the owner ruling (S6-B3201)")
     a = ap.parse_args()
     from producer_variant_table import table_d, table_d_params
 
@@ -71,13 +76,17 @@ def main() -> int:
         return 1
     for line in table_d(grids, top=a.top):
         print(line)
-    # S6-B2334: the six axes follow in the SAME order, joined on `#`
-    print()
-    from producer_variant_table import TABLE_D2_TITLE
-    print(f"### {TABLE_D2_TITLE} - THE SIX SWEPT AXES")
-    print()
-    for line in table_d_params(grids, top=a.top):
-        print(line)
+    if a.axes:
+        # SUPERSEDED VIEW (B2725): printing this beside Table D
+        # recreates the two-table shape the owner rejected, so it
+        # prints only on the explicit flag. The S6-B2334 always-print
+        # default is retired (S6-B3201 / L928 / #303 instance 3).
+        print()
+        from producer_variant_table import TABLE_D2_TITLE
+        print(f"### {TABLE_D2_TITLE} - THE SWEPT AXES")
+        print()
+        for line in table_d_params(grids, top=a.top):
+            print(line)
     return 0
 
 

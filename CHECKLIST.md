@@ -6060,6 +6060,8 @@ rejected key and survives any re-expression of the right one. ENFORCED BY
 test_b3085_table_d_sorts_on_the_locked_key, fail-proved in both directions.
 
 
+**INSTANCE 3 - A BAND ADDED AFTER THE REGISTRY ENTRY, AND A HAND-RUN CLI THE LANDING-REPORT FIX NEVER REACHED (B3139q-r72 / L928, self-caught at render).** The naked_poc D_AXIS_FAMILIES entry (B3139q-r70b) predates the P1 ema_span band (B3139q-r71e), so Table D had no column for the axis 5 of 12 npoc Step-1 configs swept; and scripts/show_table_d.py still printed the retired TABLE D-2 beside the unified table - test_b2725 had pinned the LANDING report only. Two additions to this item's sweep: an AXIS REGISTRY is a renderer input (a new band re-derives every family entry it serves, in the adding batch), and "every renderer" includes the HAND-RUN CLIs, not only the wired paths. ENFORCED BY test_b3200_npoc_table_d_carries_the_p1_ema_span_band and test_b3201_show_table_d_default_emits_no_d2, both fail-proved.
+
 An owner ruling about a DOCUMENT ("Table D is one unified table, a column per
 producer band") is satisfied per-RENDERER, and a repo can hold more than one
 renderer for the same document. Before calling such a ruling satisfied:
