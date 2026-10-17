@@ -2807,6 +2807,10 @@ Phase-1 population of 25, a planning number derived from an over-scoped verdict.
 
 **INSTANCE 4 (B3139q-r69o / L916) - THE NUMERATOR'S MEMBERSHIP TEST WAS THE SYMPTOM, NOT THE DEFECT.** S6-B3155a told the owner a partial final bar affected 84 of 544 tickers; the 84 were the tickers whose close moved more than 1pct after the snapshot, while a partial session corrupts the whole bar. Measured by the full bar against the prefetch and confirmed by a third source, 446 of the 544 carried one - and the owner had ruled on 84. A denominator can be right while the numerator is a proxy: before quoting how many members a defect has, name the property its mechanism corrupts in every instance and count by that. Mechanism: test_b3155a's class pin compares all five fields of every ruled ticker's final bar.
 
+**INSTANCE 5 (B3139q-r71c / L923) - AN INDEX QUOTED AS A COUNT.** Six owner-facing reports said "sim-day N of 249": 249 is the last 0-based index of a 250-day Step-1 window, not its size, and the wording came from monitor prompts I authored (L839's scheduled-instrument shape). The owner asked "Why is sim day only 249?". Take a progress denominator from the record that knows it; a writer publishing an index publishes the count beside it. ENFORCED BY test_b3185_every_progress_record_carries_the_window_total, an AST check over every engine record that publishes the index (landed B3139q-r71i).
+
+**INSTANCE 6 (B3139q-r71c / L924) - A MEMBER ADDED TO A POPULATION BY RECOLLECTION.** An audit correcting S6-B3180's count sized the strategies reading STRAT_EMA_SPAN at 5; the fifth, strat_smc_breaker_block_short, reads the literal below_ema_200, so 4 rows were affected (AST over all 225 strategies: 5 runtime-built key reads in 4 strategies). A correction to a population count is itself a population claim - derive membership from the code by the defect's property. ENFORCED BY test_b3180_roster_renders_keys_built_at_runtime, which derives the readers by AST at test time (landed B3139q-r71i).
+
 **#183 PRODUCER-OPTIMISATION ARTIFACT STANDARD (B1510, owner-locked).** Every strategy entering
 S6-OPT-196 is reported through `scripts/producer_variant_table.py` in ONE 3-section artifact, so
 results are comparable across strategies and nothing is reported ad hoc:
@@ -3065,6 +3069,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 **INSTANCE (B3139q-r19 / L898):** an output-preserving refactor (the NET transform lifted from `load_cube` into `net_pnl`) moved the metric-code fingerprint and left the cost formula unhashed, because `METRIC_CODE_MEMBERS` lists functions by qualified-name STRING - one grep for "roster_core.load_cube" returns it. Before moving code out of a function, grep its NAME for any registry that hashes or lists it. Mechanism: `test_b3139ao_fingerprint_covers_repo_callees_and_constant_values` (every repo callee of a member is a member; constant values are hashed).
 
 **INSTANCE (B3139q-r24 / L901):** the re-check after S6-B3139ag (the NET formula lifted from `load_cube` into `net_pnl`) asked what HASHED and what CALLED the moved code, never what POINTED at it: 13 citations of roster_core's line 181 - 7 of them basis strings written into grade and re-score artifacts, 1 rendered into PHASE_1B_ROSTER.md - pointed into a category loop, and 3 more roster_core line citations had decayed under earlier edits (16 of 18 stale, EXECUTED grep). A positional reference names no function, so L898's name grep cannot find it. When code moves, also grep the moved file's line citations; cite a symbol in new text. Pin test_b3139ai_roster_core_is_cited_by_symbol_not_line; the repo's other 570 line citations in code are ticketed S6-B3139bb.
+
+**INSTANCE (B3139q-r71j / L926) - A FIXTURE IN CITATION FORM.** The S6-B3189 validator test copied the registry's evidence strings, each a module name with a line number, into its fixtures; test_b3139bb_line_citations_in_code_only_shrink saw test_unit.py's count grow from 9 to 12 and refused it before the commit. A fixture that mirrors a citation-shaped string takes a line-free form.
 
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
@@ -3955,6 +3961,8 @@ confirms it, because the check costs one line and the false claim costs a commit
 confirmed by luck; the `regime_flip` fix declared DONE while supplying 1 of 2 required inputs; the
 post-config gate built and left uninvoked.
 
+**INSTANCE (B3139q-r71k / L926) - A NEW REFUSAL PLACED BEFORE THE CHECK THAT VALIDATES ITS PREMISE.** S6-B3195's looser-level refusal ran before the reproduction refusal, so test_b2638_reproduction_failure_refuses's wrong production read as a looser level under a misleading message; the targeted run passed and only the full suite found it (L632). The refusal now runs after reproduction and before any cell is graded.
+
 ### #227 - COMPARING TWO RANKINGS MEANS COMPUTING THE RANK CORRELATION (B1716 / L502)
 
 I compared in-sample and holdout rankings with a **top-10 overlap count**, got **0 of 10**, and
@@ -4061,6 +4069,8 @@ pointed at data and I read the scope narrowly. **A rule whose examples share one
 to that shape only.**
 
 **INSTANCE - A GATE NAMED AS A MITIGATION (B3093 / L866).** A manifest risk read *engine code changes mid-run* with the gate *the launcher refuses on drift*. The function behind it, `drift_check`, compares HEAD's sha with `frozen_sha`, so it refuses ANY commit, and four queue-only commits refused leg 2 of a 10-leg wave after 4.5 h. **What a gate refuses is a capability claim about the gate** - open the function and write what it compares before citing it, and check the recovery path through every gate it crosses.
+
+**INSTANCE (B3139q-r71c / L922) - WHAT THE MACHINERY WILL DO IS A CAPABILITY CLAIM; OPEN WHAT DECIDES IT.** An hourly report and two push notifications told the owner a drained battery would kill the live EMA run; this laptop's critical-battery action on DC is Hibernate (powercfg) and both cap sites credit sleep, so the run pauses. The same session's audit objected to a fix on the claim that the landing supervisor stages the landings file; its commit pathspec does not contain it. Both pointed toward caution, which is why neither was re-derived (L840).
 
 ### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
 
@@ -4782,6 +4792,8 @@ landed and four because the QUESTION changed shape - their concerns live on in o
 
 **INSTANCE - A CAVEAT RE-STAMPED BY ITS GENERATOR (B3094 / L867).** I told the owner three times that a resumed wave would DROP its 67 open trades; the engine restores them (backtest.py S6-B2213a, 67 checkpoint rows == 67 open). The caveat came from scripts/run_wave.py build_manifest, which wrote it into 83 of 92 generated manifests while its own comment said RESTORES. **Re-derive a caveat against the mechanism before repeating it, and fix the generator.** Pinned by test_b3094_run_wave_manifest_says_open_trades_are_restored.
 
+**INSTANCE (B3139q-r71j / L926) - A CARVED REMAINDER CALLED ITS TERMINAL PARENT UNFIXED.** Carving S6-B3196 from S6-B3189 in the append that closed S6-B3189, the new row said the parent's half was not built; test_b3106_open_ticket_calling_a_closed_ticket_unfixed_is_flagged refused it before the commit. A carved remainder states its own scope, never the parent's unbuilt part.
+
 ### #257 - A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION (B1777 / L532)
 
 **MEASURED: I reported "271 closed in 48h". The real figure is 13.** The other 268 were WRITTEN as
@@ -5492,6 +5504,8 @@ the directive's wording, and prose counts passed for two days).
 the existing `scan_missing_skill_confirmation` and `scan_compliance_is_content`.
 
 **INSTANCE (B3139q-r70s / L921) - A MANDATED BLOCK IS COPIED, NOT RE-AUTHORED; A TESTED DRAFT IS POSTED VERBATIM.** A close re-authored the ticket table as "Tickets by class" with a "Change" column and scan_ticket_counts_missing refused it (7 of 8 members); the corrected close was drafted to a file and tested (33 scans, 0 fired), then posted as a rewording that carried a miss marker, and scan_miss_capture_complete refused that. Session sweep: 2,624 ticket tables, 48 without an accepted header, 9 without a delta column. Mechanism: scan_ticket_counts_missing for the labels; the draft-versus-post half is JUDGMENT-ONLY for detection, durability pinned by test_b2123 (the skill's L921 tripwire row).
+
+**INSTANCE 2 (B3139q-r71d / L925) - A SECOND INSTANCE IN A DAY: MECHANISE THE DRAFT-VERSUS-POST CHECK.** A close tested at 54 gates with 0 firing was posted re-authored; the rewrite turned "end to end" (the phrase scan_partial_read accepts) into "end-to-end", and the posted close failed a gate the draft passed. Post the tested file byte for byte; a needed change goes into the file and the probe runs again. The draft-versus-post half is mechanised (S6-B3193, B3139q-r71k): scripts/probe_close.py stamps the probed draft under its turn and scan_close_differs_from_tested_draft refuses a final response that differs, naming the first differing line; pinned by test_b3193_posted_close_must_equal_its_tested_draft, durability by test_b2526.
 
 ### #283 - A NAME-KEYED TERMINAL ARTIFACT ON DISK AT LAUNCH IS THE PRIOR ATTEMPT'S (B2193 / L649)
 
@@ -6422,6 +6436,8 @@ test_b3121_findings_gate_counts_rows_through_the_live_helper for the instance; (
 test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason - 17 seams classified sound
 with a reason, 18 named unread under S6-B3121a, and a new seam fails until it is read and
 registered.
+
+**INSTANCE (B3139q-r71k / L926) - A NEW SCAN'S SEAMS LEFT UNREGISTERED.** scan_close_differs_from_tested_draft shipped stamp and turn_id seams that test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason refused until each carried its live-path reason; test_b3193_posted_close_must_equal_its_tested_draft also drives the live file branch.
 
 ### #325 - A COMPARISON OF TWO CODE TREES HOLDS THE DATA ENVIRONMENT FIXED (B3139 / L889, self-caught 2026-09-30)
 
