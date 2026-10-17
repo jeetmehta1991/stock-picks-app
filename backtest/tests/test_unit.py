@@ -57376,6 +57376,9 @@ def test_b3193_posted_close_must_equal_its_tested_draft(tmp_path):
                        capture_output=True, text=True, cwd=str(root), timeout=900)
     assert r.returncode in (0, 1), (r.returncode, r.stdout[-800:], r.stderr[-800:])
     assert "STAMPED" in r.stdout, r.stdout[-800:]
+    # S6-B3199: exit 1 means "some gate fired" OR "the probe broke"; a gate
+    # that RAISED inside the probe is the second, and must never pass here
+    assert "RAISED" not in r.stdout, r.stdout[-800:]
     st = json.loads((sd / "u1.json").read_text(encoding="utf-8"))
     assert st["turn"] == "u1" and st["lines"] == stamp["lines"], st
     assert (state.read_bytes() if state.exists() else None) == before, (

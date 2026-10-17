@@ -3963,6 +3963,8 @@ post-config gate built and left uninvoked.
 
 **INSTANCE (B3139q-r71k / L926) - A NEW REFUSAL PLACED BEFORE THE CHECK THAT VALIDATES ITS PREMISE.** S6-B3195's looser-level refusal ran before the reproduction refusal, so test_b2638_reproduction_failure_refuses's wrong production read as a looser level under a misleading message; the targeted run passed and only the full suite found it (L632). The refusal now runs after reproduction and before any cell is graded.
 
+**INSTANCE (B3139q-r71m / L927) - A PIN THAT ACCEPTED A FAILURE EXIT WITHOUT ASKING WHY.** test_b3193_posted_close_must_equal_its_tested_draft accepted the probe's exit 1, which means either that a gate fired on the draft or that the probe broke; scripts/probe_close.py had called scan_unrecorded_miss without its required argument and it RAISED, which read as a firing gate. Found by the first real use of the probe. The pin now asserts no gate raised.
+
 ### #227 - COMPARING TWO RANKINGS MEANS COMPUTING THE RANK CORRELATION (B1716 / L502)
 
 I compared in-sample and holdout rankings with a **top-10 overlap count**, got **0 of 10**, and

@@ -78,6 +78,9 @@ def main(argv=None) -> int:
                                 "content": [{"type": "text", "text": draft}]}})
     print(f"transcript entries: {len(entries) - 1} + the draft as the final "
           f"message | turn {turn}")
+    # S6-B3199: the check_ wrappers read the module cache, so a scan the Stop
+    # hook reaches only through its check_ wrapper reads the draft too
+    v._ENTRIES_CACHE = entries
     ran, firing, skipped = 0, [], []
     for name in sorted(n for n in dir(v) if n.startswith("scan_")):
         if name in SKIP:
@@ -89,6 +92,30 @@ def main(argv=None) -> int:
             continue
         if not params or next(iter(params)) != "entries":
             skipped.append(name)
+            continue
+        # S6-B3199: a scan with another REQUIRED argument is called by the
+        # Stop hook through its check_ wrapper, which computes that argument
+        # (check_unrecorded_miss derives learnings_modified from git) - call
+        # the wrapper the same way, never the bare scan with the argument
+        # missing (that raised, and the raise read as a firing gate)
+        req = [k for k, p in params.items() if k != "entries"
+               and p.default is inspect.Parameter.empty
+               and p.kind in (p.POSITIONAL_OR_KEYWORD, p.KEYWORD_ONLY)]
+        if req:
+            chk = getattr(v, "check_" + name[len("scan_"):], None)
+            if chk is None:
+                skipped.append(name)
+                continue
+            try:
+                res = chk()
+            except Exception as exc:
+                firing.append(name)
+                print(f"{name}: RAISED in {chk.__name__} {exc!r}")
+                continue
+            ran += 1
+            if res:
+                firing.append(name)
+                print(f"{name} (via {chk.__name__}): {str(res)[:400]}")
             continue
         kw = {}
         if name in WRITE_ON_CLOSE:               # judge, never write (L910)
