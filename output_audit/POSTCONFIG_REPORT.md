@@ -6,15 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (176 entries), 1983 named checks have run and 20 have ever returned non-PASS.**
+**Across the entire ledger (177 entries), 2002 named checks have run and 20 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-71 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02).
+71 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-17T02:31:22 | engine-hook | 0 | none | 0 | f1077c149 | True | **NO** |
+| output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-17T02:31:22 | engine-hook | 0 | none | 0 | f1077c149 | True | yes 2026-10-17T02:51:32 |
 | output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T23:51:52 | engine-hook | 0 | none | 0 | 4801ad035 | True | yes 2026-10-17T00:07:10 |
 | output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T20:20:16 | engine-hook | 0 | none | 0 | 44dc192f3 | True | yes 2026-10-16T23:53:54 |
 | output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T16:29:34 | engine-hook | 0 | none | 0 | ff914e7da | True | yes 2026-10-16T16:44:18 |
@@ -195,6 +195,7 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | `npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.282 | 0.509 | 0.509 | 0.257 | P1_ema_span=20 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
 | `npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.267 | 0.514 | 0.514 | 0.241 | P1_ema_span=50 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
 | `npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.248 | 0.495 | 0.495 | 0.223 | P1_ema_span=100 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
+| `npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.316 | 0.428 | 0.428 | 0.153 | P1_ema_span=150 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
 
 **Parameters tested** - distinct values each config exercised per axis, read from the result rows themselves. `1 value` = the axis was PINNED and contributed no search; an axis absent from the artifact reads `not recorded`, never `1`. **P1 `swing_length` and P6 `span` are the CROSS-CONFIG axes** - they define which config a cube IS and are held FIXED within it, so they show a value rather than a count. Recorded in the artifact since B2138; anything graded before that reads `not recorded`, which is what let a swing-10 cube be re-graded as swing-20 (S6-B2136).
 
@@ -325,6 +326,7 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | `npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
 | `npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
 | `npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
+| `npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
 
 ## TABLE D - STEP-1 RANKED LIST (top 25)
 
@@ -364,20 +366,21 @@ _**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one unified table, no s
 | 24 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.03 | 50 | time_stop_10d | +0.613 | 22 | THIN | - | 2.865 | 1 | 0 | 22 | BELOW_POWER_FLOOR | yes |
 | 25 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 120 | 0.03 | 20 | earnings_blackout | +0.604 | 15 | THIN | 1 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 
-_1020 ranked outcomes across 102 graded configs; 994 distinct signatures._
+_1030 ranked outcomes across 103 graded configs; 1004 distinct signatures._
 
 **Best within each depth tier** (the comparison a rank order hides):
 
 | tier | best is_ci_lo | at n | rows |
 |---|---|---|---|
-| DEEP | +0.659 | 797 | 738 |
+| DEEP | +0.659 | 797 | 748 |
 | MID | +0.656 | 33 | 191 |
 | THIN | +1.250 | 14 | 91 |
 
-## Index - 102 graded config(s), newest first
+## Index - 103 graded config(s), newest first
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02 | 0.153 | 510 | 0/24 exits | 9/9 |
 | output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 0.223 | 523 | 0/24 exits | 9/9 |
 | output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02 | 0.241 | 543 | 0/24 exits | 9/9 |
 | output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02 | 0.257 | 659 | 0/24 exits | 9/9 |
@@ -482,6 +485,107 @@ _1020 ranked outcomes across 102 graded configs; 994 distinct signatures._
 | output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 combinations | 9/9 |
 
 ## Per-config findings
+
+### output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02
+
+**Configuration:** P1_ema_span=150, P2_lookback=252, P3_n_periods=6, P4_n_bins=40, P6_max_distance_pct=0.02
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.153** (is_sharpe 0.428, 510 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 73 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
+
+| level | knobs | IS fires | top exit (ranked by ci_lo) | is_sharpe | is_ci_lo |
+|---|---|---|---|---|---|
+| P5:1.0 | axis=P5 level=1.0 | 510 | breakeven_plus_trail | None | None |
+| P5:2.0 | axis=P5 level=2.0 | 510 | breakeven_plus_trail | None | None |
+| P6:0.0028 | axis=P6 level=0.0028 | 113 | breakeven_plus_trail | None | None |
+| P6:0.0059 | axis=P6 level=0.0059 | 209 | breakeven_plus_trail | None | None |
+| P6:0.0096 | axis=P6 level=0.0096 | 306 | breakeven_plus_trail | None | None |
+| P6:0.0141 | axis=P6 level=0.0141 | 396 | breakeven_plus_trail | None | None |
+| base:0.02 | axis=base level=0.02 | 510 | breakeven_plus_trail | None | None |
+
+**Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | AUTO (S6-B3171a, B3139q-r69y): grade_npoc_config at manifest ema_span=150 lookback=252 n_periods=6 n_bins=40 max_distance_pct=0.02 -> output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_grid_auto.json; free levels reproduction-gated -> output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_free_levels.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B3171a, B3139q-r69z): spot_check_npoc at manifest ema_span=150 lookback=252 n_periods=6 n_bins=40 max_distance_pct=0.02; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 11 run: 0 WARN / 0 FAIL / 11 INFO -> output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (11 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | DONE | AUTO (B2192): the grader collapses identical outcomes - 10 ranked outcome classes carry 1 parameter combinations; 1 distinct outcome classes among 1 combinations enumerated in output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_grid_auto.json |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 5 of 5 declared knobs read from the environment + consumer lists match the tree |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 12240 IS rows (12240 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.153 is_sharpe 0.428 fires 510 - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 12240 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | d678b7bb783df4a7 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha 741c569e1153 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 5 of 5 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_spot_check.json.
+
+**Adversarial lenses (step 5) - 11 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family naked_poc_retest_long)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 510 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.31 (2024Q2) over 5 quarters of 510 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.07 of 510 entries across 182 tickers; WARN > 0.30 |
+| eligibility_leak | INFO | 0 of 510 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped) |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.153 vs rank-2 [earnings_blackout] -0.104: margin 0.257 between exits; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a) |
+| empty_signals_share | INFO | 0 of 510 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/510 (0.0%) from replay_atr_fallback.json) |
+| grading_provenance | INFO | grading surface UNCHANGED since freeze (27 files, digest 36de97ff535e) |
+| direction_consistency | INFO | directions ['long'] (single direction) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_spot_check.json |
+| min_trades_floor | INFO | 510 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 24 exits enumerated (population field `per_exit`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | 0.153 | 0.428 | 510 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.104 | 0.092 | 510 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.11 | 0.1 | 510 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.127 | 0.086 | 510 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.219 | -0.054 | 510 | trailing_15pct | 1 | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_grid_auto.json._
 
 ### output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02
 
