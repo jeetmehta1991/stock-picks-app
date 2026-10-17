@@ -26633,6 +26633,7 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
             regime_at_entry="bull")]
         eng._run_start_time = time.time()
         eng._last_sim_day_index, eng._last_sim_date = 7, "2024-06-03"
+        eng._total_sim_days = 250   # S6-B3185: the window's day count
         eng._last_universe = ["AAA", "BBB"]
         eng.supervisor_interval_s = 0.5
         # B3098 (S6-B3094g): the supervisor now waits cap + grace (default
@@ -26663,6 +26664,9 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
         "the open count must reflect the REAL open trade - a 0 here "
         "is the L645 phantom passing through a zero fixture")
     assert beat["sim_day_index"] == 7 and beat["elapsed_hours"] >= 0
+    # S6-B3185: the record carries the window's day COUNT beside the
+    # 0-based index, so a reader says 'day 8 of 250', never 'of 249'.
+    assert beat["total_sim_days"] == 250, beat
 
     st = out / "engine_state.json"
     assert st.exists(), "the kill must leave resumable state on disk"
@@ -26676,6 +26680,7 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
         "wall_time_kill the B2502b rename regressed, and any other value "
         "means the hung-day protection weakened")
     assert state["sim_day_index"] == 7
+    assert state["total_sim_days"] == 250, state
     # B3098 (S6-B3094g): the hard kill mid-day 7 records it as HALF-RUN, and the
     # resume skips it and discloses it (owner ruling) - never replays it.
     assert state["last_completed_day"] == 6 and state["day_in_progress"] == 7
@@ -26683,6 +26688,48 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
     assert _BE.resume_plan(state) == {"resume_index": 8, "skipped_index": 7,
                                       "decision": "skipped_half_run_day"}
     assert state["open_trades"] == 1
+
+
+def test_b3185_every_progress_record_carries_the_window_total():
+    """S6-B3185 (L923): six owner-facing reports said 'sim-day N of 249' where
+    249 is the LAST INDEX of a 250-day window, not its size - the reporter
+    derived a total from an index. The fix is at the WRITER: every engine
+    record that publishes sim_day_index also publishes total_sim_days, set from
+    the window (len(trading_days)) before the first writer - the supervisor -
+    starts. AST over the engine, so a sixth writer inherits the check
+    unwritten (L592 / B2092); the floor of 5 is the positive control (L715).
+    """
+    import ast as _ast
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "backtest" / "engine"
+           / "backtest.py").read_text(encoding="utf-8")
+    tree = _ast.parse(src)
+    writers, missing = 0, []
+    for node in _ast.walk(tree):
+        if not isinstance(node, _ast.Dict):
+            continue
+        keys = {k.value for k in node.keys
+                if isinstance(k, _ast.Constant) and isinstance(k.value, str)}
+        if "sim_day_index" in keys:
+            writers += 1
+            if "total_sim_days" not in keys:
+                missing.append(node.lineno)
+    assert writers >= 5, f"positive control: {writers} writers found, 5 known"
+    assert not missing, f"progress records without total_sim_days at lines {missing}"
+    run = next(n for n in _ast.walk(tree)
+               if isinstance(n, _ast.FunctionDef) and n.name == "run")
+    sets = [n for n in _ast.walk(run) if isinstance(n, _ast.Assign)
+            and any(isinstance(t, _ast.Attribute) and t.attr == "_total_sim_days"
+                    for t in n.targets)]
+    starts = [n.lineno for n in _ast.walk(run) if isinstance(n, _ast.Call)
+              and isinstance(n.func, _ast.Attribute)
+              and n.func.attr == "_start_run_supervisor"]
+    assert len(sets) == 1 and len(starts) == 1, ([s.lineno for s in sets], starts)
+    v = sets[0].value
+    assert (isinstance(v, _ast.Call) and isinstance(v.func, _ast.Name)
+            and v.func.id == "len" and isinstance(v.args[0], _ast.Name)
+            and v.args[0].id == "trading_days"), "the total is the window's day count"
+    assert sets[0].lineno < starts[0], "set the total before the first writer starts"
 
 
 def test_b2149_prerun_gate_refuses_without_the_supervisor(tmp_path, monkeypatch):
@@ -27476,6 +27523,38 @@ def test_b2219_stall_detector_reads_progress_not_freshness(tmp_path, monkeypatch
     assert code == 2, "frozen counter must escalate even with a fresh heartbeat"
     assert "STALLED" in msg and "supervisor THREAD lives" in msg, msg
     assert "DO NOT relaunch" in msg, "the no-relaunch rule must travel with the alert"
+
+def test_b3185_progress_reporter_reads_the_total_never_derives_it(tmp_path, monkeypatch):
+    """S6-B3185: the hand-run progress reporter prints 'day <index + 1> of
+    <total>' from the record's own total_sim_days, and a record from an engine
+    that predates the field is DISCLOSED as such - never given a derived total.
+    """
+    import importlib.util as _ilu
+    import json as _json
+    import time as _time
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "watch_run_progress_b3185", _root / "scripts" / "watch_run_progress.py")
+    w = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(w)
+    audit = tmp_path / "output_audit"
+    audit.mkdir()
+    monkeypatch.setattr(w, "ROOT", tmp_path)
+    monkeypatch.setattr(w, "AUDIT", audit)
+    ts = _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime())
+    for name, extra in (("output_new", {"total_sim_days": 250}), ("output_old", {})):
+        (tmp_path / name).mkdir()
+        (tmp_path / name / "run_heartbeat.json").write_text(_json.dumps(
+            dict({"sim_day_index": 249, "closed_trades": 3, "elapsed_hours": 1.0,
+                  "timestamp": ts, "pid": 7}, **extra)), encoding="utf-8")
+    code, msg = w.check("output_new")
+    assert code == 0 and "day 250 of 250" in msg, msg
+    assert "of 249" not in msg, msg
+    code, msg = w.check("output_old")
+    assert code == 0 and "total not published" in msg, msg
+    assert " of 249" not in msg and " of 250" not in msg, msg
+
 
 def test_b2199_table_c_is_printed_with_every_locked_column(tmp_path, monkeypatch):
     """B2199 (L652, CHECKLIST #285): the locked Table C is PRINTED, never retyped.
@@ -35663,6 +35742,89 @@ def test_b2636_roster_header_counts_every_disabled_set():
            | set(getattr(cfg, "DEPRECATED_STRATEGIES", set()) or set())
            | set(getattr(cfg, "STRATEGIES_DISABLED_MISSING_PRODUCER", set()) or set()))
     assert len(dis) == 4, sorted(dis)
+
+
+def test_b3180_roster_renders_keys_built_at_runtime(monkeypatch):
+    """S6-B3180 (B3139q-r71c): the roster generator read signal keys only from
+    s.get("literal") and literal lists, so a key BUILT AT RUNTIME from a config
+    knob - f"price_above_ema_{_cfg.STRAT_EMA_SPAN}", or a local bound to one -
+    vanished from the plain, signals and producers columns (a regeneration
+    dropped naked_poc_retest_long's 200-EMA gate). The population is DERIVED
+    here by AST over every registered strategy, never typed from a ticket: the
+    ticket's own count named a fifth strategy whose key is the literal
+    below_ema_200. Each reader's extraction carries the default-rendered key and
+    names its knob, the COMMITTED roster row names the knob, the default is read
+    from config.py's SOURCE (an env override does not move it), a label
+    f-string is not a key, and an unknown knob refuses.
+    """
+    import ast as _ast
+    import importlib.util as _ilu
+    import inspect as _inspect
+    import textwrap as _tw
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "bsr_b3180", root / "scripts" / "build_strategy_roster.py")
+    m = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    monkeypatch.setenv("STRAT_EMA_SPAN", "50")
+    monkeypatch.setattr(m, "_CFG_ENV_DEFAULTS", None)
+    assert m.config_env_defaults()["STRAT_EMA_SPAN"] == "200", "default from SOURCE"
+    nl = chr(10)
+    src = nl.join([
+        "def f(s):",
+        '    k = f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"',
+        '    a = s.get(f"below_ema_{_cfg.STRAT_EMA_SPAN}", False)',
+        '    return _strat(s.get(k, False) and a, "long", "x", [k],',
+        '                  [f"Above {_cfg.STRAT_EMA_SPAN} EMA"])', ""])
+    out, acts = m.resolve_runtime_keys("fixture", src)
+    assert 's.get("price_above_ema_200", False)' in out, out
+    assert '["price_above_ema_200"]' in out, out
+    assert 's.get("below_ema_200", False)' in out, out
+    assert 'f"Above {_cfg.STRAT_EMA_SPAN} EMA"' in out, "a label is not a key"
+    assert sorted(acts) == [("STRAT_EMA_SPAN", "200", "below_ema_200"),
+                            ("STRAT_EMA_SPAN", "200", "price_above_ema_200")], acts
+    with pytest.raises(SystemExit, match="REFUSED .S6-B3180."):
+        m.resolve_runtime_keys("fixture", 'x = s.get(f"k_{_cfg.NO_SUCH_KNOB}")' + nl)
+    from backtest.signals.screener import ALL_STRATEGIES
+    readers = []
+    for name, fn in sorted(ALL_STRATEGIES.items()):
+        try:
+            tree = _ast.parse(_tw.dedent(_inspect.getsource(fn)))
+        except (TypeError, OSError):
+            continue
+        if any(isinstance(n, _ast.Call) and isinstance(n.func, _ast.Attribute)
+               and n.func.attr == "get" and isinstance(n.func.value, _ast.Name)
+               and n.func.value.id == "s" and n.args
+               and not (isinstance(n.args[0], _ast.Constant)
+                        and isinstance(n.args[0].value, str))
+               for n in _ast.walk(tree)):
+            readers.append(name)
+    assert len(readers) >= 4, f"positive control: {readers}"
+    assert "smc_breaker_block_short" not in readers, "its key is the literal below_ema_200"
+    import re as _re
+    roster = (root / "STRATEGY_ROSTER.md").read_text(encoding="utf-8").splitlines()
+
+    def _cells(line):
+        return [c.strip() for c in _re.split(r"(?<!\\)\|", line)[1:-1]]
+    # L705 / L706: assert in the plain CELL, located by its header - the quoted
+    # code cell names the knob too, so a whole-row substring passes on a stale
+    # plain column (it did: mutation M4 at B3139q-r71c)
+    header = next(ln for ln in roster if ln.startswith("| # | Name |"))
+    col = _cells(header).index("Trigger Conditions (plain)")
+    for name in readers:
+        meta = m.extract_strategy_meta(name, ALL_STRATEGIES[name])
+        assert meta["actuators"], f"{name}: a runtime-built key with no knob named"
+        for knob, default, key in meta["actuators"]:
+            assert key in meta["body_signals"], (name, key, meta["body_signals"])
+        row = next((ln for ln in roster
+                    if ln.startswith("| ") and f"| `{name}` |" in ln), None)
+        assert row is not None, f"{name}: no roster row"
+        cells = _cells(row)
+        assert len(cells) == len(_cells(header)), (name, len(cells))
+        missing = [k for k, _, _ in meta["actuators"] if k not in cells[col]]
+        assert not missing, (f"{name}: the committed plain column does not name "
+                             f"{missing} - regenerate STRATEGY_ROSTER.md")
 
 
 def test_b2636_finishing_run_is_done_not_stalled():

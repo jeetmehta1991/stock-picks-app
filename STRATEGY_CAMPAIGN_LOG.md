@@ -2570,3 +2570,72 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   commit-then-launch so the last full pyramid precedes the wave; hourly monitor cron armed
   in the launch turn; battery + landing report per config automatic (B2520).
 - **ETA:** 40.3-46.2 h serial (charter cost line / B2107 measured rate).
+
+### K.12 Configs 1-7 run record (2026-10-15..16, B3139q-r70e..r70t; S6-B3171, S6-B3171b)
+
+- **Ran: 7 of the 11 approved configs, all COMPLETE** (serial_chain.log `finished` lines):
+  config 1 P2 lookback 126 (2026-10-15 19:23:27Z); configs 2-5 P3 n_periods 4 / 8 / 12 / 50
+  (22:45:39Z; 2026-10-16 02:27:09Z, 05:47:27Z, 08:41:42Z); configs 6-7 P4 n_bins 20 / 30
+  (11:20:21Z, 15:19:38Z; config 7 landing commit 9ec36536e).
+- **Dropped by the owner** (2026-10-16, verbatim "Finish config 7, then stop"): configs 8-11 -
+  P4 n_bins 50 and P6 distance ceilings 0.03 / 0.04 / 0.05 - NOT RUN. Those levels are
+  untested by the owner's word, not by a result.
+- **Configs 1-2 landed ungradeable** (battery exit 2; landing commits 00034d5cf, 6c128e1c4):
+  each arm's env recorded 1 of the family's 4 graded knobs and the battery fails closed on a
+  missing one. The engine ran production values for the unrecorded knobs (the env actuators
+  default to production), so both cubes are valid; both were hand-graded on both legs with
+  the disclosure recorded on each artifact (S6-B3171b part b, r70i and r70k).
+- **Specs 3-11 regenerated** with companion knobs pinned at production (e077a2510); configs
+  3-7 then graded unaided, battery exit 0 on 5 of 5. The class fix - make_spec pins every
+  battery knob the spec does not sweep, and the launch gate refuses a spec missing one
+  (S6-B3171b part a) - lands in the same post-chain batch as this entry.
+
+### K.13 P1 actuated + EMA-span chain (2026-10-16..17, B3139q-r70u..r71c; S6-B3175)
+
+- **Owner, verbatim:** "P1 - need configs to include ema bands" and "run spans 9, 20, 50,
+  100, 150" (span 21 dropped as a near-duplicate of 20).
+- **P1 actuated** in 09b87b2a2: the gate reads `price_above_ema_{STRAT_EMA_SPAN}` (default
+  200, so production fires are unchanged); SPECS P1 band 9/20/50/100/150/200; STRAT_EMA_SPAN
+  is the fifth knob of the grade and spot-check legs. **K.2's line calling the P1.1 ema-span
+  swap DEFINED-NO-ACTUATOR is SUPERSEDED by this entry, not edited** (this log is append-only).
+- **Configs 1-7 keep their grades**, but their manifests record no STRAT_EMA_SPAN, so a
+  battery re-run of any of them now refuses (fail closed).
+- **Chain** stockpicks_chain_b3175_1792170779, launched 2026-10-16 17:13Z, one config per span
+  with P2/P3/P4/P6 pinned at 252/6/40/0.02. State when this entry was written
+  (2026-10-17 03:00Z): span 9 COMPLETE 2026-10-16 20:29:46Z and span 20 COMPLETE
+  2026-10-17 00:20:28Z, battery exit 0 on both; span 50 running (day 191 of 250); spans 100
+  and 150 queued. Step 1 totals 12 engine configs (7 + 5); the ranking against configs 1-7
+  is reported at CHAIN DONE and recorded in the next entry.
+
+### K.14 EMA-span chain complete; Step-1 ranking of all 12 configs (2026-10-17, B3139q-r71i; S6-B3175, S6-B3183)
+
+- **Chain** stockpicks_chain_b3175_1792170779 finished: 5 of 5 spans COMPLETE, battery exit 0 on
+  5 of 5. Landing records (output_audit/postconfig_landings.jsonl, local times converted to UTC):
+  span 50 03:51:52Z, span 100 06:31:22Z, span 150 09:08:19Z on 2026-10-17 (spans 9 and 20 in K.13).
+  Engine hours per run_heartbeat.json: span 9 3.25, 20 3.82, 50 3.50, 100 2.63, 150 2.59.
+- **Ranking**, each row read from its own config's grid file (output_audit/output_npoc_s1_*_grid_auto.json),
+  best exit by is_ci_lo, the in-sample lower confidence bound and the ranking key. Step 1 ranks;
+  it admits nothing (owner ruling B1608). breakeven_plus_trail is the best exit in 12 of 12 configs,
+  24 exits graded in each.
+
+| rank | config (one knob moved; the rest at production 200 / 252 / 6 / 40 / 0.02) | trades | is_sharpe | is_ci_lo |
+|---|---|---|---|---|
+| 1 | P2 lookback 126 | 559 | 0.523 | 0.262 |
+| 2 | P1 EMA span 20 | 659 | 0.509 | 0.257 |
+| 3 | P3 n_periods 8 | 537 | 0.521 | 0.257 |
+| 4 | P3 n_periods 50 | 600 | 0.499 | 0.248 |
+| 5 | P1 EMA span 50 | 543 | 0.514 | 0.241 |
+| 6 | P4 n_bins 20 | 527 | 0.503 | 0.236 |
+| 7 | P3 n_periods 12 | 576 | 0.485 | 0.228 |
+| 8 | P3 n_periods 4 | 492 | 0.499 | 0.224 |
+| 9 | P1 EMA span 100 | 523 | 0.495 | 0.223 |
+| 10 | P4 n_bins 30 | 516 | 0.487 | 0.215 |
+| 11 | P1 EMA span 9 | 765 | 0.450 | 0.211 |
+| 12 | P1 EMA span 150 | 510 | 0.428 | 0.153 |
+
+- **No all-production config ran in this Step-1 window**, so no row's margin over production is
+  measured here; each row is one knob moved with the other four at production.
+- **Interaction check (runbook 4.4 rule 4, S6-B3183):** the predicted joint point, from each knob's
+  best is_ci_lo level among the levels that ran, is P1 EMA 20 + P2 lookback 126 + P3 n_periods 8 +
+  P4 n_bins 20 + P6 0.02 (P6 at production: its levels were dropped by the owner 2026-10-16). It
+  differs from every config run, so it is ONE extra engine config; put to the owner, NOT launched.

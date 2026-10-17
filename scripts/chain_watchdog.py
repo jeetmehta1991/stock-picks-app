@@ -125,6 +125,8 @@ def main() -> int:
             "path": str(hb_path.relative_to(ROOT)) if hb_path else None,
             "age_min": round(hb_age, 1) if hb_age is not None else None,
             "sim_day": (hb_doc or {}).get("sim_day_index"),
+            # S6-B3185: the 0-based index's window size, from the record
+            "total_sim_days": (hb_doc or {}).get("total_sim_days"),
             "pid": (hb_doc or {}).get("pid"),
         },
     }

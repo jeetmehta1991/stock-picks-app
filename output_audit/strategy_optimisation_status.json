@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "42ea94879",
-    "generated_at": "2026-10-17 06:39:53"
+    "source_commit": "3ca05f86b",
+    "generated_at": "2026-10-17 07:27:47"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -261,7 +261,6 @@
         "S6-B3194"
       ],
       "live_campaign_tickets": [
-        "S6-B3180",
         "S6-B3194"
       ],
       "mention_tickets": [
@@ -391,8 +390,7 @@
         "S6-B3180"
       ],
       "live_campaign_tickets": [
-        "S6-B2178c",
-        "S6-B3180"
+        "S6-B2178c"
       ],
       "mention_tickets": [
         "S6-B2178c",
@@ -1547,8 +1545,7 @@
         "S6-B3180"
       ],
       "live_campaign_tickets": [
-        "S6-B2178c",
-        "S6-B3180"
+        "S6-B2178c"
       ],
       "mention_tickets": [
         "S6-B2178c",
@@ -2362,8 +2359,6 @@
         "S6-B3194"
       ],
       "live_campaign_tickets": [
-        "S6-B3175",
-        "S6-B3180",
         "S6-B3183",
         "S6-B3194"
       ],
@@ -3739,8 +3734,7 @@
         "S6-B3180"
       ],
       "live_campaign_tickets": [
-        "S6-B2178c",
-        "S6-B3180"
+        "S6-B2178c"
       ],
       "mention_tickets": [
         "S6-B1505b",

@@ -1131,6 +1131,7 @@ class BacktestEngine:
                         "sleep_credit_hours": round(_cred_h, 4),
                         "active_hours": round(max(0.0, elapsed_h - _cred_h), 4),
                         "sim_day_index": getattr(self, "_last_sim_day_index", -1),
+                        "total_sim_days": getattr(self, "_total_sim_days", None),
                         "sim_date": str(getattr(self, "_last_sim_date", "")),
                         "closed_trades": len(self.closed_trades),
                         "open_trades": len(self.open_trades),
@@ -1259,6 +1260,7 @@ class BacktestEngine:
                 "status": status,
                 "sim_date": str(getattr(self, "_last_sim_date", "")),
                 "sim_day_index": getattr(self, "_last_sim_day_index", -1),
+                "total_sim_days": getattr(self, "_total_sim_days", None),
                 "tickers_processed": len(getattr(self, "liquid_universe", []) or []),
                 "trades_so_far": len(self.closed_trades),
                 "open_trades": len(self.open_trades),
@@ -1622,6 +1624,13 @@ class BacktestEngine:
             _replay = self._rebuild_regime_state(trading_days, self._resume_sim_day)
             self._record_resume_boundary(trading_days, _replay)
 
+        # S6-B3185: the window's day COUNT, published beside the 0-based
+        # sim_day_index in every progress record (heartbeat, engine_state),
+        # so a reader quotes 'day <index + 1> of <total>' and never derives a
+        # total from an index - six reports said 'of 249' for a 250-day window.
+        # A resume enumerates the full window too (it skips by index), so this
+        # is the window total on every leg.
+        self._total_sim_days = len(trading_days)
         # B2148: arm the out-of-loop supervisor BEFORE the
         # first iteration, so a pathological day 0 is still bounded.
         self._start_run_supervisor()
@@ -1766,6 +1775,7 @@ class BacktestEngine:
                         "status": "wall_time_kill",
                         "sim_date": str(as_of),
                         "sim_day_index": i,
+                        "total_sim_days": getattr(self, "_total_sim_days", None),
                         "tickers_processed": len(
                             getattr(self, "liquid_universe", []) or []),
                         "trades_so_far": _ktrades,
@@ -1928,6 +1938,7 @@ class BacktestEngine:
                         # Backwards-compat + debugging fields:
                         "sim_date": str(as_of),
                         "sim_day_index": i,
+                        "total_sim_days": getattr(self, "_total_sim_days", None),
                         "tickers_processed": len(getattr(self, "liquid_universe", []) or []),
                         "trades_so_far": _trades,
                         "open_trades": _open,
@@ -2070,6 +2081,7 @@ class BacktestEngine:
                 "status": "complete",
                 "sim_date": str(getattr(self, "_last_sim_date", "")),
                 "sim_day_index": int(getattr(self, "_last_sim_day_index", 0)),
+                "total_sim_days": getattr(self, "_total_sim_days", None),
                 "tickers_processed": int(len(getattr(self, "liquid_universe", []) or [])),
                 "trades_so_far": int(len(self.closed_trades)),
                 "open_trades": int(len(self.open_trades)),

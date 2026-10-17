@@ -49,6 +49,7 @@ def sample(out_dir: str) -> dict | None:
     except ValueError:
         return None
     return {"sim_day_index": d.get("sim_day_index"),
+            "total_sim_days": d.get("total_sim_days"),
             "closed_trades": d.get("closed_trades"),
             "elapsed_hours": d.get("elapsed_hours"),
             "timestamp": d.get("timestamp"), "pid": d.get("pid"),
@@ -91,7 +92,16 @@ def check(out_dir: str, stall_after: int = 2) -> tuple[int, str]:
             # a reader must see rather than have quietly replaced by "unknown".
             age_min = f"UNPARSEABLE timestamp {cur['timestamp']!r}"
 
-    base = (f"sim_day_index={cur['sim_day_index']} "
+    # S6-B3185: sim_day_index is 0-based; the day COUNT comes from the record
+    # itself (total_sim_days), never from the index - six reports said 'of
+    # 249' for a 250-day window. A record without it is disclosed as such.
+    idx, total = cur["sim_day_index"], cur.get("total_sim_days")
+    if isinstance(idx, int) and isinstance(total, int):
+        day = f"day {idx + 1} of {total} (sim_day_index={idx})"
+    else:
+        day = (f"sim_day_index={idx} (window total not published by this "
+               f"engine - pre-S6-B3185)")
+    base = (f"{day} "
             f"closed={cur['closed_trades']} pid={cur['pid']} "
             f"heartbeat_age_min={age_min}")
     if unchanged >= stall_after:

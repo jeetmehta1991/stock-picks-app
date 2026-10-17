@@ -393,6 +393,87 @@ def textwrap_dedent(s: str) -> str:
     return textwrap.dedent(s)
 
 
+_CFG_ENV_DEFAULTS: dict | None = None
+# S6-B3180: a signal key BUILT AT RUNTIME from one config knob and nothing else,
+# e.g. f"price_above_ema_{_cfg.STRAT_EMA_SPAN}" - prefix, knob, suffix.
+_RUNTIME_KEY = re.compile(
+    r'f(["\'])([a-z_0-9]*)\{_cfg\.([A-Z][A-Z_0-9]*)\}([a-z_0-9]*)\1')
+
+
+def config_env_defaults() -> dict:
+    """S6-B3180: {KNOB: production default} for every backtest/config.py knob
+    written as os.environ.get("KNOB", <default>). Read from the SOURCE, not the
+    imported module, so the roster describes production even when this process
+    runs with a sweep's env set."""
+    global _CFG_ENV_DEFAULTS
+    if _CFG_ENV_DEFAULTS is None:
+        tree = ast.parse((REPO / "backtest" / "config.py").read_text(encoding="utf-8"))
+        found = {}
+        for node in ast.walk(tree):
+            if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                target, value = node.target.id, node.value
+            elif (isinstance(node, ast.Assign) and len(node.targets) == 1
+                  and isinstance(node.targets[0], ast.Name)):
+                target, value = node.targets[0].id, node.value
+            else:
+                continue
+            if value is None:
+                continue
+            for sub in ast.walk(value):
+                if (isinstance(sub, ast.Call) and isinstance(sub.func, ast.Attribute)
+                        and sub.func.attr == "get" and len(sub.args) == 2
+                        and isinstance(sub.args[0], ast.Constant)
+                        and sub.args[0].value == target
+                        and isinstance(sub.args[1], ast.Constant)):
+                    found[target] = str(sub.args[1].value)
+        _CFG_ENV_DEFAULTS = found
+    return _CFG_ENV_DEFAULTS
+
+
+def resolve_runtime_keys(name: str, src: str) -> tuple:
+    """S6-B3180: every extractor here reads a signal key from s.get("literal")
+    or a literal list, so a key BUILT AT RUNTIME - f"price_above_ema_{_cfg.
+    STRAT_EMA_SPAN}", or a local bound to one - was invisible to the plain,
+    signals and producers columns (MEASURED B3139q-r71c by AST over all 225
+    registered strategies: 5 such reads in 4 strategies, all from
+    STRAT_EMA_SPAN; a regeneration dropped naked_poc_retest_long's 200-EMA gate).
+
+    Returns (src_for_extraction, actuators): a copy of the source with each
+    such key rendered at its PRODUCTION default and every local bound to one
+    substituted, plus [(knob, default, key)]. The quoted-code column keeps the
+    real source. A knob with no readable default REFUSES - a guessed default
+    would describe a gate that does not run."""
+    defaults = config_env_defaults()
+    actuators = []
+
+    def _render(m):
+        knob = m.group(3)
+        if knob not in defaults:
+            raise SystemExit(
+                f"REFUSED (S6-B3180): {name} builds a signal key from _cfg.{knob}, "
+                f"which has no os.environ.get default in backtest/config.py - the "
+                f"roster cannot say what production reads")
+        key = f"{m.group(2)}{defaults[knob]}{m.group(4)}"
+        if (knob, defaults[knob], key) not in actuators:
+            actuators.append((knob, defaults[knob], key))
+        return f'"{key}"'
+
+    nl = chr(10)
+    out, bound = [], {}
+    for ln in src.split(nl):
+        new = _RUNTIME_KEY.sub(_render, ln)
+        if new != ln:
+            b = re.match(r'^\s*([A-Za-z_]\w*)\s*=\s*"([a-z_0-9]+)"\s*$', new)
+            if b:
+                bound[b.group(1)] = b.group(2)
+        out.append(new)
+    for var, key in bound.items():
+        use = re.compile(rf'(?<![\w.]){re.escape(var)}(?!\w)')
+        own = re.compile(rf'^\s*{re.escape(var)}\s*=')
+        out = [ln if own.match(ln) else use.sub(f'"{key}"', ln) for ln in out]
+    return nl.join(out), actuators
+
+
 def extract_strategy_meta(name: str, fn) -> dict:
     """Extract per-strategy metadata from the function source.
     Returns dict with direction, category, signals_used, context_bullets,
@@ -406,6 +487,10 @@ def extract_strategy_meta(name: str, fn) -> dict:
             "fires_expr": "(not extracted)", "is_dual": False,
             "logical_formula": "", "producers": "",
         }
+    # S6-B3180: extract from a copy whose runtime-built keys are rendered at
+    # their production default; the displayed code and bullets read src_shown.
+    src_shown = src
+    src, actuators = resolve_runtime_keys(name, src)
     # Dual-direction check
     is_dual = "_strat3" in src and "fl" in src and "fs" in src
     # Direction extraction: single-strategy `_strat(fires, "direction", ...)`
@@ -436,11 +521,11 @@ def extract_strategy_meta(name: str, fn) -> dict:
             pass
     # Context bullets: extract all string literals from the function
     # (heuristic; the bullets are the human-readable rationale)
-    context_bullets = re.findall(r'["\']([^"\']{20,200})["\']', src)
+    context_bullets = re.findall(r'["\']([^"\']{20,200})["\']', src_shown)
     # Filter to bullet-like (longer, descriptive)
     context_bullets = [b for b in context_bullets if " " in b and len(b) > 20][:5]
     # Trigger expression
-    fires_expr = _extract_fires_expression(src)
+    fires_expr = _extract_fires_expression(src_shown)
     # B1237 (2026-07-07 Council 288): logical formula + producers extraction
     # Also derive per-strategy signal set by grep-scanning the body (catches
     # signals used in inline conditionals, not just those declared in _strat call)
@@ -491,7 +576,7 @@ def extract_strategy_meta(name: str, fn) -> dict:
                 )
                 if m_list:
                     items = re.findall(r's\.get\(\s*["\']([a-z_0-9]+)["\']', m_list.group(1))
-        m_fires = re.search(r'fires\s*=\s*([^\n#]+)', src)
+        m_fires = re.search(r'fires\s*=\s*([^\n#]+)', src_shown)
         if items and m_fires:
             fires_expr = m_fires.group(1).strip()
             threshold_match = re.search(r'>=\s*(\d+)', fires_expr)
@@ -522,6 +607,7 @@ def extract_strategy_meta(name: str, fn) -> dict:
         "fires_expr": fires_expr, "is_dual": is_dual,
         "logical_formula": logical_formula, "producers": producers,
         "body_signals": body_signals,
+        "actuators": actuators,
     }
 
 
@@ -1196,6 +1282,11 @@ def main() -> int:
             logical_formula = logical_formula[:247] + "..."
         # B586 + B589: plain-language trigger.
         trigger_plain = render_trigger_plain(body_sigs, r["fires_expr"])
+        # S6-B3180: name the knob that builds a key at runtime, so the row
+        # describes the gate a sweep varies, not only its production default.
+        for knob, default, key in r.get("actuators", []):
+            trigger_plain += (f"<br>- ({key} is built at runtime from {knob}: "
+                              f"production default {default}; a sweep varies it)")
         trigger_plain = trigger_plain.replace("|", "\\|")
         out_lines.append(
             f"| {i} | `{r['name']}` | {r['category']} | {r['direction']} | "
