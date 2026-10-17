@@ -4027,7 +4027,8 @@ def offline_retest_refusal(strategy: str) -> str | None:
 
 
 def launch_refusals(doc: dict, root: Path | None = None,
-                    require_subset: bool = True) -> list[str]:
+                    require_subset: bool = True,
+                    subset_override: tuple | list | None = None) -> list[str]:
     """Reasons NOT to launch `doc` (a wave spec or a run manifest - both carry
     strategy_subset + arms). Empty list = launch. Every reason names the
     class it refuses under so the HALT record reads without this file open.
@@ -4035,7 +4036,15 @@ def launch_refusals(doc: dict, root: Path | None = None,
     require_subset: a wave spec (run_wave) is a Step-1 config by construction
     and MUST name its strategy. A LOCAL manifest without one is a full-roster
     run (the B1488 shape) - nothing here to gate unless it also sets arms,
-    in which case the arms have no strategy to be checked against."""
+    in which case the arms have no strategy to be checked against.
+
+    subset_override (S6-B3184): the strategy list a GENERATOR is about to
+    write into strategy_subset. make_spec's --dry run writes no subset
+    file, so a first-time dry run was refused 'does not exist' for a file
+    the real run creates before it validates - measured on a clean
+    checkout, where test_b3141a failed on exactly that. Given, it replaces
+    the file read (the field itself must still be present), so the dry
+    run judges what the real run would."""
     root = Path(root) if root is not None else Path(__file__).resolve().parents[1]
     rel = doc.get("strategy_subset")
     if not rel:
@@ -4043,7 +4052,7 @@ def launch_refusals(doc: dict, root: Path | None = None,
             return ["spec/manifest carries no strategy_subset - the gate cannot "
                     "tell which strategy the run is for (fail CLOSED, L642)"]
         return []
-    if not (root / str(rel)).exists():
+    if subset_override is None and not (root / str(rel)).exists():
         # B2578 addendum: the field has historically been used as free text in
         # hand-written manifests - MEASURED 2026-09-03, six pre-B2118 ones read
         # "output_audit/_subset_one.txt (smc_breaker_block_long)" and
@@ -4057,7 +4066,8 @@ def launch_refusals(doc: dict, root: Path | None = None,
                f"BARE path ({head} exists); pre-B2118 hand-written manifests use "
                "the annotated form and are refused deliberately")
         return [f"strategy_subset {rel} does not exist under {root}{why}"]
-    strats = strategies_of(doc, root)
+    strats = (list(subset_override) if subset_override is not None
+              else strategies_of(doc, root))
     if not strats:
         return [f"strategy_subset {rel} lists no strategy"]
     fams, why = _battery_families()
@@ -4148,6 +4158,38 @@ def launch_refusals(doc: dict, root: Path | None = None,
             errs.append(f"{s}: has a {_where} entry but is NOT a registered "
                         "post-config battery family (run_postconfig.FAMILIES) - "
                         "the landing would FAIL closed (S6-B2573b)")
+        else:
+            # S6-B3171b (L835): the battery's KEY-COMPLETENESS rule, judged
+            # at LAUNCH. run_postconfig.params_from_manifest fails CLOSED at
+            # landing on any family knob the manifest's arms[0] cannot
+            # resolve (env actuator, then arm key, then param name), and
+            # run_wave writes each spec arm as that arms[0]
+            # (run_wave.build_manifest). MEASURED 2026-10-16: the b3171
+            # chain's configs 1 and 2 named one of four naked-POC knobs,
+            # this gate was clean on both, and each landing's battery failed
+            # closed after the engine had run. The SAME function the battery
+            # calls, imported lazily like _battery_families, so the launch
+            # rule and the landing rule cannot drift apart.
+            try:
+                from run_postconfig import params_from_manifest as _pfm
+            except Exception as _e:  # noqa: BLE001 - fail CLOSED (L642)
+                errs.append(f"{s}: the battery's manifest reader could not "
+                            f"be imported ({_e!r}) - refusing rather than "
+                            "launching an arm the landing cannot grade (L642)")
+            else:
+                for _arm in (doc.get("arms") or []):
+                    try:
+                        _vals, _why = _pfm(s, {"arms": [_arm]})
+                    except Exception as _e:  # noqa: BLE001 - fail CLOSED
+                        _vals, _why = None, f"the reader raised {_e!r}"
+                    if _vals is None:
+                        errs.append(
+                            f"{s}: arm '{_arm.get('tag', '?')}' - {_why}. The "
+                            "post-config battery reads EVERY declared knob "
+                            "from the manifest and fails CLOSED at landing, "
+                            "after the engine spend (S6-B3171b, L835); "
+                            "make_spec pins the knobs you do not sweep at "
+                            "production")
         errs += [f"{s}: {e}" for e in validate_spec(spec)]
         knobs = {p["env"]: p for p in spec["params"] if p.get("env")}
         for k in knobs:

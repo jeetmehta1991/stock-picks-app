@@ -1488,6 +1488,13 @@ instance is recorded in the campaign log).
   anywhere; a family with no ratio of its own borrows the largest other family's, labelled
   CROSS-FAMILY. A knob at its production level counts as the knob unset (the engine reads an unset
   knob as production).
+- **Every knob the battery reads is in the spec (S6-B3171b).** `make_spec.py` writes each knob of the
+  family's `tools.keys` that the command neither sweeps nor names with `--with` at its PRODUCTION
+  level, through the `--with` path (env actuator and arm key), and names them in the arm note.
+  `launch_refusals` applies the battery's own key rule (`run_postconfig.params_from_manifest`) to
+  every arm, so a hand-written spec that omits one is refused before the engine runs instead of
+  landing ungradeable - the b3171 chain's configs 1 and 2 named one of four knobs and both landings'
+  batteries failed closed.
 - **`step1_cube: false` - set it explicitly, and know what it reaches.** A Step-1 marking arms the
   **holdout-touch FAIL** in run_postconfig - correct for a Step-1 search, which must not touch the
   holdout, and **WRONG for Step 2, which grades ON the holdout by design.** The spec field selects the

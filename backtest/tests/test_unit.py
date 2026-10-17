@@ -24233,6 +24233,14 @@ def test_b2082_launch_sweep_refuses_without_a_passing_gate():
                 "test fixture: exercising the launch path, not a real re-test"}
         # B2849 (S6-B2848c): a compliant manifest records the 0.5 smoke
         _m["fires_at_production"] = 12
+        # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest), which reads
+        # arm['env'] and the lower-case arm keys, never the legacy flat
+        # UPPERCASE keys this pre-B2138 arm carries - so the copy, re-stamped
+        # like every rule above, states the SAME two values in the modern env
+        # form (arm_env_matches reads both forms, so the declared config is
+        # unchanged).
+        _m["arms"][0]["env"] = {"SMC_SWING_LENGTH": "20",
+                                "STRAT_EMA_SPAN": "200"}
         good = str(td / "good_manifest.json")
         (td / "good_manifest.json").write_text(_bj.dumps(_m), encoding="utf-8")
         r = subprocess.run(
@@ -24926,7 +24934,10 @@ if n == 1:
             "shape_waiver": ("test fixture: resume-loop probe on a "
                              "2-ticker temp universe, not a campaign step"),
             "leg_cap_hours": 0.1, "max_legs": 3,
-            "arms": [{"tag": "armx", "env": {"SMC_SWING_LENGTH": "20"}}]}
+            # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest): the family
+            # reads swing AND span, so the arm names both (span at production).
+            "arms": [{"tag": "armx", "env": {"SMC_SWING_LENGTH": "20",
+                                          "STRAT_EMA_SPAN": "200"}}]}
 
     import shutil
     import subprocess as _sp
@@ -33269,6 +33280,7 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     live = sorted(_glob.glob(str(root / "output_audit" / "b2527_icg_*_spec.json")))
     live.append(str(root / "output_audit" / "b2574_icg_span100_rerun_spec.json"))
     assert len(live) >= 17, live
+    _absent_b3184 = []
     for f in live:
         d = _json.loads(_P(f).read_text(encoding="utf-8"))
         # B2717: identity is EXACT, so a spec loaded from disk carries
@@ -33278,9 +33290,13 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
         # B2738 (B2450/L721 disposal): see test_b2714 - icg is admitted, so
         # B2731 refuses these historical specs; this pin is about the
         # pre-engine refusal classes, not admission.
-        _r = [x for x in pvt.launch_refusals(d, root)
-              if "ALREADY ADMITTED" not in x]
+        # S6-B3184: judged as THIS checkout can judge it (precompute data
+        # absent from a clean clone is disclosed, not failed).
+        _r, _abs = _launch_refusals_here(pvt, d, root)
+        _absent_b3184 += _abs
+        _r = [x for x in _r if "ALREADY ADMITTED" not in x]
         assert _r == [], (f, _r)
+    _warn_absent_precompute(_absent_b3184, "test_b2578")
     # an smc spec of the b2197 shape, with its own subset file (the live
     # _subset_one.txt is untracked); pathlib keeps an absolute subset path
     sub_smc = tmp_path / "smc.txt"
@@ -33408,9 +33424,12 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     assert any("not_a_strategy" in r for r in summ["refusals"]), summ
     assert rsc.summary_status({"wave": "b2578ref"}) == "REFUSED", "HALT, not SKIP"
     # a registered spec goes through to run_arm - the gate is not a wall
+    # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest) - both smc
+    # knobs are named (span at production) in the good spec and in m2 below.
     good = {"wave": "b2578ok", "strategy_subset": str(sub_smc),
             "owner_override_retest_admitted": _ov_smc,
-            "arms": [{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}]}
+            "arms": [{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10",
+                                          "STRAT_EMA_SPAN": "200"}}]}
     sp_g = tmp_path / "good.json"
     sp_g.write_text(_json.dumps(good), encoding="utf-8")
     monkeypatch.setattr(_sys, "argv", ["run_wave.py", "--spec", str(sp_g)])
@@ -33425,7 +33444,8 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     assert any("LAUNCH REFUSED (S6-B2573b)" in f and "not_a_strategy" in f for f in fails), fails
     m2 = dict(ok, strategy_subset=str(sub_smc),
               owner_override_retest_admitted=_ov_smc,
-              arms=[{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}])
+              arms=[{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10",
+                                          "STRAT_EMA_SPAN": "200"}}])
     assert pg.check(m2, {}, "") == [], pg.check(m2, {}, "")
     # wired, not merely defined (B1864 shape): both callers name the gate
     import inspect as _insp
@@ -36829,15 +36849,19 @@ def test_b2714_legacy_typed_spec_register_is_named_and_shrink_only():
     live = sorted(_glob.glob(str(root / "output_audit" / "b2527_icg_*_spec.json")))
     assert len(live) == 16, live
     live.append(str(root / "output_audit" / "b2574_icg_span100_rerun_spec.json"))
+    _absent_b3184 = []
     for f in live:
         d = _json.loads(_P(f).read_text(encoding="utf-8"))
         d["_spec_path"] = _P(f).name
         # B2738 (B2450/L721 disposal): icg is ADMITTED since 2026-09-10, so
         # B2731 refuses these historical specs - correctly. Filter that one
         # refusal; this pin is about the legacy typed register.
-        _r = [x for x in pvt.launch_refusals(d, root)
-              if "ALREADY ADMITTED" not in x]
+        # S6-B3184: judged as THIS checkout can judge it.
+        _r, _abs = _launch_refusals_here(pvt, d, root)
+        _absent_b3184 += _abs
+        _r = [x for x in _r if "ALREADY ADMITTED" not in x]
         assert _r == [], (f, _r)
+    _warn_absent_precompute(_absent_b3184, "test_b2714")
 
 
 def test_b2716_the_gate_judges_the_authored_spec_then_the_resolver_fills_it():
@@ -37212,13 +37236,19 @@ def test_b2732a_hub1_is_a_registered_launchable_family(tmp_path):
     # S6-B2945: a MODERN-shape spec must carry fires_at_production; this
     # fixture predates the requirement and probes family registration,
     # which the field does not touch.
+    # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest): hub-1's
+    # battery reads swing, liq_range and recency, so the arm names all three
+    # (the last two at production); `bad` below still differs in ONE value.
+    _hub1_env = {"SMC_SWING_LENGTH": "10", "SMC_LIQUIDITY_RANGE_PCT": "0.01",
+                 "SMC_EVENT_RECENCY_BARS": "90"}
     spec = {"wave": "b2732a_pin", "step": 1, "fires_at_production": 199,
             "strategy_subset": str(sub),
-            "arms": [{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}]}
+            "arms": [{"tag": "sw10", "env": dict(_hub1_env)}]}
     assert pvt.launch_refusals(spec, root) == [], pvt.launch_refusals(spec, root)
 
     # (d) the gate KEPT ITS TEETH - an out-of-band level is still refused
-    bad = dict(spec, arms=[{"tag": "x", "env": {"SMC_SWING_LENGTH": "12"}}])
+    bad = dict(spec, arms=[{"tag": "x",
+                            "env": dict(_hub1_env, SMC_SWING_LENGTH="12")}])
     r = pvt.launch_refusals(bad, root)
     assert r and any("not a level of P1" in x for x in r), r
 
@@ -45465,7 +45495,12 @@ def test_b3099_every_file_the_leg_gate_opens_is_refused_or_declared_policy(tmp_p
         "owner_override_retest_admitted": {
             "three_white_soldiers": "B3115 pin fixture - gate-plumbing "
                                     "probe, not a retest word"},
-        "arms": [{"tag": "t", "env": {"CANDLE_N_BARS": "3"}}]})
+        # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest): all four
+        # candle knobs at production ('' is the wick knob's None level).
+        "arms": [{"tag": "t", "env": {"CANDLE_N_BARS": "3",
+                                     "CANDLE_MIN_BODY_PCT": "0.0",
+                                     "CANDLE_MIN_STEP_PCT": "0.0",
+                                     "CANDLE_MAX_WICK_PCT": ""}}]})
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(root),
                           capture_output=True, text=True).stdout.strip()
     mp = rw.build_manifest(spec, spec["arms"][0], tmp_path / "out", head)
@@ -56236,3 +56271,211 @@ def test_b3175_npoc_ema_span_reaches_the_gate_and_the_spot_check(monkeypatch):
     assert scn._leg_c(row, 0.02, 100) is None      # flag not recorded: skipped
     assert scn._leg_c(row, 0.005, 50) is False     # distance still binds
     assert scn._leg_c(row, 0.02) is True           # no span: the EMA is not part
+
+
+def _launch_refusals_here(pvt, doc, root):
+    """S6-B3184: launch_refusals as THIS checkout can judge it.
+
+    11 tracked institutional specs route INST_PERSIST_CACHE_TAG to a
+    precompute directory under data_prefetch/derived/, which is untracked
+    DATA - so a clean clone or worktree has no such directory, and the
+    S6-B2484 'holds no parquet' refusal is then a fact about the checkout,
+    not about the gate. MEASURED 2026-10-17 in a clean worktree at 2a17d7866:
+    test_b2578 and test_b2714 both failed on b2527_icg_lookback2_spec.json for
+    exactly that refusal. It is dropped ONLY when the routed directory does
+    not exist at all; a directory that exists but holds no parquet still
+    refuses, because broken data is not absent data. Returns (refusals, the
+    absent directories)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    if str(_P(root) / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(_P(root) / "scripts"))
+    from build_institutional_persistence_precompute import persistence_cache_dir
+    errs = pvt.launch_refusals(doc, root)
+    absent = []
+    for arm in doc.get("arms") or []:
+        tag = (arm.get("env") or {}).get("INST_PERSIST_CACHE_TAG")
+        if tag:
+            d = _P(persistence_cache_dir(root, str(tag)))
+            if not d.exists():
+                absent.append(str(d))
+    if absent:
+        errs = [e for e in errs
+                if not ("(S6-B2484 class)" in e and "holds no parquet" in e
+                        and any(a in e for a in absent))]
+    return errs, absent
+
+
+def _warn_absent_precompute(absent, who):
+    """S6-B3184: the disclosure half - a check this checkout could not make is
+    REPORTED in the test session's warnings summary, never silently passed."""
+    if absent:
+        import warnings
+        warnings.warn(f"{who} (S6-B3184): the S6-B2484 precompute-data check was "
+                      f"not made for {len(absent)} spec arm(s) - their routed "
+                      f"directories are absent from this checkout (untracked "
+                      f"data): {sorted(set(absent))}")
+
+
+def test_b3171b_make_spec_pins_every_battery_key_at_production(monkeypatch, capsys):
+    """S6-B3171b part (a), L788: make_spec writes EVERY knob the battery reads.
+
+    The b3171 chain's configs 1 and 2 named one of four naked-POC knobs and
+    each landing's battery failed CLOSED in params_from_manifest after the
+    engine had run. Driven through make_spec.main --dry on the live registry:
+    the draft the consumer's gate judged is captured, read back through the
+    battery's OWN reader, and checked for the auto-pins at production - one
+    family with numeric knobs, and the candle family whose wick knob is None
+    at production (the engine's unset form ''). The dry run is judged with
+    subset_override (S6-B3184), so it never refuses for a file it did not
+    write. The swept-only tag is kept: production pins stay out of it.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import make_spec as ms
+    import producer_variant_table as pvt
+    import run_postconfig as rp
+
+    real = pvt.launch_refusals
+    seen = []
+
+    def _capture(doc, *a, **k):
+        errs = real(doc, *a, **k)
+        seen.append((doc, dict(k), errs))
+        return errs
+    monkeypatch.setattr(pvt, "launch_refusals", _capture)
+
+    def _run(argv):
+        seen.clear()
+        monkeypatch.setattr(sys, "argv", ["make_spec.py"] + argv + ["--dry"])
+        capsys.readouterr()
+        rc = ms.main()
+        return rc, capsys.readouterr().out
+
+    rc, out = _run(["--strategy", "naked_poc_retest_long", "--param", "P3",
+                    "--levels", "8", "--wave-prefix", "t_b3171b"])
+    assert rc == 0, out
+    assert len(seen) == 1, seen
+    doc, kw, errs = seen[0]
+    assert errs == [], errs
+    assert kw.get("subset_override") == ("naked_poc_retest_long",), kw
+    arm = doc["arms"][0]
+    assert arm["tag"] == "p3_8", arm["tag"]
+    assert arm["env"] == {"NAKED_POC_N_PERIODS": "8", "STRAT_EMA_SPAN": "200",
+                          "NAKED_POC_LOOKBACK": "252", "NAKED_POC_N_BINS": "40",
+                          "NAKED_POC_MAX_DISTANCE_PCT": "0.02"}, arm["env"]
+    vals, why = rp.params_from_manifest("naked_poc_retest_long", {"arms": [arm]})
+    assert vals == {"ema_span": "200", "lookback": "252", "n_periods": "8",
+                    "n_bins": "40", "max_distance_pct": "0.02"}, (vals, why)
+    assert "AUTO-PINNED AT PRODUCTION" in arm["note"], arm["note"]
+    assert "P2=252" in arm["note"] and "P1=200" in arm["note"], arm["note"]
+    assert "auto-pinned at production: P1, P2, P4, P6" in out, out
+
+    # the None-production knob: written as '' (unset) and resolvable
+    rc, out = _run(["--strategy", "three_white_soldiers", "--param", "P2",
+                    "--levels", "4", "--wave-prefix", "t_b3171b"])
+    assert len(seen) == 1, (rc, out)
+    doc, kw, errs = seen[0]
+    arm = doc["arms"][0]
+    assert arm["env"]["CANDLE_MAX_WICK_PCT"] == "", arm["env"]
+    assert "max_wick_pct" in arm and arm["max_wick_pct"] is None, arm
+    vals, why = rp.params_from_manifest("three_white_soldiers", {"arms": [arm]})
+    assert vals is not None and vals["max_wick_pct"] == "", (vals, why)
+    assert not [e for e in errs if "S6-B3171b" in e], errs
+
+    # S6-B3184: a FIRST dry run - the family has no subset file yet - is
+    # judged as the real run would be (subset_override) and writes nothing.
+    # The family is DERIVED, never named (L801): a non-admitted battery
+    # family with no _subset_<family>.txt on disk.
+    admitted, _why = pvt.phase1b_admitted(root)
+    fresh = [f for f in sorted(rp.FAMILIES)
+             if f not in admitted
+             and not (root / "output_audit" / f"_subset_{f}.txt").exists()]
+    if not fresh:
+        import warnings
+        warnings.warn("test_b3171b (S6-B3184): every battery family has a subset "
+                      "file now - the first-dry-run case had no subject")
+        return
+    fam = fresh[0]
+    first = next(p for p in pvt.SPECS[fam]["params"] if p.get("env"))
+    rc, out = _run(["--strategy", fam, "--param", first["id"], "--levels",
+                    str(first["production"]), "--wave-prefix", "t_b3184"])
+    assert len(seen) == 1, (fam, rc, out)
+    doc, kw, errs = seen[0]
+    assert not [e for e in errs if "does not exist" in e], (fam, errs)
+    assert not (root / "output_audit" / f"_subset_{fam}.txt").exists(), (
+        f"--dry wrote the subset file for {fam}")
+
+
+def test_b3171b_launch_gate_refuses_a_spec_missing_a_battery_key(monkeypatch):
+    """S6-B3171b, L835: launch_refusals applies the battery's key rule.
+
+    Verbatim incident (#240): output_audit/npoc_s1_p2_126_spec.json, config 1
+    of the b3171 chain, names NAKED_POC_LOOKBACK alone; this gate was clean on
+    it and the landing's battery failed closed after the engine had run.
+    Must-fire on that spec, naming exactly the missing keys; must-quiet on an
+    EMA-chain spec that carries all five; and the refusal is produced by the
+    battery's OWN reader - patching run_postconfig.params_from_manifest moves
+    the verdict, which a re-implementation would not.
+    """
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import run_postconfig as rp
+    oa = root / "output_audit"
+    bad = json.loads((oa / "npoc_s1_p2_126_spec.json").read_text(encoding="utf-8"))
+    assert bad["arms"][0]["env"] == {"NAKED_POC_LOOKBACK": "126"}, "incident shape"
+    hit = [e for e in pvt.launch_refusals(bad, root) if "S6-B3171b" in e]
+    assert len(hit) == 1, hit
+    assert "lacks ['ema_span', 'n_periods', 'n_bins', 'max_distance_pct']" in hit[0], hit[0]
+    good = json.loads((oa / "npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_spec.json"
+                       ).read_text(encoding="utf-8"))
+    assert len(good["arms"][0]["env"]) == 5, good["arms"][0]["env"]
+    assert [e for e in pvt.launch_refusals(good, root) if "S6-B3171b" in e] == []
+    monkeypatch.setattr(rp, "params_from_manifest",
+                        lambda fam, man, expect=None: (None, "SENTINEL-B3171b"))
+    moved = [e for e in pvt.launch_refusals(good, root) if "S6-B3171b" in e]
+    assert len(moved) == 1 and "SENTINEL-B3171b" in moved[0], moved
+
+
+def test_b3184_committed_specs_name_only_tracked_subset_files():
+    """S6-B3184: a committed spec's strategy_subset file is committed too.
+
+    The naked-POC and pairs campaigns' 24 specs named two UNTRACKED subset
+    files, so a fresh clone or worktree could not judge them - test_b3141a
+    went red there for that reason alone. MEASURED 2026-10-17: 137 tracked
+    specs referenced 7 subset files and exactly those 2 were untracked; both
+    are tracked now. Holds the class: a spec committed without its subset
+    file fails here, at the pyramid, before a clean checkout meets it.
+    """
+    import json
+    import subprocess
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    tracked = set(subprocess.run(
+        ["git", "ls-files", "output_audit"], cwd=root, capture_output=True,
+        text=True, encoding="utf-8").stdout.splitlines())
+    specs = sorted(p for p in tracked if p.endswith("_spec.json"))
+    assert len(specs) >= 137, len(specs)
+    named, missing = set(), {}
+    for rel in specs:
+        try:
+            d = json.loads((root / rel).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        s = d.get("strategy_subset") if isinstance(d, dict) else None
+        if not s:
+            continue
+        s = str(s).split(" (")[0].strip().replace("\\", "/")
+        named.add(s)
+        if s not in tracked:
+            missing.setdefault(s, []).append(rel)
+    assert "output_audit/_subset_naked_poc_retest_long.txt" in named, sorted(named)
+    assert missing == {}, missing
