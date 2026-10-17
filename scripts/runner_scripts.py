@@ -22,3 +22,25 @@ RUN_PROCESSES = ("run_phase1a.py", "run_wave.py", "run_serial_chain.py",
 LAUNCH_ENTRY_POINTS = RUN_PROCESSES + ("launch_detached.py",)
 SPEC_DRIVEN = ("run_wave.py", "run_serial_chain.py", "launch_sweep.py",
                "launch_detached.py")
+
+# S6-B3178: an entry point's MODES, in its OWN dispatch precedence - the first
+# flag present decides whether the call starts an engine run; no flag present
+# means it does. launch_detached.main tests a.selftest, then a.chain, then
+# a.cleanup, then falls through to --spec (pinned against that if-chain by
+# test_b3178_launch_dispatch_table_matches_launch_detached). MEASURED: the
+# turn gate counted `launch_detached.py --cleanup <task>` - which only
+# unregisters a finished task - as a launch. run_phase1a.py --dry-run is NOT
+# here: it runs the engine on a two-month, ten-ticker window, a real run.
+LAUNCH_DISPATCH = {
+    "launch_detached.py": (("--selftest", False), ("--chain", True),
+                           ("--cleanup", False)),
+}
+
+
+def starts_a_run(script: str, tokens) -> bool:
+    """Does invoking `script` with these argv tokens start an engine run?"""
+    toks = set(tokens)
+    for flag, is_launch in LAUNCH_DISPATCH.get(script, ()):
+        if flag in toks:
+            return is_launch
+    return True

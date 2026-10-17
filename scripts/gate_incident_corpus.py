@@ -579,6 +579,34 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
                            "--output-dir output_cfg1 &"}}]}}],), False,
          "an hourly UNCONDITIONAL arm in the same turn - both halves of "
          "L424, and the gate must not punish the compliance it demands"),
+        # S6-B3178 launch side, verbatim incident (B3139q-r70t): --cleanup
+        # only unregisters a finished task - not a launch.
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "python scripts/launch_detached.py --cleanup "
+                           "stockpicks_chain_b3171_1792082738"}}]}}],), False,
+         "S6-B3178 - a launcher in its --cleanup mode starts no run"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "python scripts/launch_detached.py --chain "
+                           "--batch b3175 --specs a_spec.json"}}]}}],), True,
+         "S6-B3178 must-fire kept - a real --chain launch with no monitor"),
+        # S6-B3178 arm side, verbatim shape (B3139q-r70w): a grep naming the
+        # cron tool AFTER the real hourly cron must not disarm it.
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "CronCreate", "input": {
+                "cron": "23 * * * *",
+                "prompt": "HOURLY monitor; deliver a report every hour, "
+                          "unconditionally - do not withhold"}}]}},
+           {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "python scripts/launch_detached.py --chain "
+                           "--batch b3175 --specs a_spec.json"}}]}},
+           {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "grep -n CronCreate "
+                           "scripts/transcript_timeline.py"}}]}}],), False,
+         "S6-B3178 - a MENTION of the cron tool is not a call of it"),
     ],
     # B1940: excused as unseamed and 3/3 drivable on STRUCTURAL_CLAIMS.
     # Sixth false reason this register has carried.

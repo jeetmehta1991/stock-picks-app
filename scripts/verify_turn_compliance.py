@@ -63,12 +63,78 @@ LIVE_RUN_CHURN = {
 }
 
 
-def split_churn(modified: list[str]) -> tuple[list[str], list[str]]:
-    """Split porcelain lines into (substantive, churn) by path."""
+LANDINGS_RECORD = "output_audit/postconfig_landings.jsonl"
+
+
+def landings_change_is_append_only(*, head_text: str | None = None,
+                                   work_text: str | None = None) -> bool:
+    """S6-B3181: is the uncommitted change to the landings record ONLY
+    records its two automated writers append?
+
+    Writers: scripts/postconfig_landing.py append_landing (the supervisor's
+    record, written AFTER its own commit) and mark_reported (the Stop hook's
+    reported_to_owner marker, appended by scan_undelivered_landing in the
+    same run whose Gate B then refused the close for that one line -
+    MEASURED 2026-10-16 on the span-9 landing, and once per delivered
+    landing since). True only when the working text EXTENDS the HEAD text
+    (line endings normalised: the file is written in text mode, CRLF on
+    Windows, while git stores LF) and every added line is a JSON object
+    carrying `cube` and a boolean `reported_to_owner`. A deleted, edited or
+    malformed line is a SUBSTANTIVE change Gate B must see - which is why
+    this is a check and not a LIVE_RUN_CHURN path (a whole-file exemption
+    would wave a hand edit through). No automated commit sweeps the record
+    (commit_and_push's pathspec excludes it), so it commits with the next
+    delivery commit, the B1338 rule for churn."""
+    import subprocess
+    if head_text is None:
+        r = subprocess.run(["git", "show", f"HEAD:{LANDINGS_RECORD}"],
+                           cwd=str(REPO_ROOT), capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=20)
+        if r.returncode != 0:
+            return False
+        head_text = r.stdout
+    if work_text is None:
+        try:
+            work_text = (REPO_ROOT / LANDINGS_RECORD).read_text(
+                encoding="utf-8", errors="replace")
+        except OSError:
+            return False
+    nl = chr(10)
+    head = head_text.replace(chr(13) + nl, nl)
+    work = work_text.replace(chr(13) + nl, nl)
+    if not head.endswith(nl) or not work.startswith(head) or work == head:
+        return False
+    for ln in work[len(head):].split(nl):
+        if not ln.strip():
+            continue
+        try:
+            rec = json.loads(ln)
+        except ValueError:
+            return False
+        if not (isinstance(rec, dict) and isinstance(rec.get("cube"), str)
+                and isinstance(rec.get("reported_to_owner"), bool)):
+            return False
+    return True
+
+
+def split_churn(modified: list[str], *, landings_ok=None
+                ) -> tuple[list[str], list[str]]:
+    """Split porcelain lines into (substantive, churn) by path.
+
+    S6-B3181: the landings record is churn ONLY while its change is
+    append-only automated records (landings_change_is_append_only;
+    `landings_ok` is the test seam)."""
     subst, churn = [], []
     for ln in modified:
         path = ln.split(maxsplit=1)[-1].strip().replace("\\", "/")
-        (churn if path in LIVE_RUN_CHURN else subst).append(ln)
+        if path in LIVE_RUN_CHURN:
+            churn.append(ln)
+        elif path == LANDINGS_RECORD and (
+                landings_ok() if landings_ok is not None
+                else landings_change_is_append_only()):
+            churn.append(ln)
+        else:
+            subst.append(ln)
     return subst, churn
 
 
@@ -547,8 +613,14 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
                 continue
             name = str(c.get("name", ""))
             blob = json.dumps(c.get("input", {}))
-            if any(m in name for m in ARM_MARKERS) or any(
-                    m in blob for m in ("CronCreate", "PushNotification")):
+            # S6-B3178 (arm side): only a call OF a scheduling or notification
+            # tool can arm - never a MENTION inside another call's input.
+            # MEASURED 2026-10-16: a Bash grep whose pattern named the cron
+            # tool re-set `armed` to False after the real hourly cron, and the
+            # earlier chain launch then read as unmonitored (scratchpad
+            # arm_trace.py over the live transcript). Sixth instance of the
+            # naming-is-not-invoking class.
+            if any(m in name for m in ARM_MARKERS):
                 # B1548 (L424): a monitor that EXISTS but reports exception-only
                 # fails the owner's standing hourly directive while passing the
                 # existence check. #185 caught absence; it did not catch cadence,
@@ -572,7 +644,7 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
                                   or "unconditional" in _low
                                   or "silence is correct only" in _low
                                   or "silence is correct onlY".lower() in _low)
-                if "CronCreate" in name or "CronCreate" in blob:
+                if "CronCreate" in name:
                     armed = _periodic and _unconditional
                 else:
                     armed = armed or False
@@ -4555,6 +4627,7 @@ if _here_rs not in sys.path:
     sys.path.insert(0, _here_rs)
 from runner_scripts import LAUNCH_ENTRY_POINTS as RUNNER_SCRIPTS  # noqa: E402
 from runner_scripts import SPEC_DRIVEN  # noqa: E402
+from runner_scripts import starts_a_run  # noqa: E402
 # the direct engine entry points - their argv IS where the pool flag lives
 _DIRECT_ENGINE = ("run_phase1a.py", "universe_ladder_run.py")
 POOL_FLAG = "--screen-pool-workers"
@@ -4668,8 +4741,16 @@ def _segment_is_launch(cmd: str) -> bool:
         # B2581d: a RUNNER file named in the segment is a launch however it is
         # spelled; a background word alone is one only when what it backgrounds
         # is not a known non-launch target.
-        if any(m in t for m in RUNNER_SCRIPTS for t in toks):
-            return True
+        named = [m for m in RUNNER_SCRIPTS if any(m in t for t in toks)]
+        if named:
+            # S6-B3178: a runner invoked in a NON-LAUNCH mode starts no run -
+            # launch_detached.py --cleanup only unregisters a finished task.
+            # Decided by the entry point's own dispatch precedence
+            # (runner_scripts.starts_a_run), so --cleanup beside --chain is
+            # still a launch.
+            if any(starts_a_run(m, toks) for m in named):
+                return True
+            continue
         if bases & _NON_LAUNCH_TARGETS:
             continue
         if any(m in t for m in LAUNCH_MARKERS for t in toks):

@@ -47836,6 +47836,19 @@ _B3121_SEAMS_SOUND = {
     ("scan_deferral_trigger_fired", "state"):
         "dict seam matching the json state file's shape; the same keys are "
         "read on both branches",
+    # S6-B3181 (B3139q-r71c): read at registration.
+    ("landings_change_is_append_only", "head_text"):
+        "str seam for the stdout of git show HEAD:<record>; the same CRLF "
+        "normalisation, prefix check and per-line JSON parse run on both "
+        "branches, and test_b3181 feeds it that git output itself",
+    ("landings_change_is_append_only", "work_text"):
+        "str seam for the working file's read_text; same processing as the "
+        "live read on both branches (CRLF normalised, then extended-prefix "
+        "and per-line record checks)",
+    ("split_churn", "landings_ok"):
+        "zero-arg bool callable seam called at the exact site the live "
+        "branch calls landings_change_is_append_only(); test_b3181 also "
+        "drives the live branch once with no seam",
 }
 # B3126 (S6-B3121a): the backlog is EMPTY - all 18 read. 15 entered SOUND
 # with their reasons; 3 were parity FIXES (locked-format live normalisation,
@@ -56789,3 +56802,129 @@ def test_b3173a_table_d_reads_free_level_artifacts():
     bad = {"levels": {"x": {"p99": 1, "per_exit_ranked_by_ci_lo": []}}}
     with pytest.raises(SystemExit, match="REFUSED .S6-B3173a."):
         tdr._free_level_rows(bad, tdr._spec("bollinger_lower")["params"])
+
+
+def _vtc_b3178():
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    spec = _ilu.spec_from_file_location(
+        "vtc_b3178", _P(__file__).resolve().parents[2] / "scripts" / "verify_turn_compliance.py")
+    m = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_b3178_a_non_launch_mode_is_not_a_launch():
+    """S6-B3178 (launch side): the turn gate counted
+    `launch_detached.py --cleanup <task>` - which only unregisters a finished
+    task - as a launch and demanded a monitor (B3139q-r70t, verbatim below).
+    Decided at the TRUNK (_segment_is_launch) by the entry point's own dispatch
+    precedence, so every launch gate inherits it and --cleanup beside --chain
+    stays a launch. run_phase1a --dry-run still runs the engine and stays one.
+    """
+    m = _vtc_b3178()
+    quiet = ["python scripts/launch_detached.py --cleanup stockpicks_chain_b3171_1792082738",
+             "python scripts/launch_detached.py --selftest",
+             "nohup python scripts/launch_detached.py --cleanup X &"]
+    fire = ["PYTHONPATH=.:scripts python scripts/launch_detached.py --chain --batch b1 --specs x_spec.json",
+            "python scripts/launch_detached.py --cleanup X --chain --batch b --specs y",
+            "python scripts/launch_detached.py --spec x_spec.json",
+            "python backtest/run_phase1a.py --dry-run"]
+    assert [m._segment_is_launch(c) for c in quiet] == [False] * 3, quiet
+    assert [m._segment_is_launch(c) for c in fire] == [True] * 4, fire
+
+    def _ents(cmd):
+        return [{"type": "user", "message": {"content": "go"}},
+                {"type": "assistant", "message": {"content": [
+                    {"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}]
+    assert m.scan_unmonitored_launch(_ents(quiet[0])) == []
+    assert m.scan_unmonitored_launch(_ents(fire[0])), "a real --chain launch still needs a monitor"
+
+
+def test_b3178_launch_dispatch_table_matches_launch_detached():
+    """S6-B3178: LAUNCH_DISPATCH mirrors launch_detached.main's if-chain - the
+    order of the mode tests IS the precedence - so the table cannot drift from
+    the code it describes (AST, never prose)."""
+    import ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import runner_scripts as rs
+    tree = ast.parse((root / "scripts" / "launch_detached.py").read_text(encoding="utf-8"))
+    main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    order = [s.test.attr for s in main.body
+             if isinstance(s, ast.If) and isinstance(s.test, ast.Attribute)
+             and isinstance(s.test.value, ast.Name) and s.test.value.id == "a"]
+    assert order == ["selftest", "chain", "cleanup"], order
+    table = rs.LAUNCH_DISPATCH["launch_detached.py"]
+    assert [f.lstrip("-") for f, _ in table] == order, table
+    assert dict(table) == {"--selftest": False, "--chain": True, "--cleanup": False}
+    assert rs.starts_a_run("launch_detached.py", ["--spec", "x"]) is True
+    assert rs.starts_a_run("run_wave.py", ["--cleanup"]) is True, "no table, no exemption"
+
+
+def test_b3178_a_mention_of_the_cron_tool_does_not_disarm():
+    """S6-B3178 (arm side): the armed flag followed the LAST call whose INPUT
+    named the cron tool, so a later grep naming it re-set armed to False after
+    the real hourly cron (B3139q-r70w, measured with arm_trace.py). Only a call
+    OF the tool arms. Must-fire kept: no cron at all, and an exception-only cron
+    (a mention afterwards cannot rescue it either).
+    """
+    m = _vtc_b3178()
+    tool = "Cron" + "Create"
+
+    def tu(name, inp):
+        return {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": name, "input": inp}]}}
+    user = {"type": "user", "message": {"content": "go"}}
+    launch = tu("Bash", {"command": "python scripts/launch_detached.py --chain --batch b --specs s.json"})
+    mention = tu("Bash", {"command": f"grep -n {tool} scripts/transcript_timeline.py"})
+    hourly = tu(tool, {"cron": "23 * * * *",
+                       "prompt": "hourly report, unconditional - do not withhold"})
+    exc_only = tu(tool, {"cron": "23 * * * *", "prompt": "report only if it breaks"})
+    assert m.scan_unmonitored_launch([user, hourly, launch, mention]) == []
+    assert m.scan_unmonitored_launch([user, launch])
+    assert m.scan_unmonitored_launch([user, exc_only, launch, mention])
+
+
+def test_b3181_landings_append_is_churn_a_hand_edit_is_not():
+    """S6-B3181: the Stop hook appends its reported_to_owner marker to
+    output_audit/postconfig_landings.jsonl and Gate B, in the same run, refused
+    the close for that one line - once per delivered landing (MEASURED on the
+    span-9 landing). The record is churn ONLY while its change is append-only
+    automated records; an edited, deleted or malformed line stays substantive.
+    Built on the COMMITTED record (read, never written), with the Windows CRLF
+    working form against git's LF blob (the file is written in text mode).
+    """
+    import json
+    import subprocess
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    m = _vtc_b3178()
+    head = subprocess.run(["git", "show", "HEAD:" + m.LANDINGS_RECORD], cwd=root,
+                          capture_output=True, text=True, encoding="utf-8").stdout
+    assert head.endswith(chr(10)) and head.count(chr(10)) >= 10, "positive control"
+    last = json.loads(head.strip().split(chr(10))[-1])
+    marker = dict(last, reported_to_owner=True, reported_ts="T", reported_by="x")
+    crlf = head.replace(chr(10), chr(13) + chr(10))
+    ok = crlf + json.dumps(marker, sort_keys=True) + chr(13) + chr(10)
+    assert m.landings_change_is_append_only(head_text=head, work_text=ok)
+    edited = crlf.replace('"battery_exit": 0', '"battery_exit": 9', 1) + json.dumps(marker) + chr(10)
+    assert edited != crlf + json.dumps(marker) + chr(10), "the edit landed"
+    assert not m.landings_change_is_append_only(head_text=head, work_text=edited)
+    assert not m.landings_change_is_append_only(head_text=head, work_text=crlf + "not json" + chr(10))
+    bad_rec = json.dumps({"cube": "x"}) + chr(10)
+    assert not m.landings_change_is_append_only(head_text=head, work_text=crlf + bad_rec)
+    assert not m.landings_change_is_append_only(head_text=head, work_text=crlf)
+    lines = [" M " + m.LANDINGS_RECORD, " M STRATEGY_ROSTER.md", " M LEARNINGS.md"]
+    subst, churn = m.split_churn(lines, landings_ok=lambda: True)
+    assert churn == lines[:2] and subst == lines[2:], (subst, churn)
+    subst, churn = m.split_churn(lines, landings_ok=lambda: False)
+    assert churn == [lines[1]] and subst == [lines[0], lines[2]], (subst, churn)
+    # L878: the LIVE branch once, with no seam - whatever this checkout's
+    # record looks like, split_churn agrees with the check it calls
+    live = m.landings_change_is_append_only()
+    assert isinstance(live, bool)
+    assert (lines[0] in m.split_churn(lines)[1]) == live, live
