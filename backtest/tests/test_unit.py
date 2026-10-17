@@ -48029,6 +48029,17 @@ _B3121_SEAMS_SOUND = {
         "zero-arg bool callable seam called at the exact site the live "
         "branch calls landings_change_is_append_only(); test_b3181 also "
         "drives the live branch once with no seam",
+    # S6-B3193 (B3139q-r71k): read at registration.
+    ("scan_close_differs_from_tested_draft", "stamp"):
+        "dict seam with the shape json.loads gives the live stamp file (turn, "
+        "draft, lines, sha256); the same turn check and the same "
+        "collector-normalised line comparison run on both branches, and "
+        "test_b3193 also drives the live file branch through "
+        "write_close_stamp and stamp_dir",
+    ("scan_close_differs_from_tested_draft", "turn_id"):
+        "str seam for turn_anchor(entries)'s return, an instruction uuid; "
+        "the same equality test against the stamp's turn runs on both "
+        "branches, and test_b3193 also derives it from entries (its u1 case)",
 }
 # B3126 (S6-B3121a): the backlog is EMPTY - all 18 read. 15 entered SOUND
 # with their reasons; 3 were parity FIXES (locked-format live normalisation,
@@ -57283,3 +57294,151 @@ def test_b3189_engine_split_excludes_unreachable_cells():
         r = pvt.engine_split(sp)
         assert r["unreachable_cells"] == 0, k
         assert r["offline_cells"] == r["full_factorial"] - r["engine_configs"], k
+
+
+def test_b3193_posted_close_must_equal_its_tested_draft(tmp_path):
+    """S6-B3193 (L921 / L925 / #282): a close tested as a draft is posted
+    VERBATIM. scripts/probe_close.py stamps the tested draft under its turn;
+    scan_close_differs_from_tested_draft refuses a final response that differs
+    (both sides read through the shared response collector, so case alone is
+    not a difference) and names the first differing line. Both directions
+    (#226): a verbatim post
+    and pure whitespace / line-ending differences pass; a one-character edit and
+    the L925 hyphenation fire; another turn's stamp and no stamp stay quiet.
+    The probe CLI runs end to end on a synthetic transcript, writes ONLY its
+    stamp (the deferral-trigger state file is passed in memory, never written -
+    the L910 class), and the gate is wired into the Stop hook's runner."""
+    import json
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as tg
+
+    draft = ("Done - batch 2 landed.\n\n"
+             "- An AST scan of all 225 registered strategies, end to end, finds 4.\n"
+             "\n**CHECKLIST compliance:** #45 ok\n")
+    edited = draft.replace("end to end", "end-to-end")
+    stamp = {"turn": "T1", "draft": "close.md", "lines": tg.close_lines(draft)}
+    gate = tg.scan_close_differs_from_tested_draft
+
+    # (1) verbatim passes, and so do endings, trailing spaces and edge blanks
+    assert gate([], text=draft, stamp=stamp, turn_id="T1") == []
+    assert gate([], text="\n" + draft.replace("\n", " \r\n") + "\n\n",
+                stamp=stamp, turn_id="T1") == []
+    # (2) a one-character edit fires and names its line; so does L925's
+    out = gate([], text=draft.replace("Done -", "Done:"), stamp=stamp, turn_id="T1")
+    assert out and "First differing line 1:" in out[0], out
+    out = gate([], text=edited, stamp=stamp, turn_id="T1")
+    assert out and "First differing line 3:" in out[0] and "end-to-end" in out[0], out
+    # a dropped line is a difference too
+    out = gate([], text=draft.rsplit("\n\n", 1)[0], stamp=stamp, turn_id="T1")
+    assert out and "<end of the posted close>" in out[0], out
+    # (3) another turn's stamp is ignored; (4) no stamp, no check
+    assert gate([], text=edited, stamp=dict(stamp, turn="T0"), turn_id="T1") == []
+    assert gate([], text=edited, turn_id="T1", stamp_dir=tmp_path) == []
+    # (5) the stamp file round trip (the writer the probe calls)
+    p = tg.write_close_stamp(draft, "T1", draft="close.md", stamp_dir=tmp_path)
+    assert p.parent == tmp_path, p
+    assert json.loads(p.read_text(encoding="utf-8"))["lines"] == stamp["lines"]
+    assert gate([], text=draft, turn_id="T1", stamp_dir=tmp_path) == []
+    assert gate([], text=edited, turn_id="T1", stamp_dir=tmp_path)
+    p.write_text("{not json", encoding="utf-8")       # a corrupt stamp fails closed
+    assert "UNREADABLE" in gate([], text=draft, turn_id="T1", stamp_dir=tmp_path)[0]
+    # (6) the turn is the last real instruction; gate feedback does not move it
+    entries = [
+        {"type": "user", "uuid": "u1",
+         "message": {"role": "user", "content": "land the batches"}},
+        {"type": "assistant",
+         "message": {"content": [{"type": "text", "text": edited}]}}]
+    assert tg.turn_anchor(entries) == "u1"
+    assert tg.turn_anchor([]) is None
+    assert gate(entries, stamp=dict(stamp, turn="u1"))        # reads the final block
+    assert gate(entries, stamp=dict(stamp, turn="u0")) == []
+    # (7) wired into the Stop hook's runner, not merely defined (B1864)
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8")
+    runner = src.split("def main(", 1)[1].split("def _main_legacy(", 1)[0]
+    assert "scan_close_differs_from_tested_draft," in runner
+    # (8) the probe CLI end to end: stamps the draft under the transcript's turn
+    tr = tmp_path / "t.jsonl"
+    tr.write_text(json.dumps(entries[0]) + "\n", encoding="utf-8")
+    d = tmp_path / "close.md"
+    d.write_text(draft, encoding="utf-8")
+    sd = tmp_path / "stamps"
+    state = root / "output_audit" / "deferral_trigger_state.json"
+    before = state.read_bytes() if state.exists() else None
+    ledger = root / "output_audit" / "postconfig_landings.jsonl"
+    ledger_before = ledger.read_bytes() if ledger.exists() else None
+    r = subprocess.run([sys.executable, str(root / "scripts" / "probe_close.py"),
+                        str(d), "--transcript", str(tr), "--stamp-dir", str(sd)],
+                       capture_output=True, text=True, cwd=str(root), timeout=900)
+    assert r.returncode in (0, 1), (r.returncode, r.stdout[-800:], r.stderr[-800:])
+    assert "STAMPED" in r.stdout, r.stdout[-800:]
+    st = json.loads((sd / "u1.json").read_text(encoding="utf-8"))
+    assert st["turn"] == "u1" and st["lines"] == stamp["lines"], st
+    assert (state.read_bytes() if state.exists() else None) == before, (
+        "the probe wrote the deferral-trigger state - a draft check consumed a "
+        "one-time block (L910)")
+    assert (ledger.read_bytes() if ledger.exists() else None) == ledger_before, (
+        "the probe wrote the landings ledger - a draft check marked a landing "
+        "delivered (L910)")
+    psrc = (root / "scripts" / "probe_close.py").read_text(encoding="utf-8")
+    assert 'WRITE_ON_CLOSE = ("scan_undelivered_landing", "scan_chain_halt")' in psrc
+    assert 'kw = {"state": _deferral_state()}' in psrc
+    # a usage error is refused, never stamped
+    r2 = subprocess.run([sys.executable, str(root / "scripts" / "probe_close.py"),
+                         str(d), "--transcript", str(tmp_path / "missing.jsonl"),
+                         "--stamp-dir", str(sd)],
+                        capture_output=True, text=True, cwd=str(root), timeout=300)
+    assert r2.returncode == 2 and "REFUSED" in r2.stderr, (r2.returncode, r2.stderr)
+
+
+def test_b3195_offline_sweep_refuses_a_looser_level():
+    """S6-B3195: offline_level_sweep applies col <= level for an le axis, so a
+    level LOOSER than production kept every production fire and graded as
+    production under another label. looser_levels() names each such level and
+    both readers refuse once production has reproduced and before any cell is
+    graded. Both directions (#226)."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import offline_level_sweep as ols
+
+    le = ols.parse_axis("days_since_last_earnings:le:20,40,60")
+    ge = ols.parse_axis("earnings_eps_yoy_growth:ge:0.05,0.10,0.20")
+    # must-quiet: every level at or tighter than production (the pead sweep)
+    assert ols.looser_levels([le, ge], (60.0, 0.05)) == []
+    # must-fire: a level above production on le, below production on ge
+    out = ols.looser_levels([ols.parse_axis("days_since_last_earnings:le:20,60,80"),
+                             ols.parse_axis("earnings_eps_yoy_growth:ge:0.02,0.05")],
+                            (60.0, 0.05))
+    assert len(out) == 2 and "[80.0]" in out[0] and "[0.02]" in out[1], out
+    # ORDER, in both readers: the refusal sits AFTER the reproduction refusal
+    # (a wrong production is a reproduction failure - test_b2638's must-fire
+    # arm) and BEFORE the first cell is graded
+    for name, call, repro, cells in (
+            ("offline_level_sweep.py", "_loose = looser_levels(axes, production)",
+             "if repro < repro_min:", "for combo in itertools.product("),
+            ("offline_holdout_read.py", "_loose = ols.looser_levels(axes, production)",
+             "if repro < repro_min:", "for combo in itertools.product(")):
+        src = (root / "scripts" / name).read_text(encoding="utf-8")
+        assert src.count(call) == 1, name
+        i = src.index(call)
+        r, c = src.rfind(repro, 0, i), src.find(cells, i)
+        # local order: the nearest reproduction refusal before the guard,
+        # the next grading loop after it, and no grading loop between
+        assert r != -1 and c != -1 and cells not in src[r:i], name
+    # the live sweep on the real cube: production reproduces, then a level
+    # looser than production is refused (artifact-dependent, as test_b2638)
+    m, _root = _b2638_mod()
+    if m.TRADE_LOG.exists():
+        axes = [m.parse_axis("days_since_last_earnings:le:20,40,60,80"),
+                m.parse_axis("earnings_eps_yoy_growth:ge:0.05,0.10")]
+        with pytest.raises(SystemExit, match="S6-B3195") as e:
+            m.sweep("pead_long_high_yoy_growth_only", axes, (60.0, 0.05),
+                    0.99, 0.999, 30)
+        assert "[80.0]" in str(e.value), str(e.value)

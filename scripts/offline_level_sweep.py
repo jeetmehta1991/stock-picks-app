@@ -87,6 +87,26 @@ def _parse_sig(s):
             return {}
 
 
+def looser_levels(axes: list[dict], production) -> list[str]:
+    """S6-B3195: each axis level on the LOOSER side of its production level.
+
+    keep() applies col <= level for an le axis (col >= level for ge), so a
+    level above production on an le axis keeps EVERY production fire and the
+    cell grades identically to production while labelled with the looser
+    setting - a wrong grade with every other refusal green. A looser level
+    admits bars the cube never simulated: it is engine work (runbook 0.7),
+    never an offline grade. MEASURED when added: 0 of 9 existing sweep
+    artifacts carried one, so no recorded grade was wrong."""
+    out = []
+    for ax, pv in zip(axes, production):
+        bad = [lv for lv in ax["levels"]
+               if (lv > pv if ax["op"] == "le" else lv < pv)]
+        if bad:
+            out.append(f"{ax['key']} {ax['op']}: levels {bad} are looser "
+                       f"than production {pv}")
+    return out
+
+
 def keep(frame: pd.DataFrame, axes: list[dict], combo: tuple) -> pd.DataFrame:
     m = pd.Series(True, index=frame.index)
     for ax, level in zip(axes, combo):
@@ -189,6 +209,16 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
         raise SystemExit(f"REFUSED: production levels reproduce {repro:.4f} of the "
                          f"landed fire set (< {repro_min}) - the persisted magnitude "
                          "is not the quantity the engine thresholded")
+    # S6-B3195: AFTER the reproduction refusal - a level is looser only
+    # relative to production, so production must reproduce first (a wrong
+    # production is a reproduction failure, not a looser level) - and
+    # BEFORE any cell is graded.
+    _loose = looser_levels(axes, production)
+    if _loose:
+        raise SystemExit("REFUSED (S6-B3195): " + "; ".join(_loose) + " - a "
+                         "looser level keeps every production fire, so its "
+                         "offline grade would be production's grade under "
+                         "another label")
     if not ev["cap_bypassed_evidence"]:
         ev["truncation_note"] = (
             f"max fires/day {ev['max_fires_per_day']} <= cap {CANDIDATE_CAP}: no "

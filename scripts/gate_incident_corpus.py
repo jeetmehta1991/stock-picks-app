@@ -41,6 +41,14 @@ from __future__ import annotations
 # incident produced several sentences, the one chosen is the one that appeared
 # in the response the owner reacted to.
 INCIDENTS: dict[str, tuple[str, bool, dict]] = {
+    # S6-B3193 (L925): VERBATIM - the line posted at 2026-10-17T03:51:26Z
+    # against the draft line probe-tested minutes earlier (close_r71d.md:30);
+    # the rewrite turned the accepted "end to end" into "end-to-end".
+    "scan_close_differs_from_tested_draft": (
+        '- Correction: S6-B3180 said 5 strategies read the EMA-span knob. An end-to-end AST scan of all 225 registered strategies finds 4. smc_breaker_block_short reads a fixed 200-EMA key. Recorded as L924, a compliance failure against #182.', True,
+        {"stamp": {"turn": "r71d", "draft": "close_r71d.md",
+                   "lines": ['- Correction: S6-B3180 said 5 strategies read the EMA-span knob. An AST scan of all 225 registered strategies, end to end, finds 4; smc_breaker_block_short reads a fixed 200-EMA key. L924; compliance failure against #182.']},
+         "turn_id": "r71d"}),
     # S6-B3096e (B3107): the B3096 restructure's MEASURED share - the runbook
     # dropped 0.942 of its distinct lines - in a turn whose draft parts had
     # been written before any coverage comparison ran (L869).
@@ -671,6 +679,18 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    "scan_close_differs_from_tested_draft": [
+        # the tested draft posted verbatim - must go quiet
+        ('- Correction: S6-B3180 said 5 strategies read the EMA-span knob. An AST scan of all 225 registered strategies, end to end, finds 4; smc_breaker_block_short reads a fixed 200-EMA key. L924; compliance failure against #182.', False,
+         {"stamp": {"turn": "r71d", "draft": "close_r71d.md",
+                    "lines": ['- Correction: S6-B3180 said 5 strategies read the EMA-span knob. An AST scan of all 225 registered strategies, end to end, finds 4; smc_breaker_block_short reads a fixed 200-EMA key. L924; compliance failure against #182.']},
+          "turn_id": "r71d"}),
+        # a stamp from ANOTHER turn is ignored - must go quiet
+        ('- Correction: S6-B3180 said 5 strategies read the EMA-span knob. An end-to-end AST scan of all 225 registered strategies finds 4. smc_breaker_block_short reads a fixed 200-EMA key. Recorded as L924, a compliance failure against #182.', False,
+         {"stamp": {"turn": "r71c", "draft": "close_r71c.md",
+                    "lines": ['- Correction: S6-B3180 said 5 strategies read the EMA-span knob. An AST scan of all 225 registered strategies, end to end, finds 4; smc_breaker_block_short reads a fixed 200-EMA key. L924; compliance failure against #182.']},
+          "turn_id": "r71d"}),
+    ],
     "scan_doc_rewrite_without_coverage": [
         # the CLI was only asked for --help - not a run
         ("Restructured.", True,

@@ -121,6 +121,11 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
     repro = len(ols.keep(fires, axes, production)) / max(len(fires), 1)
     if repro < repro_min:
         raise SystemExit(f"REFUSED: production reproduces {repro:.4f} < {repro_min}")
+    # S6-B3195: after the reproduction refusal, before any cell is read
+    _loose = ols.looser_levels(axes, production)
+    if _loose:
+        raise SystemExit("REFUSED (S6-B3195): " + "; ".join(_loose) + " - a "
+                         "looser level's holdout cell would be production's")
 
     import itertools
     rows = []

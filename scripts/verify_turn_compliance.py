@@ -591,6 +591,114 @@ def _last_instruction_index(entries) -> int:
     return last
 
 
+# S6-B3193 (L921 / L925 / #282): a close TESTED as a draft is posted VERBATIM.
+# scripts/probe_close.py runs the scan gates on a drafted close and STAMPS it - its
+# normalised lines and the turn they belong to - under .close_stamps/ (git-ignored).
+# This gate compares the turn's final text block with that stamp and refuses an
+# edit made after the test, naming the first differing line. No stamp, no check;
+# a stamp from another turn is ignored. MEASURED: the r71d close passed 54 of 54
+# transcript gates as a draft and was posted re-authored - 'end to end' became
+# 'end-to-end' - so scan_partial_read refused it (L925), the second re-authored
+# post in one day (L921).
+CLOSE_STAMP_DIR = REPO_ROOT / ".close_stamps"
+
+
+def scan_close_differs_from_tested_draft(entries, text=None, *, stamp=None,
+                                         turn_id=None, stamp_dir=None) -> list[str]:
+    """S6-B3193: the posted close must equal the draft probe_close.py tested.
+
+    Both sides pass through the shared response collector with keep_code=True
+    (fences and inline code KEPT - a changed backtick is a change), the one
+    reader every response gate uses (B1783 pins it), so the comparison is
+    exact up to the collector's own blind spots: case, blockquote lines and
+    echoed gate reports - which no other response gate sees either. Seams
+    (#241): `text` is the posted close (default: the final text block);
+    `stamp` a stamp dict (default: read from `stamp_dir`, default
+    .close_stamps/); `turn_id` the turn (default: turn_anchor(entries))."""
+    tid = turn_anchor(entries) if turn_id is None else turn_id
+    if stamp is None:
+        if tid is None:
+            return []
+        path = close_stamp_path(tid, stamp_dir)
+        if not path.exists():
+            return []                       # no stamp, no check
+        try:
+            stamp = json.loads(path.read_text(encoding="utf-8"))
+        except Exception as exc:            # a probe ran: fail CLOSED
+            return [f"CLOSE STAMP UNREADABLE (S6-B3193): {path} ({exc!r}) - "
+                    "re-run scripts/probe_close.py on the close you will post"]
+    if not isinstance(stamp, dict) or stamp.get("turn") != tid:
+        return []                           # another turn's stamp
+    posted = close_lines(_response_text(entries, text, keep_code=True))
+    if not posted:
+        return []                           # no close to compare
+    tested = close_lines(_response_text(
+        [], "\n".join(str(x) for x in (stamp.get("lines") or [])),
+        keep_code=True))
+    if posted == tested:
+        return []
+    i = next(k for k in range(max(len(posted), len(tested)) + 1)
+             if k >= len(posted) or k >= len(tested) or posted[k] != tested[k])
+    a = tested[i] if i < len(tested) else "<end of the tested draft>"
+    b = posted[i] if i < len(posted) else "<end of the posted close>"
+    return [f"CLOSE DIFFERS FROM ITS TESTED DRAFT (S6-B3193 / L925 / #282): the "
+            f"final response is not the text scripts/probe_close.py tested this "
+            f"turn ({stamp.get('draft', '?')}). First differing line {i + 1}: "
+            f"tested {a[:160]!r} - posted {b[:160]!r}. Post the tested file "
+            "verbatim, or re-run the probe on the edited text - an edit after a "
+            "test re-opens the test."]
+
+
+def close_lines(text) -> list:
+    """S6-B3193: a close normalised for comparison - line endings unified,
+    trailing whitespace dropped per line, leading and trailing blank lines
+    dropped. Nothing else: a changed word, hyphen or backtick is a change."""
+    lines = [ln.rstrip() for ln in
+             str(text or "").replace("\r\n", "\n").replace("\r", "\n").split("\n")]
+    while lines and not lines[0]:
+        lines.pop(0)
+    while lines and not lines[-1]:
+        lines.pop()
+    return lines
+
+
+def turn_anchor(entries):
+    """S6-B3193: the id of the instruction that opened this turn - its uuid,
+    else its timestamp and position - or None when there is none. Gate
+    feedback does not move it (_last_instruction_index), so a re-close after a
+    block belongs to the same turn and the same stamp."""
+    seq = list(entries or ())
+    i = _last_instruction_index(seq)
+    if i < 0:
+        return None
+    e = seq[i] if isinstance(seq[i], dict) else {}
+    u = e.get("uuid")
+    return str(u) if u else f"{e.get('timestamp', '')}#{i}"
+
+
+def close_stamp_path(turn, stamp_dir=None) -> Path:
+    """S6-B3193: where a turn's close stamp lives (git-ignored)."""
+    safe = "".join(c if (c.isalnum() or c in "-_") else "_" for c in str(turn))
+    base = Path(stamp_dir) if stamp_dir is not None else CLOSE_STAMP_DIR
+    return base / f"{safe}.json"
+
+
+def write_close_stamp(text, turn, draft: str = "", stamp_dir=None,
+                      extra=None) -> Path:
+    """S6-B3193: record a tested close's normalised lines under its turn."""
+    import hashlib
+    from datetime import datetime, timezone
+    lines = close_lines(text)
+    rec = {"turn": turn, "draft": draft, "lines": lines,
+           "sha256": hashlib.sha256("\n".join(lines).encode("utf-8")).hexdigest(),
+           "written_utc": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    rec.update(extra or {})
+    path = close_stamp_path(turn, stamp_dir)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(rec, indent=1), encoding="utf-8")
+    return path
+
+
 def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
     """Return launch snippets that had no monitor armed in the same turn.
 
@@ -5950,6 +6058,9 @@ def main(argv: list[str] | None = None) -> int:
                 # L920 (B3139q-r70l): a markdown table inside a code
                 # fence renders as raw pipes - owner-caught on Table A.
                 scan_fenced_markdown_table,
+                # S6-B3193 (L925): a close tested as a draft is posted
+                # verbatim - the stamp scripts/probe_close.py writes.
+                scan_close_differs_from_tested_draft,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):
