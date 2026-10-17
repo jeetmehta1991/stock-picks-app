@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-71 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+72 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-17T05:08:19 | engine-hook | 0 | none | 0 | ea2ffb91a | True | **NO** |
 | output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-17T02:31:22 | engine-hook | 0 | none | 0 | f1077c149 | True | yes 2026-10-17T02:51:32 |
 | output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T23:51:52 | engine-hook | 0 | none | 0 | 4801ad035 | True | yes 2026-10-17T00:07:10 |
 | output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T20:20:16 | engine-hook | 0 | none | 0 | 44dc192f3 | True | yes 2026-10-16T23:53:54 |
@@ -544,7 +545,7 @@ _1030 ranked outcomes across 103 graded configs; 1004 distinct signatures._
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12240 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 5 of 5 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
