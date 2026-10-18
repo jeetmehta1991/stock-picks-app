@@ -57581,3 +57581,37 @@ def test_b3208_claude_criteria_row10_matches_config():
     assert onum and float(onum[0]) == float(PC["min_sharpe_overall"]), (
         overall, PC["min_sharpe_overall"],
         "row 10 overall cell disagrees with the live constant")
+
+
+def test_b3204_portfolio_resolution_covers_every_admission():
+    """S6-B3204 stage 1 (owner approved 2026-10-18): the portfolio builder's
+    admission -> trade-source resolver, run LIVE over the committed admissions
+    register. Every admission resolves to a trade file that exists on disk and
+    none is refused; and the REFUSED branch is proven to fire (a synthetic
+    admission naming no artifact), so a quiet shrink of the book cannot read
+    as a pass (#279 / L817). The resolver's first live run refused
+    smc_breaker_block_long on a prefix-slicing defect - this pin holds the
+    fix."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import build_phase1b_portfolio as bpp
+
+    res = bpp.resolve()
+    assert res["admissions"] == 16, res["admissions"]
+    assert res["resolved"] == 16 and res["refused"] == [], res["refused"]
+    cubes = {r["cube"] for r in res["rows"]}
+    # the three direct Step-2 cubes plus the R5 merged re-score source
+    assert "output_r5_merged_1_7" in cubes
+    assert "output_b2399_step2_sw50sp50_step2_sw50sp50" in cubes
+    for r in res["rows"]:
+        assert (root / r["trade_file"]).exists(), r["trade_file"]
+        assert r["trade_file_bytes"] > 0, r["strategy"]
+
+    # must-FIRE: an admission the resolver cannot trace is REFUSED by name
+    bad = bpp.resolve_one({"strategy": "ghost_strategy",
+                           "grid_artifact": "output_audit/does_not_exist.json"})
+    assert bad["resolution"] == "REFUSED" and "missing" in bad["reason"], bad

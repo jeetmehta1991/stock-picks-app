@@ -1,0 +1,250 @@
+{
+  "_doc": "S6-B3204 stage 1 - admission -> trade-source resolution for the Phase-1B portfolio-unit evaluation (owner approved 2026-10-18). Every admission resolves or is REFUSED by name; stage 2 refuses to blend while any row is REFUSED.",
+  "admissions": 16,
+  "resolved": 16,
+  "refused": [],
+  "rows": [
+    {
+      "strategy": "smc_breaker_block_long",
+      "grid_artifact": "output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json",
+      "combination": {
+        "close_mitigation": true,
+        "break_pct_max": 0.02,
+        "age_bars_max": null,
+        "tail_n": 20
+      },
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_b2399_step2_sw50sp50_step2_sw50sp50",
+      "how": "DIRECT (cube named by the grid artifact's own filename)",
+      "trade_file": "output_b2399_step2_sw50sp50_step2_sw50sp50/trade_exit_detail.csv",
+      "trade_file_bytes": 4083411
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "grid_artifact": "output_audit/b2645_pead_admission_grid.json",
+      "combination": {
+        "drift_window_days": 20.0,
+        "yoy_growth_long_threshold": 0.1
+      },
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "grid_artifact": "output_audit/b2653_peadsm_admission_grid.json",
+      "combination": {
+        "drift_window_days": 60.0,
+        "yoy_growth_threshold": 0.05,
+        "announcement_return_threshold": 0.05
+      },
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+      "combination": {
+        "xs_max_anomaly": 0.0719,
+        "strategy": "institutional_breakout_confirmation_long"
+      },
+      "exit": "r_multiple_2r",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "institutional_committed_growth_long",
+      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+      "combination": {
+        "xs_max_anomaly": 0.0705,
+        "strategy": "institutional_committed_growth_long"
+      },
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "institutional_high_conviction_long",
+      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+      "combination": {
+        "xs_max_anomaly": 0.0791,
+        "strategy": "institutional_high_conviction_long"
+      },
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "institutional_multi_quarter_persistence_long",
+      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+      "combination": {
+        "xs_max_anomaly": 0.0668,
+        "strategy": "institutional_multi_quarter_persistence_long"
+      },
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "institutional_oversold_long",
+      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+      "combination": {
+        "sector_strongest_rs": 0.0517,
+        "strategy": "institutional_oversold_long"
+      },
+      "exit": "r_multiple_2r",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "institutional_persistence_oversold_long",
+      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+      "combination": {
+        "institutional_new_positions": 187.0,
+        "strategy": "institutional_persistence_oversold_long"
+      },
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "institutional_recent_init_momentum_long",
+      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+      "combination": {
+        "xs_max_anomaly": 0.0752,
+        "strategy": "institutional_recent_init_momentum_long"
+      },
+      "exit": "r_multiple_2r",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "institutional_recent_init_volume_long",
+      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+      "combination": {
+        "xs_max_anomaly": 0.0819,
+        "strategy": "institutional_recent_init_volume_long"
+      },
+      "exit": "r_multiple_2r",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "institutional_strong_conviction_long",
+      "grid_artifact": "output_audit/b2664_inst_admission_grid.json",
+      "combination": {
+        "xs_max_anomaly": 0.0691,
+        "strategy": "institutional_strong_conviction_long"
+      },
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "xs_momentum_top_decile",
+      "grid_artifact": "output_audit/b2684_topdecile_breadth_admission_grid.json",
+      "combination": {
+        "xs_momentum_12_1": 0.529,
+        "pct_from_vwap": 36.6266
+      },
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "grid_artifact": "output_audit/b2685_xslowbeta_admission_grid.json",
+      "combination": {},
+      "exit": "time_stop_10d",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_r5_merged_1_7",
+      "how": "R5_RESCORE (the artifact's _doc names the R5 merged cube as its source; the combination re-applies at stage 2)",
+      "trade_file": "output_r5_merged_1_7/trade_exit_detail.csv",
+      "trade_file_bytes": 1638534091
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "grid_artifact": "output_audit/b3114_tws_c14_breadth_step2_read.json",
+      "combination": {
+        "axis": "cot_ndx_mmoney_pctile_3y",
+        "op": "ge",
+        "level": 0.637
+      },
+      "exit": "class_time_stop",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3",
+      "how": "DIRECT (artifact's own cube_dir field)",
+      "trade_file": "output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3/trade_exit_detail.csv",
+      "trade_file_bytes": 8888826
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "grid_artifact": "output_audit/b3145_pairs_prod_breadth_step3_read.json",
+      "combination": {
+        "axis": "cot_copper_commercials_net_pct",
+        "op": "ge",
+        "level": -0.14
+      },
+      "exit": "multi_tier_partial",
+      "direction": "long",
+      "resolution": "RESOLVED",
+      "cube": "output_pairs_mrl_step2_production",
+      "how": "DIRECT (artifact's own cube_dir field)",
+      "trade_file": "output_pairs_mrl_step2_production/trade_exit_detail.csv",
+      "trade_file_bytes": 53190240
+    }
+  ]
+}
