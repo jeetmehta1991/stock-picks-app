@@ -1,0 +1,351 @@
+{
+  "_doc": "S6-B3204 (owner approved 2026-10-18): the Phase-1B PORTFOLIO-UNIT evaluation - equal-weight blend of the 16 admitted lines' reproduced NET trade sets. DISCLOSED-RE-READ: the holdout window was read per-strategy at admission; this blend re-uses those banked trades and spends no new read. DISCLOSURES: equal weight per line (no admitted line carries a ruled tier); each trade at TRADE_FRACTION of book for the MDD scale; pnl realized at exit date, so intra-trade drawdown is understated.",
+  "basis": "net = roster_core.net_pnl (winsorize 300.0, cost 20.0 bps)",
+  "trade_fraction": 0.015,
+  "is_holdout_boundary": "2025-05-05",
+  "lines": [
+    {
+      "strategy": "smc_breaker_block_long",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "re-diagnosed with tighten_breaker_block at sw=50; counts reproduce 41/180",
+      "trades": 180
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['le', 'ge']",
+      "trades": 988
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['le', 'ge', 'ge']",
+      "trades": 215
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "exit": "r_multiple_2r",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge']",
+      "trades": 128
+    },
+    {
+      "strategy": "institutional_committed_growth_long",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge']",
+      "trades": 387
+    },
+    {
+      "strategy": "institutional_high_conviction_long",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge']",
+      "trades": 492
+    },
+    {
+      "strategy": "institutional_multi_quarter_persistence_long",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge']",
+      "trades": 505
+    },
+    {
+      "strategy": "institutional_oversold_long",
+      "exit": "r_multiple_2r",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['le']",
+      "trades": 156
+    },
+    {
+      "strategy": "institutional_persistence_oversold_long",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge']",
+      "trades": 145
+    },
+    {
+      "strategy": "institutional_recent_init_momentum_long",
+      "exit": "r_multiple_2r",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge']",
+      "trades": 454
+    },
+    {
+      "strategy": "institutional_recent_init_volume_long",
+      "exit": "r_multiple_2r",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge']",
+      "trades": 215
+    },
+    {
+      "strategy": "institutional_strong_conviction_long",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge']",
+      "trades": 366
+    },
+    {
+      "strategy": "xs_momentum_top_decile",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge', 'ge']",
+      "trades": 84
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "exit": "time_stop_10d",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=[]",
+      "trades": 452
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "exit": "class_time_stop",
+      "status": "OK",
+      "how": "reproduced (#290 gate): ops=['ge']",
+      "trades": 343
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "exit": "multi_tier_partial",
+      "status": "OK",
+      "how": "ALREADY-NET read (artifact basis=net); condition re-applied on the Step-2 cube; counts reproduce 39/1890",
+      "trades": 1890
+    }
+  ],
+  "portfolio": {
+    "full": {
+      "days": 1048,
+      "sharpe": 1.694,
+      "mdd_pct": -20.82,
+      "total_return_pct": 152.03
+    },
+    "in_sample": {
+      "days": 778,
+      "sharpe": 0.129,
+      "mdd_pct": -20.82,
+      "total_return_pct": 2.64
+    },
+    "holdout": {
+      "days": 270,
+      "sharpe": 4.679,
+      "mdd_pct": -5.68,
+      "total_return_pct": 145.56
+    }
+  },
+  "benchmark_spy": {
+    "in_sample": {
+      "days": 751,
+      "sharpe": 0.594,
+      "total_return_pct": 32.09,
+      "mdd_pct": -19.0
+    },
+    "holdout": {
+      "days": 251,
+      "sharpe": 1.972,
+      "total_return_pct": 26.69,
+      "mdd_pct": -9.13
+    }
+  },
+  "per_line_holdout": {
+    "smc_breaker_block_long": {
+      "days": 264,
+      "sharpe": 1.448,
+      "mdd_pct": -0.29,
+      "total_return_pct": 0.81
+    },
+    "pead_long_high_yoy_growth_only": {
+      "days": 264,
+      "sharpe": 3.211,
+      "mdd_pct": -0.73,
+      "total_return_pct": 8.09
+    },
+    "pead_with_smart_money_long": {
+      "days": 260,
+      "sharpe": 2.31,
+      "mdd_pct": -0.37,
+      "total_return_pct": 2.06
+    },
+    "institutional_breakout_confirmation_long": {
+      "days": 264,
+      "sharpe": 2.918,
+      "mdd_pct": -0.38,
+      "total_return_pct": 2.21
+    },
+    "institutional_committed_growth_long": {
+      "days": 266,
+      "sharpe": 2.997,
+      "mdd_pct": -1.29,
+      "total_return_pct": 12.58
+    },
+    "institutional_high_conviction_long": {
+      "days": 266,
+      "sharpe": 2.91,
+      "mdd_pct": -1.59,
+      "total_return_pct": 14.3
+    },
+    "institutional_multi_quarter_persistence_long": {
+      "days": 266,
+      "sharpe": 3.296,
+      "mdd_pct": -0.88,
+      "total_return_pct": 11.68
+    },
+    "institutional_oversold_long": {
+      "days": 270,
+      "sharpe": 1.422,
+      "mdd_pct": -0.26,
+      "total_return_pct": 0.72
+    },
+    "institutional_persistence_oversold_long": {
+      "days": 266,
+      "sharpe": 1.892,
+      "mdd_pct": -0.85,
+      "total_return_pct": 1.96
+    },
+    "institutional_recent_init_momentum_long": {
+      "days": 264,
+      "sharpe": 2.53,
+      "mdd_pct": -0.85,
+      "total_return_pct": 8.99
+    },
+    "institutional_recent_init_volume_long": {
+      "days": 264,
+      "sharpe": 2.767,
+      "mdd_pct": -0.29,
+      "total_return_pct": 3.82
+    },
+    "institutional_strong_conviction_long": {
+      "days": 266,
+      "sharpe": 2.965,
+      "mdd_pct": -1.48,
+      "total_return_pct": 12.14
+    },
+    "xs_momentum_top_decile": {
+      "days": 266,
+      "sharpe": 2.526,
+      "mdd_pct": -0.22,
+      "total_return_pct": 1.91
+    },
+    "xs_low_beta_with_smart_money_long": {
+      "days": 266,
+      "sharpe": 1.759,
+      "mdd_pct": -0.47,
+      "total_return_pct": 1.48
+    },
+    "three_white_soldiers": {
+      "days": 205,
+      "sharpe": 1.512,
+      "mdd_pct": -0.15,
+      "total_return_pct": 0.54
+    },
+    "pairs_mean_reversion_long": {
+      "days": 27,
+      "sharpe": 14.821,
+      "mdd_pct": -0.02,
+      "total_return_pct": 12.49
+    }
+  },
+  "per_line_in_sample": {
+    "smc_breaker_block_long": {
+      "days": 730,
+      "sharpe": 0.606,
+      "mdd_pct": -0.77,
+      "total_return_pct": 0.74
+    },
+    "pead_long_high_yoy_growth_only": {
+      "days": 768,
+      "sharpe": 1.767,
+      "mdd_pct": -2.12,
+      "total_return_pct": 17.21
+    },
+    "pead_with_smart_money_long": {
+      "days": 767,
+      "sharpe": 0.507,
+      "mdd_pct": -3.06,
+      "total_return_pct": 1.46
+    },
+    "institutional_breakout_confirmation_long": {
+      "days": 778,
+      "sharpe": -0.383,
+      "mdd_pct": -0.82,
+      "total_return_pct": -0.52
+    },
+    "institutional_committed_growth_long": {
+      "days": 759,
+      "sharpe": 0.445,
+      "mdd_pct": -1.56,
+      "total_return_pct": 2.39
+    },
+    "institutional_high_conviction_long": {
+      "days": 768,
+      "sharpe": -0.088,
+      "mdd_pct": -3.58,
+      "total_return_pct": -0.52
+    },
+    "institutional_multi_quarter_persistence_long": {
+      "days": 767,
+      "sharpe": 0.603,
+      "mdd_pct": -2.59,
+      "total_return_pct": 4.38
+    },
+    "institutional_oversold_long": {
+      "days": 747,
+      "sharpe": -1.034,
+      "mdd_pct": -1.92,
+      "total_return_pct": -2.43
+    },
+    "institutional_persistence_oversold_long": {
+      "days": 727,
+      "sharpe": -0.289,
+      "mdd_pct": -2.24,
+      "total_return_pct": -0.6
+    },
+    "institutional_recent_init_momentum_long": {
+      "days": 778,
+      "sharpe": -0.799,
+      "mdd_pct": -2.92,
+      "total_return_pct": -2.47
+    },
+    "institutional_recent_init_volume_long": {
+      "days": 778,
+      "sharpe": -0.0,
+      "mdd_pct": -2.47,
+      "total_return_pct": -0.01
+    },
+    "institutional_strong_conviction_long": {
+      "days": 752,
+      "sharpe": 0.367,
+      "mdd_pct": -2.32,
+      "total_return_pct": 2.38
+    },
+    "xs_momentum_top_decile": {
+      "days": 468,
+      "sharpe": 1.769,
+      "mdd_pct": -0.31,
+      "total_return_pct": 1.61
+    },
+    "xs_low_beta_with_smart_money_long": {
+      "days": 768,
+      "sharpe": -0.538,
+      "mdd_pct": -3.72,
+      "total_return_pct": -2.12
+    },
+    "three_white_soldiers": {
+      "days": 739,
+      "sharpe": -0.964,
+      "mdd_pct": -2.55,
+      "total_return_pct": -2.29
+    },
+    "pairs_mean_reversion_long": {
+      "days": 743,
+      "sharpe": -1.063,
+      "mdd_pct": -14.95,
+      "total_return_pct": -12.93
+    }
+  },
+  "status": "OK"
+}

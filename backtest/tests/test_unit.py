@@ -57615,3 +57615,48 @@ def test_b3204_portfolio_resolution_covers_every_admission():
     bad = bpp.resolve_one({"strategy": "ghost_strategy",
                            "grid_artifact": "output_audit/does_not_exist.json"})
     assert bad["resolution"] == "REFUSED" and "missing" in bad["reason"], bad
+
+
+def test_b3204_portfolio_count_gate_and_artifact():
+    """S6-B3204 stages 2+3 (owner approved 2026-10-18). (a) _count_gate - the
+    #290 reproduction gate for the two directly-extracted lines - passes an
+    exact match and REFUSES a mismatch on either count (both directions); the
+    first build took all 437 smc cube rows for a 180-trade line, caught
+    before any figure was reported. (b) The committed portfolio artifact
+    carries all 16 lines reproduced, the full / in-sample / holdout windows,
+    and BOTH per-line legs (L525: a pooled IS-vs-holdout gap is decomposed
+    per line before it is explained); smc carries its admitted 180 trades."""
+    import json as _json
+    import sys as _sys
+    from datetime import date as _d
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import build_phase1b_portfolio as bpp
+
+    rows = _pd.DataFrame({"entry_date": [_d(2024, 1, 2), _d(2025, 6, 2),
+                                         _d(2025, 7, 1)]})
+    assert bpp._count_gate(rows, 2, 3) == []                 # exact: passes
+    assert bpp._count_gate(rows, 1, 3), "holdout mismatch not refused"
+    assert bpp._count_gate(rows, 2, 4), "full-period mismatch not refused"
+    assert bpp._count_gate(rows, None, 3), "an absent target must refuse"
+
+    d = _json.loads((root / "output_audit" / "b3204_portfolio_eval.json")
+                    .read_text(encoding="utf-8"))
+    assert d["status"] == "OK"
+    assert len(d["lines"]) == 16
+    assert all(l["status"] == "OK" for l in d["lines"]), [
+        l["strategy"] for l in d["lines"] if l["status"] != "OK"]
+    smc = next(l for l in d["lines"] if l["strategy"] == "smc_breaker_block_long")
+    assert smc["trades"] == 180, smc
+    for w in ("full", "in_sample", "holdout"):
+        assert d["portfolio"][w]["sharpe"] is not None, w
+    assert set(d["per_line_holdout"]) == set(d["per_line_in_sample"])
+    assert len(d["per_line_in_sample"]) == 16
+    # the CONTROL rides the artifact: every admitted line is LONG, so the
+    # portfolio is read against SPY over the same two windows, never alone
+    for w in ("in_sample", "holdout"):
+        assert d["benchmark_spy"][w]["sharpe"] is not None, w

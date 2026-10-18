@@ -5785,6 +5785,8 @@ test_b2569_battery_runs_free_levels_on_every_institutional_landing /
 test_b2569_free_level_reproduction_gate_and_specs_derivation. DETECTION of new unwired checks is
 JUDGMENT-ONLY; the pin holds the wiring that exists.
 
+**INSTANCE (B3139q-r72g / L931) - AN EXEMPTION GRANTED FOR ONE QUESTION WAS READ AS COVERING ANOTHER.** The S6-B3204 portfolio builder reproduced 14 of 16 admitted lines through the #290 gate and extracted the 2 ALREADY-NET lines with only a non-empty check; smc took 437 cube rows for its 180-trade admitted line. ALREADY-NET certifies a read's cost basis, never a fresh extraction's trade set. Caught before any figure was reported; ENFORCED BY build_phase1b_portfolio._count_gate, pinned both directions by test_b3204_portfolio_count_gate_and_artifact.
+
 ### #291 - A SCRIPT WITH A STRAT CONSTANT IS THE FIRST INSTANCE OF A PORTABILITY CLASS; REGISTRATION IS CHECKED AT LAUNCH (B2573 / L754)
 
 **Any grader, spot-check, verifier, or table renderer written for ONE strategy (a `STRAT`
