@@ -3072,6 +3072,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r71j / L926) - A FIXTURE IN CITATION FORM.** The S6-B3189 validator test copied the registry's evidence strings, each a module name with a line number, into its fixtures; test_b3139bb_line_citations_in_code_only_shrink saw test_unit.py's count grow from 9 to 12 and refused it before the commit. A fixture that mirrors a citation-shaped string takes a line-free form.
 
+**INSTANCE (B3139q-r72e / L930) - THE CLOSURE RIPPLE'S TEST-TREE GREP RAN AFTER THE GATE, NOT BEFORE THE APPEND.** Closing naked_poc_retest_long (the first closure after the S6-B3189 additive footer) turned test_b3137's membership freeze (by design) and test_b2862's historical branch (a false pre-additive assumption) red at gate r72d; the owed subject grep - owner_campaign_closures / DONE-OWNER-CLOSED consumers across the test tree, 12 hits - would have named both beforehand (the L801/L913 class). Both fixed; the historical branch now validates each record by its own footer form.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
@@ -4795,6 +4797,8 @@ landed and four because the QUESTION changed shape - their concerns live on in o
 **INSTANCE - A CAVEAT RE-STAMPED BY ITS GENERATOR (B3094 / L867).** I told the owner three times that a resumed wave would DROP its 67 open trades; the engine restores them (backtest.py S6-B2213a, 67 checkpoint rows == 67 open). The caveat came from scripts/run_wave.py build_manifest, which wrote it into 83 of 92 generated manifests while its own comment said RESTORES. **Re-derive a caveat against the mechanism before repeating it, and fix the generator.** Pinned by test_b3094_run_wave_manifest_says_open_trades_are_restored.
 
 **INSTANCE (B3139q-r71j / L926) - A CARVED REMAINDER CALLED ITS TERMINAL PARENT UNFIXED.** Carving S6-B3196 from S6-B3189 in the append that closed S6-B3189, the new row said the parent's half was not built; test_b3106_open_ticket_calling_a_closed_ticket_unfixed_is_flagged refused it before the commit. A carved remainder states its own scope, never the parent's unbuilt part.
+
+**INSTANCE (B3139q-r72d / L929) - THE CANONICAL CRITERIA TABLE WAS THE STALE TICKET.** CLAUDE.md passing-criteria row 10 said per-regime Sharpe 0.7 while backtest/config.py has held min_sharpe_per_regime = 0.5 since B1387 (~12 weeks); the figure was repeated into the owner-facing RCA (S6-B3203) and a decision ticket (S6-B3205) before the #222 gate forced the definition-site read. Sweep: 1 of 9 table-vs-config checks stale (scratchpad criteria_sweep.py). ENFORCED BY test_b3208_claude_criteria_row10_matches_config, fail-proved against the pre-fix row.
 
 ### #257 - A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION (B1777 / L532)
 

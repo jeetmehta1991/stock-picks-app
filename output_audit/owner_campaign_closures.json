@@ -10,7 +10,10 @@
       "ruling_verbatim": "4 close and mark it as done",
       "owner_question_answered": "It's equivalent short mirror is already in the phase 1b roster list? - YES: three_black_crows_short is three_white_soldiers' registered short mirror (role ADMISSION_MIRROR in scripts/phase1b_membership.py) and stays on the roster",
       "scope": "the candle campaign's short leg: 2 of 18 short-leg configs ran; the 16 unrun configs will not run",
-      "tickets": ["S6-B3135a", "S6-B2944"]
+      "tickets": [
+        "S6-B3135a",
+        "S6-B2944"
+      ]
     },
     {
       "strategy": "smc_breaker_block_short",
@@ -18,7 +21,10 @@
       "ruling_in_substance": "smc_breaker_block_long is finalised and part of the Phase 1B roster; even marked PROVISIONAL, long and short stay exactly as they are and no further work is to be done on that strategy",
       "recorded_in": "EXECUTION_QUEUE.md - the S6-B1545a, S6-B2115a and S6-B2411 rows marked DROPPED by the owner's 2026-09-03 scope ruling (L758 / CHECKLIST #295)",
       "scope": "the short mirror of the finalised smc_breaker_block_long admission; excluded from the S6-B2420 short-leg Step-2 programme for this reason",
-      "tickets": ["S6-B3135a", "S6-B2420"]
+      "tickets": [
+        "S6-B3135a",
+        "S6-B2420"
+      ]
     },
     {
       "strategy": "bollinger_lower",
@@ -26,12 +32,31 @@
       "ruling_verbatim": "Close",
       "owner_question_answered": "S6-B3139bt - admit a line from the bollinger_lower Step-3 holdout read (adx or bb_10_20_pctb), or admit nothing and close? - the owner chose close",
       "scope": "both legs. Step 2 closed at 2 of 3 configs by the 2026-10-01 ruling (both FAIL 5 of 6, pooled_sharpe 0.422 and 0.526); the Step-3 breadth read is spent (campaign log I.9: long 26 of 676 cell-exits pass, short 2 of 624). Nothing is admitted; no further configs, grids or holdout reads",
-      "tickets": ["S6-B3139bt", "S6-B3139am", "S6-B3139by"],
+      "tickets": [
+        "S6-B3139bt",
+        "S6-B3139am",
+        "S6-B3139by"
+      ],
       "reconfirmed": {
         "ruled": "2026-10-07",
         "ruling_verbatim": "Ok close the strategy",
         "after": "S6-B3139bw: the holdout chance test (scripts/breadth_holdout_null.py, 300 within-period shuffles) put the long qualifiers at chance (26 vs median 27, p 0.53; best lower bound 0.850, p 0.25 family-wise) and the short at chance (2 vs mean 2.0, p 0.42). The first closure had been recommended on an in-sample test (L904); this one rests on the holdout's own test."
       }
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "ruled": "2026-10-18",
+      "ruling_verbatim": "Given low sharpe i do not think there is a likelyhood that this strategy will pass. Lets mark this strategy as done and move to next.",
+      "owner_question_answered": "S6-B3183 - launch the one interaction-check config at the predicted joint point (A) or skip (B)? - the owner closed the campaign instead; S6-B3183 DROPPED unrun",
+      "scope": "both legs. DEPTH: offline Step-1 grid FLAT (best 0.620 vs 100-perm null q95 0.917, p 0.6733; campaign log K.4); engine leg negative - 12 Step-1 configs, best is_ci_lo 0.262 at is_sharpe 0.523, 12 of 12 below production's own IS Sharpe 0.558 over 1,375 (K.14); engine configs 8-11 of the approved 11 (P4 n_bins 50; P6 0.03/0.04/0.05) NOT RUN by the owner's 2026-10-16 word - untested by word, not by result. BREADTH: Step-1 significant (2.431, p 0.0099; K.7) but the one Step-2 holdout read is SPENT and NEGATIVE - 0 of 425 cells clear the six gates, IS rank-1 inverted (2.431 -> holdout 0.261), family-best chance-shaped p 0.236 (K.8). Nothing admitted; no further configs, grids or holdout reads",
+      "tickets": [
+        "S6-B3171",
+        "S6-B3171a",
+        "S6-B3171b",
+        "S6-B3175",
+        "S6-B3183",
+        "S6-B3202"
+      ]
     }
   ]
 }

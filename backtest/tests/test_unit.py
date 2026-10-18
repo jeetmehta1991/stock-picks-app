@@ -40101,10 +40101,17 @@ def test_b2862_table_a_factorial_counts_every_band_axis():
         else:
             # a HISTORICAL deliverable: its strategy left the lane (a closure
             # closes the campaign, it does not delete its record - B3139
-            # batch 4), so the generator no longer rewrites it and it keeps the
-            # S6-B2862 product footer it was written with - 4 of 38 footered
-            # files when S6-B3189 landed. A CURRENT file without the additive
-            # footer lands in the branch above and fails there.
+            # batch 4), so the generator no longer rewrites it and it keeps
+            # WHATEVER FOOTER FORM it was written with. The 4 pre-S6-B3189
+            # closures carry the product footer; a strategy closed AFTER the
+            # additive footer landed (naked_poc, 2026-10-18 - L930) carries
+            # the additive one, so each record is validated by its OWN
+            # form's rules (S6-B3209; the old branch assumed historical ==
+            # pre-additive and fired on the first post-change closure).
+            if "TILING " in txt:
+                _probs = _b3189_footer_problems(txt)
+                assert not _probs, (f.name, _probs)
+                continue
             assert "TILING " not in txt, f.name
             mf = re.search(r"offline gradings\s+(\d+) level-combinations", txt)
             mr = re.search(r"ENGINE RUNS\s+([\d,]+)", txt)
@@ -50509,8 +50516,10 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
     import phase1b_membership as pm
     import build_strategy_status as bss
     reg = bss.load_owner_closures(_REPO_B3135)
-    assert sorted(reg) == ["bollinger_lower", "smc_breaker_block_short",
-                           "three_black_crows_short"]
+    assert sorted(reg) == ["bollinger_lower", "naked_poc_retest_long",
+                           "smc_breaker_block_short",
+                           "three_black_crows_short"]   # +npoc B3139q-r72e
+    assert reg["naked_poc_retest_long"]["ruled"] == "2026-10-18"
     # S6-B3139bt: a closure can end a NON-member's campaign (owner "Close",
     # 2026-10-06); the mirror closures below are the members
     assert reg["bollinger_lower"]["ruling_verbatim"] == "Close"
@@ -50519,7 +50528,12 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
     mem = pm.members(_REPO_B3135)
     mirrors = {n for n in mem if pm.roster_status(n, mem) == "IN-ROSTER-MIRROR"}
     assert len(mirrors) == 10      # 9 + the S6-B3145 mirror (owner 2026-10-13)
-    assert set(reg) - {"bollinger_lower"} <= mirrors and "bollinger_lower" not in mem
+    # non-member closures: a closure can end a campaign on a strategy
+    # that is not a roster member (bollinger_lower, owner "Close"
+    # 2026-10-06; naked_poc_retest_long, owner close 2026-10-18 - L930)
+    _non_members = {"bollinger_lower", "naked_poc_retest_long"}
+    assert set(reg) - _non_members <= mirrors
+    assert not (_non_members & set(mem))
     pop = bss.closed_populations(_REPO_B3135)
     got = {n for n in mirrors if bss.status_for(
         n, admitted=pop["admitted"], roster_status=pm.roster_status(n, mem),
@@ -57541,3 +57555,29 @@ def test_b3201_show_table_d_default_emits_no_d2():
     rc2, out2 = _run(["--axes"])
     assert rc2 == 0 and "TABLE D-2" in out2, (
         "the --axes escape is dead - the pin could never fail")
+
+
+def test_b3208_claude_criteria_row10_matches_config():
+    """S6-B3208 (L929 / #256 INSTANCE): CLAUDE.md passing-criteria row 10 said
+    per-regime Sharpe 0.7 for ~12 weeks while backtest/config.py has held
+    min_sharpe_per_regime = 0.5 since B1387 - and the stale figure reached an
+    owner-facing RCA and a decision ticket. Row 10's two value cells are
+    pinned to the live constants; fail-proved at authoring against the
+    pre-fix row text (0.7 vs 0.5)."""
+    import re
+    from pathlib import Path as _P
+    from backtest.config import PASSING_CRITERIA as PC
+    root = _P(__file__).resolve().parents[2]
+    cl = (root / "CLAUDE.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in cl.splitlines() if l.startswith("| 10 | Sharpe ratio |")]
+    assert len(rows) == 1, f"criteria row 10 occurs {len(rows)} times"
+    cells = rows[0].split("|")
+    per, overall = cells[3], cells[4]
+    pnum = re.findall(r"\d+\.?\d*", per)
+    assert pnum and float(pnum[0]) == float(PC["min_sharpe_per_regime"]), (
+        per, PC["min_sharpe_per_regime"],
+        "row 10 per-regime cell disagrees with the live constant")
+    onum = re.findall(r"\d+\.?\d*", overall)
+    assert onum and float(onum[0]) == float(PC["min_sharpe_overall"]), (
+        overall, PC["min_sharpe_overall"],
+        "row 10 overall cell disagrees with the live constant")

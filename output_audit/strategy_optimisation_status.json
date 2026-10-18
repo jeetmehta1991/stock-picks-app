@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "1667c8859",
-    "generated_at": "2026-10-17 08:22:24"
+    "source_commit": "4462f16e0",
+    "generated_at": "2026-10-18 07:06:35"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -31,6 +31,7 @@
   },
   "owner_closures": [
     "bollinger_lower",
+    "naked_poc_retest_long",
     "smc_breaker_block_short",
     "three_black_crows_short"
   ],
@@ -2342,7 +2343,7 @@
       "projected_step1_fires": 164.3,
       "projected_current_gate": 164.3,
       "reopen_candidate": false,
-      "stream": "TIGHTEN",
+      "stream": "-",
       "tightenable_keys": {
         "naked_poc_count": 1.0,
         "naked_poc_nearest_distance_pct": 1.0
@@ -2358,10 +2359,10 @@
         "S6-B3180",
         "S6-B3182",
         "S6-B3183",
-        "S6-B3194"
+        "S6-B3194",
+        "S6-B3202"
       ],
       "live_campaign_tickets": [
-        "S6-B3183",
         "S6-B3194"
       ],
       "mention_tickets": [
@@ -2375,11 +2376,12 @@
         "S6-B3180",
         "S6-B3182",
         "S6-B3183",
-        "S6-B3194"
+        "S6-B3194",
+        "S6-B3202"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "IN-CAMPAIGN"
+      "status": "DONE-OWNER-CLOSED"
     },
     {
       "strategy": "news_momentum_long",

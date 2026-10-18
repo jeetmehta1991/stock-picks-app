@@ -2639,3 +2639,22 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   best is_ci_lo level among the levels that ran, is P1 EMA 20 + P2 lookback 126 + P3 n_periods 8 +
   P4 n_bins 20 + P6 0.02 (P6 at production: its levels were dropped by the owner 2026-10-16). It
   differs from every config run, so it is ONE extra engine config; put to the owner, NOT launched.
+
+### K.15 Campaign closed by the owner (2026-10-18, B3139q-r72c; S6-B3202)
+
+- **Owner, verbatim (2026-10-18):** "Given low sharpe i do not think there is a likelyhood that
+  this strategy will pass. Lets mark this strategy as done and move to next."
+- **Disposition, every leg named (#298/L785):** DEPTH offline grid FLAT (best 0.620 vs 100-perm
+  null q95 0.917, p 0.6733; K.4); DEPTH engine leg NEGATIVE - 12 Step-1 configs, best is_ci_lo
+  0.262 at is_sharpe 0.523, 12 of 12 below production's own IS Sharpe 0.558 over 1,375 (K.14);
+  engine configs 8-11 of the approved 11 (P4 n_bins 50; P6 0.03/0.04/0.05) NOT RUN by the
+  owner's 2026-10-16 word - untested by word, not by result. BREADTH Step-1 significant (2.431,
+  p 0.0099; K.7), but the one Step-2 holdout read is SPENT and NEGATIVE - 0 of 425 cells clear
+  the six gates, IS rank-1 inverted (2.431 -> holdout 0.261 ci_lo -1.634), family-best
+  chance-shaped p 0.236 (K.8). The S6-B3183 interaction-check config is DROPPED unrun on the
+  same ruling.
+- **Records:** output_audit/owner_campaign_closures.json gains the naked_poc_retest_long row
+  (reader: build_strategy_status::load_owner_closures -> DONE-OWNER-CLOSED, a NEVER_REOPEN
+  lane); status view rebuilt in the same batch. The family's holdout read stays spent.
+- **Programme note:** the close triggered the owner-directed RCA on the tightening workflow -
+  output_audit/b3203_tightening_workflow_rca.md (S6-B3203); decision tickets S6-B3204..S6-B3207.
