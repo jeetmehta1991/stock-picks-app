@@ -4047,6 +4047,171 @@ def offline_retest_refusal(strategy: str) -> str | None:
     return errs[0] if errs else None
 
 
+# S6-B3206 (owner ruling 2026-10-18, verbatim "B3206 approved"; the
+# no-surface case ruled "A" the same day): the offline permutation-null
+# early-stop is a MANDATORY pre-engine gate. MEASURED motive (RCA S6-B3203,
+# RC5): naked_poc's depth surface priced flat at p 0.6733 on 2026-10-14
+# (output_audit/b3171_naked_poc_step1_is_surface.json) and the Step-1
+# engine chains ran 2026-10-15..17 anyway.
+DEPTH_NULL_P_MAX = 0.20
+DEPTH_NULL_DIR = CODE_ROOT / "output_audit"
+DEPTH_NULL_MIN_REASON = 20
+_DEPTH_NULL_CACHE = None
+
+
+def _depth_null_index() -> dict:
+    """{strategy: [(repo-relative path, p_value_best)]} for every committed
+    DEPTH-surface null. The discriminator is the FIELD, measured 2026-10-18:
+    the four depth writers (offline_level_sweep, smc_lsr_step1,
+    smc_obb_step1, b2698_momentum_resweep) emit permutation_null.p_value_best
+    and no breadth writer does (breadth_step1_grid and breadth_holdout_null
+    emit p_value) - 8 of the 27 null-carrying artifacts on disk that day.
+    A repo fact, so it is read from CODE_ROOT (B2739 / #305). Files that do
+    not parse as JSON are skipped: pyramid gate outputs are plain-text .json
+    files and can quote this field in a traceback without being artifacts.
+    Cached per process; production calls it once per launch (the scan read
+    1,681 files, 532 MB, in 0.46 s warm)."""
+    global _DEPTH_NULL_CACHE
+    if _DEPTH_NULL_CACHE is not None:
+        return _DEPTH_NULL_CACHE
+    import json as _json
+    out: dict = {}
+    for p in sorted(DEPTH_NULL_DIR.glob("*.json")):
+        try:
+            raw = p.read_bytes()
+        except OSError:
+            continue
+        if b"p_value_best" not in raw:
+            continue
+        try:
+            d = _json.loads(raw.decode("utf-8", errors="replace"))
+        except ValueError:
+            continue
+        pn = d.get("permutation_null") if isinstance(d, dict) else None
+        if not isinstance(pn, dict) or "p_value_best" not in pn:
+            continue
+        s = d.get("strategy")
+        if s:
+            out.setdefault(s, []).append(
+                (p.relative_to(CODE_ROOT).as_posix(), pn.get("p_value_best")))
+    _DEPTH_NULL_CACHE = out
+    return out
+
+
+def _depth_null_refusals(doc: dict, strats: list) -> list:
+    """S6-B3206: refuse a Step-1 engine chain whose depth null is
+    undeclared, unreadable, attributed to another strategy, not a depth null,
+    or priced as noise (p_value_best > DEPTH_NULL_P_MAX).
+
+    SCOPE: a modern wave SPEC at step 1 (keyed on `wave` + `step`, the
+    S6-B2945 shape). Derived manifests carry `sequence` and were judged at
+    spec time. Step 2 reads the holdout of an already-ranked line; the
+    depth search this gate prices is behind it.
+
+    THE DECLARATION, per strategy in the subset:
+        "depth_null": {"<strategy>": "<repo-relative artifact path>"}
+                  or {"<strategy>": "none: <reason, >= 20 chars>"}
+    THE ESCAPE, the B2731 shape (a mapping, never a bare boolean):
+        "owner_override_depth_null": {"<strategy>": "<owner words + date>"}
+
+    "none" (owner ruling "A", 2026-10-18) is CROSS-CHECKED, because a
+    self-reported exemption decays (#279): refused when leverage() counts
+    more than one offline-gradable level combination for the strategy, and
+    when a committed depth null for it already exists (smc_liquidity_sweep_
+    reversal: free_combos 1, yet four depth nulls on disk). RESIDUAL,
+    disclosed: a strategy whose axes are re-diagnosable offline but which
+    has no null-pricing grader yet passes "none" with its reason - the gate
+    can only demand a null that some tool produces."""
+    if not ("wave" in doc and str(doc.get("step")) == "1"):
+        return []
+    ov = doc.get("owner_override_depth_null")
+    if ov is None:
+        ov = {}
+    if not isinstance(ov, dict):
+        return ["owner_override_depth_null must be a MAPPING of strategy -> "
+                "the owner's words + date; a bare boolean is a blanket "
+                "exemption (L789 - an escape must name its target)"]
+    decl = doc.get("depth_null")
+    if not isinstance(decl, dict):
+        return ["spec declares no depth_null - a Step-1 engine chain must "
+                "name the offline depth null it answers to, or state "
+                "'none: <reason>' (S6-B3206, owner ruling 2026-10-18; fail "
+                "CLOSED on the absent declaration, L642). make_spec: "
+                "--depth-null <artifact> or --depth-null 'none: <reason>'"]
+    import json as _json
+    errs = []
+    for s in strats:
+        v = str(decl.get(s) or "").strip()
+        quote = str(ov.get(s) or "").strip()
+        if not v:
+            errs.append(f"{s}: depth_null declares nothing for this strategy "
+                        "(S6-B3206; fail CLOSED, L642)")
+            continue
+        if v.lower().startswith("none:"):
+            reason = v[len("none:"):].strip()
+            if len(reason) < DEPTH_NULL_MIN_REASON:
+                errs.append(f"{s}: 'none' needs a reason of at least "
+                            f"{DEPTH_NULL_MIN_REASON} characters - got "
+                            f"{reason!r} (S6-B3206)")
+                continue
+            spec = SPECS.get(s) or SPECS_PHASE0.get(s)
+            fc = leverage(spec).get("free_combos") if spec else None
+            if fc is not None and fc > 1:
+                errs.append(f"{s}: declares no depth null possible, but its "
+                            f"spec has {fc} offline-gradable level "
+                            "combinations (leverage free_combos) - run the "
+                            "offline depth sweep (scripts/offline_level_"
+                            "sweep.py) and declare its artifact (S6-B3206, "
+                            "ruling 'A' cross-check)")
+            have = _depth_null_index().get(s)
+            if have:
+                errs.append(f"{s}: declares no depth null possible, but "
+                            f"{len(have)} committed depth null(s) exist: "
+                            f"{have} - declare the one this chain answers to "
+                            "(S6-B3206, ruling 'A' cross-check)")
+            continue
+        path = Path(v)
+        if not path.is_absolute():
+            path = CODE_ROOT / v
+        if not path.is_file():
+            errs.append(f"{s}: declared depth null {v} does not exist "
+                        f"under {CODE_ROOT} (S6-B3206)")
+            continue
+        try:
+            art = _json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            errs.append(f"{s}: declared depth null {v} is unreadable "
+                        f"({exc!r}) - refusing (L642)")
+            continue
+        who = art.get("strategy") if isinstance(art, dict) else None
+        if who != s:
+            errs.append(f"{s}: declared depth null {v} prices {who!r}, not "
+                        "this strategy - a null prices ITS subject's search "
+                        "(L912 / #305)")
+            continue
+        pn = art.get("permutation_null")
+        if not isinstance(pn, dict) or "p_value_best" not in pn:
+            errs.append(f"{s}: {v} carries no depth-surface null "
+                        "(permutation_null.p_value_best) - a breadth grid's "
+                        "p_value prices a different search (S6-B3206)")
+            continue
+        p = pn.get("p_value_best")
+        if p is None:
+            if not quote:
+                errs.append(f"{s}: {v}'s depth null is not computable "
+                            "(p_value_best None) - refusing; the owner may "
+                            "override under owner_override_depth_null")
+            continue
+        if float(p) > DEPTH_NULL_P_MAX and not quote:
+            errs.append(f"{s}: its offline depth search is priced as NOISE - "
+                        f"p_value_best {p} > {DEPTH_NULL_P_MAX} in {v} (owner "
+                        "ruling S6-B3206, 2026-10-18: a flat depth surface "
+                        "does not earn engine hours). To launch anyway the "
+                        "owner's words go under owner_override_depth_null"
+                        f"[{s!r}]")
+    return errs
+
+
 def launch_refusals(doc: dict, root: Path | None = None,
                     require_subset: bool = True,
                     subset_override: tuple | list | None = None) -> list[str]:
@@ -4097,6 +4262,10 @@ def launch_refusals(doc: dict, root: Path | None = None,
     errs += _rider_refusals(doc, root, strats)
     # B2731: an ADMITTED strategy is closed to re-testing (owner ruling)
     errs += _admitted_retest_refusals(doc, root, strats)
+    # S6-B3206 (owner ruling 2026-10-18): a Step-1 engine chain must
+    # DECLARE its depth null, and a depth surface the offline null
+    # already prices as noise is refused without an owner override
+    errs += _depth_null_refusals(doc, strats)
     # B2711: the ruled Step-1 search shape (holdout reach is absolute)
     errs += _step1_shape_refusals(doc)
     # S6-B2945 (L835): enforce at SPEC time what prelaunch_gate enforces

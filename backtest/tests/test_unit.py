@@ -36961,9 +36961,15 @@ def test_b2713_ruled_scope_is_resolved_not_typed():
     # Filtered by name on the same B2738 rationale, and asserted
     # present below rather than wished away.
     _fap = "fires_at_production"
+    # S6-B3206: a THIRD retroactive refusal of the same shape - b2712 ran
+    # 2026-09-12, before a Step-1 spec had to declare its depth null.
+    # Filtered by name on the B2738 rationale, asserted present below.
+    _dn = "depth_null"
     _r = [x for x in launch_refusals(spec, root)
-          if _adm not in x and _fap not in x]
+          if _adm not in x and _fap not in x and _dn not in x]
     assert _r == [], _r
+    assert any(_dn in x for x in launch_refusals(spec, root)), (
+        "b2712 predates S6-B3206; relaunching it today must refuse")
     assert any(_fap in x for x in launch_refusals(spec, root)), (
         "b2712 predates B2848c; relaunching it today must refuse")
     # and the admitted-retest refusal IS present, because b2712 graded a
@@ -37405,6 +37411,9 @@ def test_b2732a_hub1_is_a_registered_launchable_family(tmp_path):
                  "SMC_EVENT_RECENCY_BARS": "90"}
     spec = {"wave": "b2732a_pin", "step": 1, "fires_at_production": 199,
             "strategy_subset": str(sub),
+            # S6-B3206: a Step-1 spec declares its depth null; hub-1's
+            # committed momentum re-sweep prices p_value_best 0.0099
+            "depth_null": {HUB: "output_audit/b2698_momentum_resweep.json"},
             "arms": [{"tag": "sw10", "env": dict(_hub1_env)}]}
     assert pvt.launch_refusals(spec, root) == [], pvt.launch_refusals(spec, root)
 
@@ -42213,6 +42222,9 @@ def test_b2945_spec_gate_enforces_what_the_launch_gate_requires():
         "wave": "probe_wave",
         "strategy_subset": "output_audit/_subset_three_white_soldiers.txt",
         "step": 1,
+        # S6-B3206: tws's committed Step-1 depth null, p_value_best 0.0995
+        "depth_null": {"three_white_soldiers":
+                       "output_audit/b2858_tws_step1_grid.json"},
         "leg_cap_hours": 4.5,
         # B3115: tws is ADMITTED now; this fixture probes spec-vs-launch
         # gate parity, not the admitted-refusal - the override names its
@@ -42253,8 +42265,12 @@ def test_b2945_spec_gate_enforces_what_the_launch_gate_requires():
         # B3115: a real spec whose SUBJECT is now ADMITTED refuses by
         # design (the closed-roster owner rule, 2026-09-12); the parity
         # this test guards is every OTHER refusal class.
+        # S6-B3206: the b2944 specs predate the depth-null declaration
+        # (2026-10-18), so a relaunch refuses by design - that class is
+        # filtered by name exactly like the admitted one above
         refs = [r for r in launch_refusals(d, root=root)
-                if "ALREADY ADMITTED to Phase 1B" not in r]
+                if "ALREADY ADMITTED to Phase 1B" not in r
+                and "depth_null" not in r]
         assert refs == [], (f.name, refs)
         assert int(d["fires_at_production"]) > 0, f.name
 
@@ -47753,7 +47769,7 @@ def test_b3120d_strat_constant_scripts_are_a_shrinking_set():
         "(run_postconfig.FAMILIES + the SPECS tools block) instead.")
     # shrink-only: members may retire; record the retirement by removing
     # them from FROZEN in the same commit.
-def test_b3120a_make_spec_generates_launchable_and_refuses_offband():
+def test_b3120a_make_spec_generates_launchable_and_refuses_offband(tmp_path):
     """S6-B3120a: the generator's output passes the CONSUMER'S OWN gate
     (launch_refusals) and an off-band level is refused with the band
     quoted - both directions, through the real CLI on the venv interpreter
@@ -47762,10 +47778,21 @@ def test_b3120a_make_spec_generates_launchable_and_refuses_offband():
     import sys
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2]
+    # S6-B3206: a Step-1 spec DECLARES its depth null. bollinger_lower has
+    # offline-gradable levels and no committed depth null, so the honest
+    # fixture is a PLANTED null in tmp (never output_audit), not "none"
+    import json as _json
+    _bl_null = tmp_path / "bl_depth_null.json"
+    _bl_null.write_text(_json.dumps({
+        "strategy": "bollinger_lower",
+        "permutation_null": {"p_value_best": 0.05,
+                             "provenance": "TEST FIXTURE (S6-B3206)"}}),
+        encoding="utf-8")
     ok = subprocess.run(
         [sys.executable, str(root / "scripts" / "make_spec.py"),
          "--strategy", "bollinger_lower", "--param", "P4",
-         "--levels", "50", "--wave-prefix", "bl_pin_demo", "--dry"],
+         "--levels", "50", "--wave-prefix", "bl_pin_demo", "--dry",
+         "--depth-null", str(_bl_null)],
         capture_output=True, text=True, cwd=str(root))
     assert ok.returncode == 0 and "launch_refusals clean" in ok.stdout, (
         ok.returncode, ok.stdout[-300:], ok.stderr[-300:])
@@ -54184,6 +54211,17 @@ def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path, monkeyp
 
     fam = "pairs_mean_reversion_long"
     assert rp.family_refusal(fam) == ""
+    # S6-B3206: pairs has offline-gradable levels and no committed DEPTH
+    # null (its nulls are breadth p_value), so its drafts declare a
+    # PLANTED one in tmp - keeping the closed-set refusal below the ONLY
+    # refusal, which is what the in-process arm proves
+    import json as _jsn
+    _pairs_null = tmp_path / "pairs_depth_null.json"
+    _pairs_null.write_text(_jsn.dumps({
+        "strategy": fam,
+        "permutation_null": {"p_value_best": 0.05,
+                             "provenance": "TEST FIXTURE (S6-B3206)"}}),
+        encoding="utf-8")
     vals, _ = rp.params_from_manifest(fam, {"arms": [{"env": {
         "PAIRS_EG_SIGNIFICANCE": "0.01", "PAIRS_Z_WINDOW": "90"}}]})
     assert vals == {"eg_significance": "0.01", "z_window": "90"}
@@ -54211,7 +54249,8 @@ def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path, monkeyp
 
     r = _sp.run([_sys.executable, str(root / "scripts" / "make_spec.py"),
                  "--strategy", fam, "--param", "P6", "--levels", "40",
-                 "--with", "P5=0.01", "--wave-prefix", "t_b3141a", "--dry"],
+                 "--with", "P5=0.01", "--wave-prefix", "t_b3141a", "--dry",
+                 "--depth-null", str(_pairs_null)],
                 cwd=root, capture_output=True, text=True,
                 env={**_os.environ, "PYTHONPATH": _os.pathsep.join(
                     [str(root), str(root / "scripts")])})
@@ -54238,7 +54277,8 @@ def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path, monkeyp
     monkeypatch.setattr(_pvt, "phase1b_admitted", _before_admission)
     monkeypatch.setattr(_sys, "argv", [
         "make_spec.py", "--strategy", fam, "--param", "P6", "--levels", "40",
-        "--with", "P5=0.01", "--wave-prefix", "t_b3141a", "--dry"])
+        "--with", "P5=0.01", "--wave-prefix", "t_b3141a", "--dry",
+        "--depth-null", str(_pairs_null)])
     capsys.readouterr()
     assert _ms.main() == 0
     out = capsys.readouterr().out
@@ -56535,7 +56575,8 @@ def _warn_absent_precompute(absent, who):
                       f"data): {sorted(set(absent))}")
 
 
-def test_b3171b_make_spec_pins_every_battery_key_at_production(monkeypatch, capsys):
+def test_b3171b_make_spec_pins_every_battery_key_at_production(monkeypatch, capsys,
+                                                               tmp_path):
     """S6-B3171b part (a), L788: make_spec writes EVERY knob the battery reads.
 
     The b3171 chain's configs 1 and 2 named one of four naked-POC knobs and
@@ -56568,6 +56609,16 @@ def test_b3171b_make_spec_pins_every_battery_key_at_production(monkeypatch, caps
 
     def _run(argv):
         seen.clear()
+        # S6-B3206: each draft DECLARES a depth null - a planted fixture
+        # per strategy (tmp, never output_audit), so the real gate stays
+        # live and this pin also proves make_spec carries the declaration
+        import json as _jsn
+        _s = argv[argv.index("--strategy") + 1]
+        _nf = tmp_path / f"{_s}_depth_null.json"
+        _nf.write_text(_jsn.dumps({"strategy": _s, "permutation_null": {
+            "p_value_best": 0.05, "provenance": "TEST FIXTURE (S6-B3206)"}}),
+            encoding="utf-8")
+        argv = argv + ["--depth-null", str(_nf)]
         monkeypatch.setattr(sys, "argv", ["make_spec.py"] + argv + ["--dry"])
         capsys.readouterr()
         rc = ms.main()
@@ -57660,3 +57711,75 @@ def test_b3204_portfolio_count_gate_and_artifact():
     # portfolio is read against SPY over the same two windows, never alone
     for w in ("in_sample", "holdout"):
         assert d["benchmark_spy"][w]["sharpe"] is not None, w
+
+
+def test_b3206_depth_null_gate_refuses_noise_and_undeclared(tmp_path):
+    """S6-B3206 (owner rulings 2026-10-18: "B3206 approved"; the no-surface
+    case "A"): a Step-1 engine chain DECLARES its offline depth null, and a
+    depth surface the offline null prices as noise (p_value_best > 0.20) is
+    refused without the owner's words. Motive (RCA S6-B3203, RC5): naked_poc's
+    depth surface priced flat at p 0.6733 and its Step-1 chains ran anyway.
+    Every case runs on a REAL committed artifact, in both directions, and
+    each refusal is matched on the fragment of its OWN branch - so a case
+    refused through the wrong branch fails here (L614). The last arm pins the
+    WIRING through launch_refusals (L654)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import producer_variant_table as pvt
+
+    NPOC = "naked_poc_retest_long"
+    npoc_art = "output_audit/b3171_naked_poc_step1_is_surface.json"
+    tws_art = "output_audit/b2858_tws_step1_grid.json"
+    breadth = "output_audit/b3171_npoc_breadth_step1.json"
+    why = "no persisted magnitude knob; nothing offline can price it"
+
+    def g(strat, decl, step=1, wave=True, ov=None):
+        doc = {"step": step}
+        if wave:
+            doc["wave"] = "pin"
+        if decl is not None:
+            doc["depth_null"] = {strat: decl}
+        if ov is not None:
+            doc["owner_override_depth_null"] = ov
+        return pvt._depth_null_refusals(doc, [strat])
+
+    def one(errs, frag):
+        assert errs and any(frag in e for e in errs), (frag, errs)
+
+    # out of scope: a Step-2 spec, and a derived manifest (no `wave` key)
+    assert g(NPOC, None, step=2) == []
+    assert g(NPOC, None, wave=False) == []
+    # an undeclared Step-1 spec is refused (fail CLOSED, L642)
+    one(g(NPOC, None), "declares no depth_null")
+    # npoc's REAL depth null prices its search as noise; owner words lift it
+    one(g(NPOC, npoc_art), "priced as NOISE")
+    assert g(NPOC, npoc_art, ov={NPOC: "fixture words 2026-10-18"}) == []
+    one(g(NPOC, npoc_art, ov=True), "MAPPING")
+    # tws's REAL depth null (p_value_best 0.0995) passes
+    assert g("three_white_soldiers", tws_art) == []
+    # wrong subjects: a breadth grid, another strategy's null, a missing file
+    one(g(NPOC, breadth), "carries no depth-surface null")
+    one(g(NPOC, tws_art), "not this strategy")
+    one(g(NPOC, "output_audit/no_such_file.json"), "does not exist")
+    # "none" (ruling A) is CROSS-CHECKED both ways
+    one(g(NPOC, "none: " + why), "offline-gradable level")
+    one(g("smc_liquidity_sweep_reversal", "none: " + why),
+        "committed depth null")
+    assert g("smc_inverse_fvg", "none: " + why) == []
+    one(g("smc_inverse_fvg", "none: too short"), "at least")
+
+    # WIRING: the gate runs inside launch_refusals, not only beside it
+    hub = "smc_liquidity_sweep_reversal"
+    sub = tmp_path / "hub1.txt"
+    sub.write_text(hub + "\n", encoding="utf-8")
+    env = {"SMC_SWING_LENGTH": "10", "SMC_LIQUIDITY_RANGE_PCT": "0.01",
+           "SMC_EVENT_RECENCY_BARS": "90"}
+    spec = {"wave": "b3206_pin", "step": 1, "fires_at_production": 199,
+            "strategy_subset": str(sub), "arms": [{"tag": "sw10", "env": env}]}
+    assert any("depth_null" in r for r in pvt.launch_refusals(spec, root))
+    ok = dict(spec, depth_null={hub: "output_audit/b2698_momentum_resweep.json"})
+    assert not any("depth" in r for r in pvt.launch_refusals(ok, root))

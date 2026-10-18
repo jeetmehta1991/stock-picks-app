@@ -390,6 +390,16 @@ def main() -> int:
                     help="comma-separated resim levels, e.g. 9,20,50")
     ap.add_argument("--wave-prefix", required=True)
     ap.add_argument("--step", type=int, default=1, choices=(1, 2))
+    # S6-B3206 (owner ruling 2026-10-18): a Step-1 spec DECLARES its
+    # depth null - a repo-relative artifact path, or "none: <reason>"
+    # (cross-checked by the launch gate); the override is the owner's
+    # words + date, never a bare flag (the B2731 shape)
+    ap.add_argument("--depth-null", default=None,
+                    help="Step 1: the offline depth-null artifact "
+                         "this chain answers to, or 'none: <reason>'")
+    ap.add_argument("--override-depth-null", default=None,
+                    help="Step 1: the OWNER's words + date lifting a "
+                         "depth null priced as noise (S6-B3206)")
     ap.add_argument("--dry", action="store_true")
     ap.add_argument("--with", dest="with_", action="append", default=[],
                     metavar="PARAM=LEVEL",
@@ -510,6 +520,14 @@ def main() -> int:
                              "refused (B2713/L788)."),
             "_generated_by": "scripts/make_spec.py (S6-B3120a)",
         }
+        if a.step == 1:
+            # S6-B3206: the declaration rides the spec so the launch
+            # gate at run_wave judges the same claim make_spec did
+            if a.depth_null:
+                spec["depth_null"] = {a.strategy: a.depth_null}
+            if a.override_depth_null:
+                spec["owner_override_depth_null"] = {
+                    a.strategy: a.override_depth_null}
         if a.step == 2:
             sizing, why = step2_sizing(ROOT, a.strategy, arm_env,
                                        float(spec["leg_cap_hours"]))

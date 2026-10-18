@@ -81,3 +81,12 @@ Generated B3139q-r72c, 2026-10-18. Sources named inline; admission label counts 
 figures re-derived this turn.
 
 CORRECTED B3139q-r72d: the per-regime Sharpe floor is 0.5 (min_sharpe_per_regime, backtest/config.py, owner-approved B1387), not the 0.7 two sites above first said - the stale source was CLAUDE.md criteria row 10, fixed and pinned (test_b3208) in the same batch. Decision B is accordingly CHEAPER than first stated.
+
+## Status (B3139q-r72h, 2026-10-18)
+
+- A (S6-B3204): EXECUTED and CLOSED on the owner's word ("S6-B3204 (A) close approved").
+  output_audit/b3204_portfolio_eval.json: in-sample book Sharpe 0.129 vs SPY 0.594 over the same
+  window; holdout 4.679 vs 1.972 (commit b5a19f49f). The selection-free reading sits below holding SPY.
+- C (S6-B3206): EXECUTED - the depth-null declaration gate inside launch_refusals, the no-surface case
+  per the owner's ruling "A" (this batch).
+- B (S6-B3205), D (S6-B3207): OPEN, the owner's word; the A result argues against loosening admission.
