@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "18dcc274d",
-    "generated_at": "2026-10-18 21:36:57"
+    "source_commit": "147fecee9",
+    "generated_at": "2026-10-19 11:38:33"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -929,7 +929,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3192"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -2067,7 +2069,8 @@
       "mention_tickets": [
         "S6-B2420",
         "S6-B2669",
-        "S6-B3168"
+        "S6-B3168",
+        "S6-B3192"
       ],
       "admitted": false,
       "roster_roles": [
@@ -3618,7 +3621,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3192"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -4308,7 +4313,8 @@
       "mention_tickets": [
         "S6-B2420",
         "S6-B2669",
-        "S6-B3168"
+        "S6-B3168",
+        "S6-B3192"
       ],
       "admitted": false,
       "roster_roles": [
@@ -4383,7 +4389,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3192"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -4557,7 +4565,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3192"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -4847,7 +4857,8 @@
         "S6-B2758",
         "S6-B3122",
         "S6-B3135",
-        "S6-B3171"
+        "S6-B3171",
+        "S6-B3215"
       ],
       "admitted": true,
       "roster_roles": [

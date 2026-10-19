@@ -57904,7 +57904,8 @@ def test_b3194_campaign_lanes_read_the_owner_register(tmp_path):
 
     assert set(m.load_campaign_opens(_w(good))) == {"a"}
     rec = good["opens"][0]
-    bad = [{k: v for k, v in rec.items() if k != "ruling_verbatim"},
+    bad = [{k: v for k, v in rec.items() if k != "strategy"},
+           {k: v for k, v in rec.items() if k != "ruling_verbatim"},
            {k: v for k, v in rec.items() if k != "opened"},
            dict(rec, tickets=[]), dict(rec, tickets="S6-B1")]
     for b in bad:
@@ -57948,6 +57949,17 @@ def test_b3194_campaign_lanes_read_the_owner_register(tmp_path):
     men = {g["strategy"] for g in cls["mention"]}
     assert not gen & men and len(gen | men) == cls["population"] == 44
     assert gen <= set(reg_doc), gen - set(reg_doc)
+
+    # 6. S6-B3216 (L935): the two descriptions of this change stay true to
+    # the code - the runbook names the reader's branches (either word field,
+    # the opens list) and the builder comment no longer says a lane reads the
+    # vocabulary split
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    assert "or `ruling_in_substance` where the words were not verbatim" in plan
+    assert "a file with no `opens` list" in plan
+    bss_src = (root / "scripts" / "build_strategy_status.py").read_text(encoding="utf-8")
+    assert "S6-B3194 (2026-10-19) retired that" in bss_src
+    assert "counts as a CAMPAIGN only when" not in bss_src
 
 
 def test_b3192_every_short_strategy_carries_the_borrow_gate():
@@ -58043,3 +58055,68 @@ def test_b3155b_provenance_repair_holds_the_prefetch_bar(tmp_path):
     log2 = tmp_path / "log2.json"
     assert rp.main(["--evidence", str(bad), "--log", str(log2), "--apply"]) == 2
     assert not log2.exists()
+
+
+def test_b3217_status_view_records_fail_closed(tmp_path):
+    """S6-B3217 (L936): the status-view builder reads 6 committed records -
+    the owner's campaign closures and opens, the Phase-1B admissions, the
+    b2628 family grades, the b2647 PEAD sibling pass and the ledger - and an
+    ABSENT file or field used to read as an EMPTY population (10 defaults:
+    exists() guards and 'or []' / 'or {}'), which would silently return
+    admitted or closed strategies to the work lanes (#232, L642).
+    (1) control: temp copies of the records reproduce the live populations,
+    every one non-empty; (2) each record removed RAISES; (3) each required
+    field removed or nulled RAISES; (4) the two owner registers raise without
+    their list and read an explicit empty list as empty; (5) main() reads the
+    ledger with no existence guard (AST, never the text - L748)."""
+    import ast
+    import json
+    import shutil
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as m
+    oa = tmp_path / "output_audit"
+    oa.mkdir()
+    fields = {"phase_1b_step2_admissions.json": ("admissions", "pruned_collinear_b2666"),
+              "b2628_institutional_family_grades.json": ("siblings",),
+              "b2647_pead_sibling_pass.json": ("graded",)}
+    for n in fields:
+        shutil.copy(root / "output_audit" / n, oa / n)
+    live = m.closed_populations(root)
+    assert m.closed_populations(tmp_path) == live                         # (1)
+    assert all(live[k] for k in ("admitted", "pruned", "closed_neg", "contained")), live
+    for n, keys in fields.items():
+        raw = (oa / n).read_bytes()
+        (oa / n).unlink()
+        with pytest.raises(OSError):                                       # (2)
+            m.closed_populations(tmp_path)
+        doc = json.loads(raw.decode("utf-8"))
+        for k in keys:                                                     # (3)
+            for broken in ({kk: v for kk, v in doc.items() if kk != k},
+                           dict(doc, **{k: None})):
+                (oa / n).write_text(json.dumps(broken), encoding="utf-8")
+                with pytest.raises(ValueError):
+                    m.closed_populations(tmp_path)
+        (oa / n).write_bytes(raw)
+    assert m.closed_populations(tmp_path) == live
+    for fname, key, load in (("owner_campaign_closures.json", "closures", m.load_owner_closures),
+                             ("owner_campaign_opens.json", "opens", m.load_campaign_opens)):
+        p = oa / fname
+        for broken in ({"generator": "x"}, {key: None}, {key: {"a": 1}}, [1]):   # (4)
+            p.write_text(json.dumps(broken), encoding="utf-8")
+            with pytest.raises(ValueError):
+                load(tmp_path)
+        p.write_text(json.dumps({key: []}), encoding="utf-8")
+        assert load(tmp_path) == {}
+    src = (root / "scripts" / "build_strategy_status.py").read_text(encoding="utf-8")
+    main_fn = [n for n in ast.walk(ast.parse(src))
+               if isinstance(n, ast.FunctionDef) and n.name == "main"]
+    assert len(main_fn) == 1
+    reads = [n for n in ast.walk(main_fn[0]) if isinstance(n, ast.Assign)
+             and any(isinstance(t, ast.Name) and t.id == "qtext" for t in n.targets)]
+    assert len(reads) == 1, len(reads)                                     # (5)
+    assert not isinstance(reads[0].value, ast.IfExp), "the ledger read is guarded again"

@@ -259,8 +259,10 @@ come from the register below, and the JSON's `mention_tickets` keeps every row n
 2026-10-19).** Append a record to `output_audit/owner_campaign_opens.json` - `strategy`, `opened`
 (the date), `ruling_verbatim` (the owner's words) and `tickets` (the campaign's tickets, never
 empty) - then rebuild the view. The register is the ONLY source of IN-CAMPAIGN and
-STALLED-CAMPAIGN: its reader RAISES on an unreadable file, a record missing any of those fields or
-a strategy listed twice, and test_b3194 pins that the lanes read nothing else. Which members a
+STALLED-CAMPAIGN: its reader RAISES on an unreadable file, a file with no `opens` list, a record
+missing its `strategy`, its `opened` date, a non-empty `tickets` list or the owner's words
+(`ruling_verbatim`, or `ruling_in_substance` where the words were not verbatim), or a strategy
+listed twice, and test_b3194 pins that the lanes read nothing else. Which members a
 FAMILY campaign records is the owner's word, ruled per family; an open instance is a queue
 ticket, never named here. The closure register, `output_audit/owner_campaign_closures.json`, is its mirror
 and outranks it.

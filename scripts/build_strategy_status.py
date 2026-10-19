@@ -175,10 +175,11 @@ def changed_since_r5(src_now: str) -> set:
 # S6-B2810c: a MENTION is not a campaign. The first build flagged IN-CAMPAIGN
 # when any ticket id preceded the strategy name anywhere in a queue cell - and
 # all four news-family flags traced to S6-B1428a, an exit-reassignment ticket
-# that campaigns nothing (L748: an identifier matched in prose). A row now
-# counts as a CAMPAIGN only when it also carries campaign vocabulary. The
-# vocabulary is a HEURISTIC and is caveated as such (caveat 4): a borderline
-# row is settled by reading the ticket, never by this list.
+# that campaigns nothing (L748: an identifier matched in prose). S6-B2810c then
+# required campaign vocabulary in the row; S6-B3194 (2026-10-19) retired that
+# for the lanes - IN-CAMPAIGN and STALLED-CAMPAIGN read the owner-opened
+# register (load_campaign_opens, register_tickets), and campaign_tickets keeps
+# its vocabulary split only beside the mention list it produces.
 CAMPAIGN_VOCAB = ("campaign", "step 1", "step-1", "step 2", "step-2",
                   "depth", "breadth", "band", "register", "specs",
                   "grader", "admission")
@@ -262,6 +263,19 @@ NEVER_REOPEN = ("DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED")
 OWNER_CLOSURES = Path("output_audit") / "owner_campaign_closures.json"
 
 
+def _required(path, doc, key: str, typ: type):
+    """S6-B3217 (L936): a committed record's REQUIRED field. An absent key,
+    a null or the wrong type RAISES - the 'or []' / 'or {}' defaults this
+    replaces read a malformed record as an empty population, the silent
+    fallback #232 names (L642). An explicit empty list or dict is a DECLARED
+    empty and reads empty."""
+    v = doc.get(key) if isinstance(doc, dict) else None
+    if not isinstance(v, typ):
+        raise ValueError(f"{path}: needs '{key}' as a {typ.__name__} - got "
+                         f"{type(v).__name__} (S6-B3217)")
+    return v
+
+
 def load_owner_closures(root=ROOT) -> dict:
     """{strategy: record} for campaigns the OWNER closed outright (S6-B3135a).
     Every record carries the owner's words (verbatim, or in substance with the
@@ -271,7 +285,7 @@ def load_owner_closures(root=ROOT) -> dict:
     p = Path(root) / OWNER_CLOSURES
     d = json.loads(p.read_text(encoding="utf-8"))
     out = {}
-    for r in d.get("closures") or []:
+    for r in _required(p, d, "closures", list):
         s = r.get("strategy")
         words = r.get("ruling_verbatim") or r.get("ruling_in_substance")
         if not s or not words or not r.get("ruled"):
@@ -300,7 +314,7 @@ def load_campaign_opens(root=ROOT) -> dict:
     p = Path(root) / CAMPAIGN_OPENS
     d = json.loads(p.read_text(encoding="utf-8"))
     out = {}
-    for r in d.get("opens") or []:
+    for r in _required(p, d, "opens", list):
         s = r.get("strategy")
         words = r.get("ruling_verbatim") or r.get("ruling_in_substance")
         tickets = r.get("tickets")
@@ -321,32 +335,31 @@ def closed_populations(root=ROOT) -> dict:
     record - nothing here is a judgement. A pure function of `root` so the
     precedence pin reads the very sets main() reads (L593)."""
     root = Path(root)
-    admitted = set()
-    pruned = set()
+    # S6-B3217 (L936): every record here is REQUIRED. An absent file raises
+    # (read_text) and an absent field raises (_required); the exists()
+    # guards and 'or []' defaults this replaces read a missing record as an
+    # empty population, which would silently return admitted and closed
+    # strategies to the work lanes (#232, L642).
     adm = root / ADMISSIONS.relative_to(ROOT)
-    if adm.exists():
-        d = json.loads(adm.read_text(encoding="utf-8"))
-        rows = d if isinstance(d, list) else d.get("admissions") or d.get("rows") or []
-        admitted = {r.get("strategy") for r in rows
-                    if isinstance(r, dict) and r.get("strategy")}
-        # B2825: the Jaccard-0.70 pruned duplicates (B2666) are EVALUATED AND
-        # DISCARDED, not future work
-        pruned = {r.get("strategy")
-                  for r in (d.get("pruned_collinear_b2666") or [])
-                  if isinstance(r, dict) and r.get("strategy")}
-    closed_neg = set()      # family-pass FAIL, never re-admitted (b2628)
-    contained = set()       # contained in an admitted representative (b2647)
+    d = json.loads(adm.read_text(encoding="utf-8"))
+    admitted = {r.get("strategy") for r in _required(adm, d, "admissions", list)
+                if isinstance(r, dict) and r.get("strategy")}
+    # B2825: the Jaccard-0.70 pruned duplicates (B2666) are EVALUATED AND
+    # DISCARDED, not future work
+    pruned = {r.get("strategy")
+              for r in _required(adm, d, "pruned_collinear_b2666", list)
+              if isinstance(r, dict) and r.get("strategy")}
+    # family-pass FAIL, never re-admitted (b2628)
     p28 = root / "output_audit" / "b2628_institutional_family_grades.json"
-    if p28.exists():
-        sib = json.loads(p28.read_text(encoding="utf-8")).get("siblings") or {}
-        closed_neg = {k for k, v in sib.items()
-                      if isinstance(v, dict)} - admitted - pruned
+    sib = _required(p28, json.loads(p28.read_text(encoding="utf-8")), "siblings", dict)
+    closed_neg = {k for k, v in sib.items() if isinstance(v, dict)} - admitted - pruned
+    # contained in an admitted representative (b2647)
+    contained = set()
     p47 = root / "output_audit" / "b2647_pead_sibling_pass.json"
-    if p47.exists():
-        for r in json.loads(p47.read_text(encoding="utf-8")).get("graded") or []:
-            if isinstance(r, dict) and "CONTAINED" in str(r.get("disposition", "")):
-                if r.get("strategy") not in admitted:
-                    contained.add(r["strategy"])
+    for r in _required(p47, json.loads(p47.read_text(encoding="utf-8")), "graded", list):
+        if isinstance(r, dict) and "CONTAINED" in str(r.get("disposition", "")):
+            if r.get("strategy") not in admitted:
+                contained.add(r["strategy"])
     from backtest.config import (STRATEGIES_DISABLED_MISSING_PRODUCER,
                                  STRATEGIES_DISABLED_DATA_SCARCITY,
                                  STRATEGIES_DISABLED_DUPLICATE)
@@ -432,7 +445,9 @@ def main() -> int:
     closed_neg, contained = _pop["closed_neg"], _pop["contained"]
     disabled = _pop["disabled"]
 
-    qtext = QUEUE.read_text(encoding="utf-8", errors="replace") if QUEUE.exists() else ""
+    # S6-B3217: the ledger is REQUIRED - an absent queue read as empty text
+    # would have dropped every mention silently
+    qtext = QUEUE.read_text(encoding="utf-8", errors="replace")
     # B2829: the canonical last-row-wins reducer - never a hand parser (L695)
     sys.path.insert(0, str(ROOT / "scripts"))
     import queue_state as _qs

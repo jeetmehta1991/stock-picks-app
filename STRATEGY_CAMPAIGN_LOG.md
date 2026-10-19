@@ -958,6 +958,11 @@ the candidate: full 129 >= 75, projected holdout ~18 >= 15 - both floors clear o
 counts. PRE-REGISTRATION CANDIDATE: LONG leg + bullish_engulfing confirmation; Step-2
 one read awaits the owner's word (S6-B2694a).
 
+**Dated 2026-10-19 (S6-B3213, B3139q-r72n):** the owner ruled LEAVE ('Fable mode / Approve all recommendations'). Of the 15 members this campaign opened, the 4 that became campaign
+subjects are recorded in output_audit/owner_campaign_opens.json (S6-B3194); the other 11
+read NOT-STARTED, because the owner's 2026-09-13 revert to per-strategy isolation
+(S6-B2764) retired the plan for them to ride the hubs' verdicts.
+
 ### B.12 Hub-1 depth - STEP 0 done and the producer reach (old §11.2b2b, §11.2s item 2)
 
 *Source lines 3621-3642, 3971-3973, verbatim.*

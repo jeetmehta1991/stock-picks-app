@@ -3080,6 +3080,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r72e / L930) - THE CLOSURE RIPPLE'S TEST-TREE GREP RAN AFTER THE GATE, NOT BEFORE THE APPEND.** Closing naked_poc_retest_long (the first closure after the S6-B3189 additive footer) turned test_b3137's membership freeze (by design) and test_b2862's historical branch (a false pre-additive assumption) red at gate r72d; the owed subject grep - owner_campaign_closures / DONE-OWNER-CLOSED consumers across the test tree, 12 hits - would have named both beforehand (the L801/L913 class). Both fixed; the historical branch now validates each record by its own footer form.
 
+**INSTANCE (B3139q-r72n / L935) - TWO DESCRIPTIONS OF THE CHANGE OUTLIVED IT.** The S6-B3194 commit updated the docstrings of the functions it touched and the runbook paragraph it rewrote, and missed the comment above CAMPAIGN_VOCAB that still described the retired vocabulary rule; its new runbook sentence said the register's reader raises on a record missing any named field, while the reader accepts ruling_in_substance in place of ruling_verbatim. Grep for every description of the old behaviour, and describe a new check from its branches.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
@@ -4128,6 +4130,8 @@ opposite result.** For anything invoked by a harness - hooks, subprocesses, CI -
 
 **Fix pattern:** write BYTES through `sys.stdout.buffer` with an explicit `utf-8` encode; never let
 a console codepage decide whether a payload survives.
+
+**INSTANCE (B3139q-r72n / L936) - A DEFAULT EMPTY IS A SILENT FALLBACK TOO.** The status-view builder read 6 committed records through 10 defaults - exists() guards and 'or []' - so a missing record or list read as an empty population, able to return admitted or closed strategies to the work lanes; the S6-B3194 register reader inherited the shape by copying the closure reader. A default that stands in for a REQUIRED record is the degraded output this item names: raise on it, and pin the absent case.
 
 ### #233 - ENCODE THE STEM, AND TEST THE GATE ON A PARAPHRASE (B1748 / L509)
 
