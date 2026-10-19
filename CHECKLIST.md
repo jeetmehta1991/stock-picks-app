@@ -113,6 +113,11 @@ State compliance visibly: "Checklist: ✅ [each item]"
     rows classed mention are members of it. "Never a campaign subject" is an absence claim: read
     where openings are recorded - the campaign log's family sections and, from S6-B3194,
     output_audit/owner_campaign_opens.json - before the rows that came after them.
+    INSTANCE (B3139q-r72o / L937): S6-B3215 proposed correcting one strategy's declared signals_used
+    list and building a class lint, and the B3139q-r72n close recommended it next, while the owner had
+    ruled 2026-09-30 (row 7, S6-B3139c) that exactly those corrections land at Phase-1B entry. 'This
+    is open work' is a claim a start-work recommendation depends on: search the ledger for the work's
+    CLASS, not only its subject, and read the rulings the search returns.
 
 27. RELEVANCE CHECK BEFORE EVERY RECOMMENDATION — no exceptions:
     a. State the specific question or problem being solved
@@ -3244,6 +3249,8 @@ do the arithmetic and SHOW it.** If you cannot, drop the claim.
 rate-for-total substitutions above.
 
 **INSTANCE (B3139 / L890):** the cube-isolation occupancy block was described per-strategy in L812 and S6-B2905 from the comment at backtest.py:2830-2831 (at 83eb1ff48), while the control flow skips the WHOLE candidate - co-firing strategies holding nothing are not entered and are named in no skip row (S6-B3139r); its pin tests two literal sets, not the engine loop (#276b).
+
+**INSTANCE (B3139q-r72o / L937) - 'COMMITTED' WITH NO PATH.** S6-B3139c's deferral row and its batch's commit message said the signals_used detector is committed; a search by name, by its recorded result and through the commit that recorded the result found none, so the Phase-1B entry batch would have looked for a tool that does not exist. A claim that something is committed carries its path.
 
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
 
