@@ -1942,8 +1942,9 @@ of 6 thresholds until B2402):
 - **THE POWER FLOOR IS NOT A GATE, AND IS NOT `min_trades_holdout`** (§4.6): a cell below `--min-n` is
   `BELOW_POWER_FLOOR` and never reaches the gates.
 - **FOUR CRITERIA ARE DEMOTED to diagnostics and are NOT gates** (`roster_core.DEMOTED`): max_drawdown,
-  calmar, deflated_sharpe, win_rate (B1387 / B1436 / B1437). max_drawdown and calmar re-engage at Phase 1B
-  on a blended portfolio. The grid stage applies no multiplicity correction across a config's cells
+  calmar, deflated_sharpe, win_rate (B1387 / B1436 / B1437). On the blended book the portfolio evaluator
+  REPORTS max drawdown, calmar and the deflated Sharpe (S6-B3096b); making any of them a GATE again is a
+  separate owner ruling. The grid stage applies no multiplicity correction across a config's cells
   (owner ruling D2; §1.4).
 - **PSR units (B2646, owner ruling 'then c'):** the per-period Sharpe and RAW kurtosis feed the
   Bailey-Lopez de Prado PSR; the annualised Sharpe with excess kurtosis fed before made PSR incomputable
@@ -2085,13 +2086,15 @@ wishlist:**
   (one-sided, H0: SR<=0), `ci_lo` (Sharpe CI lower bound).
 - **CONTEXT (4):** fires, holdout n, full-period n, exit chosen IN-SAMPLE.
 
-**Known gap, re-measured B3096:** `max_drawdown`, `calmar` and `deflated_sharpe` are ABSENT from
-`evaluate()`'s return dict - its keys are `all_live_gates, ci_lo, expectancy, gates, n, n_gates,
-n_gates_evaluable, p, payoff, profit_factor, psr, sharpe, sortino, win_rate` - so for those three
-"diagnostic" still means absent (`metrics.py` has all three, L374; since the B1972-era
-None-propagation work the deflated Sharpe is computed inside `evaluate`, at `roster_core.py:235`, only
-to derive `psr`). The ledger row S6-B1509a reads EXECUTED
-against this; the discrepancy is ticketed S6-B3096b.
+**Where the three demoted diagnostics are reported (S6-B3096b, B3139q-r72q):** `evaluate()` scores
+ONE line's trade series and returns no `max_drawdown`, `calmar` or `deflated_sharpe` - its keys are
+`all_live_gates, ci_lo, expectancy, gates, n, n_gates, n_gates_evaluable, p, payoff, profit_factor,
+psr, sharpe, sortino, win_rate`, and it computes the deflated Sharpe only to derive `psr`. A BOOK's
+drawdown is not a line's, so the three are reported by the portfolio evaluator,
+`scripts/build_phase1b_portfolio.py` (`_risk_diagnostics`, through the deflated-Sharpe function
+`evaluate` calls), for the blended book's three windows, each line's two legs and SPY's two windows.
+Reported, never gated; the ledger row S6-B1509a that read EXECUTED against the earlier gap is
+superseded by S6-B3096b.
 
 **Why all 15 and not just Sharpe (L373):** reporting Sharpe alone once hid a 95 pct lower bound below
 zero. Omitting cheap metrics is not brevity; it suppresses the interval around the headline.

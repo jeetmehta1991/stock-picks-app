@@ -58120,3 +58120,76 @@ def test_b3217_status_view_records_fail_closed(tmp_path):
              and any(isinstance(t, ast.Name) and t.id == "qtext" for t in n.targets)]
     assert len(reads) == 1, len(reads)                                     # (5)
     assert not isinstance(reads[0].value, ast.IfExp), "the ledger read is guarded again"
+
+
+def test_b3096b_the_blended_book_reports_the_demoted_diagnostics():
+    """S6-B3096b (owner-approved Phase-1B entry work 2026-10-19): max
+    drawdown, Calmar and the deflated Sharpe - roster_core.DEMOTED - are
+    REPORTED on the blended book by the portfolio evaluator, never gated.
+    (1) _risk_diagnostics computes Calmar from the daily equity curve and the
+    deflated pair through the SAME function roster_core.evaluate calls
+    (L593), on a deterministic series; (2) it returns None, never 0, for a
+    flat curve, a curve with no drawdown and a series too short for the
+    deflated pair (L580); (3) the committed artifact carries all three for
+    the book's three windows and SPY's two - so a reader compares like for
+    like; (4) none of them is a gate: roster_core.DEMOTED still names them."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    import numpy as _np
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import build_phase1b_portfolio as bpp
+    import roster_core as rc
+
+    r = _np.array([0.01, -0.02, 0.015, 0.005, -0.01, 0.02, -0.005, 0.01] * 6)
+    got = bpp._risk_diagnostics(r)
+    eq = _np.cumprod(1 + r)
+    mdd = float((eq / _np.maximum.accumulate(eq) - 1).min())
+    assert mdd < 0
+    want_calmar = round((float(eq[-1]) ** (252 / len(r)) - 1) / abs(mdd), 3)
+    assert got["calmar"] == want_calmar, (got, want_calmar)
+    s = _pd.Series(r)
+    d = rc._deflated_sharpe(float(r.mean()) / float(_np.std(r)), len(r),
+                            float(s.skew()), float(s.kurtosis()) + 3.0)
+    assert d["deflated_sharpe"] is not None and d["psr"] is not None
+    assert got["deflated_sharpe"] == round(float(d["deflated_sharpe"]) * float(_np.sqrt(252)), 3)
+    assert got["psr"] == round(float(d["psr"]), 4)
+
+    none = {"calmar": None, "deflated_sharpe": None, "psr": None}
+    assert bpp._risk_diagnostics(_np.zeros(60)) == none          # flat
+    up = bpp._risk_diagnostics(_np.full(60, 0.001) + _np.arange(60) * 1e-6)
+    assert up["calmar"] is None                                  # no drawdown
+    short = bpp._risk_diagnostics(r[:12])
+    assert short["deflated_sharpe"] is None and short["psr"] is None
+    assert short["calmar"] is not None                           # measurable
+
+    # the LIVE paths, not only the committed artifact: a window and SPY's
+    # control must carry the three, through the same helper
+    import datetime as _dt
+    days = [_dt.date(2024, 1, 1) + _dt.timedelta(days=k) for k in range(len(r))]
+    pct = r * 100.0 / bpp.TRADE_FRACTION       # the series' own units
+    ws = bpp._window_stats(_pd.Series(pct, index=days))
+    want = bpp._risk_diagnostics(pct * bpp.TRADE_FRACTION / 100.0)
+    for k in ("calmar", "deflated_sharpe", "psr"):
+        assert ws[k] == want[k], (k, ws[k], want[k])
+    sb = bpp._benchmark(rc.IS_START, rc.IS_END)
+    for k in ("calmar", "deflated_sharpe", "psr"):
+        assert sb.get(k) is not None, (k, sb)
+
+    d = _json.loads((root / "output_audit" / "b3204_portfolio_eval.json")
+                    .read_text(encoding="utf-8"))
+    for w in ("full", "in_sample", "holdout"):
+        for k in ("mdd_pct", "calmar", "deflated_sharpe", "psr"):
+            assert k in d["portfolio"][w], (w, k)
+            assert d["portfolio"][w][k] is not None, (w, k)
+    for w in ("in_sample", "holdout"):
+        for k in ("mdd_pct", "calmar", "deflated_sharpe", "psr"):
+            assert d["benchmark_spy"][w].get(k) is not None, (w, k)
+    for leg in ("per_line_holdout", "per_line_in_sample"):
+        for s_, row in d[leg].items():
+            assert {"calmar", "deflated_sharpe", "psr"} <= set(row), (leg, s_)
+    assert {"max_drawdown", "calmar", "deflated_sharpe"} <= set(rc.DEMOTED)

@@ -247,6 +247,42 @@ def _daily_curve(frames: dict) -> "object":
     return allt, series
 
 
+def _risk_diagnostics(r) -> dict:
+    """S6-B3096b (owner-approved Phase-1B entry work, 2026-10-19): the
+    DEMOTED diagnostics (roster_core.DEMOTED) on a BLENDED daily return
+    series - REPORTED, never gated. The line evaluator scores one trade
+    series, so a book's drawdown lives here (the B3139 council's restated
+    home for the 2026-09-24 approval). calmar = annualised return / |max
+    drawdown| of the daily equity curve; deflated_sharpe and psr come from
+    the function roster_core.evaluate calls (L593), fed the PER-PERIOD
+    Sharpe and RAW kurtosis (B2646), the deflated figure annualised like
+    the window's sharpe. None where a figure is not measurable - fewer
+    than 30 days for the deflated pair, a flat curve, no drawdown, or a
+    curve that ends at or below zero - never a fabricated 0 (L580)."""
+    import numpy as np
+    import pandas as pd
+    import roster_core as rc
+    out = {"calmar": None, "deflated_sharpe": None, "psr": None}
+    r = np.asarray(r, dtype=float)
+    n = len(r)
+    sd = float(np.std(r)) if n else 0.0
+    if n < 2 or sd == 0:
+        return out
+    eq = np.cumprod(1.0 + r)
+    mdd = float((eq / np.maximum.accumulate(eq) - 1.0).min())
+    if mdd < 0 and float(eq[-1]) > 0:
+        ann = float(eq[-1]) ** (252.0 / n) - 1.0
+        out["calmar"] = round(ann / abs(mdd), 3)
+    s = pd.Series(r)
+    d = rc._deflated_sharpe(float(np.mean(r)) / sd, n, float(s.skew()),
+                            float(s.kurtosis()) + 3.0)
+    if d.get("deflated_sharpe") is not None:
+        out["deflated_sharpe"] = round(float(d["deflated_sharpe"]) * float(np.sqrt(252)), 3)
+    if d.get("psr") is not None:
+        out["psr"] = round(float(d["psr"]), 4)
+    return out
+
+
 def _window_stats(series, lo=None, hi=None) -> dict:
     import numpy as np
     s = series
@@ -256,13 +292,15 @@ def _window_stats(series, lo=None, hi=None) -> dict:
         s = s[[d < hi for d in s.index]]
     r = s.values * TRADE_FRACTION / 100.0      # daily portfolio return
     if len(r) < 20 or float(np.std(r)) == 0:
-        return {"days": int(len(r)), "sharpe": None, "mdd_pct": None}
+        return {"days": int(len(r)), "sharpe": None, "mdd_pct": None,
+                "calmar": None, "deflated_sharpe": None, "psr": None}
     sharpe = float(np.mean(r) / np.std(r) * np.sqrt(252))
     eq = np.cumprod(1.0 + r)
     mdd = float((eq / np.maximum.accumulate(eq) - 1.0).min())
     return {"days": int(len(r)), "sharpe": round(sharpe, 3),
             "mdd_pct": round(100 * mdd, 2),
-            "total_return_pct": round(100 * (eq[-1] - 1.0), 2)}
+            "total_return_pct": round(100 * (eq[-1] - 1.0), 2),
+            **_risk_diagnostics(r)}
 
 
 def _benchmark(lo, hi) -> dict:
@@ -285,7 +323,8 @@ def _benchmark(lo, hi) -> dict:
     return {"days": int(len(s)),
             "sharpe": round(float(s.mean() / s.std() * np.sqrt(252)), 3),
             "total_return_pct": round(100 * float(eq.iloc[-1] - 1), 2),
-            "mdd_pct": round(100 * float((eq / eq.cummax() - 1).min()), 2)}
+            "mdd_pct": round(100 * float((eq / eq.cummax() - 1).min()), 2),
+            **_risk_diagnostics(s.values)}
 
 
 def blend() -> dict:
