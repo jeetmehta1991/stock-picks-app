@@ -80,7 +80,9 @@ def test_b744_pin2_short_strategy_count_matches_b718b_cohort():
     # files, which is exactly why it drifted in one and not the other (S6-B1471d).
     assert len(dual) == EXPECTED_DUAL_STRAT3, f"dual _strat3: got {len(dual)}"
     # total 111 -> 112: pure 51->53 (+2 net) and dual 60->59 (-1) = 110 + 2 = 112
-    assert len(rep.short_strategies) == 112
+    # S6-B3192: 112 -> 116 (pure 53 -> 57, lineage in roster_invariants), and the
+    # total is DERIVED from the two counts rather than pinned as a third literal
+    assert len(rep.short_strategies) == EXPECTED_PURE_SHORT + EXPECTED_DUAL_STRAT3
 
 
 def test_b744_pin3_synthetic_missing_gate_caught(tmp_path):

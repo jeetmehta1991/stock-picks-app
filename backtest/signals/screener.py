@@ -8123,10 +8123,18 @@ def strat_totm_short(s):
     the verdict per feedback_no_a_priori_strategy_pruning. STATUS: EXPLORATORY
     (registered in EXPLORATORY_STRATEGIES); inherits the parent's Pattern-AA
     DO-NOT-DEPLOY caveat (B830) - event-strategy effective-N limits apply to
-    both directions."""
-    fires = s.get("is_totm_window_first_day", False) and s.get("below_ema_200", False)
+    both directions.
+
+    S6-B3192 (owner approved 2026-10-19): carries the borrow-trap gate
+    and its 'borrow_ok' declaration, as every pure short has since B744 -
+    registered after that lint ran, it had shipped without them."""
+    fires = (
+        s.get("is_totm_window_first_day", False)
+        and s.get("below_ema_200", False)
+        and not _short_borrow_trap_active(s)
+    )
     return _strat(fires, "short", "calendar",
-        ["is_totm_window_first_day", "below_ema_200"],
+        ["is_totm_window_first_day", "below_ema_200", "borrow_ok"],
         ["Bar entering the TOTM window (last-4 + first-3 trading days)",
          "Below 200 EMA (positive-symmetric regime gate)"])
 
@@ -8143,10 +8151,18 @@ def strat_mfi_overbought_short(s):
     the economically defensible half. STATUS: EXPLORATORY (registered in
     EXPLORATORY_STRATEGIES); zero short rows cleared the B1378 true holdout
     on the R5 window (L229), so unvalidated-by-construction until a
-    bear-inclusive window tests it."""
-    fires = s.get("mfi_broad_overbought", False) and s.get("below_ema_200", False)
+    bear-inclusive window tests it.
+
+    S6-B3192 (owner approved 2026-10-19): carries the borrow-trap gate
+    and its 'borrow_ok' declaration, as every pure short has since B744 -
+    registered after that lint ran, it had shipped without them."""
+    fires = (
+        s.get("mfi_broad_overbought", False)
+        and s.get("below_ema_200", False)
+        and not _short_borrow_trap_active(s)
+    )
     return _strat(fires, "short", "mean_reversion",
-        ["mfi_broad_overbought", "below_ema_200"],
+        ["mfi_broad_overbought", "below_ema_200", "borrow_ok"],
         ["MFI > 70 - broad money-flow overbought (mirror of the parent's mfi < 30)",
          "Below 200 EMA (positive-symmetric regime gate)"])
 
@@ -8188,13 +8204,18 @@ def strat_vwap_extension_momentum_short(s):
     drift, squeeze risk and borrow costs bias against shorts, and zero short
     rows cleared the B1378 true holdout (L229) - unvalidated-by-construction
     until a bear-inclusive window tests it. STATUS: EXPLORATORY,
-    DO-NOT-DEPLOY pending cube validation."""
+    DO-NOT-DEPLOY pending cube validation.
+
+    S6-B3192 (owner approved 2026-10-19): carries the borrow-trap gate
+    and its 'borrow_ok' declaration, as every pure short has since B744 -
+    registered after that lint ran, it had shipped without them."""
     fires = (
         s.get("pct_from_vwap", 0) <= -35.0
         and s.get("below_ema_200", False)
+        and not _short_borrow_trap_active(s)
     )
     return _strat(fires, "short", "momentum",
-        ["pct_from_vwap<=-35", "below_ema_200"],
+        ["pct_from_vwap<=-35", "below_ema_200", "borrow_ok"],
         ["Close >= 35pct BELOW cumulative VWAP (mirror extension; CHOSEN "
          "level, band-swept at own Step-1)",
          "Below 200 EMA (positive-symmetric regime gate)"])

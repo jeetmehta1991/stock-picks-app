@@ -30,8 +30,9 @@ B741_STRATEGIES = [
     "triangle_descending_short",
     "flag_bear_retest_short",
     "simple_below_ema_50_short",
-    "classification_change_to_defensive_short",
-    "classification_change_from_tech_short",
+    # S6-B3192: classification_change_to_defensive_short and
+    # classification_change_from_tech_short left the cohort - B2098 (F23)
+    # deleted both, and pins 2-4 had failed on them since, unseen outside the gate.
     "vol_spike_2x_below_ema_50_short",
     "risk_off_bond_equity_short",
     "pairs_mean_reversion_short",
@@ -47,6 +48,16 @@ B741_STRATEGIES = [
     "news_sentiment_short",
     "poc_magnet_short",
     "xs_combined_momentum_high_ivol_short",
+    # S6-B3192 (2026-10-19): the 6 pure shorts registered since 98309d103,
+    # enumerated by diffing the borrow lint's pure-short set. Three shipped
+    # without the gate (totm_short, mfi_overbought_short,
+    # vwap_extension_momentum_short) and gained it in S6-B3192.
+    "failed_breakout_2b_short",
+    "mfi_overbought_short",
+    "smc_equal_highs_bos_short",
+    "totm_short",
+    "turtle_soup_bos_short",
+    "vwap_extension_momentum_short",
 ]
 
 
@@ -54,7 +65,8 @@ def test_b741_pin1_count_matches_25():
     """B741 second chunk -- exactly 25 strategies refactored this batch."""
     # B1471: 25 -> 24 after B1189 deleted dxy_headwind_multinational_short from the
     # cohort. The pin was never updated because this file is outside the enforced gate.
-    assert len(B741_STRATEGIES) == 28   # B1471: 24 + the 4 registered above
+    # S6-B3192: 28 - 2 (B2098 deletions) + 6 (registered since 98309d103) = 32
+    assert len(B741_STRATEGIES) == 32
 
 
 def test_b741_pin2_all_25_registered():

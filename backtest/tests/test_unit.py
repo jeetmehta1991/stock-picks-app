@@ -57952,3 +57952,39 @@ def test_b3194_campaign_lanes_read_the_owner_register(tmp_path):
     men = {g["strategy"] for g in cls["mention"]}
     assert not gen & men and len(gen | men) == cls["population"] == 44
     assert gen <= set(reg_doc), gen - set(reg_doc)
+
+
+def test_b3192_every_short_strategy_carries_the_borrow_gate():
+    """S6-B3192 (owner approved 2026-10-19, 'Approve all recommendations'):
+    every short-emitting strategy carries the borrow-trap gate
+    (_short_borrow_trap_active) and declares 'borrow_ok' - the B744 invariant.
+    The lint (scripts/borrow_gate_lint.py) ran only in the EXTENDED tier, so 3
+    shorts registered after it - strat_totm_short, strat_mfi_overbought_short,
+    strat_vwap_extension_momentum_short - shipped without the gate and nothing
+    in the enforced pyramid could see it. This pin runs the lint in the GATE
+    tier over the whole population, refuses an empty read (the lint returns an
+    empty report when it cannot find screener.py - L642), and drives the three
+    through the live helper: days_to_cover above 5 blocks, exactly 5 fires.
+    """
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import borrow_gate_lint as bgl
+    rep = bgl.audit_screener(root / "backtest" / "signals" / "screener.py")
+    assert len(rep.short_strategies) >= 100, (len(rep.short_strategies), rep.note)
+    assert rep.violations == [], [v.name for v in rep.violations]
+    from backtest.signals.screener import (strat_totm_short,
+                                           strat_mfi_overbought_short,
+                                           strat_vwap_extension_momentum_short)
+    cases = ((strat_totm_short,
+              {"is_totm_window_first_day": True, "below_ema_200": True}),
+             (strat_mfi_overbought_short,
+              {"mfi_broad_overbought": True, "below_ema_200": True}),
+             (strat_vwap_extension_momentum_short,
+              {"pct_from_vwap": -40.0, "below_ema_200": True}))
+    for fn, legs in cases:
+        assert fn(dict(legs, days_to_cover=5.0))["fires"] is True, fn.__name__
+        assert fn(dict(legs, days_to_cover=6.0))["fires"] is False, fn.__name__
+        assert "borrow_ok" in fn(legs)["signals_used"], fn.__name__

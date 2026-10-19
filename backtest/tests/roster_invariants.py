@@ -53,5 +53,10 @@ def pure_long_count(src: str | None = None) -> int:
 #               character-identical to standalone prev_day_low_breakdown)
 #   short 53  : 50 + 1 (B1010 insider_cluster_concentrated_sell_short)
 #               + 3 (B1382 mirror shorts) - 1 (B1189 deleted dxy_headwind_multinational_short)
+#   short 57  : S6-B3192 (2026-10-19), enumerated by diffing the borrow lint's pure-short
+#               set against 98309d103: + failed_breakout_2b_short, mfi_overbought_short,
+#               smc_equal_highs_bos_short, totm_short, turtle_soup_bos_short,
+#               vwap_extension_momentum_short; - the two classification_change shorts
+#               (B2098). Raised only after all 116 shorts carry the borrow gate (B1471).
 EXPECTED_DUAL_STRAT3 = 59
-EXPECTED_PURE_SHORT = 53
+EXPECTED_PURE_SHORT = 57
