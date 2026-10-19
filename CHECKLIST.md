@@ -4558,6 +4558,8 @@ proposal would have been `#242`'s failure with the authority invented. **Owner r
 the promised mechanism is now attached**, which is the behaviour a `JUDGMENT-ONLY` tag is supposed
 to produce rather than a permanent excuse.
 
+**INSTANCE (B3139q-r72i / L932) - THE MISSING FIELD WAS 'CAMPAIGN SUBJECT'.** The status view infers 'campaigned' from a live ticket row that names a strategy beside any of 12 vocabulary words (build_strategy_status.campaign_tickets), because the ledger has no field for it. Measured 2026-10-19: 3 of 3 IN-CAMPAIGN labels were false, each held up by the ticket that documented them (S6-B3194), whose row had forecast they would clear; a hand-read sample of the STALLED lane found 5 of 6 never campaigned. Four recordings of the heuristic's errors (S6-B2810c, S6-B2833, S6-B3117a, S6-B3194) were each closed as documentation - the confession standing in for the column, this item's own L522 shape. The class fix is put to the owner on S6-B3194.
+
 ### #248 - THE BACKTICK RULE IS ABOUT SHELL ARGUMENTS, NOT COMMIT MESSAGES (B1768 / L523)
 
 **`#245` was written one batch ago and I violated it immediately** - not in a commit message, but in

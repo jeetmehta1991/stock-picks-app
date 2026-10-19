@@ -1,0 +1,3 @@
+pytest_exit=0 tree=SAME exit=0
+  NOTE (S6-B3130a): read-set RERUN-PASS:85-tests (re-run: 85 tests rc=0 log=b3139_pyramid_r72i.json.rerun.txt; stamp: kept-green)
+  NOTE (S6-B3130a/L689): test(s) WROTE under the production output_audit in-process: 2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
