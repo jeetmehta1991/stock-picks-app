@@ -4,7 +4,8 @@ engine cache's final bar where a third source confirmed it was a partial
 session - for runs launched after the repair; frozen results unchanged.
 
 WHAT IT WRITES. For each CONFIRMED row of the evidence artifact written by
-scripts/final_bar_third_source_check.py classify, ONE row of one file under
+scripts/final_bar_third_source_check.py classify - or each row its
+`provenance` subcommand writes on an owner ruling (S6-B3155b) - ONE row of one file under
 backtest/data/cache/ohlcv: the bar dated the evidence's `date`, which must be
 the file's LAST row. Its open/high/low/close/volume become the PREFETCH
 cache's bar for that date (data_prefetch/polygon/ohlcv_daily - the cache's own
@@ -212,6 +213,16 @@ def main(argv=None) -> int:
     ap.add_argument("--apply", action="store_true")
     a = ap.parse_args(argv)
     evidence = json.loads((ROOT / a.evidence).read_text(encoding="utf-8"))
+    # S6-B3155b: the log records the authority the EVIDENCE carries. An
+    # evidence for any other ticket must name its owner ruling, or the log
+    # would credit S6-B3155a's ruling with a repair that ruling never covered.
+    ticket = evidence.get("ticket", "S6-B3155a")
+    auth = evidence.get("authority")
+    if auth is None and ticket != "S6-B3155a":
+        print(f"REFUSED: the {ticket} evidence names no owner authority; nothing written")
+        return 2
+    ruling = (auth or {}).get("ruling_verbatim", RULING)
+    ruled = (auth or {}).get("ruled", "2026-10-14")
     planned, already, refusals = plan(evidence)
     print(f"evidence {a.evidence}: {len(evidence['repair'])} confirmed rows; "
           f"{len(planned)} planned, {len(already)} already repaired, "
@@ -276,7 +287,7 @@ def main(argv=None) -> int:
            "replaced": len(entries)}
     merged = dict(kept)
     merged.update({e["ticker"]: e for e in entries})
-    log = {"ticket": "S6-B3155a", "owner_ruling": RULING, "ruled": "2026-10-14",
+    log = {"ticket": ticket, "owner_ruling": ruling, "ruled": ruled,
            "evidence": a.evidence, "date": evidence["date"],
            "generator": "scripts/repair_final_bar_partial_session.py --apply",
            "runs": list(prior_log.get("runs") or (

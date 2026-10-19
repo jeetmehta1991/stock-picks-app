@@ -1,0 +1,189 @@
+{
+ "ticket": "S6-B3155b",
+ "date": "2026-05-05",
+ "prior": "2026-05-04",
+ "generator": "scripts/final_bar_third_source_check.py provenance",
+ "authority": {
+  "ruling_verbatim": "Fable mode / Approve all recommendations",
+  "ruled": "2026-10-19",
+  "basis": "provenance, not a third-source match: the third source holds no record under these symbols, so classify could not confirm them"
+ },
+ "repair": [
+  {
+   "ticker": "AVB",
+   "engine_file": "backtest/data/cache/ohlcv/AVB.parquet",
+   "prefetch_file": "data_prefetch/polygon/ohlcv_daily/AVB.parquet",
+   "shape": "PARTIAL_SESSION",
+   "in_step2_universe": true,
+   "engine_before": {
+    "open": 182.56,
+    "high": 185.61,
+    "low": 182.0069,
+    "close": 185.445,
+    "volume": 151548.082323
+   },
+   "prefetch": {
+    "open": 182.56,
+    "high": 186.48,
+    "low": 182.0069,
+    "close": 185.25,
+    "volume": 747673.458771
+   },
+   "yahoo_normalised": null,
+   "corporate_action_factor": null,
+   "engine_volume_over_prefetch": 0.202693,
+   "max_price_gap": 0.004665
+  },
+  {
+   "ticker": "BK",
+   "engine_file": "backtest/data/cache/ohlcv/BK.parquet",
+   "prefetch_file": "data_prefetch/polygon/ohlcv_daily/BK.parquet",
+   "shape": "PARTIAL_SESSION",
+   "in_step2_universe": true,
+   "engine_before": {
+    "open": 132.03,
+    "high": 133.12,
+    "low": 131.5,
+    "close": 132.51,
+    "volume": 1321701.709282
+   },
+   "prefetch": {
+    "open": 132.03,
+    "high": 133.35,
+    "low": 131.5,
+    "close": 132.36,
+    "volume": 3435977.951596
+   },
+   "yahoo_normalised": null,
+   "corporate_action_factor": null,
+   "engine_volume_over_prefetch": 0.384665,
+   "max_price_gap": 0.001725
+  },
+  {
+   "ticker": "CTRA",
+   "engine_file": "backtest/data/cache/ohlcv/CTRA.parquet",
+   "prefetch_file": "data_prefetch/polygon/ohlcv_daily/CTRA.parquet",
+   "shape": "PARTIAL_SESSION",
+   "in_step2_universe": true,
+   "engine_before": {
+    "open": 35.8,
+    "high": 36.315,
+    "low": 35.44,
+    "close": 35.98,
+    "volume": 4194124.438785
+   },
+   "prefetch": {
+    "open": 35.8,
+    "high": 36.315,
+    "low": 35.44,
+    "close": 35.63,
+    "volume": 8705563.327292
+   },
+   "yahoo_normalised": null,
+   "corporate_action_factor": null,
+   "engine_volume_over_prefetch": 0.481775,
+   "max_price_gap": 0.009823
+  },
+  {
+   "ticker": "EA",
+   "engine_file": "backtest/data/cache/ohlcv/EA.parquet",
+   "prefetch_file": "data_prefetch/polygon/ohlcv_daily/EA.parquet",
+   "shape": "PARTIAL_SESSION",
+   "in_step2_universe": true,
+   "engine_before": {
+    "open": 201.95,
+    "high": 202.08,
+    "low": 201.5,
+    "close": 201.9,
+    "volume": 584345.509023
+   },
+   "prefetch": {
+    "open": 201.95,
+    "high": 202.08,
+    "low": 201.39,
+    "close": 201.57,
+    "volume": 1401221.296273
+   },
+   "yahoo_normalised": null,
+   "corporate_action_factor": null,
+   "engine_volume_over_prefetch": 0.417026,
+   "max_price_gap": 0.001637
+  },
+  {
+   "ticker": "EQR",
+   "engine_file": "backtest/data/cache/ohlcv/EQR.parquet",
+   "prefetch_file": "data_prefetch/polygon/ohlcv_daily/EQR.parquet",
+   "shape": "PARTIAL_SESSION",
+   "in_step2_universe": true,
+   "engine_before": {
+    "open": 65.75,
+    "high": 66.74,
+    "low": 65.14,
+    "close": 66.6,
+    "volume": 701787.980772
+   },
+   "prefetch": {
+    "open": 65.75,
+    "high": 66.95,
+    "low": 65.14,
+    "close": 66.25,
+    "volume": 2733316.554642
+   },
+   "yahoo_normalised": null,
+   "corporate_action_factor": null,
+   "engine_volume_over_prefetch": 0.256753,
+   "max_price_gap": 0.005283
+  },
+  {
+   "ticker": "QRVO",
+   "engine_file": "backtest/data/cache/ohlcv/QRVO.parquet",
+   "prefetch_file": "data_prefetch/polygon/ohlcv_daily/QRVO.parquet",
+   "shape": "PARTIAL_SESSION",
+   "in_step2_universe": true,
+   "engine_before": {
+    "open": 92.4,
+    "high": 95.52,
+    "low": 92.27,
+    "close": 94.7625,
+    "volume": 551201.259414
+   },
+   "prefetch": {
+    "open": 92.4,
+    "high": 96.68,
+    "low": 92.27,
+    "close": 96.35,
+    "volume": 1667640.079598
+   },
+   "yahoo_normalised": null,
+   "corporate_action_factor": null,
+   "engine_volume_over_prefetch": 0.330528,
+   "max_price_gap": 0.016476
+  },
+  {
+   "ticker": "WBD",
+   "engine_file": "backtest/data/cache/ohlcv/WBD.parquet",
+   "prefetch_file": "data_prefetch/polygon/ohlcv_daily/WBD.parquet",
+   "shape": "PARTIAL_SESSION",
+   "in_step2_universe": true,
+   "engine_before": {
+    "open": 26.93,
+    "high": 27.02,
+    "low": 26.85,
+    "close": 26.98,
+    "volume": 5444279.899533
+   },
+   "prefetch": {
+    "open": 26.93,
+    "high": 27.25,
+    "low": 26.85,
+    "close": 27.22,
+    "volume": 16893902.886988
+   },
+   "yahoo_normalised": null,
+   "corporate_action_factor": null,
+   "engine_volume_over_prefetch": 0.322263,
+   "max_price_gap": 0.008817
+  }
+ ],
+ "source_evidence": "output_audit/b3155a_final_bar_third_source.json"
+}

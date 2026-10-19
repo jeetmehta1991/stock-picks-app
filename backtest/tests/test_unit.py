@@ -55679,13 +55679,9 @@ _B3155A_FINAL_BAR_EXCEPTIONS = {
     "CVNA": ("a constant 5.0x price scale on every earlier bar; its repair was "
              "dropped with S6-B3155 on the owner's ruling 2026-10-13, and a "
              "one-row repair would splice two price bases (B3139q-r69n)"),
-    "AVB": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
-    "BK": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
-    "CTRA": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
-    "EA": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
-    "EQR": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
-    "QRVO": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
-    "WBD": "partial bar, no third-source record (Yahoo has no data under the symbol); S6-B3155b",
+    # S6-B3155b (owner ruled 2026-10-19, option (a)): AVB, BK, CTRA, EA, EQR,
+    # QRVO and WBD left this register - repaired from the prefetch on
+    # provenance (output_audit/b3155b_final_bar_repair_log.json).
 }
 
 
@@ -57988,3 +57984,62 @@ def test_b3192_every_short_strategy_carries_the_borrow_gate():
         assert fn(dict(legs, days_to_cover=5.0))["fires"] is True, fn.__name__
         assert fn(dict(legs, days_to_cover=6.0))["fires"] is False, fn.__name__
         assert "borrow_ok" in fn(legs)["signals_used"], fn.__name__
+
+
+def test_b3155b_provenance_repair_holds_the_prefetch_bar(tmp_path):
+    """S6-B3155b (owner ruled 2026-10-19, 'Fable mode / Approve all
+    recommendations', option (a)): the 7 partial 2026-05-05 bars the third
+    source could not adjudicate - Yahoo holds no record under the symbols -
+    were repaired from the prefetch on PROVENANCE. (1) The committed
+    provenance evidence REPRODUCES from the committed raw read and classify
+    evidence through the committed function (L593) and records the owner's
+    words; (2) provenance() refuses an empty ruling and a ticker that is not an
+    unconfirmed partial bar; (3) every repaired engine file ends on the
+    prefetch bar; (4) the repair log carries exactly the 7 under S6-B3155b's
+    authority; (5) the repair script refuses an evidence for another ticket
+    that names no owner authority, and writes nothing.
+    """
+    import json as _j
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import final_bar_third_source_check as fb
+    import repair_final_bar_partial_session as rp
+    oa = root / "output_audit"
+    raw = _j.loads((oa / "b3155a_final_bar_third_source_raw.json").read_text(encoding="utf-8"))
+    ev_a = _j.loads((oa / "b3155a_final_bar_third_source.json").read_text(encoding="utf-8"))
+    ev_b = _j.loads((oa / "b3155b_final_bar_provenance.json").read_text(encoding="utf-8"))
+    auth = ev_b["authority"]
+    assert auth["ruling_verbatim"] == "Fable mode / Approve all recommendations"
+    assert auth["ruled"] == "2026-10-19"
+    again = fb.provenance(raw, ev_a, auth["ruling_verbatim"], auth["ruled"])
+    assert again["repair"] == ev_b["repair"]
+    assert len(ev_b["repair"]) == 7
+    assert sorted(r["ticker"] for r in ev_b["repair"]) == sorted(ev_a["unconfirmed_partial_bars"])
+    with pytest.raises(ValueError):
+        fb.provenance(raw, ev_a, " ", "2026-10-19")
+    confirmed = ev_a["repair"][0]["ticker"]
+    with pytest.raises(ValueError):
+        fb.provenance(raw, dict(ev_a, unconfirmed_partial_bars=[confirmed]), "x", "2026-10-19")
+    final = pd.Timestamp(ev_b["date"])
+    for r in ev_b["repair"]:
+        e = pd.read_parquet(root / r["engine_file"])
+        assert pd.Timestamp(e["date"].iloc[-1]).normalize() == final, r["ticker"]
+        want = dict(r["prefetch"])
+        if str(e["volume"].dtype).startswith("int"):
+            want["volume"] = float(round(want["volume"]))
+        got = {f: float(e[f].iloc[-1]) for f in ("open", "high", "low", "close", "volume")}
+        assert got == want, (r["ticker"], got, want)
+    log = _j.loads((oa / "b3155b_final_bar_repair_log.json").read_text(encoding="utf-8"))
+    assert log["ticket"] == "S6-B3155b" and log["owner_ruling"] == auth["ruling_verbatim"]
+    assert sorted(x["ticker"] for x in log["entries"]) == sorted(r["ticker"] for r in ev_b["repair"])
+    bad = tmp_path / "noauth.json"
+    bad.write_text(_j.dumps({"ticket": "S6-B9999", "date": "2026-05-05",
+                             "prior": "2026-05-04", "repair": []}), encoding="utf-8")
+    log2 = tmp_path / "log2.json"
+    assert rp.main(["--evidence", str(bad), "--log", str(log2), "--apply"]) == 2
+    assert not log2.exists()

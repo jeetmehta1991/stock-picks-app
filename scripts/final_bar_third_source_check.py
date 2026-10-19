@@ -45,6 +45,15 @@ SUBCOMMANDS
             CONFIRMED rows are the repair set for
             scripts/repair_final_bar_partial_session.py: their values come
             from the PREFETCH (the cache's own vendor), never from Yahoo.
+  provenance  S6-B3155b (owner ruling 2026-10-19, "Fable mode / Approve all
+            recommendations", option (a)): repair rows for the classify
+            step's unconfirmed_partial_bars - partial bars the third source
+            cannot adjudicate because it holds no record under the symbol -
+            on PROVENANCE. The owner's words are the authority and are
+            written onto the artifact (--ruling, --ruled; empty RAISES); each
+            row carries its measured engine/prefetch gaps; yahoo_normalised
+            is None. Same row shape as classify's repair set, so the repair
+            script's fail-closed checks run unchanged.
 
 usage:
   python scripts/final_bar_third_source_check.py read --date 2026-05-05 \
@@ -52,6 +61,7 @@ usage:
   python scripts/final_bar_third_source_check.py classify \
       --raw output_audit/b3155a_final_bar_third_source_raw.json \
       --out output_audit/b3155a_final_bar_third_source.json
+  python scripts/final_bar_third_source_check.py provenance --raw <raw read> --evidence <classify output> --out <evidence> --ruling <owner words> --ruled <date>
 """
 from __future__ import annotations
 
@@ -321,6 +331,46 @@ def classify(raw: dict) -> dict:
     }
 
 
+def provenance(raw: dict, evidence: dict, ruling: str, ruled: str) -> dict:
+    """S6-B3155b: repair rows for evidence['unconfirmed_partial_bars'] on
+    PROVENANCE. A row is built only for a bar the classify step left
+    unconfirmed for want of a third-source record (NO_YAHOO) whose prices
+    differ between the caches; anything else RAISES. The owner's ruling is
+    the authority and an empty one RAISES - this code never authorises a
+    repair by itself."""
+    if not str(ruling).strip() or not str(ruled).strip():
+        raise ValueError("a provenance repair needs the owner's words and the date ruled")
+    date, prior = evidence["date"], evidence["prior"]
+    if (raw["date"], raw["prior"]) != (date, prior):
+        raise ValueError(f"raw read {raw['date']}/{raw['prior']} and evidence "
+                         f"{date}/{prior} disagree")
+    from phase_table import resolve
+    ruled_universe = set((ROOT / resolve(2)["tickers_file"]).read_text().split())
+    no_record = set(evidence["other_verdicts"].get("NO_YAHOO", []))
+    rows = []
+    for t in evidence["unconfirmed_partial_bars"]:
+        r = raw["rows"][t]
+        e, p = r["engine"][date], r["prefetch"][date]
+        if t not in no_record or not prices_differ(e, p):
+            raise ValueError(f"{t}: not an unconfirmed partial bar")
+        rows.append({
+            "ticker": t, "engine_file": r["engine_file"], "prefetch_file": r["prefetch_file"],
+            "shape": "PARTIAL_SESSION", "in_step2_universe": t in ruled_universe,
+            "engine_before": e, "prefetch": p, "yahoo_normalised": None,
+            "corporate_action_factor": corporate_action_factor(r, prior),
+            "engine_volume_over_prefetch": round(e["volume"] / p["volume"], 6),
+            "max_price_gap": round(max(abs(_rel(e[f], p[f])) for f in PRICES), 6)})
+    return {
+        "ticket": "S6-B3155b", "date": date, "prior": prior,
+        "generator": "scripts/final_bar_third_source_check.py provenance",
+        "authority": {"ruling_verbatim": ruling, "ruled": ruled,
+                      "basis": "provenance, not a third-source match: the third "
+                               "source holds no record under these symbols, so "
+                               "classify could not confirm them"},
+        "repair": rows,
+    }
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -331,6 +381,12 @@ def main(argv=None) -> int:
     c = sub.add_parser("classify")
     c.add_argument("--raw", required=True)
     c.add_argument("--out", required=True)
+    v = sub.add_parser("provenance")
+    v.add_argument("--raw", required=True)
+    v.add_argument("--evidence", required=True)
+    v.add_argument("--out", required=True)
+    v.add_argument("--ruling", required=True)
+    v.add_argument("--ruled", required=True)
     a = ap.parse_args(argv)
     if a.cmd == "read":
         doc = read(a.date, a.prior, Path(a.out))
@@ -339,6 +395,15 @@ def main(argv=None) -> int:
         print(f"read {doc['n_tickers']} tickers, third-source bar present for {got}, "
               f"{len(doc['chunks_failed'])} chunk failure(s) -> {a.out}")
         return 0 if not doc["chunks_failed"] else 3
+    if a.cmd == "provenance":
+        doc = provenance(json.loads(Path(a.raw).read_text(encoding="utf-8")),
+                         json.loads(Path(a.evidence).read_text(encoding="utf-8")),
+                         a.ruling, a.ruled)
+        doc["source_evidence"] = Path(a.evidence).as_posix()
+        Path(a.out).write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8",
+                               newline="\n")
+        print("provenance repair rows:", len(doc["repair"]), "->", a.out)
+        return 0
     raw = json.loads(Path(a.raw).read_text(encoding="utf-8"))
     doc = classify(raw)
     Path(a.out).write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8", newline="\n")

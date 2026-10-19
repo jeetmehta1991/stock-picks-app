@@ -1,0 +1,167 @@
+{
+ "ticket": "S6-B3155b",
+ "owner_ruling": "Fable mode / Approve all recommendations",
+ "ruled": "2026-10-19",
+ "evidence": "output_audit/b3155b_final_bar_provenance.json",
+ "date": "2026-05-05",
+ "generator": "scripts/repair_final_bar_partial_session.py --apply",
+ "runs": [
+  {
+   "applied_at_utc": "2026-10-19T14:55:18Z",
+   "planned": 7,
+   "already_repaired": 0,
+   "replaced": 7
+  }
+ ],
+ "replaced_total": 7,
+ "entries": [
+  {
+   "ticker": "AVB",
+   "file": "backtest/data/cache/ohlcv/AVB.parquet",
+   "shape": "PARTIAL_SESSION",
+   "before": {
+    "open": 182.56,
+    "high": 185.61,
+    "low": 182.0069,
+    "close": 185.445,
+    "volume": 151548.082323
+   },
+   "after": {
+    "open": 182.56,
+    "high": 186.48,
+    "low": 182.0069,
+    "close": 185.25,
+    "volume": 747673.458771
+   },
+   "sha256_before": "2cfd05f307cdb4a52065af7f78f4d9997bd3171fdf3c4e464af1131911cd4009",
+   "sha256_after": "5667cb51f288099666dbf7868b7440e1d46cf7f66cf4a39f7e7a47bcaefaaeb6"
+  },
+  {
+   "ticker": "BK",
+   "file": "backtest/data/cache/ohlcv/BK.parquet",
+   "shape": "PARTIAL_SESSION",
+   "before": {
+    "open": 132.03,
+    "high": 133.12,
+    "low": 131.5,
+    "close": 132.51,
+    "volume": 1321701.709282
+   },
+   "after": {
+    "open": 132.03,
+    "high": 133.35,
+    "low": 131.5,
+    "close": 132.36,
+    "volume": 3435977.951596
+   },
+   "sha256_before": "239934e5988e7dd798524dde1699e2732a2f6fe07c9462601cfe8c62c10e8ebd",
+   "sha256_after": "8da4fe4ec672e448ea15caefe4b21f5a8df91065e9d1b1d1f2e5030890b455b3"
+  },
+  {
+   "ticker": "CTRA",
+   "file": "backtest/data/cache/ohlcv/CTRA.parquet",
+   "shape": "PARTIAL_SESSION",
+   "before": {
+    "open": 35.8,
+    "high": 36.315,
+    "low": 35.44,
+    "close": 35.98,
+    "volume": 4194124.438785
+   },
+   "after": {
+    "open": 35.8,
+    "high": 36.315,
+    "low": 35.44,
+    "close": 35.63,
+    "volume": 8705563.327292
+   },
+   "sha256_before": "ff15ca43a1e37b7d60b4459db8a4906e11198e9e09a80d6f2a9c8a269077ad41",
+   "sha256_after": "43489626682f19c3ff4009cfbf50ae4ecf7e4b84310829880ab9b1a1c1b6fe06"
+  },
+  {
+   "ticker": "EA",
+   "file": "backtest/data/cache/ohlcv/EA.parquet",
+   "shape": "PARTIAL_SESSION",
+   "before": {
+    "open": 201.95,
+    "high": 202.08,
+    "low": 201.5,
+    "close": 201.9,
+    "volume": 584345.509023
+   },
+   "after": {
+    "open": 201.95,
+    "high": 202.08,
+    "low": 201.39,
+    "close": 201.57,
+    "volume": 1401221.296273
+   },
+   "sha256_before": "0e450242dc3669447da33deef95892092df884e9232e6426b20db231bbc9afa2",
+   "sha256_after": "41dd9052b894cca04b391223c98a2e86f6036b454d21f9ed8a64ef012dde856c"
+  },
+  {
+   "ticker": "EQR",
+   "file": "backtest/data/cache/ohlcv/EQR.parquet",
+   "shape": "PARTIAL_SESSION",
+   "before": {
+    "open": 65.75,
+    "high": 66.74,
+    "low": 65.14,
+    "close": 66.6,
+    "volume": 701787.980772
+   },
+   "after": {
+    "open": 65.75,
+    "high": 66.95,
+    "low": 65.14,
+    "close": 66.25,
+    "volume": 2733316.554642
+   },
+   "sha256_before": "c889905cd998675761cddfa2fbd38a3c4bde41e6a767654fea25e7ba020bddd0",
+   "sha256_after": "8010714cee54afe1a8938432ca461e65f0a6f28009d19b9cbb95444098abcd1f"
+  },
+  {
+   "ticker": "QRVO",
+   "file": "backtest/data/cache/ohlcv/QRVO.parquet",
+   "shape": "PARTIAL_SESSION",
+   "before": {
+    "open": 92.4,
+    "high": 95.52,
+    "low": 92.27,
+    "close": 94.7625,
+    "volume": 551201.259414
+   },
+   "after": {
+    "open": 92.4,
+    "high": 96.68,
+    "low": 92.27,
+    "close": 96.35,
+    "volume": 1667640.079598
+   },
+   "sha256_before": "b6c25f4619e6c042cdc6c347b658acbe12aec828126c917d2f01300708ec7fbf",
+   "sha256_after": "b421fa29a7e7f74703c7c634bcf53c8cf349812a0d3d7898f3fb12bea47f647f"
+  },
+  {
+   "ticker": "WBD",
+   "file": "backtest/data/cache/ohlcv/WBD.parquet",
+   "shape": "PARTIAL_SESSION",
+   "before": {
+    "open": 26.93,
+    "high": 27.02,
+    "low": 26.85,
+    "close": 26.98,
+    "volume": 5444279.899533
+   },
+   "after": {
+    "open": 26.93,
+    "high": 27.25,
+    "low": 26.85,
+    "close": 27.22,
+    "volume": 16893902.886988
+   },
+   "sha256_before": "baa25b8f9801b42bd62aab35be3fecf2bbac3c5348865f146486bffb1c8ccd47",
+   "sha256_after": "e4bff436a4e78e8e3de2d6a4ccfe6f359f1f894871ffc92c9d0ed2f4b6895672"
+  }
+ ],
+ "reverted": []
+}
