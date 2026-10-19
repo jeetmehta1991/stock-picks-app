@@ -1,0 +1,593 @@
+{
+ "generator": "S6-B3194 move check (B3139q-r72j): recomputed from three status-view builds by a one-off scratch script; the builds' stamps are below",
+ "control_build": {
+  "builder": "scripts/build_strategy_status.py at HEAD before S6-B3194",
+  "source_commit": "18dcc274d",
+  "generated_at": "2026-10-18 21:19:52"
+ },
+ "new_build_same_ledger": {
+  "builder": "scripts/build_strategy_status.py with S6-B3194",
+  "source_commit": "18dcc274d",
+  "generated_at": "2026-10-18 21:23:11"
+ },
+ "final_view_build": {
+  "builder": "scripts/build_strategy_status.py with S6-B3194, after this batch's queue rows",
+  "source_commit": "18dcc274d",
+  "generated_at": "2026-10-18 21:36:57"
+ },
+ "register": [
+  "smc_equal_lows_sweep_long",
+  "smc_inverse_fvg",
+  "smc_liquidity_sweep_reversal",
+  "smc_order_block_bounce"
+ ],
+ "approved_mention_set_size": 40,
+ "same_ledger": {
+  "moves": [
+   [
+    "52w_low_breakdown",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "avwap_20high_rejection_short",
+    "IN-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "avwap_252_breakout",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "avwap_50_reclaim",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "bollinger_tight",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "bollinger_upper_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "camarilla_s3_bounce",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "cmf_flip",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "consec_downdays_quality_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "cpr_narrow_bullish",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "golden_cross_9_21",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "hull_rsi",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "ichimoku_tk_cross",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "macd_bullish_with_smart_money_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "macd_fast_crossover",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "mmbm_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "morning_star",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "news_sentiment_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "pead_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "pead_with_insider_confirmation_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "pivot_r1_breakout",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "pivot_r2_continuation",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "r1_break_retest",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "rsi_overbought_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "rsi_oversold",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "rsi_oversold_with_smart_money_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "shooting_star_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_bos_continuation",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_choch_reversal",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_discount_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_equal_highs_sweep_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_fvg_retest_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_ote_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_ote_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_premium_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "squeeze_breakout",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "stochrsi_oversold",
+    "IN-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "turtle_soup_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "vol_spike_2x_below_ema_50_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "williams_r_oversold",
+    "IN-CAMPAIGN",
+    "NOT-STARTED"
+   ]
+  ],
+  "moves_by_kind": {
+   "STALLED-CAMPAIGN -> NOT-STARTED": 37,
+   "IN-CAMPAIGN -> NOT-STARTED": 3
+  },
+  "moved_equals_approved_mention_set": true,
+  "moved_count": 40,
+  "stalled_after": [
+   "smc_equal_lows_sweep_long",
+   "smc_inverse_fvg",
+   "smc_liquidity_sweep_reversal",
+   "smc_order_block_bounce"
+  ],
+  "stalled_equals_register": true,
+  "in_campaign_after": [],
+  "other_field_diffs_excluding_lane_and_mention_lists": [],
+  "mention_lists_changed": {},
+  "vocabulary_lists_dropped_from_terminal_or_mirror_rows": {
+   "count": 41,
+   "by_status": {
+    "IN-ROSTER-FUNNEL": 7,
+    "IN-ROSTER-MIRROR": 8,
+    "DONE-OWNER-CLOSED": 4,
+    "DONE-ADMITTED": 16,
+    "PRUNED-DUPLICATE": 4,
+    "CONTAINED-IN-REPRESENTATIVE": 1,
+    "DISABLED": 1
+   }
+  },
+  "status_counts_before": {
+   "CLOSED-NEGATIVE": 3,
+   "CONTAINED-IN-REPRESENTATIVE": 1,
+   "DISABLED": 4,
+   "DONE-ADMITTED": 16,
+   "DONE-OWNER-CLOSED": 4,
+   "IN-CAMPAIGN": 3,
+   "IN-ROSTER-FUNNEL": 7,
+   "IN-ROSTER-MIRROR": 8,
+   "NOT-STARTED": 130,
+   "PRUNED-DUPLICATE": 8,
+   "STALLED-CAMPAIGN": 41
+  },
+  "status_counts_after": {
+   "CLOSED-NEGATIVE": 3,
+   "CONTAINED-IN-REPRESENTATIVE": 1,
+   "DISABLED": 4,
+   "DONE-ADMITTED": 16,
+   "DONE-OWNER-CLOSED": 4,
+   "IN-ROSTER-FUNNEL": 7,
+   "IN-ROSTER-MIRROR": 8,
+   "NOT-STARTED": 170,
+   "PRUNED-DUPLICATE": 8,
+   "STALLED-CAMPAIGN": 4
+  }
+ },
+ "control_vs_final_view": {
+  "moves": [
+   [
+    "52w_low_breakdown",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "avwap_20high_rejection_short",
+    "IN-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "avwap_252_breakout",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "avwap_50_reclaim",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "bollinger_tight",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "bollinger_upper_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "camarilla_s3_bounce",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "cmf_flip",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "consec_downdays_quality_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "cpr_narrow_bullish",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "golden_cross_9_21",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "hull_rsi",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "ichimoku_tk_cross",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "macd_bullish_with_smart_money_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "macd_fast_crossover",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "mmbm_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "morning_star",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "news_sentiment_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "pead_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "pead_with_insider_confirmation_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "pivot_r1_breakout",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "pivot_r2_continuation",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "r1_break_retest",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "rsi_overbought_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "rsi_oversold",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "rsi_oversold_with_smart_money_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "shooting_star_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_bos_continuation",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_choch_reversal",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_discount_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_equal_highs_sweep_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_fvg_retest_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_ote_long",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_ote_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "smc_premium_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "squeeze_breakout",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "stochrsi_oversold",
+    "IN-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "turtle_soup_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "vol_spike_2x_below_ema_50_short",
+    "STALLED-CAMPAIGN",
+    "NOT-STARTED"
+   ],
+   [
+    "williams_r_oversold",
+    "IN-CAMPAIGN",
+    "NOT-STARTED"
+   ]
+  ],
+  "moves_by_kind": {
+   "STALLED-CAMPAIGN -> NOT-STARTED": 37,
+   "IN-CAMPAIGN -> NOT-STARTED": 3
+  },
+  "moved_equals_approved_mention_set": true,
+  "moved_count": 40,
+  "stalled_after": [
+   "smc_equal_lows_sweep_long",
+   "smc_inverse_fvg",
+   "smc_liquidity_sweep_reversal",
+   "smc_order_block_bounce"
+  ],
+  "stalled_equals_register": true,
+  "in_campaign_after": [],
+  "other_field_diffs_excluding_lane_and_mention_lists": [],
+  "mention_lists_changed": {
+   "smc_bos_continuation": [
+    "S6-B3212",
+    "S6-B3213"
+   ],
+   "smc_choch_reversal": [
+    "S6-B3212",
+    "S6-B3213"
+   ],
+   "smc_discount_long": [
+    "S6-B3212",
+    "S6-B3213"
+   ],
+   "smc_equal_highs_sweep_short": [
+    "S6-B3212",
+    "S6-B3213"
+   ],
+   "smc_equal_lows_sweep_long": [
+    "S6-B3194"
+   ],
+   "smc_fvg_retest_long": [
+    "S6-B3212",
+    "S6-B3213"
+   ],
+   "smc_fvg_retest_short": [
+    "S6-B3213"
+   ],
+   "smc_inverse_fvg": [
+    "S6-B3194"
+   ],
+   "smc_liquidity_sweep_reversal": [
+    "S6-B3194"
+   ],
+   "smc_mitigation_block_long": [
+    "S6-B3213"
+   ],
+   "smc_mitigation_block_short": [
+    "S6-B3213"
+   ],
+   "smc_order_block_bounce": [
+    "S6-B3194"
+   ],
+   "smc_ote_long": [
+    "S6-B3212",
+    "S6-B3213"
+   ],
+   "smc_ote_short": [
+    "S6-B3212",
+    "S6-B3213"
+   ],
+   "smc_premium_short": [
+    "S6-B3212",
+    "S6-B3213"
+   ]
+  },
+  "vocabulary_lists_dropped_from_terminal_or_mirror_rows": {
+   "count": 41,
+   "by_status": {
+    "IN-ROSTER-FUNNEL": 7,
+    "IN-ROSTER-MIRROR": 8,
+    "DONE-OWNER-CLOSED": 4,
+    "DONE-ADMITTED": 16,
+    "PRUNED-DUPLICATE": 4,
+    "CONTAINED-IN-REPRESENTATIVE": 1,
+    "DISABLED": 1
+   }
+  },
+  "status_counts_before": {
+   "CLOSED-NEGATIVE": 3,
+   "CONTAINED-IN-REPRESENTATIVE": 1,
+   "DISABLED": 4,
+   "DONE-ADMITTED": 16,
+   "DONE-OWNER-CLOSED": 4,
+   "IN-CAMPAIGN": 3,
+   "IN-ROSTER-FUNNEL": 7,
+   "IN-ROSTER-MIRROR": 8,
+   "NOT-STARTED": 130,
+   "PRUNED-DUPLICATE": 8,
+   "STALLED-CAMPAIGN": 41
+  },
+  "status_counts_after": {
+   "CLOSED-NEGATIVE": 3,
+   "CONTAINED-IN-REPRESENTATIVE": 1,
+   "DISABLED": 4,
+   "DONE-ADMITTED": 16,
+   "DONE-OWNER-CLOSED": 4,
+   "IN-ROSTER-FUNNEL": 7,
+   "IN-ROSTER-MIRROR": 8,
+   "NOT-STARTED": 170,
+   "PRUNED-DUPLICATE": 8,
+   "STALLED-CAMPAIGN": 4
+  }
+ }
+}

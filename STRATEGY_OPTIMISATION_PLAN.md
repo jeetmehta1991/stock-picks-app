@@ -217,9 +217,10 @@ family that was already finished.
 
 **Columns** - strategy, family (the category the strategy declares in its own `_strat` / `_strat3`
 call), R5 fires, projected Step-1 fires, changed-since-R5, survives_pct, STREAM, ticket, status -
-one of EIGHT, mutually exclusive (B2825/B2833): five terminal (DONE-ADMITTED / DISABLED /
-PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED-IN-REPRESENTATIVE) and three in lanes (IN-CAMPAIGN /
-STALLED-CAMPAIGN / NOT-STARTED).
+one of ELEVEN, mutually exclusive (B2825/B2833/S6-B3135/S6-B3135a): seven terminal (DONE-ADMITTED /
+IN-ROSTER-FUNNEL / DONE-OWNER-CLOSED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE /
+CONTAINED-IN-REPRESENTATIVE) and four in lanes (IN-ROSTER-MIRROR / IN-CAMPAIGN / STALLED-CAMPAIGN /
+NOT-STARTED). The ticket column is the campaign's tickets from the owner-opened register (S6-B3194).
 
 **STREAM is the optimisation lane, and the rule is mechanical:**
 
@@ -233,28 +234,36 @@ STALLED-CAMPAIGN / NOT-STARTED).
 **COUNTS LIVE IN THE STAMPED VIEW, NEVER HERE (B2829; the L639 fix by construction):** this section
 stopped quoting live totals after three builds in two days each left a stale snapshot in prose.
 Trust ONLY a copy whose L803 build stamp matches HEAD - if it does not, REGENERATE FIRST and commit
-the fresh build. What this section owns is the INVARIANTS, which do not rot: the eight statuses
+the fresh build. What this section owns is the INVARIANTS, which do not rot: the eleven statuses
 partition all registered strategies exactly; terminal statuses are mutually exclusive with every
-work lane; IN-CAMPAIGN requires a campaign-vocabulary ticket whose CURRENT ledger state is
-non-terminal (B2829 - a concluded campaign does not own a strategy forever); a row whose campaign
-tickets exist but are ALL terminal is STALLED-CAMPAIGN (B2833, owner-approved 2026-09-15) -
-campaigned, concluded mid-path, KEEPS its stream lane and its workflow eligibility; the lanes
+work lane; IN-CAMPAIGN requires an owner-opened campaign in the register (below, S6-B3194) with a
+ticket whose CURRENT ledger state is non-terminal (B2829 - a concluded campaign does not own a
+strategy forever); a register row whose tickets are ALL terminal is STALLED-CAMPAIGN (B2833,
+owner-approved 2026-09-15) - campaigned, concluded mid-path, KEEPS its stream lane and its workflow
+eligibility; an unlisted strategy is NOT-STARTED whatever tickets mention it; the lanes
 classify on the CURRENT-GATE projection (raw x survives); and `reopen_candidate` FLAGS a terminal
 row whose entry condition moved since its closure evidence - reopening is the OWNER'S word, never
 automatic. Per-family tightening-candidate counts are programme state, recorded in the campaign log.
 
-**Four caveats bound every number in it, and are printed in the file itself:** `changed_since_r5`
+**Three caveats bound every number in it, and are printed in the file itself:** `changed_since_r5`
 is an UPPER bound (any code difference counts, including a rename); `stream = TIGHTEN` rests on a
 source pattern for numeric comparisons and is a LOWER bound (a threshold reached through a helper
-or compared to a config constant is invisible to it); `survives_pct` calls the LIVE strategy
+or compared to a config constant is invisible to it); and `survives_pct` calls the LIVE strategy
 function on each fire's persisted signals (S6-B2814; `-` only for zero-fire strategies) and is a
-LOWER bound where a gate leg reads an unpersisted key; and `IN-CAMPAIGN` requires a
-campaign-vocabulary token in the row naming the strategy (S6-B2810c - a bare mention is not a
-campaign), a HEURISTIC with measured misses in both directions, so a borderline row is settled by
-reading the ticket and the JSON's `mention_tickets` keeps the unfiltered list. `STALLED-CAMPAIGN`
-inherits this heuristic WITHOUT the B2829 liveness mask, so a builder-audit ticket naming a strategy
-as an example can stall it falsely (9 of 46 at the B2833 build; disclosed in both artifacts,
-exclusion awaiting the owner's word).
+LOWER bound where a gate leg reads an unpersisted key. The campaign lanes are no longer a caveat:
+until S6-B3194 they came from a 12-word vocabulary heuristic over ticket rows, which labelled 44
+strategies as campaigns when 4 were (output_audit/b3194_campaign_classification.json); they now
+come from the register below, and the JSON's `mention_tickets` keeps every row naming a strategy.
+
+**AN OWNER-OPENED CAMPAIGN IS RECORDED THE TURN THE OWNER OPENS IT (S6-B3194, owner 'A approved'
+2026-10-19).** Append a record to `output_audit/owner_campaign_opens.json` - `strategy`, `opened`
+(the date), `ruling_verbatim` (the owner's words) and `tickets` (the campaign's tickets, never
+empty) - then rebuild the view. The register is the ONLY source of IN-CAMPAIGN and
+STALLED-CAMPAIGN: its reader RAISES on an unreadable file, a record missing any of those fields or
+a strategy listed twice, and test_b3194 pins that the lanes read nothing else. Which members a
+FAMILY campaign records is the owner's word, ruled per family; an open instance is a queue
+ticket, never named here. The closure register, `output_audit/owner_campaign_closures.json`, is its mirror
+and outranks it.
 
 ---
 

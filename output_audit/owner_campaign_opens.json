@@ -1,0 +1,51 @@
+{
+  "generator": "hand-maintained on owner rulings only - one record per campaign the owner OPENED (S6-B3194, owner 'A approved' and table 'ok', 2026-10-19)",
+  "ticket": "S6-B3194",
+  "reader": "scripts/build_strategy_status.py::load_campaign_opens - a listed strategy reads IN-CAMPAIGN while one of its tickets is live and STALLED-CAMPAIGN once every one is terminal; an unlisted strategy reads NOT-STARTED whatever tickets mention it. An unreadable file, a record without the owner's words, date or tickets, or a strategy listed twice RAISES",
+  "semantics": "A record says the owner opened a campaign on this strategy. Terminal dispositions (admission, owner closure, disabled, pruned, contained) outrank it in the status precedence, so a record may outlive its campaign. Mentions are not campaigns: the vocabulary heuristic this replaces labelled 44 strategies and 4 were campaign subjects.",
+  "classification_evidence": "output_audit/b3194_campaign_classification.json",
+  "opens": [
+    {
+      "strategy": "smc_liquidity_sweep_reversal",
+      "opened": "2026-09-11",
+      "ruling_verbatim": "Lets start with smc family",
+      "role": "wave-1 hub 1 of the smc family campaign (campaign log B.11)",
+      "tickets": [
+        "S6-B2692",
+        "S6-B2693",
+        "S6-B2732",
+        "S6-B2732a",
+        "S6-B2910"
+      ]
+    },
+    {
+      "strategy": "smc_order_block_bounce",
+      "opened": "2026-09-11",
+      "ruling_verbatim": "Lets start with smc family",
+      "role": "wave-1 hub 2 (campaign log B.11); registered as Subject 1 under the owner's 'implement all' 2026-09-15 (S6-B2752)",
+      "tickets": [
+        "S6-B2692",
+        "S6-B2752",
+        "S6-B2752e"
+      ]
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "opened": "2026-09-11",
+      "ruling_verbatim": "Lets start with smc family",
+      "role": "wave-2 member (campaign log B.11); registered as Subject 2 under the owner's 'implement all' 2026-09-15 (S6-B2752)",
+      "tickets": [
+        "S6-B2752"
+      ]
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "opened": "2026-09-11",
+      "ruling_verbatim": "Lets start with smc family",
+      "role": "wave-2 member (campaign log B.11); registered as Subject 3 under the owner's 'implement all' 2026-09-15 (S6-B2752)",
+      "tickets": [
+        "S6-B2752"
+      ]
+    }
+  ]
+}

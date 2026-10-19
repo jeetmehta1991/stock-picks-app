@@ -1,0 +1,123 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+..............................................s......................... [ 36%]
+....................s.................................................s. [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+.........................................................F.............. [ 76%]
+........................................................................ [ 80%]
+........................................................................ [ 84%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+...........................................................              [100%]
+================================== FAILURES ===================================
+_________ test_b3096_runbook_is_class_level_and_numbered_consistently _________
+
+    def test_b3096_runbook_is_class_level_and_numbered_consistently():
+        """B3096 (owner directive 2026-09-24, verbatim): "Update the strategy
+        optimization doc to ensure numbering is correct and there are no references
+        to any specific strategy but the runbook is at a class level. The runbook is
+        intended to be broad for each strategy. Tightening and loosening are
+        separate workflows."
+    
+        Four properties, each checked by a helper run on the REAL runbook (must be
+        clean) and on a MUTATED copy (must flag) - a pin that cannot fail pins
+        nothing (L686):
+          1. CLASS-LEVEL - no registered strategy name (the live registry is the
+             defining source, L697) and no family knob / config tag / family word,
+             outside a short allow-list of ENGINE identifiers;
+          2. NUMBERING - top sections 0..N consecutive, subsections consecutive
+             inside their section, and the section-0.1 step table agrees with the
+             parsed phase table step-for-step (the Step 2 / Step 3 confusion the
+             owner asked about);
+          3. REFERENCES - every section reference outside a "(formerly ...)" tag
+             and APPENDIX M resolves to a heading;
+          4. THE MAP - APPENDIX M has one row per heading of the archived
+             pre-B3096 runbook, so every old citation resolves.
+        """
+        import re
+        import sys
+        from pathlib import Path
+    
+        root = Path(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import phase_table as pt
+        from backtest.signals.screener import ALL_STRATEGIES
+    
+        plan_p = root / "STRATEGY_OPTIMISATION_PLAN.md"
+        text = plan_p.read_text(encoding="utf-8")
+        arch = (root / "archive" / "2026-09-24-strategy-optimisation-plan-pre-B3096"
+                / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+        names = sorted({k[len("strat_"):] if k.startswith("strat_") else k
+                        for k in ALL_STRATEGIES}, key=len, reverse=True)
+        assert len(names) >= 200, len(names)
+    
+        family = re.compile(
+            r"\bsw\d+sp\d+\b|\bSMC_[A-Z_]+|\bSTRAT_EMA_SPAN\b|\bCANDLE_[A-Z_]+"
+            r"|\bINST_[A-Z_]+|\bPEAD_[A-Z_]+|\bb2399\b|\bb2197\b|\bb2527\b|\bc14\b"
+            r"|\bicg\b|\bpead\b|\bsmc\b|\btop_decile\b|\bbreaker\b|\bsoldiers\b"
+            r"|\bcrows\b|\bhub-1\b|\binstitutional\b|\bcandle\b|\bswing_length\b", re.I)
+        ALLOW = ("USE_SMC_PANEL_CACHE", "SMC_PHASE", "smc_skip_primitives",
+                 "institutional_companion_screen.py")
+    
+        registry = re.compile(r"(?<![A-Za-z0-9_])(?:strat_)?(?:%s)(?![A-Za-z0-9_])"
+                              % "|".join(re.escape(nm) for nm in names))
+    
+        def named(doc):
+            out = []
+            for n, line in enumerate(doc.split(chr(10)), 1):
+                ln = line
+                for a in ALLOW:
+                    ln = ln.replace(a, "")
+                hit = family.search(ln) or registry.search(ln)
+                if hit:
+                    out.append((n, hit.group(0)))
+            return out
+    
+>       assert named(text) == [], named(text)[:5]
+E       AssertionError: [(264, 'smc')]
+E       assert [(264, 'smc')] == []
+E         
+E         Left contains one more item: (264, 'smc')
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:44746: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3096_runbook_is_class_level_and_numbered_consistently
+1 failed, 1783 passed, 3 skipped in 1378.23s (0:22:58)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1408
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=ac
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=output_audit/b3139_pyramid_r72j.json,output_audit/b3139_pyramid_r72j.json.pid
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+stamp_binding=already-red

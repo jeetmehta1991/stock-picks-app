@@ -107,6 +107,12 @@ State compliance visibly: "Checklist: ✅ [each item]"
     re-scope (EXPLORATORY, long-leg-only, no deployment until the Stage-3 hedge leg). The subject's
     source and its registry memberships (EXPLORATORY_STRATEGIES, disabled sets, owner closures) are
     claims a start-work recommendation depends on - validate them per (a)-(c).
+    INSTANCE (B3139q-r72j / L933): the S6-B3194 table classing 44 strategies as campaign subjects
+    or mentions was read from ledger rows only. STRATEGY_CAMPAIGN_LOG.md B.11 records the owner's
+    smc family campaign ('Lets start with smc family', 2026-09-11) over 15 members, and 8 of the 40
+    rows classed mention are members of it. "Never a campaign subject" is an absence claim: read
+    where openings are recorded - the campaign log's family sections and, from S6-B3194,
+    output_audit/owner_campaign_opens.json - before the rows that came after them.
 
 27. RELEVANCE CHECK BEFORE EVERY RECOMMENDATION — no exceptions:
     a. State the specific question or problem being solved
@@ -5902,6 +5908,8 @@ feedback_strategy_scope_no_zoom_out.
 **INSTANCE - A SECOND OWNER ASK ABOUT THE SAME CAMPAIGN (B3095 / L868).** In the three_white_soldiers Step-2 run I cited smc's and icg's cubes as evidence for an engine defect that three_white_soldiers' own Step-1 cubes already proved, and ticketed a re-audit of two ADMITTED strategies - while the runbook's Step-2 launch template was still smc's b2399 spec, a day after the owner called a family-specific Step-2 procedure a serious error. **Prove engine-wide defects on the current strategy's own artifacts; a procedure names families only in labelled INSTANCE paragraphs.** Pinned by test_b3095_step2_launch_procedure_names_no_family_outside_an_instance.
 
 **B3096 SUPERSESSION.** The owner then directed a runbook that names no strategy at all (2026-09-24), so the labelled INSTANCE paragraphs moved byte-for-byte to STRATEGY_CAMPAIGN_LOG.md; the whole-runbook enforcer is test_b3096_runbook_is_class_level_and_numbered_consistently, and test_b3095 now asserts the Step-2 launch procedure carries no instance.
+
+**INSTANCE (B3139q-r72j / L934):** a register rule added to runbook section 0.7 named its open instance by family word; test_b3096 refused it at gate r72j (1 failed of 1,787) before the commit, and the sentence now points to the queue ticket instead.
 
 ### #296 - PRICE AN OPTION FROM THE PLAN ROW THAT DEFINES IT (B2612 / L767)
 

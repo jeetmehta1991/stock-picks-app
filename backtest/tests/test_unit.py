@@ -38435,6 +38435,11 @@ def test_b2811_campaign_is_not_a_mention():
     vocabulary in the SAME row. Both arms pinned, and the row anchor is
     structural (the id opens the row - L748), so prose in other rows can
     neither flag nor unflag a strategy.
+
+    S6-B3194 (2026-10-19): no lane reads the vocabulary split any more -
+    the campaign lanes read the owner-opened register (test_b3194). The
+    split is kept as the mention list's producer, and its word-bounded
+    match still decides mention_tickets, so both arms stay pinned.
     """
     m = _b2811_mod()
     q = "\n".join([
@@ -38468,7 +38473,7 @@ def test_b2811_campaign_is_not_a_mention():
     # B2822: COVER, not EQUAL - an equality here turns the gate RED on the
     # next honest caveat (the b2801-banner lesson); the named caveat is the
     # claim, the count is only a floor.
-    assert len(d["caveats"]) >= 4, "the IN-CAMPAIGN heuristic caveat must ride the artifact"
+    assert len(d["caveats"]) >= 4, "the campaign-lane caveat must ride the artifact"
     assert any("mention is not a campaign" in c for c in d["caveats"])
 
 
@@ -39140,9 +39145,11 @@ def test_b2833_stalled_campaign_is_distinguished_and_honest():
       (non-terminal - the whole point is that the work is unfinished);
     - a NOT-STARTED row carries NO campaign tickets (else it belongs to
       STALLED) and an IN-CAMPAIGN row a live one (B2829, restated);
-    - both artifacts carry the caveat that STALLED inherits the vocabulary
-      heuristic WITHOUT the liveness mask (an audit ticket naming a strategy
-      as an example can stall it falsely - disclosed, not hidden);
+    - both artifacts say where the campaign lanes come from: the owner-
+      opened register (S6-B3194). The caveat this bullet once pinned -
+      STALLED inherited the vocabulary heuristic WITHOUT the liveness
+      mask, so an audit ticket naming a strategy as an example could stall
+      it falsely - retired with its cause;
     - one genuine member rides as a concrete anchor: smc_equal_lows_sweep_long
       stalled on its concluded S6-B2752 registration campaign.
     """
@@ -39173,11 +39180,13 @@ def test_b2833_stalled_campaign_is_distinguished_and_honest():
               if r["strategy"] == "smc_equal_lows_sweep_long"][0]
     assert anchor["status"] == "STALLED-CAMPAIGN"
     assert "S6-B2752" in anchor["tickets"]
-    assert any("STALLED-CAMPAIGN" in c and "liveness mask" in c
+    assert any("STALLED-CAMPAIGN" in c and "owner_campaign_opens.json" in c
                for c in d["caveats"])
+    assert not any("liveness mask" in c for c in d["caveats"])
     md = (root / "STRATEGY_OPTIMISATION_STATUS.md").read_text(
         encoding="utf-8", errors="replace")
-    assert "STALLED-CAMPAIGN" in md and "liveness mask" in md
+    assert "STALLED-CAMPAIGN" in md and "owner_campaign_opens.json" in md
+    assert "liveness mask" not in md
 
 
 def test_b2836_table_a_directory_is_complete_and_honest():
@@ -56491,8 +56500,16 @@ def test_b3179_live_campaign_ticket_past_the_third_counts():
     assert m.live_campaign_tickets(camp, states) == ["S6-B9004"]
     states["S6-B9004"] = "EXECUTED"
     assert m.live_campaign_tickets(camp, states) == []
+    # S6-B3194: the lanes read the register through register_tickets,
+    # which judges live-ness over the register's WHOLE list - the same
+    # fourth-ticket arm, driven through the path main() now takes
+    states["S6-B9004"] = "OPEN"
+    opens = {"toy_strategy_long": {"tickets": camp}}
+    assert m.register_tickets("toy_strategy_long", opens, states) == (
+        camp, ["S6-B9004"])
     import inspect
-    assert "live_campaign_tickets(tickets_all, ticket_states)" in inspect.getsource(m)
+    assert ("live_campaign_tickets(tickets, ticket_states)"
+            in inspect.getsource(m.register_tickets))
 
 
 def test_b3175_npoc_ema_span_reaches_the_gate_and_the_spot_check(monkeypatch):
@@ -57783,3 +57800,155 @@ def test_b3206_depth_null_gate_refuses_noise_and_undeclared(tmp_path):
     assert any("depth_null" in r for r in pvt.launch_refusals(spec, root))
     ok = dict(spec, depth_null={hub: "output_audit/b2698_momentum_resweep.json"})
     assert not any("depth" in r for r in pvt.launch_refusals(ok, root))
+
+
+def test_b3194_campaign_lanes_read_the_owner_register(tmp_path):
+    """S6-B3194 (owner "A approved" + table "ok", 2026-10-19): the campaign
+    lanes read a RECORDED fact - output_audit/owner_campaign_opens.json -
+    never the 12-word vocabulary heuristic, which labelled 44 strategies as
+    campaigns when 4 were campaign subjects read one by one
+    (output_audit/b3194_campaign_classification.json; L932, #247).
+
+    Incident shape (toy ids): avwap_20high_rejection_short read IN-CAMPAIGN
+    because a live builder ticket named it beside the word "campaign". Arms,
+    both directions (#226): an unlisted strategy named by a campaign-worded
+    live row reads NOT-STARTED, while the retired wiring reproduces the
+    defect; a listed one is IN-CAMPAIGN while a register ticket is live (the
+    fourth included, S6-B3179) and STALLED-CAMPAIGN once every one is
+    terminal; main() takes BOTH lane lists from one register_tickets call
+    (AST, so prose cannot satisfy it); the strict reader refuses a record
+    without the owner's words, date or tickets, a duplicate, an unreadable
+    file and an absent one (L642); and the committed register, view and
+    ledger agree.
+    """
+    import ast
+    import json
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    m = _b2811_mod()
+    root = _P(__file__).resolve().parents[2]
+    kw = dict(admitted=set(), roster_status=None, owner_closed={},
+              disabled=set(), pruned=set(), closed_neg=set(), contained=set())
+
+    # 1. the incident shape: a live, campaign-worded row names the strategy
+    q = ("| **S6-B9901** | **OPEN** | P1 | the status view labels "
+         "toy_view_short a campaign by vocabulary | _reason:_ OPEN |")
+    camp, ment = m.campaign_tickets(q, "toy_view_short")
+    assert camp == ["S6-B9901"] and ment == ["S6-B9901"]
+    states = {"S6-B9901": "OPEN"}
+    t, lv = m.register_tickets("toy_view_short", {}, states)
+    assert (t, lv) == ([], [])
+    assert m.status_for("toy_view_short", live_tickets=lv, tickets=t,
+                        **kw) == "NOT-STARTED"
+    # the retired wiring, fed the same row, reproduces the defect
+    assert m.status_for("toy_view_short", tickets=camp,
+                        live_tickets=m.live_campaign_tickets(camp, states),
+                        **kw) == "IN-CAMPAIGN"
+
+    # 2. a listed strategy: live while ANY register ticket is, the fourth too
+    ids = ["S6-B9911", "S6-B9912", "S6-B9913", "S6-B9914"]
+    opens = {"toy_hub_long": {"strategy": "toy_hub_long", "tickets": ids}}
+    st = {"S6-B9911": "EXECUTED", "S6-B9912": "EXECUTED",
+          "S6-B9913": "DROPPED", "S6-B9914": "OPEN"}
+    t, lv = m.register_tickets("toy_hub_long", opens, st)
+    assert t == ids and t is not ids and lv == ["S6-B9914"]
+    assert m.status_for("toy_hub_long", live_tickets=lv, tickets=t,
+                        **kw) == "IN-CAMPAIGN"
+    st["S6-B9914"] = "EXECUTED"
+    t, lv = m.register_tickets("toy_hub_long", opens, st)
+    assert lv == [] and m.status_for("toy_hub_long", live_tickets=lv,
+                                     tickets=t, **kw) == "STALLED-CAMPAIGN"
+
+    # 3. wiring: main() binds both lane names once, from register_tickets
+    tree = ast.parse((root / "scripts" / "build_strategy_status.py")
+                     .read_text(encoding="utf-8"))
+    main_fn = next(n for n in tree.body
+                   if isinstance(n, ast.FunctionDef) and n.name == "main")
+    reg = [n for n in ast.walk(main_fn) if isinstance(n, ast.Assign)
+           and isinstance(n.value, ast.Call)
+           and getattr(n.value.func, "id", None) == "register_tickets"]
+    assert len(reg) == 1, "main() must call register_tickets exactly once"
+    tgt = reg[0].targets[0]
+    assert isinstance(tgt, ast.Tuple) and [getattr(e, "id", None)
+                                           for e in tgt.elts] == [
+        "tickets", "live_tickets"], ast.dump(tgt)
+    binders = []
+    for n in ast.walk(main_fn):
+        if isinstance(n, ast.Assign):
+            tg = n.targets
+        elif isinstance(n, (ast.AugAssign, ast.AnnAssign, ast.For)):
+            tg = [n.target]
+        elif isinstance(n, ast.NamedExpr):
+            tg = [n.target]
+        else:
+            continue
+        for x in tg:
+            for e in ast.walk(x):
+                if isinstance(e, ast.Name) and e.id in ("tickets", "live_tickets"):
+                    binders.append(n.lineno)
+    assert len(binders) == 2, f"a second binding of a lane name in main(): {binders}"
+    sf = [n for n in ast.walk(main_fn) if isinstance(n, ast.Call)
+          and getattr(n.func, "id", None) == "status_for"]
+    assert len(sf) == 1
+    kws = {k.arg: getattr(k.value, "id", None) for k in sf[0].keywords}
+    assert kws.get("tickets") == "tickets", kws
+    assert kws.get("live_tickets") == "live_tickets", kws
+
+    # 4. the strict reader: an unreadable or malformed register RAISES
+    good = {"opens": [{"strategy": "a", "opened": "2026-10-19",
+                       "ruling_verbatim": "go", "tickets": ["S6-B1"]}]}
+
+    def _w(doc):
+        d = tmp_path / "output_audit"
+        d.mkdir(exist_ok=True)
+        (d / "owner_campaign_opens.json").write_text(
+            doc if isinstance(doc, str) else json.dumps(doc), encoding="utf-8")
+        return tmp_path
+
+    assert set(m.load_campaign_opens(_w(good))) == {"a"}
+    rec = good["opens"][0]
+    bad = [{k: v for k, v in rec.items() if k != "ruling_verbatim"},
+           {k: v for k, v in rec.items() if k != "opened"},
+           dict(rec, tickets=[]), dict(rec, tickets="S6-B1")]
+    for b in bad:
+        with pytest.raises(ValueError):
+            m.load_campaign_opens(_w({"opens": [b]}))
+    with pytest.raises(ValueError):
+        m.load_campaign_opens(_w({"opens": [rec, rec]}))
+    with pytest.raises(ValueError):
+        m.load_campaign_opens(_w("{not json"))
+    with pytest.raises(OSError):
+        m.load_campaign_opens(tmp_path / "absent_root")
+
+    # 5. the committed register, view and ledger agree
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import queue_state as qs
+    reg_doc = m.load_campaign_opens(root)
+    assert reg_doc, "the register must not read empty"
+    ledger = {k: (v.get("state") if isinstance(v, dict) else v)
+              for k, v in qs.tickets().items()}
+    for s, r in reg_doc.items():
+        for tid in r["tickets"]:
+            assert ledger.get(tid) is not None, (s, tid, "not on the ledger")
+    view = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                      .read_text(encoding="utf-8"))
+    assert view.get("campaign_opens") == sorted(reg_doc)
+    rows = {r["strategy"]: r for r in view["rows"]}
+    lanes = {s for s, r in rows.items()
+             if r["status"] in ("IN-CAMPAIGN", "STALLED-CAMPAIGN")}
+    assert lanes <= set(reg_doc), (lanes - set(reg_doc), "a lane row the owner never opened")
+    for s in lanes:
+        assert rows[s]["tickets"] == reg_doc[s]["tickets"], s
+    for s in reg_doc:
+        assert s in rows, (s, "a register strategy must be registered")
+        if (rows[s]["status"] not in m.TERMINAL_STATUSES
+                and rows[s]["status"] != "IN-ROSTER-MIRROR"):
+            assert s in lanes, (s, rows[s]["status"])
+    cls = json.loads((root / "output_audit" / "b3194_campaign_classification.json")
+                     .read_text(encoding="utf-8"))
+    gen = {g["strategy"] for g in cls["genuine"]}
+    men = {g["strategy"] for g in cls["mention"]}
+    assert not gen & men and len(gen | men) == cls["population"] == 44
+    assert gen <= set(reg_doc), gen - set(reg_doc)

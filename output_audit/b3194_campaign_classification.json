@@ -1,0 +1,279 @@
+{
+ "_doc": "S6-B3194 option A (owner 'A approved', 2026-10-19): classification BY READING of the 44 strategies the vocabulary heuristic labels IN-CAMPAIGN (3) or STALLED-CAMPAIGN (41). GENUINE = the subject of an owner-opened campaign; MENTION = named in a ticket row without being a campaign subject. No status moves until the owner OKs this table.",
+ "population": 44,
+ "genuine": [
+  {
+   "strategy": "smc_equal_lows_sweep_long",
+   "current": "STALLED-CAMPAIGN",
+   "evidence": "registered as 'Subject 2' under the owner's 'implement all' 2026-09-15 (S6-B2752); SPECS entry + 1 grid artifact; launch behind the owner's band + venue word",
+   "proposed": "STALLED-CAMPAIGN (registered, no live campaign ticket)"
+  },
+  {
+   "strategy": "smc_inverse_fvg",
+   "current": "STALLED-CAMPAIGN",
+   "evidence": "registered as 'Subject 3' under the owner's 'implement all' 2026-09-15 (S6-B2752); SPECS entry + 1 grid artifact; launch behind the owner's band + venue word",
+   "proposed": "STALLED-CAMPAIGN (registered, no live campaign ticket)"
+  },
+  {
+   "strategy": "smc_liquidity_sweep_reversal",
+   "current": "STALLED-CAMPAIGN",
+   "evidence": "hub-1 campaign subject: Table A built for the wave-1 hubs on the owner's ask 'Show table A' 2026-09-11 (S6-B2692); offline salvage run on the owner's '2 yes' 2026-09-13 (S6-B2732, 528 cells, best p 0.8317); SPECS entry + 5 grid artifacts",
+   "proposed": "STALLED-CAMPAIGN (registered, no live campaign ticket)"
+  },
+  {
+   "strategy": "smc_order_block_bounce",
+   "current": "STALLED-CAMPAIGN",
+   "evidence": "hub-2 campaign subject: Table A built 2026-09-11 (S6-B2692); registered as 'Subject 1' under the owner's 'implement all' 2026-09-15 (S6-B2752, S6-B2752e); re-laned to the engine (S6-B2845); launch behind the owner's band + venue word",
+   "proposed": "STALLED-CAMPAIGN (registered, no live campaign ticket)"
+  }
+ ],
+ "mention": [
+  {
+   "strategy": "52w_low_breakdown",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "an example in a builder / view / band-inventory ticket (S6-B2830, S6-B2833, S6-B2836, S6-B2841, S6-B2845, S6-B2872, S6-B3117a, S6-B3139q, S6-B2477, S6-B2421, S6-B2737)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "avwap_20high_rejection_short",
+   "current": "IN-CAMPAIGN",
+   "reason": "named only by the status-view defect ticket itself and a builder ticket (S6-B3194 with S6-B3180 / S6-B3189 / S6-B2383 / S6-B3142) - the 3 current IN-CAMPAIGN labels",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "avwap_252_breakout",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a candidate in a ranked list, never opened (S6-B2418 / S6-B3142)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "avwap_50_reclaim",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in the span-floor audit (S6-B2810b)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "bollinger_tight",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in an audit of the reverse-signal exit keys (S6-B2383)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "bollinger_upper_short",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in an audit of the reverse-signal exit keys (S6-B2383)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "camarilla_s3_bounce",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a candidate in a ranked list, never opened (S6-B2418 / S6-B3142)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "cmf_flip",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "an example in a builder / view / band-inventory ticket (S6-B2830, S6-B2833, S6-B2836, S6-B2841, S6-B2845, S6-B2872, S6-B3117a, S6-B3139q, S6-B2477, S6-B2421, S6-B2737)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "consec_downdays_quality_long",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "an example in a builder / view / band-inventory ticket (S6-B2830, S6-B2833, S6-B2836, S6-B2841, S6-B2845, S6-B2872, S6-B3117a, S6-B3139q, S6-B2477, S6-B2421, S6-B2737)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "cpr_narrow_bullish",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in the span-floor audit (S6-B2810b)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "golden_cross_9_21",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "an example in a builder / view / band-inventory ticket (S6-B2830, S6-B2833, S6-B2836, S6-B2841, S6-B2845, S6-B2872, S6-B3117a, S6-B3139q, S6-B2477, S6-B2421, S6-B2737)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "hull_rsi",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "an example in a builder / view / band-inventory ticket (S6-B2830, S6-B2833, S6-B2836, S6-B2841, S6-B2845, S6-B2872, S6-B3117a, S6-B3139q, S6-B2477, S6-B2421, S6-B2737)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "ichimoku_tk_cross",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in the span-floor audit (S6-B2810b)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "macd_bullish_with_smart_money_long",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in the span-floor audit (S6-B2810b)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "macd_fast_crossover",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a candidate in a ranked list, never opened (S6-B2418 / S6-B3142)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "mmbm_long",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in the span-floor audit (S6-B2810b)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "morning_star",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "an example in a builder / view / band-inventory ticket (S6-B2830, S6-B2833, S6-B2836, S6-B2841, S6-B2845, S6-B2872, S6-B3117a, S6-B3139q, S6-B2477, S6-B2421, S6-B2737)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "news_sentiment_long",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a candidate in a ranked list, never opened (S6-B2418 / S6-B3142)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "pead_short",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "PEAD family pre-gate disposition, explicitly 'NOT campaigned' (campaign log D; S6-B2633 / S6-B2645b)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "pead_with_insider_confirmation_long",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "PEAD family pre-gate disposition, explicitly 'NOT campaigned' (campaign log D; S6-B2633 / S6-B2645b)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "pivot_r1_breakout",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in an audit of the reverse-signal exit keys (S6-B2383)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "pivot_r2_continuation",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in an audit of the reverse-signal exit keys (S6-B2383)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "r1_break_retest",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a candidate in a ranked list, never opened (S6-B2418 / S6-B3142)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "rsi_overbought_short",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in an audit of the reverse-signal exit keys (S6-B2383)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "rsi_oversold",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "an example in a builder / view / band-inventory ticket (S6-B2830, S6-B2833, S6-B2836, S6-B2841, S6-B2845, S6-B2872, S6-B3117a, S6-B3139q, S6-B2477, S6-B2421, S6-B2737)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "rsi_oversold_with_smart_money_long",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "named NEXT in a working order and flagged consolidate-before-tune, never opened - no SPECS, grid or Table A work (S6-B2418 / S6-B2645b / S6-B2649)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "shooting_star_short",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "an example in a builder / view / band-inventory ticket (S6-B2830, S6-B2833, S6-B2836, S6-B2841, S6-B2845, S6-B2872, S6-B3117a, S6-B3139q, S6-B2477, S6-B2421, S6-B2737)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "smc_bos_continuation",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a member of the smc G1 group, whose GROUP campaign was retired before it ran (S6-B2756 lists it; S6-B2764 retired the method; the manifest ticket S6-B2763 DROPPED on the owner's 'Drop the 2 stale tickets' 2026-09-13)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "smc_choch_reversal",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a member of the smc G1 group, whose GROUP campaign was retired before it ran (S6-B2756 lists it; S6-B2764 retired the method; the manifest ticket S6-B2763 DROPPED on the owner's 'Drop the 2 stale tickets' 2026-09-13)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "smc_discount_long",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a member of the smc G1 group, whose GROUP campaign was retired before it ran (S6-B2756 lists it; S6-B2764 retired the method; the manifest ticket S6-B2763 DROPPED on the owner's 'Drop the 2 stale tickets' 2026-09-13)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "smc_equal_highs_sweep_short",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a member of the smc G1 group, whose GROUP campaign was retired before it ran (S6-B2756 lists it; S6-B2764 retired the method; the manifest ticket S6-B2763 DROPPED on the owner's 'Drop the 2 stale tickets' 2026-09-13)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "smc_fvg_retest_long",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "an example in a builder / view / band-inventory ticket (S6-B2830, S6-B2833, S6-B2836, S6-B2841, S6-B2845, S6-B2872, S6-B3117a, S6-B3139q, S6-B2477, S6-B2421, S6-B2737)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "smc_ote_long",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a member of the smc G1 group, whose GROUP campaign was retired before it ran (S6-B2756 lists it; S6-B2764 retired the method; the manifest ticket S6-B2763 DROPPED on the owner's 'Drop the 2 stale tickets' 2026-09-13)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "smc_ote_short",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a member of the smc G1 group, whose GROUP campaign was retired before it ran (S6-B2756 lists it; S6-B2764 retired the method; the manifest ticket S6-B2763 DROPPED on the owner's 'Drop the 2 stale tickets' 2026-09-13)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "smc_premium_short",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a member of the smc G1 group, whose GROUP campaign was retired before it ran (S6-B2756 lists it; S6-B2764 retired the method; the manifest ticket S6-B2763 DROPPED on the owner's 'Drop the 2 stale tickets' 2026-09-13)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "squeeze_breakout",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in the span-floor audit (S6-B2810b)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "stochrsi_oversold",
+   "current": "IN-CAMPAIGN",
+   "reason": "named only by the status-view defect ticket itself and a builder ticket (S6-B3194 with S6-B3180 / S6-B3189 / S6-B2383 / S6-B3142) - the 3 current IN-CAMPAIGN labels",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "turtle_soup_short",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a member of the smc G1 group, whose GROUP campaign was retired before it ran (S6-B2756 lists it; S6-B2764 retired the method; the manifest ticket S6-B2763 DROPPED on the owner's 'Drop the 2 stale tickets' 2026-09-13)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "vol_spike_2x_below_ema_50_short",
+   "current": "STALLED-CAMPAIGN",
+   "reason": "a list member in the span-floor audit (S6-B2810b)",
+   "proposed": "NOT-STARTED"
+  },
+  {
+   "strategy": "williams_r_oversold",
+   "current": "IN-CAMPAIGN",
+   "reason": "named only by the status-view defect ticket itself and a builder ticket (S6-B3194 with S6-B3180 / S6-B3189 / S6-B2383 / S6-B3142) - the 3 current IN-CAMPAIGN labels",
+   "proposed": "NOT-STARTED"
+  }
+ ],
+ "owner_ruling": {
+  "words": "ok",
+  "at_utc": "2026-10-19T00:58:24Z",
+  "scope": "the table as presented - 4 genuine, 40 mentions, no flips",
+  "applied": "B3139q-r72j: the register holds the 4 genuine; the 40 mentions read NOT-STARTED"
+ },
+ "correction_l933": "Found after the ruling and before any status moved: 8 of the 40 mentions (smc_bos_continuation, smc_choch_reversal, smc_discount_long, smc_equal_highs_sweep_short, smc_fvg_retest_long, smc_ote_long, smc_ote_short, smc_premium_short) are members of the smc family campaign the owner opened 2026-09-11 ('Lets start with smc family', STRATEGY_CAMPAIGN_LOG.md B.11; 15 members per output_audit/b2690_smc_pregate.json). This table read ticket rows only (L933, a compliance failure against #26). The family question is owner decision S6-B3213."
+}

@@ -22,7 +22,9 @@ judgement:
   survives_pct      share of R5 fires on which the LIVE strategy function
                     fires with the recorded direction (S6-B2814)
   stream            TIGHTEN / LOOSEN / BOTH / NONE - see classify_stream
-  ticket            campaign tickets naming this strategy in EXECUTION_QUEUE.md
+  ticket            the campaign's tickets from the OWNER-OPENED register,
+                    output_audit/owner_campaign_opens.json (S6-B3194);
+                    mention_tickets keeps every ledger row naming it
   admitted          present in phase_1b_step2_admissions.json
   status            one of eleven, mutually exclusive (B2825/B2833/
                     S6-B3135/S6-B3135a), decided by status_for():
@@ -190,6 +192,11 @@ def campaign_tickets(qtext: str, name: str) -> tuple:
     must appear in THAT row. campaign_ids additionally require a
     CAMPAIGN_VOCAB token in the row; mention_ids do not, and are kept so a
     reader can still ask "who talks about this strategy".
+
+    S6-B3194: NO LANE READS campaign_ids. The campaign lanes read the
+    owner-opened register through register_tickets(); this vocabulary
+    split labelled 44 strategies as campaigns and 4 were, so it survives
+    only as the producer of the mention list.
     """
     camp, ment = set(), set()
     for line in qtext.splitlines():
@@ -218,6 +225,19 @@ def live_campaign_tickets(tickets, ticket_states) -> list:
     once judged on a list already cut to three ids for display, so a live
     ticket sorting fourth or later read STALLED-CAMPAIGN (3 of 225 flipped)."""
     return [t for t in tickets if ticket_states.get(t) in LIVE_TICKET_STATES]
+
+
+def register_tickets(name: str, campaign_opens: dict, ticket_states: dict) -> tuple:
+    """S6-B3194 (owner "A approved" + table "ok", 2026-10-19): (tickets,
+    live_tickets) for `name` from the OWNER-OPENED register - never from a
+    vocabulary match. An unlisted strategy has no campaign tickets whatever
+    the ledger says about it, so status_for reads it NOT-STARTED; a listed
+    one is IN-CAMPAIGN while any of its tickets is live (B2829, judged over
+    the whole list - S6-B3179) and STALLED-CAMPAIGN once every one is
+    terminal (B2833)."""
+    r = campaign_opens.get(name)
+    tickets = list(r["tickets"]) if r else []
+    return tickets, live_campaign_tickets(tickets, ticket_states)
 
 
 def classify_stream(tightenable: bool, projected: float) -> str:
@@ -259,6 +279,37 @@ def load_owner_closures(root=ROOT) -> dict:
                              f"owner's words - got {r!r}")
         if s in out:
             raise ValueError(f"{p}: {s} is closed twice")
+        out[s] = r
+    return out
+
+
+# S6-B3194 (owner "A approved" + table "ok", 2026-10-19): "campaigned" is a
+# RECORDED fact. The 12-word vocabulary heuristic below labelled 44
+# strategies as campaigns and 4 were campaign subjects when read one by one
+# (output_audit/b3194_campaign_classification.json) - the ledger could not
+# store "campaign subject", so a guess stood in for it (#247 / L932).
+CAMPAIGN_OPENS = Path("output_audit") / "owner_campaign_opens.json"
+
+
+def load_campaign_opens(root=ROOT) -> dict:
+    """{strategy: record} for campaigns the OWNER opened (S6-B3194). Every
+    record carries the owner's words, the date opened and the campaign's
+    tickets - the tickets alone decide live versus stalled. An unreadable or
+    malformed register RAISES: a register that silently read empty would
+    turn every campaign NOT-STARTED (L642)."""
+    p = Path(root) / CAMPAIGN_OPENS
+    d = json.loads(p.read_text(encoding="utf-8"))
+    out = {}
+    for r in d.get("opens") or []:
+        s = r.get("strategy")
+        words = r.get("ruling_verbatim") or r.get("ruling_in_substance")
+        tickets = r.get("tickets")
+        if (not s or not words or not r.get("opened")
+                or not isinstance(tickets, list) or not tickets):
+            raise ValueError(f"{p}: an open needs strategy, opened, the "
+                             f"owner's words and a ticket list - got {r!r}")
+        if s in out:
+            raise ValueError(f"{p}: {s} is opened twice")
         out[s] = r
     return out
 
@@ -314,7 +365,11 @@ def ticket_fields(tickets_all: list, mentions_all: list) -> tuple[list, list]:
     mention_tickets keeps the unfiltered list, so a reader could not tell a
     capped record from a complete one (L558) - 24 of 225 strategies carry
     more than three (B3139q-r70t). Nothing renders these lists (the MD view
-    shows status counts only), so the cap bought nothing."""
+    shows status counts only), so the cap bought nothing.
+
+    S6-B3194: the record's `tickets` field now comes from
+    register_tickets(); the first list returned here is the vocabulary
+    split, which no lane reads."""
     return list(tickets_all), list(mentions_all)
 
 
@@ -389,6 +444,9 @@ def main() -> int:
     _mem_sum = _pm.summary(_mem)
     # S6-B3135a (owner 2026-09-29): campaigns the owner closed outright
     owner_closed = load_owner_closures(ROOT)
+    # S6-B3194: the owner-opened campaigns - the ONLY source of the
+    # campaign lanes (IN-CAMPAIGN / STALLED-CAMPAIGN)
+    campaign_opens = load_campaign_opens(ROOT)
     ticket_states = {k: (v.get("state") if isinstance(v, dict) else v)
                      for k, v in _qs.tickets().items()}
 
@@ -435,12 +493,15 @@ def main() -> int:
 
         tickets_all, mentions_all = campaign_tickets(qtext, name)
         # S6-B3186: the record keeps the FULL lists (ticket_fields)
-        tickets, mentions = ticket_fields(tickets_all, mentions_all)
-        # B2829 (owner-directed "statuses latest, no misses" 2026-09-16): a
-        # campaign is LIVE only while a naming ticket's CURRENT ledger state
-        # is non-terminal. Before this, a ticket EXECUTED long ago flagged
-        # IN-CAMPAIGN forever - the ticket-state half of L804's class.
-        live_tickets = live_campaign_tickets(tickets_all, ticket_states)
+        _vocab, mentions = ticket_fields(tickets_all, mentions_all)
+        # S6-B3194: the campaign tickets come from the owner-opened register,
+        # never from a vocabulary match - the heuristic survives only as
+        # the mention list (who talks about this strategy). B2829 (owner-
+        # directed "statuses latest, no misses" 2026-09-16): a campaign is
+        # LIVE only while one of its tickets' CURRENT ledger state is
+        # non-terminal - a concluded campaign does not own a strategy forever.
+        tickets, live_tickets = register_tickets(name, campaign_opens,
+                                                 ticket_states)
         # B2825 status precedence - one status per strategy, MUTUALLY
         # EXCLUSIVE by construction; a terminal disposition beats a campaign
         # mention, and the stream lane below is voided for terminal rows.
@@ -508,19 +569,15 @@ def main() -> int:
              "signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). "
              "A LOWER BOUND where a gate leg reads an unpersisted key (defaults False); "
              "an erroring row counts as non-survival; None only for zero-fire strategies",
-             "IN-CAMPAIGN requires a CAMPAIGN_VOCAB token in the row naming the "
-             "strategy (S6-B2810c; a bare mention is not a campaign) - the "
-             "vocabulary is a heuristic, so borderline rows are settled by "
-             "reading the ticket; mention_tickets keeps the unfiltered list; "
-             "IN-CAMPAIGN additionally requires a naming ticket whose CURRENT "
-             "ledger state is non-terminal (B2829) - a concluded campaign does "
-             "not own a strategy forever; a row whose campaign tickets exist "
-             "but are ALL terminal is STALLED-CAMPAIGN (B2833, owner-approved "
-             "2026-09-15): campaigned, concluded mid-path, still in its lane. "
-             "STALLED inherits the vocabulary heuristic WITHOUT the liveness "
-             "mask, so a builder-audit ticket that names a strategy as an "
-             "EXAMPLE (the S6-B2810b/c and S6-B2830 rows) can stall it "
-             "falsely - settle a surprising row by reading its tickets",
+             "the campaign lanes read the OWNER-OPENED register "
+             "(output_audit/owner_campaign_opens.json, S6-B3194): a listed "
+             "strategy is IN-CAMPAIGN while one of its register tickets is "
+             "non-terminal (B2829) and STALLED-CAMPAIGN once every one is "
+             "terminal (B2833, owner-approved 2026-09-15); an unlisted "
+             "strategy is NOT-STARTED whatever tickets mention it - a mention "
+             "is not a campaign (the vocabulary heuristic this replaces "
+             "labelled 44 strategies and 4 were campaign subjects); "
+             "mention_tickets keeps the full mention list",
              "stream and the proj column use the CURRENT-GATE projection "
              "(raw projection x survives_pct, B2822); projected_step1_fires "
              "in this JSON keeps the raw figure",
@@ -545,6 +602,7 @@ def main() -> int:
              "ends its campaign, not its membership"],
          "phase1b_roster": _mem_sum,
          "owner_closures": sorted(owner_closed),
+         "campaign_opens": sorted(campaign_opens),
          "rows": recs}, indent=2), encoding="utf-8")
 
     # ---- the markdown view -------------------------------------------------
@@ -585,8 +643,8 @@ def main() -> int:
          f"| IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | {bystatus.get('IN-ROSTER-FUNNEL', 0)} |",
          f"| IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded, with Step 2 scheduled (S6-B2420) | {bystatus.get('IN-ROSTER-MIRROR', 0)} |",
          f"| DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | {bystatus.get('DONE-OWNER-CLOSED', 0)} |",
-         f"| IN-CAMPAIGN - a campaign-marked ticket names it, LIVE | {bystatus.get('IN-CAMPAIGN', 0)} |",
-         f"| STALLED-CAMPAIGN - campaigned, every naming ticket terminal (B2833) | {bystatus.get('STALLED-CAMPAIGN', 0)} |",
+         f"| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | {bystatus.get('IN-CAMPAIGN', 0)} |",
+         f"| STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | {bystatus.get('STALLED-CAMPAIGN', 0)} |",
          f"| NOT-STARTED | {bystatus.get('NOT-STARTED', 0)} |",
          f"| CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | {bystatus.get('CLOSED-NEGATIVE', 0)} |",
          f"| PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | {bystatus.get('PRUNED-DUPLICATE', 0)} |",
@@ -616,19 +674,15 @@ def main() -> int:
           "- `survives_pct` calls the **live strategy function** on each fire's persisted "
           "signals (S6-B2814). A **lower bound** where a gate leg reads an unpersisted key; "
           "an erroring row counts as non-survival; `-` only for zero-fire strategies.",
-          "- `IN-CAMPAIGN` requires a campaign-vocabulary token in the row naming the "
-          "strategy (S6-B2810c) - **a bare mention is not a campaign** - AND a naming "
-          "ticket whose CURRENT ledger state is non-terminal (B2829). The vocabulary "
-          "is a heuristic; a borderline row is settled by reading the ticket, and "
-          "`mention_tickets` in the JSON keeps the unfiltered list.",
-          "- `STALLED-CAMPAIGN` (B2833, owner-approved 2026-09-15): campaign tickets "
-          "exist but every one is terminal - campaigned, concluded mid-path (e.g. "
-          "Step-1 done, no Step-2 word). **Not terminal**: the row keeps its stream "
-          "lane; the history is preserved rather than erased into NOT-STARTED. It "
-          "inherits the vocabulary heuristic WITHOUT the liveness mask, so a "
-          "builder-audit ticket naming a strategy as an EXAMPLE (S6-B2810b/c, "
-          "S6-B2830) can stall it falsely - settle a surprising row by reading "
-          "its tickets.",
+          "- `IN-CAMPAIGN` / `STALLED-CAMPAIGN` read the **owner-opened register** "
+          "(`output_audit/owner_campaign_opens.json`, S6-B3194): a listed strategy is "
+          "IN-CAMPAIGN while one of its register tickets is non-terminal (B2829), and "
+          "STALLED-CAMPAIGN (B2833, owner-approved 2026-09-15) once every one is "
+          "terminal - campaigned, concluded mid-path, still in its stream lane. **A "
+          "mention is not a campaign**: an unlisted strategy is NOT-STARTED whatever "
+          "tickets name it. The vocabulary heuristic this replaces labelled 44 "
+          "strategies and 4 were campaign subjects when read one by one; "
+          "`mention_tickets` in the JSON keeps the full mention list.",
           "- `IN-ROSTER-FUNNEL` / `IN-ROSTER-MIRROR` (S6-B3135): read from "
           "scripts/phase1b_membership.py, the one reader of the Phase 1B roster. "
           "A funnel cell is terminal like an admission and closed to re-testing "
