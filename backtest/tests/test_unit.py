@@ -32583,7 +32583,7 @@ def test_b2560_parameters_tested_block_renders_every_family(tmp_path):
     """S6-B2542a: the block iterated one family's six axes, so every other
     family rendered "not recorded" in all six cells.
 
-    NOT COSMETIC. Phase 1B targets 20 long + 20 short strategies, and a report
+    NOT COSMETIC. Phase 1B targets 30 long strategies (S6-B3220), and a report
     generator hard-wired to one family's axes renders every other family blank -
     capping the legible roster at one family. The funnel row above was made
     family-aware at B2542; this is the block beneath it, reading the same
