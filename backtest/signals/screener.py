@@ -680,8 +680,9 @@ def strat_pivot_r3_blowoff_short(s):
     routing until (1) + (2) above ship.
 
     Regime affinity: no explicit STRATEGY_REGIME_AFFINITY entry; B291
-    direction-aware default applies -> SHORT fires in
-    {bear, crisis, neutral}. (LONG counterpart strat_pivot_s3
+    direction-aware default applied -> SHORT fired in
+    {bear, crisis, neutral}, and in every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20).
+    (LONG counterpart strat_pivot_s3
     _capitulation has explicit {neutral, bear, crisis} entry; SHORT
     mirror gets identical-ish effective regime via B291 default plus
     `bear` substitution for `bull`.)
@@ -1190,6 +1191,12 @@ def strat_hull_rsi(s):
         `S4-T3-NOT-ABOVE-200-EMA-PATTERN` (B656 surface for owner
         decision). NOT auto-fixed here per CHECKLIST (g) sequence-
         or-split.
+    CURRENT GATE (S6-B3227 census, B3139q-r82): LONG hull_bullish + price_above_hull
+    + (adx > 20 OR adx_trending) + price_above_ema_200_break_recent_5d;
+    SHORT hull_bearish + price_below_hull + (adx > 20 OR adx_trending) +
+    below_ema_200_break_recent_5d + the borrow-trap gate. B659 replaced
+    the (not above_200) form with below_ema_200 and B722 made both
+    200-EMA legs EVENT-anchored.
     """
     adx_trend_ok = s.get("adx", 0) > 20 or s.get("adx_trending", False)
     # B722 (2026-06-12 owner-approved STATE->EVENT conversion per B655 T10
@@ -1314,6 +1321,9 @@ def strat_awesome_oscillator(s):
     Post-B627 gate set (unchanged count; F1 hardens pattern only):
       LONG:  ao_cross_up + price_above_ema_20
       SHORT: ao_cross_dn + below_ema_20  (B627 F1 positive symmetric)
+    CURRENT GATE (S6-B3227 census, B3139q-r82): each side also requires
+    pct_from_avwap_50low >= -0.46 (B1422 selectivity gate); the short side
+    the borrow-trap gate.
     """
     fl = (s.get("ao_cross_up") and s.get("price_above_ema_20"))
     fl = fl and (s.get("pct_from_avwap_50low", float("-inf")) >= -0.46)  # B1422 selectivity gate: IS(best-exit) exp +2.111 -> +3.370, WR 0.283 -> 0.318, fires 757 -> 544, 303 dates
@@ -1557,6 +1567,10 @@ def strat_ichimoku_cloud_breakout(s):
     term TK / multi-TF weekly cloud / trend-strength) where each
     component screens a distinct failure mode. Per option A: status
     quo on the 4-gate confluence structure.
+    CURRENT GATE (S6-B3227 census, B3139q-r82): 3 legs per direction - the cloud
+    break within 5 days (ichi_above_cloud_break_recent_5d or
+    ichi_below_cloud_break_recent_5d), the TK cross and the weekly cloud;
+    the trend-strength leg B657 kept is no longer read.
 
     BUT the weekly Kumo gate had a DEFAULT-TRUE silent-gap (same
     auto-pass-on-missing class as W6/W7/W8 LONG AVWAP defaults
@@ -2098,6 +2112,9 @@ def strat_stoch_oversold(s):
     Post-B627 gate set (unchanged count; F1 hardens pattern only):
       LONG:  stoch_oversold + stoch_bullish_cross + price_above_ema_20
       SHORT: stoch_overbought + stoch_bearish_cross + below_ema_20
+    CURRENT GATE (S6-B3227 census, B3139q-r82): the live gate reads the BROAD
+    variants - stoch_broad_oversold / stoch_broad_overbought - in place of
+    stoch_oversold / stoch_overbought.
              (B627 F1 positive symmetric)
     """
     # B1199 (2026-07-06 Council 278 owner-approved): widen Stochastic %K
@@ -2159,7 +2176,7 @@ def strat_volume_spike_breakout(s):
           STRATEGY_REGIME_AFFINITY (was {bull, neutral, bear, crisis}
           - defeated regime classification). Now relies on Batch 291
           direction-aware default: LONG -> {bull, neutral}; SHORT ->
-          {bear, crisis, neutral}.
+          {bear, crisis, neutral}, and every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20).
     """
     fl = (s.get("dc20_breakout_up")
           and s.get("vol_above_avg")
@@ -2469,7 +2486,8 @@ def strat_donchian_breakdown_retest_short(s):
           dc20_support_break_retest_strong (original breakdown bar must
           clear level by >= 0.5*ATR(14)).
       (e) Regime affinity: rely on Batch 291 direction-aware default
-          (SHORT -> {bear, crisis, neutral}).
+          (SHORT -> {bear, crisis, neutral}; it fires in
+          every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20)).
     """
     # B612 refactor: NOT s.get(macd_bullish) -> positive macd_bearish.
     fires = (s.get("dc20_support_break_retest_strong")
@@ -2530,7 +2548,8 @@ def strat_morning_star(s):
     a confirmed uptrend before it can fire encodes a continuation thesis
     (buy-the-dip) under a reversal-pattern docstring. Owner walk option 2
     removed the trend gates so the strategy fires on canonical Nison
-    turns: pattern + RSI-not-overbought/oversold band only.
+    turns: pattern + RSI-not-overbought/oversold bound (B1422 later added a squeeze_momentum
+    selectivity gate).
 
     Producer pair compute_candles in technical.compute_candles (Nison strict
     4-condition AND - bar -3 directional + bar -2 small body <30pct of
@@ -2544,10 +2563,16 @@ def strat_morning_star(s):
     fire under it since LONG requires bullish setup conditions and bear
     regime gates them out; SHORT side over-restricted vs B291 default).
 
-    Gates:
-      LONG  = morning_star AND rsi_14 < 45  (RSI band rejects fires
-              already deep in oversold blow-off territory).
-      SHORT = evening_star AND rsi_14 > 55  (mirror).
+    Gates (S6-B3227, owner ruled 2026-10-20, 'Approve all recs fable mode
+    be extremely thorough', option (a): corrected to match the code - this
+    section had said the RSI band rejects fires already deep in oversold
+    blow-off territory, while rsi_14 < 45 admits them):
+      LONG  = morning_star AND rsi_14 < 45 (a ceiling - the bar is not
+              overbought; deeply oversold readings are admitted)
+              AND squeeze_momentum <= 0.0096 (B1422 selectivity gate).
+      SHORT = evening_star AND rsi_14 > 55 (a floor - not oversold;
+              deeply overbought readings are admitted) AND
+              squeeze_momentum <= 0.0096 AND the borrow-trap gate.
     """
     fl = (s.get("morning_star") and s.get("rsi_14", 50) < 45)
     fl = fl and (s.get("squeeze_momentum", float("inf")) <= 0.0096)  # B1422 selectivity gate: IS(best-exit) exp +2.340 -> +4.236, WR 0.262 -> 0.296, fires 1668 -> 834, 309 dates
@@ -2725,7 +2750,8 @@ def strat_three_black_crows_short(s):
     3-bar pattern.
 
     Regime affinity: Batch 291 direction-aware default
-      (SHORT -> {bear, crisis, neutral}).
+      (SHORT -> {bear, crisis, neutral}; it fires in
+      every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20)).
     """
     fires = (s.get("three_black_crows") and
              s.get("rsi_14", 50) > 40 and not _short_borrow_trap_active(s))
@@ -3167,7 +3193,8 @@ def strat_donchian_breakdown_short(s):
             dc10_breakout_dn + vol_spike_15x + NOT macd_bullish
             + close_below_open + close_in_bottom_40pct_of_range
       (e) Regime affinity: rely on Batch 291 direction-aware default
-          (SHORT -> {bear, crisis, neutral}). NOT in
+          (SHORT -> {bear, crisis, neutral}; it fires in
+          every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20)). NOT in
           STRATEGY_REGIME_AFFINITY map; default handles it.
     """
     # B612 refactor: NOT s.get(macd_bullish) -> positive macd_bearish (B609 added).
@@ -3193,6 +3220,8 @@ def strat_donchian_breakout_long(s):
     Producer signals: dc10_breakout_up (existing 0.2pct tolerance),
     vol_spike_15x, macd_12_26_9_bullish, close_above_open,
     close_in_top_40pct_of_range.
+    CURRENT GATE (S6-B3227 census, B3139q-r82): the volume leg reads vol_spike_12x
+    (1.2x - names are decimal-shifted), not vol_spike_15x.
 
     Batch 595 (2026-06-05 owner-directed Stage 4 walk of the tight
     non-retest pair): no gate changes here - this strategy already
@@ -3259,6 +3288,10 @@ def strat_52w_low_breakdown(s):
     Producer signals: break_52w_low (B582 fix), vol_spike_17x (B586),
     sector_underperforming_spy (B587), close_below_open (existing),
     close_in_bottom_40pct_of_range (B589).
+    CURRENT GATE (S6-B3227 census, B3139q-r82): break_52w_low + vol_above_avg +
+    close_below_open + close_in_bottom_40pct_of_range + the borrow-trap
+    gate - B1144 swapped vol_spike_17x for vol_above_avg and dropped
+    sector_underperforming_spy (the comment below the docstring).
     """
     # B1144 (2026-07-03 Council 254 LOOSEN per Turn 9): 5-way AND compound.
     # Widen vol_spike_17x (1.7x) -> vol_above_avg. Drop sector_underperforming_spy
@@ -3417,7 +3450,8 @@ def strat_r1_break_retest(s):
           (SHORT) (Brian Shannon 2022 AVWAP; same family as
           B597/B598/B600/B601/B603/B605).
       (i) Regime affinity: Batch 291 direction-aware default
-          (LONG -> {bull, neutral}; SHORT -> {bear, crisis, neutral}).
+          (LONG -> {bull, neutral}; SHORT -> {bear, crisis, neutral},
+          and every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20)).
 
     NOTE: above_r1 / below_s1 gates PRESERVED. They check today's
     close vs today's R1/S1 (intraday position context) - distinct
@@ -3432,6 +3466,9 @@ def strat_r1_break_retest(s):
       SHORT: s1_break_retest_short + below_s1 + NOT macd_bullish +
              close_below_open + close_in_bottom_40pct_of_range +
              vol_below_avg + NOT above_avwap_20high
+    CURRENT GATE (S6-B3227 census, B3139q-r82): the SHORT side reads the
+    positive-symmetric keys macd_12_26_9_bearish and below_avwap_20high in
+    place of the two NOTs above, plus the borrow-trap gate.
     """
     fl = (s.get("r1_break_retest_long")
           and s.get("above_r1")
@@ -3500,6 +3537,8 @@ def strat_52wh_break_retest(s):
       year_high_break_retest_long + near_52w_high + price_above_ema_200
       + close_above_open + close_in_top_40pct_of_range + vol_below_avg
       + above_avwap_20low
+    CURRENT GATE (S6-B3227 census, B3139q-r82): the first five above - the live gate
+    no longer reads vol_below_avg or above_avwap_20low.
 
     Academic backing:
       - George-Hwang 2004 JF: 52w-high attracts sustained buying.
@@ -3526,6 +3565,10 @@ def strat_52wl_break_retest_short(s):
     inverse of strat_52wh_break_retest. 52-week LOW breakdown-and-
     retest -- historical support confirmed as resistance below 200 EMA.
 
+    CURRENT GATE (S6-B3227 census, B3139q-r82): year_low_break_retest_short_held
+    (the B2089 level-held variant) + near_52w_low + below_ema_200 +
+    close_below_open + close_in_bottom_40pct_of_range + the borrow-trap
+    gate. The B605 listing below is history:
     Mirror 7-gate structure:
       year_low_break_retest_short + near_52w_low + NOT price_above
       _ema_200 + close_below_open + close_in_bottom_40pct_of_range +
@@ -3535,7 +3578,7 @@ def strat_52wl_break_retest_short(s):
     compute_52w_break_retest_signals; all others pre-existing.
 
     Regime affinity: Batch 291 direction-aware default (SHORT ->
-    {bear, crisis, neutral}).
+    {bear, crisis, neutral}; it fires in every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20)).
     """
     # B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
     # `not s.get("price_above_ema_200", False)` -> `below_ema_200`
@@ -3610,6 +3653,10 @@ def strat_break_retest_volume(s):
              + vol_below_avg
       SHORT: support_break_retest + obv_bearish + close_below_open
              + vol_below_avg
+    CURRENT GATE (S6-B3227 census, B3139q-r82): each side also requires
+    close_in_top_40pct_of_range / close_in_bottom_40pct_of_range (B728
+    strong-close) and ppo_hist >= -0.2823 (B1422 selectivity gate); the
+    short side the borrow-trap gate.
 
     Lineage of prior walk batches preserved (B320 / B608 / B617 history
     in code commit log).
@@ -3656,7 +3703,8 @@ def strat_break_retest_confluence(s):
         mass-edit. LONG over-restricted; SHORT mis-regimed (firing
         in bull = wrong for short bias). Fixed by removing the entry;
         falls back to Batch 291 direction-aware default (LONG ->
-        {bull, neutral}; SHORT -> {bear, crisis, neutral}).
+        {bull, neutral}; SHORT -> {bear, crisis, neutral}, and
+        every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20)).
       F2 - silent-gap bugs fixed (THREE gates this time). SHORT side
         previously used `not s.get(macd_12_26_9_bullish)`,
         `not s.get(price_above_ema_20)`, `not s.get(price_above_ema
@@ -3684,6 +3732,10 @@ def strat_break_retest_confluence(s):
       SHORT: support_break_retest + macd_12_26_9_bearish (explicit) +
              below_ema_20 (explicit) + below_ema_50 (explicit) +
              close_below_open + vol_below_avg
+    CURRENT GATE (S6-B3227 census, B3139q-r82): 7 legs per direction - each side
+    also requires close_in_top_40pct_of_range or
+    close_in_bottom_40pct_of_range (B728 strong-close); the short side
+    the borrow-trap gate.
     """
     # B728 (2026-06-12 owner-approved per "approve all" of B726 Decision 1):
     # B710 W1 strong-close anti-fakeout pattern added per S4-B717 ceiling
@@ -4657,7 +4709,8 @@ def strat_smc_premium_short(s):
 
 
 def strat_smc_ote_long(s):
-    """Batch 216: Optimal Trade Entry long - Fibonacci 62-79%
+    """Batch 216: Optimal Trade Entry long - Fibonacci 60-82% (B1137
+    widened it from 62-79%)
     retracement zone after bullish CHoCH/BOS. ICT canonical 'sweet
     spot' for high-conviction trend continuation entries."""
     fires = (
@@ -5760,6 +5813,9 @@ def strat_head_and_shoulders_top_short(s):
     + already PIT-disciplined.
 
     Symmetric 2-gate structure with CP-3 (mirror of bottom-long).
+    CURRENT GATE (S6-B3227 census, B3139q-r82): head_shoulders_top_detected +
+    head_shoulders_top_neckline_break + below_ema_200 + the borrow-trap
+    gate - three signal legs.
     B671 borrow-trap gate applies (SHORT-direction via _strat).
     """
     # B2088 (S6-B1248-HNS-NECKLINE-GATE, owner-approved 2026-08-23 at b2031
@@ -6127,6 +6183,9 @@ def strat_flag_bear_retest_short(s):
     Mirror 4-gate structure:
       flag_bear_break_retest_short + NOT price_above_ema_200 +
       close_below_open + vol_below_avg
+    CURRENT GATE (S6-B3227 census, B3139q-r82): below_ema_200 (the positive-
+    symmetric key) in place of NOT price_above_ema_200, plus the
+    borrow-trap gate.
 
     Batch 618 (2026-06-07 owner-directed B607 critique correction
     per CHECKLIST #105 (m) economic-symmetry audit):
@@ -6147,7 +6206,8 @@ def strat_flag_bear_retest_short(s):
     test_batch618_pit_discipline.
 
     Regime affinity: Batch 291 direction-aware default
-      (SHORT -> {bear, crisis, neutral}).
+      (SHORT -> {bear, crisis, neutral}; it fires in
+      every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20)).
     """
     # B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
     # `not s.get("price_above_ema_200", False)` -> `below_ema_200`
@@ -6314,7 +6374,8 @@ def strat_simple_below_ema_50_short(s):
     not yet list that key; correcting it changes the Phase-1B agent input
     (backtest/agents/pipeline.py) and is the owner's (S6-B3139c).
 
-    Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
+    Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral},
+    and every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20).
     """
     fires = s.get("below_ema_50_break_recent_5d", False) and not _short_borrow_trap_active(s)
     fires = fires and (s.get("committed_growth_holders", float("-inf")) >= 3.0)  # B1422 selectivity gate: IS(best-exit) exp -0.116 -> +0.357, WR 0.254 -> 0.276, fires 2534 -> 1342, 489 dates
@@ -6405,6 +6466,10 @@ def strat_institutional_breakout_confirmation_long(s):
       - Classification: buy = new_pos>=1 OR increased>=2
       - STATE (constant 90d between filings), NOT EVENT
 
+    CURRENT GATE (S6-B3227 census, B3139q-r82): institutional_buy +
+    resistance_break_retest + price_above_ema_200 + close_above_open - 4
+    legs; the live gate no longer reads vol_below_avg. The listing below
+    (and the TIMING sentence above naming vol_below_avg) is the B611 state:
     Post-B611 5-gate set (unchanged from B610):
       institutional_buy (eligibility filter) + resistance_break_retest
       (timing) + price_above_ema_200 (trend) + close_above_open (bar
@@ -6960,7 +7025,8 @@ def strat_vol_spike_2x_below_ema_50_short(s):
     Registered in `momentum_trend` category; does NOT belong to smart
     money cluster (no smart-money data dependency).
 
-    Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
+    Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral},
+    and every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20).
 
     NAME NOTE (B2084, annotate-not-rename): the name says vol_spike_2x;
     the live gate is vol_spike_15x = 1.5x since B1200 (and per the
@@ -7616,6 +7682,11 @@ def strat_news_momentum_long(s):
       news_sentiment_5d >= 0.5 + news_volume_zscore_5d >= 1.5 +
       dc20_breakout_up + close_above_open + close_in_top_40pct_of_range +
       vol_above_avg + above_avwap_20low
+    CURRENT GATE (S6-B3227 census, B3139q-r82): news_sentiment_5d >= 0.3 +
+    news_volume_zscore_5d >= 0.90909 + dc20_breakout_up + close_above_open
+    + close_in_top_40pct_of_range + vol_above_avg - 6 legs (B1136 dropped
+    above_avwap_20low and loosened both news thresholds; B1424 the z-score
+    again). S6-B1248-LEVER4 evaluates them through _gate_budget.
     """
     # B1136 (2026-07-03 Council 250 LOOSEN per Turn 4 + B1130 coverage-verified):
     # 0 fires in Batch A. B1130 confirmed polygon news 100% coverage; sparse
@@ -7679,9 +7750,15 @@ def strat_news_momentum_short(s):
       close_in_bottom_40pct_of_range + vol_above_avg +
       NOT above_avwap_20high (price BELOW 20d swing-high AVWAP =
       recent rally given back; symmetric to LONG above_avwap_20low)
+    CURRENT GATE (S6-B3227 census, B3139q-r82): news_sentiment_5d <= -0.3 (B1192
+    loosened -0.5) + news_volume_zscore_5d >= 1.5 + dc20_breakout_dn +
+    close_below_open + close_in_bottom_40pct_of_range + vol_above_avg +
+    below_avwap_20high (the positive-symmetric key, not a NOT) + the
+    borrow-trap gate.
 
     Regime affinity: Batch 291 direction-aware default
-      (SHORT -> {bear, crisis, neutral})
+      (SHORT -> {bear, crisis, neutral}; it fires in
+      every regime since S6-B1248-SHORT-REGIME-AFFINITY (2026-10-20))
     """
     # B616 (2026-06-07 owner-directed LOW-priority refactor): swapped
     # `not s.get("above_avwap_20high", True)` -> `below_avwap_20high`
@@ -7743,6 +7820,11 @@ def strat_news_reversal_short(s):
         selective" was assertion without empirical backing). Fire-count
         relief addresses minimum-trades risk per
         feedback_minimum_fire_count_gate_before_cube.
+    CURRENT GATE (S6-B3227 census, B3139q-r82): news_sentiment_5d >= 0.3 +
+    pct_change_5d > 0.08 + news_count_5d >= 3 + news_sentiment_shift <
+    -0.2 + close_below_open + close_in_bottom_40pct_of_range + the
+    borrow-trap gate - later loosenings moved +0.5 to +0.3 and 10pct to
+    8pct after the B614 lineage above.
 
     Tetlock 2007 RFS shows news-tone-driven price moves of >10pct in short
     windows tend to partially reverse over 5-10 trading days. De Bondt-

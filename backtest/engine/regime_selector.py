@@ -83,7 +83,7 @@ import pandas as pd
 # (LONG-bias `{bull,neutral}` or `{neutral,bear}` on dual where SHORT side
 # is mis-regimed). The Batch 291 direction-aware default automatically
 # applies LONG -> {bull, neutral} / SHORT -> {bear, crisis, neutral}
-# correctly per direction once the explicit entry is removed.
+# correctly per direction once the explicit entry is removed. (SHORT: every regime since S6-B1248-SHORT-REGIME-AFFINITY.)
 #
 # Removed in B617:
 #   avwap_50_reclaim, bollinger_lower, cpr_narrow_bullish,

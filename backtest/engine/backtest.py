@@ -3253,9 +3253,9 @@ class BacktestEngine:
                 # Batch 291 (2026-05-21 owner-approved option B): pass
                 # direction so the regime selector applies the new
                 # direction-aware default for un-mapped strategies (long
-                # defaults to {bull, neutral}, short to {bear, crisis, neutral})
-                # instead of allow-all. Closes Stage C v2 gap where 25 long
-                # trades fired in bear regime via affinity-not-in-map fallback.
+                # defaults to {bull, neutral}, short to {bear, crisis, neutral};
+                # short is every regime since S6-B1248-SHORT-REGIME-AFFINITY) instead of allow-all.
+                # Closes Stage C v2 gap where 25 long trades fired in bear regime via affinity-not-in-map fallback.
                 # Batch 384: when no_regime_affinity=True (Phase 1A-beta cube),
                 # skip the affinity filter. Cube collects per-regime data
                 # empirically.

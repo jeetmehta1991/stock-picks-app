@@ -228,10 +228,10 @@ def compute_smc_signals(
       - smc_mitigation_block_long / smc_mitigation_block_short: bool
         (price inside an OB zone that is being mitigated NOW)
       - smc_dealing_range_pct: float in [0,1] (0=at low, 1=at high)
-      - smc_in_discount_zone: bool (pct < 0.5)
-      - smc_in_premium_zone: bool (pct > 0.5)
-      - smc_ote_long_zone / smc_ote_short_zone: bool (62-79% Fib
-        retracement zone after bullish/bearish CHoCH)
+      - smc_in_discount_zone: bool (pct < 0.6; B1137 widened from 0.5)
+      - smc_in_premium_zone: bool (pct > 0.4; B1137 widened from 0.5)
+      - smc_ote_long_zone / smc_ote_short_zone: bool (60-82% Fib since B1137, was
+        62-79%; retracement zone after bullish/bearish CHoCH)
       - smc_equal_highs_swept / smc_equal_lows_swept: bool (liquidity
         primitive with Swept=True)
       - smc_bos_retest_long / smc_bos_retest_short: bool (price within
@@ -548,7 +548,7 @@ def compute_smc_signals(
         except Exception as _e:
             log_silent_failure("smc_ict.liquidity_compute", _e)
         # Batch 216: retracements primitive for OTE (Optimal Trade Entry)
-        # 62-79% Fibonacci zone after CHoCH.
+        # Fibonacci zone after CHoCH - 60-82% since B1137 (was 62-79%).
         try:
             # B1569: 46.7pct of SMC primitive cost -- the single largest.
             if skip_primitives and "retracements" in skip_primitives:

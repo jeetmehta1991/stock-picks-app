@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 4341e14af at 2026-10-20 17:51:53 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit b792f8bef at 2026-10-20 18:38:38 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -75,7 +75,7 @@
 | pairs_mean_reversion_long | pairs | 5036 | 462.9 | YES | 100.0% | - | DONE-ADMITTED |
 | stochrsi_overbought_short | momentum | 4287 | 394.0 | YES | 100.0% | TIGHTEN | NOT-STARTED |
 | macd_fast_crossover | momentum | 4070 | 374.1 |  | 100.0% | NONE | NOT-STARTED |
-| r1_break_retest | pivot | 3371 | 309.8 |  | 100.0% | NONE | NOT-STARTED |
+| r1_break_retest | pivot | 3371 | 309.8 | YES | 100.0% | NONE | NOT-STARTED |
 | simple_below_ema_50_short | momentum_trend | 3299 | 177.8 | YES | 58.7% | NONE | NOT-STARTED |
 | force_index_breakout | breakout | 3013 | 276.9 |  | 100.0% | NONE | NOT-STARTED |
 | cmf_flip | mean_reversion | 2994 | 206.8 | YES | 75.1% | TIGHTEN | NOT-STARTED |
@@ -104,7 +104,7 @@
 | rsi_oversold | mean_reversion | 1945 | 178.8 | YES | 100.0% | NONE | NOT-STARTED |
 | institutional_committed_growth_long | institutional_persistence | 1941 | 178.4 | YES | 100.0% | - | DONE-ADMITTED |
 | risk_off_bond_equity_short | cross_asset | 1895 | 0.0 | YES | 0.0% | LOOSEN | NOT-STARTED |
-| break_retest_confluence | confluence | 1889 | 173.6 |  | 100.0% | NONE | NOT-STARTED |
+| break_retest_confluence | confluence | 1889 | 173.6 | YES | 100.0% | NONE | NOT-STARTED |
 | turtle_soup_short | ict | 1880 | 28.6 | YES | 16.5% | LOOSEN | NOT-STARTED |
 | tema_dema | trend | 1876 | 124.2 | YES | 72.0% | NONE | NOT-STARTED |
 | institutional_strong_conviction_long | institutional_persistence | 1826 | 167.8 | YES | 100.0% | - | DONE-ADMITTED |
@@ -139,7 +139,7 @@
 | bb_squeeze_volume | confluence | 1013 | 93.1 |  | 100.0% | LOOSEN | NOT-STARTED |
 | awesome_oscillator | momentum | 1012 | 65.5 | YES | 70.5% | LOOSEN | NOT-STARTED |
 | cpr_narrow_momentum | confluence | 1001 | 92.0 | YES | 100.0% | BOTH | NOT-STARTED |
-| donchian_breakdown_retest_short | breakout | 999 | 91.8 |  | 100.0% | LOOSEN | NOT-STARTED |
+| donchian_breakdown_retest_short | breakout | 999 | 91.8 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | htf_aligned_breakout_short | multi_timeframe | 996 | 91.5 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | bullish_engulfing_support | candle | 991 | 91.1 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | donchian_breakout_with_smart_money_long | smart_money_sleeve | 985 | 90.5 | YES | 100.0% | LOOSEN | NOT-STARTED |
@@ -173,7 +173,7 @@
 | donchian_breakout_retest_long | breakout | 547 | 50.3 |  | 100.0% | LOOSEN | NOT-STARTED |
 | vix_backwardation_long | cross_asset | 543 | 49.9 | YES | 100.0% | BOTH | NOT-STARTED |
 | institutional_persistence_breakout_long | institutional_persistence | 532 | 48.9 | YES | 100.0% | - | PRUNED-DUPLICATE |
-| ichimoku_cloud_breakout | trend | 511 | 47.0 |  | 100.0% | LOOSEN | NOT-STARTED |
+| ichimoku_cloud_breakout | trend | 511 | 47.0 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | donchian_breakout_long | breakout | 507 | 46.6 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | supertrend_macd | trend | 486 | 44.7 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | head_and_shoulders_top_short | chart_pattern | 477 | 0.0 | YES | 0.0% | LOOSEN | NOT-STARTED |
@@ -243,7 +243,7 @@
 | flag_bull_long | chart_pattern | 63 | 5.8 |  | 100.0% | LOOSEN | NOT-STARTED |
 | news_reversal_short | news_sentiment | 60 | 5.5 | YES | 100.0% | BOTH | NOT-STARTED |
 | rsi9_extreme | mean_reversion | 56 | 5.1 | YES | 100.0% | LOOSEN | NOT-STARTED |
-| flag_bear_retest_short | chart_pattern | 55 | 5.1 |  | 100.0% | LOOSEN | NOT-STARTED |
+| flag_bear_retest_short | chart_pattern | 55 | 5.1 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | pivot_r2_continuation | pivot | 55 | 5.1 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | pivot_s2_bounce | pivot | 55 | 5.1 | YES | 100.0% | BOTH | NOT-STARTED |
 | orb_stocks_in_play_long | orb | 54 | 5.0 | YES | 100.0% | LOOSEN | NOT-STARTED |

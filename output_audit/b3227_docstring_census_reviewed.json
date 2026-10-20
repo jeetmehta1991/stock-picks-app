@@ -1,0 +1,19 @@
+{
+ "generator": "scripts/docstring_gate_census.py (S6-B3227, B3139q-r82)",
+ "rule": "Each strategy below has a docstring gate-listing block naming a key its live gate does not read. Every flag was hand-read at B3139q-r82 (30 blocks across 28 strategies): each is HISTORY kept beside a 'CURRENT GATE (S6-B3227 census, B3139q-r82)' note that states the live gate, or a MIRROR mention. test_b3227 holds the live census EQUAL to this register - a new flag (a gate edit that strands a listed key) fails until the docstring is corrected and the flag reviewed here; a corrected docstring shrinks it.",
+ "reviewed": {
+  "52w_low_breakdown": {"keys": ["vol_spike_17x"], "why": "history: the B589 'Producer signals' line; the CURRENT GATE note records B1144's swap to vol_above_avg"},
+  "52wh_break_retest": {"keys": ["above_avwap_20low", "vol_below_avg"], "why": "history: the Post-B605 listing; the CURRENT GATE note records that the live gate no longer reads either"},
+  "52wl_break_retest_short": {"keys": ["above_avwap_20high", "vol_below_avg"], "why": "history: the B605 mirror listing; the CURRENT GATE note above it states the live legs"},
+  "cpr_narrow_bullish": {"keys": ["rsi_14"], "why": "history: the PRE-B654 audit narrative; the Post-B654 set beneath it matches the live gate"},
+  "donchian_breakout_long": {"keys": ["vol_spike_15x"], "why": "history: the B591 'Producer signals' line; the CURRENT GATE note records vol_spike_12x"},
+  "flag_bear_retest_short": {"keys": ["price_above_ema_200"], "why": "history: the mirror listing's NOT price_above_ema_200; the CURRENT GATE note records below_ema_200"},
+  "hammer_at_support_long": {"keys": ["shooting_star"], "why": "mirror mention: shooting_star is the CC-4 mirror's leg this strategy replaces, not a leg of its gate"},
+  "hull_rsi": {"keys": ["above_200", "below_ema_200", "price_above_ema_200"], "why": "history: the Post-B656 listing and its NOT-pattern footnote; the CURRENT GATE note records the EVENT-anchored legs and names below_ema_200 as B659's interim key"},
+  "institutional_breakout_confirmation_long": {"keys": ["vol_below_avg"], "why": "history: the Post-B611 listing; the CURRENT GATE note records the 4 live legs"},
+  "news_momentum_long": {"keys": ["above_avwap_20low"], "why": "history: the Post-B603 listing; the CURRENT GATE note records the 6 live legs"},
+  "news_momentum_short": {"keys": ["above_avwap_20high", "above_avwap_20low"], "why": "history: the B603 listing's NOT above_avwap_20high and its symmetry note naming the long side's key; the CURRENT GATE note records below_avwap_20high"},
+  "news_reversal_short": {"keys": ["news_article_count"], "why": "history: B614 (c) records swapping news_article_count for news_count_5d"},
+  "r1_break_retest": {"keys": ["above_avwap_20high"], "why": "history: the Post-B606 listing's NOT above_avwap_20high; the CURRENT GATE note records below_avwap_20high"}
+ }
+}

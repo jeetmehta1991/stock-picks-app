@@ -26032,6 +26032,13 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r77: L944, same call as the skill edit.
         ("EVERY DECISION NAMED TO THE OWNER NAMES ITS TICKET",
          "L944 (B3139q-r77): a decision listed to the owner with no ticket"),
+        # B3139q-r82: L945-L947, same call as the skill edit.
+        ("A PACKET OPTION'S SCOPE AND PRICE COME FROM ITS REACH",
+         "L945 (B3139q-r82): an approved change reached further than its packet"),
+        ("MEASURE THE RATE ON THE PART, OR STATE AND TEST THE TRANSFER",
+         "L946 (B3139q-r80): a per-side projection inherited a whole-strategy rate"),
+        ("READ ITS SOURCE FIRST; RUN --help ONLY WHERE A PARSER IS CONFIRMED",
+         "L947 (B3139q-r81): --help rewrote a committed artifact"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26266,7 +26273,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # tripwire clause and #283-section rule; same call as the skill edit).
     # 339 -> 340 at B3139q-r76 (L943's text-edit clause; same call).
     # 340 -> 341 at B3139q-r77 (L944's decision-ticket clause; same call).
-    assert len(gutted) == 341, gutted
+    # 341 -> 344 at B3139q-r82 (L945's reach clause, L946's and L947's rows;
+    # same call as the skill edit).
+    assert len(gutted) == 344, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -58441,6 +58450,247 @@ def test_b1248_lever4_gate_budget_is_the_and_by_default_and_k_of_m_when_set(monk
         assert "_gate_budget" in text and all(f'"{leg}"' in text for leg in legs), (name, text[:200])
 
 
+def test_b3227_docstring_gate_listings_match_the_reviewed_register():
+    """S6-B3227 (owner ruled 2026-10-20, 'Approve all recs fable mode be
+    extremely thorough', option (a) for morning_star; the census its ticket
+    names): scripts/docstring_gate_census.py reads every docstring block that
+    lists a gate set against the strategy's live gate keys. The B3139q-r82
+    census hand-read all of them, corrected each drifted one with a CURRENT
+    GATE note, and recorded the flags that remain - history beside a note, or
+    a mirror mention - with a reason each in
+    output_audit/b3227_docstring_census_reviewed.json. The live flags EQUAL
+    the register, so a gate edit that strands a key a listing still names
+    fails here until the docstring is corrected. And the owner-ruled
+    correction itself stays: morning_star's Gates section says the RSI bound
+    admits deeply oversold readings."""
+    import inspect
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import docstring_gate_census as dgc
+    flags, blocks = dgc.census()
+    assert blocks >= 25, blocks
+    reviewed = dgc.load_reviewed()
+    assert flags == reviewed, ({k: v for k, v in flags.items() if reviewed.get(k) != v},
+                               {k: v for k, v in reviewed.items() if flags.get(k) != v})
+    from backtest.signals.screener import strat_morning_star
+    doc = inspect.getdoc(strat_morning_star)
+    assert "deeply oversold readings are admitted" in doc, doc[-600:]
+    assert "(RSI band rejects fires" not in doc
+
+
+def test_b1248_withdrawn_short_default_is_never_stated_as_current():
+    """L945 (B3139q-r82): r79 withdrew the Batch 291 short default {bear,
+    crisis, neutral} (S6-B1248-SHORT-REGIME-AFFINITY) and swept the scripts
+    and tests that restated it, while 12 strategy docstrings and two engine
+    comments still stated it as current - found and corrected three batches
+    later. A strategy docstring naming that set must cite the withdrawal
+    unless the strategy's own explicit entry IS that set; and the two
+    general statements of the default in regime_selector.py and backtest.py
+    cite it."""
+    import ast as _ast
+    import re as _re
+    from pathlib import Path as _P
+    from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY as A
+    root = _P(__file__).resolve().parents[2]
+    src = (root / "backtest" / "signals" / "screener.py").read_text(encoding="utf-8")
+    pat = _re.compile(r"\{bear,\s*crisis,\s*neutral\}")
+    stated = []
+    for n in _ast.parse(src).body:
+        if not (isinstance(n, _ast.FunctionDef) and n.name.startswith("strat_")):
+            continue
+        doc = _ast.get_docstring(n) or ""
+        if not pat.search(doc):
+            continue
+        if A.get(n.name[len("strat_"):]) == {"bear", "crisis", "neutral"}:
+            continue
+        stated.append(n.name)
+        assert "S6-B1248-SHORT-REGIME-AFFINITY" in doc, n.name
+    assert len(stated) >= 12, stated
+    rs = (root / "backtest" / "engine" / "regime_selector.py").read_text(encoding="utf-8")
+    i = rs.index("correctly per direction once the explicit entry is removed.")
+    assert "S6-B1248-SHORT-REGIME-AFFINITY" in rs[i:i + 200]
+    bt = (root / "backtest" / "engine" / "backtest.py").read_text(encoding="utf-8")
+    j = bt.index("# defaults to {bull, neutral}, short to {bear, crisis, neutral}")
+    assert "S6-B1248-SHORT-REGIME-AFFINITY" in bt[j:j + 200]
+
+
+def _b3243_argv_writers(root):
+    """(writers, mains): scripts/*.py with a __main__ entry that WRITE a file
+    and build no argparse/click parser, and the count of __main__ scripts.
+    A static lower bound - a write behind a helper in another module is not
+    seen."""
+    import ast as _ast
+    import re as _re
+    write = _re.compile(r"\.write_text\(|\.write_bytes\(|json\.dump\(|\.to_csv\(|\.to_parquet\("
+                        r"|open\([^)]*['\"][wa]")
+    out, mains = set(), 0
+    for p in sorted((root / "scripts").glob("*.py")):
+        s = p.read_text(encoding="utf-8", errors="replace")
+        try:
+            tree = _ast.parse(s)
+        except SyntaxError:
+            continue
+        if not any(isinstance(n, _ast.If) and "__main__" in _ast.unparse(n.test) for n in tree.body):
+            continue
+        mains += 1
+        if "argparse" in s or "click" in s:
+            continue
+        if write.search(s):
+            out.add(p.name)
+    return out, mains
+
+
+_B3243_LEGACY_WRITERS = frozenset({
+    "add_updated_producer_signals_columns.py",
+    "apply_csv_loosen_autonomous.py",
+    "audit_ohlcv_integrity_full.py",
+    "audit_ohlcv_ticker_reassignments.py",
+    "b1029_build_inventory.py",
+    "b2938_figures.py",
+    "b748c_data_quality_investigation.py",
+    "b748c_extended_data_quality.py",
+    "b914_cohort_audit_13f_fwd_returns.py",
+    "b916_archetype1_diagnose_before_dispose.py",
+    "b917_coverage_map_rescue_retest.py",
+    "b918_arch1_per_gate_bottleneck.py",
+    "b949_investigate_evidence_source_buckets.py",
+    "b950_measure_counterfactuals.py",
+    "b950_pre_build_audit_d_only.py",
+    "b956_build_findings_triage_queue.py",
+    "b957_audit_retrospective_trial_counts.py",
+    "b974_classify_signal_orphan_17.py",
+    "b978_audit_tier2_wireup_state.py",
+    "b980_track_a_candidate_report.py",
+    "b981_b956_triage_top_n_report.py",
+    "b987_tranche_2_stage5_candidates.py",
+    "build_13f_depth_precompute.py",
+    "build_dashboard_sprint0a.py",
+    "build_dashboard_stage_2.py",
+    "build_fomc_calendar.py",
+    "build_index_rebalance_events.py",
+    "build_r5_cube_dashboard.py",
+    "build_r6_change_list.py",
+    "build_russell_events.py",
+    "build_strategy_producer_map.py",
+    "build_strategy_return_correlation.py",
+    "build_strategy_roster.py",
+    "build_verification_matrix.py",
+    "build_walk_verdict_ledger.py",
+    "build_walk_verdict_ledger_v2.py",
+    "build_wiring_catalog.py",
+    "build_workflow_state.py",
+    "chain_watchdog.py",
+    "classify_deferred_140.py",
+    "cross_audit_strategies_vs_coverage.py",
+    "drift_audit_pre_phase_1a_beta.py",
+    "enhance_skip_recs_per_strategy.py",
+    "fix_change_from_original_and_gate_structure.py",
+    "fix_meta_ticker_corruption.py",
+    "generate_dec_unit_stubs.py",
+    "generate_phase_1a_beta_batches.py",
+    "generate_stage_d_tickers.py",
+    "mae_fitted_stop_census.py",
+    "measure_exit_selection_noise.py",
+    "measure_news_coverage_batch_a.py",
+    "measure_producer_coverage.py",
+    "measure_roster_breadth.py",
+    "measure_roster_breadth_and_alpha.py",
+    "migrate_string_dates.py",
+    "parse_aaii_asset_allocation.py",
+    "parse_aaii_sentiment.py",
+    "phase_1_add_execution_status_column.py",
+    "phase_1_add_final_actions_column.py",
+    "phase_1_add_investigation_columns.py",
+    "phase_1_analysis_turn_1.py",
+    "phase_1_analysis_turn_10.py",
+    "phase_1_analysis_turn_11.py",
+    "phase_1_analysis_turn_12.py",
+    "phase_1_analysis_turn_13.py",
+    "phase_1_analysis_turn_2.py",
+    "phase_1_analysis_turn_3.py",
+    "phase_1_analysis_turn_4.py",
+    "phase_1_analysis_turn_5.py",
+    "phase_1_analysis_turn_6.py",
+    "phase_1_analysis_turn_7.py",
+    "phase_1_analysis_turn_8.py",
+    "phase_1_analysis_turn_9.py",
+    "phase_1_correction_direction_and_signal_errors.py",
+    "phase_1_correction_vol_spike_naming.py",
+    "phase_1_investigation_autonomous_loop.py",
+    "phase_1_investigation_turn_1_ichimoku.py",
+    "phase_1_investigation_turn_2.py",
+    "phase_1_investigation_turn_3_ict_smc.py",
+    "phase_1_investigation_turn_4_news_pead.py",
+    "phase_1_investigation_turn_5_chart_pattern.py",
+    "phase_1_investigation_turn_6_final.py",
+    "phase_1_investigation_turn_7_silent_misses.py",
+    "phase_1_investigation_turn_8_adjacent_family.py",
+    "phase_1_investigation_turn_9_critical_producers.py",
+    "prefetch_alfred_mirror.py",
+    "prefetch_apewisdom_subreddits.py",
+    "prefetch_cftc_cot.py",
+    "prefetch_cftc_extended.py",
+    "prefetch_fred_metadata.py",
+    "prefetch_macro.py",
+    "prefetch_polygon_corp_actions_full.py",
+    "prefetch_polygon_economy.py",
+    "prefetch_polygon_forex.py",
+    "prefetch_polygon_futures.py",
+    "prefetch_polygon_grouped_daily.py",
+    "prefetch_polygon_indices.py",
+    "prefetch_polygon_prev_related.py",
+    "prefetch_polygon_reference_extended.py",
+    "prefetch_polygon_statics.py",
+    "prefetch_quiver.py",
+    "prefetch_wikipedia_revisions.py",
+    "probe_api_catalog.py",
+    "reconcile_self_measures.py",
+    "reconcile_strategy_population.py",
+    "refresh_economic_calendar.py",
+    "regime_conditional_gate.py",
+    "remediate_spec_without_build.py",
+    "remediate_test_signal_unverified.py",
+    "restore_final_recommended_actions_from_recommendation.py",
+    "revert_batch_69_phase_1.py",
+    "short_regime_affinity_census.py",
+    "smoke_candle_step05.py",
+    "stream_v_verify_reproducibility.py",
+    "triage_quarantine.py",
+    "validate_smc_panel_cache_semantic.py",
+    "verify_batch_69_phase_3.py",
+    "verify_turn_compliance.py",
+    "walk_forward_batch414_cells.py",
+    "write_cache_schemas.py"
+})
+
+
+def test_b3243_a_writing_script_parses_its_arguments():
+    """L947 / #327 (B3139q-r81..r82): `python scripts/lever4_condition_census.py
+    --help` ran main() - the script read sys.argv by hand and ignored what it
+    did not know - and rewrote a committed artifact (restored from HEAD; the
+    census parses its arguments since r81). A script with a __main__ entry
+    that WRITES a file parses its arguments, so an unknown one - --help
+    included - refuses before any write. MEASURED with this scan after the
+    census fix: 120 legacy writers have no parser; they are frozen BY NAME
+    above, shrink-only - a new writer outside the set fails, and a member
+    that gains a parser or is deleted must leave it."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    writers, mains = _b3243_argv_writers(root)
+    assert mains >= 400, mains
+    assert writers - _B3243_LEGACY_WRITERS == set(), (
+        "a new script writes without parsing its arguments - give it argparse",
+        sorted(writers - _B3243_LEGACY_WRITERS))
+    assert _B3243_LEGACY_WRITERS - writers == set(), (
+        "a legacy writer now parses its arguments or is gone - remove it from the frozen set",
+        sorted(_B3243_LEGACY_WRITERS - writers))
+    assert "lever4_condition_census.py" not in writers
+    assert len(_B3243_LEGACY_WRITERS) <= 120, len(_B3243_LEGACY_WRITERS)
+
+
 def test_b3155b_provenance_repair_holds_the_prefetch_bar(tmp_path):
     """S6-B3155b (owner ruled 2026-10-19, 'Fable mode / Approve all
     recommendations', option (a)): the 7 partial 2026-05-05 bars the third
@@ -59474,7 +59724,7 @@ def test_b3232_long_shortlist_reads_in_sample_only_and_open_longs():
             want = v["projected_step1_fires"] * sh * r["long_survival_r5"]
             assert abs(r["projected_step1_fires_long"] - want) <= 0.1, (r, want)
             asym += r["long_survival_r5"] != v["survives_pct"]
-    assert asym >= 10, asym  # MEASURED B3139q-r80: 12 of the 56 two-sided rows
+    assert asym >= 10, asym  # 13 at B3139q-r82: rows with R5 fires both ways (the r80 probe's 12 counted registry duals)
     # the status view's per-side record agrees with its total on every fired
     # row: side denominators sum to r5_fires, and the fire-weighted mean of
     # the side survivals is survives_pct to rounding

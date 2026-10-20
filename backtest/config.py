@@ -2610,9 +2610,9 @@ except Exception:
     raise ValueError(f"SMC_BREAKER_VARIANTS is not valid JSON: {_raw!r}")
 del _raw
 
-# Which EMA span the trend leg reads. compute_ema_sma emits spans 9/20/21/50/200
-# from pairs (9,21),(20,50),(50,200) - so no producer change is needed, only a
-# change of which emitted signal the strategy consumes.
+# Which EMA span the trend leg reads. compute_ema_sma emits every span in EMA_PAIRS
+# (default 9:21,20:50,50:200,100:150 - spans 9/20/21/50/100/150/200) - so no producer
+# change is needed, only a change of which emitted signal the strategy consumes.
 STRAT_EMA_SPAN: int = int(os.environ.get("STRAT_EMA_SPAN", "200"))
 
 # S6-B3171 (owner T3 band words 2026-10-14): the naked-POC producer's knobs

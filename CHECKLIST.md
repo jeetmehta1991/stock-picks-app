@@ -3091,6 +3091,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r76 / L943) - A TEXT EDIT MOVES LINES TOO.** B3139q-r74's bullet rewrite (first changed line 258, net -6) moved the cited lines of 24 of 26 live-code screener.py citations without the L901 grep; 3 had been right and 21 were already wrong. ENFORCED BY test_b3231_screener_is_cited_by_symbol_not_line (zero live-code line citations of screener.py, one asserted-exact exemption), fail-proved.
 
+**INSTANCE (B3139q-r82 / L945) - THE POST-FIX SWEEP STOPPED AT EXECUTABLE RESTATEMENTS.** r79 withdrew the short regime default and corrected the scripts and tests restating it, while 12 strategy docstrings and 2 engine comments kept stating it as current until r82. Mechanism: test_b1248_withdrawn_short_default_is_never_stated_as_current.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
@@ -4095,6 +4097,8 @@ to that shape only.**
 
 **INSTANCE (B3139q-r71c / L922) - WHAT THE MACHINERY WILL DO IS A CAPABILITY CLAIM; OPEN WHAT DECIDES IT.** An hourly report and two push notifications told the owner a drained battery would kill the live EMA run; this laptop's critical-battery action on DC is Hibernate (powercfg) and both cap sites credit sleep, so the run pauses. The same session's audit objected to a fix on the claim that the landing supervisor stages the landings file; its commit pathspec does not contain it. Both pointed toward caution, which is why neither was re-derived (L840).
 
+**INSTANCE (B3139q-r82 / L945) - A PACKET PRICED A CHANGE FROM THE CODE PATH IN FRONT OF IT.** The r77 decision packet described S6-B1248-SHORT-REGIME-AFFINITY (a) by the campaign path (which bypasses the regime filter) and missed Phase 1B and 23 explicit entries, and priced S6-B1248-LEVER4 (a) as one Step-1 run each while 0 of 4 strategies had any on-ramp rung. Both were found at execution, after the owner had approved on the packet's words. Mechanism: the L945 skill clause (a packet option's scope and price come from its reach), pinned by test_b2123.
+
 ### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
 
 **INSTANCE (B3139q-r68b / L909), compliance failure against this item:** the L908 Phase-5 commit (f5afa5e5f) was followed by a queue-only commit in the same turn, so the one-commit-deep gate could not see its members; the same close reported a five-config chain as five running when 1 of 5 ran (compliance failure against #122, the L738 level-per-member rule).
@@ -4846,6 +4850,8 @@ shipped in a different batch.
 and a lesson, not a diff. **Calling every doc-only DONE a false claim would be the same
 category-to-claim leap as the 271** - one council advisor did exactly that, reading 87pct born-DONE
 as "87pct fabrication".
+
+**INSTANCE (B3139q-r82 / L946) - A PER-SIDE NUMBER INHERITED A WHOLE-STRATEGY RATE.** The r79 shortlist projected two-sided strategies' long sides with strategy-level survival; 12 of 56 two-sided rows survive differently (morning_star long 0.9753 vs 0.4618). Mechanism: the status view's per-side record and test_b3232's per-side checks (r80).
 
 ### #258 - DONE IS SELF-REPORTED; CLOSED IS VERIFIED AGAINST CODE (B1778 / L533)
 
@@ -6330,6 +6336,8 @@ Two additions, both from L852. (a) **ORDER.** A targeted test step runs AFTER ev
 
 **INSTANCE (B3139q-r72r / L938) - A COLLAPSE MOVED A STRUCTURAL COUNT THE SEARCH NEVER NAMED.** S6-B3096g replaced four engine_state dict literals with one builder; the pin search named the edited strings and missed test_b3185, which counts dict literals carrying sim_day_index against a floor of 5. The full gate refused the batch before commit. A refactor that collapses copies searches for the pins it breaks by STRUCTURE as well: every test walking the collapsed node type over the file, or every key of the collapsed literal.
 
+**INSTANCE (B3139q-r82 / L945) - THE PIN SEARCH STOPPED AT THE TESTS JUST WRITTEN.** r80 ran its own pins and an extended-tier control and never grepped test_unit.py for the changed strategies' names; test_batch216 pinned the S6-B3222 defect and turned the gate RED (1 failed, 1,812 passed), and spot_check_smc_family.GATES carried the same stale leg with no pin on it. Mechanism: the full gate, and test_b3222's every-leg check of that table.
+
 ### #316 - EVERY ARM OF ONE BOOLEAN COMPARES THE SAME WAY (L853, S6-B3036, 2026-09-23)
 
 When a single acceptance or rejection expression ORs several arms together, every arm normalises its input identically - same case folding, same whitespace, same stripping - or each divergence is justified IN THE CODE beside the arm. A mixed boolean fails as a FALSE NEGATIVE on the compliant author who writes naturally, which is the direction nobody reports: the arm that rejects wrongly is the one whose victim assumes they got the wording wrong. MEASURED: `#300`'s pin ORed three case-sensitive arms with one `.lower()` arm, so a durability clause opening a sentence with a capital D was invisible, and both #315 sections failed (written WITHOUT the header marker on purpose: the #300 pin splits sections on that token, so quoting it here would split THIS item in two and hide its JUDGMENT-ONLY from its own durability clause - the defect was live in the first draft of this line) while carrying the exact clause the rule demands. THE FIX IS NOT UNIFORM NORMALISATION: where an arm is an ESCAPE, it takes the stricter matcher (L528) - `"Mechanism"` stays capitalised because it marks L548's structured form and lowercasing it would match the prose "no mechanism is possible", the bare label the rule refuses. WHICH CANDIDATE WAS COMPARED (L720): L771 covers a PROBE diverging from the ASSERTION it validates - two expressions drifting apart over time - and does not reach one expression whose own arms disagree at authoring time; #226 proves a pin CAN fail and is silent about which compliant inputs it wrongly rejects. Mechanism: the arm's verdict is now pinned in BOTH directions by the five-case table inside `test_b2705_judgment_only_declarations_carry_their_search` - two must-refuse (bare label, "no mechanism is possible") and three must-accept (capitalised, lowercase, L548 form).
@@ -6529,3 +6537,19 @@ the pin does not list is JUDGMENT-ONLY (the construct is semantics a scan reads
 only for the flags it names); durability is
 test_b3196_selector_rule_is_in_the_durable_docs plus the tripwire row in the
 execution-discipline skill, pinned by test_b2123.
+
+### #327 - LEARN A SCRIPT'S INTERFACE BY READING IT; A WRITING SCRIPT PARSES ITS ARGUMENTS (B3139q-r81 / L947, self-caught 2026-10-20)
+
+Before running a script to see its flags, read its source: an argparse (or
+click) block makes --help read-only, while a script that reads sys.argv by
+hand may run main() on any argument and write its artifact. A script with a
+__main__ entry that writes a file parses its arguments, so an unknown one -
+--help included - refuses before any write. MEASURED (L947): --help rewrote
+the committed LEVER4 census; 121 of 436 writer scripts had no parser before
+the census fix, 120 after.
+
+MECHANISM: test_b3243_a_writing_script_parses_its_arguments freezes the 120
+legacy writers by name, shrink-only - a new writer without a parser fails, and
+a member that gains one or is deleted must leave the set. Reading before
+running is JUDGMENT-ONLY (no scan sees an intent to probe); durability is the
+tripwire row in the execution-discipline skill, pinned by test_b2123.
