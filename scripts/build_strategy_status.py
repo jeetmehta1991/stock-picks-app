@@ -256,10 +256,17 @@ def classify_stream(tightenable: bool, projected: float) -> str:
 # TERMINAL rows leave every work lane; NEVER_REOPEN rows are owner decisions,
 # not gate verdicts, so the reopen flag (a changed entry condition) never
 # applies to them.
+# S6-B2420 DROPPED (owner ruling 2026-10-20, 'Approve all recs fable mode be
+# extremely thorough'): the short-leg Step 2 that kept IN-ROSTER-MIRROR open
+# is withdrawn, so the mirror lane is terminal too - on the roster by the
+# mirror policy, closed to re-testing like every member ('2 yes. No more
+# retesting', 2026-09-29), with no work scheduled - and, being an owner
+# decision rather than a gate verdict, never flagged for reopening.
 TERMINAL_STATUSES = ("DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED",
-                     "DISABLED", "PRUNED-DUPLICATE", "CLOSED-NEGATIVE",
-                     "CONTAINED-IN-REPRESENTATIVE")
-NEVER_REOPEN = ("DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED")
+                     "IN-ROSTER-MIRROR", "DISABLED", "PRUNED-DUPLICATE",
+                     "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE")
+NEVER_REOPEN = ("DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED",
+                "IN-ROSTER-MIRROR")
 OWNER_CLOSURES = Path("output_audit") / "owner_campaign_closures.json"
 
 
@@ -391,8 +398,9 @@ def status_for(name: str, *, admitted, roster_status, owner_closed, disabled,
     """B2825 precedence - ONE status per strategy, mutually exclusive by
     construction; a terminal disposition beats a campaign mention.
     S6-B3135a: an owner-closed campaign (DONE-OWNER-CLOSED) outranks every
-    lane, the roster-mirror lane included - a mirror stays IN-ROSTER-MIRROR
-    (non-terminal) only while the owner has work scheduled on it (S6-B2420).
+    lane, the roster-mirror lane included - a closed mirror reads
+    DONE-OWNER-CLOSED, any other mirror IN-ROSTER-MIRROR; both are terminal
+    since the owner dropped the mirrors' Step 2 (S6-B2420, 2026-10-20).
     An admission or a graded funnel cell outranks a closure: both are already
     terminal, and the admission is the stronger fact."""
     if name in admitted:
@@ -607,12 +615,12 @@ def main() -> int:
              "the Phase 1B roster, terminal like an admission and CLOSED to "
              "re-testing like one (owner 2026-09-29, '2 yes. No more "
              "retesting'); a short mirror retained by the owner's mirror "
-             "policy is on the roster but UNGRADED, so it keeps its lane "
-             "while the owner has Step 2 scheduled on it (S6-B2420)",
+             "policy is on the roster, UNGRADED beyond R5, and terminal "
+             "since the owner dropped its Step 2 (S6-B2420, 2026-10-20)",
              "DONE-OWNER-CLOSED (S6-B3135a) is a campaign the owner closed "
              "outright, read from output_audit/owner_campaign_closures.json "
              "with the owner's words; it outranks the mirror lane, so "
-             "IN-ROSTER-MIRROR is exactly the mirrors with scheduled work. "
+             "IN-ROSTER-MIRROR is exactly the mirrors the owner has not closed. "
              "A closed mirror stays ON the Phase 1B roster - the closure "
              "ends its campaign, not its membership"],
          "phase1b_roster": _mem_sum,
@@ -656,7 +664,7 @@ def main() -> int:
          f"| registered strategies | {len(recs)} |",
          f"| DONE - admitted to Phase 1B | {bystatus.get('DONE-ADMITTED', 0)} |",
          f"| IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | {bystatus.get('IN-ROSTER-FUNNEL', 0)} |",
-         f"| IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded, with Step 2 scheduled (S6-B2420) | {bystatus.get('IN-ROSTER-MIRROR', 0)} |",
+         f"| IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded beyond R5, terminal (its Step 2 dropped 2026-10-20, S6-B2420) | {bystatus.get('IN-ROSTER-MIRROR', 0)} |",
          f"| DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | {bystatus.get('DONE-OWNER-CLOSED', 0)} |",
          f"| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | {bystatus.get('IN-CAMPAIGN', 0)} |",
          f"| STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | {bystatus.get('STALLED-CAMPAIGN', 0)} |",
@@ -701,8 +709,8 @@ def main() -> int:
           "- `IN-ROSTER-FUNNEL` / `IN-ROSTER-MIRROR` (S6-B3135): read from "
           "scripts/phase1b_membership.py, the one reader of the Phase 1B roster. "
           "A funnel cell is terminal like an admission and closed to re-testing "
-          "like one (owner 2026-09-29); a mirror is ungraded and keeps its lane "
-          "while the owner has Step 2 scheduled on it (S6-B2420).",
+          "like one (owner 2026-09-29); a mirror is ungraded beyond R5 and "
+          "terminal too - the owner dropped its Step 2 (S6-B2420, 2026-10-20).",
           "- `DONE-OWNER-CLOSED` (S6-B3135a, owner 2026-09-29): a campaign the "
           "owner closed outright (output_audit/owner_campaign_closures.json, "
           "each with the owner's words). Terminal; never auto-reopened. A "

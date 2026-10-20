@@ -217,9 +217,10 @@ family that was already finished.
 
 **Columns** - strategy, family (the category the strategy declares in its own `_strat` / `_strat3`
 call), R5 fires, projected Step-1 fires, changed-since-R5, survives_pct, STREAM, ticket, status -
-one of ELEVEN, mutually exclusive (B2825/B2833/S6-B3135/S6-B3135a): seven terminal (DONE-ADMITTED /
-IN-ROSTER-FUNNEL / DONE-OWNER-CLOSED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE /
-CONTAINED-IN-REPRESENTATIVE) and four in lanes (IN-ROSTER-MIRROR / IN-CAMPAIGN / STALLED-CAMPAIGN /
+one of ELEVEN, mutually exclusive (B2825/B2833/S6-B3135/S6-B3135a/S6-B2420): eight terminal
+(DONE-ADMITTED / IN-ROSTER-FUNNEL / DONE-OWNER-CLOSED / IN-ROSTER-MIRROR / DISABLED /
+PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED-IN-REPRESENTATIVE - the mirror lane closed when the
+owner dropped its Step 2, 2026-10-20) and three in lanes (IN-CAMPAIGN / STALLED-CAMPAIGN /
 NOT-STARTED). The ticket column is the campaign's tickets from the owner-opened register (S6-B3194).
 
 **STREAM is the optimisation lane, and the rule is mechanical:**

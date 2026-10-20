@@ -21,7 +21,7 @@ the formula <-> Table A cross-check.
 
 **Generated, never hand-edited.** Regenerate with:
 
-    python scripts/build_table_a.py --lane TIGHTEN                      # tighten/ (10 files; an admitted/terminal row's charter moves to archive/ - B3115 three_white_soldiers, S6-B3145 pairs_mean_reversion_long; test_b2836 holds file-set == lane-set, test_b3167 this count)
+    python scripts/build_table_a.py --lane TIGHTEN                      # tighten/ (9 files; an admitted/terminal row's charter moves to archive/ - B3115 three_white_soldiers, S6-B3145 pairs_mean_reversion_long, the S6-B2420 drop pairs_mean_reversion_short (a terminal roster mirror, 2026-10-20); test_b2836 holds file-set == lane-set, test_b3167 this count)
     python scripts/build_table_a.py --lane BOTH --subdir tighten/both   # tighten/both/ (29 files, owner-directed placement)
 
 Each file carries an L803/#309 build stamp (generator + cube + status build +

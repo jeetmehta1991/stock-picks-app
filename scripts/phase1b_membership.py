@@ -126,8 +126,8 @@ def roster_status(name: str, mem: dict) -> str | None:
     """The status-view label a roster member carries when it is not a Step-2
     admission: a graded funnel cell is IN-ROSTER-FUNNEL (terminal - on the
     roster, closed like an admission); a policy mirror is IN-ROSTER-MIRROR
-    (NOT terminal - ungraded, and the owner scheduled Step 2 on the short
-    legs, S6-B2420). None for a non-member."""
+    (terminal too since the owner dropped the short legs' Step 2 on
+    2026-10-20, S6-B2420 - ungraded beyond R5). None for a non-member."""
     r = mem.get(name)
     if r is None:
         return None

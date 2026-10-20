@@ -39048,9 +39048,10 @@ def test_b2825_status_groups_are_mutually_exclusive():
     d = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
                    .read_text(encoding="utf-8"))
     rows = d["rows"]
+    # S6-B2420 DROPPED (owner 2026-10-20): the mirror lane is terminal too
     TERMINAL = {"DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED",
-                "DISABLED", "PRUNED-DUPLICATE", "CLOSED-NEGATIVE",
-                "CONTAINED-IN-REPRESENTATIVE"}
+                "IN-ROSTER-MIRROR", "DISABLED", "PRUNED-DUPLICATE",
+                "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE"}
     import collections
     st = collections.Counter(r["status"] for r in rows)
     assert sum(st.values()) == len(rows) == 225
@@ -39067,8 +39068,8 @@ def test_b2825_status_groups_are_mutually_exclusive():
     # status, never a work lane. The expected SETS are derived from the
     # defining sources (L697) - the membership reader and the owner-closure
     # register - never hand-listed: funnel cells are terminal, owner-closed
-    # mirrors are terminal, and the remaining mirrors (S6-B2420's short legs)
-    # keep their lane.
+    # mirrors are terminal, and since S6-B2420 was dropped (owner 2026-10-20)
+    # the remaining mirrors are terminal too - no Step 2 is scheduled on them.
     import sys as _sys
     if str(root / "scripts") not in _sys.path:
         _sys.path.insert(0, str(root / "scripts"))
@@ -39095,7 +39096,8 @@ def test_b2825_status_groups_are_mutually_exclusive():
     for r in rows:
         if r["reopen_candidate"]:
             assert r["status"] in TERMINAL and r["status"] not in (
-                "DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED")
+                "DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED",
+                "IN-ROSTER-MIRROR")
     assert any("never auto-reopened" in c for c in d["caveats"])
 
 
@@ -39367,7 +39369,10 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     # R1 band sub-rows present in every file (>= 1 '| BAND |' row each)
     cmf = (d / "cmf_flip.md").read_text(encoding="utf-8")
     assert "po3_accum_range_pct `>= 0.0458`" in cmf
-    prs = (d / "pairs_mean_reversion_short.md").read_text(encoding="utf-8")
+    # S6-B2420 DROPPED (owner 2026-10-20): the pairs mirror is a terminal
+    # roster row, so its charter left the lane for the archive (B3116)
+    prs = (root / "archive" / "2026-10-20-pairs-short-mirror-table-a" /
+           "pairs_mean_reversion_short.md").read_text(encoding="utf-8")
     assert "ppo_signal `>= -0.858`" in prs
     for p in d.glob("*.md"):
         assert "| BAND |" in p.read_text(encoding="utf-8"), (
@@ -50529,7 +50534,10 @@ def test_b3135_roster_members_get_roster_statuses_never_work_lanes():
     # from its source text (the prior text pin broke on the first re-order)
     import build_strategy_status as bss
     assert "IN-ROSTER-FUNNEL" in bss.TERMINAL_STATUSES
-    assert "IN-ROSTER-MIRROR" not in bss.TERMINAL_STATUSES
+    # S6-B2420 DROPPED (owner 2026-10-20): no Step 2 is scheduled on the
+    # mirrors, so the mirror lane is terminal and never flagged for reopening
+    assert "IN-ROSTER-MIRROR" in bss.TERMINAL_STATUSES
+    assert "IN-ROSTER-MIRROR" in bss.NEVER_REOPEN
 
 
 def test_b3135_long_only_producer_keys_are_all_declared(monkeypatch):
@@ -50594,7 +50602,8 @@ def _b3137_main_calls(src):
 def test_b3137_status_precedence_puts_owner_closure_above_the_mirror_lane():
     """S6-B3135a (owner 2026-09-29, '4 close and mark it as done'): status_for
     is the ONE precedence. An owner-closed mirror reads DONE-OWNER-CLOSED
-    (terminal); an open mirror keeps IN-ROSTER-MIRROR (its lane); an admission
+    (terminal); any other mirror reads IN-ROSTER-MIRROR (terminal too since
+    S6-B2420 was dropped, 2026-10-20); an admission
     and a graded funnel cell outrank a closure; a closure outranks every other
     terminal population and every lane; someone else's closure changes
     nothing. main() decides status ONLY through status_for and reads the
@@ -50628,7 +50637,7 @@ def test_b3137_status_precedence_puts_owner_closure_above_the_mirror_lane():
     assert f(owner_closed={"y"}) == "NOT-STARTED"
     assert "DONE-OWNER-CLOSED" in bss.TERMINAL_STATUSES
     assert "DONE-OWNER-CLOSED" in bss.NEVER_REOPEN
-    assert "IN-ROSTER-MIRROR" not in bss.TERMINAL_STATUSES
+    assert "IN-ROSTER-MIRROR" in bss.TERMINAL_STATUSES   # S6-B2420 dropped
     assert set(bss.NEVER_REOPEN) <= set(bss.TERMINAL_STATUSES)
 
     src = (_SCRIPTS_B3135 / "build_strategy_status.py").read_text(encoding="utf-8")
@@ -50666,8 +50675,9 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
     without words, date or strategy, and a double closure each RAISE. On the
     real tree both closures are roster mirrors (a closure never removes
     membership), and the roster's 9 mirrors minus the closures, run through
-    the builder's own precedence and populations, are exactly S6-B2420's
-    seven short legs - the owner's 2026-09-24 scope list."""
+    the builder's own precedence and populations, are exactly the seven
+    short legs S6-B2420 scheduled (the owner's 2026-09-24 scope list; the
+    programme was dropped 2026-10-20)."""
     import phase1b_membership as pm
     import build_strategy_status as bss
     reg = bss.load_owner_closures(_REPO_B3135)
@@ -50773,47 +50783,56 @@ def test_b3137_the_whole_phase1b_roster_is_closed_at_launch(monkeypatch):
     assert len(r) == 1 and "unreadable" in r[0], r
 
 
-def test_b3137_s6_b2420_overrides_open_exactly_the_seven_short_legs():
-    """S6-B2420 + S6-B3135a (owner 2026-09-24 'Approve all other recs', and
-    2026-09-29 '3 yes approve your recommendation'): the override register
-    names exactly the seven short legs, which are exactly the roster mirrors
-    that stay IN-ROSTER-MIRROR once the owner's closures are applied. Each leg
-    passes the gate with ITS OWN entry; the same entries do NOT open the
-    owner-closed candle mirror, a funnel long, or a leg whose own entry is
-    missing (an override names its target - L789)."""
+def test_b3137_s6_b2420_overrides_are_retired_and_every_mirror_is_refused(
+        tmp_path, monkeypatch):
+    """S6-B2420 DROPPED (owner ruling 2026-10-20, verbatim 'Approve all recs
+    fable mode be extremely thorough', the recommendation being (a) drop the
+    short-leg Step 2 - shorts carry no target since 2026-10-19). The register
+    that opened the seven short legs to a Step-2 re-test (owner 2026-09-24 and
+    2026-09-29) is RETIRED: its live overrides are empty, the seven entries
+    stay under retired_overrides with the owner's words, and the launch gate
+    and the offline holdout refusal close every one of them again. The
+    override MECHANISM is unchanged - an entry naming its target still opens
+    exactly that target and no other (L789), proved on a temp register."""
     import phase1b_membership as pm
     import producer_variant_table as pvt
     import build_strategy_status as bss
     root = _REPO_B3135
-    ov = json.loads((root / "output_audit" / "s6_b2420_retest_overrides.json")
-                    .read_text(encoding="utf-8"))["overrides"]
+    reg = json.loads((root / "output_audit" / "s6_b2420_retest_overrides.json")
+                     .read_text(encoding="utf-8"))
+    assert reg["overrides"] == {}, reg["overrides"]
+    assert reg["retired"]["ruled"] == "2026-10-20"
+    assert reg["retired"]["ruling_verbatim"] == (
+        "Approve all recs fable mode be extremely thorough")
+    old = reg["retired_overrides"]
     mem = pm.members(root)
     mirrors = {n for n in mem if pm.roster_status(n, mem) == "IN-ROSTER-MIRROR"}
     closed = set(bss.load_owner_closures(root))
-    # the S6-B3145 mirror was admitted after S6-B2420 and is NOT on its
-    # register: it stays CLOSED at launch by the owner's 2026-10-13 ruling
-    # (S6-B3145b DROPPED)
-    assert _B3145_CLOSED_MIRROR <= mirrors - closed
-    assert set(ov) == mirrors - closed - _B3145_CLOSED_MIRROR, sorted(
-        set(ov) ^ (mirrors - closed - _B3145_CLOSED_MIRROR))
-    for s in sorted(_B3145_CLOSED_MIRROR):
-        r = pvt._admitted_retest_refusals(
-            {"owner_override_retest_admitted": ov}, root, [s])
-        assert len(r) == 1 and "ALREADY ADMITTED" in r[0], (s, r)
-    assert len(ov) == 7
-    for s, words in ov.items():
+    # the retired seven are exactly the mirrors the register once opened: the
+    # roster's mirrors less the owner's closures and the S6-B3145 mirror
+    assert len(old) == 7
+    assert set(old) == mirrors - closed - _B3145_CLOSED_MIRROR, sorted(
+        set(old) ^ (mirrors - closed - _B3145_CLOSED_MIRROR))
+    for s, words in sorted(old.items()):
         assert "Approve all other recs" in words and "3 yes approve" in words
-        assert pvt._admitted_retest_refusals(
-            {"owner_override_retest_admitted": {s: words}}, root, [s]) == []
-        # without its own entry the same leg is refused
-        others = {k: v for k, v in ov.items() if k != s}
         r = pvt._admitted_retest_refusals(
-            {"owner_override_retest_admitted": others}, root, [s])
+            {"owner_override_retest_admitted": reg["overrides"]}, root, [s])
         assert len(r) == 1 and "ALREADY ADMITTED" in r[0], (s, r)
-    for s in ("three_black_crows_short", "smc_breaker_block_short", "totm_long"):
-        r = pvt._admitted_retest_refusals(
-            {"owner_override_retest_admitted": ov}, root, [s])
-        assert len(r) == 1 and "ALREADY ADMITTED" in r[0], (s, r)
+        msg = pvt.offline_retest_refusal(s)
+        assert msg and "ALREADY ADMITTED" in msg, (s, msg)
+    # the mechanism survives: an entry opens its own target and no other
+    one, other = sorted(old)[:2]
+    assert pvt._admitted_retest_refusals(
+        {"owner_override_retest_admitted": {one: old[one]}}, root, [one]) == []
+    r = pvt._admitted_retest_refusals(
+        {"owner_override_retest_admitted": {one: old[one]}}, root, [other])
+    assert len(r) == 1 and "ALREADY ADMITTED" in r[0], (other, r)
+    p = tmp_path / "reg.json"
+    p.write_text(json.dumps({"overrides": {one: old[one]}}), encoding="utf-8")
+    monkeypatch.setattr(pvt, "RETEST_OVERRIDES", p)
+    assert pvt.offline_retest_refusal(one) is None
+    assert "ALREADY ADMITTED" in (pvt.offline_retest_refusal(other) or "")
+
 
 # ---------------------------------------------------------------- S6-B3136
 _B3137_NEAR = {"smc_breaker_block_long", "three_white_soldiers",
@@ -51586,9 +51605,18 @@ def test_b3139_offline_holdout_reads_refuse_a_closed_strategy(tmp_path, monkeypa
     msg = pvt.offline_retest_refusal("smc_breaker_block_long")
     assert msg and "ALREADY ADMITTED" in msg, msg
     import json as _json
-    ov = _json.loads(pvt.RETEST_OVERRIDES.read_text(encoding="utf-8"))["overrides"]
-    over = sorted(ov)[0]
+    # S6-B2420 DROPPED (owner 2026-10-20): the live register opens nothing,
+    # so a former override target is refused like any member; the override
+    # path itself is proved on a temp register naming that target
+    reg = _json.loads(pvt.RETEST_OVERRIDES.read_text(encoding="utf-8"))
+    assert reg["overrides"] == {}, reg["overrides"]
+    over = sorted(reg["retired_overrides"])[0]
     assert over in closed, over
+    assert "ALREADY ADMITTED" in (pvt.offline_retest_refusal(over) or ""), over
+    tmp_reg = tmp_path / "reg.json"
+    tmp_reg.write_text(_json.dumps(
+        {"overrides": {over: reg["retired_overrides"][over]}}), encoding="utf-8")
+    monkeypatch.setattr(pvt, "RETEST_OVERRIDES", tmp_reg)
     assert pvt.offline_retest_refusal(over) is None, over
     assert pvt.offline_retest_refusal("bollinger_lower") is None
     monkeypatch.setattr(pvt, "RETEST_OVERRIDES", tmp_path / "absent.json")
