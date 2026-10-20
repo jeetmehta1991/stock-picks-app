@@ -300,12 +300,22 @@ def load_admissions(admissions_path=None) -> list[dict]:
 
     An absent file is the feature being absent - nothing ruled yet - and
     returns [] (absence of DATA, not of a bound; L643's discriminator).
+    S6-B3218: a PRESENT file must carry an 'admissions' list (an empty list
+    is data); one without it is refused, because reading it as empty would
+    render no Step-2 admissions and say nothing - the S6-B3217 class.
     """
     p = Path(admissions_path) if admissions_path else (
         REPO / "output_audit" / "phase_1b_step2_admissions.json")
     if not p.exists():
         return []
-    return json.loads(p.read_text(encoding="utf-8")).get("admissions") or []
+    doc = json.loads(p.read_text(encoding="utf-8"))
+    adms = doc.get("admissions") if isinstance(doc, dict) else None
+    if not isinstance(adms, list):
+        raise ValueError(
+            f"S6-B3218: {p} is present but carries no 'admissions' list "
+            f"({type(adms).__name__}) - a roster built from it would show no "
+            f"Step-2 admissions; refusing rather than reading it as empty")
+    return adms
 
 
 # S6-B3136 (owner ruling 2026-09-29, '1 approve your recommendation'): three

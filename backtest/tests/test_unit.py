@@ -58502,3 +58502,35 @@ def test_b3139c_removed_literal_pins_finds_a_test_quoting_removed_text(tmp_path)
     hits = rlp.quoting_hits(gone, [pin, quiet])
     assert [(_P(f).name, lit) for f, _ln, lit in hits] == [("test_pin.py", "rsi_14<60")], hits
     assert rlp.removed_literals('a = "kept"\nb = 1\n', 'b = 1\na = "kept"\n') == set()
+
+
+def test_b3218_a_present_admissions_record_without_its_list_is_refused(tmp_path):
+    """S6-B3218 (owner 2026-10-19, 'implement now'): build_phase_1b_roster's
+    load_admissions read a PRESENT record with no 'admissions' list as EMPTY,
+    so the roster would render no Step-2 admissions and say nothing (MEASURED
+    B3139q-r72n: [] for a keyless copy against 16 for the live file). The
+    absent FILE stays the documented feature (nothing ruled yet) and returns
+    []; a list - even an empty one - is data; every other shape is refused."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    import pytest as _pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import build_phase_1b_roster as m
+    assert m.load_admissions(tmp_path / "absent.json") == []
+    live = m.load_admissions()
+    assert live and all(isinstance(a, dict) and a.get("strategy") for a in live), live[:1]
+    ok = tmp_path / "ok.json"
+    ok.write_text(_json.dumps({"admissions": [{"strategy": "x"}]}), encoding="utf-8")
+    assert m.load_admissions(ok) == [{"strategy": "x"}]
+    empty = tmp_path / "empty.json"
+    empty.write_text(_json.dumps({"admissions": []}), encoding="utf-8")
+    assert m.load_admissions(empty) == []
+    for i, body in enumerate(({}, {"admissions": None}, {"admissions": {}},
+                              {"rows": [{"strategy": "x"}]}, [])):
+        p = tmp_path / f"bad{i}.json"
+        p.write_text(_json.dumps(body), encoding="utf-8")
+        with _pytest.raises(ValueError, match="S6-B3218"):
+            m.load_admissions(p)
