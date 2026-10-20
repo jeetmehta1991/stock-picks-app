@@ -26012,6 +26012,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r70s: the L921 row - pin the REMEDY it names (L548).
         ("POST THE TESTED FILE VERBATIM - AN EDIT AFTER THE TEST RE-OPENS THE TEST",
          "L921 (B3139q-r70s): a close tested as a draft was posted as a rewrite"),
+        # B3139q-r73b: the L940 selector row - pin the REMEDY it names (L548).
+        ("CLASSIFY EACH CONSUMER'S CONSTRUCT BEFORE CLASSING A BAND LEVEL TIGHTER OR LOOSER",
+         "L940 (B3139q-r73b): a selector flag classed from its producer alone"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26238,7 +26241,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # skill edit per B2130).
     # 333 -> 334 at B3139q-r70s (the L921 post-the-tested-draft row; same-call
     # with the skill edit per B2130).
-    assert len(gutted) == 334, gutted
+    # 334 -> 335 at B3139q-r73b (the L940 selector row; same-call with the
+    # skill edit per B2130).
+    assert len(gutted) == 335, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

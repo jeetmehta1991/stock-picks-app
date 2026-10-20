@@ -6517,4 +6517,5 @@ negates or compares those flags, and that every vix_band_low read is an if-test,
 so a consumer that changes construct re-opens the class in the pyramid. A flag
 the pin does not list is JUDGMENT-ONLY (the construct is semantics a scan reads
 only for the flags it names); durability is
-test_b3196_selector_rule_is_in_the_durable_docs.
+test_b3196_selector_rule_is_in_the_durable_docs plus the tripwire row in the
+execution-discipline skill, pinned by test_b2123.
