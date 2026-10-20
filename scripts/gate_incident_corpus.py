@@ -396,6 +396,18 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
                        "| _reason:_ BLOCKED - needs an owner decision "
                        "between per-leg keying and per-leg cubes. |"},
     ),
+    # S6-B3233 (B3139q-r77, L944): VERBATIM from the 2026-10-20 14:51Z close.
+    # Four items named live tickets by fragment or id; 'which long campaigns
+    # to start' named none, carried no recommendation, and no ledger reader
+    # could see it.
+    "scan_decision_without_ticket": (
+        "Still waiting on you: LEVER10 (rec c), SHORT-REGIME (rec a), LEVER4 "
+        "(rec a), which long campaigns to start, and S6-B3222 (rec a).",
+        True,
+        {"ticket_ids": ["S6-B1248-LEVER10-MAE-FITTED-STOPS",
+                        "S6-B1248-SHORT-REGIME-AFFINITY",
+                        "S6-B1248-LEVER4-GATE-BUDGET", "S6-B3222"]},
+    ),
     "scan_judgment_only_without_search": (
         "The broader leg-completeness judgment for non-failure closures "
         "remains JUDGMENT-ONLY; durability via the L785 fragment pin "
@@ -1245,6 +1257,27 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
         ("**SKILLS INVOKED** - `execution-discipline` **ALWAYS-ON** - "
          "`fable-mode` **FULLY LOADED**", True, {}),
     ],
+    # S6-B3234 (B3139q-r77): this gate's only corpus case was the B1767
+    # must-QUIET regression, so the corpus never proved it fires. Its
+    # lineage text, from the TEST-EVERY-QUANTITY incident (L470):
+    "scan_unmeasured_quantity": [
+        ("Costs nothing - same runtime.", True, {}),
+    ],
+    "scan_decision_without_ticket": [
+        # must-QUIET: the same list once the decision has its ticket
+        ("Still waiting on you: LEVER10 (rec c), SHORT-REGIME (rec a), LEVER4 "
+         "(rec a), the next long campaigns (S6-B3232), and S6-B3222 (rec a).",
+         False, {"ticket_ids": ["S6-B1248-LEVER10-MAE-FITTED-STOPS",
+                                "S6-B1248-SHORT-REGIME-AFFINITY",
+                                "S6-B1248-LEVER4-GATE-BUDGET", "S6-B3222",
+                                "S6-B3232"]}),
+        # must-QUIET: prose that lists no decision for the owner
+        ("The roster holds 23 long strategies, and 7 more are needed.", False,
+         {"ticket_ids": []}),
+        # must-FIRE: a fragment of a ticket that is no longer live names nothing
+        ("Waiting on you: LEVER9 (rec a).", True,
+         {"ticket_ids": ["S6-B1248-LEVER10-MAE-FITTED-STOPS"]}),
+    ],
     "scan_owner_decision_taken": [
         # must-QUIET: proceeding is ALLOWED - what is forbidden is
         # proceeding in SILENCE. L633: the error is the silence, not the
@@ -1336,6 +1369,9 @@ NEUTRAL: dict[str, dict] = {
     # the negative control red, which is L517's shape for the fourth time
     # and is why B1762c added this dict. Neutralise the queue.
     "scan_owner_decision_taken": {"queue_text": "", "rows": []},
+    # S6-B3233: reads the LIVE ledger for ticket ids by default;
+    # neutralised so the control measures the text alone.
+    "scan_decision_without_ticket": {"ticket_ids": []},
     # B1769: the per-turn gate fires on ABSENCE, so the neutral state for a
     # text-only control must supply a row - otherwise the control measures the
     # gate doing its job and reports it as a false positive.

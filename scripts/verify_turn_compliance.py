@@ -3961,6 +3961,75 @@ def scan_prose_only_rule(entries, *, docs_touched=None, code_touched=None,
             "PROSE-ONLY and say why a mechanism is not possible."]
 
 
+def scan_decision_without_ticket(entries, *, text=None, ticket_ids=None) -> list[str]:
+    """S6-B3233 / L944: a decision put to the owner names its ticket.
+
+    MEASURED 2026-10-20: the close at 14:51Z listed 'which long campaigns to
+    start' under 'Still waiting on you', beside four ticketed decisions, with
+    no ticket and no recommendation. No ledger reader - queue_state, the
+    blocker audit, a later decision packet - could see a decision the owner
+    was being asked for. A decision that exists only in prose is the #164
+    class (routed work becomes tickets) at the owner's desk.
+
+    The mechanizable slice: a line that LISTS decisions for the owner - it
+    starts 'still waiting on you', 'waiting on you', 'needs your decision' or
+    'awaiting your decision' and has a colon - and each comma- or
+    semicolon-separated item after the colon carries a ticket token: an S6-
+    id, or a fragment of a LIVE (non-terminal) ticket id at least 5
+    characters long with a digit or a hyphen (lever10, short-regime). An
+    item reading none, nothing or n/a is an empty list, not a decision. A
+    lower bound on the class (L757): a decision named in a table or in
+    running prose is not read here. `ticket_ids` is the test seam (the live
+    ids); by default they come from queue_state, and a ledger the gate cannot
+    read refuses (L642)."""
+    import re
+    t = _response_text(entries, text, keep_code=True)
+    if not t:
+        return []
+    markers = ("still waiting on you", "waiting on you", "needs your decision",
+               "awaiting your decision")
+    bodies = []
+    for ln in t.splitlines():
+        s = ln.strip().lstrip("-*>_ ").strip()
+        if any(s.startswith(m) for m in markers) and ":" in s:
+            bodies.append(s.split(":", 1)[1])
+    if not bodies:
+        return []
+    if ticket_ids is None:
+        try:
+            import queue_state as _qs
+            ticket_ids = [k for k, v in _qs.tickets().items()
+                          if v in ("OPEN", "BLOCKED", "DEFERRED", "RUNNING")]
+        except Exception as e:
+            return [f"DECISION WITHOUT A TICKET (S6-B3233): the ledger could not be "
+                    f"read ({e!r}), so the decision list cannot be checked - refusing "
+                    "(L642: a guard fails closed on the input it cannot read)."]
+    ids = [str(i).lower() for i in ticket_ids]
+    token = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*")
+    empty = {"none", "nothing", "n/a", "-", "no decisions"}
+    bad = []
+    for body in bodies:
+        for item in re.split(r"[,;]", body):
+            item = re.sub(r"^\s*and\s+", "", item).strip(" .*_")
+            if not item or item in empty:
+                continue
+            if re.search(r"\bs6-[a-z0-9]", item):
+                continue
+            toks = [m.group(0) for m in token.finditer(item)
+                    if len(m.group(0)) >= 5 and re.search(r"[0-9-]", m.group(0))]
+            if any(tok in i for tok in toks for i in ids):
+                continue
+            bad.append(item)
+    if not bad:
+        return []
+    return [f"DECISION WITHOUT A TICKET (S6-B3233 / L944, #164): the response asks "
+            f"the owner to decide {len(bad)} item(s) that no live ticket holds: "
+            + "; ".join(repr(b[:60]) for b in bad[:4])
+            + ". A decision that exists only in prose cannot be counted, closed or "
+            "found by the ledger readers - file it with its options and a "
+            "recommendation, and name its id."]
+
+
 def scan_findings_vs_tickets(entries, *, text=None, rows=None,
                              diff_text=None) -> list[str]:
     """B1739: EVERY finding owes a ticket, not just the first one.
@@ -6041,6 +6110,9 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B2925 (B2929): an owner decision must not be taken
                 # in silence. The L829 slice I wrongly filed JUDGMENT-ONLY.
                 scan_owner_decision_taken,
+                # S6-B3233 (B3139q-r77, L944): a decision put to the
+                # owner names its ticket.
+                scan_decision_without_ticket,
                 # S6-B2993 (owner approved 2026-09-22): a registered
                 # deferral trigger that NEWLY fires blocks one close.
                 scan_deferral_trigger_fired,

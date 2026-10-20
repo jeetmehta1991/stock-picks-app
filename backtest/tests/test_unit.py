@@ -26029,6 +26029,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r76: L943, same call as the skill edit.
         ("ANY EDIT THAT CHANGES A FILE'S LINE COUNT MOVES EVERY LINE BELOW IT",
          "L943 (B3139q-r76): a bullet rewrite moved 24 live-code citations"),
+        # B3139q-r77: L944, same call as the skill edit.
+        ("EVERY DECISION NAMED TO THE OWNER NAMES ITS TICKET",
+         "L944 (B3139q-r77): a decision listed to the owner with no ticket"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26262,7 +26265,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 336 -> 339 at B3139q-r75 (L941's derive-or-drop clause, L942's
     # tripwire clause and #283-section rule; same call as the skill edit).
     # 339 -> 340 at B3139q-r76 (L943's text-edit clause; same call).
-    assert len(gutted) == 340, gutted
+    # 340 -> 341 at B3139q-r77 (L944's decision-ticket clause; same call).
+    assert len(gutted) == 341, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -48075,6 +48079,11 @@ def _b3121_call_site_seams(src: str) -> set:
 # returns and the PROCESSING it applies (#276b). A new seam fails the pin until
 # it is read and entered here with its reason.
 _B3121_SEAMS_SOUND = {
+    ("scan_decision_without_ticket", "ticket_ids"):
+        "list seam (list[str] of ticket ids) for the non-terminal ids the live branch reads "
+        "from queue_state.tickets(); both get the same lowercasing and fragment matching, and "
+        "the live read, its non-terminal filter and its fail-closed refusal are driven on the "
+        "live branch by test_b3233_decision_list_items_name_a_live_ticket",
     ("scan_heredoc_escapes", "cmds"):
         "list seam (list[str] of Bash command strings) for the list the live collector builds from _turn_entries; every element gets the same heredoc_escape_hits processing, and the window/tool selection the seam skips is driven on the live branch by test_b3139_heredoc_escape_scan_judges_only_commands_after_it_shipped",
     ("scan_owner_decision_taken", "rows"):
@@ -58940,6 +58949,97 @@ def test_b3231_screener_is_cited_by_symbol_not_line(tmp_path):
     plant.write_text("# see screener.py" + ":" + "4750\n"
                      "# see screener.strat_smc_order_block_bounce\n", encoding="utf-8")
     assert _b3139ai_line_citations([plant], "screener.py") == ["plant.txt:1"]
+
+
+def test_b3233_decision_list_items_name_a_live_ticket(monkeypatch):
+    """S6-B3233 (B3139q-r77, L944): the 2026-10-20 14:51Z close listed 'which
+    long campaigns to start' under 'Still waiting on you' with no ticket and
+    no recommendation. scan_decision_without_ticket fires on that verbatim
+    line, stays quiet once the item carries its id, on a bold marker over
+    live fragments, on an empty list and on prose with no decision list,
+    treats a fragment of a ticket that is no longer live as naming nothing,
+    refuses when the ledger cannot be read (L642), fires on the live
+    ledger's default path (L878), and is wired into main() (L654)."""
+    import ast as _ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as vtc
+    import queue_state as qs
+
+    live = ["S6-B1248-LEVER10-MAE-FITTED-STOPS", "S6-B1248-SHORT-REGIME-AFFINITY",
+            "S6-B1248-LEVER4-GATE-BUDGET", "S6-B3222"]
+    incident = ("Still waiting on you: LEVER10 (rec c), SHORT-REGIME (rec a), LEVER4 "
+                "(rec a), which long campaigns to start, and S6-B3222 (rec a).")
+    hits = vtc.scan_decision_without_ticket([], text=incident, ticket_ids=live)
+    assert len(hits) == 1 and "which long campaigns to start" in hits[0], hits
+    assert "1 item(s)" in hits[0], hits
+    # the verbatim incident stays in INCIDENTS: test_b1762 accepts any
+    # corpus shape, so only this assertion holds the incident itself
+    import gate_incident_corpus as gic
+    inc = gic.INCIDENTS["scan_decision_without_ticket"]
+    assert "which long campaigns to start" in inc[0] and inc[1] is True, inc
+    ticketed = incident.replace("which long campaigns to start",
+                                "the next long campaigns (S6-B3232)")
+    assert vtc.scan_decision_without_ticket([], text=ticketed, ticket_ids=live) == []
+    assert vtc.scan_decision_without_ticket(
+        [], text="**Still waiting on you:** LEVER10, LEVER4.", ticket_ids=live) == []
+    assert vtc.scan_decision_without_ticket(
+        [], text="Waiting on you: none.", ticket_ids=live) == []
+    assert vtc.scan_decision_without_ticket(
+        [], text="The roster holds 23 long strategies.", ticket_ids=live) == []
+    assert vtc.scan_decision_without_ticket(
+        [], text="Waiting on you: LEVER9 (rec a).", ticket_ids=live) != []
+
+    def _broken():
+        raise OSError("ledger unreadable")
+    monkeypatch.setattr(qs, "tickets", _broken)
+    refused = vtc.scan_decision_without_ticket([], text=incident)
+    assert refused and "could not be read" in refused[0], refused
+    monkeypatch.undo()
+    assert vtc.scan_decision_without_ticket([], text=incident) != []
+
+    tree = _ast.parse(_P(vtc.__file__).read_text(encoding="utf-8"))
+    main_fn = next(n for n in tree.body
+                   if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    names = {n.id for n in _ast.walk(main_fn) if isinstance(n, _ast.Name)}
+    assert "scan_decision_without_ticket" in names, \
+        "the gate is defined but not wired into main()"
+
+
+def test_b3233b_no_covered_gate_is_proven_only_quiet():
+    """S6-B3234 (B3139q-r77): test_b1762 counts a gate covered by ANY corpus
+    shape, so a gate whose only cases are must-QUIET passes it with nothing in
+    the corpus proving it can fire - the mirror of L594's fire-only rule
+    (test_b1944). MEASURED at r77 by a census over INCIDENTS, EXTRA_INCIDENTS
+    and PURE_INCIDENTS: 1 of 57 covered gates, scan_unmeasured_quantity,
+    whose one case was the B1767 regression; it now carries its lineage text
+    as a must-fire case. A covered gate with no must-fire case fails here."""
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "gate_incident_corpus", root / "scripts" / "gate_incident_corpus.py")
+    c = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(c)
+    fire = {}
+    for g, v in c.INCIDENTS.items():
+        fire.setdefault(g, []).append(bool(v[1]))
+    for src in (getattr(c, "EXTRA_INCIDENTS", {}), getattr(c, "PURE_INCIDENTS", {})):
+        for g, cases in src.items():
+            for case in cases:
+                fire.setdefault(g, []).append(bool(case[1]))
+    # positive control: an empty or mis-read corpus must not pass vacuously
+    assert len(fire) >= 50, f"corpus read too small to mean anything: {len(fire)}"
+    # _negative_control is a corpus key, not a gate, and is quiet by design
+    quiet_only = sorted(g for g, flags in fire.items()
+                        if g.startswith("scan_") and not any(flags))
+    assert quiet_only == [], (
+        f"gate(s) whose corpus cases are ALL must-quiet: {quiet_only} - the "
+        "corpus never proves they fire. Add the verbatim incident as a "
+        "must-fire case (S6-B3234).")
 
 
 def test_b3218_a_present_admissions_record_without_its_list_is_refused(tmp_path):
