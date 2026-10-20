@@ -58969,3 +58969,45 @@ def test_b1248_lever10_mae_helper_reads_the_engine_field():
     assert fit(dual, "s", direction="short") == 1.0
     # fewer than 20 winners keeps the default
     assert fit(df.iloc[:19], "s") == 1.0
+
+
+def test_b1248_short_regime_census_never_reads_the_holdout():
+    """S6-B1248-SHORT-REGIME-AFFINITY (B3139q-r72y): the census that informs a
+    short regime policy reads the IN-SAMPLE window only - under the owner's
+    2026-09-30 rulings a holdout read needs the owner's own word, and a
+    policy fitted on the holdout would spend it. census() drops rows entered
+    on or after the cut FIRST: holdout rows extreme enough to flip the exit
+    choice and every mean change nothing, and the same rows inside a later
+    cut do change the result (must-fire). The in-sample arithmetic is checked
+    on a hand-sized frame."""
+    import sys
+    import pandas as pd
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import short_regime_affinity_census as src
+
+    d = pd.Timestamp
+    base = pd.DataFrame({
+        "strategy": ["s"] * 6,
+        "exit_method": ["e1", "e1", "e1", "e1", "e2", "e2"],
+        "net": [-2.0, -1.0, 1.0, 3.0, -9.0, -9.0],
+        "entry_date": [d("2023-01-02"), d("2023-02-01"), d("2023-03-01"),
+                       d("2023-04-03"), d("2023-01-05"), d("2023-02-06")],
+        "regime_at_entry": ["bear", "bear", "bull", "bull", "bear", "bull"]})
+    rows, summ = src.census(base, "2025-05-05")
+    # e1's in-sample mean (+0.25) beats e2's (-9.0), so e1 is the exit
+    assert rows[0]["best_exit_in_sample"] == "e1", rows
+    assert rows[0]["by_regime"]["bear"] == {"n": 2, "mean_net": -1.5, "pf": 0.0}
+    assert rows[0]["by_regime"]["bull"] == {"n": 2, "mean_net": 2.0, "pf": None}
+    assert summ["bear_mean_below_bull_mean"] == 1 and summ["bear_trades"] == 2
+    ho = pd.DataFrame({
+        "strategy": ["s"] * 4, "exit_method": ["e2"] * 4, "net": [500.0] * 4,
+        "entry_date": [d("2025-05-05"), d("2025-06-02"), d("2025-07-01"),
+                       d("2026-01-05")],
+        "regime_at_entry": ["bear", "bull", "bear", "bull"]})
+    both = pd.concat([base, ho], ignore_index=True)
+    assert src.census(both, "2025-05-05") == (rows, summ)
+    rows3, _s3 = src.census(both, "2027-01-01")      # must-fire
+    assert rows3 != rows and rows3[0]["best_exit_in_sample"] == "e2", rows3

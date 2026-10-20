@@ -1,0 +1,2427 @@
+{
+ "generator": "scripts/short_regime_affinity_census.py",
+ "cube": "output_r5_merged_1_7/trade_exit_detail.csv",
+ "basis": "NET (roster_core.net_pnl)",
+ "window": "in-sample, entry before 2025-05-05",
+ "summary": {
+  "short_strategies_measured": 105,
+  "with_bear_and_bull_trades": 104,
+  "bear_mean_below_bull_mean": 90,
+  "bear_mean_negative": 89,
+  "bull_mean_negative": 45,
+  "with_30_plus_trades_in_each": 84,
+  "of_those_bear_below_bull": 75,
+  "trade_weighted_mean_net_bear": -1.105,
+  "bear_trades": 30333,
+  "trade_weighted_mean_net_bull": 0.253,
+  "bull_trades": 37632,
+  "short_pnl_sign_check_corr": 0.9991
+ },
+ "rows": [
+  {
+   "strategy": "52w_low_breakdown",
+   "best_exit_in_sample": "r_multiple_2r",
+   "trades": 74,
+   "mean_net": -0.3726,
+   "pf": 0.904,
+   "by_regime": {
+    "bear": {
+     "n": 50,
+     "mean_net": -1.2547,
+     "pf": 0.717
+    },
+    "bull": {
+     "n": 24,
+     "mean_net": 1.4651,
+     "pf": 1.54
+    }
+   }
+  },
+  {
+   "strategy": "52w_low_breakdown_pullback_short",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 354,
+   "mean_net": -0.4683,
+   "pf": 0.706,
+   "by_regime": {
+    "bear": {
+     "n": 240,
+     "mean_net": -0.5489,
+     "pf": 0.678
+    },
+    "bull": {
+     "n": 112,
+     "mean_net": -0.269,
+     "pf": 0.8
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -1.9564,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "52wl_break_retest_short",
+   "best_exit_in_sample": "r_multiple_2r",
+   "trades": 58,
+   "mean_net": -1.8284,
+   "pf": 0.564,
+   "by_regime": {
+    "bear": {
+     "n": 38,
+     "mean_net": -2.0225,
+     "pf": 0.594
+    },
+    "bull": {
+     "n": 20,
+     "mean_net": -1.4598,
+     "pf": 0.46
+    }
+   }
+  },
+  {
+   "strategy": "adx_initiation",
+   "best_exit_in_sample": "earnings_blackout",
+   "trades": 24,
+   "mean_net": 2.2854,
+   "pf": 1.661,
+   "by_regime": {
+    "bear": {
+     "n": 4,
+     "mean_net": -3.2696,
+     "pf": 0.0
+    },
+    "bull": {
+     "n": 20,
+     "mean_net": 3.3964,
+     "pf": 1.972
+    }
+   }
+  },
+  {
+   "strategy": "avwap_20high_rejection_short",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 54,
+   "mean_net": -0.717,
+   "pf": 0.512,
+   "by_regime": {
+    "bear": {
+     "n": 26,
+     "mean_net": -1.7329,
+     "pf": 0.053
+    },
+    "bull": {
+     "n": 28,
+     "mean_net": 0.2264,
+     "pf": 1.2
+    }
+   }
+  },
+  {
+   "strategy": "avwap_252_breakout",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 617,
+   "mean_net": -1.451,
+   "pf": 0.576,
+   "by_regime": {
+    "bear": {
+     "n": 356,
+     "mean_net": -2.9975,
+     "pf": 0.315
+    },
+    "bull": {
+     "n": 261,
+     "mean_net": 0.6585,
+     "pf": 1.311
+    }
+   }
+  },
+  {
+   "strategy": "avwap_50_reclaim",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 923,
+   "mean_net": -1.1154,
+   "pf": 0.598,
+   "by_regime": {
+    "bear": {
+     "n": 563,
+     "mean_net": -1.7185,
+     "pf": 0.492
+    },
+    "bull": {
+     "n": 351,
+     "mean_net": -0.2368,
+     "pf": 0.873
+    },
+    "neutral": {
+     "n": 9,
+     "mean_net": 2.3425,
+     "pf": 4.334
+    }
+   }
+  },
+  {
+   "strategy": "awesome_oscillator",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 364,
+   "mean_net": -0.4149,
+   "pf": 0.843,
+   "by_regime": {
+    "bear": {
+     "n": 107,
+     "mean_net": -1.1181,
+     "pf": 0.655
+    },
+    "bull": {
+     "n": 251,
+     "mean_net": -0.0425,
+     "pf": 0.982
+    },
+    "neutral": {
+     "n": 6,
+     "mean_net": -3.4535,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "bb_squeeze_volume",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 435,
+   "mean_net": -0.9269,
+   "pf": 0.728,
+   "by_regime": {
+    "bear": {
+     "n": 212,
+     "mean_net": -1.8453,
+     "pf": 0.546
+    },
+    "bull": {
+     "n": 221,
+     "mean_net": -0.1034,
+     "pf": 0.963
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": 5.4188,
+     "pf": null
+    }
+   }
+  },
+  {
+   "strategy": "bollinger_lower",
+   "best_exit_in_sample": "earnings_blackout",
+   "trades": 615,
+   "mean_net": -0.0853,
+   "pf": 0.986,
+   "by_regime": {
+    "bear": {
+     "n": 353,
+     "mean_net": -0.4667,
+     "pf": 0.918
+    },
+    "bull": {
+     "n": 259,
+     "mean_net": 0.5563,
+     "pf": 1.085
+    },
+    "neutral": {
+     "n": 3,
+     "mean_net": -10.5956,
+     "pf": 0.069
+    }
+   }
+  },
+  {
+   "strategy": "bollinger_tight",
+   "best_exit_in_sample": "earnings_blackout",
+   "trades": 123,
+   "mean_net": 2.438,
+   "pf": 1.581,
+   "by_regime": {
+    "bear": {
+     "n": 42,
+     "mean_net": 7.3193,
+     "pf": 8.383
+    },
+    "bull": {
+     "n": 79,
+     "mean_net": -0.2428,
+     "pf": 0.959
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": 5.8249,
+     "pf": 2.669
+    }
+   }
+  },
+  {
+   "strategy": "bollinger_upper_short",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 97,
+   "mean_net": -0.128,
+   "pf": 0.832,
+   "by_regime": {
+    "bear": {
+     "n": 25,
+     "mean_net": -0.1365,
+     "pf": 0.802
+    },
+    "bull": {
+     "n": 70,
+     "mean_net": -0.0436,
+     "pf": 0.94
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -2.979,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "break_retest_confluence",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 975,
+   "mean_net": -0.6476,
+   "pf": 0.668,
+   "by_regime": {
+    "bear": {
+     "n": 465,
+     "mean_net": -0.9704,
+     "pf": 0.597
+    },
+    "bull": {
+     "n": 498,
+     "mean_net": -0.272,
+     "pf": 0.815
+    },
+    "neutral": {
+     "n": 12,
+     "mean_net": -3.7288,
+     "pf": 0.123
+    }
+   }
+  },
+  {
+   "strategy": "break_retest_volume",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 1089,
+   "mean_net": -0.8076,
+   "pf": 0.594,
+   "by_regime": {
+    "bear": {
+     "n": 505,
+     "mean_net": -0.8875,
+     "pf": 0.595
+    },
+    "bull": {
+     "n": 573,
+     "mean_net": -0.6963,
+     "pf": 0.612
+    },
+    "neutral": {
+     "n": 11,
+     "mean_net": -2.9335,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "bullish_engulfing_support",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 430,
+   "mean_net": 0.1267,
+   "pf": 1.06,
+   "by_regime": {
+    "bear": {
+     "n": 155,
+     "mean_net": -0.4765,
+     "pf": 0.813
+    },
+    "bull": {
+     "n": 269,
+     "mean_net": 0.5592,
+     "pf": 1.305
+    },
+    "neutral": {
+     "n": 6,
+     "mean_net": -3.6855,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "camarilla_r4_breakout",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 2351,
+   "mean_net": 0.0675,
+   "pf": 1.025,
+   "by_regime": {
+    "bear": {
+     "n": 1002,
+     "mean_net": -0.9046,
+     "pf": 0.727
+    },
+    "bull": {
+     "n": 1337,
+     "mean_net": 0.8193,
+     "pf": 1.37
+    },
+    "neutral": {
+     "n": 12,
+     "mean_net": -2.5272,
+     "pf": 0.264
+    }
+   }
+  },
+  {
+   "strategy": "camarilla_s3_bounce",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 64,
+   "mean_net": -0.2883,
+   "pf": 0.525,
+   "by_regime": {
+    "bear": {
+     "n": 13,
+     "mean_net": -0.0001,
+     "pf": 1.0
+    },
+    "bull": {
+     "n": 51,
+     "mean_net": -0.3618,
+     "pf": 0.458
+    }
+   }
+  },
+  {
+   "strategy": "classification_change_to_defensive_short",
+   "best_exit_in_sample": "trailing_15pct",
+   "trades": 5,
+   "mean_net": 20.681,
+   "pf": 10.564,
+   "by_regime": {
+    "bear": {
+     "n": 1,
+     "mean_net": -10.8116,
+     "pf": 0.0
+    },
+    "bull": {
+     "n": 4,
+     "mean_net": 28.5541,
+     "pf": null
+    }
+   }
+  },
+  {
+   "strategy": "cmf_flip",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 936,
+   "mean_net": -0.3554,
+   "pf": 0.854,
+   "by_regime": {
+    "bear": {
+     "n": 321,
+     "mean_net": -1.6018,
+     "pf": 0.517
+    },
+    "bull": {
+     "n": 606,
+     "mean_net": 0.3102,
+     "pf": 1.158
+    },
+    "neutral": {
+     "n": 9,
+     "mean_net": -0.7156,
+     "pf": 0.738
+    }
+   }
+  },
+  {
+   "strategy": "cpr_narrow_bullish",
+   "best_exit_in_sample": "multi_tier_partial",
+   "trades": 592,
+   "mean_net": -1.535,
+   "pf": 0.355,
+   "by_regime": {
+    "bear": {
+     "n": 333,
+     "mean_net": -1.9957,
+     "pf": 0.299
+    },
+    "bull": {
+     "n": 254,
+     "mean_net": -0.9098,
+     "pf": 0.482
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": -2.6105,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "cpr_narrow_momentum",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 569,
+   "mean_net": -1.5008,
+   "pf": 0.502,
+   "by_regime": {
+    "bear": {
+     "n": 333,
+     "mean_net": -2.5441,
+     "pf": 0.323
+    },
+    "bull": {
+     "n": 232,
+     "mean_net": -0.0818,
+     "pf": 0.959
+    },
+    "neutral": {
+     "n": 4,
+     "mean_net": 3.0506,
+     "pf": 2.83
+    }
+   }
+  },
+  {
+   "strategy": "cpr_narrow_momentum_short",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 1297,
+   "mean_net": -0.815,
+   "pf": 0.622,
+   "by_regime": {
+    "bear": {
+     "n": 530,
+     "mean_net": -1.6586,
+     "pf": 0.444
+    },
+    "bull": {
+     "n": 752,
+     "mean_net": -0.224,
+     "pf": 0.856
+    },
+    "neutral": {
+     "n": 15,
+     "mean_net": -0.6367,
+     "pf": 0.773
+    }
+   }
+  },
+  {
+   "strategy": "dc20_break_retest",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 1212,
+   "mean_net": -0.8192,
+   "pf": 0.579,
+   "by_regime": {
+    "bear": {
+     "n": 562,
+     "mean_net": -0.8803,
+     "pf": 0.588
+    },
+    "bull": {
+     "n": 637,
+     "mean_net": -0.7145,
+     "pf": 0.591
+    },
+    "neutral": {
+     "n": 13,
+     "mean_net": -3.3055,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "death_cross_50_200_volume",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 21,
+   "mean_net": -0.5153,
+   "pf": 0.812,
+   "by_regime": {
+    "bear": {
+     "n": 10,
+     "mean_net": -2.4201,
+     "pf": 0.487
+    },
+    "bull": {
+     "n": 11,
+     "mean_net": 1.2164,
+     "pf": 2.279
+    }
+   }
+  },
+  {
+   "strategy": "doji_at_resistance_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 216,
+   "mean_net": 0.0923,
+   "pf": 1.043,
+   "by_regime": {
+    "bear": {
+     "n": 66,
+     "mean_net": -0.5456,
+     "pf": 0.805
+    },
+    "bull": {
+     "n": 145,
+     "mean_net": 0.4344,
+     "pf": 1.241
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": -1.4092,
+     "pf": 0.638
+    }
+   }
+  },
+  {
+   "strategy": "donchian_10_breakout",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 463,
+   "mean_net": 0.0682,
+   "pf": 1.022,
+   "by_regime": {
+    "bear": {
+     "n": 201,
+     "mean_net": -1.5437,
+     "pf": 0.566
+    },
+    "bull": {
+     "n": 260,
+     "mean_net": 1.3448,
+     "pf": 1.497
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -3.882,
+     "pf": 0.315
+    }
+   }
+  },
+  {
+   "strategy": "donchian_breakdown_retest_short",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 775,
+   "mean_net": -0.7187,
+   "pf": 0.615,
+   "by_regime": {
+    "bear": {
+     "n": 373,
+     "mean_net": -0.7384,
+     "pf": 0.645
+    },
+    "bull": {
+     "n": 392,
+     "mean_net": -0.6486,
+     "pf": 0.606
+    },
+    "neutral": {
+     "n": 10,
+     "mean_net": -2.7341,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "donchian_breakdown_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 689,
+   "mean_net": -0.1347,
+   "pf": 0.956,
+   "by_regime": {
+    "bear": {
+     "n": 298,
+     "mean_net": -1.3675,
+     "pf": 0.633
+    },
+    "bull": {
+     "n": 385,
+     "mean_net": 0.8424,
+     "pf": 1.336
+    },
+    "neutral": {
+     "n": 6,
+     "mean_net": -1.6024,
+     "pf": 0.447
+    }
+   }
+  },
+  {
+   "strategy": "flag_bear_retest_short",
+   "best_exit_in_sample": "r_multiple_2r",
+   "trades": 45,
+   "mean_net": -0.4597,
+   "pf": 0.773,
+   "by_regime": {
+    "bear": {
+     "n": 17,
+     "mean_net": -0.8356,
+     "pf": 0.691
+    },
+    "bull": {
+     "n": 28,
+     "mean_net": -0.2314,
+     "pf": 0.856
+    }
+   }
+  },
+  {
+   "strategy": "force_index_breakout",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 1385,
+   "mean_net": -0.6551,
+   "pf": 0.763,
+   "by_regime": {
+    "bear": {
+     "n": 682,
+     "mean_net": -0.8745,
+     "pf": 0.716
+    },
+    "bull": {
+     "n": 698,
+     "mean_net": -0.4651,
+     "pf": 0.812
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": 2.7518,
+     "pf": 4.662
+    }
+   }
+  },
+  {
+   "strategy": "golden_cross_20_50",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 207,
+   "mean_net": 0.4879,
+   "pf": 1.204,
+   "by_regime": {
+    "bear": {
+     "n": 78,
+     "mean_net": 0.417,
+     "pf": 1.14
+    },
+    "bull": {
+     "n": 127,
+     "mean_net": 0.5807,
+     "pf": 1.286
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -2.6339,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "golden_cross_50_200",
+   "best_exit_in_sample": "trailing_10pct",
+   "trades": 70,
+   "mean_net": -0.7124,
+   "pf": 0.845,
+   "by_regime": {
+    "bear": {
+     "n": 30,
+     "mean_net": -5.0986,
+     "pf": 0.172
+    },
+    "bull": {
+     "n": 40,
+     "mean_net": 2.5772,
+     "pf": 1.753
+    }
+   }
+  },
+  {
+   "strategy": "golden_cross_9_21",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 337,
+   "mean_net": 0.4154,
+   "pf": 1.158,
+   "by_regime": {
+    "bear": {
+     "n": 127,
+     "mean_net": 0.1378,
+     "pf": 1.046
+    },
+    "bull": {
+     "n": 206,
+     "mean_net": 0.6928,
+     "pf": 1.296
+    },
+    "neutral": {
+     "n": 4,
+     "mean_net": -5.0535,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "golden_cross_volume",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 21,
+   "mean_net": -0.5153,
+   "pf": 0.812,
+   "by_regime": {
+    "bear": {
+     "n": 10,
+     "mean_net": -2.4201,
+     "pf": 0.487
+    },
+    "bull": {
+     "n": 11,
+     "mean_net": 1.2164,
+     "pf": 2.279
+    }
+   }
+  },
+  {
+   "strategy": "head_and_shoulders_top_short",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 389,
+   "mean_net": -0.4509,
+   "pf": 0.743,
+   "by_regime": {
+    "bear": {
+     "n": 228,
+     "mean_net": -0.7679,
+     "pf": 0.607
+    },
+    "bull": {
+     "n": 156,
+     "mean_net": 0.076,
+     "pf": 1.053
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": -2.4385,
+     "pf": 0.042
+    }
+   }
+  },
+  {
+   "strategy": "htf_aligned_breakout_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 780,
+   "mean_net": -0.7251,
+   "pf": 0.804,
+   "by_regime": {
+    "bear": {
+     "n": 400,
+     "mean_net": -2.3847,
+     "pf": 0.477
+    },
+    "bull": {
+     "n": 378,
+     "mean_net": 1.0577,
+     "pf": 1.38
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -5.7641,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "hull_rsi",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 605,
+   "mean_net": -0.0616,
+   "pf": 0.98,
+   "by_regime": {
+    "bear": {
+     "n": 267,
+     "mean_net": -1.3786,
+     "pf": 0.637
+    },
+    "bull": {
+     "n": 328,
+     "mean_net": 1.1136,
+     "pf": 1.47
+    },
+    "neutral": {
+     "n": 10,
+     "mean_net": -3.444,
+     "pf": 0.271
+    }
+   }
+  },
+  {
+   "strategy": "ichimoku_cloud_breakdown",
+   "best_exit_in_sample": "r_multiple_2r",
+   "trades": 159,
+   "mean_net": -1.2763,
+   "pf": 0.56,
+   "by_regime": {
+    "bear": {
+     "n": 64,
+     "mean_net": -2.9276,
+     "pf": 0.246
+    },
+    "bull": {
+     "n": 95,
+     "mean_net": -0.1639,
+     "pf": 0.927
+    }
+   }
+  },
+  {
+   "strategy": "ichimoku_cloud_breakout",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 257,
+   "mean_net": -0.3155,
+   "pf": 0.907,
+   "by_regime": {
+    "bear": {
+     "n": 108,
+     "mean_net": -2.6861,
+     "pf": 0.364
+    },
+    "bull": {
+     "n": 146,
+     "mean_net": 1.5017,
+     "pf": 1.547
+    },
+    "neutral": {
+     "n": 3,
+     "mean_net": -3.4124,
+     "pf": 0.112
+    }
+   }
+  },
+  {
+   "strategy": "ichimoku_tk_cross",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 589,
+   "mean_net": -0.1018,
+   "pf": 0.959,
+   "by_regime": {
+    "bear": {
+     "n": 208,
+     "mean_net": -1.2985,
+     "pf": 0.603
+    },
+    "bull": {
+     "n": 377,
+     "mean_net": 0.5747,
+     "pf": 1.274
+    },
+    "neutral": {
+     "n": 4,
+     "mean_net": -1.6332,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "insider_cluster_concentrated_sell_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 190,
+   "mean_net": -0.6235,
+   "pf": 0.8,
+   "by_regime": {
+    "bear": {
+     "n": 88,
+     "mean_net": -1.5317,
+     "pf": 0.641
+    },
+    "bull": {
+     "n": 101,
+     "mean_net": 0.1636,
+     "pf": 1.076
+    },
+    "neutral": {
+     "n": 1,
+     "mean_net": -0.2,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "inverted_cup_and_handle_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 294,
+   "mean_net": -0.0779,
+   "pf": 0.964,
+   "by_regime": {
+    "bear": {
+     "n": 125,
+     "mean_net": -1.2223,
+     "pf": 0.54
+    },
+    "bull": {
+     "n": 169,
+     "mean_net": 0.7686,
+     "pf": 1.439
+    }
+   }
+  },
+  {
+   "strategy": "judas_swing_short",
+   "best_exit_in_sample": "r_multiple_3r",
+   "trades": 54,
+   "mean_net": -0.4057,
+   "pf": 0.8,
+   "by_regime": {
+    "bear": {
+     "n": 15,
+     "mean_net": 1.1176,
+     "pf": 1.59
+    },
+    "bull": {
+     "n": 38,
+     "mean_net": -0.9459,
+     "pf": 0.541
+    },
+    "neutral": {
+     "n": 1,
+     "mean_net": -2.727,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "keltner_lower",
+   "best_exit_in_sample": "chandelier_3x",
+   "trades": 15,
+   "mean_net": -0.3584,
+   "pf": 0.0,
+   "by_regime": {
+    "bear": {
+     "n": 3,
+     "mean_net": -0.3892,
+     "pf": 0.0
+    },
+    "bull": {
+     "n": 12,
+     "mean_net": -0.3507,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "macd_crossover",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1102,
+   "mean_net": 0.2223,
+   "pf": 1.096,
+   "by_regime": {
+    "bear": {
+     "n": 335,
+     "mean_net": -0.1003,
+     "pf": 0.963
+    },
+    "bull": {
+     "n": 762,
+     "mean_net": 0.3684,
+     "pf": 1.169
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": -0.4297,
+     "pf": 0.624
+    }
+   }
+  },
+  {
+   "strategy": "macd_crossover_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1102,
+   "mean_net": 0.2223,
+   "pf": 1.096,
+   "by_regime": {
+    "bear": {
+     "n": 335,
+     "mean_net": -0.1003,
+     "pf": 0.963
+    },
+    "bull": {
+     "n": 762,
+     "mean_net": 0.3684,
+     "pf": 1.169
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": -0.4297,
+     "pf": 0.624
+    }
+   }
+  },
+  {
+   "strategy": "macd_fast_crossover",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1569,
+   "mean_net": 0.4839,
+   "pf": 1.211,
+   "by_regime": {
+    "bear": {
+     "n": 536,
+     "mean_net": -0.8438,
+     "pf": 0.716
+    },
+    "bull": {
+     "n": 1026,
+     "mean_net": 1.1826,
+     "pf": 1.606
+    },
+    "neutral": {
+     "n": 7,
+     "mean_net": -0.2601,
+     "pf": 0.662
+    }
+   }
+  },
+  {
+   "strategy": "macd_ichimoku",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1101,
+   "mean_net": 0.2252,
+   "pf": 1.097,
+   "by_regime": {
+    "bear": {
+     "n": 335,
+     "mean_net": -0.1003,
+     "pf": 0.963
+    },
+    "bull": {
+     "n": 761,
+     "mean_net": 0.3729,
+     "pf": 1.171
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": -0.4297,
+     "pf": 0.624
+    }
+   }
+  },
+  {
+   "strategy": "mfi_oversold",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 19,
+   "mean_net": -0.0601,
+   "pf": 0.907,
+   "by_regime": {
+    "bear": {
+     "n": 8,
+     "mean_net": -0.9862,
+     "pf": 0.004
+    },
+    "bull": {
+     "n": 10,
+     "mean_net": 0.805,
+     "pf": 3.628
+    },
+    "neutral": {
+     "n": 1,
+     "mean_net": -1.3018,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "mmsm_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1901,
+   "mean_net": -0.0461,
+   "pf": 0.974,
+   "by_regime": {
+    "bear": {
+     "n": 497,
+     "mean_net": -0.2738,
+     "pf": 0.871
+    },
+    "bull": {
+     "n": 1371,
+     "mean_net": -0.0338,
+     "pf": 0.98
+    },
+    "neutral": {
+     "n": 33,
+     "mean_net": 2.8711,
+     "pf": 2.515
+    }
+   }
+  },
+  {
+   "strategy": "morning_star",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 834,
+   "mean_net": 0.5682,
+   "pf": 1.278,
+   "by_regime": {
+    "bear": {
+     "n": 201,
+     "mean_net": -0.4587,
+     "pf": 0.828
+    },
+    "bull": {
+     "n": 631,
+     "mean_net": 0.9044,
+     "pf": 1.491
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -2.2864,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "news_reversal_short",
+   "best_exit_in_sample": "chandelier_3x",
+   "trades": 40,
+   "mean_net": -0.435,
+   "pf": 0.0,
+   "by_regime": {
+    "bear": {
+     "n": 18,
+     "mean_net": -0.492,
+     "pf": 0.0
+    },
+    "bull": {
+     "n": 22,
+     "mean_net": -0.3883,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "orb_stocks_in_play_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 77,
+   "mean_net": 3.8956,
+   "pf": 1.911,
+   "by_regime": {
+    "bear": {
+     "n": 32,
+     "mean_net": 2.6804,
+     "pf": 1.551
+    },
+    "bull": {
+     "n": 43,
+     "mean_net": 5.2493,
+     "pf": 2.393
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -5.7641,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "pairs_mean_reversion_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 4320,
+   "mean_net": -0.6233,
+   "pf": 0.79,
+   "by_regime": {
+    "bear": {
+     "n": 1800,
+     "mean_net": -2.0739,
+     "pf": 0.477
+    },
+    "bull": {
+     "n": 2467,
+     "mean_net": 0.435,
+     "pf": 1.196
+    },
+    "neutral": {
+     "n": 53,
+     "mean_net": -0.6109,
+     "pf": 0.822
+    }
+   }
+  },
+  {
+   "strategy": "parabolic_sar_flip",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 603,
+   "mean_net": 0.5231,
+   "pf": 1.251,
+   "by_regime": {
+    "bear": {
+     "n": 145,
+     "mean_net": -0.373,
+     "pf": 0.843
+    },
+    "bull": {
+     "n": 456,
+     "mean_net": 0.7915,
+     "pf": 1.395
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": 4.3084,
+     "pf": null
+    }
+   }
+  },
+  {
+   "strategy": "parabolic_sar_flip_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1216,
+   "mean_net": 0.3166,
+   "pf": 1.138,
+   "by_regime": {
+    "bear": {
+     "n": 399,
+     "mean_net": -0.5874,
+     "pf": 0.789
+    },
+    "bull": {
+     "n": 812,
+     "mean_net": 0.7316,
+     "pf": 1.354
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": 5.0677,
+     "pf": 3.404
+    }
+   }
+  },
+  {
+   "strategy": "pead_short",
+   "best_exit_in_sample": "r_multiple_3r",
+   "trades": 667,
+   "mean_net": -0.2786,
+   "pf": 0.895,
+   "by_regime": {
+    "bear": {
+     "n": 241,
+     "mean_net": 0.3381,
+     "pf": 1.116
+    },
+    "bull": {
+     "n": 412,
+     "mean_net": -0.5271,
+     "pf": 0.788
+    },
+    "neutral": {
+     "n": 14,
+     "mean_net": -3.5815,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "pead_short_negative_yoy_growth",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1719,
+   "mean_net": -0.1601,
+   "pf": 0.939,
+   "by_regime": {
+    "bear": {
+     "n": 640,
+     "mean_net": -0.442,
+     "pf": 0.846
+    },
+    "bull": {
+     "n": 1043,
+     "mean_net": 0.0179,
+     "pf": 1.007
+    },
+    "neutral": {
+     "n": 36,
+     "mean_net": -0.3068,
+     "pf": 0.913
+    }
+   }
+  },
+  {
+   "strategy": "pivot_fib_confluence",
+   "best_exit_in_sample": "chandelier_3x",
+   "trades": 30,
+   "mean_net": -0.3986,
+   "pf": 0.458,
+   "by_regime": {
+    "bear": {
+     "n": 15,
+     "mean_net": -0.5576,
+     "pf": 0.0
+    },
+    "bull": {
+     "n": 15,
+     "mean_net": -0.2396,
+     "pf": 0.738
+    }
+   }
+  },
+  {
+   "strategy": "pivot_r1_breakout",
+   "best_exit_in_sample": "reverse_signal",
+   "trades": 350,
+   "mean_net": -0.6322,
+   "pf": 0.524,
+   "by_regime": {
+    "bear": {
+     "n": 165,
+     "mean_net": -0.784,
+     "pf": 0.496
+    },
+    "bull": {
+     "n": 180,
+     "mean_net": -0.5058,
+     "pf": 0.558
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": -0.1714,
+     "pf": 0.624
+    }
+   }
+  },
+  {
+   "strategy": "pivot_r2_continuation",
+   "best_exit_in_sample": "hybrid_50pct_target",
+   "trades": 18,
+   "mean_net": 10.0457,
+   "pf": 3.533,
+   "by_regime": {
+    "bear": {
+     "n": 6,
+     "mean_net": 10.6987,
+     "pf": 3.098
+    },
+    "bull": {
+     "n": 11,
+     "mean_net": 10.1816,
+     "pf": 3.745
+    },
+    "neutral": {
+     "n": 1,
+     "mean_net": 4.6332,
+     "pf": null
+    }
+   }
+  },
+  {
+   "strategy": "pivot_s1_bounce",
+   "best_exit_in_sample": "smc_mitigation_zone",
+   "trades": 78,
+   "mean_net": -0.9465,
+   "pf": 0.236,
+   "by_regime": {
+    "bear": {
+     "n": 33,
+     "mean_net": -0.6512,
+     "pf": 0.444
+    },
+    "bull": {
+     "n": 45,
+     "mean_net": -1.163,
+     "pf": 0.098
+    }
+   }
+  },
+  {
+   "strategy": "pivot_s2_bounce",
+   "best_exit_in_sample": "class_time_stop",
+   "trades": 1,
+   "mean_net": -0.0834,
+   "pf": 0.0,
+   "by_regime": {
+    "bull": {
+     "n": 1,
+     "mean_net": -0.0834,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "po3_bearish",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 2067,
+   "mean_net": -1.0918,
+   "pf": 0.401,
+   "by_regime": {
+    "bear": {
+     "n": 1195,
+     "mean_net": -1.3704,
+     "pf": 0.342
+    },
+    "bull": {
+     "n": 846,
+     "mean_net": -0.6839,
+     "pf": 0.531
+    },
+    "neutral": {
+     "n": 26,
+     "mean_net": -1.5597,
+     "pf": 0.035
+    }
+   }
+  },
+  {
+   "strategy": "post_deletion_drift_short",
+   "best_exit_in_sample": "atr_trail_2x",
+   "trades": 43,
+   "mean_net": 7.2119,
+   "pf": 2.44,
+   "by_regime": {
+    "bear": {
+     "n": 19,
+     "mean_net": 11.7939,
+     "pf": 2.817
+    },
+    "bull": {
+     "n": 24,
+     "mean_net": 3.5845,
+     "pf": 1.935
+    }
+   }
+  },
+  {
+   "strategy": "post_inclusion_reversal_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 57,
+   "mean_net": 1.2586,
+   "pf": 1.386,
+   "by_regime": {
+    "bear": {
+     "n": 31,
+     "mean_net": -2.4752,
+     "pf": 0.48
+    },
+    "bull": {
+     "n": 26,
+     "mean_net": 5.7105,
+     "pf": 4.88
+    }
+   }
+  },
+  {
+   "strategy": "ppo_crossover",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 599,
+   "mean_net": 0.3937,
+   "pf": 1.182,
+   "by_regime": {
+    "bear": {
+     "n": 119,
+     "mean_net": 0.3097,
+     "pf": 1.138
+    },
+    "bull": {
+     "n": 478,
+     "mean_net": 0.3755,
+     "pf": 1.175
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": 9.7486,
+     "pf": null
+    }
+   }
+  },
+  {
+   "strategy": "prev_day_high_break",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 636,
+   "mean_net": 0.2203,
+   "pf": 1.065,
+   "by_regime": {
+    "bear": {
+     "n": 330,
+     "mean_net": -1.4294,
+     "pf": 0.641
+    },
+    "bull": {
+     "n": 303,
+     "mean_net": 2.0578,
+     "pf": 1.743
+    },
+    "neutral": {
+     "n": 3,
+     "mean_net": -3.9094,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "prev_day_low_bounce",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 147,
+   "mean_net": 1.0303,
+   "pf": 1.52,
+   "by_regime": {
+    "bear": {
+     "n": 44,
+     "mean_net": -0.5609,
+     "pf": 0.748
+    },
+    "bull": {
+     "n": 102,
+     "mean_net": 1.7922,
+     "pf": 1.979
+    },
+    "neutral": {
+     "n": 1,
+     "mean_net": -6.6753,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "prev_day_low_breakdown",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 646,
+   "mean_net": 0.1911,
+   "pf": 1.056,
+   "by_regime": {
+    "bear": {
+     "n": 336,
+     "mean_net": -1.4642,
+     "pf": 0.633
+    },
+    "bull": {
+     "n": 307,
+     "mean_net": 2.0428,
+     "pf": 1.742
+    },
+    "neutral": {
+     "n": 3,
+     "mean_net": -3.9094,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "r1_break_retest",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1246,
+   "mean_net": 0.4169,
+   "pf": 1.199,
+   "by_regime": {
+    "bear": {
+     "n": 450,
+     "mean_net": 0.6353,
+     "pf": 1.301
+    },
+    "bull": {
+     "n": 786,
+     "mean_net": 0.3862,
+     "pf": 1.191
+    },
+    "neutral": {
+     "n": 10,
+     "mean_net": -7.0001,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "risk_off_bond_equity_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1806,
+   "mean_net": -1.1276,
+   "pf": 0.663,
+   "by_regime": {
+    "bear": {
+     "n": 1152,
+     "mean_net": -1.6767,
+     "pf": 0.557
+    },
+    "bull": {
+     "n": 548,
+     "mean_net": 0.8911,
+     "pf": 1.453
+    },
+    "neutral": {
+     "n": 106,
+     "mean_net": -5.597,
+     "pf": 0.011
+    }
+   }
+  },
+  {
+   "strategy": "roc_burst",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 385,
+   "mean_net": 0.1579,
+   "pf": 1.057,
+   "by_regime": {
+    "bear": {
+     "n": 166,
+     "mean_net": -1.4387,
+     "pf": 0.545
+    },
+    "bull": {
+     "n": 218,
+     "mean_net": 1.358,
+     "pf": 1.555
+    },
+    "neutral": {
+     "n": 1,
+     "mean_net": 3.5642,
+     "pf": null
+    }
+   }
+  },
+  {
+   "strategy": "rsi_oversold",
+   "best_exit_in_sample": "chandelier_3x",
+   "trades": 790,
+   "mean_net": -0.3306,
+   "pf": 0.716,
+   "by_regime": {
+    "bear": {
+     "n": 504,
+     "mean_net": -0.7636,
+     "pf": 0.36
+    },
+    "bull": {
+     "n": 272,
+     "mean_net": 0.5651,
+     "pf": 1.533
+    },
+    "neutral": {
+     "n": 14,
+     "mean_net": -2.1451,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "rsi_volume_200ema",
+   "best_exit_in_sample": "earnings_blackout",
+   "trades": 241,
+   "mean_net": 1.5772,
+   "pf": 1.277,
+   "by_regime": {
+    "bear": {
+     "n": 115,
+     "mean_net": -1.481,
+     "pf": 0.753
+    },
+    "bull": {
+     "n": 124,
+     "mean_net": 4.0731,
+     "pf": 1.738
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": 22.6751,
+     "pf": null
+    }
+   }
+  },
+  {
+   "strategy": "shooting_star_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 191,
+   "mean_net": 0.2002,
+   "pf": 1.099,
+   "by_regime": {
+    "bear": {
+     "n": 41,
+     "mean_net": 0.6466,
+     "pf": 1.3
+    },
+    "bull": {
+     "n": 147,
+     "mean_net": 0.0306,
+     "pf": 1.015
+    },
+    "neutral": {
+     "n": 3,
+     "mean_net": 2.408,
+     "pf": 2.683
+    }
+   }
+  },
+  {
+   "strategy": "simple_below_ema_50_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 2534,
+   "mean_net": -0.116,
+   "pf": 0.957,
+   "by_regime": {
+    "bear": {
+     "n": 1122,
+     "mean_net": -0.8389,
+     "pf": 0.74
+    },
+    "bull": {
+     "n": 1383,
+     "mean_net": 0.5148,
+     "pf": 1.227
+    },
+    "neutral": {
+     "n": 29,
+     "mean_net": -2.2308,
+     "pf": 0.479
+    }
+   }
+  },
+  {
+   "strategy": "smc_bos_continuation",
+   "best_exit_in_sample": "multi_tier_partial",
+   "trades": 44,
+   "mean_net": -1.8569,
+   "pf": 0.472,
+   "by_regime": {
+    "bear": {
+     "n": 31,
+     "mean_net": -1.9781,
+     "pf": 0.51
+    },
+    "bull": {
+     "n": 13,
+     "mean_net": -1.5676,
+     "pf": 0.311
+    }
+   }
+  },
+  {
+   "strategy": "smc_bos_retest_entry",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 381,
+   "mean_net": -0.2229,
+   "pf": 0.914,
+   "by_regime": {
+    "bear": {
+     "n": 169,
+     "mean_net": -1.5649,
+     "pf": 0.518
+    },
+    "bull": {
+     "n": 209,
+     "mean_net": 0.9208,
+     "pf": 1.45
+    },
+    "neutral": {
+     "n": 3,
+     "mean_net": -4.297,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "smc_breaker_block_short",
+   "best_exit_in_sample": "multi_tier_partial",
+   "trades": 1171,
+   "mean_net": -1.5266,
+   "pf": 0.482,
+   "by_regime": {
+    "bear": {
+     "n": 629,
+     "mean_net": -1.7879,
+     "pf": 0.404
+    },
+    "bull": {
+     "n": 529,
+     "mean_net": -1.2075,
+     "pf": 0.582
+    },
+    "neutral": {
+     "n": 13,
+     "mean_net": -1.8737,
+     "pf": 0.309
+    }
+   }
+  },
+  {
+   "strategy": "smc_choch_reversal",
+   "best_exit_in_sample": "r_multiple_3r",
+   "trades": 338,
+   "mean_net": -1.0617,
+   "pf": 0.698,
+   "by_regime": {
+    "bear": {
+     "n": 207,
+     "mean_net": -1.3352,
+     "pf": 0.676
+    },
+    "bull": {
+     "n": 130,
+     "mean_net": -0.6092,
+     "pf": 0.762
+    },
+    "neutral": {
+     "n": 1,
+     "mean_net": -3.2573,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "smc_equal_highs_sweep_short",
+   "best_exit_in_sample": "multi_tier_partial",
+   "trades": 647,
+   "mean_net": -1.4585,
+   "pf": 0.342,
+   "by_regime": {
+    "bear": {
+     "n": 316,
+     "mean_net": -1.9462,
+     "pf": 0.324
+    },
+    "bull": {
+     "n": 329,
+     "mean_net": -0.976,
+     "pf": 0.38
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -3.7914,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "smc_fvg_retest_short",
+   "best_exit_in_sample": "multi_tier_partial",
+   "trades": 228,
+   "mean_net": -0.4918,
+   "pf": 0.755,
+   "by_regime": {
+    "bear": {
+     "n": 130,
+     "mean_net": -0.1524,
+     "pf": 0.932
+    },
+    "bull": {
+     "n": 96,
+     "mean_net": -0.8879,
+     "pf": 0.461
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -3.5373,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "smc_inverse_fvg",
+   "best_exit_in_sample": "chandelier_3x",
+   "trades": 419,
+   "mean_net": -0.8305,
+   "pf": 0.745,
+   "by_regime": {
+    "bear": {
+     "n": 216,
+     "mean_net": -1.4511,
+     "pf": 0.611
+    },
+    "bull": {
+     "n": 199,
+     "mean_net": -0.1067,
+     "pf": 0.961
+    },
+    "neutral": {
+     "n": 4,
+     "mean_net": -3.3314,
+     "pf": 0.11
+    }
+   }
+  },
+  {
+   "strategy": "smc_liquidity_sweep_reversal",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 1462,
+   "mean_net": -1.2286,
+   "pf": 0.409,
+   "by_regime": {
+    "bear": {
+     "n": 825,
+     "mean_net": -1.7657,
+     "pf": 0.304
+    },
+    "bull": {
+     "n": 622,
+     "mean_net": -0.5188,
+     "pf": 0.651
+    },
+    "neutral": {
+     "n": 15,
+     "mean_net": -1.122,
+     "pf": 0.218
+    }
+   }
+  },
+  {
+   "strategy": "smc_mitigation_block_short",
+   "best_exit_in_sample": "trailing_10pct",
+   "trades": 35,
+   "mean_net": 0.0883,
+   "pf": 1.018,
+   "by_regime": {
+    "bear": {
+     "n": 14,
+     "mean_net": 2.4894,
+     "pf": 1.569
+    },
+    "bull": {
+     "n": 21,
+     "mean_net": -1.5124,
+     "pf": 0.708
+    }
+   }
+  },
+  {
+   "strategy": "smc_order_block_bounce",
+   "best_exit_in_sample": "chandelier_3x",
+   "trades": 668,
+   "mean_net": -0.4074,
+   "pf": 0.121,
+   "by_regime": {
+    "bear": {
+     "n": 407,
+     "mean_net": -0.3965,
+     "pf": 0.127
+    },
+    "bull": {
+     "n": 255,
+     "mean_net": -0.4172,
+     "pf": 0.115
+    },
+    "neutral": {
+     "n": 6,
+     "mean_net": -0.7277,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "smc_ote_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 179,
+   "mean_net": 0.398,
+   "pf": 1.161,
+   "by_regime": {
+    "bear": {
+     "n": 57,
+     "mean_net": -0.9011,
+     "pf": 0.71
+    },
+    "bull": {
+     "n": 116,
+     "mean_net": 1.3891,
+     "pf": 1.712
+    },
+    "neutral": {
+     "n": 6,
+     "mean_net": -6.4221,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "smc_premium_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 328,
+   "mean_net": 0.0993,
+   "pf": 1.034,
+   "by_regime": {
+    "bear": {
+     "n": 178,
+     "mean_net": -1.4321,
+     "pf": 0.611
+    },
+    "bull": {
+     "n": 148,
+     "mean_net": 2.044,
+     "pf": 2.085
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": -7.5108,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "stoch_oversold",
+   "best_exit_in_sample": "class_time_stop",
+   "trades": 135,
+   "mean_net": 0.4917,
+   "pf": 1.24,
+   "by_regime": {
+    "bear": {
+     "n": 71,
+     "mean_net": 1.108,
+     "pf": 1.469
+    },
+    "bull": {
+     "n": 63,
+     "mean_net": -0.1448,
+     "pf": 0.913
+    },
+    "neutral": {
+     "n": 1,
+     "mean_net": -3.1712,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "stochrsi_overbought_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 3172,
+   "mean_net": -0.136,
+   "pf": 0.944,
+   "by_regime": {
+    "bear": {
+     "n": 1185,
+     "mean_net": -0.8563,
+     "pf": 0.721
+    },
+    "bull": {
+     "n": 1965,
+     "mean_net": 0.3013,
+     "pf": 1.146
+    },
+    "neutral": {
+     "n": 22,
+     "mean_net": -0.3928,
+     "pf": 0.7
+    }
+   }
+  },
+  {
+   "strategy": "stochrsi_oversold",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 1064,
+   "mean_net": -0.5192,
+   "pf": 0.53,
+   "by_regime": {
+    "bear": {
+     "n": 595,
+     "mean_net": -0.5474,
+     "pf": 0.507
+    },
+    "bull": {
+     "n": 467,
+     "mean_net": -0.4893,
+     "pf": 0.556
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": 0.8904,
+     "pf": null
+    }
+   }
+  },
+  {
+   "strategy": "supertrend_macd",
+   "best_exit_in_sample": "multi_tier_partial",
+   "trades": 357,
+   "mean_net": -1.2826,
+   "pf": 0.489,
+   "by_regime": {
+    "bear": {
+     "n": 165,
+     "mean_net": -1.3937,
+     "pf": 0.532
+    },
+    "bull": {
+     "n": 189,
+     "mean_net": -1.1597,
+     "pf": 0.446
+    },
+    "neutral": {
+     "n": 3,
+     "mean_net": -2.9073,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "supertrend_macd_short",
+   "best_exit_in_sample": "atr_trail_2x",
+   "trades": 212,
+   "mean_net": 0.5847,
+   "pf": 1.145,
+   "by_regime": {
+    "bear": {
+     "n": 88,
+     "mean_net": 0.5739,
+     "pf": 1.116
+    },
+    "bull": {
+     "n": 123,
+     "mean_net": 0.6386,
+     "pf": 1.19
+    },
+    "neutral": {
+     "n": 1,
+     "mean_net": -5.0971,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "tema_dema",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 701,
+   "mean_net": 0.5908,
+   "pf": 1.285,
+   "by_regime": {
+    "bear": {
+     "n": 202,
+     "mean_net": 0.5189,
+     "pf": 1.206
+    },
+    "bull": {
+     "n": 496,
+     "mean_net": 0.6384,
+     "pf": 1.339
+    },
+    "neutral": {
+     "n": 3,
+     "mean_net": -2.4237,
+     "pf": 0.329
+    }
+   }
+  },
+  {
+   "strategy": "three_black_crows_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 1204,
+   "mean_net": 0.2919,
+   "pf": 1.134,
+   "by_regime": {
+    "bear": {
+     "n": 343,
+     "mean_net": -0.3353,
+     "pf": 0.872
+    },
+    "bull": {
+     "n": 858,
+     "mean_net": 0.5443,
+     "pf": 1.271
+    },
+    "neutral": {
+     "n": 3,
+     "mean_net": -0.2,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "triangle_descending_short",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 820,
+   "mean_net": -0.2739,
+   "pf": 0.891,
+   "by_regime": {
+    "bear": {
+     "n": 402,
+     "mean_net": -1.0427,
+     "pf": 0.65
+    },
+    "bull": {
+     "n": 411,
+     "mean_net": 0.4763,
+     "pf": 1.23
+    },
+    "neutral": {
+     "n": 7,
+     "mean_net": -0.1712,
+     "pf": 0.929
+    }
+   }
+  },
+  {
+   "strategy": "turtle_soup_short",
+   "best_exit_in_sample": "next_pivot_target",
+   "trades": 1478,
+   "mean_net": -1.1782,
+   "pf": 0.576,
+   "by_regime": {
+    "bear": {
+     "n": 793,
+     "mean_net": -1.1501,
+     "pf": 0.592
+    },
+    "bull": {
+     "n": 673,
+     "mean_net": -1.1774,
+     "pf": 0.564
+    },
+    "neutral": {
+     "n": 12,
+     "mean_net": -3.0729,
+     "pf": 0.303
+    }
+   }
+  },
+  {
+   "strategy": "ultimate_oscillator",
+   "best_exit_in_sample": "chandelier_3x",
+   "trades": 291,
+   "mean_net": -0.3321,
+   "pf": 0.424,
+   "by_regime": {
+    "bear": {
+     "n": 170,
+     "mean_net": -0.3273,
+     "pf": 0.487
+    },
+    "bull": {
+     "n": 111,
+     "mean_net": -0.3098,
+     "pf": 0.346
+    },
+    "neutral": {
+     "n": 10,
+     "mean_net": -0.6608,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "vol_spike_2x_below_ema_50_short",
+   "best_exit_in_sample": "multi_tier_partial",
+   "trades": 871,
+   "mean_net": -1.3246,
+   "pf": 0.441,
+   "by_regime": {
+    "bear": {
+     "n": 423,
+     "mean_net": -1.7761,
+     "pf": 0.385
+    },
+    "bull": {
+     "n": 441,
+     "mean_net": -0.8714,
+     "pf": 0.533
+    },
+    "neutral": {
+     "n": 7,
+     "mean_net": -2.5972,
+     "pf": 0.0
+    }
+   }
+  },
+  {
+   "strategy": "volume_spike_breakout",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 782,
+   "mean_net": -0.2296,
+   "pf": 0.922,
+   "by_regime": {
+    "bear": {
+     "n": 339,
+     "mean_net": -1.2757,
+     "pf": 0.642
+    },
+    "bull": {
+     "n": 438,
+     "mean_net": 0.5992,
+     "pf": 1.247
+    },
+    "neutral": {
+     "n": 5,
+     "mean_net": -1.9104,
+     "pf": 0.449
+    }
+   }
+  },
+  {
+   "strategy": "week_opening_gap_fill_down",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 418,
+   "mean_net": -0.9712,
+   "pf": 0.382,
+   "by_regime": {
+    "bear": {
+     "n": 247,
+     "mean_net": -1.2798,
+     "pf": 0.226
+    },
+    "bull": {
+     "n": 169,
+     "mean_net": -0.5362,
+     "pf": 0.633
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": 0.3728,
+     "pf": 1.573
+    }
+   }
+  },
+  {
+   "strategy": "williams_r_oversold",
+   "best_exit_in_sample": "ma_exit_ema9",
+   "trades": 911,
+   "mean_net": -0.4697,
+   "pf": 0.506,
+   "by_regime": {
+    "bear": {
+     "n": 527,
+     "mean_net": -0.5774,
+     "pf": 0.441
+    },
+    "bull": {
+     "n": 382,
+     "mean_net": -0.3251,
+     "pf": 0.612
+    },
+    "neutral": {
+     "n": 2,
+     "mean_net": 0.2812,
+     "pf": 1.809
+    }
+   }
+  },
+  {
+   "strategy": "williams_stoch_dual",
+   "best_exit_in_sample": "breakeven_plus_trail",
+   "trades": 331,
+   "mean_net": 0.3935,
+   "pf": 1.21,
+   "by_regime": {
+    "bear": {
+     "n": 86,
+     "mean_net": -0.1887,
+     "pf": 0.913
+    },
+    "bull": {
+     "n": 241,
+     "mean_net": 0.6558,
+     "pf": 1.382
+    },
+    "neutral": {
+     "n": 4,
+     "mean_net": -2.8966,
+     "pf": 0.444
+    }
+   }
+  },
+  {
+   "strategy": "xs_momentum_bottom_decile_short",
+   "best_exit_in_sample": "hybrid_50pct_target",
+   "trades": 1062,
+   "mean_net": -1.2146,
+   "pf": 0.792,
+   "by_regime": {
+    "bear": {
+     "n": 519,
+     "mean_net": -2.1977,
+     "pf": 0.66
+    },
+    "bull": {
+     "n": 533,
+     "mean_net": -0.3235,
+     "pf": 0.939
+    },
+    "neutral": {
+     "n": 10,
+     "mean_net": 2.3128,
+     "pf": 1.567
+    }
+   }
+  }
+ ]
+}
