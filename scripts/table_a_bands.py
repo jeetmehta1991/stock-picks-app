@@ -344,7 +344,7 @@ PRODUCER_BANDS = {
          "basis": "BRACKET production; naked_poc_count IS persisted",
          "offline": "TIGHTER floors (> 1, > 2) - subset on the persisted count",
          "resim": "none on this knob", "env": None,
-         "evidence": "backtest/signals/screener.py:7004"},
+         "evidence": "backtest/signals/screener.py strat_naked_poc_retest_long (naked_poc_count > 0)"},
     ],
     # ---- pairs -------------------------------------------------------------
     "pair_count_active": [

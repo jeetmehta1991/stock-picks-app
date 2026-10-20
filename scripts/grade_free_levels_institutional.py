@@ -95,7 +95,7 @@ def spec_levels() -> list[tuple[str, int, int]]:
     p7, p8 = rows["P7"], rows["P8"]
     assert (p7["production"], p8["production"]) == (P7_PROD, P8_PROD), (
         f"SPECS production {(p7['production'], p8['production'])} != "
-        f"screener-pinned {(P7_PROD, P8_PROD)} - re-verify screener.py:6648")
+        f"screener-pinned {(P7_PROD, P8_PROD)} - re-verify screener.py strat_institutional_recent_init_momentum_long")
     levels = [(f"baseline_p7_{P7_PROD}", P7_PROD, P8_PROD)]
     levels += [(f"p7_{v}", int(v), P8_PROD)
                for v in p7["free_band"] if v != P7_PROD]

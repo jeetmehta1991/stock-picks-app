@@ -277,10 +277,10 @@ WIRED_VIA_CALL_GRAPH = {
     # audit doesn't trace through cross-module call chain.
     "sc_13d_filed_within_30d": (
         "sec_edgar_extractor.py",
-        "compute_sec_edgar_signals (B531 wire-in; screener.py:8170-8176)",
+        "compute_sec_edgar_signals (B531 wire-in; screener.screen_instrument)",
     ),
     # B986: cap_band wired via cap_band_from_market_cap at
-    # screener.cap_band_from_market_cap; in-place assign at screener.py:7934
+    # screener.cap_band_from_market_cap; in-place assign in screener.screen_instrument
     # (signals["cap_band"] = cap_band_from_market_cap(info.get(
     # "market_cap"))). Strategy consumes at screener.strat_january_effect_small_cap_long
     # (strat_january_effect_long s.get("cap_band") check). Section 1
@@ -288,7 +288,7 @@ WIRED_VIA_CALL_GRAPH = {
     # skipped (line 279) to avoid self-referencing audit cycles.
     "cap_band": (
         "screener.py",
-        "cap_band_from_market_cap (BUG-290 Batch 314; screener.py:7934)",
+        "cap_band_from_market_cap (BUG-290 Batch 314; assigned in screener.screen_instrument)",
     ),
 }
 

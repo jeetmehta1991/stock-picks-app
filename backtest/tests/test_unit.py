@@ -26026,6 +26026,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L942 (B3139q-r75): a reused gate name overwrote committed evidence"),
         ("A RUN ARTIFACT THAT A LEDGER ROW OR A LESSON MAY CITE IS WRITE-ONCE",
          "L942 (B3139q-r75): the #283 section's reverse direction"),
+        # B3139q-r76: L943, same call as the skill edit.
+        ("ANY EDIT THAT CHANGES A FILE'S LINE COUNT MOVES EVERY LINE BELOW IT",
+         "L943 (B3139q-r76): a bullet rewrite moved 24 live-code citations"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26258,7 +26261,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # the skill edit per B2130).
     # 336 -> 339 at B3139q-r75 (L941's derive-or-drop clause, L942's
     # tripwire clause and #283-section rule; same call as the skill edit).
-    assert len(gutted) == 339, gutted
+    # 339 -> 340 at B3139q-r76 (L943's text-edit clause; same call).
+    assert len(gutted) == 340, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -53043,27 +53047,22 @@ def test_b3139bc_the_roster_window_has_one_definition(tmp_path):
 # citation is converted to a symbol. (Citations OF roster_core - the other
 # direction - are held at zero by test_b3139ai_roster_core_is_cited_by_symbol_not_line.)
 _B3139BB_LINE_CITATIONS = {
-    "backtest/config.py": 4,
-    "backtest/diagnostics/section_01_wiring_trace.py": 3,
+    "backtest/config.py": 3,
     "backtest/engine/backtest.py": 2,
-    "backtest/engine/multiple_testing_correction.py": 1,
     "backtest/run_phase1a.py": 1,
-    "backtest/signals/macro_events.py": 1,
-    "backtest/signals/screener.py": 1,
     "backtest/tests/test_b1062_monitor_schema_contract.py": 1,
     "backtest/tests/test_batch459_verification_matrix_scripts_layer.py": 1,
     "backtest/tests/test_batch491_audit_pattern3_closures.py": 1,
     "backtest/tests/test_batch495_pattern3_closures.py": 2,
     "backtest/tests/test_exit_distribution_sanity.py": 1,
-    "backtest/tests/test_integration.py": 5,
+    "backtest/tests/test_integration.py": 4,
     "backtest/tests/test_smc_spof_sentinel.py": 9,
     "backtest/tests/test_unit.py": 9,
     "scripts/aws_chunk_launch.py": 1,
     "scripts/b974_classify_signal_orphan_17.py": 17,
     "scripts/b987_tranche_2_stage5_candidates.py": 1,
-    "scripts/build_strategy_roster.py": 29,
+    "scripts/build_strategy_roster.py": 28,
     "scripts/gate_incident_corpus.py": 1,
-    "scripts/grade_free_levels_institutional.py": 1,
     "scripts/offline_level_sweep.py": 1,
     "scripts/phase_1_add_investigation_columns.py": 2,
     "scripts/phase_1_analysis_turn_3.py": 1,
@@ -53076,10 +53075,10 @@ _B3139BB_LINE_CITATIONS = {
     "scripts/phase_1_investigation_turn_7_silent_misses.py": 4,
     "scripts/phase_1_investigation_turn_8_adjacent_family.py": 2,
     "scripts/postconfig_doc.py": 1,
-    "scripts/producer_variant_table.py": 77,
+    "scripts/producer_variant_table.py": 69,
     "scripts/roster_core.py": 2,
     "scripts/smc_lsr_step1.py": 1,
-    "scripts/table_a_bands.py": 103
+    "scripts/table_a_bands.py": 102
 }
 
 
@@ -58909,6 +58908,38 @@ def test_b3230_gate_records_are_write_once(tmp_path, monkeypatch):
     names = _sp.run(["git", "ls-tree", "-r", "--name-only", "HEAD", "--", "output_audit"],
                     cwd=root, capture_output=True, text=True).stdout.split()
     assert sum(1 for n in names if pf._C17_GATE_RECORD.match(n)) >= 200
+
+
+def test_b3231_screener_is_cited_by_symbol_not_line(tmp_path):
+    """S6-B3231 / L943: screener.py is the most-edited file in the repo, and a
+    line citation into it moves with every edit above it. MEASURED at
+    B3139q-r75: B3139q-r74's bullet rewrite (first changed line 258, net -6
+    lines) moved the cited lines of 24 of the 26 live-code citations of a
+    screener.py line under scripts/ and backtest/, unchecked; read one by one,
+    3 of the 24 had landed on what they described before it and 21 already
+    pointed at blank lines, a separator or another strategy. Each now names a
+    symbol (screen_instrument, strat_smc_order_block_bounce, the EV-7 note
+    above strat_insider_cluster_long, ...), held at zero as roster_core's are
+    (test_b3139ai). One exemption, asserted exact: the frozen B974 one-off
+    classifier, whose committed output
+    output_audit/b974_signal_orphan_17_classification.json carries the same six
+    citations - converting the script alone would split it from its record."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    paths = sorted(list((root / "scripts").rglob("*.py"))
+                   + list((root / "backtest").rglob("*.py")))
+    assert len(paths) >= 900, len(paths)
+    exempt = {"b974_classify_signal_orphan_17.py"}
+    hits = _b3139ai_line_citations(paths, "screener.py")
+    live = [h for h in hits if h.split(":")[0] not in exempt]
+    assert not live, ("cite screener.py by SYMBOL (a function or a constant), never "
+                      f"by line number - its lines move with every edit: {live}")
+    frozen = [h for h in hits if h.split(":")[0] in exempt]
+    assert len(frozen) == 6, frozen          # the exemption is exact, not a hole
+    plant = tmp_path / "plant.txt"
+    plant.write_text("# see screener.py" + ":" + "4750\n"
+                     "# see screener.strat_smc_order_block_bounce\n", encoding="utf-8")
+    assert _b3139ai_line_citations([plant], "screener.py") == ["plant.txt:1"]
 
 
 def test_b3218_a_present_admissions_record_without_its_list_is_refused(tmp_path):

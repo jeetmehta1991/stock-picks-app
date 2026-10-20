@@ -1273,7 +1273,7 @@ DEPRECATED_STRATEGIES: set[str] = set()
 #     audit_script_fix.py:144-153) verified AAL 2026-03-16 returns
 #     8k_item_1_01_filed_within_30d=True. B984 "CC-B 8-K population-
 #     mixing carry" rationale was a citation slip - EV-7 deletion
-#     (screener.py:3454-3456) explicitly distinguishes itself from
+#     (screener.py, the EV-7 note above strat_insider_cluster_long) explicitly distinguishes itself from
 #     properly-parsed Item 1.01 strategies. Re-enable as
 #     EXPLORATORY pending SM-4 feasibility cube verdict
 #     (S4-B673-SM4-FEASIBILITY-FAILURE-RECLASSIFICATION ticket

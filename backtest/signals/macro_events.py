@@ -92,7 +92,7 @@ def compute_pre_fomc_signals(as_of: date) -> dict:
 # B748b (2026-06-13 owner-approved): `compute_recent_8k_signal` DELETED.
 # Per B745 finding-grade audit: zero consumers across the registry (no
 # strategy in ALL_STRATEGIES consumed `recent_8k_filed` or `days_since_8k`).
-# Codebase already flagged the producer as suspect at screener.py:3091.
+# Codebase already flagged the producer as suspect (screener.py, the EV-7 note above strat_insider_cluster_long).
 # Data path (data_prefetch/sec_edgar/8_K/) was also 0 rows; producer was
 # both data-empty AND consumer-empty (genuine orphan). Source preserved
 # in git history at commit de0d7b522~1 if revival ever needed.

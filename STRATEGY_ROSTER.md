@@ -6,7 +6,7 @@
 
 > **B894 NOTE (2026-06-18 Council 18 verdict per CHECKLIST #111):** R4 cube fire status, S4 Review progress, Producer Bug Fix ledger, and per-row Stage 4 Awaiting columns SCRUBBED from this doc - those data sources are stale (R4 era May 31; pre-B722/B874 deletions). Per `feedback_no_a_priori_strategy_pruning` + Council 18 Contrarian: "anything that lies is worse than absent." Live cube fire status + S4 status will be restored after R5 cube execution with fresh data sources. Until then this doc shows only what's derivable from current `screener.py` + `regime_selector.py`.
 
-**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **226** (225 + 1 special-path).
+**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` in [screener.py](backtest/signals/screener.py), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **226** (225 + 1 special-path).
 
 **Count reconciliation:**
 - `len(ALL_STRATEGIES)` = 225 (standard dict path)

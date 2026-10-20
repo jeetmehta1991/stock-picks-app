@@ -1200,7 +1200,7 @@ def main() -> int:
     # the template at B576-era were the root cause of owner's "STRATEGY_ROSTER
     # extremely stale" complaint. Replaced with live-computed values via
     # f-strings + the STRATEGY_REGIME_AFFINITY dict scan below.
-    out_lines.append(f"**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` at [screener.py:4096](backtest/signals/screener.py#L4096), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **{len(ALL_STRATEGIES) + 1}** ({len(ALL_STRATEGIES)} + 1 special-path).")
+    out_lines.append(f"**Architectural gotcha (B576):** `lead_lag_sector_rotation` is registered via a non-ALL_STRATEGIES path (`screen_lead_lag_sector()` in [screener.py](backtest/signals/screener.py), called from `screen_universe()`). It IS active in the engine but is NOT counted in `len(ALL_STRATEGIES)`. The true active engine roster total is **{len(ALL_STRATEGIES) + 1}** ({len(ALL_STRATEGIES)} + 1 special-path).")
     out_lines.append("")
     out_lines.append("**Count reconciliation:**")
     out_lines.append(f"- `len(ALL_STRATEGIES)` = {len(ALL_STRATEGIES)} (standard dict path)")

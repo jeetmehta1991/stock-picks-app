@@ -131,7 +131,7 @@ EXPLORATORY_STRATEGIES = frozenset({
     # B748d: producer EXISTS-RELIABLE at sec_edgar_extractor.eight_k_item_filed_within_days
     # + B748d pin test 8 verified AAL 2026-03-16 fires; B984 disablement
     # rationale (CC-B 8-K population-mixing carry) was citation-slip from
-    # EV-7 deletion which screener.py:3454-3456 explicitly distinguishes.
+    # EV-7 deletion which screener.py (the EV-7 note above strat_insider_cluster_long) explicitly distinguishes.
     # Re-enabled but EXPLORATORY pending SM-4 feasibility cube verdict
     # (S4-B673-SM4-FEASIBILITY-FAILURE-RECLASSIFICATION ticket):
     # engine enters next-day-open AFTER the 20-40% M&A gap, capturing

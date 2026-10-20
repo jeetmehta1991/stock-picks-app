@@ -3087,6 +3087,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r72n / L935) - TWO DESCRIPTIONS OF THE CHANGE OUTLIVED IT.** The S6-B3194 commit updated the docstrings of the functions it touched and the runbook paragraph it rewrote, and missed the comment above CAMPAIGN_VOCAB that still described the retired vocabulary rule; its new runbook sentence said the register's reader raises on a record missing any named field, while the reader accepts ruling_in_substance in place of ruling_verbatim. Grep for every description of the old behaviour, and describe a new check from its branches.
 
+**INSTANCE (B3139q-r76 / L943) - A TEXT EDIT MOVES LINES TOO.** B3139q-r74's bullet rewrite (first changed line 258, net -6) moved the cited lines of 24 of 26 live-code screener.py citations without the L901 grep; 3 had been right and 21 were already wrong. ENFORCED BY test_b3231_screener_is_cited_by_symbol_not_line (zero live-code line citations of screener.py, one asserted-exact exemption), fail-proved.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in

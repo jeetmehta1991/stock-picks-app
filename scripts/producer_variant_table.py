@@ -486,7 +486,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "band": [3, 5, 11, 14],
              "free_band": [3, 5, 11, 14], "resim_band": [],
              "subset_safe": None, "status": "UNTESTED",
-             "evidence": "screener.py:6648",
+             "evidence": "screener.py strat_institutional_recent_init_momentum_long",
              "type": "int", "engine_implemented": True,
              "derivation": "PERSISTED, so this row splits PER LEVEL - which the pre-B2467 binary field could not express and which is why the old factorial read 31,500. Raising the bar (5, 11, 14) selects a STRICT SUBSET of rows already in the cube and grades FREE; lowering it (1, 2) would admit rows the cube never contains and need the engine - and the engine has no knob for it, so those two levels were STRUCK at B2578 (S6-B2569a). The fallback does NOT break this: raising the primary threshold leaves committed_growth_holders unchanged, so rows at 0 still take P8 identically and rows at 3-4 simply stop firing. Levels are the measured IS deciles over 1,275 IS rows."},
             {"id": "P8", "producer": "strat_institutional_committed_growth_long",
@@ -496,7 +496,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "band": [5, 6],
              "free_band": [5, 6], "resim_band": [],
              "subset_safe": None, "status": "UNTESTED",
-             "evidence": "screener.py:6648",
+             "evidence": "screener.py strat_institutional_recent_init_momentum_long",
              "type": "int", "engine_implemented": True,
              "derivation": "the B1230 fallback, live wherever the persistence precompute has no row (~4pct of fired rows). PERSISTED, so the same per-level split as P7: raising it only removes fires and grades FREE; 2 and 3 would add fires and need resim - no knob exists, STRUCK at B2578 (S6-B2569a). Levels are the measured IS deciles of institutional_increased."},
             {"id": "P9", "producer": "compute_ema_sma",
@@ -759,7 +759,7 @@ B1  monthly_momentum_6m       >= q   (momentum cluster rep - the ONE
         "baseline": {"artifact": "output_r5_merged_1_7", "fires": 2116,
                      "tickers": 480, "holdout_n": 422,
                      "window": "2022-05-05..2026-05-05"},
-        "gate": "within_pead_window AND yoy_surprise_high (screener.py:5041)",
+        "gate": "within_pead_window AND yoy_surprise_high (strat_pead_long_high_yoy_growth_only)",
         "params": [
             {"id": "P1", "producer": "pead.load_quarterly_eps",
              "param": "eps_source", "production": "polygon_financials",
@@ -890,7 +890,7 @@ P7  yoy_surprise_negative = yoy <= T   (short sleeve, excluded cluster)
 
 =============================== STRATEGY LAYER ===============================
 
-fires  =  within_pead_window  AND  yoy_surprise_high     (screener.py:5041)
+fires  =  within_pead_window  AND  yoy_surprise_high     (strat_pead_long_high_yoy_growth_only)
 """,
     },
 }
@@ -5865,7 +5865,7 @@ if __name__ == "__main__":
 SPECS["smc_order_block_bounce"] = {
     "gate": ("(smc_ob_bullish_tap_recent_5d AND rsi_14<45 AND "
              "price_above_ema_200) | short mirror + borrow gate "
-             "(screener.py:4693 strat_smc_order_block_bounce)"),
+             "(screener.py strat_smc_order_block_bounce)"),
     "formula": FORMULA_SMC_OBB,
     "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1340,
                  "tickers": 475, "holdout_n": 352,
@@ -5968,7 +5968,7 @@ SPECS["smc_order_block_bounce"] = {
                         "per leg (long max 44.99), so it is the AT-ENTRY value "
                         "and the subset property holds"),
          "subset_safe": True, "status": "UNTESTED",
-         "evidence": "screener.py:4705 rsi_14<45; rsi_14 persisted",
+         "evidence": "screener.py strat_smc_order_block_bounce rsi_14<45; rsi_14 persisted",
          "engine_implemented": True},
         {"id": "P5", "producer": "gate threshold (screener)",
         # S6-B2885: an OFFLINE axis (no env knob) is graded from the landed
@@ -5984,7 +5984,7 @@ SPECS["smc_order_block_bounce"] = {
          "derivation": ("FREE - raising the floor keeps a strict subset; "
                         "short min 55.04 measured on the same 1340 fires"),
          "subset_safe": True, "status": "UNTESTED",
-         "evidence": "screener.py:4710 rsi_14>55", "engine_implemented": True},
+         "evidence": "screener.py strat_smc_order_block_bounce rsi_14>55", "engine_implemented": True},
         {"id": "P6", "producer": "gate structure (screener)",
         # S6-B2885: an OFFLINE axis (no env knob) is graded from the landed
         # cube, so every level is FREE. Migrated in the SAME pass as this
@@ -5998,7 +5998,7 @@ SPECS["smc_order_block_bounce"] = {
          "band": ["long", "short"],
          "derivation": "FREE depth axis: per-leg grading of the same cube",
          "subset_safe": True, "status": "UNTESTED",
-         "evidence": "dual _strat3 at screener.py:4713",
+         "evidence": "dual _strat3 in screener.py strat_smc_order_block_bounce",
          "engine_implemented": True},
     ],
     "tools": {

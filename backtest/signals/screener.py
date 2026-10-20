@@ -8306,7 +8306,7 @@ ALL_STRATEGIES = {
     # DELETED Batch 682; RESTORED Batch 709 (2026-06-12 EMPIRICAL-RESTORE
     # per phi=0.297 verdict from scripts/run_b702_ev3_deletion_empirical_
     # verify.py -- 70% of EV-3 fires are a distinct population EV-1 misses;
-    # see screener.py:3858+ B709 EMPIRICAL-RESTORE comment block + result
+    # see the B709 EMPIRICAL-RESTORE comment above strat_pead_long_high_yoy_growth_only + result
     # at output_audit/b702_ev3_deletion_empirical_verify_2026-06-12.json).
     "pead_long_high_yoy_growth_only":   strat_pead_long_high_yoy_growth_only,
     "pead_short_negative_yoy_growth":   strat_pead_short_negative_yoy_growth,

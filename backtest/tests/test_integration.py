@@ -727,7 +727,7 @@ def test_bug_022_023_strategy_count_references_are_current():
     docstring both said "60 strategies" - stale per layered-roster
     expansion. RESOLVED via current text referencing
     "Layer 1 baseline; full layered roster ~108-133 per
-    CANONICAL_FACTS.md F-002" in run_phase1a.main and screener.py:7+.
+    CANONICAL_FACTS.md F-002" in run_phase1a.main and screener.py's module docstring.
     Sister bugs share single fix.
     """
     # B2017 SUPERSESSION: this pin originally asserted the "~108-133 per
