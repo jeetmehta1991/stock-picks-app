@@ -59011,3 +59011,27 @@ def test_b1248_short_regime_census_never_reads_the_holdout():
     assert src.census(both, "2025-05-05") == (rows, summ)
     rows3, _s3 = src.census(both, "2027-01-01")      # must-fire
     assert rows3 != rows and rows3[0]["best_exit_in_sample"] == "e2", rows3
+
+
+def test_b1248_lever4_census_counts_each_long_sides_and_legs():
+    """S6-B1248-LEVER4-GATE-BUDGET (B3139q-r72z): the census that sizes a
+    k-of-m rewrite counts each LONG side's AND legs. Hand-checked against the
+    screener source: hull_rsi's long side ANDs 4 legs (hull_bullish,
+    price_above_hull, adx_trend_ok, above_200_fresh) and squeeze_breakout's
+    one (squeeze_fire_up). The flattener descends into nested ANDs and keeps
+    an OR as ONE leg; a flattener that stopped descending would read hull_rsi
+    short (must-fire, proved by mutation)."""
+    import ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import lever4_condition_census as lc
+
+    rows = {r["strategy"]: r for r in lc.long_side_rows({"hull_rsi", "squeeze_breakout"})}
+    assert rows["hull_rsi"]["conditions"] == 4, rows["hull_rsi"]
+    assert "adx_trend_ok" in rows["hull_rsi"]["operands"], rows["hull_rsi"]
+    assert rows["squeeze_breakout"]["conditions"] == 1, rows["squeeze_breakout"]
+    e = ast.parse("a and (b and c) and (d or e)", mode="eval").body
+    assert [ast.unparse(x) for x in lc.and_ops(e)] == ["a", "b", "c", "d or e"]

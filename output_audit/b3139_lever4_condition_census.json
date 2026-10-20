@@ -1,0 +1,2453 @@
+{
+ "generator": "scripts/lever4_condition_census.py",
+ "status_view": "output_audit/strategy_optimisation_status.json",
+ "summary": {
+  "long_sides": 163,
+  "open_long_sides": 123,
+  "open_conditions_distribution": {
+   "1": 9,
+   "2": 43,
+   "3": 49,
+   "4": 10,
+   "5": 6,
+   "6": 4,
+   "7": 2
+  },
+  "open_long_sides_with_4_plus_conditions": 22,
+  "deep_open_long_sides": [
+   "break_retest_confluence",
+   "r1_break_retest",
+   "break_retest_volume",
+   "donchian_10_breakout",
+   "news_momentum_long",
+   "news_reversal_long",
+   "52wh_break_retest",
+   "cpr_narrow_momentum",
+   "cup_and_handle_retest_long",
+   "donchian_breakout_long",
+   "donchian_breakout_retest_long",
+   "volume_spike_breakout",
+   "cpr_narrow_bullish",
+   "cup_and_handle_long",
+   "dc20_break_retest",
+   "flag_bull_retest_long",
+   "hull_rsi",
+   "orb_stocks_in_play_long",
+   "pivot_r1_breakout",
+   "pivot_r2_continuation",
+   "smc_bos_continuation",
+   "stochrsi_oversold"
+  ]
+ },
+ "rows": [
+  {
+   "strategy": "orb_stocks_in_play_long",
+   "declaration": "_strat",
+   "conditions": 4,
+   "operands": [
+    "gap > 1.5",
+    "s.get('close_above_open', False)",
+    "s.get('vol_spike_2x', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 54,
+   "projected_step1_fires": 5.0
+  },
+  {
+   "strategy": "smc_bos_continuation",
+   "declaration": "_strat3",
+   "conditions": 4,
+   "operands": [
+    "s.get('smc_bos_bullish', False)",
+    "s.get('price_above_ema_200', False)",
+    "vol_confirms",
+    "rsi > 50"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 100,
+   "projected_step1_fires": 9.2
+  },
+  {
+   "strategy": "smc_choch_reversal",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('smc_choch_bullish', False)",
+    "s.get('smc_fvg_bullish_active', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 551,
+   "projected_step1_fires": 50.6
+  },
+  {
+   "strategy": "smc_order_block_bounce",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('smc_ob_bullish_tap_recent_5d', False)",
+    "s.get('rsi_14', 50) < 45",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "STALLED-CAMPAIGN",
+   "open": true,
+   "r5_fires": 1340,
+   "projected_step1_fires": 123.2
+  },
+  {
+   "strategy": "smc_liquidity_sweep_reversal",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('smc_liquidity_swept_dn', False)",
+    "s.get('smc_choch_bullish', False) or s.get('smc_bos_bullish', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "STALLED-CAMPAIGN",
+   "open": true,
+   "r5_fires": 2933,
+   "projected_step1_fires": 269.6
+  },
+  {
+   "strategy": "turtle_soup_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('smc_liquidity_swept_dn', False)",
+    "s.get('above_prev_low', False)",
+    "s.get('close_above_open', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 324,
+   "projected_step1_fires": 29.8
+  },
+  {
+   "strategy": "judas_swing_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('smc_liquidity_swept_dn', False)",
+    "s.get('near_pivot', False)",
+    "s.get('close_above_open', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 65,
+   "projected_step1_fires": 6.0
+  },
+  {
+   "strategy": "mmbm_long",
+   "declaration": "_strat",
+   "conditions": 1,
+   "operands": [
+    "bool(s.get('po3_mmbm_setup', False))"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1337,
+   "projected_step1_fires": 122.9
+  },
+  {
+   "strategy": "week_opening_gap_fill_up",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "bool(s.get('week_open_gap_down_15pct', False))",
+    "s.get('days_since_last_earnings', 999) > 2"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 834,
+   "projected_step1_fires": 76.7
+  },
+  {
+   "strategy": "pre_fomc_long_sleeve",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('pre_fomc_d1', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 69,
+   "projected_step1_fires": 6.3
+  },
+  {
+   "strategy": "pre_fomc_quality_momentum_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('pre_fomc_d1', False)",
+    "s.get('xs_momentum_top_quintile', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 25,
+   "projected_step1_fires": 2.3
+  },
+  {
+   "strategy": "insider_cluster_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('insider_cluster_active', False) or n >= 3",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 24,
+   "projected_step1_fires": 2.2
+  },
+  {
+   "strategy": "insider_cluster_with_director_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('insider_cluster_active', False)",
+    "s.get('insider_director_buyers_30d', 0) >= 1 or s.get('insider_officer_buyers_30d', 0) >= 1",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 24,
+   "projected_step1_fires": 2.2
+  },
+  {
+   "strategy": "xs_quality_top_quintile_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('xs_quality_top_tercile', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 89,
+   "projected_step1_fires": 8.2
+  },
+  {
+   "strategy": "xs_momentum_quality_combined",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('xs_momentum_top_quintile', False)",
+    "s.get('xs_quality_top_quintile', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 163,
+   "projected_step1_fires": 15.0
+  },
+  {
+   "strategy": "pead_with_insider_confirmation_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('within_pead_window', False)",
+    "s.get('pead_positive_surprise', False)",
+    "s.get('insider_cluster_active', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 10,
+   "projected_step1_fires": 0.9
+  },
+  {
+   "strategy": "xs_momentum_top_decile",
+   "declaration": "_strat",
+   "conditions": 4,
+   "operands": [
+    "s.get('xs_momentum_top_decile', False)",
+    "s.get('xs_avoid_high_ivol', True)",
+    "s.get('xs_avoid_high_max', True)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 255,
+   "projected_step1_fires": 23.4
+  },
+  {
+   "strategy": "xs_low_beta_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('xs_low_beta_decile_entry_recent_5d', False)",
+    "s.get('xs_avoid_high_ivol', True)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 78,
+   "projected_step1_fires": 7.2
+  },
+  {
+   "strategy": "xs_combined_momentum_low_ivol",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('xs_momentum_top_quintile', False)",
+    "s.get('xs_ivol_decile', 5) <= 4",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "IN-ROSTER-FUNNEL",
+   "open": false,
+   "r5_fires": 212,
+   "projected_step1_fires": 19.5
+  },
+  {
+   "strategy": "po3_bullish",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('po3_bullish', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 731,
+   "projected_step1_fires": 67.2
+  },
+  {
+   "strategy": "htf_aligned_breakout_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('above_prev_high', False)",
+    "s.get('vol_above_avg', False)",
+    "s.get('htf_aligned_bull', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 326,
+   "projected_step1_fires": 30.0
+  },
+  {
+   "strategy": "weekly_bias_pullback_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('weekly_bias_bull', False)",
+    "s.get('rsi_14', 50) < 45"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 27,
+   "projected_step1_fires": 2.5
+  },
+  {
+   "strategy": "monthly_bias_momentum_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('monthly_bias_bull', False)",
+    "s.get('monthly_momentum_pos', False)",
+    "s.get('above_prev_high_clearance_atr_05', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 37,
+   "projected_step1_fires": 3.4
+  },
+  {
+   "strategy": "smc_fvg_retest_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('smc_fvg_retest_long_zone', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 66,
+   "projected_step1_fires": 6.1
+  },
+  {
+   "strategy": "smc_inverse_fvg",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "fl_base",
+    "above_200",
+    "vol_confirms"
+   ],
+   "early_return_guards": 0,
+   "status": "STALLED-CAMPAIGN",
+   "open": true,
+   "r5_fires": 953,
+   "projected_step1_fires": 87.6
+  },
+  {
+   "strategy": "smc_breaker_block_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('smc_breaker_block_bullish_retest_recent_5d', False)",
+    "s.get(_ema_key, False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 948,
+   "projected_step1_fires": 87.1
+  },
+  {
+   "strategy": "smc_mitigation_block_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('smc_mitigation_block_long', False)",
+    "s.get('price_above_ema_200', False)",
+    "s.get('rsi_14', 50) < 50"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 15,
+   "projected_step1_fires": 1.4
+  },
+  {
+   "strategy": "smc_discount_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('smc_in_discount_zone', False)",
+    "s.get('smc_bos_bullish', False) or s.get('smc_choch_bullish', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 333,
+   "projected_step1_fires": 30.6
+  },
+  {
+   "strategy": "smc_ote_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('smc_ote_long_zone', False)",
+    "s.get('smc_bos_bullish', False) or s.get('smc_choch_bullish', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 231,
+   "projected_step1_fires": 21.2
+  },
+  {
+   "strategy": "smc_equal_lows_sweep_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('smc_equal_lows_swept', False)",
+    "s.get('smc_fvg_bullish_active', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "STALLED-CAMPAIGN",
+   "open": true,
+   "r5_fires": 382,
+   "projected_step1_fires": 35.1
+  },
+  {
+   "strategy": "smc_bos_retest_entry",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('smc_bos_retest_long', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "IN-ROSTER-FUNNEL",
+   "open": false,
+   "r5_fires": 682,
+   "projected_step1_fires": 62.7
+  },
+  {
+   "strategy": "pead_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('within_pead_window', False)",
+    "s.get('pead_positive_surprise', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "CONTAINED-IN-REPRESENTATIVE",
+   "open": false,
+   "r5_fires": 140,
+   "projected_step1_fires": 12.9
+  },
+  {
+   "strategy": "pead_long_high_yoy_growth_only",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('within_pead_window', False)",
+    "s.get('yoy_surprise_high', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 2116,
+   "projected_step1_fires": 194.5
+  },
+  {
+   "strategy": "squeeze_setup_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "layer1_positioning",
+    "layer2_catalyst",
+    "layer3_confirmation"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 0,
+   "projected_step1_fires": 0.0
+  },
+  {
+   "strategy": "activist_13d_long",
+   "declaration": "_strat",
+   "conditions": 1,
+   "operands": [
+    "bool(s.get('sc_13d_filed_within_30d', False))"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 119,
+   "projected_step1_fires": 10.9
+  },
+  {
+   "strategy": "m_and_a_target_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "bool(s.get('8k_item_1_01_filed_within_30d', False))",
+    "s.get('po3_accum_range_pct', float('-inf')) >= 0.0556"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1023,
+   "projected_step1_fires": 94.0
+  },
+  {
+   "strategy": "avwap_252_breakout",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "reclaim_252_long",
+    "vol_ok"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 2294,
+   "projected_step1_fires": 210.8
+  },
+  {
+   "strategy": "avwap_50_reclaim",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "reclaim_event_long",
+    "macd_bull",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1336,
+   "projected_step1_fires": 122.8
+  },
+  {
+   "strategy": "pivot_s1_bounce",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('near_s1')",
+    "s.get('hammer') or s.get('bullish_pin_bar')",
+    "s.get('obv_bullish')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 458,
+   "projected_step1_fires": 42.1
+  },
+  {
+   "strategy": "pivot_s2_bounce",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('near_s2')",
+    "s.get('rsi_14', 50) < 45",
+    "s.get('hammer') or s.get('bullish_engulfing')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 55,
+   "projected_step1_fires": 5.1
+  },
+  {
+   "strategy": "pivot_s3_capitulation",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('recent_capitulation_at_s3')",
+    "s.get('vol_below_avg')",
+    "s.get('bullish_engulfing') or s.get('hammer') or s.get('above_prev_high') or s.get('bullish_pin_bar')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 3,
+   "projected_step1_fires": 0.3
+  },
+  {
+   "strategy": "pivot_r1_breakout",
+   "declaration": "_strat3",
+   "conditions": 4,
+   "operands": [
+    "s.get('above_r1')",
+    "s.get('vol_spike_15x')",
+    "s.get('macd_12_26_9_bullish')",
+    "avwap_long_ok"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 860,
+   "projected_step1_fires": 79.0
+  },
+  {
+   "strategy": "pivot_r2_continuation",
+   "declaration": "_strat3",
+   "conditions": 4,
+   "operands": [
+    "s.get('above_r2')",
+    "s.get('adx_trending')",
+    "s.get('ema_50_200_bullish')",
+    "s.get('vol_spike_2x', s.get('vol_spike_15x', False))"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 55,
+   "projected_step1_fires": 5.1
+  },
+  {
+   "strategy": "cpr_narrow_bullish",
+   "declaration": "_strat3",
+   "conditions": 4,
+   "operands": [
+    "s.get('cpr_narrow_tight')",
+    "s.get('above_cpr')",
+    "avwap_long_ok",
+    "above_200"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1248,
+   "projected_step1_fires": 114.7
+  },
+  {
+   "strategy": "camarilla_s3_bounce",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('near_cam_s3')",
+    "s.get('rsi_14', 50) < 40",
+    "s.get('obv_bullish')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 228,
+   "projected_step1_fires": 21.0
+  },
+  {
+   "strategy": "camarilla_r4_breakout",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('above_cam_r4')",
+    "s.get('vol_above_avg')",
+    "s.get('xs_ivol', float('-inf')) >= 0.2598"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 5774,
+   "projected_step1_fires": 530.7
+  },
+  {
+   "strategy": "prev_day_high_break",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('above_prev_high')",
+    "s.get('vol_spike_12x')",
+    "s.get('above_vwap')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1424,
+   "projected_step1_fires": 130.9
+  },
+  {
+   "strategy": "prev_day_low_bounce",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('near_prev_low')",
+    "s.get('hammer')",
+    "s.get('cmf_positive')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 577,
+   "projected_step1_fires": 53.0
+  },
+  {
+   "strategy": "macd_crossover",
+   "declaration": "_strat3",
+   "conditions": 1,
+   "operands": [
+    "s.get('macd_12_26_9_crossover_up')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 2910,
+   "projected_step1_fires": 267.5
+  },
+  {
+   "strategy": "macd_fast_crossover",
+   "declaration": "_strat3",
+   "conditions": 1,
+   "operands": [
+    "s.get('macd_8_21_5_crossover_up')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 4070,
+   "projected_step1_fires": 374.1
+  },
+  {
+   "strategy": "hull_rsi",
+   "declaration": "_strat3",
+   "conditions": 4,
+   "operands": [
+    "s.get('hull_bullish')",
+    "s.get('price_above_hull')",
+    "adx_trend_ok",
+    "above_200_fresh"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1270,
+   "projected_step1_fires": 116.7
+  },
+  {
+   "strategy": "williams_r_oversold",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('williams_r_oversold') or rsi_2 < 5",
+    "above_200",
+    "s.get('cmf_positive')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 2535,
+   "projected_step1_fires": 233.0
+  },
+  {
+   "strategy": "roc_burst",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('roc_turning_up')",
+    "s.get('vol_spike_12x')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 918,
+   "projected_step1_fires": 84.4
+  },
+  {
+   "strategy": "awesome_oscillator",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('ao_cross_up')",
+    "s.get('price_above_ema_20')",
+    "s.get('pct_from_avwap_50low', float('-inf')) >= -0.46"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1012,
+   "projected_step1_fires": 93.0
+  },
+  {
+   "strategy": "stochrsi_oversold",
+   "declaration": "_strat3",
+   "conditions": 4,
+   "operands": [
+    "s.get('stochrsi_oversold')",
+    "s.get('stochrsi_cross_up')",
+    "s.get('rsi_14', 50) < 55",
+    "above_200"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 2433,
+   "projected_step1_fires": 223.6
+  },
+  {
+   "strategy": "ppo_crossover",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('ppo_crossover_up')",
+    "s.get('adx_trending')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1588,
+   "projected_step1_fires": 146.0
+  },
+  {
+   "strategy": "ultimate_oscillator",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('uo_oversold') or rsi_2 < 5",
+    "s.get('price_above_sma_200')",
+    "s.get('close_above_open')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 592,
+   "projected_step1_fires": 54.4
+  },
+  {
+   "strategy": "golden_cross_50_200",
+   "declaration": "_strat3",
+   "conditions": 1,
+   "operands": [
+    "s.get('ema_50_200_golden_cross')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 109,
+   "projected_step1_fires": 10.0
+  },
+  {
+   "strategy": "golden_cross_9_21",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('ema_9_21_golden_cross')",
+    "s.get('price_above_sma_50')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 889,
+   "projected_step1_fires": 81.7
+  },
+  {
+   "strategy": "golden_cross_20_50",
+   "declaration": "_strat3",
+   "conditions": 1,
+   "operands": [
+    "s.get('ema_20_50_golden_cross')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 413,
+   "projected_step1_fires": 38.0
+  },
+  {
+   "strategy": "parabolic_sar_flip",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('psar_flip_up')",
+    "s.get('adx_trending')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1618,
+   "projected_step1_fires": 148.7
+  },
+  {
+   "strategy": "tema_dema",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('tema_cross_up')",
+    "s.get('price_above_tema')",
+    "s.get('ao', float('inf')) <= 2.866"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1876,
+   "projected_step1_fires": 172.4
+  },
+  {
+   "strategy": "ichimoku_tk_cross",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('ichi_tk_cross_up')",
+    "s.get('news_sentiment_5d', float('-inf')) >= 0.0"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1319,
+   "projected_step1_fires": 121.2
+  },
+  {
+   "strategy": "ichimoku_cloud_breakout",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('ichi_above_cloud_break_recent_5d')",
+    "s.get('ichi_tk_bullish')",
+    "weekly_long_ok"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 511,
+   "projected_step1_fires": 47.0
+  },
+  {
+   "strategy": "adx_initiation",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('adx_cross_up_20')",
+    "s.get('adx_di_bull')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 39,
+   "projected_step1_fires": 3.6
+  },
+  {
+   "strategy": "supertrend_macd",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('supertrend_flip_recent_long_5d')",
+    "s.get('macd_12_26_9_bullish')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 486,
+   "projected_step1_fires": 44.7
+  },
+  {
+   "strategy": "rsi_oversold",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "rsi_2 < 7 or rsi_14 < 40",
+    "s.get('price_above_sma_50')",
+    "above_200"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1945,
+   "projected_step1_fires": 178.8
+  },
+  {
+   "strategy": "rsi9_extreme",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('rsi_9_extreme_os')",
+    "s.get('price_above_ema_200')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 56,
+   "projected_step1_fires": 5.1
+  },
+  {
+   "strategy": "rsi21_slow",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('rsi_21', 50) < 40",
+    "s.get('price_above_sma_50')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 9,
+   "projected_step1_fires": 0.8
+  },
+  {
+   "strategy": "mfi_oversold",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('mfi_broad_oversold')",
+    "s.get('near_s1') or s.get('near_s2')",
+    "s.get('obv_bullish')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 77,
+   "projected_step1_fires": 7.1
+  },
+  {
+   "strategy": "cmf_flip",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('cmf_cross_up')",
+    "s.get('rsi_14', 50) < 50",
+    "s.get('po3_accum_range_pct', float('-inf')) >= 0.0458"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 2994,
+   "projected_step1_fires": 275.2
+  },
+  {
+   "strategy": "bollinger_lower",
+   "declaration": "_strat3",
+   "conditions": 4,
+   "operands": [
+    "s.get('bb_20_20_reclaim_from_lower_recent_3d')",
+    "rsi_long_ok",
+    "above_200",
+    "adx_ok"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-OWNER-CLOSED",
+   "open": false,
+   "r5_fires": 1622,
+   "projected_step1_fires": 149.1
+  },
+  {
+   "strategy": "bollinger_tight",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('bb_20_15_reclaim_from_lower_recent_3d') or s.get('bb_20_20_reclaim_from_lower_recent_3d')",
+    "rsi_long_ok",
+    "above_200"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 271,
+   "projected_step1_fires": 24.9
+  },
+  {
+   "strategy": "keltner_lower",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('kc_touch_lower')",
+    "s.get('hammer', False) or s.get('bullish_engulfing', False) or s.get('bullish_pin_bar', False)",
+    "s.get('obv_bullish')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 41,
+   "projected_step1_fires": 3.8
+  },
+  {
+   "strategy": "stoch_oversold",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('stoch_broad_oversold')",
+    "s.get('stoch_bullish_cross')",
+    "s.get('price_above_ema_20')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 286,
+   "projected_step1_fires": 26.3
+  },
+  {
+   "strategy": "squeeze_breakout",
+   "declaration": "_strat",
+   "conditions": 1,
+   "operands": [
+    "s.get('squeeze_fire_up')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1141,
+   "projected_step1_fires": 104.9
+  },
+  {
+   "strategy": "volume_spike_breakout",
+   "declaration": "_strat3",
+   "conditions": 5,
+   "operands": [
+    "s.get('dc20_breakout_up')",
+    "s.get('vol_above_avg')",
+    "s.get('above_avwap_20low')",
+    "s.get('close_above_open')",
+    "s.get('close_in_top_40pct_of_range')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1500,
+   "projected_step1_fires": 137.9
+  },
+  {
+   "strategy": "52w_high_breakout",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "n_confirm >= 1"
+   ],
+   "early_return_guards": 1,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 33,
+   "projected_step1_fires": 3.0
+  },
+  {
+   "strategy": "52w_high_breakout_pullback_long",
+   "declaration": "_strat",
+   "conditions": 1,
+   "operands": [
+    "s.get('near_52w_high_retest_long', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "IN-ROSTER-FUNNEL",
+   "open": false,
+   "r5_fires": 150,
+   "projected_step1_fires": 13.8
+  },
+  {
+   "strategy": "inside_bar_breakout",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('inside_bar')",
+    "s.get('adx', 0) > 20",
+    "s.get('above_vwap')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 677,
+   "projected_step1_fires": 62.2
+  },
+  {
+   "strategy": "force_index_breakout",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('force_index_cross_up')",
+    "s.get('price_above_ema_20')",
+    "s.get('close_above_open')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 3013,
+   "projected_step1_fires": 276.9
+  },
+  {
+   "strategy": "donchian_10_breakout",
+   "declaration": "_strat3",
+   "conditions": 6,
+   "operands": [
+    "s.get('dc10_breakout_up_1pct')",
+    "s.get('vol_above_avg')",
+    "s.get('macd_12_26_9_bullish')",
+    "s.get('close_above_open')",
+    "s.get('close_in_top_40pct_of_range')",
+    "s.get('dc10_strong_breakout_up')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 966,
+   "projected_step1_fires": 88.8
+  },
+  {
+   "strategy": "morning_star",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('morning_star')",
+    "s.get('rsi_14', 50) < 45",
+    "s.get('squeeze_momentum', float('inf')) <= 0.0096"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 2280,
+   "projected_step1_fires": 209.6
+  },
+  {
+   "strategy": "bullish_engulfing_support",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "bullish_candle",
+    "s.get('near_s1') or s.get('near_s2') or s.get('at_key_fib')",
+    "s.get('obv_bullish')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 991,
+   "projected_step1_fires": 91.1
+  },
+  {
+   "strategy": "doji_at_support",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('doji')",
+    "s.get('near_s1_wide') or s.get('near_s2_wide') or s.get('at_key_fib_wide')",
+    "s.get('vol_spike_12x')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 232,
+   "projected_step1_fires": 21.3
+  },
+  {
+   "strategy": "three_white_soldiers",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('three_white_soldiers')",
+    "s.get('rsi_14', 50) < 60"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 1596,
+   "projected_step1_fires": 146.7
+  },
+  {
+   "strategy": "hammer_at_support_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('hammer')",
+    "s.get('near_s1') or s.get('near_s2') or s.get('bb_20_20_touch_lower')",
+    "s.get('rsi_14', 50) < 35"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 110,
+   "projected_step1_fires": 10.1
+  },
+  {
+   "strategy": "rsi_volume_200ema",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('rsi_14', 50) < 40",
+    "s.get('vol_above_avg')",
+    "s.get('price_above_ema_200')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 548,
+   "projected_step1_fires": 50.4
+  },
+  {
+   "strategy": "macd_ichimoku",
+   "declaration": "_strat3",
+   "conditions": 1,
+   "operands": [
+    "s.get('macd_12_26_9_crossover_up')"
+   ],
+   "early_return_guards": 0,
+   "status": "DISABLED",
+   "open": false,
+   "r5_fires": 2907,
+   "projected_step1_fires": 267.2
+  },
+  {
+   "strategy": "bb_squeeze_volume",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('squeeze_fire_up')",
+    "s.get('vol_above_avg')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1013,
+   "projected_step1_fires": 93.1
+  },
+  {
+   "strategy": "pivot_fib_confluence",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('near_s1') or s.get('near_s2')",
+    "s.get('at_key_fib')",
+    "bullish_candle"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 91,
+   "projected_step1_fires": 8.4
+  },
+  {
+   "strategy": "golden_cross_volume",
+   "declaration": "_strat3",
+   "conditions": 2,
+   "operands": [
+    "s.get('ema_50_200_golden_cross')",
+    "s.get('vol_above_avg')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 43,
+   "projected_step1_fires": 4.0
+  },
+  {
+   "strategy": "cpr_narrow_momentum",
+   "declaration": "_strat3",
+   "conditions": 5,
+   "operands": [
+    "s.get('cpr_narrow_tight')",
+    "s.get('above_cpr')",
+    "s.get('rsi_14', 50) > 50",
+    "s.get('macd_12_26_9_bullish')",
+    "above_200"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1001,
+   "projected_step1_fires": 92.0
+  },
+  {
+   "strategy": "supertrend_ichimoku_adx",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('supertrend_flip_recent_long_5d')",
+    "s.get('ichi_above_cloud_break_recent_5d')",
+    "s.get('adx_strong')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 4,
+   "projected_step1_fires": 0.4
+  },
+  {
+   "strategy": "williams_stoch_dual",
+   "declaration": "_strat3",
+   "conditions": 3,
+   "operands": [
+    "s.get('williams_r_oversold')",
+    "s.get('stoch_bullish_cross')",
+    "s.get('near_s1') or s.get('near_s2') or s.get('near_s3') or s.get('near_cam_s3') or s.get('near_wood_s1')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 750,
+   "projected_step1_fires": 68.9
+  },
+  {
+   "strategy": "donchian_breakout_long",
+   "declaration": "_strat",
+   "conditions": 5,
+   "operands": [
+    "s.get('dc10_breakout_up')",
+    "s.get('vol_spike_12x')",
+    "s.get('macd_12_26_9_bullish')",
+    "s.get('close_above_open')",
+    "s.get('close_in_top_40pct_of_range')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 507,
+   "projected_step1_fires": 46.6
+  },
+  {
+   "strategy": "donchian_breakout_retest_long",
+   "declaration": "_strat",
+   "conditions": 5,
+   "operands": [
+    "s.get('dc20_resistance_break_retest_strong')",
+    "s.get('vol_below_avg')",
+    "s.get('macd_12_26_9_bullish')",
+    "s.get('close_above_open')",
+    "s.get('close_in_top_40pct_of_range')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 547,
+   "projected_step1_fires": 50.3
+  },
+  {
+   "strategy": "dc20_break_retest",
+   "declaration": "_strat3",
+   "conditions": 4,
+   "operands": [
+    "s.get('resistance_break_retest')",
+    "s.get('vol_below_avg')",
+    "s.get('close_in_top_40pct_of_range')",
+    "s.get('ppo_hist', float('-inf')) >= -0.2513"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 2414,
+   "projected_step1_fires": 221.9
+  },
+  {
+   "strategy": "r1_break_retest",
+   "declaration": "_strat3",
+   "conditions": 7,
+   "operands": [
+    "s.get('r1_break_retest_long')",
+    "s.get('above_r1')",
+    "s.get('macd_12_26_9_bullish')",
+    "s.get('close_above_open')",
+    "s.get('close_in_top_40pct_of_range')",
+    "s.get('vol_below_avg')",
+    "s.get('above_avwap_20low')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 3371,
+   "projected_step1_fires": 309.8
+  },
+  {
+   "strategy": "52wh_break_retest",
+   "declaration": "_strat",
+   "conditions": 5,
+   "operands": [
+    "s.get('year_high_break_retest_long')",
+    "s.get('near_52w_high')",
+    "s.get('price_above_ema_200')",
+    "s.get('close_above_open')",
+    "s.get('close_in_top_40pct_of_range')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 18,
+   "projected_step1_fires": 1.7
+  },
+  {
+   "strategy": "break_retest_volume",
+   "declaration": "_strat3",
+   "conditions": 6,
+   "operands": [
+    "s.get('resistance_break_retest')",
+    "s.get('obv_bullish')",
+    "s.get('close_above_open')",
+    "s.get('close_in_top_40pct_of_range')",
+    "s.get('vol_below_avg')",
+    "s.get('ppo_hist', float('-inf')) >= -0.2823"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 2164,
+   "projected_step1_fires": 198.9
+  },
+  {
+   "strategy": "break_retest_confluence",
+   "declaration": "_strat3",
+   "conditions": 7,
+   "operands": [
+    "s.get('resistance_break_retest')",
+    "s.get('macd_12_26_9_bullish')",
+    "s.get('price_above_ema_20')",
+    "s.get('price_above_ema_50')",
+    "s.get('close_above_open')",
+    "s.get('close_in_top_40pct_of_range')",
+    "s.get('vol_below_avg')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1889,
+   "projected_step1_fires": 173.6
+  },
+  {
+   "strategy": "head_and_shoulders_bottom_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('head_shoulders_bottom_detected', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 146,
+   "projected_step1_fires": 13.4
+  },
+  {
+   "strategy": "double_bottom_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('double_bottom_detected', False)",
+    "s.get('price_above_ema_200', False)",
+    "s.get('close_in_top_40pct_of_range', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 291,
+   "projected_step1_fires": 26.7
+  },
+  {
+   "strategy": "cup_and_handle_long",
+   "declaration": "_strat",
+   "conditions": 4,
+   "operands": [
+    "s.get('cup_handle_detected', False)",
+    "s.get('price_above_ema_200', False)",
+    "s.get('vol_above_avg', False)",
+    "s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 164,
+   "projected_step1_fires": 15.1
+  },
+  {
+   "strategy": "flag_bull_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('flag_bull_broke', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 63,
+   "projected_step1_fires": 5.8
+  },
+  {
+   "strategy": "triangle_ascending_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('triangle_ascending_detected', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 330,
+   "projected_step1_fires": 30.3
+  },
+  {
+   "strategy": "cup_and_handle_retest_long",
+   "declaration": "_strat",
+   "conditions": 5,
+   "operands": [
+    "s.get('cup_handle_detected', False)",
+    "s.get('cup_handle_neckline_break_retest_long', False)",
+    "s.get('price_above_ema_200', False)",
+    "s.get('price_above_ema_50', False)",
+    "s.get('rsi_14', 50) < 70"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 99,
+   "projected_step1_fires": 9.1
+  },
+  {
+   "strategy": "flag_bull_retest_long",
+   "declaration": "_strat",
+   "conditions": 4,
+   "operands": [
+    "s.get('flag_bull_break_retest_long', False)",
+    "s.get('price_above_ema_200', False)",
+    "s.get('close_above_open', False)",
+    "s.get('vol_below_avg', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 33,
+   "projected_step1_fires": 3.0
+  },
+  {
+   "strategy": "triangle_ascending_retest_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('triangle_ascending_detected', False)",
+    "s.get('triangle_apex_break_retest_long', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 112,
+   "projected_step1_fires": 10.3
+  },
+  {
+   "strategy": "institutional_cluster_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('institutional_strong_buy', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "PRUNED-DUPLICATE",
+   "open": false,
+   "r5_fires": 2451,
+   "projected_step1_fires": 225.3
+  },
+  {
+   "strategy": "institutional_buy_momentum_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_buy', False)",
+    "s.get('macd_12_26_9_bullish', False)",
+    "s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "PRUNED-DUPLICATE",
+   "open": false,
+   "r5_fires": 2644,
+   "projected_step1_fires": 243.0
+  },
+  {
+   "strategy": "institutional_oversold_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_buy', False)",
+    "s.get('rsi_14', 50) < 40",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 386,
+   "projected_step1_fires": 35.5
+  },
+  {
+   "strategy": "institutional_breakout_confirmation_long",
+   "declaration": "_strat",
+   "conditions": 4,
+   "operands": [
+    "s.get('institutional_buy', False)",
+    "s.get('resistance_break_retest', False)",
+    "s.get('price_above_ema_200', False)",
+    "s.get('close_above_open', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 642,
+   "projected_step1_fires": 59.0
+  },
+  {
+   "strategy": "institutional_insider_combo_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_buy', False)",
+    "s.get('insider_cluster_active', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "PRUNED-DUPLICATE",
+   "open": false,
+   "r5_fires": 2751,
+   "projected_step1_fires": 252.8
+  },
+  {
+   "strategy": "institutional_volume_confirmation_long",
+   "declaration": "_strat",
+   "conditions": 4,
+   "operands": [
+    "s.get('institutional_buy', False)",
+    "s.get('vol_above_avg', False)",
+    "s.get('price_above_ema_50', False)",
+    "s.get('stoch_d', float('-inf')) >= 45.63"
+   ],
+   "early_return_guards": 0,
+   "status": "PRUNED-DUPLICATE",
+   "open": false,
+   "r5_fires": 1387,
+   "projected_step1_fires": 127.5
+  },
+  {
+   "strategy": "classification_change_recent_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('classification_changed_recent', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DISABLED",
+   "open": false,
+   "r5_fires": 6,
+   "projected_step1_fires": 0.6
+  },
+  {
+   "strategy": "pocket_pivot_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('pocket_pivot', False)",
+    "s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 0,
+   "projected_step1_fires": 0.0
+  },
+  {
+   "strategy": "consec_downdays_quality_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('consec_down_4plus', False)",
+    "s.get('xs_quality_top_tercile', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 0,
+   "projected_step1_fires": 0.0
+  },
+  {
+   "strategy": "gap_and_go_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('gap_up_2pct_held', False)",
+    "s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 0,
+   "projected_step1_fires": 0.0
+  },
+  {
+   "strategy": "rs_line_sector_leader_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('rs_new_high_price_not_at_high', False)",
+    "s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 0,
+   "projected_step1_fires": 0.0
+  },
+  {
+   "strategy": "earnings_avwap_reclaim_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('earnings_avwap_reclaim_recent_3d', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 0,
+   "projected_step1_fires": 0.0
+  },
+  {
+   "strategy": "institutional_persistent_holders_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('institutional_increased', 0) >= 5",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "PRUNED-DUPLICATE",
+   "open": false,
+   "r5_fires": 1955,
+   "projected_step1_fires": 179.7
+  },
+  {
+   "strategy": "institutional_strong_conviction_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_increased', 0) >= 5",
+    "s.get('institutional_new_positions', 0) >= 2",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 1826,
+   "projected_step1_fires": 167.8
+  },
+  {
+   "strategy": "institutional_high_conviction_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('institutional_new_positions', 0) >= 3",
+    "s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 2473,
+   "projected_step1_fires": 227.3
+  },
+  {
+   "strategy": "institutional_with_directors_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_buy', False)",
+    "s.get('insider_unique_buyers_30d', 0) >= 1",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "CLOSED-NEGATIVE",
+   "open": false,
+   "r5_fires": 115,
+   "projected_step1_fires": 10.6
+  },
+  {
+   "strategy": "institutional_with_officers_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_buy', False)",
+    "s.get('insider_officer_buyers_30d', 0) >= 1 or s.get('insider_director_buyers_30d', 0) >= 1",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "CLOSED-NEGATIVE",
+   "open": false,
+   "r5_fires": 103,
+   "projected_step1_fires": 9.5
+  },
+  {
+   "strategy": "institutional_persistence_momentum_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_increased', 0) >= 3",
+    "s.get('macd_12_26_9_bullish', False)",
+    "s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "PRUNED-DUPLICATE",
+   "open": false,
+   "r5_fires": 2324,
+   "projected_step1_fires": 213.6
+  },
+  {
+   "strategy": "institutional_persistence_breakout_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_increased', 0) >= 3",
+    "s.get('resistance_break_retest', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "PRUNED-DUPLICATE",
+   "open": false,
+   "r5_fires": 532,
+   "projected_step1_fires": 48.9
+  },
+  {
+   "strategy": "institutional_persistence_volume_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_increased', 0) >= 3",
+    "s.get('vol_above_avg', False)",
+    "s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "PRUNED-DUPLICATE",
+   "open": false,
+   "r5_fires": 1199,
+   "projected_step1_fires": 110.2
+  },
+  {
+   "strategy": "institutional_persistence_oversold_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_increased', 0) >= 3",
+    "s.get('rsi_14', 50) < 45",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 716,
+   "projected_step1_fires": 65.8
+  },
+  {
+   "strategy": "institutional_recent_init_momentum_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_new_positions', 0) >= 2",
+    "s.get('macd_12_26_9_bullish', False)",
+    "s.get('price_above_ema_200', False) or s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 2268,
+   "projected_step1_fires": 208.5
+  },
+  {
+   "strategy": "institutional_recent_init_volume_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_new_positions', 0) >= 2",
+    "s.get('vol_above_avg', False)",
+    "s.get('price_above_ema_50', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 1075,
+   "projected_step1_fires": 98.8
+  },
+  {
+   "strategy": "institutional_increased_with_directors_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('institutional_increased', 0) >= 3",
+    "s.get('insider_unique_buyers_30d', 0) >= 1",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "CLOSED-NEGATIVE",
+   "open": false,
+   "r5_fires": 107,
+   "projected_step1_fires": 9.8
+  },
+  {
+   "strategy": "institutional_multi_quarter_persistence_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('persistent_holders_4q', 0) >= 5",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 2516,
+   "projected_step1_fires": 231.2
+  },
+  {
+   "strategy": "institutional_committed_growth_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "committed_growth_ok",
+    "s.get(f'price_above_ema_{_cfg.STRAT_EMA_SPAN}', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 1941,
+   "projected_step1_fires": 178.4
+  },
+  {
+   "strategy": "pairs_mean_reversion_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('pair_count_active', 0) > 0",
+    "s.get('pair_zscore_signed', 0.0) < -2.0",
+    "s.get('pair_half_life', 0.0) >= 5"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 5036,
+   "projected_step1_fires": 462.9
+  },
+  {
+   "strategy": "news_sentiment_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('news_sentiment_mean', 0.0) > 0.3",
+    "s.get('news_article_count', 0) >= 3",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 906,
+   "projected_step1_fires": 83.3
+  },
+  {
+   "strategy": "news_sentiment_shift_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('news_sentiment_shift', 0.0) > 0.3",
+    "s.get('news_article_count', 0) >= 2",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 357,
+   "projected_step1_fires": 32.8
+  },
+  {
+   "strategy": "news_momentum_long",
+   "declaration": "_strat",
+   "conditions": 6,
+   "operands": [
+    "s.get('news_sentiment_5d', 0.0) >= 0.3",
+    "s.get('news_volume_zscore_5d', 0.0) >= 0.90909",
+    "s.get('dc20_breakout_up', False)",
+    "s.get('close_above_open', False)",
+    "s.get('close_in_top_40pct_of_range', False)",
+    "s.get('vol_above_avg', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 113,
+   "projected_step1_fires": 10.4
+  },
+  {
+   "strategy": "news_reversal_long",
+   "declaration": "_strat",
+   "conditions": 6,
+   "operands": [
+    "s.get('news_sentiment_5d', 0.0) <= -0.3",
+    "s.get('pct_change_5d', 0.0) < -0.1",
+    "s.get('news_count_5d', 0) >= 3",
+    "s.get('news_sentiment_shift', 0.0) > 0.2",
+    "s.get('close_above_open', False)",
+    "s.get('close_in_top_40pct_of_range', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1,
+   "projected_step1_fires": 0.1
+  },
+  {
+   "strategy": "bollinger_tight_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "base_fires",
+    "_has_smart_money_buy(s)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 840,
+   "projected_step1_fires": 77.2
+  },
+  {
+   "strategy": "mfi_oversold_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "base_fires",
+    "_has_smart_money_buy(s)"
+   ],
+   "early_return_guards": 0,
+   "status": "IN-ROSTER-FUNNEL",
+   "open": false,
+   "r5_fires": 244,
+   "projected_step1_fires": 22.4
+  },
+  {
+   "strategy": "rsi_oversold_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "base_fires",
+    "_has_smart_money_buy(s)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 2753,
+   "projected_step1_fires": 253.0
+  },
+  {
+   "strategy": "52w_high_breakout_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 1,
+   "operands": [
+    "base_fires"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 66,
+   "projected_step1_fires": 6.1
+  },
+  {
+   "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+   "declaration": "_strat",
+   "conditions": 1,
+   "operands": [
+    "base_fires"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 203,
+   "projected_step1_fires": 18.7
+  },
+  {
+   "strategy": "squeeze_breakout_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('squeeze_fire_up', False)",
+    "s.get('close_above_open', True)"
+   ],
+   "early_return_guards": 0,
+   "status": "DISABLED",
+   "open": false,
+   "r5_fires": 1139,
+   "projected_step1_fires": 104.7
+  },
+  {
+   "strategy": "xs_momentum_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('xs_momentum_top_decile', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "IN-ROSTER-FUNNEL",
+   "open": false,
+   "r5_fires": 658,
+   "projected_step1_fires": 60.5
+  },
+  {
+   "strategy": "xs_low_beta_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "base_fires",
+    "_has_smart_money_buy(s)",
+    "s.get('pair_half_life', float('-inf')) >= 6.55"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 452,
+   "projected_step1_fires": 41.5
+  },
+  {
+   "strategy": "donchian_breakout_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "base_fires",
+    "_has_smart_money_buy(s)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 985,
+   "projected_step1_fires": 90.5
+  },
+  {
+   "strategy": "macd_bullish_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "base_fires",
+    "_has_smart_money_buy(s)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1162,
+   "projected_step1_fires": 106.8
+  },
+  {
+   "strategy": "pead_with_smart_money_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "base_fires",
+    "_has_smart_money_buy(s)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-ADMITTED",
+   "open": false,
+   "r5_fires": 656,
+   "projected_step1_fires": 60.3
+  },
+  {
+   "strategy": "totm_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('is_totm_window_first_day', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "IN-ROSTER-FUNNEL",
+   "open": false,
+   "r5_fires": 343,
+   "projected_step1_fires": 31.5
+  },
+  {
+   "strategy": "vwap_extension_momentum_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('pct_from_vwap', 0) >= 35.0",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 0,
+   "projected_step1_fires": 0.0
+  },
+  {
+   "strategy": "pre_holiday_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('is_pre_holiday', False)",
+    "s.get('dow', 0) != 0",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 124,
+   "projected_step1_fires": 11.4
+  },
+  {
+   "strategy": "january_effect_small_cap_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('is_january_extended', False)",
+    "s.get('cap_band', '') in ('micro', 'small')",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 1,
+   "projected_step1_fires": 0.1
+  },
+  {
+   "strategy": "halloween_seasonal_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('is_halloween_period_first_day', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 7,
+   "projected_step1_fires": 0.6
+  },
+  {
+   "strategy": "vix_backwardation_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('vix_term_backwardation', False)",
+    "s.get('xs_quality_decile', 0) >= 7"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 543,
+   "projected_step1_fires": 49.9
+  },
+  {
+   "strategy": "sector_rotation_defensive_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('defensive_leadership', False)",
+    "s.get('sector', '') in ('Utilities', 'Consumer Staples', 'Health Care', 'Real Estate')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 0,
+   "projected_step1_fires": 0.0
+  },
+  {
+   "strategy": "gold_silver_risk_off_long",
+   "declaration": "_strat",
+   "conditions": 2,
+   "operands": [
+    "s.get('risk_off_regime_gold_signal', False)",
+    "s.get('sector', '') in ('Utilities', 'Consumer Staples', 'Health Care', 'Real Estate')"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 0,
+   "projected_step1_fires": 0.0
+  },
+  {
+   "strategy": "poc_magnet_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('vp_close_near_poc_pct', 1.0) < 0.03",
+    "s.get('vp_close_above_poc', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "IN-ROSTER-FUNNEL",
+   "open": false,
+   "r5_fires": 589,
+   "projected_step1_fires": 54.1
+  },
+  {
+   "strategy": "value_area_breakout_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('vp_above_value_area', False)",
+    "s.get('vol_above_avg', False)",
+    "s.get('price_above_ema_200', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "NOT-STARTED",
+   "open": true,
+   "r5_fires": 375,
+   "projected_step1_fires": 34.5
+  },
+  {
+   "strategy": "naked_poc_retest_long",
+   "declaration": "_strat",
+   "conditions": 3,
+   "operands": [
+    "s.get('naked_poc_count', 0) > 0",
+    "s.get('naked_poc_nearest_distance_pct', 1.0) < _cfg.NAKED_POC_MAX_DISTANCE_PCT",
+    "s.get(f'price_above_ema_{_cfg.STRAT_EMA_SPAN}', False)"
+   ],
+   "early_return_guards": 0,
+   "status": "DONE-OWNER-CLOSED",
+   "open": false,
+   "r5_fires": 1788,
+   "projected_step1_fires": 164.3
+  }
+ ]
+}
