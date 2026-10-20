@@ -74,14 +74,17 @@ def test_b738_pin4_week_open_gap_up_default_no_earnings_data_passes():
 
 
 def test_b738_pin5_week_open_gap_signals_used_declares_new_gate():
-    """signals_used must declare the new earnings-recency gate."""
+    """signals_used must declare the new earnings-recency gate - as the EXACT
+    key the gate reads (S6-B3139c, B3139q-r72s): the agent pipeline passes only
+    exact signal keys, so the comparator form this pin asserted reached no one."""
     from backtest.signals.screener import strat_week_opening_gap_fill_down, strat_week_opening_gap_fill_up
     s = {"week_open_gap_up_15pct": True, "days_since_last_earnings": 10}
     r_down = strat_week_opening_gap_fill_down(s)
     s2 = {"week_open_gap_down_15pct": True, "days_since_last_earnings": 10}
     r_up = strat_week_opening_gap_fill_up(s2)
-    assert "days_since_last_earnings>2" in r_down["signals_used"]
-    assert "days_since_last_earnings>2" in r_up["signals_used"]
+    assert "days_since_last_earnings" in r_down["signals_used"]
+    assert "days_since_last_earnings" in r_up["signals_used"]
+    assert not any(">" in k for k in r_down["signals_used"] + r_up["signals_used"])
 
 
 # -------------------------------------------------------------------------

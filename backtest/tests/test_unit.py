@@ -40810,12 +40810,28 @@ def test_b2904_candle_free_levels_leg_mirrors_the_gate_and_discloses_occupancy()
         assert (root / "scripts" / blk["script"]).exists()
 
     # ---- the gate constants match the PRODUCER, not my memory ------------
+    # S6-B3139c (B3139q-r72s): read the GATE, not its signals_used annotation -
+    # the lists now carry exact keys, and an annotation was never the gate
+    import ast as _ast
     src = (root / "backtest" / "signals" / "screener.py").read_text(
         encoding="utf-8", errors="replace")
-    assert '"three_white_soldiers","rsi_14<60"' in src, (
-        "the soldiers gate moved - the mirrored bound is now wrong")
-    assert '"three_black_crows","rsi_14>40"' in src, (
-        "the crows gate moved - the mirrored bound is now wrong")
+    fns = {n.name: n for n in _ast.parse(src).body if isinstance(n, _ast.FunctionDef)}
+
+    def rsi_bounds(fname):
+        out = []
+        for n in _ast.walk(fns[fname]):
+            if (isinstance(n, _ast.Compare) and isinstance(n.left, _ast.Call)
+                    and getattr(n.left.func, "attr", "") == "get" and n.left.args
+                    and getattr(n.left.args[0], "value", None) == "rsi_14"
+                    and isinstance(n.comparators[0], _ast.Constant)):
+                out.append((type(n.ops[0]).__name__, n.comparators[0].value))
+        return out
+    assert rsi_bounds("strat_three_white_soldiers") == [("Lt", 60)], (
+        "the soldiers gate moved - the mirrored bound is now wrong",
+        rsi_bounds("strat_three_white_soldiers"))
+    assert rsi_bounds("strat_three_black_crows_short") == [("Gt", 40)], (
+        "the crows gate moved - the mirrored bound is now wrong",
+        rsi_bounds("strat_three_black_crows_short"))
     assert fl.GATE["three_white_soldiers"] == ("lt", 60.0)
     assert fl.GATE["three_black_crows_short"] == ("gt", 40.0)
 
@@ -58376,3 +58392,113 @@ def test_b3096g_an_unsized_book_is_disclosed_empty():
     sized = compute_portfolio_summary(_pd.DataFrame(dict(base, confidence_tier=["HIGH", "LOW"])))
     assert sized["empty_book"] is False
     assert sized["note"] == "Portfolio return applies tier-based position sizing to all trades"
+
+
+def test_b3139c_every_declared_signal_list_names_the_keys_its_gate_reads(monkeypatch):
+    """S6-B3139c (owner ruling 2026-09-30, decision-table row 7: correct the
+    lists at Phase-1B entry; Phase-1B entry approved 2026-10-19), with S6-B3191
+    and S6-B3215. backtest/agents/pipeline.py hands a declared signals_used
+    name to the agents only when it is an EXACT signal key, so each list must
+    name exactly the keys its side's fire decision reads - the rule is stated
+    in scripts/signals_used_lint.py. (1) The live roster: zero drifted sides,
+    over every registered strategy and a floor of 280 declaration sides, so
+    the scan cannot pass blind (L715). (2) Must-fire, one toy strategy for every
+    shape the rule names: a comparator string, a concept label, an omitted gate
+    key, a key read in an early-return guard, a key that chooses a threshold
+    through an if (control dependence) and the borrow marker - each flagged,
+    and proposed() corrects them. (3) Must-quiet: the corrected toy is clean.
+    (4) S6-B3191: bollinger_lower's span-built short key and both regime labels
+    follow STRAT_EMA_SPAN, so a swept span declares the key the gate read.
+    (5) S6-B3215: xs_combined_momentum_low_ivol states its B1193 gate."""
+    import importlib.util
+    from pathlib import Path as _P
+    import backtest.config as _cfg
+    from backtest.signals import screener as _sm
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "signals_used_lint_b3139c", root / "scripts" / "signals_used_lint.py")
+    sul = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sul)
+
+    rows = sul.analyse()
+    nsides = sum(len(r["sides"]) for r in rows)
+    assert len(rows) == len(_sm.ALL_STRATEGIES) and nsides >= 280, (len(rows), nsides)
+    assert sul.drifted(rows) == [], sul.drifted(rows)[:10]
+
+    toy = (
+        "def _short_borrow_trap_active(s):\n"
+        "    return bool(s.get('borrow_blocked'))\n"
+        "def strat_toy(s):\n"
+        "    if not s.get('event'):\n"
+        "        return _strat3(False, False, 't', ['event'], ['event'], [], [])\n"
+        "    thr = 40\n"
+        "    if s.get('vix_high'):\n"
+        "        thr = 50\n"
+        "    fl = s.get('a') and s.get('rsi_14', 50) < thr\n"
+        "    fl = fl and (s.get('gate_b', float('-inf')) >= 1.5)\n"
+        "    fs = s.get('c') and not _short_borrow_trap_active(s)\n"
+        "    fs = fs and (s.get('d', 0) > 1)\n"
+        "    return _strat3(fl, fs, 't', LONG, SHORT, [], [])\n")
+    L = lambda *ks: [("lit", k) for k in ks]  # noqa: E731
+    drifted_src = toy.replace("LONG", "['a', 'rsi_14<40', 'concept_label']").replace("SHORT", "['c', 'borrow_ok']")
+    m = sul.Module(drifted_src)
+    sides = [s for s in sul.analyse_function(m, m.funcs["strat_toy"]) if s["status"] == "OK"]
+    long_, short = sides
+    assert set(long_["drift"]) == set(L("rsi_14<40", "concept_label", "event", "rsi_14",
+                                        "gate_b", "vix_high")), long_["drift"]
+    assert sul.proposed(long_) == L("a", "rsi_14", "event", "gate_b", "vix_high"), sul.proposed(long_)
+    assert set(short["drift"]) == set(L("event", "d")), short["drift"]
+    # the borrow marker closes the list even when a gate key is read after it
+    assert sul.proposed(short) == L("c", "event", "d", "borrow_ok"), sul.proposed(short)
+    clean_src = toy.replace("LONG", "['a', 'rsi_14', 'event', 'gate_b', 'vix_high']").replace(
+        "SHORT", "['c', 'event', 'd', 'borrow_ok']")
+    m2 = sul.Module(clean_src)
+    assert all(not s["drift"] for s in sul.analyse_function(m2, m2.funcs["strat_toy"])
+               if s["status"] == "OK")
+
+    monkeypatch.setattr(_cfg, "STRAT_EMA_SPAN", 50)
+    short_bb = _sm.strat_bollinger_lower({
+        "bb_20_20_reclaim_from_upper_recent_3d": True, "rsi_2": 99, "rsi_14": 50,
+        "below_ema_50": True, "adx": 20})
+    assert short_bb["fires"] and short_bb["direction"] == "short", short_bb
+    assert "below_ema_50" in short_bb["signals_used"], short_bb["signals_used"]
+    assert "below_ema_200" not in short_bb["signals_used"], short_bb["signals_used"]
+    assert "Price below 50-EMA (bear regime)" in short_bb["context_bullets"], short_bb
+    long_bb = _sm.strat_bollinger_lower({
+        "bb_20_20_reclaim_from_lower_recent_3d": True, "rsi_2": 1, "rsi_14": 50,
+        "price_above_ema_50": True, "adx": 20})
+    assert long_bb["fires"] and "price_above_ema_50" in long_bb["signals_used"], long_bb
+    assert "Price above 50-EMA (regime gate)" in long_bb["context_bullets"], long_bb
+
+    xs = _sm.strat_xs_combined_momentum_low_ivol({
+        "xs_momentum_top_quintile": True, "xs_ivol_decile": 4, "price_above_ema_200": True})
+    assert xs["fires"] and set(xs["signals_used"]) == {
+        "xs_momentum_top_quintile", "xs_ivol_decile", "price_above_ema_200"}, xs
+    assert xs["context_bullets"][0].startswith("Top-quintile"), xs["context_bullets"]
+
+
+def test_b3139c_removed_literal_pins_finds_a_test_quoting_removed_text(tmp_path):
+    """L939 (#315): scripts/removed_literal_pins.py names the pins that quote
+    text a change REMOVES. Must-fire on test_b2904's exact shape - a pin that
+    quoted '"three_white_soldiers","rsi_14<60"' after the list became exact
+    keys; must-quiet on a file quoting only a kept key and on a literal that
+    merely moved within its file."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import removed_literal_pins as rlp
+    old = ('def strat_x(s):\n'
+           '    return _strat(f, "long", "candle", ["three_white_soldiers", "rsi_14<60"], [])\n')
+    new = ('def strat_x(s):\n'
+           '    return _strat(f, "long", "candle", ["three_white_soldiers", "rsi_14"], [])\n')
+    gone = rlp.removed_literals(old, new)
+    assert gone == {"rsi_14<60"}, gone
+    pin = tmp_path / "test_pin.py"
+    pin.write_text("assert '\"three_white_soldiers\",\"rsi_14<60\"' in src\n", encoding="utf-8")
+    quiet = tmp_path / "test_quiet.py"
+    quiet.write_text("assert 'rsi_14' in src and 'three_white_soldiers' in src\n", encoding="utf-8")
+    hits = rlp.quoting_hits(gone, [pin, quiet])
+    assert [(_P(f).name, lit) for f, _ln, lit in hits] == [("test_pin.py", "rsi_14<60")], hits
+    assert rlp.removed_literals('a = "kept"\nb = 1\n', 'b = 1\na = "kept"\n') == set()

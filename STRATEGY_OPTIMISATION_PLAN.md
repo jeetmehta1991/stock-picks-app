@@ -586,7 +586,10 @@ own strategy, leaving the base keys and the roster untouched until an admission 
   (S6-B1467c / B2009); family-pooled grains at B2068 / B2080 (iid 0.088, entry-day block 0.2245 on a
   62,064-trade pool; 0.3115 on a 10,862-trade pool - the b2068 / b2081 artifacts).
 - Any tightened config that differs from the shipped gates is a **strategy change** and needs owner
-  approval before it is written to `screener.py`.
+  approval before it is written to `screener.py`. **When it is written, the strategy's declared
+  `signals_used` list changes in the same edit:** the list names exactly the keys the fire decision
+  reads, because the Phase-1B agents receive a declared name only when it is an exact signal key
+  (`scripts/signals_used_lint.py --check`, pinned by test_b3139c; S6-B3139c).
 
 ### 1.8 Kill criteria (formerly §4)
 

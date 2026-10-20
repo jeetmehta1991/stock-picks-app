@@ -181,7 +181,7 @@ def strat_post_inclusion_drift_long(s: dict) -> dict:
     )
     dse = s.get("days_since_inclusion", 0)
     return _strat_signal(fires, "long", "index_rebalance",
-        ["within_post_inclusion_window", "price_above_ema_200"],
+        ["within_post_inclusion_window", "price_above_ema_200", "last_event_type"],
         [f"Day +{dse} of post-{s.get('last_event_type', 'add')} window",
          "Shleifer 1986 / Petajisto 2011 inclusion drift",
          "Above 200 EMA (regime gate)"])
@@ -200,7 +200,7 @@ def strat_post_inclusion_reversal_short(s: dict) -> dict:
     )
     dse = s.get("days_since_inclusion", 0)
     return _strat_signal(fires, "short", "index_rebalance",
-        ["in_reversal_window", "post_add_event"],
+        ["in_reversal_window", "last_event_type"],
         [f"Day +{dse} in reversal window (Beneish-Whaley 1996)",
          "Fade post-inclusion overshoot",
          f"Last event: {s.get('last_event_type', '')}"])
@@ -221,7 +221,7 @@ def strat_post_deletion_drift_short(s: dict) -> dict:
     )
     dse = s.get("days_since_deletion", 0)
     return _strat_signal(fires, "short", "index_rebalance",
-        ["within_post_deletion_window", "price_below_ema_200"],
+        ["within_post_deletion_window", "price_above_ema_200", "last_event_type"],
         [f"Day +{dse} of post-{s.get('last_event_type', 'drop')} window",
          "Chen-Noronha-Singal 2004 deletion drift",
          "Below 200 EMA (bear regime confirmation)"])
@@ -242,7 +242,7 @@ def strat_pre_rebalance_long(s: dict) -> dict:
     )
     dt = s.get("days_to_rebalance", 0)
     return _strat_signal(fires, "long", "index_rebalance",
-        ["within_pre_rebalance_window"],
+        ["within_pre_rebalance_window", "days_to_rebalance"],
         [f"T-{dt} until announced rebalance",
          "Cai-Houge 2008 index-fund front-running pattern",
          "Pre-rebalance positioning"])
