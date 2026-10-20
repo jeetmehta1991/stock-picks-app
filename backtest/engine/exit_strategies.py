@@ -1092,6 +1092,7 @@ def per_strategy_mae_75th_pct_of_winners(
     lookback_days: int = 252,
     as_of=None,
     default_atr_mult: float = 1.0,
+    direction=None,
 ):
     """Compute the 75th-percentile MAE-of-winners for a strategy.
 
@@ -1102,6 +1103,12 @@ def per_strategy_mae_75th_pct_of_winners(
 
     Returns float ATR multiplier in [0.5, 2.5] derived from |MAE_75| /
     median(|MAE|). Falls back to default_atr_mult on insufficient data.
+
+    S6-B1248-LEVER10 (B3139q-r72x): reads the engine's trade-log field
+    max_adverse_excursion (percent of entry, negative = adverse - written by
+    exit_manager.ClosedTrade); mae_pct, which the engine never wrote, stays
+    readable for a caller that supplies it. `direction` keeps one leg of a
+    dual strategy, whose long and short trades share one strategy name.
     """
     import pandas as pd
     if trade_log is None or trade_log.empty:
@@ -1109,16 +1116,22 @@ def per_strategy_mae_75th_pct_of_winners(
     if "strategy" not in trade_log.columns or strategy not in trade_log["strategy"].values:
         return default_atr_mult
     df = trade_log[trade_log["strategy"] == strategy].copy()
+    if direction is not None and "direction" in df.columns:
+        df = df[df["direction"] == direction]
     if as_of is not None and "entry_date" in df.columns:
         df = df[pd.to_datetime(df["entry_date"]) <= as_of]
         window_start = pd.to_datetime(as_of) - pd.Timedelta(days=lookback_days)
         df = df[pd.to_datetime(df["entry_date"]) >= window_start]
-    if df.empty or "win" not in df.columns or "mae_pct" not in df.columns:
+    # keyed on mae_pct alone this returned the default for every strategy
+    # (MEASURED B3139: no R5 or Step-2 trade log carries mae_pct)
+    col = ("max_adverse_excursion" if "max_adverse_excursion" in df.columns
+           else "mae_pct" if "mae_pct" in df.columns else None)
+    if df.empty or "win" not in df.columns or col is None:
         return default_atr_mult
     winners = df[df["win"] == True]
     if len(winners) < 20:
         return default_atr_mult
-    mae_abs = winners["mae_pct"].abs().dropna()
+    mae_abs = winners[col].abs().dropna()
     if len(mae_abs) < 20:
         return default_atr_mult
     try:

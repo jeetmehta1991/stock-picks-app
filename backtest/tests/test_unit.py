@@ -58928,3 +58928,44 @@ def test_b3196_band_evidence_cites_the_producer_file():
         row = dict(tb.PRODUCER_BANDS[leg][0], evidence=ev)
         _n, b = violations({leg: [row]})
         assert len(b) == 1 and b[0][0] == leg, (leg, b)
+
+
+def test_b1248_lever10_mae_helper_reads_the_engine_field():
+    """S6-B1248-LEVER10 (B3139q-r72x): per_strategy_mae_75th_pct_of_winners
+    keyed on 'mae_pct', a column the engine never wrote - its trade log
+    records max_adverse_excursion (percent of entry, negative = adverse;
+    exit_manager.ClosedTrade) - so it returned the default multiplier for
+    every strategy. It now reads the engine's field, keeps mae_pct for a
+    caller that supplies it, and keeps one leg of a dual strategy by
+    direction. The writer side of the contract is pinned too: the field the
+    helper reads must be the one ClosedTrade records."""
+    import dataclasses
+    import pandas as pd
+    from backtest.engine import exit_manager as em
+    from backtest.engine.exit_strategies import (
+        per_strategy_mae_75th_pct_of_winners as fit)
+
+    names = {f.name for f in dataclasses.fields(em.ClosedTrade)}
+    assert "max_adverse_excursion" in names and "mae_pct" not in names, names
+
+    # 40 long winners with |MAE| 1..40: pandas p50 = 20.5, p75 = 30.25, so
+    # the ratio-based multiplier is 30.25 / 20.5 = 1.476 (default 1.0)
+    longs = pd.DataFrame({"strategy": "s", "direction": "long", "win": True,
+                          "max_adverse_excursion": [-float(v) for v in range(1, 41)]})
+    losers = pd.DataFrame({"strategy": "s", "direction": "long", "win": False,
+                           "max_adverse_excursion": [-9.0] * 10})
+    df = pd.concat([longs, losers], ignore_index=True)
+    assert fit(df, "s") == 1.476, fit(df, "s")          # must-fire: was 1.0
+    # the same values under the legacy name still fit
+    legacy = df.rename(columns={"max_adverse_excursion": "mae_pct"})
+    assert fit(legacy, "s") == 1.476
+    # a dual strategy: 40 short winners at |MAE| 5.0 each. Pooled, p50 = 5.0
+    # and p75 = 20.25, so the clamp's 2.5 - neither leg's own fit
+    shorts = pd.DataFrame({"strategy": "s", "direction": "short", "win": True,
+                           "max_adverse_excursion": [-5.0] * 40})
+    dual = pd.concat([df, shorts], ignore_index=True)
+    assert fit(dual, "s") == 2.5, fit(dual, "s")
+    assert fit(dual, "s", direction="long") == 1.476
+    assert fit(dual, "s", direction="short") == 1.0
+    # fewer than 20 winners keeps the default
+    assert fit(df.iloc[:19], "s") == 1.0
