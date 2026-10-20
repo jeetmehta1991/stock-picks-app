@@ -1,0 +1,1924 @@
+{
+ "_doc": "S6-B3221 reviewed register for scripts/context_bullets_census.py - DATA, not code (CSV-first; the output_audit/preleg_lifecycle_exemptions.json precedent). Each group names bullet numbers a reader compared against the gate AND the producer and found true, keyed [strategy, side, bullet index, token], with the reason. An anchor is a producer line the number comes from, with the count of its occurrences: if the producer changes the line, the count moves and the census check fails until the bullet is re-read - so producer-constant drift is caught too. A group with no anchor is a label, a form name, a literature figure or a quoted measurement. 'retired' lists the 80 bullet texts S6-B3221 corrected or removed on 69 sides, in the census's rendering (an f-string's values shown as {...}); the check fails if one comes back on its side.",
+ "groups": [
+  {
+   "why": "the OBV baseline is its 20-bar moving average",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "obv_ma    = obv.rolling(20).mean()",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "camarilla_s3_bounce",
+     "long",
+     2,
+     "20"
+    ],
+    [
+     "break_retest_volume",
+     "long",
+     0,
+     "20"
+    ],
+    [
+     "break_retest_volume",
+     "short",
+     0,
+     "20"
+    ]
+   ]
+  },
+  {
+   "why": "the 2B level is the prior 20-day high, broken within the last 2 bars",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "def compute_failed_breakout_2b(df: pd.DataFrame, level_lookback: int = 20,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "failed_breakout_2b_short",
+     "single",
+     0,
+     "20"
+    ]
+   ]
+  },
+  {
+   "why": "the bond/equity ratio trend is a 20-day change",
+   "anchors": [
+    {
+     "file": "backtest/signals/cross_asset.py",
+     "snippet": "def compute_bond_equity_signals(as_of: date, window: int = 20) -> dict:",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "risk_off_bond_equity_short",
+     "single",
+     0,
+     "20"
+    ]
+   ]
+  },
+  {
+   "why": "the volume ratio is today's volume over its 20-day mean",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "avg20 = _safe_float(v.rolling(20).mean().iloc[-1])",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "orb_stocks_in_play_long",
+     "single",
+     2,
+     "20"
+    ],
+    [
+     "orb_stocks_in_play_short",
+     "single",
+     2,
+     "20"
+    ],
+    [
+     "htf_aligned_breakout_short",
+     "single",
+     1,
+     "20"
+    ],
+    [
+     "avwap_252_breakout",
+     "long",
+     1,
+     "20"
+    ],
+    [
+     "avwap_252_breakout",
+     "short",
+     1,
+     "20"
+    ],
+    [
+     "pivot_r1_breakout",
+     "long",
+     1,
+     "20"
+    ],
+    [
+     "pivot_r1_breakout",
+     "short",
+     1,
+     "20"
+    ],
+    [
+     "donchian_10_breakout",
+     "long",
+     1,
+     "20"
+    ],
+    [
+     "donchian_10_breakout",
+     "short",
+     1,
+     "20"
+    ],
+    [
+     "rsi_volume_200ema",
+     "long",
+     0,
+     "20"
+    ],
+    [
+     "rsi_volume_200ema",
+     "short",
+     0,
+     "20"
+    ],
+    [
+     "donchian_breakdown_short",
+     "single",
+     1,
+     "20"
+    ],
+    [
+     "donchian_breakout_long",
+     "single",
+     1,
+     "20"
+    ],
+    [
+     "break_retest_volume",
+     "long",
+     2,
+     "20"
+    ],
+    [
+     "break_retest_volume",
+     "short",
+     2,
+     "20"
+    ],
+    [
+     "flag_bull_retest_long",
+     "single",
+     3,
+     "20"
+    ],
+    [
+     "flag_bear_retest_short",
+     "single",
+     3,
+     "20"
+    ],
+    [
+     "institutional_volume_confirmation_long",
+     "single",
+     1,
+     "20"
+    ],
+    [
+     "vol_spike_2x_below_ema_50_short",
+     "single",
+     0,
+     "20"
+    ],
+    [
+     "institutional_persistence_volume_long",
+     "single",
+     1,
+     "20"
+    ],
+    [
+     "institutional_recent_init_volume_long",
+     "single",
+     1,
+     "20"
+    ],
+    [
+     "52w_high_breakout_with_smart_money_long",
+     "single",
+     2,
+     "20"
+    ],
+    [
+     "52w_high_breakout_with_smart_money_vol_below_long",
+     "single",
+     2,
+     "20"
+    ],
+    [
+     "value_area_breakout_long",
+     "single",
+     1,
+     "20"
+    ]
+   ]
+  },
+  {
+   "why": "cross-sectional momentum is 12-1: a 252-day return skipping the last 21 days",
+   "anchors": [
+    {
+     "file": "backtest/signals/cross_sectional.py",
+     "snippet": "    momentum_lookback: int = 252,",
+     "count": 1
+    },
+    {
+     "file": "backtest/signals/cross_sectional.py",
+     "snippet": "    momentum_skip: int = 21,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "pre_fomc_quality_momentum_long",
+     "single",
+     1,
+     "12"
+    ],
+    [
+     "xs_momentum_quality_combined",
+     "single",
+     0,
+     "12"
+    ],
+    [
+     "xs_momentum_quality_combined",
+     "single",
+     0,
+     "1"
+    ],
+    [
+     "xs_momentum_top_decile",
+     "single",
+     0,
+     "12"
+    ],
+    [
+     "xs_momentum_top_decile",
+     "single",
+     0,
+     "1"
+    ],
+    [
+     "xs_momentum_bottom_decile_short",
+     "single",
+     0,
+     "12"
+    ],
+    [
+     "xs_momentum_bottom_decile_short",
+     "single",
+     0,
+     "1"
+    ],
+    [
+     "xs_combined_momentum_low_ivol",
+     "single",
+     0,
+     "12"
+    ],
+    [
+     "xs_combined_momentum_low_ivol",
+     "single",
+     0,
+     "1"
+    ],
+    [
+     "xs_combined_momentum_high_ivol_short",
+     "single",
+     0,
+     "12"
+    ],
+    [
+     "xs_combined_momentum_high_ivol_short",
+     "single",
+     0,
+     "1"
+    ]
+   ]
+  },
+  {
+   "why": "quality deciles run 1-10 and the 'top tercile' key is decile 7 or higher - the top 40pct",
+   "anchors": [
+    {
+     "file": "backtest/signals/cross_sectional.py",
+     "snippet": "\"xs_quality_top_tercile\":          d >= 7,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "xs_quality_top_quintile_long",
+     "single",
+     0,
+     "40"
+    ],
+    [
+     "xs_quality_top_quintile_long",
+     "single",
+     0,
+     "7"
+    ],
+    [
+     "consec_downdays_quality_long",
+     "single",
+     1,
+     "40"
+    ],
+    [
+     "consec_downdays_quality_long",
+     "single",
+     1,
+     "7"
+    ],
+    [
+     "vix_backwardation_long",
+     "single",
+     1,
+     "40"
+    ]
+   ]
+  },
+  {
+   "why": "the low-beta flag is beta decile 2 or lower",
+   "anchors": [
+    {
+     "file": "backtest/signals/cross_sectional.py",
+     "snippet": "out[ticker][\"xs_low_beta_decile\"] = (d <= 2)",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "xs_low_beta_long",
+     "single",
+     0,
+     "2"
+    ]
+   ]
+  },
+  {
+   "why": "IVOL deciles run 1-10, so <= 4 is the bottom 40pct and >= 7 the top 40pct",
+   "anchors": [
+    {
+     "file": "backtest/signals/cross_sectional.py",
+     "snippet": "  - xs_ivol_decile:          int 1-10",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "xs_combined_momentum_low_ivol",
+     "single",
+     1,
+     "40"
+    ],
+    [
+     "xs_combined_momentum_high_ivol_short",
+     "single",
+     1,
+     "40%"
+    ]
+   ]
+  },
+  {
+   "why": "the PEAD window is 60 days after the filing",
+   "anchors": [
+    {
+     "file": "backtest/signals/pead.py",
+     "snippet": "    drift_window_days: int = 60,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "pead_with_insider_confirmation_long",
+     "single",
+     0,
+     "60"
+    ],
+    [
+     "pead_long",
+     "single",
+     0,
+     "60"
+    ],
+    [
+     "pead_short",
+     "single",
+     0,
+     "60"
+    ],
+    [
+     "pead_long_high_yoy_growth_only",
+     "single",
+     0,
+     "60"
+    ],
+    [
+     "pead_short_negative_yoy_growth",
+     "single",
+     0,
+     "60"
+    ]
+   ]
+  },
+  {
+   "why": "the PEAD surprise needs an announcement return beyond 1pct (B1136)",
+   "anchors": [
+    {
+     "file": "backtest/signals/pead.py",
+     "snippet": "    announcement_return_threshold: float = 0.01,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "pead_with_insider_confirmation_long",
+     "single",
+     1,
+     "1"
+    ],
+    [
+     "pead_long",
+     "single",
+     2,
+     "1%"
+    ],
+    [
+     "pead_short",
+     "single",
+     2,
+     "1%"
+    ]
+   ]
+  },
+  {
+   "why": "the OTE zone is a 60-82pct retracement (B1137)",
+   "anchors": [
+    {
+     "file": "backtest/signals/smc_ict.py",
+     "snippet": "in_ote = 60.0 <= float(cur_ret) <= 82.0",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "smc_ote_long",
+     "single",
+     0,
+     "60"
+    ],
+    [
+     "smc_ote_long",
+     "single",
+     0,
+     "82%"
+    ],
+    [
+     "smc_ote_short",
+     "single",
+     0,
+     "60"
+    ],
+    [
+     "smc_ote_short",
+     "single",
+     0,
+     "82%"
+    ]
+   ]
+  },
+  {
+   "why": "a concentrated sell is more than 50pct of the holding sold",
+   "anchors": [
+    {
+     "file": "backtest/data/smart_money.py",
+     "snippet": "concentrated_sell = bool((frac > 0.50).any())",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "insider_cluster_concentrated_sell_short",
+     "single",
+     0,
+     "50%"
+    ]
+   ]
+  },
+  {
+   "why": "the week-open gap threshold is 1.5pct",
+   "anchors": [
+    {
+     "file": "backtest/signals/ict_producers.py",
+     "snippet": "gap_threshold_pct: float = 1.5",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "week_opening_gap_fill_down",
+     "single",
+     1,
+     "1.5"
+    ],
+    [
+     "week_opening_gap_fill_up",
+     "single",
+     1,
+     "1.5"
+    ]
+   ]
+  },
+  {
+   "why": "the doji's wide pivot band is 1.5pct",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "near_wide = lambda lvl: abs(today - lvl) / max(abs(lvl), 0.01) < 0.015",
+     "count": 2
+    }
+   ],
+   "members": [
+    [
+     "doji_at_support",
+     "single",
+     3,
+     "1.5"
+    ]
+   ]
+  },
+  {
+   "why": "monthly momentum is the 6-month return",
+   "anchors": [
+    {
+     "file": "backtest/signals/multi_timeframe.py",
+     "snippet": "out[\"monthly_momentum_6m\"]  = round(mom, 4)",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "monthly_bias_momentum_long",
+     "single",
+     0,
+     "6"
+    ]
+   ]
+  },
+  {
+   "why": "the clearance is 0.5 x ATR(14) above the previous high",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "today_close > prev_high + 0.5 * atr_val",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "monthly_bias_momentum_long",
+     "single",
+     1,
+     "0.5"
+    ],
+    [
+     "monthly_bias_momentum_long",
+     "single",
+     1,
+     "14"
+    ]
+   ]
+  },
+  {
+   "why": "a strong Donchian-10 break clears the prior extreme by 0.5 x ATR14",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "result[\"dc10_strong_breakout_up\"] = close >= upper_prior_10 + 0.5 * atr14",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "donchian_10_breakout",
+     "long",
+     5,
+     "0.5"
+    ],
+    [
+     "donchian_10_breakout",
+     "short",
+     5,
+     "0.5"
+    ]
+   ]
+  },
+  {
+   "why": "a strong Donchian-20 break clears the level by 0.5 x ATR",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "strong_atr_clearance = 0.5 * atr",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "donchian_breakout_retest_long",
+     "single",
+     0,
+     "0.5"
+    ],
+    [
+     "donchian_breakdown_retest_short",
+     "single",
+     0,
+     "0.5"
+    ]
+   ]
+  },
+  {
+   "why": "the capitulation and blowoff events look back 5 bars",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "def compute_capitulation_lookback(df: pd.DataFrame, lookback: int = 5) -> dict:",
+     "count": 1
+    },
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "def compute_blowoff_lookback(df: pd.DataFrame, lookback: int = 5) -> dict:",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "pivot_s3_capitulation",
+     "single",
+     0,
+     "5"
+    ],
+    [
+     "pivot_r3_blowoff_short",
+     "single",
+     0,
+     "5"
+    ]
+   ]
+  },
+  {
+   "why": "StochRSI oversold is K below 20 and overbought K above 80",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "\"stochrsi_oversold\":  k < 20,",
+     "count": 1
+    },
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "\"stochrsi_overbought\": k > 80,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "stochrsi_oversold",
+     "long",
+     0,
+     "20"
+    ],
+    [
+     "stochrsi_oversold",
+     "short",
+     0,
+     "80"
+    ],
+    [
+     "stochrsi_overbought_short",
+     "single",
+     0,
+     "80"
+    ]
+   ]
+  },
+  {
+   "why": "the Ultimate Oscillator flags are below 30 and above 70",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "\"uo_oversold\":    v < 30,",
+     "count": 1
+    },
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "\"uo_overbought\":  v > 70,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "ultimate_oscillator",
+     "long",
+     0,
+     "30"
+    ],
+    [
+     "ultimate_oscillator",
+     "short",
+     0,
+     "70"
+    ]
+   ]
+  },
+  {
+   "why": "RSI-9 extreme oversold is below 20",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "result[f\"rsi_{p}_extreme_os\"]  = v < 20",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "rsi9_extreme",
+     "single",
+     0,
+     "20"
+    ]
+   ]
+  },
+  {
+   "why": "the broad MFI flags are a 14-period MFI below 30 and above 70 (B1170)",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "result[\"mfi_broad_oversold\"]   = mfi_v < 30",
+     "count": 1
+    },
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "result[\"mfi_broad_overbought\"] = mfi_v > 70",
+     "count": 1
+    },
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "pos_mf = mf.where(diff>0,0.0).rolling(14).sum()",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "mfi_oversold",
+     "long",
+     0,
+     "30"
+    ],
+    [
+     "mfi_oversold",
+     "short",
+     0,
+     "70"
+    ],
+    [
+     "mfi_oversold_with_smart_money_long",
+     "single",
+     0,
+     "14"
+    ],
+    [
+     "mfi_oversold_with_smart_money_long",
+     "single",
+     0,
+     "30"
+    ],
+    [
+     "mfi_overbought_short",
+     "single",
+     0,
+     "70"
+    ],
+    [
+     "mfi_overbought_short",
+     "single",
+     0,
+     "30"
+    ]
+   ]
+  },
+  {
+   "why": "the broad stochastic flags are K below 25 and above 75 (B1199)",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "\"stoch_broad_oversold\":   k < 25,   \"stoch_broad_overbought\": k > 75,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "stoch_oversold",
+     "long",
+     0,
+     "25"
+    ],
+    [
+     "stoch_oversold",
+     "short",
+     0,
+     "75"
+    ]
+   ]
+  },
+  {
+   "why": "the Bollinger keys are 20-period bands at 2.0 and 1.5 sigma",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "for period, std_m in [(20,2.0),(20,1.5),(10,2.0)]:",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "bollinger_tight",
+     "long",
+     0,
+     "1.5"
+    ],
+    [
+     "bollinger_tight",
+     "long",
+     0,
+     "2.0"
+    ],
+    [
+     "bollinger_tight",
+     "short",
+     0,
+     "1.5"
+    ],
+    [
+     "bollinger_tight",
+     "short",
+     0,
+     "2.0"
+    ],
+    [
+     "bollinger_upper_short",
+     "single",
+     0,
+     "2"
+    ],
+    [
+     "bollinger_tight_with_smart_money_long",
+     "single",
+     0,
+     "2.0"
+    ],
+    [
+     "bollinger_tight_with_smart_money_long",
+     "single",
+     0,
+     "1.5"
+    ]
+   ]
+  },
+  {
+   "why": "the 52-week retest reference is the 252-day extreme ending 45 bars back (B1138)",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "breakout_window_days = 45  # B1138: was 30",
+     "count": 1
+    },
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "ref_window = df.iloc[-(252 + breakout_window_days + 1):ref_end]",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "52w_high_breakout_pullback_long",
+     "single",
+     1,
+     "252"
+    ],
+    [
+     "52w_high_breakout_pullback_long",
+     "single",
+     1,
+     "45"
+    ],
+    [
+     "52w_low_breakdown_pullback_short",
+     "single",
+     1,
+     "252"
+    ],
+    [
+     "52w_low_breakdown_pullback_short",
+     "single",
+     1,
+     "45"
+    ]
+   ]
+  },
+  {
+   "why": "the break-retest producers scan lags 2-8 with a 1.5 x ATR(14) retest band; the held variant needs 2 closes (B2089)",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "for lag in range(2, 9):",
+     "count": 6
+    },
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "tolerance = 1.5 * atr",
+     "count": 3
+    },
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "n >= 2 and close[-2] <= year_low_at_break)",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "r1_break_retest",
+     "long",
+     0,
+     "2"
+    ],
+    [
+     "r1_break_retest",
+     "long",
+     0,
+     "8"
+    ],
+    [
+     "r1_break_retest",
+     "long",
+     0,
+     "1.5"
+    ],
+    [
+     "r1_break_retest",
+     "short",
+     0,
+     "2"
+    ],
+    [
+     "r1_break_retest",
+     "short",
+     0,
+     "8"
+    ],
+    [
+     "r1_break_retest",
+     "short",
+     0,
+     "1.5"
+    ],
+    [
+     "52wh_break_retest",
+     "single",
+     0,
+     "2"
+    ],
+    [
+     "52wh_break_retest",
+     "single",
+     0,
+     "8"
+    ],
+    [
+     "52wh_break_retest",
+     "single",
+     0,
+     "1.5"
+    ],
+    [
+     "52wl_break_retest_short",
+     "single",
+     0,
+     "2"
+    ],
+    [
+     "52wl_break_retest_short",
+     "single",
+     0,
+     "8"
+    ]
+   ]
+  },
+  {
+   "why": "near the 52-week extreme is within 2pct of it",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "result[\"near_52w_high\"]   = _safe_float(c.iloc[-1]) >= year_high*0.98",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "52wh_break_retest",
+     "single",
+     1,
+     "2%"
+    ],
+    [
+     "52wl_break_retest_short",
+     "single",
+     1,
+     "2%"
+    ]
+   ]
+  },
+  {
+   "why": "the 52-week high is the prior 252-day high",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "lookback = min(252, len(df) - 1)  # -1 to exclude today",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "52w_high_breakout_with_smart_money_long",
+     "single",
+     0,
+     "252"
+    ],
+    [
+     "52w_high_breakout_with_smart_money_vol_below_long",
+     "single",
+     0,
+     "252"
+    ]
+   ]
+  },
+  {
+   "why": "a bull flag is a 10pct pole then a pullback under 5pct",
+   "anchors": [
+    {
+     "file": "backtest/signals/chart_patterns.py",
+     "snippet": "    flagpole_min_move: float = 0.10,",
+     "count": 1
+    },
+    {
+     "file": "backtest/signals/chart_patterns.py",
+     "snippet": "    flag_max_pullback: float = 0.05,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "flag_bull_long",
+     "single",
+     0,
+     "10%"
+    ],
+    [
+     "flag_bull_long",
+     "single",
+     0,
+     "5%"
+    ]
+   ]
+  },
+  {
+   "why": "the pocket pivot compares the last 10 sessions",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "def compute_pocket_pivot(df: pd.DataFrame, lookback: int = 10) -> dict:",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "pocket_pivot_long",
+     "single",
+     0,
+     "10"
+    ]
+   ]
+  },
+  {
+   "why": "the RS-line high is a 60-day high and 'not at its 52w high' is below 98pct of the 252-day high",
+   "anchors": [
+    {
+     "file": "backtest/data/signal_loader.py",
+     "snippet": "signals[\"rs_line_new_60d_high\"] = rs_high",
+     "count": 1
+    },
+    {
+     "file": "backtest/data/signal_loader.py",
+     "snippet": "close.iloc[-252:].max()",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "rs_line_sector_leader_long",
+     "single",
+     0,
+     "60"
+    ],
+    [
+     "rs_line_sector_leader_long",
+     "single",
+     0,
+     "52"
+    ]
+   ]
+  },
+  {
+   "why": "committed growth is 4+ consecutive quarters held and shares up more than 10pct",
+   "anchors": [
+    {
+     "file": "scripts/build_institutional_persistence_precompute.py",
+     "snippet": "MIN_CONSECUTIVE_QUARTERS = int(_os.environ.get(\"INST_MIN_CONSECUTIVE_QUARTERS\", \"4\"))",
+     "count": 1
+    },
+    {
+     "file": "scripts/build_institutional_persistence_precompute.py",
+     "snippet": "GROWTH_MULTIPLE = float(_os.environ.get(\"INST_GROWTH_MULTIPLE\", \"1.10\"))",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "institutional_committed_growth_long",
+     "single",
+     0,
+     "4"
+    ],
+    [
+     "institutional_committed_growth_long",
+     "single",
+     0,
+     "10%"
+    ]
+   ]
+  },
+  {
+   "why": "the news window the engine passes is 7 days",
+   "anchors": [
+    {
+     "file": "backtest/signals/screener.py",
+     "snippet": "inject_news_sentiment_signals(signals, ticker, as_of, lookback_days=7)",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "news_sentiment_long",
+     "single",
+     0,
+     "7"
+    ],
+    [
+     "news_sentiment_short",
+     "single",
+     0,
+     "7"
+    ],
+    [
+     "news_sentiment_shift_long",
+     "single",
+     0,
+     "7"
+    ]
+   ]
+  },
+  {
+   "why": "the TOTM window is the last 4 and first 3 trading days",
+   "anchors": [
+    {
+     "file": "backtest/signals/calendar_effects.py",
+     "snippet": "out[\"is_totm_window\"] = bool((tdl <= 4) or (tdm <= 3))",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "totm_short",
+     "single",
+     0,
+     "4"
+    ],
+    [
+     "totm_short",
+     "single",
+     0,
+     "3"
+    ]
+   ]
+  },
+  {
+   "why": "the extended January window runs Dec 26 to Feb 3",
+   "anchors": [
+    {
+     "file": "backtest/signals/calendar_effects.py",
+     "snippet": "is_late_december = (as_of.month == 12 and as_of.day >= 26)",
+     "count": 1
+    },
+    {
+     "file": "backtest/signals/calendar_effects.py",
+     "snippet": "is_early_february = (as_of.month == 2 and as_of.day <= 3)",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "january_effect_small_cap_long",
+     "single",
+     0,
+     "26"
+    ],
+    [
+     "january_effect_small_cap_long",
+     "single",
+     0,
+     "3"
+    ]
+   ]
+  },
+  {
+   "why": "the volume profile window is 60 days",
+   "anchors": [
+    {
+     "file": "backtest/signals/volume_profile.py",
+     "snippet": "    lookback_days: int = 60,",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "poc_magnet_long",
+     "single",
+     0,
+     "60"
+    ],
+    [
+     "poc_magnet_short",
+     "single",
+     0,
+     "60"
+    ]
+   ]
+  },
+  {
+   "why": "the tight CPR is a width under 5pct of the prior range",
+   "anchors": [
+    {
+     "file": "backtest/signals/technical.py",
+     "snippet": "cpr_narrow_tight = (cpr_width < rng * 0.05) if rng > 0 else False",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "cpr_narrow_bullish",
+     "long",
+     0,
+     "0.05"
+    ],
+    [
+     "cpr_narrow_bullish",
+     "short",
+     0,
+     "0.05"
+    ]
+   ]
+  },
+  {
+   "why": "the candle producer's bar count is CANDLE_N_BARS, 3 in production",
+   "anchors": [
+    {
+     "file": "backtest/config.py",
+     "snippet": "CANDLE_N_BARS: int = int(os.environ.get(\"CANDLE_N_BARS\", \"3\"))",
+     "count": 1
+    }
+   ],
+   "members": [
+    [
+     "three_white_soldiers",
+     "single",
+     1,
+     "3"
+    ],
+    [
+     "three_black_crows_short",
+     "single",
+     1,
+     "3"
+    ]
+   ]
+  },
+  {
+   "why": "a measured figure or prior value quoted for history, not a threshold",
+   "anchors": [],
+   "members": [
+    [
+     "mfi_oversold",
+     "long",
+     2,
+     "319.5"
+    ]
+   ]
+  },
+  {
+   "why": "a label, a form name or a literature figure, not a threshold the gate tests",
+   "anchors": [],
+   "members": [
+    [
+     "mmbm_long",
+     "single",
+     1,
+     "1"
+    ],
+    [
+     "mmbm_long",
+     "single",
+     2,
+     "2"
+    ],
+    [
+     "mmsm_short",
+     "single",
+     1,
+     "1"
+    ],
+    [
+     "mmsm_short",
+     "single",
+     2,
+     "2"
+    ],
+    [
+     "pead_long",
+     "single",
+     3,
+     "60"
+    ],
+    [
+     "pead_short",
+     "single",
+     3,
+     "60"
+    ],
+    [
+     "pead_long_high_yoy_growth_only",
+     "single",
+     2,
+     "2"
+    ],
+    [
+     "pead_short_negative_yoy_growth",
+     "single",
+     2,
+     "2"
+    ],
+    [
+     "m_and_a_target_long",
+     "single",
+     0,
+     "1.01"
+    ],
+    [
+     "m_and_a_target_long",
+     "single",
+     2,
+     "2"
+    ],
+    [
+     "m_and_a_target_long",
+     "single",
+     2,
+     "10"
+    ],
+    [
+     "52w_high_breakout",
+     "single",
+     2,
+     "5"
+    ],
+    [
+     "double_bottom_long",
+     "single",
+     0,
+     "2"
+    ],
+    [
+     "triangle_ascending_long",
+     "single",
+     1,
+     "70%"
+    ],
+    [
+     "head_and_shoulders_top_short",
+     "single",
+     0,
+     "3"
+    ],
+    [
+     "triangle_descending_short",
+     "single",
+     1,
+     "64%"
+    ],
+    [
+     "triangle_ascending_retest_long",
+     "single",
+     1,
+     "70%"
+    ],
+    [
+     "institutional_cluster_long",
+     "single",
+     0,
+     "13"
+    ],
+    [
+     "institutional_cluster_long",
+     "single",
+     1,
+     "1"
+    ],
+    [
+     "institutional_buy_momentum_long",
+     "single",
+     0,
+     "13"
+    ],
+    [
+     "institutional_oversold_long",
+     "single",
+     0,
+     "13"
+    ],
+    [
+     "institutional_breakout_confirmation_long",
+     "single",
+     0,
+     "13"
+    ],
+    [
+     "institutional_insider_combo_long",
+     "single",
+     0,
+     "13"
+    ],
+    [
+     "institutional_volume_confirmation_long",
+     "single",
+     0,
+     "13"
+    ],
+    [
+     "institutional_with_directors_long",
+     "single",
+     0,
+     "13"
+    ],
+    [
+     "institutional_with_officers_long",
+     "single",
+     0,
+     "13"
+    ],
+    [
+     "vwap_extension_momentum_long",
+     "single",
+     0,
+     "1"
+    ],
+    [
+     "vwap_extension_momentum_short",
+     "single",
+     0,
+     "1"
+    ]
+   ]
+  }
+ ],
+ "retired": [
+  [
+   "turtle_soup_short",
+   "single",
+   "Turtle Soup short (Raschke Street Smarts 1996) - B1202 added smc_bos_bearish OR per B1186 probe"
+  ],
+  [
+   "turtle_soup_short",
+   "single",
+   "Upside liquidity swept OR bearish break-of-structure"
+  ],
+  [
+   "judas_swing_short",
+   "single",
+   "Bearish bar - rejection of stop-hunt extension"
+  ],
+  [
+   "xs_quality_top_quintile_long",
+   "single",
+   "Top tercile gross profitability (B1193 loosened from quintile per DEC-321)"
+  ],
+  [
+   "pead_with_insider_confirmation_long",
+   "single",
+   "Positive earnings surprise (YoY+ AND ann-ret>+2pct)"
+  ],
+  [
+   "htf_aligned_breakout_short",
+   "single",
+   "Volume 1.5x ADV(20) - institutional participation"
+  ],
+  [
+   "weekly_bias_pullback_long",
+   "single",
+   "Daily RSI<40 - oversold pullback"
+  ],
+  [
+   "weekly_bias_pullback_long",
+   "single",
+   "Bullish reversal candle (hammer or engulfing)"
+  ],
+  [
+   "smc_ote_long",
+   "single",
+   "OTE zone: {pct}% retracement (62-79% Fib)"
+  ],
+  [
+   "smc_ote_short",
+   "single",
+   "OTE zone: {pct}% retracement (62-79% Fib)"
+  ],
+  [
+   "smc_equal_highs_sweep_short",
+   "single",
+   "Equal-highs cluster swept OR bearish BOS (B1202 add per B1186 probe)"
+  ],
+  [
+   "pead_long",
+   "single",
+   "Announcement-day return: {ann*100}% (>+2% surprise threshold)"
+  ],
+  [
+   "pead_short",
+   "single",
+   "Announcement-day return: {ann*100}% (<-2% surprise)"
+  ],
+  [
+   "avwap_50_reclaim",
+   "long",
+   "Within 1.5% of AVWAP inflection"
+  ],
+  [
+   "avwap_50_reclaim",
+   "short",
+   "Within 1.5% of AVWAP inflection"
+  ],
+  [
+   "pivot_r1_breakout",
+   "long",
+   "Above Anchored VWAP (252d low + 50d low) - institutional reference"
+  ],
+  [
+   "pivot_r1_breakout",
+   "short",
+   "Below Anchored VWAP (252d low + 50d low) - distribution"
+  ],
+  [
+   "pivot_r2_continuation",
+   "long",
+   "Above Anchored VWAP - institutional reference"
+  ],
+  [
+   "pivot_r2_continuation",
+   "short",
+   "Price below R2 - strong downtrend continuation"
+  ],
+  [
+   "pivot_r2_continuation",
+   "short",
+   "Below Anchored VWAP - distribution"
+  ],
+  [
+   "camarilla_s3_bounce",
+   "long",
+   "RSI oversold (<35)"
+  ],
+  [
+   "camarilla_s3_bounce",
+   "short",
+   "RSI overbought (>65)"
+  ],
+  [
+   "hull_rsi",
+   "long",
+   "Above 200-EMA (bull regime gate, Batch 358)"
+  ],
+  [
+   "hull_rsi",
+   "short",
+   "Below 200-EMA (bear regime gate, Batch 358)"
+  ],
+  [
+   "ichimoku_tk_cross",
+   "long",
+   "Ichimoku Tenkan crossed above Kijun - TK cross bullish (B1134 self-sufficient)"
+  ],
+  [
+   "ichimoku_tk_cross",
+   "short",
+   "Ichimoku Tenkan crossed below Kijun - TK cross bearish (B1134 self-sufficient)"
+  ],
+  [
+   "adx_initiation",
+   "short",
+   "ADX crossed above 25  -  trend initiating"
+  ],
+  [
+   "supertrend_macd",
+   "short",
+   "ADX > 20  -  trend strength confirmed"
+  ],
+  [
+   "rsi_oversold",
+   "long",
+   "Connors RSI(2)<5 OR RSI(14)<35"
+  ],
+  [
+   "rsi_oversold",
+   "short",
+   "RSI(2)>95 OR RSI(14)>65"
+  ],
+  [
+   "rsi9_extreme",
+   "single",
+   "RSI-9 rising  -  recovering"
+  ],
+  [
+   "rsi21_slow",
+   "long",
+   "Slow RSI-21 oversold below 35"
+  ],
+  [
+   "rsi21_slow",
+   "short",
+   "Slow RSI-21 overbought above 65"
+  ],
+  [
+   "rsi_overbought_short",
+   "single",
+   "RSI-14 overbought at {s.get('rsi_14',0)}  -  above 68"
+  ],
+  [
+   "rsi_overbought_short",
+   "single",
+   "Bearish momentum confirms sellers taking control"
+  ],
+  [
+   "mfi_oversold",
+   "long",
+   "MFI oversold - volume-weighted RSI below 20"
+  ],
+  [
+   "mfi_oversold",
+   "short",
+   "MFI overbought - volume-weighted RSI above 80"
+  ],
+  [
+   "bollinger_tight",
+   "long",
+   "Price RECLAIMED inside tight BB after lower-band touch (B801 #44 EVENT)"
+  ],
+  [
+   "bollinger_tight",
+   "short",
+   "Price RECLAIMED inside tight BB after upper-band touch (B801 #44 EVENT)"
+  ],
+  [
+   "stoch_oversold",
+   "long",
+   "Stochastic oversold below 20"
+  ],
+  [
+   "stoch_oversold",
+   "short",
+   "Stochastic overbought above 80"
+  ],
+  [
+   "volume_spike_breakout",
+   "long",
+   "Volume 1.5x confirms institutional buying"
+  ],
+  [
+   "volume_spike_breakout",
+   "short",
+   "Volume 1.5x confirms institutional selling"
+  ],
+  [
+   "52w_high_breakout",
+   "single",
+   "B697 + B698 score-of-2-of-5 met: vol={confirmations[0]} above_open={confirmations[1]} top_40={confirmations[2]} clearance_atr05={confirmations[3]} reclaim_held={confirmations[4]} (n_confirm={n_confirm}/5)"
+  ],
+  [
+   "52w_high_breakout_pullback_long",
+   "single",
+   "Prior 252d high broken in last 10 days; price now retesting as support"
+  ],
+  [
+   "52w_low_breakdown_pullback_short",
+   "single",
+   "Prior 252d low broken in last 10 days; price now retesting as resistance"
+  ],
+  [
+   "morning_star",
+   "long",
+   "RSI not deep-oversold"
+  ],
+  [
+   "morning_star",
+   "short",
+   "RSI not deep-overbought"
+  ],
+  [
+   "shooting_star_short",
+   "single",
+   "Shooting star at resistance level  -  bearish reversal"
+  ],
+  [
+   "shooting_star_short",
+   "single",
+   "Long upper wick shows sellers rejecting higher prices"
+  ],
+  [
+   "golden_cross_volume",
+   "long",
+   "Golden cross with 2x volume  -  institutional confirmation of bullish shift"
+  ],
+  [
+   "golden_cross_volume",
+   "short",
+   "Death cross with 2x volume  -  institutional confirmation of bearish shift"
+  ],
+  [
+   "death_cross_50_200_volume",
+   "single",
+   "Volume 2x confirms institutional selling on the cross"
+  ],
+  [
+   "parabolic_sar_flip_short",
+   "single",
+   "ADX trending  -  reversal has follow-through potential"
+  ],
+  [
+   "donchian_breakdown_short",
+   "single",
+   "Volume 1.5x confirms institutional selling pressure"
+  ],
+  [
+   "52w_low_breakdown",
+   "single",
+   "Volume >1.7x confirms institutional distribution (George-Hwang 2004 JF mirror)"
+  ],
+  [
+   "52w_low_breakdown",
+   "single",
+   "Sector ETF underperforming SPY 20d  -  sell weak sectors only"
+  ],
+  [
+   "52w_low_breakdown",
+   "single",
+   "Stocks at new 52-week lows in weak sectors tend to continue lower"
+  ],
+  [
+   "donchian_breakout_long",
+   "single",
+   "Volume 1.5x confirms institutional buying pressure"
+  ],
+  [
+   "dc20_break_retest",
+   "long",
+   "DC20 break-and-retest: channel high broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)"
+  ],
+  [
+   "dc20_break_retest",
+   "short",
+   "DC20 breakdown-and-retest: channel low broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)"
+  ],
+  [
+   "52wh_break_retest",
+   "single",
+   "Volume below 20d avg (Bulkowski retest = supply absorption)"
+  ],
+  [
+   "52wh_break_retest",
+   "single",
+   "Above 20d swing-low AVWAP (Brian Shannon)"
+  ],
+  [
+   "52wl_break_retest_short",
+   "single",
+   "Volume below 20d avg (Bulkowski retest = lower volume)"
+  ],
+  [
+   "52wl_break_retest_short",
+   "single",
+   "Below 20d swing-high AVWAP - recent rally given back"
+  ],
+  [
+   "institutional_breakout_confirmation_long",
+   "single",
+   "Volume below 20d avg (Bulkowski retest characteristic)"
+  ],
+  [
+   "consec_downdays_quality_long",
+   "single",
+   "Top-tercile gross profitability - quality name worth catching"
+  ],
+  [
+   "institutional_persistence_momentum_long",
+   "single",
+   "5+ institutional funds grew position this quarter"
+  ],
+  [
+   "institutional_persistence_breakout_long",
+   "single",
+   "5+ institutional funds grew position this quarter"
+  ],
+  [
+   "institutional_persistence_volume_long",
+   "single",
+   "5+ institutional funds grew position"
+  ],
+  [
+   "institutional_persistence_volume_long",
+   "single",
+   "Volume 2x ADV - retail tape participating"
+  ],
+  [
+   "institutional_persistence_oversold_long",
+   "single",
+   "5+ institutional funds grew position (persistence)"
+  ],
+  [
+   "institutional_persistence_oversold_long",
+   "single",
+   "RSI<40 oversold (counter-trend mean-rev)"
+  ],
+  [
+   "institutional_recent_init_volume_long",
+   "single",
+   "Volume 2x ADV - retail tape participating"
+  ],
+  [
+   "news_momentum_long",
+   "single",
+   "News volume z-score {vz} (unusual coverage; B1136 threshold >=1.0)"
+  ],
+  [
+   "news_reversal_short",
+   "single",
+   "5d sentiment {sent} (bullish; B614 d loosened to >=+0.5)"
+  ],
+  [
+   "news_reversal_long",
+   "single",
+   "5d sentiment {sent} (bearish; B614 d loosened to <=-0.5)"
+  ],
+  [
+   "bollinger_tight_with_smart_money_long",
+   "single",
+   "Bollinger band squeeze tight (20,2.0)"
+  ],
+  [
+   "vix_backwardation_long",
+   "single",
+   "Top-quintile quality (defensive sleeve)"
+  ],
+  [
+   "value_area_breakout_long",
+   "single",
+   "Volume 2x ADV(20) (breakout confirmation)"
+  ]
+ ]
+}

@@ -58588,6 +58588,111 @@ def test_b3139c_removed_literal_pins_finds_a_test_quoting_removed_text(tmp_path)
     assert rlp.removed_literals('a = "kept"\nb = 1\n', 'b = 1\na = "kept"\n') == set()
 
 
+def test_b3221_bullet_numbers_and_keys_match_the_gate(tmp_path):
+    """S6-B3221 (B3139q-r74), the bullet-prose half of S6-B3139c: a strategy's
+    context_bullets ride every fire into the trade log and the site, so every
+    number a bullet states must match its gate - or be a reviewed producer or
+    literature figure in output_audit/b3221_bullet_census_reviewed.json - and
+    every key a bullet names must be one its gate reads. The rule is stated in
+    scripts/context_bullets_census.py. (1) The live roster: no unreviewed
+    number, no unread key, no stale register member, no moved producer anchor
+    and none of the corrected texts back, over a floor of 280 sides and 790
+    bullets so the scan cannot pass blind (L715); the measured member,
+    strat_rsi_overbought_short, now states its gate's 65. (2) Must-fire, one
+    toy per shape: a stale gate number ('above 68' over > 65), a key swap that
+    states the old multiplier ('Volume 1.5x' over vol_above_avg), a bullet
+    naming a key its gate does not read. (3) Must-quiet in the same set: the
+    gate's own number, a prior value after 'was', the vol_spike_15x
+    multiplier, a number inside a key the gate reads. (4) The register in both
+    directions: a reviewed member is excused, an unread key never is (and is
+    stale if listed), a member nothing needs is stale, a producer anchor whose
+    line changed is reported, a retired text that returns is flagged."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import context_bullets_census as C
+    from backtest.signals import screener as _sm
+
+    rows = C.census()
+    live = [r for r in rows if r.get("status") == "OK"]
+    nb = sum(len(r["bullets"]) for r in live)
+    assert len(live) >= 280 and nb >= 790, (len(live), nb)
+    groups = C.load_reviewed()
+    assert C.candidates(rows, groups) == [], C.candidates(rows, groups)[:10]
+    assert C.stale_reviewed(rows, groups) == [], C.stale_reviewed(rows, groups)[:10]
+    assert C.anchor_problems(groups) == [], C.anchor_problems(groups)[:5]
+    assert C.retired_recurrences(rows) == [], C.retired_recurrences(rows)[:5]
+    assert len(C.load_retired()) >= 80
+    r = _sm.strat_rsi_overbought_short({"rsi_14": 70, "below_sma_50": True})
+    assert r["fires"] and "above 65" in r["context_bullets"][0], r
+    assert not any("Bearish momentum" in b for b in r["context_bullets"]), r
+
+    toy = (
+        "def strat_stale(s):\n"
+        "    fires = s.get('rsi_14', 50) > 65 and s.get('below_sma_50')\n"
+        "    return _strat(fires, 'short', 'x', ['rsi_14', 'below_sma_50'],\n"
+        "                  ['RSI-14 overbought - above 68'])\n"
+        "def strat_right(s):\n"
+        "    fires = s.get('rsi_14', 50) > 65 and s.get('below_sma_50')\n"
+        "    return _strat(fires, 'short', 'x', ['rsi_14', 'below_sma_50'],\n"
+        "                  ['RSI-14 overbought - above 65 (B1140: was 68)', 'Below 50 SMA'])\n"
+        "def strat_swap(s):\n"
+        "    fires = s.get('dc20_breakout_up') and s.get('vol_above_avg')\n"
+        "    return _strat(fires, 'long', 'x', ['dc20_breakout_up', 'vol_above_avg'],\n"
+        "                  ['Volume 1.5x confirms buying'])\n"
+        "def strat_spike(s):\n"
+        "    fires = s.get('dc20_breakout_up') and s.get('vol_spike_15x')\n"
+        "    return _strat(fires, 'long', 'x', ['dc20_breakout_up', 'vol_spike_15x'],\n"
+        "                  ['Volume 1.5x confirms buying'])\n"
+        "def strat_key(s):\n"
+        "    fires = s.get('smc_liquidity_swept_up')\n"
+        "    return _strat(fires, 'short', 'x', ['smc_liquidity_swept_up'],\n"
+        "                  ['Liquidity swept OR smc_bos_bearish'])\n")
+    trows = C.census_source(toy, extra_keys={"smc_bos_bearish"})
+    un = {(c[0], c[3], c[4]) for c in C.unsettled(trows)}
+    assert un == {("stale", "68", "FREE"), ("swap", "1.5x", "FREE"),
+                  ("key", "smc_bos_bearish", "NOT-READ")}, un
+
+    prod = tmp_path / "prod.py"
+    prod.write_text("flag = k < 25\n", encoding="utf-8")
+    tg = [{"why": "toy", "anchors": [{"file": "prod.py", "snippet": "k < 25", "count": 1}],
+           "members": [["stale", "single", 0, "68"], ["right", "single", 0, "65"],
+                       ["key", "single", 0, "smc_bos_bearish"]]}]
+    cand = {(c[0], c[3]) for c in C.candidates(trows, tg)}
+    assert cand == {("swap", "1.5x"), ("key", "smc_bos_bearish")}, cand
+    # the gate's own number needs no review, and a key never gets one
+    assert C.stale_reviewed(trows, tg) == [("key", "single", 0, "smc_bos_bearish"),
+                                           ("right", "single", 0, "65")]
+    assert C.anchor_problems(tg, root=tmp_path) == []
+    prod.write_text("flag = k < 22\n", encoding="utf-8")
+    assert [(p[1], p[3], p[4]) for p in C.anchor_problems(tg, root=tmp_path)] == [
+        ("prod.py", 1, 0)]
+    back = [["stale", "single", "RSI-14 overbought - above 68"], ["right", "single", "gone"]]
+    assert C.retired_recurrences(trows, back) == [back[0]]
+
+
+def test_b3221_bullet_rule_is_in_the_durable_docs():
+    """S6-B3221: the census sees numbers and keys; a bullet asserting a
+    condition its gate no longer tests, with neither ('Bearish bar - rejection
+    of stop-hunt extension' after B1145 dropped the bar gate), is invisible to
+    it by construction - so the rule that a gate edit updates its bullets and
+    removes a bullet for a removed condition is a reading step. No DETECTION
+    mechanism for that shape; this pins its durability in the two places a
+    gate editor reads: runbook section 1.7 and the _strat docstring."""
+    from pathlib import Path as _P
+    from backtest.signals import screener as _sm
+    root = _P(__file__).resolve().parents[2]
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    assert "**So do its `context_bullets`:**" in plan
+    assert "scripts/context_bullets_census.py --check" in plan
+    assert "a bullet describing a condition the edit removes is removed with it" in plan
+    doc = _sm._strat.__doc__
+    assert "context_bullets_census.py" in doc and "test_b3221" in doc, doc
+    assert "a bullet describing a condition the edit removes goes with it" in doc, doc
+
+
 def test_b3218_a_present_admissions_record_without_its_list_is_refused(tmp_path):
     """S6-B3218 (owner 2026-10-19, 'implement now'): build_phase_1b_roster's
     load_admissions read a PRESENT record with no 'admissions' list as EMPTY,

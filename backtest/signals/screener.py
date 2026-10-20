@@ -255,6 +255,13 @@ def _strat(fires, direction, category, signals_used, context_bullets):
     a name only when it is an exact key, so a comparator string, a label or a
     stale key reaches no one. A gate edit changes its list in the same edit;
     scripts/signals_used_lint.py --check states the rule and test_b3139c pins it.
+
+    `context_bullets` (S6-B3221, B3139q-r74) state the gate as it is, and a
+    gate edit updates them in the same edit: scripts/context_bullets_census.py
+    --check holds every number a bullet states to the gate or a reviewed
+    producer line and every key it names to the gate's reads (test_b3221),
+    and a bullet describing a condition the edit removes goes with it - no
+    scan sees that prose shape, so it is a reading step.
     """
     return {
         "fires":           bool(fires),
@@ -715,11 +722,11 @@ def strat_pivot_r1_breakout(s):
         ["Price broke above R1 resistance",
          "Volume 1.5x ADV(20) - institutional buying",
          "MACD positive",
-         "Above Anchored VWAP (252d low + 50d low) - institutional reference"],
+         "Above Anchored VWAP from the 50d low - institutional reference (B1171 dropped the 252d-low anchor)"],
         ["Price broke below S1 support",
          "Volume 1.5x ADV(20) - institutional selling",
          "MACD negative",
-         "Below Anchored VWAP (252d low + 50d low) - distribution"])
+         "Below Anchored VWAP from the 50d low - distribution (B1171 dropped the 252d-low anchor)"])
 
 
 def strat_pivot_r2_continuation(s):
@@ -767,12 +774,10 @@ def strat_pivot_r2_continuation(s):
          "borrow_ok"],
         ["Price above R2 - strong trend continuation",
          "ADX confirms trend", "Above 50/200 EMA",
-         "Volume 2x ADV - heavy participation",
-         "Above Anchored VWAP - institutional reference"],
-        ["Price below R2 - strong downtrend continuation",
+         "Volume 2x ADV - heavy participation"],
+        ["Price below S2 - strong downtrend continuation",
          "ADX confirms trend", "Below 50/200 EMA",
-         "Volume 2x ADV - heavy participation",
-         "Below Anchored VWAP - distribution"])
+         "Volume 2x ADV - heavy participation"])
 
 
 def strat_cpr_narrow_bullish(s):
@@ -931,10 +936,10 @@ def strat_camarilla_s3_bounce(s):
         ["near_cam_s3", "rsi_14", "obv_bullish"],
         ["near_cam_r3", "rsi_14", "obv_bearish", "borrow_ok"],
         ["Price at Camarilla S3 - primary support (Slim Khan / Nick Scott)",
-         "RSI oversold (<35)",
+         "RSI oversold (<40; B1184 widened from 35)",
          "OBV confirming accumulation (above 20-bar MA)"],
         ["Price at Camarilla R3 - primary resistance",
-         "RSI overbought (>65)",
+         "RSI overbought (>60; B1184 widened from 65)",
          "OBV confirming distribution (B628 F1 positive symmetric)"])
 
 
@@ -1159,10 +1164,10 @@ def strat_hull_rsi(s):
          "borrow_ok"],
         ["Hull MA rising - fast trend bullish", "Price above Hull",
          "ADX>20 confirms trend",
-         "Above 200-EMA (bull regime gate, Batch 358)"],
+         "Crossed above the 200-EMA within the last 5 bars and still above (B722 EVENT; the Batch 358 gate was the regime STATE)"],
         ["Hull MA falling - fast trend bearish", "Price below Hull",
          "ADX>20 confirms trend",
-         "Below 200-EMA (bear regime gate, Batch 358)"])
+         "Crossed below the 200-EMA within the last 5 bars and still below (B722 EVENT; the Batch 358 gate was the regime STATE)"])
 
 
 def strat_williams_r_oversold(s):
@@ -1466,8 +1471,8 @@ def strat_ichimoku_tk_cross(s):
     fs = fs and (s.get("news_sentiment_5d", float("-inf")) >= 0.0)  # B1422 selectivity gate: IS(best-exit) exp +1.691 -> +1.909, WR 0.265 -> 0.269, fires 1013 -> 945, 456 dates
     return _strat3(fl, fs, "trend",
         ["ichi_tk_cross_up", "news_sentiment_5d"], ["ichi_tk_cross_dn", "news_sentiment_5d", "borrow_ok"],
-        ["Ichimoku Tenkan crossed above Kijun - TK cross bullish (B1134 self-sufficient)"],
-        ["Ichimoku Tenkan crossed below Kijun - TK cross bearish (B1134 self-sufficient)"])
+        ["Ichimoku Tenkan crossed above Kijun - TK cross bullish (B1134 dropped the cloud gate)"],
+        ["Ichimoku Tenkan crossed below Kijun - TK cross bearish (B1134 dropped the cloud gate)"])
 
 
 def strat_ichimoku_cloud_breakout(s):
@@ -1564,7 +1569,7 @@ def strat_adx_initiation(s):
     return _strat3(fl, fs, "trend",
         ["adx_cross_up_20","adx_di_bull"], ["adx_cross_up_20","adx_di_bear", "borrow_ok"],
         ["ADX crossed above 20 - trend initiating (B1138 loosened from 25)","DI+ above DI-  -  bullish direction"],
-        ["ADX crossed above 25  -  trend initiating","DI- above DI+  -  bearish direction"])
+        ["ADX crossed above 20  -  trend initiating (B1138 loosened from 25)","DI- above DI+  -  bearish direction"])
 
 
 def strat_supertrend_macd(s):
@@ -1641,8 +1646,7 @@ def strat_supertrend_macd(s):
         ["Supertrend flip-up within last 5 bars (B655 EVENT-anchored; pre-B655 used always-on supertrend_bullish)",
          "MACD positive  -  momentum confirms within window (B1139 self-sufficient)"],
         ["Supertrend flip-down within last 5 bars",
-         "MACD negative  -  momentum confirms within window (B1139 self-sufficient)",
-         "ADX > 20  -  trend strength confirmed"])
+         "MACD negative  -  momentum confirms within window (B1139 self-sufficient)"])
 
 
 # -----------------------------------------------------------------------------
@@ -1681,9 +1685,9 @@ def strat_rsi_oversold(s):
     return _strat3(fl, fs, "mean_reversion",
         ["rsi_2", "price_above_sma_50", "price_above_ema_200", "rsi_14"],
         ["rsi_2", "below_ema_200", "below_sma_50", "rsi_14", "borrow_ok"],
-        ["Connors RSI(2)<5 OR RSI(14)<35", "Above 50 SMA - buying dip",
+        ["Connors RSI(2)<7 OR RSI(14)<40 (B1147: was <5 / <35)", "Above 50 SMA - buying dip",
          "Above 200 EMA (regime gate)"],
-        ["RSI(2)>95 OR RSI(14)>65", "Below 50 SMA - selling rally",
+        ["RSI(2)>93 OR RSI(14)>60 (B1147: was >95 / >65)", "Below 50 SMA - selling rally",
          "Below 200 EMA (bear regime)"])
 
 
@@ -1698,7 +1702,7 @@ def strat_rsi9_extreme(s):
     # B1140 dropped: rsi_9_rising (redundant with extreme_os for mean-reversion setup)
     return _strat(fires, "long", "mean_reversion",
         ["price_above_ema_200", "rsi_9_extreme_os"],
-        [f"RSI-9 extreme oversold below 20","Above 200 EMA  -  uptrend context","RSI-9 rising  -  recovering"])
+        [f"RSI-9 extreme oversold below 20","Above 200 EMA  -  uptrend context"])
 
 
 def strat_rsi21_slow(s):
@@ -1723,8 +1727,8 @@ def strat_rsi21_slow(s):
     fs = (s.get("rsi_21", 50) > 60 and s.get("below_sma_50")) and not _short_borrow_trap_active(s)  # B1140: was > 65
     return _strat3(fl, fs, "mean_reversion",
         ["rsi_21", "price_above_sma_50"], ["rsi_21", "below_sma_50", "borrow_ok"],
-        [f"Slow RSI-21 oversold below 35","Above 50 SMA  -  uptrend context"],
-        [f"Slow RSI-21 overbought above 65","Below 50 SMA  -  downtrend context"])
+        [f"Slow RSI-21 below 40 (B1140 widened from 35)","Above 50 SMA  -  uptrend context"],
+        [f"Slow RSI-21 above 60 (B1140 widened from 65)","Below 50 SMA  -  downtrend context"])
 
 
 def strat_rsi_overbought_short(s):
@@ -1750,9 +1754,8 @@ def strat_rsi_overbought_short(s):
     # B806 #50 metadata cleanup: bearish_signal shorthand -> canonical compound
     return _strat(fires, "short", "mean_reversion",
         ["rsi_14", "below_sma_50", "borrow_ok"],
-        [f"RSI-14 overbought at {s.get('rsi_14',0):.1f}  -  above 68",
-         "Below 50 SMA  -  selling rally in downtrend",
-         "Bearish momentum confirms sellers taking control"])
+        [f"RSI-14 overbought at {s.get('rsi_14',0):.1f}  -  above 65 (B1140: was 68)",
+         "Below 50 SMA  -  selling rally in downtrend"])
 
 
 def strat_mfi_oversold(s):
@@ -1832,8 +1835,8 @@ def strat_mfi_oversold(s):
     return _strat3(fl, fs, "mean_reversion",
         ["obv_bullish", "mfi_broad_oversold", "near_s1", "near_s2"],
         ["obv_bearish", "mfi_broad_overbought", "near_r1", "near_r2", "borrow_ok"],
-        ["MFI oversold - volume-weighted RSI below 20","At pivot support","OBV rising (B791 restored per demo +319.5 bps lift)"],
-        ["MFI overbought - volume-weighted RSI above 80","At pivot resistance","OBV falling (B628 F1)"])
+        ["MFI oversold - volume-weighted RSI below 30 (B1170 broad variant; was 20)","At pivot support","OBV rising (B791 restored per demo +319.5 bps lift)"],
+        ["MFI overbought - volume-weighted RSI above 70 (B1170 broad variant; was 80)","At pivot resistance","OBV falling (B628 F1)"])
 
 
 def strat_cmf_flip(s):
@@ -1972,10 +1975,10 @@ def strat_bollinger_tight(s):
         ["rsi_2", "below_ema_200", "bb_20_15_reclaim_from_upper_recent_3d",
          "bb_20_20_reclaim_from_upper_recent_3d", "rsi_14", "vix_band_low", "vix_band_high",
          "borrow_ok"],
-        ["Price RECLAIMED inside tight BB after lower-band touch (B801 #44 EVENT)",
+        ["Price RECLAIMED inside the 1.5- or 2.0-sigma BB after a lower-band touch (B801 #44 EVENT)",
          f"RSI(2)<10 OR RSI(14)<{rsi_thr_long}",
          "Price above 200-EMA (regime gate)"],
-        ["Price RECLAIMED inside tight BB after upper-band touch (B801 #44 EVENT)",
+        ["Price RECLAIMED inside the 1.5- or 2.0-sigma BB after an upper-band touch (B801 #44 EVENT)",
          f"RSI(2)>90 OR RSI(14)>{rsi_thr_short}",
          "Price below 200-EMA (bear regime)"])
 
@@ -2047,10 +2050,10 @@ def strat_stoch_oversold(s):
     return _strat3(fl, fs, "mean_reversion",
         ["stoch_bullish_cross", "price_above_ema_20", "stoch_broad_oversold"],
         ["stoch_bearish_cross", "below_ema_20", "stoch_broad_overbought", "borrow_ok"],
-        ["Stochastic oversold below 20",
+        ["Stochastic oversold below 25 (B1199 broad variant; was 20)",
          "K crossed above D - turning bullish",
          "Above EMA-20 (trend filter)"],
-        ["Stochastic overbought above 80",
+        ["Stochastic overbought above 75 (B1199 broad variant; was 80)",
          "K crossed below D - turning bearish",
          "Below EMA-20 (trend filter; B627 F1 positive symmetric)"])
 
@@ -2112,12 +2115,12 @@ def strat_volume_spike_breakout(s):
         ["dc20_breakout_dn", "below_avwap_20high", "close_below_open",
          "close_in_bottom_40pct_of_range", "vol_above_avg", "borrow_ok"],
         ["Price broke above 20-day Donchian high",
-         "Volume 1.5x confirms institutional buying",
+         "Volume above 20d average confirms buying (B1148: was 1.5x)",
          "Above 20-day swing-low AVWAP (Brian Shannon 2022) - 20d upleg intact",
          "Bullish bar (close above open)",
          "Strong close (top 40pct of range)"],
         ["Price broke below 20-day Donchian low",
-         "Volume 1.5x confirms institutional selling",
+         "Volume above 20d average confirms selling (B1148: was 1.5x)",
          "Below 20-day swing-high AVWAP - 20d rally given back",
          "Bearish bar (close below open)",
          "Strong close (bottom 40pct of range)"])
@@ -2200,7 +2203,7 @@ def strat_52w_high_breakout(s):
          "break_52w_high_clearance_atr_05", "break_52w_high_confirmed_today"],
         [f"Price broke 52-week high at ${s.get('year_high',0):.2f}",
          "George-Hwang 2004 JF - new highs attract buyers",
-         f"B697 + B698 score-of-2-of-5 met: vol={confirmations[0]} above_open={confirmations[1]} top_40={confirmations[2]} clearance_atr05={confirmations[3]} reclaim_held={confirmations[4]} (n_confirm={n_confirm}/5)"])
+         f"B697 + B698 score: at least 1 of 5 confirmations (B1144: was 2 of 5): vol={confirmations[0]} above_open={confirmations[1]} top_40={confirmations[2]} clearance_atr05={confirmations[3]} reclaim_held={confirmations[4]} (n_confirm={n_confirm}/5)"])
 
 
 def strat_52w_high_breakout_pullback_long(s):
@@ -2217,7 +2220,7 @@ def strat_52w_high_breakout_pullback_long(s):
     return _strat(fires, "long", "breakout",
         ["near_52w_high_retest_long"],
         ["52-week high RETEST long (classical breakout pullback)",
-         "Prior 252d high broken in last 10 days; price now retesting as support",
+         "Prior 252d high broken within the last 45 days (B1138 widened from 30); price now retesting it as support",
          "Low-volume retest = sellers exhausted; bullish close = bounce confirmed",
          "Higher conviction than chase-the-breakout"])
 
@@ -2237,7 +2240,7 @@ def strat_52w_low_breakdown_pullback_short(s):
     return _strat(fires, "short", "breakout",
         ["near_52w_low_retest_short", "borrow_ok"],
         ["52-week low RETEST short (mirror of pullback long)",
-         "Prior 252d low broken in last 10 days; price now retesting as resistance",
+         "Prior 252d low broken within the last 45 days (B1138 widened from 30); price now retesting it as resistance",
          "Low-volume retest + bearish close = rejection of bounce-back",
          "Higher conviction than chase-the-breakdown"])
 
@@ -2488,8 +2491,8 @@ def strat_morning_star(s):
     fs = fs and (s.get("squeeze_momentum", float("inf")) <= 0.0096)  # B1422 selectivity gate: IS(best-exit) exp +2.340 -> +4.236, WR 0.262 -> 0.296, fires 1668 -> 834, 309 dates
     return _strat3(fl, fs, "candle",
         ["morning_star", "rsi_14", "squeeze_momentum"], ["evening_star", "rsi_14", "squeeze_momentum", "borrow_ok"],
-        ["Three-bar morning star  -  Nison bullish reversal (bottom call)","RSI not deep-oversold"],
-        ["Three-bar evening star  -  Nison bearish reversal (top call)","RSI not deep-overbought"])
+        ["Three-bar morning star  -  Nison bullish reversal (bottom call)","RSI-14 below 45 - not overbought"],
+        ["Three-bar evening star  -  Nison bearish reversal (top call)","RSI-14 above 55 - not oversold"])
 
 
 def strat_bullish_engulfing_support(s):
@@ -2682,8 +2685,8 @@ def strat_shooting_star_short(s):
     return _strat(fires, "short", "candle",
         ["shooting_star", "rsi_14", "bearish_pin_bar", "hanging_man", "dark_cloud_cover", "near_r1",
          "near_r2", "bb_20_20_touch_upper", "borrow_ok"],
-        ["Shooting star at resistance level  -  bearish reversal",
-         "Long upper wick shows sellers rejecting higher prices",
+        ["Bearish reversal candle at resistance  -  shooting star, bearish pin bar, hanging man or dark cloud cover (B1159 widened)",
+         "Sellers rejecting higher prices at R1, R2 or the upper Bollinger band",
          f"RSI-14 at {s.get('rsi_14',0):.1f}  -  overbought at resistance"])
 
 
@@ -2816,8 +2819,8 @@ def strat_golden_cross_volume(s):
     fs = (s.get("ema_50_200_death_cross") and s.get("vol_above_avg")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
         ["ema_50_200_golden_cross", "vol_above_avg"], ["ema_50_200_death_cross", "vol_above_avg", "borrow_ok"],
-        ["Golden cross with 2x volume  -  institutional confirmation of bullish shift"],
-        ["Death cross with 2x volume  -  institutional confirmation of bearish shift"])
+        ["Golden cross with above-average volume  -  confirmation of bullish shift (B1190: was 2x)"],
+        ["Death cross with above-average volume  -  confirmation of bearish shift (B1190: was 2x)"])
 
 
 def strat_cpr_narrow_momentum(s):
@@ -2964,7 +2967,7 @@ def strat_death_cross_50_200_volume(s):
     return _strat(fires, "short", "trend",
         ["ema_50_200_death_cross", "vol_above_avg", "borrow_ok"],
         ["EMA-50 crossed below EMA-200  -  death cross",
-         "Volume 2x confirms institutional selling on the cross",
+         "Above-average volume confirms selling on the cross (B1190: was 2x)",
          "Structural shift to bearish  -  strong follow-through expected"])
 
 
@@ -3017,8 +3020,7 @@ def strat_parabolic_sar_flip_short(s):
     return _strat(fires, "short", "trend",
         ["psar_flip_dn", "borrow_ok"],
         ["Parabolic SAR flipped above price  -  trend reversed downward",
-         "Clean unambiguous signal  -  SAR is now resistance",
-         "ADX trending  -  reversal has follow-through potential"])
+         "Clean unambiguous signal  -  SAR is now resistance"])
 
 
 # --- Momentum shorts (3) ---
@@ -3114,7 +3116,7 @@ def strat_donchian_breakdown_short(s):
         ["dc10_breakout_dn", "macd_12_26_9_bearish", "close_below_open",
          "close_in_bottom_40pct_of_range", "vol_spike_12x", "borrow_ok"],
         ["Price broke 10-day Donchian low - downside breakout",
-         "Volume 1.5x confirms institutional selling pressure",
+         "Volume 1.2x the 20d average confirms selling pressure (B1150: was 1.5x)",
          "MACD negative - momentum confirms the breakdown",
          "Bearish bar (close below open)",
          "Strong close (bottom 40pct of range)"])
@@ -3144,7 +3146,7 @@ def strat_donchian_breakout_long(s):
         ["dc10_breakout_up", "macd_12_26_9_bullish", "close_above_open",
          "close_in_top_40pct_of_range", "vol_spike_12x"],
         ["Price broke 10-day Donchian high - upside breakout",
-         "Volume 1.5x confirms institutional buying pressure",
+         "Volume 1.2x the 20d average confirms buying pressure (B1153: was 1.5x)",
          "MACD positive - momentum confirms the breakout",
          "Bullish bar (close above open)",
          "Strong close (top 40pct of range)"])
@@ -3207,9 +3209,8 @@ def strat_52w_low_breakdown(s):
         ["break_52w_low", "vol_above_avg", "close_below_open", "close_in_bottom_40pct_of_range",
          "borrow_ok"],  # B1144 loosened
         [f"Price broke 52-week low  -  serious capitulation signal",
-         "Volume >1.7x confirms institutional distribution (George-Hwang 2004 JF mirror)",
-         "Sector ETF underperforming SPY 20d  -  sell weak sectors only",
-         "Stocks at new 52-week lows in weak sectors tend to continue lower"])
+         "Above-average volume confirms distribution (B1144: was >1.7x; George-Hwang 2004 JF mirror)",
+         "Stocks at new 52-week lows tend to continue lower (B1144 dropped the weak-sector filter)"])
 
 
 def strat_prev_day_low_breakdown(s):
@@ -3320,8 +3321,8 @@ def strat_dc20_break_retest(s):
         # be LISTS -- the bare strings here were the only such call site and
         # made pyarrow reject trade_log.parquet at rung 2 (mixed list/str in
         # context_bullets; caught by the ENG-3 .FAILED marker).
-        ["DC20 break-and-retest: channel high broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)"],
-        ["DC20 breakdown-and-retest: channel low broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)"])
+        ["DC20 break-and-retest: channel high broken, retested on lower volume (Bulkowski 2005), strong-close confirmation (B728; B1147 dropped the ADX gate)"],
+        ["DC20 breakdown-and-retest: channel low broken, retested on lower volume (Bulkowski 2005), strong-close confirmation (B728; B1147 dropped the ADX gate)"])
 
 
 def strat_r1_break_retest(s):
@@ -3453,9 +3454,7 @@ def strat_52wh_break_retest(s):
          "Today's close within 2% of 52-week high",
          "Above 200-day EMA (trend filter)",
          "Bullish bar (close above open)",
-         "Strong close (top 40% of range)",
-         "Volume below 20d avg (Bulkowski retest = supply absorption)",
-         "Above 20d swing-low AVWAP (Brian Shannon)"])
+         "Strong close (top 40% of range)"])
 
 
 def strat_52wl_break_retest_short(s):
@@ -3498,9 +3497,7 @@ def strat_52wl_break_retest_short(s):
          "Today's close within 2% of 52-week low",
          "Below 200-day EMA (bearish trend filter)",
          "Bearish bar (close below open)",
-         "Strong close (bottom 40% of range)",
-         "Volume below 20d avg (Bulkowski retest = lower volume)",
-         "Below 20d swing-high AVWAP - recent rally given back"])
+         "Strong close (bottom 40% of range)"])
 
 
 def strat_break_retest_volume(s):
@@ -3928,7 +3925,7 @@ def strat_xs_quality_top_quintile_long(s):
     )
     return _strat(fires, "long", "factor",
         ["xs_quality_top_tercile", "price_above_ema_200"],
-        ["Top tercile gross profitability (B1193 loosened from quintile per DEC-321)",
+        ["Top-40pct gross profitability - quality decile 7 or higher (B1193 loosened from quintile per DEC-321)",
          "Above 200 EMA (regime gate)"])
 
 
@@ -3974,7 +3971,7 @@ def strat_pead_with_insider_confirmation_long(s):
         ["within_pead_window", "pead_positive_surprise",
          "insider_cluster_active"],
         ["Within PEAD drift window (<=60d post-earnings)",
-         "Positive earnings surprise (YoY+ AND ann-ret>+2pct)",
+         "Positive earnings surprise (YoY+ AND ann-ret>+1pct; B1136: was 2pct)",
          "Concurrent insider buying cluster - independent confirmation"])
 
 
@@ -4280,7 +4277,7 @@ def strat_htf_aligned_breakout_short(s):
     return _strat(fires, "short", "multi_timeframe",
         ["below_prev_low", "htf_aligned_bear", "vol_above_avg", "borrow_ok"],
         ["Price broke below previous day's low",
-         "Volume 1.5x ADV(20) - institutional participation",
+         "Volume above 20d average - institutional participation (B1146: was 1.5x)",
          "Weekly + Monthly bias both bearish - HTF aligned"])
 
 
@@ -4299,8 +4296,7 @@ def strat_weekly_bias_pullback_long(s):
     return _strat(fires, "long", "multi_timeframe",
         ["weekly_bias_bull", "rsi_14"],
         ["Weekly bias bullish - trade WITH weekly trend",
-         "Daily RSI<40 - oversold pullback",
-         "Bullish reversal candle (hammer or engulfing)"])
+         "Daily RSI<45 - pullback (B1143 loosened from 40)"])
 
 
 def strat_weekly_bias_pullback_short(s):
@@ -4589,7 +4585,7 @@ def strat_smc_ote_long(s):
     pct = s.get("smc_retracement_pct", 0.0)
     return _strat(fires, "long", "smc",
         ["smc_ote_long_zone", "smc_bos_bullish", "smc_choch_bullish"],
-        [f"OTE zone: {pct:.0f}% retracement (62-79% Fib)",
+        [f"OTE zone: {pct:.0f}% retracement (60-82% Fib; B1137 widened from 62-79)",
          "Bullish BOS/CHoCH - structural backdrop"])
 
 
@@ -4602,7 +4598,7 @@ def strat_smc_ote_short(s):
     pct = s.get("smc_retracement_pct", 0.0)
     return _strat(fires, "short", "smc",
         ["smc_ote_short_zone", "smc_bos_bearish", "smc_choch_bearish", "borrow_ok"],
-        [f"OTE zone: {pct:.0f}% retracement (62-79% Fib)",
+        [f"OTE zone: {pct:.0f}% retracement (60-82% Fib; B1137 widened from 62-79)",
          "Bearish BOS/CHoCH - structural backdrop"])
 
 
@@ -4621,7 +4617,7 @@ def strat_smc_equal_highs_sweep_short(s):
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "smc",
         ["smc_equal_highs_swept", "smc_fvg_bearish_active", "borrow_ok"],
-        ["Equal-highs cluster swept OR bearish BOS (B1202 add per B1186 probe)",
+        ["Equal-highs cluster swept - buy-side liquidity taken (the B1202 bearish-BOS arm is smc_equal_highs_bos_short since S6-B2931)",
          "Bearish FVG active below - reversal confluence"])
 
 
@@ -4880,8 +4876,8 @@ def strat_turtle_soup_short(s):
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "ict",
         ["smc_liquidity_swept_up", "below_prev_high", "close_below_open", "borrow_ok"],
-        ["Turtle Soup short (Raschke Street Smarts 1996) - B1202 added smc_bos_bearish OR per B1186 probe",
-         "Upside liquidity swept OR bearish break-of-structure",
+        ["Turtle Soup short (Raschke Street Smarts 1996) - the liquidity-sweep arm; the B1202 break-of-structure arm is turtle_soup_bos_short since S6-B2931",
+         "Upside liquidity swept - retail stops taken above resistance",
          "Price reversed back BELOW prior-day-high - stop-hunt failed",
          "Bearish close below open - rejection of upside breakout"])
 
@@ -4951,8 +4947,7 @@ def strat_judas_swing_short(s):
         ["smc_liquidity_swept_up", "near_pivot", "borrow_ok"],
         ["Judas Swing short (ICT manipulation reversal)",
          "Upside liquidity swept - retail stops taken above range high",
-         "Price returned deep to pivot midpoint - institutional reversal",
-         "Bearish bar - rejection of stop-hunt extension"])
+         "Price returned deep to pivot midpoint - institutional reversal"])
 
 
 def strat_mmbm_long(s):
@@ -5061,7 +5056,7 @@ def strat_pead_long(s):
         ["within_pead_window", "pead_positive_surprise"],
         [f"Within PEAD drift window (<=60d post-earnings)",
          f"YoY EPS growth: {yoy*100:.1f}%",
-         f"Announcement-day return: {ann*100:.1f}% (>+2% surprise threshold)",
+         f"Announcement-day return: {ann*100:.1f}% (>+1% surprise threshold; B1136: was 2%)",
          "Bernard-Thomas (1989) 60-day drift continuation"])
 
 
@@ -5079,7 +5074,7 @@ def strat_pead_short(s):
         ["within_pead_window", "pead_negative_surprise", "borrow_ok"],
         [f"Within PEAD drift window (<=60d post-earnings)",
          f"YoY EPS growth: {yoy*100:.1f}% (negative)",
-         f"Announcement-day return: {ann*100:.1f}% (<-2% surprise)",
+         f"Announcement-day return: {ann*100:.1f}% (<-1% surprise; B1136: was 2%)",
          "Bernard-Thomas 60-day drift continuation (negative)"])
 
 
@@ -5585,10 +5580,10 @@ def strat_avwap_50_reclaim(s):
         ["macd_12_26_9_bullish", "price_above_ema_200", "avwap_50low_reclaim_held_2d"],
         ["below_ema_200", "avwap_50low_loss_recent_3d", "macd_12_26_9_bullish", "borrow_ok"],
         ["Price reclaimed Anchored VWAP from 50d low - recent leg accumulation",
-         "Within 1.5% of AVWAP inflection", "MACD bullish",
+         "MACD bullish",
          "Above 200 EMA (regime gate)"],
         ["Price lost Anchored VWAP from 50d low - recent leg distribution",
-         "Within 1.5% of AVWAP inflection", "MACD bearish",
+         "MACD bearish",
          "Below 200 EMA (bear regime)"])
 
 
@@ -6341,8 +6336,7 @@ def strat_institutional_breakout_confirmation_long(s):
         ["13F institutional accumulation during pullback to broken level",
          "Bulkowski 2005 retest entry with smart-money sponsorship",
          "Above 200 EMA (regime gate)",
-         "Bullish bar (close above open)",
-         "Volume below 20d avg (Bulkowski retest characteristic)"])
+         "Bullish bar (close above open)"])
 
 
 # Batch 611 (2026-06-07 external-AI critique): strat_institutional_breakdown
@@ -6546,7 +6540,7 @@ def strat_consec_downdays_quality_long(s):
     return _strat(fires, "long", "mean_reversion",
         ["consec_down_4plus", "xs_quality_top_tercile"],
         ["4+ consecutive red closes - capitulation-grade selling pressure",
-         "Top-tercile gross profitability - quality name worth catching"])
+         "Top-40pct gross profitability (quality decile 7 or higher) - quality name worth catching"])
 
 
 # B2098 (S6-B1248-F23, owner-approved 2026-08-23 at b2031 rec 13):
@@ -6577,7 +6571,7 @@ def strat_institutional_persistence_breakout_long(s):
     )
     return _strat(fires, "long", "institutional_persistence",
         ["institutional_increased", "resistance_break_retest", "price_above_ema_200"],
-        ["5+ institutional funds grew position this quarter",
+        ["3+ institutional funds grew position this quarter (B1163: was 5+)",
          "Post-break retest entry with institutional sponsorship",
          "Above 200 EMA (regime gate)"])
 
@@ -6596,8 +6590,8 @@ def strat_institutional_persistence_volume_long(s):
     )
     return _strat(fires, "long", "institutional_persistence",
         ["institutional_increased", "price_above_ema_50", "vol_above_avg"],
-        ["5+ institutional funds grew position",
-         "Volume 2x ADV - retail tape participating",
+        ["3+ institutional funds grew position (B1141: was 5+)",
+         "Volume above 20d average - retail tape participating (B1141: was 2x)",
          "Above 50 EMA (intermediate trend)"])
 
 
@@ -6617,8 +6611,8 @@ def strat_institutional_persistence_oversold_long(s):
     )
     return _strat(fires, "long", "institutional_persistence",
         ["institutional_increased", "rsi_14", "price_above_ema_200"],
-        ["5+ institutional funds grew position (persistence)",
-         "RSI<40 oversold (counter-trend mean-rev)",
+        ["3+ institutional funds grew position (persistence; B1160: was 5+)",
+         "RSI<45 (counter-trend mean-rev; B1160: was <40)",
          "Above 200 EMA (filter falling-knife)"])
 
 
@@ -6668,7 +6662,7 @@ def strat_institutional_recent_init_volume_long(s):
     return _strat(fires, "long", "institutional_persistence",
         ["institutional_new_positions", "price_above_ema_50", "vol_above_avg"],
         [f"{n_new} institutional funds initiated new positions this quarter",
-         "Volume 2x ADV - retail tape participating",
+         "Volume above 20d average - retail tape participating (B1147: was 2x)",
          "Above 50 EMA (intermediate trend gate)"])
 
 
@@ -6976,7 +6970,7 @@ def strat_institutional_persistence_momentum_long(s):
     )
     return _strat(fires, "long", "institutional_persistence",
         ["institutional_increased", "macd_12_26_9_bullish", "price_above_ema_50"],
-        ["5+ institutional funds grew position this quarter",
+        ["3+ institutional funds grew position this quarter (B1163: was 5+)",
          "MACD bullish - momentum confirms institutional conviction",
          "Above 50 EMA (intermediate trend)"])
 
@@ -7078,7 +7072,7 @@ def strat_value_area_breakout_long(s):
     return _strat(fires, "long", "volume_profile",
         ["vp_above_value_area", "price_above_ema_200", "vol_above_avg"],
         ["Close above Value Area High (institutional acceptance)",
-         "Volume 2x ADV(20) (breakout confirmation)",
+         "Volume above 20d average (breakout confirmation; B1149: was 2x)",
          "Above 200 EMA (regime gate)"])
 
 
@@ -7293,7 +7287,7 @@ def strat_vix_backwardation_long(s):
     return _strat(fires, "long", "cross_asset",
         ["vix_term_backwardation", "xs_quality_decile"],
         ["VIX > VIX3M backwardation (stress regime)",
-         "Top-quintile quality (defensive sleeve)"])
+         "Top-40pct quality - decile 7 or higher (defensive sleeve; B1164: was 8)"])
 
 
 def strat_sector_rotation_defensive_long(s):
@@ -7556,7 +7550,7 @@ def strat_news_momentum_long(s):
         ["news_sentiment_5d", "news_volume_zscore_5d", "dc20_breakout_up", "close_above_open",
          "close_in_top_40pct_of_range", "vol_above_avg"],  # B1136 dropped above_avwap_20low
         [f"5d recency-weighted sentiment {sent:.2f} (bullish; B1136 threshold >=0.3)",
-         f"News volume z-score {vz:.2f} (unusual coverage; B1136 threshold >=1.0)",
+         f"News volume z-score {vz:.2f} (unusual coverage; B1424 threshold >=0.90909, was 1.0)",
          "Donchian-20 breakout up (price confirms)",
          "Bullish bar (close above open)",
          "Strong close (top 40pct of range)",
@@ -7679,7 +7673,7 @@ def strat_news_reversal_short(s):
     return _strat(fires, "short", "news_sentiment",
         ["news_sentiment_5d", "pct_change_5d", "news_count_5d", "news_sentiment_shift",
          "close_below_open", "close_in_bottom_40pct_of_range", "borrow_ok"],
-        [f"5d sentiment {sent:.2f} (bullish; B614 d loosened to >=+0.5)",
+        [f"5d sentiment {sent:.2f} (bullish; B1192 threshold >=+0.3, was +0.5)",
          f"Price up {pct*100:.1f} pct in 5d (large positive move)",
          "Coverage threshold met (>=3 articles in 5d; B614 c window-consistent)",
          f"News tone shift {shift:+.2f} - DETERIORATING (B614 b reversal turn)",
@@ -7739,7 +7733,7 @@ def strat_news_reversal_long(s):
     return _strat(fires, "long", "news_sentiment",
         ["news_sentiment_5d", "pct_change_5d", "news_count_5d", "news_sentiment_shift",
          "close_above_open", "close_in_top_40pct_of_range"],
-        [f"5d sentiment {sent:.2f} (bearish; B614 d loosened to <=-0.5)",
+        [f"5d sentiment {sent:.2f} (bearish; B1192 threshold <=-0.3, was -0.5)",
          f"Price down {pct*100:.1f} pct in 5d (large negative move)",
          "Coverage threshold met (>=3 articles in 5d; B614 c window-consistent)",
          f"News tone shift {shift:+.2f} - IMPROVING (B614 b reversal turn)",
@@ -7827,7 +7821,7 @@ def strat_bollinger_tight_with_smart_money_long(s):
         ["bb_20_20_squeeze", "close_above_open", "price_above_ema_200", "insider_cluster_active",
          "cfo_buy", "large_dollar_buy", "institutional_strong_buy", "institutional_buy",
          "bb_20_15_squeeze"],
-        ["Bollinger band squeeze tight (20,2.0)", "Above 200 EMA",
+        ["Bollinger band squeeze (20,2.0 or 20,1.5; B1161 widened)", "Above 200 EMA",
          "Smart-money buy confirmation"])
 
 

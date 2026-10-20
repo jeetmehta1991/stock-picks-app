@@ -590,6 +590,11 @@ own strategy, leaving the base keys and the roster untouched until an admission 
   `signals_used` list changes in the same edit:** the list names exactly the keys the fire decision
   reads, because the Phase-1B agents receive a declared name only when it is an exact signal key
   (`scripts/signals_used_lint.py --check`, pinned by test_b3139c; S6-B3139c).
+  **So do its `context_bullets`:** they ride every fire into the trade log and the site, so every
+  number a bullet states matches the gate (or a reviewed producer line) and every key it names is
+  one the gate reads (`scripts/context_bullets_census.py --check`, pinned by test_b3221;
+  S6-B3221), and a bullet describing a condition the edit removes is removed with it - the census
+  cannot see that prose shape, so it is a reading step.
 
 ### 1.8 Kill criteria (formerly §4)
 
