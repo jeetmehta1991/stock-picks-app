@@ -6498,3 +6498,23 @@ happy path pinned by test_b3139_materialise_worktree_links_the_untracked_data.
 Detection that a comparison SKIPPED the check is JUDGMENT-ONLY - an ad-hoc A/B
 harness is scratch code no gate reads; durability is the pins plus the tripwire
 row in the execution-discipline skill.
+
+### #326 - A FLAG THAT SELECTS A PARAMETER HAS NO DIRECTION OF ITS OWN (B3139q-r72w / L940, self-caught 2026-10-20)
+
+Before a band level is classed TIGHTER (offline-gradable) or LOOSER (engine),
+classify how EACH consumer reads the flag: a GATE LEG (AND / OR, never negated)
+carries the producer's direction; a NEGATED read flips it; a SELECTOR (an if /
+elif that picks a parameter) has the direction of the parameter change it
+causes, consumer by consumer. A level is offline-gradable only when it is
+tighter for EVERY consumer. MEASURED (L940): S6-B3196 called vix_band_low's
+quartile edge 'tighter' from its producer alone; its consumers use the flag to
+pick bollinger_lower's RSI cut, so the moved days go from RSI < 40 to RSI < 45 -
+LOOSER - and bollinger_tight's equal low and mid cuts make it no change at all.
+
+MECHANISM: test_b3196_band_levels_follow_each_knobs_gate_direction asserts the
+producer comparison of every per-level-classed knob, that no screener consumer
+negates or compares those flags, and that every vix_band_low read is an if-test,
+so a consumer that changes construct re-opens the class in the pyramid. A flag
+the pin does not list is JUDGMENT-ONLY (the construct is semantics a scan reads
+only for the flags it names); durability is
+test_b3196_selector_rule_is_in_the_durable_docs.

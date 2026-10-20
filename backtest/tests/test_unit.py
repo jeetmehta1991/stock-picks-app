@@ -59035,3 +59035,25 @@ def test_b1248_lever4_census_counts_each_long_sides_and_legs():
     assert rows["squeeze_breakout"]["conditions"] == 1, rows["squeeze_breakout"]
     e = ast.parse("a and (b and c) and (d or e)", mode="eval").body
     assert [ast.unparse(x) for x in lc.and_ops(e)] == ["a", "b", "c", "d or e"]
+
+
+def test_b3196_selector_rule_is_in_the_durable_docs():
+    """L940 / #326 (B3139q-r73): durability for the selector rule. Detecting
+    a selector for a flag nobody lists is JUDGMENT-ONLY, so what is pinned is
+    that the rule and its diagnostic stay where the next reader looks: the
+    CHECKLIST item with the three constructs and its mechanism's name, and
+    the L-entry. Proved able to fail by deleting the diagnostic sentence."""
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    ck = (root / "CHECKLIST.md").read_text(encoding="utf-8")
+    m = re.search(r"(?ms)^### #326 - .*?(?=^### #|\Z)", ck)
+    assert m, "CHECKLIST #326 is missing"
+    item = m.group(0)
+    for frag in ("A FLAG THAT SELECTS A PARAMETER HAS NO DIRECTION OF ITS OWN",
+                 "GATE LEG", "NEGATED", "SELECTOR",
+                 "tighter for EVERY consumer",
+                 "test_b3196_band_levels_follow_each_knobs_gate_direction"):
+        assert frag in item, frag
+    ln = (root / "LEARNINGS.md").read_text(encoding="utf-8")
+    assert re.search(r"(?m)^### L940 - A FLAG THAT SELECTS A PARAMETER", ln)
