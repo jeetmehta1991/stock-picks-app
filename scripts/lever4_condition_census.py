@@ -16,9 +16,16 @@ census_counts_each_long_sides_and_legs). Open means the status view row is
 NOT-STARTED or STALLED-CAMPAIGN; the run refuses a status it does not
 classify, so a new status can never silently fall on either side.
 
+A LEVER4 side (screener._gate_budget, S6-B1248-LEVER4 B3139q-r81) is read as
+the AND of its legs - its production meaning - one condition per leg, the
+leg's thunk body as the operand, so a restructured strategy keeps its count.
+
     python scripts/lever4_condition_census.py [--out PATH]
-writes output_audit/b3139_lever4_condition_census.json
+writes output_audit/b3139_lever4_condition_census.json. B3139q-r81: any
+other argument is refused before anything is written - the script once took
+any argv, and a `--help` probe overwrote the committed artifact.
 """
+import argparse
 import ast
 import json
 import sys
@@ -48,7 +55,25 @@ CLOSED = {"DONE-ADMITTED", "IN-ROSTER-FUNNEL", "IN-ROSTER-MIRROR", "DONE-OWNER-C
           "DISABLED", "PRUNED-DUPLICATE", "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE"}
 
 
+def budget_legs(node):
+    """The leg thunk bodies of a `_gate_budget(name, ((leg, thunk), ...))`
+    call (S6-B1248-LEVER4), or None when `node` is not one."""
+    if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+            and node.func.id == "_gate_budget" and len(node.args) == 2
+            and isinstance(node.args[1], (ast.Tuple, ast.List))):
+        return [e.elts[1].body for e in node.args[1].elts
+                if isinstance(e, (ast.Tuple, ast.List)) and len(e.elts) == 2
+                and isinstance(e.elts[1], ast.Lambda)]
+    return None
+
+
 def and_ops(node):
+    legs = budget_legs(node)
+    if legs is not None:
+        out = []
+        for leg in legs:
+            out += and_ops(leg)
+        return out
     if isinstance(node, ast.BoolOp) and isinstance(node.op, ast.And):
         out = []
         for v in node.values:
@@ -97,10 +122,13 @@ def long_side_rows(names=None) -> list:
     return rows
 
 
-def main() -> int:
+def main(argv=None) -> int:
     global OUT
-    if "--out" in sys.argv:
-        OUT = Path(sys.argv[sys.argv.index("--out") + 1])
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--out", help=f"write here instead of {OUT}")
+    a = ap.parse_args(argv)
+    if a.out:
+        OUT = Path(a.out)
     view = {r["strategy"]: r for r in json.loads(VIEW.read_text(encoding="utf-8"))["rows"]}
     unknown = {r.get("status") for r in view.values()} - OPEN - CLOSED
     if unknown:

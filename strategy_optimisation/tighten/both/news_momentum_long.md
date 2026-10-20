@@ -1,6 +1,6 @@
 # Table A - news_momentum_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit b926385df at 2026-10-20 09:45:14 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 4341e14af | commit 4341e14af at 2026-10-20 17:54:53 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 113 | **surviving fires (T1):** 113 (code changed since R5; the status build's survival filter measured survives_pct 1.0 - every fire kept)
 
@@ -31,7 +31,7 @@ P6  news_volume_zscore_5d >= 0.9091   [EXISTING-THRESHOLD]
 Gate body, VERBATIM from backtest/signals/screener.py strat_news_momentum_long (docstring and return dropped):
 
 ```python
-fires = s.get('news_sentiment_5d', 0.0) >= 0.3 and s.get('news_volume_zscore_5d', 0.0) >= 0.90909 and s.get('dc20_breakout_up', False) and s.get('close_above_open', False) and s.get('close_in_top_40pct_of_range', False) and s.get('vol_above_avg', False)
+fires = _gate_budget('news_momentum_long', (('news_sentiment_5d', lambda: s.get('news_sentiment_5d', 0.0) >= 0.3), ('news_volume_zscore_5d', lambda: s.get('news_volume_zscore_5d', 0.0) >= 0.90909), ('dc20_breakout_up', lambda: s.get('dc20_breakout_up', False)), ('close_above_open', lambda: s.get('close_above_open', False)), ('close_in_top_40pct_of_range', lambda: s.get('close_in_top_40pct_of_range', False)), ('vol_above_avg', lambda: s.get('vol_above_avg', False))))
 sent = s.get('news_sentiment_5d', 0.0)
 vz = s.get('news_volume_zscore_5d', 0.0)
 ```

@@ -341,6 +341,66 @@ def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_s
             "signals_used": [], "context_bullets": []}
 
 
+# S6-B1248-LEVER4-GATE-BUDGET (owner ruled 2026-10-20, 'Approve all recs fable mode be extremely thorough',
+# recommendation (a)): the strategies whose LONG side honours
+# config.LEVER4_GATE_BUDGET, and their legs in gate order - the one definition
+# the strategies and the import-time validation both read. The four are the
+# deep stacks (4+ legs) that clear all five in-sample-evaluable gates yet
+# project under the 100-fire Step-1 floor (B3139q-r72z census).
+LEVER4_LEGS = {
+    "pivot_r1_breakout": ("above_r1", "vol_spike_15x", "macd_12_26_9_bullish",
+                          "above_avwap_50low"),
+    "news_momentum_long": ("news_sentiment_5d", "news_volume_zscore_5d", "dc20_breakout_up",
+                           "close_above_open", "close_in_top_40pct_of_range", "vol_above_avg"),
+    "smc_bos_continuation": ("smc_bos_bullish", "price_above_ema_200", "vol_confirms", "rsi_14"),
+    "orb_stocks_in_play_long": ("gap_up_pct", "close_above_open", "vol_spike_2x",
+                                "price_above_ema_200"),
+}
+
+
+def validate_lever4(budget):
+    """Refuse a gate budget the strategies cannot honour - an unhonoured spec
+    must not run production while reporting a variant (L642). Returns it."""
+    if not isinstance(budget, dict):
+        raise ValueError(f"LEVER4_GATE_BUDGET must be an object, got {budget!r}")
+    for name, spec in budget.items():
+        legs = LEVER4_LEGS.get(name)
+        if legs is None:
+            raise ValueError(f"LEVER4_GATE_BUDGET names {name!r}, which honours no gate "
+                             f"budget (honoured: {sorted(LEVER4_LEGS)})")
+        if not isinstance(spec, dict) or "k" not in spec or set(spec) - {"k", "mandatory"}:
+            raise ValueError(f"{name}: a budget is {{'k': int, 'mandatory': [legs]}}, "
+                             f"got {spec!r}")
+        k = spec["k"]
+        if isinstance(k, bool) or not isinstance(k, int) or not 1 <= k <= len(legs):
+            raise ValueError(f"{name}: k must be an int in 1..{len(legs)}, got {k!r}")
+        mandatory = spec.get("mandatory", [])
+        if not isinstance(mandatory, list) or set(mandatory) - set(legs):
+            raise ValueError(f"{name}: mandatory legs must be among {legs}, got {mandatory!r}")
+    return budget
+
+
+validate_lever4(_cfg.LEVER4_GATE_BUDGET)
+
+
+def _gate_budget(name, legs):
+    """S6-B1248-LEVER4: the long gate of a LEVER4_LEGS strategy. `legs` is
+    ((leg_name, thunk), ...) in gate order, each thunk evaluating one leg.
+    PRODUCTION - no budget for `name`: every leg must hold, evaluated in order
+    and stopping at the first that fails, which is the strategy's `and` chain
+    exactly, short-circuit included. With a budget {"k": k, "mandatory":
+    [...]}: every mandatory leg holds AND at least k legs hold; every leg is
+    then evaluated."""
+    if tuple(n for n, _ in legs) != LEVER4_LEGS[name]:
+        raise ValueError(f"{name}: legs {tuple(n for n, _ in legs)} are not LEVER4_LEGS")
+    spec = _cfg.LEVER4_GATE_BUDGET.get(name)
+    if spec is None:
+        return all(f() for _, f in legs)
+    held = {n: bool(f()) for n, f in legs}
+    return (all(held[m] for m in spec.get("mandatory", []))
+            and sum(held.values()) >= spec["k"])
+
+
 # -----------------------------------------------------------------------------
 # CATEGORY 1: PIVOT-BASED (10 strategies)
 # -----------------------------------------------------------------------------
@@ -706,10 +766,14 @@ def strat_pivot_r1_breakout(s):
     # anchor still relevant). Narrow-scope: only pivot_r1_breakout.
     avwap_long_ok = s.get("above_avwap_50low", False)
     avwap_short_ok = s.get("below_avwap_50low", False)
-    fl = (
-        s.get("above_r1") and s.get("vol_spike_15x")
-        and s.get("macd_12_26_9_bullish") and avwap_long_ok
-    )
+    # S6-B1248-LEVER4: the long legs in gate order - their AND unless
+    # config.LEVER4_GATE_BUDGET names this strategy (_gate_budget)
+    fl = _gate_budget("pivot_r1_breakout", (
+        ("above_r1", lambda: s.get("above_r1")),
+        ("vol_spike_15x", lambda: s.get("vol_spike_15x")),
+        ("macd_12_26_9_bullish", lambda: s.get("macd_12_26_9_bullish")),
+        ("above_avwap_50low", lambda: avwap_long_ok),
+    ))
     fs = (
         s.get("below_s1") and s.get("vol_spike_15x")
         and s.get("macd_12_26_9_bearish") and avwap_short_ok
@@ -3685,12 +3749,14 @@ def strat_orb_stocks_in_play_long(s):
     # gap_up_pct > +2% -> > +1.5% (broader gap-and-go zone). Inline check on
     # gap_up_pct numeric signal replaces gap_up_2pct boolean threshold.
     gap = s.get("gap_up_pct", 0.0)
-    fires = (
-        gap > 1.5  # B1164: was s.get("gap_up_2pct", False) (>=2.0)
-        and s.get("close_above_open", False)
-        and s.get("vol_spike_2x", False)
-        and s.get("price_above_ema_200", False)
-    )
+    # S6-B1248-LEVER4: the legs in gate order - their AND unless
+    # config.LEVER4_GATE_BUDGET names this strategy (_gate_budget)
+    fires = _gate_budget("orb_stocks_in_play_long", (
+        ("gap_up_pct", lambda: gap > 1.5),  # B1164: was s.get("gap_up_2pct", False) (>=2.0)
+        ("close_above_open", lambda: s.get("close_above_open", False)),
+        ("vol_spike_2x", lambda: s.get("vol_spike_2x", False)),
+        ("price_above_ema_200", lambda: s.get("price_above_ema_200", False)),
+    ))
     return _strat(fires, "long", "orb",
         ["gap_up_pct", "close_above_open", "vol_spike_2x", "price_above_ema_200"],
         [f"Gap up +{gap:.1f}% - in-play catalyst",
@@ -4727,12 +4793,14 @@ def strat_smc_bos_continuation(s):
     vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_cross_up", False)
     vol_confirms_short = s.get("vol_spike_2x", False) or s.get("force_index_cross_dn", False)
     rsi = s.get("rsi_14", 50)
-    fl = (
-        s.get("smc_bos_bullish", False)
-        and s.get("price_above_ema_200", False)
-        and vol_confirms
-        and rsi > 50
-    )
+    # S6-B1248-LEVER4: the long legs in gate order - their AND unless
+    # config.LEVER4_GATE_BUDGET names this strategy (_gate_budget)
+    fl = _gate_budget("smc_bos_continuation", (
+        ("smc_bos_bullish", lambda: s.get("smc_bos_bullish", False)),
+        ("price_above_ema_200", lambda: s.get("price_above_ema_200", False)),
+        ("vol_confirms", lambda: vol_confirms),
+        ("rsi_14", lambda: rsi > 50),
+    ))
     fs = (
         s.get("smc_bos_bearish", False)
         and s.get("below_ema_200", False)  # B630 sweep
@@ -7558,15 +7626,17 @@ def strat_news_momentum_long(s):
     # (3) Drop above_avwap_20low (redundant with dc20_breakout + close_above_open
     #     per feedback_avwap_redundant + feedback_obv_avwap_macd_non_redundancy)
     # Expected: 5-10x uplift.
-    fires = (
-        s.get("news_sentiment_5d", 0.0) >= 0.3  # B1136: was >= 0.5
-        and s.get("news_volume_zscore_5d", 0.0) >= 0.90909  # B1424 LOOSEN x1.1 (was >= 1.0; B1136 was >= 1.5). Starved: 89 IS / 17 holdout trades, below min_trades so no verdict was possible - yet expectancy is POSITIVE in both windows (IS +2.774%, holdout +1.978%). Loosening to ~311 fires makes it TESTABLE; R6 decides. Admission ratio 3.24x (cap 5x).
-        and s.get("dc20_breakout_up", False)
-        and s.get("close_above_open", False)
-        and s.get("close_in_top_40pct_of_range", False)
-        and s.get("vol_above_avg", False)
+    # S6-B1248-LEVER4: the legs in gate order - their AND unless
+    # config.LEVER4_GATE_BUDGET names this strategy (_gate_budget)
+    fires = _gate_budget("news_momentum_long", (
+        ("news_sentiment_5d", lambda: s.get("news_sentiment_5d", 0.0) >= 0.3),  # B1136: was >= 0.5
+        ("news_volume_zscore_5d", lambda: s.get("news_volume_zscore_5d", 0.0) >= 0.90909),  # B1424 LOOSEN x1.1 (was >= 1.0; B1136 was >= 1.5). Starved: 89 IS / 17 holdout trades, below min_trades so no verdict was possible - yet expectancy is POSITIVE in both windows (IS +2.774%, holdout +1.978%). Loosening to ~311 fires makes it TESTABLE; R6 decides. Admission ratio 3.24x (cap 5x).
+        ("dc20_breakout_up", lambda: s.get("dc20_breakout_up", False)),
+        ("close_above_open", lambda: s.get("close_above_open", False)),
+        ("close_in_top_40pct_of_range", lambda: s.get("close_in_top_40pct_of_range", False)),
+        ("vol_above_avg", lambda: s.get("vol_above_avg", False)),
         # B1136 dropped: above_avwap_20low (redundant per feedback_avwap_redundant)
-    )
+    ))
     sent = s.get("news_sentiment_5d", 0.0)
     vz   = s.get("news_volume_zscore_5d", 0.0)
     return _strat(fires, "long", "news_sentiment",

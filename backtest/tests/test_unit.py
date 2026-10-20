@@ -58298,6 +58298,149 @@ def test_b3222_smc_shorts_confirm_with_the_down_cross():
     assert legs_checked >= 3, legs_checked
 
 
+def test_b1248_lever4_gate_budget_is_the_and_by_default_and_k_of_m_when_set(monkeypatch):
+    """S6-B1248-LEVER4-GATE-BUDGET (owner ruled 2026-10-20, 'Approve all recs
+    fable mode be extremely thorough', recommendation (a)): the LONG side of
+    pivot_r1_breakout, news_momentum_long, smc_bos_continuation and
+    orb_stocks_in_play_long reads config.LEVER4_GATE_BUDGET through
+    screener._gate_budget. Over the FULL truth table of each strategy's legs
+    (2^m signal dicts): (1) with no budget the long side fires exactly when
+    every leg holds - the production AND; (2) {"k": m-1} fires when at least
+    m-1 legs hold; (3) adding "mandatory": [the thesis leg] also requires it.
+    (4) Production keeps the AND's short-circuit: a later leg that would
+    raise is never reached once an earlier one fails. (5) validate_lever4
+    refuses an unknown strategy, an unknown leg, k outside 1..m, a bool k, an
+    extra key and a non-object. (6) A long budget leaves a dual's short side
+    requiring all of its own legs. (7) The knob is engine-actuated: the env
+    JSON reaches a fresh interpreter's screener, and a malformed one fails
+    config import."""
+    import itertools
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    from backtest.signals import screener as sc
+    root = _P(__file__).resolve().parents[2]
+    T = {"pivot_r1_breakout": (sc.strat_pivot_r1_breakout, "above_r1", {
+            "above_r1": ("above_r1", True, False),
+            "vol_spike_15x": ("vol_spike_15x", True, False),
+            "macd_12_26_9_bullish": ("macd_12_26_9_bullish", True, False),
+            "above_avwap_50low": ("above_avwap_50low", True, False)}),
+         "news_momentum_long": (sc.strat_news_momentum_long, "news_sentiment_5d", {
+            "news_sentiment_5d": ("news_sentiment_5d", 0.5, 0.0),
+            "news_volume_zscore_5d": ("news_volume_zscore_5d", 1.0, 0.0),
+            "dc20_breakout_up": ("dc20_breakout_up", True, False),
+            "close_above_open": ("close_above_open", True, False),
+            "close_in_top_40pct_of_range": ("close_in_top_40pct_of_range", True, False),
+            "vol_above_avg": ("vol_above_avg", True, False)}),
+         "smc_bos_continuation": (sc.strat_smc_bos_continuation, "smc_bos_bullish", {
+            "smc_bos_bullish": ("smc_bos_bullish", True, False),
+            "price_above_ema_200": ("price_above_ema_200", True, False),
+            "vol_confirms": ("vol_spike_2x", True, False),
+            "rsi_14": ("rsi_14", 60, 40)}),
+         "orb_stocks_in_play_long": (sc.strat_orb_stocks_in_play_long, "gap_up_pct", {
+            "gap_up_pct": ("gap_up_pct", 2.0, 1.0),
+            "close_above_open": ("close_above_open", True, False),
+            "vol_spike_2x": ("vol_spike_2x", True, False),
+            "price_above_ema_200": ("price_above_ema_200", True, False)})}
+    assert set(T) == set(sc.LEVER4_LEGS)
+
+    def long_fires(fn, s):
+        out = fn(s)
+        return bool(out["fires"]) and out["direction"] == "long"
+
+    checked = 0
+    for name, (fn, thesis, legs) in T.items():
+        assert tuple(legs) == sc.LEVER4_LEGS[name], name
+        m = len(legs)
+        for budget in (None, {"k": m - 1}, {"k": m - 1, "mandatory": [thesis]}):
+            monkeypatch.setattr(sc._cfg, "LEVER4_GATE_BUDGET",
+                                {} if budget is None else {name: budget})
+            for bits in itertools.product((True, False), repeat=m):
+                s = {key: (yes if b else no)
+                     for b, (key, yes, no) in zip(bits, legs.values())}
+                held = dict(zip(legs, bits))
+                want = (all(bits) if budget is None else
+                        sum(bits) >= budget["k"]
+                        and all(held[x] for x in budget.get("mandatory", [])))
+                assert long_fires(fn, s) is want, (name, budget, held)
+                checked += 1
+    assert checked == 3 * (16 + 64 + 16 + 16), checked
+    # (4) the production short-circuit: smc_bos_continuation's rsi leg would
+    # raise on None, and is never reached once the BOS leg fails (rsi is read
+    # by the gate only; news_momentum_long and orb format their numeric legs
+    # into bullets, so a None there raises before and after this change).
+    # A budget evaluates every leg, so the same input fails LOUD there.
+    monkeypatch.setattr(sc._cfg, "LEVER4_GATE_BUDGET", {})
+    unevaluable = {"smc_bos_bullish": False, "rsi_14": None}
+    assert sc.strat_smc_bos_continuation(unevaluable)["fires"] is False
+    monkeypatch.setattr(sc._cfg, "LEVER4_GATE_BUDGET", {"smc_bos_continuation": {"k": 3}})
+    with pytest.raises(TypeError):
+        sc.strat_smc_bos_continuation(unevaluable)
+    # (5) refusals, and one acceptance
+    for bad in ({"no_such_strategy": {"k": 1}},
+                {"pivot_r1_breakout": {"k": 3, "mandatory": ["no_such_leg"]}},
+                {"pivot_r1_breakout": {"k": 0}}, {"pivot_r1_breakout": {"k": 5}},
+                {"pivot_r1_breakout": {"k": True}},
+                {"pivot_r1_breakout": {"k": 3, "extra": 1}},
+                {"pivot_r1_breakout": 3}, ["pivot_r1_breakout"]):
+        with pytest.raises(ValueError):
+            sc.validate_lever4(bad)
+    ok = {"orb_stocks_in_play_long": {"k": 3, "mandatory": ["gap_up_pct"]}}
+    assert sc.validate_lever4(ok) == ok
+    # (6) a long budget leaves the dual's short side requiring all its legs:
+    # the long side is kept out by its mandatory thesis leg (absent here), and
+    # a short holding 3 of its 4 legs - enough under k=3 - must not fire
+    monkeypatch.setattr(sc._cfg, "LEVER4_GATE_BUDGET",
+                        {"pivot_r1_breakout": {"k": 3, "mandatory": ["above_r1"]}})
+    short = {"below_s1": True, "vol_spike_15x": True, "macd_12_26_9_bearish": True,
+             "below_avwap_50low": True}
+    assert sc.strat_pivot_r1_breakout(short)["direction"] == "short"
+    assert sc.strat_pivot_r1_breakout(dict(short, below_s1=False))["fires"] is False
+    # (7) engine-actuated through the env; a malformed spec fails import
+    probe = ("from backtest.signals import screener as sc; "
+             "print(sc.strat_orb_stocks_in_play_long({'gap_up_pct': 2.0, "
+             "'close_above_open': True, 'vol_spike_2x': True})['fires'])")
+    for spec, want in (('{"orb_stocks_in_play_long": {"k": 3}}', "True"), ("", "False")):
+        env = dict(os.environ, LEVER4_GATE_BUDGET=spec)
+        r = subprocess.run([sys.executable, "-c", probe], cwd=str(root), env=env,
+                           capture_output=True, text=True, timeout=300)
+        assert r.returncode == 0, r.stderr[-800:]
+        assert r.stdout.strip().splitlines()[-1] == want, (spec, r.stdout[-300:])
+    env = dict(os.environ, LEVER4_GATE_BUDGET="{bad")
+    r = subprocess.run([sys.executable, "-c", "import backtest.config"], cwd=str(root),
+                       env=env, capture_output=True, text=True, timeout=120)
+    assert r.returncode != 0 and "LEVER4_GATE_BUDGET is not valid JSON" in r.stderr, r.stderr[-800:]
+    # (8) the leg census reads a _gate_budget call as the AND of its legs -
+    # the restructure must not move a strategy out of the 4+-leg population
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import lever4_condition_census as lc
+    rows = {r_["strategy"]: r_ for r_ in lc.long_side_rows(set(T))}
+    for name, (_fn, _thesis, legs) in T.items():
+        assert rows[name]["conditions"] == len(legs), (name, rows[name])
+    assert "rsi > 50" in rows["smc_bos_continuation"]["operands"], rows["smc_bos_continuation"]
+    # (9) the census writes only on a real run: --help and an unknown
+    # argument exit without touching its artifact (a --help probe overwrote
+    # the committed census in B3139q-r81)
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        out = _P(d) / "census.json"
+        monkeypatch.setattr(lc, "OUT", out)
+        for argv in (["--help"], ["--bogus"]):
+            with pytest.raises(SystemExit):
+                lc.main(argv)
+            assert not out.exists(), argv
+    # (10) STRATEGY_ROSTER.md's 'Trigger (code)' cell still shows each LEVER4
+    # long side verbatim - every leg named - rather than 'not extracted'
+    import inspect
+    import build_strategy_roster as bsr
+    for name, (fn, _thesis, legs) in T.items():
+        text = bsr._extract_fires_expression(inspect.getsource(fn))
+        assert "_gate_budget" in text and all(f'"{leg}"' in text for leg in legs), (name, text[:200])
+
+
 def test_b3155b_provenance_repair_holds_the_prefetch_bar(tmp_path):
     """S6-B3155b (owner ruled 2026-10-19, 'Fable mode / Approve all
     recommendations', option (a)): the 7 partial 2026-05-05 bars the third

@@ -2631,4 +2631,23 @@ _npoc_raw = os.environ.get("NAKED_POC_MAX_DISTANCE_PCT", "").strip()
 NAKED_POC_MAX_DISTANCE_PCT: float = float(_npoc_raw) if _npoc_raw else 0.02
 del _npoc_raw
 
+# S6-B1248-LEVER4-GATE-BUDGET (owner ruled 2026-10-20, 'Approve all recs fable mode be extremely thorough',
+# recommendation (a)): a k-of-m gate budget for the LONG side of four
+# condition-stacked strategies - fire when at least k of the side's m legs
+# hold, every leg named in "mandatory" always required. EMPTY BY DEFAULT: each
+# strategy then requires all m legs - its production gate, evaluated in the
+# same order with the same short-circuit. Engine-actuated for the Step-1 runs
+# the ruling approved, e.g.
+#   LEVER4_GATE_BUDGET='{"pivot_r1_breakout": {"k": 3, "mandatory": ["above_r1"]}}'
+# The honouring strategies and their legs are screener.LEVER4_LEGS; screener
+# validates this dict against them at import, so a spec naming a strategy or
+# leg that does not honour a budget refuses rather than running production
+# while reporting a variant (the SMC_BREAKER_VARIANTS rule above).
+_lever4_raw = os.environ.get("LEVER4_GATE_BUDGET", "").strip()
+try:
+    LEVER4_GATE_BUDGET: dict = _json.loads(_lever4_raw) if _lever4_raw else {}
+except Exception:
+    raise ValueError(f"LEVER4_GATE_BUDGET is not valid JSON: {_lever4_raw!r}")
+del _lever4_raw
+
 USE_SMC_PANEL_CACHE = False

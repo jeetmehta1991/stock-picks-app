@@ -55,7 +55,8 @@ def _extract_fires_expression(func_source: str) -> str:
     buf = []
     for line in lines:
         if not in_capture:
-            m = re.match(r"\s*(fires|fl|fs|f_long|f_short)\s*=\s*\(", line)
+            # B3139q-r81: a LEVER4 side reads `= _gate_budget(` (S6-B1248-LEVER4)
+            m = re.match(r"\s*(fires|fl|fs|f_long|f_short)\s*=\s*(?:_gate_budget)?\(", line)
             if m:
                 in_capture = True
                 paren_depth = line.count("(") - line.count(")")
