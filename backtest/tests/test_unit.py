@@ -12680,6 +12680,23 @@ def test_b1255_turn_gate_verifier(tmp_path, monkeypatch):
                  "so the no-debt fast-pass property cannot be tested here. The "
                  "gate is CORRECT to block (S6-B2436: judgment steps outstanding "
                  f"on real configs). Gate output: {_pc.stdout[-400:]}")
+    # S6-B3198 (B3139q-r72u): a third precondition, MEASURED in a clean
+    # checkout (S6-B3190) - a landing or a chain halt still awaiting its owner
+    # report makes the gate CORRECTLY block (its undelivered-landing and
+    # chain-halt gates), so the no-debt fast-pass cannot be tested; both are
+    # read through their reducers (L737) and named in the skip
+    _scr = str(_P(__file__).resolve().parents[2] / "scripts")
+    if _scr not in sys.path:
+        sys.path.insert(0, _scr)
+    import postconfig_landing as _pl
+    import run_serial_chain as _rsc
+    _pend = ([e.get("cube") for e in _pl.undelivered()]
+             + [e.get("wave") for e in _rsc.undelivered_halts()])
+    if _pend:
+        import pytest as _pt
+        _pt.skip(f"precondition not met: {len(_pend)} landing(s) / chain halt(s) "
+                 f"await their owner report ({_pend[:3]}) - the gate is CORRECT to "
+                 "block, so the no-debt fast-pass property cannot be tested here")
     # B1749: this assertion's PRECONDITION is a clean tree. Before B1746 the
     # dirty-tree check was masked by an earlier early-return in main(); now the
     # all-gates pre-pass falls through to it reliably, so the test fails
@@ -13090,7 +13107,7 @@ def test_b1431_subset_without_cube_mode_is_refused():
     assert "SystemExit" in text, "mode assert must halt the run, not warn"
 
 
-def test_b1431_mode_assert_actually_fires_end_to_end():
+def test_b1431_mode_assert_actually_fires_end_to_end(tmp_path):
     """EXECUTE the bad launch and require a non-zero exit + the assert message.
 
     Why this test exists on top of the two source-grep tests above: those two
@@ -13104,7 +13121,12 @@ def test_b1431_mode_assert_actually_fires_end_to_end():
     import subprocess, sys as _sys, os as _os, pathlib
     repo = pathlib.Path(__file__).resolve().parent.parent.parent
     env = dict(_os.environ)
-    env["STRATEGY_SUBSET_FILE"] = str(repo / "output_audit" / "_r6_changed_strategies.txt")
+    # S6-B3198: the subset file only has to EXIST and name a registered
+    # strategy for the mode assert to be reached - it is written here, not read
+    # from an untracked output_audit file a clean checkout lacks (S6-B3190)
+    _subset = tmp_path / "subset.txt"
+    _subset.write_text("awesome_oscillator" + chr(10), encoding="utf-8")
+    env["STRATEGY_SUBSET_FILE"] = str(_subset)
     env["PYTHONIOENCODING"] = "utf-8"
     r = subprocess.run(
         [_sys.executable, str(repo / "backtest" / "run_phase1a.py"),
@@ -21856,8 +21878,15 @@ def test_b1974_generated_artifact_is_not_older_than_its_generator():
     except ValueError:
         stamp = {}
 
+    # S6-B3198: the digest is line-ending-normalised - a fresh checkout
+    # rewrites LF as CRLF, and a raw-byte stamp then read stale in every
+    # clean checkout (MEASURED B3139q-r72u). ONE definition: the writer's.
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import freshness_stamp as _fs
+
     def digest(g):
-        return _hl.sha256((root / g).read_bytes()).hexdigest()
+        return _fs.source_digest(root / g)
 
     stale = _b1974_stale(_B1974_GENERATED, dirty, stamp, last_commit, digest)
 
@@ -26842,7 +26871,11 @@ def test_b2158_a_log_without_an_ending_is_dead_not_running(tmp_path):
 
     # and the real population still classifies without crashing
     real = sorted((root / "output_audit").glob("*_summary.log"))
-    assert real, "no summary logs - the fixture population is gone"
+    if not real:
+        import pytest as _pytest
+        _pytest.skip("the assertions above passed; no *_summary.log exists in this "
+                     "checkout - run logs are never committed (S6-B3198), so the "
+                     "real-population arm runs only where runs have been made")
     for lgf in real:
         assert m.classify(lgf, pids=set())["status"] in (
             "COMPLETE", "DEAD_WITHOUT_ENDING", "EMPTY")
@@ -32944,6 +32977,20 @@ def test_b2575_chain_launch_path_exists_and_engine_hash_gate_records(tmp_path, m
     log = root / "output_audit" / "b2527_chain_detached.log"
     ours = ld.chain_cmd_text(specs, log, None)
     o_lines = [ln for ln in ours.splitlines() if ln.strip()]
+    # S6-B3198: the golden records the checkout it was written in - `cd /d
+    # <root>`, the venv's python, the log under <root> - so both sides compare
+    # with those paths replaced by placeholders (python first: it contains the
+    # root); a clean checkout elsewhere then runs the same line-for-line test
+    # (MEASURED S6-B3190: it failed there on the literal path, not the template)
+    assert g_lines[1].startswith("cd /d ") and len(g_lines[1]) > len("cd /d "), g_lines[1]
+    _rec_root = g_lines[1][len("cd /d "):]
+    _rec_py = g_lines[-2].split(chr(34))[1]
+
+    def _norm(lines, root_s, py_s):
+        return [ln.replace(py_s, "<PY>").replace(root_s, "<ROOT>") for ln in lines]
+    g_lines = _norm(g_lines, _rec_root, _rec_py)
+    o_lines = _norm(o_lines, str(ld.ROOT), _sys.executable)
+    assert g_lines[1] == o_lines[1] == "cd /d <ROOT>", (g_lines[1], o_lines[1])
     assert o_lines[:6] == g_lines[:6], (o_lines[:6], g_lines[:6])
     assert o_lines[-1] == g_lines[-1] == "exit /b %ERRORLEVEL%"
     marker = " scripts" + chr(92) + "run_serial_chain.py "   # backslash spelled out
@@ -52850,7 +52897,16 @@ def test_b3139ap_an_edited_generator_beside_an_unregenerated_artifact_is_stale(t
     sp = tmp_path / "stamp.json"
     sp.write_text(json.dumps({"other.py": "kept"}), encoding="utf-8")
     got = fs.stamp_generators("a.py", stamp_path=sp, root=tmp_path)
-    want = hashlib.sha256((tmp_path / "a.py").read_bytes()).hexdigest()
+    # S6-B3198: the stamp hashes the source with line endings normalised -
+    # computed here independently, and an LF and a CRLF copy of one text must
+    # stamp alike (a fresh checkout writes CRLF where a tool wrote LF)
+    want = hashlib.sha256((tmp_path / "a.py").read_bytes().replace(
+        bytes([13, 10]), bytes([10]))).hexdigest()
+    (tmp_path / "lf.py").write_bytes(b"x = 1" + bytes([10]))
+    (tmp_path / "crlf.py").write_bytes(b"x = 1" + bytes([13, 10]))
+    assert fs.source_digest(tmp_path / "lf.py") == fs.source_digest(tmp_path / "crlf.py")
+    (tmp_path / "other.py").write_bytes(b"x = 2" + bytes([10]))
+    assert fs.source_digest(tmp_path / "lf.py") != fs.source_digest(tmp_path / "other.py")
     assert got == {"other.py": "kept", "a.py": want}, got
     assert json.loads(sp.read_text(encoding="utf-8")) == got
     # wired: build_strategy_roster's main stamps its own source
@@ -54035,6 +54091,11 @@ def test_b3140b_table_d_reads_the_offline_factorial_block():
     paths = [p for p in paths if p.endswith(("_grid_auto.json", "_free_levels.json",
                                             "_breadth_grid_long.json"))
              and "_step2_" not in p]
+    if len(paths) < 18:
+        pytest.skip(f"the synthetic-block arms above passed; {18 - len(paths)} of the "
+                    "18 pairs Step-1 artifacts are absent - the six ~4 MB breadth "
+                    "grids are untracked (S6-B3198), so the real render is checked "
+                    "only where they exist")
     assert len(paths) == 18, len(paths)
     # all rows, as the CLI renders it (S6-B2700) - the committed file's form
     md = t.build_table("pairs_mean_reversion_long", paths, top=10**9)
@@ -54343,7 +54404,11 @@ def test_b3141a_pairs_producer_knobs_reach_the_engine_and_bite(tmp_path, monkeyp
     # landed production Step-1 cube agrees at its true window and disagrees
     # on every sampled trade at a wrong one (it agreed 15 of 20 before)
     s1 = root / "output_pairs_mrl_step1_production"
-    assert (s1 / "trade_log.csv").exists(), "pin needs the config-1 Step-1 cube"
+    if not (s1 / "trade_log.csv").exists():
+        import pytest as _pytest
+        _pytest.skip("the knob arms above passed; the config-1 Step-1 cube is absent "
+                     "- cube dirs are never committed (S6-B3198), as its sibling pins "
+                     "skip")
     seen = {}
     for w in (60, 40):
         out = tmp_path / f"sc{w}.json"
@@ -57703,8 +57768,27 @@ def test_b3204_portfolio_resolution_covers_every_admission():
         _sys.path.insert(0, sp)
     import build_phase1b_portfolio as bpp
 
+    # must-FIRE first, so it runs in every checkout: an admission the
+    # resolver cannot trace is REFUSED by name
+    bad = bpp.resolve_one({"strategy": "ghost_strategy",
+                           "grid_artifact": "output_audit/does_not_exist.json"})
+    assert bad["resolution"] == "REFUSED" and "missing" in bad["reason"], bad
+
     res = bpp.resolve()
     assert res["admissions"] == 16, res["admissions"]
+    # S6-B3198: cube directories are never committed, so in a clean checkout
+    # a refusal whose reason is DATA ABSENCE (a trade file or grid artifact
+    # not on disk) is the environment, not the resolver - and any other
+    # refusal reason is a resolver defect and still fails
+    _absent = [r for r in res["rows"] if r["resolution"] == "REFUSED"
+               and ("not on disk" in r["reason"]
+                    or "grid artifact missing" in r["reason"])]
+    if _absent and len(_absent) == len(res["refused"]):
+        import pytest as _pytest
+        _pytest.skip(f"the must-fire arm passed; {len(_absent)} of 16 admissions' "
+                     "trade sources are absent - cube directories are never "
+                     "committed (S6-B3198), so live resolution is checked only "
+                     "where they exist")
     assert res["resolved"] == 16 and res["refused"] == [], res["refused"]
     cubes = {r["cube"] for r in res["rows"]}
     # the three direct Step-2 cubes plus the R5 merged re-score source
@@ -57713,11 +57797,6 @@ def test_b3204_portfolio_resolution_covers_every_admission():
     for r in res["rows"]:
         assert (root / r["trade_file"]).exists(), r["trade_file"]
         assert r["trade_file_bytes"] > 0, r["strategy"]
-
-    # must-FIRE: an admission the resolver cannot trace is REFUSED by name
-    bad = bpp.resolve_one({"strategy": "ghost_strategy",
-                           "grid_artifact": "output_audit/does_not_exist.json"})
-    assert bad["resolution"] == "REFUSED" and "missing" in bad["reason"], bad
 
 
 def test_b3204_portfolio_count_gate_and_artifact():

@@ -24,6 +24,16 @@ REPO = Path(__file__).resolve().parents[1]
 STAMP = REPO / "output_audit" / "phase_1b_roster_freshness.json"
 
 
+def source_digest(path) -> str:
+    """sha256 of a source file with CRLF normalised to LF (S6-B3198). A fresh
+    checkout writes CRLF where a tool wrote LF, so a raw-byte stamp read every
+    such generator stale in a clean checkout (MEASURED B3139q-r72u: test_b1974
+    failed there and passed in the working tree). Python reads its source with
+    universal newlines, so the two forms are the same program."""
+    return hashlib.sha256(Path(path).read_bytes().replace(
+        bytes([13, 10]), bytes([10]))).hexdigest()
+
+
 def stamp_generators(*rel_paths: str, stamp_path: Path | None = None,
                      root: Path | None = None) -> dict:
     """Record the sha256 of each generator source (repo-relative path) in the
@@ -33,6 +43,6 @@ def stamp_generators(*rel_paths: str, stamp_path: Path | None = None,
     sp = STAMP if stamp_path is None else Path(stamp_path)
     stamp = json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else {}
     for rel in rel_paths:
-        stamp[rel] = hashlib.sha256((root / rel).read_bytes()).hexdigest()
+        stamp[rel] = source_digest(root / rel)
     sp.write_text(json.dumps(stamp, indent=1), encoding="utf-8")
     return stamp
