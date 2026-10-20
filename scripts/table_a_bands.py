@@ -180,7 +180,9 @@ PRODUCER_BANDS = {
     "cmf_cross_dn": [
         {"param": "as cmf_cross_up, mirrored", "production": 0.0,
          "band": [0.0, -0.02, -0.05], "basis": "mirror",
-         "offline": "level side on persisted cmf", "resim": "freshness",
+         "offline": "none - the cross needs FRESHNESS (prior bar >= level), and the "
+                    "prior cmf is unpersisted; the level side alone is persisted "
+                    "(mirror of cmf_cross_up)", "resim": "freshness",
          "env": None, "evidence": "backtest/signals/technical.py:1707"},
     ],
     "cmf_positive": [
@@ -272,14 +274,21 @@ PRODUCER_BANDS = {
          "band": "[0.25/0.75] and [1/3, 2/3]",
          "basis": "BRACKET terciles vs quartile edges; vix_percentile IS "
                   "persisted",
-         "offline": "any re-banding - re-derive from persisted vix_percentile",
+         "offline": "none - a selector: the flag picks bollinger_lower's RSI "
+                    "cut in an if / elif, so a re-banded edge moves days to "
+                    "another cut and the looser side adds fires the cube does "
+                    "not hold; a flag re-derived from persisted vix_percentile "
+                    "grades only the intersection (S6-B3196)",
          "resim": "none needed", "env": None,
          "evidence": "backtest/signals/technical.py:2690-2702"},
     ],
     "vix_band_high": [
         {"param": "as vix_band_low (upper edge)", "production": "2/3",
          "band": "[0.75] alternative", "basis": "as vix_band_low",
-         "offline": "re-derive from persisted vix_percentile",
+         "offline": "none - the 0.75 edge is the upper half of vix_band_low's "
+                    "quartile pair and is counted on that row (this row is one "
+                    "level); a selector, so re-banding is engine work "
+                    "(S6-B3196)",
          "resim": "none needed", "env": None, "evidence": "technical.py:2700"},
     ],
     # ---- cpr + macd --------------------------------------------------------
@@ -306,8 +315,10 @@ PRODUCER_BANDS = {
                  "triples are new",
          "basis": "MEASURED availability - both triples are emitted and "
                   "macd_8_21_5_* IS persisted",
-         "offline": "the (8,21,5) SWAP - re-evaluate on persisted "
-                    "macd_8_21_5 keys",
+         "offline": "none - the (8,21,5) SWAP changes which bars fire: the "
+                    "persisted macd_8_21_5 keys re-grade only fires the "
+                    "(12,26,9) cube holds, and the fires the swap adds are "
+                    "engine work",
          "resim": "any third triple", "env": None,
          "evidence": "backtest/signals/technical.py:634-648"},
     ],
@@ -656,7 +667,9 @@ PRODUCER_BANDS.update({
                   "resim_band": [14, 60]}])],
     "insider_unique_buyers_30d": [
         _K("count window (days)", 30, "[14, 30, 60]",
-           "BRACKET production", "count floors via the persisted count",
+           "BRACKET production", "none - a window change recounts the buyers, "
+           "which the persisted 30-day count cannot recover; a floor ON that "
+           "count is a different knob",
            "window changes",
            "backtest/signals/insider_buying.py compute_insider_cluster_signals")],
     "xs_momentum_top_quintile": [
@@ -678,7 +691,9 @@ PRODUCER_BANDS.update({
         _K("span triple (mirror of the bearish entry)", "(12,26,9)",
            "[(8,21,5), (12,26,9)] both computed; others new",
            "MEASURED availability (both persisted)",
-           "the (8,21,5) swap on persisted keys", "any third triple",
+           "none - the (8,21,5) swap changes which bars fire; the persisted "
+           "keys re-grade only fires the (12,26,9) cube holds (mirror of the "
+           "bearish row)", "any third triple",
            "backtest/signals/technical.py:634-648")],
     # ---- non-gate display key ---------------------------------------------
     "pair_counterparty": [
@@ -716,7 +731,8 @@ STRATEGY_EXTRAS = {
                   "rsi_2/rsi_14 and vix_percentile all persisted",
          "offline": "TIGHTER edges - subset on persisted rsi keys per band",
          "resim": "LOOSER edges", "env": None,
-         "evidence": "backtest/signals/screener.py:1855-1863"},
+         "evidence": "backtest/signals/screener.py strat_bollinger_lower "
+                     "(the vix_band_low / vix_band_high if / elif)"},
     ],
 }
 

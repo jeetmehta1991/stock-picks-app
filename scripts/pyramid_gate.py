@@ -137,6 +137,50 @@ def refusal_beside_wave(engine: str, beside_wave: str | None) -> str | None:
             "override; the reason is recorded in the artifact.")
 
 
+EXIT_REFUSED_TRACKED_RECORD = 6
+
+
+def refusal_tracked_record(out: Path, root: Path, in_head=None) -> str | None:
+    """L942 (B3139q-r75, #283's reverse direction): a gate run never writes
+    over a COMMITTED gate record. Artifact names are reused counters, and
+    ledger rows and lessons cite gate records as evidence: b3139_pyramid_r72.out
+    held B3139q-r62's verdict (its queue row cites it) until B3139q-r72's run
+    reused the name and was committed (7c25bad46), and B3139q-r75's runs
+    overwrote b3139_pyramid_r75.out (the r66 gate L907 cites) before this check
+    existed. Refuses when --out, or its .out / .json sibling, exists in HEAD,
+    and writes nothing - the record must survive. A shell redirect has already
+    truncated a .out before this runs, so the message says how to restore it.
+    No repository or no HEAD means nothing is committed, and the check skips
+    (a feature absent, L643). `in_head` is the test seam: a callable taking a
+    repo-relative path and returning whether HEAD holds it."""
+    p = Path(out)
+    cands = {p}
+    if p.suffix in (".json", ".out"):
+        cands |= {p.with_suffix(".out"), p.with_suffix(".json")}
+    hits = []
+    for c in sorted(cands, key=str):
+        try:
+            rel = c.resolve().relative_to(Path(root).resolve()).as_posix()
+        except ValueError:
+            continue                    # outside the repo: never a committed record
+        if in_head is not None:
+            committed = bool(in_head(rel))
+        else:
+            r = subprocess.run(["git", "ls-tree", "--name-only", "HEAD", "--", rel],
+                               cwd=str(root), capture_output=True, text=True,
+                               encoding="utf-8", errors="replace")
+            committed = r.returncode == 0 and bool(r.stdout.strip())
+        if committed:
+            hits.append(rel)
+    if not hits:
+        return None
+    return ("REFUSED (L942, preflight C17): " + ", ".join(hits) + " is a COMMITTED "
+            "gate record - a ledger row or a lesson may cite it as evidence, and a "
+            "run under its name overwrites it. Pick a name HEAD does not hold. A "
+            "shell redirect has already truncated the .out: restore it from HEAD "
+            "(git show HEAD:<path>) before anything stages it.")
+
+
 def output_audit_snapshot(root) -> set | None:
     """S6-B3120g: the file names under the PRODUCTION output_audit before
     pytest runs. None when unreadable - reported as such, never treated as
@@ -487,6 +531,11 @@ def bind_stamp(root, t0: float, final: int, reason: str) -> str:
 
 def run(out: Path, root: Path, pytest_args: list[str],
         beside_wave: str | None = None) -> int:
+    # L942: first, and before any write - a committed record is evidence.
+    tracked = refusal_tracked_record(Path(out), Path(root))
+    if tracked:
+        print(tracked)
+        return EXIT_REFUSED_TRACKED_RECORD
     engine_start = _engine_inflight()
     refused = refusal_beside_wave(engine_start, beside_wave)
     if refused:

@@ -1,6 +1,6 @@
 # Table A - week_opening_gap_fill_down
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit b926385df at 2026-10-20 09:45:14 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** ict | **status:** NOT-STARTED | **R5 fires:** 633 | **surviving fires (T1):** 633 (unchanged since R5 - filter is identity)
 
@@ -37,9 +37,9 @@ leg runs.
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
 | P1 | PRODUCER | week_open_gap_up_15pct - emitted by backtest/signals/ict_producers.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | Monday-equivalent open gapped up >= 1.5pct vs prior close (ict_producers.py:147-149; DECIMAL-SHIFTED name) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | gap threshold pct (NAME IS DECIMAL-SHIFTED: 15pct = 1.5pct, the vol_spike naming convention) - backtest/signals/ict_producers.py:147-149 | BRACKET production 1.5 | 1.5 | [1.0, 1.5, 2.0, 3.0] | none - the gap pct is not persisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P2 | STRATEGY | days_since_last_earnings `> 2` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 2` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P3 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (6 consumers) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
+| P1.1 | BAND | gap threshold pct (NAME IS DECIMAL-SHIFTED: 15pct = 1.5pct, the vol_spike naming convention) - backtest/signals/ict_producers.py:147-149 | BRACKET production 1.5 | 1.5 | [1.0, 1.5, 2.0, 3.0] | offline 0 of 4 levels - none - the gap pct is not persisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | STRATEGY | days_since_last_earnings `> 2` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 2` | production + 4 tighter measured levels | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P3 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]

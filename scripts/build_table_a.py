@@ -287,6 +287,19 @@ def _axis_sub(cls, prose_sub: bool) -> bool:
     return off > 0 and eng == 1 and pend == 0
 
 
+def _offline_cell(split, prose, note: str = "") -> str:
+    """S6-B3224: an OFFLINE cell leads with its row's COUNTED class - the
+    levels the footer grades offline, per axis - so the registry's prose can
+    no longer claim an offline grading the count does not hold (6 band rows
+    did, MEASURED B3139q-r72w). split is the (n, engine, offline, pending)
+    list the footer counts; an empty list is a mirror, counted on the leg it
+    mirrors; note says why a count is what it is."""
+    if not split:
+        return f"counted on the mirrored leg - {prose}"
+    parts = ", ".join(f"{off} of {n}" for n, _eng, off, _pend in split)
+    return f"offline {parts} levels{note} - {prose}"
+
+
 def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
     """B2841: the R1 band definitions (table_a_bands.py) as sub-rows under a
     P-row. env None on a resim-bearing knob renders DEFINED-NO-ACTUATOR - the
@@ -311,13 +324,13 @@ def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
         # band text: a multi-axis band contributes several axes, and a mirror
         # ("as morning_star, mirrored") contributes none, because its axes are
         # already counted on the leg it mirrors.
+        _cls = band_level_classes(k)
         if axes is not None:
             # S6-B3189: each axis's levels are classed ONE BY ONE (engine /
             # offline / pending) by the registry's band_level_classes, so the
             # footer and the import-time validator cannot disagree. The
             # TIGHTER prefix used to class EVERY level offline - stochrsi
             # oversold's looser k < 25 then read as a free grading.
-            _cls = band_level_classes(k)
             _sub = str(k.get("offline", "")).startswith("TIGHTER")
             # S6-B2862: the ACTUATOR flag must be carried, not inferred. The
             # footer used to read n == 1 as "DEFINED-NO-ACTUATOR", which was
@@ -337,7 +350,8 @@ def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
         out.append(
             f"| P{pid}.{j} | BAND | {k['param']} - {k['evidence']} | "
             f"{k['basis']} | "
-            f"{k['production']} | {vals_s} | {k.get('offline', '-')} | "
+            f"{k['production']} | {vals_s} | "
+            f"{_offline_cell(_cls, k.get('offline', '-'))} | "
             f"{resim}{act} | T3 review before any grid |")
     return out
 
@@ -458,8 +472,9 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                           True, True, None, (1, _nfree, 0)))
         L.append(f"| P{pid} | STRATEGY | {key} `{op} {_fmt(prod)}` "
                  f"[EXISTING-THRESHOLD] | {LEG_DEFN.get(key, 'gate threshold on the persisted magnitude')} "
-                 f"| `{op} {_fmt(prod)}` | production + {_nfree} tighter measured levels | measured tighter "
-                 f"QUANTS levels - see the free-band section below | looser side "
+                 f"| `{op} {_fmt(prod)}` | production + {_nfree} tighter measured levels | "
+                 f"{_offline_cell([(_nfree + 1, 1, _nfree, 0)], 'measured tighter QUANTS levels - see the free-band section below')}"
+                 f" | looser side "
                  f"- band at R1 | MEASURED-PRE-R1 |")
         L += _band_rows(pid, key, PRODUCER_BANDS.get(key, []), axes)
     for h in helpers:
@@ -469,18 +484,23 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             # bandable, and this shared helper's is days_to_cover > 5.0
             # (screener.py) with days_to_cover PERSISTED - so the tighter
             # side is offline TODAY. The 5.0 is an owner-ruled risk guard
-            # (B718a, GME pre-squeeze calibration) shared by every short
-            # strategy: any band is per-strategy-override scope, on the
-            # owner's word only.
+            # (B718a, GME pre-squeeze calibration) shared across the
+            # strategies that call it: any band is per-strategy-override
+            # scope, on the owner's word only. L941 (B3139q-r75): the cell
+            # names no caller count and no universal - a population claim
+            # typed into a cell is not derived (test_b3224b), and two
+            # delegating shorts never call the helper (S6-B3226).
             axes.append(_axis(f"P{pid}", "days_to_cover cap 5.0", 1, False,
                               False, None, (1, 0, 0)))
             L.append(f"| P{pid} | STRATEGY-HELPER | {h}(s) - underlying "
                      f"condition: days_to_cover > 5.0 (blocks the fire) | "
                      f"blocks SHORT fires when days_to_cover > 5.0 (B718a) | "
-                     f"cap 5.0 (B718a owner-ruled risk guard) | tighter = "
-                     f"LOWER cap on persisted days_to_cover - OFFLINE subset "
+                     f"cap 5.0 (B718a owner-ruled risk guard) | "
+                     f"- (no band ruled) | "
+                     f"{_offline_cell([(1, 1, 0, 0)], 'tighter = LOWER cap on persisted days_to_cover - OFFLINE subset', ' (no band ruled)')} "
                      f"| raising the cap admits engine-blocked fires - RESIM; "
-                     f"shared helper (6 consumers) so any band is a "
+                     f"shared helper (the short-side borrow gate the B744 "
+                     f"lint checks for) so any band is a "
                      f"per-strategy override on the owner's word | "
                      f"BANDABLE-OWNER-GATED |")
             continue
@@ -494,7 +514,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                           (1, 0, 0)))
         L.append(f"| P{pid} | STRATEGY | {k['param']} - {k['evidence']} | "
                  f"{k['basis']} | {k['production']} | {k.get('band', '-')} | "
-                 f"{k.get('offline', '-')} | "
+                 f"{_offline_cell([(1, 1, 0, 0)], k.get('offline', '-'), ' (prose band - the footer counts production only)')} | "
                  f"{k.get('resim', '-')} | T3 review |")
     L += ["| B-rows | BREADTH | every companion in the B-row candidate census "
           "below is Table A inventory once REGISTERED at the T3 band review "

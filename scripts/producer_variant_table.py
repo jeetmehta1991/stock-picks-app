@@ -945,8 +945,10 @@ SPECS["smc_liquidity_sweep_reversal"] = {
                        "backtest/signals/screener.py"],
          "production": 20, "type": "int", "band": [5, 10, 20, 30, 50],
          "derivation": ("library default 50, production 20; band brackets both "
-                        "- SHARED with the breaker family, which is why one "
-                        "variant cube serves 19 of 22 smc consumers (B2735)"),
+                        "- SHARED with the breaker family, so one variant cube "
+                        "serves the smc consumers of the swing-derived "
+                        "primitives (ob, bos_choch, liquidity, retracements - "
+                        "B2735)"),
          "subset_safe": False, "status": "UNTESTED",
          "evidence": "smc_ict.py:368", "engine_implemented": True},
         {"id": "P2", "producer": "_smc.liquidity",
@@ -971,8 +973,9 @@ SPECS["smc_liquidity_sweep_reversal"] = {
          "band": [0.005, 0.01, 0.02, 0.03],
          "derivation": ("the cluster width that defines 'equal' highs/lows; "
                         "production 0.01 = 1pct. Band brackets it either side. "
-                        "Reaches 7 of 22 consumers - the liquidity primitive "
-                        "only (B2743)"),
+                        "Reaches only the liquidity primitive's consumers - "
+                        "those reading smc_liquidity_swept_up/dn or "
+                        "smc_equal_highs/lows_swept (B2743)"),
          "subset_safe": False, "status": "UNTESTED",
          "evidence": "smc_ict.py:503", "engine_implemented": True},
         {"id": "P3", "producer": "_most_recent_event_within",
@@ -2494,7 +2497,7 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "evidence": "charter free-band line (QUANTS retention on 1622 fires: 1298/974/649/326)",
          "derivation": "TIGHTER = LOWER the ceiling; production included as the offline identity level",
          "signal_keys": ["adx"]},  # S6-B3139an: breadth rows carry axis "adx"
-        {"id": "P10", "producer": "screener helper (shared, 6 consumers)",
+        {"id": "P10", "producer": "_short_borrow_trap_active (shared screener helper)",
          "param": "days_to_cover cap (borrow guard, SHORT leg)",
          "production": "5.0", "band": ["5.0"],
          "free_band": None, "resim_band": None, "env": None,
@@ -2514,7 +2517,8 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "subset_safe": True,
          "status": "T3-APPROVED 2026-09-27; COMPOSITE - needs its own offline leg (not one key:op axis), scheduled S6-B3118a",
          "type": "edge-set", "engine_implemented": True,
-         "evidence": "screener.py:1855-1863; rsi_2/rsi_14/vix_percentile all persisted",
+         "evidence": "screener.py strat_bollinger_lower (the vix_band_low / vix_band_high "
+                     "if / elif); rsi_2/rsi_14/vix_percentile all persisted",
          "derivation": "tighter edges = subset on persisted keys per vix band"},
         {"id": "B1", "producer": "cot (CFTC positioning)",
          "param": "cot_rut_commercials_net_pct", "production": "not gated",
@@ -2917,15 +2921,15 @@ SPECS["three_black_crows_short"] = {  # B2897 (owner ruling 2026-09-20 "Candle g
          "engine_implemented": True},
         {"id": "P7", "producer": "_short_borrow_trap_active",
          "param": "days_to_cover cap", "env": None,
-         "consumers": ["backtest/signals/screener.py (6 short consumers)"],
+         "consumers": ["backtest/signals/screener.py"],
          "production": 5.0, "type": "float", "band": [5.0],
          "free_band": [], "resim_band": [5.0],
          "derivation": ("B718a owner-ruled risk guard; tighter caps offline "
-                        "via persisted days_to_cover but shared by 6 "
-                        "consumers - BANDABLE-OWNER-GATED, per-strategy "
+                        "via persisted days_to_cover but the helper is "
+                        "shared - BANDABLE-OWNER-GATED, per-strategy "
                         "override on the owner word only"),
          "subset_safe": False, "status": "BANDABLE-OWNER-GATED",
-         "evidence": "screener.py:148 (B718a)", "engine_implemented": True},
+         "evidence": "screener.py _short_borrow_trap_active (B718a)", "engine_implemented": True},
     ],
     "tools": {
         "keys": {"P2": "n_bars", "P3": "min_body_pct",

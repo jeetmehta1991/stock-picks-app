@@ -5546,6 +5546,8 @@ INCOMPLETE_MAX_LEGS summary while the live resumed run was at sim day 110. Sibli
 *Enforced by:* run_wave.py archive_stale_summary() at launch, pinned by
 test_b2193_stale_wave_summary_is_archived_at_launch.
 
+**INSTANCE (B3139q-r75 / L942) - THE REVERSE DIRECTION: THE NEW RUN DESTROYS THE OLD RECORD.** The pyramid gate's artifact names are reused counters, and the archive-at-launch above never reached it: B3139q-r72's run overwrote b3139_pyramid_r72.out, B3139q-r62's committed verdict that its queue row cites (7c25bad46), and B3139q-r75's runs overwrote b3139_pyramid_r75.out, L907's evidence, before commit. A gate record is write-once. ENFORCED BY scripts/pyramid_gate.py's start refusal (a name HEAD holds - exit 6, nothing written) and preflight C17 (a staged rewrite, deletion or rename of a committed verdict record is refused), pinned by test_b3230_gate_records_are_write_once, fail-proved.
+
 ### #284 - AN ANALYSIS THAT RUNS PER EVENT IS RENDERED PER EVENT (B2198 / L651)
 
 When a directive requires an analysis after every occurrence of an event (per config, per
@@ -6088,6 +6090,8 @@ test_b3085_table_d_sorts_on_the_locked_key, fail-proved in both directions.
 
 
 **INSTANCE 3 - A BAND ADDED AFTER THE REGISTRY ENTRY, AND A HAND-RUN CLI THE LANDING-REPORT FIX NEVER REACHED (B3139q-r72 / L928, self-caught at render).** The naked_poc D_AXIS_FAMILIES entry (B3139q-r70b) predates the P1 ema_span band (B3139q-r71e), so Table D had no column for the axis 5 of 12 npoc Step-1 configs swept; and scripts/show_table_d.py still printed the retired TABLE D-2 beside the unified table - test_b2725 had pinned the LANDING report only. Two additions to this item's sweep: an AXIS REGISTRY is a renderer input (a new band re-derives every family entry it serves, in the adding batch), and "every renderer" includes the HAND-RUN CLIs, not only the wired paths. ENFORCED BY test_b3200_npoc_table_d_carries_the_p1_ema_span_band and test_b3201_show_table_d_default_emits_no_d2, both fail-proved.
+
+**INSTANCE 4 - THE HEADER IS PINNED, THE BODY IS NOT (B3139q-r75 / L941, self-caught at regeneration).** Item 3 below asserts the header row's columns and the separator's count; a body row emitted by its own branch passes both whatever its own count. MEASURED: the days_to_cover STRATEGY-HELPER row in Table A emitted 8 cells under the 9-column inventory header from B2840 to B3139q-r75 - its text one column left in 22 of 34 lane files and 2 departed records - and called the helper's 116 strategy-function callers '6 consumers'; the first correction typed in 'every short in screener.py calls it' while 2 registered shorts never call it (S6-B3226). Assert EVERY body row's cell count against the header, and type no population count or universal into a cell - derive it or drop it. ENFORCED BY test_b3224_every_offline_cell_leads_with_its_counted_class (every lane inventory row has 9 cells) and test_b3224b_table_generators_type_no_code_population_claim (no literal consumer count or 'every ... calls' universal in the six table generators), both fail-proved.
 
 An owner ruling about a DOCUMENT ("Table D is one unified table, a column per
 producer band") is satisfied per-RENDERER, and a repo can hold more than one

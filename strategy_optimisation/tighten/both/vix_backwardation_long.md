@@ -1,6 +1,6 @@
 # Table A - vix_backwardation_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit b926385df at 2026-10-20 09:45:14 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** cross_asset | **status:** NOT-STARTED | **R5 fires:** 543 | **surviving fires (T1):** 543 (unchanged since R5 - filter is identity)
 
@@ -36,8 +36,8 @@ leg runs.
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
 | P1 | PRODUCER | vix_term_backwardation - emitted by backtest/signals/cross_asset.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | VIX close above VIX3M close - term-structure stress (cross_asset.py:216-231) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | backwardation margin (VIX over VIX3M) - backtest/signals/cross_asset.py:216-231 | BRACKET zero (strict > today) | 0.0 | [0, 2, 5] pct | none - vix3m is not persisted per-fire | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P2 | STRATEGY | xs_quality_decile `>= 7` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 7` | production + 3 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P1.1 | BAND | backwardation margin (VIX over VIX3M) - backtest/signals/cross_asset.py:216-231 | BRACKET zero (strict > today) | 0.0 | [0, 2, 5] pct | offline 0 of 3 levels - none - vix3m is not persisted per-fire | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2 | STRATEGY | xs_quality_decile `>= 7` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 7` | production + 3 tighter measured levels | offline 3 of 4 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]

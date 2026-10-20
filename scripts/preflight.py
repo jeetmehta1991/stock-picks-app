@@ -862,6 +862,65 @@ def check_pyramid_artifact_has_verdict(read=None) -> list[str]:
     return out
 
 
+# C17 (B3139q-r75 / L942, #283's reverse direction): a committed gate record
+# is write-once. Gate artifact names are reused counters and ledger rows and
+# lessons cite the records as evidence: b3139_pyramid_r72.out held B3139q-r62's
+# verdict until B3139q-r72's run reused the name and was committed (7c25bad46),
+# and B3139q-r75's runs overwrote b3139_pyramid_r75.out (L907's evidence)
+# before this check existed - caught before commit. MEASURED at B3139q-r75:
+# 233 committed output_audit pyramid .out/.json artifacts, all 233 carrying a
+# verdict. pyramid_gate.py refuses a committed name at start; this is the
+# commit-boundary backstop.
+_C17_GATE_RECORD = re.compile(r"^output_audit/[^/]*pyramid[^/]*[.](?:out|json)$")
+
+
+def check_gate_records_are_write_once(name_status=None, head_text=None) -> list[str]:
+    """C17: refuse a staged MODIFICATION, DELETION or RENAME of a committed
+    output_audit pyramid artifact whose committed text carries a verdict
+    ('pytest_exit='). A new run writes a NEW name. A committed artifact WITHOUT
+    a verdict is a racing or refused run, not evidence, and stays replaceable
+    (C15's remedy for a racing artifact is its deletion). Seams (B1761):
+    `name_status` is a list of (status, path) pairs; `head_text` maps a path
+    to its HEAD text. Fails closed when the staged list cannot be read (L642)."""
+    if name_status is None:
+        try:
+            r = subprocess.run(["git", "diff", "--cached", "--name-status", "-M"],
+                               cwd=REPO_ROOT, capture_output=True, text=True,
+                               encoding="utf-8", errors="replace", check=False)
+        except Exception as e:
+            return [f"C17 GATE RECORD: could not list the staged changes ({e!r}) - "
+                    "refusing (fail closed, L642)"]
+        if r.returncode != 0:
+            return [f"C17 GATE RECORD: git diff --cached exited {r.returncode} - "
+                    "refusing (fail closed, L642)"]
+        name_status = []
+        for ln in r.stdout.splitlines():
+            parts = ln.split("\t")
+            if len(parts) >= 2 and parts[0].strip():
+                name_status.append((parts[0].strip(), parts[1].strip()))
+    out = []
+    for st, path in name_status:
+        path = path.replace("\\", "/")
+        if st[:1] not in ("M", "D", "R") or not _C17_GATE_RECORD.match(path):
+            continue
+        if head_text is not None:
+            txt = head_text(path)
+        else:
+            rr = subprocess.run(["git", "show", f"HEAD:{path}"], cwd=REPO_ROOT,
+                                capture_output=True, text=True, encoding="utf-8",
+                                errors="replace", check=False)
+            txt = rr.stdout if rr.returncode == 0 else ""
+        if "pytest_exit=" not in (txt or ""):
+            continue                    # a racing or refused run, not evidence
+        verb = {"M": "rewrites", "D": "deletes", "R": "renames"}[st[0]]
+        out.append(f"C17 GATE RECORD IS WRITE-ONCE (L942): this commit {verb} "
+                   f"{path}, a committed gate record carrying a verdict - a ledger "
+                   "row or a lesson may cite it as evidence (b3139_pyramid_r72.out "
+                   "lost B3139q-r62's verdict this way at 7c25bad46). Restore it "
+                   "(git show HEAD:<path>) and write the new run under a NEW name.")
+    return out
+
+
 # ---------------------------------------------------------------------------
 # C15 (B2852, owner-approved 2026-09-17 / L805): a generated locked-format
 # artifact is never hand-edited - the generator owns the bytes. Any staged
@@ -1015,6 +1074,8 @@ def main() -> int:
         all_violations += check_queue_readers_after_stamp(files)
         # C15 (B2852 / L805): generated artifacts never hand-edited
         all_violations += check_generated_artifact_matches_generator(files)
+        # C17 (B3139q-r75 / L942): a committed gate record is write-once
+        all_violations += check_gate_records_are_write_once()
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

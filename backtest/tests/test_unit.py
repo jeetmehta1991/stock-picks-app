@@ -26015,6 +26015,17 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r73b: the L940 selector row - pin the REMEDY it names (L548).
         ("CLASSIFY EACH CONSUMER'S CONSTRUCT BEFORE CLASSING A BAND LEVEL TIGHTER OR LOOSER",
          "L940 (B3139q-r73b): a selector flag classed from its producer alone"),
+        # B3139q-r75: the L941 amendment of the locked-format row - pin the
+        # REMEDY it names (L548).
+        ("AND PIN EACH BODY ROW'S CELL COUNT AGAINST THE HEADER",
+         "L941 (B3139q-r75): a body row one column short under a pinned header"),
+        # B3139q-r75: L941's second half and L942, same call as the skill edit.
+        ("A COUNT OR AN 'EVERY' TYPED INTO A CELL IS NOT DERIVED",
+         "L941 (B3139q-r75): a typed-in caller count and its false 'every' correction"),
+        ("AND NAME ITS ARTIFACT SOMETHING HEAD DOES NOT HOLD",
+         "L942 (B3139q-r75): a reused gate name overwrote committed evidence"),
+        ("A RUN ARTIFACT THAT A LEDGER ROW OR A LESSON MAY CITE IS WRITE-ONCE",
+         "L942 (B3139q-r75): the #283 section's reverse direction"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26243,7 +26254,11 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # with the skill edit per B2130).
     # 334 -> 335 at B3139q-r73b (the L940 selector row; same-call with the
     # skill edit per B2130).
-    assert len(gutted) == 335, gutted
+    # 335 -> 336 at B3139q-r75 (the L941 body-row amendment; same-call with
+    # the skill edit per B2130).
+    # 336 -> 339 at B3139q-r75 (L941's derive-or-drop clause, L942's
+    # tripwire clause and #283-section rule; same call as the skill edit).
+    assert len(gutted) == 339, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -53061,10 +53076,10 @@ _B3139BB_LINE_CITATIONS = {
     "scripts/phase_1_investigation_turn_7_silent_misses.py": 4,
     "scripts/phase_1_investigation_turn_8_adjacent_family.py": 2,
     "scripts/postconfig_doc.py": 1,
-    "scripts/producer_variant_table.py": 79,
+    "scripts/producer_variant_table.py": 77,
     "scripts/roster_core.py": 2,
     "scripts/smc_lsr_step1.py": 1,
-    "scripts/table_a_bands.py": 104
+    "scripts/table_a_bands.py": 103
 }
 
 
@@ -58691,6 +58706,209 @@ def test_b3221_bullet_rule_is_in_the_durable_docs():
     doc = _sm._strat.__doc__
     assert "context_bullets_census.py" in doc and "test_b3221" in doc, doc
     assert "a bullet describing a condition the edit removes goes with it" in doc, doc
+
+
+def test_b3224_every_offline_cell_leads_with_its_counted_class():
+    """S6-B3224 (B3139q-r75, option b): Table A's free_band (OFFLINE) cell
+    printed the band registry's offline prose with nothing tying it to the
+    counted classes - MEASURED B3139q-r72w: 12 band rows count no offline
+    level and carry prose other than 'none', 6 of them claiming an offline
+    grading. Every counted OFFLINE cell now leads with the count the footer
+    takes for its row, so prose cannot contradict it unseen, and the 6 rows
+    say 'none' and why. (1) The helper on each shape: no offline level, a
+    TIGHTER row, a multi-axis row, a mirror with no axis. (2) A band row
+    rendered from a toy knob whose prose claims an offline grading leads with
+    'offline 0 of 3 levels'. (3) The 6 corrected rows count 0 offline and say
+    'none'. (4) Every lane member's inventory: each BAND and STRATEGY row's
+    OFFLINE cell leads with a count, rows selected by their layer cell
+    (L705), over a floor of 20 lane files - and every inventory row has the
+    locked 9 cells (the days_to_cover helper row had 8 from B2840, so its
+    cells sat one column left, and said '6 consumers' of a helper 116
+    strategy functions call)."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import build_table_a as B
+    import table_a_bands as T
+
+    assert B._offline_cell([(3, 1, 0, 2)], "x") == "offline 0 of 3 levels - x"
+    assert B._offline_cell([(3, 1, 2, 0)], "TIGHTER y") == "offline 2 of 3 levels - TIGHTER y"
+    assert B._offline_cell([(3, 1, 2, 0), (3, 1, 0, 2)], "z") == "offline 2 of 3, 0 of 3 levels - z"
+    assert B._offline_cell([], "m") == "counted on the mirrored leg - m"
+    assert B._offline_cell([(1, 1, 0, 0)], "p", " (no band ruled)") == "offline 0 of 1 levels (no band ruled) - p"
+
+    knob = {"param": "toy window", "production": 20, "band": [14, 20, 30],
+            "basis": "BRACKET production", "offline": "re-derive from persisted keys",
+            "resim": "the whole band", "env": None, "evidence": "toy"}
+    row = B._band_rows(1, "toy", [knob], [])[0]
+    cells = [c.strip() for c in row.split("|")]
+    assert cells[2] == "BAND" and cells[7].startswith(
+        "offline 0 of 3 levels - re-derive"), cells
+
+    fixed = [("cmf_cross_dn", 0), ("vix_band_low", 0), ("vix_band_high", 0),
+             ("macd_12_26_9_bearish", 0), ("macd_12_26_9_bullish", 0),
+             ("insider_unique_buyers_30d", 0)]
+    for leg, i in fixed:
+        k = T.PRODUCER_BANDS[leg][i]
+        assert sum(c[2] for c in T.band_level_classes(k)) == 0, (leg, k)
+        assert str(k["offline"]).startswith("none - "), (leg, k["offline"])
+
+    view = _json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                       .read_text(encoding="utf-8"))
+    stream = {r["strategy"]: r.get("stream") for r in view["rows"]}
+    lanes = {"tighten/both": "BOTH", "tighten": "TIGHTEN"}
+    layers = ("PRODUCER", "BAND", "STRATEGY", "STRATEGY-HELPER", "BREADTH")
+    bad, shape, helpers, files, cells_seen = [], [], [], 0, 0
+    for p in sorted((root / "strategy_optimisation").rglob("*.md")):
+        rel = p.parent.relative_to(root / "strategy_optimisation").as_posix()
+        if p.name == "README.md" or lanes.get(rel) is None or stream.get(p.stem) != lanes[rel]:
+            continue            # README, or a departed record (test_b2836's question)
+        files += 1
+        for ln in p.read_text(encoding="utf-8").splitlines():
+            c = [x.strip() for x in ln.split("|")]
+            if len(c) > 2 and (c[1].startswith("P") or c[1] == "B-rows") and c[2] in layers:
+                # the inventory's locked 9 columns: B2840's helper row had 8,
+                # so every cell after 'production' sat one column left
+                if len(c) != 11:
+                    shape.append((p.name, c[1], len(c) - 2))
+                if c[2] == "STRATEGY-HELPER" and "days_to_cover" in c[3]:
+                    helpers.append("6 consumers" not in ln)
+            if len(c) < 10 or not c[1].startswith("P") or c[2] not in (
+                    "BAND", "STRATEGY", "STRATEGY-HELPER"):
+                continue
+            if c[2] == "STRATEGY-HELPER" and c[7] == "-":
+                continue        # a helper gate with no counted axis
+            cells_seen += 1
+            if not (c[7].startswith("offline ") or c[7].startswith("counted on the mirrored leg")):
+                bad.append((p.name, c[1], c[7][:60]))
+    assert files >= 20 and cells_seen >= 100, (files, cells_seen)
+    assert bad == [], bad[:5]
+    assert shape == [], shape[:5]
+    assert helpers and all(helpers), helpers
+
+
+def test_b3224b_table_generators_type_no_code_population_claim():
+    """B3139q-r75 (L941): a count of a helper's consumers, or an 'every X ...
+    calls' universal, typed into a table generator's text is not derived - the
+    code it describes changes and the cell does not. MEASURED this batch: the
+    Table A helper row said '6 consumers' of a helper 116 of 225 registered
+    strategies call; its first correction said every short in screener.py
+    calls it while 2 registered shorts do not (S6-B3226); the sibling registry
+    repeated the 6 twice and said 7 of 22 consumers of a primitive that
+    reaches 9 of 24 since B3078. A count derived from code reaches the output
+    through an f-string slot, never as a literal, so a literal match is
+    un-derived by construction. Scope, a lower bound (L757): the six table
+    generators' string constants, docstrings excepted, and two shapes - a
+    number before consumers / callers / call sites, and an every short / long
+    / strategy / consumer ... calls universal."""
+    import ast as _ast
+    import re as _re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    count = _re.compile(r"\b\d+\s+(?:of\s+\d+\s+)?(?:\w+\s+)?(?:consumers|callers|call sites)\b", _re.I)
+    universal = _re.compile(r"\bevery\s+(?:short|long|strategy|consumer)\b(?:(?!\.\s)[^|;])*?\bcalls?\b", _re.I)
+
+    def claims(src):
+        tree = _ast.parse(src)
+        docs = set()
+        for n in _ast.walk(tree):
+            if isinstance(n, (_ast.Module, _ast.FunctionDef, _ast.AsyncFunctionDef, _ast.ClassDef)):
+                b = n.body[0] if n.body else None
+                if (isinstance(b, _ast.Expr) and isinstance(b.value, _ast.Constant)
+                        and isinstance(b.value.value, str)):
+                    docs.add(id(b.value))
+        out = []
+        for n in _ast.walk(tree):
+            if isinstance(n, _ast.Constant) and isinstance(n.value, str) and id(n) not in docs:
+                for rx in (count, universal):
+                    m = rx.search(n.value)
+                    if m:
+                        out.append((n.lineno, m.group(0)))
+        return out
+
+    # must fire on the four shapes this batch removed; must stay quiet on a
+    # derived count and on a docstring narrating a past measurement
+    assert len(claims('a = "screener helper (shared, 6 consumers)"')) == 1
+    assert len(claims('a = ["backtest/signals/screener.py (6 short consumers)"]')) == 1
+    assert len(claims('a = f"shared helper (every short in screener.py calls it - "')) == 1
+    assert len(claims('a = "Reaches 7 of 22 consumers - the liquidity primitive"')) == 1
+    assert claims('n = 3\na = f"shared helper ({n} consumers)"') == []
+    assert claims('def f():\n    """enforced on launches only - 5 callers"""\n    return 1') == []
+
+    files = ["scripts/build_table_a.py", "scripts/table_a_bands.py",
+             "scripts/producer_variant_table.py", "scripts/table_d_render.py",
+             "scripts/show_table_d.py", "scripts/show_table_c.py"]
+    found = {}
+    for f in files:
+        p = root / f
+        assert p.exists(), f
+        hits = claims(p.read_text(encoding="utf-8"))
+        if hits:
+            found[f] = hits
+    assert found == {}, found
+
+
+def test_b3230_gate_records_are_write_once(tmp_path, monkeypatch):
+    """B3139q-r75 (L942, #283's reverse direction): gate artifact names are
+    reused counters, and B3139q-r72's run overwrote B3139q-r62's committed
+    record (7c25bad46) while B3139q-r75's runs overwrote L907's evidence
+    before commit. (1) preflight C17 refuses a staged M / D / R of a committed
+    verdict record and passes an addition, a verdict-less (racing) record and
+    a non-gate path. (2) pyramid_gate refuses a name HEAD holds - via the
+    .out sibling too - and skips a fresh name and a path outside the repo.
+    (3) run() returns the refusal before ANY write (the wiring, L654). (4) the
+    live repo: HEAD holds b3139_pyramid_r75.out, so a run named after it is
+    refused, and C17's pattern matches at least 200 committed verdict records
+    (233 at B3139q-r75) - not a vacuous pattern."""
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import preflight as pf
+    import pyramid_gate as pg
+
+    rec = "output_audit/b9999_pyramid_rX.out"
+    verdict = lambda p: "....\npytest_exit=0 tree=SAME exit=0\n"
+    for st in ("M", "D", "R100"):
+        got = pf.check_gate_records_are_write_once([(st, rec)], head_text=verdict)
+        assert len(got) == 1 and rec in got[0] and "WRITE-ONCE" in got[0], (st, got)
+    assert pf.check_gate_records_are_write_once([("A", rec)], head_text=verdict) == []
+    assert pf.check_gate_records_are_write_once([("M", rec)], head_text=lambda p: "....\n") == []
+    assert pf.check_gate_records_are_write_once([("M", "output_audit/notes.md")], head_text=verdict) == []
+    assert pf.check_gate_records_are_write_once(
+        [("M", "output_audit/b9999_pyramid_rX.json")], head_text=verdict) != []
+    import ast as _ast
+    main_fn = next(n for n in _ast.parse((root / "scripts" / "preflight.py").read_text(
+        encoding="utf-8")).body if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    assert any(isinstance(c, _ast.Call) and isinstance(c.func, _ast.Name)
+               and c.func.id == "check_gate_records_are_write_once"
+               for c in _ast.walk(main_fn)), "C17 is not wired into preflight.main"
+
+    out = root / "output_audit" / "b9999_pyramid_rX.json"
+    msg = pg.refusal_tracked_record(out, root, in_head=lambda rel: rel.endswith("_rX.out"))
+    assert msg and "output_audit/b9999_pyramid_rX.out" in msg and "REFUSED" in msg, msg
+    assert pg.refusal_tracked_record(out, root, in_head=lambda rel: False) is None
+    assert pg.refusal_tracked_record(tmp_path / "x_pyramid.json", root,
+                                     in_head=lambda rel: True) is None
+
+    monkeypatch.setattr(pg, "refusal_tracked_record", lambda o, r: "REFUSED test")
+    target = tmp_path / "gate.json"
+    assert pg.run(target, tmp_path, ["-q"]) == pg.EXIT_REFUSED_TRACKED_RECORD
+    assert not target.exists()
+    monkeypatch.undo()
+
+    live = pg.refusal_tracked_record(root / "output_audit" / "b3139_pyramid_r75.json", root)
+    assert live and "output_audit/b3139_pyramid_r75.out" in live, live
+    assert pg.refusal_tracked_record(
+        root / "output_audit" / "b3230_pyramid_never_committed.json", root) is None
+    names = _sp.run(["git", "ls-tree", "-r", "--name-only", "HEAD", "--", "output_audit"],
+                    cwd=root, capture_output=True, text=True).stdout.split()
+    assert sum(1 for n in names if pf._C17_GATE_RECORD.match(n)) >= 200
 
 
 def test_b3218_a_present_admissions_record_without_its_list_is_refused(tmp_path):

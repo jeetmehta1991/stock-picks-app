@@ -1,6 +1,6 @@
 # Table A - inside_bar_breakout
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit b926385df at 2026-10-20 09:45:14 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** breakout | **status:** NOT-STARTED | **R5 fires:** 677 | **surviving fires (T1):** 677 (unchanged since R5 - filter is identity)
 
@@ -39,10 +39,10 @@ leg runs.
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
 | P1 | PRODUCER | above_vwap - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs session VWAP (vwap block) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
-| P1.1 | BAND | buffer pct (price vs vwap) - backtest/signals/technical.py vwap block | BRACKET zero; strict inequality today | 0.0 | [0, 0.25, 0.5] | none - today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P1.1 | BAND | buffer pct (price vs vwap) - backtest/signals/technical.py vwap block | BRACKET zero; strict inequality today | 0.0 | [0, 0.25, 0.5] | offline 0 of 3 levels - none - today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P2 | PRODUCER | inside_bar - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | inside bar: high < prior high AND low > prior low (technical.py:2027) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
-| P2.1 | BAND | (structural) h[-1]<h[-2] and l[-1]>l[-2] - no parameter - backtest/signals/technical.py:2027 | BRACKET zero; strict containment today | - | optional containment-margin pct [0, 0.1, 0.25] | none - bar OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P3 | STRATEGY | adx `> 20` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 20` | production + 4 tighter measured levels | measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P2.1 | BAND | (structural) h[-1]<h[-2] and l[-1]>l[-2] - no parameter - backtest/signals/technical.py:2027 | BRACKET zero; strict containment today | - | optional containment-margin pct [0, 0.1, 0.25] | offline 0 of 3 levels - none - bar OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P3 | STRATEGY | adx `> 20` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 20` | production + 4 tighter measured levels | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
