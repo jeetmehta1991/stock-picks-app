@@ -26698,12 +26698,19 @@ def test_b3185_every_progress_record_carries_the_window_total():
     the window (len(trading_days)) before the first writer - the supervisor -
     starts. AST over the engine, so a sixth writer inherits the check
     unwritten (L592 / B2092); the floor of 5 is the positive control (L715).
+    S6-B3096g: the four engine_state writers share ONE builder, so their
+    records are one dict literal inside _engine_state and four calls of it -
+    a writer is a literal outside the builder or a call of it.
     """
     import ast as _ast
     from pathlib import Path as _P
     src = (_P(__file__).resolve().parents[2] / "backtest" / "engine"
            / "backtest.py").read_text(encoding="utf-8")
     tree = _ast.parse(src)
+    builder = next((n for n in _ast.walk(tree) if isinstance(n, _ast.FunctionDef)
+                    and n.name == "_engine_state"), None)
+    assert builder is not None, "the S6-B3096g state builder is gone"
+    inside = {id(n) for n in _ast.walk(builder)}
     writers, missing = 0, []
     for node in _ast.walk(tree):
         if not isinstance(node, _ast.Dict):
@@ -26711,10 +26718,15 @@ def test_b3185_every_progress_record_carries_the_window_total():
         keys = {k.value for k in node.keys
                 if isinstance(k, _ast.Constant) and isinstance(k.value, str)}
         if "sim_day_index" in keys:
-            writers += 1
+            writers += id(node) not in inside
             if "total_sim_days" not in keys:
                 missing.append(node.lineno)
-    assert writers >= 5, f"positive control: {writers} writers found, 5 known"
+    calls = sum(1 for n in _ast.walk(tree) if isinstance(n, _ast.Call)
+                and isinstance(n.func, _ast.Attribute)
+                and n.func.attr == "_engine_state")
+    assert writers + calls >= 5, (
+        f"positive control: {writers} record literals + {calls} builder calls "
+        f"found, 5 writers known")
     assert not missing, f"progress records without total_sim_days at lines {missing}"
     run = next(n for n in _ast.walk(tree)
                if isinstance(n, _ast.FunctionDef) and n.name == "run")
@@ -45260,9 +45272,10 @@ def test_b3098_resume_wiring_markers_and_every_state_writer():
     loading the checkpoint, before the day loop. (2) The day loop sets
     _day_in_progress before _process_day and, after it, sets _last_completed_day
     BEFORE clearing _day_in_progress - the supervisor reads them in the opposite
-    order. (3) EVERY engine_state writer - every dict literal carrying a
-    'simulated_day' key - carries both markers, so a fifth writer inherits the
-    check without anyone remembering it."""
+    order. (3) EVERY engine_state writer carries both markers: since S6-B3096g
+    the writers call ONE builder, _engine_state, whose dict literal is checked
+    here, and a writer that bypassed it would write its own literal carrying
+    'simulated_day' and inherit the same check."""
     import ast
     from pathlib import Path
     src = (Path(__file__).resolve().parents[1] / "engine" / "backtest.py"
@@ -45306,7 +45319,16 @@ def test_b3098_resume_wiring_markers_and_every_state_writer():
     writers = [d for d in ast.walk(tree) if isinstance(d, ast.Dict)
                and any(isinstance(k, ast.Constant) and k.value == "simulated_day"
                        for k in d.keys)]
-    assert len(writers) >= 4, f"expected >= 4 engine_state writers, found {len(writers)}"
+    # S6-B3096g: the writers share ONE builder, so one dict literal carries
+    # the keys and the writers are its call sites - floor BOTH, so neither
+    # scan can pass vacuously (L715)
+    builder_calls = [c for c in ast.walk(tree) if isinstance(c, ast.Call)
+                     and isinstance(c.func, ast.Attribute)
+                     and c.func.attr == "_engine_state"]
+    assert writers, "no engine_state dict literal found - the scan went blind"
+    assert len(builder_calls) >= 4, (
+        f"expected >= 4 engine_state writers (calls of the S6-B3096g "
+        f"builder), found {len(builder_calls)}")
     for d in writers:
         keys = {k.value for k in d.keys if isinstance(k, ast.Constant)}
         assert {"last_completed_day", "day_in_progress"} <= keys, (
@@ -45783,9 +45805,10 @@ def test_b3100_leg_outcome_reads_the_engine_stop_status():
     assert lo(1, False, {"status": "running"}) == "CRASH"
     assert lo(1, False, {}) == "CRASH"
     eng = (_P(root) / "backtest" / "engine" / "backtest.py").read_text(encoding="utf-8")
-    assert '"status": "wall_time_kill"' in eng, "the in-loop stop status moved"
+    # S6-B3096g: the writers pass their status to the ONE state builder
+    assert 'status="wall_time_kill"' in eng, "the in-loop stop status moved"
     assert '_emit_kill_state("supervisor_%s"' in eng, "the supervisor status moved"
-    assert '"status": "complete"' in eng
+    assert 'status="complete"' in eng
 
 
 def test_b3100_backup_checkpoint_copies_what_a_resume_reads(tmp_path):
@@ -58193,3 +58216,163 @@ def test_b3096b_the_blended_book_reports_the_demoted_diagnostics():
         for s_, row in d[leg].items():
             assert {"calmar", "deflated_sharpe", "psr"} <= set(row), (leg, s_)
     assert {"max_drawdown", "calmar", "deflated_sharpe"} <= set(rc.DEMOTED)
+
+
+def test_b3096g_every_engine_state_writer_carries_the_same_keys():
+    """S6-B3096g (owner-approved Phase-1B entry work 2026-10-19): ONE builder
+    for engine_state.json. (1) STRUCTURE: backtest.py holds exactly one dict
+    literal with an engine-state key ('simulated_day') - inside _engine_state -
+    and the four writers each call it, so no writer can drift from the others'
+    key set; (2) BEHAVIOUR, the must-fire: on a stand-in engine holding open
+    positions and ZERO closed trades (the case S6-B3094g found the in-loop kill
+    could not resume), the state carries the portfolio block with every
+    position, and the four statuses produce the same key set; (3) a missing
+    portfolio serialises as None, never a fabricated empty book."""
+    import ast
+    from datetime import date as _d
+    from pathlib import Path as _P
+    from backtest.engine.backtest import BacktestEngine
+    from backtest.engine.portfolio import Portfolio, Position
+    src = (_P(__file__).resolve().parents[1] / "engine" / "backtest.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    holders = []
+    for fn in ast.walk(tree):
+        if isinstance(fn, ast.FunctionDef):
+            for n in ast.walk(fn):
+                if isinstance(n, ast.Dict) and any(
+                        isinstance(k, ast.Constant) and k.value == "simulated_day"
+                        for k in n.keys):
+                    holders.append(fn.name)
+    assert holders == ["_engine_state"], holders
+    calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
+             and isinstance(n.func, ast.Attribute) and n.func.attr == "_engine_state"]
+    statuses = sorted(
+        next((k.value.value if isinstance(k.value, ast.Constant) else "<status>")
+             for k in c.keywords if k.arg == "status") for c in calls)
+    assert statuses == ["<status>", "complete", "running", "wall_time_kill"], statuses
+
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.closed_trades, eng.open_trades = [], [object(), object()]
+    eng.portfolio = Portfolio(starting_capital=100_000.0)
+    eng.portfolio.cash = 90_000.0
+    eng.portfolio.positions = {"AAPL": Position(
+        ticker="AAPL", sector="Tech", direction="long", entry_date=_d(2024, 3, 1),
+        entry_price=180.0, shares=50.0, last_mark=181.0)}
+    keys = set()
+    for st in ("running", "wall_time_kill", "complete", "supervisor_active_cap"):
+        s = eng._engine_state(status=st, sim_day_index=7, sim_date=_d(2024, 3, 4))
+        assert s["status"] == st and s["trades_so_far"] == 0 and s["open_trades"] == 2
+        assert s["portfolio"]["cash"] == 90_000.0, s["portfolio"]
+        assert [p["ticker"] for p in s["portfolio"]["positions"]] == ["AAPL"]
+        keys.add(frozenset(s))
+    assert len(keys) == 1, keys
+    fin = eng._engine_state(status="complete", sim_day_index=7, sim_date="",
+                            finalized_open_trades=2)
+    assert fin["finalized_open_trades"] == 2
+
+    bare = BacktestEngine.__new__(BacktestEngine)
+    bare.closed_trades, bare.open_trades = [], []
+    assert bare._engine_state(status="running", sim_day_index=0,
+                              sim_date="")["portfolio"] is None
+
+
+def test_b3096g_portfolio_state_round_trips_through_the_checkpoint(tmp_path, caplog):
+    """S6-B3096g: EVERY Portfolio state field survives checkpoint -> resume.
+    The field sets come from the defining sources - vars(Portfolio()) and
+    dataclasses.fields(Position) - so a field added later fails here until
+    it is checkpointed (L697); 'benchmark' is exempt as constructor config,
+    not state. The curves and the peak are built by the REAL mark_to_market
+    and add_benchmark_point. Must-fire arms: a checkpoint written before
+    S6-B3096g restarts the history AND says so; a block from a differently
+    capitalised run is refused before any write; a curve point dated after
+    the checkpoint's sim_date (a supervisor kill inside a hung day) is
+    dropped and the peak rebuilt without it, so the resumed run's re-mark of
+    that day is not a duplicate."""
+    import dataclasses
+    import json
+    import logging
+    from datetime import date as _d
+    import pytest
+    from backtest.engine.backtest import BacktestEngine
+    from backtest.engine.portfolio import Portfolio, Position
+
+    def engine(pf):
+        e = BacktestEngine.__new__(BacktestEngine)
+        e.closed_trades, e.open_trades = [], []
+        e.portfolio = pf
+        e._resume_sim_day, e._resumed_closed_trades_count = -1, 0
+        e.resume_from_checkpoint = str(tmp_path)
+        return e
+
+    src = Portfolio(starting_capital=100_000.0)
+    src.cash = 90_000.0
+    src.positions = {"AAPL": Position(
+        ticker="AAPL", sector="Tech", direction="long", entry_date=_d(2024, 3, 1),
+        entry_price=180.0, shares=100.0, last_mark=180.0)}
+    days = [_d(2024, 3, 4), _d(2024, 3, 5), _d(2024, 3, 6)]
+    for day, px, spy in zip(days, (190.0, 185.0, 200.0), (470.0, 468.5, 474.0)):
+        src.mark_to_market({"AAPL": px}, day)
+        src.add_benchmark_point(day, spy)
+    assert src._equity_peak == 110_000.0 and len(src.equity_curve) == 3
+
+    block = engine(src)._portfolio_state_block()
+    want = {k.lstrip("_") for k in vars(Portfolio(starting_capital=1.0))} - {"benchmark"}
+    assert set(block) == want, (sorted(block), sorted(want))
+    assert set(block["positions"][0]) == {f.name for f in dataclasses.fields(Position)}
+
+    def write(state_block, sim_date):
+        (tmp_path / "engine_state.json").write_text(json.dumps({
+            "simulated_day": 3, "status": "running", "sim_date": sim_date,
+            "trades_so_far": 0, "open_trades": 0, "last_completed_day": 2,
+            "day_in_progress": None, "portfolio": state_block}))
+
+    write(block, "2024-03-06")
+    dst = engine(Portfolio(starting_capital=100_000.0))
+    dst._load_resume_checkpoint()
+    for k, v in vars(src).items():
+        assert vars(dst.portfolio)[k] == v, (k, vars(dst.portfolio)[k], v)
+
+    # must-fire: a point past the checkpoint's sim_date is dropped, the peak
+    # rebuilt from the kept marks the way mark_to_market builds it
+    write(block, "2024-03-05")
+    cut = engine(Portfolio(starting_capital=100_000.0))
+    cut._load_resume_checkpoint()
+    assert [d for d, _ in cut.portfolio.equity_curve] == days[:2]
+    assert [d for d, _ in cut.portfolio.benchmark_curve] == days[:2]
+    assert cut.portfolio._equity_peak == 109_000.0, cut.portfolio._equity_peak
+
+    # must-fire: a checkpoint from before S6-B3096g restarts the history and SAYS so
+    old = {k: block[k] for k in ("starting_capital", "cash", "positions")}
+    write(old, "2024-03-06")
+    pre = engine(Portfolio(starting_capital=100_000.0))
+    with caplog.at_level(logging.WARNING):
+        pre._load_resume_checkpoint()
+    assert pre.portfolio.cash == 90_000.0 and set(pre.portfolio.positions) == {"AAPL"}
+    assert pre.portfolio.equity_curve == [] and pre.portfolio._equity_peak == 100_000.0
+    assert any("before S6-B3096g" in r.getMessage() for r in caplog.records)
+
+    # must-fire: a differently capitalised run is refused BEFORE any write
+    write(block, "2024-03-06")
+    other = engine(Portfolio(starting_capital=50_000.0))
+    with pytest.raises(RuntimeError, match="S6-B3096g RESUME HALT"):
+        other._load_resume_checkpoint()
+    assert other.portfolio.cash == 50_000.0 and not other.portfolio.positions
+
+
+def test_b3096g_an_unsized_book_is_disclosed_empty():
+    """S6-B3096g: an isolation cube's trades are all tier LOW (size 0), so
+    portfolio_summary.json's dollar, return and SPY-excess figures describe no
+    portfolio - MEASURED on landed cubes, -75.15 and -9.09 'excess returns'.
+    The summary now says so: empty_book True and an explicit note; a sized book
+    keeps its note and reads empty_book False. Additive - the numbers stay, so
+    readers that format them (merge_batch_outputs) keep working."""
+    import pandas as _pd
+    from backtest.results.metrics import compute_portfolio_summary
+    base = {"pnl_pct": [1.0, -2.0], "ticker": ["A", "B"], "strategy": ["s", "s"]}
+    low = compute_portfolio_summary(_pd.DataFrame(dict(base, confidence_tier=["LOW", "LOW"])))
+    assert low["empty_book"] is True
+    assert low["note"].startswith("EMPTY BOOK BY CONSTRUCTION")
+    assert low["total_pnl_dollar"] == 0.0 and low["portfolio_return_pct"] == 0.0
+    sized = compute_portfolio_summary(_pd.DataFrame(dict(base, confidence_tier=["HIGH", "LOW"])))
+    assert sized["empty_book"] is False
+    assert sized["note"] == "Portfolio return applies tier-based position sizing to all trades"

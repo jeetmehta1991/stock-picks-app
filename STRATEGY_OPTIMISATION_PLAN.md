@@ -506,11 +506,11 @@ re-selected in-sample, but no simulation is involved.
   before launch and capped by budget. If a fire-adding parameter is ever added to the graded grid,
   this bullet stops applying and the carry must be capped explicitly.
 - **A subset of SIGNALS is not a subset of TRADES (L812).** The engine blocks a fire while the same
-  strategy holds that ticker (`backtest.py:2795`, `open_combos`), so a tighter level FREES occupancy
+  strategy holds that ticker (`open_combos` in `BacktestEngine._process_day`), so a tighter level FREES occupancy
   and can admit trades present in no cube: every offline trade count is a LOWER BOUND and offline
   verdicts are candidates. B2905 made the per-strategy occupancy count measurable in every cube
   written after it. Separately, the candidate cap cannot truncate: under `--cube-isolation`
-  `backtest.py:2442` bypasses `max_candidates_per_day` (R5's cap bound on only 1 of 972 days, and
+  `_cand_iter` in `BacktestEngine._process_day` bypasses `max_candidates_per_day` (R5's cap bound on only 1 of 972 days, and
   isolation ignores it entirely), which is what makes subsetting exact for the cap (L645: the objection costed and void) - re-checked per strategy, and disclosed when a cube
   offers no evidence either way.
 - **Site the baseline at the LOOSEST admissible level of every persisted gate** where the strategy
@@ -1417,7 +1417,7 @@ expensive than the flat top-3 slate and usually cheaper.
 **NO separate baseline run (L423).** All six gates are ABSOLUTE thresholds, so admission depends on a
 candidate's own 4-year metrics, and production parameters are one of the configs anyway, so their
 4-year number arrives free if they rank into the slate - and only then. Valid on the
-appended universe because `--cube-isolation` bypasses the candidate cap (`backtest.py:2442`). Scoping a
+appended universe because `--cube-isolation` bypasses the candidate cap (`_cand_iter` in `BacktestEngine._process_day`). Scoping a
 baseline run once wasted 7.3 h of plan before this was caught.
 
 **THE REGIME MAP WAS LOST ACROSS LEGS - FIXED AT B3098 for runs on the B3098+ engine (S6-B3094c, added
@@ -1428,8 +1428,8 @@ boundary in `resume_boundaries.json`; the landing reports any gap as a finding. 
 (`output_audit/b3098_resume_equivalence.json`): a run split into 9 legs matched the unsplit run's cube
 row for row, regime map 83 of 83 days in both. WHAT FOLLOWS STILL HOLDS FOR ANY MULTI-LEG CUBE FROM A
 PRE-B3098 ENGINE - one with no `regime_map_coverage.json` beside it. The engine keeps its date-to-regime
-map only for days the running process simulated (`backtest.py:2144-2146`, `_regime_by_date`, filled in
-`_process_day`), and a resumed leg starts without it; `exit_regime_flip` then falls back to its 20-day
+map only for days the running process simulated (`_regime_by_date`, filled by `BacktestEngine._classify_and_record_regime`
+from `_process_day` and, on resume, `_rebuild_regime_state`), and a resumed leg starts without it; `exit_regime_flip` then falls back to its 20-day
 time stop (`regime_flip_max_days_20`) for every entry whose hold window precedes the resume. In a
 multi-leg Step-2 cube from such an engine, `regime_flip` is therefore measured only for entries in the
 final leg. **For those cubes, measure it per cube (`roster_core.measure_degraded_exits`) and never read a
@@ -1620,9 +1620,10 @@ The monitor contract is §8.9. Wave-specific rules:
   the arm result carries them as `leg_outcomes`, and the ELAPSED reading is a cross-check. Before
   every resumed leg run_wave copies the checkpoint to `<out>/checkpoint_backups/leg<N>/`, and each leg
   start prints its free commit (`[B3100 leg-start]`).
-  It resumes from the last PERIODIC checkpoint, which carries no portfolio block, so cash and positions
-  restart at that boundary - inert in an isolation cube, where the portfolio holds nothing (S6-B3096g,
-  §8.6).
+  It resumes from the last PERIODIC checkpoint, which since S6-B3096g carries the whole portfolio like
+  every engine_state writer - cash, positions, the equity and benchmark curves and the drawdown peak -
+  so portfolio accounting resumes where it stood (inert in an isolation cube either way, where the
+  portfolio holds nothing; §8.6).
 - **Retire the monitor in the same turn the run lands or stops** (CHECKLIST #320) - a monitor that
   outlives its subject keeps re-asserting a frozen state on a timer.
 
@@ -1834,7 +1835,7 @@ that never reads the input that gates it - its output would be identical to a re
 MEASURED across the roster (B1634): 185 of 222 strategies had at least one input the spot check cannot
 verify. The gate is fail-CLOSED - an unclassified key counts as unverifiable, because an unrecognised
 input is precisely the one nobody thought about. **Before the spot check certifies any strategy, this
-must exit 0.** Under `--cube-isolation` tier sizing is bypassed (`backtest.py:3054-3055`), so tier is
+must exit 0.** Under `--cube-isolation` tier sizing is bypassed (`CUBE_ISOLATION_SIZE_PCT` in `BacktestEngine._process_day`), so tier is
 not an entry input; **at Phase 1B, with tier sizing live and the full roster running, OHLCV-only
 coverage is NOT sufficient** - the smart-money leg re-enters the entry path (tier GATES ENTRY through a
 LOW -> 0.0 size skip, L418 / B1544) and must be checked too.
@@ -2294,7 +2295,7 @@ that producer return `{}` and every strategy reading it silently dies) · `DATA_
 
 **Isolation also bypasses TIER SIZING (B1545, owner-approved).** `TIER_POSITION_SIZE_PCT` maps LOW/AVOID
 to **0.0**, and a zero size SKIPS the trade - so tier data was deciding which signals became trades.
-Under isolation every valid signal opens at `CUBE_ISOLATION_SIZE_PCT` (`backtest.py:3054-3055`); size
+Under isolation every valid signal opens at `CUBE_ISOLATION_SIZE_PCT` (`CUBE_ISOLATION_SIZE_PCT` in `BacktestEngine._process_day`); size
 cannot affect any gate because the cube records `pnl_pct`, a PERCENTAGE.
 
 ### 8.2 What demand pruning skips, and when (formerly REFERENCE — WHAT GETS SKIPPED, AND WHEN)
@@ -2394,7 +2395,7 @@ per run  =  tickers x sim-days x 0.2613      <- a CANONICAL rate; a campaign's o
 
 | setting | value | why |
 |---|---|---|
-| `--cube-isolation` | ON | bypasses ALL cross-strategy gates and tier sizing (`backtest.py:212`, the B1321 constructor flag) |
+| `--cube-isolation` | ON | bypasses ALL cross-strategy gates and tier sizing (`cube_isolation` in `BacktestEngine.__init__`, the B1321 constructor flag) |
 | `--screen-pool-workers` | from the spec's `pool_workers` | the spec's arm is the authority, read by run_wave (`run_arm`'s engine arguments, `spec.get("pool_workers", 0)`; the pre-B3096 table said launch_sweep, which never reads it); 0 is sequential (L407) |
 | `--no-agents --no-news --no-git --no-walk-forward` | ON | not consumed by the six gates |
 | `--max-run-hours` | the spec's `leg_cap_hours` | the runner REFUSES to start without it |
@@ -2430,12 +2431,17 @@ one carries a pin.
   pid = DEAD, never RUNNING (pin `test_b2158`).
 - **On a wall-time kill the SUPERVISOR flushes `engine_state.json` (with the portfolio block), the
   trade-log checkpoint and the open-book checkpoint** through an out-of-loop emitter, so a killed run
-  stays resumable (B2126 proved kill-then-resume live; B2148 proved it for a hung sim-day). **The other
-  writers save less (MEASURED B3096, S6-B3096g):** the in-loop kill flushes the open book only once a
-  trade has closed, so a kill before the first close can leave a run the resume refuses, and neither it
-  nor the periodic checkpoint writes the portfolio block, so a resume from either restarts cash and
-  positions (logged as a pre-B2387 checkpoint) - inert in an isolation cube, which never mirrors a
-  trade into the portfolio (`backtest.py:3379-3380`), and real for a non-isolated run. **A resume RESTORES the open book** - it reads
+  stays resumable (B2126 proved kill-then-resume live; B2148 proved it for a hung sim-day). **Every
+  writer now saves the same state (S6-B3096g, B3139q-r72r):** the supervisor's kill, the in-loop kill,
+  the periodic checkpoint and the final 'complete' state all build engine_state.json through one
+  function, `BacktestEngine._engine_state`, so each carries the whole portfolio - cash, positions, the
+  equity and benchmark curves and the drawdown peak - and a resume from any of them continues it (a
+  checkpoint from a differently-capitalised run is refused); the in-loop kill flushes the open book
+  whatever the closed count (S6-B3094g, B3098). Before it (MEASURED B3096) only the supervisor wrote
+  the block and no writer carried the curves or the peak, so a resumed run's drawdown sizing restarted
+  and its portfolio_metrics.json covered the last leg only (MEASURED B3098) - inert in an isolation
+  cube, which skips the portfolio mirror (`if self.cube_isolation: continue` in
+  `BacktestEngine._process_day`), and real for a non-isolated run. **A resume RESTORES the open book** - it reads
   `open_trades_checkpoint.csv` and HALTS on a count mismatch rather than continue partial
   (`backtest.py::_load_resume_checkpoint`, S6-B2213a; L867). The two resume defects recorded here at
   B3096 are FIXED AT B3098: the regime map is rebuilt at every resume (S6-B3094c, §4.8), and a resume

@@ -1210,6 +1210,91 @@ class BacktestEngine:
             interval, self.max_run_hours, hb_path,
         )
 
+    def _portfolio_state_block(self):
+        """S6-B2387 / S6-B3096g: EVERY Portfolio state field a resume needs -
+        cash, open positions, the equity and benchmark curves and the running
+        equity peak - in the shape _load_resume_checkpoint restores. Built
+        DEFENSIVELY: every writer's flush is wrapped in `except Exception`, so
+        anything raising here would silently disable checkpointing - which a
+        first cut did, caught by test_b2148. self.portfolio may not exist when
+        the supervisor thread fires, and getattr(self.portfolio, ...) guards
+        only the INNER attribute while the outer access still raises. Each
+        container is copied (list(...)) before it is walked, because the
+        supervisor thread reads it while the day loop may still append.
+        None = NOT serialised; the resume then restarts portfolio accounting
+        and says so. S6-B3096g added the curves and the peak: without the
+        peak a resumed run's drawdown read - and so its drawdown sizing -
+        restarted from starting capital, and without the curves its
+        portfolio_metrics.json covered the last leg only (MEASURED B3098)."""
+        _pf_obj = getattr(self, "portfolio", None)
+        _pf_block = None
+        if _pf_obj is not None:
+            try:
+                _pf_block = {
+                    "starting_capital": getattr(_pf_obj, "starting_capital", None),
+                    "cash": getattr(_pf_obj, "cash", None),
+                    "positions": [
+                        {"ticker": p.ticker, "sector": p.sector,
+                         "direction": p.direction,
+                         "entry_date": str(p.entry_date),
+                         "entry_price": p.entry_price, "shares": p.shares,
+                         "last_mark": p.last_mark}
+                        for p in list(getattr(_pf_obj, "positions", {}).values())],
+                    "equity_curve": [
+                        [str(_dt), float(_v)]
+                        for _dt, _v in list(getattr(_pf_obj, "equity_curve", []))],
+                    "benchmark_curve": [
+                        [str(_dt), float(_v)]
+                        for _dt, _v in list(getattr(_pf_obj, "benchmark_curve", []))],
+                    "equity_peak": getattr(_pf_obj, "_equity_peak", None),
+                }
+            except Exception as _pexc:
+                logger.error("S6-B2387: portfolio block NOT serialised (%r) - "
+                             "the rest of the checkpoint still writes, but this "
+                             "resume will restart portfolio accounting", _pexc)
+        return _pf_block
+
+    def _engine_state(self, *, status, sim_day_index, sim_date, **extra) -> dict:
+        """S6-B3096g (owner-approved Phase-1B entry work, 2026-10-19): the ONE
+        engine_state.json builder. All four writers call it - the supervisor's
+        kill state, the in-loop wall-time kill, the periodic checkpoint and the
+        final 'complete' state - so every checkpoint carries the same keys, the
+        portfolio block included. Before it only the supervisor wrote the block
+        (S6-B2387), so a resume after an in-loop kill or from a periodic
+        checkpoint restarted portfolio cash and positions: one of three
+        resumable writers fixed, the L637 / B2144 sibling class.
+        day_in_progress is read BEFORE last_completed_day (S6-B3094g): the
+        supervisor calls this while the day loop may still be moving, and the
+        loop sets last_completed_day first and only then clears
+        day_in_progress, so this order never pairs 'nothing in progress' with
+        an index older than the day that just finished."""
+        import os as _bos
+        import time as _btime
+        _dip = getattr(self, "_day_in_progress", None)
+        _lc = getattr(self, "_last_completed_day", -1)
+        _pf_block = self._portfolio_state_block()
+        state = {
+            "simulated_day": sim_day_index,
+            "cells_completed": len(self.closed_trades),
+            "status": status,
+            "sim_date": str(sim_date),
+            "sim_day_index": sim_day_index,
+            "total_sim_days": getattr(self, "_total_sim_days", None),
+            "tickers_processed": len(getattr(self, "liquid_universe", []) or []),
+            "trades_so_far": len(self.closed_trades),
+            "open_trades": len(self.open_trades),
+            "timestamp": _btime.strftime("%Y-%m-%dT%H:%M:%SZ", _btime.gmtime()),
+            "pid": _bos.getpid(),
+            # S6-B2387 / S6-B3096g: cash, positions, the equity and benchmark
+            # curves and the peak - the whole Portfolio, so a resume from ANY
+            # writer continues portfolio accounting.
+            "portfolio": _pf_block,
+            "last_completed_day": _lc,
+            "day_in_progress": _dip,
+        }
+        state.update(extra)
+        return state
+
     def _emit_kill_state(self, status: str) -> None:
         """Write engine_state.json from OUTSIDE the day loop (B2148).
 
@@ -1220,60 +1305,15 @@ class BacktestEngine:
         import os as _eo
         import time as _et
         try:
-            # S6-B2387: build the portfolio block DEFENSIVELY. The whole flush is
-            # wrapped in `except Exception`, so anything raising here silently
-            # disables checkpointing - which a first cut of this did, caught by
-            # test_b2148. self.portfolio may not exist when the supervisor thread
-            # fires, and getattr(self.portfolio, ...) guards only the INNER
-            # attribute while the outer access still raises.
-            _pf_obj = getattr(self, "portfolio", None)
-            _pf_block = None
-            if _pf_obj is not None:
-                try:
-                    _pf_block = {
-                        "starting_capital": getattr(_pf_obj, "starting_capital", None),
-                        "cash": getattr(_pf_obj, "cash", None),
-                        "positions": [
-                            {"ticker": p.ticker, "sector": p.sector,
-                             "direction": p.direction,
-                             "entry_date": str(p.entry_date),
-                             "entry_price": p.entry_price, "shares": p.shares,
-                             "last_mark": p.last_mark}
-                            for p in getattr(_pf_obj, "positions", {}).values()]}
-                except Exception as _pexc:
-                    logger.error("S6-B2387: portfolio block NOT serialised (%r) - "
-                                 "the rest of the checkpoint still writes, but this "
-                                 "resume will restart portfolio accounting", _pexc)
-            # S6-B3094g (B3098): this runs on the SUPERVISOR thread while the day
-            # loop may still be moving. Read day_in_progress BEFORE
-            # last_completed_day - the loop sets last_completed_day first and only
-            # then clears day_in_progress, so this order never pairs 'nothing in
-            # progress' with an index older than the day that just finished.
-            # Residual race, disclosed: trades closed AFTER this snapshot can reach
-            # the CSV below; the resume's trades_so_far == CSV-rows contract HALTs
-            # on that (fail closed), and this path now fires only on a hang.
-            _b3098_dip = getattr(self, "_day_in_progress", None)
-            _b3098_lc = getattr(self, "_last_completed_day", -1)
-            state = {
-                "simulated_day": getattr(self, "_last_sim_day_index", -1),
-                "cells_completed": len(self.closed_trades),
-                "status": status,
-                "sim_date": str(getattr(self, "_last_sim_date", "")),
-                "sim_day_index": getattr(self, "_last_sim_day_index", -1),
-                "total_sim_days": getattr(self, "_total_sim_days", None),
-                "tickers_processed": len(getattr(self, "liquid_universe", []) or []),
-                "trades_so_far": len(self.closed_trades),
-                "open_trades": len(self.open_trades),
-                "timestamp": _et.strftime("%Y-%m-%dT%H:%M:%SZ", _et.gmtime()),
-                "pid": _eo.getpid(),
-                # S6-B2387: portfolio cash and positions were NEVER checkpointed, so
-                # every resume silently reset them to starting_capital with an empty
-                # book. Position carries `shares`, so the Portfolio can serialise
-                # itself - no OpenTrade schema change is needed.
-                "portfolio": _pf_block,
-                "last_completed_day": _b3098_lc,
-                "day_in_progress": _b3098_dip,
-            }
+            # S6-B3096g: the ONE state builder (portfolio block, read order).
+            # Residual race, disclosed (S6-B3094g): trades closed AFTER this
+            # snapshot can reach the CSV below; the resume's trades_so_far ==
+            # CSV-rows contract HALTs on that (fail closed), and this path now
+            # fires only on a hang.
+            state = self._engine_state(
+                status=status,
+                sim_day_index=getattr(self, "_last_sim_day_index", -1),
+                sim_date=getattr(self, "_last_sim_date", ""))
             d = Path(self.output_dir)
             tmp, final = d / "engine_state.json.tmp", d / "engine_state.json"
             tmp.write_text(_ej.dumps(state, indent=2))
@@ -1330,13 +1370,26 @@ class BacktestEngine:
                 "B1076 resume: prior run status=complete; nothing to resume. "
                 "Remove --resume-from-checkpoint flag for fresh run."
             )
-        # S6-B2387: restore portfolio cash + open positions. Absent block means
-        # a pre-B2387 checkpoint; leave the fresh Portfolio and say so, rather
-        # than silently resuming with reset accounting.
+        # S6-B2387 / S6-B3096g: restore EVERY Portfolio state field - cash,
+        # open positions, the equity and benchmark curves and the running
+        # equity peak. Absent block means a pre-B2387 checkpoint; leave the
+        # fresh Portfolio and say so, rather than silently resuming with reset
+        # accounting.
         _pf = state.get("portfolio")
         if _pf:
             from backtest.engine.portfolio import Position as _Pos
             from datetime import date as _d
+            # S6-B3096g: refused BEFORE any write - cash, positions and the
+            # equity history cannot continue across a different capital.
+            _sc = _pf.get("starting_capital")
+            if _sc is not None and float(_sc) != float(self.portfolio.starting_capital):
+                raise RuntimeError(
+                    f"S6-B3096g RESUME HALT: the checkpoint's portfolio started "
+                    f"with {float(_sc):.2f} and this engine's with "
+                    f"{float(self.portfolio.starting_capital):.2f} - cash, "
+                    f"positions and the equity history cannot be continued "
+                    f"across a different starting capital. Resume with the "
+                    f"original capital, or re-run from scratch.")
             self.portfolio.cash = float(_pf["cash"])
             self.portfolio.positions = {}
             for _p in _pf.get("positions", []):
@@ -1353,9 +1406,42 @@ class BacktestEngine:
                     entry_price=float(_p["entry_price"]),
                     shares=float(_p["shares"]),
                     last_mark=float(_p["last_mark"]))
+            # S6-B3096g: the equity and benchmark curves and the running peak.
+            # A point dated after the checkpoint's sim_date belongs to a day
+            # the resumed run processes again (a supervisor kill inside a hung
+            # day), so it is dropped here and re-marked by that run, and the
+            # peak is then rebuilt the way mark_to_market builds it.
+            if all(_pf.get(_k) is not None
+                   for _k in ("equity_curve", "benchmark_curve", "equity_peak")):
+                _last = str(state.get("sim_date") or "")[:10]
+                _cut = _d.fromisoformat(_last) if _last else None
+
+                def _b3096g_curve(rows):
+                    pts = [(_d.fromisoformat(str(_dt)[:10]), float(_v))
+                           for _dt, _v in rows]
+                    return [_pt for _pt in pts
+                            if _cut is not None and _pt[0] <= _cut]
+                _eq = _b3096g_curve(_pf["equity_curve"])
+                _dropped = len(_pf["equity_curve"]) - len(_eq)
+                self.portfolio.equity_curve = _eq
+                self.portfolio.benchmark_curve = _b3096g_curve(_pf["benchmark_curve"])
+                self.portfolio._equity_peak = (
+                    float(_pf["equity_peak"]) if _dropped == 0 else
+                    max([float(self.portfolio.starting_capital)]
+                        + [_v for _dt, _v in _eq]))
+                _hist = (f"equity history restored ({len(_eq)} marks, "
+                         f"{_dropped} past the checkpoint dropped)")
+            else:
+                logger.warning("S6-B3096g resume: the checkpoint carries no equity "
+                               "or benchmark history or equity peak (written "
+                               "before S6-B3096g) - the curves restart at the "
+                               "resume day and the drawdown peak at starting "
+                               "capital, so portfolio_metrics.json covers the "
+                               "last leg only and drawdown sizing restarts")
+                _hist = "equity history NOT restored (pre-S6-B3096g checkpoint)"
             logger.info("S6-B2387 resume: portfolio restored cash=%.2f "
-                        "positions=%d", self.portfolio.cash,
-                        len(self.portfolio.positions))
+                        "positions=%d; %s", self.portfolio.cash,
+                        len(self.portfolio.positions), _hist)
         else:
             logger.warning("S6-B2387 resume: checkpoint carries NO portfolio "
                            "block (pre-B2387); cash and positions stay at their "
@@ -1455,24 +1541,23 @@ class BacktestEngine:
                     f"is a correctness defect, not a warning."
                 )
             self.open_trades = restored
-            # SCOPE BOUNDARY, measured rather than assumed. The design said
-            # "open positions are the entire missing state". THEY ARE NOT:
-            # self.portfolio is constructed fresh in __init__ and never
-            # restored, so cash and positions reset - and OpenTrade carries NO
-            # size field, so portfolio.add_position(ticker, sector, direction,
-            # entry_price, size_pct, entry_date) cannot be reconstructed from
-            # the open book alone. Restoring open_trades is therefore CORRECT
-            # AND SUFFICIENT for the EXIT path (exit logic reads OpenTrade
-            # fields only) and for cube runs, where cube_isolation bypasses all
-            # portfolio gates by design. It does NOT restore portfolio
-            # ACCOUNTING, which matters for portfolio-sim; ticketed separately.
+            # SCOPE BOUNDARY, measured rather than assumed. OpenTrade carries
+            # NO size field, so portfolio.add_position(ticker, sector,
+            # direction, entry_price, size_pct, entry_date) cannot be rebuilt
+            # from the open book alone. The portfolio is therefore restored
+            # from engine_state.json's own block above (S6-B2387 cash and
+            # positions; S6-B3096g the equity and benchmark curves and the
+            # peak), and this open book serves the EXIT path (exit logic reads
+            # OpenTrade fields only) - in a cube run, where cube_isolation
+            # bypasses every portfolio gate by design, the only path.
             # An earlier draft called a non-existent self.position_sizer inside
             # a bare try/except, which would have swallowed an AttributeError
             # on every resume and reported success - CHECKLIST #122 exactly.
             logger.info(
                 "S6-B2213a RESUME: restored %d open position(s) at "
-                "resume_sim_day=%d (exit path only; portfolio accounting is "
-                "NOT restored - see S6-B2387)", len(restored), resume_sim_day)
+                "resume_sim_day=%d (the exit path; portfolio accounting comes "
+                "from the engine_state.json portfolio block - S6-B2387 / "
+                "S6-B3096g)", len(restored), resume_sim_day)
         # S6-B3098d: restore the three process-local logs. An absent file is
         # a checkpoint from before this writer - the log restarts EMPTY at
         # the resume day, which is disclosed (WARNING + logs_restored None)
@@ -1769,23 +1854,10 @@ class BacktestEngine:
                     import time as _ktime
                     _ktrades = len(self.closed_trades)
                     _kopen = len(self.open_trades)
-                    _kstate = {
-                        "simulated_day": i,
-                        "cells_completed": _ktrades,
-                        "status": "wall_time_kill",
-                        "sim_date": str(as_of),
-                        "sim_day_index": i,
-                        "total_sim_days": getattr(self, "_total_sim_days", None),
-                        "tickers_processed": len(
-                            getattr(self, "liquid_universe", []) or []),
-                        "trades_so_far": _ktrades,
-                        "open_trades": _kopen,
-                        "timestamp": _ktime.strftime(
-                            "%Y-%m-%dT%H:%M:%SZ", _ktime.gmtime()),
-                        "pid": _kos.getpid(),
-                        "last_completed_day": getattr(self, "_last_completed_day", -1),
-                        "day_in_progress": getattr(self, "_day_in_progress", None),
-                    }
+                    # S6-B3096g: the ONE state builder - this writer now
+                    # carries the portfolio block too.
+                    _kstate = self._engine_state(
+                        status="wall_time_kill", sim_day_index=i, sim_date=as_of)
                     _kpath = self.output_dir / "engine_state.json"
                     _ktmp = self.output_dir / "engine_state.json.tmp"
                     _ktmp.write_text(_kjson.dumps(_kstate, indent=2))
@@ -1930,23 +2002,10 @@ class BacktestEngine:
                     import time as _time
                     _trades = len(self.closed_trades)
                     _open = len(self.open_trades)
-                    state = {
-                        # B1043 F-01 monitor-expected keys:
-                        "simulated_day": i,
-                        "cells_completed": _trades,
-                        "status": "running",
-                        # Backwards-compat + debugging fields:
-                        "sim_date": str(as_of),
-                        "sim_day_index": i,
-                        "total_sim_days": getattr(self, "_total_sim_days", None),
-                        "tickers_processed": len(getattr(self, "liquid_universe", []) or []),
-                        "trades_so_far": _trades,
-                        "open_trades": _open,
-                        "timestamp": _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime()),
-                        "pid": _os.getpid(),
-                        "last_completed_day": getattr(self, "_last_completed_day", -1),
-                        "day_in_progress": getattr(self, "_day_in_progress", None),
-                    }
+                    # S6-B3096g: the ONE state builder (B1043 F-01's monitor
+                    # keys simulated_day / cells_completed / status ride it).
+                    state = self._engine_state(
+                        status="running", sim_day_index=i, sim_date=as_of)
                     state_path = self.output_dir / "engine_state.json"
                     state_tmp = self.output_dir / "engine_state.json.tmp"
                     state_tmp.write_text(_json.dumps(state, indent=2))
@@ -2075,22 +2134,12 @@ class BacktestEngine:
             import time as _time_b1070
             _state_path = self.output_dir / "engine_state.json"
             _state_tmp = self.output_dir / "engine_state.json.tmp"
-            _final_state = {
-                "simulated_day": int(getattr(self, "_last_sim_day_index", 0)),
-                "cells_completed": int(len(self.closed_trades)),
-                "status": "complete",
-                "sim_date": str(getattr(self, "_last_sim_date", "")),
-                "sim_day_index": int(getattr(self, "_last_sim_day_index", 0)),
-                "total_sim_days": getattr(self, "_total_sim_days", None),
-                "tickers_processed": int(len(getattr(self, "liquid_universe", []) or [])),
-                "trades_so_far": int(len(self.closed_trades)),
-                "open_trades": int(len(self.open_trades)),
-                "timestamp": _time_b1070.strftime("%Y-%m-%dT%H:%M:%SZ", _time_b1070.gmtime()),
-                "pid": _os_b1070.getpid(),
-                "finalized_open_trades": int(n_finalized),
-                "last_completed_day": getattr(self, "_last_completed_day", -1),
-                "day_in_progress": getattr(self, "_day_in_progress", None),
-            }
+            # S6-B3096g: the ONE state builder, plus the finalize count
+            _final_state = self._engine_state(
+                status="complete",
+                sim_day_index=int(getattr(self, "_last_sim_day_index", 0)),
+                sim_date=getattr(self, "_last_sim_date", ""),
+                finalized_open_trades=int(n_finalized))
             _state_tmp.write_text(_json_b1070.dumps(_final_state, indent=2))
             _os_b1070.replace(_state_tmp, _state_path)
             logger.info("B1070 F-1.1: emitted status='complete' to %s", _state_path)
@@ -3502,12 +3551,13 @@ class BacktestEngine:
                     if _n_strategies_for_split > 1:
                         size_pct = size_pct / _n_strategies_for_split
                     # DEC-091 RESOLVED-IMPLEMENTED Batch 70 2026-05-12 owner-
-                    # mandated wiring: scale size_pct by tiered drawdown-band
-                    # multiplier {1.0 / 0.75 / 0.5 / 0.0} at 0/10/20/30% DD.
-                    # Adds 10% and 20% size-reduction bands that the existing
-                    # can_open(drawdown_suspend_pct=30%) gate does NOT enforce.
-                    # 30%+ DD remains a hard halt via both this multiplier (-> 0)
-                    # AND can_open (defense in depth).
+                    # mandated wiring: scale size_pct by the tiered drawdown-band
+                    # multiplier Portfolio.drawdown_size_multiplier returns -
+                    # since Batch 213, 1.0 / 0.8 / 0.5 / 0.25 / 0.0 at under 5 /
+                    # 5 / 10 / 15 / 20 pct DD, the multiplier itself halting at
+                    # 20 pct (S6-B3096g restated this comment from the pre-Batch-
+                    # 213 ladder). can_open's own drawdown suspend is a separate
+                    # gate (defense in depth).
                     dd_mult = self.portfolio.drawdown_size_multiplier()
                     size_pct = size_pct * dd_mult
                     # DEC-088 RESOLVED-IMPLEMENTED Batch 71 2026-05-12: stack the

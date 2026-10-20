@@ -2781,6 +2781,17 @@ def compute_portfolio_summary(
 
     total_pnl   = df["pnl_dollar_sized"].sum()
     portfolio_return_pct = total_pnl / reference_capital * 100
+    # S6-B3096g: in an isolation cube every trade carries confidence tier
+    # LOW, which maps to size 0 - total_pnl_dollar and portfolio_return_pct
+    # are 0 by construction and vs_spy_excess_return_pct is SPY's return
+    # negated, a figure that reads as a result (MEASURED B3139 on landed
+    # cubes: -75.15 and -9.09). Said on the artifact, never inferred.
+    _empty_book = bool((df["position_size_pct"] == 0).all())
+    _empty_note = ("EMPTY BOOK BY CONSTRUCTION: every trade maps to position size 0 "
+                   "(tier LOW - an isolation cube's trades are unsized), so "
+                   "total_pnl_dollar, portfolio_return_pct and "
+                   "vs_spy_excess_return_pct describe no portfolio; read the "
+                   "per-strategy metrics, not this summary (S6-B3096g)")
 
     # Portfolio heat: max simultaneous open risk
     # Approximate: sum of position sizes for all trades open on busiest day
@@ -2834,7 +2845,12 @@ def compute_portfolio_summary(
             round(portfolio_return_pct - spy_bh_return_pct, 2)
             if spy_bh_return_pct is not None else None
         ),
-        "note": "Portfolio return applies tier-based position sizing to all trades",
+        "note": (_empty_note if _empty_book else
+                 "Portfolio return applies tier-based position sizing to all trades"),
+        # S6-B3096g: True when every trade maps to position size 0, so the
+        # book is EMPTY BY CONSTRUCTION and the figures above describe no
+        # portfolio - additive, so readers that format the numbers still work
+        "empty_book": _empty_book,
     }
 
 
