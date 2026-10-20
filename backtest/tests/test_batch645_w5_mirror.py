@@ -213,9 +213,11 @@ def test_batch645_b291_short_default_applies():
         assert should_strategy_fire_in_regime(
             "pivot_r3_blowoff_short", r, direction="short"
         ) is True
+    # S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20, recommendation
+    # (a)): no regime policy for shorts - an unmapped short fires in bull too.
     assert should_strategy_fire_in_regime(
         "pivot_r3_blowoff_short", "bull", direction="short"
-    ) is False
+    ) is True
 
 
 def test_batch645_total_strategy_count_222():

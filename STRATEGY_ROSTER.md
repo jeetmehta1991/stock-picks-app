@@ -14,7 +14,7 @@
 - **= True engine roster: 226**
 - approvals.json ROWS != strategies (each strategy can have multiple change-class rows)
 
-**STRATEGY_REGIME_AFFINITY coverage (live count, B892):** 101 of 225 strategies have explicit regime affinity declarations in `regime_selector.STRATEGY_REGIME_AFFINITY`. 124 strategies fall through to default 'all regimes'. Per CLAUDE.md criterion #11 + DEC-611 (B891), the per-regime PASS gate is `min_regimes_passing=1` so strategies without explicit affinity can still earn regime-specific deployment via cube empirical PASS in any regime.
+**STRATEGY_REGIME_AFFINITY coverage (live count, B892):** 72 of 225 strategies have explicit regime affinity declarations in `regime_selector.STRATEGY_REGIME_AFFINITY` (plus 6 inert entries naming no registered strategy). 153 strategies fall through to the direction-aware default - long: bull, neutral; short: bull, neutral, bear, crisis (derived from `should_strategy_fire_in_regime` at generation time; S6-B1248-SHORT-REGIME-AFFINITY withdrew the short bull block on 2026-10-20). The filter binds when Phase 1B re-engages regime affinity; campaign cubes bypass it. Per CLAUDE.md criterion #11 + DEC-611 (B891), the per-regime PASS gate is `min_regimes_passing=1` so strategies without explicit affinity can still earn regime-specific deployment via cube empirical PASS in any regime.
 
 
 ## Direction counts

@@ -42,7 +42,9 @@ from scripts.direction_disaggregated_regime_audit import (
 def test_batch623_imports():
     """Pin (1)."""
     assert DEFAULT_LONG_REGIMES == {"bull", "neutral"}
-    assert DEFAULT_SHORT_REGIMES == {"bear", "crisis", "neutral"}
+    # S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20, rec (a)): no
+    # regime policy for shorts - the derived short default is every regime
+    assert DEFAULT_SHORT_REGIMES == {"bull", "neutral", "bear", "crisis"}
 
 
 def test_batch623_compare_keep_vs_remove_partitions_correctly():

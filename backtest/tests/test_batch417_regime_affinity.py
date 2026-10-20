@@ -106,10 +106,15 @@ def test_batch417_strategy_regime_affinity_count_floor():
     it without surfacing the cause defeats its purpose. Future lowering
     requires (a) which batch removed entries, (b) why, (c) explicit
     floor update in same batch."""
-    assert len(STRATEGY_REGIME_AFFINITY) >= 100, (
+    # 101 -> 78 (B3139q-r79): S6-B1248-SHORT-REGIME-AFFINITY (owner ruled
+    # 2026-10-20, recommendation (a) - no regime policy for shorts) removed
+    # the 23 explicit pure-short entries that copied the blanket short
+    # policy (Batch 203 / Batch 271); test_b1248_shorts_carry_no_regime_policy
+    # names them. Floor = the new count, no margin.
+    assert len(STRATEGY_REGIME_AFFINITY) >= 78, (
         f"STRATEGY_REGIME_AFFINITY has {len(STRATEGY_REGIME_AFFINITY)} "
-        f"entries, expected >= 100 (post-B617 -19 -> 105; post-B639 + "
-        f"family audits to current 101 -> 100 floor with 1-entry margin)")
+        f"entries, expected >= 78 (post-B617 -19 -> 105; post-B639 + "
+        f"family audits -> 101; B3139q-r79 -23 policy copies -> 78)")
 
 
 # Batch 418 (2026-05-28 owner-approved "proceed"): 15 OVERRIDES of existing

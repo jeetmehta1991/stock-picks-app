@@ -210,9 +210,11 @@ def test_batch603_regime_default_news_momentum_short_bear_crisis_neutral():
         assert should_strategy_fire_in_regime(
             "news_momentum_short", r, direction="short"
         ) is True
+    # S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20, recommendation
+    # (a)): no regime policy for shorts - an unmapped short fires in bull too.
     assert should_strategy_fire_in_regime(
         "news_momentum_short", "bull", direction="short"
-    ) is False
+    ) is True
 
 
 def test_batch603_regime_default_news_reversal_long_bull_neutral():

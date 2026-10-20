@@ -226,6 +226,8 @@ def test_batch670_class7_new_b291_default_short_regime_behavior():
         assert should_strategy_fire_in_regime(
             strat, "neutral", direction="short"
         ) is True
+        # S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20, recommendation
+        # (a)): no regime policy for shorts - an unmapped short fires in bull too.
         assert should_strategy_fire_in_regime(
             strat, "bull", direction="short"
-        ) is False
+        ) is True

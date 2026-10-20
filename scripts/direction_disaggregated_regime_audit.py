@@ -50,7 +50,8 @@ import pandas as pd
 # Make root importable
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
+from backtest.engine.regime_selector import (  # noqa: E402
+    STRATEGY_REGIME_AFFINITY, should_strategy_fire_in_regime)
 
 
 # B617 audit identified 21 deferred dual strategies. Source of truth is
@@ -100,8 +101,15 @@ def compute_direction_stats(
     return stats
 
 
-DEFAULT_LONG_REGIMES = {"bull", "neutral"}
-DEFAULT_SHORT_REGIMES = {"bear", "crisis", "neutral"}
+# S6-B1248-SHORT-REGIME-AFFINITY (B3139q-r79): the direction-aware defaults
+# are DERIVED from the engine's own function on an empty affinity map, never
+# restated - the restated copy kept Batch 291's short set {bear, crisis,
+# neutral} after the owner withdrew that policy (2026-10-20, rec (a)).
+_REGIMES = ("bull", "neutral", "bear", "crisis")
+DEFAULT_LONG_REGIMES = {r for r in _REGIMES if should_strategy_fire_in_regime(
+    "_unmapped", r, affinity={}, direction="long")}
+DEFAULT_SHORT_REGIMES = {r for r in _REGIMES if should_strategy_fire_in_regime(
+    "_unmapped", r, affinity={}, direction="short")}
 
 
 def compare_keep_vs_remove(

@@ -1209,13 +1209,26 @@ def main() -> int:
     out_lines.append(f"- approvals.json ROWS != strategies (each strategy can have multiple change-class rows)")
     out_lines.append("")
     # B892 live-computed STRATEGY_REGIME_AFFINITY count (was hardcoded "1 of 205")
+    # B3139q-r79 (S6-B1248-SHORT-REGIME-AFFINITY): the fall-through default is
+    # DERIVED from regime_selector at generation time, never restated - this
+    # sentence said 'all regimes' for years while Batch 291 had made the
+    # default direction-aware - and the count is of REGISTERED strategies (an
+    # entry naming a deleted strategy is inert). A failed read announces
+    # itself rather than printing a quiet zero (L508).
+    _regs = ("bull", "neutral", "bear", "crisis")
     try:
-        from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
-        n_with_affinity = len(STRATEGY_REGIME_AFFINITY)
-    except Exception:
-        n_with_affinity = 0
+        from backtest.engine.regime_selector import (
+            STRATEGY_REGIME_AFFINITY, should_strategy_fire_in_regime)
+        n_with_affinity = sum(1 for k in STRATEGY_REGIME_AFFINITY if k in ALL_STRATEGIES)
+        n_inert = len(STRATEGY_REGIME_AFFINITY) - n_with_affinity
+        _dflt = {d: ", ".join(r for r in _regs if should_strategy_fire_in_regime(
+            "_unmapped", r, affinity={}, direction=d)) for d in ("long", "short")}
+    except Exception as _e:
+        print(f"[build_strategy_roster] regime_selector unreadable: {_e!r} - "
+              "the affinity line below is UNMEASURED", file=sys.stderr)
+        n_with_affinity, n_inert, _dflt = 0, 0, {"long": "UNMEASURED", "short": "UNMEASURED"}
     n_without_affinity = len(ALL_STRATEGIES) - n_with_affinity
-    out_lines.append(f"**STRATEGY_REGIME_AFFINITY coverage (live count, B892):** {n_with_affinity} of {len(ALL_STRATEGIES)} strategies have explicit regime affinity declarations in `regime_selector.STRATEGY_REGIME_AFFINITY`. {n_without_affinity} strategies fall through to default 'all regimes'. Per CLAUDE.md criterion #11 + DEC-611 (B891), the per-regime PASS gate is `min_regimes_passing=1` so strategies without explicit affinity can still earn regime-specific deployment via cube empirical PASS in any regime.")
+    out_lines.append(f"**STRATEGY_REGIME_AFFINITY coverage (live count, B892):** {n_with_affinity} of {len(ALL_STRATEGIES)} strategies have explicit regime affinity declarations in `regime_selector.STRATEGY_REGIME_AFFINITY` (plus {n_inert} inert entries naming no registered strategy). {n_without_affinity} strategies fall through to the direction-aware default - long: {_dflt['long']}; short: {_dflt['short']} (derived from `should_strategy_fire_in_regime` at generation time; S6-B1248-SHORT-REGIME-AFFINITY withdrew the short bull block on 2026-10-20). The filter binds when Phase 1B re-engages regime affinity; campaign cubes bypass it. Per CLAUDE.md criterion #11 + DEC-611 (B891), the per-regime PASS gate is `min_regimes_passing=1` so strategies without explicit affinity can still earn regime-specific deployment via cube empirical PASS in any regime.")
     out_lines.append("")
     # B894 SCRUB: Stage 4 approvals per-strategy mapping line removed - sourced
     # from stale approvals.json (R4-era; pre-B722/B874 deletions). Will be

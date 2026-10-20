@@ -205,9 +205,11 @@ def test_batch617_class_a_strategies_get_direction_aware_default():
         assert should_strategy_fire_in_regime(
             "donchian_10_breakout", r, direction="short"
         ) is True
+    # S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20, recommendation
+    # (a)): no regime policy for shorts - an unmapped short fires in bull too.
     assert should_strategy_fire_in_regime(
         "donchian_10_breakout", "bull", direction="short"
-    ) is False
+    ) is True
 
 
 def test_batch617_all_strategies_count_unchanged_at_222():

@@ -94,9 +94,11 @@ def test_batch636_short_regime_default_bear_crisis_neutral():
         assert should_strategy_fire_in_regime(
             "three_black_crows_short", r, direction="short"
         ) is True
+    # S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20, recommendation
+    # (a)): no regime policy for shorts - an unmapped short fires in bull too.
     assert should_strategy_fire_in_regime(
         "three_black_crows_short", "bull", direction="short"
-    ) is False
+    ) is True
 
 
 def test_batch636_three_black_crows_short_still_registered():

@@ -10990,18 +10990,16 @@ def test_batch291_direction_aware_regime_default_long():
 
 
 def test_batch291_direction_aware_regime_default_short():
-    """Batch 291: short strategies NOT in map default to {bear, crisis, neutral}.
-    Bull blocked; bear/crisis/neutral allowed (matches Batch 271 explicit
-    short-affinity expansion philosophy)."""
+    """Batch 291 set short strategies NOT in the map to {bear, crisis,
+    neutral}; S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20,
+    recommendation (a)) withdrew that policy - an unmapped short fires in
+    every regime, and the 'unknown' regime still blocks (DEC-316)."""
     from backtest.engine.regime_selector import should_strategy_fire_in_regime
+    for r in ("bull", "neutral", "bear", "crisis"):
+        assert should_strategy_fire_in_regime(
+            "_unmapped_short", r, direction="short") is True, r
     assert should_strategy_fire_in_regime(
-        "_unmapped_short", "bull", direction="short") is False
-    assert should_strategy_fire_in_regime(
-        "_unmapped_short", "neutral", direction="short") is True
-    assert should_strategy_fire_in_regime(
-        "_unmapped_short", "bear", direction="short") is True
-    assert should_strategy_fire_in_regime(
-        "_unmapped_short", "crisis", direction="short") is True
+        "_unmapped_short", "unknown", direction="short") is False
 
 
 def test_batch291_backward_compat_no_direction_still_allow_all():
@@ -11430,38 +11428,33 @@ def test_batch274_dedup_priority_reverted():
 
 
 def test_batch271_short_regime_affinity_expanded_to_neutral():
-    """Batch 271 (Tier 2 expansion of T1A_COMPREHENSIVE_REVIEW): short
-    strategies that were previously gated to bear/crisis only now allow
-    neutral too. T1a forensic: regime_affinity_block_neutral_batch203
-    blocked 942/1212 hull_rsi_short candidates + 833/1083
-    cpr_narrow_momentum_short candidates (neutral was ~70% of 4y window).
-
-    Cross-asset shorts (risk_off_bond_equity_short) NOT expanded - their
-    signals are regime-defined."""
+    """Batch 271 widened the blanket short policy from bear/crisis to + neutral
+    (T1a forensic: neutral was ~70% of the 4y window). S6-B1248-SHORT-REGIME-
+    AFFINITY (owner ruled 2026-10-20, recommendation (a)) then withdrew the
+    policy itself: the registered shorts that carried it now fire in every
+    regime, direction passed or not. Names that no longer register keep their
+    inert entries; the cross-asset risk_off_bond_equity_short keeps its own
+    regime-defined set (its signal IS a risk-off regime)."""
     from backtest.engine.regime_selector import should_strategy_fire_in_regime
-    # Technical shorts: now allow neutral
-    expanded = [
-        "hull_rsi_short", "rsi_overbought_short", "bollinger_upper_short",
+    registered_copies = [
+        "rsi_overbought_short", "bollinger_upper_short",
         "stochrsi_overbought_short", "ichimoku_cloud_breakdown",
         "supertrend_macd_short", "donchian_breakdown_short",
-        "camarilla_rsi_obv_short", "cpr_narrow_momentum_short",
-        "52w_low_breakdown", "prev_day_low_breakdown",
-        "po3_bearish", "po3_htf_aligned_short", "htf_aligned_breakout_short",
+        "cpr_narrow_momentum_short", "52w_low_breakdown", "prev_day_low_breakdown",
+        "po3_bearish", "htf_aligned_breakout_short",
         "weekly_bias_pullback_short", "smc_fvg_retest_short",
         "smc_breaker_block_short", "smc_mitigation_block_short",
         "smc_premium_short", "smc_ote_short", "orb_stocks_in_play_short",
     ]
-    for strat in expanded:
-        assert should_strategy_fire_in_regime(strat, "neutral") is True, (
-            f"{strat}: expected neutral=True post-Batch-271 expansion"
-        )
-        assert should_strategy_fire_in_regime(strat, "bear") is True, (
-            f"{strat}: bear should still be allowed"
-        )
-        assert should_strategy_fire_in_regime(strat, "bull") is False, (
-            f"{strat}: bull should remain blocked"
-        )
-
+    for strat in registered_copies:
+        for r in ("bull", "neutral", "bear", "crisis"):
+            assert should_strategy_fire_in_regime(strat, r) is True, (strat, r)
+            assert should_strategy_fire_in_regime(
+                strat, r, direction="short") is True, (strat, r)
+    # names that no longer register keep their (inert) Batch 271 entries
+    for strat in ("hull_rsi_short", "camarilla_rsi_obv_short", "po3_htf_aligned_short"):
+        assert should_strategy_fire_in_regime(strat, "neutral") is True
+        assert should_strategy_fire_in_regime(strat, "bull") is False
     # Cross-asset shorts NOT expanded (signals are regime-defined)
     assert should_strategy_fire_in_regime("risk_off_bond_equity_short", "neutral") is False
     assert should_strategy_fire_in_regime("risk_off_bond_equity_short", "bear") is True
@@ -59068,6 +59061,115 @@ def test_b3233b_no_covered_gate_is_proven_only_quiet():
         f"gate(s) whose corpus cases are ALL must-quiet: {quiet_only} - the "
         "corpus never proves they fire. Add the verbatim incident as a "
         "must-fire case (S6-B3234).")
+
+
+# S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20, recommendation (a)):
+# the explicit PURE-short entries that remain, each with its own reason rather
+# than the blanket short policy. S6-B3237 asks the owner whether (a) reaches
+# them; a new explicit pure-short entry must be named here with its reason.
+_B1248_PURE_SHORT_ENTRIES_KEPT = {
+    "post_inclusion_reversal_short": {"bull", "neutral", "bear", "crisis"},  # DEC-370, all regimes
+    "post_deletion_drift_short": {"bear", "crisis", "neutral"},  # DEC-370 index-rebalance block
+    "pairs_mean_reversion_short": {"bull", "neutral"},  # pairs thesis (Krauss 2024)
+    "risk_off_bond_equity_short": {"bear", "crisis"},  # a regime-defined risk-off signal
+    "avwap_20high_rejection_short": {"neutral", "bear", "crisis"},  # designed for neutral/bear
+    "pead_short": {"bull", "neutral", "bear", "crisis"},  # PEAD, all regimes
+    "xs_momentum_bottom_decile_short": {"bear", "crisis"},  # Batch 220 factor rationale
+}
+_B1248_POLICY_COPIES_REMOVED = (
+    "po3_bearish", "htf_aligned_breakout_short", "weekly_bias_pullback_short",
+    "smc_fvg_retest_short", "smc_breaker_block_short", "smc_mitigation_block_short",
+    "smc_premium_short", "smc_ote_short", "smc_equal_highs_sweep_short",
+    "orb_stocks_in_play_short", "bollinger_upper_short", "rsi_overbought_short",
+    "stochrsi_overbought_short", "macd_crossover_short", "ichimoku_cloud_breakdown",
+    "parabolic_sar_flip_short", "supertrend_macd_short", "donchian_breakdown_short",
+    "shooting_star_short", "cpr_narrow_momentum_short", "52w_low_breakdown",
+    "death_cross_50_200_volume", "prev_day_low_breakdown")
+
+
+def test_b1248_shorts_carry_no_regime_policy():
+    """S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20, verbatim
+    'Approve all recs fable mode be extremely thorough', recommendation (a) -
+    no regime policy for shorts). MEASURED in-sample: 90 of 104 shorts did
+    worse in bear than in bull. The blanket short policy lived in TWO places:
+    the Batch 291 default for unmapped shorts and 23 explicit pure-short
+    entries copying it (Batch 203 / Batch 271). Both are withdrawn: every
+    registered pure short without an explicit entry fires in all four
+    regimes, the 23 copies are gone, and the explicit pure-short entries
+    left are exactly the seven named with their own reasons - a new one fails
+    here until it is named."""
+    from backtest.engine.regime_selector import (
+        STRATEGY_REGIME_AFFINITY as aff, should_strategy_fire_in_regime)
+    from backtest.signals.screener import ALL_STRATEGIES
+    pure = {k for k, fn in ALL_STRATEGIES.items() if fn({}).get("direction") == "short"}
+    assert len(pure) >= 50, len(pure)          # positive control: 59 at r79
+    kept = {k: set(v) for k, v in aff.items() if k in pure}
+    assert kept == _B1248_PURE_SHORT_ENTRIES_KEPT, sorted(
+        set(kept) ^ set(_B1248_PURE_SHORT_ENTRIES_KEPT))
+    for k in _B1248_POLICY_COPIES_REMOVED:
+        assert k in pure and k not in aff, k
+    for k in sorted(pure - set(aff)):
+        for r in ("bull", "neutral", "bear", "crisis"):
+            assert should_strategy_fire_in_regime(k, r, direction="short"), (k, r)
+        assert not should_strategy_fire_in_regime(k, "unknown", direction="short"), k
+
+
+def test_b3232_long_shortlist_reads_in_sample_only_and_open_longs():
+    """S6-B3232 (owner ruling 2026-10-20, recommendation (a)): the long-campaign
+    shortlist reads the IN-SAMPLE fields of the roster rows only - no code
+    constant names a holdout-derived field (docstrings, which name them in
+    prose, are blanked first) and in_sample_rows copies nothing else out of a
+    row that carries them; every listed row is an open (NOT-STARTED or
+    STALLED) long-capable non-member; the ranked order is cost lane, then
+    in-sample gates, then in-sample Sharpe, and the lane carries the Step-1
+    floor; the deploy-bar detector finds a
+    known re-scope; and the committed artifact is this build."""
+    import ast as _ast
+    import json as _json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    src = (root / "scripts" / "build_long_campaign_shortlist.py").read_text(encoding="utf-8")
+    tree = _ast.parse(src)
+    for n in _ast.walk(tree):
+        if (isinstance(n, (_ast.Module, _ast.FunctionDef)) and n.body
+                and isinstance(n.body[0], _ast.Expr)
+                and isinstance(n.body[0].value, _ast.Constant)):
+            n.body[0].value.value = ""
+    consts = {n.value for n in _ast.walk(tree)
+              if isinstance(n, _ast.Constant) and isinstance(n.value, str)}
+    holdout = {"holdout", "bh", "verdict", "margin", "trades"}
+    assert not (consts & holdout), consts & holdout
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_long_campaign_shortlist as sl
+    import phase1b_membership as pm
+    assert not (set(sl.IN_SAMPLE_FIELDS) & holdout)
+    fake = {"all_rows": [{"cube": "R5", "direction": "long", "strategy": "x",
+                          "exit": "e", "is_sharpe": 1.0, "is_n_gates": 5,
+                          "n_tickers": 3, "holdout": {"sharpe": 9.0},
+                          "verdict": "PASS", "bh": True, "margin": 1.0,
+                          "trades": [("A", "2025-06-01")]}]}
+    assert set(sl.in_sample_rows(fake)["x"]) == set(sl.IN_SAMPLE_FIELDS)
+    d = sl.build(root)
+    pop = d["population"]
+    assert pop["ranked"] + pop["unranked"] == pop["open_long_capable"] >= 100, pop
+    mem = pm.members(root)
+    for r in d["ranked"] + d["unranked"]:
+        assert r["status"] in sl.OPEN_STATUSES, r
+        assert r["kind"] in ("long", "dual") and r["strategy"] not in mem, r
+    key = [(sl.COST_ORDER.index(r["long_lane"]), -(r["is_gates_cleared"] or 0),
+            -(r["is_sharpe"] if r["is_sharpe"] is not None else -1e9))
+           for r in d["ranked"]]
+    assert key == sorted(key)
+    # the lane carries the Step-1 floor (classify_stream), so no floor key
+    for r in d["ranked"]:
+        assert r["step1_floor_met"] == (r["long_lane"] in ("TIGHTEN", "NONE")), r
+    assert sl.deploy_bar("pre_fomc_long_sleeve") == "do not deploy"
+    art = _json.loads((root / "output_audit" / "b3232_long_campaign_shortlist.json")
+                      .read_text(encoding="utf-8"))
+    assert art["population"] == pop, (art["population"], pop)
+    assert [r["strategy"] for r in art["ranked"]] == [r["strategy"] for r in d["ranked"]]
 
 
 def test_b3218_a_present_admissions_record_without_its_list_is_refused(tmp_path):

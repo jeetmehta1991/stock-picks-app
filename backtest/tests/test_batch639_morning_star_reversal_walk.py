@@ -121,7 +121,9 @@ def test_batch639_morning_star_short_b291_default():
     for r in ["bear", "crisis", "neutral"]:
         assert should_strategy_fire_in_regime("morning_star", r, direction="short") is True, (
             f"SHORT must fire in {r} per B291 default")
-    assert should_strategy_fire_in_regime("morning_star", "bull", direction="short") is False
+    # S6-B1248-SHORT-REGIME-AFFINITY (owner ruled 2026-10-20, recommendation
+    # (a)): no regime policy for shorts - an unmapped short fires in bull too.
+    assert should_strategy_fire_in_regime("morning_star", "bull", direction="short") is True
 
 
 def test_batch639_checklist_q_candle_pit_rule_present():
