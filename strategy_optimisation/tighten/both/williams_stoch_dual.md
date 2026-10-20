@@ -1,6 +1,6 @@
 # Table A - williams_stoch_dual
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 3ca05f86b | commit 1667c8859 at 2026-10-17 07:49:18 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit d4bf4d286 at 2026-10-20 00:43:52 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** confluence | **status:** NOT-STARTED | **R5 fires:** 750 | **surviving fires (T1):** 750 (unchanged since R5 - filter is identity)
 
@@ -89,10 +89,10 @@ leg runs.
 | P9 | PRODUCER | near_wood_s1 - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | price within 0.3pct of the named pivot level (near(); technical.py:76) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P9.x) | BANDS-DEFINED |
 | P9.1 | BAND | proximity tolerance to Woodie S1 (abs dist/level) - backtest/signals/technical.py:76 (near), :81 (near_wide) | BRACKET production 0.003; 0.015 is the shipped near_*_wide | 0.003 | [0.002, 0.003, 0.005, 0.015 (the _wide variant)] | none - the level is persisted but today's price is not a signal key | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P10 | PRODUCER | stoch_bearish_cross - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | stochastic (14,3,3) k/d cross with prior-bar confirmation (technical.py:604-630) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P10.x) | BANDS-DEFINED |
-| P10.1 | BAND | mirror of stoch_bullish_cross - backtest/signals/technical.py:604-630 | mirror | (14,3,3) | as bullish, mirrored (guard k above [70, 80]) | guard-band side on persisted k/d | freshness; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P10.1 | BAND | overbought guard at the cross (k above a floor) - backtest/signals/technical.py compute_stochastic | mirror of the bullish guard | no guard | no guard, k > 70, k > 80 | TIGHTER - each guard is an AND on the persisted stoch_k at the cross bar | none - a guard adds no fire (the span is counted on stoch_bullish_cross) | T3 review before any grid |
 | P11 | PRODUCER | stoch_bullish_cross - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | stochastic (14,3,3) k/d cross with prior-bar confirmation (technical.py:604-630) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P11.x) | BANDS-DEFINED |
 | P11.1 | BAND | stochastic (k, smooth, d) - backtest/signals/technical.py:604-624 | BRACKET canon | (14, 3, 3) | [(14,3,3), (5,3,3), (21,5,5)] | none - other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P11.2 | BAND | cross freshness (k over d today) - technical.py:629 | BRACKET the oversold zone | structural | add guard band: k below [20, 30] at cross | guard-band side on persisted stoch_k/stoch_d | the freshness itself (prior k/d unpersisted); DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P11.2 | BAND | oversold guard at the cross (k below a ceiling) - backtest/signals/technical.py compute_stochastic | BRACKET the oversold zone | no guard | no guard, k < 20, k < 30 | TIGHTER - each guard is an AND on the persisted stoch_k at the cross bar | none - a guard adds no fire (moving the cross itself needs the prior k/d, unpersisted) | T3 review before any grid |
 | P12 | PRODUCER | williams_r_oversold - emitted by backtest/signals/screener.py +3; the boolean's UNDERLYING condition is bandable through its producer's internals | Williams %R(14) < -80 (technical.py:702) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P12.x) | BANDS-DEFINED |
 | P12.1 | BAND | period - backtest/signals/technical.py:692 | BRACKET production | 14 | 10, 14, 20 | none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P12.2 | BAND | oversold threshold - technical.py:702 | BRACKET canon -80; williams_r IS persisted | -80 | -90, -85, -80 | TIGHTER (< -85, < -90) - subset on persisted williams_r | LOOSER (> -80); DEFINED-NO-ACTUATOR | T3 review before any grid |
@@ -849,20 +849,20 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P7.1 | proximity tolerance to S3 (abs dist/leve | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 3 |
 | P8.1 | proximity tolerance to Woodie R1 (abs di | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 3 |
 | P9.1 | proximity tolerance to Woodie S1 (abs di | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 3 |
-| P10.1 | mirror of stoch_bullish_cross | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 1 |
+| P10.1 | overbought guard at the cross (k above a | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
 | P11.1 | stochastic (k, smooth, d) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
-| P11.2 | cross freshness (k over d today) | 2 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 1 |
+| P11.2 | oversold guard at the cross (k below a c | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
 | P12.1 | period | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P12.2 | oversold threshold | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
 | P13 | williams_r > -20 | 4 | subset-safe | no - derives offline | 1 | 3 | 0 |
 | P14 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
-FULL FACTORIAL     4 x 4 x 4 x 4 x 4 x 4 x 4 x 4 x 4 x 2 x 3 x 2 x 3 x 3 x 4 x 1 = 113246208
-offline gradings   11 level-combinations x 24 exits = 264 (graded from the engine runs' cubes, never run themselves)
+FULL FACTORIAL     4 x 4 x 4 x 4 x 4 x 4 x 4 x 4 x 4 x 3 x 3 x 3 x 3 x 3 x 4 x 1 = 254803968
+offline gradings   107 level-combinations x 24 exits = 2568 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  113246196 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 11 + 113246196 = 113246208 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+PENDING ACTUATION  254803860 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 107 + 254803860 = 254803968 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

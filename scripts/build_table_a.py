@@ -275,6 +275,18 @@ def _axis(aid, prm, n, sub, act, env, split) -> tuple:
     return (aid, prm, n, sub, act, env, eng, off, pend)
 
 
+def _axis_sub(cls, prose_sub: bool) -> bool:
+    """S6-B3196: an axis's subset-safe flag follows its OWN level classes - a
+    multi-axis row can hold a pure-offline axis beside a pure-pending one
+    (insider_cluster_active's N and window), and one prose prefix cannot
+    describe both. An axis with no non-production level keeps the row's
+    prose reading: it has no level to class."""
+    n, eng, off, pend = cls
+    if n <= 1:
+        return prose_sub
+    return off > 0 and eng == 1 and pend == 0
+
+
 def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
     """B2841: the R1 band definitions (table_a_bands.py) as sub-rows under a
     P-row. env None on a resim-bearing knob renders DEFINED-NO-ACTUATOR - the
@@ -315,11 +327,13 @@ def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
             _act = bool(env)
             if len(_cls) == 1:
                 axes.append(_axis(f"P{pid}.{j}", k["param"][:40], _cls[0][0],
-                                  _sub, _act, env, _cls[0][1:]))
+                                  _axis_sub(_cls[0], _sub), _act, env,
+                                  _cls[0][1:]))
             else:
                 for _ai, _c in enumerate(_cls, 1):
                     axes.append(_axis(f"P{pid}.{j}.{_ai}", k["param"][:40],
-                                      _c[0], _sub, _act, env, _c[1:]))
+                                      _c[0], _axis_sub(_c, _sub), _act, env,
+                                      _c[1:]))
         out.append(
             f"| P{pid}.{j} | BAND | {k['param']} - {k['evidence']} | "
             f"{k['basis']} | "

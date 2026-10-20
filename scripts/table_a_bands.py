@@ -226,10 +226,15 @@ PRODUCER_BANDS = {
          "evidence": "technical.py hull block"},
     ],
     "adx_trending": [
+        # S6-B3196: the gate is adx > 25 (technical.py, the adx_trending key)
+        # and every consumer requires the flag True - AND/OR legs, none
+        # negated - so 30 keeps a SUBSET of the fires and 20 adds fires the
+        # cube does not hold
         {"param": "trending threshold", "production": 25, "band": [20, 25, 30],
          "basis": "BRACKET canon 25; adx IS persisted",
-         "offline": "any level - re-derive from persisted adx",
-         "resim": "none needed", "env": None,
+         "free_band": [25, 30], "resim_band": [20],
+         "offline": "TIGHTER (> 30) - re-derived from the persisted adx",
+         "resim": "20 (LOOSER - adx > 20 adds fires)", "env": None,
          "evidence": "backtest/signals/technical.py:915"},
     ],
     "price_above_ema_200_break_recent_5d": [
@@ -449,16 +454,29 @@ PRODUCER_BANDS.update({
         _K("stochastic (k, smooth, d)", "(14, 3, 3)", "[(14,3,3), (5,3,3), (21,5,5)]",
            "BRACKET canon", "none - other spans unpersisted", "the whole band",
            "backtest/signals/technical.py:604-624"),
-        _K("cross freshness (k over d today)", "structural",
-           "add guard band: k below [20, 30] at cross",
-           "BRACKET the oversold zone",
-           "guard-band side on persisted stoch_k/stoch_d",
-           "the freshness itself (prior k/d unpersisted)",
-           "technical.py:629")],
-    "stoch_bearish_cross": [_K("mirror of stoch_bullish_cross", "(14,3,3)",
-                               "as bullish, mirrored (guard k above [70, 80])",
-                               "mirror", "guard-band side on persisted k/d",
-                               "freshness", "backtest/signals/technical.py:604-630")],
+        # S6-B3196: a guard is one more AND on the persisted stoch_k at the
+        # cross bar and both consumers require the cross True, so every guard
+        # level keeps a SUBSET of the fires; production (no guard) is a level
+        # of the band, which the old two-value band left out of n
+        dict(_K("oversold guard at the cross (k below a ceiling)", "no guard",
+                ["no guard", "k < 20", "k < 30"], "BRACKET the oversold zone",
+                "TIGHTER - each guard is an AND on the persisted stoch_k at "
+                "the cross bar",
+                "none - a guard adds no fire (moving the cross itself needs "
+                "the prior k/d, unpersisted)",
+                "backtest/signals/technical.py compute_stochastic"),
+             free_band=["no guard", "k < 20", "k < 30"], resim_band=[])],
+    # S6-B3196: the bearish leg's OWN guard axis (its span is counted on the
+    # bullish row); each guard level keeps a SUBSET of the fires
+    "stoch_bearish_cross": [dict(_K(
+        "overbought guard at the cross (k above a floor)", "no guard",
+        ["no guard", "k > 70", "k > 80"], "mirror of the bullish guard",
+        "TIGHTER - each guard is an AND on the persisted stoch_k at the cross "
+        "bar",
+        "none - a guard adds no fire (the span is counted on "
+        "stoch_bullish_cross)",
+        "backtest/signals/technical.py compute_stochastic"),
+        free_band=["no guard", "k > 70", "k > 80"], resim_band=[])],
     "rsi_14": _span("rsi", 14, "[9, 14, 21]",
                     "backtest/signals/technical.py rsi block"),
     "rsi_2": _span("rsi (fast escape-hatch)", 2, "[2, 3, 5]",
@@ -617,21 +635,45 @@ PRODUCER_BANDS.update({
            "compute_cup_handle_neckline_break_retest_signals")],
     # ---- events / smart money / factor ------------------------------------
     "insider_cluster_active": [
-        _K("cluster rule (unique buyers >= N in window)", "N in 30d",
-           "N [2, 3, 5]; window [14, 30, 60] days",
-           "BRACKET the shipped cluster rule",
-           "N-side TIGHTER via persisted insider_unique_buyers_30d",
-           "window changes", "backtest/data/smart_money.py cluster block")],
+        # S6-B3196: the producer is unique_buyers >= 2 over 30 days (the
+        # insider_buying.compute_insider_cluster_signals defaults) and every
+        # consumer requires the flag True - AND/OR legs, none negated - so a
+        # higher N keeps a SUBSET of the fires, read on the co-emitted
+        # insider_unique_buyers_30d; any other window needs the engine (14 is
+        # tighter but its count is not persisted, 60 adds fires)
+        dict(_K("cluster rule (unique buyers >= N in window)", "N >= 2 in 30d",
+                "N [2, 3, 5]; window [14, 30, 60] days",
+                "BRACKET the shipped cluster rule",
+                "N-side TIGHTER (3, 5) on the persisted "
+                "insider_unique_buyers_30d",
+                "window changes (14, 60)",
+                "backtest/signals/insider_buying.py "
+                "compute_insider_cluster_signals"),
+             axis_levels=[
+                 {"production": 2, "band": [2, 3, 5], "free_band": [2, 3, 5],
+                  "resim_band": []},
+                 {"production": 30, "band": [14, 30, 60], "free_band": [30],
+                  "resim_band": [14, 60]}])],
     "insider_unique_buyers_30d": [
         _K("count window (days)", 30, "[14, 30, 60]",
            "BRACKET production", "count floors via the persisted count",
-           "window changes", "backtest/data/smart_money.py:433-439 region")],
+           "window changes",
+           "backtest/signals/insider_buying.py compute_insider_cluster_signals")],
     "xs_momentum_top_quintile": [
-        _K("quantile cut (quintile)", "top 20pct", "[decile, quintile, tercile]",
-           "BRACKET the cut; the underlying 12-1 momentum and decile keys are "
-           "persisted", "re-cuts via persisted xs decile/raw keys - OFFLINE",
-           "recompute at other formation windows",
-           "backtest/signals cross-sectional factor block")],
+        # S6-B3196: top quintile is xs_momentum_decile >= 9 and top decile is
+        # == 10 (cross_sectional.py), every consumer requires the quintile flag
+        # True and the decile flag is persisted - so decile keeps a SUBSET of
+        # the fires and tercile adds fires the cube does not hold
+        dict(_K("quantile cut (quintile)", "quintile",
+                ["decile", "quintile", "tercile"],
+                "BRACKET the cut; the underlying 12-1 momentum and decile keys "
+                "are persisted",
+                "TIGHTER (decile) - re-cut on the persisted "
+                "xs_momentum_top_decile",
+                "tercile (LOOSER - adds fires); other formation windows "
+                "recompute too",
+                "backtest/signals/cross_sectional.py xs momentum flags"),
+             free_band=["quintile", "decile"], resim_band=["tercile"])],
     "macd_12_26_9_bullish": [
         _K("span triple (mirror of the bearish entry)", "(12,26,9)",
            "[(8,21,5), (12,26,9)] both computed; others new",
@@ -724,8 +766,8 @@ LEG_DEFN.update(_same("Monday-equivalent open gapped up >= 1.5pct vs prior close
 LEG_DEFN.update(_same("today's close above the 60d/40-bin volume-profile POC (volume_profile.py:140)", "vp_close_above_poc"))
 LEG_DEFN.update(_same("VIX close above VIX3M close - term-structure stress (cross_asset.py:216-231)", "vix_term_backwardation"))
 LEG_DEFN.update(_same("weekly close above weekly EMA(10) AND EMA(20) (multi_timeframe.py:45-90)", "weekly_bias_bull"))
-LEG_DEFN.update(_same("insider buy cluster active in the 30d window (smart_money.py cluster block)", "insider_cluster_active"))
-LEG_DEFN.update(_same("count of unique insider buyers in 30d (smart_money.py)", "insider_unique_buyers_30d"))
+LEG_DEFN.update(_same("insider buy cluster active in the 30d window: >= 2 unique buyers (insider_buying.py)", "insider_cluster_active"))
+LEG_DEFN.update(_same("count of unique insider buyers in 30d (insider_buying.py)", "insider_unique_buyers_30d"))
 LEG_DEFN.update(_same("OBV vs its moving average (technical.py:1570)", "obv_bullish", "obv_bearish"))
 LEG_DEFN.update(_same("close vs the named SMA/EMA span (compute_ema_sma family)", "price_above_sma_50", "price_above_sma_200", "below_sma_50", "below_sma_200", "price_above_ema_50", "price_above_ema_200", "below_ema_200"))
 LEG_DEFN.update(_same("close vs session VWAP (vwap block)", "above_vwap"))
@@ -786,7 +828,6 @@ BAND_AXES: dict[str, list[int]] = {
     "[0.2, 0.3, 0.4]": [3],
     "midpoint vs [0.382, 0.5, 0.618] retrace": [4],
     "as morning_star, mirrored": [],
-    "as bullish, mirrored (guard k above [70, 80])": [2],
     "as obv_bullish, mirrored": [],
     "as long, mirrored": [],
     "the registered SPECS bands (P1-P6)": [],
@@ -795,7 +836,6 @@ BAND_AXES: dict[str, list[int]] = {
     "[(7,14,28), (5,10,20), (14,28,56)]": [3],
     "[70, 75, 80]": [3],
     "[(14,3,3), (5,3,3), (21,5,5)]": [3],
-    "add guard band: k below [20, 30] at cross": [2],
     "[9, 14, 21]": [3],
     "[2, 3, 5]": [3],
     "MA span [10, 20, 50]": [3],
@@ -811,7 +851,6 @@ BAND_AXES: dict[str, list[int]] = {
     "window [3, 5, 10]; tolerance [0, 0.2, 0.5] pct": [3, 3],
     "N [2, 3, 5]; window [14, 30, 60] days": [3, 3],
     "[14, 30, 60]": [3],
-    "[decile, quintile, tercile]": [3],
     "[(8,21,5), (12,26,9)] both computed; others new": [2],
     # a display-only field: not a gate, carries no swept axis
     "-": [],
@@ -868,6 +907,16 @@ _b2862_validate_every_band_is_countable()
 # whose levels are not all one class carries free_band (offline levels,
 # production included) and resim_band (engine-only levels), as SPECS does
 # (engine_split, S6-B3182).
+#
+# S6-B3196 (B3139q-r72w): the same rule for a MULTI-AXIS row - a band carrying
+# several axes (insider_cluster_active's N and window) lists one axis_levels
+# entry per axis, each with its production, band, free_band and resim_band,
+# and the validator holds each entry to the partition and to the band's
+# declared axis count. A level's class comes from the gate's DIRECTION, read
+# from its producer and checked against every consumer: the vix flags SELECT an
+# RSI cut (if / elif), so moving the low edge to 0.25 LOOSENS bollinger_lower's
+# cut on the moved days - a re-band that looks tighter is not tighter when the
+# flag is a selector.
 # ---------------------------------------------------------------------------
 
 def _numeric_levels(band):
@@ -893,6 +942,17 @@ def _numeric_levels(band):
     return [float(v) for v in vals]
 
 
+def _level_split(n, prod, free, resim, act) -> tuple:
+    """(n, engine, offline, pending) for ONE axis's per-level fields. The
+    single-axis free_band / resim_band form and every axis_levels entry share
+    this one definition (S6-B3196): offline = the free levels other than
+    production; the resim levels are engine runs when the row is actuated and
+    pending when it is not."""
+    off = len([b for b in (free or []) if b != prod])
+    rs = len(resim or [])
+    return (n, 1 + rs, off, 0) if act else (n, 1, off, rs)
+
+
 def band_level_classes(row: dict) -> list:
     """[(n, engine, offline, pending)] for each axis of a band row (S6-B3189).
 
@@ -901,22 +961,43 @@ def band_level_classes(row: dict) -> list:
     offline = levels graded from a run's cube (subsets of its fires);
     pending = non-production levels that need an env knob that does not exist.
     The three partition n. A row carrying free_band / resim_band is classed
-    level by level; any other row is ONE class - TIGHTER-noted rows offline,
-    actuated rows engine, the rest pending - exactly as the footer read it
-    before."""
+    level by level, and a multi-axis row carrying axis_levels is classed level
+    by level on each axis (S6-B3196); any other row is ONE class -
+    TIGHTER-noted rows offline, actuated rows engine, the rest pending -
+    exactly as the footer read it before."""
     counts = band_axes(row)
     act = bool(row.get("env"))
+    if "axis_levels" in row:
+        return [_level_split(n, a.get("production"), a.get("free_band"),
+                             a.get("resim_band"), act)
+                for n, a in zip(counts, row["axis_levels"])]
     if "free_band" in row or "resim_band" in row:
-        prod = row.get("production")
-        off = len([b for b in (row.get("free_band") or []) if b != prod])
-        resim = len(row.get("resim_band") or [])
-        n = counts[0]
-        return [(n, 1 + resim, off, 0)] if act else [(n, 1, off, resim)]
+        return [_level_split(counts[0], row.get("production"),
+                             row.get("free_band"), row.get("resim_band"), act)]
     if str(row.get("offline", "")).startswith("TIGHTER"):
         return [(n, 1, n - 1, 0) for n in counts]
     if act:
         return [(n, n, 0, 0) for n in counts]
     return [(n, 1, 0, n - 1) for n in counts]
+
+
+def _partition_problems(tag, band, prod, free, resim) -> list:
+    """The per-level fields of ONE axis must partition its band - shared by
+    the single-axis form and each axis_levels entry (S6-B3196)."""
+    free, resim = list(free or []), list(resim or [])
+    if not isinstance(band, list):
+        return ["%s: per-level fields need a list band" % tag]
+    out = []
+    if prod in resim:
+        out.append("%s: production %r sits in resim_band" % (tag, prod))
+    if set(free) & set(resim):
+        out.append("%s: levels both free and resim: %r"
+                   % (tag, sorted(set(free) & set(resim))))
+    if (len(set(band)) != len(band) or prod not in band
+            or (set(free) | set(resim) | {prod}) != set(band)):
+        out.append("%s: free_band %r + resim_band %r + production %r "
+                   "do not partition band %r" % (tag, free, resim, prod, band))
+    return out
 
 
 _ENV_CHARS = set("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
@@ -961,23 +1042,35 @@ def _b3189_validate_levels_and_env(bands=None) -> None:
             if not (isinstance(ev, str) and ev.strip()):
                 bad.append("%s: evidence %r is empty" % (tag, ev))
             prod = r.get("production")
-            if "free_band" in r or "resim_band" in r:
-                band = r.get("band")
-                free = list(r.get("free_band") or [])
-                resim = list(r.get("resim_band") or [])
-                if not isinstance(band, list):
-                    bad.append("%s: per-level fields need a list band" % tag)
+            if "axis_levels" in r:
+                # S6-B3196: one per-level form only, one entry per counted
+                # axis, each entry partitioning its own band
+                if "free_band" in r or "resim_band" in r:
+                    bad.append("%s: carries axis_levels AND free_band / "
+                               "resim_band - one per-level form only" % tag)
                     continue
-                if prod in resim:
-                    bad.append("%s: production %r sits in resim_band" % (tag, prod))
-                if set(free) & set(resim):
-                    bad.append("%s: levels both free and resim: %r"
-                               % (tag, sorted(set(free) & set(resim))))
-                if (len(set(band)) != len(band) or prod not in band
-                        or (set(free) | set(resim) | {prod}) != set(band)):
-                    bad.append("%s: free_band %r + resim_band %r + production %r "
-                               "do not partition band %r" % (tag, free, resim,
-                                                             prod, band))
+                al = r.get("axis_levels")
+                try:
+                    want = band_axes(r)
+                except ValueError as e:
+                    bad.append("%s: %s" % (tag, e))
+                    continue
+                got = ([len(a.get("band") or []) if isinstance(a, dict) else None
+                        for a in al] if isinstance(al, list) else al)
+                if got != want:
+                    bad.append("%s: axis_levels sizes %r do not match the "
+                               "band's axes %r" % (tag, got, want))
+                    continue
+                for i, a in enumerate(al, 1):
+                    bad += _partition_problems(
+                        "%s axis %d" % (tag, i), a.get("band"),
+                        a.get("production"), a.get("free_band"),
+                        a.get("resim_band"))
+                continue
+            if "free_band" in r or "resim_band" in r:
+                bad += _partition_problems(tag, r.get("band"), prod,
+                                           r.get("free_band"),
+                                           r.get("resim_band"))
                 continue
             if str(r.get("offline", "")).startswith("TIGHTER"):
                 lv = _numeric_levels(r.get("band"))

@@ -53059,7 +53059,7 @@ _B3139BB_LINE_CITATIONS = {
     "scripts/producer_variant_table.py": 79,
     "scripts/roster_core.py": 2,
     "scripts/smc_lsr_step1.py": 1,
-    "scripts/table_a_bands.py": 107
+    "scripts/table_a_bands.py": 104
 }
 
 
@@ -58692,3 +58692,239 @@ def test_b3223_table_a_files_carry_the_current_status_view(tmp_path):
         good.replace(f"**status:** {r['status']}", "**status:** STALLED-CAMPAIGN"),
         encoding="utf-8")
     assert problems(tmp_path) == ([], 1), problems(tmp_path)
+
+
+def test_b3196_band_levels_follow_each_knobs_gate_direction():
+    """S6-B3196 (B3139q-r72w): five band knobs held tighter levels that the
+    footer classed fire-adding, because their offline prose did not start with
+    TIGHTER - adx_trending (30), the two stochastic cross guards (every guard
+    level), xs_momentum_top_quintile (decile) and insider_cluster_active's N
+    axis (3, 5). Each is now classed level by level from its gate DIRECTION,
+    read from its producer and checked against every consumer; the producer
+    comparisons and the never-negated consumers are pinned here, so a producer
+    that flips a direction turns this red. The ticket's sixth candidate,
+    vix_band_low, was MISREAD: the vix flags SELECT an RSI cut, and moving the
+    low edge to 0.25 loosens bollinger_lower's cut on the moved days, so its
+    pending class was right and stays. A multi-axis row carries axis_levels,
+    validated per axis through the partition helper the single-axis form
+    shares, and the footer's subset flag follows each axis's own levels."""
+    import ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    import table_a_bands as tb
+    import build_table_a as bta
+
+    def knob(leg, param):
+        rows = [r for r in tb.PRODUCER_BANDS[leg] if r["param"] == param]
+        assert len(rows) == 1, (leg, param, len(rows))
+        return rows[0]
+
+    # (1) the registry: each knob classed level by level
+    assert tb.band_level_classes(
+        knob("adx_trending", "trending threshold")) == [(3, 1, 1, 1)]
+    assert tb.band_level_classes(knob(
+        "stoch_bullish_cross", "oversold guard at the cross (k below a ceiling)")
+    ) == [(3, 1, 2, 0)]
+    assert tb.band_level_classes(knob(
+        "stoch_bearish_cross", "overbought guard at the cross (k above a floor)")
+    ) == [(3, 1, 2, 0)]
+    assert tb.band_level_classes(
+        knob("xs_momentum_top_quintile", "quantile cut (quintile)")) == [(3, 1, 1, 1)]
+    assert tb.band_level_classes(knob(
+        "insider_cluster_active", "cluster rule (unique buyers >= N in window)")
+    ) == [(3, 1, 2, 0), (3, 1, 0, 2)]
+    # the misread candidate keeps its pending class, and its prose no longer
+    # claims an offline re-banding (that prose class rides its own ticket)
+    vix = knob("vix_band_low", "tercile edges on vix_percentile")
+    assert tb.band_level_classes(vix) == [(2, 1, 0, 1)]
+    assert not str(vix["offline"]).startswith("TIGHTER")
+
+    # (2) the directions, read from the producers (AST, so prose cannot pass)
+    def keyed(rel, key):
+        tree = ast.parse((root / rel).read_text(encoding="utf-8"))
+        out = []
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Dict):
+                out += [ast.unparse(v) for k, v in zip(n.keys, n.values)
+                        if isinstance(k, ast.Constant) and k.value == key]
+            elif isinstance(n, ast.Assign):
+                out += [ast.unparse(n.value) for t in n.targets
+                        if isinstance(t, ast.Subscript)
+                        and isinstance(t.slice, ast.Constant)
+                        and t.slice.value == key]
+        return set(out)
+
+    tech = "backtest/signals/technical.py"
+    assert keyed(tech, "adx_trending") == {"adx_v > 25"}
+    assert keyed(tech, "stoch_bullish_cross") == {"k > d and pk <= pd_v"}
+    assert keyed(tech, "stoch_bearish_cross") == {"k < d and pk >= pd_v"}
+    xs = "backtest/signals/cross_sectional.py"
+    assert keyed(xs, "xs_momentum_top_decile") == {"d == 10"}
+    assert keyed(xs, "xs_momentum_top_quintile") == {"d >= 9"}
+    ins = "backtest/signals/insider_buying.py"
+    assert keyed(ins, "insider_cluster_active") == {
+        "unique_buyers >= min_unique_insiders"}
+    fn = [n for n in ast.walk(ast.parse((root / ins).read_text(encoding="utf-8")))
+          if isinstance(n, ast.FunctionDef)
+          and n.name == "compute_insider_cluster_signals"]
+    assert len(fn) == 1
+    defaults = dict(zip([a.arg for a in fn[0].args.args][-len(fn[0].args.defaults):],
+                        [ast.unparse(d) for d in fn[0].args.defaults]))
+    assert defaults == {"lookback_days": "30", "min_unique_insiders": "2"}, defaults
+
+    # (3) every consumer requires the flags True: none negated, none compared
+    flags = {"adx_trending", "stoch_bullish_cross", "stoch_bearish_cross",
+             "xs_momentum_top_quintile", "insider_cluster_active"}
+    scr = ast.parse((root / "backtest" / "signals" / "screener.py")
+                    .read_text(encoding="utf-8"))
+
+    def get_of(n, keys):
+        return (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                and n.func.attr == "get" and bool(n.args)
+                and isinstance(n.args[0], ast.Constant)
+                and n.args[0].value in keys)
+
+    bad, uses = [], 0
+    for n in ast.walk(scr):
+        if get_of(n, flags):
+            uses += 1
+        if isinstance(n, ast.UnaryOp) and isinstance(n.op, ast.Not) and (
+                get_of(n.operand, flags)
+                or (isinstance(n.operand, ast.Call)
+                    and getattr(n.operand.func, "id", "") == "_has_smart_money_buy")):
+            bad.append(ast.unparse(n))
+        if isinstance(n, ast.Compare) and (
+                get_of(n.left, flags) or any(get_of(c, flags) for c in n.comparators)):
+            bad.append(ast.unparse(n))
+    assert bad == [], bad
+    assert uses >= 15, uses          # not vacuous: the consumers exist
+    # the vix flags are SELECTORS - every read is an if-test, which is why a
+    # re-band's direction depends on the cut each branch picks
+    vix_reads = [n for n in ast.walk(scr) if get_of(n, {"vix_band_low"})]
+    vix_tests = [n for n in ast.walk(scr) if isinstance(n, ast.If)
+                 and get_of(n.test, {"vix_band_low"})]
+    assert len(vix_reads) == len(vix_tests) >= 2, (len(vix_reads), len(vix_tests))
+
+    # (4) the validator: axis_levels held per axis (#226 both directions)
+    tb._b3189_validate_levels_and_env()
+    two = {"param": "x", "production": "N >= 2 in 30d",
+           "band": "N [2, 3, 5]; window [14, 30, 60] days", "basis": "b",
+           "offline": "N-side", "resim": "window", "env": None,
+           "evidence": "backtest/signals/insider_buying.py",
+           "axis_levels": [
+               {"production": 2, "band": [2, 3, 5], "free_band": [2, 3, 5],
+                "resim_band": []},
+               {"production": 30, "band": [14, 30, 60], "free_band": [30],
+                "resim_band": [14, 60]}]}
+    tb._b3189_validate_levels_and_env({"leg": [two]})
+
+    def refused(row, why):
+        with pytest.raises(ValueError, match=why):
+            tb._b3189_validate_levels_and_env({"leg": [row]})
+
+    refused(dict(two, axis_levels=two["axis_levels"][:1]), "do not match the band")
+    refused(dict(two, axis_levels=[two["axis_levels"][0],
+                                   dict(two["axis_levels"][1], resim_band=[14])]),
+            "do not partition")
+    refused(dict(two, axis_levels=[two["axis_levels"][0],
+                                   dict(two["axis_levels"][1], free_band=[14, 30])]),
+            "both free and resim")
+    refused(dict(two, axis_levels=[two["axis_levels"][0],
+                                   dict(two["axis_levels"][1],
+                                        resim_band=[14, 30, 60])]),
+            "sits in resim_band")
+    refused(dict(two, free_band=[2]), "one per-level form only")
+
+    # (5) the footer's subset flag follows each axis's own levels
+    assert bta._axis_sub((3, 1, 2, 0), False) is True
+    assert bta._axis_sub((3, 1, 0, 2), True) is False
+    assert bta._axis_sub((3, 1, 1, 1), True) is False
+    assert bta._axis_sub((3, 3, 0, 0), True) is False
+    assert bta._axis_sub((1, 1, 0, 0), True) is True     # no level to class
+    assert bta._axis_sub((1, 1, 0, 0), False) is False
+
+    # (6) the rendered lane files carry it (regenerated in this batch)
+    d = root / "strategy_optimisation" / "tighten"
+    ins_txt = (d / "both" / "insider_cluster_with_director_long.md").read_text(
+        encoding="utf-8")
+    assert not _b3189_footer_problems(ins_txt), _b3189_footer_problems(ins_txt)
+    foot = ins_txt.split("## Factorial", 1)[1]
+    rows = [ln for ln in foot.splitlines()
+            if ln.startswith("| P") and "| cluster rule (unique buyers" in ln]
+    assert len(rows) == 2, rows
+    assert rows[0].endswith("| 1 | 2 | 0 |") and "subset-safe" in rows[0], rows[0]
+    assert rows[1].endswith("| 1 | 0 | 2 |") and "FIRE-ADDING" in rows[1], rows[1]
+    for name, prm in (("both/williams_stoch_dual.md", "| oversold guard at the cross"),
+                      ("both/williams_stoch_dual.md", "| overbought guard at the cros"),
+                      ("hull_rsi.md", "| trending threshold |")):
+        txt = (d / name).read_text(encoding="utf-8")
+        assert not _b3189_footer_problems(txt), (name, _b3189_footer_problems(txt))
+        foot = txt.split("## Factorial", 1)[1]
+        sel = [ln for ln in foot.splitlines() if ln.startswith("| P") and prm in ln]
+        assert len(sel) == 1, (name, prm, sel)
+        want = "| 1 | 1 | 1 |" if "trending" in prm else "| 1 | 2 | 0 |"
+        assert sel[0].endswith(want), (name, sel[0])
+
+
+def test_b3196_band_evidence_cites_the_producer_file():
+    """S6-B3196 (B3139q-r72w): a band row's evidence must name the file that
+    PRODUCES its leg. MEASURED: insider_cluster_active and
+    insider_unique_buyers_30d cited backtest/data/smart_money.py while both
+    keys are emitted by backtest/signals/insider_buying.py, and
+    xs_momentum_top_quintile named no file at all - 3 of the 69 rows the rule
+    can judge. The rule applies where a leg's key is a quoted literal in
+    exactly ONE non-strategy module under backtest/ (a key built by an
+    f-string, such as rsi_{p}, has no literal and is out of scope); a row
+    citing the SPECS registry (producer_variant_table) is accepted, since its
+    knobs live there. Must-fire on a wrong-file citation for each of the
+    three legs (a fixture never reproduces a line number - test_b3139bb
+    counts one as a new line citation in code); must-quiet on the live
+    registry."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import table_a_bands as tb
+
+    producers = {}
+    for p in (root / "backtest").rglob("*.py"):
+        rel = p.relative_to(root).as_posix()
+        if "/tests/" in rel:
+            continue
+        txt = p.read_text(encoding="utf-8", errors="replace")
+        if "def strat_" in txt:
+            continue                     # a strategy module CONSUMES keys
+        producers[rel] = txt
+
+    def violations(bands):
+        applies, bad = 0, []
+        for leg, rows in bands.items():
+            homes = [rel for rel, t in producers.items()
+                     if ('"%s"' % leg) in t or ("'%s'" % leg) in t]
+            if len(homes) != 1:
+                continue
+            for r in rows:
+                applies += 1
+                ev = str(r.get("evidence", ""))
+                if (homes[0].rsplit("/", 1)[1] not in ev
+                        and "producer_variant_table" not in ev):
+                    bad.append((leg, ev, homes[0]))
+        return applies, bad
+
+    applies, bad = violations(tb.PRODUCER_BANDS)
+    assert bad == [], bad
+    assert applies >= 60, applies        # not vacuous: 69 rows at landing
+    for leg, ev in (
+            ("insider_cluster_active", "backtest/data/smart_money.py cluster block"),
+            ("insider_unique_buyers_30d",
+             "backtest/data/smart_money.py institutional block"),
+            ("xs_momentum_top_quintile",
+             "backtest/signals cross-sectional factor block")):
+        row = dict(tb.PRODUCER_BANDS[leg][0], evidence=ev)
+        _n, b = violations({leg: [row]})
+        assert len(b) == 1 and b[0][0] == leg, (leg, b)
