@@ -58613,3 +58613,82 @@ def test_b3218_a_present_admissions_record_without_its_list_is_refused(tmp_path)
         p.write_text(_json.dumps(body), encoding="utf-8")
         with _pytest.raises(ValueError, match="S6-B3218"):
             m.load_admissions(p)
+
+
+def test_b3223_table_a_files_carry_the_current_status_view(tmp_path):
+    """S6-B3223 (B3139q-r72v): a Table A file embeds its strategy's lane,
+    family, status and R5 fires from the status view, so a status-view
+    rebuild that does not regenerate Table A leaves a lane member's file
+    stale with nothing failing - MEASURED: r72j..k's lane change (S6-B3194)
+    moved 9 strategies from STALLED-CAMPAIGN to NOT-STARTED and left 9 of
+    the 34 lane members' files still saying STALLED-CAMPAIGN. Every file
+    whose strategy is still in its folder's lane must carry that view row's
+    lane, family, status and fires. A file whose strategy LEFT the lane is a
+    historical record under the B3139 batch-4 policy test_b2836 pins
+    (owner-closed, or promoted into the roster funnel): it keeps the header
+    of its last build, its build stamp dates it (L803), and WHICH departures
+    may keep a file is test_b2836's question, not this one's. Must-fire on a
+    stale lane member; must-quiet on a current lane member and on a departed
+    record."""
+    import json as _json
+    import re as _re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    view = _json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                       .read_text(encoding="utf-8"))
+    rows = {r["strategy"]: r for r in view["rows"]}
+    lanes = {"tighten/both": "BOTH", "tighten": "TIGHTEN"}
+    hdr = _re.compile(r"^[*][*]Lane:[*][*] (\S+) [|] [*][*]family:[*][*] (\S+) [|] "
+                      r"[*][*]status:[*][*] (\S+) [|] [*][*]R5 fires:[*][*] (\d+)", _re.M)
+
+    def problems(base):
+        out, checked = [], 0
+        for p in sorted(base.rglob("*.md")):
+            if p.name == "README.md":
+                continue
+            rel = p.parent.relative_to(base).as_posix()
+            if rel not in lanes:
+                out.append(f"{rel}/{p.name}: not under a lane folder")
+                continue
+            r = rows.get(p.stem)
+            if r is None:
+                out.append(f"{rel}/{p.name}: {p.stem} has no status-view row")
+                continue
+            if r.get("stream") != lanes[rel]:
+                continue            # a departed record - test_b2836's question
+            m = hdr.search(p.read_text(encoding="utf-8"))
+            if m is None:
+                out.append(f"{rel}/{p.name}: no lane header")
+                continue
+            checked += 1
+            want = (lanes[rel], str(r["family"]), str(r["status"]), int(r["r5_fires"]))
+            got = (m.group(1), m.group(2), m.group(3), int(m.group(4)))
+            if got != want:
+                out.append(f"{rel}/{p.name}: header {got} vs view {want} - regenerate")
+        return out, checked
+
+    found, checked = problems(root / "strategy_optimisation")
+    assert found == [], found[:5]
+    # not vacuous: 34 lane members carried a file at landing (7 TIGHTEN + 27 BOTH)
+    assert checked >= 20, checked
+
+    member = next(s for s, r in rows.items() if r.get("stream") == "TIGHTEN")
+    departed = next(s for s, r in rows.items() if r.get("status") == "DONE-OWNER-CLOSED")
+    r = rows[member]
+    (tmp_path / "tighten").mkdir()
+    good = (f"**Lane:** TIGHTEN | **family:** {r['family']} | **status:** {r['status']} | "
+            f"**R5 fires:** {r['r5_fires']} | **surviving fires (T1):** 1\n")
+    (tmp_path / "tighten" / f"{member}.md").write_text(good, encoding="utf-8")
+    assert problems(tmp_path) == ([], 1), problems(tmp_path)
+    stale_status = "IN-CAMPAIGN" if r["status"] != "IN-CAMPAIGN" else "NOT-STARTED"
+    (tmp_path / "tighten" / f"{member}.md").write_text(
+        good.replace(f"**status:** {r['status']}", f"**status:** {stale_status}"),
+        encoding="utf-8")
+    found, _n = problems(tmp_path)
+    assert any("regenerate" in x and member in x for x in found), found
+    # a departed record keeps the header of its last build and stays quiet here
+    (tmp_path / "tighten" / f"{member}.md").write_text(good, encoding="utf-8")
+    (tmp_path / "tighten" / f"{departed}.md").write_text(
+        good.replace(f"**status:** {r['status']}", "**status:** STALLED-CAMPAIGN"),
+        encoding="utf-8")
+    assert problems(tmp_path) == ([], 1), problems(tmp_path)
