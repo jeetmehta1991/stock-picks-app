@@ -193,14 +193,29 @@ def strat_post_inclusion_reversal_short(s: dict) -> dict:
 
     Data state (B748c 2026-06-13 walk-back of B748b): same correct-data
     situation as strat_post_inclusion_drift_long; see that docstring.
+
+    S6-B3226 (owner ruled 2026-10-20, 'Approve all recs fable mode be extremely thorough',
+    option (a)): carries the borrow-trap gate B740/B741 made mandatory for
+    every pure short, and declares 'borrow_ok'. From B744 to S6-B3226
+    neither index-rebalance short carried it, and the B744 lint could not
+    see them: it read screener.py only, where both are one-line
+    delegations. MEASURED on the R5 trade log
+    (output_r5_merged_1_7/trade_log.parquet): 15 of this strategy's 100
+    entries had days_to_cover above 5.0 - fires the gate now refuses.
     """
+    # imported at call time: screener imports this module while it loads,
+    # so a module-level import back would be circular (the reason
+    # _strat_signal above mirrors screener._strat). MEASURED: 0.17 us per
+    # call once screener is loaded.
+    from backtest.signals.screener import _short_borrow_trap_active
     fires = (
         s.get("in_reversal_window", False)
         and "add" in str(s.get("last_event_type", ""))
+        and not _short_borrow_trap_active(s)
     )
     dse = s.get("days_since_inclusion", 0)
     return _strat_signal(fires, "short", "index_rebalance",
-        ["in_reversal_window", "last_event_type"],
+        ["in_reversal_window", "last_event_type", "borrow_ok"],
         [f"Day +{dse} in reversal window (Beneish-Whaley 1996)",
          "Fade post-inclusion overshoot",
          f"Last event: {s.get('last_event_type', '')}"])
@@ -213,15 +228,23 @@ def strat_post_deletion_drift_short(s: dict) -> dict:
     Data state (B748c walk-back): runtime probe on AAL post-S&P-drop
     2024-10-07 emits `days_since_deletion=14, within_post_deletion
     _window=True`. Producer fires correctly.
+
+    S6-B3226 (owner ruled 2026-10-20, option (a)): carries the borrow-trap
+    gate and declares 'borrow_ok', as strat_post_inclusion_reversal_short
+    records. MEASURED on the R5 trade log: 7 of this strategy's 54 entries
+    had days_to_cover above 5.0.
     """
+    # imported at call time - see strat_post_inclusion_reversal_short
+    from backtest.signals.screener import _short_borrow_trap_active
     fires = (
         s.get("within_post_deletion_window", False)
         and "drop" in str(s.get("last_event_type", ""))
         and not s.get("price_above_ema_200", True)
+        and not _short_borrow_trap_active(s)
     )
     dse = s.get("days_since_deletion", 0)
     return _strat_signal(fires, "short", "index_rebalance",
-        ["within_post_deletion_window", "price_above_ema_200", "last_event_type"],
+        ["within_post_deletion_window", "price_above_ema_200", "last_event_type", "borrow_ok"],
         [f"Day +{dse} of post-{s.get('last_event_type', 'drop')} window",
          "Chen-Noronha-Singal 2004 deletion drift",
          "Below 200 EMA (bear regime confirmation)"])

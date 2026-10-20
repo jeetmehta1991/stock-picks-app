@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "445605127",
-    "generated_at": "2026-10-20 14:22:35"
+    "source_commit": "6d2a10271",
+    "generated_at": "2026-10-20 16:27:21"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -48,6 +48,12 @@
       "r5_fires": 33,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 33
+      },
       "projected_step1_fires": 3.0,
       "projected_current_gate": 3.0,
       "reopen_candidate": false,
@@ -69,6 +75,12 @@
       "r5_fires": 150,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 150
+      },
       "projected_step1_fires": 13.8,
       "projected_current_gate": 13.8,
       "reopen_candidate": false,
@@ -94,6 +106,12 @@
       "r5_fires": 66,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 66
+      },
       "projected_step1_fires": 6.1,
       "projected_current_gate": 6.1,
       "reopen_candidate": false,
@@ -112,6 +130,12 @@
       "r5_fires": 203,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 203
+      },
       "projected_step1_fires": 18.7,
       "projected_current_gate": 18.7,
       "reopen_candidate": false,
@@ -130,6 +154,12 @@
       "r5_fires": 95,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 95
+      },
       "projected_step1_fires": 8.7,
       "projected_current_gate": 8.7,
       "reopen_candidate": false,
@@ -154,6 +184,12 @@
       "r5_fires": 427,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 427
+      },
       "projected_step1_fires": 39.2,
       "projected_current_gate": 39.2,
       "reopen_candidate": false,
@@ -178,6 +214,12 @@
       "r5_fires": 18,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 18
+      },
       "projected_step1_fires": 1.7,
       "projected_current_gate": 1.7,
       "reopen_candidate": false,
@@ -198,6 +240,12 @@
       "r5_fires": 77,
       "changed_since_r5": true,
       "survives_pct": 0.0,
+      "survives_pct_by_side": {
+        "short": 0.0
+      },
+      "r5_fires_by_side": {
+        "short": 77
+      },
       "projected_step1_fires": 7.1,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -216,6 +264,12 @@
       "r5_fires": 119,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 119
+      },
       "projected_step1_fires": 10.9,
       "projected_current_gate": 10.9,
       "reopen_candidate": false,
@@ -234,6 +288,14 @@
       "r5_fires": 39,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 14,
+        "short": 25
+      },
       "projected_step1_fires": 3.6,
       "projected_current_gate": 3.6,
       "reopen_candidate": false,
@@ -242,7 +304,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3221"
+        "S6-B3221",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -254,6 +317,12 @@
       "r5_fires": 81,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 81
+      },
       "projected_step1_fires": 7.4,
       "projected_current_gate": 7.4,
       "reopen_candidate": false,
@@ -263,7 +332,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3180",
-        "S6-B3194"
+        "S6-B3194",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -275,6 +345,14 @@
       "r5_fires": 2294,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1523,
+        "short": 771
+      },
       "projected_step1_fires": 210.8,
       "projected_current_gate": 210.8,
       "reopen_candidate": false,
@@ -284,7 +362,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2418",
-        "S6-B3078"
+        "S6-B3078",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -296,6 +375,14 @@
       "r5_fires": 1336,
       "changed_since_r5": true,
       "survives_pct": 0.8608,
+      "survives_pct_by_side": {
+        "long": 0.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 186,
+        "short": 1150
+      },
       "projected_step1_fires": 122.8,
       "projected_current_gate": 105.7,
       "reopen_candidate": false,
@@ -317,6 +404,14 @@
       "r5_fires": 1012,
       "changed_since_r5": true,
       "survives_pct": 0.7045,
+      "survives_pct_by_side": {
+        "long": 0.9981,
+        "short": 0.398
+      },
+      "r5_fires_by_side": {
+        "long": 517,
+        "short": 495
+      },
       "projected_step1_fires": 93.0,
       "projected_current_gate": 65.5,
       "reopen_candidate": false,
@@ -325,7 +420,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3139c"
+        "S6-B3139c",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -337,6 +433,14 @@
       "r5_fires": 1013,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 473,
+        "short": 540
+      },
       "projected_step1_fires": 93.1,
       "projected_current_gate": 93.1,
       "reopen_candidate": false,
@@ -355,6 +459,14 @@
       "r5_fires": 1622,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 814,
+        "short": 808
+      },
       "projected_step1_fires": 149.1,
       "projected_current_gate": 149.1,
       "reopen_candidate": false,
@@ -408,6 +520,14 @@
       "r5_fires": 271,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 143,
+        "short": 128
+      },
       "projected_step1_fires": 24.9,
       "projected_current_gate": 24.9,
       "reopen_candidate": false,
@@ -418,7 +538,8 @@
       "mention_tickets": [
         "S6-B2383",
         "S6-B3139c",
-        "S6-B3221"
+        "S6-B3221",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -430,6 +551,12 @@
       "r5_fires": 840,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 840
+      },
       "projected_step1_fires": 77.2,
       "projected_current_gate": 77.2,
       "reopen_candidate": false,
@@ -450,6 +577,12 @@
       "r5_fires": 130,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 130
+      },
       "projected_step1_fires": 11.9,
       "projected_current_gate": 11.9,
       "reopen_candidate": false,
@@ -473,6 +606,14 @@
       "r5_fires": 1889,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 618,
+        "short": 1271
+      },
       "projected_step1_fires": 173.6,
       "projected_current_gate": 173.6,
       "reopen_candidate": false,
@@ -491,6 +632,14 @@
       "r5_fires": 2164,
       "changed_since_r5": true,
       "survives_pct": 0.4958,
+      "survives_pct_by_side": {
+        "long": 0.9791,
+        "short": 0.2316
+      },
+      "r5_fires_by_side": {
+        "long": 765,
+        "short": 1399
+      },
       "projected_step1_fires": 198.9,
       "projected_current_gate": 98.6,
       "reopen_candidate": false,
@@ -509,6 +658,14 @@
       "r5_fires": 991,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 409,
+        "short": 582
+      },
       "projected_step1_fires": 91.1,
       "projected_current_gate": 91.1,
       "reopen_candidate": false,
@@ -527,6 +684,14 @@
       "r5_fires": 5774,
       "changed_since_r5": true,
       "survives_pct": 0.5322,
+      "survives_pct_by_side": {
+        "long": 0.5954,
+        "short": 0.4759
+      },
+      "r5_fires_by_side": {
+        "long": 2721,
+        "short": 3053
+      },
       "projected_step1_fires": 530.7,
       "projected_current_gate": 282.4,
       "reopen_candidate": false,
@@ -545,6 +710,14 @@
       "r5_fires": 228,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 137,
+        "short": 91
+      },
       "projected_step1_fires": 21.0,
       "projected_current_gate": 21.0,
       "reopen_candidate": false,
@@ -558,7 +731,8 @@
         "S6-B3142",
         "S6-B3143",
         "S6-B3221",
-        "S6-B3223"
+        "S6-B3223",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -570,6 +744,12 @@
       "r5_fires": 6,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 6
+      },
       "projected_step1_fires": 0.6,
       "projected_current_gate": 0.6,
       "reopen_candidate": false,
@@ -588,6 +768,14 @@
       "r5_fires": 2994,
       "changed_since_r5": true,
       "survives_pct": 0.7515,
+      "survives_pct_by_side": {
+        "long": 0.7992,
+        "short": 0.6841
+      },
+      "r5_fires_by_side": {
+        "long": 1753,
+        "short": 1241
+      },
       "projected_step1_fires": 275.2,
       "projected_current_gate": 206.8,
       "reopen_candidate": false,
@@ -601,7 +789,9 @@
         "S6-B2836",
         "S6-B2841",
         "S6-B3117a",
-        "S6-B3223"
+        "S6-B3223",
+        "S6-B3232",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -613,6 +803,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -633,6 +825,14 @@
       "r5_fires": 1248,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 503,
+        "short": 745
+      },
       "projected_step1_fires": 114.7,
       "projected_current_gate": 114.7,
       "reopen_candidate": false,
@@ -653,6 +853,14 @@
       "r5_fires": 1001,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 273,
+        "short": 728
+      },
       "projected_step1_fires": 92.0,
       "projected_current_gate": 92.0,
       "reopen_candidate": false,
@@ -673,6 +881,12 @@
       "r5_fires": 1696,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 1696
+      },
       "projected_step1_fires": 155.9,
       "projected_current_gate": 155.9,
       "reopen_candidate": false,
@@ -693,6 +907,12 @@
       "r5_fires": 164,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 164
+      },
       "projected_step1_fires": 15.1,
       "projected_current_gate": 15.1,
       "reopen_candidate": false,
@@ -711,6 +931,12 @@
       "r5_fires": 99,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 99
+      },
       "projected_step1_fires": 9.1,
       "projected_current_gate": 9.1,
       "reopen_candidate": false,
@@ -731,6 +957,14 @@
       "r5_fires": 2414,
       "changed_since_r5": true,
       "survives_pct": 0.4942,
+      "survives_pct_by_side": {
+        "long": 0.9733,
+        "short": 0.2281
+      },
+      "r5_fires_by_side": {
+        "long": 862,
+        "short": 1552
+      },
       "projected_step1_fires": 221.9,
       "projected_current_gate": 109.7,
       "reopen_candidate": false,
@@ -751,6 +985,12 @@
       "r5_fires": 31,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 31
+      },
       "projected_step1_fires": 2.8,
       "projected_current_gate": 2.8,
       "reopen_candidate": false,
@@ -769,6 +1009,12 @@
       "r5_fires": 306,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 306
+      },
       "projected_step1_fires": 28.1,
       "projected_current_gate": 28.1,
       "reopen_candidate": false,
@@ -787,6 +1033,12 @@
       "r5_fires": 232,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 232
+      },
       "projected_step1_fires": 21.3,
       "projected_current_gate": 21.3,
       "reopen_candidate": false,
@@ -805,6 +1057,14 @@
       "r5_fires": 966,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 388,
+        "short": 578
+      },
       "projected_step1_fires": 88.8,
       "projected_current_gate": 88.8,
       "reopen_candidate": false,
@@ -823,6 +1083,12 @@
       "r5_fires": 999,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 999
+      },
       "projected_step1_fires": 91.8,
       "projected_current_gate": 91.8,
       "reopen_candidate": false,
@@ -841,6 +1107,12 @@
       "r5_fires": 872,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 872
+      },
       "projected_step1_fires": 80.1,
       "projected_current_gate": 80.1,
       "reopen_candidate": false,
@@ -859,6 +1131,12 @@
       "r5_fires": 507,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 507
+      },
       "projected_step1_fires": 46.6,
       "projected_current_gate": 46.6,
       "reopen_candidate": false,
@@ -877,6 +1155,12 @@
       "r5_fires": 547,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 547
+      },
       "projected_step1_fires": 50.3,
       "projected_current_gate": 50.3,
       "reopen_candidate": false,
@@ -897,6 +1181,12 @@
       "r5_fires": 985,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 985
+      },
       "projected_step1_fires": 90.5,
       "projected_current_gate": 90.5,
       "reopen_candidate": false,
@@ -915,6 +1205,12 @@
       "r5_fires": 291,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 291
+      },
       "projected_step1_fires": 26.7,
       "projected_current_gate": 26.7,
       "reopen_candidate": false,
@@ -933,6 +1229,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -951,6 +1249,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -971,6 +1271,12 @@
       "r5_fires": 55,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 55
+      },
       "projected_step1_fires": 5.1,
       "projected_current_gate": 5.1,
       "reopen_candidate": false,
@@ -989,6 +1295,12 @@
       "r5_fires": 63,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 63
+      },
       "projected_step1_fires": 5.8,
       "projected_current_gate": 5.8,
       "reopen_candidate": false,
@@ -1007,6 +1319,12 @@
       "r5_fires": 33,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 33
+      },
       "projected_step1_fires": 3.0,
       "projected_current_gate": 3.0,
       "reopen_candidate": false,
@@ -1025,6 +1343,14 @@
       "r5_fires": 3013,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1211,
+        "short": 1802
+      },
       "projected_step1_fires": 276.9,
       "projected_current_gate": 276.9,
       "reopen_candidate": false,
@@ -1032,7 +1358,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3237"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1043,6 +1371,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -1061,6 +1391,8 @@
       "r5_fires": 0,
       "changed_since_r5": true,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -1079,6 +1411,14 @@
       "r5_fires": 413,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 132,
+        "short": 281
+      },
       "projected_step1_fires": 38.0,
       "projected_current_gate": 38.0,
       "reopen_candidate": false,
@@ -1097,6 +1437,14 @@
       "r5_fires": 109,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 22,
+        "short": 87
+      },
       "projected_step1_fires": 10.0,
       "projected_current_gate": 10.0,
       "reopen_candidate": false,
@@ -1115,6 +1463,14 @@
       "r5_fires": 889,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 450,
+        "short": 439
+      },
       "projected_step1_fires": 81.7,
       "projected_current_gate": 81.7,
       "reopen_candidate": false,
@@ -1135,6 +1491,14 @@
       "r5_fires": 43,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 12,
+        "short": 31
+      },
       "projected_step1_fires": 4.0,
       "projected_current_gate": 4.0,
       "reopen_candidate": false,
@@ -1153,6 +1517,12 @@
       "r5_fires": 7,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 7
+      },
       "projected_step1_fires": 0.6,
       "projected_current_gate": 0.6,
       "reopen_candidate": false,
@@ -1171,6 +1541,12 @@
       "r5_fires": 110,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 110
+      },
       "projected_step1_fires": 10.1,
       "projected_current_gate": 10.1,
       "reopen_candidate": false,
@@ -1191,6 +1567,12 @@
       "r5_fires": 146,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 146
+      },
       "projected_step1_fires": 13.4,
       "projected_current_gate": 13.4,
       "reopen_candidate": false,
@@ -1209,6 +1591,12 @@
       "r5_fires": 477,
       "changed_since_r5": true,
       "survives_pct": 0.0,
+      "survives_pct_by_side": {
+        "short": 0.0
+      },
+      "r5_fires_by_side": {
+        "short": 477
+      },
       "projected_step1_fires": 43.8,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -1227,6 +1615,12 @@
       "r5_fires": 326,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 326
+      },
       "projected_step1_fires": 30.0,
       "projected_current_gate": 30.0,
       "reopen_candidate": false,
@@ -1245,6 +1639,12 @@
       "r5_fires": 996,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 996
+      },
       "projected_step1_fires": 91.5,
       "projected_current_gate": 91.5,
       "reopen_candidate": false,
@@ -1263,6 +1663,14 @@
       "r5_fires": 1270,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 463,
+        "short": 807
+      },
       "projected_step1_fires": 116.7,
       "projected_current_gate": 116.7,
       "reopen_candidate": false,
@@ -1279,7 +1687,8 @@
         "S6-B3117a",
         "S6-B3196",
         "S6-B3221",
-        "S6-B3223"
+        "S6-B3223",
+        "S6-B3232"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -1291,6 +1700,12 @@
       "r5_fires": 197,
       "changed_since_r5": true,
       "survives_pct": 0.4315,
+      "survives_pct_by_side": {
+        "short": 0.4315
+      },
+      "r5_fires_by_side": {
+        "short": 197
+      },
       "projected_step1_fires": 18.1,
       "projected_current_gate": 7.8,
       "reopen_candidate": false,
@@ -1309,6 +1724,14 @@
       "r5_fires": 511,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 140,
+        "short": 371
+      },
       "projected_step1_fires": 47.0,
       "projected_current_gate": 47.0,
       "reopen_candidate": false,
@@ -1327,6 +1750,14 @@
       "r5_fires": 1319,
       "changed_since_r5": true,
       "survives_pct": 0.931,
+      "survives_pct_by_side": {
+        "long": 0.9111,
+        "short": 0.9463
+      },
+      "r5_fires_by_side": {
+        "long": 574,
+        "short": 745
+      },
       "projected_step1_fires": 121.2,
       "projected_current_gate": 112.9,
       "reopen_candidate": false,
@@ -1348,6 +1779,12 @@
       "r5_fires": 677,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 677
+      },
       "projected_step1_fires": 62.2,
       "projected_current_gate": 62.2,
       "reopen_candidate": false,
@@ -1368,6 +1805,12 @@
       "r5_fires": 269,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 269
+      },
       "projected_step1_fires": 24.7,
       "projected_current_gate": 24.7,
       "reopen_candidate": false,
@@ -1386,6 +1829,12 @@
       "r5_fires": 24,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 24
+      },
       "projected_step1_fires": 2.2,
       "projected_current_gate": 2.2,
       "reopen_candidate": false,
@@ -1404,6 +1853,12 @@
       "r5_fires": 24,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 24
+      },
       "projected_step1_fires": 2.2,
       "projected_current_gate": 2.2,
       "reopen_candidate": false,
@@ -1427,6 +1882,12 @@
       "r5_fires": 642,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 642
+      },
       "projected_step1_fires": 59.0,
       "projected_current_gate": 59.0,
       "reopen_candidate": false,
@@ -1451,6 +1912,12 @@
       "r5_fires": 2644,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 2644
+      },
       "projected_step1_fires": 243.0,
       "projected_current_gate": 243.0,
       "reopen_candidate": false,
@@ -1469,6 +1936,12 @@
       "r5_fires": 2451,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 2451
+      },
       "projected_step1_fires": 225.3,
       "projected_current_gate": 225.3,
       "reopen_candidate": false,
@@ -1490,6 +1963,12 @@
       "r5_fires": 1941,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1941
+      },
       "projected_step1_fires": 178.4,
       "projected_current_gate": 178.4,
       "reopen_candidate": false,
@@ -1531,6 +2010,12 @@
       "r5_fires": 2473,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 2473
+      },
       "projected_step1_fires": 227.3,
       "projected_current_gate": 227.3,
       "reopen_candidate": false,
@@ -1556,6 +2041,12 @@
       "r5_fires": 107,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 107
+      },
       "projected_step1_fires": 9.8,
       "projected_current_gate": 9.8,
       "reopen_candidate": false,
@@ -1577,6 +2068,12 @@
       "r5_fires": 2751,
       "changed_since_r5": true,
       "survives_pct": 0.008,
+      "survives_pct_by_side": {
+        "long": 0.008
+      },
+      "r5_fires_by_side": {
+        "long": 2751
+      },
       "projected_step1_fires": 252.8,
       "projected_current_gate": 2.0,
       "reopen_candidate": true,
@@ -1597,6 +2094,12 @@
       "r5_fires": 2516,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 2516
+      },
       "projected_step1_fires": 231.2,
       "projected_current_gate": 231.2,
       "reopen_candidate": false,
@@ -1625,6 +2128,12 @@
       "r5_fires": 386,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 386
+      },
       "projected_step1_fires": 35.5,
       "projected_current_gate": 35.5,
       "reopen_candidate": false,
@@ -1650,6 +2159,12 @@
       "r5_fires": 532,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 532
+      },
       "projected_step1_fires": 48.9,
       "projected_current_gate": 48.9,
       "reopen_candidate": false,
@@ -1670,6 +2185,12 @@
       "r5_fires": 2324,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 2324
+      },
       "projected_step1_fires": 213.6,
       "projected_current_gate": 213.6,
       "reopen_candidate": false,
@@ -1692,6 +2213,12 @@
       "r5_fires": 716,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 716
+      },
       "projected_step1_fires": 65.8,
       "projected_current_gate": 65.8,
       "reopen_candidate": false,
@@ -1717,6 +2244,12 @@
       "r5_fires": 1199,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1199
+      },
       "projected_step1_fires": 110.2,
       "projected_current_gate": 110.2,
       "reopen_candidate": false,
@@ -1739,6 +2272,12 @@
       "r5_fires": 1955,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1955
+      },
       "projected_step1_fires": 179.7,
       "projected_current_gate": 179.7,
       "reopen_candidate": false,
@@ -1759,6 +2298,12 @@
       "r5_fires": 2268,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 2268
+      },
       "projected_step1_fires": 208.5,
       "projected_current_gate": 208.5,
       "reopen_candidate": false,
@@ -1783,6 +2328,12 @@
       "r5_fires": 1075,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1075
+      },
       "projected_step1_fires": 98.8,
       "projected_current_gate": 98.8,
       "reopen_candidate": false,
@@ -1807,6 +2358,12 @@
       "r5_fires": 1826,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1826
+      },
       "projected_step1_fires": 167.8,
       "projected_current_gate": 167.8,
       "reopen_candidate": false,
@@ -1832,6 +2389,12 @@
       "r5_fires": 1387,
       "changed_since_r5": true,
       "survives_pct": 0.7707,
+      "survives_pct_by_side": {
+        "long": 0.7707
+      },
+      "r5_fires_by_side": {
+        "long": 1387
+      },
       "projected_step1_fires": 127.5,
       "projected_current_gate": 98.3,
       "reopen_candidate": true,
@@ -1853,6 +2416,12 @@
       "r5_fires": 115,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 115
+      },
       "projected_step1_fires": 10.6,
       "projected_current_gate": 10.6,
       "reopen_candidate": false,
@@ -1873,6 +2442,12 @@
       "r5_fires": 103,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 103
+      },
       "projected_step1_fires": 9.5,
       "projected_current_gate": 9.5,
       "reopen_candidate": false,
@@ -1894,6 +2469,12 @@
       "r5_fires": 366,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 366
+      },
       "projected_step1_fires": 33.6,
       "projected_current_gate": 33.6,
       "reopen_candidate": false,
@@ -1912,6 +2493,12 @@
       "r5_fires": 1,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1
+      },
       "projected_step1_fires": 0.1,
       "projected_current_gate": 0.1,
       "reopen_candidate": false,
@@ -1930,6 +2517,12 @@
       "r5_fires": 65,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 65
+      },
       "projected_step1_fires": 6.0,
       "projected_current_gate": 6.0,
       "reopen_candidate": false,
@@ -1948,6 +2541,12 @@
       "r5_fires": 84,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 84
+      },
       "projected_step1_fires": 7.7,
       "projected_current_gate": 7.7,
       "reopen_candidate": false,
@@ -1968,6 +2567,14 @@
       "r5_fires": 41,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 21,
+        "short": 20
+      },
       "projected_step1_fires": 3.8,
       "projected_current_gate": 3.8,
       "reopen_candidate": false,
@@ -1986,6 +2593,12 @@
       "r5_fires": 1023,
       "changed_since_r5": true,
       "survives_pct": 0.7341,
+      "survives_pct_by_side": {
+        "long": 0.7341
+      },
+      "r5_fires_by_side": {
+        "long": 1023
+      },
       "projected_step1_fires": 94.0,
       "projected_current_gate": 69.0,
       "reopen_candidate": false,
@@ -2004,6 +2617,12 @@
       "r5_fires": 1162,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1162
+      },
       "projected_step1_fires": 106.8,
       "projected_current_gate": 106.8,
       "reopen_candidate": false,
@@ -2024,6 +2643,14 @@
       "r5_fires": 2910,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1386,
+        "short": 1524
+      },
       "projected_step1_fires": 267.5,
       "projected_current_gate": 267.5,
       "reopen_candidate": false,
@@ -2042,6 +2669,12 @@
       "r5_fires": 1524,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 1524
+      },
       "projected_step1_fires": 140.1,
       "projected_current_gate": 140.1,
       "reopen_candidate": false,
@@ -2060,6 +2693,14 @@
       "r5_fires": 4070,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1912,
+        "short": 2158
+      },
       "projected_step1_fires": 374.1,
       "projected_current_gate": 374.1,
       "reopen_candidate": false,
@@ -2068,7 +2709,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2418"
+        "S6-B2418",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2080,6 +2722,14 @@
       "r5_fires": 2907,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1385,
+        "short": 1522
+      },
       "projected_step1_fires": 267.2,
       "projected_current_gate": 267.2,
       "reopen_candidate": false,
@@ -2098,6 +2748,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -2123,6 +2775,14 @@
       "r5_fires": 77,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 51,
+        "short": 26
+      },
       "projected_step1_fires": 7.1,
       "projected_current_gate": 7.1,
       "reopen_candidate": false,
@@ -2143,6 +2803,12 @@
       "r5_fires": 244,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 244
+      },
       "projected_step1_fires": 22.4,
       "projected_current_gate": 22.4,
       "reopen_candidate": false,
@@ -2169,6 +2835,12 @@
       "r5_fires": 1337,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1337
+      },
       "projected_step1_fires": 122.9,
       "projected_current_gate": 122.9,
       "reopen_candidate": false,
@@ -2189,6 +2861,12 @@
       "r5_fires": 2456,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 2456
+      },
       "projected_step1_fires": 225.7,
       "projected_current_gate": 225.7,
       "reopen_candidate": false,
@@ -2207,6 +2885,12 @@
       "r5_fires": 37,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 37
+      },
       "projected_step1_fires": 3.4,
       "projected_current_gate": 3.4,
       "reopen_candidate": false,
@@ -2225,6 +2909,14 @@
       "r5_fires": 2280,
       "changed_since_r5": true,
       "survives_pct": 0.4618,
+      "survives_pct_by_side": {
+        "long": 0.9753,
+        "short": 0.0212
+      },
+      "r5_fires_by_side": {
+        "long": 1053,
+        "short": 1227
+      },
       "projected_step1_fires": 209.6,
       "projected_current_gate": 96.8,
       "reopen_candidate": false,
@@ -2251,6 +2943,12 @@
       "r5_fires": 1788,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1788
+      },
       "projected_step1_fires": 164.3,
       "projected_current_gate": 164.3,
       "reopen_candidate": false,
@@ -2288,6 +2986,12 @@
       "r5_fires": 113,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 113
+      },
       "projected_step1_fires": 10.4,
       "projected_current_gate": 10.4,
       "reopen_candidate": false,
@@ -2311,6 +3015,12 @@
       "r5_fires": 13,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 13
+      },
       "projected_step1_fires": 1.2,
       "projected_current_gate": 1.2,
       "reopen_candidate": false,
@@ -2332,6 +3042,12 @@
       "r5_fires": 1,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1
+      },
       "projected_step1_fires": 0.1,
       "projected_current_gate": 0.1,
       "reopen_candidate": false,
@@ -2355,6 +3071,12 @@
       "r5_fires": 60,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 60
+      },
       "projected_step1_fires": 5.5,
       "projected_current_gate": 5.5,
       "reopen_candidate": false,
@@ -2380,6 +3102,12 @@
       "r5_fires": 906,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 906
+      },
       "projected_step1_fires": 83.3,
       "projected_current_gate": 83.3,
       "reopen_candidate": false,
@@ -2404,6 +3132,12 @@
       "r5_fires": 357,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 357
+      },
       "projected_step1_fires": 32.8,
       "projected_current_gate": 32.8,
       "reopen_candidate": false,
@@ -2425,6 +3159,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -2443,6 +3179,12 @@
       "r5_fires": 54,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 54
+      },
       "projected_step1_fires": 5.0,
       "projected_current_gate": 5.0,
       "reopen_candidate": false,
@@ -2461,6 +3203,12 @@
       "r5_fires": 115,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 115
+      },
       "projected_step1_fires": 10.6,
       "projected_current_gate": 10.6,
       "reopen_candidate": false,
@@ -2479,6 +3227,12 @@
       "r5_fires": 5036,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 5036
+      },
       "projected_step1_fires": 462.9,
       "projected_current_gate": 462.9,
       "reopen_candidate": false,
@@ -2512,6 +3266,12 @@
       "r5_fires": 5698,
       "changed_since_r5": true,
       "survives_pct": 0.7829,
+      "survives_pct_by_side": {
+        "short": 0.7829
+      },
+      "r5_fires_by_side": {
+        "short": 5698
+      },
       "projected_step1_fires": 523.7,
       "projected_current_gate": 410.0,
       "reopen_candidate": false,
@@ -2527,7 +3287,8 @@
         "S6-B3145",
         "S6-B3145b",
         "S6-B3168",
-        "S6-B3169"
+        "S6-B3169",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [
@@ -2541,6 +3302,14 @@
       "r5_fires": 1618,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 775,
+        "short": 843
+      },
       "projected_step1_fires": 148.7,
       "projected_current_gate": 148.7,
       "reopen_candidate": false,
@@ -2548,7 +3317,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3237"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -2559,6 +3330,12 @@
       "r5_fires": 1672,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 1672
+      },
       "projected_step1_fires": 153.7,
       "projected_current_gate": 153.7,
       "reopen_candidate": false,
@@ -2579,6 +3356,12 @@
       "r5_fires": 140,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 140
+      },
       "projected_step1_fires": 12.9,
       "projected_current_gate": 12.9,
       "reopen_candidate": false,
@@ -2603,6 +3386,12 @@
       "r5_fires": 2116,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 2116
+      },
       "projected_step1_fires": 194.5,
       "projected_current_gate": 194.5,
       "reopen_candidate": false,
@@ -2633,6 +3422,12 @@
       "r5_fires": 872,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 872
+      },
       "projected_step1_fires": 80.1,
       "projected_current_gate": 80.1,
       "reopen_candidate": false,
@@ -2642,7 +3437,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2633",
-        "S6-B2645b"
+        "S6-B2645b",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2654,6 +3450,12 @@
       "r5_fires": 2215,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 2215
+      },
       "projected_step1_fires": 203.6,
       "projected_current_gate": 203.6,
       "reopen_candidate": false,
@@ -2685,6 +3487,12 @@
       "r5_fires": 10,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 10
+      },
       "projected_step1_fires": 0.9,
       "projected_current_gate": 0.9,
       "reopen_candidate": false,
@@ -2707,6 +3515,12 @@
       "r5_fires": 656,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 656
+      },
       "projected_step1_fires": 60.3,
       "projected_current_gate": 60.3,
       "reopen_candidate": false,
@@ -2737,6 +3551,14 @@
       "r5_fires": 91,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 50,
+        "short": 41
+      },
       "projected_step1_fires": 8.4,
       "projected_current_gate": 8.4,
       "reopen_candidate": false,
@@ -2755,6 +3577,14 @@
       "r5_fires": 860,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 407,
+        "short": 453
+      },
       "projected_step1_fires": 79.0,
       "projected_current_gate": 79.0,
       "reopen_candidate": false,
@@ -2776,6 +3606,14 @@
       "r5_fires": 55,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 29,
+        "short": 26
+      },
       "projected_step1_fires": 5.1,
       "projected_current_gate": 5.1,
       "reopen_candidate": false,
@@ -2797,6 +3635,12 @@
       "r5_fires": 9,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 9
+      },
       "projected_step1_fires": 0.8,
       "projected_current_gate": 0.8,
       "reopen_candidate": false,
@@ -2815,6 +3659,14 @@
       "r5_fires": 458,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 360,
+        "short": 98
+      },
       "projected_step1_fires": 42.1,
       "projected_current_gate": 42.1,
       "reopen_candidate": false,
@@ -2833,6 +3685,14 @@
       "r5_fires": 55,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 53,
+        "short": 2
+      },
       "projected_step1_fires": 5.1,
       "projected_current_gate": 5.1,
       "reopen_candidate": false,
@@ -2853,6 +3713,12 @@
       "r5_fires": 3,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 3
+      },
       "projected_step1_fires": 0.3,
       "projected_current_gate": 0.3,
       "reopen_candidate": false,
@@ -2871,6 +3737,12 @@
       "r5_fires": 2624,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 2624
+      },
       "projected_step1_fires": 241.2,
       "projected_current_gate": 241.2,
       "reopen_candidate": false,
@@ -2889,6 +3761,12 @@
       "r5_fires": 731,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 731
+      },
       "projected_step1_fires": 67.2,
       "projected_current_gate": 67.2,
       "reopen_candidate": false,
@@ -2907,6 +3785,12 @@
       "r5_fires": 589,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 589
+      },
       "projected_step1_fires": 54.1,
       "projected_current_gate": 54.1,
       "reopen_candidate": false,
@@ -2935,6 +3819,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -2959,6 +3845,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -2976,16 +3864,23 @@
       "family": "-",
       "r5_fires": 54,
       "changed_since_r5": false,
-      "survives_pct": 1.0,
+      "survives_pct": 0.8704,
+      "survives_pct_by_side": {
+        "short": 0.8704
+      },
+      "r5_fires_by_side": {
+        "short": 54
+      },
       "projected_step1_fires": 5.0,
-      "projected_current_gate": 5.0,
+      "projected_current_gate": 4.3,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3226"
+        "S6-B3226",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2997,6 +3892,12 @@
       "r5_fires": 27,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 27
+      },
       "projected_step1_fires": 2.5,
       "projected_current_gate": 2.5,
       "reopen_candidate": false,
@@ -3014,16 +3915,23 @@
       "family": "-",
       "r5_fires": 100,
       "changed_since_r5": false,
-      "survives_pct": 1.0,
+      "survives_pct": 0.85,
+      "survives_pct_by_side": {
+        "short": 0.85
+      },
+      "r5_fires_by_side": {
+        "short": 100
+      },
       "projected_step1_fires": 9.2,
-      "projected_current_gate": 9.2,
+      "projected_current_gate": 7.8,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3226"
+        "S6-B3226",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3035,6 +3943,14 @@
       "r5_fires": 1588,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 750,
+        "short": 838
+      },
       "projected_step1_fires": 146.0,
       "projected_current_gate": 146.0,
       "reopen_candidate": false,
@@ -3042,7 +3958,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3237"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -3053,6 +3971,12 @@
       "r5_fires": 69,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 69
+      },
       "projected_step1_fires": 6.3,
       "projected_current_gate": 6.3,
       "reopen_candidate": false,
@@ -3071,6 +3995,12 @@
       "r5_fires": 25,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 25
+      },
       "projected_step1_fires": 2.3,
       "projected_current_gate": 2.3,
       "reopen_candidate": false,
@@ -3089,6 +4019,12 @@
       "r5_fires": 124,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 124
+      },
       "projected_step1_fires": 11.4,
       "projected_current_gate": 11.4,
       "reopen_candidate": false,
@@ -3107,6 +4043,12 @@
       "r5_fires": 28,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 28
+      },
       "projected_step1_fires": 2.6,
       "projected_current_gate": 2.6,
       "reopen_candidate": false,
@@ -3127,6 +4069,14 @@
       "r5_fires": 1424,
       "changed_since_r5": true,
       "survives_pct": 0.4466,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 0.0
+      },
+      "r5_fires_by_side": {
+        "long": 636,
+        "short": 788
+      },
       "projected_step1_fires": 130.9,
       "projected_current_gate": 58.5,
       "reopen_candidate": false,
@@ -3145,6 +4095,14 @@
       "r5_fires": 577,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 405,
+        "short": 172
+      },
       "projected_step1_fires": 53.0,
       "projected_current_gate": 53.0,
       "reopen_candidate": false,
@@ -3152,7 +4110,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3237"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -3163,6 +4123,12 @@
       "r5_fires": 800,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 800
+      },
       "projected_step1_fires": 73.5,
       "projected_current_gate": 73.5,
       "reopen_candidate": false,
@@ -3181,6 +4147,14 @@
       "r5_fires": 3371,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1727,
+        "short": 1644
+      },
       "projected_step1_fires": 309.8,
       "projected_current_gate": 309.8,
       "reopen_candidate": false,
@@ -3201,6 +4175,12 @@
       "r5_fires": 1895,
       "changed_since_r5": true,
       "survives_pct": 0.0,
+      "survives_pct_by_side": {
+        "short": 0.0
+      },
+      "r5_fires_by_side": {
+        "short": 1895
+      },
       "projected_step1_fires": 174.2,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -3208,7 +4188,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3237"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -3219,6 +4201,14 @@
       "r5_fires": 918,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 395,
+        "short": 523
+      },
       "projected_step1_fires": 84.4,
       "projected_current_gate": 84.4,
       "reopen_candidate": false,
@@ -3237,6 +4227,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -3255,6 +4247,14 @@
       "r5_fires": 9,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 7,
+        "short": 2
+      },
       "projected_step1_fires": 0.8,
       "projected_current_gate": 0.8,
       "reopen_candidate": false,
@@ -3277,6 +4277,12 @@
       "r5_fires": 56,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 56
+      },
       "projected_step1_fires": 5.1,
       "projected_current_gate": 5.1,
       "reopen_candidate": false,
@@ -3297,6 +4303,8 @@
       "r5_fires": 0,
       "changed_since_r5": true,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -3318,6 +4326,14 @@
       "r5_fires": 1945,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 986,
+        "short": 959
+      },
       "projected_step1_fires": 178.8,
       "projected_current_gate": 178.8,
       "reopen_candidate": false,
@@ -3342,6 +4358,12 @@
       "r5_fires": 2753,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 2753
+      },
       "projected_step1_fires": 253.0,
       "projected_current_gate": 253.0,
       "reopen_candidate": false,
@@ -3364,6 +4386,14 @@
       "r5_fires": 548,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 233,
+        "short": 315
+      },
       "projected_step1_fires": 50.4,
       "projected_current_gate": 50.4,
       "reopen_candidate": false,
@@ -3384,6 +4414,8 @@
       "r5_fires": 0,
       "changed_since_r5": true,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -3402,6 +4434,12 @@
       "r5_fires": 250,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 250
+      },
       "projected_step1_fires": 23.0,
       "projected_current_gate": 23.0,
       "reopen_candidate": false,
@@ -3426,6 +4464,8 @@
       "r5_fires": 0,
       "changed_since_r5": true,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -3444,6 +4484,12 @@
       "r5_fires": 3299,
       "changed_since_r5": true,
       "survives_pct": 0.5865,
+      "survives_pct_by_side": {
+        "short": 0.5865
+      },
+      "r5_fires_by_side": {
+        "short": 3299
+      },
       "projected_step1_fires": 303.2,
       "projected_current_gate": 177.8,
       "reopen_candidate": false,
@@ -3461,9 +4507,17 @@
       "family": "smc",
       "r5_fires": 100,
       "changed_since_r5": true,
-      "survives_pct": 1.0,
+      "survives_pct": 0.87,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 0.7679
+      },
+      "r5_fires_by_side": {
+        "long": 44,
+        "short": 56
+      },
       "projected_step1_fires": 9.2,
-      "projected_current_gate": 9.2,
+      "projected_current_gate": 8.0,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -3484,6 +4538,14 @@
       "r5_fires": 682,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 202,
+        "short": 480
+      },
       "projected_step1_fires": 62.7,
       "projected_current_gate": 62.7,
       "reopen_candidate": false,
@@ -3496,7 +4558,8 @@
         "S6-B2644c",
         "S6-B2756",
         "S6-B3135",
-        "S6-B3135a"
+        "S6-B3135a",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [
@@ -3511,6 +4574,12 @@
       "r5_fires": 948,
       "changed_since_r5": true,
       "survives_pct": 0.0,
+      "survives_pct_by_side": {
+        "long": 0.0
+      },
+      "r5_fires_by_side": {
+        "long": 948
+      },
       "projected_step1_fires": 87.1,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -3604,6 +4673,12 @@
       "r5_fires": 1598,
       "changed_since_r5": true,
       "survives_pct": 0.0,
+      "survives_pct_by_side": {
+        "short": 0.0
+      },
+      "r5_fires_by_side": {
+        "short": 1598
+      },
       "projected_step1_fires": 146.9,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -3636,6 +4711,14 @@
       "r5_fires": 551,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 147,
+        "short": 404
+      },
       "projected_step1_fires": 50.6,
       "projected_current_gate": 50.6,
       "reopen_candidate": false,
@@ -3659,6 +4742,12 @@
       "r5_fires": 333,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 333
+      },
       "projected_step1_fires": 30.6,
       "projected_current_gate": 30.6,
       "reopen_candidate": false,
@@ -3682,6 +4771,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -3702,6 +4793,12 @@
       "r5_fires": 838,
       "changed_since_r5": true,
       "survives_pct": 0.3652,
+      "survives_pct_by_side": {
+        "short": 0.3652
+      },
+      "r5_fires_by_side": {
+        "short": 838
+      },
       "projected_step1_fires": 77.0,
       "projected_current_gate": 28.1,
       "reopen_candidate": false,
@@ -3728,6 +4825,12 @@
       "r5_fires": 382,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 382
+      },
       "projected_step1_fires": 35.1,
       "projected_current_gate": 35.1,
       "reopen_candidate": false,
@@ -3757,6 +4860,12 @@
       "r5_fires": 66,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 66
+      },
       "projected_step1_fires": 6.1,
       "projected_current_gate": 6.1,
       "reopen_candidate": false,
@@ -3779,6 +4888,12 @@
       "r5_fires": 288,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 288
+      },
       "projected_step1_fires": 26.5,
       "projected_current_gate": 26.5,
       "reopen_candidate": false,
@@ -3798,9 +4913,17 @@
       "family": "smc",
       "r5_fires": 953,
       "changed_since_r5": true,
-      "survives_pct": 1.0,
+      "survives_pct": 0.8048,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 0.6667
+      },
+      "r5_fires_by_side": {
+        "long": 395,
+        "short": 558
+      },
       "projected_step1_fires": 87.6,
-      "projected_current_gate": 87.6,
+      "projected_current_gate": 70.5,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -3816,7 +4939,8 @@
         "S6-B2885",
         "S6-B2941",
         "S6-B2943",
-        "S6-B3194"
+        "S6-B3194",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3828,6 +4952,14 @@
       "r5_fires": 2933,
       "changed_since_r5": true,
       "survives_pct": 0.0515,
+      "survives_pct_by_side": {
+        "long": 0.0488,
+        "short": 0.0532
+      },
+      "r5_fires_by_side": {
+        "long": 1128,
+        "short": 1805
+      },
       "projected_step1_fires": 269.6,
       "projected_current_gate": 13.9,
       "reopen_candidate": false,
@@ -3875,6 +5007,12 @@
       "r5_fires": 15,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 15
+      },
       "projected_step1_fires": 1.4,
       "projected_current_gate": 1.4,
       "reopen_candidate": false,
@@ -3898,6 +5036,12 @@
       "r5_fires": 44,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 44
+      },
       "projected_step1_fires": 4.0,
       "projected_current_gate": 4.0,
       "reopen_candidate": false,
@@ -3921,6 +5065,14 @@
       "r5_fires": 1340,
       "changed_since_r5": true,
       "survives_pct": 0.0,
+      "survives_pct_by_side": {
+        "long": 0.0,
+        "short": 0.0
+      },
+      "r5_fires_by_side": {
+        "long": 454,
+        "short": 886
+      },
       "projected_step1_fires": 123.2,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -3971,6 +5123,12 @@
       "r5_fires": 231,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 231
+      },
       "projected_step1_fires": 21.2,
       "projected_current_gate": 21.2,
       "reopen_candidate": false,
@@ -3994,6 +5152,12 @@
       "r5_fires": 262,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 262
+      },
       "projected_step1_fires": 24.1,
       "projected_current_gate": 24.1,
       "reopen_candidate": false,
@@ -4016,6 +5180,12 @@
       "r5_fires": 433,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 433
+      },
       "projected_step1_fires": 39.8,
       "projected_current_gate": 39.8,
       "reopen_candidate": false,
@@ -4039,6 +5209,12 @@
       "r5_fires": 1141,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1141
+      },
       "projected_step1_fires": 104.9,
       "projected_current_gate": 104.9,
       "reopen_candidate": false,
@@ -4047,7 +5223,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2810b"
+        "S6-B2810b",
+        "S6-B3232"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4059,6 +5236,12 @@
       "r5_fires": 1139,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1139
+      },
       "projected_step1_fires": 104.7,
       "projected_current_gate": 104.7,
       "reopen_candidate": false,
@@ -4079,6 +5262,8 @@
       "r5_fires": 0,
       "changed_since_r5": true,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -4097,6 +5282,14 @@
       "r5_fires": 286,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 115,
+        "short": 171
+      },
       "projected_step1_fires": 26.3,
       "projected_current_gate": 26.3,
       "reopen_candidate": false,
@@ -4117,6 +5310,12 @@
       "r5_fires": 4287,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 4287
+      },
       "projected_step1_fires": 394.0,
       "projected_current_gate": 394.0,
       "reopen_candidate": false,
@@ -4137,6 +5336,14 @@
       "r5_fires": 2433,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1050,
+        "short": 1383
+      },
       "projected_step1_fires": 223.6,
       "projected_current_gate": 223.6,
       "reopen_candidate": false,
@@ -4161,6 +5368,12 @@
       "r5_fires": 4,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 4
+      },
       "projected_step1_fires": 0.4,
       "projected_current_gate": 0.4,
       "reopen_candidate": false,
@@ -4179,6 +5392,14 @@
       "r5_fires": 486,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 40,
+        "short": 446
+      },
       "projected_step1_fires": 44.7,
       "projected_current_gate": 44.7,
       "reopen_candidate": false,
@@ -4187,7 +5408,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3221"
+        "S6-B3221",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4199,6 +5421,12 @@
       "r5_fires": 271,
       "changed_since_r5": true,
       "survives_pct": 0.8782,
+      "survives_pct_by_side": {
+        "short": 0.8782
+      },
+      "r5_fires_by_side": {
+        "short": 271
+      },
       "projected_step1_fires": 24.9,
       "projected_current_gate": 21.9,
       "reopen_candidate": false,
@@ -4219,6 +5447,14 @@
       "r5_fires": 1876,
       "changed_since_r5": true,
       "survives_pct": 0.7201,
+      "survives_pct_by_side": {
+        "long": 0.9945,
+        "short": 0.4589
+      },
+      "r5_fires_by_side": {
+        "long": 915,
+        "short": 961
+      },
       "projected_step1_fires": 172.4,
       "projected_current_gate": 124.2,
       "reopen_candidate": false,
@@ -4226,7 +5462,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3237"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -4237,6 +5475,12 @@
       "r5_fires": 1674,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 1674
+      },
       "projected_step1_fires": 153.9,
       "projected_current_gate": 153.9,
       "reopen_candidate": false,
@@ -4287,6 +5531,12 @@
       "r5_fires": 1596,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1596
+      },
       "projected_step1_fires": 146.7,
       "projected_current_gate": 146.7,
       "reopen_candidate": false,
@@ -4355,6 +5605,12 @@
       "r5_fires": 343,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 343
+      },
       "projected_step1_fires": 31.5,
       "projected_current_gate": 31.5,
       "reopen_candidate": false,
@@ -4381,6 +5637,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -4406,6 +5664,12 @@
       "r5_fires": 330,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 330
+      },
       "projected_step1_fires": 30.3,
       "projected_current_gate": 30.3,
       "reopen_candidate": false,
@@ -4424,6 +5688,12 @@
       "r5_fires": 112,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 112
+      },
       "projected_step1_fires": 10.3,
       "projected_current_gate": 10.3,
       "reopen_candidate": false,
@@ -4442,6 +5712,12 @@
       "r5_fires": 1064,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 1064
+      },
       "projected_step1_fires": 97.8,
       "projected_current_gate": 97.8,
       "reopen_candidate": false,
@@ -4460,6 +5736,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -4480,6 +5758,12 @@
       "r5_fires": 324,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 324
+      },
       "projected_step1_fires": 29.8,
       "projected_current_gate": 29.8,
       "reopen_candidate": false,
@@ -4498,6 +5782,12 @@
       "r5_fires": 1880,
       "changed_since_r5": true,
       "survives_pct": 0.1654,
+      "survives_pct_by_side": {
+        "short": 0.1654
+      },
+      "r5_fires_by_side": {
+        "short": 1880
+      },
       "projected_step1_fires": 172.8,
       "projected_current_gate": 28.6,
       "reopen_candidate": false,
@@ -4523,6 +5813,14 @@
       "r5_fires": 592,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 206,
+        "short": 386
+      },
       "projected_step1_fires": 54.4,
       "projected_current_gate": 54.4,
       "reopen_candidate": false,
@@ -4533,7 +5831,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3228"
+        "S6-B3228",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4545,6 +5844,12 @@
       "r5_fires": 375,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 375
+      },
       "projected_step1_fires": 34.5,
       "projected_current_gate": 34.5,
       "reopen_candidate": false,
@@ -4563,6 +5868,12 @@
       "r5_fires": 543,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 543
+      },
       "projected_step1_fires": 49.9,
       "projected_current_gate": 49.9,
       "reopen_candidate": false,
@@ -4585,6 +5896,12 @@
       "r5_fires": 1140,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 1140
+      },
       "projected_step1_fires": 104.8,
       "projected_current_gate": 104.8,
       "reopen_candidate": false,
@@ -4605,6 +5922,14 @@
       "r5_fires": 1500,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 534,
+        "short": 966
+      },
       "projected_step1_fires": 137.9,
       "projected_current_gate": 137.9,
       "reopen_candidate": false,
@@ -4623,6 +5948,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -4641,6 +5968,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -4661,6 +5990,12 @@
       "r5_fires": 633,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 633
+      },
       "projected_step1_fires": 58.2,
       "projected_current_gate": 58.2,
       "reopen_candidate": false,
@@ -4681,6 +6016,12 @@
       "r5_fires": 834,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 834
+      },
       "projected_step1_fires": 76.7,
       "projected_current_gate": 76.7,
       "reopen_candidate": false,
@@ -4701,6 +6042,12 @@
       "r5_fires": 27,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 27
+      },
       "projected_step1_fires": 2.5,
       "projected_current_gate": 2.5,
       "reopen_candidate": false,
@@ -4723,6 +6070,8 @@
       "r5_fires": 0,
       "changed_since_r5": true,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -4741,6 +6090,14 @@
       "r5_fires": 2535,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 1327,
+        "short": 1208
+      },
       "projected_step1_fires": 233.0,
       "projected_current_gate": 233.0,
       "reopen_candidate": false,
@@ -4757,7 +6114,8 @@
         "S6-B3189",
         "S6-B3194",
         "S6-B3223",
-        "S6-B3228"
+        "S6-B3228",
+        "S6-B3232"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4769,6 +6127,14 @@
       "r5_fires": 750,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0,
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 289,
+        "short": 461
+      },
       "projected_step1_fires": 68.9,
       "projected_current_gate": 68.9,
       "reopen_candidate": false,
@@ -4779,7 +6145,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3196"
+        "S6-B3196",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4791,6 +6158,8 @@
       "r5_fires": 0,
       "changed_since_r5": false,
       "survives_pct": null,
+      "survives_pct_by_side": {},
+      "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
       "reopen_candidate": false,
@@ -4815,6 +6184,12 @@
       "r5_fires": 212,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 212
+      },
       "projected_step1_fires": 19.5,
       "projected_current_gate": 19.5,
       "reopen_candidate": false,
@@ -4845,6 +6220,12 @@
       "r5_fires": 78,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 78
+      },
       "projected_step1_fires": 7.2,
       "projected_current_gate": 7.2,
       "reopen_candidate": false,
@@ -4863,6 +6244,12 @@
       "r5_fires": 452,
       "changed_since_r5": true,
       "survives_pct": 0.7434,
+      "survives_pct_by_side": {
+        "long": 0.7434
+      },
+      "r5_fires_by_side": {
+        "long": 452
+      },
       "projected_step1_fires": 41.5,
       "projected_current_gate": 30.9,
       "reopen_candidate": false,
@@ -4886,6 +6273,12 @@
       "r5_fires": 1384,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "short": 1.0
+      },
+      "r5_fires_by_side": {
+        "short": 1384
+      },
       "projected_step1_fires": 127.2,
       "projected_current_gate": 127.2,
       "reopen_candidate": false,
@@ -4897,7 +6290,8 @@
         "S6-B2420",
         "S6-B3135",
         "S6-B3135a",
-        "S6-B3168a"
+        "S6-B3168a",
+        "S6-B3237"
       ],
       "admitted": false,
       "roster_roles": [
@@ -4912,6 +6306,12 @@
       "r5_fires": 163,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 163
+      },
       "projected_step1_fires": 15.0,
       "projected_current_gate": 15.0,
       "reopen_candidate": false,
@@ -4930,6 +6330,12 @@
       "r5_fires": 255,
       "changed_since_r5": false,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 255
+      },
       "projected_step1_fires": 23.4,
       "projected_current_gate": 23.4,
       "reopen_candidate": false,
@@ -4965,6 +6371,12 @@
       "r5_fires": 658,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 658
+      },
       "projected_step1_fires": 60.5,
       "projected_current_gate": 60.5,
       "reopen_candidate": false,
@@ -4994,6 +6406,12 @@
       "r5_fires": 89,
       "changed_since_r5": true,
       "survives_pct": 1.0,
+      "survives_pct_by_side": {
+        "long": 1.0
+      },
+      "r5_fires_by_side": {
+        "long": 89
+      },
       "projected_step1_fires": 8.2,
       "projected_current_gate": 8.2,
       "reopen_candidate": false,

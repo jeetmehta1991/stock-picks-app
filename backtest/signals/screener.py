@@ -4381,28 +4381,44 @@ def strat_smc_inverse_fvg(s):
 
     Added confluence gates:
     - 200-EMA regime alignment (long above, short below)
-    - vol_spike OR price_acceleration confirms institutional follow-through
-      (IFVG breakdown without volume = false signal per ICT canon)
+    - vol_spike_2x OR a force-index cross in the trade's own direction
+      confirms institutional follow-through (IFVG breakdown without volume
+      = false signal per ICT canon). Batch 262 wrote this leg as
+      vol_spike OR price_acceleration; the code has since read a force-
+      index cross (B975 re-keyed force_index_breakout to the up-cross for
+      both sides), and S6-B3222 split it per side.
+
+    S6-B3222 (owner ruled 2026-10-20, 'Approve all recs fable mode be extremely thorough',
+    option (a)): long confirms with vol_spike_2x OR force_index_cross_up,
+    short with vol_spike_2x OR force_index_cross_dn. The short had read the
+    up-cross, so it also fired on an UPWARD force-index cross with no 2x
+    volume: MEASURED on the R5 trade log, 186 of its 558 short entries
+    passed the volume leg only that way. The fires the down-cross adds were
+    never traded, so no artifact holds them - an engine run measures them.
     """
     fl_base = s.get("smc_inverse_fvg_bullish", False)
     fs_base = s.get("smc_inverse_fvg_bearish", False)
     # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer) replaces (not above_200)
     above_200 = s.get("price_above_ema_200", False)
     below_200 = s.get("below_ema_200", False)
-    # Volume confirmation: vol_spike_2x (2x ADV) OR force_index_cross_up
-    # signals institutional follow-through on the role-flip.
+    # Volume confirmation: vol_spike_2x (2x ADV) OR a force-index cross in
+    # the trade's own direction signals institutional follow-through on the
+    # role-flip.
     #
     # B975 (2026-06-21 Council 77 P1 Bucket A A5 C1 fix): key-mismatch
     # silent-gap repair. Previously read 'force_index_breakout' but
     # producer technical.compute_volume emits force_index_positive /
     # force_index_cross_up / force_index_cross_dn (NO _breakout). Aligned
     # with force_index_cross_up for bullish-direction Force Index event.
+    # S6-B3222 (owner ruled 2026-10-20, option (a)): B975 aligned BOTH sides
+    # to the up-cross; the short now reads its mirror, force_index_cross_dn.
     vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_cross_up", False)
+    vol_confirms_short = s.get("vol_spike_2x", False) or s.get("force_index_cross_dn", False)
     fl = fl_base and above_200 and vol_confirms
-    fs = fs_base and below_200 and vol_confirms and not _short_borrow_trap_active(s)
+    fs = fs_base and below_200 and vol_confirms_short and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "smc",
         ["smc_inverse_fvg_bullish", "price_above_ema_200", "vol_spike_2x", "force_index_cross_up"],
-        ["smc_inverse_fvg_bearish", "below_ema_200", "vol_spike_2x", "force_index_cross_up",
+        ["smc_inverse_fvg_bearish", "below_ema_200", "vol_spike_2x", "force_index_cross_dn",
          "borrow_ok"],
         ["Inverse FVG bullish + 200-EMA gate + volume confirms",
          "ICT IFVG role-flip with institutional follow-through"],
@@ -4701,8 +4717,15 @@ def strat_smc_bos_continuation(s):
     silent-gap repair. Previously read 'force_index_breakout' but producer
     technical.compute_volume emits force_index_positive / force_index_cross_up
     / force_index_cross_dn (NO _breakout). Aligned with force_index_cross_up.
+
+    S6-B3222 (owner ruled 2026-10-20, 'Approve all recs fable mode be extremely thorough',
+    option (a)): the SHORT side's volume confirmation reads the mirror the
+    long side implies - vol_spike_2x OR force_index_cross_dn; B975 had
+    aligned both sides to the up-cross. MEASURED on the R5 trade log: 13 of
+    its 56 short entries passed the volume leg only through the up-cross.
     """
     vol_confirms = s.get("vol_spike_2x", False) or s.get("force_index_cross_up", False)
+    vol_confirms_short = s.get("vol_spike_2x", False) or s.get("force_index_cross_dn", False)
     rsi = s.get("rsi_14", 50)
     fl = (
         s.get("smc_bos_bullish", False)
@@ -4713,12 +4736,12 @@ def strat_smc_bos_continuation(s):
     fs = (
         s.get("smc_bos_bearish", False)
         and s.get("below_ema_200", False)  # B630 sweep
-        and vol_confirms
+        and vol_confirms_short
         and rsi < 50
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "smc",
         ["smc_bos_bullish", "price_above_ema_200", "rsi_14", "vol_spike_2x", "force_index_cross_up"],
-        ["smc_bos_bearish", "below_ema_200", "rsi_14", "vol_spike_2x", "force_index_cross_up",
+        ["smc_bos_bearish", "below_ema_200", "rsi_14", "vol_spike_2x", "force_index_cross_dn",
          "borrow_ok"],
         ["Break of Structure (continuation) up + volume + momentum confirms",
          "Above 200 EMA (regime gate)"],

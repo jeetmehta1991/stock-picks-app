@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 445605127 at 2026-10-20 14:22:35 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 6d2a10271 at 2026-10-20 16:27:21 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -144,7 +144,7 @@
 | bullish_engulfing_support | candle | 991 | 91.1 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | donchian_breakout_with_smart_money_long | smart_money_sleeve | 985 | 90.5 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | donchian_10_breakout | breakout | 966 | 88.8 |  | 100.0% | LOOSEN | NOT-STARTED |
-| smc_inverse_fvg | smc | 953 | 87.6 | YES | 100.0% | LOOSEN | STALLED-CAMPAIGN |
+| smc_inverse_fvg | smc | 953 | 70.5 | YES | 80.5% | LOOSEN | STALLED-CAMPAIGN |
 | smc_breaker_block_long | smc | 948 | 0.0 | YES | 0.0% | - | DONE-ADMITTED |
 | roc_burst | momentum | 918 | 84.4 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | news_sentiment_long | news_sentiment | 906 | 83.3 | YES | 100.0% | BOTH | NOT-STARTED |
@@ -225,8 +225,8 @@
 | golden_cross_50_200 | trend | 109 | 10.0 |  | 100.0% | LOOSEN | NOT-STARTED |
 | institutional_increased_with_directors_long | institutional_persistence | 107 | 9.8 | YES | 100.0% | - | CLOSED-NEGATIVE |
 | institutional_with_officers_long | smart_money_combo | 103 | 9.5 | YES | 100.0% | - | CLOSED-NEGATIVE |
-| post_inclusion_reversal_short | - | 100 | 9.2 |  | 100.0% | LOOSEN | NOT-STARTED |
-| smc_bos_continuation | smc | 100 | 9.2 | YES | 100.0% | LOOSEN | NOT-STARTED |
+| post_inclusion_reversal_short | - | 100 | 7.8 |  | 85.0% | LOOSEN | NOT-STARTED |
+| smc_bos_continuation | smc | 100 | 8.0 | YES | 87.0% | LOOSEN | NOT-STARTED |
 | cup_and_handle_retest_long | chart_pattern | 99 | 9.1 | YES | 100.0% | BOTH | NOT-STARTED |
 | 52w_low_breakdown | breakout | 95 | 8.7 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | pivot_fib_confluence | confluence | 91 | 8.4 | YES | 100.0% | LOOSEN | NOT-STARTED |
@@ -247,7 +247,7 @@
 | pivot_r2_continuation | pivot | 55 | 5.1 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | pivot_s2_bounce | pivot | 55 | 5.1 | YES | 100.0% | BOTH | NOT-STARTED |
 | orb_stocks_in_play_long | orb | 54 | 5.0 | YES | 100.0% | LOOSEN | NOT-STARTED |
-| post_deletion_drift_short | - | 54 | 5.0 |  | 100.0% | LOOSEN | NOT-STARTED |
+| post_deletion_drift_short | - | 54 | 4.3 |  | 87.0% | LOOSEN | NOT-STARTED |
 | smc_mitigation_block_short | smc | 44 | 4.0 | YES | 100.0% | BOTH | NOT-STARTED |
 | golden_cross_volume | confluence | 43 | 4.0 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | keltner_lower | mean_reversion | 41 | 3.8 | YES | 100.0% | LOOSEN | NOT-STARTED |

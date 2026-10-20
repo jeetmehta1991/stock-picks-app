@@ -22,6 +22,14 @@ WHAT IT READS - and what it never reads:
     the status builder's own rule (classify_stream) - MEASURED at build time:
     hull_rsi trades 463 long / 807 short, so its long side projects under the
     Step-1 floor although the strategy as a whole clears it.
+  * the status view's survives_pct_by_side['long']: the share of the R5
+    LONG fires the live strategy still fires long on. The long projection
+    is the raw projection x the long share x the LONG side's survival.
+    B3139q-r80 CORRECTION: the r79 build scaled by the strategy-level
+    survival, assuming both sides survive their current gates alike -
+    MEASURED false for 12 of the 56 two-sided rows (morning_star long
+    0.9753 against 0.4618 overall; avwap_50_reclaim long 0.0 against
+    0.8608), so their long projections and lanes were misstated.
   * the registry: a strategy is long-capable when it is a pure long or a
     two-sided strategy (its empty-signal call returns direction long or None);
     EXPLORATORY_STRATEGIES; and each docstring, for an owner re-scope that
@@ -148,7 +156,18 @@ def build(root: Path = ROOT) -> dict:
         name = r["strategy"]
         sh = share.get(name)
         proj = r["projected_current_gate"]
-        long_proj = None if sh is None else round(proj * sh, 1)
+        long_surv = (r.get("survives_pct_by_side") or {}).get("long")
+        if sh and long_surv is None:
+            # a strategy with R5 long fires must carry a long survival - an
+            # absent one is a stale or partial status view, never a 1.0 (L642)
+            raise ValueError(f"{name}: R5 long share {sh} but no long-side "
+                             "survival in the status view - rebuild it")
+        if sh is None:
+            long_proj = None
+        elif sh == 1.0:
+            long_proj = proj  # every R5 fire is long: the strategy's survival IS the long side's
+        else:
+            long_proj = round(r["projected_step1_fires"] * sh * (long_surv or 0.0), 1)
         tightenable = any(v >= bss.COVERAGE_FLOOR
                           for v in (r.get("tightenable_keys") or {}).values())
         lane = r["stream"] if long_proj is None else bss.classify_stream(tightenable, long_proj)
@@ -156,6 +175,7 @@ def build(root: Path = ROOT) -> dict:
                "status": r["status"], "strategy_lane": r["stream"],
                "long_lane": lane, "cost": COST_MEANING.get(lane, "?"),
                "long_share_r5": None if sh is None else round(sh, 4),
+               "long_survival_r5": long_surv,
                "projected_step1_fires_strategy": proj,
                "projected_step1_fires_long": long_proj,
                "step1_floor_met": (long_proj if long_proj is not None else proj) >= floor,

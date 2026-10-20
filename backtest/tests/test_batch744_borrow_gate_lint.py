@@ -70,10 +70,18 @@ def test_b744_pin2_short_strategy_count_matches_b718b_cohort():
     # and an unaliased import shadowed one of them into a function object.
     from roster_invariants import (dual_strat3_count as _derive_dual,
                                    pure_short_count as _derive_short,
-                                   EXPECTED_DUAL_STRAT3, EXPECTED_PURE_SHORT)
+                                   EXPECTED_DUAL_STRAT3, EXPECTED_PURE_SHORT,
+                                   EXPECTED_DELEGATED_PURE_SHORT)
     # B1488 (S6-B1471d): DERIVED, not re-literalled. This number was pinned in two
     # files and drifted in one (L317) - a duplicated pin halves protection.
-    assert len(pure) == EXPECTED_PURE_SHORT, f"pure-short: got {len(pure)}"
+    # S6-B3226: the lint follows one-line screener.py delegations into other
+    # backtest.signals modules, so the two index-rebalance shorts are now in its
+    # population, counted apart (`via` set); EXPECTED_PURE_SHORT stays
+    # screener.py's own pure shorts.
+    here = [s for s in pure if not s.via]
+    delegated = [s for s in pure if s.via]
+    assert len(here) == EXPECTED_PURE_SHORT, f"pure-short: got {len(here)}"
+    assert len(delegated) == EXPECTED_DELEGATED_PURE_SHORT, [s.name for s in delegated]
     # B1471: 60 -> 59. B1465 converted prev_day_high_break from _strat3 to _strat after its
     # SHORT branch was found character-identical to standalone prev_day_low_breakdown. NOTE the
     # same number is pinned independently in test_batch743 pin3 - a duplicated pin across two
@@ -82,7 +90,9 @@ def test_b744_pin2_short_strategy_count_matches_b718b_cohort():
     # total 111 -> 112: pure 51->53 (+2 net) and dual 60->59 (-1) = 110 + 2 = 112
     # S6-B3192: 112 -> 116 (pure 53 -> 57, lineage in roster_invariants), and the
     # total is DERIVED from the two counts rather than pinned as a third literal
-    assert len(rep.short_strategies) == EXPECTED_PURE_SHORT + EXPECTED_DUAL_STRAT3
+    # S6-B3226: 116 -> 118, the two delegated index-rebalance shorts
+    assert len(rep.short_strategies) == (EXPECTED_PURE_SHORT + EXPECTED_DELEGATED_PURE_SHORT
+                                         + EXPECTED_DUAL_STRAT3)
 
 
 def test_b744_pin3_synthetic_missing_gate_caught(tmp_path):
@@ -169,7 +179,9 @@ def test_b744_pin6_format_report_runs_on_live_and_synthetic():
     live = audit_screener("backtest/signals/screener.py")
     out_live = format_report(live)
     assert "BORROW-GATE LINT" in out_live
-    assert "files=1" in out_live
+    # S6-B3226: the live report also parses the module a screener delegation
+    # points into (index_rebalance.py), so it reads files=2
+    assert f"files={live.files_scanned}" in out_live and live.files_scanned == 2, out_live
     assert "OK:" in out_live  # passes today
 
     fake = LintReport(

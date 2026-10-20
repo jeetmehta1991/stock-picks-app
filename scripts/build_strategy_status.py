@@ -21,6 +21,13 @@ judgement:
   changed_since_r5  AST diff of the strat_ function against the R5-era screener
   survives_pct      share of R5 fires on which the LIVE strategy function
                     fires with the recorded direction (S6-B2814)
+  survives_pct_by_side  the same share per recorded direction, {'long': x,
+                    'short': y} for each side with R5 fires: a two-sided
+                    strategy's sides can survive their current gates very
+                    differently (S6-B3232 correction, B3139q-r80 - MEASURED
+                    12 of 56 duals in the long shortlist), so a per-side
+                    consumer must not scale by survives_pct; r5_fires_by_side
+                    carries each side's denominator
   stream            TIGHTEN / LOOSEN / BOTH / NONE - see classify_stream
   ticket            the campaign's tickets from the OWNER-OPENED register,
                     output_audit/owner_campaign_opens.json (S6-B3194);
@@ -502,17 +509,25 @@ def main() -> int:
         # persisted signals with the recorded direction. An erroring row is
         # a non-survival counted in the denominator, never dropped.
         survives = None
+        side_survives, n_side = {}, {}
         fn = ALL_STRATEGIES.get(name)
         if callable(fn) and sigs:
             ok = 0
+            # S6-B3232 correction: the same count per recorded direction, in
+            # the same pass - an erroring row stays in its side's denominator
+            ok_side = {}
             for s_, d_ in zip(sigs, dirs):
+                n_side[d_] = n_side.get(d_, 0) + 1
                 try:
                     r_ = fn(s_)
                 except Exception:
                     continue
                 if r_ and r_.get("fires") and r_.get("direction") == d_:
                     ok += 1
+                    ok_side[d_] = ok_side.get(d_, 0) + 1
             survives = round(ok / fires, 4)
+            side_survives = {d: round(ok_side.get(d, 0) / n, 4)
+                             for d, n in sorted(n_side.items())}
 
         tickets_all, mentions_all = campaign_tickets(qtext, name)
         # S6-B3186: the record keeps the FULL lists (ticket_fields)
@@ -551,6 +566,8 @@ def main() -> int:
         recs.append({"strategy": name, "family": fam, "r5_fires": fires,
                      "changed_since_r5": name in changed,
                      "survives_pct": survives,
+                     "survives_pct_by_side": side_survives,
+                     "r5_fires_by_side": dict(sorted(n_side.items())),
                      "projected_step1_fires": round(projected, 1),
                      "projected_current_gate": round(eff, 1),
                      "reopen_candidate": reopen,

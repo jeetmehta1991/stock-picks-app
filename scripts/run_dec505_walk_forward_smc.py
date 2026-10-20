@@ -137,7 +137,8 @@ def _compute_signals_at(df: pd.DataFrame, as_of_idx: int,
 
     Combines compute_smc_signals + a minimal subset of compute_all_signals
     needed by the 18 SMC strategies (price_above_ema_200, below_ema_200,
-    rsi_14, vol_spike_2x, force_index_cross_up, borrow_ok).
+    rsi_14, vol_spike_2x, force_index_cross_up, force_index_cross_dn,
+    borrow_ok - the down-cross since S6-B3222).
     """
     from backtest.signals.smc_ict import compute_smc_signals
     from backtest.signals.technical import compute_all_signals

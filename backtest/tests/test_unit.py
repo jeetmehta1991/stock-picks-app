@@ -8956,13 +8956,20 @@ def test_batch216_smc_inverse_fvg_handles_both_directions():
     # B975 fixture update: vol_confirms now reads force_index_cross_up
     # (B975 Council 77 P1 Bucket A A5 C1 key-mismatch fix - prior
     # 'force_index_breakout' was never produced by compute_force_index).
+    # S6-B3222 (owner ruled 2026-10-20, option (a)): that fixture pinned the
+    # defect itself - a SHORT confirmed by an UPWARD force-index cross. The
+    # short now confirms with the down-cross, and the up-cross alone no
+    # longer fires it.
     s = {
         "smc_inverse_fvg_bullish": False, "smc_inverse_fvg_bearish": True,
         "price_above_ema_200": False, "below_ema_200": True,
-        "force_index_cross_up": True,
+        "force_index_cross_dn": True,
     }
     r = strat_smc_inverse_fvg(s)
     assert r["fires"] is True and r["direction"] == "short"
+    s_up = dict(s, force_index_cross_dn=False, force_index_cross_up=True)
+    assert strat_smc_inverse_fvg(s_up)["fires"] is False, (
+        "S6-B3222: an upward force-index cross must not confirm a short")
     # No IFVG signal -> no fire
     s = {"smc_inverse_fvg_bullish": False, "smc_inverse_fvg_bearish": False}
     assert strat_smc_inverse_fvg(s)["fires"] is False
@@ -58165,6 +58172,132 @@ def test_b3192_every_short_strategy_carries_the_borrow_gate():
         assert "borrow_ok" in fn(legs)["signals_used"], fn.__name__
 
 
+def test_b3226_borrow_lint_sees_every_registered_short(tmp_path):
+    """S6-B3226 (owner ruled 2026-10-20, 'Approve all recs fable mode be
+    extremely thorough', option (a)). The B744 lint read screener.py only, so
+    the two index-rebalance shorts - defined in index_rebalance.py, registered
+    through one-line screener delegations - were invisible to it and carried
+    no borrow gate. (1) The lint's population equals the REGISTRY's: every
+    registered strategy whose empty-signal call returns direction 'short' is
+    in the lint's pure-short set and every one returning None (a _strat3
+    dual) is in its dual set, both ways - a runtime classification the lint's
+    static reading does not share, so a short the lint cannot see fails here;
+    (2) zero violations and no unfollowed delegation; (3) the two delegated
+    shorts are reported with `via` naming index_rebalance.py; (4) both carry
+    the gate through the live helper - days_to_cover 5.0 fires, 6.0 does
+    not - and declare 'borrow_ok'; (5) the lint reads CODE: a gate named only
+    in a comment is a violation (L748)."""
+    import sys
+    import textwrap
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import borrow_gate_lint as bgl
+    from backtest.signals.screener import (ALL_STRATEGIES,
+                                           strat_post_inclusion_reversal_short,
+                                           strat_post_deletion_drift_short)
+    rep = bgl.audit_screener(root / "backtest" / "signals" / "screener.py")
+    runtime = {fn.__name__: fn({}).get("direction") for fn in ALL_STRATEGIES.values()}
+    rt_short = {n for n, d in runtime.items() if d == "short"}
+    rt_dual = {n for n, d in runtime.items() if d is None}
+    lint_pure = {s.name for s in rep.short_strategies if not s.is_dual}
+    lint_dual = {s.name for s in rep.short_strategies if s.is_dual}
+    assert len(rt_short) >= 50 and len(rt_dual) >= 50, (len(rt_short), len(rt_dual))
+    assert lint_pure == rt_short, (sorted(rt_short - lint_pure), sorted(lint_pure - rt_short))
+    assert lint_dual == rt_dual, (sorted(rt_dual - lint_dual), sorted(lint_dual - rt_dual))
+    assert rep.violations == [], [v.name for v in rep.violations]
+    assert rep.unresolved == [], rep.unresolved
+    via = {s.name: s.via for s in rep.short_strategies if s.via}
+    assert set(via) == {"strat_post_inclusion_reversal_short",
+                        "strat_post_deletion_drift_short"}, via
+    assert all("index_rebalance.py:" in v for v in via.values()), via
+    cases = ((strat_post_inclusion_reversal_short,
+              {"in_reversal_window": True, "last_event_type": "s&p_add"}),
+             (strat_post_deletion_drift_short,
+              {"within_post_deletion_window": True, "last_event_type": "s&p_drop",
+               "price_above_ema_200": False}))
+    for fn, legs in cases:
+        assert fn(dict(legs, days_to_cover=5.0))["fires"] is True, fn.__name__
+        assert fn(dict(legs, days_to_cover=6.0))["fires"] is False, fn.__name__
+        assert "borrow_ok" in fn(legs)["signals_used"], fn.__name__
+    # (5) a gate named only in prose does not satisfy the lint
+    p = tmp_path / "screener.py"
+    p.write_text(textwrap.dedent('''
+        def _strat(fires, direction, category, signals_used, ctx):
+            return {"fires": fires, "direction": direction}
+
+        def strat_prose_short(s):
+            """carries _short_borrow_trap_active(s) and "borrow_ok" in prose only"""
+            # and not _short_borrow_trap_active(s)
+            fires = s.get("trigger", False)
+            return _strat(fires, "short", "test", ["trigger"], ["no gate"])
+    '''), encoding="utf-8")
+    prose = bgl.audit_screener(p)
+    assert [v.name for v in prose.violations] == ["strat_prose_short"], prose.violations
+    assert not prose.violations[0].has_borrow_gate
+    assert not prose.violations[0].has_borrow_ok_declared
+
+
+def test_b3222_smc_shorts_confirm_with_the_down_cross():
+    """S6-B3222 (owner ruled 2026-10-20, 'Approve all recs fable mode be
+    extremely thorough', option (a)): strat_smc_inverse_fvg and
+    strat_smc_bos_continuation built one volume confirmation - vol_spike_2x
+    OR force_index_cross_up - and ANDed it into BOTH sides, so each short
+    also fired on an UPWARD force-index cross with no 2x volume (186 of 558
+    and 13 of 56 R5 short entries, MEASURED). (1) Live behaviour, both
+    strategies: with no 2x volume the short fires on force_index_cross_dn
+    and not on force_index_cross_up, and the long side is unchanged - it
+    fires on the up-cross and not on the down-cross; a 2x volume spike
+    confirms either side. (2) The declared short lists name the down-cross,
+    not the up-cross. (3) signals_used_lint finds no drift on any side."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import signals_used_lint as sul
+    from backtest.signals import screener as sc
+    cases = (
+        (sc.strat_smc_inverse_fvg,
+         {"smc_inverse_fvg_bullish": True, "price_above_ema_200": True},
+         {"smc_inverse_fvg_bearish": True, "below_ema_200": True}),
+        (sc.strat_smc_bos_continuation,
+         {"smc_bos_bullish": True, "price_above_ema_200": True, "rsi_14": 60},
+         {"smc_bos_bearish": True, "below_ema_200": True, "rsi_14": 40}),
+    )
+    for fn, long_legs, short_legs in cases:
+        n = fn.__name__
+        assert fn(dict(short_legs, force_index_cross_dn=True))["direction"] == "short", n
+        assert fn(dict(short_legs, force_index_cross_up=True))["fires"] is False, n
+        assert fn(dict(short_legs, vol_spike_2x=True))["direction"] == "short", n
+        assert fn(dict(long_legs, force_index_cross_up=True))["direction"] == "long", n
+        assert fn(dict(long_legs, force_index_cross_dn=True))["fires"] is False, n
+        assert fn(dict(long_legs, vol_spike_2x=True))["direction"] == "long", n
+        used = fn(dict(short_legs, force_index_cross_dn=True))["signals_used"]
+        assert "force_index_cross_dn" in used and "force_index_cross_up" not in used, (n, used)
+        mod = sul.Module.of(sc)
+        sides = sul.analyse_function(mod, mod.funcs[n])
+        assert len(sides) == 2, (n, sides)
+        for side in sides:
+            assert side["status"] == "OK" and side["drift"] == [], (n, side)
+    # (4) the spot check's hand-held gate table: EVERY leg names exactly the
+    # keys that leg's gate reads (the borrow marker aside). It carried the
+    # up-cross on the IFVG short leg after the change and only the long leg
+    # was pinned (B3139q-r80 RED gate).
+    import spot_check_smc_family as spot
+    mod = sul.Module.of(sc)
+    legs_checked = 0
+    for name, legs in spot.GATES.items():
+        sides = {s["side"]: s for s in sul.analyse_function(mod, mod.funcs["strat_" + name])}
+        for leg, terms in legs.items():
+            side = sides.get(leg) or sides["single"]
+            feeds = {v for t, v in side["feeds"] if t == "lit"} - {"borrow_ok"}
+            assert set(spot._flat(terms)) == feeds, (name, leg, sorted(spot._flat(terms)), sorted(feeds))
+            legs_checked += 1
+    assert legs_checked >= 3, legs_checked
+
+
 def test_b3155b_provenance_repair_holds_the_prefetch_bar(tmp_path):
     """S6-B3155b (owner ruled 2026-10-19, 'Fable mode / Approve all
     recommendations', option (a)): the 7 partial 2026-05-05 bars the third
@@ -59123,7 +59256,11 @@ def test_b3232_long_shortlist_reads_in_sample_only_and_open_longs():
     STALLED) long-capable non-member; the ranked order is cost lane, then
     in-sample gates, then in-sample Sharpe, and the lane carries the Step-1
     floor; the deploy-bar detector finds a
-    known re-scope; and the committed artifact is this build."""
+    known re-scope; and the committed artifact is this build, value for value.
+    B3139q-r80 correction: a two-sided row's long projection scales by its
+    LONG side's survival, never the strategy-level one (MEASURED 12 of 56
+    two-sided rows differ), and the status view's per-side record sums to
+    its total."""
     import ast as _ast
     import json as _json
     import sys
@@ -59170,6 +59307,41 @@ def test_b3232_long_shortlist_reads_in_sample_only_and_open_longs():
                       .read_text(encoding="utf-8"))
     assert art["population"] == pop, (art["population"], pop)
     assert [r["strategy"] for r in art["ranked"]] == [r["strategy"] for r in d["ranked"]]
+    # B3139q-r80: the committed rows are this build value for value - an
+    # order check alone passed an artifact whose long projections had moved
+    keep = ("strategy", "long_lane", "projected_step1_fires_long",
+            "long_survival_r5", "step1_floor_met")
+    for part in ("ranked", "unranked"):
+        assert ([{k: r.get(k) for k in keep} for r in art[part]]
+                == [{k: r.get(k) for k in keep} for r in d[part]]), part
+    # each side survives on its own: a two-sided row's long projection
+    # scales by the LONG side's survival, never the strategy-level one
+    view = {r["strategy"]: r for r in _json.loads(
+        (root / sl.STATUS).read_text(encoding="utf-8"))["rows"]}
+    asym = 0
+    for r in d["ranked"] + d["unranked"]:
+        v = view[r["strategy"]]
+        sh = r["long_share_r5"]
+        if sh is None:
+            continue
+        assert r["long_survival_r5"] == (v.get("survives_pct_by_side") or {}).get("long"), r
+        if sh not in (0.0, 1.0):
+            # within rounding: the row stores the share to 4 places, the
+            # build multiplies the unrounded one
+            want = v["projected_step1_fires"] * sh * r["long_survival_r5"]
+            assert abs(r["projected_step1_fires_long"] - want) <= 0.1, (r, want)
+            asym += r["long_survival_r5"] != v["survives_pct"]
+    assert asym >= 10, asym  # MEASURED B3139q-r80: 12 of the 56 two-sided rows
+    # the status view's per-side record agrees with its total on every fired
+    # row: side denominators sum to r5_fires, and the fire-weighted mean of
+    # the side survivals is survives_pct to rounding
+    fired = [v for v in view.values() if v["r5_fires"]]
+    assert len(fired) >= 200, len(fired)
+    for v in fired:
+        n = v["r5_fires_by_side"]
+        assert sum(n.values()) == v["r5_fires"], v["strategy"]
+        mean = sum(n[d_] * v["survives_pct_by_side"][d_] for d_ in n) / v["r5_fires"]
+        assert abs(mean - v["survives_pct"]) <= 1e-4, (v["strategy"], mean, v["survives_pct"])
 
 
 def test_b3218_a_present_admissions_record_without_its_list_is_refused(tmp_path):

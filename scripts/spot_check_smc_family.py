@@ -50,8 +50,11 @@ GATES = {
     "smc_inverse_fvg": {
         "long": ("smc_inverse_fvg_bullish", "price_above_ema_200",
                  ("vol_spike_2x", "force_index_cross_up")),
+        # S6-B3222 (2026-10-20): the short confirms with its OWN direction's
+        # cross; this table kept the up-cross until the B3139q-r80 gate, and
+        # test_b3222 now holds every leg here to the leg's live gate keys
         "short": ("smc_inverse_fvg_bearish", "below_ema_200",
-                  ("vol_spike_2x", "force_index_cross_up")),
+                  ("vol_spike_2x", "force_index_cross_dn")),
     },
 }
 

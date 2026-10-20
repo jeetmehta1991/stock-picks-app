@@ -1201,13 +1201,20 @@ FORMULA_SMC_IFVG = (
     "============================== STRATEGY LAYER ===============================\n"
     "\n"
     "long   =  smc_inverse_fvg_bullish AND price_above_ema_{span}\n"
-    "short  =  smc_inverse_fvg_bearish AND below_ema_200 AND borrow_ok\n"
+    "          AND (vol_spike_2x OR force_index_cross_up)\n"
+    "short  =  smc_inverse_fvg_bearish AND below_ema_200\n"
+    "          AND (vol_spike_2x OR force_index_cross_dn) AND borrow_ok\n"
+    "          (S6-B3222: each side confirms in its own direction; the\n"
+    "          strategy reads the LITERAL price_above_ema_200 key, so\n"
+    "          whether P1 reaches the long leg is S6-B3238)\n"
     "          (all persisted booleans - NO free numeric axis; Step 1 is\n"
     "          legs x exits via the shared smc_family_step1 grader)\n")
 
 SPECS["smc_inverse_fvg"] = {
-    "gate": ("long: smc_inverse_fvg_bullish AND price_above_ema_{span} | "
-             "short: smc_inverse_fvg_bearish AND below_ema_200 AND borrow_ok"),
+    "gate": ("long: smc_inverse_fvg_bullish AND price_above_ema_{span} AND "
+             "(vol_spike_2x OR force_index_cross_up) | "
+             "short: smc_inverse_fvg_bearish AND below_ema_200 AND "
+             "(vol_spike_2x OR force_index_cross_dn) AND borrow_ok"),
     "formula": FORMULA_SMC_IFVG,
     "baseline": {"artifact": "output_r5_merged_1_7", "fires": 953,
                  "tickers": 544, "holdout_n": 231,

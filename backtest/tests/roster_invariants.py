@@ -60,3 +60,10 @@ def pure_long_count(src: str | None = None) -> int:
 #               (B2098). Raised only after all 116 shorts carry the borrow gate (B1471).
 EXPECTED_DUAL_STRAT3 = 59
 EXPECTED_PURE_SHORT = 57
+#   delegated 2 : S6-B3226 (2026-10-20) - post_inclusion_reversal_short and
+#               post_deletion_drift_short are defined in index_rebalance.py and
+#               registered through one-line screener.py delegations, so
+#               pure_short_count (a scan of screener.py's text) never sees them.
+#               The B744 lint follows the delegation since S6-B3226 and reports
+#               them with `via` set; EXPECTED_PURE_SHORT stays screener.py's own.
+EXPECTED_DELEGATED_PURE_SHORT = 2
