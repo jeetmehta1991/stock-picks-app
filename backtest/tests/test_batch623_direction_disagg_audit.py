@@ -113,9 +113,12 @@ def test_batch623_audit_produces_18_results():
     tl = Path("output_batch395_final/trade_log.csv")
     if not tl.exists():
         pytest.skip("cube trade_log absent")
-    result = audit(tl)
-    assert result["deferred_strategies_audited"] == 18
-    assert len(result["results"]) == 18
+    # S6-B3237 (B3139q-r88): the B395 cube is read WHOLE, as when pinned;
+    # 18 -> 17 because B1465 (S6-B1463a) made prev_day_high_break
+    # long-only, so it left the two-sided population.
+    result = audit(tl, window="all")
+    assert result["deferred_strategies_audited"] == 17
+    assert len(result["results"]) == 17
     # Every result has the required keys
     for r in result["results"]:
         assert "strategy" in r
@@ -141,7 +144,7 @@ def test_batch623_remove_ok_set_matches_audit():
     tl = Path("output_batch395_final/trade_log.csv")
     if not tl.exists():
         pytest.skip("cube trade_log absent")
-    result = audit(tl)
+    result = audit(tl, window="all")   # S6-B3237: the cube read whole
     remove_ok = {r["strategy"] for r in result["results"]
                  if r["recommendation"] == "REMOVE_OK"}
     assert remove_ok == EXPECTED_REMOVE_OK, (

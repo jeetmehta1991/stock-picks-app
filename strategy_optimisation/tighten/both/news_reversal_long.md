@@ -1,6 +1,6 @@
 # Table A - news_reversal_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit b926385df at 2026-10-20 09:45:14 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 5a9ffe2ee | commit 5a9ffe2ee at 2026-10-21 03:48:40 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 1 | **surviving fires (T1):** 1 (unchanged since R5 - filter is identity)
 
@@ -10,10 +10,10 @@
 
 =============================== PRODUCER LAYER ===============================
 
-P1  close_above_open  <- backtest/signals/screener.py +1
+P1  close_above_open  <- backtest/signals/technical.py
        DEFN: bar direction: close vs open (bar-anatomy block)
        knobs P1.1-P1.1 (band rows in Table A)
-P2  close_in_top_40pct_of_range  <- backtest/signals/screener.py +1
+P2  close_in_top_40pct_of_range  <- backtest/signals/technical.py
        DEFN: close inside the top/bottom 40pct of the bar's range (technical.py:1682)
        knobs P2.1-P2.1 (band rows in Table A)
 
@@ -44,9 +44,9 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | close_above_open - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | bar direction: close vs open (bar-anatomy block) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | close_above_open - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | bar direction: close vs open (bar-anatomy block) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
 | P1.1 | BAND | (structural) c > o - optional min body pct - backtest/signals/technical.py bar-anatomy block | BRACKET zero | 0.0 | [0, 0.2, 0.5] pct | offline 0 of 3 levels - none - bar OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P2 | PRODUCER | close_in_top_40pct_of_range - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close inside the top/bottom 40pct of the bar's range (technical.py:1682) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2 | PRODUCER | close_in_top_40pct_of_range - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close inside the top/bottom 40pct of the bar's range (technical.py:1682) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
 | P2.1 | BAND | range-position cutoff - backtest/signals/technical.py:1682 | BRACKET production 0.40 | 0.4 | [0.25, 0.40, 0.50] | offline 0 of 3 levels - none - bar OHLC unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | STRATEGY | news_count_5d `>= 3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 3` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P4 | STRATEGY | news_sentiment_5d `<= -0.3` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `<= -0.3` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
@@ -61,12 +61,12 @@ hours). Looser side = RESIM (engine) by construction - a looser level admits
 bars the cube never recorded. Levels are QUANTS quantiles [0.2, 0.4, 0.6, 0.8] of the key's values on the surviving fires; only levels
 STRICTLY tighter than production enter the free band.
 
-| key | source (literal grep) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
+| key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| news_count_5d | backtest/signals/news_sentiment.py +1 | `>= 3` | 100.0% | TIGHTER = RAISE the floor: 12 -> 1 (100%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
-| news_sentiment_5d | backtest/signals/news_sentiment.py +1 | `<= -0.3` | 100.0% | TIGHTER = LOWER the ceiling: -0.5 -> 1 (100%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
-| news_sentiment_shift | backtest/signals/news_sentiment.py +1 | `> 0.2` | 100.0% | TIGHTER = RAISE the floor: 0.2157 -> 1 (100%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
-| pct_change_5d | backtest/signals/screener.py | `< -0.1` | 100.0% | TIGHTER = LOWER the ceiling: -0.102 -> 0 (0%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
+| news_count_5d | backtest/signals/news_sentiment.py | `>= 3` | 100.0% | TIGHTER = RAISE the floor: 12 -> 1 (100%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
+| news_sentiment_5d | backtest/signals/news_sentiment.py | `<= -0.3` | 100.0% | TIGHTER = LOWER the ceiling: -0.5 -> 1 (100%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
+| news_sentiment_shift | backtest/signals/news_sentiment.py | `> 0.2` | 100.0% | TIGHTER = RAISE the floor: 0.2157 -> 1 (100%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
+| pct_change_5d | backtest/signals/technical.py (f-string template) +1 | `< -0.1` | 100.0% | TIGHTER = LOWER the ceiling: -0.102 -> 0 (0%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
@@ -77,7 +77,7 @@ companion levels are OFFLINE (subset selection). Coverage floor 0.98
 (breadth_step1_grid.MIN_COVERAGE); keys below it are listed at the bottom as
 RESIM-ONLY - offline grading would silently drop their absent rows.
 
-| key | source (literal grep) | coverage | levels (QUANTS on fires) | keep >= level (n, %) | keep <= level (n, %) | mark |
+| key | source (module writing the key) | coverage | levels (QUANTS on fires) | keep >= level (n, %) | keep <= level (n, %) | mark |
 |---|---|---|---|---|---|---|
 
 ### Binary companions (offline AND-able; no band - a boolean has no threshold)

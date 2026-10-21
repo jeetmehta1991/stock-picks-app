@@ -23,8 +23,8 @@ engine-only by construction (runbook §4.3) and no offline table can enumerate
 them. The depth extraction is the builder's source pattern - a LOWER BOUND
 (thresholds via helpers or config constants are invisible).
 
-Module attribution is a literal grep of the key name across backtest/signals,
-backtest/data and backtest/engine - a heuristic, labelled as such per file.
+Module attribution names a module that WRITES the key (S6-B3251; an f-string
+template counts) under backtest/signals, data and engine - a static AST read.
 """
 from __future__ import annotations
 
@@ -176,25 +176,95 @@ def gate_bodies(src: str) -> dict:
     return out
 
 
-def _module_index() -> list[tuple[str, str]]:
+def _written_keys(text: str):
+    """S6-B3251: the keys a module WRITES, as (literal keys, templates). A
+    write is a subscript-assignment target (X["k"] = ..., augmented and tuple
+    targets too), a key of a dict literal or dict comprehension that is
+    returned, assigned or passed to .update(), an .update(k=...) keyword, or
+    a .setdefault("k", ...) key. An f-string key is a TEMPLATE - each {...}
+    matches [A-Za-z0-9_.]+ - kept with its count of literal characters, the
+    measure of how specific it is. A key that is only READ (s.get, a
+    membership test, a name quoted in prose) is not a write."""
+    lits, tmpls = set(), []
+
+    def key_of(node):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            lits.add(node.value)
+        elif isinstance(node, ast.JoinedStr):
+            parts, nlit = [], 0
+            for v in node.values:
+                if isinstance(v, ast.Constant):
+                    parts.append(re.escape(str(v.value)))
+                    nlit += len(str(v.value))
+                else:
+                    parts.append(r"[A-Za-z0-9_.]+")
+            if nlit:
+                tmpls.append((re.compile("^" + "".join(parts) + "$"), nlit))
+
+    def dict_keys(node):
+        if isinstance(node, ast.Dict):
+            for k in node.keys:
+                if k is not None:
+                    key_of(k)
+        elif isinstance(node, ast.DictComp):
+            key_of(node.key)
+
+    for n in ast.walk(ast.parse(text)):
+        if isinstance(n, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
+            targets = n.targets if isinstance(n, ast.Assign) else [n.target]
+            for t in targets:
+                for tt in (t.elts if isinstance(t, (ast.Tuple, ast.List)) else [t]):
+                    if isinstance(tt, ast.Subscript):
+                        key_of(tt.slice)
+            if n.value is not None:
+                dict_keys(n.value)
+        elif isinstance(n, ast.Return) and n.value is not None:
+            dict_keys(n.value)
+        elif isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute):
+            if n.func.attr == "update":
+                for a in n.args:
+                    dict_keys(a)
+                lits.update(kw.arg for kw in n.keywords if kw.arg)
+            elif n.func.attr == "setdefault" and n.args:
+                key_of(n.args[0])
+    return lits, tmpls
+
+
+def _module_index() -> list[tuple[str, str, tuple]]:
+    """(module path, text, written keys) per scanned module (S6-B3251)."""
     idx = []
     for d in _ATTR_DIRS:
         for p in sorted((ROOT / d).glob("*.py")):
             try:
-                idx.append((f"{d}/{p.name}",
-                            p.read_text(encoding="utf-8", errors="replace")))
+                text = p.read_text(encoding="utf-8", errors="replace")
             except OSError:
                 continue
+            try:
+                written = _written_keys(text)
+            except SyntaxError:
+                written = (set(), [])
+            idx.append((f"{d}/{p.name}", text, written))
     return idx
 
 
 def attribute(key: str, idx) -> str:
-    hits = [name for name, text in idx
-            if f'"{key}"' in text or f"'{key}'" in text]
-    if not hits:
-        return "(not found by literal grep)"
-    extra = f" +{len(hits) - 1}" if len(hits) > 1 else ""
-    return hits[0] + extra
+    """S6-B3251: the module that WRITES `key` - a literal writer first (in
+    path order), else the most specific f-string template that renders it,
+    else none. The old rule named the first file QUOTING the key, often a
+    consumer: MEASURED B3139q-r86, williams_r_oversold's price_above_ema_200
+    named backtest/signals/index_rebalance.py (a strategy reading it) and
+    cmf_flip's cmf_cross_up named screener.py, while technical.py writes
+    both (one through an f-string, which a literal grep never matches)."""
+    lit = [name for name, _text, (lits, _tm) in idx if key in lits]
+    if lit:
+        return lit[0] + (f" +{len(lit) - 1}" if len(lit) > 1 else "")
+    tm = sorted((-max(n for rx, n in tms if rx.match(key)), name)
+                for name, _text, (_l, tms) in idx
+                if any(rx.match(key) for rx, _n in tms))
+    if tm:
+        return (f"{tm[0][1]} (f-string template)"
+                + (f" +{len(tm) - 1}" if len(tm) > 1 else ""))
+    return "(no module found writing the key)"
 
 
 def surviving_fires(name: str, frame: pd.DataFrame, survives_pct,
@@ -602,7 +672,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
           "bars the cube never recorded. Levels are QUANTS quantiles "
           f"{list(QUANTS)} of the key's values on the surviving fires; only levels",
           "STRICTLY tighter than production enter the free band.", "",
-         "| key | source (literal grep) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |",
+         "| key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |",
          "|---|---|---|---|---|---|"]
     for key, op, prod in sorted(set(comparisons)):
         kind, ser = series.get(key, ("missing", pd.Series(dtype=float)))
@@ -642,7 +712,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
           f"companion levels are OFFLINE (subset selection). Coverage floor {MIN_COVERAGE}",
           "(breadth_step1_grid.MIN_COVERAGE); keys below it are listed at the bottom as",
           "RESIM-ONLY - offline grading would silently drop their absent rows.", "",
-          "| key | source (literal grep) | coverage | levels (QUANTS on fires) | keep >= level (n, %) | keep <= level (n, %) | mark |",
+          "| key | source (module writing the key) | coverage | levels (QUANTS on fires) | keep >= level (n, %) | keep <= level (n, %) | mark |",
           "|---|---|---|---|---|---|---|"]
     priced, proxy = price_denominated(series)
     low_cov, binaries = [], []

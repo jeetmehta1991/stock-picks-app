@@ -16,6 +16,14 @@ output_batch395_final/trade_log.csv with 29,360 trades from May 2026
 cube).
 
 CAVEATS:
+  - S6-B3237 CORRECTION (B3139q-r88): the next bullet is FALSE for the
+    cubes this script reads. Phase 1A-beta cubes run with
+    --no-regime-affinity (run_phase1a.py, Batch 384, auto-enabled), so
+    they hold every strategy's trades in every regime that occurred -
+    MEASURED: output_batch395_final holds adx_initiation (entry {bear})
+    long trades in bull 373 and neutral 93, and R5 likewise. Both what
+    removal drops and what it adds are observed; by_direction flags a
+    regime-side cell with 0 trades. (Original B623 text follows.)
   - The trade_log already reflects the explicit regime entry in force
     at run time, so the cube only observed trades the affinity ALLOWED.
     Direction-disaggregated stats here describe behavior conditional on
@@ -49,6 +57,8 @@ import pandas as pd
 
 # Make root importable
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+# S6-B3237: free_level_window / roster_core - the one in-sample window
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from backtest.engine.regime_selector import (  # noqa: E402
     STRATEGY_REGIME_AFFINITY, should_strategy_fire_in_regime)
@@ -110,6 +120,83 @@ DEFAULT_LONG_REGIMES = {r for r in _REGIMES if should_strategy_fire_in_regime(
     "_unmapped", r, affinity={}, direction="long")}
 DEFAULT_SHORT_REGIMES = {r for r in _REGIMES if should_strategy_fire_in_regime(
     "_unmapped", r, affinity={}, direction="short")}
+
+
+# S6-B3237 (owner ruled 2026-10-21, 'Approve all recs execute', option (c)):
+# the evidence for ruling the two-sided entries is read IN-SAMPLE only - the
+# holdout read needs the owner's own word (runbook 0.6).
+WINDOWS = ("is", "all")
+_COLS = ("strategy", "direction", "regime", "pnl_pct", "entry_date", "win")
+VERDICT_SCOPE = (
+    "KEEP / REMOVE_OK compare the window's trades by regime. A Phase 1A-beta "
+    "cube (B395, R5) runs with --no-regime-affinity (run_phase1a.py), so what "
+    "removal drops AND what it adds are both observed; a regime-side cell "
+    "with 0 trades is unobserved (R5's window holds no crisis day) and "
+    "by_direction flags it. A run with the affinity ON holds only allowed "
+    "regimes, and its added cells read 0 for that reason")
+
+
+def load_trade_log(trade_log_path, strategies=None, window: str = "is"):
+    """(rows, meta) - the rows the audit reads. Only the columns the audit
+    uses, in chunks, keeping `strategies` (None keeps all): the R5 trade log
+    is 4.6 GB. window 'is' (the DEFAULT) keeps the IN-SAMPLE rows only,
+    through free_level_window.in_sample_only - roster_core's one entry-dated
+    window, which fails closed if a holdout-entered row survives; 'all' keeps
+    every row (the pre-S6-B3237 behaviour, for a historical cube read whole).
+    Any other window is refused, and 'is' without entry_date is refused."""
+    if window not in WINDOWS:
+        raise ValueError(f"window must be one of {WINDOWS}, got {window!r}")
+    head = list(pd.read_csv(trade_log_path, nrows=0).columns)
+    cols = [c for c in _COLS if c in head]
+    missing = {"strategy", "direction", "regime", "pnl_pct"} - set(cols)
+    if missing:
+        raise ValueError(f"{trade_log_path} lacks {sorted(missing)}")
+    if window == "is" and "entry_date" not in cols:
+        raise ValueError("window 'is' needs an entry_date column")
+    parts = []
+    for ch in pd.read_csv(trade_log_path, usecols=cols, chunksize=500_000,
+                          low_memory=False):
+        if strategies is not None:
+            ch = ch[ch["strategy"].isin(set(strategies))]
+        if len(ch):
+            parts.append(ch)
+    df = (pd.concat(parts, ignore_index=True) if parts
+          else pd.DataFrame(columns=cols))
+    meta = {"window": window, "rows_read": len(df), "split": None}
+    if window == "is":
+        from free_level_window import in_sample_only, split_windows
+        meta["split"] = split_windows(df)
+        df = in_sample_only(df)
+    meta["rows_kept"] = len(df)
+    return df, meta
+
+
+def compare_per_direction(stats: pd.DataFrame, current_regimes: set) -> dict:
+    """S6-B3237: what removing an explicit entry does to EACH side, from the
+    trades the log holds - per direction, the regimes removal DROPS (the
+    entry allows them, the side's default does not: observed n and pnl),
+    KEEPS, and ADDS (the default allows them, the entry does not). An added
+    set with 0 trades is flagged unobserved - in a Phase 1A-beta cube
+    (affinity off) that regime did not occur for the side in the window; in
+    a run with the affinity on it may have been blocked."""
+    out = {}
+    for d, default in (("long", DEFAULT_LONG_REGIMES),
+                       ("short", DEFAULT_SHORT_REGIMES)):
+        sd = (stats[stats["direction"] == d] if len(stats)
+              else pd.DataFrame(columns=["regime", "n_trades", "total_pnl_pct"]))
+
+        def agg(regs, sd=sd):
+            sub = sd[sd["regime"].isin(regs)]
+            n = int(sub["n_trades"].sum()) if len(sub) else 0
+            tot = float(sub["total_pnl_pct"].sum()) if len(sub) else 0.0
+            return {"regimes": sorted(regs), "n": n,
+                    "total_pnl_pct": round(tot, 2),
+                    "mean_pnl_pct": round(tot / n, 3) if n else None}
+        added = agg(set(default) - set(current_regimes))
+        out[d] = {"kept": agg(set(current_regimes) & set(default)),
+                  "dropped": agg(set(current_regimes) - set(default)),
+                  "added": {**added, "unobserved": added["n"] == 0}}
+    return out
 
 
 def compare_keep_vs_remove(
@@ -190,10 +277,13 @@ def classify_recommendation(
     return "KEEP", cmp
 
 
-def audit(trade_log_path: Path, min_trades: int = 10) -> dict:
-    """Run the audit across all 21 deferred dual entries."""
-    df = pd.read_csv(trade_log_path)
+def audit(trade_log_path: Path, min_trades: int = 10, window: str = "is") -> dict:
+    """Run the audit across the deferred dual entries (17 since B1465 made
+    prev_day_high_break long-only). S6-B3237: `window` defaults to 'is' -
+    the in-sample rows only (load_trade_log); total_trades counts the
+    AUDITED strategies' rows in that window."""
     deferred = _identify_deferred_dual_entries()
+    df, meta = load_trade_log(trade_log_path, {s for s, _ in deferred}, window)
     results = []
     for strategy, current_regimes in sorted(deferred):
         stats = compute_direction_stats(df, strategy)
@@ -203,10 +293,13 @@ def audit(trade_log_path: Path, min_trades: int = 10) -> dict:
             "current_regimes": sorted(current_regimes),
             "recommendation": rec,
             "comparison": cmp,
+            "by_direction": compare_per_direction(stats, set(current_regimes)),
             "stats": stats.to_dict(orient="records") if not stats.empty else [],
         })
     return {
         "trade_log_path": str(trade_log_path),
+        "window": meta,
+        "verdict_scope": VERDICT_SCOPE,
         "total_trades": len(df),
         "deferred_strategies_audited": len(deferred),
         "results": results,
@@ -220,6 +313,10 @@ def _format_summary(audit_out: dict) -> str:
     lines.append("=" * 100)
     lines.append(f"Trade log: {audit_out['trade_log_path']} ({audit_out['total_trades']} trades)")
     lines.append(f"Deferred dual entries audited: {audit_out['deferred_strategies_audited']}")
+    w = audit_out.get("window") or {}
+    lines.append(f"Window: {w.get('window')} - kept {w.get('rows_kept')} of {w.get('rows_read')} "
+                 f"audited-strategy rows (split {w.get('split')})")
+    lines.append(f"Scope: {audit_out.get('verdict_scope', '')}")
     lines.append("")
     lines.append(f"{'Strategy':<32} {'Current':<22} {'KEEP-PnL':>9} {'REMOVE-PnL':>11} {'Delta':>8} {'Verdict'}")
     lines.append("-" * 100)
@@ -235,6 +332,18 @@ def _format_summary(audit_out: dict) -> str:
             f"{r['recommendation']}"
         )
     lines.append("=" * 100)
+
+    # S6-B3237: per side, what removal drops (observed) and adds (unobserved)
+    lines.append("")
+    lines.append("PER SIDE - removal DROPS (observed) / ADDS (unobserved when n=0):")
+    for r in audit_out["results"]:
+        for d, v in (r.get("by_direction") or {}).items():
+            dr, ad, kp = v["dropped"], v["added"], v["kept"]
+            lines.append(
+                f"  {r['strategy']:<28} {d:<5} kept {kp['regimes']} n={kp['n']} "
+                f"mean={kp['mean_pnl_pct']} | drops {dr['regimes']} n={dr['n']} "
+                f"mean={dr['mean_pnl_pct']} | adds {ad['regimes']} n={ad['n']}"
+                + (" UNOBSERVED" if ad["unobserved"] and ad["regimes"] else ""))
 
     # Per-strategy detail for non-trivial cases
     interesting = [r for r in audit_out["results"]
@@ -255,7 +364,7 @@ def _format_summary(audit_out: dict) -> str:
     return "\n".join(lines)
 
 
-def main():
+def _parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--trade-log", type=Path,
@@ -266,12 +375,25 @@ def main():
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--save-json", action="store_true",
                         help="Save full audit to output_audit/direction_disagg_audit.json")
-    args = parser.parse_args()
+    # S6-B3237: in-sample by default - the holdout read is the owner's
+    parser.add_argument("--window", choices=WINDOWS, default="is",
+                        help="is = in-sample rows only (default); all = every row")
+    parser.add_argument("--out", type=Path, default=None,
+                        help="also write the full audit JSON here")
+    return parser
+
+
+def main():
+    args = _parser().parse_args()
 
     if not args.trade_log.exists():
         raise SystemExit(f"trade_log not found: {args.trade_log}")
 
-    result = audit(args.trade_log, min_trades=args.min_trades)
+    result = audit(args.trade_log, min_trades=args.min_trades, window=args.window)
+    if args.out:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
+        print(f"Saved: {args.out}")
     if args.save_json:
         out = Path("output_audit/direction_disagg_audit.json")
         out.parent.mkdir(parents=True, exist_ok=True)

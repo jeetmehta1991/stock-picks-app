@@ -61050,3 +61050,119 @@ def test_b3238_ifvg_trend_legs_and_every_declared_key_selector_reach_the_gate(mo
     # (5)
     gate = pvt.SPECS["smc_inverse_fvg"]["gate"]
     assert "below_ema_{span}" in gate and "below_ema_200" not in gate, gate
+
+
+def test_b3237_regime_audit_reads_in_sample_and_splits_each_side(tmp_path):
+    """S6-B3237 (owner ruled 2026-10-21, 'Approve all recs execute', option
+    (c)): the evidence for ruling the two-sided regime-affinity entries is
+    read IN-SAMPLE only. (1) load_trade_log keeps the named strategies and,
+    by DEFAULT, only rows entered in roster_core's in-sample window - a
+    holdout-entered row never reaches the stats - and reports the split;
+    window 'all' keeps every row; any other window is refused. (2) audit()
+    defaults to the in-sample window and names it and its verdict scope.
+    (3) compare_per_direction gives, per side, the regimes removal DROPS
+    (observed n and pnl), KEEPS, and ADDS - flagged unobserved when the log
+    holds no trade there. (4) The CLI's --window defaults to 'is'."""
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    for p in (root, root / "scripts"):
+        if str(p) not in sys.path:
+            sys.path.insert(0, str(p))
+    import direction_disaggregated_regime_audit as dda
+    import roster_core as rc
+    assert str(rc.IS_START) == "2022-05-05" and str(rc.IS_END) == "2025-05-05"
+    tl = tmp_path / "trade_log.csv"
+    rows = [("x", "long", "bear", 2.0, "2023-01-03"), ("x", "long", "bull", -1.0, "2024-02-01"),
+            ("x", "short", "bear", 1.5, "2023-06-01"),
+            ("x", "long", "bear", 50.0, "2025-08-01"),      # holdout-entered
+            ("y", "long", "bull", 9.0, "2023-01-03")]       # another strategy
+    pd.DataFrame([{"strategy": s, "direction": d, "regime": r, "pnl_pct": p,
+                   "entry_date": e, "win": p > 0} for s, d, r, p, e in rows]).to_csv(tl, index=False)
+    # (1)
+    df, meta = dda.load_trade_log(tl, {"x"})
+    assert meta["window"] == "is" and meta["rows_read"] == 4 and meta["rows_kept"] == 3, meta
+    assert meta["split"] == {"in_sample": 3, "holdout": 1, "outside_both": 0}, meta
+    assert set(df["strategy"]) == {"x"} and 50.0 not in set(df["pnl_pct"]), df
+    df_all, meta_all = dda.load_trade_log(tl, {"x"}, window="all")
+    assert len(df_all) == 4 and meta_all["window"] == "all" and meta_all["split"] is None
+    with pytest.raises(ValueError):
+        dda.load_trade_log(tl, {"x"}, window="holdout")
+    # (3) per side, against an explicit {bear} entry
+    by = dda.compare_per_direction(dda.compute_direction_stats(df, "x"), {"bear"})
+    assert dda.DEFAULT_LONG_REGIMES == {"bull", "neutral"}
+    assert by["long"]["dropped"] == {"regimes": ["bear"], "n": 1, "total_pnl_pct": 2.0,
+                                     "mean_pnl_pct": 2.0}, by["long"]
+    assert by["long"]["added"]["regimes"] == ["bull", "neutral"]
+    assert by["long"]["added"]["n"] == 1 and by["long"]["added"]["unobserved"] is False
+    assert by["short"]["kept"]["regimes"] == ["bear"] and by["short"]["kept"]["n"] == 1
+    assert by["short"]["dropped"]["n"] == 0 and by["short"]["dropped"]["regimes"] == []
+    assert by["short"]["added"]["regimes"] == ["bull", "crisis", "neutral"]
+    assert by["short"]["added"]["unobserved"] is True
+    # (2) audit() over a live two-sided entry, default window
+    name = sorted(n for n, _ in dda._identify_deferred_dual_entries())[0]
+    tl2 = tmp_path / "trade_log2.csv"
+    pd.DataFrame([{"strategy": name, "direction": "long", "regime": "bear", "pnl_pct": 1.0,
+                   "entry_date": e, "win": True} for e in ("2023-03-01", "2025-09-01")]).to_csv(tl2, index=False)
+    res = dda.audit(tl2)
+    assert res["window"]["window"] == "is" and res["total_trades"] == 1, res["window"]
+    assert "unobserved" in res["verdict_scope"]
+    hit = [r for r in res["results"] if r["strategy"] == name][0]
+    assert set(hit["by_direction"]) == {"long", "short"}
+    assert dda.audit(tl2, window="all")["total_trades"] == 2
+    # (4)
+    assert dda._parser().parse_args([]).window == "is"
+
+
+def test_b3251_table_a_names_the_module_that_writes_a_key():
+    """S6-B3251 (B3139q-r88): Table A's 'emitted by' column names a module
+    that WRITES the key, not the first file that QUOTES it - the old literal
+    grep named consumers (index_rebalance.py for price_above_ema_200,
+    screener.py for cmf_cross_up). (1) Live attribution: cmf_cross_up and
+    squeeze_fire_up (literal writes) name technical.py; price_above_ema_200,
+    written only through an f-string, names technical.py's template; a key
+    no module writes says so; no attribution names screener.py for a key it
+    only reads. (2) _written_keys sees every write form - a subscript
+    assignment, an augmented and a tuple target, a returned dict, a dict
+    comprehension, .update({...}), .update(k=...), .setdefault - and no
+    read form: s.get, a membership test, a key quoted in a docstring.
+    (3) The committed cmf_flip lane renders the producer it names."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_table_a as bta
+    idx = bta._module_index()
+    assert bta.attribute("cmf_cross_up", idx) == "backtest/signals/technical.py"
+    assert bta.attribute("squeeze_fire_up", idx) == "backtest/signals/technical.py"
+    assert bta.attribute("price_above_ema_200", idx).startswith(
+        "backtest/signals/technical.py (f-string template)")
+    assert bta.attribute("no_such_key_b3251", idx) == "(no module found writing the key)"
+    # (2) the write forms, and the read forms that are not writes
+    src = (
+        'def f(s, out, res):\n'
+        '    """mentions \'doc_only\' in prose"""\n'
+        '    out["sub_lit"] = 1\n'
+        '    out["aug_lit"] += 1\n'
+        '    out["tup_a"], out["tup_b"] = 1, 2\n'
+        '    out[f"tmpl_{s}_end"] = 1\n'
+        '    res.update({"upd_dict": 1})\n'
+        '    res.update(upd_kw=1)\n'
+        '    res.setdefault("sd_key", 1)\n'
+        '    d = {f"comp_{k}": 1 for k in s}\n'
+        '    x = s.get("read_only", False) and "member" in s\n'
+        '    return {"ret_key": x}\n')
+    lits, tmpls = bta._written_keys(src)
+    assert {"sub_lit", "aug_lit", "tup_a", "tup_b", "upd_dict", "upd_kw", "sd_key",
+            "ret_key"} <= lits, lits
+    assert not ({"read_only", "member", "doc_only"} & lits), lits
+    assert any(rx.match("tmpl_200_end") for rx, _n in tmpls)
+    assert any(rx.match("comp_x") for rx, _n in tmpls)
+    assert not any(rx.match("read_only") for rx, _n in tmpls)
+    # (3) render level: the committed lane names the writer, not the reader
+    lane = (root / "strategy_optimisation" / "tighten" / "cmf_flip.md").read_text(encoding="utf-8")
+    sel = [ln for ln in lane.splitlines() if "cmf_cross_up - emitted by" in ln]
+    assert sel and all("emitted by backtest/signals/technical.py" in ln for ln in sel), sel

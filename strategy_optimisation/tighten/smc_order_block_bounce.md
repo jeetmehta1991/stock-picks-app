@@ -1,6 +1,6 @@
 # Table A - smc_order_block_bounce
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6f532c001 | commit 6f532c001 at 2026-10-21 00:30:15 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 5a9ffe2ee | commit 5a9ffe2ee at 2026-10-21 03:47:08 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** smc | **status:** STALLED-CAMPAIGN | **R5 fires:** 1340 | **surviving fires (T1): 0** (survives_pct UNMEASURED)
 

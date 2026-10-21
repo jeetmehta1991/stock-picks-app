@@ -1,0 +1,2209 @@
+{
+  "trade_log_path": "output_r5_merged_1_7\\trade_log.csv",
+  "window": {
+    "window": "is",
+    "rows_read": 23043,
+    "split": {
+      "in_sample": 17730,
+      "holdout": 5313,
+      "outside_both": 0
+    },
+    "rows_kept": 17730
+  },
+  "verdict_scope": "KEEP / REMOVE_OK compare the window's trades by regime. A Phase 1A-beta cube (B395, R5) runs with --no-regime-affinity (run_phase1a.py), so what removal drops AND what it adds are both observed; a regime-side cell with 0 trades is unobserved (R5's window holds no crisis day) and by_direction flags it. A run with the affinity ON holds only allowed regimes, and its added cells read 0 for that reason",
+  "total_trades": 17730,
+  "deferred_strategies_audited": 17,
+  "results": [
+    {
+      "strategy": "adx_initiation",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": -35.22,
+        "remove_total_pnl": -95.66,
+        "delta_pnl": -60.44,
+        "keep_n": 7,
+        "remove_n": 35
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 3,
+            "total_pnl_pct": -21.37,
+            "mean_pnl_pct": -7.124
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "neutral"
+            ],
+            "n": 11,
+            "total_pnl_pct": -32.77,
+            "mean_pnl_pct": -2.979,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 4,
+            "total_pnl_pct": -13.85,
+            "mean_pnl_pct": -3.462
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "crisis",
+              "neutral"
+            ],
+            "n": 20,
+            "total_pnl_pct": -49.04,
+            "mean_pnl_pct": -2.452,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 3,
+          "mean_pnl_pct": -7.123596825396824,
+          "std_pnl_pct": 6.556434927653271,
+          "win_rate": 0.3333333333333333,
+          "total_pnl_pct": -21.37079047619047,
+          "sharpe_proxy": -1.0865046178299456
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 9,
+          "mean_pnl_pct": -1.3273097001763665,
+          "std_pnl_pct": 14.48677469853185,
+          "win_rate": 0.3333333333333333,
+          "total_pnl_pct": -11.945787301587298,
+          "sharpe_proxy": -0.09162216765274064
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 2,
+          "mean_pnl_pct": -10.41252619047619,
+          "std_pnl_pct": 0.0369682159554593,
+          "win_rate": 0.0,
+          "total_pnl_pct": -20.82505238095238,
+          "sharpe_proxy": -281.6615820201222
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 4,
+          "mean_pnl_pct": -3.4624234126984126,
+          "std_pnl_pct": 9.322443062232416,
+          "win_rate": 0.25,
+          "total_pnl_pct": -13.84969365079365,
+          "sharpe_proxy": -0.3714073005954382
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 20,
+          "mean_pnl_pct": -2.451779841269841,
+          "std_pnl_pct": 11.326172195077314,
+          "win_rate": 0.2,
+          "total_pnl_pct": -49.03559682539682,
+          "sharpe_proxy": -0.21647029543974763
+        }
+      ]
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "current_regimes": [
+        "bear",
+        "neutral"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": -1538.77,
+        "remove_total_pnl": -3172.4,
+        "delta_pnl": -1633.63,
+        "keep_n": 1139,
+        "remove_n": 1054
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "neutral"
+            ],
+            "n": 11,
+            "total_pnl_pct": 88.98,
+            "mean_pnl_pct": 8.089
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 772,
+            "total_pnl_pct": 500.03,
+            "mean_pnl_pct": 0.648
+          },
+          "added": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 426,
+            "total_pnl_pct": -602.17,
+            "mean_pnl_pct": -1.414,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear",
+              "neutral"
+            ],
+            "n": 356,
+            "total_pnl_pct": -2127.78,
+            "mean_pnl_pct": -5.977
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "crisis"
+            ],
+            "n": 261,
+            "total_pnl_pct": -531.44,
+            "mean_pnl_pct": -2.036,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 772,
+          "mean_pnl_pct": 0.6477024817777394,
+          "std_pnl_pct": 17.153676695021346,
+          "win_rate": 0.28886010362694303,
+          "total_pnl_pct": 500.02631593241483,
+          "sharpe_proxy": 0.03775881365221996
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 426,
+          "mean_pnl_pct": -1.4135354774072153,
+          "std_pnl_pct": 17.073051944238042,
+          "win_rate": 0.2323943661971831,
+          "total_pnl_pct": -602.1661133754737,
+          "sharpe_proxy": -0.08279336828728312
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 11,
+          "mean_pnl_pct": 8.089171428571431,
+          "std_pnl_pct": 31.75994687214195,
+          "win_rate": 0.45454545454545453,
+          "total_pnl_pct": 88.98088571428573,
+          "sharpe_proxy": 0.2546972594487178
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 356,
+          "mean_pnl_pct": -5.976908912965935,
+          "std_pnl_pct": 8.260042622824033,
+          "win_rate": 0.14606741573033707,
+          "total_pnl_pct": -2127.7795730158728,
+          "sharpe_proxy": -0.7235929868510151
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 261,
+          "mean_pnl_pct": -2.0361588346539237,
+          "std_pnl_pct": 11.77421056253263,
+          "win_rate": 0.2835249042145594,
+          "total_pnl_pct": -531.4374558446741,
+          "sharpe_proxy": -0.17293378811597762
+        }
+      ]
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 185.19,
+        "remove_total_pnl": -1341.66,
+        "delta_pnl": -1526.85,
+        "keep_n": 333,
+        "remove_n": 531
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 226,
+            "total_pnl_pct": 627.93,
+            "mean_pnl_pct": 2.778
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "neutral"
+            ],
+            "n": 167,
+            "total_pnl_pct": -171.95,
+            "mean_pnl_pct": -1.03,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 107,
+            "total_pnl_pct": -442.74,
+            "mean_pnl_pct": -4.138
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "crisis",
+              "neutral"
+            ],
+            "n": 257,
+            "total_pnl_pct": -726.97,
+            "mean_pnl_pct": -2.829,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 226,
+          "mean_pnl_pct": 2.7784426323921902,
+          "std_pnl_pct": 20.157982297961905,
+          "win_rate": 0.336283185840708,
+          "total_pnl_pct": 627.928034920635,
+          "sharpe_proxy": 0.13783336999324122
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 158,
+          "mean_pnl_pct": -0.9754026874937697,
+          "std_pnl_pct": 16.1205842484546,
+          "win_rate": 0.22151898734177214,
+          "total_pnl_pct": -154.1136246240156,
+          "sharpe_proxy": -0.060506658596277414
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 9,
+          "mean_pnl_pct": -1.98193544973545,
+          "std_pnl_pct": 13.358179061001225,
+          "win_rate": 0.3333333333333333,
+          "total_pnl_pct": -17.83741904761905,
+          "sharpe_proxy": -0.14836868413612203
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 107,
+          "mean_pnl_pct": -4.137731434505266,
+          "std_pnl_pct": 8.254268669501007,
+          "win_rate": 0.16822429906542055,
+          "total_pnl_pct": -442.73726349206345,
+          "sharpe_proxy": -0.5012838326663533
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 251,
+          "mean_pnl_pct": -2.774792986783026,
+          "std_pnl_pct": 11.899116045687476,
+          "win_rate": 0.27091633466135456,
+          "total_pnl_pct": -696.4730396825396,
+          "sharpe_proxy": -0.23319320327064777
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 6,
+          "mean_pnl_pct": -5.083317989417989,
+          "std_pnl_pct": 10.847901944452635,
+          "win_rate": 0.16666666666666666,
+          "total_pnl_pct": -30.499907936507935,
+          "sharpe_proxy": -0.468599183090651
+        }
+      ]
+    },
+    {
+      "strategy": "bollinger_tight",
+      "current_regimes": [
+        "bull"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 3.22,
+        "remove_total_pnl": -76.58,
+        "delta_pnl": -79.81,
+        "keep_n": 165,
+        "remove_n": 221
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 86,
+            "total_pnl_pct": 87.43,
+            "mean_pnl_pct": 1.017
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "neutral"
+            ],
+            "n": 12,
+            "total_pnl_pct": 54.1,
+            "mean_pnl_pct": 4.508,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 79,
+            "total_pnl_pct": -84.21,
+            "mean_pnl_pct": -1.066
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bear",
+              "crisis",
+              "neutral"
+            ],
+            "n": 44,
+            "total_pnl_pct": -133.91,
+            "mean_pnl_pct": -3.043,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 37,
+          "mean_pnl_pct": -1.5515546975546968,
+          "std_pnl_pct": 16.644392327020753,
+          "win_rate": 0.1891891891891892,
+          "total_pnl_pct": -57.40752380952378,
+          "sharpe_proxy": -0.0932178638348893
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 86,
+          "mean_pnl_pct": 1.0166650609080843,
+          "std_pnl_pct": 16.042552161777817,
+          "win_rate": 0.3372093023255814,
+          "total_pnl_pct": 87.43319523809525,
+          "sharpe_proxy": 0.06337302510571477
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 12,
+          "mean_pnl_pct": 4.508409523809524,
+          "std_pnl_pct": 8.797484691260571,
+          "win_rate": 0.5833333333333334,
+          "total_pnl_pct": 54.10091428571429,
+          "sharpe_proxy": 0.5124657424284218
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 42,
+          "mean_pnl_pct": -3.4891984504913074,
+          "std_pnl_pct": 11.057388456679,
+          "win_rate": 0.2857142857142857,
+          "total_pnl_pct": -146.5463349206349,
+          "sharpe_proxy": -0.315553574350888
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 79,
+          "mean_pnl_pct": -1.0659467952581874,
+          "std_pnl_pct": 13.156724108981882,
+          "win_rate": 0.3670886075949367,
+          "total_pnl_pct": -84.20979682539681,
+          "sharpe_proxy": -0.08101916452975425
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 2,
+          "mean_pnl_pct": 6.318522222222223,
+          "std_pnl_pct": 10.572927721529707,
+          "win_rate": 0.5,
+          "total_pnl_pct": 12.637044444444445,
+          "sharpe_proxy": 0.5976132996119687
+        }
+      ]
+    },
+    {
+      "strategy": "camarilla_s3_bounce",
+      "current_regimes": [
+        "bear",
+        "crisis",
+        "neutral"
+      ],
+      "recommendation": "REMOVE_OK",
+      "comparison": {
+        "keep_total_pnl": -117.9,
+        "remove_total_pnl": -120.11,
+        "delta_pnl": -2.21,
+        "keep_n": 56,
+        "remove_n": 125
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "neutral"
+            ],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "dropped": {
+            "regimes": [
+              "bear",
+              "crisis"
+            ],
+            "n": 43,
+            "total_pnl_pct": -66.18,
+            "mean_pnl_pct": -1.539
+          },
+          "added": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 61,
+            "total_pnl_pct": 184.74,
+            "mean_pnl_pct": 3.029,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear",
+              "crisis",
+              "neutral"
+            ],
+            "n": 13,
+            "total_pnl_pct": -51.72,
+            "mean_pnl_pct": -3.978
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 51,
+            "total_pnl_pct": -253.13,
+            "mean_pnl_pct": -4.963,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 43,
+          "mean_pnl_pct": -1.5390886674049464,
+          "std_pnl_pct": 11.893826803547787,
+          "win_rate": 0.27906976744186046,
+          "total_pnl_pct": -66.1808126984127,
+          "sharpe_proxy": -0.12940231036035052
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 61,
+          "mean_pnl_pct": 3.0285521727816813,
+          "std_pnl_pct": 19.420284082638705,
+          "win_rate": 0.39344262295081966,
+          "total_pnl_pct": 184.74168253968256,
+          "sharpe_proxy": 0.15594788211616012
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 13,
+          "mean_pnl_pct": -3.9782703296703295,
+          "std_pnl_pct": 7.5164053429668165,
+          "win_rate": 0.15384615384615385,
+          "total_pnl_pct": -51.71751428571428,
+          "sharpe_proxy": -0.5292783116590221
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 51,
+          "mean_pnl_pct": -4.963389417989418,
+          "std_pnl_pct": 9.887804198665366,
+          "win_rate": 0.13725490196078433,
+          "total_pnl_pct": -253.13286031746028,
+          "sharpe_proxy": -0.5019708439068166
+        }
+      ]
+    },
+    {
+      "strategy": "cmf_flip",
+      "current_regimes": [
+        "bear",
+        "neutral"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": -1198.61,
+        "remove_total_pnl": -3276.38,
+        "delta_pnl": -2077.77,
+        "keep_n": 1203,
+        "remove_n": 1473
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "neutral"
+            ],
+            "n": 10,
+            "total_pnl_pct": 28.27,
+            "mean_pnl_pct": 2.827
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 863,
+            "total_pnl_pct": 198.54,
+            "mean_pnl_pct": 0.23
+          },
+          "added": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 527,
+            "total_pnl_pct": -363.4,
+            "mean_pnl_pct": -0.69,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear",
+              "neutral"
+            ],
+            "n": 330,
+            "total_pnl_pct": -1425.42,
+            "mean_pnl_pct": -4.319
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "crisis"
+            ],
+            "n": 606,
+            "total_pnl_pct": -1515.84,
+            "mean_pnl_pct": -2.501,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 863,
+          "mean_pnl_pct": 0.2300566197242235,
+          "std_pnl_pct": 16.98255968855863,
+          "win_rate": 0.2653534183082271,
+          "total_pnl_pct": 198.5388628220049,
+          "sharpe_proxy": 0.013546639843651814
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 527,
+          "mean_pnl_pct": -0.6895602090298483,
+          "std_pnl_pct": 15.13476164685954,
+          "win_rate": 0.2846299810246679,
+          "total_pnl_pct": -363.39823015873003,
+          "sharpe_proxy": -0.045561352409731005
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 10,
+          "mean_pnl_pct": 2.8268028571428574,
+          "std_pnl_pct": 17.221349325288045,
+          "win_rate": 0.4,
+          "total_pnl_pct": 28.268028571428573,
+          "sharpe_proxy": 0.16414525968600757
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 321,
+          "mean_pnl_pct": -4.347976684962666,
+          "std_pnl_pct": 9.267301624727159,
+          "win_rate": 0.17445482866043613,
+          "total_pnl_pct": -1395.7005158730158,
+          "sharpe_proxy": -0.4691739689751035
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 606,
+          "mean_pnl_pct": -2.5013814212373617,
+          "std_pnl_pct": 11.165632700906228,
+          "win_rate": 0.24422442244224424,
+          "total_pnl_pct": -1515.8371412698411,
+          "sharpe_proxy": -0.2240250497434278
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 9,
+          "mean_pnl_pct": -3.301822222222222,
+          "std_pnl_pct": 4.237967997184646,
+          "win_rate": 0.1111111111111111,
+          "total_pnl_pct": -29.716399999999997,
+          "sharpe_proxy": -0.7791050391167839
+        }
+      ]
+    },
+    {
+      "strategy": "force_index_breakout",
+      "current_regimes": [
+        "bear",
+        "bull",
+        "crisis",
+        "neutral"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": -4598.69,
+        "remove_total_pnl": -5135.08,
+        "delta_pnl": -536.4,
+        "keep_n": 2337,
+        "remove_n": 1770
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "bull",
+              "neutral"
+            ],
+            "n": 385,
+            "total_pnl_pct": -431.95,
+            "mean_pnl_pct": -1.122
+          },
+          "dropped": {
+            "regimes": [
+              "bear",
+              "crisis"
+            ],
+            "n": 567,
+            "total_pnl_pct": 536.4,
+            "mean_pnl_pct": 0.946
+          },
+          "added": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null,
+            "unobserved": true
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear",
+              "bull",
+              "crisis",
+              "neutral"
+            ],
+            "n": 1385,
+            "total_pnl_pct": -4703.14,
+            "mean_pnl_pct": -3.396
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null,
+            "unobserved": true
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 567,
+          "mean_pnl_pct": 0.946023353209597,
+          "std_pnl_pct": 23.183850809923694,
+          "win_rate": 0.25573192239858905,
+          "total_pnl_pct": 536.3952412698414,
+          "sharpe_proxy": 0.04080527264282851
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 372,
+          "mean_pnl_pct": -1.4138204338958873,
+          "std_pnl_pct": 16.057303848911737,
+          "win_rate": 0.2553763440860215,
+          "total_pnl_pct": -525.9412014092701,
+          "sharpe_proxy": -0.08804843248897648
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 13,
+          "mean_pnl_pct": 7.230424542124542,
+          "std_pnl_pct": 19.191175429383925,
+          "win_rate": 0.5384615384615384,
+          "total_pnl_pct": 93.99551904761904,
+          "sharpe_proxy": 0.3767577743598717
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 682,
+          "mean_pnl_pct": -4.017932637434249,
+          "std_pnl_pct": 8.553088767683448,
+          "win_rate": 0.23313782991202345,
+          "total_pnl_pct": -2740.2300587301584,
+          "sharpe_proxy": -0.46976393517806103
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 698,
+          "mean_pnl_pct": -2.7582412216871175,
+          "std_pnl_pct": 11.254713964394384,
+          "win_rate": 0.2707736389684814,
+          "total_pnl_pct": -1925.2523727376079,
+          "sharpe_proxy": -0.24507430667835178
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 5,
+          "mean_pnl_pct": -7.530926031746032,
+          "std_pnl_pct": 4.560956965819613,
+          "win_rate": 0.0,
+          "total_pnl_pct": -37.65463015873016,
+          "sharpe_proxy": -1.6511723500536712
+        }
+      ]
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "current_regimes": [
+        "bull"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": -3448.17,
+        "remove_total_pnl": -4933.13,
+        "delta_pnl": -1484.96,
+        "keep_n": 1583,
+        "remove_n": 2142
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 557,
+            "total_pnl_pct": -1118.66,
+            "mean_pnl_pct": -2.008
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "neutral"
+            ],
+            "n": 16,
+            "total_pnl_pct": 26.19,
+            "mean_pnl_pct": 1.637,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 1026,
+            "total_pnl_pct": -2329.51,
+            "mean_pnl_pct": -2.27
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bear",
+              "crisis",
+              "neutral"
+            ],
+            "n": 543,
+            "total_pnl_pct": -1511.15,
+            "mean_pnl_pct": -2.783,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 961,
+          "mean_pnl_pct": 1.6421788695524857,
+          "std_pnl_pct": 20.8962393143949,
+          "win_rate": 0.29448491155046824,
+          "total_pnl_pct": 1578.1338936399388,
+          "sharpe_proxy": 0.07858729242353334
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 557,
+          "mean_pnl_pct": -2.0083579349797325,
+          "std_pnl_pct": 13.213717810211863,
+          "win_rate": 0.26929982046678635,
+          "total_pnl_pct": -1118.655369783711,
+          "sharpe_proxy": -0.15199037574630417
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 16,
+          "mean_pnl_pct": 1.6370069444444446,
+          "std_pnl_pct": 19.275202708624715,
+          "win_rate": 0.3125,
+          "total_pnl_pct": 26.192111111111114,
+          "sharpe_proxy": 0.08492813119480003
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 536,
+          "mean_pnl_pct": -2.6976617774224114,
+          "std_pnl_pct": 9.316380675896786,
+          "win_rate": 0.26865671641791045,
+          "total_pnl_pct": -1445.9467126984125,
+          "sharpe_proxy": -0.2895611365904965
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 1026,
+          "mean_pnl_pct": -2.2704811904879234,
+          "std_pnl_pct": 11.706946554053221,
+          "win_rate": 0.2962962962962963,
+          "total_pnl_pct": -2329.5137014406096,
+          "sharpe_proxy": -0.19394307302973288
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 7,
+          "mean_pnl_pct": -9.314863492063493,
+          "std_pnl_pct": 4.1021237694373,
+          "win_rate": 0.0,
+          "total_pnl_pct": -65.20404444444445,
+          "sharpe_proxy": -2.2707416976209958
+        }
+      ]
+    },
+    {
+      "strategy": "parabolic_sar_flip",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 812.59,
+        "remove_total_pnl": -2342.02,
+        "delta_pnl": -3154.61,
+        "keep_n": 550,
+        "remove_n": 812
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 405,
+            "total_pnl_pct": 1216.6,
+            "mean_pnl_pct": 3.004
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "neutral"
+            ],
+            "n": 209,
+            "total_pnl_pct": -394.74,
+            "mean_pnl_pct": -1.889,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 145,
+            "total_pnl_pct": -404.01,
+            "mean_pnl_pct": -2.786
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "crisis",
+              "neutral"
+            ],
+            "n": 458,
+            "total_pnl_pct": -1543.26,
+            "mean_pnl_pct": -3.37,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 405,
+          "mean_pnl_pct": 3.003960239075054,
+          "std_pnl_pct": 28.778547610429044,
+          "win_rate": 0.30617283950617286,
+          "total_pnl_pct": 1216.603896825397,
+          "sharpe_proxy": 0.10438192641752533
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 203,
+          "mean_pnl_pct": -1.9584206493020522,
+          "std_pnl_pct": 13.532321391345755,
+          "win_rate": 0.31527093596059114,
+          "total_pnl_pct": -397.5593918083166,
+          "sharpe_proxy": -0.14472170684288574
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 6,
+          "mean_pnl_pct": 0.4695145502645491,
+          "std_pnl_pct": 16.647258054009207,
+          "win_rate": 0.16666666666666666,
+          "total_pnl_pct": 2.8170873015872946,
+          "sharpe_proxy": 0.028203716716668218
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 145,
+          "mean_pnl_pct": -2.7862895238095238,
+          "std_pnl_pct": 7.739249108620272,
+          "win_rate": 0.2620689655172414,
+          "total_pnl_pct": -404.01198095238095,
+          "sharpe_proxy": -0.36002065377454356
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 456,
+          "mean_pnl_pct": -3.3806184155425463,
+          "std_pnl_pct": 11.306823059828504,
+          "win_rate": 0.27631578947368424,
+          "total_pnl_pct": -1541.5619974874012,
+          "sharpe_proxy": -0.29898923841422714
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 2,
+          "mean_pnl_pct": -0.8508444444444445,
+          "std_pnl_pct": 0.9604709976277007,
+          "win_rate": 0.0,
+          "total_pnl_pct": -1.701688888888889,
+          "sharpe_proxy": -0.8858616726022686
+        }
+      ]
+    },
+    {
+      "strategy": "ppo_crossover",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 464.15,
+        "remove_total_pnl": -559.78,
+        "delta_pnl": -1023.93,
+        "keep_n": 500,
+        "remove_n": 813
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 381,
+            "total_pnl_pct": 245.9,
+            "mean_pnl_pct": 0.645
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "neutral"
+            ],
+            "n": 214,
+            "total_pnl_pct": -97.46,
+            "mean_pnl_pct": -0.455,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 119,
+            "total_pnl_pct": 218.25,
+            "mean_pnl_pct": 1.834
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "crisis",
+              "neutral"
+            ],
+            "n": 480,
+            "total_pnl_pct": -680.56,
+            "mean_pnl_pct": -1.418,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 381,
+          "mean_pnl_pct": 0.6454187101612302,
+          "std_pnl_pct": 9.810741477515279,
+          "win_rate": 0.5196850393700787,
+          "total_pnl_pct": 245.90452857142873,
+          "sharpe_proxy": 0.0657869450174007
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 206,
+          "mean_pnl_pct": -0.3799430805979346,
+          "std_pnl_pct": 8.797286948073506,
+          "win_rate": 0.46601941747572817,
+          "total_pnl_pct": -78.26827460317452,
+          "sharpe_proxy": -0.04318866519195867
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 8,
+          "mean_pnl_pct": -2.3994410714285705,
+          "std_pnl_pct": 4.555955948218955,
+          "win_rate": 0.25,
+          "total_pnl_pct": -19.195528571428564,
+          "sharpe_proxy": -0.5266602879175283
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 119,
+          "mean_pnl_pct": 1.8340040016006405,
+          "std_pnl_pct": 7.853004463438276,
+          "win_rate": 0.5966386554621849,
+          "total_pnl_pct": 218.24647619047622,
+          "sharpe_proxy": 0.23354169861220986
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 478,
+          "mean_pnl_pct": -1.4485224847394724,
+          "std_pnl_pct": 7.548328551793342,
+          "win_rate": 0.41631799163179917,
+          "total_pnl_pct": -692.3937477054678,
+          "sharpe_proxy": -0.19189976625955563
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 2,
+          "mean_pnl_pct": 5.9145055555555555,
+          "std_pnl_pct": 0.47397367542934354,
+          "win_rate": 1.0,
+          "total_pnl_pct": 11.829011111111111,
+          "sharpe_proxy": 12.478552844096182
+        }
+      ]
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "current_regimes": [
+        "bear",
+        "neutral"
+      ],
+      "recommendation": "REMOVE_OK",
+      "comparison": {
+        "keep_total_pnl": -493.82,
+        "remove_total_pnl": 41.76,
+        "delta_pnl": 535.58,
+        "keep_n": 151,
+        "remove_n": 328
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "neutral"
+            ],
+            "n": 1,
+            "total_pnl_pct": -2.2,
+            "mean_pnl_pct": -2.197
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 105,
+            "total_pnl_pct": -264.56,
+            "mean_pnl_pct": -2.52
+          },
+          "added": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 180,
+            "total_pnl_pct": 414.17,
+            "mean_pnl_pct": 2.301,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear",
+              "neutral"
+            ],
+            "n": 45,
+            "total_pnl_pct": -227.06,
+            "mean_pnl_pct": -5.046
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "crisis"
+            ],
+            "n": 102,
+            "total_pnl_pct": -143.15,
+            "mean_pnl_pct": -1.403,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 105,
+          "mean_pnl_pct": -2.519646772486772,
+          "std_pnl_pct": 16.42673354285296,
+          "win_rate": 0.19047619047619047,
+          "total_pnl_pct": -264.5629111111111,
+          "sharpe_proxy": -0.15338696314234881
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 180,
+          "mean_pnl_pct": 2.3009329100529103,
+          "std_pnl_pct": 18.14863419081442,
+          "win_rate": 0.3611111111111111,
+          "total_pnl_pct": 414.16792380952387,
+          "sharpe_proxy": 0.1267827036382431
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 1,
+          "mean_pnl_pct": -2.1965666666666666,
+          "std_pnl_pct": NaN,
+          "win_rate": 0.0,
+          "total_pnl_pct": -2.1965666666666666,
+          "sharpe_proxy": NaN
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 44,
+          "mean_pnl_pct": -4.923779184704185,
+          "std_pnl_pct": 8.023535082918373,
+          "win_rate": 0.20454545454545456,
+          "total_pnl_pct": -216.64628412698414,
+          "sharpe_proxy": -0.6136670599455116
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 102,
+          "mean_pnl_pct": -1.4033913632119512,
+          "std_pnl_pct": 10.064967643915606,
+          "win_rate": 0.28431372549019607,
+          "total_pnl_pct": -143.14591904761903,
+          "sharpe_proxy": -0.13943327120980048
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 1,
+          "mean_pnl_pct": -10.414290476190477,
+          "std_pnl_pct": NaN,
+          "win_rate": 0.0,
+          "total_pnl_pct": -10.414290476190477,
+          "sharpe_proxy": NaN
+        }
+      ]
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "current_regimes": [
+        "bear",
+        "bull",
+        "crisis",
+        "neutral"
+      ],
+      "recommendation": "REMOVE_OK",
+      "comparison": {
+        "keep_total_pnl": -1401.79,
+        "remove_total_pnl": -1233.47,
+        "delta_pnl": 168.32,
+        "keep_n": 528,
+        "remove_n": 472
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "bull",
+              "neutral"
+            ],
+            "n": 91,
+            "total_pnl_pct": -56.27,
+            "mean_pnl_pct": -0.618
+          },
+          "dropped": {
+            "regimes": [
+              "bear",
+              "crisis"
+            ],
+            "n": 56,
+            "total_pnl_pct": -168.32,
+            "mean_pnl_pct": -3.006
+          },
+          "added": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null,
+            "unobserved": true
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear",
+              "bull",
+              "crisis",
+              "neutral"
+            ],
+            "n": 381,
+            "total_pnl_pct": -1177.2,
+            "mean_pnl_pct": -3.09
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null,
+            "unobserved": true
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 56,
+          "mean_pnl_pct": -3.00575992063492,
+          "std_pnl_pct": 11.612253665545893,
+          "win_rate": 0.17857142857142858,
+          "total_pnl_pct": -168.32255555555554,
+          "sharpe_proxy": -0.25884380476058255
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 90,
+          "mean_pnl_pct": -0.6195797001763662,
+          "std_pnl_pct": 15.047654471291324,
+          "win_rate": 0.3111111111111111,
+          "total_pnl_pct": -55.76217301587296,
+          "sharpe_proxy": -0.04117450339908001
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 1,
+          "mean_pnl_pct": -0.5101587301587301,
+          "std_pnl_pct": NaN,
+          "win_rate": 0.0,
+          "total_pnl_pct": -0.5101587301587301,
+          "sharpe_proxy": NaN
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 169,
+          "mean_pnl_pct": -4.470198516013901,
+          "std_pnl_pct": 9.436961913537198,
+          "win_rate": 0.21893491124260356,
+          "total_pnl_pct": -755.4635492063492,
+          "sharpe_proxy": -0.4736904267464998
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 209,
+          "mean_pnl_pct": -1.9656609478241056,
+          "std_pnl_pct": 12.132933629375453,
+          "win_rate": 0.291866028708134,
+          "total_pnl_pct": -410.82313809523805,
+          "sharpe_proxy": -0.16201036022029972
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 3,
+          "mean_pnl_pct": -3.637173015873016,
+          "std_pnl_pct": 6.014742247115757,
+          "win_rate": 0.3333333333333333,
+          "total_pnl_pct": -10.911519047619048,
+          "sharpe_proxy": -0.60470970599233
+        }
+      ]
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "current_regimes": [
+        "bear",
+        "bull",
+        "neutral"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": -1639.86,
+        "remove_total_pnl": -1896.32,
+        "delta_pnl": -256.46,
+        "keep_n": 722,
+        "remove_n": 564
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "bull",
+              "neutral"
+            ],
+            "n": 145,
+            "total_pnl_pct": 109.85,
+            "mean_pnl_pct": 0.758
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 158,
+            "total_pnl_pct": 256.46,
+            "mean_pnl_pct": 1.623
+          },
+          "added": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null,
+            "unobserved": true
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear",
+              "bull",
+              "neutral"
+            ],
+            "n": 419,
+            "total_pnl_pct": -2006.17,
+            "mean_pnl_pct": -4.788
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "crisis"
+            ],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null,
+            "unobserved": true
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 158,
+          "mean_pnl_pct": 1.623188205746434,
+          "std_pnl_pct": 20.279218653066806,
+          "win_rate": 0.25316455696202533,
+          "total_pnl_pct": 256.4637365079366,
+          "sharpe_proxy": 0.08004195001373787
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 138,
+          "mean_pnl_pct": -0.13988121693121675,
+          "std_pnl_pct": 15.683291715671746,
+          "win_rate": 0.2898550724637681,
+          "total_pnl_pct": -19.303607936507913,
+          "sharpe_proxy": -0.008919123578594059
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 7,
+          "mean_pnl_pct": 18.45034172335601,
+          "std_pnl_pct": 39.08294353856502,
+          "win_rate": 0.7142857142857143,
+          "total_pnl_pct": 129.15239206349207,
+          "sharpe_proxy": 0.4720816820040735
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 216,
+          "mean_pnl_pct": -6.731102366255144,
+          "std_pnl_pct": 8.034480511814488,
+          "win_rate": 0.12962962962962962,
+          "total_pnl_pct": -1453.918111111111,
+          "sharpe_proxy": -0.8377769236426971
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 199,
+          "mean_pnl_pct": -2.6055287309563693,
+          "std_pnl_pct": 13.412257423683258,
+          "win_rate": 0.24623115577889448,
+          "total_pnl_pct": -518.5002174603175,
+          "sharpe_proxy": -0.19426474221673878
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 4,
+          "mean_pnl_pct": -8.437959126984126,
+          "std_pnl_pct": 2.7783483345853566,
+          "win_rate": 0.0,
+          "total_pnl_pct": -33.7518365079365,
+          "sharpe_proxy": -3.0370414760262285
+        }
+      ]
+    },
+    {
+      "strategy": "supertrend_macd",
+      "current_regimes": [
+        "bull"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": -144.51,
+        "remove_total_pnl": -1176.45,
+        "delta_pnl": -1031.94,
+        "keep_n": 207,
+        "remove_n": 376
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 18,
+            "total_pnl_pct": 105.64,
+            "mean_pnl_pct": 5.869
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "neutral"
+            ],
+            "n": 1,
+            "total_pnl_pct": -10.91,
+            "mean_pnl_pct": -10.908,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 189,
+            "total_pnl_pct": -250.15,
+            "mean_pnl_pct": -1.324
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bear",
+              "crisis",
+              "neutral"
+            ],
+            "n": 168,
+            "total_pnl_pct": -1021.03,
+            "mean_pnl_pct": -6.078,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 13,
+          "mean_pnl_pct": 40.80331062271062,
+          "std_pnl_pct": 82.42997130504206,
+          "win_rate": 0.6923076923076923,
+          "total_pnl_pct": 530.4430380952381,
+          "sharpe_proxy": 0.49500576036491684
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 18,
+          "mean_pnl_pct": 5.868768253968253,
+          "std_pnl_pct": 24.037575775013238,
+          "win_rate": 0.4444444444444444,
+          "total_pnl_pct": 105.63782857142856,
+          "sharpe_proxy": 0.24414975573654832
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 1,
+          "mean_pnl_pct": -10.907714285714286,
+          "std_pnl_pct": NaN,
+          "win_rate": 0.0,
+          "total_pnl_pct": -10.907714285714286,
+          "sharpe_proxy": NaN
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 165,
+          "mean_pnl_pct": -6.051933612313612,
+          "std_pnl_pct": 6.990419200996681,
+          "win_rate": 0.12121212121212122,
+          "total_pnl_pct": -998.569046031746,
+          "sharpe_proxy": -0.8657468798796414
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 189,
+          "mean_pnl_pct": -1.3235549508692366,
+          "std_pnl_pct": 12.263424008694104,
+          "win_rate": 0.3386243386243386,
+          "total_pnl_pct": -250.1518857142857,
+          "sharpe_proxy": -0.10792703162925034
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 3,
+          "mean_pnl_pct": -7.487747619047618,
+          "std_pnl_pct": 5.159646913197279,
+          "win_rate": 0.0,
+          "total_pnl_pct": -22.463242857142856,
+          "sharpe_proxy": -1.4512131828043413
+        }
+      ]
+    },
+    {
+      "strategy": "tema_dema",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 946.03,
+        "remove_total_pnl": -2156.6,
+        "delta_pnl": -3102.62,
+        "keep_n": 657,
+        "remove_n": 967
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 455,
+            "total_pnl_pct": 1389.11,
+            "mean_pnl_pct": 3.053
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "neutral"
+            ],
+            "n": 266,
+            "total_pnl_pct": -107.69,
+            "mean_pnl_pct": -0.405,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 202,
+            "total_pnl_pct": -443.08,
+            "mean_pnl_pct": -2.193
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "crisis",
+              "neutral"
+            ],
+            "n": 499,
+            "total_pnl_pct": -1605.82,
+            "mean_pnl_pct": -3.218,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 455,
+          "mean_pnl_pct": 3.0529878911564627,
+          "std_pnl_pct": 23.99849518142156,
+          "win_rate": 0.3230769230769231,
+          "total_pnl_pct": 1389.1094904761906,
+          "sharpe_proxy": 0.12721580532765794
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 262,
+          "mean_pnl_pct": -0.4207083051030136,
+          "std_pnl_pct": 19.71263185642226,
+          "win_rate": 0.23282442748091603,
+          "total_pnl_pct": -110.22557593698956,
+          "sharpe_proxy": -0.021342066760403143
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 4,
+          "mean_pnl_pct": 0.6344027777777786,
+          "std_pnl_pct": 11.348153443292997,
+          "win_rate": 0.25,
+          "total_pnl_pct": 2.5376111111111146,
+          "sharpe_proxy": 0.05590361294882951
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 202,
+          "mean_pnl_pct": -2.1934845827439884,
+          "std_pnl_pct": 11.947920131966073,
+          "win_rate": 0.27722772277227725,
+          "total_pnl_pct": -443.08388571428566,
+          "sharpe_proxy": -0.18358714809914306
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 496,
+          "mean_pnl_pct": -3.224016433051715,
+          "std_pnl_pct": 11.421268936525278,
+          "win_rate": 0.25806451612903225,
+          "total_pnl_pct": -1599.1121507936507,
+          "sharpe_proxy": -0.2822818069489016
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 3,
+          "mean_pnl_pct": -2.237518518518518,
+          "std_pnl_pct": 8.16419203197594,
+          "win_rate": 0.3333333333333333,
+          "total_pnl_pct": -6.712555555555554,
+          "sharpe_proxy": -0.27406490559690844
+        }
+      ]
+    },
+    {
+      "strategy": "ultimate_oscillator",
+      "current_regimes": [
+        "bull"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": 20.36,
+        "remove_total_pnl": -721.36,
+        "delta_pnl": -741.72,
+        "keep_n": 209,
+        "remove_n": 389
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 98,
+            "total_pnl_pct": 33.08,
+            "mean_pnl_pct": 0.338
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "neutral"
+            ],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null,
+            "unobserved": true
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bull"
+            ],
+            "n": 111,
+            "total_pnl_pct": -12.72,
+            "mean_pnl_pct": -0.115
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bear",
+              "crisis",
+              "neutral"
+            ],
+            "n": 180,
+            "total_pnl_pct": -741.72,
+            "mean_pnl_pct": -4.121,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 51,
+          "mean_pnl_pct": 0.2780978213507626,
+          "std_pnl_pct": 15.517458430767498,
+          "win_rate": 0.29411764705882354,
+          "total_pnl_pct": 14.182988888888893,
+          "sharpe_proxy": 0.017921608914985687
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 98,
+          "mean_pnl_pct": 0.3375927232623134,
+          "std_pnl_pct": 15.328444385539544,
+          "win_rate": 0.29591836734693877,
+          "total_pnl_pct": 33.08408687970671,
+          "sharpe_proxy": 0.022023938944566977
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 170,
+          "mean_pnl_pct": -4.2653888888888885,
+          "std_pnl_pct": 9.68051014261293,
+          "win_rate": 0.2411764705882353,
+          "total_pnl_pct": -725.1161111111111,
+          "sharpe_proxy": -0.44061612725479665
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 111,
+          "mean_pnl_pct": -0.11462617576873518,
+          "std_pnl_pct": 13.354615211959677,
+          "win_rate": 0.3783783783783784,
+          "total_pnl_pct": -12.723505510329606,
+          "sharpe_proxy": -0.008583263085415006
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 10,
+          "mean_pnl_pct": -1.6606165079365076,
+          "std_pnl_pct": 10.291637124735281,
+          "win_rate": 0.4,
+          "total_pnl_pct": -16.606165079365077,
+          "sharpe_proxy": -0.16135591333135169
+        }
+      ]
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "current_regimes": [
+        "bear"
+      ],
+      "recommendation": "KEEP",
+      "comparison": {
+        "keep_total_pnl": -454.94,
+        "remove_total_pnl": -1088.1,
+        "delta_pnl": -633.16,
+        "keep_n": 203,
+        "remove_n": 445
+      },
+      "by_direction": {
+        "long": {
+          "kept": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "dropped": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 117,
+            "total_pnl_pct": -267.24,
+            "mean_pnl_pct": -2.284
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "neutral"
+            ],
+            "n": 114,
+            "total_pnl_pct": -187.15,
+            "mean_pnl_pct": -1.642,
+            "unobserved": false
+          }
+        },
+        "short": {
+          "kept": {
+            "regimes": [
+              "bear"
+            ],
+            "n": 86,
+            "total_pnl_pct": -187.7,
+            "mean_pnl_pct": -2.183
+          },
+          "dropped": {
+            "regimes": [],
+            "n": 0,
+            "total_pnl_pct": 0.0,
+            "mean_pnl_pct": null
+          },
+          "added": {
+            "regimes": [
+              "bull",
+              "crisis",
+              "neutral"
+            ],
+            "n": 245,
+            "total_pnl_pct": -713.25,
+            "mean_pnl_pct": -2.911,
+            "unobserved": false
+          }
+        }
+      },
+      "stats": [
+        {
+          "direction": "long",
+          "regime": "bear",
+          "n_trades": 117,
+          "mean_pnl_pct": -2.2841425858092523,
+          "std_pnl_pct": 15.621536211031813,
+          "win_rate": 0.2564102564102564,
+          "total_pnl_pct": -267.2446825396825,
+          "sharpe_proxy": -0.14621753936057888
+        },
+        {
+          "direction": "long",
+          "regime": "bull",
+          "n_trades": 112,
+          "mean_pnl_pct": -1.7583635062358272,
+          "std_pnl_pct": 15.138671237134322,
+          "win_rate": 0.29464285714285715,
+          "total_pnl_pct": -196.93671269841263,
+          "sharpe_proxy": -0.1161504519579406
+        },
+        {
+          "direction": "long",
+          "regime": "neutral",
+          "n_trades": 2,
+          "mean_pnl_pct": 4.891480952380953,
+          "std_pnl_pct": 1.030800062562859,
+          "win_rate": 1.0,
+          "total_pnl_pct": 9.782961904761907,
+          "sharpe_proxy": 4.745324656092235
+        },
+        {
+          "direction": "short",
+          "regime": "bear",
+          "n_trades": 86,
+          "mean_pnl_pct": -2.1825077519379845,
+          "std_pnl_pct": 10.042050982649092,
+          "win_rate": 0.3488372093023256,
+          "total_pnl_pct": -187.69566666666665,
+          "sharpe_proxy": -0.21733685237298397
+        },
+        {
+          "direction": "short",
+          "regime": "bull",
+          "n_trades": 241,
+          "mean_pnl_pct": -2.8032779819535008,
+          "std_pnl_pct": 11.380356731251169,
+          "win_rate": 0.24481327800829875,
+          "total_pnl_pct": -675.5899936507936,
+          "sharpe_proxy": -0.24632602019016897
+        },
+        {
+          "direction": "short",
+          "regime": "neutral",
+          "n_trades": 4,
+          "mean_pnl_pct": -9.414824603174603,
+          "std_pnl_pct": 10.054632772893383,
+          "win_rate": 0.25,
+          "total_pnl_pct": -37.65929841269841,
+          "sharpe_proxy": -0.9363668286878005
+        }
+      ]
+    }
+  ]
+}
