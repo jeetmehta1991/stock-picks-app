@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "5a9ffe2ee",
-    "generated_at": "2026-10-21 03:46:45"
+    "source_commit": "dedad72e4",
+    "generated_at": "2026-10-21 06:15:02"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -97,7 +97,8 @@
         "S6-B1770b",
         "S6-B2014b",
         "S6-B3135",
-        "S6-B3135a"
+        "S6-B3135a",
+        "S6-B3258"
       ],
       "admitted": false,
       "roster_roles": [
@@ -238,7 +239,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3227"
+        "S6-B3227",
+        "S6-B3258"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2997,7 +2999,8 @@
         "S6-B2646b",
         "S6-B2651",
         "S6-B3135",
-        "S6-B3135a"
+        "S6-B3135a",
+        "S6-B3258"
       ],
       "admitted": false,
       "roster_roles": [
@@ -3192,7 +3195,8 @@
       "mention_tickets": [
         "S6-B3221",
         "S6-B3227",
-        "S6-B3240"
+        "S6-B3240",
+        "S6-B3258"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4248,7 +4252,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3258"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -5143,7 +5149,8 @@
         "S6-B2885",
         "S6-B2941",
         "S6-B2943",
-        "S6-B3194"
+        "S6-B3194",
+        "S6-B3257"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5240,7 +5247,8 @@
         "S6-B3194",
         "S6-B3237",
         "S6-B3238",
-        "S6-B3244"
+        "S6-B3244",
+        "S6-B3257"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5296,7 +5304,8 @@
         "S6-B3139z",
         "S6-B3140b",
         "S6-B3194",
-        "S6-B3224"
+        "S6-B3224",
+        "S6-B3257"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5327,7 +5336,8 @@
       "mention_tickets": [
         "S6-B1617b",
         "S6-B3213",
-        "S6-B3253"
+        "S6-B3253",
+        "S6-B3258"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5426,7 +5436,8 @@
         "S6-B3161",
         "S6-B3194",
         "S6-B3224",
-        "S6-B3239"
+        "S6-B3239",
+        "S6-B3257"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6584,7 +6595,8 @@
         "S6-B3189",
         "S6-B3196",
         "S6-B3221",
-        "S6-B3223"
+        "S6-B3223",
+        "S6-B3258"
       ],
       "admitted": false,
       "roster_roles": [
@@ -6744,7 +6756,8 @@
         "S6-B3139c",
         "S6-B3171",
         "S6-B3215",
-        "S6-B3252"
+        "S6-B3252",
+        "S6-B3258"
       ],
       "admitted": true,
       "roster_roles": [

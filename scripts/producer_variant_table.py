@@ -1274,6 +1274,118 @@ SPECS["smc_inverse_fvg"] = {
 }
 
 
+# S6-B3240 (B3139q-r89): the four LEVER4 gate-budget strategies REGISTERED -
+# the on-ramp for the Step-1 runs S6-B1248-LEVER4-GATE-BUDGET approved (owner
+# 2026-10-20) under reading R2 (owner 2026-10-21, 'Approve all recs execute'):
+# k = m-1 with the thesis leg mandatory. ONE knob each, LEVER4_GATE_BUDGET: a
+# JSON object keyed by strategy (config.py parses it; screener._gate_budget
+# reads it; screener.validate_lever4 refuses an unhonoured one at import).
+# Production is the empty object - every leg, the strategy's AND. The R2
+# level ADMITS fires no cube holds (a looser gate), so both levels are resim
+# and the battery grades a landed cube legs x exits (lever4_step1.py),
+# spot-checks it by replaying the live strategy under the arm's budget
+# (spot_check_replay.py) and proves the knob reaches each gate
+# (verify_lever4_anchors.py). A level is the JSON TEXT the engine parses
+# (type 'json'; make_spec writes it verbatim; test_b3161 round-trips it).
+# The legs are screener.LEVER4_LEGS (test_b3240 holds them equal); the
+# baselines are MEASURED on output_r5_merged_1_7 at B3139q-r89: trade-log
+# fires (unique ticker x entry_date), holdout-entered fires, first..last
+# entry, and the EXIT CUBE's fires - the population a grade reads
+# (S6-B3258: the R5 cube writer dropped some closed trades).
+_LEVER4 = {
+    "pivot_r1_breakout": (
+        ("above_r1", "vol_spike_15x", "macd_12_26_9_bullish", "above_avwap_50low"),
+        "above_r1", ("long", "short"), 860, 194, "2022-05-05..2026-05-04", 860),
+    "news_momentum_long": (
+        ("news_sentiment_5d", "news_volume_zscore_5d", "dc20_breakout_up",
+         "close_above_open", "close_in_top_40pct_of_range", "vol_above_avg"),
+        "news_sentiment_5d", ("long",), 113, 17, "2022-05-05..2026-04-17", 106),
+    "smc_bos_continuation": (
+        ("smc_bos_bullish", "price_above_ema_200", "vol_confirms", "rsi_14"),
+        "smc_bos_bullish", ("long", "short"), 100, 20, "2022-05-05..2026-04-07", 96),
+    "orb_stocks_in_play_long": (
+        ("gap_up_pct", "close_above_open", "vol_spike_2x", "price_above_ema_200"),
+        "gap_up_pct", ("long",), 54, 14, "2022-05-05..2026-04-30", 48),
+}
+LEVER4_KNOB_CONSUMERS = ["backtest/config.py", "backtest/signals/screener.py"]
+LEVER4_PRODUCTION = "{}"
+
+
+def lever4_r2_level(name: str) -> str:
+    """`name`'s R2 level as the env text an arm sets: k = m-1 with the thesis
+    leg mandatory (owner, 2026-10-21)."""
+    legs, thesis = _LEVER4[name][0], _LEVER4[name][1]
+    return json.dumps({name: {"k": len(legs) - 1, "mandatory": [thesis]}})
+
+
+def _lever4_spec(name: str) -> dict:
+    legs, thesis, sides, fires, ho, window, cube_fires = _LEVER4[name]
+    m = len(legs)
+    r2 = lever4_r2_level(name)
+    formula = (
+        "=============================== PRODUCER LAYER ===============================\n"
+        "\n"
+        "(no producer knob - every leg is a persisted signal at its production setting)\n"
+        "\n"
+        "============================== STRATEGY LAYER ===============================\n"
+        "\n"
+        f"P1  gate_budget  =  LEVER4_GATE_BUDGET['{name}'] - the LONG gate's\n"
+        f"                    k-of-{m} budget (screener._gate_budget): production\n"
+        f"                    {{}} = all {m} legs; R2 (owner 2026-10-21) k = {m - 1}\n"
+        f"                    with {thesis} mandatory\n"
+        "\n"
+        f"long   =  k-of-{m} over ({', '.join(legs)})\n"
+        + ("short  =  its own legs, every one required - the budget binds the\n"
+           "          long gate only\n" if "short" in sides else ""))
+    return {
+        "gate": (f"long: k-of-{m} of {' AND '.join(legs)} (production k = {m})"
+                 + (" | short: unchanged, every leg" if "short" in sides else "")),
+        "formula": formula,
+        "baseline": {"artifact": "output_r5_merged_1_7", "fires": fires,
+                     "tickers": 544, "holdout_n": ho, "window": window,
+                     "cube_fires": cube_fires},
+        "params": [
+            {"id": "P1", "producer": "the LONG gate's k-of-m budget (screener._gate_budget)",
+             "param": "gate_budget", "env": "LEVER4_GATE_BUDGET",
+             "free_band": [], "resim_band": [LEVER4_PRODUCTION, r2],
+             "consumers": list(LEVER4_KNOB_CONSUMERS),
+             "production": LEVER4_PRODUCTION, "type": "json",
+             "band": [LEVER4_PRODUCTION, r2],
+             "derivation": ("S6-B1248-LEVER4 reading R2 (owner 2026-10-21): k = m-1 "
+                            f"with the thesis leg {thesis} mandatory. The level ADMITS "
+                            "fires the production cube never recorded, so it is "
+                            "resim-only"),
+             "subset_safe": False, "status": "UNTESTED",
+             "evidence": ("screener.py LEVER4_LEGS / _gate_budget; config.py "
+                          "LEVER4_GATE_BUDGET"),
+             "engine_implemented": True},
+        ],
+        "tools": {
+            "keys": {"P1": "gate_budget"},
+            "grid_keys": ["leg"],
+            "grade": {"script": "lever4_step1.py", "cube": "",
+                      "flags": {"P1": "--gate-budget"},
+                      "extra": ["--strategy", name, "--min-n", "10"],
+                      "pythonpath": ".;scripts",
+                      "note": "AUTO (S6-B3240); legs x exits at the cube's gate budget"},
+            "free_levels": None,
+            "spot_check": {"script": "spot_check_replay.py", "cube": "",
+                           "flags": {}, "extra": ["--n", "50"],
+                           "strategy_flag": "--strategy",
+                           "window": True, "precompute_check": False,
+                           "pythonpath": ".",
+                           "note": ("AUTO (S6-B3240); the live strategy replayed on "
+                                    "the cube's signals under the arm's budget")},
+            "engine_anchors": {"script": "verify_lever4_anchors.py"},
+            "single_combination": False,
+        },
+    }
+
+
+for _lever4_name in _LEVER4:
+    SPECS[_lever4_name] = _lever4_spec(_lever4_name)
+del _lever4_name
+
 # B2816 (S6-B2703, owner-ruled schedule-later 2026-09-15): Table-A depth
 # inventories for the 9 admitted strategies whose depth was never searched
 # (8 institutional + xs_low_beta; top_decile is depth-done via its own
@@ -3692,6 +3804,18 @@ def _level_in_band(value, row: dict) -> bool:
     t = str(row.get("type", ""))
     band = list(row.get("band") or [])
     s = str(value).strip()
+    if t == "json":
+        # S6-B3240: a JSON-valued knob (LEVER4_GATE_BUDGET). Its levels are
+        # the JSON text the engine parses, so a value matches a level of
+        # equal PARSED value; the unset form '' is the engine's empty object.
+        def _parsed(x):
+            x = "" if x is None else str(x).strip()
+            return json.loads(x) if x else {}
+        try:
+            got = _parsed(s)
+            return any(_parsed(b) == got for b in band)
+        except ValueError:
+            return False
     if t.startswith("bool"):
         low = s.lower()
         if low in ("1", "true"):
@@ -4758,6 +4882,18 @@ D_AXIS_FAMILIES = {
         "d2": (("P1 identity", "cfg", "P1_pairs_identity"),
                ("P5 EG sig", "cfg", "P5_eg_significance"),
                ("P6 z-window", "cfg", "P6_z_window")),
+    },
+    # S6-B3240 (B3139q-r89): the LEVER4 gate-budget family - ONE strategy-
+    # layer knob (LEVER4_GATE_BUDGET) over four strategies. detect keys on
+    # P1_gate_budget, which only lever4_step1 emits; the strategy column
+    # names which of the four a grid grades.
+    "lever4_gate_budget": {
+        "serves": ("pivot_r1_breakout", "news_momentum_long",
+                   "smc_bos_continuation", "orb_stocks_in_play_long"),
+        "detect": "P1_gate_budget",
+        "d1": (("budget", "cfg", "P1_gate_budget"),),
+        "d2": (("P0 strategy", "art", "strategy"),
+               ("P1 gate_budget", "cfg", "P1_gate_budget")),
     },
     "smc_breaker_block": {
         # S6-B2941: records the CURRENT fallback for the four non-breaker

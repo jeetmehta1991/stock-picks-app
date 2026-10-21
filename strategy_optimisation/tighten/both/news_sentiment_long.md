@@ -1,6 +1,6 @@
 # Table A - news_sentiment_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 5a9ffe2ee | commit 5a9ffe2ee at 2026-10-21 03:48:40 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build dedad72e4 | commit dedad72e4 at 2026-10-21 05:28:37 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 906 | **surviving fires (T1):** 906 (unchanged since R5 - filter is identity)
 

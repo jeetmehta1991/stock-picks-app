@@ -610,7 +610,7 @@ def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
       * BELOW_POWER_FLOOR was folded into an unnamed "ungraded" remainder. A
         row that SELECTED a candidate and could not price it is not the same as
         one that produced no candidate. B1701 already solved this shape with a
-        four-bucket partition (producer_variant_table.py:2169) after 31-66 rows
+        four-bucket partition (producer_variant_table.table_c) after 31-66 rows
         per config vanished from a funnel.
       * A grader using a PERMUTATION NULL rather than per-row p-values reported
         `graded: 0` while 528 cells had been graded. Correct, and blind.

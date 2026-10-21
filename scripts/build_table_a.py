@@ -44,7 +44,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_strategy_status as bss                      # noqa: E402
 from breadth_step1_grid import MIN_COVERAGE, QUANTS      # noqa: E402
-from table_a_bands import (KEY_SELECTOR_KNOBS, LEG_DEFN, PRODUCER_BANDS,  # noqa: E402
+from table_a_bands import (GATE_STRUCTURE_KNOBS, KEY_SELECTOR_KNOBS, LEG_DEFN, PRODUCER_BANDS,  # noqa: E402
                            STRATEGY_EXTRAS, band_axes, band_level_classes)
 
 
@@ -466,9 +466,30 @@ def _band_rows(pid: int, subject: str, knobs, axes: list | None = None,
             f"{resim}{act} | T3 review before any grid |")
     return out
 
+def registered_sets():
+    """(specs_names, specs_bands). B2850: a PHASE0 entry is a validated
+    inventory awaiting its first engine campaign (adapters come with it,
+    L754) - REGISTERED for Table A purposes, same as a full SPECS family.
+    S6-B3240: an entry that HAS params and whose params are ALL gate-
+    structure knobs (GATE_STRUCTURE_KNOBS) is registered but inventories no
+    Table A band, so it is in specs_names and not in specs_bands; a
+    param-less entry keeps the credit (its knobs live on a shared family
+    entry - its own shared_family field). Both empty when the registry
+    cannot be read."""
+    try:
+        from producer_variant_table import SPECS, SPECS_PHASE0
+    except Exception:
+        return set(), set()
+    merged = {**SPECS_PHASE0, **SPECS}
+    return set(merged), {n for n, e in merged.items()
+                         if not (e.get("params") and all(
+                             p.get("env") in GATE_STRUCTURE_KNOBS
+                             for p in e["params"]))}
+
+
 def render(name: str, row: dict, frame, sigs, filtered: bool,
            comparisons, legs_helpers, idx, specs_names, stamp: str,
-           body: str = "") -> str:
+           body: str = "", specs_bands=None) -> str:
     n_all = len(frame)
     # B2845 zero-survivor guard: smc_order_block_bounce survives 0.0 - the T1
     # filter keeps NOTHING, so no offline level is measurable and every
@@ -514,7 +535,8 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     series = key_series(sigs)
     depth_keys = sorted({k for k, _, _ in comparisons})
     legs, helpers = legs_helpers
-    in_specs = name in specs_names
+    in_specs = name in specs_names  # S6-B3240: and its bands, unless gate-structure only
+    bands_in_specs = in_specs and (specs_bands is None or name in specs_bands)
     L = [f"# Table A - {name}", "",
          stamp, "",
          f"**Lane:** {row['stream']} | **family:** {row['family']} | "
@@ -528,7 +550,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
              if row.get("changed_since_r5") else
              " (unchanged since R5 - filter is identity)")),
          "",
-         f"**SPECS entry:** {'registered in producer_variant_table' if in_specs else 'NONE - build at R1 before any engine leg (W-T T0)'}",
+         f"**SPECS entry:** {('registered in producer_variant_table' + ('' if bands_in_specs else ' - gate-structure knob(s) only (GATE_STRUCTURE_KNOBS), so none of the bands below is in it (S6-B3240)')) if in_specs else 'NONE - build at R1 before any engine leg (W-T T0)'}",
          "",
          # B2844 (owner-caught): the SS6/#183 locked artifact is FORMULA +
          # Table A + Table B - Section 1 and Table A are two views of one
@@ -587,8 +609,8 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"a shared producer's resim runs the FULL OPEN consumer set "
                  f"and its one cube is graded per consumer (runbook section 4.3 - results "
                  f"reused by construction); "
-                 f"knobs {'in the SPECS entry' if in_specs else ('DEFINED below (P' + str(pid) + '.x)' if PRODUCER_BANDS.get(leg) else 'to define')} | "
-                 f"{'SPECS-REGISTERED' if in_specs else ('BANDS-DEFINED' if PRODUCER_BANDS.get(leg) else 'BANDS-TO-DEFINE')} |")
+                 f"knobs {'in the SPECS entry' if bands_in_specs else ('DEFINED below (P' + str(pid) + '.x)' if PRODUCER_BANDS.get(leg) else 'to define')} | "
+                 f"{'SPECS-REGISTERED' if bands_in_specs else ('BANDS-DEFINED' if PRODUCER_BANDS.get(leg) else 'BANDS-TO-DEFINE')} |")
         L += _band_rows(pid, leg, PRODUCER_BANDS.get(leg, []), axes, reads=_reads)
     for key, op, prod in sorted(set(comparisons)):
         pid += 1
@@ -698,7 +720,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                        "(no QUANTS level sits tighter than production - band at T3)")
         loose = ("LOOSER = " + ("LOWER" if tighter_hi else "RAISE") +
                  " the threshold: RESIM - band from the SPECS entry"
-                 + ("" if name in specs_names else " (to be built)"))
+                 + ("" if bands_in_specs else " (to be built)"))
         L.append(f"| {key} | {attribute(key, idx)} | `{op} {_fmt(prod)}` | "
                  f"{cov:.1%} | {free} | {loose} |")
 
@@ -928,14 +950,7 @@ def main() -> int:
     legs = gate_legs(src)
     bodies = gate_bodies(src)
     idx = _module_index()
-    try:
-        # B2850: PHASE0 entries are validated inventories awaiting their
-        # first engine campaign (battery adapters come with it, L754) -
-        # REGISTERED for Table A purposes, same as full SPECS families.
-        from producer_variant_table import SPECS, SPECS_PHASE0
-        specs_names = set(SPECS) | set(SPECS_PHASE0)
-    except Exception:
-        specs_names = set()
+    specs_names, specs_bands = registered_sets()
 
     tl = pd.read_csv(bss.R5_DIR / "trade_log.csv", low_memory=False,
                      usecols=["strategy", "ticker", "entry_date", "direction",
@@ -956,7 +971,7 @@ def main() -> int:
                                                r.get("unmeasured_gate_keys"))
         md = render(name, r, kept, sigs, filtered, comps.get(name, []),
                     legs.get(name, ([], [])), idx, specs_names, stamp,
-                    body=bodies.get(name, ""))
+                    body=bodies.get(name, ""), specs_bands=specs_bands)
         p = Path(a.out) if a.strategy else sub / f"{name}.md"
         p.write_text(md, encoding="utf-8", newline="\n")
         written.append(p)

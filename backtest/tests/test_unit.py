@@ -33786,7 +33786,15 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
                                 # B3139q-r70b: the volume_profile
                                 # family (S6-B3171a adapter complete
                                 # on the owner's "Engine" word).
-                                "naked_poc_retest_long"}, sorted(rp.FAMILIES)
+                                "naked_poc_retest_long",
+                                # B3139q-r89 (S6-B3240): the four LEVER4
+                                # gate-budget strategies, registered
+                                # DELIBERATELY with their adapters - the
+                                # on-ramp for the owner-approved Step-1
+                                # runs (reading R2, 2026-10-21).
+                                "pivot_r1_breakout", "news_momentum_long",
+                                "smc_bos_continuation",
+                                "orb_stocks_in_play_long"}, sorted(rp.FAMILIES)
     # B2897: FAMILY_REFUSALS was EMPTY for its whole life - every SPECS
     # member was already a family, so the ledger of "why this is not a
     # family" named nobody. Promoting the candle pair with an incomplete
@@ -53165,7 +53173,7 @@ _B3139BB_LINE_CITATIONS = {
     "scripts/phase_1_investigation_turn_8_adjacent_family.py": 2,
     "scripts/postconfig_doc.py": 1,
     "scripts/producer_variant_table.py": 69,
-    "scripts/roster_core.py": 2,
+    "scripts/roster_core.py": 1,
     "scripts/smc_lsr_step1.py": 1,
     "scripts/table_a_bands.py": 102
 }
@@ -55451,10 +55459,17 @@ print(json.dumps(out))
     assert r.returncode == 0, r.stderr[-800:]
     got = _j.loads(r.stdout.strip().splitlines()[-1])
     assert len(got) == len(cases)
-    bad = [(env, val, lev, g) for (env, val, lev), g in zip(cases, got)
-           if not (g[0] == "ok" and g[1] == lev
-                   and isinstance(g[1], bool) == isinstance(lev, bool)
-                   and (g[1] is None) == (lev is None))]
+    # S6-B3240: a JSON-typed knob's level is the TEXT the engine parses, so
+    # it round-trips when json.loads(level) equals the parsed value; the
+    # JSON-typed set is pinned so a new one is a decision
+    JSON_ENVS = {p["env"] for e in SPECS.values() for p in e.get("params", [])
+                 if p.get("type") == "json"}
+    assert JSON_ENVS == {"LEVER4_GATE_BUDGET"}, JSON_ENVS
+    want = [(_j.loads(lev) if env in JSON_ENVS else lev) for env, _v, lev in cases]
+    bad = [(env, val, lev, g) for (env, val, lev), w, g in zip(cases, want, got)
+           if not (g[0] == "ok" and g[1] == w
+                   and isinstance(g[1], bool) == isinstance(w, bool)
+                   and (g[1] is None) == (w is None))]
     assert not bad, bad
     for env, where in READ_ELSEWHERE.items():
         src = (root / "scripts" / where).read_text(encoding="utf-8")
@@ -61166,3 +61181,276 @@ def test_b3251_table_a_names_the_module_that_writes_a_key():
     lane = (root / "strategy_optimisation" / "tighten" / "cmf_flip.md").read_text(encoding="utf-8")
     sel = [ln for ln in lane.splitlines() if "cmf_cross_up - emitted by" in ln]
     assert sel and all("emitted by backtest/signals/technical.py" in ln for ln in sel), sel
+
+
+def test_b3240_lever4_on_ramp_registers_the_four_strategies():
+    """S6-B3240 (B3139q-r89; S6-B1248-LEVER4 reading R2, owner 2026-10-21):
+    the on-ramp for the four LEVER4 gate-budget strategies. (1) R1/R3/R2 for
+    each: validate_spec clean, family_refusal empty, a battery family, served
+    by the 'lever4_gate_budget' Table D family; the registry's legs equal
+    screener.LEVER4_LEGS and the grader's sides equal the registry's. (2) The
+    R2 level is k = m-1 with the ruled thesis leg mandatory, and
+    validate_lever4 accepts it. (3) A JSON-typed knob's band matches by PARSED
+    value: production '{}', the unset form '', and R2 are in band; an
+    off-band budget and unparseable text are not. (4) make_spec takes the
+    level as a JSON array whose object maps to the band's own text - and,
+    since B3139q-r89b, a bare object (the production '{}' included, and an
+    object holding commas) maps the same way - keeps the comma form, and
+    tags a JSON level path-safely while every scalar tag is unchanged.
+    (5) The engine-anchor check holds on the live source and
+    reports a strategy whose _gate_budget call is gone, and config that never
+    reads the env var."""
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (root, root / "scripts"):
+        if str(p) not in sys.path:
+            sys.path.insert(0, str(p))
+    import lever4_step1 as l4
+    import make_spec as ms
+    import producer_variant_table as pvt
+    import verify_lever4_anchors as vla
+    from run_postconfig import FAMILIES, family_refusal
+    from backtest.signals import screener as sc
+    THESIS = {"pivot_r1_breakout": "above_r1", "news_momentum_long": "news_sentiment_5d",
+              "smc_bos_continuation": "smc_bos_bullish", "orb_stocks_in_play_long": "gap_up_pct"}
+    assert set(pvt._LEVER4) == set(sc.LEVER4_LEGS) == set(l4.FAMILY) == set(THESIS)
+    for name, (legs, thesis, sides, *_rest) in pvt._LEVER4.items():
+        spec = pvt.SPECS[name]
+        assert pvt.validate_spec(spec) == [], (name, pvt.validate_spec(spec))
+        assert family_refusal(name) == "" and name in FAMILIES, name
+        assert name in pvt.D_AXIS_FAMILIES["lever4_gate_budget"]["serves"]
+        assert tuple(legs) == sc.LEVER4_LEGS[name] and thesis == THESIS[name], name
+        assert tuple(sides) == l4.FAMILY[name]["legs"], name
+        r2 = json.loads(pvt.lever4_r2_level(name))
+        assert r2 == {name: {"k": len(legs) - 1, "mandatory": [thesis]}}, r2
+        assert sc.validate_lever4(r2) == r2
+        row = spec["params"][0]
+        assert row["env"] == "LEVER4_GATE_BUDGET" and row["type"] == "json"
+        assert pvt._level_in_band("{}", row) and pvt._level_in_band("", row)
+        assert pvt._level_in_band(pvt.lever4_r2_level(name), row)
+        assert not pvt._level_in_band(json.dumps({name: {"k": 1}}), row)
+        assert not pvt._level_in_band("{not json", row)
+    assert pvt._d_family({"P1_gate_budget": None})["detect"] == "P1_gate_budget"
+    # (4) make_spec
+    row = pvt.SPECS["pivot_r1_breakout"]["params"][0]
+    allowed = list(row["resim_band"]) + [row["production"]]
+    obj = {"pivot_r1_breakout": {"k": 3, "mandatory": ["above_r1"]}}
+    assert ms._parse_levels(json.dumps([obj]), allowed) == [pvt.lever4_r2_level("pivot_r1_breakout")]
+    assert ms._parse_levels("9,20,None", [9, 20, None]) == [9, 20, None]
+    # B3139q-r89b: a BARE object - what str(production) gives - maps too
+    assert ms._parse_levels("{}", allowed) == ["{}"]
+    _r2 = pvt.lever4_r2_level("pivot_r1_breakout")
+    assert ms._parse_levels(_r2, allowed) == [_r2]
+    assert ms._parse_levels("{},{}", allowed) == ["{}", "{}"]
+    tag = ms._tag_part(pvt.lever4_r2_level("pivot_r1_breakout"))
+    assert tag.startswith("j") and len(tag) == 9 and tag[1:].isalnum(), tag
+    for lev, want in ((200, "200"), (0.5, "0p5"), (None, "None"), (True, "True"),
+                      (-0.858, "-0p858")):
+        assert ms._tag_part(lev) == want, (lev, ms._tag_part(lev))
+    # (5) anchors
+    assert vla.check() == [], vla.check()
+    scr = (root / "backtest" / "signals" / "screener.py").read_text(encoding="utf-8")
+    bad = scr.replace('_gate_budget("orb_stocks_in_play_long", (', '_no_budget("orb_stocks_in_play_long", (')
+    assert bad != scr
+    assert any("strat_orb_stocks_in_play_long" in p for p in vla.check({"screener": bad}))
+    cfg = (root / "backtest" / "config.py").read_text(encoding="utf-8")
+    bad_cfg = cfg.replace('os.environ.get("LEVER4_GATE_BUDGET"', 'os.environ.get("LEVER4_GATE_BUDGET_X"')
+    assert bad_cfg != cfg
+    assert any("never reads" in p for p in vla.check({"config": bad_cfg}))
+
+
+def test_b3240_make_spec_matches_a_json_companion_by_parsed_value(monkeypatch, capsys):
+    """B3139q-r89b (the r89 gate's test_b3171b catch): make_spec reads a level
+    on two paths - --levels and the --with companion - and both match a
+    JSON-typed level to the band's own TEXT by parsed value. The r89 draft
+    mapped an object only inside a JSON array, so the comma path refused the
+    bare production '{}', and --with json.loads'd a companion with no mapping
+    at all. A synthetic two-knob entry drives --with through make_spec.main:
+    a JSON companion in band is accepted, so the run reaches the NEXT refusal
+    (no projected fires for a strategy the status artifact does not carry),
+    never the companion's level refusal; an off-band object is refused."""
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import make_spec as ms
+    import producer_variant_table as pvt
+    name = "x_b3240_synth"
+    budget = json.dumps({name: {"k": 1, "mandatory": []}})
+    monkeypatch.setitem(pvt.SPECS, name, {
+        "params": [{"id": "P1", "env": "X_B3240_SYNTH_A", "production": 1,
+                    "resim_band": [2]},
+                   {"id": "P2", "env": "LEVER4_GATE_BUDGET", "type": "json",
+                    "production": "{}", "resim_band": [budget]}],
+        "tools": {"keys": {}}})
+
+    def run(*extra):
+        monkeypatch.setattr(sys, "argv", ["make_spec.py", "--strategy", name,
+                                          "--param", "P1", "--levels", "2",
+                                          "--wave-prefix", "t_b3240", "--dry",
+                                          *extra])
+        capsys.readouterr()
+        rc = ms.main()
+        return rc, capsys.readouterr().out
+    for lev in ("{}", budget):
+        rc, out = run("--with", f"P2={lev}")
+        assert rc == 2 and "level outside" not in out, (lev, out)
+        assert f"no positive projected_step1_fires for {name}" in out, (lev, out)
+    rc, out = run("--with", "P2=" + json.dumps({name: {"k": 9}}))
+    assert rc == 2 and "level outside P2" in out, out
+    # the one matcher: an object maps to the band's TEXT, a scalar passes
+    assert ms._match_level({}, ["{}", budget]) == "{}"
+    assert ms._match_level(json.loads(budget), ["{}", budget]) == budget
+    assert ms._match_level(7, [7]) == 7 and ms._match_level({"z": 1}, ["{}"]) == {"z": 1}
+
+
+def test_b3240_lever4_grader_and_replay_spot_check_follow_the_budget(tmp_path):
+    """S6-B3240: the two LEVER4 battery legs on a synthetic cube.
+    (1) lever4_step1 grades legs x exits IS-only at the cube's budget, records
+    THIS strategy's entry as config.P1_gate_budget (None at production),
+    labels a non-R5 cube a variant, ranks on is_ci_lo, and refuses a
+    non-production budget claimed for the R5 cube before reading it.
+    (2) spot_check_replay replays the live strategy under the process's
+    config: a news_momentum_long fire holding 5 of its 6 legs (thesis held)
+    DISAGREES at production (exit 1) and AGREES under the R2 budget (exit 0),
+    the artifact records the budget it read, and a fire whose gate key was
+    not persisted is skipped, never agreed. The fires sit on real AAPL bars
+    (LEG C reads the cached OHLCV)."""
+    import json
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import lever4_step1 as l4
+    import producer_variant_table as pvt
+    name = "news_momentum_long"
+    r2 = pvt.lever4_r2_level(name)
+    full = {"news_sentiment_5d": 0.5, "news_volume_zscore_5d": 1.2, "dc20_breakout_up": True,
+            "close_above_open": True, "close_in_top_40pct_of_range": True, "vol_above_avg": True}
+    five = dict(full, close_above_open=False)
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    fires = [("AAPL", "2024-06-03", full), ("AAPL", "2024-06-04", five)]
+    pd.DataFrame([{"strategy": name, "ticker": t, "entry_date": d, "direction": "long",
+                   "signals_at_entry": json.dumps(s), "hold_days": 5, "pnl_pct": 1.0}
+                  for t, d, s in fires]).to_csv(cube / "trade_log.csv", index=False)
+    pd.DataFrame([{"ticker": t, "strategy": name, "entry_date": d, "direction": "long",
+                   "exit_method": ex, "pnl_pct": 1.0 + i, "hold_days": 5}
+                  for i, (t, d, _s) in enumerate(fires) for ex in ("e1", "e2")]
+                 ).to_csv(cube / "trade_exit_detail.csv", index=False)
+    # (1) the grader
+    out = tmp_path / "grid.json"
+    assert l4.main(["--strategy", name, "--cube", str(cube), "--gate-budget", r2,
+                    "--min-n", "1", "--out", str(out)]) == 0
+    g = json.loads(out.read_text(encoding="utf-8"))
+    assert json.loads(g["config"]["P1_gate_budget"]) == json.loads(r2)[name]
+    assert g["reproduction"].startswith("VARIANT-CUBE-NO-R5-REPRODUCTION")
+    assert g["reproduction_fires"] == 2 and g["rows"], g
+    ci = [r.get("is_ci_lo") for r in g["step1_ranking"]]
+    assert ci == sorted(ci, key=lambda v: -(v if v is not None else -9e9))
+    assert l4.budget_for("", name) is None and l4.budget_for("{}", name) is None
+    with pytest.raises(SystemExit):
+        l4.main(["--strategy", name, "--gate-budget", r2, "--out", str(tmp_path / "x.json")])
+
+    # (2) the replay spot check, production then R2
+    def spot(env_budget, out_name):
+        env = dict(os.environ)
+        env.pop("LEVER4_GATE_BUDGET", None)
+        if env_budget is not None:
+            env["LEVER4_GATE_BUDGET"] = env_budget
+        o = tmp_path / out_name
+        r = subprocess.run([sys.executable, str(root / "scripts" / "spot_check_replay.py"),
+                            "--strategy", name, "--cube", str(cube), "--n", "50",
+                            "--start", "2024-01-01", "--end", "2024-12-31", "--out", str(o)],
+                           cwd=str(root), env=env, capture_output=True, text=True, timeout=600)
+        return r, json.loads(o.read_text(encoding="utf-8"))
+    r, d = spot(None, "prod.json")
+    assert r.returncode == 1 and d["agree"] == 1 and d["disagree"] == 1, (r.stdout, d)
+    assert d["knobs"]["LEVER4_GATE_BUDGET"] == {} and not d["execution_failures"], d
+    r, d = spot(r2, "r2.json")
+    assert r.returncode == 0 and d["agree"] == 2 and d["disagree"] == 0, (r.stdout, d)
+    assert d["knobs"]["LEVER4_GATE_BUDGET"] == json.loads(r2)
+    # a fire whose gate key was not persisted is skipped, never agreed
+    gone = {k: v for k, v in full.items() if k != "vol_above_avg"}
+    pd.DataFrame([{"strategy": name, "ticker": "AAPL", "entry_date": "2024-06-03",
+                   "direction": "long", "signals_at_entry": json.dumps(gone),
+                   "hold_days": 5, "pnl_pct": 1.0}]).to_csv(cube / "trade_log.csv", index=False)
+    r, d = spot(r2, "gone.json")
+    assert d["skipped"] == 1 and d["agree"] == 0 and r.returncode == 1, (r.stdout, d)
+    assert "vol_above_avg" in d["rows"][0]["why"]
+
+
+def test_b3240_lever4_grader_ranks_on_the_in_sample_lower_bound():
+    """S6-B3240: lever4_step1.rank orders graded rows by is_ci_lo (the ruled
+    key - make_spec takes rank 1's exit as the Step-2 pre-registered exit),
+    never by Sharpe, on rows whose two orders DISAGREE; a None bound ranks
+    last and an npt-barred row is dropped."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import lever4_step1 as l4
+    rows = [{"exit": "hi_sharpe", "is_sharpe": 2.0, "is_ci_lo": 0.1, "is_n": 40, "npt_barred": False},
+            {"exit": "hi_bound", "is_sharpe": 1.0, "is_ci_lo": 0.3, "is_n": 90, "npt_barred": False},
+            {"exit": "no_bound", "is_sharpe": 3.0, "is_ci_lo": None, "is_n": 12, "npt_barred": False},
+            {"exit": "npt", "is_sharpe": 9.0, "is_ci_lo": 0.9, "is_n": 90, "npt_barred": True}]
+    assert [r["exit"] for r in l4.rank(rows)] == ["hi_bound", "hi_sharpe", "no_bound"]
+
+
+def test_b3240_table_a_credits_no_bands_to_a_gate_structure_entry():
+    """S6-B3240: a SPECS entry whose params are all GATE-STRUCTURE knobs
+    (table_a_bands.GATE_STRUCTURE_KNOBS - the LEVER4 budget) is registered
+    but inventories none of Table A's bands. (1) render() with the strategy
+    registered and NOT in specs_bands says so in its header, keeps its
+    producer rows off 'SPECS-REGISTERED', and leaves the threshold's resim
+    band '(to be built)'; in specs_bands it credits them. (2) Every LEVER4
+    entry's params are gate-structure knobs and no other SPECS entry's are,
+    so main()'s specs_bands drops exactly the four. (3) The committed lanes:
+    news_momentum_long says gate-structure only with no SPECS-REGISTERED row;
+    smc_order_block_bounce (SMC producer knobs) carries no gate-structure
+    note - its lane takes the UNMEASURED zero-survivor branch, which renders
+    no per-row labels (part (1) covers the credit branch)."""
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    for p in (root, root / "scripts"):
+        if str(p) not in sys.path:
+            sys.path.insert(0, str(p))
+    import build_table_a as bta
+    import producer_variant_table as pvt
+    from table_a_bands import GATE_STRUCTURE_KNOBS
+    row = {"stream": "BOTH", "family": "f", "status": "NOT-STARTED", "r5_fires": 2,
+           "survives_pct": 1.0, "unmeasured_gate_keys": {}}
+    frame = pd.DataFrame([{"strategy": "x", "ticker": t, "entry_date": d, "direction": "long",
+                           "signals_at_entry": "{}"}
+                          for t, d in (("AAA", "2023-01-03"), ("BBB", "2023-02-03"))])
+    sigs = [{"close_above_open": True, "news_sentiment_5d": 0.5},
+            {"close_above_open": True, "news_sentiment_5d": 0.9}]
+    args = ("x", row, frame, sigs, False, [("news_sentiment_5d", ">=", 0.3)],
+            (["close_above_open"], []), [], {"x"}, "STAMP")
+    md = bta.render(*args, body="fires = s.get('close_above_open')", specs_bands=set())
+    assert "gate-structure knob(s) only" in md and "SPECS-REGISTERED" not in md
+    assert "(to be built)" in md
+    md = bta.render(*args, body="fires = s.get('close_above_open')", specs_bands={"x"})
+    assert "gate-structure" not in md and "SPECS-REGISTERED" in md and "(to be built)" not in md
+    # (2) the population main() derives
+    names, bands = bta.registered_sets()
+    assert names - bands == set(pvt._LEVER4), sorted(names - bands)
+    assert "smc_order_block_bounce" in bands and set(GATE_STRUCTURE_KNOBS) == {"LEVER4_GATE_BUDGET"}
+    # (3) committed lanes
+    lane = root / "strategy_optimisation" / "tighten"
+    nml = (lane / "both" / "news_momentum_long.md").read_text(encoding="utf-8")
+    assert "gate-structure knob(s) only" in nml and "SPECS-REGISTERED" not in nml
+    obb = (lane / "smc_order_block_bounce.md").read_text(encoding="utf-8")
+    assert "UNMEASURED" in obb and "gate-structure" not in obb

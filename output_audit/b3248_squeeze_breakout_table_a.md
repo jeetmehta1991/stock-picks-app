@@ -1,6 +1,6 @@
 # Table A - squeeze_breakout
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 5a9ffe2ee | commit 5a9ffe2ee at 2026-10-21 03:50:19 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build dedad72e4 | commit dedad72e4 at 2026-10-21 05:30:19 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** NONE | **family:** breakout | **status:** IN-CAMPAIGN | **R5 fires:** 1141 | **surviving fires (T1):** 1141 (unchanged since R5 - filter is identity)
 

@@ -56,9 +56,11 @@ def _baseline_fires(strat: str) -> int:
     return int(pre["members"][strat]["n_trades"])
 
 
-def grade_cells(m, strat: str, min_n: int) -> list:
+def grade_cells(m, strat: str, min_n: int, legs=None) -> list:
+    """S6-B3240: `legs` lets another family's grader reuse this (the
+    LEVER4 grader passes its own); None reads this module's registry."""
     rows = []
-    legs = FAMILY[strat]["legs"]
+    legs = FAMILY[strat]["legs"] if legs is None else tuple(legs)
 
     def emit(tag, sub):
         for ex, cell in sub.groupby("exit_method"):

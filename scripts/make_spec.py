@@ -114,6 +114,59 @@ def fires_at_production(strategy: str):
     return int(round(float(fires))), basis
 
 
+def _match_level(x, allowed: list):
+    """S6-B3240: a level parsed to an object or array is a JSON-typed knob's
+    level - matched to the allowed level of equal PARSED value, whose own
+    TEXT is used (the band and the env carry text). A scalar is returned
+    unchanged. B3139q-r89b: every path that parses a level calls this - the
+    r89 draft mapped objects only inside a JSON array, so the comma form
+    refused the bare production level '{}' (test_b3171b) and --with had the
+    same unmapped json.loads."""
+    if isinstance(x, (dict, list)):
+        hit = [a for a in allowed
+               if isinstance(a, str) and _json_or_none(a) == x]
+        return hit[0] if hit else x
+    return x
+
+
+def _parse_levels(text: str, allowed: list) -> list:
+    """The --levels argument as levels. S6-B3240: a JSON-typed knob's level is
+    JSON TEXT that may hold commas, so the argument may be a JSON ARRAY, or
+    ONE bare JSON object; every parsed level goes through _match_level. The
+    comma-separated form is unchanged for scalars."""
+    s = text.strip()
+    if s.startswith("["):
+        return [_match_level(x, allowed) for x in json.loads(s)]
+    if s.startswith("{"):
+        obj = _json_or_none(s)
+        if obj is not None:
+            return [_match_level(obj, allowed)]
+        # several objects without inner commas: the comma form below
+    return [_match_level(json.loads(r.strip()), allowed)
+            if r.strip() not in ("None", "null") else None
+            for r in text.split(",")]
+
+
+def _json_or_none(s):
+    try:
+        return json.loads(s)
+    except ValueError:
+        return None
+
+
+def _tag_part(level) -> str:
+    """A level as a wave-name fragment. A scalar keeps its readable form ('.'
+    -> 'p', as before); a level holding any character a path cannot - a
+    JSON-typed knob's object text - becomes 'j' + 8 hex of its sha1, so the
+    wave name stays a valid directory name on every OS (S6-B3240)."""
+    import hashlib
+    import re
+    s = str(level).replace(".", "p")
+    if re.fullmatch(r"[A-Za-z0-9_+-]*", s):
+        return s
+    return "j" + hashlib.sha1(str(level).encode("utf-8")).hexdigest()[:8]
+
+
 def _env_value(level) -> str:
     """The env-string encoding of a level - ONE definition, shared by the
     arm env (_arm_env) and config identity (_env_key, S6-B3154a), so the
@@ -387,7 +440,8 @@ def main() -> int:
     ap.add_argument("--strategy", required=True)
     ap.add_argument("--param", required=True, help="SPECS param id, e.g. P4")
     ap.add_argument("--levels", required=True,
-                    help="comma-separated resim levels, e.g. 9,20,50")
+                    help="comma-separated resim levels, e.g. 9,20,50 - or a "
+                         "JSON array, for a JSON-typed knob (S6-B3240)")
     ap.add_argument("--wave-prefix", required=True)
     ap.add_argument("--step", type=int, default=1, choices=(1, 2))
     # S6-B3206 (owner ruling 2026-10-18): a Step-1 spec DECLARES its
@@ -435,8 +489,8 @@ def main() -> int:
                           f"{[x['id'] for x in spec_entry['params']]})")
         if not cp.get("env"):
             return refuse(f"--with {item!r}: {cpid} has NO env actuator")
-        clev = json.loads(craw)
         callowed = list(cp.get("resim_band") or []) + [cp.get("production")]
+        clev = _match_level(json.loads(craw), callowed)
         if clev not in callowed:
             return refuse(f"--with {item!r}: level outside {cpid} "
                           f"resim_band+production {callowed}")
@@ -467,14 +521,12 @@ def main() -> int:
         subset.write_text(a.strategy + "\n", encoding="utf-8")
 
     written = []
-    for raw in a.levels.split(","):
-        raw = raw.strip()
-        level = json.loads(raw) if raw not in ("None", "null") else None
+    for level in _parse_levels(a.levels, allowed):
         if level not in allowed:
             return refuse(f"level {level!r} outside {a.strategy}.{a.param} "
                           f"resim_band+production {allowed}")
-        tag = f"{a.param.lower()}_{str(level).replace('.', 'p')}" + "".join(
-            f"_{cpid.lower()}_{str(clev).replace('.', 'p')}"
+        tag = f"{a.param.lower()}_{_tag_part(level)}" + "".join(
+            f"_{cpid.lower()}_{_tag_part(clev)}"
             for cpid, _e, clev, _k in companions)
         arm_env = _arm_env(env, level)
         for _cpid, cenv, clev, _k in companions:

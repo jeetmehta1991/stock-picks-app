@@ -1,10 +1,10 @@
 # Table A - news_momentum_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 5a9ffe2ee | commit 5a9ffe2ee at 2026-10-21 03:48:40 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build dedad72e4 | commit dedad72e4 at 2026-10-21 05:28:37 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** news_sentiment | **status:** NOT-STARTED | **R5 fires:** 113 | **surviving fires (T1):** 113 (code changed since R5; the status build's survival filter measured survives_pct 1.0 - every fire kept)
 
-**SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+**SPECS entry:** registered in producer_variant_table - gate-structure knob(s) only (GATE_STRUCTURE_KNOBS), so none of the bands below is in it (S6-B3240)
 
 ## Formula (Section 1 of the SS6/#183 locked artifact)
 

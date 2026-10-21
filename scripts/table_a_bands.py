@@ -742,6 +742,14 @@ PRODUCER_BANDS.update({
 # engine axis only for a strategy whose fire logic reads it (build_table_a);
 # for any other its levels are PENDING - wiring the gate is the feature
 # request. test_b3253 checks each member's producer reads it nowhere.
+# S6-B3240: a GATE-STRUCTURE knob changes how many of a gate's legs must
+# hold, not any leg's band, so a SPECS entry whose params are all such
+# knobs is registered without inventorying a Table A band row.
+GATE_STRUCTURE_KNOBS = {
+    "LEVER4_GATE_BUDGET": ("a k-of-m budget over the LONG gate's legs "
+                           "(screener._gate_budget)"),
+}
+
 KEY_SELECTOR_KNOBS = {
     "STRAT_EMA_SPAN": ("selects the emitted price_above_ema_N / below_ema_N key; "
                        "technical.compute_ema_sma reads EMA_PAIRS, never this knob"),
