@@ -4867,6 +4867,8 @@ as "87pct fabrication".
 
 **INSTANCE (B3139q-r82 / L946) - A PER-SIDE NUMBER INHERITED A WHOLE-STRATEGY RATE.** The r79 shortlist projected two-sided strategies' long sides with strategy-level survival; 12 of 56 two-sided rows survive differently (morning_star long 0.9753 vs 0.4618). Mechanism: the status view's per-side record and test_b3232's per-side checks (r80).
 
+**INSTANCE 2 (B3139q-r92 / L953) - THE CLASS'S SECOND RENDERER: TABLE A FREE-BAND ROWS.** build_table_a pools both directions and offers mixed-population quantiles as per-side band levels with whole-strategy (n, pct) labels - cmf_flip's long-only rsi_14 quantiles 36.14/40.58/43.95 vs the offered 38.624/44.24/49.234, retention at the (60 pct) ceiling actually 95.4 pct of 1,753 long fires. Found by the r92 audit; fix S6-B3270 (per-side frame + two-sided fixture pin).
+
 ### #258 - DONE IS SELF-REPORTED; CLOSED IS VERIFIED AGAINST CODE (B1778 / L533)
 
 **OWNER RULING 2026-08-20:** *"Done isn't closure. Closed is only to be marked once you have

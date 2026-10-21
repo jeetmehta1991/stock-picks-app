@@ -26037,6 +26037,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L945 (B3139q-r82): an approved change reached further than its packet"),
         ("MEASURE THE RATE ON THE PART, OR STATE AND TEST THE TRANSFER",
          "L946 (B3139q-r80): a per-side projection inherited a whole-strategy rate"),
+        # B3139q-r92: L953 instance 2, same call as the skill edit.
+        ("the class's second renderer, found by the r92 audit",
+         "L953 (B3139q-r92): a fixed class survives in sibling renderers"),
         ("READ ITS SOURCE FIRST; RUN --help ONLY WHERE A PARSER IS CONFIRMED",
          "L947 (B3139q-r81): --help rewrote a committed artifact"),
         # B3139q-r83: L943 instance 2, same call as the skill edit.
@@ -26303,7 +26306,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 345 -> 353 at B3139q-r90 (L948-L952's eight clauses; same call as the
     # skill edit).
     # 353 -> 354 at B3139q-r91 (S6-B3269's selector clause; same call).
-    assert len(gutted) == 354, gutted
+    # 354 -> 355 at B3139q-r92 (the L953 second-renderer fragment; same call).
+    assert len(gutted) == 355, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
