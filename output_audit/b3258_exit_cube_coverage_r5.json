@@ -1,0 +1,1351 @@
+{
+ "cube_dir": "output_r5_merged_1_7",
+ "closed_fires": 189471,
+ "covered": 189122,
+ "missing": 349,
+ "whole": [
+  "classification_change_breakout_long",
+  "classification_change_from_tech_short",
+  "classification_change_momentum_long",
+  "classification_change_recent_long",
+  "classification_change_with_insider_long",
+  "classification_change_with_institutional_long",
+  "halloween_seasonal_long",
+  "january_effect_small_cap_long",
+  "news_momentum_short",
+  "news_reversal_long",
+  "pead_with_insider_confirmation_long",
+  "pivot_r3_blowoff_short",
+  "pivot_s3_capitulation",
+  "supertrend_ichimoku_adx"
+ ],
+ "partial": [
+  "52w_high_breakout",
+  "52w_high_breakout_pullback_long",
+  "52w_high_breakout_with_smart_money_long",
+  "52w_low_breakdown",
+  "52wh_break_retest",
+  "52wl_break_retest_short",
+  "activist_13d_long",
+  "avwap_20high_rejection_short",
+  "bollinger_upper_short",
+  "camarilla_s3_bounce",
+  "classification_change_to_defensive_short",
+  "cup_and_handle_retest_long",
+  "death_cross_50_200_volume",
+  "doji_at_support",
+  "double_bottom_long",
+  "flag_bull_retest_long",
+  "golden_cross_50_200",
+  "golden_cross_volume",
+  "head_and_shoulders_top_short",
+  "ichimoku_cloud_breakdown",
+  "insider_cluster_concentrated_sell_short",
+  "insider_cluster_long",
+  "insider_cluster_with_director_long",
+  "institutional_increased_with_directors_long",
+  "institutional_with_directors_long",
+  "institutional_with_officers_long",
+  "judas_swing_long",
+  "judas_swing_short",
+  "keltner_lower",
+  "mfi_oversold",
+  "mfi_oversold_with_smart_money_long",
+  "monthly_bias_momentum_long",
+  "news_momentum_long",
+  "news_reversal_short",
+  "orb_stocks_in_play_long",
+  "orb_stocks_in_play_short",
+  "pead_long",
+  "pivot_fib_confluence",
+  "pivot_r2_continuation",
+  "pivot_s2_bounce",
+  "post_deletion_drift_short",
+  "post_inclusion_drift_long",
+  "pre_fomc_long_sleeve",
+  "pre_fomc_quality_momentum_long",
+  "pre_holiday_long",
+  "pre_rebalance_long",
+  "rsi21_slow",
+  "rsi9_extreme",
+  "smc_bos_continuation",
+  "smc_fvg_retest_long",
+  "smc_mitigation_block_long",
+  "smc_mitigation_block_short",
+  "smc_ote_long",
+  "smc_ote_short",
+  "stoch_oversold",
+  "supertrend_macd_short",
+  "triangle_ascending_retest_long",
+  "weekly_bias_pullback_long",
+  "xs_combined_momentum_low_ivol",
+  "xs_low_beta_long",
+  "xs_momentum_top_decile",
+  "xs_quality_top_quintile_long"
+ ],
+ "pairs_with_missing": 317,
+ "pairs_split": 0,
+ "pairs_wholly_missing": 317,
+ "strategies": {
+  "52w_high_breakout": {
+   "closed": 33,
+   "covered": 30,
+   "missing": 3,
+   "kind": "partial"
+  },
+  "52w_high_breakout_pullback_long": {
+   "closed": 150,
+   "covered": 146,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "52w_high_breakout_with_smart_money_long": {
+   "closed": 66,
+   "covered": 65,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "52w_high_breakout_with_smart_money_vol_below_long": {
+   "closed": 203,
+   "covered": 203,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "52w_low_breakdown": {
+   "closed": 95,
+   "covered": 90,
+   "missing": 5,
+   "kind": "partial"
+  },
+  "52w_low_breakdown_pullback_short": {
+   "closed": 427,
+   "covered": 427,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "52wh_break_retest": {
+   "closed": 18,
+   "covered": 6,
+   "missing": 12,
+   "kind": "partial"
+  },
+  "52wl_break_retest_short": {
+   "closed": 77,
+   "covered": 74,
+   "missing": 3,
+   "kind": "partial"
+  },
+  "activist_13d_long": {
+   "closed": 119,
+   "covered": 114,
+   "missing": 5,
+   "kind": "partial"
+  },
+  "adx_initiation": {
+   "closed": 39,
+   "covered": 39,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "avwap_20high_rejection_short": {
+   "closed": 81,
+   "covered": 76,
+   "missing": 5,
+   "kind": "partial"
+  },
+  "avwap_252_breakout": {
+   "closed": 2294,
+   "covered": 2294,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "avwap_50_reclaim": {
+   "closed": 1336,
+   "covered": 1336,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "awesome_oscillator": {
+   "closed": 1012,
+   "covered": 1012,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "bb_squeeze_volume": {
+   "closed": 1013,
+   "covered": 1013,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "bollinger_lower": {
+   "closed": 1622,
+   "covered": 1622,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "bollinger_tight": {
+   "closed": 271,
+   "covered": 271,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "bollinger_tight_with_smart_money_long": {
+   "closed": 840,
+   "covered": 840,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "bollinger_upper_short": {
+   "closed": 130,
+   "covered": 129,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "break_retest_confluence": {
+   "closed": 1889,
+   "covered": 1889,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "break_retest_volume": {
+   "closed": 2164,
+   "covered": 2164,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "bullish_engulfing_support": {
+   "closed": 991,
+   "covered": 991,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "camarilla_r4_breakout": {
+   "closed": 5774,
+   "covered": 5774,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "camarilla_s3_bounce": {
+   "closed": 228,
+   "covered": 227,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "classification_change_breakout_long": {
+   "closed": 2,
+   "covered": 0,
+   "missing": 2,
+   "kind": "whole"
+  },
+  "classification_change_from_tech_short": {
+   "closed": 9,
+   "covered": 0,
+   "missing": 9,
+   "kind": "whole"
+  },
+  "classification_change_momentum_long": {
+   "closed": 13,
+   "covered": 0,
+   "missing": 13,
+   "kind": "whole"
+  },
+  "classification_change_recent_long": {
+   "closed": 6,
+   "covered": 0,
+   "missing": 6,
+   "kind": "whole"
+  },
+  "classification_change_to_defensive_short": {
+   "closed": 7,
+   "covered": 5,
+   "missing": 2,
+   "kind": "partial"
+  },
+  "classification_change_with_insider_long": {
+   "closed": 1,
+   "covered": 0,
+   "missing": 1,
+   "kind": "whole"
+  },
+  "classification_change_with_institutional_long": {
+   "closed": 5,
+   "covered": 0,
+   "missing": 5,
+   "kind": "whole"
+  },
+  "cmf_flip": {
+   "closed": 2994,
+   "covered": 2994,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "cpr_narrow_bullish": {
+   "closed": 1248,
+   "covered": 1248,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "cpr_narrow_momentum": {
+   "closed": 1001,
+   "covered": 1001,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "cpr_narrow_momentum_short": {
+   "closed": 1696,
+   "covered": 1696,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "cup_and_handle_long": {
+   "closed": 164,
+   "covered": 164,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "cup_and_handle_retest_long": {
+   "closed": 99,
+   "covered": 98,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "dc20_break_retest": {
+   "closed": 2414,
+   "covered": 2414,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "death_cross_50_200_volume": {
+   "closed": 31,
+   "covered": 26,
+   "missing": 5,
+   "kind": "partial"
+  },
+  "doji_at_resistance_short": {
+   "closed": 306,
+   "covered": 306,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "doji_at_support": {
+   "closed": 232,
+   "covered": 229,
+   "missing": 3,
+   "kind": "partial"
+  },
+  "donchian_10_breakout": {
+   "closed": 966,
+   "covered": 966,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "donchian_breakdown_retest_short": {
+   "closed": 999,
+   "covered": 999,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "donchian_breakdown_short": {
+   "closed": 872,
+   "covered": 872,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "donchian_breakout_long": {
+   "closed": 507,
+   "covered": 507,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "donchian_breakout_retest_long": {
+   "closed": 547,
+   "covered": 547,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "donchian_breakout_with_smart_money_long": {
+   "closed": 985,
+   "covered": 985,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "double_bottom_long": {
+   "closed": 291,
+   "covered": 287,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "flag_bear_retest_short": {
+   "closed": 55,
+   "covered": 55,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "flag_bull_long": {
+   "closed": 63,
+   "covered": 63,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "flag_bull_retest_long": {
+   "closed": 33,
+   "covered": 24,
+   "missing": 9,
+   "kind": "partial"
+  },
+  "force_index_breakout": {
+   "closed": 3013,
+   "covered": 3013,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "golden_cross_20_50": {
+   "closed": 413,
+   "covered": 413,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "golden_cross_50_200": {
+   "closed": 109,
+   "covered": 105,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "golden_cross_9_21": {
+   "closed": 889,
+   "covered": 889,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "golden_cross_volume": {
+   "closed": 43,
+   "covered": 37,
+   "missing": 6,
+   "kind": "partial"
+  },
+  "halloween_seasonal_long": {
+   "closed": 7,
+   "covered": 0,
+   "missing": 7,
+   "kind": "whole"
+  },
+  "hammer_at_support_long": {
+   "closed": 110,
+   "covered": 110,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "head_and_shoulders_bottom_long": {
+   "closed": 146,
+   "covered": 146,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "head_and_shoulders_top_short": {
+   "closed": 477,
+   "covered": 474,
+   "missing": 3,
+   "kind": "partial"
+  },
+  "htf_aligned_breakout_long": {
+   "closed": 326,
+   "covered": 326,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "htf_aligned_breakout_short": {
+   "closed": 996,
+   "covered": 996,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "hull_rsi": {
+   "closed": 1270,
+   "covered": 1270,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "ichimoku_cloud_breakdown": {
+   "closed": 197,
+   "covered": 194,
+   "missing": 3,
+   "kind": "partial"
+  },
+  "ichimoku_cloud_breakout": {
+   "closed": 511,
+   "covered": 511,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "ichimoku_tk_cross": {
+   "closed": 1319,
+   "covered": 1319,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "inside_bar_breakout": {
+   "closed": 677,
+   "covered": 677,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "insider_cluster_concentrated_sell_short": {
+   "closed": 269,
+   "covered": 265,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "insider_cluster_long": {
+   "closed": 24,
+   "covered": 16,
+   "missing": 8,
+   "kind": "partial"
+  },
+  "insider_cluster_with_director_long": {
+   "closed": 24,
+   "covered": 16,
+   "missing": 8,
+   "kind": "partial"
+  },
+  "institutional_breakout_confirmation_long": {
+   "closed": 642,
+   "covered": 642,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_buy_momentum_long": {
+   "closed": 2644,
+   "covered": 2644,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_cluster_long": {
+   "closed": 2451,
+   "covered": 2451,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_committed_growth_long": {
+   "closed": 1941,
+   "covered": 1941,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_high_conviction_long": {
+   "closed": 2473,
+   "covered": 2473,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_increased_with_directors_long": {
+   "closed": 107,
+   "covered": 103,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "institutional_insider_combo_long": {
+   "closed": 2751,
+   "covered": 2751,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_multi_quarter_persistence_long": {
+   "closed": 2516,
+   "covered": 2516,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_oversold_long": {
+   "closed": 386,
+   "covered": 386,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_persistence_breakout_long": {
+   "closed": 532,
+   "covered": 532,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_persistence_momentum_long": {
+   "closed": 2324,
+   "covered": 2324,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_persistence_oversold_long": {
+   "closed": 716,
+   "covered": 716,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_persistence_volume_long": {
+   "closed": 1199,
+   "covered": 1199,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_persistent_holders_long": {
+   "closed": 1955,
+   "covered": 1955,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_recent_init_momentum_long": {
+   "closed": 2268,
+   "covered": 2268,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_recent_init_volume_long": {
+   "closed": 1075,
+   "covered": 1075,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_strong_conviction_long": {
+   "closed": 1826,
+   "covered": 1826,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_volume_confirmation_long": {
+   "closed": 1387,
+   "covered": 1387,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "institutional_with_directors_long": {
+   "closed": 115,
+   "covered": 110,
+   "missing": 5,
+   "kind": "partial"
+  },
+  "institutional_with_officers_long": {
+   "closed": 103,
+   "covered": 98,
+   "missing": 5,
+   "kind": "partial"
+  },
+  "inverted_cup_and_handle_short": {
+   "closed": 366,
+   "covered": 366,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "january_effect_small_cap_long": {
+   "closed": 1,
+   "covered": 0,
+   "missing": 1,
+   "kind": "whole"
+  },
+  "judas_swing_long": {
+   "closed": 65,
+   "covered": 60,
+   "missing": 5,
+   "kind": "partial"
+  },
+  "judas_swing_short": {
+   "closed": 84,
+   "covered": 80,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "keltner_lower": {
+   "closed": 41,
+   "covered": 37,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "m_and_a_target_long": {
+   "closed": 1023,
+   "covered": 1023,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "macd_bullish_with_smart_money_long": {
+   "closed": 1162,
+   "covered": 1162,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "macd_crossover": {
+   "closed": 2910,
+   "covered": 2910,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "macd_crossover_short": {
+   "closed": 1524,
+   "covered": 1524,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "macd_fast_crossover": {
+   "closed": 4070,
+   "covered": 4070,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "macd_ichimoku": {
+   "closed": 2907,
+   "covered": 2907,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "mfi_oversold": {
+   "closed": 77,
+   "covered": 71,
+   "missing": 6,
+   "kind": "partial"
+  },
+  "mfi_oversold_with_smart_money_long": {
+   "closed": 244,
+   "covered": 242,
+   "missing": 2,
+   "kind": "partial"
+  },
+  "mmbm_long": {
+   "closed": 1337,
+   "covered": 1337,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "mmsm_short": {
+   "closed": 2456,
+   "covered": 2456,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "monthly_bias_momentum_long": {
+   "closed": 37,
+   "covered": 29,
+   "missing": 8,
+   "kind": "partial"
+  },
+  "morning_star": {
+   "closed": 2280,
+   "covered": 2280,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "naked_poc_retest_long": {
+   "closed": 1788,
+   "covered": 1788,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "news_momentum_long": {
+   "closed": 113,
+   "covered": 106,
+   "missing": 7,
+   "kind": "partial"
+  },
+  "news_momentum_short": {
+   "closed": 13,
+   "covered": 0,
+   "missing": 13,
+   "kind": "whole"
+  },
+  "news_reversal_long": {
+   "closed": 1,
+   "covered": 0,
+   "missing": 1,
+   "kind": "whole"
+  },
+  "news_reversal_short": {
+   "closed": 60,
+   "covered": 57,
+   "missing": 3,
+   "kind": "partial"
+  },
+  "news_sentiment_long": {
+   "closed": 906,
+   "covered": 906,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "news_sentiment_shift_long": {
+   "closed": 357,
+   "covered": 357,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "orb_stocks_in_play_long": {
+   "closed": 54,
+   "covered": 48,
+   "missing": 6,
+   "kind": "partial"
+  },
+  "orb_stocks_in_play_short": {
+   "closed": 115,
+   "covered": 108,
+   "missing": 7,
+   "kind": "partial"
+  },
+  "pairs_mean_reversion_long": {
+   "closed": 5036,
+   "covered": 5036,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "pairs_mean_reversion_short": {
+   "closed": 5698,
+   "covered": 5698,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "parabolic_sar_flip": {
+   "closed": 1618,
+   "covered": 1618,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "parabolic_sar_flip_short": {
+   "closed": 1672,
+   "covered": 1672,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "pead_long": {
+   "closed": 140,
+   "covered": 138,
+   "missing": 2,
+   "kind": "partial"
+  },
+  "pead_long_high_yoy_growth_only": {
+   "closed": 2116,
+   "covered": 2116,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "pead_short": {
+   "closed": 872,
+   "covered": 872,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "pead_short_negative_yoy_growth": {
+   "closed": 2215,
+   "covered": 2215,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "pead_with_insider_confirmation_long": {
+   "closed": 10,
+   "covered": 0,
+   "missing": 10,
+   "kind": "whole"
+  },
+  "pead_with_smart_money_long": {
+   "closed": 656,
+   "covered": 656,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "pivot_fib_confluence": {
+   "closed": 91,
+   "covered": 84,
+   "missing": 7,
+   "kind": "partial"
+  },
+  "pivot_r1_breakout": {
+   "closed": 860,
+   "covered": 860,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "pivot_r2_continuation": {
+   "closed": 55,
+   "covered": 53,
+   "missing": 2,
+   "kind": "partial"
+  },
+  "pivot_r3_blowoff_short": {
+   "closed": 9,
+   "covered": 0,
+   "missing": 9,
+   "kind": "whole"
+  },
+  "pivot_s1_bounce": {
+   "closed": 458,
+   "covered": 458,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "pivot_s2_bounce": {
+   "closed": 55,
+   "covered": 52,
+   "missing": 3,
+   "kind": "partial"
+  },
+  "pivot_s3_capitulation": {
+   "closed": 3,
+   "covered": 0,
+   "missing": 3,
+   "kind": "whole"
+  },
+  "po3_bearish": {
+   "closed": 2624,
+   "covered": 2624,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "po3_bullish": {
+   "closed": 731,
+   "covered": 731,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "poc_magnet_long": {
+   "closed": 589,
+   "covered": 589,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "post_deletion_drift_short": {
+   "closed": 54,
+   "covered": 50,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "post_inclusion_drift_long": {
+   "closed": 27,
+   "covered": 23,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "post_inclusion_reversal_short": {
+   "closed": 100,
+   "covered": 100,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "ppo_crossover": {
+   "closed": 1588,
+   "covered": 1588,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "pre_fomc_long_sleeve": {
+   "closed": 69,
+   "covered": 68,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "pre_fomc_quality_momentum_long": {
+   "closed": 25,
+   "covered": 12,
+   "missing": 13,
+   "kind": "partial"
+  },
+  "pre_holiday_long": {
+   "closed": 124,
+   "covered": 123,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "pre_rebalance_long": {
+   "closed": 28,
+   "covered": 27,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "prev_day_high_break": {
+   "closed": 1424,
+   "covered": 1424,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "prev_day_low_bounce": {
+   "closed": 577,
+   "covered": 577,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "prev_day_low_breakdown": {
+   "closed": 800,
+   "covered": 800,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "r1_break_retest": {
+   "closed": 3371,
+   "covered": 3371,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "risk_off_bond_equity_short": {
+   "closed": 1895,
+   "covered": 1895,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "roc_burst": {
+   "closed": 918,
+   "covered": 918,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "rsi21_slow": {
+   "closed": 9,
+   "covered": 5,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "rsi9_extreme": {
+   "closed": 56,
+   "covered": 48,
+   "missing": 8,
+   "kind": "partial"
+  },
+  "rsi_oversold": {
+   "closed": 1945,
+   "covered": 1945,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "rsi_oversold_with_smart_money_long": {
+   "closed": 2753,
+   "covered": 2753,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "rsi_volume_200ema": {
+   "closed": 548,
+   "covered": 548,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "shooting_star_short": {
+   "closed": 250,
+   "covered": 250,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "simple_below_ema_50_short": {
+   "closed": 3299,
+   "covered": 3299,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_bos_continuation": {
+   "closed": 100,
+   "covered": 96,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "smc_bos_retest_entry": {
+   "closed": 682,
+   "covered": 682,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_breaker_block_long": {
+   "closed": 948,
+   "covered": 948,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_breaker_block_short": {
+   "closed": 1598,
+   "covered": 1598,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_choch_reversal": {
+   "closed": 551,
+   "covered": 551,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_discount_long": {
+   "closed": 333,
+   "covered": 333,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_equal_highs_sweep_short": {
+   "closed": 838,
+   "covered": 838,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_equal_lows_sweep_long": {
+   "closed": 382,
+   "covered": 382,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_fvg_retest_long": {
+   "closed": 66,
+   "covered": 61,
+   "missing": 5,
+   "kind": "partial"
+  },
+  "smc_fvg_retest_short": {
+   "closed": 288,
+   "covered": 288,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_inverse_fvg": {
+   "closed": 953,
+   "covered": 953,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_liquidity_sweep_reversal": {
+   "closed": 2933,
+   "covered": 2933,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_mitigation_block_long": {
+   "closed": 15,
+   "covered": 5,
+   "missing": 10,
+   "kind": "partial"
+  },
+  "smc_mitigation_block_short": {
+   "closed": 44,
+   "covered": 40,
+   "missing": 4,
+   "kind": "partial"
+  },
+  "smc_order_block_bounce": {
+   "closed": 1340,
+   "covered": 1340,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "smc_ote_long": {
+   "closed": 231,
+   "covered": 228,
+   "missing": 3,
+   "kind": "partial"
+  },
+  "smc_ote_short": {
+   "closed": 262,
+   "covered": 261,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "smc_premium_short": {
+   "closed": 433,
+   "covered": 433,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "squeeze_breakout": {
+   "closed": 1141,
+   "covered": 1141,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "squeeze_breakout_with_smart_money_long": {
+   "closed": 1139,
+   "covered": 1139,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "stoch_oversold": {
+   "closed": 286,
+   "covered": 284,
+   "missing": 2,
+   "kind": "partial"
+  },
+  "stochrsi_overbought_short": {
+   "closed": 4287,
+   "covered": 4287,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "stochrsi_oversold": {
+   "closed": 2433,
+   "covered": 2433,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "supertrend_ichimoku_adx": {
+   "closed": 4,
+   "covered": 0,
+   "missing": 4,
+   "kind": "whole"
+  },
+  "supertrend_macd": {
+   "closed": 486,
+   "covered": 486,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "supertrend_macd_short": {
+   "closed": 271,
+   "covered": 268,
+   "missing": 3,
+   "kind": "partial"
+  },
+  "tema_dema": {
+   "closed": 1876,
+   "covered": 1876,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "three_black_crows_short": {
+   "closed": 1674,
+   "covered": 1674,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "three_white_soldiers": {
+   "closed": 1596,
+   "covered": 1596,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "totm_long": {
+   "closed": 343,
+   "covered": 343,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "triangle_ascending_long": {
+   "closed": 330,
+   "covered": 330,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "triangle_ascending_retest_long": {
+   "closed": 112,
+   "covered": 111,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "triangle_descending_short": {
+   "closed": 1064,
+   "covered": 1064,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "turtle_soup_long": {
+   "closed": 324,
+   "covered": 324,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "turtle_soup_short": {
+   "closed": 1880,
+   "covered": 1880,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "ultimate_oscillator": {
+   "closed": 592,
+   "covered": 592,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "value_area_breakout_long": {
+   "closed": 375,
+   "covered": 375,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "vix_backwardation_long": {
+   "closed": 543,
+   "covered": 543,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "vol_spike_2x_below_ema_50_short": {
+   "closed": 1140,
+   "covered": 1140,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "volume_spike_breakout": {
+   "closed": 1500,
+   "covered": 1500,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "week_opening_gap_fill_down": {
+   "closed": 633,
+   "covered": 633,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "week_opening_gap_fill_up": {
+   "closed": 834,
+   "covered": 834,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "weekly_bias_pullback_long": {
+   "closed": 27,
+   "covered": 20,
+   "missing": 7,
+   "kind": "partial"
+  },
+  "williams_r_oversold": {
+   "closed": 2535,
+   "covered": 2535,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "williams_stoch_dual": {
+   "closed": 750,
+   "covered": 750,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "xs_combined_momentum_low_ivol": {
+   "closed": 212,
+   "covered": 211,
+   "missing": 1,
+   "kind": "partial"
+  },
+  "xs_low_beta_long": {
+   "closed": 78,
+   "covered": 76,
+   "missing": 2,
+   "kind": "partial"
+  },
+  "xs_low_beta_with_smart_money_long": {
+   "closed": 452,
+   "covered": 452,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "xs_momentum_bottom_decile_short": {
+   "closed": 1384,
+   "covered": 1384,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "xs_momentum_quality_combined": {
+   "closed": 163,
+   "covered": 163,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "xs_momentum_top_decile": {
+   "closed": 255,
+   "covered": 253,
+   "missing": 2,
+   "kind": "partial"
+  },
+  "xs_momentum_with_smart_money_long": {
+   "closed": 658,
+   "covered": 658,
+   "missing": 0,
+   "kind": "complete"
+  },
+  "xs_quality_top_quintile_long": {
+   "closed": 89,
+   "covered": 85,
+   "missing": 4,
+   "kind": "partial"
+  }
+ }
+}

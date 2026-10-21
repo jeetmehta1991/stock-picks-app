@@ -2772,6 +2772,8 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
 **INSTANCE (B3139q-r69m / L915) - A COPIED NOTE CARRIES ITS SOURCE'S ABSENCE CLAIMS.** 2 of 16 admission notes said the mirror short had "no holdout evidence of its own" - the pairs note copied the three_white_soldiers sentence - while R5 grades both mirrors (-0.686 over 470 trades; -0.184 over 1,378 trades). An absence copied into a new subject is an absence never searched for. Mechanism: test_b3169.
 
+**INSTANCE (B3139q-r90 / L951) - A COPIED DOCSTRING NEGATIVE BECAME NEW CODE'S PREMISE.** S6-B3237's first patch wrote VERDICT_SCOPE from Batch 623's caveat - a trade log 'only observed trades the affinity ALLOWED' - into a module whose every cube runs with the affinity off (Phase 1A-beta auto-enables --no-regime-affinity). My own per-side read contradicted it before commit. A copied absence claim is a claim about the new subject; pinned by test_b3262.
+
 **#167 (B1446, owner-surfaced) - REJECTION ON DIRECTION MUST REDIRECT, NEVER DROP.** When a router rejects a candidate because it is the WRONG KIND of change (tighten proposed on a starved strategy, loosen on a high-fire one), the item must be re-routed to the opposite queue, not `continue`d out of the pipeline. **Lineage:** `build_r6_change_list.py:89-92` dropped 10 strategies into no queue at all; owner: "if it's not tightening it's loosening, why skip?" (S6-B1445a). **Retroactive (#136):** same family as the B1410 prose-only routing (#164) and the B984/B975 disable-instead-of-investigate pattern.
 
 **#168 (B1464, from L292) - A BYPASS SHIPS WITH THE CAPABILITY IT EXISTS TO ENABLE.** When a flag DISABLES a safeguard so that something else can be measured or collected, the batch that ships the bypass must ALSO ship that something else, or an EXECUTION_QUEUE ticket for it linked from the bypass's own comment. A bypass whose counterpart never lands silently converts a designed measurement into lost data, and it does so invisibly because the bypass keeps working exactly as written. **Enforcement:** any diff adding a `no_*` / `skip_*` / `bypass_*` / `disable_*` flag must, in the same commit, either implement the enabled capability or cite the ticket ID in the flag's docstring. **Lineage:** `backtest/engine/backtest.py:129` bypassed `STRATEGY_REGIME_AFFINITY` at Batch 384 with the rationale "cube measures per-regime cell verdicts empirically" -- the per-regime verdict is canonical criterion #11, which B1456 found was never implemented anywhere (L289). For ~1,000 batches the cube deliberately traded every strategy in every regime, including regimes each disclaims, and the grading pipeline pooled it all into one Sharpe -- averaging away precisely the signal the bypass was collecting. **Retroactive (#136):** would have caught the B901 `EMIT_RAW_SIGNAL_FIRES` flag (shipped before its consumer), the B1035 `SMC_PHASE` silent-kill, and this.
@@ -2823,6 +2825,8 @@ Phase-1 population of 25, a planning number derived from an over-scoped verdict.
 **INSTANCE 5 (B3139q-r71c / L923) - AN INDEX QUOTED AS A COUNT.** Six owner-facing reports said "sim-day N of 249": 249 is the last 0-based index of a 250-day Step-1 window, not its size, and the wording came from monitor prompts I authored (L839's scheduled-instrument shape). The owner asked "Why is sim day only 249?". Take a progress denominator from the record that knows it; a writer publishing an index publishes the count beside it. ENFORCED BY test_b3185_every_progress_record_carries_the_window_total, an AST check over every engine record that publishes the index (landed B3139q-r71i).
 
 **INSTANCE 6 (B3139q-r71c / L924) - A MEMBER ADDED TO A POPULATION BY RECOLLECTION.** An audit correcting S6-B3180's count sized the strategies reading STRAT_EMA_SPAN at 5; the fifth, strat_smc_breaker_block_short, reads the literal below_ema_200, so 4 rows were affected (AST over all 225 strategies: 5 runtime-built key reads in 4 strategies). A correction to a population count is itself a population claim - derive membership from the code by the defect's property. ENFORCED BY test_b3180_roster_renders_keys_built_at_runtime, which derives the readers by AST at test time (landed B3139q-r71i).
+
+**INSTANCE (B3139q-r90 / L952) - AN RCA'S CLASS WAS SIZED BY ITS SYMPTOM.** S6-B2649c counted strategies with ZERO exit-cube rows - 14 strategies, 84 fires on R5 - and concluded no roster outcome was distorted. By fire, the property the drop corrupts, 349 of 189,471 closed fires lack an exit row: 265 more in 62 strategies that kept others, 4 of them Phase 1B members (UNVERIFIED whether any gate moves, S6-B3258). Mechanism: scripts/exit_cube_coverage.py, pinned by test_b3263.
 
 **#183 PRODUCER-OPTIMISATION ARTIFACT STANDARD (B1510, owner-locked).** Every strategy entering
 S6-OPT-196 is reported through `scripts/producer_variant_table.py` in ONE 3-section artifact, so
@@ -3095,6 +3099,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r82 / L945) - THE POST-FIX SWEEP STOPPED AT EXECUTABLE RESTATEMENTS.** r79 withdrew the short regime default and corrected the scripts and tests restating it, while 12 strategy docstrings and 2 engine comments kept stating it as current until r82. Mechanism: test_b1248_withdrawn_short_default_is_never_stated_as_current.
 
+**INSTANCE (B3139q-r90 / L950) - READERS THAT NAME NO STRATEGY.** L801's grep is by the changed subject's NAME. This turn's state changes reached readers that name none: the long-campaign shortlist built from the status view (test_b3232, r86), test_b3171b's derived first fresh family (r89), Table A's 'in SPECS' predicate (r89). The first two turned full gates RED; the third was caught reading the re-render diff.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
@@ -3259,6 +3265,8 @@ rate-for-total substitutions above.
 **INSTANCE (B3139 / L890):** the cube-isolation occupancy block was described per-strategy in L812 and S6-B2905 from the comment at backtest.py:2830-2831 (at 83eb1ff48), while the control flow skips the WHOLE candidate - co-firing strategies holding nothing are not entered and are named in no skip row (S6-B3139r); its pin tests two literal sets, not the engine loop (#276b).
 
 **INSTANCE (B3139q-r72o / L937) - 'COMMITTED' WITH NO PATH.** S6-B3139c's deferral row and its batch's commit message said the signals_used detector is committed; a search by name, by its recorded result and through the commit that recorded the result found none, so the Phase-1B entry batch would have looked for a tool that does not exist. A claim that something is committed carries its path.
+
+**INSTANCE (B3139q-r90 / L951) - A COUNT TYPED AHEAD OF ITS PROBE.** The S6-B3237 correction's docstring first said '15 of 17' entries; the probe returned 14 of 17 and the draft was fixed before applying - L776's shape, inside a scratch patcher no turn gate reads.
 
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
 
@@ -3815,6 +3823,8 @@ the owner asked); `prelaunch_gate` still unwired; `verify_engine_implemented` / 
 
 **INSTANCE (B3139 / L892):** S6-B3118a's event trigger ('before any bollinger_lower T6/Step-2 ask') fired unbuilt at B3131 although deferral_trigger_audit.py listed it among 11 unevaluated triggers - a disclosure no launch path reads (S6-B3139s).
 
+**INSTANCE (B3139q-r86..r90 / L949) - AN EVALUATOR THAT LATCHES IS A REMINDER AGAIN.** scan_deferral_trigger_fired blocked once per ticket id, so S6-B2620b's trigger, already fired, read 6 against a baseline of 3 while nothing blocked and two flips sat unread for 13 days. A gate over a level records the value at each firing and re-blocks on a rise (S6-B3250, pinned by test_b3250).
+
 ### #225 - AN ANALYSIS-ONLY TURN PASSES EVERY GATE AND CAN STILL BE A SILENT MISS (B1705 / L500)
 
 MEASURED: three consecutive turns produced **ten findings and zero tickets**. Every mechanical gate
@@ -4100,6 +4110,8 @@ to that shape only.**
 **INSTANCE (B3139q-r71c / L922) - WHAT THE MACHINERY WILL DO IS A CAPABILITY CLAIM; OPEN WHAT DECIDES IT.** An hourly report and two push notifications told the owner a drained battery would kill the live EMA run; this laptop's critical-battery action on DC is Hibernate (powercfg) and both cap sites credit sleep, so the run pauses. The same session's audit objected to a fix on the claim that the landing supervisor stages the landings file; its commit pathspec does not contain it. Both pointed toward caution, which is why neither was re-derived (L840).
 
 **INSTANCE (B3139q-r82 / L945) - A PACKET PRICED A CHANGE FROM THE CODE PATH IN FRONT OF IT.** The r77 decision packet described S6-B1248-SHORT-REGIME-AFFINITY (a) by the campaign path (which bypasses the regime filter) and missed Phase 1B and 23 explicit entries, and priced S6-B1248-LEVER4 (a) as one Step-1 run each while 0 of 4 strategies had any on-ramp rung. Both were found at execution, after the owner had approved on the packet's words. Mechanism: the L945 skill clause (a packet option's scope and price come from its reach), pinned by test_b2123.
+
+**INSTANCE (B3139q-r90 / L950):** registering news_momentum_long for its LEVER4 budget was scoped as an on-ramp for four strategies; its reach included Table A's producer and threshold rows, which read 'in SPECS' as 'its bands are inventoried'. GATE_STRUCTURE_KNOBS and build_table_a.registered_sets() split the two (test_b3240).
 
 ### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
 
@@ -5673,6 +5685,8 @@ to a control that assumes it can** - reporting is safe, gating is not.
 
 **Pins:** test_b2490 x2, test_b2492, test_b2495, test_b2496.
 
+**INSTANCE (B3139q-r90 / L951) - THE NEGATIVE CLAIM WAS COPIED, NOT ONLY BELIEVED.** Batch 623's caveat in direction_disaggregated_regime_audit.py said the log 'only observed trades the affinity ALLOWED'; S6-B3237's patch carried it into VERDICT_SCOPE and a new docstring. MEASURED against the cubes the script reads: output_batch395_final holds adx_initiation (entry {bear}) long trades in bull 373 and neutral 93. The bullet now carries a CORRECTION note.
+
 **#226 SCOPE EXTENSION (L734):** prove-it-can-fail extends from pins to
 DESIGNS - before presenting any rule/threshold/mechanism recommendation,
 evaluate it on the motivating incident's own numbers. One function call.
@@ -6043,6 +6057,8 @@ an attempted-search clause); the response-level scan is ticketed
 S6-B2705a for the next enforcement batch - editing the live Stop-hook file
 mid-session risks blocking every close, the stated reason for the split.
 
+**INSTANCE (B3139q-r90 / L948):** #327 filed reading-before-running as JUDGMENT-ONLY ('no scan sees an intent to probe') with no named search. The intent is invisible; the act - a turn's command running --help on a script whose source builds no parser - is not, and scan_help_on_parserless_script now reads it.
+
 ### #301 - COPY THE STEP'S RULED SHAPE FROM THE PHASE TABLE (B2711 / L787, owner-caught 2026-09-12)
 
 Before writing a campaign spec, read the runbook phase table row for that
@@ -6340,6 +6356,8 @@ Two additions, both from L852. (a) **ORDER.** A targeted test step runs AFTER ev
 
 **INSTANCE (B3139q-r82 / L945) - THE PIN SEARCH STOPPED AT THE TESTS JUST WRITTEN.** r80 ran its own pins and an extended-tier control and never grepped test_unit.py for the changed strategies' names; test_batch216 pinned the S6-B3222 defect and turned the gate RED (1 failed, 1,812 passed), and spot_check_smc_family.GATES carried the same stale leg with no pin on it. Mechanism: the full gate, and test_b3222's every-leg check of that table.
 
+**INSTANCE (B3139q-r90 / L950) - FOUR DEFECTS REACHED FULL GATES; THE SELECTIONS NAMED NONE OF THE FOUR FAILING TESTS.** r86: test_b3232 (a derived shortlist); r89: test_b3171b (a derived test subject) and test_b1974 (a generator's freshness stamp); r89b: test_b2128 (a repo-wide ratchet - the fix's own except:pass, 129 against 128). Each selection ran the change's own pins. The reach of a change is every test that reads what it touched; the gate's read-set records that for output_audit/ only, so it would have selected 1 of the 4 - a selector needs source reads too (S6-B3269).
+
 ### #316 - EVERY ARM OF ONE BOOLEAN COMPARES THE SAME WAY (L853, S6-B3036, 2026-09-23)
 
 When a single acceptance or rejection expression ORs several arms together, every arm normalises its input identically - same case folding, same whitespace, same stripping - or each divergence is justified IN THE CODE beside the arm. A mixed boolean fails as a FALSE NEGATIVE on the compliant author who writes naturally, which is the direction nobody reports: the arm that rejects wrongly is the one whose victim assumes they got the wording wrong. MEASURED: `#300`'s pin ORed three case-sensitive arms with one `.lower()` arm, so a durability clause opening a sentence with a capital D was invisible, and both #315 sections failed (written WITHOUT the header marker on purpose: the #300 pin splits sections on that token, so quoting it here would split THIS item in two and hide its JUDGMENT-ONLY from its own durability clause - the defect was live in the first draft of this line) while carrying the exact clause the rule demands. THE FIX IS NOT UNIFORM NORMALISATION: where an arm is an ESCAPE, it takes the stricter matcher (L528) - `"Mechanism"` stays capitalised because it marks L548's structured form and lowercasing it would match the prose "no mechanism is possible", the bare label the rule refuses. WHICH CANDIDATE WAS COMPARED (L720): L771 covers a PROBE diverging from the ASSERTION it validates - two expressions drifting apart over time - and does not reach one expression whose own arms disagree at authoring time; #226 proves a pin CAN fail and is silent about which compliant inputs it wrongly rejects. Mechanism: the arm's verdict is now pinned in BOTH directions by the five-case table inside `test_b2705_judgment_only_declarations_carry_their_search` - two must-refuse (bare label, "no mechanism is possible") and three must-accept (capitalised, lowercase, L548 form).
@@ -6555,3 +6573,36 @@ legacy writers by name, shrink-only - a new writer without a parser fails, and
 a member that gains one or is deleted must leave the set. Reading before
 running is JUDGMENT-ONLY (no scan sees an intent to probe); durability is the
 tripwire row in the execution-discipline skill, pinned by test_b2123.
+
+**INSTANCE (B3139q-r90 / L948) - THE RULE'S AUTHOR BROKE IT FOUR HOURS LATER.** At
+2026-10-21T04:01:45Z I ran python scripts/queue_state.py --help to check ticket
+ids; the script builds no parser and ignores its arguments, so main() ran -
+read-only only because of what it happens to do. #327 had been committed at
+2026-10-20T23:57:02Z.
+
+**MECHANISM (CORRECTED B3139q-r90):** the paragraph above files reading before
+running as JUDGMENT-ONLY because no scan sees an intent to probe. The intent is
+invisible, the ACT is not: scan_help_on_parserless_script fires when a turn's
+command runs a repo script with --help or -h whose source neither imports a
+parser library nor compares against a --help literal, both read from the AST
+(builds_arg_parser, which test_b3243's census now shares), pinned by
+test_b3259. Refusing such a command BEFORE it runs is S6-B3268, the owner's
+decision (a refusal is a behaviour change).
+
+### #328 - A CLOSED TICKET'S REMAINDER RIDES A NEW TICKET OPENED IN THE SAME APPEND (B3139q-r90 / L949, citing L704 and L640, self-caught 2026-10-21)
+
+Work deferred inside a row marked EXECUTED or DROPPED - it 'rides the next batch',
+is 'owed at the next render', will run 'in a later batch' - is read by no
+open-ticket sweep, so it has no reader. Open a NEW non-terminal ticket for the
+deferred work in the same append and name it in the closing row (L640); a live
+ticket the row names for another reason - a blocker, a citation - does not
+carry it. MEASURED (L949): S6-B2620b's flip-4 bump, deferred that way on
+2026-09-25, never landed and two later flips sat unread for 13 days; across
+the ledger's 2,768 terminal rows the phrases occur outside quotes in 8, all
+genuine deferrals, and 4 of those 8 obligations were never carried out
+(S6-B3264, S6-B3265 and S6-B3266 now carry the three still owed).
+
+MECHANISM: scan_obligation_in_closing_row (scripts/verify_turn_compliance.py)
+fires on such a row added in the turn, the phrase outside quotes, pinned by
+test_b3260. A lower bound: 'next session' is left out (4 of its 5 terminal-row
+uses are context), so L704's own incident is outside the slice.

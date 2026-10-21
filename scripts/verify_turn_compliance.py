@@ -6056,6 +6056,255 @@ def scan_heredoc_escapes(entries, *, cmds=None, active_from=None) -> list[str]:
             "commit or tag message heredoc is exempt."]
 
 
+
+# S6-B3259 (B3139q-r90, L948): #327's detectable slice. #327 filed reading a
+# script before running it as JUDGMENT-ONLY ("no scan sees an intent to
+# probe"); the intent is invisible but the ACT is not - the turn's command
+# holds the --help, and whether the script builds a parser is a fact in its
+# source. Commands before this moment are not judged: the motivating incident
+# (queue_state.py --help, 2026-10-21T04:01:45Z) is recorded in L948, and a
+# past command cannot be un-run (L721).
+HELP_PARSERLESS_ACTIVE_FROM = "2026-10-21T10:30:00.000Z"
+_HELP_PARSERLESS_HEAD = "--HELP ON A SCRIPT THAT PARSES NO ARGUMENTS"
+_PY_EXES = ("python", "python3", "python.exe", "python3.exe", "py", "py.exe")
+_PARSER_LIBS = frozenset({"argparse", "optparse", "click", "typer", "docopt"})
+
+
+def builds_arg_parser(src) -> bool:
+    """True when `src` imports an argument-parser library (argparse,
+    optparse, click, typer, docopt), read from the AST - a word in a comment,
+    a docstring or a string constant does not count (L748). ONE definition:
+    this scan and test_b3243's writer census both call it (B3139q-r90: the
+    census's substring check read this module as a parser because a marker
+    tuple here named the libraries). Unparseable source: False."""
+    import ast as _ast
+    try:
+        tree = _ast.parse(str(src or ""))
+    except SyntaxError:
+        return False
+    for n in _ast.walk(tree):
+        if isinstance(n, _ast.Import) and any(
+                a.name.split(".")[0] in _PARSER_LIBS for a in n.names):
+            return True
+        if isinstance(n, _ast.ImportFrom) and (n.module or "").split(".")[0] in _PARSER_LIBS:
+            return True
+    return False
+
+
+def handles_help_by_hand(src) -> bool:
+    """True when `src` compares something against a '--help' or '-h' literal
+    (e.g. `if "--help" in sys.argv`), read from the AST - --help on it is
+    then handled, not passed to main(). Unparseable source: False."""
+    import ast as _ast
+    try:
+        tree = _ast.parse(str(src or ""))
+    except SyntaxError:
+        return False
+    for n in _ast.walk(tree):
+        if isinstance(n, _ast.Compare):
+            for x in [n.left, *n.comparators]:
+                if isinstance(x, _ast.Constant) and x.value in ("--help", "-h"):
+                    return True
+    return False
+
+
+def help_on_parserless_hits(cmd, root=None, sources=None) -> list[str]:
+    """Repo scripts `cmd` runs with --help or -h whose source builds no
+    argument parser (S6-B3259 / #327 / L948), as repo-relative paths. A
+    parser makes --help read-only; a script that reads sys.argv by hand - or
+    ignores it - runs main() on any argument (L947: --help rewrote a
+    committed census). A heredoc body is data, not a command (B1878).
+    `sources` maps a repo-relative path to its text (the corpus seam, #241);
+    without it the file is read under `root` (the repo by default). A path
+    that does not resolve to a repo file is not judged."""
+    import re as _re
+    base = Path(root) if root else REPO_ROOT
+    txt = _re.sub(r"<<-?\s*['\"]?(\w+)['\"]?.*?^\s*\1\s*$", " ",
+                  str(cmd or ""), flags=_re.S | _re.M)
+    hits = []
+    for seg in _re.split(r"&&|\|\||[;|\n]", txt):
+        toks = seg.split()
+        for i, tok in enumerate(toks):
+            exe = tok.strip("'\"&").replace("\\", "/").rsplit("/", 1)[-1]
+            if exe.lower() not in _PY_EXES:
+                continue
+            rest = toks[i + 1:]
+            j = 0
+            while (j < len(rest) and rest[j].startswith("-")
+                   and not rest[j].strip("'\"").lower().endswith(".py")):
+                j += 2 if rest[j] in ("-X", "-W") else 1
+            script = rest[j].strip("'\"").replace("\\", "/") if j < len(rest) else ""
+            if (script.lower().endswith(".py")
+                    and any(a.strip("'\"") in ("--help", "-h") for a in rest[j + 1:])):
+                rel = script
+                if "stock-picks-app/" in rel:
+                    rel = rel.split("stock-picks-app/", 1)[1]
+                elif rel.startswith("/") or _re.match(r"^[A-Za-z]:/", rel):
+                    rel = ""
+                rel = rel[2:] if rel.startswith("./") else rel
+                if rel:
+                    if sources is not None:
+                        src = sources.get(rel)
+                    else:
+                        f = base / rel
+                        src = (f.read_text(encoding="utf-8", errors="replace")
+                               if f.is_file() else None)
+                    if (src is not None and not builds_arg_parser(src)
+                            and not handles_help_by_hand(src)):
+                        hits.append(rel)
+            break
+    return hits
+
+
+def scan_help_on_parserless_script(entries, *, cmds=None, active_from=None,
+                                   sources=None) -> list[str]:
+    """S6-B3259 / #327 / L948: --help is read-only only behind a parser.
+
+    MEASURED: at B3139q-r81 lever4_condition_census.py --help ran main() and
+    rewrote a committed artifact (L947); four hours after #327 recorded the
+    rule, queue_state.py --help ran main() again - read-only only because of
+    what that script happens to do (L948). Fires when this turn's Bash or
+    PowerShell command runs a repo script with --help or -h and the script's
+    source neither builds a parser (builds_arg_parser) nor compares against a
+    --help literal (handles_help_by_hand) - a lower bound: a parser built
+    through an imported helper module is not seen.
+
+    Seam (#241): `cmds` injects command strings (the active-from window is
+    then the caller's); `sources` maps a repo path to its text; `active_from`
+    overrides the ship timestamp. ONE incident, ONE report (S6-B3139u's
+    rule): once harness feedback quotes a hit, that hit no longer blocks.
+    """
+    if cmds is None:
+        cut = active_from or HELP_PARSERLESS_ACTIVE_FROM
+        cmds = []
+        for d in _turn_entries(entries):
+            if not isinstance(d, dict) or d.get("type") != "assistant":
+                continue
+            if str(d.get("timestamp") or "") < cut:
+                continue
+            for blk in (d.get("message") or {}).get("content") or ():
+                if (isinstance(blk, dict) and blk.get("type") == "tool_use"
+                        and str(blk.get("name") or "").lower()
+                        in ("bash", "powershell")):
+                    cmds.append(str((blk.get("input") or {}).get("command") or ""))
+    hits = [h for c in cmds for h in help_on_parserless_hits(c, sources=sources)]
+    if hits:
+        reported = ""
+        for _d in (entries or ()):
+            if not (isinstance(_d, dict) and _d.get("type") == "user"):
+                continue
+            _c = (_d.get("message") or {}).get("content")
+            if isinstance(_c, str):
+                if _HELP_PARSERLESS_HEAD in _c:
+                    reported += _c
+                continue
+            for _blk in _c or ():
+                if isinstance(_blk, dict):
+                    _t = str(_blk.get("text", "")) + str(_blk.get("content", ""))
+                    if _HELP_PARSERLESS_HEAD in _t:
+                        reported += _t
+        hits = [h for h in hits if repr(h) not in reported]
+    if not hits:
+        return []
+    return [f"{_HELP_PARSERLESS_HEAD} (S6-B3259 / #327 / L948): {len(hits)} "
+            f"command(s) ran --help or -h on a repo script whose source builds "
+            f"no argument parser - first: {hits[0]!r}. Such a script runs "
+            "main() on any argument and may write its artifact (L947: --help "
+            "rewrote a committed census). Run git status now and restore "
+            "anything it wrote from HEAD; learn a script's flags by reading "
+            "its source."]
+
+
+# S6-B3260 (B3139q-r90, L949): L704's detectable slice. L704 filed a future
+# obligation written into a CLOSING row as JUDGMENT-ONLY ("no detection
+# mechanism can tell a caveat that names a future action from one that
+# merely records context"). The phrase slice below is not that: MEASURED
+# at B3139q-r90 over the ledger's 2,768 terminal rows (of 4,106), these
+# phrases outside quotes occur in 8, and all 8 defer real work; 4 of the 8
+# obligations were never carried out - S6-B2620b's flip-4 bump (voided at
+# B3139q-r86 by S6-B3250's register) and three now carried by S6-B3264,
+# S6-B3265 and S6-B3266. A LOWER bound: 'next session' is left out (4 of its
+# 5 terminal-row uses are context, not obligations), so L704's own incident
+# is outside it.
+_OBLIGATION_HEAD = "A CLOSING ROW CARRIES A FUTURE OBLIGATION"
+_OBLIGATION_RE = None
+
+
+def _obligation_re():
+    global _OBLIGATION_RE
+    if _OBLIGATION_RE is None:
+        import re as _re
+        _OBLIGATION_RE = _re.compile(
+            r"\brides? (?:on )?the next\b|\bto ride the next\b"
+            r"|\bowed (?:at|in|by) the next\b|\bin a later batch\b"
+            r"|\brides? a later\b", _re.I)
+    return _OBLIGATION_RE
+
+
+def obligation_in_closing_rows(rows) -> list[tuple[str, str]]:
+    """(ticket id, phrase) for each TERMINAL row (EXECUTED / DROPPED) in
+    `rows` that defers work to a later batch - a phrase of _obligation_re()
+    outside quotes ('...', "...", `...`, with an apostrophe inside a word
+    never opening one) - and names no NON-TERMINAL row of the same
+    append. L640/L704: the remainder of a closed ticket rides a NEW id opened
+    in the same append; naming a live ticket for another reason (a blocker,
+    a citation) is not that - the S6-B2620b flip-4 row named one."""
+    import re as _re
+    from queue_state import TICKET_ID
+
+    def cells(r):
+        c = str(r).split("|")
+        tid = c[1].strip().strip("*").strip() if len(c) > 2 else ""
+        st = c[2].strip().strip("*").strip().upper() if len(c) > 3 else ""
+        return tid, st
+
+    carriers = {cells(r)[0] for r in rows
+                if cells(r)[1] and cells(r)[1] not in ("EXECUTED", "DROPPED")}
+    quoted = _re.compile(r"(?<!\w)'[^'\n]*?'(?!\w)|\"[^\"\n]*?\"|`[^`\n]*?`")
+    out = []
+    for r in rows:
+        tid, st = cells(r)
+        if st not in ("EXECUTED", "DROPPED"):
+            continue
+        m = _obligation_re().search(quoted.sub(" ", str(r)))
+        if not m:
+            continue
+        named = {x.rstrip(".,;:)") for x in _re.findall(TICKET_ID, str(r))} - {tid}
+        if named & carriers:
+            continue
+        out.append((tid, m.group(0)))
+    return out
+
+
+def scan_obligation_in_closing_row(entries, *, rows=None) -> list[str]:
+    """S6-B3260 / L704 / L949: work deferred inside a CLOSED row is invisible.
+
+    MEASURED: S6-B2620b's flip-4 row (2026-09-25, EXECUTED) said the baseline
+    bump was 'REGISTERED to ride the next gated scripts batch'; it never
+    landed, and flips 5 and 6 sat unread for 13 days until S6-B3250 found
+    them. A terminal row is read by no open-ticket sweep, so the obligation
+    has no reader (L704). Fires on rows ADDED this turn - in state EXECUTED
+    or DROPPED, carrying a deferral phrase outside quotes, naming no
+    non-terminal row of the same append.
+
+    Seam (#241): `rows` injects the added rows.
+    """
+    added = _queue_rows_added() if rows is None else list(rows)
+    if not added:
+        return []
+    hits = obligation_in_closing_rows(added)
+    if not hits:
+        return []
+    tid, phrase = hits[0]
+    return [f"{_OBLIGATION_HEAD} (S6-B3260 / L704 / L949): {len(hits)} "
+            f"terminal row(s) added this turn defer work - first: {tid} "
+            f"({phrase!r}). A closed row is read by no open-ticket sweep, so "
+            "the deferred work has no reader (the S6-B2620b flip-4 bump sat "
+            "26 days). Open a NEW non-terminal ticket for it in the same "
+            "append and name that ticket in the closing row (L640), or quote "
+            "the phrase if the row only reports it."]
+
+
 def main(argv: list[str] | None = None) -> int:
     # B1746: RUN EVERY GATE, REPORT EVERY VIOLATION.
     #
@@ -6147,6 +6396,12 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B3193 (L925): a close tested as a draft is posted
                 # verbatim - the stamp scripts/probe_close.py writes.
                 scan_close_differs_from_tested_draft,
+                # S6-B3259 (B3139q-r90, L948): #327's detectable
+                # slice - --help on a script with no parser.
+                scan_help_on_parserless_script,
+                # S6-B3260 (B3139q-r90, L949): L704's detectable
+                # slice - an obligation deferred in a closing row.
+                scan_obligation_in_closing_row,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):

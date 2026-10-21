@@ -26042,6 +26042,23 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r83: L943 instance 2, same call as the skill edit.
         ("THE PYRAMID GATE PRINTS moved_line_citations= BEFORE PYTEST STARTS",
          "L943 instance 2 (B3139q-r82): a docstring fix moved 27 code citations"),
+        # B3139q-r90: L948-L952, same call as the skill edit.
+        ('MECHANIZED SLICE (B3139q-r90, L949): scan_obligation_in_closing_row',
+         'L949 (B3139q-r90): an obligation deferred in a closing row'),
+        ('L948 / #327 INSTANCE',
+         'L948 (B3139q-r90): --help on a parserless script four hours after #327'),
+        ("#327's 'no scan sees an intent'",
+         'L948 (B3139q-r90): a JUDGMENT-ONLY whose act was detectable'),
+        ('THE REACH OF A CHANGE IS EVERY TEST THAT READS WHAT IT TOUCHED',
+         'L950 (B3139q-r90): four defects reached full gates'),
+        ('L951 / #287c INSTANCE',
+         'L951 (B3139q-r90): a copied docstring negative became a premise'),
+        ("'15 of 17' typed into a docstring",
+         'L951 (B3139q-r90): a count typed ahead of its probe'),
+        ('L952 / #182 INSTANCE',
+         "L952 (B3139q-r90): an RCA's class sized by its symptom"),
+        ('A ONCE-PER-ID LATCH TURNS A RISING LEVEL INTO SILENCE',
+         'L949 (B3139q-r90): a latch over a level trigger'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26280,7 +26297,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same call as the skill edit).
     # 344 -> 345 at B3139q-r83 (L943 instance 2's gate-disclosure clause;
     # same call as the skill edit).
-    assert len(gutted) == 345, gutted
+    # 345 -> 353 at B3139q-r90 (L948-L952's eight clauses; same call as the
+    # skill edit).
+    assert len(gutted) == 353, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -48153,6 +48172,15 @@ _B3121_SEAMS_SOUND = {
         "list seam (list[str] of Bash command strings) for the list the live collector builds from _turn_entries; every element gets the same heredoc_escape_hits processing, and the window/tool selection the seam skips is driven on the live branch by test_b3139_heredoc_escape_scan_judges_only_commands_after_it_shipped",
     ("scan_owner_decision_taken", "rows"):
         "list seam (list(rows)) for the list _queue_rows_added(diff_text) returns",
+    # B3139q-r90 (S6-B3259 / S6-B3260): the two new scans' seams.
+    ("scan_help_on_parserless_script", "cmds"):
+        "list seam (list[str] of command strings) for the list the live collector builds from "
+        "_turn_entries' Bash and PowerShell tool_use inputs; every element gets the same "
+        "help_on_parserless_hits processing, and the window/tool selection the seam skips is "
+        "driven on the live branch by test_b3259_help_on_a_parserless_script_is_flagged",
+    ("scan_obligation_in_closing_row", "rows"):
+        "list seam (list(rows)) for the list _queue_rows_added() returns; both paths feed "
+        "obligation_in_closing_rows unchanged",
     ("scan_count_without_members", "rows"):
         "list seam (list(rows)) for the list _queue_rows_added() returns",
     ("scan_ticket_claim_without_pin", "rows"):
@@ -58582,6 +58610,16 @@ def test_b1248_withdrawn_short_default_is_never_stated_as_current():
     assert "S6-B1248-SHORT-REGIME-AFFINITY" in bt[j:j + 200]
 
 
+def _b3243_vtc():
+    import sys as _sys
+    from pathlib import Path as _P
+    _scripts = _P(__file__).resolve().parents[2] / "scripts"
+    if str(_scripts) not in _sys.path:
+        _sys.path.insert(0, str(_scripts))
+    import verify_turn_compliance as _v
+    return _v
+
+
 def _b3243_argv_writers(root):
     """(writers, mains): scripts/*.py with a __main__ entry that WRITE a file
     and build no argparse/click parser, and the count of __main__ scripts.
@@ -58601,7 +58639,10 @@ def _b3243_argv_writers(root):
         if not any(isinstance(n, _ast.If) and "__main__" in _ast.unparse(n.test) for n in tree.body):
             continue
         mains += 1
-        if "argparse" in s or "click" in s:
+        # B3139q-r90: ONE definition, from the AST (verify_turn_compliance.
+        # builds_arg_parser) - the substring check read a module that merely
+        # NAMES the libraries as parsing its arguments.
+        if _b3243_vtc().builds_arg_parser(s):
             continue
         if write.search(s):
             out.add(p.name)
@@ -61454,3 +61495,235 @@ def test_b3240_table_a_credits_no_bands_to_a_gate_structure_entry():
     assert "gate-structure knob(s) only" in nml and "SPECS-REGISTERED" not in nml
     obb = (lane / "smc_order_block_bounce.md").read_text(encoding="utf-8")
     assert "UNMEASURED" in obb and "gate-structure" not in obb
+
+
+def test_b3259_help_on_a_parserless_script_is_flagged(tmp_path):
+    """S6-B3259 (B3139q-r90, L948): #327's detectable slice. #327 filed
+    reading a script before running it as JUDGMENT-ONLY ('no scan sees an
+    intent to probe'); the intent is invisible but the act is not. (1) The
+    verbatim incident - queue_state.py --help, 2026-10-21T04:01:45Z - fires,
+    naming the script. (2) A parser makes it quiet, and so does no --help.
+    (3) The forms a command takes (-h, an interpreter flag, a Windows path,
+    an absolute repo path) are read; a heredoc BODY, a -c payload, a path
+    outside the repo and another program are not. (4) Without the sources
+    seam the file is read under root. (5) One incident, one report: harness
+    feedback quoting the hit quiets it, assistant text never does. (6) The
+    live collector skips a command before the ship time. (7) Wired."""
+    import inspect as _insp
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gic
+    import verify_turn_compliance as vtc
+    inc = gic.INCIDENTS["scan_help_on_parserless_script"][2]
+    qs_cmd, noparse = inc["cmds"][0], inc["sources"]
+    assert qs_cmd.endswith("python scripts/queue_state.py --help 2>&1 | head -5")
+    # (1)
+    assert vtc.help_on_parserless_hits(qs_cmd, sources=noparse) == ["scripts/queue_state.py"]
+    out = vtc.scan_help_on_parserless_script([], cmds=[qs_cmd], sources=noparse)
+    assert len(out) == 1 and "'scripts/queue_state.py'" in out[0] and "S6-B3259" in out[0], out
+    # (2)
+    assert vtc.help_on_parserless_hits(
+        qs_cmd, sources={"scripts/queue_state.py": "import argparse\n"}) == []
+    assert vtc.help_on_parserless_hits("python scripts/queue_state.py | head",
+                                       sources=noparse) == []
+    # the detectors read the AST (B3139q-r90): a mention is not a parser
+    hand = 'import sys\nif "--help" in sys.argv:\n    print(__doc__)\n'
+    assert vtc.help_on_parserless_hits(
+        qs_cmd, sources={"scripts/queue_state.py": hand}) == []
+    named = '"""Flags: see argparse or click; pass --help."""\nimport sys\nprint(sys.argv)\n'
+    assert vtc.help_on_parserless_hits(
+        qs_cmd, sources={"scripts/queue_state.py": named}) == ["scripts/queue_state.py"]
+    assert vtc.builds_arg_parser("import argparse\n")
+    assert vtc.builds_arg_parser("from click import command\n")
+    assert not vtc.builds_arg_parser("# argparse\nx = 'click'\n")
+    assert vtc.handles_help_by_hand(hand) and not vtc.handles_help_by_hand(named)
+    assert not vtc.builds_arg_parser(
+        (root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8"))
+    # (3)
+    for cmd in ("python -I scripts/queue_state.py -h",
+                "python scripts\\queue_state.py --help",
+                "cd /x && python /c/Users/jeetm/Github/stock-picks-app/scripts/queue_state.py "
+                "--help 2>&1 | tail -3",
+                "py -3 ./scripts/queue_state.py --help"):
+        assert vtc.help_on_parserless_hits(cmd, sources=noparse) == ["scripts/queue_state.py"], cmd
+    for cmd in ("cat <<'EOF' > n.txt\npython scripts/queue_state.py --help\nEOF",
+                'python -c "print(1)" --help',
+                "python /tmp/elsewhere/x.py --help",
+                "git log --help"):
+        assert vtc.help_on_parserless_hits(cmd, sources=noparse) == [], cmd
+    # (4)
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "w.py").write_text("import sys\nprint(sys.argv)\n", encoding="utf-8")
+    (tmp_path / "scripts" / "p.py").write_text(
+        "import argparse\nargparse.ArgumentParser().parse_args()\n", encoding="utf-8")
+    assert vtc.help_on_parserless_hits("python scripts/w.py --help", root=tmp_path) == ["scripts/w.py"]
+    assert vtc.help_on_parserless_hits("python scripts/p.py --help", root=tmp_path) == []
+    assert vtc.help_on_parserless_hits("python scripts/gone.py --help", root=tmp_path) == []
+    # (5)
+    hit = repr("scripts/queue_state.py")
+    fb = {"type": "user", "message": {"content": [
+        {"type": "tool_result", "content": vtc._HELP_PARSERLESS_HEAD + " first: " + hit}]}}
+    said = {"type": "assistant", "message": {"content": [
+        {"type": "text", "text": vtc._HELP_PARSERLESS_HEAD + " first: " + hit}]}}
+    assert vtc.scan_help_on_parserless_script([fb], cmds=[qs_cmd], sources=noparse) == []
+    assert vtc.scan_help_on_parserless_script([said], cmds=[qs_cmd], sources=noparse)
+
+    # (6)
+    def bash(ts, c):
+        return {"type": "assistant", "timestamp": ts, "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": c}}]}}
+    before = bash("2026-10-21T04:01:45.815Z", qs_cmd)
+    after = bash("2099-01-01T00:00:00.000Z", qs_cmd)
+    assert vtc.scan_help_on_parserless_script([before], sources=noparse) == []
+    assert vtc.scan_help_on_parserless_script([before, after], sources=noparse)
+    # (7)
+    assert "scan_help_on_parserless_script" in _insp.getsource(vtc.main)
+
+
+def test_b3260_a_closing_row_that_defers_work_names_its_new_ticket():
+    """S6-B3260 (B3139q-r90, L949): L704's detectable slice. (1) The verbatim
+    flip-4 row fires - the live ticket it names, S6-B3062, is a BLOCKER, not
+    a carrier - and so does S6-B2700's row. (2) Quiet: S6-B3250's row quotes
+    the phrase; the flip-4 row with a NEW non-terminal carrier of the same
+    append. The carrier must be non-terminal and in the append. (3) A
+    non-terminal row is not judged, DROPPED is, and an apostrophe inside a
+    word opens no quote. (4) The ledger's terminal rows, one at a time, hold
+    the deferrals the scan was sized on (a superset as the ledger grows), and
+    not S6-B3250's quoting row. (5) Wired."""
+    import inspect as _insp
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gic
+    import queue_state as qs
+    import verify_turn_compliance as vtc
+    flip4 = gic.INCIDENTS["scan_obligation_in_closing_row"][2]["rows"][0]
+    extra = gic.EXTRA_INCIDENTS["scan_obligation_in_closing_row"]
+    b2700, b3250 = extra[0][2]["rows"][0], extra[1][2]["rows"][0]
+    carried, carrier = extra[2][2]["rows"]
+    # (1)
+    assert "S6-B3062" in flip4
+    assert vtc.obligation_in_closing_rows([flip4]) == [("S6-B2620b", "to ride the next")]
+    out = vtc.scan_obligation_in_closing_row([], rows=[flip4])
+    assert len(out) == 1 and "S6-B2620b" in out[0] and "S6-B3260" in out[0], out
+    assert vtc.obligation_in_closing_rows([b2700]) == [("S6-B2700", "rides the next")]
+    # (2)
+    assert vtc.obligation_in_closing_rows([b3250]) == []
+    assert vtc.obligation_in_closing_rows([carried, carrier]) == []
+    assert vtc.scan_obligation_in_closing_row([], rows=[carried, carrier]) == []
+    assert vtc.obligation_in_closing_rows([carried]) != []
+    closed_carrier = carrier.replace("| **OPEN** |", "| **EXECUTED** |")
+    assert closed_carrier != carrier
+    assert vtc.obligation_in_closing_rows([carried, closed_carrier]) != []
+    # (3)
+    opened = flip4.replace("| **EXECUTED** |", "| **OPEN** |", 1)
+    assert opened != flip4 and vtc.obligation_in_closing_rows([opened]) == []
+    dropped = flip4.replace("| **EXECUTED** |", "| **DROPPED** |", 1)
+    assert vtc.obligation_in_closing_rows([dropped]) == [("S6-B2620b", "to ride the next")]
+    row = ("| **S6-B9998** | **EXECUTED** | P3 | **the engine's fix landed; its re-check "
+           "rides the next batch and the c14's run stays** | _reason:_ x |")
+    assert vtc.obligation_in_closing_rows([row]) == [("S6-B9998", "rides the next")]
+    # (4)
+    lines = (root / "EXECUTION_QUEUE.md").read_text(encoding="utf-8").splitlines()
+    ids = {tid for ln, tid, st in qs.rows() if st in ("EXECUTED", "DROPPED")
+           and vtc.obligation_in_closing_rows([lines[ln - 1]])}
+    assert {"S6-B1573c", "S6-B1248-BREAKEVEN-1R-BUFFER", "S6-B2122b", "S6-B2174a",
+            "S6-B2605a", "S6-B2700", "S6-B2620b"} <= ids, ids
+    assert "S6-B3250" not in ids
+    # (5)
+    assert "scan_obligation_in_closing_row" in _insp.getsource(vtc.main)
+
+
+def test_b3262_regime_audit_states_the_affinity_off_premise():
+    """S6-B3262 (B3139q-r90, L951): the corrected premise of S6-B3237's audit
+    stays corrected. S6-B3237's first patch copied Batch 623's caveat - a
+    trade log 'only observed trades the affinity ALLOWED' - into VERDICT_SCOPE;
+    every cube the script reads runs with the affinity OFF (Phase 1A-beta
+    auto-enables --no-regime-affinity; test_batch384_phase_1a_beta_auto_
+    enables_gate2_gate3_in_cli pins that). The scope names the flag and not
+    the false premise, compare_per_direction says the same, the module
+    docstring's CORRECTION precedes the B623 bullet, and the run_phase1a line
+    the premise rests on is still there."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import direction_disaggregated_regime_audit as dda
+    assert "--no-regime-affinity" in dda.VERDICT_SCOPE
+    assert "only trades in regimes the run's affinity ALLOWED" not in dda.VERDICT_SCOPE
+    doc = dda.__doc__
+    assert doc.index("S6-B3237 CORRECTION") < doc.index(
+        "The trade_log already reflects the explicit regime entry")
+    cpd = dda.compare_per_direction.__doc__
+    assert "affinity off" in cpd and "never let the side fire there" not in cpd
+    src = (root / "backtest" / "run_phase1a.py").read_text(encoding="utf-8")
+    assert 'if args.phase == "1a-beta" and not args.no_regime_affinity:' in src
+
+
+def test_b3263_exit_cube_coverage_counts_by_fire(tmp_path, capsys):
+    """S6-B3263 (B3139q-r90, L952): scripts/exit_cube_coverage.py measures
+    exit-cube coverage per CLOSED trade-log fire - the property a drop
+    corrupts - never by the symptom (a strategy with zero rows) S6-B2649c's
+    RCA counted. (1) A fixture with a complete, a whole-dropped and a
+    partially-dropped strategy, a duplicate row (one fire) and an open trade
+    (not closed): counts, kinds and the (strategy, ticker) split test.
+    (2) The CLI writes --out, refuses a cube without its exit detail, and
+    --help is read-only (it parses its arguments, #327). (3) The committed R5
+    reading carries the S6-B3258 figures."""
+    import json
+    import sys
+    from pathlib import Path as _P
+
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import exit_cube_coverage as ecc
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    tl = [("A", "X", "2023-01-03", "2023-01-10"), ("A", "Y", "2023-02-01", "2023-02-09"),
+          ("B", "X", "2023-03-01", "2023-03-08"), ("B", "Z", "2023-04-03", "2023-04-11"),
+          ("C", "X", "2023-05-01", "2023-05-09"), ("C", "X", "2023-06-01", "2023-06-08"),
+          ("C", "Y", "2023-07-03", "2023-07-11"), ("C", "Y", "2023-07-03", "2023-07-11"),
+          ("A", "Z", "2023-08-01", None)]
+    pd.DataFrame(tl, columns=["strategy", "ticker", "entry_date", "exit_date"]).to_csv(
+        cube / "trade_log.csv", index=False)
+    kept = [("A", "X", "2023-01-03"), ("A", "Y", "2023-02-01"), ("C", "X", "2023-05-01")]
+    pd.DataFrame([{"strategy": s, "ticker": k, "entry_date": e, "exit_method": m}
+                  for s, k, e in kept for m in ("e1", "e2")]).to_csv(
+        cube / "trade_exit_detail.csv", index=False)
+    # (1)
+    rec = ecc.coverage(cube)
+    assert (rec["closed_fires"], rec["covered"], rec["missing"]) == (7, 3, 4), rec
+    assert rec["whole"] == ["B"] and rec["partial"] == ["C"], rec
+    assert rec["strategies"]["A"]["kind"] == "complete"
+    assert rec["strategies"]["C"] == {"closed": 3, "covered": 1, "missing": 2,
+                                      "kind": "partial"}, rec["strategies"]["C"]
+    assert (rec["pairs_with_missing"], rec["pairs_split"],
+            rec["pairs_wholly_missing"]) == (4, 1, 3), rec
+    # (2)
+    out = tmp_path / "cov.json"
+    assert ecc.main(["--cube-dir", str(cube), "--out", str(out)]) == 0
+    assert json.loads(out.read_text(encoding="utf-8"))["missing"] == 4
+    (cube / "trade_exit_detail.csv").unlink()
+    capsys.readouterr()
+    assert ecc.main(["--cube-dir", str(cube)]) == 2
+    assert "REFUSED" in capsys.readouterr().out
+    with pytest.raises(SystemExit) as ex:
+        ecc.main(["--help"])
+    assert ex.value.code == 0
+    # (3)
+    r5 = json.loads((root / "output_audit" / "b3258_exit_cube_coverage_r5.json").read_text(
+        encoding="utf-8"))
+    assert r5["cube_dir"] == "output_r5_merged_1_7"
+    assert (r5["closed_fires"], r5["missing"], len(r5["whole"]),
+            len(r5["partial"])) == (189471, 349, 14, 62), {
+        k: r5[k] for k in ("closed_fires", "missing")}
+    assert (r5["pairs_with_missing"], r5["pairs_split"]) == (317, 0)
