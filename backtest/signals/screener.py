@@ -4516,9 +4516,9 @@ def strat_smc_inverse_fvg(s):
     """
     fl_base = s.get("smc_inverse_fvg_bullish", False)
     fs_base = s.get("smc_inverse_fvg_bearish", False)
-    # B663 family-bug sweep: was default-True silent-gap; positive symmetric below_ema_200 (B630 producer) replaces (not above_200)
-    above_200 = s.get("price_above_ema_200", False)
-    below_200 = s.get("below_ema_200", False)
+    # B663: positive symmetric below_ema_N replaces (not above). S6-B3238 (a): STRAT_EMA_SPAN span, 200 = the prior keys
+    above_200 = s.get(f"price_above_ema_{_cfg.STRAT_EMA_SPAN}", False)
+    below_200 = s.get(f"below_ema_{_cfg.STRAT_EMA_SPAN}", False)
     # Volume confirmation: vol_spike_2x (2x ADV) OR a force-index cross in
     # the trade's own direction signals institutional follow-through on the
     # role-flip.
@@ -4535,12 +4535,12 @@ def strat_smc_inverse_fvg(s):
     fl = fl_base and above_200 and vol_confirms
     fs = fs_base and below_200 and vol_confirms_short and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "smc",
-        ["smc_inverse_fvg_bullish", "price_above_ema_200", "vol_spike_2x", "force_index_cross_up"],
-        ["smc_inverse_fvg_bearish", "below_ema_200", "vol_spike_2x", "force_index_cross_dn",
+        ["smc_inverse_fvg_bullish", f"price_above_ema_{_cfg.STRAT_EMA_SPAN}", "vol_spike_2x", "force_index_cross_up"],
+        ["smc_inverse_fvg_bearish", f"below_ema_{_cfg.STRAT_EMA_SPAN}", "vol_spike_2x", "force_index_cross_dn",
          "borrow_ok"],
-        ["Inverse FVG bullish + 200-EMA gate + volume confirms",
+        [f"Inverse FVG bullish + {_cfg.STRAT_EMA_SPAN}-EMA gate + volume confirms",
          "ICT IFVG role-flip with institutional follow-through"],
-        ["Inverse FVG bearish + 200-EMA gate + volume confirms",
+        [f"Inverse FVG bearish + {_cfg.STRAT_EMA_SPAN}-EMA gate + volume confirms",
          "ICT IFVG role-flip with institutional follow-through"])
 
 
@@ -5714,15 +5714,15 @@ def strat_avwap_50_reclaim(s):
         and macd_bull
         and s.get("price_above_ema_200", False)  # require uptrend regime
     )
-    # Short: just lost AVWAP-50 + MACD turning bearish
+    # Short: just lost AVWAP-50 + MACD bearish (S6-B3244 (a): the POSITIVE key)
     fs = (
         loss_event_short
-        and (not macd_bull)
+        and s.get("macd_12_26_9_bearish", False)
         and s.get("below_ema_200", False)  # B630 sweep
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "vwap",
         ["macd_12_26_9_bullish", "price_above_ema_200", "avwap_50low_reclaim_held_2d"],
-        ["below_ema_200", "avwap_50low_loss_recent_3d", "macd_12_26_9_bullish", "borrow_ok"],
+        ["below_ema_200", "avwap_50low_loss_recent_3d", "macd_12_26_9_bearish", "borrow_ok"],
         ["Price reclaimed Anchored VWAP from 50d low - recent leg accumulation",
          "MACD bullish",
          "Above 200 EMA (regime gate)"],

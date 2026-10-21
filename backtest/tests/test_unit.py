@@ -38841,7 +38841,9 @@ def test_b2819_equal_lows_registered_via_the_shared_grader():
             # see a missing leg, which is how inverse_fvg shipped without its
             # volume-confirmation leg for two hours.
             for k in spot._flat(keys):
-                assert f'"{k}"' in body, (strat, k, "gate key not in source")
+                # S6-B3238: a '{span}' key is the f-string the gate reads
+                src_k = k.replace("{span}", "{_cfg.STRAT_EMA_SPAN}")
+                assert f'"{src_k}"' in body, (strat, k, "gate key not in source")
 
     art = json.loads((root / "output_audit" / "b2819_els_step1.json")
                      .read_text(encoding="utf-8"))
@@ -58266,7 +58268,7 @@ def test_b3226_borrow_lint_sees_every_registered_short(tmp_path):
               {"in_reversal_window": True, "last_event_type": "s&p_add"}),
              (strat_post_deletion_drift_short,
               {"within_post_deletion_window": True, "last_event_type": "s&p_drop",
-               "price_above_ema_200": False}))
+               "below_ema_200": True}))  # S6-B3244: the positive key the gate reads
     for fn, legs in cases:
         assert fn(dict(legs, days_to_cover=5.0))["fires"] is True, fn.__name__
         assert fn(dict(legs, days_to_cover=6.0))["fires"] is False, fn.__name__
@@ -58336,14 +58338,21 @@ def test_b3222_smc_shorts_confirm_with_the_down_cross():
     # up-cross on the IFVG short leg after the change and only the long leg
     # was pinned (B3139q-r80 RED gate).
     import spot_check_smc_family as spot
+    import build_strategy_status as _bss
+    from backtest import config as _bcfg
     mod = sul.Module.of(sc)
     legs_checked = 0
+    # S6-B3238: the IFVG trend legs are span-keyed f-strings, so both sides
+    # are RESOLVED at the current span - a literal-only comparison would
+    # silently drop them
     for name, legs in spot.GATES.items():
         sides = {s["side"]: s for s in sul.analyse_function(mod, mod.funcs["strat_" + name])}
         for leg, terms in legs.items():
             side = sides.get(leg) or sides["single"]
-            feeds = {v for t, v in side["feeds"] if t == "lit"} - {"borrow_ok"}
-            assert set(spot._flat(terms)) == feeds, (name, leg, sorted(spot._flat(terms)), sorted(feeds))
+            feeds = {_bss._resolve_key(t, v, _bcfg) for t, v in side["feeds"]} - {"borrow_ok"}
+            assert None not in feeds, (name, leg, side["feeds"])
+            got = set(spot._flat(spot.resolve(terms, _bcfg.STRAT_EMA_SPAN)))
+            assert got == feeds, (name, leg, sorted(got), sorted(feeds))
             legs_checked += 1
     assert legs_checked >= 3, legs_checked
 
@@ -60904,3 +60913,140 @@ def test_b3253_a_key_selector_knob_is_an_engine_axis_only_where_the_gate_reads_i
                 if "STRAT_EMA_SPAN" not in reads:
                     assert c[5] == "1", (p.name, c)
     assert checked >= 5, checked
+
+
+def test_b3244_negated_signal_reads_stay_at_the_reviewed_register():
+    """S6-B3244 (owner ruled 2026-10-21, 'Approve all recs execute', option
+    (a)) and its class. A NEGATED read of a strategy signal fails OPEN on an
+    absent key (not s.get(k), not s.get(k, False), a name bound from one) or
+    reads 'unknown' as 'the opposite state' (not s.get(k, True) where the
+    producer wrote False because its input was NaN). Preflight C7a reads the
+    TEXT of added lines, so the bound form in avwap_50_reclaim was invisible.
+    (1) scripts/negated_signal_reads.py's AST scan over the S6-B3235
+    fire-logic members of EVERY registered strategy finds exactly the reviewed
+    register, both directions (L587): 3 members - the 52w_high_breakout
+    fail-closed guard and the two S6-B2931 exact-partition identity tests -
+    each reached by a registered strategy and carrying a reason. (2)
+    avwap_50_reclaim's short reads macd_12_26_9_bearish: it fires on the
+    positive key and NOT on macd_12_26_9_bullish False with the bearish key
+    absent - the case the bound negation passed. (3) post_deletion_drift_short
+    reads below_ema_200: it fires on the positive key and NOT on
+    price_above_ema_200 False with below_ema_200 absent. Both declare the key
+    they read. (4) The detector sees every spelling - direct, wrapped, a
+    bound name, is False, == False, is not True, != True - and stays quiet on
+    a positive read, a negated helper call, a membership test and a
+    categorical compare."""
+    import ast as _ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import negated_signal_reads as nsr
+    from backtest.signals.screener import (strat_avwap_50_reclaim,
+                                           strat_post_deletion_drift_short)
+    found = nsr.find()
+    assert nsr.problems(found) == [], nsr.problems(found)
+    assert set(found) == set(nsr.REVIEWED) and len(found) == 3, sorted(found)
+    assert all(r["strategies"] for r in found.values()), found
+    assert all(str(why).strip() for why in nsr.REVIEWED.values())
+    # a register entry that is no longer found, and a negation that is not
+    # reviewed, are both refused
+    assert any(p.startswith("STALE") for p in nsr.problems(
+        found, {**nsr.REVIEWED, ("strat_x", "not s.get('y')"): "why"}))
+    assert any(p.startswith("UNREVIEWED") for p in nsr.problems(
+        found, {k: v for k, v in list(nsr.REVIEWED.items())[1:]}))
+    # (2) avwap_50_reclaim short
+    base = {"avwap_50low_loss_recent_3d": True, "below_ema_200": True}
+    r = strat_avwap_50_reclaim(dict(base, macd_12_26_9_bearish=True))
+    assert r["fires"] is True and r["direction"] == "short", r
+    assert "macd_12_26_9_bearish" in r["signals_used"], r["signals_used"]
+    assert strat_avwap_50_reclaim(dict(base, macd_12_26_9_bullish=False))["fires"] is False
+    assert strat_avwap_50_reclaim(base)["fires"] is False
+    # (3) post_deletion_drift_short
+    pd_base = {"within_post_deletion_window": True, "last_event_type": "s&p_drop"}
+    r = strat_post_deletion_drift_short(dict(pd_base, below_ema_200=True))
+    assert r["fires"] is True and r["direction"] == "short", r
+    assert "below_ema_200" in r["signals_used"], r["signals_used"]
+    assert strat_post_deletion_drift_short(
+        dict(pd_base, price_above_ema_200=False))["fires"] is False
+    assert strat_post_deletion_drift_short(pd_base)["fires"] is False
+
+    # (4) every spelling, both directions
+    def scan(body):
+        src = "def strat_x(s):\n" + "".join("    " + ln + "\n" for ln in body.split("\n"))
+        return [k for _ln, k, _e in nsr.negations(_ast.parse(src).body[0])]
+    for body in ('return not s.get("k")', 'return not s.get("k", False)',
+                 'return not s.get("k", True)', 'return not bool(s.get("k"))',
+                 'm = s.get("k", False)\nreturn not m', 'return s.get("k") is False',
+                 'return s.get("k") == False', 'return s.get("k") is not True',
+                 'return s.get("k") != True'):
+        assert len(scan(body)) == 1, body
+    for body in ('return s.get("k", False)', 'return not _short_borrow_trap_active(s)',
+                 'return "drop" not in str(s.get("e", ""))', 'return s.get("dow", 0) != 0',
+                 'm = s.get("k", False)\nreturn m'):
+        assert scan(body) == [], body
+
+
+def test_b3238_ifvg_trend_legs_and_every_declared_key_selector_reach_the_gate(monkeypatch):
+    """S6-B3238 (owner ruled 2026-10-21, 'Approve all recs execute', option
+    (a)) and S6-B3253's SPECS half. (1) strat_smc_inverse_fvg's trend legs
+    read config.STRAT_EMA_SPAN: at 50 the long fires on price_above_ema_50 and
+    NOT on price_above_ema_200 alone, the short on below_ema_50 and NOT on
+    below_ema_200 alone, and signals_used names the span keys. (2) At the
+    production 200 both legs read the prior literal keys - byte-identical
+    fires. (3) EVERY SPECS / SPECS_PHASE0 param whose env knob is a
+    KEY-SELECTOR knob (table_a_bands.KEY_SELECTOR_KNOBS - it only chooses
+    which emitted key a strategy reads) is READ by its strategy's fire logic
+    (build_table_a.fire_logic_config_reads, the S6-B3235 members): MEASURED
+    7 of 8 params across 5 strategies before this fix, IFVG's P1 the one
+    phantom engine axis; 8 of 8 after. (4) The smc family spot check's IFVG
+    trend keys follow the span, and its gate table still equals the live gate
+    keys at the current span. (5) The SPECS gate string names below_ema_{span}
+    on the short leg."""
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_table_a as bta
+    import producer_variant_table as pvt
+    import spot_check_smc_family as spot
+    from table_a_bands import KEY_SELECTOR_KNOBS
+    from backtest import config as cfg
+    from backtest.signals.screener import strat_smc_inverse_fvg as ifvg
+    long_ = {"smc_inverse_fvg_bullish": True, "vol_spike_2x": True}
+    short = {"smc_inverse_fvg_bearish": True, "vol_spike_2x": True}
+    # (2) production
+    assert cfg.STRAT_EMA_SPAN == 200
+    assert ifvg(dict(long_, price_above_ema_200=True))["direction"] == "long"
+    assert ifvg(dict(short, below_ema_200=True))["direction"] == "short"
+    assert ifvg(long_)["fires"] is False and ifvg(short)["fires"] is False
+    # (1) a configured span
+    monkeypatch.setattr(cfg, "STRAT_EMA_SPAN", 50)
+    r = ifvg(dict(long_, price_above_ema_50=True))
+    assert r["direction"] == "long" and "price_above_ema_50" in r["signals_used"], r
+    assert ifvg(dict(long_, price_above_ema_200=True))["fires"] is False
+    r = ifvg(dict(short, below_ema_50=True))
+    assert r["direction"] == "short" and "below_ema_50" in r["signals_used"], r
+    assert ifvg(dict(short, below_ema_200=True))["fires"] is False
+    # (4) the spot check follows the span
+    flat = spot._flat(spot.resolve(spot.GATES["smc_inverse_fvg"]["long"], 50))
+    assert "price_above_ema_50" in flat and "price_above_ema_200" not in flat, flat
+    flat = spot._flat(spot.resolve(spot.GATES["smc_inverse_fvg"]["short"], 50))
+    assert "below_ema_50" in flat and "below_ema_200" not in flat, flat
+    monkeypatch.setattr(cfg, "STRAT_EMA_SPAN", 200)
+    # (3) every declared key-selector knob reaches its strategy's gate
+    checked = []
+    for reg in (pvt.SPECS, pvt.SPECS_PHASE0):
+        for entry, spec in reg.items():
+            for p in spec.get("params") or []:
+                if p.get("env") in KEY_SELECTOR_KNOBS:
+                    reads = bta.fire_logic_config_reads(entry)
+                    assert reads is not None, (entry, "no strat_ function")
+                    assert p["env"] in reads, (entry, p.get("id"), sorted(reads))
+                    checked.append((entry, p.get("id")))
+    assert len(checked) >= 8 and ("smc_inverse_fvg", "P1") in checked, checked
+    # (5)
+    gate = pvt.SPECS["smc_inverse_fvg"]["gate"]
+    assert "below_ema_{span}" in gate and "below_ema_200" not in gate, gate

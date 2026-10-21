@@ -239,12 +239,12 @@ def strat_post_deletion_drift_short(s: dict) -> dict:
     fires = (
         s.get("within_post_deletion_window", False)
         and "drop" in str(s.get("last_event_type", ""))
-        and not s.get("price_above_ema_200", True)
+        and s.get("below_ema_200", False)  # S6-B3244: the positive key, close < EMA200
         and not _short_borrow_trap_active(s)
     )
     dse = s.get("days_since_deletion", 0)
     return _strat_signal(fires, "short", "index_rebalance",
-        ["within_post_deletion_window", "price_above_ema_200", "last_event_type", "borrow_ok"],
+        ["within_post_deletion_window", "below_ema_200", "last_event_type", "borrow_ok"],
         [f"Day +{dse} of post-{s.get('last_event_type', 'drop')} window",
          "Chen-Noronha-Singal 2004 deletion drift",
          "Below 200 EMA (bear regime confirmation)"])

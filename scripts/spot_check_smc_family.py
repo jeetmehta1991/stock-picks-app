@@ -35,8 +35,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 # gate keys per strategy and leg, READ from screener source (B2819), never
-# recalled. The trend legs of smc_inverse_fvg ride ema-200 keys that are
-# persisted technical booleans.
+# recalled. smc_inverse_fvg's trend legs read the CONFIGURED span since
+# S6-B3238 - '{span}' below is filled by resolve() at the run's span.
 # A term is a persisted key (AND leg) or a TUPLE of keys (any-of / OR leg).
 # B2822 CORRECTION: the first shipped table omitted inverse_fvg's THIRD leg -
 # vol_spike_2x OR force_index_cross_up (Batch 262's volume confirmation) -
@@ -48,12 +48,12 @@ GATES = {
         "long": ("smc_equal_lows_swept", "smc_fvg_bullish_active"),
     },
     "smc_inverse_fvg": {
-        "long": ("smc_inverse_fvg_bullish", "price_above_ema_200",
+        "long": ("smc_inverse_fvg_bullish", "price_above_ema_{span}",
                  ("vol_spike_2x", "force_index_cross_up")),
         # S6-B3222 (2026-10-20): the short confirms with its OWN direction's
         # cross; this table kept the up-cross until the B3139q-r80 gate, and
         # test_b3222 now holds every leg here to the leg's live gate keys
-        "short": ("smc_inverse_fvg_bearish", "below_ema_200",
+        "short": ("smc_inverse_fvg_bearish", "below_ema_{span}",
                   ("vol_spike_2x", "force_index_cross_dn")),
     },
 }
@@ -70,6 +70,18 @@ def _term_fires(vals: dict, term) -> bool:
     if isinstance(term, tuple):
         return any(bool(vals.get(k)) for k in term)
     return bool(vals.get(term))
+
+
+def resolve(terms, span):
+    """S6-B3238: a leg's terms with '{span}' filled - the span the engine's
+    gate read, config.STRAT_EMA_SPAN, which the battery sets from the
+    landed arm's env (B2576)."""
+    def one(k):
+        return k.replace("{span}", str(int(span)))
+    return tuple(tuple(one(k) for k in t) if isinstance(t, tuple) else one(t)
+                 for t in terms)
+
+
 # keys the smc producer can recompute; technical keys are cube-only and are
 # COUNTED as such rather than silently compared against a producer that
 # never emits them (the B2724 shape).
@@ -103,11 +115,15 @@ def _parse_signals(raw):
     return {}
 
 
-def compare_legs(strat, df, when, direction, persisted, knobs) -> dict:
+def compare_legs(strat, df, when, direction, persisted, knobs, span=None) -> dict:
     from backtest.signals import smc_ict
     keys = GATES[strat].get(str(direction).lower())
     if keys is None:
         return {"ok": False, "why": f"unknown direction {direction!r}"}
+    if span is None:
+        from backtest import config as _c
+        span = _c.STRAT_EMA_SPAN
+    keys = resolve(keys, span)
     idx = df.index.searchsorted(pd.Timestamp(when))
     if idx >= len(df):
         return {"ok": False, "why": "entry bar past the end of the cache"}
@@ -202,13 +218,15 @@ def main() -> int:
     knobs = {"swing_length": a.swing_length,
              "liquidity_range_pct": a.liquidity_range_pct,
              "event_recency_bars": a.event_recency_bars}
+    from backtest import config as _c
+    span = int(_c.STRAT_EMA_SPAN)    # S6-B3238: the arm env's span (B2576)
 
     recs, agree, disagree, skipped = [], 0, 0, 0
     for r in rows:
         df = load_ohlcv(str(r["ticker"]))
         legs = ({"ok": False, "why": "no cached OHLCV"} if df is None else
                 compare_legs(strat, df, r["entry_date"], r.get("direction"),
-                             _parse_signals(r.get("signals_at_entry")), knobs))
+                             _parse_signals(r.get("signals_at_entry")), knobs, span))
         if not legs.get("ok"):
             skipped += 1
         elif legs["keys_disagree"]:
@@ -219,7 +237,7 @@ def main() -> int:
                      "direction": r.get("direction"), "legs": legs,
                      "execution": check_execution(r, df, a.start, a.end)})
 
-    rec = {"strategy": strat, "cube": str(cube_dir), "knobs": knobs,
+    rec = {"strategy": strat, "cube": str(cube_dir), "knobs": knobs, "ema_span": span,
            "sampled": len(recs), "seed": a.seed,
            "smc_keys_agree": agree, "smc_keys_disagree": disagree,
            "unevaluable": skipped,
