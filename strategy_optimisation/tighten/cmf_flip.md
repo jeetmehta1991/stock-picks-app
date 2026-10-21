@@ -1,6 +1,6 @@
 # Table A - cmf_flip
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build dedad72e4 | commit dedad72e4 at 2026-10-21 05:27:04 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ab5dab247 | commit b0ce01e07 at 2026-10-21 19:00:47 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** mean_reversion | **status:** IN-CAMPAIGN | **R5 fires:** 2994 | **surviving fires (T1):** 2250 (survives_pct 0.7515)
 
@@ -50,9 +50,9 @@ leg runs.
 | P2.1 | BAND | cmf window - backtest/signals/technical.py:1695 | BRACKET production | 20 | 14, 20, 30 | offline 0 of 3 levels - none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P2.2 | BAND | cross level (zero line) - technical.py:1706 | BRACKET zero upward (require conviction, not a graze) | 0.0 | 0, 0.02, 0.05 | offline 0 of 3 levels - LEVEL side (cmf > 0.02/0.05) - persisted cmf; the FRESHNESS (prior bar <= level) needs the unpersisted prior cmf | freshness at any non-production level; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | STRATEGY | po3_accum_range_pct `>= 0.0458` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 0.0458` | production + 4 tighter measured levels | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P4 | STRATEGY | rsi_14 `< 50` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 50` | production + 3 tighter measured levels | offline 3 of 4 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P4 | STRATEGY | rsi_14 `< 50` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 50` | production + 4 tighter measured levels [long leg only] | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P4.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | offline 0 of 3 levels - none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P5 | STRATEGY | rsi_14 `> 50` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `> 50` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P5 | STRATEGY | rsi_14 `> 50` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `> 50` | production + 4 tighter measured levels [short leg only] | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P5.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | offline 0 of 3 levels - none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P6 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
@@ -67,8 +67,8 @@ STRICTLY tighter than production enter the free band.
 | key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
 | po3_accum_range_pct | backtest/signals/ict_producers.py | `>= 0.0458` | 100.0% | TIGHTER = RAISE the floor: 0.0561 -> 1801 (80%); 0.0693 -> 1351 (60%); 0.0867 -> 903 (40%); 0.1203 -> 452 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
-| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `< 50` | 100.0% | TIGHTER = LOWER the ceiling: 38.624 -> 450 (20%); 44.24 -> 901 (40%); 49.234 -> 1350 (60%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
-| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `> 50` | 100.0% | TIGHTER = RAISE the floor: 57.128 -> 450 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
+| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `< 50` | 100.0% | [long leg only] TIGHTER = LOWER the ceiling: 35.49 -> 281 (20%); 40.16 -> 562 (40%); 43.52 -> 841 (60%); 46.57 -> 1121 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
+| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `> 50` | 100.0% | [short leg only] TIGHTER = RAISE the floor: 53.11 -> 679 (80%); 55.866 -> 509 (60%); 59.542 -> 340 (40%); 64.152 -> 170 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
@@ -819,18 +819,18 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P2.1 | cmf window | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P2.2 | cross level (zero line) | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P3 | po3_accum_range_pct >= 0.0458 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
-| P4 | rsi_14 < 50 | 4 | subset-safe | no - derives offline | 1 | 3 | 0 |
+| P4 | rsi_14 < 50 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
 | P4.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
-| P5 | rsi_14 > 50 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P5 | rsi_14 > 50 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
 | P5.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P6 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
-FULL FACTORIAL     3 x 3 x 3 x 5 x 4 x 3 x 2 x 3 x 1 = 9720
-offline gradings   39 level-combinations x 24 exits = 936 (graded from the engine runs' cubes, never run themselves)
+FULL FACTORIAL     3 x 3 x 3 x 5 x 5 x 3 x 5 x 3 x 1 = 30375
+offline gradings   124 level-combinations x 24 exits = 2976 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  9680 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 39 + 9680 = 9720 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+PENDING ACTUATION  30250 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 124 + 30250 = 30375 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

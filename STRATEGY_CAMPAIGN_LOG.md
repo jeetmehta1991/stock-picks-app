@@ -2686,9 +2686,12 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 
 - **T0:** status row quoted in S6-B3246; the fire logic changed since R5 (the B1422 po3 floor).
 - **T1:** survival 0.7515 (long 0.7992, short 0.6841) - every later grade reads the surviving fires.
-- **T2:** strategy_optimisation/tighten/cmf_flip.md, rendered at the r86 build. Offline depth: po3
-  floor 0.0561 / 0.0693 / 0.0867 / 0.1203 (keeps 80 / 60 / 40 / 20 pct), rsi_14 long ceiling 38.624
-  / 44.24 / 49.234 (20 / 40 / 60 pct), rsi_14 short floor 57.128 (20 pct). The producer bands (cmf
+- **T2:** strategy_optimisation/tighten/cmf_flip.md, re-rendered at the r93 build (S6-B3270:
+  per-side bands - the r86 render offered mixed-population quantiles, the r92 audit's headline).
+  Offline depth: po3 floor 0.0561 / 0.0693 / 0.0867 / 0.1203 (keeps 80 / 60 / 40 / 20 pct of all
+  2,250 survivors - a both-sides leg), rsi_14 long ceiling 35.49 / 40.16 / 43.52 / 46.57 (keeps
+  20 / 40 / 60 / 80 pct of the 1,401 long survivors), rsi_14 short floor 53.11 / 55.866 / 59.542
+  / 64.152 (keeps 80 / 60 / 40 / 20 pct of the 849 short survivors). The producer bands (cmf
   window and cross level, rsi span) need the engine and have no knob. 655 B-row candidates, every
   one NEW-GATE.
 - **T3:** awaits the owner's band words; the SPECS_PHASE0 entry is written from the approved band.
@@ -2708,10 +2711,14 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 
 - **T0:** status row quoted in S6-B3247; the fire logic is unchanged since R5 (S6-B3235's measure).
 - **T1:** identity - survival 1.0 on both sides.
-- **T2:** strategy_optimisation/tighten/williams_r_oversold.md, rendered at the r86 build. Offline
-  depth: the oversold threshold -85 / -90 on the persisted williams_r, the rsi_2 escape hatch long
+- **T2:** strategy_optimisation/tighten/williams_r_oversold.md, re-rendered at the r93 build
+  (S6-B3270: per-side bands). Offline depth: the oversold threshold -85 / -90 on the persisted
+  williams_r, the rsi_2 escape hatch long
   < 3 and short > 97 (list bands since S6-B3228), cmf_positive > 0.02 / 0.05 and cmf_negative <
-  -0.02 / -0.05, the short williams_r floor -19.89 / -13.08. **No engine axis moves this gate
+  -0.02 / -0.05; the short williams_r `> -20` leg measured NOT an AND-leg of either side
+  (production satisfaction long 0 pct, short 85 pct - an OR-arm member; the r86 render's floors
+  -19.89 / -13.08 were mixed-population levels, and its band now waits on the arm structure at
+  the T3 review, S6-B3270). **No engine axis moves this gate
   today:** its trend legs read the literal 200 keys, so the STRAT_EMA_SPAN rows read
   DEFINED-NO-ACTUATOR since S6-B3253 (they had claimed 8 engine runs). 651 B-row candidates,
   every one NEW-GATE.

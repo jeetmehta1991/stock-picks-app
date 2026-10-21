@@ -1,6 +1,6 @@
 # Table A - williams_r_oversold
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build dedad72e4 | commit dedad72e4 at 2026-10-21 05:27:04 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ab5dab247 | commit b0ce01e07 at 2026-10-21 19:00:47 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** IN-CAMPAIGN | **R5 fires:** 2535 | **surviving fires (T1):** 2535 (unchanged since R5 - filter is identity)
 
@@ -69,7 +69,7 @@ leg runs.
 | P6 | PRODUCER | williams_r_oversold - emitted by backtest/signals/screener.py +2; the boolean's UNDERLYING condition is bandable through its producer's internals | Williams %R(14) < -80 (technical.py:702) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P6.x) | BANDS-DEFINED |
 | P6.1 | BAND | period - backtest/signals/technical.py:692 | BRACKET production | 14 | 10, 14, 20 | offline 0 of 3 levels - none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P6.2 | BAND | oversold threshold - technical.py:702 | BRACKET canon -80; williams_r IS persisted | -80 | -90, -85, -80 | offline 2 of 3 levels - TIGHTER (< -85, < -90) - subset on persisted williams_r | LOOSER (> -80); DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P7 | STRATEGY | williams_r `> -20` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> -20` | production + 2 tighter measured levels | offline 2 of 3 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P7 | STRATEGY | williams_r `> -20` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> -20` | production + 0 tighter measured levels [NOT AN AND-LEG OF EITHER SIDE (production satisfaction long 0%; short 85%)] | offline 0 of 1 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P8 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | P9 | STRATEGY | rsi_2 escape-hatch thresholds (long < 5, short > 95) - backtest/signals/screener.py strat_williams_r_oversold (local rsi_2 compare - invisible to the extractor) | BRACKET production (Connors RSI-2 canon); rsi_2 persisted | 5 / 95 | long < [3, 5] / short > [95, 97] | offline 1 of 2, 1 of 2 levels - TIGHTER (< 3, > 97) - subset on persisted rsi_2 | none in the band - a looser cut is an engine level | T3 review |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
@@ -83,7 +83,7 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| williams_r | backtest/signals/technical.py | `> -20` | 100.0% | TIGHTER = RAISE the floor: -19.89 -> 1014 (40%); -13.08 -> 508 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
+| williams_r | backtest/signals/technical.py | `> -20` | - | NOT AN AND-LEG OF EITHER SIDE (production satisfaction long 0%; short 85%) - an OR-arm's retention needs the gate's arm structure; band at T3 | engine-only (T3) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
@@ -833,17 +833,17 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P5.1 | rsi (fast escape-hatch) span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P6.1 | period | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P6.2 | oversold threshold | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
-| P7 | williams_r > -20 | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
+| P7 | williams_r > -20 | 1 | subset-safe | no - derives offline | 1 | 0 | 0 |
 | P8 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 | P9.1 | rsi_2 escape-hatch thresholds (long < 5, | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
 | P9.2 | rsi_2 escape-hatch thresholds (long < 5, | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
 
 ```
-FULL FACTORIAL     8 x 3 x 3 x 3 x 3 x 3 x 3 x 1 x 2 x 2 = 23328
-offline gradings   323 level-combinations x 24 exits = 7752 (graded from the engine runs' cubes, never run themselves)
+FULL FACTORIAL     8 x 3 x 3 x 3 x 3 x 3 x 1 x 1 x 2 x 2 = 7776
+offline gradings   107 level-combinations x 24 exits = 2568 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  23004 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 323 + 23004 = 23328 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+PENDING ACTUATION  7668 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 107 + 7668 = 7776 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

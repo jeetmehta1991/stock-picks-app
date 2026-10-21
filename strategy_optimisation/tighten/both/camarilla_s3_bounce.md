@@ -1,6 +1,6 @@
 # Table A - camarilla_s3_bounce
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build dedad72e4 | commit dedad72e4 at 2026-10-21 05:28:37 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ab5dab247 | commit b0ce01e07 at 2026-10-21 18:58:10 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** pivot | **status:** NOT-STARTED | **R5 fires:** 228 | **surviving fires (T1):** 228 (unchanged since R5 - filter is identity)
 
@@ -56,9 +56,9 @@ leg runs.
 | P4 | PRODUCER | obv_bullish - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | OBV vs its moving average (technical.py:1570) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
 | P4.1 | BAND | obv vs its moving average - backtest/signals/technical.py:1570 | BRACKET the shipped span | obv > obv_ma | MA span [10, 20, 50] | offline 0 of 3 levels - none - obv_ma at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P4.2 | BAND | margin pct over the MA - technical.py:1570 | BRACKET zero | 0.0 | [0, 1, 2] pct | offline 2 of 3 levels - TIGHTER margins where obv and obv_ma are persisted | LOOSER; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P5 | STRATEGY | rsi_14 `< 40` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 40` | production + 2 tighter measured levels | offline 2 of 3 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P5 | STRATEGY | rsi_14 `< 40` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 40` | production + 4 tighter measured levels [long leg only] | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P5.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | offline 0 of 3 levels - none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P6 | STRATEGY | rsi_14 `> 60` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `> 60` | production + 1 tighter measured levels | offline 1 of 2 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P6 | STRATEGY | rsi_14 `> 60` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `> 60` | production + 4 tighter measured levels [short leg only] | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P6.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | offline 0 of 3 levels - none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P7 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
@@ -72,8 +72,8 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `< 40` | 100.0% | TIGHTER = LOWER the ceiling: 36.704 -> 46 (20%); 38.558 -> 91 (40%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
-| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `> 60` | 100.0% | TIGHTER = RAISE the floor: 62.598 -> 46 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
+| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `< 40` | 100.0% | [long leg only] TIGHTER = LOWER the ceiling: 35.308 -> 28 (20%); 37.166 -> 55 (40%); 38.33 -> 83 (61%); 39.148 -> 109 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
+| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `> 60` | 100.0% | [short leg only] TIGHTER = RAISE the floor: 60.87 -> 73 (80%); 61.86 -> 55 (60%); 63.43 -> 37 (41%); 65.61 -> 19 (21%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
@@ -794,18 +794,18 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P2.1 | proximity tolerance to Camarilla S3 (abs | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 3 |
 | P4.1 | obv vs its moving average | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P4.2 | margin pct over the MA | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
-| P5 | rsi_14 < 40 | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
+| P5 | rsi_14 < 40 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
 | P5.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
-| P6 | rsi_14 > 60 | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P6 | rsi_14 > 60 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
 | P6.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P7 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
-FULL FACTORIAL     4 x 4 x 3 x 3 x 3 x 3 x 2 x 3 x 1 = 7776
-offline gradings   17 level-combinations x 24 exits = 408 (graded from the engine runs' cubes, never run themselves)
+FULL FACTORIAL     4 x 4 x 3 x 3 x 5 x 3 x 5 x 3 x 1 = 32400
+offline gradings   74 level-combinations x 24 exits = 1776 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  7758 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 17 + 7758 = 7776 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+PENDING ACTUATION  32325 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 74 + 32325 = 32400 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

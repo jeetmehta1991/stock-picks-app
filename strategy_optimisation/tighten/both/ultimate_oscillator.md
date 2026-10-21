@@ -1,6 +1,6 @@
 # Table A - ultimate_oscillator
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build dedad72e4 | commit dedad72e4 at 2026-10-21 05:28:37 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ab5dab247 | commit b0ce01e07 at 2026-10-21 18:58:10 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 592 | **surviving fires (T1):** 592 (unchanged since R5 - filter is identity)
 
@@ -72,7 +72,7 @@ leg runs.
 | P7 | PRODUCER | uo_oversold - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | Ultimate Oscillator (7,14,28) < 30 / > 70 (technical.py:738-752) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P7.x) | BANDS-DEFINED |
 | P7.1 | BAND | oversold threshold - backtest/signals/technical.py:751 | BRACKET canon 30; the uo value itself is persisted where emitted | 30 | [20, 25, 30] | offline 2 of 3 levels - TIGHTER (< 25, < 20) where `uo` is persisted on the fires | LOOSER; and the (7,14,28) period triple; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P7.2 | BAND | period triple - backtest/signals/technical.py:738-750 | BRACKET canon triple | (7, 14, 28) | [(7,14,28), (5,10,20), (14,28,56)] | offline 0 of 3 levels - none - other triples unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P8 | STRATEGY | uo `> 70` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 70` | production + 0 tighter measured levels | offline 0 of 1 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
+| P8 | STRATEGY | uo `> 70` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 70` | production + 0 tighter measured levels [NOT AN AND-LEG OF EITHER SIDE (production satisfaction long 2%; short 20%)] | offline 0 of 1 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P9 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
 | P10 | STRATEGY | rsi_2 escape-hatch thresholds (long < 5, short > 95) - backtest/signals/screener.py strat_ultimate_oscillator (local rsi_2 compare - invisible to the extractor) | BRACKET production (Connors RSI-2 canon); rsi_2 persisted | 5 / 95 | long < [3, 5] / short > [95, 97] | offline 1 of 2, 1 of 2 levels - TIGHTER (< 3, > 97) - subset on persisted rsi_2 | none in the band - a looser cut is an engine level | T3 review |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
@@ -86,7 +86,7 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| uo | backtest/signals/technical.py | `> 70` | 100.0% | TIGHTER = RAISE the floor: (no QUANTS level sits tighter than production - band at T3) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
+| uo | backtest/signals/technical.py | `> 70` | - | NOT AN AND-LEG OF EITHER SIDE (production satisfaction long 2%; short 20%) - an OR-arm's retention needs the gate's arm structure; band at T3 | engine-only (T3) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 

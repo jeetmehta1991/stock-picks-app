@@ -325,6 +325,67 @@ def key_series(sigs: list[dict]) -> dict:
     return out
 
 
+
+def per_side_series(key, op, prod, sigs, dirs, min_sat=0.99):
+    """S6-B3270 (L953/#257 INSTANCE 2): the rows a per-side gate leg's band is
+    measured on. A dual strategy's numeric leg binds ONE side (cmf_flip:
+    rsi_14 < 50 long, > 50 short), and a level offered from the MIXED survivor
+    population is a quantile of rows the leg never gates - the r92 audit's
+    headline finding. Attribution is EMPIRICAL, never AST: a side is bound by
+    the leg when at least min_sat of its surviving fires satisfy the
+    production comparison (an AND-leg admits only satisfying fires, so its own
+    side sits at ~100 pct while the other side is free). Returns
+    (series, n, label):
+      - every present side bound (or one side exists) -> pooled series,
+        n = all fires, label '' - a both-sides leg is correctly measured on
+        the mix (cmf_flip's po3_accum_range_pct);
+      - exactly one side bound -> that side's values, n = its fire count,
+        label naming the side and both satisfaction rates;
+      - no side bound (an OR-arm member, or a key the gate reads noisily) ->
+        (None, 0, reason): the caller renders the honest refusal instead of
+        misplaced levels. Missing values count as NOT satisfying (fail
+        conservative). Pinned by test_b3270."""
+    import operator as _operator
+    ops = {">": _operator.gt, ">=": _operator.ge,
+           "<": _operator.lt, "<=": _operator.le}
+    f = ops.get(op)
+    vals = [s.get(key) for s in sigs]
+
+    def _num(v):
+        if isinstance(v, bool):
+            return None
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return None
+
+    nums = [_num(v) for v in vals]
+    sides = sorted({str(d) for d in dirs})
+    sat, per = {}, {}
+    for d in sides:
+        iv = [n for n, dd in zip(nums, dirs) if str(dd) == d]
+        per[d] = iv
+        sat[d] = (sum(1 for n in iv if n is not None and f(n, prod)) / len(iv)
+                  if (f and iv) else 0.0)
+    pooled = pd.to_numeric(pd.Series(vals), errors="coerce")
+    if len(sides) <= 1:
+        return pooled, len(sigs), ""
+    bound = [d for d in sides if sat[d] >= min_sat]
+    if len(bound) == len(sides):
+        return pooled, len(sigs), ""
+    if len(bound) == 1:
+        d = bound[0]
+        ser = pd.to_numeric(pd.Series(per[d]), errors="coerce")
+        other = "; ".join(f"{x} {sat[x]:.0%}" for x in sides if x != d)
+        return ser, len(per[d]), (
+            f"{d} leg only - measured on the {len(per[d])} {d} fires "
+            f"(production satisfaction {d} {sat[d]:.0%}, {other})")
+    rates = "; ".join(f"{x} {sat[x]:.0%}" for x in sides)
+    return None, 0, (f"NOT AN AND-LEG OF EITHER SIDE (production satisfaction "
+                     f"{rates}) - an OR-arm's retention needs the gate's arm "
+                     "structure; band at T3")
+
+
 def _fmt(x) -> str:
     return f"{x:.4f}".rstrip("0").rstrip(".") if isinstance(x, float) else str(x)
 
@@ -533,6 +594,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             "(producer_variant_table) and table_a_bands.py entries for: "
             + ", ".join(sorted(set(legs_helpers[0]))) + ".", ""])
     series = key_series(sigs)
+    dirs = [str(d) for d in frame["direction"]]   # S6-B3270
     depth_keys = sorted({k for k, _, _ in comparisons})
     legs, helpers = legs_helpers
     in_specs = name in specs_names  # S6-B3240: and its bands, unless gate-structure only
@@ -615,16 +677,21 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     for key, op, prod in sorted(set(comparisons)):
         pid += 1
         _kind, _ser = series.get(key, ("missing", None))
-        _nfree = 0
+        _nfree, _snote = 0, ""
         if _kind == "numeric":
-            _qs = sorted(set(round(float(q), 4) for q in _ser.quantile(QUANTS)))
-            _hi = op in (">", ">=")
-            _nfree = sum(1 for lv in _qs if (lv > prod if _hi else lv < prod))
+            # S6-B3270: free levels are quantiles of the BOUND side's fires
+            _sser, _sn, _slab = per_side_series(key, op, prod, sigs, dirs)
+            if _sser is not None:
+                _qs = sorted(set(round(float(q), 4) for q in _sser.quantile(QUANTS)))
+                _hi = op in (">", ">=")
+                _nfree = sum(1 for lv in _qs if (lv > prod if _hi else lv < prod))
+            if _slab:
+                _snote = " [" + _slab.split(" - ")[0] + "]"
         axes.append(_axis(f"P{pid}", f"{key} {op} {_fmt(prod)}", _nfree + 1,
                           True, True, None, (1, _nfree, 0)))
         L.append(f"| P{pid} | STRATEGY | {key} `{op} {_fmt(prod)}` "
                  f"[EXISTING-THRESHOLD] | {LEG_DEFN.get(key, 'gate threshold on the persisted magnitude')} "
-                 f"| `{op} {_fmt(prod)}` | production + {_nfree} tighter measured levels | "
+                 f"| `{op} {_fmt(prod)}` | production + {_nfree} tighter measured levels{_snote} | "
                  f"{_offline_cell([(_nfree + 1, 1, _nfree, 0)], 'measured tighter QUANTS levels - see the free-band section below')}"
                  f" | looser side "
                  f"- band at R1 | MEASURED-PRE-R1 |")
@@ -702,6 +769,14 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             L.append(f"| {key} | {attribute(key, idx)} | `{op} {_fmt(prod)}` | "
                      f"NOT NUMERIC ON FIRES ({kind}) | - | engine-only |")
             continue
+        # S6-B3270 (L953/#257): levels and retention come from the side
+        # the leg binds; a mixed-population quantile places the band on
+        # rows the leg never gates (the r92 audit's headline finding)
+        ser, s_n, s_label = per_side_series(key, op, prod, sigs, dirs)
+        if ser is None:
+            L.append(f"| {key} | {attribute(key, idx)} | `{op} {_fmt(prod)}` | "
+                     f"- | {s_label} | engine-only (T3) |")
+            continue
         cov = ser.notna().mean()
         qs = sorted(set(round(float(q), 4) for q in ser.quantile(QUANTS)))
         tighter_hi = op in (">", ">=")          # tighter = RAISE the floor
@@ -711,13 +786,14 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
             if not tighter:
                 continue
             kept = int((ser >= lv).sum() if tighter_hi else (ser <= lv).sum())
-            cells.append(f"{_fmt(lv)} -> {kept} ({kept / n_all:.0%})")
+            cells.append(f"{_fmt(lv)} -> {kept} ({kept / s_n:.0%})")
         # B2843 (owner question "are we raising the threshold or making it
         # tighter?"): say the direction in words, per row, both sides.
         tdir = ("TIGHTER = RAISE the floor: " if tighter_hi
                 else "TIGHTER = LOWER the ceiling: ")
-        free = tdir + ("; ".join(cells) if cells else
-                       "(no QUANTS level sits tighter than production - band at T3)")
+        free = (("[" + s_label.split(" - ")[0] + "] ") if s_label else "") \
+            + tdir + ("; ".join(cells) if cells else
+                      "(no QUANTS level sits tighter than production - band at T3)")
         loose = ("LOOSER = " + ("LOWER" if tighter_hi else "RAISE") +
                  " the threshold: RESIM - band from the SPECS entry"
                  + ("" if bands_in_specs else " (to be built)"))

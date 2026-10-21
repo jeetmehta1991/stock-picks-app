@@ -61877,3 +61877,53 @@ def test_b3269_pregate_selector_reaches_the_tests_that_read_a_change(monkeypatch
     monkeypatch.undo()
     monkeypatch.setattr(ps, "ROOT", tmp_path)
     assert ps.main(["--changed", "scripts/make_spec.py"]) == 2
+
+
+def test_b3270_per_side_gate_bands_are_measured_on_the_bound_side():
+    """S6-B3270 (L953 / #257 INSTANCE 2): build_table_a offered MIXED-population
+    quantiles as per-side band levels in two owner-facing T3 docs (cmf_flip's
+    rsi_14, williams_r_oversold's floors - the r92 audit's headline finding).
+    per_side_series attributes a numeric gate leg EMPIRICALLY - the side whose
+    surviving fires all satisfy the production comparison is the side it
+    binds - and the free-band row measures levels and retention on that side
+    alone. SYNTHETIC fixture (structure is the evidence, not the values):
+    (1) a long-only leg slices to the long fires; (2) the short leg to the
+    shorts; (3) a both-sides leg stays pooled with no label; (4) an OR-arm
+    member (satisfaction under the floor on both sides) returns the refusal;
+    (5) a single-direction population stays pooled; (6) the fixture's side
+    quantiles differ from the pooled ones, so a helper that silently pools
+    again FAILS here (#226's must-fail direction)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import build_table_a as B
+
+    longs = [30.0, 32.0, 34.0, 36.0, 38.0, 40.0, 42.0, 44.0]
+    shorts = [55.0, 58.0, 61.0, 64.0, 67.0, 70.0]
+    sigs = ([{"rsi": v, "both": 1.0, "arm": v} for v in longs]
+            + [{"rsi": v, "both": 1.0} for v in shorts])
+    dirs = ["long"] * len(longs) + ["short"] * len(shorts)
+
+    ser, n, label = B.per_side_series("rsi", "<", 50, sigs, dirs)
+    assert n == len(longs) and label.startswith("long leg only"), (n, label)
+    assert float(ser.max()) == 44.0 and float(ser.min()) == 30.0
+    pooled = sorted(set(round(float(q), 4) for q in _pd.to_numeric(
+        _pd.Series([s.get("rsi") for s in sigs])).quantile(B.QUANTS)))
+    side = sorted(set(round(float(q), 4) for q in ser.quantile(B.QUANTS)))
+    assert side != pooled, "a pool-again regression must fail this pin"
+
+    ser2, n2, label2 = B.per_side_series("rsi", ">", 50, sigs, dirs)
+    assert n2 == len(shorts) and label2.startswith("short leg only"), (n2, label2)
+
+    ser3, n3, label3 = B.per_side_series("both", ">=", 0.5, sigs, dirs)
+    assert n3 == len(sigs) and label3 == "", (n3, label3)
+
+    ser4, n4, label4 = B.per_side_series("arm", ">", 35, sigs, dirs)
+    assert ser4 is None and "NOT AN AND-LEG" in label4, label4
+
+    ser5, n5, label5 = B.per_side_series("rsi", "<", 50, sigs[:len(longs)],
+                                         dirs[:len(longs)])
+    assert n5 == len(longs) and label5 == "", (n5, label5)
