@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit fd2c815be at 2026-10-20 23:40:13 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 6f532c001 at 2026-10-21 00:36:34 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -33,10 +33,10 @@
 
 | stream | meaning | count |
 |---|---|---|
-| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 6 |
-| BOTH | tightenable AND fire-starved | 27 |
-| LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 116 |
-| NONE | no numeric knob and not starved - a BREADTH candidate | 25 |
+| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 7 |
+| BOTH | tightenable AND fire-starved | 26 |
+| LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 115 |
+| NONE | no numeric knob and not starved - a BREADTH candidate | 26 |
 
 ## Tightening candidates by family - largest families first
 
@@ -61,7 +61,7 @@
 
 - `changed_since_r5` compares **fire logic** (S6-B3235): the strategy's body and every function, module constant and config value it reaches - a delegation to index_rebalance.py included - with docstrings and the signals_used / context-bullet payload removed. A reviewed fire-neutral change (the borrow gate's S6-B2118b counters) is skipped while its digest holds. An **upper bound** on behaviour - a configurable-span swap identical at its default counts - and blind to the producers that compute the signals.
 - `stream = TIGHTEN` rests on a source pattern for numeric comparisons and is a **lower bound** - a threshold reached through a helper or compared to a config constant is invisible to it.
-- `survives_pct` calls the **live strategy function** on each fire's persisted signals (S6-B2814). A **lower bound** where a gate leg reads an unpersisted key; an erroring row counts as non-survival; `-` only for zero-fire strategies.
+- `survives_pct` calls the **live strategy function** on each fire's persisted signals (S6-B2814). A **lower bound** where a gate leg reads a key some fires did not persist; an erroring row counts as non-survival; `-` only for zero-fire strategies. **UNMEASURED** (S6-B3239): a side whose gate reads a key absent from EVERY one of its R5 fires has no survival - the replay would read the key's default, not a measurement - so its raw share stands in the projection and the cell names the side; `unmeasured_gate_keys` in the JSON names the keys.
 - `IN-CAMPAIGN` / `STALLED-CAMPAIGN` read the **owner-opened register** (`output_audit/owner_campaign_opens.json`, S6-B3194): a listed strategy is IN-CAMPAIGN while one of its register tickets is non-terminal (B2829), and STALLED-CAMPAIGN (B2833, owner-approved 2026-09-15) once every one is terminal - campaigned, concluded mid-path, still in its stream lane. **A mention is not a campaign**: an unlisted strategy is NOT-STARTED whatever tickets name it. The vocabulary heuristic this replaces labelled 44 strategies and 4 were campaign subjects when read one by one; `mention_tickets` in the JSON keeps the full mention list.
 - `IN-ROSTER-FUNNEL` / `IN-ROSTER-MIRROR` (S6-B3135): read from scripts/phase1b_membership.py, the one reader of the Phase 1B roster. A funnel cell is terminal like an admission and closed to re-testing like one (owner 2026-09-29); a mirror is ungraded beyond R5 and terminal too - the owner dropped its Step 2 (S6-B2420, 2026-10-20).
 - `DONE-OWNER-CLOSED` (S6-B3135a, owner 2026-09-29): a campaign the owner closed outright (output_audit/owner_campaign_closures.json, each with the owner's words). Terminal; never auto-reopened. A closed mirror stays ON the Phase 1B roster - the closure ends its campaign, not its membership.
@@ -103,7 +103,7 @@
 | institutional_persistent_holders_long | institutional_persistence | 1955 | 179.7 |  | 100.0% | - | PRUNED-DUPLICATE |
 | rsi_oversold | mean_reversion | 1945 | 178.8 |  | 100.0% | NONE | NOT-STARTED |
 | institutional_committed_growth_long | institutional_persistence | 1941 | 178.4 | YES | 100.0% | - | DONE-ADMITTED |
-| risk_off_bond_equity_short | cross_asset | 1895 | 0.0 | YES | 0.0% | LOOSEN | NOT-STARTED |
+| risk_off_bond_equity_short | cross_asset | 1895 | 174.2 | YES | UNMEASURED | NONE | NOT-STARTED |
 | break_retest_confluence | confluence | 1889 | 173.6 |  | 100.0% | NONE | NOT-STARTED |
 | turtle_soup_short | ict | 1880 | 28.6 | YES | 16.5% | LOOSEN | NOT-STARTED |
 | tema_dema | trend | 1876 | 124.2 | YES | 72.0% | NONE | NOT-STARTED |
@@ -114,7 +114,7 @@
 | parabolic_sar_flip_short | trend | 1672 | 153.7 |  | 100.0% | NONE | NOT-STARTED |
 | bollinger_lower | mean_reversion | 1622 | 149.1 | YES | 100.0% | - | DONE-OWNER-CLOSED |
 | parabolic_sar_flip | trend | 1618 | 148.7 |  | 100.0% | NONE | NOT-STARTED |
-| smc_breaker_block_short | smc | 1598 | 0.0 | YES | 0.0% | - | DONE-OWNER-CLOSED |
+| smc_breaker_block_short | smc | 1598 | 146.9 | YES | UNMEASURED | - | DONE-OWNER-CLOSED |
 | three_white_soldiers | candle | 1596 | 146.7 |  | 100.0% | - | DONE-ADMITTED |
 | ppo_crossover | momentum | 1588 | 146.0 |  | 100.0% | NONE | NOT-STARTED |
 | macd_crossover_short | momentum | 1524 | 140.1 |  | 100.0% | - | DISABLED |
@@ -122,9 +122,9 @@
 | prev_day_high_break | pivot | 1424 | 58.5 | YES | 44.7% | LOOSEN | NOT-STARTED |
 | institutional_volume_confirmation_long | - | 1387 | 98.3 | YES | 77.1% | - | PRUNED-DUPLICATE |
 | xs_momentum_bottom_decile_short | factor | 1384 | 127.2 |  | 100.0% | - | IN-ROSTER-MIRROR |
-| smc_order_block_bounce | smc | 1340 | 0.0 | YES | 0.0% | BOTH | STALLED-CAMPAIGN |
+| smc_order_block_bounce | smc | 1340 | 123.2 | YES | UNMEASURED | TIGHTEN | STALLED-CAMPAIGN |
 | mmbm_long | ict | 1337 | 122.9 |  | 100.0% | NONE | NOT-STARTED |
-| avwap_50_reclaim | vwap | 1336 | 105.7 | YES | 86.1% | NONE | NOT-STARTED |
+| avwap_50_reclaim | vwap | 1336 | 122.8 | YES | 100.0% (long UNMEASURED) | NONE | NOT-STARTED |
 | ichimoku_tk_cross | trend | 1319 | 112.9 | YES | 93.1% | NONE | NOT-STARTED |
 | hull_rsi | momentum | 1270 | 116.7 |  | 100.0% | TIGHTEN | NOT-STARTED |
 | cpr_narrow_bullish | pivot | 1248 | 114.7 |  | 100.0% | NONE | NOT-STARTED |
@@ -145,7 +145,7 @@
 | donchian_breakout_with_smart_money_long | smart_money_sleeve | 985 | 90.5 |  | 100.0% | LOOSEN | NOT-STARTED |
 | donchian_10_breakout | breakout | 966 | 88.8 |  | 100.0% | LOOSEN | NOT-STARTED |
 | smc_inverse_fvg | smc | 953 | 70.5 | YES | 80.5% | LOOSEN | STALLED-CAMPAIGN |
-| smc_breaker_block_long | smc | 948 | 0.0 | YES | 0.0% | - | DONE-ADMITTED |
+| smc_breaker_block_long | smc | 948 | 87.1 | YES | UNMEASURED | - | DONE-ADMITTED |
 | roc_burst | momentum | 918 | 84.4 |  | 100.0% | LOOSEN | NOT-STARTED |
 | news_sentiment_long | news_sentiment | 906 | 83.3 |  | 100.0% | BOTH | NOT-STARTED |
 | golden_cross_9_21 | trend | 889 | 81.7 |  | 100.0% | LOOSEN | NOT-STARTED |
@@ -176,7 +176,7 @@
 | ichimoku_cloud_breakout | trend | 511 | 47.0 |  | 100.0% | LOOSEN | NOT-STARTED |
 | donchian_breakout_long | breakout | 507 | 46.6 |  | 100.0% | LOOSEN | NOT-STARTED |
 | supertrend_macd | trend | 486 | 44.7 |  | 100.0% | LOOSEN | NOT-STARTED |
-| head_and_shoulders_top_short | chart_pattern | 477 | 0.0 | YES | 0.0% | LOOSEN | NOT-STARTED |
+| head_and_shoulders_top_short | chart_pattern | 477 | 43.8 | YES | UNMEASURED | LOOSEN | NOT-STARTED |
 | pivot_s1_bounce | pivot | 458 | 42.1 |  | 100.0% | LOOSEN | NOT-STARTED |
 | xs_low_beta_with_smart_money_long | smart_money_sleeve | 452 | 30.9 | YES | 74.3% | - | DONE-ADMITTED |
 | smc_premium_short | smc | 433 | 39.8 |  | 100.0% | LOOSEN | NOT-STARTED |
@@ -234,7 +234,7 @@
 | judas_swing_short | ict | 84 | 7.7 |  | 100.0% | LOOSEN | NOT-STARTED |
 | avwap_20high_rejection_short | vwap | 81 | 7.4 | YES | 100.0% | LOOSEN | NOT-STARTED |
 | xs_low_beta_long | factor | 78 | 7.2 |  | 100.0% | LOOSEN | NOT-STARTED |
-| 52wl_break_retest_short | breakout | 77 | 0.0 | YES | 0.0% | LOOSEN | NOT-STARTED |
+| 52wl_break_retest_short | breakout | 77 | 7.1 | YES | UNMEASURED | LOOSEN | NOT-STARTED |
 | mfi_oversold | mean_reversion | 77 | 7.1 |  | 100.0% | LOOSEN | NOT-STARTED |
 | pre_fomc_long_sleeve | event_driven | 69 | 6.3 |  | 100.0% | LOOSEN | NOT-STARTED |
 | 52w_high_breakout_with_smart_money_long | smart_money_sleeve | 66 | 6.1 |  | 100.0% | LOOSEN | NOT-STARTED |

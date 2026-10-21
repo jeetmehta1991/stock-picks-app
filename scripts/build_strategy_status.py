@@ -486,6 +486,110 @@ def register_tickets(name: str, campaign_opens: dict, ticket_states: dict) -> tu
     return tickets, live_campaign_tickets(tickets, ticket_states)
 
 
+# S6-B3239 (a) (owner ruled 2026-10-21, 'Approve all recs execute'): A SIDE
+# WHOSE GATE READS A KEY ABSENT FROM EVERY ONE OF ITS R5 FIRES IS UNMEASURED.
+# The survival replay hands the live function each fire's persisted signals;
+# a key the cube never persisted is in none of them, .get returns its default,
+# and the side read 0.0 - MEASURED B3139q-r80, reproduced r85: 9 sides carry
+# such a key and 8 read 0.0 that way. A missing measurement is not a measured
+# zero (L580): such a side's survival is None, its RAW share stands in the
+# current-gate projection, and unmeasured_gate_keys names the keys. A side that
+# still survives 1.0 is measured - its absent key was an OR leg that never
+# decided (shooting_star_short).
+def _resolve_key(kind: str, v: str, cfg):
+    """A lint feed as a signal key: a literal as is; a key built at runtime -
+    an f-string over a _cfg knob - resolved against backtest.config; anything
+    else None (not resolvable, so not checked)."""
+    if kind == "lit":
+        return v
+    try:
+        node = ast.parse(v, mode="eval").body
+    except SyntaxError:
+        return None
+    if not isinstance(node, ast.JoinedStr):
+        return None
+    parts = []
+    for p in node.values:
+        if isinstance(p, ast.Constant):
+            parts.append(str(p.value))
+        elif (isinstance(p, ast.FormattedValue) and isinstance(p.value, ast.Attribute)
+              and isinstance(p.value.value, ast.Name) and p.value.value.id == "_cfg"
+              and hasattr(cfg, p.value.attr)):
+            parts.append(str(getattr(cfg, p.value.attr)))
+        else:
+            return None
+    return "".join(parts)
+
+
+def gate_keys_by_direction(rows=None) -> dict:
+    """{strategy: {direction: set of signal keys its fire decision reads}},
+    from scripts/signals_used_lint.py - the repo's one side model (guards,
+    assignments and helpers followed). A side whose direction is not a
+    constant feeds both directions; the lint's borrow_ok marker is not a
+    signal key and is dropped. `rows` is the test seam (the lint's rows)."""
+    if rows is None:
+        if str(ROOT / "scripts") not in sys.path:
+            sys.path.insert(0, str(ROOT / "scripts"))
+        import signals_used_lint as _sul
+        rows = _sul.analyse()
+        borrow = _sul.BORROW
+    else:
+        borrow = "borrow_ok"
+    from backtest import config as _c
+    out = {}
+    for r in rows:
+        per = out.setdefault(r["strategy"], {})
+        for sd in r["sides"]:
+            if sd.get("status") not in ("OK", "NONLITERAL_LIST"):
+                continue
+            keys = {k for k in (_resolve_key(t, v, _c) for t, v in sd.get("feeds", ()))
+                    if k and k != borrow}
+            d = sd.get("direction")
+            for dd in ((d,) if d in ("long", "short") else ("long", "short")):
+                per.setdefault(dd, set()).update(keys)
+    return out
+
+
+def unmeasured_sides(sigs, dirs, side_survives: dict, keys_by_dir: dict) -> dict:
+    """{direction: sorted gate keys absent from EVERY R5 fire of that side} for
+    each side whose measured survival is below 1.0 (S6-B3239). A key counts as
+    present on a fire when the persisted dict holds a non-None value for it."""
+    out = {}
+    for d, sv in side_survives.items():
+        if sv is None or sv >= 1.0 or not keys_by_dir.get(d):
+            continue
+        have = set()
+        for s_, d_ in zip(sigs, dirs):
+            if d_ == d:
+                have.update(k for k, v in s_.items() if v is not None)
+        absent = sorted(k for k in keys_by_dir[d] if k not in have)
+        if absent:
+            out[d] = absent
+    return out
+
+
+def measured_survival(ok_side: dict, n_side: dict, side_survives: dict):
+    """S6-B3239: the strategy's survives_pct over its MEASURED sides only -
+    None when every side is UNMEASURED (or the strategy has no fires)."""
+    meas = [d for d in n_side if side_survives.get(d) is not None]
+    n = sum(n_side[d] for d in meas)
+    return round(sum(ok_side.get(d, 0) for d in meas) / n, 4) if n else None
+
+
+def current_gate_projection(projected: float, fires: int, n_side: dict,
+                            side_survives: dict, survives) -> float:
+    """B2822 + S6-B3239: the Step-1 projection under the CURRENT gate. With
+    no UNMEASURED side it is the raw projection x survives_pct (the raw one
+    where survival is None - a zero-fire row). With one, each MEASURED side
+    scales by its own survival and an UNMEASURED side (survival None) keeps
+    its RAW share - never the 0.0 default the replay would have read."""
+    if fires and any(side_survives.get(d) is None for d in n_side):
+        return projected * sum(
+            n / fires * (1.0 if side_survives.get(d) is None else side_survives[d])
+            for d, n in n_side.items())
+    return projected if survives is None else projected * survives
+
+
 def classify_stream(tightenable: bool, projected: float) -> str:
     starved = projected < MIN_FIRES_FOR_GRID
     if tightenable and starved:
@@ -685,6 +789,7 @@ def main() -> int:
     fams = declared_families(src)
     thresholds = numeric_thresholds(src)
     changed = changed_since_r5(src)
+    gate_keys = gate_keys_by_direction()  # S6-B3239
 
     tl = pd.read_csv(R5_DIR / "trade_log.csv", low_memory=False,
                      usecols=["strategy", "ticker", "entry_date", "direction",
@@ -766,6 +871,15 @@ def main() -> int:
             survives = round(ok / fires, 4)
             side_survives = {d: round(ok_side.get(d, 0) / n, 4)
                              for d, n in sorted(n_side.items())}
+        # S6-B3239: a side whose gate reads a key no R5 fire of it persisted
+        # is UNMEASURED - its survival is None; the strategy's survives_pct
+        # is the share over its MEASURED sides (None when there is none)
+        unmeasured = unmeasured_sides(sigs, dirs, side_survives,
+                                      gate_keys.get(name, {}))
+        if unmeasured:
+            for d in unmeasured:
+                side_survives[d] = None
+            survives = measured_survival(ok_side, n_side, side_survives)
 
         tickets_all, mentions_all = campaign_tickets(qtext, name)
         # S6-B3186: the record keeps the FULL lists (ticket_fields)
@@ -800,11 +914,13 @@ def main() -> int:
         # stream NONE off 2,933 raw fires while only 5.15% survive its current
         # gate - its honest projection is ~14, which is LOOSEN. Where survival
         # is unmeasured (zero-fire rows) the raw projection stands.
-        eff = projected if survives is None else projected * survives
+        eff = current_gate_projection(projected, fires, n_side,
+                                      side_survives, survives)
         recs.append({"strategy": name, "family": fam, "r5_fires": fires,
                      "changed_since_r5": name in changed,
                      "survives_pct": survives,
                      "survives_pct_by_side": side_survives,
+                     "unmeasured_gate_keys": unmeasured,
                      "r5_fires_by_side": dict(sorted(n_side.items())),
                      "projected_step1_fires": round(projected, 1),
                      "projected_current_gate": round(eff, 1),
@@ -852,8 +968,13 @@ def main() -> int:
              "a LOWER BOUND - thresholds via a helper or a config constant are invisible",
              "survives_pct calls the LIVE strategy function on each fire's persisted "
              "signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). "
-             "A LOWER BOUND where a gate leg reads an unpersisted key (defaults False); "
-             "an erroring row counts as non-survival; None only for zero-fire strategies",
+             "A LOWER BOUND where a gate leg reads a key some fires did not persist; "
+             "an erroring row counts as non-survival. S6-B3239: a SIDE whose gate "
+             "reads a key absent from EVERY one of its R5 fires is UNMEASURED - its "
+             "survival is None, unmeasured_gate_keys names the keys, the strategy's "
+             "survives_pct covers its measured sides only (None when it has none), "
+             "and the current-gate projection keeps that side's RAW share; None "
+             "otherwise only for zero-fire strategies",
              "the campaign lanes read the OWNER-OPENED register "
              "(output_audit/owner_campaign_opens.json, S6-B3194): a listed "
              "strategy is IN-CAMPAIGN while one of its register tickets is "
@@ -962,8 +1083,12 @@ def main() -> int:
           "a **lower bound** - a threshold reached through a helper or compared to a "
           "config constant is invisible to it.",
           "- `survives_pct` calls the **live strategy function** on each fire's persisted "
-          "signals (S6-B2814). A **lower bound** where a gate leg reads an unpersisted key; "
-          "an erroring row counts as non-survival; `-` only for zero-fire strategies.",
+          "signals (S6-B2814). A **lower bound** where a gate leg reads a key some fires did "
+          "not persist; an erroring row counts as non-survival; `-` only for zero-fire "
+          "strategies. **UNMEASURED** (S6-B3239): a side whose gate reads a key absent from "
+          "EVERY one of its R5 fires has no survival - the replay would read the key's "
+          "default, not a measurement - so its raw share stands in the projection and the "
+          "cell names the side; `unmeasured_gate_keys` in the JSON names the keys.",
           "- `IN-CAMPAIGN` / `STALLED-CAMPAIGN` read the **owner-opened register** "
           "(`output_audit/owner_campaign_opens.json`, S6-B3194): a listed strategy is "
           "IN-CAMPAIGN while one of its register tickets is non-terminal (B2829), and "
@@ -989,6 +1114,11 @@ def main() -> int:
           "|---|---|---|---|---|---|---|---|"]
     for r in sorted(recs, key=lambda x: (-x["r5_fires"], x["strategy"])):
         sv = "-" if r["survives_pct"] is None else f"{r['survives_pct']:.1%}"
+        if r["unmeasured_gate_keys"]:
+            # S6-B3239: a missing measurement is never printed as a number
+            um = "/".join(sorted(r["unmeasured_gate_keys"]))
+            sv = ("UNMEASURED" if r["survives_pct"] is None
+                  else f"{sv} ({um} UNMEASURED)")
         L.append(f"| {r['strategy']} | {r['family']} | {r['r5_fires']} | "
                  f"{r['projected_current_gate']} | {'YES' if r['changed_since_r5'] else ''} | "
                  f"{sv} | {r['stream']} | {r['status']} |")

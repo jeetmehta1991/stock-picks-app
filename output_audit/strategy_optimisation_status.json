@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "fd2c815be",
-    "generated_at": "2026-10-20 23:40:13"
+    "source_commit": "6f532c001",
+    "generated_at": "2026-10-21 00:36:34"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -14,7 +14,7 @@
   "caveats": [
     "changed_since_r5 compares FIRE LOGIC (S6-B3235): the strategy's body and every function, module constant and config value it reaches - a delegation to another signals module included - with docstrings and the signals_used / context-bullet payload removed, against the R5-era code; a reviewed fire-neutral change (FIRE_NEUTRAL_CHANGES) counts only once its digest goes stale. An UPPER BOUND on behaviour (a configurable-span swap identical at its default counts) and blind to the producers that compute the signals",
     "stream TIGHTEN rests on a source pattern for numeric comparisons, a LOWER BOUND - thresholds via a helper or a config constant are invisible",
-    "survives_pct calls the LIVE strategy function on each fire's persisted signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). A LOWER BOUND where a gate leg reads an unpersisted key (defaults False); an erroring row counts as non-survival; None only for zero-fire strategies",
+    "survives_pct calls the LIVE strategy function on each fire's persisted signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). A LOWER BOUND where a gate leg reads a key some fires did not persist; an erroring row counts as non-survival. S6-B3239: a SIDE whose gate reads a key absent from EVERY one of its R5 fires is UNMEASURED - its survival is None, unmeasured_gate_keys names the keys, the strategy's survives_pct covers its measured sides only (None when it has none), and the current-gate projection keeps that side's RAW share; None otherwise only for zero-fire strategies",
     "the campaign lanes read the OWNER-OPENED register (output_audit/owner_campaign_opens.json, S6-B3194): a listed strategy is IN-CAMPAIGN while one of its register tickets is non-terminal (B2829) and STALLED-CAMPAIGN once every one is terminal (B2833, owner-approved 2026-09-15); an unlisted strategy is NOT-STARTED whatever tickets mention it - a mention is not a campaign (the vocabulary heuristic this replaces labelled 44 strategies and 4 were campaign subjects); mention_tickets keeps the full mention list",
     "stream and the proj column use the CURRENT-GATE projection (raw projection x survives_pct, B2822); projected_step1_fires in this JSON keeps the raw figure",
     "terminal statuses (ADMITTED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED) are MUTUALLY EXCLUSIVE with the stream lanes and excluded from every work bucket (B2825); reopen_candidate flags a terminal row whose entry condition changed since its closure evidence (survives < 1.0) - flagged for the owner, never auto-reopened",
@@ -51,6 +51,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 33
       },
@@ -78,6 +79,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 150
       },
@@ -109,6 +111,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 66
       },
@@ -133,6 +136,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 203
       },
@@ -157,6 +161,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 95
       },
@@ -187,6 +192,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 427
       },
@@ -217,6 +223,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 18
       },
@@ -239,15 +246,20 @@
       "family": "breakout",
       "r5_fires": 77,
       "changed_since_r5": true,
-      "survives_pct": 0.0,
+      "survives_pct": null,
       "survives_pct_by_side": {
-        "short": 0.0
+        "short": null
+      },
+      "unmeasured_gate_keys": {
+        "short": [
+          "year_low_break_retest_short_held"
+        ]
       },
       "r5_fires_by_side": {
         "short": 77
       },
       "projected_step1_fires": 7.1,
-      "projected_current_gate": 0.0,
+      "projected_current_gate": 7.1,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -270,6 +282,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 119
       },
@@ -295,6 +308,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 14,
         "short": 25
@@ -323,6 +337,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 81
       },
@@ -352,6 +367,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1523,
         "short": 771
@@ -377,17 +393,22 @@
       "family": "vwap",
       "r5_fires": 1336,
       "changed_since_r5": true,
-      "survives_pct": 0.8608,
+      "survives_pct": 1.0,
       "survives_pct_by_side": {
-        "long": 0.0,
+        "long": null,
         "short": 1.0
+      },
+      "unmeasured_gate_keys": {
+        "long": [
+          "avwap_50low_reclaim_held_2d"
+        ]
       },
       "r5_fires_by_side": {
         "long": 186,
         "short": 1150
       },
       "projected_step1_fires": 122.8,
-      "projected_current_gate": 105.7,
+      "projected_current_gate": 122.8,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -414,6 +435,7 @@
         "long": 0.9981,
         "short": 0.398
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 517,
         "short": 495
@@ -444,6 +466,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 473,
         "short": 540
@@ -470,6 +493,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 814,
         "short": 808
@@ -531,6 +555,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 143,
         "short": 128
@@ -561,6 +586,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 840
       },
@@ -587,6 +613,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 130
       },
@@ -617,6 +644,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 618,
         "short": 1271
@@ -646,6 +674,7 @@
         "long": 0.9791,
         "short": 0.2316
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 765,
         "short": 1399
@@ -675,6 +704,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 409,
         "short": 582
@@ -701,6 +731,7 @@
         "long": 0.5954,
         "short": 0.4759
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2721,
         "short": 3053
@@ -727,6 +758,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 137,
         "short": 91
@@ -760,6 +792,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 6
       },
@@ -785,6 +818,7 @@
         "long": 0.7992,
         "short": 0.6841
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1753,
         "short": 1241
@@ -817,6 +851,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -842,6 +877,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 503,
         "short": 745
@@ -870,6 +906,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 273,
         "short": 728
@@ -897,6 +934,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 1696
       },
@@ -923,6 +961,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 164
       },
@@ -947,6 +986,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 99
       },
@@ -974,6 +1014,7 @@
         "long": 0.9733,
         "short": 0.2281
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 862,
         "short": 1552
@@ -1002,6 +1043,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 31
       },
@@ -1026,6 +1068,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 306
       },
@@ -1050,6 +1093,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 232
       },
@@ -1075,6 +1119,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 388,
         "short": 578
@@ -1100,6 +1145,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 999
       },
@@ -1126,6 +1172,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 872
       },
@@ -1150,6 +1197,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 507
       },
@@ -1176,6 +1224,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 547
       },
@@ -1202,6 +1251,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 985
       },
@@ -1226,6 +1276,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 291
       },
@@ -1248,6 +1299,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -1268,6 +1320,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -1292,6 +1345,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 55
       },
@@ -1319,6 +1373,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 63
       },
@@ -1343,6 +1398,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 33
       },
@@ -1368,6 +1424,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1211,
         "short": 1802
@@ -1393,6 +1450,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -1413,6 +1471,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -1436,6 +1495,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 132,
         "short": 281
@@ -1462,6 +1522,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 22,
         "short": 87
@@ -1488,6 +1549,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 450,
         "short": 439
@@ -1516,6 +1578,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 12,
         "short": 31
@@ -1541,6 +1604,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 7
       },
@@ -1565,6 +1629,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 110
       },
@@ -1577,7 +1642,9 @@
       },
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3235"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1591,6 +1658,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 146
       },
@@ -1611,15 +1679,20 @@
       "family": "chart_pattern",
       "r5_fires": 477,
       "changed_since_r5": true,
-      "survives_pct": 0.0,
+      "survives_pct": null,
       "survives_pct_by_side": {
-        "short": 0.0
+        "short": null
+      },
+      "unmeasured_gate_keys": {
+        "short": [
+          "head_shoulders_top_neckline_break"
+        ]
       },
       "r5_fires_by_side": {
         "short": 477
       },
       "projected_step1_fires": 43.8,
-      "projected_current_gate": 0.0,
+      "projected_current_gate": 43.8,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1642,6 +1715,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 326
       },
@@ -1666,6 +1740,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 996
       },
@@ -1691,6 +1766,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 463,
         "short": 807
@@ -1728,6 +1804,7 @@
       "survives_pct_by_side": {
         "short": 0.4315
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 197
       },
@@ -1753,6 +1830,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 140,
         "short": 371
@@ -1782,6 +1860,7 @@
         "long": 0.9111,
         "short": 0.9463
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 574,
         "short": 745
@@ -1810,6 +1889,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 677
       },
@@ -1836,6 +1916,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 269
       },
@@ -1862,6 +1943,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 24
       },
@@ -1886,6 +1968,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 24
       },
@@ -1915,6 +1998,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 642
       },
@@ -1945,6 +2029,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2644
       },
@@ -1969,6 +2054,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2451
       },
@@ -1996,6 +2082,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1941
       },
@@ -2043,6 +2130,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2473
       },
@@ -2074,6 +2162,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 107
       },
@@ -2101,6 +2190,7 @@
       "survives_pct_by_side": {
         "long": 0.008
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2751
       },
@@ -2127,6 +2217,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2516
       },
@@ -2161,6 +2252,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 386
       },
@@ -2192,6 +2284,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 532
       },
@@ -2218,6 +2311,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2324
       },
@@ -2246,6 +2340,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 716
       },
@@ -2277,6 +2372,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1199
       },
@@ -2305,6 +2401,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1955
       },
@@ -2331,6 +2428,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2268
       },
@@ -2361,6 +2459,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1075
       },
@@ -2391,6 +2490,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1826
       },
@@ -2422,6 +2522,7 @@
       "survives_pct_by_side": {
         "long": 0.7707
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1387
       },
@@ -2449,6 +2550,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 115
       },
@@ -2475,6 +2577,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 103
       },
@@ -2502,6 +2605,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 366
       },
@@ -2528,6 +2632,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1
       },
@@ -2552,6 +2657,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 65
       },
@@ -2576,6 +2682,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 84
       },
@@ -2603,6 +2710,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 21,
         "short": 20
@@ -2628,6 +2736,7 @@
       "survives_pct_by_side": {
         "long": 0.7341
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1023
       },
@@ -2652,6 +2761,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1162
       },
@@ -2679,6 +2789,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1386,
         "short": 1524
@@ -2704,6 +2815,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 1524
       },
@@ -2729,6 +2841,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1912,
         "short": 2158
@@ -2758,6 +2871,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1385,
         "short": 1522
@@ -2781,6 +2895,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -2811,6 +2926,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 51,
         "short": 26
@@ -2838,6 +2954,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 244
       },
@@ -2870,6 +2987,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1337
       },
@@ -2896,6 +3014,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 2456
       },
@@ -2920,6 +3039,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 37
       },
@@ -2945,6 +3065,7 @@
         "long": 0.9753,
         "short": 0.0212
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1053,
         "short": 1227
@@ -2980,6 +3101,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1788
       },
@@ -3023,6 +3145,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 113
       },
@@ -3054,6 +3177,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 13
       },
@@ -3083,6 +3207,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1
       },
@@ -3112,6 +3237,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 60
       },
@@ -3144,6 +3270,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 906
       },
@@ -3174,6 +3301,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 357
       },
@@ -3199,6 +3327,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -3221,6 +3350,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 54
       },
@@ -3247,6 +3377,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 115
       },
@@ -3271,6 +3402,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 5036
       },
@@ -3310,6 +3442,7 @@
       "survives_pct_by_side": {
         "short": 0.7829
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 5698
       },
@@ -3347,6 +3480,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 775,
         "short": 843
@@ -3374,6 +3508,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 1672
       },
@@ -3400,6 +3535,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 140
       },
@@ -3430,6 +3566,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2116
       },
@@ -3466,6 +3603,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 872
       },
@@ -3494,6 +3632,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 2215
       },
@@ -3531,6 +3670,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 10
       },
@@ -3559,6 +3699,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 656
       },
@@ -3596,6 +3737,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 50,
         "short": 41
@@ -3622,6 +3764,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 407,
         "short": 453
@@ -3652,6 +3795,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 29,
         "short": 26
@@ -3680,6 +3824,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 9
       },
@@ -3705,6 +3850,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 360,
         "short": 98
@@ -3731,6 +3877,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 53,
         "short": 2
@@ -3758,6 +3905,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 3
       },
@@ -3782,6 +3930,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 2624
       },
@@ -3806,6 +3955,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 731
       },
@@ -3830,6 +3980,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 589
       },
@@ -3862,6 +4013,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -3888,6 +4040,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -3910,6 +4063,7 @@
       "survives_pct_by_side": {
         "short": 0.8704
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 54
       },
@@ -3922,6 +4076,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3226",
+        "S6-B3235",
         "S6-B3237"
       ],
       "admitted": false,
@@ -3937,6 +4092,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 27
       },
@@ -3961,6 +4117,7 @@
       "survives_pct_by_side": {
         "short": 0.85
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 100
       },
@@ -3973,6 +4130,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3226",
+        "S6-B3235",
         "S6-B3237"
       ],
       "admitted": false,
@@ -3989,6 +4147,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 750,
         "short": 838
@@ -4016,6 +4175,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 69
       },
@@ -4040,6 +4200,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 25
       },
@@ -4064,6 +4225,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 124
       },
@@ -4088,6 +4250,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 28
       },
@@ -4115,6 +4278,7 @@
         "long": 1.0,
         "short": 0.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 636,
         "short": 788
@@ -4143,6 +4307,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 405,
         "short": 172
@@ -4170,6 +4335,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 800
       },
@@ -4195,6 +4361,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1727,
         "short": 1644
@@ -4220,17 +4387,22 @@
       "family": "cross_asset",
       "r5_fires": 1895,
       "changed_since_r5": true,
-      "survives_pct": 0.0,
+      "survives_pct": null,
       "survives_pct_by_side": {
-        "short": 0.0
+        "short": null
+      },
+      "unmeasured_gate_keys": {
+        "short": [
+          "risk_off_bond_signal_strong_cross_recent_5d"
+        ]
       },
       "r5_fires_by_side": {
         "short": 1895
       },
       "projected_step1_fires": 174.2,
-      "projected_current_gate": 0.0,
+      "projected_current_gate": 174.2,
       "reopen_candidate": false,
-      "stream": "LOOSEN",
+      "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
@@ -4252,6 +4424,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 395,
         "short": 523
@@ -4275,6 +4448,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -4298,6 +4472,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 7,
         "short": 2
@@ -4327,6 +4502,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 56
       },
@@ -4351,6 +4527,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -4377,6 +4554,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 986,
         "short": 959
@@ -4408,6 +4586,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 2753
       },
@@ -4437,6 +4616,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 233,
         "short": 315
@@ -4462,6 +4642,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -4484,6 +4665,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 250
       },
@@ -4513,6 +4695,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -4535,6 +4718,7 @@
       "survives_pct_by_side": {
         "short": 0.5865
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 3299
       },
@@ -4560,6 +4744,7 @@
         "long": 1.0,
         "short": 0.7679
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 44,
         "short": 56
@@ -4591,6 +4776,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 202,
         "short": 480
@@ -4622,15 +4808,20 @@
       "family": "smc",
       "r5_fires": 948,
       "changed_since_r5": true,
-      "survives_pct": 0.0,
+      "survives_pct": null,
       "survives_pct_by_side": {
-        "long": 0.0
+        "long": null
+      },
+      "unmeasured_gate_keys": {
+        "long": [
+          "smc_breaker_block_bullish_retest_recent_5d"
+        ]
       },
       "r5_fires_by_side": {
         "long": 948
       },
       "projected_step1_fires": 87.1,
-      "projected_current_gate": 0.0,
+      "projected_current_gate": 87.1,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -4722,15 +4913,20 @@
       "family": "smc",
       "r5_fires": 1598,
       "changed_since_r5": true,
-      "survives_pct": 0.0,
+      "survives_pct": null,
       "survives_pct_by_side": {
-        "short": 0.0
+        "short": null
+      },
+      "unmeasured_gate_keys": {
+        "short": [
+          "smc_breaker_block_bearish_retest_recent_5d"
+        ]
       },
       "r5_fires_by_side": {
         "short": 1598
       },
       "projected_step1_fires": 146.9,
-      "projected_current_gate": 0.0,
+      "projected_current_gate": 146.9,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -4766,6 +4962,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 147,
         "short": 404
@@ -4796,6 +4993,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 333
       },
@@ -4823,6 +5021,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -4847,6 +5046,7 @@
       "survives_pct_by_side": {
         "short": 0.3652
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 838
       },
@@ -4879,6 +5079,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 382
       },
@@ -4914,6 +5115,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 66
       },
@@ -4942,6 +5144,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 288
       },
@@ -4969,6 +5172,7 @@
         "long": 1.0,
         "short": 0.6667
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 395,
         "short": 558
@@ -5008,6 +5212,7 @@
         "long": 0.0488,
         "short": 0.0532
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1128,
         "short": 1805
@@ -5062,6 +5267,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 15
       },
@@ -5091,6 +5297,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 44
       },
@@ -5105,7 +5312,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1995b",
-        "S6-B3213"
+        "S6-B3213",
+        "S6-B3235"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5116,19 +5324,27 @@
       "family": "smc",
       "r5_fires": 1340,
       "changed_since_r5": true,
-      "survives_pct": 0.0,
+      "survives_pct": null,
       "survives_pct_by_side": {
-        "long": 0.0,
-        "short": 0.0
+        "long": null,
+        "short": null
+      },
+      "unmeasured_gate_keys": {
+        "long": [
+          "smc_ob_bullish_tap_recent_5d"
+        ],
+        "short": [
+          "smc_ob_bearish_tap_recent_5d"
+        ]
       },
       "r5_fires_by_side": {
         "long": 454,
         "short": 886
       },
       "projected_step1_fires": 123.2,
-      "projected_current_gate": 0.0,
+      "projected_current_gate": 123.2,
       "reopen_candidate": false,
-      "stream": "BOTH",
+      "stream": "TIGHTEN",
       "tightenable_keys": {
         "rsi_14": 1.0
       },
@@ -5179,6 +5395,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 231
       },
@@ -5209,6 +5426,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 262
       },
@@ -5237,6 +5455,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 433
       },
@@ -5266,6 +5485,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1141
       },
@@ -5293,6 +5513,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1139
       },
@@ -5318,6 +5539,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -5341,6 +5563,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 115,
         "short": 171
@@ -5369,6 +5592,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 4287
       },
@@ -5396,6 +5620,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1050,
         "short": 1383
@@ -5427,6 +5652,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 4
       },
@@ -5452,6 +5678,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 40,
         "short": 446
@@ -5480,6 +5707,7 @@
       "survives_pct_by_side": {
         "short": 0.8782
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 271
       },
@@ -5507,6 +5735,7 @@
         "long": 0.9945,
         "short": 0.4589
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 915,
         "short": 961
@@ -5534,6 +5763,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 1674
       },
@@ -5590,6 +5820,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1596
       },
@@ -5664,6 +5895,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 343
       },
@@ -5694,6 +5926,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -5723,6 +5956,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 330
       },
@@ -5747,6 +5981,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 112
       },
@@ -5771,6 +6006,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 1064
       },
@@ -5793,6 +6029,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -5817,6 +6054,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 324
       },
@@ -5843,6 +6081,7 @@
       "survives_pct_by_side": {
         "short": 0.1654
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 1880
       },
@@ -5875,6 +6114,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 206,
         "short": 386
@@ -5890,6 +6130,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3228",
+        "S6-B3235",
         "S6-B3237"
       ],
       "admitted": false,
@@ -5905,6 +6146,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 375
       },
@@ -5929,6 +6171,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 543
       },
@@ -5957,6 +6200,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 1140
       },
@@ -5985,6 +6229,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 534,
         "short": 966
@@ -6008,6 +6253,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -6028,6 +6274,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -6052,6 +6299,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 633
       },
@@ -6078,6 +6326,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 834
       },
@@ -6104,6 +6353,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 27
       },
@@ -6130,6 +6380,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -6153,6 +6404,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 1327,
         "short": 1208
@@ -6174,7 +6426,8 @@
         "S6-B3194",
         "S6-B3223",
         "S6-B3228",
-        "S6-B3232"
+        "S6-B3232",
+        "S6-B3235"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6190,6 +6443,7 @@
         "long": 1.0,
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 289,
         "short": 461
@@ -6218,6 +6472,7 @@
       "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {},
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
@@ -6246,6 +6501,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 212
       },
@@ -6282,6 +6538,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 78
       },
@@ -6306,6 +6563,7 @@
       "survives_pct_by_side": {
         "long": 0.7434
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 452
       },
@@ -6335,6 +6593,7 @@
       "survives_pct_by_side": {
         "short": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "short": 1384
       },
@@ -6369,6 +6628,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 163
       },
@@ -6393,6 +6653,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 255
       },
@@ -6434,6 +6695,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 658
       },
@@ -6470,6 +6732,7 @@
       "survives_pct_by_side": {
         "long": 1.0
       },
+      "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
         "long": 89
       },

@@ -251,8 +251,8 @@ compares FIRE LOGIC - the body and all it reaches, docstrings and the _strat pay
 (S6-B3235) - and is an UPPER bound on behaviour; `stream = TIGHTEN` rests on a source pattern for
 numeric comparisons and is a LOWER bound (a threshold reached through a helper or compared to a
 config constant is invisible to it); and `survives_pct` calls the LIVE strategy function on each
-fire's persisted signals (S6-B2814; `-` only for zero-fire strategies) and is a LOWER bound where
-a gate leg reads an unpersisted key. The campaign lanes are no longer a caveat: until S6-B3194 they
+fire's persisted signals (S6-B2814; `-` only for zero-fire strategies) - a LOWER bound where a gate
+leg reads a key some fires lack, UNMEASURED where no fire of a side carries it (S6-B3239). The campaign lanes are no longer a caveat: until S6-B3194 they
 came from a 12-word vocabulary heuristic over ticket rows, which labelled 44 strategies as campaigns
 when 4 were (output_audit/b3194_campaign_classification.json); they now come from the register below, and the JSON's `mention_tickets` keeps every row naming a strategy.
 
@@ -837,7 +837,7 @@ the ENGINE has no such limit, and DEPTH over all producer bands INCLUDING loosen
 numbers: it gets the survival check first, and where the current condition is rare, the LOOSENING
 half of its producer bands is scheduled as an engine depth sweep (W-L) rather than treated as a dead
 end. Two LOWER bounds, for different reasons: a survival rate is a lower bound where a gate leg
-reads a key the cube did not persist (S6-B2814); and a projected fire GAIN under a looser or new
+reads a key some fires did not persist (S6-B2814), and UNMEASURED - never 0.0 - where no fire of the side carries it (S6-B3239); and a projected fire GAIN under a looser or new
 condition is a lower bound because a bar that satisfies it but never fired under the old gate is
 absent from the cube (S6-B2810d).
 

@@ -157,7 +157,10 @@ def build(root: Path = ROOT) -> dict:
         sh = share.get(name)
         proj = r["projected_current_gate"]
         long_surv = (r.get("survives_pct_by_side") or {}).get("long")
-        if sh and long_surv is None:
+        # S6-B3239: a long side the view marks UNMEASURED (its gate reads a
+        # key absent from every R5 long fire) keeps its RAW share, labelled
+        um_long = (r.get("unmeasured_gate_keys") or {}).get("long")
+        if sh and long_surv is None and not um_long:
             # a strategy with R5 long fires must carry a long survival - an
             # absent one is a stale or partial status view, never a 1.0 (L642)
             raise ValueError(f"{name}: R5 long share {sh} but no long-side "
@@ -167,7 +170,8 @@ def build(root: Path = ROOT) -> dict:
         elif sh == 1.0:
             long_proj = proj  # every R5 fire is long: the strategy's survival IS the long side's
         else:
-            long_proj = round(r["projected_step1_fires"] * sh * (long_surv or 0.0), 1)
+            long_proj = round(r["projected_step1_fires"] * sh
+                              * (1.0 if um_long else (long_surv or 0.0)), 1)
         tightenable = any(v >= bss.COVERAGE_FLOOR
                           for v in (r.get("tightenable_keys") or {}).values())
         lane = r["stream"] if long_proj is None else bss.classify_stream(tightenable, long_proj)
@@ -176,6 +180,7 @@ def build(root: Path = ROOT) -> dict:
                "long_lane": lane, "cost": COST_MEANING.get(lane, "?"),
                "long_share_r5": None if sh is None else round(sh, 4),
                "long_survival_r5": long_surv,
+               "long_survival_unmeasured_keys": um_long or None,
                "projected_step1_fires_strategy": proj,
                "projected_step1_fires_long": long_proj,
                "step1_floor_met": (long_proj if long_proj is not None else proj) >= floor,

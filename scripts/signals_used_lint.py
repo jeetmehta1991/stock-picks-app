@@ -172,7 +172,15 @@ def analyse_function(mod: Module, fn: ast.FunctionDef) -> list:
                 lists[DECL_KW[c.func.id].index(kw.arg)] = kw.value
         for si, (fx, lst) in enumerate(zip([c.args[i] for i in fire_ix], lists)):
             side = ("long", "short")[si] if c.func.id == "_strat3" else "single"
-            rec = {"side": side, "module": mod.path.name, "function": fn.name,
+            # S6-B3239: the side's DIRECTION - a _strat3 side by position, a
+            # _strat / _strat_signal side by its constant direction argument
+            # (None when that argument is not a constant)
+            da = c.args[1] if side == "single" and len(c.args) > 1 else None
+            direction = (side if side != "single" else
+                         da.value if isinstance(da, ast.Constant)
+                         and da.value in ("long", "short") else None)
+            rec = {"side": side, "direction": direction,
+                   "module": mod.path.name, "function": fn.name,
                    "list_pos": ([lst.lineno, lst.col_offset, lst.end_lineno, lst.end_col_offset]
                                 if lst is not None else None)}
             if isinstance(fx, ast.Constant):

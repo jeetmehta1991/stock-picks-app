@@ -180,13 +180,26 @@ def attribute(key: str, idx) -> str:
     return hits[0] + extra
 
 
-def surviving_fires(name: str, frame: pd.DataFrame, survives_pct):
+def surviving_fires(name: str, frame: pd.DataFrame, survives_pct,
+                    unmeasured=None):
     """The T1 filter, reproduced from the builder's survival path: keep a fire
     iff the LIVE strategy function fires with the recorded direction on its
-    persisted signals. Identity (skipped) when the view says survives == 1.0."""
+    persisted signals. Identity (skipped) when the view says survives == 1.0.
+    S6-B3239: an UNMEASURED side's fires (its gate reads a key no R5 fire of
+    it persisted) are dropped first - the replay would read the key's default,
+    so none of them can be confirmed a survivor; survives_pct then covers the
+    measured sides only, and None means no measured side remains."""
     sigs = [bss._parse_signals(x) for x in frame["signals_at_entry"]]
+    dropped = False
+    if unmeasured:
+        keep_side = [str(d) not in unmeasured for d in frame["direction"]]
+        dropped = not all(keep_side)
+        frame = frame[pd.Series(keep_side, index=frame.index)]
+        sigs = [s for s, k in zip(sigs, keep_side) if k]
+        if survives_pct is None:
+            return frame, sigs, dropped
     if survives_pct is None or survives_pct >= 1.0:
-        return frame, sigs, False
+        return frame, sigs, dropped
     from backtest.signals.screener import ALL_STRATEGIES
     fn = ALL_STRATEGIES.get(name)
     if fn is None:
@@ -365,17 +378,33 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     # formula and inventory stand; the measured sections are replaced by the
     # workflow's own verdict (W-T T1: surviving fires below the floor
     # re-lanes the campaign to W-L - the engine, not the cube, must speak).
+    um = row.get("unmeasured_gate_keys") or {}
+    um_txt = "; ".join(f"{d} side reads {', '.join(ks)}" for d, ks in sorted(um.items()))
     if n_all == 0:
+        verdict = (
+            "**T1 VERDICT: 0 of the R5 fires survive the CURRENT gate - no "
+            "offline band level is measurable from this cube. Per the "
+            "workflow's T1 gate the campaign RE-LANES TO W-L (engine): the "
+            "producer bands below are the resim inventory it prices.**")
+        if um:
+            # S6-B3239: not a measured zero - the gate reads a key the cube
+            # never persisted, so survival cannot be measured from it at all
+            verdict = (
+                f"**T1 VERDICT: UNMEASURED (S6-B3239) - the CURRENT gate's {um_txt}, "
+                "absent from every R5 fire of that side, so the replay would "
+                "read a default and no survival, and no offline band level, is "
+                "measurable from this cube. Per the workflow's T1 gate the "
+                "campaign RE-LANES TO W-L (engine): a run at the current gate "
+                "produces fires carrying the key, and the producer bands below "
+                "are the resim inventory it prices.**")
         return "\n".join([
             f"# Table A - {name}", "", stamp, "",
             f"**Lane:** {row['stream']} | **family:** {row['family']} | "
             f"**status:** {row['status']} | **R5 fires:** {row['r5_fires']} | "
-            f"**surviving fires (T1): 0** (survives_pct {row['survives_pct']})",
+            f"**surviving fires (T1): 0** (survives_pct "
+            f"{'UNMEASURED' if row['survives_pct'] is None and um else row['survives_pct']})",
             "",
-            "**T1 VERDICT: 0 of the R5 fires survive the CURRENT gate - no "
-            "offline band level is measurable from this cube. Per the "
-            "workflow's T1 gate the campaign RE-LANES TO W-L (engine): the "
-            "producer bands below are the resim inventory it prices.**", "",
+            verdict, "",
             "## Formula (Section 1 of the SS6/#183 locked artifact)", "",
             "```python", body or "(no body extracted)", "```", "",
             "## Producer bands (resim inventory for the W-L campaign)", "",
@@ -392,6 +421,8 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
          f"**Lane:** {row['stream']} | **family:** {row['family']} | "
          f"**status:** {row['status']} | **R5 fires:** {row['r5_fires']} | "
          f"**surviving fires (T1):** {n_all}"
+         + (f" (the {um_txt}, absent from every R5 fire of that side - its fires "
+            "are UNMEASURED and dropped, S6-B3239)" if um else "")
          + (f" (survives_pct {row['survives_pct']})" if filtered else
             (" (code changed since R5; the status build's survival filter"
              f" measured survives_pct {row['survives_pct']} - every fire kept)"
@@ -804,7 +835,8 @@ def main() -> int:
         frame = tl[tl["strategy"] == name]
         if frame.empty:
             raise SystemExit(f"REFUSED: no R5 fires for {name} (fail closed)")
-        kept, sigs, filtered = surviving_fires(name, frame, r["survives_pct"])
+        kept, sigs, filtered = surviving_fires(name, frame, r["survives_pct"],
+                                               r.get("unmeasured_gate_keys"))
         md = render(name, r, kept, sigs, filtered, comps.get(name, []),
                     legs.get(name, ([], [])), idx, specs_names, stamp,
                     body=bodies.get(name, ""))

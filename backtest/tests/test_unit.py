@@ -38643,12 +38643,23 @@ def test_b2814_survival_calls_the_live_gate():
     # above_prev_high, the child carries smc_bos_bearish.
     assert rows["turtle_soup_short"]["survives_pct"] == 0.1654
     assert rows["avwap_252_breakout"]["survives_pct"] == 1.0
-    assert rows["smc_order_block_bounce"]["survives_pct"] == 0.0
+    # S6-B3239 (a), owner 2026-10-21: obb's gate reads keys no R5 fire of
+    # either side persisted, so its survival is UNMEASURED - None, the keys
+    # named - never the 0.0 default the replay used to read
+    assert rows["smc_order_block_bounce"]["survives_pct"] is None
+    assert set(rows["smc_order_block_bounce"]["unmeasured_gate_keys"]) == {"long", "short"}
     pop = [r for r in d["rows"] if r["survives_pct"] is not None]
-    assert len(pop) >= 200, f"survival must be near-universal, got {len(pop)}"
+    # S6-B3239: a fired row whose every side is UNMEASURED names its keys -
+    # accounted for, never a silent gap - so it counts toward the floor
+    unm = [r for r in d["rows"] if r["survives_pct"] is None and r["r5_fires"]
+           and set(r["unmeasured_gate_keys"]) == set(r["r5_fires_by_side"])]
+    assert len(pop) + len(unm) >= 200, (
+        f"survival must be near-universal, got {len(pop)} + {len(unm)} unmeasured")
     for r in d["rows"]:
         if r["survives_pct"] is None:
-            assert r["r5_fires"] == 0, (r["strategy"], "None only for zero-fire")
+            assert r["r5_fires"] == 0 or (
+                set(r["unmeasured_gate_keys"]) == set(r["r5_fires_by_side"])), (
+                r["strategy"], "None only for zero-fire or every side UNMEASURED")
     assert any("LIVE strategy function" in c or "live strategy function" in c
                for c in d["caveats"]), "the live-function caveat must ride"
     # and the hand-rule registry is retired from the builder
@@ -39327,9 +39338,25 @@ def test_b2836_table_a_directory_is_complete_and_honest():
         "archive/<date>-<subject>-admission-table-a/, with any live SPECS "
         "evidence citation and the README count (B3116 three_white_soldiers, "
         "S6-B3145 pairs_mean_reversion_long) - never widen this exemption")
+    _vrow = {r["strategy"]: r for r in view["rows"]}
+
+    def _short_form(p, t):
+        """S6-B3239: the B2845 zero-survivor SHORT FORM (formula + resim
+        inventory + the T1 verdict - every retention division would be 0/0)
+        is admitted only for a row whose survival is UNMEASURED or a measured
+        zero; a lane move brought obb's into this folder."""
+        if "**T1 VERDICT:" not in t:
+            return False
+        _r = _vrow.get(p.stem) or {}
+        assert _r.get("survives_pct") in (None, 0.0), (p.name, _r.get("survives_pct"))
+        assert "## Formula (Section 1" in t and "RE-LANES TO W-L" in t, p.name
+        return True
+
     for p in d.glob("*.md"):
         t = p.read_text(encoding="utf-8")
         assert "Build (L803/#309)" in t, p.name
+        if _short_form(p, t):
+            continue
         # B2838 (owner-caught): the canonical SS6 shape leads - one row per
         # parameter, BOTH layers - with the measured sections as its inputs
         assert "## Table A - parameter inventory" in t, p.name
@@ -39389,8 +39416,8 @@ def test_b2836_table_a_directory_is_complete_and_honest():
            "pairs_mean_reversion_short.md").read_text(encoding="utf-8")
     assert "ppo_signal `>= -0.858`" in prs
     for p in d.glob("*.md"):
-        assert "| BAND |" in p.read_text(encoding="utf-8"), (
-            p.name, "R1 band sub-rows missing")
+        _t = p.read_text(encoding="utf-8")
+        assert _short_form(p, _t) or "| BAND |" in _t, (p.name, "R1 band sub-rows missing")
     wro = (d / "williams_r_oversold.md").read_text(encoding="utf-8")
     assert "rsi_2 escape-hatch thresholds" in wro, "STRATEGY_EXTRAS row"
     assert "DEFINED-NO-ACTUATOR" in tbc, (
@@ -39417,6 +39444,8 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     for p in d.glob("*.md"):
         t2 = p.read_text(encoding="utf-8")
         assert "## Formula (Section 1" in t2, p.name
+        if _short_form(p, t2):
+            continue    # S6-B3239: the short form's formula is the gate body
         assert "PRODUCER LAYER" in t2 and "STRATEGY LAYER" in t2, p.name
         assert "```python" in t2, (p.name, "gate body missing")
         formula, _, rest = t2.partition("## Table A - parameter inventory")
@@ -39442,8 +39471,13 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     for p in (root / "strategy_optimisation").rglob("*.md"):
         assert "BANDS-TO-DEFINE" not in p.read_text(encoding="utf-8"), (
             p.name, "an undefined band survived the B2845 curation")
-    obb = (both_dir / "smc_order_block_bounce.md").read_text(encoding="utf-8")
-    assert "T1 VERDICT: 0 of the R5 fires survive" in obb
+    # S6-B3239 (a), owner 2026-10-21: obb's gate reads keys no R5 fire
+    # persisted, so its T1 is UNMEASURED, its lane follows the raw
+    # projection, and its zero-survivor file sits in that lane's folder
+    obb_lane = {r["strategy"]: r["stream"] for r in view["rows"]}["smc_order_block_bounce"]
+    obb = ((d if obb_lane == "TIGHTEN" else both_dir) / "smc_order_block_bounce.md"
+           ).read_text(encoding="utf-8")
+    assert "T1 VERDICT: UNMEASURED (S6-B3239)" in obb and "smc_ob_bullish_tap_recent_5d" in obb
     assert "RE-LANES TO W-L" in obb
     ms = (both_dir / "morning_star.md").read_text(encoding="utf-8")
     assert "## Formula (Section 1" in ms
@@ -39516,7 +39550,7 @@ def test_b2836_table_a_directory_is_complete_and_honest():
         if p.name == "README.md":
             continue
         t3 = p.read_text(encoding="utf-8")
-        if "T1 VERDICT: 0 of the R5 fires survive" in t3:
+        if "**T1 VERDICT:" in t3:   # S6-B3239: measured zero or UNMEASURED
             continue   # zero-survivor short form (re-laned to W-L) - no
             # bands or factorial exist for a table with nothing to band
         assert "DEFN:" in t3, (p.name, "Formula DEFN lines missing")
@@ -59725,8 +59759,10 @@ def test_b3232_long_shortlist_reads_in_sample_only_and_open_longs():
         assert r["long_survival_r5"] == (v.get("survives_pct_by_side") or {}).get("long"), r
         if sh not in (0.0, 1.0):
             # within rounding: the row stores the share to 4 places, the
-            # build multiplies the unrounded one
-            want = v["projected_step1_fires"] * sh * r["long_survival_r5"]
+            # build multiplies the unrounded one; an UNMEASURED long side
+            # keeps its raw share (S6-B3239)
+            want = v["projected_step1_fires"] * sh * (
+                1.0 if r["long_survival_unmeasured_keys"] else r["long_survival_r5"])
             assert abs(r["projected_step1_fires_long"] - want) <= 0.1, (r, want)
             asym += r["long_survival_r5"] != v["survives_pct"]
     assert asym >= 10, asym  # 13 at B3139q-r82: rows with R5 fires both ways (the r80 probe's 12 counted registry duals)
@@ -59738,7 +59774,14 @@ def test_b3232_long_shortlist_reads_in_sample_only_and_open_longs():
     for v in fired:
         n = v["r5_fires_by_side"]
         assert sum(n.values()) == v["r5_fires"], v["strategy"]
-        mean = sum(n[d_] * v["survives_pct_by_side"][d_] for d_ in n) / v["r5_fires"]
+        # S6-B3239: an UNMEASURED side has no survival, so the mean runs over
+        # the MEASURED sides, and a row with none has none
+        meas = [d_ for d_ in n if v["survives_pct_by_side"][d_] is not None]
+        if not meas:
+            assert v["survives_pct"] is None and v["unmeasured_gate_keys"], v["strategy"]
+            continue
+        mean = (sum(n[d_] * v["survives_pct_by_side"][d_] for d_ in meas)
+                / sum(n[d_] for d_ in meas))
         assert abs(mean - v["survives_pct"]) <= 1e-4, (v["strategy"], mean, v["survives_pct"])
 
 
@@ -60523,3 +60566,137 @@ def test_b3228_strategy_extras_bands_are_counted_level_by_level(monkeypatch):
         for ln in rows:
             c = [x.strip() for x in ln.strip("|").split("|")]
             assert c[2] == "2" and c[-3:] == ["1", "1", "0"], (rel, c)
+
+
+def test_b3239_a_gate_key_r5_never_persisted_reads_unmeasured_not_zero():
+    """S6-B3239 (a) (owner ruled 2026-10-21, 'Approve all recs execute'): a
+    side whose gate reads a key absent from EVERY one of that side's R5 fires
+    is UNMEASURED - the survival replay would read the key's default, so the
+    0.0 it produced was not a measurement (L580). Its survival is None, the
+    raw share stands in the current-gate projection, the keys are named, and
+    Table A and the long shortlist follow. MEASURED B3139q-r80 and reproduced
+    r85: 9 sides carry such a key, 8 read 0.0; shooting_star_short's absent
+    keys are OR legs and it survives 1.0, so it stays measured."""
+    import json as _json
+    import sys
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+    import build_table_a as bta
+    import signals_used_lint as sul
+    from backtest import config as _c
+
+    # 1. which sides are UNMEASURED - behaviour, both directions
+    sigs = [{"a": 1, "b": 2}, {"a": 1}, {"c": 3}]
+    dirs = ["long", "long", "short"]
+    keys = {"long": {"a", "x"}, "short": {"c"}}
+    assert bss.unmeasured_sides(sigs, dirs, {"long": 0.0, "short": 0.5}, keys) == {"long": ["x"]}
+    # survives 1.0: measured - the absent key never decided (an OR leg)
+    assert bss.unmeasured_sides(sigs, dirs, {"long": 1.0, "short": 0.5}, keys) == {}
+    # present on SOME fires of the side is not absent from every one
+    assert bss.unmeasured_sides(sigs, dirs, {"long": 0.5}, {"long": {"b"}}) == {}
+    # present only on the OTHER side's fires is still absent from this side
+    assert bss.unmeasured_sides(sigs, dirs, {"long": 0.5}, {"long": {"c"}}) == {"long": ["c"]}
+    # a None value is not a persisted value
+    assert bss.unmeasured_sides([{"k": None}], ["long"], {"long": 0.0},
+                                {"long": {"k"}}) == {"long": ["k"]}
+
+    # ... and the arithmetic downstream of it, as pure functions
+    assert bss.measured_survival({"long": 3, "short": 2}, {"long": 4, "short": 10},
+                                 {"long": None, "short": 0.2}) == 0.2
+    assert bss.measured_survival({"short": 1}, {"short": 5}, {"short": None}) is None
+    # a MEASURED side scales by its own survival, an UNMEASURED one keeps its raw share
+    got = bss.current_gate_projection(100.0, 10, {"long": 4, "short": 6},
+                                      {"long": None, "short": 0.5}, 0.5)
+    assert abs(got - (100.0 * (0.4 * 1.0 + 0.6 * 0.5))) < 1e-9, got
+    assert bss.current_gate_projection(100.0, 10, {"short": 10}, {"short": None}, None) == 100.0
+    # with no UNMEASURED side the B2822 rule is unchanged: raw x survives
+    assert bss.current_gate_projection(100.0, 10, {"long": 10}, {"long": 0.3}, 0.3) == 30.0
+    assert bss.current_gate_projection(50.0, 0, {}, {}, None) == 50.0
+
+    # 2. the gate keys per direction, from the lint's side model
+    rows = [{"strategy": "s", "sides": [
+        {"side": "single", "direction": "short", "status": "OK",
+         "feeds": [("lit", "k1"), ("lit", "borrow_ok")]},
+        {"side": "long", "direction": "long", "status": "OK",
+         "feeds": [("dyn", 'f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"')]},
+        {"side": "single", "direction": None, "status": "OK", "feeds": [("lit", "k2")]},
+        {"side": "single", "direction": "long", "status": "CONSTANT_FIRES"}]}]
+    got = bss.gate_keys_by_direction(rows)["s"]
+    assert got == {"short": {"k1", "k2"},
+                   "long": {f"price_above_ema_{_c.STRAT_EMA_SPAN}", "k2"}}, got
+    # and the lint now records each side's direction
+    lint = sul.analyse()
+    recs = [s for r in lint for s in r["sides"]]
+    assert all(s["direction"] == s["side"] for s in recs if s["side"] in ("long", "short"))
+    single = {s["direction"] for s in recs if s["side"] == "single"}
+    assert {"long", "short"} <= single <= {"long", "short", None}, single
+
+    # 3. the committed status view
+    view = _json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                       .read_text(encoding="utf-8"))
+    vrows = {r["strategy"]: r for r in view["rows"]}
+    um = {k: r for k, r in vrows.items() if r["unmeasured_gate_keys"]}
+    assert um, "positive control: R5 cannot see some current gate keys"
+    for k, r in vrows.items():
+        n, ss = r["r5_fires_by_side"], r["survives_pct_by_side"]
+        for d, ks in r["unmeasured_gate_keys"].items():
+            assert ss[d] is None and ks, (k, d)
+        if r["unmeasured_gate_keys"]:
+            meas = [d for d in n if ss[d] is not None]
+            assert (r["survives_pct"] is None) == (not meas), k
+            want = r["projected_step1_fires"] * sum(
+                n[d] / r["r5_fires"] * (1.0 if ss[d] is None else ss[d]) for d in n)
+            assert abs(r["projected_current_gate"] - want) <= 0.1, (k, want)
+    assert "shooting_star_short" in vrows and not vrows["shooting_star_short"]["unmeasured_gate_keys"]
+    md = (root / "STRATEGY_OPTIMISATION_STATUS.md").read_text(encoding="utf-8")
+    for k, r in um.items():
+        line = [ln for ln in md.splitlines() if ln.startswith(f"| {k} |")]
+        assert len(line) == 1, k
+        cell = [c.strip() for c in line[0].strip("|").split("|")][5]
+        if r["survives_pct"] is None:
+            assert cell == "UNMEASURED", (k, cell)
+        else:
+            assert cell.endswith("UNMEASURED)") and "%" in cell, (k, cell)
+
+    # 4. Table A drops an UNMEASURED side's fires before the live filter
+    frame = _pd.DataFrame({"direction": ["long", "short"],
+                           "signals_at_entry": ["{}", "{}"]})
+    kept, _s, f = bta.surviving_fires("x", frame, None, {"long": ["k"], "short": ["k"]})
+    assert len(kept) == 0 and f
+    kept, _s, f = bta.surviving_fires("x", frame, 1.0, {"long": ["k"]})
+    assert list(kept["direction"]) == ["short"] and f
+    kept, _s, f = bta.surviving_fires("x", frame, 1.0, None)
+    assert len(kept) == 2 and not f
+    # the renderer's zero-survivor branch names the side and its keys
+    md = bta.render('x', {'stream': 'TIGHTEN', 'family': 'f', 'status': 'NOT-STARTED',
+                          'r5_fires': 5, 'survives_pct': None,
+                          'unmeasured_gate_keys': {'short': ['k_new']}},
+                    frame.iloc[0:0], [], True, [], ([], []), [], set(), 'STAMP',
+                    body='fs = ...')
+    assert 'T1 VERDICT: UNMEASURED (S6-B3239)' in md and 'short side reads k_new' in md, md[:400]
+    assert 'survives_pct UNMEASURED' in md and '0 of the R5 fires survive' not in md
+    # and every committed lane file of an UNMEASURED strategy says so
+    for p in (root / "strategy_optimisation" / "tighten").rglob("*.md"):
+        r = vrows.get(p.stem)
+        if r and r["unmeasured_gate_keys"] and p.parent.name in ("tighten", "both") \
+                and r["stream"] == ("BOTH" if p.parent.name == "both" else "TIGHTEN"):
+            t = p.read_text(encoding="utf-8")
+            assert "UNMEASURED" in t and "0 of the R5 fires survive" not in t, p.name
+
+    # 5. the long shortlist keeps an UNMEASURED long side's raw share, labelled
+    sl = _json.loads((root / "output_audit" / "b3232_long_campaign_shortlist.json")
+                     .read_text(encoding="utf-8"))
+    seen = 0
+    for row in sl["ranked"] + sl["unranked"]:
+        v = vrows[row["strategy"]]
+        u = (v["unmeasured_gate_keys"] or {}).get("long")
+        assert row["long_survival_unmeasured_keys"] == (u or None), row["strategy"]
+        if u and row["long_share_r5"] not in (None, 1.0):
+            seen += 1
+            want = v["projected_step1_fires"] * row["long_share_r5"]
+            assert abs(row["projected_step1_fires_long"] - want) <= 0.1, row
+    assert seen >= 1, "positive control: an open two-sided row with an UNMEASURED long side"
