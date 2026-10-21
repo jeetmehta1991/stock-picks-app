@@ -26039,6 +26039,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L946 (B3139q-r80): a per-side projection inherited a whole-strategy rate"),
         ("READ ITS SOURCE FIRST; RUN --help ONLY WHERE A PARSER IS CONFIRMED",
          "L947 (B3139q-r81): --help rewrote a committed artifact"),
+        # B3139q-r83: L943 instance 2, same call as the skill edit.
+        ("THE PYRAMID GATE PRINTS moved_line_citations= BEFORE PYTEST STARTS",
+         "L943 instance 2 (B3139q-r82): a docstring fix moved 27 code citations"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26275,7 +26278,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 340 -> 341 at B3139q-r77 (L944's decision-ticket clause; same call).
     # 341 -> 344 at B3139q-r82 (L945's reach clause, L946's and L947's rows;
     # same call as the skill edit).
-    assert len(gutted) == 344, gutted
+    # 344 -> 345 at B3139q-r83 (L943 instance 2's gate-disclosure clause;
+    # same call as the skill edit).
+    assert len(gutted) == 345, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -60211,3 +60216,100 @@ def test_b3196_selector_rule_is_in_the_durable_docs():
         assert frag in item, frag
     ln = (root / "LEARNINGS.md").read_text(encoding="utf-8")
     assert re.search(r"(?m)^### L940 - A FLAG THAT SELECTS A PARAMETER", ln)
+
+
+def test_b3245_the_gate_discloses_code_line_citations_an_edit_moved():
+    """S6-B3245 / L943 instance 2 (B3139q-r83): the first draft of B3139q-r82's
+    smc_ict.py docstring correction added one line and moved 27 code citations
+    of that file, 16 of them correct at HEAD - SPECS evidence and the LEG_DEFN
+    text Table A renders among them - and no test reads that: test_b3231 holds
+    only screener.py's citations at zero, and the S6-B3139bb freeze counts per
+    CITING file, which an edit to the CITED file never changes.
+    scripts/moved_line_citations.py reports each code citation an edit moved;
+    scripts/pyramid_gate.py prints it before pytest starts and writes
+    moved_line_citations= into its footer - a disclosure, never a refusal
+    (L586, L721). Pinned: the line map and the mover on planted cases (moved,
+    rewritten, above the edit, already updated); the incident replayed on
+    HEAD's smc_ict.py over HEAD's citing files, equal to an independent count;
+    the exclusion equal to test_b3231's; the gate computing it before pytest
+    and footering it (L654); the CLI refusing an unknown argument (#327)."""
+    import ast as _ast
+    import re as _re
+    import subprocess as _sp
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import moved_line_citations as mlc
+    import pyramid_gate as pg
+    # (1) planted: a line inserted at line 2 moves a citation of line 3 to 4
+    head, work = "a\nb\nc\nd\n", "a\nNEW\nb\nc\nd\n"
+    m, first = mlc.line_map(mlc._lines(head), mlc._lines(work))
+    assert first == 2 and m[1] == 1 and m[3] == 4, (first, m)
+    cite = "x = 'mod.py" + ":3'\ny = 'mod.py" + ":1'\n"
+    assert mlc.moved_in_text("mod.py", m, first, cite, cite) == [(1, 3, 4)]
+    m2, f2 = mlc.line_map(mlc._lines(head), mlc._lines("a\nB2\nc\nd\n"))
+    two = "'mod.py" + ":2' 'mod.py" + ":3'"
+    assert mlc.moved_in_text("mod.py", m2, f2, two, two) == [(1, 2, None)]
+    assert m2[3] == 3 and m2[4] == 4      # a line-neutral rewrite moves nothing else
+    updated = "x = 'mod.py" + ":4'\ny = 'mod.py" + ":1'\n"
+    assert mlc.moved_in_text("mod.py", m, first, cite, updated) == []
+    # (2) the incident: HEAD's smc_ict.py with one docstring line inserted after
+    # the OTE entry, over HEAD's own citing files, against an independent count
+    def git(*a):
+        return _sp.run(["git", *a], cwd=root, capture_output=True, text=True,
+                       encoding="utf-8", errors="replace").stdout
+    hs = git("show", "HEAD:backtest/signals/smc_ict.py")
+    lines = mlc._lines(hs)
+    k = next(i for i, ln in enumerate(lines) if "smc_ote_long_zone / smc_ote_short_zone" in ln)
+    draft = "\n".join(lines[:k + 1] + ["        (an inserted docstring line)"] + lines[k + 1:])
+    pat = mlc.cite_pattern("smc_ict.py")
+    citing = [p[len("HEAD:"):] for p in git("grep", "-l", "-E", "smc_ict[.]py:[0-9]",
+                                             "HEAD", "--", "backtest", "scripts").split()
+              if p.endswith(".py")]
+    corpus = {p: (git("show", f"HEAD:{p}"),) * 2 for p in citing}
+    want = sum(1 for p, (t, _w) in corpus.items()
+               if p.split("/")[-1] not in mlc.FROZEN_CITERS
+               for n in pat.findall(t) if int(n) >= k + 2)
+    hits = mlc.moved_citations(root, changed={"backtest/signals/smc_ict.py": (hs, draft)},
+                               corpus=corpus)
+    assert len(hits) == want and all(h["now"] == h["cited"] + 1 for h in hits), (len(hits), want)
+    planted = {"scripts/plant.py": ("e = 'smc_ict.py" + f":{k + 3}'\n",) * 2}
+    assert mlc.moved_citations(root, changed={"backtest/signals/smc_ict.py": (hs, draft)},
+                               corpus=planted) == [
+        {"module": "backtest/signals/smc_ict.py", "citing": "scripts/plant.py",
+         "line": 1, "cited": k + 3, "now": k + 4}]
+    assert mlc.moved_citations(root, changed={"backtest/signals/smc_ict.py": (hs, hs)},
+                               corpus=planted) == []
+    # (3) the exclusion is test_b3231's, by the same name
+    assert mlc.FROZEN_CITERS == frozenset({"b974_classify_signal_orphan_17.py"})
+    assert 'exempt = {"b974_classify_signal_orphan_17.py"}' in _P(__file__).read_text(encoding="utf-8")
+    # (4) wiring (L654): run() computes it BEFORE pytest starts and footers it
+    gate = (root / "scripts" / "pyramid_gate.py").read_text(encoding="utf-8")
+    run = next(n for n in _ast.parse(gate).body
+               if isinstance(n, _ast.FunctionDef) and n.name == "run")
+    calls = [n for n in _ast.walk(run) if isinstance(n, _ast.Call)]
+    mc = [n.lineno for n in calls if _ast.unparse(n.func) == "_moved_citations_line"]
+    pc = [n.lineno for n in calls if _ast.unparse(n.func) == "subprocess.call"]
+    assert mc and pc and min(mc) < min(pc), (mc, pc)
+    assert any(isinstance(n, _ast.JoinedStr) and "moved_line_citations=" in _ast.unparse(n)
+               for n in _ast.walk(run))
+    assert not pg._moved_citations_line(root).startswith("unreadable")
+    # a warning printed before pytest must FLUSH: the standard gate run sends
+    # stdout to a file, where an unflushed print surfaces only at exit (the
+    # S6-B3163 battery warning had shipped that way)
+    early = [n for n in calls if _ast.unparse(n.func) == "print" and n.lineno < min(pc)]
+    assert len(early) >= 2, early
+    assert all(any(k.arg == "flush" and _ast.unparse(k.value) == "True" for k in n.keywords)
+               for n in early), [n.lineno for n in early]
+    # ... and BEFORE the output_audit snapshot: the gate's stdout is usually
+    # redirected into output_audit, so a line flushed after the snapshot is a
+    # mid-run write to the read-set (gate r83 re-ran 91 tests over its .out)
+    snap = [n.lineno for n in calls if _ast.unparse(n.func) == "output_audit_snapshot"]
+    assert snap and all(n.lineno < min(snap) for n in early), (snap, [n.lineno for n in early])
+    # (5) the CLI parses its arguments (#327): an unknown one refuses
+    r = _sp.run([sys.executable, str(root / "scripts" / "moved_line_citations.py"), "--bogus"],
+                cwd=root, capture_output=True, text=True, timeout=120)
+    assert r.returncode == 2 and "unrecognized arguments" in r.stderr, (r.returncode, r.stderr[-300:])
+    assert _re.search(r"moved_line_citations=", gate)

@@ -3091,6 +3091,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r76 / L943) - A TEXT EDIT MOVES LINES TOO.** B3139q-r74's bullet rewrite (first changed line 258, net -6) moved the cited lines of 24 of 26 live-code screener.py citations without the L901 grep; 3 had been right and 21 were already wrong. ENFORCED BY test_b3231_screener_is_cited_by_symbol_not_line (zero live-code line citations of screener.py, one asserted-exact exemption), fail-proved.
 
+**INSTANCE 2 (B3139q-r83 / L943) - A DOCSTRING FIX MOVED 27 CODE CITATIONS OF THE FILE IT FIXED.** The first draft of B3139q-r82's smc_ict.py docstring correction added one line and moved 27 code and 4 doc citations of smc_ict.py, 16 and 3 of them correct at HEAD; the L901 grep ran after the edit and before the gate, and the edits were committed reflowed line-count-neutral. ENFORCED BY the pyramid gate's moved_line_citations= disclosure (scripts/moved_line_citations.py, printed before pytest starts), pinned by test_b3245_the_gate_discloses_code_line_citations_an_edit_moved.
+
 **INSTANCE (B3139q-r82 / L945) - THE POST-FIX SWEEP STOPPED AT EXECUTABLE RESTATEMENTS.** r79 withdrew the short regime default and corrected the scripts and tests restating it, while 12 strategy docstrings and 2 engine comments kept stating it as current until r82. Mechanism: test_b1248_withdrawn_short_default_is_never_stated_as_current.
 
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)

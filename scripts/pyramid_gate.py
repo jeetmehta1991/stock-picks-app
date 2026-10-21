@@ -534,24 +534,36 @@ def run(out: Path, root: Path, pytest_args: list[str],
     # L942: first, and before any write - a committed record is evidence.
     tracked = refusal_tracked_record(Path(out), Path(root))
     if tracked:
-        print(tracked)
+        print(tracked, flush=True)
         return EXIT_REFUSED_TRACKED_RECORD
     engine_start = _engine_inflight()
     refused = refusal_beside_wave(engine_start, beside_wave)
     if refused:
         Path(out).write_text(refused + "\nexit=%d\n" % EXIT_REFUSED_BESIDE_WAVE,
                              encoding="utf-8")
-        print(refused)
+        print(refused, flush=True)
         return EXIT_REFUSED_BESIDE_WAVE
+    # S6-B3245 (L943 instance 2): code line citations this tree's edits
+    # MOVED - shown BEFORE pytest starts, while a text edit can still be
+    # reflowed line-count-neutral, and written into the footer.
+    moved_cites = _moved_citations_line(root)
+    if moved_cites != "none":
+        print("  NOTE (S6-B3245/L943): this tree's edits MOVED code line "
+              "citations - %s. A text-only edit can be reflowed "
+              "line-count-neutral before the commit." % moved_cites, flush=True)
+    # S6-B3245: every print before pytest happens BEFORE the output_audit
+    # snapshot - the gate's stdout is usually redirected INTO output_audit,
+    # and a flushed line after the snapshot reads as a mid-run write (gate
+    # r83 re-ran 91 tests over its own .out).
+    power_start = _power_state()
+    if power_start.startswith("battery"):
+        print(f"[power] S6-B3163: the gate starts ON BATTERY ({power_start}) - a "
+              "battery sleep suspends this run until the machine wakes", flush=True)
     oa_before = output_audit_snapshot(root)
     oa_state_before = output_audit_state(root)
     before = fingerprint(root)
     t0 = time.time()
     chain_start = _chain_inflight()
-    power_start = _power_state()
-    if power_start.startswith("battery"):
-        print(f"[power] S6-B3163: the gate starts ON BATTERY ({power_start}) - a "
-              "battery sleep suspends this run until the machine wakes")
     # B2856 (S6-B2854b): a stopper needs the TREE, not the wrapper. TaskStop
     # on the launching shell orphans this process and its pytest child (four
     # processes were hand-killed at B2854, two racing on one artifact). The
@@ -630,6 +642,7 @@ def run(out: Path, root: Path, pytest_args: list[str],
                      f"readset={rs_verdict}\n"
                      f"readset_rerun={rs_rerun}\n"
                      f"readset_suite_writes={rs_writes}\n"
+                     f"moved_line_citations={moved_cites}\n"
                      f"stamp_binding={binding}\n")
         print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
         if chain != "none":
@@ -909,6 +922,18 @@ def _power_state(status: dict | None = None) -> str:
         return "unknown"
     except Exception:
         return "unknown"
+
+
+def _moved_citations_line(root) -> str:
+    """S6-B3245 (L943 instance 2): the code line citations the working
+    tree's edits MOVED, as scripts/moved_line_citations.py summarises them,
+    or 'unreadable (<error>)'. A disclosure, never a refusal - and never
+    raises, like the gate's other disclosures."""
+    try:
+        import moved_line_citations as _mlc
+        return _mlc.summary(_mlc.moved_citations(Path(root)))
+    except Exception as e:
+        return f"unreadable ({type(e).__name__})"
 
 
 def _chain_inflight() -> str:
