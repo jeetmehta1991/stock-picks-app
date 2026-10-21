@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "6f532c001",
-    "generated_at": "2026-10-21 00:36:34"
+    "source_commit": "c52cbf68b",
+    "generated_at": "2026-10-21 01:16:09"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -36,10 +36,13 @@
     "three_black_crows_short"
   ],
   "campaign_opens": [
+    "cmf_flip",
     "smc_equal_lows_sweep_long",
     "smc_inverse_fvg",
     "smc_liquidity_sweep_reversal",
-    "smc_order_block_bounce"
+    "smc_order_block_bounce",
+    "squeeze_breakout",
+    "williams_r_oversold"
   ],
   "rows": [
     {
@@ -382,7 +385,8 @@
       "mention_tickets": [
         "S6-B2418",
         "S6-B3078",
-        "S6-B3237"
+        "S6-B3237",
+        "S6-B3249"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -539,7 +543,8 @@
         "S6-B3223",
         "S6-B3224",
         "S6-B3228",
-        "S6-B3231"
+        "S6-B3231",
+        "S6-B3253"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -743,7 +748,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3249"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -830,19 +837,25 @@
       "tightenable_keys": {
         "rsi_14": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3246"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3246"
+      ],
       "mention_tickets": [
         "S6-B2836",
         "S6-B2841",
         "S6-B3117a",
         "S6-B3223",
         "S6-B3232",
-        "S6-B3237"
+        "S6-B3237",
+        "S6-B3246",
+        "S6-B3251"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "consec_downdays_quality_long",
@@ -1262,7 +1275,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3252"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1437,7 +1452,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3237"
+        "S6-B3237",
+        "S6-B3249"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2113,7 +2129,8 @@
         "S6-B3094e",
         "S6-B3122",
         "S6-B3154a",
-        "S6-B3180"
+        "S6-B3180",
+        "S6-B3253"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2773,7 +2790,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2810b"
+        "S6-B2810b",
+        "S6-B3249"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2801,7 +2819,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3249"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -2855,7 +2875,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2418",
-        "S6-B3237"
+        "S6-B3237",
+        "S6-B3249"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2999,7 +3020,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2810b"
+        "S6-B2810b",
+        "S6-B3249"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3130,7 +3152,8 @@
         "S6-B3202",
         "S6-B3209",
         "S6-B3223",
-        "S6-B3231"
+        "S6-B3231",
+        "S6-B3253"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4077,7 +4100,8 @@
       "mention_tickets": [
         "S6-B3226",
         "S6-B3235",
-        "S6-B3237"
+        "S6-B3237",
+        "S6-B3252"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4103,7 +4127,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3252"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -4376,7 +4402,8 @@
       "mention_tickets": [
         "S6-B2418",
         "S6-B3227",
-        "S6-B3235"
+        "S6-B3235",
+        "S6-B3249"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4600,7 +4627,8 @@
       "mention_tickets": [
         "S6-B2418",
         "S6-B2645b",
-        "S6-B2649"
+        "S6-B2649",
+        "S6-B3249"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5494,15 +5522,20 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3248"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3248"
+      ],
       "mention_tickets": [
         "S6-B2810b",
-        "S6-B3232"
+        "S6-B3232",
+        "S6-B3248"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "squeeze_breakout_with_smart_money_long",
@@ -5526,7 +5559,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2810b",
-        "S6-B3235"
+        "S6-B3235",
+        "S6-B3248"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6416,8 +6450,12 @@
       "tightenable_keys": {
         "williams_r": 1.0
       },
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3247"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3247"
+      ],
       "mention_tickets": [
         "S6-B2383",
         "S6-B3117a",
@@ -6427,11 +6465,14 @@
         "S6-B3223",
         "S6-B3228",
         "S6-B3232",
-        "S6-B3235"
+        "S6-B3235",
+        "S6-B3247",
+        "S6-B3251",
+        "S6-B3253"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "williams_stoch_dual",
@@ -6549,7 +6590,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3252"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -6678,7 +6721,8 @@
         "S6-B3135",
         "S6-B3139c",
         "S6-B3171",
-        "S6-B3215"
+        "S6-B3215",
+        "S6-B3252"
       ],
       "admitted": true,
       "roster_roles": [

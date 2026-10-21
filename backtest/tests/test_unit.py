@@ -42972,8 +42972,10 @@ def test_b2993_newly_fired_trigger_blocks_once(monkeypatch, tmp_path):
                      "source": "planted"}})
     first = vtc.scan_deferral_trigger_fired([], state_path=str(sp))
     assert first and "S6-TEST2" in first[0]
+    # S6-B3250: the state records each firing's VALUE too, so a trigger that
+    # stays fired and keeps rising re-blocks (test_b3250)
     assert _json.loads(sp.read_text(encoding="utf-8")) == {
-        "fired": ["S6-TEST2"]}
+        "fired": ["S6-TEST2"], "values": {"S6-TEST2": 3}}
     assert not vtc.scan_deferral_trigger_fired([], state_path=str(sp))
 
 
@@ -60700,3 +60702,205 @@ def test_b3239_a_gate_key_r5_never_persisted_reads_unmeasured_not_zero():
             want = v["projected_step1_fires"] * row["long_share_r5"]
             assert abs(row["projected_step1_fires_long"] - want) <= 0.1, row
     assert seen >= 1, "positive control: an open two-sided row with an UNMEASURED long side"
+
+
+def test_b3250_trigger_counts_unread_flips_and_a_rise_reblocks(monkeypatch, tmp_path):
+    """S6-B3250 (B3139q-r86): S6-B2620b's registered trigger read 6 against a
+    baseline of 3 and nothing blocked. The baseline was a hand-kept integer
+    whose promised bump never landed, so two later mixed flips (2026-10-08)
+    went unread; and the turn gate blocked once per ticket id, so a trigger
+    that STAYED fired absorbed every rise in silence. Now the evaluator
+    counts the mixed flips NOT in a reviewed register of dispositioned ones,
+    and the gate records each firing's value and re-blocks once on a rise."""
+    import io as _io
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    _scr = str(_P(__file__).resolve().parents[2] / "scripts")
+    if _scr not in _sys.path:
+        _sys.path.insert(0, _scr)
+    import deferral_trigger_audit as dta
+    import scripts.verify_turn_compliance as vtc
+
+    # 1. the register: every entry is a real mixed flip in the log, with a
+    #    reason - no phantom, no blank - and the live value is what is left
+    stamps = dta._mixed_flip_stamps()
+    assert len(stamps) == dta._mixed_class_ledger_flips() >= 6
+    for k, why in dta.DISPOSITIONED_MIXED_FLIPS.items():
+        assert k in stamps, (k, "a dispositioned flip the log does not hold")
+        assert str(why).strip(), k
+    assert dta._undispositioned_mixed_flips() == sum(
+        1 for s in stamps if s not in dta.DISPOSITIONED_MIXED_FLIPS)
+    spec = dta.REGISTERED["S6-B2620b"]
+    assert spec["value"] is dta._undispositioned_mixed_flips and spec["threshold"] == 0
+    assert not spec["fired"](spec["value"](), spec["threshold"]), (
+        "every mixed flip on record is dispositioned - a new one must be read")
+    # 2. a NEW mixed flip in a planted log fires; a sanctioned one does not
+    planted = tmp_path / "exempt_log"
+    _io.open(planted, "w", encoding="utf-8").write(
+        "2099-01-01T00:00:00 exempt commit staging: "
+        "['output_audit/postconfig_landings.jsonl', 'output_audit/postconfig_ledger.json']\n"
+        "2099-01-02T00:00:00 exempt commit staging: "
+        "['output_audit/postconfig_landings.jsonl', 'CHECKLIST.md']\n")
+    monkeypatch.setattr(dta, "EXEMPT_LOG", planted)
+    assert dta._mixed_flip_stamps() == ["2099-01-02T00:00:00"]
+    assert dta._undispositioned_mixed_flips() == 1
+    assert spec["fired"](dta._undispositioned_mixed_flips(), spec["threshold"])
+    monkeypatch.setitem(dta.DISPOSITIONED_MIXED_FLIPS, "2099-01-02T00:00:00", "probe")
+    assert dta._undispositioned_mixed_flips() == 0
+
+    # 3. the gate: a rise in a recorded firing blocks once more; the same
+    #    value stays quiet; a state in the older shape keeps once-per-id
+    doc = [{"ticket": "S6-T", "value": 6, "threshold": 3, "trigger": "t"}]
+    out = vtc.scan_deferral_trigger_fired(
+        [], audit_doc=doc, state={"fired": ["S6-T"], "values": {"S6-T": 4}})
+    assert out and "S6-T" in out[0] and "higher value" in out[0]
+    assert not vtc.scan_deferral_trigger_fired(
+        [], audit_doc=doc, state={"fired": ["S6-T"], "values": {"S6-T": 6}})
+    assert not vtc.scan_deferral_trigger_fired(
+        [], audit_doc=doc, state={"fired": ["S6-T"]})
+    # 4. the PRODUCTION write path records the value and re-blocks on a rise
+    sp = tmp_path / "state.json"
+    box = {"v": 2}
+    monkeypatch.setattr(dta, "REGISTERED", {
+        "S6-T2": {"trigger": "planted", "threshold": 1,
+                  "value": lambda: box["v"], "fired": lambda v, t: v > t,
+                  "source": "planted"}})
+    assert vtc.scan_deferral_trigger_fired([], state_path=str(sp))
+    assert _json.loads(sp.read_text(encoding="utf-8")) == {
+        "fired": ["S6-T2"], "values": {"S6-T2": 2}}
+    assert not vtc.scan_deferral_trigger_fired([], state_path=str(sp))
+    box["v"] = 3
+    out4 = vtc.scan_deferral_trigger_fired([], state_path=str(sp))
+    assert out4 and "S6-T2" in out4[0]
+    assert not vtc.scan_deferral_trigger_fired([], state_path=str(sp))
+
+
+def test_b3248_table_a_single_render_writes_only_its_named_file(tmp_path):
+    """S6-B3232 (a) (owner 2026-10-21, 'Approve all recs execute'):
+    build_table_a renders ONE named strategy to ONE named file, so a campaign
+    on a NONE-lane strategy - squeeze_breakout's breadth campaign, S6-B3248,
+    the first - gets the Table A its band review needs, without writing the
+    TIGHTEN/BOTH charter. Behaviour through the CLI: the pairing of --strategy
+    and --out is enforced both ways, a lane row is refused (its file is the
+    charter's), an unknown strategy is refused; and the committed campaign
+    file is a full Table A of its strategy."""
+    import subprocess
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    cli = [_sys.executable, str(root / "scripts" / "build_table_a.py")]
+
+    def run(*args):
+        return subprocess.run(cli + list(args), cwd=str(root), capture_output=True,
+                              text=True, timeout=600)
+
+    r = run("--strategy", "squeeze_breakout")
+    assert r.returncode != 0 and "go together" in (r.stdout + r.stderr)
+    r = run("--out", str(tmp_path / "x.md"))
+    assert r.returncode != 0 and "go together" in (r.stdout + r.stderr)
+    r = run("--strategy", "no_such_strategy", "--out", str(tmp_path / "x.md"))
+    assert r.returncode != 0 and "not in the status view" in (r.stdout + r.stderr)
+    r = run("--strategy", "williams_r_oversold", "--out", str(tmp_path / "x.md"))
+    assert r.returncode != 0 and "lane charter" in (r.stdout + r.stderr)
+    assert not (tmp_path / "x.md").exists()
+    art = root / "output_audit" / "b3248_squeeze_breakout_table_a.md"
+    t = art.read_text(encoding="utf-8")
+    assert t.startswith("# Table A - squeeze_breakout") and "Build (L803/#309)" in t
+    assert "## Table A - parameter inventory" in t and "### B-row candidate census" in t
+    assert "**Lane:** NONE" in t and "squeeze_fire_up" in t
+    # its one producer's bands are defined (S6-B3248 T2): two squeeze-
+    # definition multipliers with a tighter offline level each, two windows
+    # engine-only - and the fire is stated as needing no prior squeeze
+    assert "| P1.1 | BAND | squeeze definition: Keltner multiplier" in t
+    assert "| P1.2 | BAND | squeeze definition: Bollinger std multiplier" in t
+    assert "FULL FACTORIAL     3 x 3 x 3 x 3 = 81" in t
+    assert "offline gradings   3 level-combinations" in t
+    assert "no prior squeeze is required" in t
+
+
+def test_b3253_a_key_selector_knob_is_an_engine_axis_only_where_the_gate_reads_it():
+    """S6-B3253 (B3139q-r86): Table A band rows take their env knob from the
+    PRODUCER, but STRAT_EMA_SPAN only selects which emitted span key a gate
+    reads - compute_ema_sma emits every span in EMA_PAIRS whatever the knob
+    says - so it moves only a gate that reads the span-keyed key. MEASURED:
+    williams_r_oversold's table claimed 8 ENGINE RUNS on it while its gate
+    reads the literal 200 keys (and hull_rsi's priced those runs at 29 h).
+    Pinned: the selector property is READ from the producer, not asserted;
+    the fire-logic reader separates a literal-key gate from a span-keyed one;
+    the band-row renderer cuts the axis to PENDING only where the gate does
+    not read the knob; and no committed lane file promises an engine run on
+    a key-selector knob its strategy never reads."""
+    import ast as _ast
+    import re as _re
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import json as _json
+    import build_table_a as bta
+    import table_a_bands as T
+
+    # 1. the selector property, read from the producer
+    tech = _ast.parse((root / "backtest" / "signals" / "technical.py").read_text(encoding="utf-8"))
+    ema = next(n for n in tech.body if isinstance(n, _ast.FunctionDef) and n.name == "compute_ema_sma")
+    names = {n.id for n in _ast.walk(ema) if isinstance(n, _ast.Name)} | \
+            {n.attr for n in _ast.walk(ema) if isinstance(n, _ast.Attribute)}
+    assert "EMA_PAIRS" in names, "positive control: the producer reads its pairs"
+    for knob in T.KEY_SELECTOR_KNOBS:
+        assert knob not in names, (knob, "a key-selector knob the producer reads is not a selector")
+    # 2. the fire-logic reader tells a literal-key gate from a span-keyed one
+    assert "STRAT_EMA_SPAN" not in bta.fire_logic_config_reads("williams_r_oversold")
+    assert "STRAT_EMA_SPAN" in bta.fire_logic_config_reads("bollinger_lower")
+    assert bta.fire_logic_config_reads("no_such_strategy") is None
+    # 3. the renderer cuts the axis only where the gate does not read the knob
+    knob = dict(T.PRODUCER_BANDS["price_above_ema_200"][0])
+    assert knob.get("env") == "STRAT_EMA_SPAN"
+    ax_cut, ax_live, ax_old = [], [], []
+    cut = bta._band_rows(1, "price_above_ema_200", [knob], ax_cut, reads=set())
+    live = bta._band_rows(1, "price_above_ema_200", [knob], ax_live, reads={"STRAT_EMA_SPAN"})
+    bta._band_rows(1, "price_above_ema_200", [knob], ax_old, reads=None)
+    assert "does not reach this gate" in cut[0] and "does not reach" not in live[0]
+    n = len(knob["band"])
+    assert ax_cut[0][6:9] == (1, 0, n - 1), ax_cut[0]          # engine, offline, pending
+    assert ax_live[0][6] == n and ax_live[0][4], ax_live[0]
+    assert ax_old[0] == ax_live[0], "an unknown strategy keeps the old reading"
+    assert ax_cut[0][5] == "STRAT_EMA_SPAN", "the env name stays so a twin row counts once"
+    assert not ax_cut[0][4], "a cut axis is not flagged actuated"
+    # ... and render() passes the gate's reads through at its call sites
+    import pandas as _pd
+    src = (root / "backtest" / "signals" / "screener.py").read_text(encoding="utf-8")
+    sigs = [{"williams_r": -90.0, "rsi_2": 3.0} for _ in range(3)]
+    frame = _pd.DataFrame({"strategy": ["williams_r_oversold"] * 3, "ticker": ["A", "B", "C"],
+                           "entry_date": ["2024-01-02"] * 3, "direction": ["long"] * 3,
+                           "signals_at_entry": [str(s) for s in sigs]})
+    md = bta.render("williams_r_oversold",
+                    {"stream": "TIGHTEN", "family": "momentum", "status": "IN-CAMPAIGN",
+                     "r5_fires": 3, "survives_pct": 1.0, "changed_since_r5": False},
+                    frame, sigs, False, [], bta.gate_legs(src)["williams_r_oversold"], [],
+                    set(), "STAMP", body="fl = ...")
+    assert "does not reach this gate" in md
+    ema_rows = [[x.strip() for x in ln.strip("|").split("|")] for ln in md.splitlines()
+                if _re.match(r"^\| P[\d.]+ \| ema span", ln)]
+    assert ema_rows and all(c[5] == "1" or c[4].startswith("shares env") for c in ema_rows), ema_rows
+    # 4. no committed lane file promises an engine run on a key-selector knob
+    #    its strategy's gate never reads
+    view = _json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                       .read_text(encoding="utf-8"))
+    lane_of = {r["strategy"]: r["stream"] for r in view["rows"]}
+    checked = 0
+    for p in (root / "strategy_optimisation" / "tighten").rglob("*.md"):
+        lane = "BOTH" if p.parent.name == "both" else "TIGHTEN"
+        if lane_of.get(p.stem) != lane:
+            continue                          # a departed record, kept as written
+        reads = bta.fire_logic_config_reads(p.stem) or set()
+        for ln in p.read_text(encoding="utf-8").splitlines():
+            if _re.match(r"^\| P[\d.]+ \| ema span", ln):
+                c = [x.strip() for x in ln.strip("|").split("|")]
+                if c[4].startswith("shares env"):
+                    continue
+                checked += 1
+                if "STRAT_EMA_SPAN" not in reads:
+                    assert c[5] == "1", (p.name, c)
+    assert checked >= 5, checked

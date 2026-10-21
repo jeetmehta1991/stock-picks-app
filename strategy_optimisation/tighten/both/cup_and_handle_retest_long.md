@@ -1,6 +1,6 @@
 # Table A - cup_and_handle_retest_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit b926385df at 2026-10-20 09:45:14 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build c52cbf68b | commit c52cbf68b at 2026-10-21 01:19:51 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** chart_pattern | **status:** NOT-STARTED | **R5 fires:** 99 | **surviving fires (T1):** 99 (unchanged since R5 - filter is identity)
 
@@ -49,7 +49,7 @@ leg runs.
 | P2 | PRODUCER | cup_handle_neckline_break_retest_long - emitted by backtest/signals/chart_patterns.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | cup-and-handle geometry detected / neckline break-retest (chart_patterns.py) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
 | P2.1 | BAND | retest window + neckline tolerance - backtest/signals/chart_patterns.py compute_cup_handle_neckline_break_retest_signals | BRACKET production (B685 producer) | producer defaults | window [3, 5, 10]; tolerance [0, 0.2, 0.5] pct | offline 0 of 3, 0 of 3 levels - none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | PRODUCER | price_above_ema_200 - emitted by backtest/signals/index_rebalance.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
-| P3.1 | BAND | ema span (the 200 in above/below_ema_200) - producer_variant_table.SPECS['bollinger_lower'] P3/P4; backtest/signals/technical.py compute_ema_sma | SPECS bollinger_lower P3/P4 (T3/Q2-APPROVED 2026-09-27): production 200 + resim spans [9, 20, 21, 50, 100, 150, 250] | 200 | 9, 20, 21, 50, 100, 150, 200, 250 | offline 0 of 8 levels - canon-span FLAGS (above/below ema 9/20/21/50/200) ARE persisted - measured 200-of-200 bollinger fires, S6-B3117b; offline as ADD-A-CONDITION legs only. The SWAP of the gate span, and non-canon spans, are RESIM | the whole band except production (resim_band [9, 20, 21, 50, 100, 150, 250]); env STRAT_EMA_SPAN | T3 review before any grid |
+| P3.1 | BAND | ema span (the 200 in above/below_ema_200) - producer_variant_table.SPECS['bollinger_lower'] P3/P4; backtest/signals/technical.py compute_ema_sma | SPECS bollinger_lower P3/P4 (T3/Q2-APPROVED 2026-09-27): production 200 + resim spans [9, 20, 21, 50, 100, 150, 250] | 200 | 9, 20, 21, 50, 100, 150, 200, 250 | offline 0 of 8 levels - canon-span FLAGS (above/below ema 9/20/21/50/200) ARE persisted - measured 200-of-200 bollinger fires, S6-B3117b; offline as ADD-A-CONDITION legs only. The SWAP of the gate span, and non-canon spans, are RESIM | the whole band except production (resim_band [9, 20, 21, 50, 100, 150, 250]); env STRAT_EMA_SPAN does not reach this gate - it reads the literal key - DEFINED-NO-ACTUATOR here (S6-B3253) | T3 review before any grid |
 | P4 | PRODUCER | price_above_ema_50 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P4.x) | BANDS-DEFINED |
 | P4.1 | BAND | ema span - backtest/signals/technical.py compute_ema_sma | BRACKET production with adjacent canon spans | 50 | [20, 50, 100] | offline 0 of 3 levels - none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P5 | STRATEGY | rsi_14 `< 70` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `< 70` | production + 4 tighter measured levels | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
@@ -640,18 +640,18 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P1.1 | detector tolerances (rim match, depth, h | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P2.1.1 | retest window + neckline tolerance | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P2.1.2 | retest window + neckline tolerance | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
-| P3.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | **YES** | 8 | 0 | 0 |
+| P3.1 | ema span (the 200 in above/below_ema_200 | 8 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 7 |
 | P4.1 | ema span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P5 | rsi_14 < 70 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
 | P5.1 | rsi span | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 
 ```
 FULL FACTORIAL     3 x 3 x 3 x 8 x 3 x 5 x 3 = 9720
-offline gradings   32 level-combinations x 24 exits = 768 (graded from the engine runs' cubes, never run themselves)
-ENGINE RUNS        8 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  9680 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             8 + 32 + 9680 = 9720 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
-STEP-1 SERIAL COST 8 x 3.66 h = 29 h at the ruled 1y x 200-ticker shape
+offline gradings   4 level-combinations x 24 exits = 96 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  9715 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 4 + 9715 = 9720 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 

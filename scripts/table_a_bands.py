@@ -665,6 +665,38 @@ PRODUCER_BANDS.update({
                   "resim_band": []},
                  {"production": 30, "band": [14, 30, 60], "free_band": [30],
                   "resim_band": [14, 60]}])],
+    # S6-B3248 (B3139q-r86): squeeze_breakout's one producer. in_squeeze =
+    # BB(20, 2.0) inside KC(20, 2.0 x ATR20); the fire needs NOT in_squeeze
+    # and the momentum zero-cross up (technical.py compute_squeeze). A WIDER
+    # Keltner or a NARROWER Bollinger puts more bars IN the squeeze, so fewer
+    # fire - a SUBSET, derivable from the persisted bb_20_20 / bb_20_15 /
+    # kc_* values (1141 of 1141 fires carry them; 578 and 519 survive the
+    # two tighter levels). The looser side and every window: engine, no knob.
+    "squeeze_fire_up": [
+        dict(_K("squeeze definition: Keltner multiplier (BB inside KC = squeeze)",
+                2.0, [1.5, 2.0, 2.5],
+                "BRACKET production; canon TTM squeeze (Carter 2005) uses 1.5",
+                "TIGHTER (2.5) - a wider channel holds more bars in the squeeze; "
+                "derived from persisted kc_mid / kc_upper and bb_20_20 bands",
+                "LOOSER (1.5) - the canon value; adds bars the cube never fired",
+                "backtest/signals/technical.py compute_keltner + compute_squeeze"),
+             free_band=[2.0, 2.5], resim_band=[1.5]),
+        dict(_K("squeeze definition: Bollinger std multiplier", 2.0, [1.5, 2.0, 2.5],
+                "BRACKET production; bb_20_15 is already emitted",
+                "TIGHTER (1.5) - a narrower band sits inside the channel more often; "
+                "persisted bb_20_15 bands",
+                "LOOSER (2.5) - adds bars the cube never fired",
+                "backtest/signals/technical.py compute_bollinger + compute_squeeze"),
+             free_band=[1.5, 2.0], resim_band=[2.5]),
+        _K("momentum window (close vs the N-bar high/low midpoint)", 20, [10, 20, 30],
+           "BRACKET production",
+           "none - the high/low midpoint at other windows is unpersisted",
+           "the whole band", "backtest/signals/technical.py compute_squeeze"),
+        _K("Keltner EMA / ATR period", 20, [14, 20, 30],
+           "BRACKET production (Wilder 14 adjacent)",
+           "none - the channel at other periods is unpersisted",
+           "the whole band", "backtest/signals/technical.py compute_keltner"),
+    ],
     "insider_unique_buyers_30d": [
         _K("count window (days)", 30, "[14, 30, 60]",
            "BRACKET production", "none - a window change recounts the buyers, "
@@ -701,6 +733,20 @@ PRODUCER_BANDS.update({
            "no band - rationale text only", "-", "-",
            "backtest/signals/pairs_trading.py:377 region")],
 })
+
+# S6-B3253 (B3139q-r86): an env knob that only SELECTS which emitted key a
+# gate reads. compute_ema_sma emits every span in config.EMA_PAIRS whatever
+# STRAT_EMA_SPAN says, so the knob moves only a gate reading the span-keyed
+# key (f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"); a gate reading the literal
+# price_above_ema_200 is untouched. A band row carrying such a knob is an
+# engine axis only for a strategy whose fire logic reads it (build_table_a);
+# for any other its levels are PENDING - wiring the gate is the feature
+# request. test_b3253 checks each member's producer reads it nowhere.
+KEY_SELECTOR_KNOBS = {
+    "STRAT_EMA_SPAN": ("selects the emitted price_above_ema_N / below_ema_N key; "
+                       "technical.compute_ema_sma reads EMA_PAIRS, never this knob"),
+}
+
 
 # strategy-layer gates the source pattern cannot see (local-variable compares)
 # - each IS a persisted magnitude, so tighter sides are OFFLINE today.
@@ -834,6 +880,7 @@ LEG_DEFN.update(_same("cup-and-handle geometry detected / neckline break-retest 
 LEG_DEFN.update(_same("cross-sectional 12-1 momentum in the top quintile (factor block)", "xs_momentum_top_quintile"))
 LEG_DEFN.update(_same("display field naming the paired ticker - not a gate (pairs_trading.py:377)", "pair_counterparty"))
 LEG_DEFN.update(_same("close back inside the LOWER band within 3 bars after being outside (technical.py:1402)", "bb_20_20_reclaim_from_lower_recent_3d"))
+LEG_DEFN.update(_same("NOT in a squeeze (BB(20, 2.0) not inside KC(20, 2.0 x ATR20)) AND close-minus-20-bar-midpoint momentum crosses above zero (technical.py compute_squeeze) - no prior squeeze is required (S6-B3254)", "squeeze_fire_up"))
 LEG_DEFN.update(_same("today's price below cpr_bottom (technical.py:146)", "below_cpr"))
 LEG_DEFN.update(_same("Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540)", "rsi_14", "rsi_2"))
 LEG_DEFN.update(_same("VIX percentile tercile flag: low < 1/3, high > 2/3 (technical.py:2690-2702)", "vix_band_low", "vix_band_high"))

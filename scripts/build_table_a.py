@@ -44,8 +44,25 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import build_strategy_status as bss                      # noqa: E402
 from breadth_step1_grid import MIN_COVERAGE, QUANTS      # noqa: E402
-from table_a_bands import (LEG_DEFN, PRODUCER_BANDS, STRATEGY_EXTRAS,  # noqa: E402
-                           band_axes, band_level_classes)
+from table_a_bands import (KEY_SELECTOR_KNOBS, LEG_DEFN, PRODUCER_BANDS,  # noqa: E402
+                           STRATEGY_EXTRAS, band_axes, band_level_classes)
+
+
+_CODE_NOW = None
+
+
+def fire_logic_config_reads(name: str):
+    """S6-B3253: the config values strategy `name`'s fire logic reads - the
+    S6-B3235 fire-logic members (its body and all it reaches, a delegation
+    followed) - or None when the strategy's function is not found."""
+    global _CODE_NOW
+    if _CODE_NOW is None:
+        _CODE_NOW = bss.CodeSide(None)
+    fn = _CODE_NOW.index("backtest.signals.screener")["strategies"].get("strat_" + name)
+    if fn is None:
+        return None
+    return {m.split(":", 2)[2] for m in _CODE_NOW.members(fn)
+            if m.startswith("value:backtest.config:")}
 
 # B2841: one numeric-compare pattern for BOTH extractors. The first cut used
 # [^)]* for the s.get(...) argument span, which cannot cross the ')' of a
@@ -313,7 +330,8 @@ def _offline_cell(split, prose, note: str = "") -> str:
     return f"offline {parts} levels{note} - {prose}"
 
 
-def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
+def _band_rows(pid: int, subject: str, knobs, axes: list | None = None,
+               reads=None) -> list:
     """B2841: the R1 band definitions (table_a_bands.py) as sub-rows under a
     P-row. env None on a resim-bearing knob renders DEFINED-NO-ACTUATOR - the
     band exists, the engine plumbing is follow-up (validate_spec refuses an
@@ -321,10 +339,20 @@ def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
     out = []
     for j, k in enumerate(knobs, 1):
         env = k.get("env")
+        # S6-B3253: a KEY-SELECTOR knob reaches only a gate that reads it;
+        # `reads` is the strategy's fire-logic config set (None = unknown,
+        # the old reading). The env name stays on the axis so a twin row
+        # still counts as ONE knob; its levels go PENDING, never ENGINE.
+        cut = (bool(env) and env in KEY_SELECTOR_KNOBS and reads is not None
+               and env not in reads)
+        if cut:
+            k = dict(k, env=None)
         resim = k.get("resim", "-")
         needs_act = resim not in ("-", "", None) and "none" not in str(resim).lower()[:4]
         act = ("" if not needs_act else
-               (f"; env {env}" if env else "; DEFINED-NO-ACTUATOR"))
+               (f"; env {env} does not reach this gate - it reads the literal "
+                f"key - DEFINED-NO-ACTUATOR here (S6-B3253)" if cut else
+                f"; env {env}" if env else "; DEFINED-NO-ACTUATOR"))
         vals = k.get("band")
         vals_s = (", ".join(_fmt(v) if isinstance(v, float) else str(v)
                             for v in vals) if isinstance(vals, list)
@@ -350,7 +378,7 @@ def _band_rows(pid: int, subject: str, knobs, axes: list | None = None) -> list:
             # only ever true because a prose band silently scored 1. Counting
             # bands correctly breaks that proxy, and an unactuated axis would
             # start inflating ENGINE RUNS - the exact class B2866 refuses.
-            _act = bool(env)
+            _act = bool(env) and not cut
             if len(_cls) == 1:
                 axes.append(_axis(f"P{pid}.{j}", k["param"][:40], _cls[0][0],
                                   _axis_sub(_cls[0], _sub), _act, env,
@@ -378,6 +406,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     # formula and inventory stand; the measured sections are replaced by the
     # workflow's own verdict (W-T T1: surviving fires below the floor
     # re-lanes the campaign to W-L - the engine, not the cube, must speak).
+    _reads = fire_logic_config_reads(name)   # S6-B3253
     um = row.get("unmeasured_gate_keys") or {}
     um_txt = "; ".join(f"{d} side reads {', '.join(ks)}" for d, ks in sorted(um.items()))
     if n_all == 0:
@@ -490,7 +519,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"reused by construction); "
                  f"knobs {'in the SPECS entry' if in_specs else ('DEFINED below (P' + str(pid) + '.x)' if PRODUCER_BANDS.get(leg) else 'to define')} | "
                  f"{'SPECS-REGISTERED' if in_specs else ('BANDS-DEFINED' if PRODUCER_BANDS.get(leg) else 'BANDS-TO-DEFINE')} |")
-        L += _band_rows(pid, leg, PRODUCER_BANDS.get(leg, []), axes)
+        L += _band_rows(pid, leg, PRODUCER_BANDS.get(leg, []), axes, reads=_reads)
     for key, op, prod in sorted(set(comparisons)):
         pid += 1
         _kind, _ser = series.get(key, ("missing", None))
@@ -507,7 +536,7 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"{_offline_cell([(_nfree + 1, 1, _nfree, 0)], 'measured tighter QUANTS levels - see the free-band section below')}"
                  f" | looser side "
                  f"- band at R1 | MEASURED-PRE-R1 |")
-        L += _band_rows(pid, key, PRODUCER_BANDS.get(key, []), axes)
+        L += _band_rows(pid, key, PRODUCER_BANDS.get(key, []), axes, reads=_reads)
     for h in helpers:
         pid += 1
         if h == "_short_borrow_trap_active":
@@ -789,10 +818,27 @@ def main() -> int:
     # rebuilds into a temp root so a pre-commit check never writes the tree.
     ap.add_argument("--out-root", default=None,
                     help="write under this root instead of strategy_optimisation/ (C15 regeneration)")
+    # S6-B3232 (B3139q-r86): ONE named strategy to ONE named file, for a
+    # campaign outside the TIGHTEN/BOTH charter (a NONE-lane breadth
+    # candidate); never writes the charter folders
+    ap.add_argument("--strategy", default=None,
+                    help="render one strategy whatever its lane; needs --out")
+    ap.add_argument("--out", default=None,
+                    help="with --strategy: the file to write")
     a = ap.parse_args()
 
     view = json.loads(STATUS_JSON.read_text(encoding="utf-8"))
-    rows = [r for r in view["rows"] if r["stream"] == a.lane]
+    if bool(a.strategy) != bool(a.out):
+        raise SystemExit("REFUSED: --strategy and --out go together (S6-B3232)")
+    if a.strategy:
+        rows = [r for r in view["rows"] if r["strategy"] == a.strategy]
+        if not rows:
+            raise SystemExit(f"REFUSED: {a.strategy} is not in the status view")
+        if rows[0]["stream"] in ("TIGHTEN", "BOTH"):
+            raise SystemExit(f"REFUSED: {a.strategy} is a {rows[0]['stream']} row - its "
+                             "Table A is the lane charter's; regenerate that lane")
+    else:
+        rows = [r for r in view["rows"] if r["stream"] == a.lane]
     if not rows:
         raise SystemExit(f"REFUSED: no {a.lane} rows in the status view")
     try:
@@ -827,7 +873,8 @@ def main() -> int:
     tl = tl.drop_duplicates(["strategy", "ticker", "entry_date"])
 
     out_base = Path(a.out_root) if a.out_root else OUT_DIR
-    sub = out_base / (a.subdir if a.subdir else a.lane.lower())
+    sub = (Path(a.out).parent if a.strategy
+           else out_base / (a.subdir if a.subdir else a.lane.lower()))
     sub.mkdir(parents=True, exist_ok=True)
     written = []
     for r in sorted(rows, key=lambda x: -x["projected_current_gate"]):
@@ -840,7 +887,7 @@ def main() -> int:
         md = render(name, r, kept, sigs, filtered, comps.get(name, []),
                     legs.get(name, ([], [])), idx, specs_names, stamp,
                     body=bodies.get(name, ""))
-        p = sub / f"{name}.md"
+        p = Path(a.out) if a.strategy else sub / f"{name}.md"
         p.write_text(md, encoding="utf-8", newline="\n")
         written.append(p)
         _rel = p.relative_to(ROOT) if p.is_relative_to(ROOT) else p

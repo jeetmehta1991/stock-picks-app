@@ -22,6 +22,10 @@
 - **H. SHARED LAUNCH MEASUREMENTS (both families)** - H.1, H.2
 - **I. BOLLINGER FAMILY (bollinger_lower - IN CAMPAIGN)** - I.1, I.2, I.3, I.4, I.5, I.6, I.7, I.8, I.9, I.10, I.11, I.12
 - **J. PAIRS FAMILY (pairs_mean_reversion_long / pairs_mean_reversion_short - ADMITTED 2026-10-13)** - J.1, J.2
+- **K. VOLUME_PROFILE FAMILY (naked_poc_retest_long - IN CAMPAIGN)** - K.1, K.2, K.3, K.4, K.5, K.6, K.7, K.8, K.9, K.10, K.11, K.12, K.13, K.14, K.15
+- **L. MEAN-REVERSION FAMILY (cmf_flip - IN CAMPAIGN)** - L.1, L.2
+- **M. MOMENTUM FAMILY (williams_r_oversold - IN CAMPAIGN)** - M.1, M.2
+- **N. SQUEEZE FAMILY (squeeze_breakout - IN CAMPAIGN)** - N.1, N.2
 
 ---
 
@@ -2663,3 +2667,78 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   lane); status view rebuilt in the same batch. The family's holdout read stays spent.
 - **Programme note:** the close triggered the owner-directed RCA on the tightening workflow -
   output_audit/b3203_tightening_workflow_rca.md (S6-B3203); decision tickets S6-B3204..S6-B3207.
+
+## L. MEAN-REVERSION FAMILY (cmf_flip - IN CAMPAIGN)
+
+### L.1 Opened (B3139q-r86; owner word 2026-10-21, verbatim "Approve all recs execute", approving S6-B3232 (a); S6-B3246)
+
+- **Why this strategy:** rank 1 of the long-campaign shortlist as built at B3139q-r85
+  (output_audit/b3232_long_campaign_shortlist.json at c52cbf68b - an opened campaign leaves
+  the open population, so later builds omit it), in the cheapest lane, TIGHTEN. The order is a
+  SELECTION on in-sample evidence, never a holdout prediction: long side 128.8 projected Step-1
+  fires, in-sample best exit breakeven_plus_trail, in-sample Sharpe 0.569, 4 in-sample gates
+  cleared. The holdout is read only on the owner's own word (runbook 0.6).
+- **Gate (screener.py strat_cmf_flip):** long cmf_cross_up AND rsi_14 < 50 AND
+  po3_accum_range_pct >= 0.0458; short cmf_cross_dn AND rsi_14 > 50 AND the same po3 floor AND the
+  borrow gate. A dual strategy: 1753 long and 1241 short R5 fires.
+
+### L.2 Campaign state (W-T, runbook 3.2)
+
+- **T0:** status row quoted in S6-B3246; the fire logic changed since R5 (the B1422 po3 floor).
+- **T1:** survival 0.7515 (long 0.7992, short 0.6841) - every later grade reads the surviving fires.
+- **T2:** strategy_optimisation/tighten/cmf_flip.md, rendered at the r86 build. Offline depth: po3
+  floor 0.0561 / 0.0693 / 0.0867 / 0.1203 (keeps 80 / 60 / 40 / 20 pct), rsi_14 long ceiling 38.624
+  / 44.24 / 49.234 (20 / 40 / 60 pct), rsi_14 short floor 57.128 (20 pct). The producer bands (cmf
+  window and cross level, rsi span) need the engine and have no knob. 655 B-row candidates, every
+  one NEW-GATE.
+- **T3:** awaits the owner's band words; the SPECS_PHASE0 entry is written from the approved band.
+
+## M. MOMENTUM FAMILY (williams_r_oversold - IN CAMPAIGN)
+
+### M.1 Opened (B3139q-r86; owner word 2026-10-21, verbatim "Approve all recs execute", approving S6-B3232 (a); S6-B3247)
+
+- **Why this strategy:** rank 2 of the r85 shortlist, TIGHTEN lane, EXPLORATORY-tagged. In-sample
+  only: long side 122.0 projected Step-1 fires, best exit breakeven_plus_trail, in-sample Sharpe
+  0.281, 3 in-sample gates cleared.
+- **Gate (screener.py strat_williams_r_oversold):** long (williams_r_oversold OR rsi_2 < 5) AND
+  price_above_ema_200 AND cmf_positive; short (williams_r > -20 OR rsi_2 > 95) AND below_ema_200
+  AND cmf_negative AND the borrow gate. 1327 long and 1208 short R5 fires.
+
+### M.2 Campaign state (W-T, runbook 3.2)
+
+- **T0:** status row quoted in S6-B3247; the fire logic is unchanged since R5 (S6-B3235's measure).
+- **T1:** identity - survival 1.0 on both sides.
+- **T2:** strategy_optimisation/tighten/williams_r_oversold.md, rendered at the r86 build. Offline
+  depth: the oversold threshold -85 / -90 on the persisted williams_r, the rsi_2 escape hatch long
+  < 3 and short > 97 (list bands since S6-B3228), cmf_positive > 0.02 / 0.05 and cmf_negative <
+  -0.02 / -0.05, the short williams_r floor -19.89 / -13.08. **No engine axis moves this gate
+  today:** its trend legs read the literal 200 keys, so the STRAT_EMA_SPAN rows read
+  DEFINED-NO-ACTUATOR since S6-B3253 (they had claimed 8 engine runs). 651 B-row candidates,
+  every one NEW-GATE.
+- **T3:** awaits the owner's band words.
+
+## N. SQUEEZE FAMILY (squeeze_breakout - IN CAMPAIGN)
+
+### N.1 Opened (B3139q-r86; owner word 2026-10-21, verbatim "Approve all recs execute", approving S6-B3232 (a); S6-B3248)
+
+- **Why this strategy:** rank 3 of the r85 shortlist, NONE lane - a breadth candidate (runbook 3.6):
+  104.9 projected Step-1 fires, in-sample best exit class_time_stop, in-sample Sharpe 1.031, 5
+  in-sample gates cleared. A pure long, 1141 R5 fires.
+- **Gate (screener.py strat_squeeze_breakout):** the one producer boolean squeeze_fire_up.
+- **Producer, READ (technical.py compute_squeeze):** in_squeeze = BB(20, 2.0) inside KC(20, 2.0 x
+  ATR20); the fire is NOT in_squeeze AND the close-minus-20-bar-midpoint momentum crossing above
+  zero. **No prior squeeze is required**, so the fire is a momentum zero-cross outside a squeeze,
+  not the squeeze RELEASE the strategy's bullets describe - S6-B3254 puts that to the owner.
+
+### N.2 Campaign state (runbook 3.6, the breadth leg)
+
+- **T0:** status row quoted in S6-B3248; unchanged since R5. **T1:** identity - survival 1.0.
+- **T2:** a NONE row has no lane-charter file, so its Table A is rendered by build_table_a.py's
+  single-strategy mode to output_audit/b3248_squeeze_breakout_table_a.md. Producer bands defined
+  at r86 from the source read above: Keltner multiplier [1.5, 2.0, 2.5] - 2.5 is offline, 578 of
+  1141 fires stay out of the squeeze; Bollinger std [1.5, 2.0, 2.5] - 1.5 is offline, 519 stay
+  out; the momentum window and the Keltner period need the engine, and no knob exists. Factorial
+  81 = 1 engine + 3 offline + 77 pending. 603 B-row candidates, every one NEW-GATE.
+- **Breadth screen:** institutional_companion_screen.py selects fires by NAME PREFIX, which also
+  takes squeeze_breakout_with_smart_money_long - it needs an exact-name filter first.
+- **T3:** awaits the owner's band words (depth and breadth rows together, runbook 3.6 item 4).

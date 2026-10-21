@@ -107,6 +107,61 @@ def _mixed_class_ledger_flips() -> int:
     return mixed
 
 
+# S6-B3250 (B3139q-r86): the mixed flips READ AND DISPOSITIONED, each keyed
+# by its exempt-log timestamp with the reason it is benign. This replaces a
+# hand-kept baseline integer: flip 4 was dispositioned 2026-09-25 with the
+# bump 3 -> 4 'registered to ride the next gated scripts batch', the bump
+# never landed, and flips 5 and 6 sat unread for 13 days under a trigger that
+# had already fired once. A register says WHICH flips were read; an integer
+# only says how many. test_b3250 holds every entry to a mixed line in the
+# log (no phantom) and the evaluator to the lines NOT in it.
+DISPOSITIONED_MIXED_FLIPS = {
+    "2026-09-22T00:19:10": "gate-storm close: LEARNINGS.md beside the landing "
+                           "bookkeeping (S6-B2620b closing row, B2999)",
+    "2026-09-22T06:01:28": "gate-storm close: Phase-5 docs and a pin beside the "
+                           "landing bookkeeping (S6-B2620b closing row, B2999)",
+    "2026-09-22T15:45:39": "commit 1339b9d70, the consolidated B3000 batch "
+                           "(flip 3, dispositioned in its own row)",
+    "2026-09-25T03:39:32": "commit b5c5cb215: the chain-written preleg bar audit "
+                           "json beside the landings jsonl (flip 4, S6-B2620b)",
+    "2026-10-08T15:12:01": "a REFUSED attempt - no commit landed between "
+                           "cc703d228 (15:07:46) and eb72e1b44 (15:22:28); its "
+                           "staged list is flip 6's without the gate record "
+                           "(S6-B3250)",
+    "2026-10-08T15:22:29": "commit eb72e1b44, B3139q-r58 delivery accounting: "
+                           "the landing bookkeeping, a one-line status-view "
+                           "restamp and the r71 gate record (S6-B3250)",
+}
+
+
+def _mixed_flip_stamps() -> list[str]:
+    """The exempt-log timestamp of every mixed-class landings flip, in log
+    order - the population _mixed_class_ledger_flips counts."""
+    if not EXEMPT_LOG.exists():
+        return []
+    out = []
+    for line in io.open(EXEMPT_LOG, encoding="utf-8",
+                        errors="replace").read().splitlines():
+        if ("exempt commit staging" not in line
+                or "postconfig_landings.jsonl" not in line):
+            continue
+        try:
+            staged = ast.literal_eval(line.split("staging:", 1)[1].strip())
+        except (ValueError, SyntaxError, IndexError):
+            out.append(line.split(" ", 1)[0])    # unparseable counts as mixed
+            continue
+        if [f for f in staged if f not in SANCTIONED_LANDING_FILES
+                and not (f.startswith("output_audit/") and f.endswith("_gate.json"))]:
+            out.append(line.split(" ", 1)[0])
+    return out
+
+
+def _undispositioned_mixed_flips() -> int:
+    """S6-B3250: the mixed flips nobody has read - the trigger quantity."""
+    return sum(1 for s in _mixed_flip_stamps()
+               if s not in DISPOSITIONED_MIXED_FLIPS)
+
+
 def _flip_exempt_commits() -> int:
     """S6-B2620b's trigger quantity, read from the log that records it.
 
@@ -133,11 +188,15 @@ REGISTERED = {
         # 2026-09-22T00:19:10 and T06:01:28, both this session's gate-
         # storm closes, plus 1339b9d70 itself (flip 3, dispositioned
         # in its own row) - so the tripwire re-arms on the FOURTH.
-        "trigger": ("exempt commits staging the landings jsonl beside "
-                    "non-landing files exceed the dispositioned "
-                    "baseline of 3"),
-        "threshold": 3,
-        "value": _mixed_class_ledger_flips,
+        # S6-B3250 (B3139q-r86): the quantity is the UNREAD mixed flips -
+        # every flip read and judged benign sits in
+        # DISPOSITIONED_MIXED_FLIPS with its reason, so the trigger fires on
+        # the first new one rather than on a hand-kept count
+        "trigger": ("an exempt commit staging the landings jsonl beside "
+                    "non-landing files that is not in "
+                    "DISPOSITIONED_MIXED_FLIPS"),
+        "threshold": 0,
+        "value": _undispositioned_mixed_flips,
         "fired": lambda v, t: v > t,
         "source": ".queue_exempt_log",
     },

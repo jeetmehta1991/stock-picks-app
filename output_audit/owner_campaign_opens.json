@@ -46,6 +46,33 @@
       "tickets": [
         "S6-B2752"
       ]
+    },
+    {
+      "strategy": "cmf_flip",
+      "opened": "2026-10-21",
+      "ruling_verbatim": "Approve all recs execute",
+      "role": "S6-B3232 (a), the r83 close's recommendation 'open campaigns on cmf_flip, williams_r_oversold and squeeze_breakout' - the long-campaign shortlist's top three (output_audit/b3232_long_campaign_shortlist.json, rank 1, TIGHTEN long lane) toward the 30-long target (S6-B3220); the shortlist's remaining 9 offline-and-over-floor candidates follow in its order (S6-B3249)",
+      "tickets": [
+        "S6-B3246"
+      ]
+    },
+    {
+      "strategy": "williams_r_oversold",
+      "opened": "2026-10-21",
+      "ruling_verbatim": "Approve all recs execute",
+      "role": "S6-B3232 (a), the r83 close's recommendation 'open campaigns on cmf_flip, williams_r_oversold and squeeze_breakout' - the long-campaign shortlist's top three (output_audit/b3232_long_campaign_shortlist.json, rank 2, TIGHTEN long lane) toward the 30-long target (S6-B3220); the shortlist's remaining 9 offline-and-over-floor candidates follow in its order (S6-B3249); EXPLORATORY-tagged",
+      "tickets": [
+        "S6-B3247"
+      ]
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "opened": "2026-10-21",
+      "ruling_verbatim": "Approve all recs execute",
+      "role": "S6-B3232 (a), the r83 close's recommendation 'open campaigns on cmf_flip, williams_r_oversold and squeeze_breakout' - the long-campaign shortlist's top three (output_audit/b3232_long_campaign_shortlist.json, rank 3, NONE (breadth) long lane) toward the 30-long target (S6-B3220); the shortlist's remaining 9 offline-and-over-floor candidates follow in its order (S6-B3249)",
+      "tickets": [
+        "S6-B3248"
+      ]
     }
   ]
 }

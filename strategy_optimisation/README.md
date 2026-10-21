@@ -24,6 +24,8 @@ the formula <-> Table A cross-check.
     python scripts/build_table_a.py --lane TIGHTEN                      # tighten/ (10 files; an admitted/terminal row's charter moves to archive/ - B3115 three_white_soldiers, S6-B3145 pairs_mean_reversion_long, the S6-B2420 drop pairs_mean_reversion_short (a terminal roster mirror, 2026-10-20); a lane move moves the file - S6-B3239 smc_order_block_bounce from tighten/both/ (2026-10-21); test_b2836 holds file-set == lane-set, test_b3167 this count)
     python scripts/build_table_a.py --lane BOTH --subdir tighten/both   # tighten/both/ (28 files, owner-directed placement)
 
+A campaign on a NONE-lane strategy (a breadth candidate) has no lane folder; its Table A is rendered alone with `python scripts/build_table_a.py --strategy <name> --out output_audit/<batch>_<name>_table_a.md` (S6-B3232; squeeze_breakout first).
+
 Each file carries an L803/#309 build stamp (generator + cube + status build +
 commit + timestamp). A file whose stamp is stale against HEAD is regenerated
 before any campaign reads it (the runbook §0.5 freshness precondition).

@@ -5852,10 +5852,24 @@ def scan_deferral_trigger_fired(entries, *, audit_doc=None, state=None,
         _seen = dict(state)
     _known = set(_seen.get("fired") or [])
     _now = sorted(f["ticket"] for f in fired)
-    newly = [f for f in fired if f["ticket"] not in _known]
-    if not in_memory and set(_now) != _known:
+    # S6-B3250: a trigger that STAYS fired and keeps rising was silent - the
+    # state held ticket ids only, so S6-B2620b's count went 4 -> 6 unblocked.
+    # The state records each fired ticket's value and a GROWTH blocks once
+    # more; a state in the older shape (no values) keeps once-per-id.
+    _vals = _seen.get("values") if isinstance(_seen.get("values"), dict) else None
+    def _grew(f):
+        if _vals is None or f["ticket"] not in _vals:
+            return False
         try:
-            _sp.write_text(json.dumps({"fired": _now}, indent=1),
+            return float(f["value"]) > float(_vals[f["ticket"]])
+        except (TypeError, ValueError):
+            return False
+    newly = [f for f in fired if f["ticket"] not in _known or _grew(f)]
+    _now_vals = {f["ticket"]: f["value"] for f in fired}
+    if not in_memory and (set(_now) != _known or _vals != _now_vals):
+        try:
+            _sp.write_text(json.dumps({"fired": _now, "values": _now_vals},
+                                      indent=1, default=str),
                            encoding="utf-8")
         except Exception as _exc:
             # a failed state write must not mask the finding - and must
@@ -5874,8 +5888,8 @@ def scan_deferral_trigger_fired(entries, *, audit_doc=None, state=None,
              "2026-09-22): %s reads '%s' and measures %s against its "
              "threshold of %s. Work the ticket, or re-defer it with a NEW "
              "trigger, in this close or a ticketed follow-up; this blocks "
-             "once - the firing is now recorded, and only a fresh firing "
-             "blocks again.%s"
+             "once - the firing and its value are now recorded, and only a "
+             "fresh firing or a higher value blocks again (S6-B3250).%s"
              % (_f["ticket"], _f["trigger"], _f["value"], _f["threshold"],
                 _extra))]
 
