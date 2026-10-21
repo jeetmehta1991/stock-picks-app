@@ -1,6 +1,6 @@
 # Table A - ultimate_oscillator
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit b926385df at 2026-10-20 09:45:14 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build fd2c815be | commit fd2c815be at 2026-10-20 23:42:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 592 | **surviving fires (T1):** 592 (unchanged since R5 - filter is identity)
 
@@ -74,7 +74,7 @@ leg runs.
 | P7.2 | BAND | period triple - backtest/signals/technical.py:738-750 | BRACKET canon triple | (7, 14, 28) | [(7,14,28), (5,10,20), (14,28,56)] | offline 0 of 3 levels - none - other triples unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P8 | STRATEGY | uo `> 70` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 70` | production + 0 tighter measured levels | offline 0 of 1 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P9 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| P10 | STRATEGY | rsi_2 escape-hatch thresholds (long < 5, short > 95) - backtest/signals/screener.py strat_ultimate_oscillator (local rsi_2 compare - invisible to the extractor) | BRACKET production (Connors RSI-2 canon); rsi_2 persisted | 5 / 95 | [3, 5] / [95, 97] | offline 0 of 1 levels (prose band - the footer counts production only) - TIGHTER (< 3, > 97) - subset on persisted rsi_2 | LOOSER | T3 review |
+| P10 | STRATEGY | rsi_2 escape-hatch thresholds (long < 5, short > 95) - backtest/signals/screener.py strat_ultimate_oscillator (local rsi_2 compare - invisible to the extractor) | BRACKET production (Connors RSI-2 canon); rsi_2 persisted | 5 / 95 | long < [3, 5] / short > [95, 97] | offline 1 of 2, 1 of 2 levels - TIGHTER (< 3, > 97) - subset on persisted rsi_2 | none in the band - a looser cut is an engine level | T3 review |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
@@ -820,14 +820,15 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P7.2 | period triple | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
 | P8 | uo > 70 | 1 | subset-safe | no - derives offline | 1 | 0 | 0 |
 | P9 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
-| P10 | rsi_2 escape-hatch thresholds (long < 5, | 1 | subset-safe | no - derives offline | 1 | 0 | 0 |
+| P10.1 | rsi_2 escape-hatch thresholds (long < 5, | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P10.2 | rsi_2 escape-hatch thresholds (long < 5, | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
 
 ```
-FULL FACTORIAL     3 x 3 x 3 x 3 x 3 x 3 x 3 x 3 x 1 x 1 x 1 = 6561
-offline gradings   8 level-combinations x 24 exits = 192 (graded from the engine runs' cubes, never run themselves)
+FULL FACTORIAL     3 x 3 x 3 x 3 x 3 x 3 x 3 x 3 x 1 x 1 x 2 x 2 = 26244
+offline gradings   35 level-combinations x 24 exits = 840 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  6552 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 8 + 6552 = 6561 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+PENDING ACTUATION  26208 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 35 + 26208 = 26244 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

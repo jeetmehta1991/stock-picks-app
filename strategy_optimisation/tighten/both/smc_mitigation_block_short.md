@@ -1,6 +1,6 @@
 # Table A - smc_mitigation_block_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit b926385df at 2026-10-20 09:45:14 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build fd2c815be | commit fd2c815be at 2026-10-20 23:42:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** smc | **status:** NOT-STARTED | **R5 fires:** 44 | **surviving fires (T1):** 44 (unchanged since R5 - filter is identity)
 
@@ -13,7 +13,7 @@
 P1  below_ema_200  <- backtest/signals/screener.py
        DEFN: close vs the named SMA/EMA span (compute_ema_sma family)
        knobs P1.1-P1.1 (band rows in Table A)
-P2  smc_mitigation_block_short  <- backtest/signals/screener.py +2
+P2  smc_mitigation_block_short  <- backtest/signals/screener.py +1
        DEFN: smc mitigation-block signal at production knobs (smc_ict.py; SPECS family)
        knobs P2.1-P2.1 (band rows in Table A)
 
@@ -41,7 +41,7 @@ leg runs.
 |---|---|---|---|---|---|---|---|---|
 | P1 | PRODUCER | below_ema_200 - emitted by backtest/signals/screener.py; the boolean's UNDERLYING condition is bandable through its producer's internals | close vs the named SMA/EMA span (compute_ema_sma family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
 | P1.1 | BAND | ema span (the 200 in above/below_ema_200) - producer_variant_table.SPECS['bollinger_lower'] P3/P4; backtest/signals/technical.py compute_ema_sma | SPECS bollinger_lower P3/P4 (T3/Q2-APPROVED 2026-09-27): production 200 + resim spans [9, 20, 21, 50, 100, 150, 250] | 200 | 9, 20, 21, 50, 100, 150, 200, 250 | offline 0 of 8 levels - canon-span FLAGS (above/below ema 9/20/21/50/200) ARE persisted - measured 200-of-200 bollinger fires, S6-B3117b; offline as ADD-A-CONDITION legs only. The SWAP of the gate span, and non-canon spans, are RESIM | the whole band except production (resim_band [9, 20, 21, 50, 100, 150, 250]); env STRAT_EMA_SPAN | T3 review before any grid |
-| P2 | PRODUCER | smc_mitigation_block_short - emitted by backtest/signals/screener.py +2; the boolean's UNDERLYING condition is bandable through its producer's internals | smc mitigation-block signal at production knobs (smc_ict.py; SPECS family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2 | PRODUCER | smc_mitigation_block_short - emitted by backtest/signals/screener.py +1; the boolean's UNDERLYING condition is bandable through its producer's internals | smc mitigation-block signal at production knobs (smc_ict.py; SPECS family) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
 | P2.1 | BAND | mirror of mitigation_long - backtest/signals/smc_ict.py mitigation block | mirror | (20, 90) | as long, mirrored | counted on the mirrored leg - none | the whole band; env SMC_SWING_LENGTH / SMC_EVENT_RECENCY_BARS | T3 review before any grid |
 | P3 | STRATEGY | rsi_14 `> 50` [EXISTING-THRESHOLD] | Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540) | `> 50` | production + 4 tighter measured levels | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
 | P3.1 | BAND | rsi span - backtest/signals/technical.py rsi block | BRACKET production with adjacent canon spans | 14 | [9, 14, 21] | offline 0 of 3 levels - none - values at other spans unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |

@@ -1,8 +1,8 @@
 # Table A - hammer_at_support_long
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 147fecee9 | commit b926385df at 2026-10-20 09:45:14 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build fd2c815be | commit fd2c815be at 2026-10-20 23:42:21 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** BOTH | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 110 | **surviving fires (T1):** 110 (code changed since R5; the status build's survival filter measured survives_pct 1.0 - every fire kept)
+**Lane:** BOTH | **family:** candle | **status:** NOT-STARTED | **R5 fires:** 110 | **surviving fires (T1):** 110 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
 

@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "b792f8bef",
-    "generated_at": "2026-10-20 18:38:38"
+    "source_commit": "fd2c815be",
+    "generated_at": "2026-10-20 23:40:13"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -12,7 +12,7 @@
     "step1_shape": "200 tickers x 1y"
   },
   "caveats": [
-    "changed_since_r5 is an UPPER BOUND - any code difference counts",
+    "changed_since_r5 compares FIRE LOGIC (S6-B3235): the strategy's body and every function, module constant and config value it reaches - a delegation to another signals module included - with docstrings and the signals_used / context-bullet payload removed, against the R5-era code; a reviewed fire-neutral change (FIRE_NEUTRAL_CHANGES) counts only once its digest goes stale. An UPPER BOUND on behaviour (a configurable-span swap identical at its default counts) and blind to the producers that compute the signals",
     "stream TIGHTEN rests on a source pattern for numeric comparisons, a LOWER BOUND - thresholds via a helper or a config constant are invisible",
     "survives_pct calls the LIVE strategy function on each fire's persisted signals (S6-B2814; validated: reproduces 151/2933 and 1880/1880 exactly). A LOWER BOUND where a gate leg reads an unpersisted key (defaults False); an erroring row counts as non-survival; None only for zero-fire strategies",
     "the campaign lanes read the OWNER-OPENED register (output_audit/owner_campaign_opens.json, S6-B3194): a listed strategy is IN-CAMPAIGN while one of its register tickets is non-terminal (B2829) and STALLED-CAMPAIGN once every one is terminal (B2833, owner-approved 2026-09-15); an unlisted strategy is NOT-STARTED whatever tickets mention it - a mention is not a campaign (the vocabulary heuristic this replaces labelled 44 strategies and 4 were campaign subjects); mention_tickets keeps the full mention list",
@@ -46,7 +46,7 @@
       "strategy": "52w_high_breakout",
       "family": "breakout",
       "r5_fires": 33,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -73,7 +73,7 @@
       "strategy": "52w_high_breakout_pullback_long",
       "family": "breakout",
       "r5_fires": 150,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -104,7 +104,7 @@
       "strategy": "52w_high_breakout_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 66,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -128,7 +128,7 @@
       "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
       "family": "smart_money_sleeve",
       "r5_fires": 203,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -152,7 +152,7 @@
       "strategy": "52w_low_breakdown",
       "family": "breakout",
       "r5_fires": 95,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -182,7 +182,7 @@
       "strategy": "52w_low_breakdown_pullback_short",
       "family": "breakout",
       "r5_fires": 427,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -212,7 +212,7 @@
       "strategy": "52wh_break_retest",
       "family": "breakout",
       "r5_fires": 18,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -254,6 +254,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B3227",
         "S6-B3239"
       ],
       "admitted": false,
@@ -288,7 +289,7 @@
       "strategy": "adx_initiation",
       "family": "trend",
       "r5_fires": 39,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -396,7 +397,8 @@
         "S6-B2810b",
         "S6-B3221",
         "S6-B3232",
-        "S6-B3239"
+        "S6-B3239",
+        "S6-B3244"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -425,6 +427,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3139c",
+        "S6-B3227",
         "S6-B3237"
       ],
       "admitted": false,
@@ -522,7 +525,7 @@
       "strategy": "bollinger_tight",
       "family": "mean_reversion",
       "r5_fires": 271,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -553,7 +556,7 @@
       "strategy": "bollinger_tight_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 840,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -579,7 +582,7 @@
       "strategy": "bollinger_upper_short",
       "family": "mean_reversion",
       "r5_fires": 130,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -608,7 +611,7 @@
       "strategy": "break_retest_confluence",
       "family": "confluence",
       "r5_fires": 1889,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -625,7 +628,10 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3227",
+        "S6-B3235"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -652,6 +658,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B3227",
         "S6-B3232"
       ],
       "admitted": false,
@@ -662,7 +669,7 @@
       "strategy": "bullish_engulfing_support",
       "family": "candle",
       "r5_fires": 991,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -714,7 +721,7 @@
       "strategy": "camarilla_s3_bounce",
       "family": "pivot",
       "r5_fires": 228,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -857,7 +864,7 @@
       "strategy": "cpr_narrow_momentum",
       "family": "confluence",
       "r5_fires": 1001,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -885,7 +892,7 @@
       "strategy": "cpr_narrow_momentum_short",
       "family": "confluence",
       "r5_fires": 1696,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -935,7 +942,7 @@
       "strategy": "cup_and_handle_retest_long",
       "family": "chart_pattern",
       "r5_fires": 99,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -990,7 +997,7 @@
       "strategy": "death_cross_50_200_volume",
       "family": "trend",
       "r5_fires": 31,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -1014,7 +1021,7 @@
       "strategy": "doji_at_resistance_short",
       "family": "candle",
       "r5_fires": 306,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -1038,7 +1045,7 @@
       "strategy": "doji_at_support",
       "family": "candle",
       "r5_fires": 232,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -1088,7 +1095,7 @@
       "strategy": "donchian_breakdown_retest_short",
       "family": "breakout",
       "r5_fires": 999,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -1103,7 +1110,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3235"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1112,7 +1121,7 @@
       "strategy": "donchian_breakdown_short",
       "family": "breakout",
       "r5_fires": 872,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -1136,7 +1145,7 @@
       "strategy": "donchian_breakout_long",
       "family": "breakout",
       "r5_fires": 507,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -1151,7 +1160,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3227"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1186,7 +1197,7 @@
       "strategy": "donchian_breakout_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 985,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -1276,7 +1287,7 @@
       "strategy": "flag_bear_retest_short",
       "family": "chart_pattern",
       "r5_fires": 55,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -1291,7 +1302,10 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3227",
+        "S6-B3235"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1396,7 +1410,7 @@
       "strategy": "gold_silver_risk_off_long",
       "family": "cross_asset",
       "r5_fires": 0,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
       "r5_fires_by_side": {},
@@ -1468,7 +1482,7 @@
       "strategy": "golden_cross_9_21",
       "family": "trend",
       "r5_fires": 889,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -1496,7 +1510,7 @@
       "strategy": "golden_cross_volume",
       "family": "confluence",
       "r5_fires": 43,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -1546,7 +1560,7 @@
       "strategy": "hammer_at_support_long",
       "family": "candle",
       "r5_fires": 110,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -1612,6 +1626,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B3227",
         "S6-B3239"
       ],
       "admitted": false,
@@ -1646,7 +1661,7 @@
       "strategy": "htf_aligned_breakout_short",
       "family": "multi_timeframe",
       "r5_fires": 996,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -1670,7 +1685,7 @@
       "strategy": "hull_rsi",
       "family": "momentum",
       "r5_fires": 1270,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -1697,6 +1712,7 @@
         "S6-B3196",
         "S6-B3221",
         "S6-B3223",
+        "S6-B3227",
         "S6-B3232"
       ],
       "admitted": false,
@@ -1731,7 +1747,7 @@
       "strategy": "ichimoku_cloud_breakout",
       "family": "trend",
       "r5_fires": 511,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -1748,7 +1764,10 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3227",
+        "S6-B3235"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1786,7 +1805,7 @@
       "strategy": "inside_bar_breakout",
       "family": "breakout",
       "r5_fires": 677,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -1812,7 +1831,7 @@
       "strategy": "insider_cluster_concentrated_sell_short",
       "family": "event_driven",
       "r5_fires": 269,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -1827,7 +1846,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3235"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1836,7 +1857,7 @@
       "strategy": "insider_cluster_long",
       "family": "event_driven",
       "r5_fires": 24,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -1860,7 +1881,7 @@
       "strategy": "insider_cluster_with_director_long",
       "family": "event_driven",
       "r5_fires": 24,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -1889,7 +1910,7 @@
       "strategy": "institutional_breakout_confirmation_long",
       "family": "-",
       "r5_fires": 642,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2017,7 +2038,7 @@
       "strategy": "institutional_high_conviction_long",
       "family": "-",
       "r5_fires": 2473,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2048,7 +2069,7 @@
       "strategy": "institutional_increased_with_directors_long",
       "family": "institutional_persistence",
       "r5_fires": 107,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2101,7 +2122,7 @@
       "strategy": "institutional_multi_quarter_persistence_long",
       "family": "institutional_persistence",
       "r5_fires": 2516,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2135,7 +2156,7 @@
       "strategy": "institutional_oversold_long",
       "family": "-",
       "r5_fires": 386,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2166,7 +2187,7 @@
       "strategy": "institutional_persistence_breakout_long",
       "family": "institutional_persistence",
       "r5_fires": 532,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2192,7 +2213,7 @@
       "strategy": "institutional_persistence_momentum_long",
       "family": "institutional_persistence",
       "r5_fires": 2324,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2220,7 +2241,7 @@
       "strategy": "institutional_persistence_oversold_long",
       "family": "institutional_persistence",
       "r5_fires": 716,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2251,7 +2272,7 @@
       "strategy": "institutional_persistence_volume_long",
       "family": "institutional_persistence",
       "r5_fires": 1199,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2279,7 +2300,7 @@
       "strategy": "institutional_persistent_holders_long",
       "family": "institutional_persistence",
       "r5_fires": 1955,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2305,7 +2326,7 @@
       "strategy": "institutional_recent_init_momentum_long",
       "family": "institutional_persistence",
       "r5_fires": 2268,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2335,7 +2356,7 @@
       "strategy": "institutional_recent_init_volume_long",
       "family": "institutional_persistence",
       "r5_fires": 1075,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2365,7 +2386,7 @@
       "strategy": "institutional_strong_conviction_long",
       "family": "institutional_persistence",
       "r5_fires": 1826,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2423,7 +2444,7 @@
       "strategy": "institutional_with_directors_long",
       "family": "smart_money_combo",
       "r5_fires": 115,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2449,7 +2470,7 @@
       "strategy": "institutional_with_officers_long",
       "family": "smart_money_combo",
       "r5_fires": 103,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2476,7 +2497,7 @@
       "strategy": "inverted_cup_and_handle_short",
       "family": "chart_pattern",
       "r5_fires": 366,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -2491,7 +2512,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3235"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -2500,7 +2523,7 @@
       "strategy": "january_effect_small_cap_long",
       "family": "calendar",
       "r5_fires": 1,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2548,7 +2571,7 @@
       "strategy": "judas_swing_short",
       "family": "ict",
       "r5_fires": 84,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -2574,7 +2597,7 @@
       "strategy": "keltner_lower",
       "family": "mean_reversion",
       "r5_fires": 41,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -2624,7 +2647,7 @@
       "strategy": "macd_bullish_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 1162,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2729,7 +2752,7 @@
       "strategy": "macd_ichimoku",
       "family": "confluence",
       "r5_fires": 2907,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -2782,7 +2805,7 @@
       "strategy": "mfi_oversold",
       "family": "mean_reversion",
       "r5_fires": 77,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -2810,7 +2833,7 @@
       "strategy": "mfi_oversold_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 244,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -2941,7 +2964,8 @@
         "S6-B3221",
         "S6-B3223",
         "S6-B3227",
-        "S6-B3232"
+        "S6-B3232",
+        "S6-B3242"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3014,6 +3038,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3221",
+        "S6-B3227",
         "S6-B3240"
       ],
       "admitted": false,
@@ -3024,7 +3049,7 @@
       "strategy": "news_momentum_short",
       "family": "news_sentiment",
       "r5_fires": 13,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -3042,7 +3067,9 @@
       },
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3227"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -3051,7 +3078,7 @@
       "strategy": "news_reversal_long",
       "family": "news_sentiment",
       "r5_fires": 1,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3080,7 +3107,7 @@
       "strategy": "news_reversal_short",
       "family": "news_sentiment",
       "r5_fires": 60,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -3101,7 +3128,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3221"
+        "S6-B3221",
+        "S6-B3227"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3111,7 +3139,7 @@
       "strategy": "news_sentiment_long",
       "family": "news_sentiment",
       "r5_fires": 906,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3141,7 +3169,7 @@
       "strategy": "news_sentiment_shift_long",
       "family": "news_sentiment",
       "r5_fires": 357,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3214,7 +3242,7 @@
       "strategy": "orb_stocks_in_play_short",
       "family": "orb",
       "r5_fires": 115,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -3238,7 +3266,7 @@
       "strategy": "pairs_mean_reversion_long",
       "family": "pairs",
       "r5_fires": 5036,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3341,7 +3369,7 @@
       "strategy": "parabolic_sar_flip_short",
       "family": "trend",
       "r5_fires": 1672,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -3367,7 +3395,7 @@
       "strategy": "pead_long",
       "family": "event_driven",
       "r5_fires": 140,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3397,7 +3425,7 @@
       "strategy": "pead_long_high_yoy_growth_only",
       "family": "event_driven",
       "r5_fires": 2116,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3433,7 +3461,7 @@
       "strategy": "pead_short",
       "family": "event_driven",
       "r5_fires": 872,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -3461,7 +3489,7 @@
       "strategy": "pead_short_negative_yoy_growth",
       "family": "event_driven",
       "r5_fires": 2215,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -3498,7 +3526,7 @@
       "strategy": "pead_with_insider_confirmation_long",
       "family": "event_driven",
       "r5_fires": 10,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3526,7 +3554,7 @@
       "strategy": "pead_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 656,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3562,7 +3590,7 @@
       "strategy": "pivot_fib_confluence",
       "family": "confluence",
       "r5_fires": 91,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -3618,7 +3646,7 @@
       "strategy": "pivot_r2_continuation",
       "family": "pivot",
       "r5_fires": 55,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -3647,7 +3675,7 @@
       "strategy": "pivot_r3_blowoff_short",
       "family": "pivot",
       "r5_fires": 9,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -3671,7 +3699,7 @@
       "strategy": "pivot_s1_bounce",
       "family": "pivot",
       "r5_fires": 458,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -3697,7 +3725,7 @@
       "strategy": "pivot_s2_bounce",
       "family": "pivot",
       "r5_fires": 55,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -3725,7 +3753,7 @@
       "strategy": "pivot_s3_capitulation",
       "family": "pivot",
       "r5_fires": 3,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3797,7 +3825,7 @@
       "strategy": "poc_magnet_long",
       "family": "volume_profile",
       "r5_fires": 589,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -3877,7 +3905,7 @@
       "strategy": "post_deletion_drift_short",
       "family": "-",
       "r5_fires": 54,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 0.8704,
       "survives_pct_by_side": {
         "short": 0.8704
@@ -3928,7 +3956,7 @@
       "strategy": "post_inclusion_reversal_short",
       "family": "-",
       "r5_fires": 100,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 0.85,
       "survives_pct_by_side": {
         "short": 0.85
@@ -4031,7 +4059,7 @@
       "strategy": "pre_holiday_long",
       "family": "calendar",
       "r5_fires": 124,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -4098,7 +4126,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3242"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -4135,7 +4165,7 @@
       "strategy": "prev_day_low_breakdown",
       "family": "breakout",
       "r5_fires": 800,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -4159,7 +4189,7 @@
       "strategy": "r1_break_retest",
       "family": "pivot",
       "r5_fires": 3371,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -4177,7 +4207,9 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2418"
+        "S6-B2418",
+        "S6-B3227",
+        "S6-B3235"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4214,7 +4246,7 @@
       "strategy": "roc_burst",
       "family": "momentum",
       "r5_fires": 918,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -4260,7 +4292,7 @@
       "strategy": "rsi21_slow",
       "family": "mean_reversion",
       "r5_fires": 9,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -4290,7 +4322,7 @@
       "strategy": "rsi9_extreme",
       "family": "mean_reversion",
       "r5_fires": 56,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -4316,7 +4348,7 @@
       "strategy": "rsi_overbought_short",
       "family": "mean_reversion",
       "r5_fires": 0,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
       "r5_fires_by_side": {},
@@ -4339,7 +4371,7 @@
       "strategy": "rsi_oversold",
       "family": "mean_reversion",
       "r5_fires": 1945,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -4371,7 +4403,7 @@
       "strategy": "rsi_oversold_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 2753,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -4399,7 +4431,7 @@
       "strategy": "rsi_volume_200ema",
       "family": "confluence",
       "r5_fires": 548,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -4427,7 +4459,7 @@
       "strategy": "sector_rotation_defensive_long",
       "family": "cross_asset",
       "r5_fires": 0,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
       "r5_fires_by_side": {},
@@ -4447,7 +4479,7 @@
       "strategy": "shooting_star_short",
       "family": "candle",
       "r5_fires": 250,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -4478,7 +4510,7 @@
       "strategy": "short_borrow_trap_avoid",
       "family": "smart_money_sleeve",
       "r5_fires": 0,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
       "r5_fires_by_side": {},
@@ -4759,7 +4791,7 @@
       "strategy": "smc_discount_long",
       "family": "smc",
       "r5_fires": 333,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -5025,7 +5057,7 @@
       "strategy": "smc_mitigation_block_long",
       "family": "smc",
       "r5_fires": 15,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -5054,7 +5086,7 @@
       "strategy": "smc_mitigation_block_short",
       "family": "smc",
       "r5_fires": 44,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -5142,7 +5174,7 @@
       "strategy": "smc_ote_long",
       "family": "smc",
       "r5_fires": 231,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -5161,7 +5193,8 @@
         "S6-B1570a",
         "S6-B2756",
         "S6-B3212",
-        "S6-B3213"
+        "S6-B3213",
+        "S6-B3227"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5171,7 +5204,7 @@
       "strategy": "smc_ote_short",
       "family": "smc",
       "r5_fires": 262,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -5199,7 +5232,7 @@
       "strategy": "smc_premium_short",
       "family": "smc",
       "r5_fires": 433,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -5255,7 +5288,7 @@
       "strategy": "squeeze_breakout_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 1139,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -5271,7 +5304,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2810b"
+        "S6-B2810b",
+        "S6-B3235"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5281,7 +5315,7 @@
       "strategy": "squeeze_setup_long",
       "family": "smart_money_sleeve",
       "r5_fires": 0,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
       "r5_fires_by_side": {},
@@ -5301,7 +5335,7 @@
       "strategy": "stoch_oversold",
       "family": "mean_reversion",
       "r5_fires": 286,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -5319,7 +5353,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3221"
+        "S6-B3221",
+        "S6-B3227"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5329,7 +5364,7 @@
       "strategy": "stochrsi_overbought_short",
       "family": "momentum",
       "r5_fires": 4287,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -5355,7 +5390,7 @@
       "strategy": "stochrsi_oversold",
       "family": "momentum",
       "r5_fires": 2433,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -5411,7 +5446,7 @@
       "strategy": "supertrend_macd",
       "family": "trend",
       "r5_fires": 486,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -5494,7 +5529,7 @@
       "strategy": "three_black_crows_short",
       "family": "candle",
       "r5_fires": 1674,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -5550,7 +5585,7 @@
       "strategy": "three_white_soldiers",
       "family": "candle",
       "r5_fires": 1596,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -5777,7 +5812,7 @@
       "strategy": "turtle_soup_long",
       "family": "ict",
       "r5_fires": 324,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -5792,7 +5827,9 @@
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3235"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -5832,7 +5869,7 @@
       "strategy": "ultimate_oscillator",
       "family": "momentum",
       "r5_fires": 592,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -5863,7 +5900,7 @@
       "strategy": "value_area_breakout_long",
       "family": "volume_profile",
       "r5_fires": 375,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -5887,7 +5924,7 @@
       "strategy": "vix_backwardation_long",
       "family": "cross_asset",
       "r5_fires": 543,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -5915,7 +5952,7 @@
       "strategy": "vol_spike_2x_below_ema_50_short",
       "family": "momentum_trend",
       "r5_fires": 1140,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -5931,7 +5968,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B2810b"
+        "S6-B2810b",
+        "S6-B3235"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -5941,7 +5979,7 @@
       "strategy": "volume_spike_breakout",
       "family": "breakout",
       "r5_fires": 1500,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -6009,7 +6047,7 @@
       "strategy": "week_opening_gap_fill_down",
       "family": "ict",
       "r5_fires": 633,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -6035,7 +6073,7 @@
       "strategy": "week_opening_gap_fill_up",
       "family": "ict",
       "r5_fires": 834,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -6061,7 +6099,7 @@
       "strategy": "weekly_bias_pullback_long",
       "family": "multi_timeframe",
       "r5_fires": 27,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -6089,7 +6127,7 @@
       "strategy": "weekly_bias_pullback_short",
       "family": "multi_timeframe",
       "r5_fires": 0,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": null,
       "survives_pct_by_side": {},
       "r5_fires_by_side": {},
@@ -6109,7 +6147,7 @@
       "strategy": "williams_r_oversold",
       "family": "momentum",
       "r5_fires": 2535,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -6146,7 +6184,7 @@
       "strategy": "williams_stoch_dual",
       "family": "confluence",
       "r5_fires": 750,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0,
@@ -6203,7 +6241,7 @@
       "strategy": "xs_combined_momentum_low_ivol",
       "family": "factor",
       "r5_fires": 212,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -6239,7 +6277,7 @@
       "strategy": "xs_low_beta_long",
       "family": "factor",
       "r5_fires": 78,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -6292,7 +6330,7 @@
       "strategy": "xs_momentum_bottom_decile_short",
       "family": "factor",
       "r5_fires": 1384,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "short": 1.0
@@ -6312,6 +6350,7 @@
         "S6-B3135",
         "S6-B3135a",
         "S6-B3168a",
+        "S6-B3235",
         "S6-B3237"
       ],
       "admitted": false,
@@ -6390,7 +6429,7 @@
       "strategy": "xs_momentum_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 658,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -6413,7 +6452,8 @@
         "S6-B1772b",
         "S6-B2418",
         "S6-B3135",
-        "S6-B3135a"
+        "S6-B3135a",
+        "S6-B3235"
       ],
       "admitted": false,
       "roster_roles": [
@@ -6425,7 +6465,7 @@
       "strategy": "xs_quality_top_quintile_long",
       "family": "factor",
       "r5_fires": 89,
-      "changed_since_r5": true,
+      "changed_since_r5": false,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0

@@ -510,11 +510,24 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
                  f"inspect before any engine leg | BANDS-TO-DEFINE |")
     for k in STRATEGY_EXTRAS.get(name, []):
         pid += 1
-        axes.append(_axis(f"P{pid}", k["param"][:40], 1, True, True, None,
-                          (1, 0, 0)))
+        # S6-B3228: an extras row is classed LEVEL BY LEVEL like every band
+        # row (_band_rows) - its per-side list bands reach the footer, where
+        # a prose band used to score n = 1 (production only)
+        _cls = band_level_classes(k)
+        _sub = str(k.get("offline", "")).startswith("TIGHTER")
+        _env = k.get("env")
+        if len(_cls) == 1:
+            axes.append(_axis(f"P{pid}", k["param"][:40], _cls[0][0],
+                              _axis_sub(_cls[0], _sub), bool(_env), _env,
+                              _cls[0][1:]))
+        else:
+            for _ai, _c in enumerate(_cls, 1):
+                axes.append(_axis(f"P{pid}.{_ai}", k["param"][:40], _c[0],
+                                  _axis_sub(_c, _sub), bool(_env), _env,
+                                  _c[1:]))
         L.append(f"| P{pid} | STRATEGY | {k['param']} - {k['evidence']} | "
                  f"{k['basis']} | {k['production']} | {k.get('band', '-')} | "
-                 f"{_offline_cell([(1, 1, 0, 0)], k.get('offline', '-'), ' (prose band - the footer counts production only)')} | "
+                 f"{_offline_cell(_cls, k.get('offline', '-'))} | "
                  f"{k.get('resim', '-')} | T3 review |")
     L += ["| B-rows | BREADTH | every companion in the B-row candidate census "
           "below is Table A inventory once REGISTERED at the T3 band review "

@@ -18,7 +18,10 @@ judgement:
                     _strat/_strat3 call; strategies whose call does not carry
                     one are reported as "-" rather than guessed
   r5_fires          distinct (ticker, entry_date) rows in the R5 trade log
-  changed_since_r5  AST diff of the strat_ function against the R5-era screener
+  changed_since_r5  the strategy's FIRE LOGIC differs from the R5-era code -
+                    its body and every function, module constant and config
+                    value it reaches, with docstrings and the _strat payload
+                    removed (S6-B3235: CodeSide / fire_logic_changes)
   survives_pct      share of R5 fires on which the LIVE strategy function
                     fires with the recorded direction (S6-B2814)
   survives_pct_by_side  the same share per recorded direction, {'long': x,
@@ -61,6 +64,8 @@ from __future__ import annotations
 
 import argparse
 import ast
+import copy
+import hashlib
 import json
 import re
 import subprocess
@@ -156,27 +161,260 @@ def numeric_thresholds(src: str) -> dict:
     return out
 
 
-def changed_since_r5(src_now: str) -> set:
-    """Strategies whose function body differs from the R5-era screener.
+# S6-B3235 (B3139q-r84): THE FLAG MEANS THE FIRE LOGIC CHANGED. Until r84 it
+# compared ast.unparse of each strat_ body with the R5-era screener, and that
+# was wrong in BOTH directions - MEASURED at fd2c815be: 124 of its 160 flags
+# were text edits (docstrings, and the signals_used lists and context bullets
+# that _strat / _strat3 only pass through into the returned dict), while the
+# 4 index-rebalance strategies, whose screener body is one delegation to
+# backtest/signals/index_rebalance.py, read unchanged after S6-B3226 changed
+# their fire logic there. Now a strategy's fire logic is a SET OF MEMBERS -
+# its own body, every function it reaches (screener helpers, other strategies,
+# a function imported from a signals module), the module constants and config
+# values those read - each with docstrings, bare strings and the _strat
+# payload removed; the flag fires when any member differs from its R5-era form
+# or exists on one side only. Still an UPPER bound on behaviour (a span swap
+# identical at its default counts), and blind to the producers that compute
+# the signals - survives_pct, which replays the live function on R5's
+# persisted signals, is the behavioural measure.
+_PAYLOAD_ARGS = {"_strat": (3, 4), "_strat3": (3, 4, 5, 6),
+                 "_strat_signal": (3, 4)}  # index_rebalance's _strat mirror
+_PAYLOAD_KW = ("signals_used", "context_bullets", "signals_used_long",
+               "signals_used_short", "bullets_long", "bullets_short")
+_SIGNALS_PKG = "backtest.signals."
+_SCREENER = "backtest.signals.screener"
+_CONFIG = "backtest.config"
 
-    UPPER BOUND on behavioural change - a rename or a configurable-span swap
-    counts as changed (runbook §2.5).
-    """
-    try:
-        old = subprocess.run(
-            ["git", "show", f"{R5_SCREENER_COMMIT}:backtest/signals/screener.py"],
-            cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
-            errors="replace", timeout=60).stdout
-    except Exception:
-        return set()
-    if not old.strip():
-        return set()
+# A member whose change was REVIEWED as unable to move a fire decision, pinned
+# to its stripped form at review (sha256, 16 hex). A later edit of the member
+# voids its entry - its readers flag again - and test_b3235 fails on a stale
+# or redundant entry, both directions (L587). MEASURED r84: the only member
+# outside a strategy's own body that changed since R5 for a stripped-unchanged
+# strategy is this pair, reached by 81 strategies through the borrow gate.
+FIRE_NEUTRAL_CHANGES = {
+    "fn:backtest.signals.screener:_short_borrow_trap_active": (
+        "c736fa330e944493",
+        "S6-B2118b instrumentation: counters added at the definition; the "
+        "value returned, days_to_cover > 5.0, is the R5-era expression"),
+    "value:backtest.signals.screener:_BORROW_TRAP_COUNTER": (
+        "974950244a3ca6ad",
+        "S6-B2118b: the counter dict that helper increments, read by "
+        "borrow_trap_rate and by no fire decision"),
+}
 
-    def funcs(s):
-        return {n.name: ast.unparse(n) for n in ast.walk(ast.parse(s))
-                if isinstance(n, ast.FunctionDef) and n.name.startswith("strat_")}
-    a, b = funcs(old), funcs(src_now)
-    return {k[len("strat_"):] for k in set(a) & set(b) if a[k] != b[k]}
+
+def member_digest(text) -> str:
+    return hashlib.sha256(str(text).encode("utf-8")).hexdigest()[:16]
+
+
+def strip_fire_logic(node) -> str:
+    """ast.unparse of a function with what no fire decision reads removed:
+    docstrings and bare string statements in every block, and the PAYLOAD
+    arguments of _strat / _strat3 (signals_used, context bullets). An AST
+    carries no comments. The direction and category arguments stay - they
+    ride the dict a trade is built from."""
+    node = copy.deepcopy(node)
+    for n in ast.walk(node):
+        for block in ("body", "orelse", "finalbody"):
+            stmts = getattr(n, block, None)
+            if isinstance(stmts, list) and stmts:
+                kept = [b for b in stmts if not (
+                    isinstance(b, ast.Expr) and isinstance(b.value, ast.Constant)
+                    and isinstance(b.value.value, str))]
+                setattr(n, block, kept or [ast.Pass()])
+        if (isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+                and n.func.id in _PAYLOAD_ARGS):
+            for i in _PAYLOAD_ARGS[n.func.id]:
+                if i < len(n.args):
+                    n.args[i] = ast.Constant(None)
+            n.keywords = [k for k in n.keywords if k.arg not in _PAYLOAD_KW]
+    return ast.unparse(node)
+
+
+class CodeSide:
+    """One revision of the repo's strategy code - R5's or the working tree's
+    - read module by module on demand. `sources` injects {module: text} (the
+    test seam); anything absent is read at `rev` (git show) or, with rev None,
+    from disk. A module missing at that revision reads as empty."""
+
+    def __init__(self, rev=None, sources=None, root=None):
+        self.rev, self.root = rev, Path(root or ROOT)
+        self._src = dict(sources or {})
+        self._idx = {}
+
+    def source(self, module: str) -> str:
+        if module not in self._src:
+            rel = module.replace(".", "/") + ".py"
+            if self.rev is None:
+                p = self.root / rel
+                self._src[module] = p.read_text(encoding="utf-8") if p.is_file() else ""
+            else:
+                self._src[module] = subprocess.run(
+                    ["git", "show", f"{self.rev}:{rel}"], cwd=self.root,
+                    capture_output=True, text=True, encoding="utf-8",
+                    errors="replace", timeout=60).stdout
+        return self._src[module]
+
+    def index(self, module: str) -> dict:
+        """Module-level functions, assigned values, and the names that alias
+        the config module, a config value, or a signals-module function."""
+        if module not in self._idx:
+            src = self.source(module)
+            tree = ast.parse(src) if src.strip() else ast.Module(body=[], type_ignores=[])
+            ix = {"funcs": {}, "values": {}, "cfg_alias": set(), "cfg_name": {},
+                  "imported": {}, "strategies": {}}
+            for n in tree.body:
+                if isinstance(n, ast.FunctionDef):
+                    ix["funcs"][n.name] = n
+                elif isinstance(n, ast.Assign):
+                    for t in n.targets:
+                        if isinstance(t, ast.Name):
+                            ix["values"][t.id] = n.value
+                elif (isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name)
+                      and n.value is not None):
+                    ix["values"][n.target.id] = n.value
+                elif isinstance(n, ast.ImportFrom):
+                    mod = n.module or ""
+                    for a in n.names:
+                        local = a.asname or a.name
+                        if mod == "backtest" and a.name == "config":
+                            ix["cfg_alias"].add(local)
+                        elif mod == _CONFIG:
+                            ix["cfg_name"][local] = a.name
+                        elif mod.startswith(_SIGNALS_PKG):
+                            ix["imported"][local] = (mod, a.name)
+            for n in ast.walk(tree):
+                if isinstance(n, ast.FunctionDef) and n.name.startswith("strat_"):
+                    ix["strategies"].setdefault(n.name, n)
+            self._idx[module] = ix
+        return self._idx[module]
+
+    def member_text(self, key: str):
+        """The stripped text of one member id - 'fn:<module>:<name>' or
+        'value:<module>:<name>' - on this side; None when it is absent."""
+        kind, mod, name = key.split(":")
+        ix = self.index(mod)
+        node = (ix["funcs"] if kind == "fn" else ix["values"]).get(name)
+        if node is None:
+            return None
+        return strip_fire_logic(node) if kind == "fn" else ast.unparse(node)
+
+    def members(self, fn_node, module: str = _SCREENER) -> dict:
+        """{member id: stripped text} - everything the function's fire
+        decision can reach in the repo's own code."""
+        out = {}
+
+        def value(mod, name):
+            key = f"value:{mod}:{name}"
+            if key in out:
+                return
+            node = self.index(mod)["values"].get(name)
+            out[key] = None if node is None else ast.unparse(node)
+            if node is not None:
+                walk(node, mod)
+
+        def func(mod, name, node=None):
+            key = f"fn:{mod}:{name}"
+            if key in out:
+                return
+            node = node if node is not None else self.index(mod)["funcs"].get(name)
+            out[key] = None if node is None else strip_fire_logic(node)
+            if node is not None:
+                walk(node, mod)
+
+        def walk(node, mod):
+            ix = self.index(mod)
+            # a function-level import binds names too: the index-rebalance
+            # shorts import _short_borrow_trap_active inside their bodies
+            local = {}
+            for n in ast.walk(node):
+                if isinstance(n, ast.ImportFrom):
+                    m2 = n.module or ""
+                    for a in n.names:
+                        if m2.startswith(_SIGNALS_PKG):
+                            local[a.asname or a.name] = ("fn", (m2, a.name))
+                        elif m2 == _CONFIG:
+                            local[a.asname or a.name] = ("value", (_CONFIG, a.name))
+            for n in ast.walk(node):
+                if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load):
+                    if n.id in local:
+                        kind, target = local[n.id]
+                        (func if kind == "fn" else value)(*target)
+                    elif n.id in ix["funcs"]:
+                        func(mod, n.id)
+                    elif n.id in ix["imported"]:
+                        func(*ix["imported"][n.id])
+                    elif n.id in ix["cfg_name"]:
+                        value(_CONFIG, ix["cfg_name"][n.id])
+                    elif n.id in ix["values"]:
+                        value(mod, n.id)
+                elif (isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name)
+                      and n.value.id in ix["cfg_alias"]):
+                    value(_CONFIG, n.attr)
+
+        func(module, fn_node.name, fn_node)
+        return out
+
+
+def fire_logic_changes(old: "CodeSide", new: "CodeSide", names=None,
+                       neutral=None) -> set:
+    """Strategies (names without the strat_ prefix) whose fire-logic members
+    differ between two code sides. A strategy absent on either side is not
+    'changed since R5' - it has no R5 fires to compare. A member listed in
+    `neutral` (default FIRE_NEUTRAL_CHANGES) is skipped while its current
+    stripped form still hashes to the reviewed digest."""
+    neutral = FIRE_NEUTRAL_CHANGES if neutral is None else neutral
+    a, b = old.index(_SCREENER)["strategies"], new.index(_SCREENER)["strategies"]
+    pick = set(a) & set(b) if names is None else {"strat_" + n for n in names} & set(a) & set(b)
+    out = set()
+    for k in sorted(pick):
+        ma, mb = old.members(a[k]), new.members(b[k])
+        for m in set(ma) | set(mb):
+            if ma.get(m) == mb.get(m):
+                continue
+            reg = neutral.get(m)
+            if reg and mb.get(m) is not None and member_digest(mb[m]) == reg[0]:
+                continue
+            out.add(k[len("strat_"):])
+            break
+    return out
+
+
+def neutral_register_problems(old: "CodeSide", new: "CodeSide",
+                              register=None) -> list:
+    """S6-B3235: every FIRE_NEUTRAL_CHANGES entry must still differ from its
+    R5-era form - else it is redundant and goes - and must still hash to its
+    reviewed digest - else the member changed after review and is re-read
+    before it is re-pinned. Both directions (L587)."""
+    register = FIRE_NEUTRAL_CHANGES if register is None else register
+    out = []
+    for key, (dig, why) in sorted(register.items()):
+        a, b = old.member_text(key), new.member_text(key)
+        if not str(why).strip():
+            out.append(f"{key}: no review reason")
+        if a == b:
+            out.append(f"{key}: REDUNDANT - the member is back to its R5-era form")
+        if b is None or member_digest(b) != dig:
+            got = member_digest(b) if b is not None else None
+            out.append(f"{key}: STALE - the member changed after review "
+                       f"(digest now {got})")
+    return out
+
+
+def changed_since_r5(src_now: str, root=None) -> set:
+    """Strategies whose FIRE LOGIC differs from the R5-era code (S6-B3235):
+    the members fire_logic_changes compares, at R5_SCREENER_COMMIT against
+    the working tree, with `src_now` as the current screener. UPPER bound on
+    behavioural change - a configurable-span swap identical at its default
+    counts (runbook §2.5). An unreadable R5 screener RAISES: the old rule
+    returned an empty set there, so every row read unchanged (L642)."""
+    old = CodeSide(R5_SCREENER_COMMIT, root=root)
+    if not old.source(_SCREENER).strip():
+        raise RuntimeError(f"the R5-era screener ({R5_SCREENER_COMMIT}) is "
+                           "unreadable - an empty read would mark every "
+                           "strategy unchanged (S6-B3235, L642)")
+    new = CodeSide(None, sources={_SCREENER: src_now}, root=root)
+    return fire_logic_changes(old, new)
 
 
 # S6-B2810c: a MENTION is not a campaign. The first build flagged IN-CAMPAIGN
@@ -602,7 +840,14 @@ def main() -> int:
                    "min_fires_for_grid": MIN_FIRES_FOR_GRID,
                    "step1_shape": f"{STEP1_TICKERS} tickers x {STEP1_YEARS}y"},
          "caveats": [
-             "changed_since_r5 is an UPPER BOUND - any code difference counts",
+             "changed_since_r5 compares FIRE LOGIC (S6-B3235): the strategy's "
+             "body and every function, module constant and config value it "
+             "reaches - a delegation to another signals module included - with "
+             "docstrings and the signals_used / context-bullet payload removed, "
+             "against the R5-era code; a reviewed fire-neutral change "
+             "(FIRE_NEUTRAL_CHANGES) counts only once its digest goes stale. An "
+             "UPPER BOUND on behaviour (a configurable-span swap identical at its "
+             "default counts) and blind to the producers that compute the signals",
              "stream TIGHTEN rests on a source pattern for numeric comparisons, "
              "a LOWER BOUND - thresholds via a helper or a config constant are invisible",
              "survives_pct calls the LIVE strategy function on each fire's persisted "
@@ -706,8 +951,13 @@ def main() -> int:
     for fam, c in famcount.most_common():
         L.append(f"| {fam} | {c} |")
     L += ["", "## Caveats that bound every number above", "",
-          "- `changed_since_r5` is an **upper bound**: any code difference counts, "
-          "including a rename or a configurable-span swap.",
+          "- `changed_since_r5` compares **fire logic** (S6-B3235): the strategy's body "
+          "and every function, module constant and config value it reaches - a "
+          "delegation to index_rebalance.py included - with docstrings and the "
+          "signals_used / context-bullet payload removed. A reviewed fire-neutral "
+          "change (the borrow gate's S6-B2118b counters) is skipped while its digest "
+          "holds. An **upper bound** on behaviour - a configurable-span swap identical "
+          "at its default counts - and blind to the producers that compute the signals.",
           "- `stream = TIGHTEN` rests on a source pattern for numeric comparisons and is "
           "a **lower bound** - a threshold reached through a helper or compared to a "
           "config constant is invisible to it.",

@@ -60313,3 +60313,213 @@ def test_b3245_the_gate_discloses_code_line_citations_an_edit_moved():
                 cwd=root, capture_output=True, text=True, timeout=120)
     assert r.returncode == 2 and "unrecognized arguments" in r.stderr, (r.returncode, r.stderr[-300:])
     assert _re.search(r"moved_line_citations=", gate)
+
+
+def test_b3235_changed_since_r5_flags_fire_logic_only():
+    """S6-B3235 (B3139q-r84): changed_since_r5 means THE FIRE LOGIC changed.
+    It compared ast.unparse of each strat_ body with the R5-era screener -
+    so docstrings and the _strat payload (signals_used lists, context bullets,
+    which _strat3 only passes through) flagged 124 of 160 rows, while a
+    strategy whose screener body is one delegation read unchanged after its
+    target changed. Synthetic sides first: every channel a fire decision can
+    move through flags its readers and nobody else, every text-only edit
+    flags nothing, and a reviewed neutral change holds only while its digest
+    does. Then the live repo against the R5-era commit, derived never named
+    (L801), and the neutral register in both directions (L587)."""
+    import ast as _ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+
+    SCR, CFG, IR = ("backtest.signals.screener", "backtest.config",
+                    "backtest.signals.index_rebalance")
+    scr = (
+        "from backtest import config as _cfg\n"
+        "from backtest.config import LIQUIDITY\n"
+        "from backtest.signals.index_rebalance import strat_drift as _strat_drift\n"
+        "LEGS = ('a', 'b')\n"
+        "def _helper(s):\n"
+        "    return s.get('x', 0) > 1\n"
+        "def _strat(fires, direction, category, signals_used, context_bullets):\n"
+        "    return {'fires': bool(fires), 'direction': direction}\n"
+        "def strat_plain(s):\n"
+        "    '''doc'''\n"
+        "    fl = s.get('rsi', 50) < 30\n"
+        "    return _strat(fl, 'long', 'mr', ['rsi'], ['RSI below 30'])\n"
+        "def strat_uses_helper(s):\n"
+        "    return _strat(_helper(s), 'short', 'c', ['x'], ['b'])\n"
+        "def strat_uses_cfg(s):\n"
+        "    return _strat(s.get('v', 0) > _cfg.LIMIT, 'long', 'c', ['v'], ['b'])\n"
+        "def strat_uses_cfg_name(s):\n"
+        "    return _strat(s.get('v', 0) > LIQUIDITY, 'long', 'c', ['v'], ['b'])\n"
+        "def strat_uses_const(s):\n"
+        "    return _strat(all(s.get(k) for k in LEGS), 'long', 'c', list(LEGS), ['b'])\n"
+        "def strat_calls_other(s):\n"
+        "    return strat_plain(s)\n"
+        "def strat_delegated(s):\n"
+        "    return _strat_drift(s)\n")
+    cfg = "LIMIT = 5\nLIQUIDITY = 1000000\n"
+    ir = (
+        "def _strat_signal(fires, direction, category, signals_used, bullets):\n"
+        "    return {'fires': bool(fires), 'direction': direction}\n"
+        "def strat_drift(s):\n"
+        "    return _strat_signal(s.get('w', False), 'long', 'ir', ['w'], ['in window'])\n")
+
+    def side(s=scr, c=cfg, i=ir):
+        return bss.CodeSide(sources={SCR: s, CFG: c, IR: i})
+
+    def flags(new, old=None, neutral=None):
+        return bss.fire_logic_changes(old or side(), new,
+                                      neutral={} if neutral is None else neutral)
+
+    # text-only edits move nothing: a docstring, a declared list, bullets,
+    # and the index-rebalance helper's payload
+    text_only = side(
+        s=scr.replace("'''doc'''", "'''a longer doc'''")
+             .replace("['rsi'], ['RSI below 30']", "['rsi', 'x'], ['RSI < 30']"),
+        i=ir.replace("['w'], ['in window']", "['w', 'z'], ['window']"))
+    assert flags(text_only) == set()
+    # every channel flags exactly its readers
+    cases = {
+        "threshold": (dict(s=scr.replace("< 30", "< 25")), {"plain", "calls_other"}),
+        "direction": (dict(s=scr.replace("'short', 'c'", "'long', 'c'")), {"uses_helper"}),
+        "helper": (dict(s=scr.replace("> 1\n", "> 2\n")), {"uses_helper"}),
+        "config attribute": (dict(c=cfg.replace("LIMIT = 5", "LIMIT = 6")), {"uses_cfg"}),
+        "config name": (dict(c=cfg.replace("1000000", "2000000")), {"uses_cfg_name"}),
+        "module constant": (dict(s=scr.replace("('a', 'b')", "('a', 'c')")), {"uses_const"}),
+        "delegation": (dict(i=ir.replace("'w', False", "'w2', False")), {"delegated"}),
+    }
+    for label, (kw, want) in cases.items():
+        assert flags(side(**kw)) == want, label
+    # a function-level import is followed (the index-rebalance shorts import
+    # the borrow helper inside their bodies)
+    ir_li = ir.replace("    return _strat_signal(s.get('w', False)",
+                       "    from backtest.signals.screener import _helper as _h\n"
+                       "    return _strat_signal(_h(s) and s.get('w', False)")
+    assert ir_li != ir
+    assert flags(side(s=scr.replace("> 1\n", "> 2\n"), i=ir_li),
+                 old=side(i=ir_li)) == {"uses_helper", "delegated"}
+    # a reviewed fire-neutral change holds while its digest is current
+    inst = side(s=scr.replace("def _helper(s):\n    return",
+                              "def _helper(s):\n    _C = {}\n    return"))
+    key = "fn:backtest.signals.screener:_helper"
+    dig = bss.member_digest(inst.member_text(key))
+    assert flags(inst) == {"uses_helper"}
+    assert flags(inst, neutral={key: (dig, "probe")}) == set()
+    assert flags(inst, neutral={key: ("0" * 16, "stale")}) == {"uses_helper"}
+    # the register audit fires both ways
+    assert bss.neutral_register_problems(side(), inst, {key: (dig, "probe")}) == []
+    assert any("REDUNDANT" in p for p in
+               bss.neutral_register_problems(side(), side(), {key: (dig, "probe")}))
+    assert any("STALE" in p for p in
+               bss.neutral_register_problems(side(), inst, {key: ("0" * 16, "probe")}))
+
+    # ---- the live repo against the R5-era commit -------------------------
+    src = (root / "backtest" / "signals" / "screener.py").read_text(encoding="utf-8")
+    live = bss.changed_since_r5(src)
+    r5 = bss.CodeSide(bss.R5_SCREENER_COMMIT)
+    now = bss.CodeSide(None, sources={SCR: src})
+    a, b = r5.index(SCR)["strategies"], now.index(SCR)["strategies"]
+    common = sorted(set(a) & set(b))
+    neutral = set(bss.FIRE_NEUTRAL_CHANGES)
+
+    def moved(k):
+        ma, mb = r5.members(a[k]), now.members(b[k])
+        return {m for m in set(ma) | set(mb) if ma.get(m) != mb.get(m)} - neutral
+
+    raw_only = [k for k in common if _ast.unparse(a[k]) != _ast.unparse(b[k])
+                and bss.strip_fire_logic(a[k]) == bss.strip_fire_logic(b[k])]
+    assert raw_only, "positive control: strategies edited in text only since R5"
+    for k in raw_only:
+        assert (k[6:] in live) == bool(moved(k)), k
+    assert any(k[6:] not in live for k in raw_only), "a text-only edit flags nothing"
+    # a one-line delegation whose screener body equals R5's is flagged when
+    # its target moved - the delegation is followed, derived from the code
+    deleg = [k for k in common if len(b[k].body) == 1
+             and isinstance(b[k].body[0], _ast.Return)
+             and isinstance(b[k].body[0].value, _ast.Call)
+             and isinstance(b[k].body[0].value.func, _ast.Name)
+             and b[k].body[0].value.func.id in now.index(SCR)["imported"]]
+    assert deleg, "positive control: the index-rebalance delegations"
+    seen = [k for k in deleg if k[6:] in live
+            and bss.strip_fire_logic(a[k]) == bss.strip_fire_logic(b[k])]
+    assert seen, "a delegated strategy's fire-logic change is seen through it"
+    # the reviewed neutral register is current and not redundant
+    assert bss.neutral_register_problems(r5, now) == []
+    # and main() still reads this function for the column it writes
+    tree = _ast.parse((root / "scripts" / "build_strategy_status.py")
+                      .read_text(encoding="utf-8"))
+    main = next(n for n in tree.body if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    assert any(isinstance(n, _ast.Call) and isinstance(n.func, _ast.Name)
+               and n.func.id == "changed_since_r5" for n in _ast.walk(main))
+
+
+def test_b3228_strategy_extras_bands_are_counted_level_by_level(monkeypatch):
+    """S6-B3228 (B3139q-r84): the three STRATEGY_EXTRAS rows carried prose
+    bands the Table A footer scored as n = 1 - production only - so a tighter
+    level their own text called an offline subset never reached the footer's
+    offline count. Each now carries per-side list bands, classed level by
+    level; the import-time validators read the extras too (a prose band is
+    refused); and the re-rendered lane files carry the per-side axes."""
+    import ast as _ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import table_a_bands as T
+
+    want = {"williams_r_oversold": [(2, 1, 1, 0)] * 2,
+            "ultimate_oscillator": [(2, 1, 1, 0)] * 2,
+            "bollinger_lower": [(3, 1, 1, 1)] * 6}
+    assert set(T.STRATEGY_EXTRAS) == set(want)
+    for name, rows in T.STRATEGY_EXTRAS.items():
+        got = [c for r in rows for c in T.band_level_classes(r)]
+        assert got == want[name], (name, got)
+    # the countability validator reads the extras: a prose band raises
+    monkeypatch.setitem(T.STRATEGY_EXTRAS, "zz_probe",
+                        [{"param": "p", "band": "prose", "evidence": "e"}])
+    with pytest.raises(ValueError, match="S6-B2862"):
+        T._b2862_validate_every_band_is_countable()
+    # the partition validator holds an extras row: a level in both classes
+    row = dict(T.STRATEGY_EXTRAS["williams_r_oversold"][0])
+    row["axis_levels"] = [dict(row["axis_levels"][0], resim_band=[3]),
+                          row["axis_levels"][1]]
+    with pytest.raises(ValueError, match="S6-B3189"):
+        T._b3189_validate_levels_and_env({"probe": [row]})
+    # and the module runs it over STRATEGY_EXTRAS at import
+    tree = _ast.parse((root / "scripts" / "table_a_bands.py").read_text(encoding="utf-8"))
+    assert any(isinstance(n, _ast.Expr) and isinstance(n.value, _ast.Call)
+               and _ast.unparse(n.value) == "_b3189_validate_levels_and_env(STRATEGY_EXTRAS)"
+               for n in tree.body)
+    # the RENDERER classes an extras row per side - behaviour, not only the
+    # committed files: a three-fire synthetic frame through render()
+    import pandas as _pd
+    import build_table_a as bta
+    sigs = [{'rsi_2': v, 'williams_r': -90.0, 'cmf_positive': True} for v in (2.0, 3.0, 4.0)]
+    frame = _pd.DataFrame({'strategy': ['williams_r_oversold'] * 3,
+                           'ticker': ['A', 'B', 'C'], 'entry_date': ['2024-01-02'] * 3,
+                           'direction': ['long'] * 3,
+                           'signals_at_entry': [str(s) for s in sigs]})
+    md = bta.render('williams_r_oversold',
+                    {'stream': 'TIGHTEN', 'family': 'momentum', 'status': 'NOT-STARTED',
+                     'r5_fires': 3, 'survives_pct': 1.0, 'changed_since_r5': False},
+                    frame, sigs, False, [], ([], []), [], set(), 'STAMP', body='fl = ...')
+    got = [ln.split('|')[1].strip() for ln in md.splitlines()
+           if ln.startswith('| P') and '| rsi_2 escape-hatch thresholds (long < 5, |' in ln]
+    assert got == ['P1.1', 'P1.2'], got
+    assert 'prose band' not in md
+    # the re-rendered lane files: each extras row is two per-side axes of 2
+    # levels with one offline level each, and the prose disclosure is gone
+    for rel in ("tighten/williams_r_oversold.md", "tighten/both/ultimate_oscillator.md"):
+        txt = (root / "strategy_optimisation" / rel).read_text(encoding="utf-8")
+        assert "prose band" not in txt, rel
+        rows = [ln for ln in txt.splitlines()
+                if ln.startswith("| P") and "| rsi_2 escape-hatch thresholds (long < 5, |" in ln]
+        assert [ln.split("|")[1].strip()[-2:] for ln in rows] == [".1", ".2"], (rel, rows)
+        for ln in rows:
+            c = [x.strip() for x in ln.strip("|").split("|")]
+            assert c[2] == "2" and c[-3:] == ["1", "1", "0"], (rel, c)

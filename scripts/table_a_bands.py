@@ -705,28 +705,67 @@ PRODUCER_BANDS.update({
 # strategy-layer gates the source pattern cannot see (local-variable compares)
 # - each IS a persisted magnitude, so tighter sides are OFFLINE today.
 STRATEGY_EXTRAS = {
+    # S6-B3228 (B3139q-r84): each row carries per-side LIST bands
+    # (axis_levels, the S6-B3196 multi-axis form) so band_level_classes
+    # counts its tighter levels; the prose bands scored n = 1 in the footer,
+    # so a level their own text called an offline subset never reached the
+    # offline count. The levels are the ones the prose stated - none added.
+    # Direction per side: a long side fires on rsi BELOW its cut, so a lower
+    # cut keeps a SUBSET (free) and a higher one adds bars (resim); a short
+    # side fires ABOVE its cut, the reverse. env None: a resim level is
+    # pending until an actuator exists (S6-B2569a).
     "williams_r_oversold": [
         {"param": "rsi_2 escape-hatch thresholds (long < 5, short > 95)",
-         "production": "5 / 95", "band": "[3, 5] / [95, 97]",
+         "production": "5 / 95", "band": "long < [3, 5] / short > [95, 97]",
+         "axes": [2, 2],
+         "axis_levels": [
+             {"side": "long rsi_2 <", "production": 5, "band": [3, 5],
+              "free_band": [3, 5], "resim_band": []},
+             {"side": "short rsi_2 >", "production": 95, "band": [95, 97],
+              "free_band": [95, 97], "resim_band": []}],
          "basis": "BRACKET production (Connors RSI-2 canon); rsi_2 persisted",
          "offline": "TIGHTER (< 3, > 97) - subset on persisted rsi_2",
-         "resim": "LOOSER", "env": None,
+         "resim": "none in the band - a looser cut is an engine level",
+         "env": None,
          "evidence": "backtest/signals/screener.py strat_williams_r_oversold "
                      "(local rsi_2 compare - invisible to the extractor)"},
     ],
     "ultimate_oscillator": [
         {"param": "rsi_2 escape-hatch thresholds (long < 5, short > 95)",
-         "production": "5 / 95", "band": "[3, 5] / [95, 97]",
+         "production": "5 / 95", "band": "long < [3, 5] / short > [95, 97]",
+         "axes": [2, 2],
+         "axis_levels": [
+             {"side": "long rsi_2 <", "production": 5, "band": [3, 5],
+              "free_band": [3, 5], "resim_band": []},
+             {"side": "short rsi_2 >", "production": 95, "band": [95, 97],
+              "free_band": [95, 97], "resim_band": []}],
          "basis": "BRACKET production (Connors RSI-2 canon); rsi_2 persisted",
          "offline": "TIGHTER (< 3, > 97) - subset on persisted rsi_2",
-         "resim": "LOOSER", "env": None,
+         "resim": "none in the band - a looser cut is an engine level",
+         "env": None,
          "evidence": "backtest/signals/screener.py strat_ultimate_oscillator "
                      "(local rsi_2 compare - invisible to the extractor)"},
     ],
     "bollinger_lower": [
         {"param": "VIX-conditional RSI thresholds (low 40/60, mid 45/55, "
                   "high 50/50)", "production": "B1147 widened set",
-         "band": "each edge +/-5 around production",
+         "band": "each edge +/-5: low long < [35, 40, 45] / short > [55, 60, 65]; "
+                 "mid long < [40, 45, 50] / short > [50, 55, 60]; high long < "
+                 "[45, 50, 55] / short > [45, 50, 55]",
+         "axes": [3, 3, 3, 3, 3, 3],
+         "axis_levels": [
+             {"side": "low-VIX long rsi_14 <", "production": 40,
+              "band": [35, 40, 45], "free_band": [35, 40], "resim_band": [45]},
+             {"side": "low-VIX short rsi_14 >", "production": 60,
+              "band": [55, 60, 65], "free_band": [60, 65], "resim_band": [55]},
+             {"side": "mid-VIX long rsi_14 <", "production": 45,
+              "band": [40, 45, 50], "free_band": [40, 45], "resim_band": [50]},
+             {"side": "mid-VIX short rsi_14 >", "production": 55,
+              "band": [50, 55, 60], "free_band": [55, 60], "resim_band": [50]},
+             {"side": "high-VIX long rsi_14 <", "production": 50,
+              "band": [45, 50, 55], "free_band": [45, 50], "resim_band": [55]},
+             {"side": "high-VIX short rsi_14 >", "production": 50,
+              "band": [45, 50, 55], "free_band": [50, 55], "resim_band": [45]}],
          "basis": "BRACKET production (Connors canonical, B1147 history); "
                   "rsi_2/rsi_14 and vix_percentile all persisted",
          "offline": "TIGHTER edges - subset on persisted rsi keys per band",
@@ -895,9 +934,11 @@ def band_axes(row: dict) -> list[int]:
 
 
 def _b2862_validate_every_band_is_countable() -> None:
-    """Runs at import: no PRODUCER_BANDS row may carry an uncountable band."""
+    """Runs at import: no PRODUCER_BANDS or STRATEGY_EXTRAS row may carry an
+    uncountable band (S6-B3228: the extras escaped this check, and a prose
+    band reached the footer as n = 1)."""
     bad = []
-    for leg, rows in PRODUCER_BANDS.items():
+    for leg, rows in list(PRODUCER_BANDS.items()) + list(STRATEGY_EXTRAS.items()):
         for r in rows:
             try:
                 band_axes(r)
@@ -1103,3 +1144,4 @@ def _b3189_validate_levels_and_env(bands=None) -> None:
 
 
 _b3189_validate_levels_and_env()
+_b3189_validate_levels_and_env(STRATEGY_EXTRAS)  # S6-B3228: the extras too

@@ -247,14 +247,14 @@ row whose entry condition moved since its closure evidence - reopening is the OW
 automatic. Per-family tightening-candidate counts are programme state, recorded in the campaign log.
 
 **Three caveats bound every number in it, and are printed in the file itself:** `changed_since_r5`
-is an UPPER bound (any code difference counts, including a rename); `stream = TIGHTEN` rests on a
-source pattern for numeric comparisons and is a LOWER bound (a threshold reached through a helper
-or compared to a config constant is invisible to it); and `survives_pct` calls the LIVE strategy
-function on each fire's persisted signals (S6-B2814; `-` only for zero-fire strategies) and is a
-LOWER bound where a gate leg reads an unpersisted key. The campaign lanes are no longer a caveat:
-until S6-B3194 they came from a 12-word vocabulary heuristic over ticket rows, which labelled 44
-strategies as campaigns when 4 were (output_audit/b3194_campaign_classification.json); they now
-come from the register below, and the JSON's `mention_tickets` keeps every row naming a strategy.
+compares FIRE LOGIC - the body and all it reaches, docstrings and the _strat payload removed
+(S6-B3235) - and is an UPPER bound on behaviour; `stream = TIGHTEN` rests on a source pattern for
+numeric comparisons and is a LOWER bound (a threshold reached through a helper or compared to a
+config constant is invisible to it); and `survives_pct` calls the LIVE strategy function on each
+fire's persisted signals (S6-B2814; `-` only for zero-fire strategies) and is a LOWER bound where
+a gate leg reads an unpersisted key. The campaign lanes are no longer a caveat: until S6-B3194 they
+came from a 12-word vocabulary heuristic over ticket rows, which labelled 44 strategies as campaigns
+when 4 were (output_audit/b3194_campaign_classification.json); they now come from the register below, and the JSON's `mention_tickets` keeps every row naming a strategy.
 
 **AN OWNER-OPENED CAMPAIGN IS RECORDED THE TURN THE OWNER OPENS IT (S6-B3194, owner 'A approved'
 2026-10-19).** Append a record to `output_audit/owner_campaign_opens.json` - `strategy`, `opened`
@@ -820,11 +820,11 @@ strategy a cube carries** (L404) - one run computes many strategies, and reading
 every offline read. A strategy's ENTRY CONDITION - the boolean in `screener.py` deciding whether it
 fires on a bar - may have been edited since. Where it was, R5 records a population the current
 condition would NOT produce, and any figure read off those rows describes a strategy that no longer
-exists in that form. The status view's `changed_since_r5` column marks them (an AST-diff of every
-`strat_*` function between the R5-era screener commit `fee970996` and HEAD). **It is an UPPER bound on
-behavioural change:** any code difference counts, so a rename or a configurable-span swap that is
-identical at its default is included beside real tightenings. The measured list, its examples, and
-the roster-exposure check are in the campaign log.
+exists in that form. The status view's `changed_since_r5` column marks them: the FIRE LOGIC of every
+`strat_*` function - its body plus every function, constant and config value it reaches, docstrings and
+the _strat payload removed (S6-B3235) - between the R5-era commit `fee970996` and HEAD. **It is an UPPER
+bound on behavioural change:** a configurable-span swap identical at its default counts beside real
+tightenings. The measured list, its examples, and the roster-exposure check are in the campaign log.
 
 **The rule - it is the Step-0.6 check made concrete.** Before reading any R5 figure for a strategy -
 changed or not; the section measured an unchanged one too - re-evaluate its CURRENT condition against the persisted `signals_at_entry` of its recorded
