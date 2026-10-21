@@ -5003,7 +5003,7 @@ def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
         for r in (g.get("step1_ranking") or []):
             a = r.get("admit") or {}
             row = {
-                "config": name,
+                "config": _cfg_label(name),
                 "exit": r.get("exit"),
                 "ci": r.get("is_ci_lo"), "n": r.get("fires"),
                 "sh": r.get("is_sharpe"), "cls": r.get("class_size"),
@@ -5080,14 +5080,14 @@ def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
             f"{r['ho']} | {r['fp']} | {r['verdict']} | {_npt} |")
 
     out += ["", f"_{len(rows)} ranked outcomes across {len(grids)} graded "
-                f"configs; {len(counts)} distinct signatures._"]
+                f"configs; {len(counts)} distinct signatures._"] + _superseded_note(grids)
 
     # per-tier best - the comparison the rank order actively hides
     out += ["", "**Best within each depth tier** (the comparison a rank order hides):",
             "", "| tier | best is_ci_lo | at n | rows |", "|---|---|---|---|"]
     for lo, hi, name in DEPTH_TIERS:
         sub = [r for r in rows if r["ci"] is not None and r["n"] is not None
-               and r["n"] >= lo and (hi is None or r["n"] < hi)]
+               and r["n"] >= lo and (hi is None or r["n"] < hi) and _live_row(r)]
         if sub:
             b = max(sub, key=lambda r: r["ci"])
             out.append(f"| {name} | {b['ci']:+.3f} | {b['n']} | {len(sub)} |")
@@ -5128,7 +5128,7 @@ def table_d_params(grids: dict[str, dict], top: int = 25) -> list[str]:
         fam_seen = fam_seen or _fam
         for r in (g.get("step1_ranking") or []):
             a = r.get("admit") or {}
-            row = {"config": name, "ci": r.get("is_ci_lo"),
+            row = {"config": _cfg_label(name), "ci": r.get("is_ci_lo"),
                    "n": r.get("fires"),
                    "npt": a.get("npt_excluded_identity_boundary")}
             for i, spec in enumerate(_fam["d2"], 1):
@@ -5501,7 +5501,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         _pb = producer_bands(name, g, root)
         if _pb:
             p_col = "; ".join(pid + "=" + cell for pid, _nm, cell in _pb)
-            rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
+            rows.append(f"| {_cfg_cell(name)} | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
                         f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
                         f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
                         f"{_measured_fmt(mx)} | {sh} | {cl} | {combo} | {_win_cell} |")
@@ -5512,7 +5512,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         if not _smc_shaped and cfg:
             p_col = "; ".join(
                 f"{k.split('_', 1)[0]}={_fmt(v)}(fixed)" for k, v in sorted(cfg.items()))
-            rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
+            rows.append(f"| {_cfg_cell(name)} | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
                         f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
                         f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
                         f"{_measured_fmt(mx)} | {sh} | {cl} | {combo} | {_win_cell} |")
@@ -5532,7 +5532,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         # the table - caught by rendering it. Semicolon is safe inside a
         # markdown cell.
         p_col = "; ".join(p_cells)
-        rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
+        rows.append(f"| {_cfg_cell(name)} | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
                     f"{g.get('step1_distinct_outcomes', '-')} | {_measured_fmt(bands)} | {p_col} | "
                     f"{_measured_fmt(med)} | {_measured_fmt(mx)} | {sh} | {cl} | {combo} | {_win_cell} |")
         if other:
@@ -5595,7 +5595,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
                 # string sort renders tail_n as "1, 10, 2, 20, 3, 5", which
                 # reads as a jumbled band and hides whether the axis is ordered.
                 cells.append(f"{len(vals)}: " + _band_str(vals))
-        rows.append(f"| `{name}` | " + " | ".join(cells) + " |")
+        rows.append(f"| {_cfg_cell(name)} | " + " | ".join(cells) + " |")
 
     # B2560: the other families, each from its own recorded axes. One table per
     # axis-set, because a shared header would have to be the union and would
@@ -5625,13 +5625,13 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
                          "|---|" + "---|" * len(_pb0)]
                 for _n, _own in _members:
                     _cells = producer_bands(_n, _per_config_grid.get(_n) or {}, root) or []
-                    rows.append(f"| `{_n}` | " + " | ".join(
+                    rows.append(f"| {_cfg_cell(_n)} | " + " | ".join(
                         c for _pid, _nm, c in _cells) + " |")
                 continue
             rows += ["", "| config | " + " | ".join(_keys) + " |",
                      "|---|" + "---|" * len(_keys)]
             for _n, _own in _members:
-                rows.append(f"| `{_n}` | " + " | ".join(
+                rows.append(f"| {_cfg_cell(_n)} | " + " | ".join(
                     f"FIXED at {_fmt(_own[k])}" for k in _keys) + " |")
     return rows
 
@@ -6176,3 +6176,53 @@ SPECS["smc_order_block_bounce"] = {
     },
 }
 
+
+# S6-B3266 (B3139q-r91): a grid whose cube was RE-RUN after a defect stays on
+# disk as evidence, so the renderers MARK it rather than drop it - a reader
+# must never compare against the superseded number. Keyed by the grid's config
+# name (output_audit/output_<name>_grid_auto.json) -> (the re-run's config
+# name, why). S6-B2605a's closing row owed this restatement 'at the next Table
+# C render' and it never happened (L949's sweep). Defined at end-of-file so no
+# cited line above moved (L943); the renderers resolve the names at call time.
+SUPERSEDED_GRIDS = {
+    "icg_cfg1": ("icg_cfg1_rerun_cfg1_rerun",
+                 "S6-B2605a: 23 of 373 fires carried empty signals_at_entry; the "
+                 "clean re-run reads is_ci_lo -0.106 against -0.087"),
+    "icg_span100_span100": ("icg_span100_rerun_span100",
+                            "S6-B2574a: a 2pct-of-price ATR proxy priced 83.7pct of "
+                            "trades; the clean re-run reads is_ci_lo -0.078 against "
+                            "+0.062"),
+}
+
+
+def _cfg_cell(name) -> str:
+    """Table C's config cell - the name and, for a superseded grid, what
+    replaced it and why (S6-B3266). ONE definition for every Table C row that
+    names a config (L593)."""
+    sup = SUPERSEDED_GRIDS.get(name)
+    if not sup:
+        return f"`{name}`"
+    return f"`{name}` SUPERSEDED by `{sup[0]}` ({sup[1]})"
+
+
+def _cfg_label(name) -> str:
+    """Table D's config label - a bare name per row; the reason is in the
+    table's footnote (S6-B3266)."""
+    return f"{name} (SUPERSEDED)" if name in SUPERSEDED_GRIDS else str(name)
+
+
+def _live_row(r) -> bool:
+    """False for a Table D row of a superseded config - the per-tier best
+    skips it (S6-B3266)."""
+    return not str(r.get("config", "")).endswith(" (SUPERSEDED)")
+
+
+def _superseded_note(grids) -> list:
+    """Table D's footnote for the superseded configs it ranked, or []."""
+    sup = [n for n in grids if n in SUPERSEDED_GRIDS]
+    if not sup:
+        return []
+    return ["", "_SUPERSEDED configs, ranked above as evidence and excluded from "
+                "the per-tier best (S6-B3266): " + "; ".join(
+                    f"{n} by {SUPERSEDED_GRIDS[n][0]} - {SUPERSEDED_GRIDS[n][1]}"
+                    for n in sup) + "._"]

@@ -26059,6 +26059,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L952 (B3139q-r90): an RCA's class sized by its symptom"),
         ('A ONCE-PER-ID LATCH TURNS A RISING LEVEL INTO SILENCE',
          'L949 (B3139q-r90): a latch over a level trigger'),
+        # B3139q-r91: S6-B3269's selector, same call as the skill edit.
+        ("scripts/pregate_select.py, S6-B3269, selects this turn's 6 of 6: run it before the gate",
+         'L950 / S6-B3269 (B3139q-r91): the pre-gate selector'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26299,7 +26302,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same call as the skill edit).
     # 345 -> 353 at B3139q-r90 (L948-L952's eight clauses; same call as the
     # skill edit).
-    assert len(gutted) == 353, gutted
+    # 353 -> 354 at B3139q-r91 (S6-B3269's selector clause; same call).
+    assert len(gutted) == 354, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -35203,7 +35207,8 @@ def test_b2619_table_d_combo_cell_is_unit_aware_at_every_branch():
     from pathlib import Path
     src = (Path(__file__).resolve().parents[2] / "scripts" /
            "producer_variant_table.py").read_text(encoding="utf-8")
-    assert src.count('rows.append(f"| `{name}` | {_combo_cell} |') == 3
+    # S6-B3266 (B3139q-r91): the sites name the config through _cfg_cell
+    assert src.count('rows.append(f"| {_cfg_cell(name)} | {_combo_cell} |') == 3
     assert 'rows.append(f"| `{name}` | {len(res)} |' not in src
     # and the cell logic itself keeps combinations bare while naming any
     # other unit - asserted against the executable assignment, not prose
@@ -61727,3 +61732,144 @@ def test_b3263_exit_cube_coverage_counts_by_fire(tmp_path, capsys):
             len(r5["partial"])) == (189471, 349, 14, 62), {
         k: r5[k] for k in ("closed_fires", "missing")}
     assert (r5["pairs_with_missing"], r5["pairs_split"]) == (317, 0)
+
+
+def test_b3266_tables_c_and_d_mark_a_superseded_grid():
+    """S6-B3266 (B3139q-r91): a grid whose cube was re-run after a defect is
+    MARKED, never shown as a peer. S6-B2605a's closing row owed this
+    restatement 'at the next Table C render' and it never happened (L949).
+    (1) The register names real, tracked grids, each with a re-run. (2) Table
+    C on the two real ICG cfg1 grids: the superseded row carries what replaced
+    it and why, the re-run's row carries no mark, and the marked row keeps the
+    header's cell count. (3) No f-string in table_c starts a row with a raw
+    name cell - every site goes through _cfg_cell. (4) Table D labels the
+    superseded config's rows, footnotes it, and its per-tier best skips it:
+    on these two grids the DEEP best is the clean re-run's -0.106 over its
+    ranked rows (step1_ranking: the top 10), not the superseded -0.087."""
+    import ast as _ast
+    import inspect as _insp
+    import json
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pv
+    oa = root / "output_audit"
+    # (1)
+    assert set(pv.SUPERSEDED_GRIDS) == {"icg_cfg1", "icg_span100_span100"}
+    for old, (new, why) in pv.SUPERSEDED_GRIDS.items():
+        for nm in (old, new):
+            assert (oa / f"output_{nm}_grid_auto.json").is_file(), nm
+        assert why and "|" not in why and new not in pv.SUPERSEDED_GRIDS
+    # (2)
+    names = ("icg_cfg1", "icg_cfg1_rerun_cfg1_rerun")
+    grids = {nm: json.loads((oa / f"output_{nm}_grid_auto.json").read_text(encoding="utf-8"))
+             for nm in names}
+    out = pv.table_c(grids)
+    header = [ln for ln in out if ln.startswith("| config |")][0]
+    old = [ln for ln in out if ln.startswith(
+        "| `icg_cfg1` SUPERSEDED by `icg_cfg1_rerun_cfg1_rerun` (S6-B2605a: ")]
+    new = [ln for ln in out if ln.startswith("| `icg_cfg1_rerun_cfg1_rerun` |")]
+    assert old and new, out
+    assert old[0].count("|") == header.count("|"), (old[0], header)
+    assert not any("SUPERSEDED" in ln for ln in new)
+    # (3)
+    tree = _ast.parse(_insp.getsource(pv.table_c).replace("\r\n", "\n"))
+    raw_cells = [n for n in _ast.walk(tree) if isinstance(n, _ast.JoinedStr)
+                 and n.values and isinstance(n.values[0], _ast.Constant)
+                 and str(n.values[0].value).startswith("| `")]
+    assert raw_cells == [], [_ast.dump(n)[:80] for n in raw_cells]
+    assert _insp.getsource(pv.table_c).count("_cfg_cell(") == 6
+    # (4)
+    d = pv.table_d(grids, top=10 ** 9)
+    labelled = [ln for ln in d if "| icg_cfg1 (SUPERSEDED) |" in ln]
+    clean = [ln for ln in d if "| icg_cfg1_rerun_cfg1_rerun |" in ln]
+    assert len(labelled) == len(grids["icg_cfg1"]["step1_ranking"]) and clean, d[:5]
+    note = [ln for ln in d if ln.startswith("_SUPERSEDED configs")]
+    assert len(note) == 1 and "icg_cfg1 by icg_cfg1_rerun_cfg1_rerun" in note[0], note
+    tiers = d[d.index("| tier | best is_ci_lo | at n | rows |"):]
+    deep = [ln for ln in tiers if ln.startswith("| DEEP |")]
+    n_clean = len(grids["icg_cfg1_rerun_cfg1_rerun"]["step1_ranking"])
+    assert deep == [f"| DEEP | -0.106 | 373 | {n_clean} |"], deep
+
+
+def test_b3269_pregate_selector_reaches_the_tests_that_read_a_change(monkeypatch, tmp_path):
+    """S6-B3269 (B3139q-r91, L950): scripts/pregate_select.py selects the tests
+    that READ what a change touched, to run before the full gate. (1) The six
+    gate catches of B3139q-r86..r90, each selected from its own change - the
+    shortlist test by the read-set (R1, injected here: the read-set file is
+    untracked), the make_spec, roster-stamp and seam-register tests by name
+    (R2, through a module-level helper for test_b1974), the except:pass
+    ratchet and the writer census as source-tree scanners (R3). (2) A narrow
+    change selects a small part of the suite. (3) R2 names a file only as a
+    whole word. (4) R4 selects a test whose own lines the diff touches, and a
+    non-.py change selects no scanner. (5) The CLI parses its arguments
+    (--help is read-only, #327). (6) The default change set takes untracked
+    files under scripts/ and backtest/ only; the CLI refuses outside the
+    repo."""
+    import sys
+    from pathlib import Path as _P
+
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import pregate_select as ps
+    T = "backtest/tests/test_unit.py::"
+    shortlist = T + "test_b3232_long_shortlist_reads_in_sample_only_and_open_longs"
+    # (1)
+    rs = {shortlist: ["output_audit/strategy_optimisation_status.json"]}
+    sel = ps.select(["output_audit/strategy_optimisation_status.json"], root=root,
+                    readset=rs, edited={})
+    assert sel.get(shortlist) == ["R1"], sel.get(shortlist)
+    sel = ps.select(["scripts/make_spec.py"], root=root, readset={}, edited={})
+    assert "R2" in sel[T + "test_b3171b_make_spec_pins_every_battery_key_at_production"]
+    assert "R3" in sel[T + "test_b2128_silent_except_pass_is_a_shrinking_set"]
+    sel = ps.select(["scripts/roster_core.py"], root=root, readset={}, edited={})
+    assert "R2" in sel[T + "test_b1974_generated_artifact_is_not_older_than_its_generator"]
+    # ... and the r90 gate's two, from r90's own change
+    sel = ps.select(["scripts/verify_turn_compliance.py"], root=root, readset={}, edited={})
+    assert "R3" in sel[T + "test_b3243_a_writing_script_parses_its_arguments"]
+    assert "R2" in sel[T + "test_b3121_every_call_site_seam_is_registered_with_its_live_path_reason"]
+    # (2)
+    src = (root / "backtest" / "tests" / "test_unit.py").read_text(encoding="utf-8")
+    tests, _defs = ps.index_module(src)
+    narrow = ps.select(["scripts/exit_cube_coverage.py"], root=root, readset={}, edited={})
+    assert T + "test_b3263_exit_cube_coverage_counts_by_fire" in narrow
+    assert 0 < len(narrow) < len(tests) // 10, (len(narrow), len(tests))
+    # (3)
+    assert ps._names("import make_spec as ms", "make_spec")
+    assert not ps._names("make_spec_extra()", "make_spec")
+    # (4)
+    node = tests["test_b3263_exit_cube_coverage_counts_by_fire"]
+    sel = ps.select([], root=root, readset={},
+                    edited={"backtest/tests/test_unit.py": {node.lineno + 1}})
+    assert sel == {T + "test_b3263_exit_cube_coverage_counts_by_fire": ["R4"]}, sel
+    sel = ps.select(["output_audit/a_new_artifact.json"], root=root, readset={}, edited={})
+    assert not any("R3" in v for v in sel.values())
+    # (5)
+    with pytest.raises(SystemExit) as ex:
+        ps.main(["--help"])
+    assert ex.value.code == 0
+    # (6) the default change set takes untracked files under scripts/ and
+    # backtest/ only - the working tree's thousands of untracked output
+    # artifacts kept the first draft computing for minutes
+    calls = []
+
+    class _R:
+        stdout = ""
+
+    def _run(cmd, **kw):
+        calls.append(list(cmd))
+        return _R()
+    monkeypatch.setattr(ps.subprocess, "run", _run)
+    ps.changed_files(root)
+    assert ["git", "ls-files", "--others", "--exclude-standard", "--", "scripts",
+            "backtest"] in calls, calls
+    calls.clear()
+    ps.changed_files(root, all_untracked=True)
+    assert ["git", "ls-files", "--others", "--exclude-standard"] in calls, calls
+    monkeypatch.undo()
+    monkeypatch.setattr(ps, "ROOT", tmp_path)
+    assert ps.main(["--changed", "scripts/make_spec.py"]) == 2
