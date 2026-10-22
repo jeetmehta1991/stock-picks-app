@@ -2979,9 +2979,9 @@ class BacktestEngine:
                     continue
                 if regime in _SRB.get(_sname, []):
                     continue
-                # Batch 291: pass direction so pre-scan uses the same
-                # direction-aware default that the inner loop uses.
-                if not _ssfir(_sname, regime, direction=_sdir):
+                # Batch 291: the inner loop's direction-aware default; S6-B3256:
+                # and its no_regime_affinity skip (Batch 384) - split as it trades
+                if not self.no_regime_affinity and not _ssfir(_sname, regime, direction=_sdir):
                     continue
                 if _sdir == "long" and _crisis_now and ticker in _CLE:
                     continue

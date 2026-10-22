@@ -45858,9 +45858,11 @@ def test_b3099_leg_start_comes_from_the_engine_resume_record():
 
 
 def test_b3099_process_table_sees_a_live_runner(tmp_path):
-    """S6-B3093c (B3099): the REAL table read, end to end - a child python
-    running a script named run_wave.py must be seen while it lives and not
-    after it is killed. The fake runner only sleeps."""
+    """S6-B3093c (B3099): the REAL table read, end to end - a python running a
+    script named run_wave.py, launched OUTSIDE the suite's process tree as a
+    real run is (S6-B3255: a direct child of pytest is suite-spawned and not
+    counted), must be seen while it lives and not after it is killed. The
+    fake runner only sleeps."""
     import subprocess
     import sys as _sys
     import time as _t
@@ -45868,12 +45870,22 @@ def test_b3099_process_table_sees_a_live_runner(tmp_path):
     import pyramid_gate as pg
     fake = tmp_path / "run_wave.py"
     fake.write_text("import time\ntime.sleep(60)\n", encoding="utf-8")
+    # S6-B3255: the probe starts through a launcher that EXITS at once, so
+    # the runner's parent chain holds no pytest - the shape of a real run
+    detach = tmp_path / "detach.py"
+    detach.write_text("import subprocess, sys\n"
+                      "p = subprocess.Popen(sys.argv[1:], stdin=subprocess.DEVNULL,\n"
+                      "    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n"
+                      "print(p.pid)\n", encoding="utf-8")
     label = "run_wave:zz_b3099_live_probe.json"
     # the BASE interpreter, not the venv launcher: on Windows the launcher
     # starts the real python as a child, and killing the launcher can leave
     # that child running - the fake needs nothing from the venv
     exe = getattr(_sys, "_base_executable", None) or _sys.executable
-    p = subprocess.Popen([exe, str(fake), "--spec", "zz_b3099_live_probe.json"])
+    out = subprocess.run([exe, str(detach), exe, str(fake), "--spec",
+                          "zz_b3099_live_probe.json"], capture_output=True,
+                         text=True, timeout=60)
+    pid = int(out.stdout.split()[-1])
     try:
         seen = False
         for _ in range(40):
@@ -45883,9 +45895,19 @@ def test_b3099_process_table_sees_a_live_runner(tmp_path):
             _t.sleep(0.25)
         assert seen, f"a live runner was not seen: {pg._engine_inflight()}"
     finally:
-        p.kill()
-        p.wait(timeout=30)
-    assert label not in pg._engine_inflight().split(","), "a killed runner still reads live"
+        import os as _os
+        import signal as _sig
+        try:
+            _os.kill(pid, _sig.SIGTERM)
+        except OSError:
+            pass
+    gone = False
+    for _ in range(40):
+        if label not in pg._engine_inflight().split(","):
+            gone = True
+            break
+        _t.sleep(0.25)
+    assert gone, "a killed runner still reads live"
 
 
 def test_b3099_every_file_the_leg_gate_opens_is_refused_or_declared_policy(tmp_path):
@@ -62445,3 +62467,137 @@ def test_b3284_every_preflight_label_names_one_check():
     out = preflight.check_generated_artifact_matches_generator(
         ["strategy_optimisation/tighten/x.md"], regenerate=boom)
     assert len(out) == 1 and out[0].startswith("C18: regeneration FAILED"), out
+
+
+def test_b3255_a_runner_the_suite_launched_is_not_in_flight(tmp_path, monkeypatch):
+    """S6-B3255 (owner ruling (a), 2026-10-22): pyramid_gate._engine_inflight
+    counted any python whose script is a runner, so a runner the TEST SUITE
+    launched (test_b2082's launch_sweep.py with a fake engine) read as an
+    engine in flight mid-pyramid and the workflow header steered toward
+    waiting on it. A runner with a python running pytest among its ancestors
+    is not counted now - every step up the chain to a process that started
+    BEFORE its child, any unknown counting the runner (the safe direction for
+    the refusal beside a wave). (1) Seams: excluded through a launcher;
+    counted when the 'pytest' pid started AFTER the runner (a reused pid),
+    when the parent table is unreadable, and when no ancestor runs pytest; an
+    injected rows seam never reads the live table. (2) The real table: a fake
+    runner this pytest launched directly is not in flight (test_b3099 holds
+    the other direction, a runner launched outside the suite's tree)."""
+    import subprocess
+    import sys as _sys
+    import time as _t
+    _b2520_scripts_on_path()
+    import pyramid_gate as pg
+    argv = ["python", "scripts/run_wave.py", "--spec", "zz_b3255.json"]
+    rows = [(10, argv), (9, list(argv)), (8, ["python", "-m", "pytest", "-q"])]
+    parents = {10: 9, 9: 8, 8: 1}
+    starts = {1: 1, 8: 100, 9: 200, 10: 300}
+    assert pg._suite_spawned(rows, parents, starts) == {9, 10}
+    assert pg._engine_inflight(rows=rows, parents=parents, starts=starts) == "none"
+    reused = dict(starts)
+    reused[8] = 400
+    assert pg._suite_spawned(rows, parents, reused) == set()
+    assert pg._engine_inflight(rows=rows, parents=parents, starts=reused) == "run_wave:zz_b3255.json"
+    assert pg._suite_spawned(rows, {}, starts) == set()
+    plain = [(10, argv), (9, ["cmd.exe"]), (8, ["python", "scripts/x.py"])]
+    assert pg._suite_spawned(plain, parents, starts) == set()
+    monkeypatch.setattr(pg, "_parent_pids", lambda: dict(parents))
+    monkeypatch.setattr(pg, "_start_time", starts.get)
+    assert pg._engine_inflight(rows=rows) == "run_wave:zz_b3255.json", "a seam read the live table"
+    monkeypatch.undo()
+    assert pg._is_pytest(["python.exe", "-m", "pytest", "x"])
+    assert pg._is_pytest(["py", "C:/v/Scripts/pytest.exe", "-q"])
+    assert not pg._is_pytest(["python", "scripts/run_wave.py"])
+    fake = tmp_path / "run_wave.py"
+    fake.write_text("import time\ntime.sleep(60)\n", encoding="utf-8")
+    exe = getattr(_sys, "_base_executable", None) or _sys.executable
+    p = subprocess.Popen([exe, str(fake), "--spec", "zz_b3255_suite_probe.json"])
+    try:
+        found = False
+        for _ in range(40):
+            if any(a and "zz_b3255_suite_probe.json" in a for _pid, a in (pg._python_argvs() or [])):
+                found = True
+                break
+            _t.sleep(0.25)
+        assert found, "the probe runner never appeared in the process table"
+        assert "run_wave:zz_b3255_suite_probe.json" not in pg._engine_inflight().split(","), \
+            "a runner this pytest launched still reads as an engine in flight"
+    finally:
+        p.kill()
+        p.wait(timeout=30)
+
+
+def test_b3256_the_split_prescan_skips_affinity_when_the_fire_loop_does():
+    """S6-B3256 (owner ruling (a), 2026-10-22): the Batch 287.B pre-scan that
+    sizes a same-ticker same-day split applied the regime-affinity predicate
+    while the fire loop skips it under no_regime_affinity (Batch 384, on for
+    every phase-1a-beta cube run_wave launches), so a split divided size_pct
+    by fewer strategies than actually opened - pnl_pct is size-free, pnl_dollar
+    and the dollar series were not. The pre-scan reads the same flag now.
+    STRUCTURAL by necessity: _process_day has no seam smaller than a simulated
+    day with market data, so this asserts the property itself - EVERY call of
+    the affinity predicate in _process_day sits under an if whose test holds
+    'not self.no_regime_affinity'."""
+    import ast
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    src = (root / "backtest" / "engine" / "backtest.py").read_text(encoding="utf-8")
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "_process_day")
+    parent = {}
+    for n in ast.walk(fn):
+        for ch in ast.iter_child_nodes(n):
+            parent[ch] = n
+    calls = [c for c in ast.walk(fn) if isinstance(c, ast.Call)
+             and isinstance(c.func, ast.Name)
+             and c.func.id in ("_ssfir", "should_strategy_fire_in_regime")]
+
+    def gated(node):
+        while node in parent:
+            node = parent[node]
+            if isinstance(node, ast.If) and any(
+                    isinstance(a, ast.UnaryOp) and isinstance(a.op, ast.Not)
+                    and isinstance(a.operand, ast.Attribute)
+                    and a.operand.attr == "no_regime_affinity"
+                    for a in ast.walk(node.test)):
+                return True
+        return False
+    assert len(calls) >= 2, len(calls)
+    bad = [c.lineno for c in calls if not gated(c)]
+    assert not bad, f"affinity checks outside 'not self.no_regime_affinity' at lines {bad}"
+
+
+def test_b3257_smc_graders_rank_on_the_ruled_key():
+    """S6-B3257 (owner ruling (a), 2026-10-22): smc_family_step1, smc_lsr_step1
+    and smc_obb_step1 ordered step1_ranking on -is_sharpe, a key runbook 6.4b
+    rejects, and make_spec pre-registers step1_ranking[0]'s exit (B2612). All
+    three rank through ONE function now, smc_lsr_step1.rank: is_ci_lo first, a
+    missing lower bound last, then more in-sample trades, npt rows barred.
+    MEASURED at the fix on the committed Step-1 artifacts: the top cell and
+    exit hold for smc_liquidity_sweep_reversal in 4 of 4, and change for
+    smc_equal_lows_sweep_long (b2819) and smc_inverse_fvg (b2820) - neither
+    has a Step-1 cube or a Step-2, so no pre-registered spec moved."""
+    import ast
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import smc_lsr_step1 as lsr
+    rows = [
+        {"is_sharpe": 2.0, "is_ci_lo": 0.10, "is_n": 50, "npt_barred": False, "exit": "a"},
+        {"is_sharpe": 1.0, "is_ci_lo": 0.40, "is_n": 30, "npt_barred": False, "exit": "b"},
+        {"is_sharpe": 3.0, "is_ci_lo": None, "is_n": 90, "npt_barred": False, "exit": "c"},
+        {"is_sharpe": 1.5, "is_ci_lo": 0.40, "is_n": 60, "npt_barred": False, "exit": "d"},
+        {"is_sharpe": 9.0, "is_ci_lo": 0.90, "is_n": 99, "npt_barred": True, "exit": "e"},
+    ]
+    assert [r["exit"] for r in lsr.rank(rows)] == ["d", "b", "a", "c"]
+    for name in ("smc_family_step1", "smc_lsr_step1", "smc_obb_step1"):
+        tree = ast.parse((root / "scripts" / f"{name}.py").read_text(encoding="utf-8"))
+        main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+        called = {c.func.id for c in ast.walk(main) if isinstance(c, ast.Call)
+                  and isinstance(c.func, ast.Name)}
+        assert "rank" in called, name
+        sharpe_keys = [ast.unparse(n) for n in ast.walk(main)
+                       if isinstance(n, ast.Lambda) and "is_sharpe" in ast.unparse(n)]
+        assert sharpe_keys == [], (name, sharpe_keys)

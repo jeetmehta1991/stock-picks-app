@@ -198,6 +198,18 @@ def breadth_null(m, min_n, n_perms, seed) -> list:
     return maxima
 
 
+def rank(graded: list) -> list:
+    """S6-B3257 (owner ruling (a), 2026-10-22): graded, non-npt rows in the
+    RULED order - the in-sample lower bound is_ci_lo first (runbook 6.4b,
+    never Sharpe), a missing one last, then more in-sample trades. make_spec
+    pre-registers the first row's exit (B2612), so this order is a selection.
+    ONE definition for the smc graders - smc_family_step1 and smc_obb_step1
+    import it - in the order lever4_step1.rank and grade_npoc_config use."""
+    return sorted((r for r in graded if not r["npt_barred"]),
+                  key=lambda r: (-(r["is_ci_lo"] if r.get("is_ci_lo") is not None
+                                   else -9e9), -r["is_n"]))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--min-n", type=int, default=10)
@@ -263,8 +275,7 @@ def main() -> int:
 
     rows = grade_cells(m, a.min_n)
     graded = [r for r in rows if r["is_sharpe"] is not None]
-    ranked = sorted((r for r in graded if not r["npt_barred"]),
-                    key=lambda r: -r["is_sharpe"])
+    ranked = rank(graded)       # S6-B3257: the ruled order (smc_lsr_step1.rank)
     print(f"{len(graded)} graded cells ({time.time()-t0:.0f}s)")
 
     pn = {}

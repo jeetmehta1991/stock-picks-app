@@ -861,6 +861,131 @@ def _runner_label(argv):
     return name[:-3]
 
 
+def _is_pytest(argv) -> bool:
+    """S6-B3255: a python running pytest - `-m pytest` (how every gate and
+    pre-gate here runs it) or a pytest console script."""
+    a = [str(x) for x in (argv or ())]
+    if any(a[i] == "-m" and a[i + 1] in ("pytest", "py.test") for i in range(len(a) - 1)):
+        return True
+    si = _script_index(a)
+    return (si is not None and a[si].replace("\\", "/").rsplit("/", 1)[-1]
+            .lower().startswith(("pytest", "py.test")))
+
+
+def _parent_pids():
+    """S6-B3255: {pid: parent pid} for every process - a Toolhelp snapshot on
+    Windows, /proc/<pid>/stat elsewhere - or None when the table cannot be
+    read. A recorded parent pid outlives its process and can be reused, so
+    _suite_spawned checks start order on every step."""
+    try:
+        if os.name != "nt":
+            out = {}
+            for d in Path("/proc").iterdir():
+                if d.name.isdigit():
+                    try:
+                        out[int(d.name)] = int(
+                            (d / "stat").read_text().rsplit(")", 1)[1].split()[1])
+                    except (OSError, ValueError, IndexError):
+                        continue
+            return out
+        import ctypes
+        from ctypes import wintypes
+
+        class _PE(ctypes.Structure):
+            _fields_ = [("dwSize", wintypes.DWORD), ("cntUsage", wintypes.DWORD),
+                        ("th32ProcessID", wintypes.DWORD),
+                        ("th32DefaultHeapID", ctypes.c_size_t),
+                        ("th32ModuleID", wintypes.DWORD),
+                        ("cntThreads", wintypes.DWORD),
+                        ("th32ParentProcessID", wintypes.DWORD),
+                        ("pcPriClassBase", ctypes.c_long),
+                        ("dwFlags", wintypes.DWORD),
+                        ("szExeFile", ctypes.c_wchar * 260)]
+        k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        k32.CreateToolhelp32Snapshot.restype = wintypes.HANDLE
+        k32.CreateToolhelp32Snapshot.argtypes = (wintypes.DWORD, wintypes.DWORD)
+        k32.Process32FirstW.argtypes = (wintypes.HANDLE, ctypes.POINTER(_PE))
+        k32.Process32NextW.argtypes = (wintypes.HANDLE, ctypes.POINTER(_PE))
+        k32.CloseHandle.argtypes = (wintypes.HANDLE,)
+        snap = k32.CreateToolhelp32Snapshot(0x2, 0)        # TH32CS_SNAPPROCESS
+        if not snap or snap == ctypes.c_void_p(-1).value:
+            return None
+        try:
+            e = _PE()
+            e.dwSize = ctypes.sizeof(_PE)
+            out = {}
+            ok = k32.Process32FirstW(snap, ctypes.byref(e))
+            while ok:
+                out[int(e.th32ProcessID)] = int(e.th32ParentProcessID)
+                ok = k32.Process32NextW(snap, ctypes.byref(e))
+            return out
+        finally:
+            k32.CloseHandle(snap)
+    except Exception:
+        return None
+
+
+def _start_time(pid):
+    """S6-B3255: a process's creation time, comparable within one boot
+    (FILETIME on Windows, clock ticks since boot elsewhere), or None."""
+    try:
+        if os.name != "nt":
+            return int((Path("/proc") / str(pid) / "stat").read_text()
+                       .rsplit(")", 1)[1].split()[19])
+        import ctypes
+        from ctypes import wintypes
+        k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        k32.OpenProcess.restype = wintypes.HANDLE
+        k32.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+        k32.GetProcessTimes.argtypes = ((wintypes.HANDLE,)
+                                        + (ctypes.POINTER(wintypes.FILETIME),) * 4)
+        k32.CloseHandle.argtypes = (wintypes.HANDLE,)
+        h = k32.OpenProcess(0x1000, False, int(pid))    # QUERY_LIMITED_INFORMATION
+        if not h:
+            return None
+        try:
+            c, e, k, u = (wintypes.FILETIME() for _ in range(4))
+            if not k32.GetProcessTimes(h, ctypes.byref(c), ctypes.byref(e),
+                                       ctypes.byref(k), ctypes.byref(u)):
+                return None
+            return (c.dwHighDateTime << 32) | c.dwLowDateTime
+        finally:
+            k32.CloseHandle(h)
+    except Exception:
+        return None
+
+
+def _suite_spawned(rows, parents=None, starts=None) -> set:
+    """S6-B3255 (owner ruling (a), 2026-10-22): the pids in `rows` with a
+    python running pytest among their ancestors. A runner the TEST SUITE
+    launched is not an engine in flight - test_b2082 starts launch_sweep.py
+    with a fake engine mid-pyramid, and the workflow header read it as a live
+    run. Every step up the chain must reach a process that STARTED BEFORE its
+    child (Windows reuses pids: a dead launcher's pid taken by a later pytest
+    would otherwise hide a real run), and any unknown - no parent table, no
+    start time - stops the walk, so the runner COUNTS: over-reporting a run is
+    the safe direction for the gate that refuses beside one. `parents`
+    ({pid: parent pid}) and `starts` ({pid: start}) are the test seams."""
+    parents = _parent_pids() if parents is None else parents
+    if not parents:
+        return set()
+    start = starts.get if starts is not None else _start_time
+    argv_of = {pid: argv for pid, argv in rows}
+    out = set()
+    for pid, _argv in rows:
+        child, cur, steps = pid, parents.get(pid), 0
+        while cur and steps < 64:
+            steps += 1
+            tc, tp = start(child), start(cur)
+            if tc is None or tp is None or tp > tc:
+                break
+            if _is_pytest(argv_of.get(cur)):
+                out.add(pid)
+                break
+            child, cur = cur, parents.get(cur)
+    return out
+
+
 def _engine_heartbeats(root=None, now=None):
     """[(out dir name, heartbeat pid)] for heartbeats touched within
     ENGINE_FRESH_S under <root>/output_*."""
@@ -879,7 +1004,8 @@ def _engine_heartbeats(root=None, now=None):
     return out
 
 
-def _engine_inflight(now=None, rows=None, root=None) -> str:
+def _engine_inflight(now=None, rows=None, root=None, parents=None,
+                     starts=None) -> str:
     """B3091 -> S6-B3093c (B3099): is an ENGINE running right now, by ANY launch
     path, in ANY output dir?
 
@@ -890,14 +1016,19 @@ def _engine_inflight(now=None, rows=None, root=None) -> str:
     answers the question itself: every running python whose script is a
     runner (RUNNER_SCRIPTS) is in flight, labelled by its --output-dir or
     --spec. When the table cannot be read, the answer is 'unknown' - which
-    every caller treats as in flight (fail closed). `rows` and `root` are the
-    test seams. Never raises."""
+    every caller treats as in flight (fail closed). S6-B3255: a runner the
+    TEST SUITE launched is not counted (_suite_spawned). `rows`, `root`,
+    `parents` and `starts` are the test seams, and an injected `rows`
+    never mixes in the live parent table (L843). Never raises."""
     try:
+        if rows is not None and parents is None:
+            parents = {}          # a seam never reads the live table (L843)
         rows = _python_argvs() if rows is None else rows
         if rows is None:
             return "unknown"
-        live = sorted({lbl for _pid, argv in rows
-                       if (lbl := _runner_label(argv))})
+        suite = _suite_spawned(rows, parents, starts)
+        live = sorted({lbl for pid, argv in rows
+                       if pid not in suite and (lbl := _runner_label(argv))})
         unreadable = [pid for pid, argv in rows if argv is None]
         if unreadable and not live:
             return "unknown(unreadable python pid %s)" % unreadable[0]

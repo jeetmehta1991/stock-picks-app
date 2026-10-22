@@ -38,7 +38,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
 from breadth_step1_grid import BARRED_EXIT  # noqa: E402
-from smc_lsr_step1 import build as _build  # noqa: E402
+from smc_lsr_step1 import build as _build, rank  # noqa: E402
 
 R5_DIR = ROOT / "output_r5_merged_1_7"
 
@@ -124,8 +124,7 @@ def main() -> int:
 
     rows = grade_cells(m, strat, a.min_n)
     graded = [r for r in rows if r["is_sharpe"] is not None]
-    ranked = sorted((r for r in graded if not r["npt_barred"]),
-                    key=lambda r: -r["is_sharpe"])
+    ranked = rank(graded)       # S6-B3257: the ruled order (smc_lsr_step1.rank)
     print(f"{len(graded)} graded cells of {len(rows)}")
 
     rec = {"strategy": strat,
