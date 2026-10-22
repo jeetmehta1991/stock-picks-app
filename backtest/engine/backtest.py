@@ -1414,6 +1414,15 @@ class BacktestEngine:
             if all(_pf.get(_k) is not None
                    for _k in ("equity_curve", "benchmark_curve", "equity_peak")):
                 _last = str(state.get("sim_date") or "")[:10]
+                # S6-B3275 (r92 audit): an empty checkpoint sim_date with
+                # non-empty curves must RAISE - the trim would otherwise
+                # drop EVERY point and log it as a restore (L642 fail
+                # closed; the simulated_day guard below already raises)
+                if not _last and (_pf["equity_curve"] or _pf["benchmark_curve"]):
+                    raise ValueError(
+                        "S6-B3275 RESUME HALT: the checkpoint carries "
+                        "equity history but no sim_date - a damaged "
+                        "checkpoint; refusing the curve trim")
                 _cut = _d.fromisoformat(_last) if _last else None
 
                 def _b3096g_curve(rows):

@@ -1,0 +1,3 @@
+  NOTE (S6-B3245/L943): this tree's edits MOVED code line citations - backtest.py=1(offline_level_sweep.py:226). A text-only edit can be reflowed line-count-neutral before the commit.
+pytest_exit=0 tree=SAME exit=0
+  NOTE (S6-B3130a/L689): test(s) WROTE under the production output_audit in-process: 2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways

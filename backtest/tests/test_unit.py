@@ -58867,6 +58867,16 @@ def test_b3155b_provenance_repair_holds_the_prefetch_bar(tmp_path):
     log2 = tmp_path / "log2.json"
     assert rp.main(["--evidence", str(bad), "--log", str(log2), "--apply"]) == 2
     assert not log2.exists()
+    # S6-B3274: present-but-EMPTY and malformed authorities refuse too -
+    # authority {} used to fall through to S6-B3155a's hardcoded ruling
+    for _auth in ({}, {"ruling_verbatim": ""},
+                  {"ruling_verbatim": "words", "ruled": " "}):
+        bad.write_text(_j.dumps({"ticket": "S6-B9999", "date": "2026-05-05",
+                                 "prior": "2026-05-04", "repair": [],
+                                 "authority": _auth}), encoding="utf-8")
+        assert rp.main(["--evidence", str(bad), "--log", str(log2),
+                        "--apply"]) == 2, _auth
+        assert not log2.exists()
 
 
 def test_b3217_status_view_records_fail_closed(tmp_path):
@@ -62057,3 +62067,139 @@ def test_b3282_compaction_trigger_admits_qualifier_words():
     assert not v.scan_compaction_timeline_claim(
         [], text="The trigger now matches `after the last compaction`.",
         tool_text="")
+
+
+def test_b3273_moved_citations_see_renames_ranges_and_ignore_lone_cr(tmp_path):
+    """S6-B3273 (r92 audit): the moved-citation disclosure had three blind
+    spots. (a) a RENAMED or DELETED cited module vanished from the changed set
+    (p.exists() filter), so citations of the vanished basename were never
+    checked; (b) a range citation file.py:A-B was read as line A only, so an
+    edit inside (A, B] was silent - 78 live A-B citations exist under
+    backtest/ + scripts/ at the r92 audit; (c) a stray carriage return (the
+    L885 class) garbled the map toward FALSE POSITIVES - universal newlines
+    (read_text, git show under text=True) made it an extra line, so all
+    three reads now decode bytes and _lines strips an EOL CR. A scratch git
+    repo drives all three plus the original control."""
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import moved_line_citations as M
+
+    def git(*args):
+        r = _sp.run(["git", *args], cwd=tmp_path, capture_output=True, text=True)
+        assert r.returncode == 0, (args, r.stderr[-200:])
+        return r.stdout
+
+    git("init", "-q")
+    git("config", "user.email", "t@t")
+    git("config", "user.name", "t")
+    (tmp_path / "backtest").mkdir()
+    (tmp_path / "scripts").mkdir()
+    foo = tmp_path / "backtest" / "foo.py"
+    foo.write_text("".join(f"x{i} = {i}\n" for i in range(1, 11)), encoding="utf-8")
+    citer = tmp_path / "scripts" / "citer.py"
+    # citation-shaped text is built from parts: the S6-B3139bb freeze reads
+    # this file too, and a literal would count as a new line citation
+    c2, c59 = "foo.py" + ":" + "2", "foo.py" + ":" + "5-9"
+    citer.write_text(f'A = "{c2}"\nB = "{c59}"\n', encoding="utf-8")
+    git("add", "-A")
+    git("commit", "-q", "-m", "base")
+
+    # control: insert ABOVE both citations moves both
+    foo.write_text("new = 0\n" + foo.read_text(encoding="utf-8"), encoding="utf-8")
+    hits = M.moved_citations(tmp_path)
+    assert {(h["cited"], h["now"]) for h in hits} == {(2, 3), (5, 6)}, hits
+
+    # (b) an edit INSIDE the range (line 7) with line 5 unmoved reports the
+    # RANGE citation and not the single-line one
+    foo.write_text("".join(f"x{i} = {i}\n" for i in range(1, 7))
+                   + "x7 = 700\nextra = 1\n"
+                   + "".join(f"x{i} = {i}\n" for i in range(8, 11)),
+                   encoding="utf-8")
+    hits = M.moved_citations(tmp_path)
+    assert [(h["cited"], h["citing"]) for h in hits] == [(5, "scripts/citer.py")], hits
+
+    # (c) a lone EOL CR is transport noise, never movement
+    base = "".join(f"x{i} = {i}\n" for i in range(1, 11))
+    # the REAL shape: every line ends CR CR LF (a CRLF file re-converted)
+    foo.write_bytes(base.replace("\n", "\r\r\n").encode("utf-8"))
+    assert M.moved_citations(tmp_path) == [], M.moved_citations(tmp_path)
+
+    # (a) rename and delete both surface every citation of the old basename
+    foo.write_text(base, encoding="utf-8")   # the committed bytes again
+    git("mv", "backtest/foo.py", "backtest/bar.py")
+    hits = M.moved_citations(tmp_path)
+    assert {h["cited"] for h in hits} == {2, 5} and all(
+        h["now"] is None for h in hits), hits
+    git("mv", "backtest/bar.py", "backtest/foo.py")   # rename undone
+    (tmp_path / "backtest" / "foo.py").unlink()
+    hits = M.moved_citations(tmp_path)
+    assert {h["cited"] for h in hits} == {2, 5}, hits
+
+    # (c) the HEAD side too: a committed lone CR is content on BOTH sides
+    # of the map, so git show decodes bytes exactly like the tree read
+    lone = base.replace("x2 = 2\n", "x2 = 2  # a\rb\n")
+    foo.write_bytes(lone.encode("utf-8"))
+    git("add", "backtest/foo.py")
+    git("commit", "-q", "-m", "lone cr")
+    foo.write_bytes(lone.replace("x10 = 10\n", "x10 = 1000\n").encode("utf-8"))
+    assert M.moved_citations(tmp_path) == [], M.moved_citations(tmp_path)
+
+    # (c) the corpus read too: a citer whose lines end CR CR LF reports
+    # its citing lines in git's numbering (1 and 2), never doubled (1, 3)
+    citer.write_bytes(f'A = "{c2}"\r\r\nB = "{c59}"\r\r\n'.encode("utf-8"))
+    git("add", "scripts/citer.py")
+    git("commit", "-q", "-m", "mangled citer")
+    foo.write_bytes(("new = 0\n" + lone).encode("utf-8"))
+    hits = M.moved_citations(tmp_path)
+    assert sorted((h["line"], h["cited"], h["now"]) for h in hits) == [
+        (1, 2, 3), (2, 5, 6)], hits
+
+
+def test_b3275_resume_refuses_curves_without_a_sim_date(tmp_path):
+    """S6-B3275 (r92 audit): a checkpoint carrying equity history but an EMPTY
+    sim_date made the trim drop EVERY curve point and log it as a restore.
+    It now RAISES (fail closed, like the capital and simulated_day guards);
+    a curve-less pre-B3096g checkpoint still resumes with its warning."""
+    import json as _j
+    from datetime import date as _d
+    import pytest as _pt
+    from backtest.engine.backtest import BacktestEngine
+    from backtest.engine.portfolio import Portfolio, Position
+
+    def engine(pf):
+        e = BacktestEngine.__new__(BacktestEngine)
+        e.closed_trades, e.open_trades = [], []
+        e.portfolio = pf
+        e._resume_sim_day, e._resumed_closed_trades_count = -1, 0
+        e.resume_from_checkpoint = str(tmp_path)
+        return e
+
+    src = Portfolio(starting_capital=100_000.0)
+    src.cash = 90_000.0
+    src.positions = {"AAPL": Position(
+        ticker="AAPL", sector="Tech", direction="long", entry_date=_d(2024, 3, 1),
+        entry_price=180.0, shares=100.0, last_mark=180.0)}
+    src.mark_to_market({"AAPL": 190.0}, _d(2024, 3, 4))
+    src.add_benchmark_point(_d(2024, 3, 4), 470.0)
+    block = engine(src)._portfolio_state_block()
+
+    (tmp_path / "engine_state.json").write_text(_j.dumps({
+        "simulated_day": 3, "status": "running", "sim_date": "",
+        "trades_so_far": 0, "open_trades": 0, "last_completed_day": 2,
+        "day_in_progress": None, "portfolio": block}))
+    dst = engine(Portfolio(starting_capital=100_000.0))
+    with _pt.raises(ValueError, match="S6-B3275 RESUME HALT"):
+        dst._load_resume_checkpoint()
+
+    # must-quiet: the same checkpoint with a real sim_date restores one mark
+    (tmp_path / "engine_state.json").write_text(_j.dumps({
+        "simulated_day": 3, "status": "running", "sim_date": "2024-03-04",
+        "trades_so_far": 0, "open_trades": 0, "last_completed_day": 2,
+        "day_in_progress": None, "portfolio": block}))
+    ok = engine(Portfolio(starting_capital=100_000.0))
+    ok._load_resume_checkpoint()
+    assert len(ok.portfolio.equity_curve) == 1

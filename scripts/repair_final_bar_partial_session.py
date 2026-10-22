@@ -218,8 +218,18 @@ def main(argv=None) -> int:
     # would credit S6-B3155a's ruling with a repair that ruling never covered.
     ticket = evidence.get("ticket", "S6-B3155a")
     auth = evidence.get("authority")
-    if auth is None and ticket != "S6-B3155a":
-        print(f"REFUSED: the {ticket} evidence names no owner authority; nothing written")
+    # S6-B3274 (r92 audit): fail CLOSED on a present-but-empty or
+    # malformed authority too - authority {} used to fall through to
+    # S6-B3155a's hardcoded ruling text, crediting that ruling to a
+    # ticket it never covered (L642: the absent case is the case the
+    # guard exists for, and an empty dict is absent in all but shape)
+    if ticket != "S6-B3155a" and not (
+            isinstance(auth, dict)
+            and str(auth.get("ruling_verbatim") or "").strip()
+            and str(auth.get("ruled") or "").strip()):
+        print(f"REFUSED: the {ticket} evidence names no owner authority "
+              "(a non-empty ruling_verbatim and ruled are required); "
+              "nothing written")
         return 2
     ruling = (auth or {}).get("ruling_verbatim", RULING)
     ruled = (auth or {}).get("ruled", "2026-10-14")

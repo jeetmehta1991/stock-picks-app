@@ -55,7 +55,9 @@ FROZEN_CITERS = frozenset({"b974_classify_signal_orphan_17.py"})
 
 
 def _lines(text: str) -> list[str]:
-    return text.replace(CRLF, LF).split(LF)
+    # S6-B3273(c): a stray EOL \r (the L885 mangling class) is not content;
+    # every caller decodes BYTES - universal newlines made it an extra line
+    return [ln.rstrip("\r") for ln in text.replace(CRLF, LF).split(LF)]
 
 
 def line_map(old: list[str], new: list[str]) -> tuple[dict[int, int], int | None]:
@@ -76,7 +78,8 @@ def line_map(old: list[str], new: list[str]) -> tuple[dict[int, int], int | None
 def cite_pattern(basename: str) -> re.Pattern:
     """`<basename>:<digits>`, not preceded by an identifier character - built
     from parts so this module's own source never cites a line."""
-    return re.compile(r"(?<![A-Za-z0-9_])" + re.escape(basename) + ":" + "([0-9]+)")
+    return re.compile(r"(?<![A-Za-z0-9_])" + re.escape(basename) + ":"
+                      + "([0-9]+)" + "(?:-[0-9]+)?")   # S6-B3273(b): A-B span
 
 
 def moved_in_text(basename: str, mapping: dict, first: int | None,
@@ -91,11 +94,17 @@ def moved_in_text(basename: str, mapping: dict, first: int | None,
     for i, ln in enumerate(_lines(head_text), 1):
         for m in pat.finditer(ln):
             n = int(m.group(1))
-            if n < first:
+            # S6-B3273(b): a range citation file.py:A-B is checked over
+            # its whole span - an edit inside (A, B] moves its tail
+            _tail = m.group(0).rsplit(":", 1)[1]   # ONE group kept (findall)
+            n2 = int(_tail.split("-")[1]) if "-" in _tail else n
+            if n2 < n:
+                n2 = n
+            if n2 < first:
+                continue
+            if all(mapping.get(k) == k for k in range(n, n2 + 1)):
                 continue
             to = mapping.get(n)
-            if to == n:
-                continue
             if m.group(0) not in work_text:
                 continue
             out.append((i, n, to))
@@ -103,15 +112,17 @@ def moved_in_text(basename: str, mapping: dict, first: int | None,
 
 
 def _git(args: list[str], root: Path) -> str:
+    # S6-B3273(c): bytes decoded once - text=True made a stray CR a line break
     return subprocess.run(["git", *args], cwd=root, capture_output=True,
-                          text=True, encoding="utf-8", errors="replace",
-                          timeout=120).stdout
+                          timeout=120).stdout.decode("utf-8", errors="replace")
 
 
 def changed_modules(root: Path) -> list[str]:
     """Tracked .py under backtest/ and scripts/ whose working text differs
     from HEAD (staged or not)."""
-    out = _git(["diff", "--name-only", "HEAD", "--", *TREES], root)
+    # S6-B3273(a): --no-renames - a rename otherwise lists only its NEW
+    # path, and the OLD cited basename never enters the changed set
+    out = _git(["diff", "--name-only", "--no-renames", "HEAD", "--", *TREES], root)
     return sorted(p for p in out.splitlines() if p.endswith(".py"))
 
 
@@ -127,9 +138,12 @@ def moved_citations(root: Path = REPO, *, changed: dict | None = None,
         changed = {}
         for rel in dirty:
             p = root / rel
-            if p.exists():
-                changed[rel] = (_git(["show", f"HEAD:{rel}"], root),
-                                p.read_text(encoding="utf-8", errors="replace"))
+            # S6-B3273(a): a DELETED or RENAMED cited module is an edit
+            # that moves every citation of it - empty working text makes
+            # each report 'rewritten' instead of vanishing from the set
+            changed[rel] = (_git(["show", f"HEAD:{rel}"], root),
+                            p.read_bytes().decode("utf-8", errors="replace")
+                            if p.exists() else "")
     if not changed:
         return []
     if corpus is None:
@@ -140,7 +154,7 @@ def moved_citations(root: Path = REPO, *, changed: dict | None = None,
             p = root / rel
             if not rel.endswith(".py") or not p.exists():
                 continue
-            work = p.read_text(encoding="utf-8", errors="replace")
+            work = p.read_bytes().decode("utf-8", errors="replace")
             head = _git(["show", f"HEAD:{rel}"], root) if rel in dirty else work
             corpus[rel] = (head, work)
     hits = []
