@@ -773,6 +773,16 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
          {"tool_text": "python scripts/transcript_timeline.py --first-after 5"}),
         # no timeline claim at all - must go quiet
         ("The pyramid passed and the commit is pushed.", False, {"tool_text": ""}),
+        # S6-B3282 (L954): VERBATIM from the 2026-10-22 close - the trigger
+        # wanted "after the compaction", so "the LAST compaction" never armed
+        # it and a typed 22:51:47Z (transcript: 22:50:02Z) shipped
+        ("execution-discipline - FULLY LOADED (Skill call at 22:51:47Z "
+         "2026-10-21, after the last compaction; re-confirmed in context "
+         "this window)", True, {"tool_text": ""}),
+        # the same claim WITH the run that prints the time - must go quiet
+        ("execution-discipline - FULLY LOADED (Skill call at 22:50:02Z, "
+         "after the last compaction at 15:25:28Z, entry 187167)", False,
+         {"tool_text": "python scripts/transcript_timeline.py --transcript t.jsonl"}),
     ],
     # B2520 must-QUIET: the SAME landing event, and a response that carries
     # the report. It is quiet because of the `LANDING REPORT: <cube>` block and

@@ -5651,8 +5651,8 @@ def synthetic_transcript() -> list[dict]:
 # context (MEASURED twice on 2026-09-24, both in the transcript_timeline
 # docstring).
 COMPACTION_TIMELINE_CLAIM = re.compile(
-    r"(?:after|before|across|since)\s+(?:a|the|that|this|my)\s+(?:mid-turn\s+)?"
-    r"(?:context\s+)?compaction"
+    r"(?:after|before|across|since)\s+(?:a|the|that|this|my)\s+"
+    r"(?:[a-z-]+\s+){0,2}compaction"  # S6-B3282: the LAST/most recent too
     r"|first\s+action\s+(?:in|after)\s+(?:this|the)\s+(?:continuation|compaction)"
     r"|post-compaction|pre-compaction"
     # 'from the summary' is a timeline claim only as a PROVENANCE of written

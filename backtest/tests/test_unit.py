@@ -26040,6 +26040,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r92: L953 instance 2, same call as the skill edit.
         ("the class's second renderer, found by the r92 audit",
          "L953 (B3139q-r92): a fixed class survives in sibling renderers"),
+        # B3139q-r95: L954, same call as the skill edit.
+        ("the close said 'after the LAST compaction'",
+         "L954 (B3139q-r95): the compaction trigger missed a qualifier"),
         ("READ ITS SOURCE FIRST; RUN --help ONLY WHERE A PARSER IS CONFIRMED",
          "L947 (B3139q-r81): --help rewrote a committed artifact"),
         # B3139q-r83: L943 instance 2, same call as the skill edit.
@@ -26307,7 +26310,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # skill edit).
     # 353 -> 354 at B3139q-r91 (S6-B3269's selector clause; same call).
     # 354 -> 355 at B3139q-r92 (the L953 second-renderer fragment; same call).
-    assert len(gutted) == 355, gutted
+    # 355 -> 356 at B3139q-r95 (the L954 qualifier fragment; same call).
+    assert len(gutted) == 356, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -62014,3 +62018,42 @@ def test_b3271_shortlist_long_lane_reads_long_side_tightenability():
     rows = {r["strategy"]: r for r in d["ranked"] + d.get("unranked", [])}
     w = rows.get("williams_stoch_dual")
     assert w is not None and w["long_lane"] != "BOTH", (w or {}).get("long_lane")
+
+
+def test_b3282_compaction_trigger_admits_qualifier_words():
+    """S6-B3282 (L954 / #322 INSTANCE): COMPACTION_TIMELINE_CLAIM wanted the
+    determiner IMMEDIATELY before 'compaction', so a close saying 'after the
+    LAST compaction' never armed the gate and a typed 22:51:47Z shipped for a
+    Skill call the transcript records at 22:50:02Z. The trigger now admits up to
+    two qualifier words. Must-fire on the verbatim close and on the other
+    natural qualifiers; must-quiet when the script ran and its time is cited,
+    and on text naming no compaction timing; the original phrasings still arm."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as v
+
+    verbatim = ("execution-discipline - FULLY LOADED (Skill call at 22:51:47Z "
+                "2026-10-21, after the last compaction; re-confirmed in context "
+                "this window)")
+    assert v.scan_compaction_timeline_claim([], text=verbatim, tool_text="")
+    for phrase in ("after the most recent compaction", "before the previous context compaction",
+                   "after a mid-turn compaction", "since my last compaction",
+                   "after the compaction"):
+        assert v.COMPACTION_TIMELINE_CLAIM.search(phrase), phrase
+    ran = "python scripts/transcript_timeline.py --transcript t.jsonl"
+    cited = "Skill call at 22:50:02Z, after the last compaction at 15:25:28Z, entry 187167"
+    # four DISTINCT quiet shapes (L746 / test_b2557: one quiet arm proves
+    # one member of an open family)
+    assert not v.scan_compaction_timeline_claim([], text=cited, tool_text=ran)
+    assert not v.scan_compaction_timeline_claim(
+        [], text="The gate passed and the commit is pushed.", tool_text="")
+    # three or more words between determiner and noun stay out (not a timing claim)
+    assert not v.COMPACTION_TIMELINE_CLAIM.search(
+        "after the long and winding data compaction")
+    # a MENTION in a code span is not a use (B1738) - the trigger quoted
+    assert not v.scan_compaction_timeline_claim(
+        [], text="The trigger now matches `after the last compaction`.",
+        tool_text="")

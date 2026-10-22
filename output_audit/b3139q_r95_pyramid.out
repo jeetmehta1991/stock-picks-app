@@ -1,0 +1,3 @@
+[power] S6-B3163: the gate starts ON BATTERY (battery 21%) - a battery sleep suspends this run until the machine wakes
+pytest_exit=1 tree=SAME exit=1
+  NOTE (S6-B3130a/L689): test(s) WROTE under the production output_audit in-process: 2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways

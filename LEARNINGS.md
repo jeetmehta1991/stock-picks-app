@@ -25222,3 +25222,13 @@ MEASURED (the owner-directed audit of the 2026-10-19..21 sessions, 35 commits r7
 **Rule.** When a class fix lands in one renderer, enumerate the OTHER writers that derive the same kind of figure from the same pooled source and check each - the second renderer looks correct precisely because the first one now is.
 
 **Mechanism.** The fix is S6-B3270 (per-side frame filter before the free-band quantiles and retention, regenerate the two lane docs, a two-sided fixture pin). Detection of a sibling-renderer survival is JUDGMENT-ONLY - no scan maps a fixed class to its other renderers; durability pinned by test_b2123 (the skill row's L953 clause). The audit's other findings: S6-B3271..S6-B3280 and the S6-B3246/S6-B3247/S6-B3252 caveat rows (B3139q-r92, commit c8d3a4dda).
+
+### L954 - A TYPED TIME IN A SKILLS LINE PASSED BECAUSE THE TRIGGER WANTED 'THE COMPACTION', NOT 'THE LAST COMPACTION' (B3139q-r95, 2026-10-22)
+
+MEASURED: the 2026-10-22 close stated 'execution-discipline - FULLY LOADED (Skill call at 22:51:47Z 2026-10-21, after the last compaction ...)'. The transcript records that Skill load at 22:50:02Z and the last compaction at 15:25:28Z, entry 187167 (scripts/transcript_timeline.py, run 2026-10-22). The STATUS was right - loaded after the last compaction - and the TIME was typed, not read: L695's shape (an evidence label inside boilerplate is asserted by default) inside the exact block #322 governs. scan_compaction_timeline_claim never armed: COMPACTION_TIMELINE_CLAIM wanted the determiner IMMEDIATELY before 'compaction' (plus two optional words, 'mid-turn' and 'context'), so 'after the last compaction' never matched; and its citation half accepts any hh:mm:ss, which a typed time satisfies.
+
+**Why.** The trigger enumerated its incidents' phrasing - the bottom rung of #239's three-rung table - and 'last' is the most natural qualifier in the one block, SKILLS INVOKED, that names a compaction on every close. Compliance failure against #322.
+
+**Rule.** Unchanged (#322, L870): a WHEN claim across a compaction quotes what transcript_timeline.py printed this turn. Addition: the trigger matches the claim's SHAPE - up to two qualifier words between the determiner and 'compaction'.
+
+**Mechanism.** COMPACTION_TIMELINE_CLAIM admits up to two qualifier words ('the last', 'the most recent', 'the previous context'); the incident's verbatim close is a must-fire corpus entry and its run-and-cite twin a must-quiet one; pinned by test_b3282. The citation half stays a format check - a typed time still satisfies it - and the RUN half, which the widened trigger restores, is the half that would have printed 22:50:02Z.

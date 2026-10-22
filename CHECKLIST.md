@@ -6470,6 +6470,8 @@ scan. BUILT B3107: scan_compaction_timeline_claim requires the script RUN this t
 or a grep naming it is not a run) AND an entry index or UTC time cited in the same response;
 `transcript_timeline.py --first-after N` prints the first calls after the last compaction.
 
+**INSTANCE (B3139q-r95 / L954) - A TYPED TIME IN THE SKILLS LINE.** A close stated the execution-discipline Skill call at 22:51:47Z; the transcript records 22:50:02Z. The gate never armed: its trigger wanted 'after the compaction' and the close said 'after the last compaction'. Mechanism: the trigger admits up to two qualifier words (test_b3282).
+
 ### #323 - A PROBE THAT EDITS LIVE FILES MUST SURVIVE ITS OWN KILL (B3107 / L874, self-caught 2026-09-25)
 
 An interrupted mutation probe left one of its mutations - preflight C1 failing open - in a worktree
