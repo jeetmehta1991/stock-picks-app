@@ -152,7 +152,16 @@ def numeric_thresholds(src: str) -> dict:
     for n in ast.walk(ast.parse(src)):
         if not (isinstance(n, ast.FunctionDef) and n.name.startswith("strat_")):
             continue
-        body = ast.unparse(n)
+        # S6-B3272 (r92 audit): strip the DOCSTRING before the regex - a
+        # history note quoting a removed comparison is prose, not a gate
+        # (ultimate_oscillator's 'uo' came from its B631 note and drove
+        # its stream BOTH and shortlist lane for 40+ days). Pinned by
+        # test_b3272.
+        stmts = n.body
+        if stmts and isinstance(stmts[0], ast.Expr) \
+                and isinstance(stmts[0].value, ast.Constant):
+            stmts = stmts[1:]
+        body = "\n".join(ast.unparse(x) for x in stmts)
         keys = set(re.findall(
             r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"][^)]*\)\s*[<>]=?\s*"
             r"(?:-?[0-9.]+|_cfg\.[A-Z0-9_]+)", body))  # S6-B3171: config-read RHS
@@ -590,6 +599,28 @@ def current_gate_projection(projected: float, fires: int, n_side: dict,
     return projected if survives is None else projected * survives
 
 
+def extras_tightenable(name: str, side: str = None) -> bool:
+    """S6-B3272 composition (r94): a STRATEGY_EXTRAS axis carrying an
+    offline-tighter level (free_band beyond production) is a REAL
+    tightenable axis the s.get regex cannot see - a LOCAL compare like
+    ultimate_oscillator's rsi_2 (table_a_bands evidence field). Without
+    this, stripping the docstring would re-lane a genuinely tightenable
+    strategy to LOOSEN. side=None asks any axis; side='long'/'short'
+    asks axes labelled for that side. Pinned by test_b3272."""
+    try:
+        from table_a_bands import STRATEGY_EXTRAS as _extras
+    except Exception:
+        return False
+    for k in _extras.get(name, []):
+        for ax in k.get("axis_levels", []):
+            if side and not str(ax.get("side", "")).startswith(side):
+                continue
+            if [v for v in (ax.get("free_band") or [])
+                    if v != ax.get("production")]:
+                return True
+    return False
+
+
 def classify_stream(tightenable: bool, projected: float) -> str:
     starved = projected < MIN_FIRES_FOR_GRID
     if tightenable and starved:
@@ -847,6 +878,8 @@ def main() -> int:
                 covered[k] = round(c, 4)
                 if c >= COVERAGE_FLOOR:
                     tightenable = True
+        if not tightenable and extras_tightenable(name):
+            tightenable = True   # S6-B3272: a local-compare extras axis
 
         # S6-B2814: survival = the LIVE strategy function fires on the
         # persisted signals with the recorded direction. An erroring row is

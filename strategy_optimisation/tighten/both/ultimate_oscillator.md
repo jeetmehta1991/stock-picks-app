@@ -1,6 +1,6 @@
 # Table A - ultimate_oscillator
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ab5dab247 | commit b0ce01e07 at 2026-10-21 18:58:10 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 8371cc71e | commit 8371cc71e at 2026-10-21 20:19:43 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 592 | **surviving fires (T1):** 592 (unchanged since R5 - filter is identity)
 
@@ -34,9 +34,8 @@ P7  uo_oversold  <- backtest/signals/technical.py
 
 ============================== STRATEGY LAYER ==============================
 
-P8  uo > 70   [EXISTING-THRESHOLD]
-P9  _short_borrow_trap_active(s)   [helper gate]
-P10  rsi_2 escape-hatch thresholds (long < 5, short > 95)   [local-variable gate]
+P8  _short_borrow_trap_active(s)   [helper gate]
+P9  rsi_2 escape-hatch thresholds (long < 5, short > 95)   [local-variable gate]
 
 Gate body, VERBATIM from backtest/signals/screener.py strat_ultimate_oscillator (docstring and return dropped):
 
@@ -72,9 +71,8 @@ leg runs.
 | P7 | PRODUCER | uo_oversold - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | Ultimate Oscillator (7,14,28) < 30 / > 70 (technical.py:738-752) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P7.x) | BANDS-DEFINED |
 | P7.1 | BAND | oversold threshold - backtest/signals/technical.py:751 | BRACKET canon 30; the uo value itself is persisted where emitted | 30 | [20, 25, 30] | offline 2 of 3 levels - TIGHTER (< 25, < 20) where `uo` is persisted on the fires | LOOSER; and the (7,14,28) period triple; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P7.2 | BAND | period triple - backtest/signals/technical.py:738-750 | BRACKET canon triple | (7, 14, 28) | [(7,14,28), (5,10,20), (14,28,56)] | offline 0 of 3 levels - none - other triples unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P8 | STRATEGY | uo `> 70` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `> 70` | production + 0 tighter measured levels [NOT AN AND-LEG OF EITHER SIDE (production satisfaction long 2%; short 20%)] | offline 0 of 1 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
-| P9 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
-| P10 | STRATEGY | rsi_2 escape-hatch thresholds (long < 5, short > 95) - backtest/signals/screener.py strat_ultimate_oscillator (local rsi_2 compare - invisible to the extractor) | BRACKET production (Connors RSI-2 canon); rsi_2 persisted | 5 / 95 | long < [3, 5] / short > [95, 97] | offline 1 of 2, 1 of 2 levels - TIGHTER (< 3, > 97) - subset on persisted rsi_2 | none in the band - a looser cut is an engine level | T3 review |
+| P8 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
+| P9 | STRATEGY | rsi_2 escape-hatch thresholds (long < 5, short > 95) - backtest/signals/screener.py strat_ultimate_oscillator (local rsi_2 compare - invisible to the extractor) | BRACKET production (Connors RSI-2 canon); rsi_2 persisted | 5 / 95 | long < [3, 5] / short > [95, 97] | offline 1 of 2, 1 of 2 levels - TIGHTER (< 3, > 97) - subset on persisted rsi_2 | none in the band - a looser cut is an engine level | T3 review |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
@@ -86,7 +84,6 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| uo | backtest/signals/technical.py | `> 70` | - | NOT AN AND-LEG OF EITHER SIDE (production satisfaction long 2%; short 20%) - an OR-arm's retention needs the gate's arm structure; band at T3 | engine-only (T3) |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
@@ -202,6 +199,7 @@ RESIM-ONLY - offline grading would silently drop their absent rows.
 | stochrsi_k | backtest/signals/technical.py | 100.0% | 4.91, 67.866, 96.194, 100 | 4.91: 473 (80%); 67.866: 355 (60%); 96.194: 237 (40%); 100: 199 (34%) | 4.91: 119 (20%); 67.866: 237 (40%); 96.194: 355 (60%); 100: 592 (100%) | OFFLINE |
 | trading_day_of_month | backtest/signals/calendar_effects.py | 100.0% | 4, 8, 12, 17 | 4: 489 (83%); 8: 362 (61%); 12: 260 (44%); 17: 132 (22%) | 4: 130 (22%); 8: 257 (43%); 12: 360 (61%); 17: 485 (82%) | OFFLINE |
 | trading_days_left_in_month | backtest/signals/calendar_effects.py | 100.0% | 5, 10, 14, 18 | 5: 480 (81%); 10: 362 (61%); 14: 258 (44%); 18: 134 (23%) | 5: 134 (23%); 10: 276 (47%); 14: 363 (61%); 18: 491 (83%) | OFFLINE |
+| uo | backtest/signals/technical.py | 100.0% | 40.704, 52.078, 58.768, 65.52 | 40.704: 473 (80%); 52.078: 355 (60%); 58.768: 237 (40%); 65.52: 119 (20%) | 40.704: 119 (20%); 52.078: 237 (40%); 58.768: 355 (60%); 65.52: 473 (80%) | OFFLINE |
 | vix_percentile | backtest/signals/technical.py | 100.0% | 0.2032, 0.4683, 0.6333, 0.8357 | 0.2032: 473 (80%); 0.4683: 358 (60%); 0.6333: 237 (40%); 0.8357: 119 (20%) | 0.2032: 119 (20%); 0.4683: 239 (40%); 0.6333: 355 (60%); 0.8357: 473 (80%) | OFFLINE |
 | vix_today | backtest/signals/cross_asset.py | 100.0% | 15.222, 18.014, 21.282, 24.93 | 15.222: 473 (80%); 18.014: 355 (60%); 21.282: 237 (40%); 24.93: 121 (20%) | 15.222: 119 (20%); 18.014: 237 (40%); 21.282: 355 (60%); 24.93: 474 (80%) | OFFLINE |
 | vix_value | backtest/signals/technical.py +1 | 100.0% | 15.222, 18.014, 21.282, 24.93 | 15.222: 473 (80%); 18.014: 355 (60%); 21.282: 237 (40%); 24.93: 121 (20%) | 15.222: 119 (20%); 18.014: 237 (40%); 21.282: 355 (60%); 24.93: 474 (80%) | OFFLINE |
@@ -818,13 +816,12 @@ breadth producers are an engine-side design act, never an offline sweep.
 | P6.1 | overbought threshold | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
 | P7.1 | oversold threshold | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
 | P7.2 | period triple | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
-| P8 | uo > 70 | 1 | subset-safe | no - derives offline | 1 | 0 | 0 |
-| P9 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
-| P10.1 | rsi_2 escape-hatch thresholds (long < 5, | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
-| P10.2 | rsi_2 escape-hatch thresholds (long < 5, | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P8 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
+| P9.1 | rsi_2 escape-hatch thresholds (long < 5, | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
+| P9.2 | rsi_2 escape-hatch thresholds (long < 5, | 2 | subset-safe | no - derives offline | 1 | 1 | 0 |
 
 ```
-FULL FACTORIAL     3 x 3 x 3 x 3 x 3 x 3 x 3 x 3 x 1 x 1 x 2 x 2 = 26244
+FULL FACTORIAL     3 x 3 x 3 x 3 x 3 x 3 x 3 x 3 x 1 x 2 x 2 = 26244
 offline gradings   35 level-combinations x 24 exits = 840 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
 PENDING ACTUATION  26208 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
@@ -833,4 +830,4 @@ STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 
-B-row candidates NOT in this factorial: 634 census axes join it only when REGISTERED at the T3 band review.
+B-row candidates NOT in this factorial: 635 census axes join it only when REGISTERED at the T3 band review.

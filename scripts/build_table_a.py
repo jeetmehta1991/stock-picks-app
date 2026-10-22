@@ -108,6 +108,19 @@ STATUS_JSON = ROOT / "output_audit" / "strategy_optimisation_status.json"
 _ATTR_DIRS = ("backtest/signals", "backtest/data", "backtest/engine")
 
 
+def _code_body(n) -> str:
+    """S6-B3272 (class sweep): a strat_ function's CODE, docstring
+    stripped - a history note quoting a removed comparison is prose, not
+    a gate (ultimate_oscillator's uo > 70 rendered a phantom depth row
+    and free-band row until r94). One definition for both extractors
+    (L593). Pinned by test_b3272."""
+    stmts = n.body
+    if stmts and isinstance(stmts[0], ast.Expr) \
+            and isinstance(stmts[0].value, ast.Constant):
+        stmts = stmts[1:]
+    return "\n".join(ast.unparse(x) for x in stmts)
+
+
 def depth_comparisons(src: str) -> dict:
     """(strategy) -> [(key, op, literal), ...] for every s.get(key) <op> NUMBER.
 
@@ -119,7 +132,7 @@ def depth_comparisons(src: str) -> dict:
     for n in ast.walk(ast.parse(src)):
         if not (isinstance(n, ast.FunctionDef) and n.name.startswith("strat_")):
             continue
-        body = ast.unparse(n)
+        body = _code_body(n)   # S6-B3272: docstring is prose
         rows = re.findall(_NUM_CMP, body)
         if rows:
             out[n.name[len("strat_"):]] = [
@@ -142,7 +155,7 @@ def gate_legs(src: str) -> dict:
     for n in ast.walk(ast.parse(src)):
         if not (isinstance(n, ast.FunctionDef) and n.name.startswith("strat_")):
             continue
-        body = ast.unparse(n)
+        body = _code_body(n)   # S6-B3272: docstring is prose
         all_keys = [_resolve_fstring_key(k) for k in re.findall(
             r"s\.get\(f?['\"]([a-zA-Z0-9_{}.]+)['\"]", body)]
         numeric = {_resolve_fstring_key(k)

@@ -140,6 +140,18 @@ def deploy_bar(name: str):
     return next((p for p in DEPLOY_BARS if p in doc), None)
 
 
+def side_tightenable(tightenable_keys, side_keys) -> bool:
+    """S6-B3271 (r92 audit): a SIDE's lane counts only covered numeric
+    keys that side's own gate reads - a key only the other leg thresholds
+    cannot tighten this side (williams_stoch_dual's williams_r is
+    short-only, yet its long lane read BOTH). The side model is the
+    lint's (gate_keys_by_direction, S6-B3239). Pinned by test_b3271."""
+    import build_strategy_status as _bss
+    return any(v >= _bss.COVERAGE_FLOOR
+               for k, v in (tightenable_keys or {}).items()
+               if k in side_keys)
+
+
 def build(root: Path = ROOT) -> dict:
     view = json.loads((root / STATUS).read_text(encoding="utf-8"))
     roster = json.loads((root / ROSTER).read_text(encoding="utf-8"))
@@ -151,6 +163,8 @@ def build(root: Path = ROOT) -> dict:
     share = long_share(root / bss.R5_DIR.name / "backtest_results.csv")
     pop = [r for r in view["rows"] if r["status"] in OPEN_STATUSES
            and r["strategy"] in caps]
+    _long_keys = {s_: d_.get("long", set())
+                  for s_, d_ in bss.gate_keys_by_direction().items()}  # S6-B3271
     ranked, unranked = [], []
     for r in pop:
         name = r["strategy"]
@@ -172,8 +186,9 @@ def build(root: Path = ROOT) -> dict:
         else:
             long_proj = round(r["projected_step1_fires"] * sh
                               * (1.0 if um_long else (long_surv or 0.0)), 1)
-        tightenable = any(v >= bss.COVERAGE_FLOOR
-                          for v in (r.get("tightenable_keys") or {}).values())
+        tightenable = (side_tightenable(r.get("tightenable_keys"),
+                                        _long_keys.get(name, set()))
+                       or bss.extras_tightenable(name, "long"))  # S6-B3271/72
         lane = r["stream"] if long_proj is None else bss.classify_stream(tightenable, long_proj)
         row = {"strategy": name, "kind": caps[name], "family": r["family"],
                "status": r["status"], "strategy_lane": r["stream"],

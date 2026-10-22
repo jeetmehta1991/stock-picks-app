@@ -61927,3 +61927,90 @@ def test_b3270_per_side_gate_bands_are_measured_on_the_bound_side():
     ser5, n5, label5 = B.per_side_series("rsi", "<", 50, sigs[:len(longs)],
                                          dirs[:len(longs)])
     assert n5 == len(longs) and label5 == "", (n5, label5)
+
+
+def test_b3272_numeric_thresholds_ignores_docstring_prose():
+    """S6-B3272 (r92 audit): numeric_thresholds regexed ast.unparse WITH the
+    docstring, so ultimate_oscillator's only 'tightenable' key (uo) came from
+    a B631 history note quoting REMOVED code - and drove its stream BOTH and
+    its shortlist lane. (1) SYNTHETIC: a docstring quoting s.get("x", 50) > 70
+    yields nothing while the same comparison in CODE is found; (2) the live
+    incident: ultimate_oscillator carries no numeric key (its gate reads the
+    uo_oversold/uo_overbought booleans; the local rsi_2 cut stays invisible to
+    the stated lower bound)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+
+    doc_only = (
+        "def strat_toy(s):\n"
+        "    \"\"\"history: instead of raw `s.get(\"x\", 50) > 70` checks.\"\"\"\n"
+        "    return {\"fires\": bool(s.get(\"x_hot\"))}\n")
+    assert bss.numeric_thresholds(doc_only) == {}, bss.numeric_thresholds(doc_only)
+    code_too = (
+        "def strat_toy(s):\n"
+        "    \"\"\"prose mentioning s.get(\"y\", 0) > 9 stays prose.\"\"\"\n"
+        "    return {\"fires\": bool(s.get(\"x\", 50) > 70)}\n")
+    assert bss.numeric_thresholds(code_too) == {"toy": ["x"]}, \
+        bss.numeric_thresholds(code_too)
+
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    live = bss.numeric_thresholds(src)
+    assert "ultimate_oscillator" not in live, live.get("ultimate_oscillator")
+    assert "cmf_flip" in live and "rsi_14" in live["cmf_flip"]  # positive control
+
+    # the CLASS: build_table_a's extractors strip the docstring too
+    import build_table_a as bta
+    assert bta.depth_comparisons(doc_only) == {}, bta.depth_comparisons(doc_only)
+    assert "x_hot" in dict(bta.gate_legs(doc_only))["toy"][0]
+    assert "x" not in dict(bta.gate_legs(doc_only))["toy"][0]
+    assert "uo" not in {k for k, _, _ in bta.depth_comparisons(src)
+                        .get("ultimate_oscillator", [])}
+
+    # the COMPOSITION: a STRATEGY_EXTRAS axis with an offline-tighter
+    # level keeps the strategy tightenable (the local rsi_2 compare),
+    # so the strip does NOT re-lane it - pinned on the live view
+    assert bss.extras_tightenable("ultimate_oscillator") is True
+    assert bss.extras_tightenable("ultimate_oscillator", "long") is True
+    assert bss.extras_tightenable("cmf_flip") is False
+    import json as _json
+    _view = _json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                        .read_text(encoding="utf-8"))
+    _uo = next(r for r in _view["rows"] if r["strategy"] == "ultimate_oscillator")
+    assert _uo["stream"] == "BOTH" and _uo.get("tightenable_keys") == {}, _uo["stream"]
+
+
+def test_b3271_shortlist_long_lane_reads_long_side_tightenability():
+    """S6-B3271 (r92 audit): the shortlist's LONG lane read the WHOLE-STRATEGY
+    tightenable flag - williams_stoch_dual showed BOTH at rank 24 while its
+    only covered key (williams_r) is read by the SHORT leg alone. (1) the
+    helper: a covered key outside the side's gate keys does not tighten the
+    side; a covered key inside them does; an empty register never does.
+    (2) the committed artifact: williams_stoch_dual's long_lane is not BOTH
+    (its long side has no covered numeric key), while its strategy_lane keeps
+    the whole-strategy stream."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import build_long_campaign_shortlist as sl
+    import build_strategy_status as bss
+
+    hi = bss.COVERAGE_FLOOR
+    assert sl.side_tightenable({"k": hi}, {"k"}) is True
+    assert sl.side_tightenable({"k": hi}, {"other"}) is False
+    assert sl.side_tightenable({"k": hi - 1e-9}, {"k"}) is False
+    assert sl.side_tightenable(None, {"k"}) is False
+    assert sl.side_tightenable({}, set()) is False
+
+    d = _json.loads((root / "output_audit" / "b3232_long_campaign_shortlist.json")
+                    .read_text(encoding="utf-8"))
+    rows = {r["strategy"]: r for r in d["ranked"] + d.get("unranked", [])}
+    w = rows.get("williams_stoch_dual")
+    assert w is not None and w["long_lane"] != "BOTH", (w or {}).get("long_lane")
