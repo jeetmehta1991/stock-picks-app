@@ -33,7 +33,8 @@ The mechanical checks (the M-list, S6-B2117b) are unchanged in checks():
   M1 determinism content-sha; M2 exits-per-entry vs len(EXIT_STRATEGIES);
   M3 fill_date; M4 PIT window + HOLDOUT-TOUCH (FAIL on a Step-1 cube);
   M5 NaN/inf pnl + beyond-winsorize; M7 measure_degraded_exits;
-  M9 universe artifact; M10 gate receipt vs manifest sha.
+  M9 universe artifact; M10 gate receipt vs manifest sha; M11 closed
+  trade-log fires with no exit-cube row (S6-B3267).
 
 Usage:
   PYTHONPATH=. python scripts/run_postconfig.py --cube output_<dir>
@@ -234,6 +235,29 @@ def checks(cube_dir: Path, step1: bool = False):
                             "the cube - the manifest CHANGED after the gate "
                             "read it (the rebind hole the council named)"))
 
+    # M11 (S6-B3267, owner ruling (a) 2026-10-22): a CLOSED trade-log fire
+    # with no exit-cube row is an entry M2 cannot see - M2 judges the
+    # entries the cube holds (L952 / S6-B3258: 349 of 189,471 closed R5
+    # fires carry none). B2046's fix makes the expected count 0; this
+    # verifies it on every landing through the ONE coverage definition.
+    tl11 = cube_dir / "trade_log.csv"
+    if not tl11.exists():
+        out.append(("M11_closed_fires_in_cube", "SKIP",
+                    "no trade_log.csv - nothing to compare; the engine writes "
+                    "one on every run, so treat SKIP on a NEW cube as a finding"))
+    else:
+        try:
+            import exit_cube_coverage as _ecc
+            cov = _ecc.coverage(cube_dir, cube_df=df)
+            miss = cov["missing"]
+            out.append(("M11_closed_fires_in_cube", "PASS" if miss == 0 else "FAIL",
+                        f"{cov['covered']} of {cov['closed_fires']} closed "
+                        f"trade-log fires have exit-cube rows; {miss} missing"
+                        + (f" - whole {cov['whole'][:3]} partial "
+                           f"{cov['partial'][:3]}" if miss else "")))
+        except Exception as exc:
+            out.append(("M11_closed_fires_in_cube", "FAIL",
+                        f"coverage could not be read ({exc!r}) - fail closed (L642)"))
 
     return out
 

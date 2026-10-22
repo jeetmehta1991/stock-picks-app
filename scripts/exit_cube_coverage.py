@@ -32,10 +32,12 @@ _TL_COLS = ("strategy", "ticker", "entry_date", "exit_date")
 _CUBE_COLS = ("strategy", "ticker", "entry_date")
 
 
-def coverage(cube_dir, label=None) -> dict:
+def coverage(cube_dir, label=None, cube_df=None) -> dict:
     """The coverage record for one cube dir (see the module docstring).
     `label` is what the record names the cube by (the CLI passes the
-    argument as given, so a committed record carries no machine path)."""
+    argument as given, so a committed record carries no machine path).
+    `cube_df` is the exit cube already in memory (the battery's checks()
+    loads it - S6-B3267), so the file is not read a second time."""
     import pandas as pd
 
     cube_dir = Path(cube_dir)
@@ -54,8 +56,10 @@ def coverage(cube_dir, label=None) -> dict:
           else pd.DataFrame(columns=list(_TL_COLS)))
     tl = tl[tl["exit_date"].notna()].drop_duplicates(["strategy", "ticker", "entry_date"])
     keys = set()
-    for ch in pd.read_csv(cube_path, low_memory=False, chunksize=1_000_000,
-                          usecols=list(_CUBE_COLS)):
+    chunks = ([cube_df] if cube_df is not None else
+              pd.read_csv(cube_path, low_memory=False, chunksize=1_000_000,
+                          usecols=list(_CUBE_COLS)))
+    for ch in chunks:
         keys.update(zip(ch["strategy"], ch["ticker"], ch["entry_date"].astype(str)))
     tl = tl.assign(in_cube=[(s, t, str(e)) in keys for s, t, e in
                             zip(tl["strategy"], tl["ticker"], tl["entry_date"])])

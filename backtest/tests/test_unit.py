@@ -54028,7 +54028,8 @@ def test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter():
     tree = ast.parse(guard.read_text(encoding="utf-8"))
     imported = {a.name for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)
                 and n.module == "verify_turn_compliance" for a in n.names}
-    assert imported == {"heredoc_escape_hits", "dash_c_escape_hits"}, imported
+    assert imported == {"heredoc_escape_hits", "dash_c_escape_hits",
+                        "help_on_parserless_hits", "_HELP_PARSERLESS_HEAD"}, imported
     assert not [n for n in ast.walk(tree) if isinstance(n, ast.Attribute) and n.attr == "compile"]
 
 
@@ -62601,3 +62602,130 @@ def test_b3257_smc_graders_rank_on_the_ruled_key():
         sharpe_keys = [ast.unparse(n) for n in ast.walk(main)
                        if isinstance(n, ast.Lambda) and "is_sharpe" in ast.unparse(n)]
         assert sharpe_keys == [], (name, sharpe_keys)
+
+
+def test_b3267_battery_fails_a_cube_that_drops_a_closed_fire(tmp_path):
+    """S6-B3267 (owner ruling (a), 2026-10-22): run_postconfig.checks read only
+    trade_exit_detail.csv, so M2 judged the entries the cube holds and never
+    the trade-log fires it lost (L952 / S6-B3258: 349 of 189,471 closed R5
+    fires carry no exit row). M11 compares closed trade-log fires with
+    exit-cube entries through exit_cube_coverage.coverage and FAILs on any
+    missing one; a FAIL row from checks() fails step 1 (1_cube_sanity). A
+    cube without a trade log SKIPs, an unreadable one FAILs (fail closed)."""
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "run_postconfig_b3267", root / "scripts" / "run_postconfig.py")
+    rp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rp)
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    exits = list(EXIT_STRATEGIES)
+    header = "strategy,direction,exit_method,entry_date,fill_date,ticker,pnl_pct,hold_days"
+
+    def cube(name, fires, log):
+        d = tmp_path / name
+        d.mkdir()
+        rows = [f"s1,long,{ex},{e},{e},{t},1.0,3" for t, e in fires for ex in exits]
+        (d / "trade_exit_detail.csv").write_text(
+            "\n".join([header] + rows) + "\n", encoding="utf-8")
+        if log is not None:
+            (d / "trade_log.csv").write_text(log, encoding="utf-8")
+        return d
+
+    def m11(d):
+        return {n: (s, e) for n, s, e in rp.checks(d, step1=True)}["M11_closed_fires_in_cube"]
+    fires = [("NVDA", "2024-06-03"), ("MSFT", "2024-06-10")]
+    log = ("strategy,ticker,entry_date,exit_date\n"
+           "s1,NVDA,2024-06-03,2024-06-06\ns1,MSFT,2024-06-10,2024-06-13\n"
+           "s1,AAPL,2024-06-17,2024-06-20\ns1,TSLA,2024-06-24,\n")
+    st, ev = m11(cube("drop", fires, log))
+    assert st == "FAIL" and "2 of 3 closed" in ev and "1 missing" in ev, (st, ev)
+    st, ev = m11(cube("whole", fires + [("AAPL", "2024-06-17")], log))
+    assert st == "PASS" and "3 of 3 closed" in ev and "0 missing" in ev, (st, ev)
+    assert m11(cube("nolog", fires, None))[0] == "SKIP"
+    st, ev = m11(cube("badlog", fires, "strategy,ticker,entry_date\ns1,NVDA,2024-06-03\n"))
+    assert st == "FAIL" and "fail closed" in ev, (st, ev)
+    assert "M11_closed_fires_in_cube" not in rp._GRADER_CHECKS + rp._LEDGER_WIDE
+    spec2 = importlib.util.spec_from_file_location(
+        "postconfig_doc_b3267", root / "scripts" / "postconfig_doc.py")
+    pdoc = importlib.util.module_from_spec(spec2)
+    spec2.loader.exec_module(pdoc)
+    assert "M11_closed_fires_in_cube" in pdoc.CHECK_MEANING
+    assert any("M11_closed_fires_in_cube" in names for _q, names in pdoc.GROUPS)
+
+
+def test_b3268_pretooluse_refuses_help_on_a_parserless_script(tmp_path):
+    """S6-B3268 (owner ruling (a), 2026-10-22): --help on a repo script that
+    parses no arguments was recorded at turn end, after its main() had run
+    (L947 rewrote a committed census; L948 recurred). The PreToolUse guard
+    refuses it BEFORE it runs, for Bash and PowerShell, through the Stop-time
+    help scan's own help_on_parserless_hits, so refusal and record agree.
+    MEASURED before wiring (S6-B3279's dependency): 0 of 477 scripts under
+    scripts/ call parse_args without importing a parser library, so the
+    helper-module false positive refuses nothing today."""
+    import importlib.util
+    import json as _j
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    guard = root / "scripts" / "pretooluse_heredoc_guard.py"
+    spec = importlib.util.spec_from_file_location("pretooluse_guard_b3268", guard)
+    g = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(g)
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "bare.py").write_text("import sys\nprint(sys.argv)\n", encoding="utf-8")
+    (tmp_path / "scripts" / "parsed.py").write_text(
+        "import argparse\nargparse.ArgumentParser().parse_args()\n", encoding="utf-8")
+
+    def pay(tool, cmd):
+        return {"tool_name": tool, "tool_input": {"command": cmd}}
+    rc, msg = g.decide(pay("Bash", "python scripts/bare.py --help"), root=tmp_path)
+    assert rc == 2 and "S6-B3268" in msg and "scripts/bare.py" in msg, (rc, msg)
+    rc, msg = g.decide(pay("PowerShell", "python scripts/bare.py -h"), root=tmp_path)
+    assert rc == 2 and "S6-B3268" in msg, (rc, msg)
+    assert g.decide(pay("Bash", "python scripts/parsed.py --help"), root=tmp_path) == (0, "")
+    assert g.decide(pay("Bash", "python scripts/bare.py --out x.json"), root=tmp_path) == (0, "")
+    assert g.decide(pay("Bash", "cat <<'EOF' > n.txt\npython scripts/bare.py --help\nEOF"),
+                    root=tmp_path) == (0, "")
+    assert g.decide(pay("Write", "python scripts/bare.py --help"), root=tmp_path) == (0, "")
+    # the real repo, run as the hook runs it, on a parserless script DERIVED
+    # here (L801) - never a named example that could gain a parser
+    sys_path = str(root / "scripts")
+    if sys_path not in _sys.path:
+        _sys.path.insert(0, sys_path)
+    import verify_turn_compliance as vtc
+    bare = next(p for p in sorted((root / "scripts").glob("*.py"))
+                if not vtc.builds_arg_parser(p.read_text(encoding="utf-8", errors="replace"))
+                and not vtc.handles_help_by_hand(p.read_text(encoding="utf-8", errors="replace")))
+    cmd = f"python scripts/{bare.name} --help"
+    r = _sp.run([_sys.executable, str(guard)], input=_j.dumps(pay("Bash", cmd)),
+                capture_output=True, text=True, encoding="utf-8", cwd=str(root), timeout=60)
+    assert r.returncode == 2 and "S6-B3268" in r.stderr, (cmd, r.returncode, r.stderr[:200])
+    s = _j.loads((root / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    tools = {e.get("matcher") for e in s["hooks"]["PreToolUse"]
+             if any("pretooluse_heredoc_guard.py" in h.get("command", "") for h in e.get("hooks", []))}
+    assert {"Bash", "PowerShell"} <= tools, tools
+    # a REFUSED command never ran: the Stop-time help scan must read the
+    # refusal (a user tool_result, as the harness records it) as its one
+    # report, and still fire on the same command with no refusal
+    import verify_turn_compliance as vtc
+    src = {"scripts/bare.py": "import sys\nprint(sys.argv)\n"}
+
+    def turn(tool, cmd, refused):
+        use = {"type": "assistant", "timestamp": "2026-10-22T16:00:00.000Z",
+               "message": {"content": [{"type": "tool_use", "name": tool,
+                                        "input": {"command": cmd}}]}}
+        if not refused:
+            return [use]
+        _rc, why = g.decide(pay(tool, cmd), root=tmp_path)
+        return [use, {"type": "user", "message": {"content": [{
+            "type": "tool_result", "is_error": True,
+            "content": f"PreToolUse:{tool} hook error: [python scripts/"
+                       f"pretooluse_heredoc_guard.py]: {why}"}]}}]
+    cmd_b = "python scripts/bare.py --help"
+    assert vtc.scan_help_on_parserless_script(turn("Bash", cmd_b, False), sources=src)
+    assert not vtc.scan_help_on_parserless_script(turn("Bash", cmd_b, True), sources=src)
+    assert not vtc.scan_help_on_parserless_script(
+        turn("PowerShell", "python scripts/bare.py -h", True), sources=src)

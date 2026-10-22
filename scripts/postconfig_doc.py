@@ -89,6 +89,10 @@ CHECK_MEANING = {
         "each mapping = an exit you paid to test and did not actually test"),
     "M10_gate_receipt": ("pre-launch receipt matches the run manifest",
                          "mismatch = this run is not the run that was gated"),
+    "M11_closed_fires_in_cube": (
+        "closed trade-log fires that have an exit-cube row",
+        "any missing = an entry the cube lost, which M2 cannot see "
+        "(S6-B3267)"),
     "step7_engine_implemented": ("engine-side implementation check exit code",
                                  "non-zero = the wiring is absent"),
     "M9_universe_artifact": ("universe artifact verified",
@@ -106,7 +110,8 @@ CHECK_MEANING = {
 GROUPS = [
     ("Is this the right data?",
      ["cube_exists", "one_strategy", "megacaps_present", "M9_universe_artifact",
-      "M1_content_sha", "M4_window", "M2_exits_per_entry_vs_registry"]),
+      "M1_content_sha", "M4_window", "M2_exits_per_entry_vs_registry",
+      "M11_closed_fires_in_cube"]),
     ("Did anything leak from the future?",
      ["M4_holdout_touch", "M3_fill_date", "M10_gate_receipt"]),
     ("Does the arithmetic reproduce?",

@@ -16,7 +16,14 @@ refusal and the record can never disagree about what counts.
 Scope, as ruled: heredoc bodies (packet row 21, 2026-10-06) AND, since
 S6-B3144 (owner ruling 2026-10-13, "Approve all other recommendations"),
 the double-quoted `python -c "..."` sibling (dash_c_escape_hits,
-S6-B3139v). MEASURED before it shipped: 157 Bash commands in one session's
+S6-B3139v). And since S6-B3268 (owner ruling (a), 2026-10-22, 'Addendum
+Approve all your recommendations'): --help or -h on a repo script that
+builds no argument parser, for Bash AND PowerShell, through the Stop-time
+scan's own help_on_parserless_hits - such a script runs main() on any
+argument (L947 rewrote a committed census). It reads imports, not parses,
+so a parser built in a helper module would be refused too: MEASURED before
+wiring, 0 of 477 scripts under scripts/ do that (S6-B3279's dependency).
+MEASURED before the -c refusal shipped: 157 Bash commands in one session's
 transcript ran such a payload (the last at 2026-10-14T02:11Z), and the Stop-time record raised none after
 its first report - its one-report key is the hit text, identical for every
 payload with the same escape set. A refusal before running closes that.
@@ -35,14 +42,33 @@ import sys
 from pathlib import Path
 
 
-def decide(payload: dict) -> tuple[int, str]:
-    """(exit code, stderr message) for one PreToolUse payload."""
-    if str(payload.get("tool_name") or "") != "Bash":
+def decide(payload: dict, root=None) -> tuple[int, str]:
+    """(exit code, stderr message) for one PreToolUse payload. `root` is
+    the test seam for the --help check's repo-file read (None: the repo)."""
+    tool = str(payload.get("tool_name") or "")
+    if tool not in ("Bash", "PowerShell"):
         return 0, ""
     cmd = str((payload.get("tool_input") or {}).get("command") or "")
-    if "<<" not in cmd and "-c" not in cmd:
-        return 0, ""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
+    if "-h" in cmd:                    # --help contains it too
+        from verify_turn_compliance import (_HELP_PARSERLESS_HEAD,
+                                            help_on_parserless_hits)
+        helps = help_on_parserless_hits(cmd, root=root)
+        if helps:
+            # the Stop-time scan's head + the hit's repr: its one-report
+            # rule then reads this refused command as reported, not run
+            return 2, ("REFUSED BEFORE RUNNING (S6-B3268 / #327 / L947): "
+                       f"{_HELP_PARSERLESS_HEAD} - {len(helps)} command(s) "
+                       f"would run --help or -h on a repo script that builds "
+                       f"no argument parser - first: {helps[0]!r}. Such a "
+                       "script runs main() on any "
+                       "argument and may write its artifact (L947: --help "
+                       "rewrote a committed census). Read the script's source "
+                       "to learn its flags; a script that imports argparse, "
+                       "optparse, click, typer or docopt, or compares against "
+                       "a --help literal, is not refused.")
+    if tool != "Bash" or ("<<" not in cmd and "-c" not in cmd):
+        return 0, ""
     from verify_turn_compliance import dash_c_escape_hits, heredoc_escape_hits
     hits = heredoc_escape_hits(cmd) if "<<" in cmd else []
     if not hits:

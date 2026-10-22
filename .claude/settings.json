@@ -9,6 +9,15 @@
             "command": "python scripts/pretooluse_heredoc_guard.py"
           }
         ]
+      },
+      {
+        "matcher": "PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/pretooluse_heredoc_guard.py"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
