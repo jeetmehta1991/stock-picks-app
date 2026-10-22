@@ -54,6 +54,9 @@ def gate_passes(manifest: str) -> bool:
 # SUPERSEDED B3099 (S6-B3093a): the sha half refused a live wave's leg 2 after
 # four queue-only commits (L866); drift_check below now compares CONTENT, and
 # ENGINE_PATHS is no longer read by it - kept for any external reader.
+# S6-B3264 (B3139q-r101, owner ruling (a)): the full fix is WIRED -
+# isolated_engine_command runs each leg's engine from the pinned worktree,
+# and drift_check stays as the leg-boundary detection.
 ENGINE_PATHS = ("backtest/engine", "backtest/signals", "backtest/data",
                 "backtest/config.py", "backtest/run_phase1a.py")
 
@@ -410,6 +413,15 @@ def _merge_link(src: Path, dst: Path, problems: list[str]) -> None:
                 shutil.copy2(child, d)
 
 
+def worktree_path(sha: str, root: Path) -> Path:
+    """S6-B3264: where a pinned worktree lives - BESIDE the repo, never inside
+    it. A checkout is every tracked file (MEASURED at B3139q-r101: 173,477
+    files, 6.02 GB), and the old in-repo .worktrees/ was not gitignored and sat
+    under the scripts and tests that walk the whole repo with rglob."""
+    root = Path(root)
+    return root.parent / f"{root.name}_worktrees" / sha[:12]
+
+
 def materialise_worktree(sha: str, root: Path) -> tuple[Path | None, list[str]]:
     """Create (or reuse) a detached worktree at `sha` with data dirs linked.
 
@@ -432,9 +444,10 @@ def materialise_worktree(sha: str, root: Path) -> tuple[Path | None, list[str]]:
         # instead of refusing, and a launcher that raises where it should
         # refuse is a launcher whose failure path nobody has run.
         return None, [f"repo root does not exist: {root}"]
-    wt = root / ".worktrees" / sha[:12]
+    wt = worktree_path(sha, root)
     problems: list[str] = []
     if not wt.exists():
+        wt.parent.mkdir(parents=True, exist_ok=True)
         r = subprocess.run(["git", "worktree", "add", "--detach",
                             str(wt), sha], cwd=str(root),
                            capture_output=True, text=True)
@@ -463,6 +476,50 @@ def materialise_worktree(sha: str, root: Path) -> tuple[Path | None, list[str]]:
     if len(diffs) > 10:
         problems.append(f"... {len(diffs) - 10} more data director(ies) differ")
     return wt, problems
+
+
+# S6-B3264: engine flags whose value is a PATH - made absolute in the main
+# tree for a worktree launch (the leg's data and spec files, not its code)
+PATH_FLAGS = ("--tickers-file", "--resume-from-checkpoint", "--output-dir")
+
+
+def isolated_engine_command(manifest_path, engine_args, out_dir, *, root=ROOT,
+                            environ=None, materialise=None) -> tuple:
+    """S6-B3264 (owner ruling (a), 2026-10-22): one leg's engine command -
+    (cmd, cwd, env_extra, engine_root, problems). A manifest declaring
+    isolation (run_wave writes "isolation": true on every wave manifest -
+    declared on every launch and, until this, consumed by nothing) runs the
+    engine from a worktree pinned at its frozen_sha, so a pool worker spawned
+    mid-leg imports the pinned code and never the live tree, which
+    drift_check sees only at a leg boundary. Path inputs the leg names become
+    ABSOLUTE in the main tree, and the engine is told the main root
+    (STOCKPICKS_LANDING_ROOT) so its landing supervisor records, commits and
+    pushes there - never in the worktree, on a detached HEAD. Any problem
+    materialising the worktree is a refusal; nothing falls back to the live
+    tree. `environ` and `materialise` are the test seams."""
+    root = Path(root)
+    environ = os.environ if environ is None else environ
+    out_dir = Path(out_dir).resolve()
+    man = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    if not man.get("isolation"):
+        cmd = ([sys.executable, str(root / "backtest" / "run_phase1a.py")]
+               + list(engine_args) + ["--output-dir", str(out_dir)])
+        return cmd, str(root), {}, str(root), []
+    wt, problems = (materialise or materialise_worktree)(
+        str(man.get("frozen_sha") or ""), root)
+    if problems or wt is None:
+        return None, None, None, None, list(problems or ["no worktree was made"])
+    args = list(engine_args)
+    for i, tok in enumerate(args[:-1]):
+        if tok in PATH_FLAGS and not Path(args[i + 1]).is_absolute():
+            args[i + 1] = str(root / args[i + 1])
+    extra = {"STOCKPICKS_LANDING_ROOT": str(root)}
+    sub = environ.get("STRATEGY_SUBSET_FILE")
+    if sub and not Path(sub).is_absolute():
+        extra["STRATEGY_SUBSET_FILE"] = str(root / sub)
+    cmd = ([sys.executable, str(Path(wt) / "backtest" / "run_phase1a.py")]
+           + args + ["--output-dir", str(out_dir)])
+    return cmd, str(wt), extra, str(wt), []
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -522,6 +579,21 @@ def main(argv: list[str] | None = None) -> int:
     out_dir = Path(a.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # S6-B3264: the leg's engine command - from the pinned worktree when the
+    # manifest declares isolation; the test seam keeps the live tree
+    if a.engine_cmd:
+        _cmd, _cwd, _extra, _engine_root, _iso = None, str(ROOT), {}, str(ROOT), []
+    else:
+        _cmd, _cwd, _extra, _engine_root, _iso = isolated_engine_command(
+            a.manifest, list(a.engine_args), out_dir)
+    if _iso:
+        print("LAUNCH REFUSED (S6-B3264 isolation): the manifest declares "
+              "isolation and its pinned worktree is not ready - the engine "
+              "was NOT invoked, and nothing falls back to the live tree.")
+        for r in _iso:
+            print(f"  - {r}")
+        return 2
+
     # B2169 (S6-B2159b): a gate PASS leaves a RECEIPT in the run's own output.
     # Before this, PASS printed to stdout and exited - no artifact could later
     # say which results were gated, and a kill erased even the stdout. The
@@ -537,6 +609,7 @@ def main(argv: list[str] | None = None) -> int:
         "gate": "prelaunch_gate PASS + drift/window/arm-env checks",
         "tag": a.tag,
         "engine_argv": list(a.engine_args),
+        "engine_root": _engine_root,          # S6-B3264: the pinned worktree
         "timestamp": _t2.strftime("%Y-%m-%dT%H:%M:%SZ", _t2.gmtime()),
     }
     (out_dir / "gate_receipt.json").write_text(
@@ -551,9 +624,9 @@ def main(argv: list[str] | None = None) -> int:
     if a.engine_cmd:
         cmd = [sys.executable, a.engine_cmd] + list(a.engine_args)
     else:
-        cmd = ([sys.executable, str(ROOT / "backtest" / "run_phase1a.py")]
-               + list(a.engine_args) + ["--output-dir", str(out_dir)])
-    rc = subprocess.run(cmd, cwd=str(ROOT)).returncode
+        cmd = _cmd
+    rc = subprocess.run(cmd, cwd=_cwd,
+                        env=({**os.environ, **_extra} if _extra else None)).returncode
 
     cube = out_dir / "trade_exit_detail.csv"
     rows = "ABSENT"

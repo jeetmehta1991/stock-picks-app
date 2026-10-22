@@ -51992,7 +51992,7 @@ def test_b3139_materialise_worktree_links_the_untracked_data(tmp_path):
         wt2, probs2 = ls.materialise_worktree(sha, root)
         assert wt2 == wt and probs2 and "data differs" in probs2[0], probs2
     finally:
-        subprocess.run(["git", "worktree", "remove", "--force", str(root / ".worktrees" / sha[:12])],
+        subprocess.run(["git", "worktree", "remove", "--force", str(ls.worktree_path(sha, root))],
                        cwd=str(root), capture_output=True, text=True)
 
 
@@ -62729,3 +62729,96 @@ def test_b3268_pretooluse_refuses_help_on_a_parserless_script(tmp_path):
     assert not vtc.scan_help_on_parserless_script(turn("Bash", cmd_b, True), sources=src)
     assert not vtc.scan_help_on_parserless_script(
         turn("PowerShell", "python scripts/bare.py -h", True), sources=src)
+
+
+def test_b3264_isolated_leg_runs_the_pinned_worktree_and_lands_in_main(tmp_path, monkeypatch):
+    """S6-B3264 (owner ruling (a), 2026-10-22): the manifest's isolation was
+    declared on every wave launch and consumed by nothing - each leg's engine
+    ran from the live tree, so a pool worker spawned mid-leg imported whatever
+    the tree held then. launch_sweep now runs a leg from a worktree pinned at
+    the frozen_sha: (1) no isolation declared - the live tree, as before;
+    (2) isolation - the worktree's engine from the worktree, path inputs
+    absolute in the main tree, the landing root passed; (3) a materialisation
+    problem refuses, with no fall-back; (4) the worktree lives BESIDE the repo
+    (an in-repo .worktrees/ was not gitignored and sat under rglob walkers);
+    (5) main() is wired to the builder; (6) the engine's landing hook lands in
+    the MAIN root when told, and falls back to its own when that root has no
+    supervisor. Proven end to end on the next owner-approved launch."""
+    import ast
+    import importlib.util
+    import json
+    import subprocess as _sp
+    from pathlib import Path as _P
+    from types import SimpleNamespace
+    here = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location("launch_sweep_b3264", here / "scripts" / "launch_sweep.py")
+    ls = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ls)
+    root = tmp_path / "repo"
+    root.mkdir()
+    man = tmp_path / "m.json"
+    out = tmp_path / "out"
+    args = ["--tickers-file", "output_audit/u.txt", "--phase", "1a-beta", "--start", "2024-01-02"]
+    man.write_text(json.dumps({"isolation": False, "frozen_sha": "abc"}), encoding="utf-8")
+    cmd, cwd, extra, eroot, probs = ls.isolated_engine_command(man, args, out, root=root, environ={})
+    assert probs == [] and cwd == str(root) and extra == {} and eroot == str(root)
+    assert cmd[1] == str(root / "backtest" / "run_phase1a.py") and "output_audit/u.txt" in cmd
+    wt = tmp_path / "wt"
+    seen = []
+
+    def fake(sha, r):
+        seen.append((sha, r))
+        return wt, []
+    man.write_text(json.dumps({"isolation": True, "frozen_sha": "0123456789abcdef"}), encoding="utf-8")
+    cmd, cwd, extra, eroot, probs = ls.isolated_engine_command(
+        man, args, out, root=root, environ={"STRATEGY_SUBSET_FILE": "output_audit/s.txt"},
+        materialise=fake)
+    assert probs == [] and seen == [("0123456789abcdef", root)], (probs, seen)
+    assert cmd[1] == str(wt / "backtest" / "run_phase1a.py") and cwd == str(wt) and eroot == str(wt)
+    assert cmd[cmd.index("--tickers-file") + 1] == str(root / "output_audit" / "u.txt")
+    assert cmd[-2:] == ["--output-dir", str(out.resolve())]
+    assert extra == {"STOCKPICKS_LANDING_ROOT": str(root),
+                     "STRATEGY_SUBSET_FILE": str(root / "output_audit" / "s.txt")}, extra
+    cmd, cwd, extra, eroot, probs = ls.isolated_engine_command(
+        man, args, out, root=root, environ={},
+        materialise=lambda s, r: (None, ["data differs at data_prefetch/x"]))
+    assert cmd is None and probs == ["data differs at data_prefetch/x"]
+    p = ls.worktree_path("0123456789abcdef", root)
+    assert p == tmp_path / "repo_worktrees" / "0123456789ab" and root not in p.parents
+    tree = ast.parse((here / "scripts" / "launch_sweep.py").read_text(encoding="utf-8"))
+    mainf = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    called = {c.func.id for c in ast.walk(mainf) if isinstance(c, ast.Call)
+              and isinstance(c.func, ast.Name)}
+    assert "isolated_engine_command" in called
+    import backtest.run_phase1a as r
+    calls = []
+
+    def run(cmd, *a, **k):
+        calls.append((list(cmd), k.get("cwd")))
+        return SimpleNamespace(returncode=0)
+    monkeypatch.setattr(_sp, "run", run)
+    monkeypatch.delenv("POSTCONFIG_LANDING", raising=False)
+    cube = tmp_path / "output_b3264"
+    cube.mkdir()
+    (cube / "trade_exit_detail.csv").write_text("h\n1\n", encoding="utf-8")
+    main_root = tmp_path / "main"
+    (main_root / "scripts").mkdir(parents=True)
+    (main_root / "scripts" / "postconfig_landing.py").write_text("", encoding="utf-8")
+    monkeypatch.setenv("STOCKPICKS_LANDING_ROOT", str(main_root))
+    assert r._postconfig_landing_hook(str(cube)) == 0
+    assert calls[-1] == (calls[-1][0], str(main_root)) and calls[-1][0][1] == str(
+        main_root / "scripts" / "postconfig_landing.py"), calls[-1]
+    monkeypatch.setenv("STOCKPICKS_LANDING_ROOT", str(tmp_path / "nowhere"))
+    assert r._postconfig_landing_hook(str(cube)) == 0
+    assert calls[-1][0][1] == str(here / "scripts" / "postconfig_landing.py"), calls[-1]
+    # main() refuses on the builder's problems before ANY subprocess call
+    monkeypatch.setattr(ls, "gate_passes", lambda m: True)
+    monkeypatch.setattr(ls, "arm_env_matches", lambda m, e: [])
+    monkeypatch.setattr(ls, "drift_check", lambda m: [])
+    monkeypatch.setattr(ls, "window_matches", lambda m, a: [])
+    monkeypatch.setattr(ls, "isolated_engine_command",
+                        lambda *a, **k: (None, None, None, None, ["worktree not ready"]))
+    calls.clear()
+    rc = ls.main(["--manifest", str(man), "--output-dir", str(tmp_path / "o2"),
+                  "--", "--phase", "1a-beta"])
+    assert rc == 2 and calls == [], (rc, calls)

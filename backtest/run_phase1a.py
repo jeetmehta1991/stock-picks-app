@@ -214,7 +214,13 @@ def _postconfig_landing_hook(output_dir: str) -> "int | None":
               f"{out.name} (opt-out LOGGED; verify_postconfig_complete still "
               "blocks the turn until this cube is dispositioned)")
         return None
-    sup = Path(__file__).resolve().parent.parent / "scripts" / "postconfig_landing.py"
+    # S6-B3264: an engine run from a pinned worktree lands into the MAIN repo
+    # (launch_sweep passes its root) - the supervisor, ledger, commit and
+    # push live there, never in the worktree on a detached HEAD
+    _main = os.environ.get("STOCKPICKS_LANDING_ROOT")
+    _base = (Path(_main) if _main and (Path(_main) / "scripts" / "postconfig_landing.py").is_file()
+             else Path(__file__).resolve().parent.parent)
+    sup = _base / "scripts" / "postconfig_landing.py"
     cmd = [sys.executable, str(sup), "--cube", str(out), "--if-not-landed",
            "--source", "engine-hook"]
     t0 = time.time()
