@@ -62203,3 +62203,141 @@ def test_b3275_resume_refuses_curves_without_a_sim_date(tmp_path):
     ok = engine(Portfolio(starting_capital=100_000.0))
     ok._load_resume_checkpoint()
     assert len(ok.portfolio.equity_curve) == 1
+
+
+def test_b3276_census_check_fails_on_an_unreviewed_status(monkeypatch, capsys):
+    """S6-B3276 (r92 audit): scripts/context_bullets_census.py --check printed a
+    NONLITERAL_BULLETS or CONSTANT_FIRES side and exited 0, so a side whose
+    bullets stopped being a literal list silently left the checked population
+    (285 sides, 283 checked, 2 excluded undisclosed). Such a side now needs an
+    entry WITH A REASON in the register's 'statuses'. (1) Live: every non-OK
+    side is listed and every entry matches one; --check exits 0. (2) Toy: both
+    statuses report unreviewed; listed with reasons they are excused; an entry
+    nothing matches is stale; a blank reason is not a review; two unreadable
+    declarations on one side need two entries (a multiset, not a set).
+    (3) Wired: --check exits 1 and names the side when the register lists
+    nothing."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import context_bullets_census as C
+    rows = C.census()
+    st = C.load_statuses()
+    assert C.status_problems(rows, st) == ([], [], []), C.status_problems(rows, st)
+    nonok = [r for r in rows if r.get("status") != "OK"]
+    assert nonok and len(nonok) == len(st), (len(nonok), len(st))
+    assert all(len(s) == 4 and len(s[3]) > 40 for s in st), st
+    assert C.main(["--check"]) == 0
+    toy = ("def strat_built(s):\n"
+           "    fires = s.get('rsi_14', 50) > 65\n"
+           "    bl = ['RSI-14 above 65']\n"
+           "    return _strat(fires, 'short', 'x', ['rsi_14'], bl)\n"
+           "def strat_const(s):\n"
+           "    return _strat(False, 'long', 'x', ['rsi_14'], ['never fires'])\n")
+    trows = C.census_source(toy)
+    built = ("built", "single", "NONLITERAL_BULLETS")
+    const = ("const", "single", "CONSTANT_FIRES")
+    assert C.status_problems(trows, []) == ([built, const], [], [])
+    ok = [[*built, "bullets built at runtime"], [*const, "an early-return guard"]]
+    assert C.status_problems(trows, ok) == ([], [], [])
+    gone = ok + [["vanished", "single", "CONSTANT_FIRES", "it was here once"]]
+    assert C.status_problems(trows, gone)[1] == [("vanished", "single", "CONSTANT_FIRES")]
+    blank = [[*built, "  "], ok[1]]
+    assert C.status_problems(trows, blank) == ([], [], [built])
+    twice = C.census_source(
+        "def strat_twice(s):\n"
+        "    bl = ['a']\n"
+        "    if s.get('k'):\n"
+        "        fires_a = s.get('k2')\n"
+        "        return _strat(fires_a, 'long', 'x', ['k2'], bl)\n"
+        "    fires_b = s.get('k3')\n"
+        "    return _strat(fires_b, 'long', 'x', ['k3'], bl)\n")
+    one = [["twice", "single", "NONLITERAL_BULLETS", "one entry for two declarations"]]
+    assert C.status_problems(twice, one)[0] == [("twice", "single", "NONLITERAL_BULLETS")]
+    assert C.status_problems(twice, one * 2) == ([], [], [])
+    capsys.readouterr()
+    monkeypatch.setattr(C, "load_statuses", lambda path=None: [])
+    assert C.main(["--check"]) == 1
+    so = capsys.readouterr().out
+    assert "UNREVIEWED STATUS activist_13d_long single NONLITERAL_BULLETS" in so, so
+    assert C.main([]) == 0
+
+
+def test_b3277_gate_stdout_carries_the_pytest_tail_and_footer(tmp_path, monkeypatch, capsys):
+    """S6-B3277 (r92 audit): the committed .out is the gate's STDOUT, and it
+    held only the verdict line - pytest's count line and the footer key=values
+    lived in the untracked .json, so 23 of 23 window commits citing a pass
+    count had it in no committed artifact. Stdout now carries the count line,
+    each FAILED / ERROR line of the short summary (only after that header - a
+    failing test's captured log prints ERROR lines of its own) and every
+    footer key=value; the log keeps its footer byte-for-byte (test_b2580)."""
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location("pyramid_gate_b3277", root / "scripts" / "pyramid_gate.py")
+    pg = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(pg)
+    log = ("....F.E\n"
+           "ERROR    backtest.engine:backtest.py a captured log line\n"
+           "=========================== short test summary info ===========================\n"
+           "FAILED backtest/tests/test_unit.py::test_x - AssertionError: boom\n"
+           "ERROR backtest/tests/test_unit.py::test_y - fixture missing\n"
+           "1 failed, 4 passed, 1 error in 2.50s\n")
+    assert pg.pytest_tail(log) == [
+        "FAILED backtest/tests/test_unit.py::test_x - AssertionError: boom",
+        "ERROR backtest/tests/test_unit.py::test_y - fixture missing",
+        "pytest: 1 failed, 4 passed, 1 error in 2.50s"]
+    assert pg.pytest_tail("== 7 passed, 1 skipped in 9.01s (0:00:09) ==\n") == [
+        "pytest: 7 passed, 1 skipped in 9.01s (0:00:09)"]
+    assert pg.pytest_tail("collection crashed\n") == ["pytest: no count line in the log"]
+    many = ("== short test summary info ==\n"
+            + "".join(f"FAILED t.py::test_{i}\n" for i in range(23)) + "23 failed in 1.00s\n")
+    tail = pg.pytest_tail(many)
+    assert len(tail) == 22 and tail[20] == "... +3 more FAILED/ERROR lines in the log", tail
+    for d in ("scripts", "backtest"):
+        (tmp_path / d).mkdir()
+
+    def fake_call(cmd, stdout=None, stderr=None, cwd=None):
+        stdout.write("....\n9 passed, 2 skipped in 3.21s\n")
+        return 0
+    monkeypatch.setattr(pg.subprocess, "call", fake_call)
+    monkeypatch.setattr(pg, "_engine_inflight", lambda *a, **k: "none")
+    out = tmp_path / "pyr.json"
+    assert pg.run(out, tmp_path, ["-q"]) == 0
+    so = capsys.readouterr().out
+    assert "pytest_exit=0 tree=SAME exit=0" in so, so
+    assert "\n  pytest: 9 passed, 2 skipped in 3.21s\n" in so, so
+    for key in ("elapsed_s=", "engine_inflight_start=", "readset=", "stamp_binding="):
+        assert "\n  " + key in so, (key, so)
+    assert "\n  pytest_exit=" not in so and "\n  exit=" not in so, so
+    text = out.read_text(encoding="utf-8")
+    assert "\npytest_exit=0\ntree=SAME\nexit=0\nelapsed_s=" in text, text
+
+
+def test_b3279_help_scan_states_its_false_positive_direction():
+    """S6-B3279 (r92 audit): scan_help_on_parserless_script's docstring said a
+    parser built through an imported helper module is not seen - 'a lower
+    bound'. The scan reads IMPORTS, not parses, so that case FIRES (a false
+    positive, which would block a read-only probe) while an unused argparse
+    import passes (the miss). Exposure was measured nil at the audit; the
+    docstring now states both directions and this pins them on the sources
+    seam."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as vtc
+    cmd = "python scripts/x.py --help"
+    helper = "from cli_helpers import make_parser\nmake_parser().parse_args()\n"
+    assert vtc.help_on_parserless_hits(cmd, sources={"scripts/x.py": helper}) == ["scripts/x.py"]
+    unused = "import argparse\nimport sys\nprint(sys.argv)\n"
+    assert not vtc.help_on_parserless_hits(cmd, sources={"scripts/x.py": unused})
+    real = "import argparse\nargparse.ArgumentParser().parse_args()\n"
+    assert not vtc.help_on_parserless_hits(cmd, sources={"scripts/x.py": real})
+    doc = " ".join(vtc.scan_help_on_parserless_script.__doc__.split())
+    assert "helper-module parser FIRES (false positive)" in doc, doc
+    assert "unused argparse passes (miss)" in doc, doc
+    assert "a lower bound" not in doc, doc

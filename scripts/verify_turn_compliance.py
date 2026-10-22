@@ -6166,8 +6166,8 @@ def scan_help_on_parserless_script(entries, *, cmds=None, active_from=None,
     what that script happens to do (L948). Fires when this turn's Bash or
     PowerShell command runs a repo script with --help or -h and the script's
     source neither builds a parser (builds_arg_parser) nor compares against a
-    --help literal (handles_help_by_hand) - a lower bound: a parser built
-    through an imported helper module is not seen.
+    --help literal (handles_help_by_hand). It reads imports, not parses: a
+    helper-module parser FIRES (false positive); unused argparse passes (miss).
 
     Seam (#241): `cmds` injects command strings (the active-from window is
     then the caller's); `sources` maps a repo path to its text; `active_from`

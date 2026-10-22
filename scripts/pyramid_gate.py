@@ -18,6 +18,11 @@ read the artifact's own exit, never a pipe's):
 
 A CHANGED run is VOID whatever pytest said; re-run it on the settled tree.
 
+S6-B3277: the gate's STDOUT is the committed half of the record (the .out);
+the log and its footer are the untracked .json. So stdout also carries
+pytest's count line, each FAILED / ERROR line of its short summary and every
+footer key=value - a pass count a ledger row cites survives a clean checkout.
+
 S6-B3130a (owner ruling 2026-09-29): the READ-SET. A watched output_audit
 file that moved during the run sends EXACTLY the tests that read it back
 through pytest once (readset=RERUN-PASS / RERUN-FAILED), or marks the run
@@ -39,6 +44,7 @@ import contextlib
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -529,6 +535,30 @@ def bind_stamp(root, t0: float, final: int, reason: str) -> str:
     return "demoted"
 
 
+_PYTEST_COUNT = re.compile(r"^\d+ (?:passed|failed|errors?|skipped|deselected|"
+                           r"xfailed|xpassed|warnings?)\b.* in \d+(?:\.\d+)?s\b")
+
+
+def pytest_tail(log_text: str, limit: int = 20) -> list[str]:
+    """S6-B3277: what a reader needs to cite a run - every FAILED / ERROR line
+    of pytest's short test summary (the first `limit`) and its count line -
+    taken from the log so the gate's stdout, the committed .out, carries them
+    (MEASURED at the r92 audit: 23 of 23 commits citing a pass count had it in
+    no committed artifact). Only lines AFTER the last 'short test summary
+    info' header count: a failing test's captured log prints ERROR lines of
+    its own."""
+    lines = [ln.rstrip("\r") for ln in str(log_text or "").split("\n")]
+    heads = [i for i, ln in enumerate(lines) if "short test summary info" in ln]
+    bad = ([ln for ln in lines[heads[-1] + 1:] if ln.startswith(("FAILED ", "ERROR "))]
+           if heads else [])
+    out = bad[:limit]
+    if len(bad) > limit:
+        out.append(f"... +{len(bad) - limit} more FAILED/ERROR lines in the log")
+    counts = [ln.strip("= ") for ln in lines if _PYTEST_COUNT.match(ln.strip("= "))]
+    out.append("pytest: " + counts[-1] if counts else "pytest: no count line in the log")
+    return out
+
+
 def run(out: Path, root: Path, pytest_args: list[str],
         beside_wave: str | None = None) -> int:
     # L942: first, and before any write - a committed record is evidence.
@@ -623,28 +653,36 @@ def run(out: Path, root: Path, pytest_args: list[str],
         engine_end = _engine_inflight()
         engine = engine_start if engine_start != "none" else engine_end
         engine_dead = _engine_dead_within_window()
+        footer = (f"pytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
+                  f"elapsed_s={time.time() - t0:.0f}\n"
+                  f"chain_inflight={chain}\n"
+                  f"chain_inflight_start={chain_start}\n"
+                  f"chain_inflight_end={chain_end}\n"
+                  f"power_start={power_start}\n"
+                  f"power_end={power_end}\n"
+                  f"engine_inflight={engine}\n"
+                  f"engine_inflight_start={engine_start}\n"
+                  f"engine_inflight_end={engine_end}\n"
+                  f"engine_dead_within_window={engine_dead}\n"
+                  f"beside_wave_override={(beside_wave or '').strip() or 'none'}\n"
+                  f"output_audit_created={oa_created}\n"
+                  f"output_audit_modified_tracked={oa_mod_tracked}\n"
+                  f"output_audit_modified_untracked={oa_mod_untracked}\n"
+                  f"readset={rs_verdict}\n"
+                  f"readset_rerun={rs_rerun}\n"
+                  f"readset_suite_writes={rs_writes}\n"
+                  f"moved_line_citations={moved_cites}\n"
+                  f"stamp_binding={binding}\n")
         with open(out, "a", encoding="utf-8") as fh:
-            fh.write(f"\npytest_exit={rc}\n{verdict_line(diff)}\nexit={final}\n"
-                     f"elapsed_s={time.time() - t0:.0f}\n"
-                     f"chain_inflight={chain}\n"
-                     f"chain_inflight_start={chain_start}\n"
-                     f"chain_inflight_end={chain_end}\n"
-                     f"power_start={power_start}\n"
-                     f"power_end={power_end}\n"
-                     f"engine_inflight={engine}\n"
-                     f"engine_inflight_start={engine_start}\n"
-                     f"engine_inflight_end={engine_end}\n"
-                     f"engine_dead_within_window={engine_dead}\n"
-                     f"beside_wave_override={(beside_wave or '').strip() or 'none'}\n"
-                     f"output_audit_created={oa_created}\n"
-                     f"output_audit_modified_tracked={oa_mod_tracked}\n"
-                     f"output_audit_modified_untracked={oa_mod_untracked}\n"
-                     f"readset={rs_verdict}\n"
-                     f"readset_rerun={rs_rerun}\n"
-                     f"readset_suite_writes={rs_writes}\n"
-                     f"moved_line_citations={moved_cites}\n"
-                     f"stamp_binding={binding}\n")
+            fh.write("\n" + footer)
         print(f"pytest_exit={rc} {verdict_line(diff)} exit={final}")
+        # S6-B3277: stdout is the committed .out - the count line, the
+        # FAILED lines and the footer must reach it, not only the log
+        with open(out, encoding="utf-8", errors="replace") as fh:
+            for ln in pytest_tail(fh.read()):
+                print("  " + ln)
+        for ln in footer.splitlines()[3:]:
+            print("  " + ln)
         if chain != "none":
             print("  NOTE (L621/S6-B3061): a config was IN FLIGHT while "
                   "this pyramid ran - %s. Its wall-clock is contended."

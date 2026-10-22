@@ -44,7 +44,9 @@ the side model and the gate-key closure are scripts/signals_used_lint.py's):
   constant changed (its anchor count moves); a register member that no longer
   needs reviewing (stale - the register shrinks with the code); one of the 80
   corrected bullet texts coming back on its side (the register's 'retired'
-  list). WHAT IT CANNOT
+  list); a side whose bullet list stops being literal, or whose fires are a
+  constant, unless the register's 'statuses' names it with a reason (S6-B3276:
+  --check used to print such a side and exit 0). WHAT IT CANNOT
   SEE: the prose shape - a bullet asserting a condition its gate no longer
   tests, with no number and no key ('Bearish bar - rejection of stop-hunt
   extension' after B1145 dropped the bar gate). S6-B3221 read all 283 live
@@ -103,6 +105,33 @@ def retired_recurrences(rows, retired=None):
             for r in rows}
     return [t for t in (load_retired() if retired is None else retired)
             if t[2] in have.get((t[0], t[1]), set())]
+
+
+def load_statuses(path=None):
+    """[strategy, side, status, reason] for every declaration side the census
+    cannot read as a literal bullet list - reviewed and kept (S6-B3276)."""
+    p = Path(path) if path else REVIEWED_PATH
+    return json.loads(p.read_text(encoding="utf-8"))["statuses"]
+
+
+def status_problems(rows, statuses=None):
+    """S6-B3276: (unreviewed, stale, unreasoned) over the non-OK sides.
+    --check used to print a NONLITERAL_BULLETS or CONSTANT_FIRES side and exit
+    0, so a side whose bullets stopped being a literal list silently left the
+    checked population. Counted as a MULTISET of (strategy, side, status): one
+    function can hold two declarations on one side (52w_high_breakout's
+    early-return guard beside its firing call), so a second unreadable
+    declaration exceeds its listed count instead of hiding behind an existing
+    entry. An entry with a blank reason is not a review."""
+    from collections import Counter
+    reg = load_statuses() if statuses is None else statuses
+    have = Counter((r["strategy"], r["side"], r["status"]) for r in rows
+                   if r.get("status") != "OK")
+    listed = Counter((s[0], s[1], s[2]) for s in reg)
+    unreasoned = sorted((s[0], s[1], s[2]) for s in reg
+                        if len(s) < 4 or not str(s[3]).strip())
+    return (sorted((have - listed).elements()), sorted((listed - have).elements()),
+            unreasoned)
 
 
 def reviewed_members(groups):
@@ -419,7 +448,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--check", action="store_true",
                     help="exit 1 on an unreviewed FREE number, a NOT-READ key, a stale "
-                         "register member or a moved producer anchor")
+                         "register member, a moved producer anchor or a non-OK side "
+                         "outside the register's reviewed statuses")
     ap.add_argument("--json", help="write the per-side rows here")
     a = ap.parse_args(argv)
     rows = census()
@@ -437,10 +467,13 @@ def main(argv=None) -> int:
     stale = stale_reviewed(rows, groups)
     moved = anchor_problems(groups)
     back = retired_recurrences(rows)
+    unrev, stale_st, unreasoned = status_problems(rows)
     print(f"sides {len(rows)} (live with literal bullets {len(live)}); bullets {nb}; "
           f"classes {dict(sorted(cls.items()))}; register {len(reviewed_members(groups))} "
           f"members in {len(groups)} groups; unreviewed {len(cand)}; stale {len(stale)}; "
-          f"moved anchors {len(moved)}; retired texts back {len(back)}")
+          f"moved anchors {len(moved)}; retired texts back {len(back)}; "
+          f"unreviewed statuses {len(unrev)}; stale status entries {len(stale_st)}; "
+          f"unreasoned status entries {len(unreasoned)}")
     for c in cand:
         print("  UNREVIEWED", c)
     for m in stale:
@@ -452,9 +485,16 @@ def main(argv=None) -> int:
     for r in rows:
         if r.get("status") not in ("OK",):
             print("  STATUS", r["strategy"], r["side"], r["status"])
+    for u in unrev:
+        print("  UNREVIEWED STATUS", *u)
+    for s in stale_st:
+        print("  STALE STATUS ENTRY", *s)
+    for s in unreasoned:
+        print("  STATUS ENTRY WITHOUT A REASON", *s)
     if a.json:
         Path(a.json).write_text(json.dumps(rows, indent=1), encoding="utf-8")
-    return 1 if (a.check and (cand or stale or moved or back)) else 0
+    return 1 if (a.check and (cand or stale or moved or back or unrev or stale_st
+                              or unreasoned)) else 0
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 {
- "_doc": "S6-B3221 reviewed register for scripts/context_bullets_census.py - DATA, not code (CSV-first; the output_audit/preleg_lifecycle_exemptions.json precedent). Each group names bullet numbers a reader compared against the gate AND the producer and found true, keyed [strategy, side, bullet index, token], with the reason. An anchor is a producer line the number comes from, with the count of its occurrences: if the producer changes the line, the count moves and the census check fails until the bullet is re-read - so producer-constant drift is caught too. A group with no anchor is a label, a form name, a literature figure or a quoted measurement. 'retired' lists the 80 bullet texts S6-B3221 corrected or removed on 69 sides, in the census's rendering (an f-string's values shown as {...}); the check fails if one comes back on its side.",
+ "_doc": "S6-B3221 reviewed register for scripts/context_bullets_census.py - DATA, not code (CSV-first; the output_audit/preleg_lifecycle_exemptions.json precedent). Each group names bullet numbers a reader compared against the gate AND the producer and found true, keyed [strategy, side, bullet index, token], with the reason. An anchor is a producer line the number comes from, with the count of its occurrences: if the producer changes the line, the count moves and the census check fails until the bullet is re-read - so producer-constant drift is caught too. A group with no anchor is a label, a form name, a literature figure or a quoted measurement. 'retired' lists the 80 bullet texts S6-B3221 corrected or removed on 69 sides, in the census's rendering (an f-string's values shown as {...}); the check fails if one comes back on its side. 'statuses' lists the declaration sides the census cannot read as a literal bullet list - [strategy, side, status, reason], counted as a multiset - and --check fails on any other non-OK side, on an entry no side matches, and on an entry with a blank reason (S6-B3276).",
  "groups": [
   {
    "why": "the OBV baseline is its 20-bar moving average",
@@ -1919,6 +1919,20 @@
    "value_area_breakout_long",
    "single",
    "Volume 2x ADV(20) (breakout confirmation)"
+  ]
+ ],
+ "statuses": [
+  [
+   "activist_13d_long",
+   "single",
+   "NONLITERAL_BULLETS",
+   "the bullet list is built at runtime: two static texts plus the filer and the percent-owned values appended when present (strat_activist_13d_long). Read for the census: '30 days' is the window of the gate key sc_13d_filed_within_30d, and '+6.8%' is a literature figure the bullet attributes to Brav-Jiang-Partnoy-Thomas 2008, not a gate number."
+  ],
+  [
+   "52w_high_breakout",
+   "single",
+   "CONSTANT_FIRES",
+   "the early-return guard when break_52w_high is absent: fires is the constant False, so its bullet never rides a fire into the trade log or the site. The strategy's firing declaration is a separate single side, which the census reads as OK."
   ]
  ]
 }
