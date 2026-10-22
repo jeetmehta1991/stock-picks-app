@@ -995,10 +995,10 @@ def main() -> int:
     ap.add_argument("--lane", default="TIGHTEN", choices=("TIGHTEN", "BOTH"))
     ap.add_argument("--subdir", default=None,
                     help="output folder under strategy_optimisation/ (default: the lane name; owner-directed tighten/both for the BOTH wave)")
-    # C15 (B2852, owner-approved): the preflight regenerate-and-diff gate
+    # C18 (B2852, owner-approved): the preflight regenerate-and-diff gate
     # rebuilds into a temp root so a pre-commit check never writes the tree.
     ap.add_argument("--out-root", default=None,
-                    help="write under this root instead of strategy_optimisation/ (C15 regeneration)")
+                    help="write under this root instead of strategy_optimisation/ (C18 regeneration)")
     # S6-B3232 (B3139q-r86): ONE named strategy to ONE named file, for a
     # campaign outside the TIGHTEN/BOTH charter (a NONE-lane breadth
     # candidate); never writes the charter folders

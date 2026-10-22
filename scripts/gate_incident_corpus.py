@@ -1327,6 +1327,13 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
         # must-FIRE: a fragment of a ticket that is no longer live names nothing
         ("Waiting on you: LEVER9 (rec a).", True,
          {"ticket_ids": ["S6-B1248-LEVER10-MAE-FITTED-STOPS"]}),
+        # must-FIRE (S6-B3278): a FULL id names nothing once it is not
+        # live - the r92 audit's probe id passed while any S6- token was enough
+        ("Still waiting on you: S6-ZZZZ99 (rec a).", True,
+         {"ticket_ids": ["S6-B3222"]}),
+        # must-QUIET: the same list once the full id is live
+        ("Still waiting on you: S6-B3222 (rec a).", False,
+         {"ticket_ids": ["S6-B3222"]}),
     ],
     "scan_owner_decision_taken": [
         # must-QUIET: proceeding is ALLOWED - what is forbidden is

@@ -922,7 +922,7 @@ def check_gate_records_are_write_once(name_status=None, head_text=None) -> list[
 
 
 # ---------------------------------------------------------------------------
-# C15 (B2852, owner-approved 2026-09-17 / L805): a generated locked-format
+# C18 (B2852, owner-approved 2026-09-17 / L805): a generated locked-format
 # artifact is never hand-edited - the generator owns the bytes. Any staged
 # strategy_optimisation .md (README excluded) must match a FRESH regeneration
 # into a temp root, compared with the L803 build-stamp line excluded (the one
@@ -932,8 +932,8 @@ def check_gate_records_are_write_once(name_status=None, head_text=None) -> list[
 # fail closed - the absent case is the case the guard exists for). The
 # regeneration runs ONLY when such files are staged, so other commits pay
 # nothing.
-_C15_STAMP_PREFIX = "**Build (L803/#309):**"
-_C15_LANES = (
+_C18_STAMP_PREFIX = "**Build (L803/#309):**"
+_C18_LANES = (
     # (posix dir prefix, generator args) - most specific FIRST, since
     # tighten/both/ sits under tighten/.
     ("strategy_optimisation/tighten/both/",
@@ -943,16 +943,16 @@ _C15_LANES = (
 )
 
 
-def _c15_normalise(text: str) -> str:
+def _c18_normalise(text: str) -> str:
     """Endings unified and the by-design-nondeterministic stamp line dropped."""
     return "\n".join(
         ln for ln in text.replace("\r\n", "\n").split("\n")
-        if not ln.startswith(_C15_STAMP_PREFIX))
+        if not ln.startswith(_C18_STAMP_PREFIX))
 
 
-def _c15_regenerate(lane_args: list[list[str]]) -> Path:
+def _c18_regenerate(lane_args: list[list[str]]) -> Path:
     import tempfile
-    tmp = Path(tempfile.mkdtemp(prefix="c15_table_a_"))
+    tmp = Path(tempfile.mkdtemp(prefix="c18_table_a_"))
     for extra in lane_args:
         r = subprocess.run(
             [sys.executable, str(REPO_ROOT / "scripts" / "build_table_a.py"),
@@ -967,7 +967,8 @@ def _c15_regenerate(lane_args: list[list[str]]) -> Path:
 
 def check_generated_artifact_matches_generator(paths, *, regenerate=None,
                                                staged_text=None) -> list[str]:
-    """C15: staged generated artifacts must byte-match a fresh regeneration."""
+    """C18: staged generated artifacts must byte-match a fresh regeneration -
+    labelled C15 until S6-B3284; the racing-artifact check keeps C15."""
     targets = []
     for p in paths:
         pos = str(p).replace("\\", "/")
@@ -978,17 +979,17 @@ def check_generated_artifact_matches_generator(paths, *, regenerate=None,
         return []
     lane_args, seen = [], set()
     for pos in targets:
-        for prefix, args_ in _C15_LANES:
+        for prefix, args_ in _C18_LANES:
             if pos.startswith(prefix):
                 if prefix not in seen:
                     seen.add(prefix)
                     lane_args.append(args_)
                 break
-    regenerate = regenerate or _c15_regenerate
+    regenerate = regenerate or _c18_regenerate
     try:
         tmp = regenerate(lane_args)
     except Exception as e:
-        return [f"C15: regeneration FAILED, refusing the staged generated "
+        return [f"C18: regeneration FAILED, refusing the staged generated "
                 f"artifacts (fail closed): {e!r}"]
     if staged_text is None:
         def staged_text(pos: str) -> str:
@@ -1002,18 +1003,18 @@ def check_generated_artifact_matches_generator(paths, *, regenerate=None,
         rel = pos[len("strategy_optimisation/"):]
         gen_p = Path(tmp) / rel
         if not gen_p.is_file():
-            bad.append(f"C15: {pos} is staged but the generator does not "
+            bad.append(f"C18: {pos} is staged but the generator does not "
                        f"produce it - a hand-authored file in the generated "
                        f"tree; add it to the generator or move it out")
             continue
         try:
             staged = staged_text(pos)
         except Exception as e:
-            bad.append(f"C15: could not read staged content of {pos}: {e!r}")
+            bad.append(f"C18: could not read staged content of {pos}: {e!r}")
             continue
-        if (_c15_normalise(staged)
-                != _c15_normalise(gen_p.read_text(encoding="utf-8"))):
-            bad.append(f"C15: {pos} differs from a fresh regeneration - a "
+        if (_c18_normalise(staged)
+                != _c18_normalise(gen_p.read_text(encoding="utf-8"))):
+            bad.append(f"C18: {pos} differs from a fresh regeneration - a "
                        f"generated artifact is never hand-edited; change "
                        f"scripts/build_table_a.py / scripts/table_a_bands.py "
                        f"and regenerate (L805)")
@@ -1072,7 +1073,7 @@ def main() -> int:
         # C16 (B3139q-r66 / L907): queue-reading pins re-run when the
         # queue moved after the last green pyramid
         all_violations += check_queue_readers_after_stamp(files)
-        # C15 (B2852 / L805): generated artifacts never hand-edited
+        # C18 (B2852 / L805): generated artifacts never hand-edited
         all_violations += check_generated_artifact_matches_generator(files)
         # C17 (B3139q-r75 / L942): a committed gate record is write-once
         all_violations += check_gate_records_are_write_once()

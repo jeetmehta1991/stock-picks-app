@@ -7,7 +7,7 @@ generator's freshness stamp (test_b1974) and a repo-wide ratchet
 (test_b2128) - and none of the four failing tests ran between its change and
 the gate. The gate's read-set (scripts/pytest_plugins/pyramid_readset.py)
 watches output_audit/ only, so alone it selects 1 of the 4. This selector
-unions four rules, each a LOWER bound - the full gate stays the authority:
+unions five rules, each a LOWER bound - the full gate stays the authority:
 
   R1 read-set  tests whose reads, in the newest gate read-set
                (output_audit/*_pyramid.json.readset.json), include a changed
@@ -17,7 +17,11 @@ unions four rules, each a LOWER bound - the full gate stays the authority:
                stem as a whole word;
   R3 scanner   tests that walk the source tree (rglob / os.walk / a *.py
                glob, reached the same way), selected by ANY changed .py file;
-  R4 edited    test functions whose own lines the diff touches.
+  R4 edited    test functions whose own lines the diff touches;
+  R5 self-read tests that read a CHANGED test module's own source - via
+               __file__, or by naming the module in a quoted literal -
+               which R2 skips (S6-B3283: test_b2557, unselected, turned
+               the r95 gate RED).
 
     python scripts/pregate_select.py                       # changed = git diff HEAD + untracked
     python scripts/pregate_select.py --changed scripts/make_spec.py --run
@@ -34,6 +38,8 @@ ROOT = Path(__file__).resolve().parent.parent
 TEST_FILES = ("backtest/tests/test_unit.py", "backtest/tests/test_integration.py")
 _SCAN_MARKS = (".rglob(", "os.walk(", '.glob("*.py")', ".glob('*.py')",
                '.glob("**/*.py")', ".glob('**/*.py')")
+# S6-B3283 (R5): a test that opens its own module's source
+_SELF_READ = re.compile(r"\(__file__\)\s*\.\s*read_(?:text|bytes)\(|open\(\s*__file__")
 
 
 def changed_files(root=ROOT, all_untracked=False) -> list:
@@ -143,6 +149,9 @@ def select(changed, root=ROOT, readset=None, edited=None) -> dict:
     rs = newest_readset(root) if readset is None else readset
     py_changed = [c for c in changed if c.endswith(".py") and c not in TEST_FILES]
     oa_changed = {c for c in changed if c.startswith("output_audit/")}
+    test_changed = [c for c in changed if c in TEST_FILES]
+    lits = [re.compile(r"[\"']" + re.escape(c.rsplit("/", 1)[-1]) + r"[\"']")
+            for c in test_changed]
     hits = {}
 
     def add(node_id, rule):
@@ -174,6 +183,9 @@ def select(changed, root=ROOT, readset=None, edited=None) -> dict:
             if lines and any(node.lineno <= ln <= (node.end_lineno or node.lineno)
                              for ln in lines):
                 add(nid, "R4")
+            if test_changed and ((tf in test_changed and _SELF_READ.search(text))
+                                 or any(rx.search(text) for rx in lits)):
+                add(nid, "R5")
     return dict(sorted(hits.items()))
 
 
@@ -192,9 +204,11 @@ def main(argv=None) -> int:
     changed = (a.changed if a.changed is not None
                else changed_files(all_untracked=a.all_untracked))
     sel = select(changed)
-    by_rule = {r: sum(1 for v in sel.values() if r in v) for r in ("R1", "R2", "R3", "R4")}
+    by_rule = {r: sum(1 for v in sel.values() if r in v)
+               for r in ("R1", "R2", "R3", "R4", "R5")}
     print(f"pregate_select: {len(changed)} changed path(s) -> {len(sel)} test(s) "
-          f"(R1 {by_rule['R1']}, R2 {by_rule['R2']}, R3 {by_rule['R3']}, R4 {by_rule['R4']}) "
+          f"(R1 {by_rule['R1']}, R2 {by_rule['R2']}, R3 {by_rule['R3']}, R4 {by_rule['R4']}, "
+          f"R5 {by_rule['R5']}) "
           "- a LOWER bound; the full gate stays the authority")
     if a.json:
         Path(a.json).write_text(json.dumps({"changed": changed, "selected": sel},

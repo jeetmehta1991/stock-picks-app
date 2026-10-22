@@ -39758,7 +39758,7 @@ def test_b2849_smoke_and_breadth_disposition_are_refusals():
 
 
 def test_b2852_generated_artifact_gate_fires_and_stays_quiet(tmp_path):
-    """B2852 (owner-approved plank 1 / L805): preflight C15 - a staged
+    """B2852 (owner-approved plank 1 / L805): preflight C18 - a staged
     strategy_optimisation generated .md must match a fresh regeneration with
     the L803 stamp line excluded (the one by-design-nondeterministic line;
     MEASURED at build time: 41 of 41 files regenerate 1/1-line-identical).
@@ -59659,7 +59659,7 @@ def test_b3233_decision_list_items_name_a_live_ticket(monkeypatch):
     assert "which long campaigns to start" in inc[0] and inc[1] is True, inc
     ticketed = incident.replace("which long campaigns to start",
                                 "the next long campaigns (S6-B3232)")
-    assert vtc.scan_decision_without_ticket([], text=ticketed, ticket_ids=live) == []
+    assert vtc.scan_decision_without_ticket([], text=ticketed, ticket_ids=live + ["S6-B3232"]) == []
     assert vtc.scan_decision_without_ticket(
         [], text="**Still waiting on you:** LEVER10, LEVER4.", ticket_ids=live) == []
     assert vtc.scan_decision_without_ticket(
@@ -62341,3 +62341,107 @@ def test_b3279_help_scan_states_its_false_positive_direction():
     assert "helper-module parser FIRES (false positive)" in doc, doc
     assert "unused argparse passes (miss)" in doc, doc
     assert "a lower bound" not in doc, doc
+
+
+def test_b3278_a_dead_full_id_names_no_ticket():
+    """S6-B3278 (r92 audit): scan_decision_without_ticket passed ANY full S6-
+    token before its live-ids check, so a decision naming a terminal or a
+    nonexistent id (the audit's probe, S6-ZZZZ99) satisfied the gate while a
+    dead fragment fired. A full id now passes only when it is live, and full
+    ids are stripped before fragment matching - so a dead id that happens to
+    be a substring of a live one cannot pass as a fragment of it."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gic
+    import verify_turn_compliance as vtc
+    live = ["S6-B3222", "S6-B1248-LEVER4-GATE-BUDGET"]
+    hits = vtc.scan_decision_without_ticket(
+        [], text="Still waiting on you: S6-ZZZZ99 (rec a).", ticket_ids=live)
+    assert len(hits) == 1 and "s6-zzzz99" in hits[0].lower(), hits
+    two = vtc.scan_decision_without_ticket(
+        [], text="Waiting on you: S6-B3273 (rec a), S6-B3222.", ticket_ids=live)
+    assert len(two) == 1 and "1 item(s)" in two[0] and "s6-b3273" in two[0].lower(), two
+    assert vtc.scan_decision_without_ticket(
+        [], text="Waiting on you: S6-B322 (rec a).", ticket_ids=live), "a substring of a live id"
+    assert not vtc.scan_decision_without_ticket(
+        [], text="Waiting on you: S6-B3222 (rec a).", ticket_ids=live)
+    assert not vtc.scan_decision_without_ticket(
+        [], text="Needs your decision: S6-B1248-LEVER4-GATE-BUDGET (rec a), LEVER4.",
+        ticket_ids=live)
+    extra = gic.EXTRA_INCIDENTS["scan_decision_without_ticket"]
+    assert any(c[1] is True and "S6-ZZZZ99" in c[0] for c in extra), extra
+    assert any(c[1] is False and "S6-B3222 (rec a)" in c[0] for c in extra), extra
+
+
+def test_b3283_pregate_selects_the_tests_that_read_their_own_module(tmp_path):
+    """S6-B3283 (B3139q-r95): R1-R4 cannot see a test whose input is its own
+    module - the r95 full gate went RED on test_b2557, which ratchets every
+    gate pin in test_unit.py through __file__, after the selector picked 318
+    tests without it. R5 selects, when a test module changes, the tests that
+    open their own source through __file__ or name the module in a quoted
+    literal. (1) The r95 must-select case, on the live module; MEASURED at
+    the fix: 16 of 1,700 tests in test_unit.py, 0 of 149 in
+    test_integration.py. (2) A planted module: the self-readers are
+    selected, a test that only locates the repo root through __file__ is
+    not, and R5 selects nothing when only a non-test file changed."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import pregate_select as ps
+    sel = ps.select(["backtest/tests/test_unit.py"], readset={}, edited={})
+    r5 = {k for k, v in sel.items() if "R5" in v}
+    must = "backtest/tests/test_unit.py::test_b2557_gate_pins_do_not_add_single_negative_arm_proofs"
+    assert must in r5 and len(r5) >= 10, (len(r5), sorted(r5)[:4])
+    (tmp_path / "backtest" / "tests").mkdir(parents=True)
+    (tmp_path / "backtest" / "tests" / "test_unit.py").write_text(
+        "from pathlib import Path\n"
+        "def test_self():\n"
+        "    src = Path(__file__).read_text(encoding='utf-8')\n"
+        "def test_named():\n"
+        "    p = ROOT / 'backtest' / 'tests' / 'test_unit.py'\n"
+        "def test_root_only():\n"
+        "    root = Path(__file__).resolve().parents[2]\n"
+        "def test_plain():\n"
+        "    x = 1\n", encoding="utf-8")
+    got = ps.select(["backtest/tests/test_unit.py"], root=tmp_path, readset={}, edited={})
+    assert sorted(k.split("::")[1] for k, v in got.items() if "R5" in v) == [
+        "test_named", "test_self"], got
+    assert not ps.select(["scripts/x.py"], root=tmp_path, readset={}, edited={})
+
+
+def test_b3284_every_preflight_label_names_one_check():
+    """S6-B3284 (B3139q-r97): preflight labelled two different checks C15 -
+    the B2683 / L782 racing-artifact verdict check and the B2852 / L805
+    locked-format regeneration check - so a C15 citation could mean either.
+    The B2852 check is C18 now. A label may head several places for ONE
+    check (C10's core and wrapper, a comment beside a docstring); it may not
+    carry two lineages, read as the first batch id in a header's parenthesis.
+    The regeneration check's refusals carry its new label."""
+    import re
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    src = (root / "scripts" / "preflight.py").read_text(encoding="utf-8")
+    heads = re.findall(r'^(?:# |    """)(C\d+)\b[^(\n]*\(([^)\n]*)\)', src, re.M)
+    lineage = {}
+    for label, paren in heads:
+        m = re.search(r"\bS6-B\d+|\bB\d+", paren)
+        if m:
+            lineage.setdefault(label, set()).add(m.group(0))
+    assert len(lineage) >= 12, lineage
+    assert {k: v for k, v in lineage.items() if len(v) > 1} == {}, lineage
+    assert lineage["C15"] == {"B2683"} and lineage["C18"] == {"B2852"}, lineage
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import preflight
+
+    def boom(lane_args):
+        raise RuntimeError("no regeneration in this test")
+    out = preflight.check_generated_artifact_matches_generator(
+        ["strategy_optimisation/tighten/x.md"], regenerate=boom)
+    assert len(out) == 1 and out[0].startswith("C18: regeneration FAILED"), out

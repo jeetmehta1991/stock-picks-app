@@ -3974,9 +3974,9 @@ def scan_decision_without_ticket(entries, *, text=None, ticket_ids=None) -> list
     The mechanizable slice: a line that LISTS decisions for the owner - it
     starts 'still waiting on you', 'waiting on you', 'needs your decision' or
     'awaiting your decision' and has a colon - and each comma- or
-    semicolon-separated item after the colon carries a ticket token: an S6-
-    id, or a fragment of a LIVE (non-terminal) ticket id at least 5
-    characters long with a digit or a hyphen (lever10, short-regime). An
+    semicolon-separated item after the colon names a LIVE (non-terminal)
+    ticket: its full S6- id (S6-B3278), or a fragment of one >= 5 chars
+    with a digit or hyphen (lever10, short-regime); dead ids name nothing. An
     item reading none, nothing or n/a is an empty list, not a decision. A
     lower bound on the class (L757): a decision named in a table or in
     running prose is not read here. `ticket_ids` is the test seam (the live
@@ -4013,9 +4013,9 @@ def scan_decision_without_ticket(entries, *, text=None, ticket_ids=None) -> list
             item = re.sub(r"^\s*and\s+", "", item).strip(" .*_")
             if not item or item in empty:
                 continue
-            if re.search(r"\bs6-[a-z0-9]", item):
-                continue
-            toks = [m.group(0) for m in token.finditer(item)
+            if set(re.findall(r"\bs6-[a-z0-9]+(?:-[a-z0-9]+)*", item)) & set(ids):
+                continue      # S6-B3278: a FULL id passes only while it is live
+            toks = [m.group(0) for m in token.finditer(re.sub(r"\bs6-[\w-]+", " ", item))
                     if len(m.group(0)) >= 5 and re.search(r"[0-9-]", m.group(0))]
             if any(tok in i for tok in toks for i in ids):
                 continue
