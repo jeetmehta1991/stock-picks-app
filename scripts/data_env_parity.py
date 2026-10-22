@@ -19,7 +19,14 @@ WHAT IT CHECKS, per data root (LINKED_DATA_DIRS from launch_sweep, plus the
 universe CSVs): every directory's file count and byte total, walked on both
 sides; a directory present on one side only, or differing, is a DIFFERENCE.
 Files whose content differs only by line endings are compared normalised (a
-pandas reader cannot tell them apart), so they are not a difference.
+pandas reader cannot tell them apart), so they are not a difference - TEXT
+files (TEXT_SUFFIXES) in EVERY root. S6-B3286 (B3139q-r104, L956): this was
+true of the universe root only, so the first real worktree materialisation
+(S6-B3264's pre-launch proof) refused on data_prefetch/finra - a tracked
+CSV the main tree holds with LF endings and `git worktree add` writes as
+CRLF (core.autocrlf), 2840 against 2869 bytes. MEASURED then: 45 text files
+under data_prefetch and backtest/data/cache, 0.9 MB - reading them costs
+nothing; binary files (154,349 tracked) stay compared by size.
 
 Read-only. Exit 0 = the data environments are identical; 1 = a difference
 (each printed); 3 = a root unreadable.
@@ -40,6 +47,8 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 UNIVERSE = "Backtesting universe"
+# S6-B3286: the suffixes compared with line endings normalised, every root
+TEXT_SUFFIXES = (".csv", ".json", ".jsonl", ".txt", ".tsv", ".md")
 
 
 def data_roots() -> tuple:
@@ -54,7 +63,7 @@ def _norm_size(p: Path) -> int:
     return len(b.replace(b"\r\n", b"\n"))
 
 
-def census(tree: Path, rel: str, normalise_text: bool) -> dict:
+def census(tree: Path, rel: str, normalise_text: bool = True) -> dict:
     """{relative dir: (files, bytes)} for every directory under tree/rel,
     following junctions (a linked data dir is data the engine reads)."""
     out = {}
@@ -69,7 +78,8 @@ def census(tree: Path, rel: str, normalise_text: bool) -> dict:
                 continue
             fp = Path(dirpath) / f
             try:
-                b += _norm_size(fp) if (normalise_text and f.endswith(".csv")) else fp.stat().st_size
+                b += (_norm_size(fp) if (normalise_text and f.lower().endswith(TEXT_SUFFIXES))
+                      else fp.stat().st_size)
                 n += 1
             except OSError as e:
                 # #122: an unreadable file is uncounted on THIS side only, so
@@ -84,8 +94,7 @@ def census(tree: Path, rel: str, normalise_text: bool) -> dict:
 def differences(left: Path, right: Path, roots=None) -> list[tuple]:
     out = []
     for rel in (roots or data_roots()):
-        norm = rel == UNIVERSE
-        a, b = census(left, rel, norm), census(right, rel, norm)
+        a, b = census(left, rel), census(right, rel)
         for d in sorted(set(a) | set(b)):
             if a.get(d) != b.get(d):
                 out.append((d, a.get(d), b.get(d)))

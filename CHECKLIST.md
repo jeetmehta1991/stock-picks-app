@@ -5885,6 +5885,8 @@ un-dry patcher at ~40%) and a verdict older than its edits (B2570 -> test_b1486 
 test_b2580_pyramid_gate_voids_a_run_whose_tree_changed. Detection of a mid-run edit is MECHANICAL;
 detection of a stale verdict is JUDGMENT-ONLY.
 
+**INSTANCE (B3139q-r104 / L957) - STAGING IS AN EDIT TO THE TRACKED SET.** B3139q-r103 committed four specs whose subset files stayed untracked; test_b3184 passed in the r103 gate because the specs were untracked too, and HEAD 13afb8ee3 was RED. preflight C19 re-runs the tracked-set tests when a commit adds a file (test_b3287).
+
 ### #293 - A PATCHER WRITES BYTES; A GATE THAT READS A DIFF IS ENDING-BLIND (B2581 / L756)
 
 **Never `Path.write_text` a file you did not create.** On Windows it rewrites every line ending in the
@@ -6542,6 +6544,8 @@ happy path pinned by test_b3139_materialise_worktree_links_the_untracked_data.
 Detection that a comparison SKIPPED the check is JUDGMENT-ONLY - an ad-hoc A/B
 harness is scratch code no gate reads; durability is the pins plus the tripwire
 row in the execution-discipline skill.
+
+**INSTANCE (B3139q-r104 / L956) - THE CHECK ITSELF HELD THE DATA FIXED IN ONE ROOT ONLY.** data_env_parity normalised line endings for universe CSVs alone, so the first real worktree (S6-B3264's pre-launch proof) refused on an LF-written tracked CSV in data_prefetch/finra that `git worktree add` writes as CRLF. Text files are now normalised in every root (test_b3286).
 
 ### #326 - A FLAG THAT SELECTS A PARAMETER HAS NO DIRECTION OF ITS OWN (B3139q-r72w / L940, self-caught 2026-10-20)
 

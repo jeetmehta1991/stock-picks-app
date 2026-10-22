@@ -768,6 +768,79 @@ def queue_reading_tests(test_path: Path | None = None) -> list[str]:
     return out
 
 
+# C19 (S6-B3287 / L957): a commit that ADDS a tracked file changes the
+# tracked set, and tests read it (`git ls-files`). The pyramid measures the
+# tree as it stood - a file added at commit time was UNTRACKED when the gate
+# ran, so a pin over the tracked set passed on a set the commit then changed.
+# MEASURED 2026-10-22: B3139q-r103 committed four LEVER4 specs whose
+# _subset_*.txt files stayed untracked; test_b3184 passed in the r103 gate
+# (the specs untracked then) and HEAD 13afb8ee3 was RED on it. So a commit
+# adding any file other than a gate artifact re-runs the tracked-set tests at
+# pre-commit, where the index already holds the additions (4 tests, 114.2 s
+# measured). EXEMPT: the unattended landing commit (its added queue lines all
+# landing rows), as C16 - it must not stall on a refusal it cannot act on.
+TRACKED_SET_MARKERS = ("ls-files",)
+GATE_ARTIFACT_SUFFIX = "_pyramid.out"
+
+
+def tracked_set_tests(test_path: Path | None = None) -> list[str]:
+    """Node ids of the unit tests whose body reads the tracked set."""
+    import ast
+    test_path = test_path or (REPO_ROOT / "backtest" / "tests" / "test_unit.py")
+    src = test_path.read_text(encoding="utf-8")
+    lines = src.splitlines()
+    out = []
+    for n in ast.parse(src).body:
+        if isinstance(n, ast.FunctionDef) and n.name.startswith("test_"):
+            body = "\n".join(lines[n.lineno - 1:n.end_lineno])
+            if any(m in body for m in TRACKED_SET_MARKERS):
+                rel = test_path.relative_to(REPO_ROOT).as_posix()
+                out.append(f"{rel}::{n.name}")
+    return out
+
+
+def staged_added_paths() -> list[str]:
+    r = subprocess.run(["git", "diff", "--cached", "--name-only", "--diff-filter=A"],
+                       cwd=REPO_ROOT, capture_output=True, text=True, check=False)
+    return [ln.strip() for ln in (r.stdout or "").splitlines() if ln.strip()]
+
+
+def check_tracked_set_readers_on_add(*, added=None, queue_added_lines=None,
+                                     run=None) -> list[str]:
+    """C19: re-run the tracked-set tests when a commit adds a file other than
+    a gate artifact. `added`, `queue_added_lines` and `run(ids) -> (code,
+    tail)` are injectable for the pin; production asks git and pytest."""
+    added = staged_added_paths() if added is None else added
+    added = [a for a in added if not a.endswith(GATE_ARTIFACT_SUFFIX)]
+    if not added:
+        return []
+    if queue_added_lines is None:
+        queue_added_lines = [l for f, l in get_staged_added_lines()
+                             if Path(f).name == C6_QUEUE_EXEMPT]
+    rows = [l for l in queue_added_lines if l.strip()]
+    if rows and all(l.startswith(LANDING_ROW_PREFIX) for l in rows):
+        return []
+    ids = tracked_set_tests()
+    if not ids:
+        return ["C19 TRACKED-SET | the tracked-set test selector found 0 "
+                "tests - the selector is broken, refusing (L687)"]
+    if run is None:
+        def run(node_ids):
+            r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p",
+                                "no:cacheprovider"] + node_ids,
+                               capture_output=True, text=True, cwd=REPO_ROOT)
+            tail = (r.stdout.strip().splitlines() or [""])[-1]
+            return r.returncode, tail
+    code, tail = run(ids)
+    if code != 0:
+        return [f"C19 TRACKED-SET | this commit ADDS {len(added)} file(s) "
+                f"(first {added[:3]}) and {len(ids)} tests read the tracked "
+                f"set; they FAILED with the additions staged ({tail}). The "
+                f"gate ran before they were tracked (L957) - stage what the "
+                f"commit adds, then fix what the tests name."]
+    return []
+
+
 def check_queue_readers_after_stamp(paths, *, added_lines=None, run=None,
                                     stamp_ts=None) -> list[str]:
     """C16: a queue staged after the last green pyramid re-runs the tests
@@ -1073,6 +1146,9 @@ def main() -> int:
         # C16 (B3139q-r66 / L907): queue-reading pins re-run when the
         # queue moved after the last green pyramid
         all_violations += check_queue_readers_after_stamp(files)
+        # C19 (S6-B3287 / L957): a commit that adds a tracked file re-runs
+        # the tests that read the tracked set, with the additions staged
+        all_violations += check_tracked_set_readers_on_add()
         # C18 (B2852 / L805): generated artifacts never hand-edited
         all_violations += check_generated_artifact_matches_generator(files)
         # C17 (B3139q-r75 / L942): a committed gate record is write-once

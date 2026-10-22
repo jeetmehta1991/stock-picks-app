@@ -51934,6 +51934,87 @@ def test_b3139_data_env_parity_names_a_missing_data_dir(tmp_path):
     assert dep.main(["--left", str(left), "--right", str(right)]) == 1
 
 
+def test_b3287_a_commit_adding_files_reruns_the_tracked_set_tests():
+    """S6-B3287 / L957 (B3139q-r104): B3139q-r103 committed four specs whose
+    subset files stayed untracked; test_b3184 passed in the r103 gate - the
+    specs were untracked then - and HEAD 13afb8ee3 was RED. preflight C19
+    re-runs the tests that read the tracked set when a commit ADDS a file.
+    Pinned through its seams: the selector finds the incident's test; a
+    failing run refuses and names the added files; a passing run is quiet;
+    a commit adding only a gate artifact, or a landing commit, never runs
+    the tests; and main() wires it (L654)."""
+    import ast as _ast
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import preflight as pf
+    ids = pf.tracked_set_tests()
+    assert any(i.endswith("::test_b3184_committed_specs_name_only_tracked_subset_files")
+               for i in ids), ids
+    calls = []
+
+    def red(node_ids):
+        calls.append(list(node_ids))
+        return 1, "1 failed, 3 passed"
+
+    def green(node_ids):
+        calls.append(list(node_ids))
+        return 0, "4 passed"
+
+    spec = "output_audit/x_spec.json"
+    out = pf.check_tracked_set_readers_on_add(added=[spec], queue_added_lines=[], run=red)
+    assert len(out) == 1 and "C19 TRACKED-SET" in out[0] and spec in out[0], out
+    assert calls and calls[-1] == ids
+    assert pf.check_tracked_set_readers_on_add(added=[spec], queue_added_lines=[],
+                                               run=green) == []
+    calls.clear()
+    gate = "output_audit/b3139q_r999" + pf.GATE_ARTIFACT_SUFFIX
+    assert pf.check_tracked_set_readers_on_add(added=[gate], queue_added_lines=[],
+                                               run=red) == []
+    landing = [pf.LANDING_ROW_PREFIX + "x** | **EXECUTED** |"]
+    assert pf.check_tracked_set_readers_on_add(added=[spec], queue_added_lines=landing,
+                                               run=red) == []
+    assert calls == []
+    src = (root / "scripts" / "preflight.py").read_text(encoding="utf-8")
+    main = next(n for n in _ast.parse(src).body
+                if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    assert any(isinstance(n, _ast.Call)
+               and _ast.unparse(n.func) == "check_tracked_set_readers_on_add"
+               for n in _ast.walk(main))
+
+
+def test_b3286_parity_normalises_text_line_endings_in_every_root(tmp_path):
+    """S6-B3286 / L956 (B3139q-r104): data_env_parity's docstring promised
+    that a file differing only by line endings is no difference, and the code
+    kept that promise for the universe root only. The first real worktree
+    materialisation refused on data_prefetch/finra/publication_schedule.csv:
+    LF in the main tree, CRLF from `git worktree add` (2840 vs 2869 bytes).
+    must-QUIET: an LF/CRLF pair of every text suffix in data_prefetch and the
+    cache, upper-case suffix included; must-FIRE: a text file whose CONTENT
+    differs, and a binary file differing only in its line-ending bytes (a
+    parquet is never normalised)."""
+    import data_env_parity as dep
+    left, right = tmp_path / "left", tmp_path / "right"
+    for t in (left, right):
+        (t / "data_prefetch" / "finra").mkdir(parents=True)
+        (t / "backtest" / "data" / "cache" / "meta").mkdir(parents=True)
+        (t / "Backtesting universe").mkdir()
+    for i, suf in enumerate(dep.TEXT_SUFFIXES + (".CSV",)):
+        (left / "data_prefetch" / "finra" / f"f{i}{suf}").write_bytes(b"a,b\n1,2\n")
+        (right / "data_prefetch" / "finra" / f"f{i}{suf}").write_bytes(b"a,b\r\n1,2\r\n")
+    (left / "backtest" / "data" / "cache" / "meta" / "m.json").write_bytes(b"{}\n")
+    (right / "backtest" / "data" / "cache" / "meta" / "m.json").write_bytes(b"{}\r\n")
+    assert dep.differences(left, right) == []
+    (right / "data_prefetch" / "finra" / "f0.csv").write_bytes(b"a,b\r\n1,3,4\r\n")
+    assert [d[0] for d in dep.differences(left, right)] == ["data_prefetch/finra"]
+    (right / "data_prefetch" / "finra" / "f0.csv").write_bytes(b"a,b\r\n1,2\r\n")
+    (left / "data_prefetch" / "finra" / "x.parquet").write_bytes(b"a\nb\n")
+    (right / "data_prefetch" / "finra" / "x.parquet").write_bytes(b"a\r\nb\r\n")
+    assert [d[0] for d in dep.differences(left, right)] == ["data_prefetch/finra"]
+
+
 # ================================================================ B3139 L889: materialise_worktree's HAPPY path
 def test_b3139_materialise_worktree_links_the_untracked_data(tmp_path):
     """L889 (B3139): the worktree materialiser's happy path, never run before
