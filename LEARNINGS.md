@@ -25232,3 +25232,13 @@ MEASURED: the 2026-10-22 close stated 'execution-discipline - FULLY LOADED (Skil
 **Rule.** Unchanged (#322, L870): a WHEN claim across a compaction quotes what transcript_timeline.py printed this turn. Addition: the trigger matches the claim's SHAPE - up to two qualifier words between the determiner and 'compaction'.
 
 **Mechanism.** COMPACTION_TIMELINE_CLAIM admits up to two qualifier words ('the last', 'the most recent', 'the previous context'); the incident's verbatim close is a must-fire corpus entry and its run-and-cite twin a must-quiet one; pinned by test_b3282. The citation half stays a format check - a typed time still satisfies it - and the RUN half, which the widened trigger restores, is the half that would have printed 22:50:02Z.
+
+### L955 - A TEST NAME IN A COMMIT MESSAGE WAS TYPED FROM RECALL WHILE THE TOOL HAD ALREADY LOCATED THE LINE (B3139q-r103, 2026-10-22)
+
+MEASURED: the B3139q-r100 commit message (2f2eab399) said moved_line_citations disclosed 'one string in test_b2541's plan check'. The disclosure printed a FILE AND LINE - test_unit.py, line 31888 - and that line sits in test_b2520_l736_count_the_asks_rule_is_anchored (the enclosing def located by line at B3139q-r101). test_b2541_every_b2527_spec_arm_carries_the_keys_its_grader_reads exists and is unrelated, so a check that the named test exists passes, and #201's source question passes too - the sentence named a source. Retracted in the B3139q-r101 commit and in S6-B3285.
+
+**Why.** The tool gave an ADDRESS (file:line) and I turned it into a NAME from memory. A name typed from recall beside an address the tool printed reads as a translation of the address; it is a second claim, and the more plausible the name, the less it gets checked. Compliance failure against #201 (a citation is a claim with an address, L595) - the address was right and the name I gave it was not.
+
+**Rule.** When a tool reports a location, the NAME of what sits there comes from a tool too - never retyped from recall into a message, a row or a report.
+
+**Mechanism.** scripts/moved_line_citations.py now names each hit's enclosing def or class (dotted, innermost) from the citing file's HEAD text, in its hits, its printed lines and the gate footer's summary - so the disclosure carries the name and there is nothing to recall. Pinned by test_b3285, which replays the incident from git (r100's run_postconfig.py edit over r100's test_unit.py) and asserts the right test. Detection of a recalled name elsewhere is JUDGMENT-ONLY: no scan can tell a name copied from tool output from one typed from memory once both are in the same sentence.

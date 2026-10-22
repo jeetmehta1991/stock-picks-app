@@ -60435,7 +60435,7 @@ def test_b3245_the_gate_discloses_code_line_citations_an_edit_moved():
     assert mlc.moved_citations(root, changed={"backtest/signals/smc_ict.py": (hs, draft)},
                                corpus=planted) == [
         {"module": "backtest/signals/smc_ict.py", "citing": "scripts/plant.py",
-         "line": 1, "cited": k + 3, "now": k + 4}]
+         "line": 1, "cited": k + 3, "now": k + 4, "in": None}]
     assert mlc.moved_citations(root, changed={"backtest/signals/smc_ict.py": (hs, hs)},
                                corpus=planted) == []
     # (3) the exclusion is test_b3231's, by the same name
@@ -61107,6 +61107,58 @@ def test_b3237a_regime_entries_are_ruled_at_admission(tmp_path):
     sec = plan.split("### 6.3 ", 1)[1].split("\n## 7.", 1)[0]
     assert "10. **Rule the strategy's REGIME-AFFINITY entry at its admission**" in sec
     assert "regime_entry_ruling" in sec and "b3237_regime_entry_evidence.md" in sec
+
+
+def test_b3285_moved_citation_names_its_enclosing_function():
+    """S6-B3285 / L955 (B3139q-r103): the B3139q-r100 commit message named
+    the citing site of a disclosed citation from recall - 'test_b2541's plan
+    check' - while the line sat in test_b2520_l736_count_the_asks_rule_is_anchored;
+    test_b2541 is real and unrelated, so no name-existence check could catch it.
+    moved_line_citations now names each hit's enclosing def from the citing
+    file's HEAD text. Pinned on planted text (innermost, dotted, module level,
+    unparseable) and on the incident REPLAYED from git: r100's own
+    run_postconfig.py edit over r100's test_unit.py names the right test."""
+    import subprocess as _sp
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import moved_line_citations as mlc
+    src = ("x = 1\n"
+           "def first():\n"
+           "    return 2\n"
+           "class C:\n"
+           "    def m(self):\n"
+           "        return 3\n"
+           "def second():\n"
+           "    return 4\n")
+    tree = mlc._parse(src)
+    assert mlc.enclosing_name(tree, 1) is None
+    assert mlc.enclosing_name(tree, 3) == "first"
+    assert mlc.enclosing_name(tree, 6) == "C.m"
+    assert mlc.enclosing_name(tree, 4) == "C"
+    assert mlc.enclosing_name(tree, 8) == "second"
+    assert mlc._parse("def broken(:\n") is None
+    assert mlc.enclosing_name(None, 3) is None
+    hits = [{"module": "a/mod.py", "citing": "b/t.py", "line": 3, "cited": 9,
+             "now": 10, "in": "first"},
+            {"module": "a/mod.py", "citing": "b/t.py", "line": 1, "cited": 9,
+             "now": 10, "in": None}]
+    tpy = "t.py"   # built from parts: the S6-B3139bb freeze counts file:line text
+    assert mlc.summary(hits) == "mod.py=2(" + tpy + ":3@first," + tpy + ":1)"
+    # the incident, replayed from git (r100 = 2f2eab399)
+    def show(rev, path):
+        return _sp.run(["git", "show", f"{rev}:{path}"], cwd=root, capture_output=True,
+                       timeout=120).stdout.decode("utf-8", errors="replace")
+    mod = "scripts/run_postconfig.py"
+    tu = "backtest/tests/test_unit.py"
+    changed = {mod: (show("2f2eab399^", mod), show("2f2eab399", mod))}
+    corpus = {tu: (show("2f2eab399^", tu), show("2f2eab399", tu))}
+    got = mlc.moved_citations(root, changed=changed, corpus=corpus)
+    assert len(got) == 1, got
+    assert got[0]["in"] == "test_b2520_l736_count_the_asks_rule_is_anchored", got
+    assert got[0]["in"] != "test_b2541_every_b2527_spec_arm_carries_the_keys_its_grader_reads"
 
 
 def test_b3253_a_key_selector_knob_is_an_engine_axis_only_where_the_gate_reads_it():

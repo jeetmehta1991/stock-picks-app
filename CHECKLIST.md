@@ -3268,6 +3268,8 @@ rate-for-total substitutions above.
 
 **INSTANCE (B3139q-r90 / L951) - A COUNT TYPED AHEAD OF ITS PROBE.** The S6-B3237 correction's docstring first said '15 of 17' entries; the probe returned 14 of 17 and the draft was fixed before applying - L776's shape, inside a scratch patcher no turn gate reads.
 
+**INSTANCE (B3139q-r103 / L955) - A NAME TYPED FROM RECALL BESIDE THE ADDRESS A TOOL PRINTED.** The B3139q-r100 commit message named the citing test of a disclosed citation as test_b2541's plan check; the line sits in test_b2520_l736_count_the_asks_rule_is_anchored, and test_b2541 is a real, unrelated test, so no existence check could catch it. moved_line_citations now names each hit's enclosing function (test_b3285).
+
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
 
 **L780 EXTENSION (B2671): the spec you must re-read includes the WORKBOOK AS AMENDED.** A queued campaign executed after a workbook rectification runs against the CURRENT template, not the design it was queued with - the top_decile campaign ran depth-only (3 own-knob axes) after the depth+breadth rectification had landed for the institutional family. Rectifications generalize into the template the turn they are ruled (runbook 11.2b2; pin test_b2671_two_legs_rule_is_in_the_runbook). **L781 (B2672):** the retroactive sweep for this class targets the workbook's RULES, not only the campaigns - the owner had to re-point the population; the rules-sweep then found 3 more family-local generals (control-family comparison, npt-bar, Jaccard de-dup), promoted same turn.

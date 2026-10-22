@@ -34,12 +34,18 @@ and the like - whose cheapest answer is writing less down (L586) - while the
 disclosure shows the movement at the one moment it is free to undo: before
 the commit, when a text edit can still be reflowed line-neutral (L721).
 
+EACH HIT NAMES ITS ENCLOSING FUNCTION (S6-B3285, L955): the dotted def/class
+holding the citing line in the citing file's HEAD text - so a report says
+WHICH test or function a citation sits in from the tool, never from recall
+(the B3139q-r100 message named a real but unrelated test).
+
     python scripts/moved_line_citations.py             # report the working tree
     python scripts/moved_line_citations.py --json PATH # the hits as JSON
 """
 from __future__ import annotations
 
 import argparse
+import ast
 import difflib
 import json
 import re
@@ -58,6 +64,30 @@ def _lines(text: str) -> list[str]:
     # S6-B3273(c): a stray EOL \r (the L885 mangling class) is not content;
     # every caller decodes BYTES - universal newlines made it an extra line
     return [ln.rstrip("\r") for ln in text.replace(CRLF, LF).split(LF)]
+
+
+def enclosing_name(tree, line: int) -> str | None:
+    """S6-B3285: the dotted name (Class.method) of the innermost def or class
+    whose span holds `line` (1-based) in a parsed module, or None at module
+    level or when the citing file did not parse (tree is None)."""
+    if tree is None:
+        return None
+    names, body = [], tree.body
+    while True:
+        hit = next((n for n in body
+                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+                    and n.lineno <= line <= (n.end_lineno or n.lineno)), None)
+        if hit is None:
+            return ".".join(names) or None
+        names.append(hit.name)
+        body = hit.body
+
+
+def _parse(text: str):
+    try:
+        return ast.parse("\n".join(_lines(text)))
+    except SyntaxError:
+        return None
 
 
 def line_map(old: list[str], new: list[str]) -> tuple[dict[int, int], int | None]:
@@ -157,7 +187,7 @@ def moved_citations(root: Path = REPO, *, changed: dict | None = None,
             work = p.read_bytes().decode("utf-8", errors="replace")
             head = _git(["show", f"HEAD:{rel}"], root) if rel in dirty else work
             corpus[rel] = (head, work)
-    hits = []
+    hits, trees = [], {}
     for mod, (head_mod, work_mod) in sorted(changed.items()):
         base = mod.split("/")[-1]
         pat = cite_pattern(base)
@@ -167,9 +197,15 @@ def moved_citations(root: Path = REPO, *, changed: dict | None = None,
             continue   # nothing cites it by line: skip the costly line map
         mapping, first = line_map(_lines(head_mod), _lines(work_mod))
         for rel, (head_txt, work_txt) in sorted(citing.items()):
-            for line, n, to in moved_in_text(base, mapping, first, head_txt, work_txt):
+            found = moved_in_text(base, mapping, first, head_txt, work_txt)
+            if not found:
+                continue
+            if rel not in trees:
+                trees[rel] = _parse(head_txt)
+            for line, n, to in found:
                 hits.append({"module": mod, "citing": rel, "line": line,
-                             "cited": n, "now": to})
+                             "cited": n, "now": to,
+                             "in": enclosing_name(trees[rel], line)})
     return hits
 
 
@@ -183,7 +219,8 @@ def summary(hits: list[dict], limit: int = 6) -> str:
         by.setdefault(h["module"].split("/")[-1], []).append(h)
     parts = []
     for mod, hs in sorted(by.items()):
-        sites = ",".join(f"{h['citing'].split('/')[-1]}:{h['line']}" for h in hs[:limit])
+        sites = ",".join(f"{h['citing'].split('/')[-1]}:{h['line']}"
+                         + (f"@{h['in']}" if h.get("in") else "") for h in hs[:limit])
         more = f",+{len(hs) - limit}" if len(hs) > limit else ""
         parts.append(f"{mod}={len(hs)}({sites}{more})")
     return ";".join(parts)
@@ -200,7 +237,8 @@ def main(argv=None) -> int:
     hits = moved_citations(REPO)
     print(f"moved_line_citations={summary(hits)}")
     for h in hits:
-        print(f"  {h['citing']}:{h['line']} cites {h['module'].split('/')[-1]}:{h['cited']}"
+        print(f"  {h['citing']}:{h['line']} (in {h.get('in') or 'module level'})"
+              f" cites {h['module'].split('/')[-1]}:{h['cited']}"
               f" -> now {h['now'] if h['now'] else 'rewritten'}")
     if a.json:
         Path(a.json).write_text(json.dumps(hits, indent=1), encoding="utf-8")
