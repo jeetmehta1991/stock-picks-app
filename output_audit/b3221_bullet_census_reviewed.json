@@ -1919,6 +1919,36 @@
    "value_area_breakout_long",
    "single",
    "Volume 2x ADV(20) (breakout confirmation)"
+  ],
+  [
+   "squeeze_breakout",
+   "single",
+   "Bollinger Bands were inside Keltner Channels  -  coiling"
+  ],
+  [
+   "squeeze_breakout",
+   "single",
+   "Squeeze released with positive momentum  -  energy unleashing"
+  ],
+  [
+   "squeeze_breakout",
+   "single",
+   "One of the highest probability breakout signals"
+  ],
+  [
+   "bb_squeeze_volume",
+   "long",
+   "BB squeeze releasing upward with above-average volume (B1135 loosened)"
+  ],
+  [
+   "bb_squeeze_volume",
+   "short",
+   "BB squeeze releasing downward with above-average volume (B1135 loosened)"
+  ],
+  [
+   "squeeze_breakout_with_smart_money_long",
+   "single",
+   "TTM squeeze releasing (B1194: smart_money AND-gate dropped)"
   ]
  ],
  "statuses": [

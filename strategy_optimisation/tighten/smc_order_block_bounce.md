@@ -1,8 +1,8 @@
 # Table A - smc_order_block_bounce
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build dedad72e4 | commit dedad72e4 at 2026-10-21 05:27:04 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 77eb58e97 | commit 77eb58e97 at 2026-10-22 13:28:04 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** TIGHTEN | **family:** smc | **status:** STALLED-CAMPAIGN | **R5 fires:** 1340 | **surviving fires (T1): 0** (survives_pct UNMEASURED)
+**Lane:** TIGHTEN | **family:** smc | **status:** STALLED-CAMPAIGN | **R5 fires:** 1340 (closed fires in the exit cube: 1340 of 1340, S6-B3258) | **surviving fires (T1): 0** (survives_pct UNMEASURED)
 
 **T1 VERDICT: UNMEASURED (S6-B3239) - the CURRENT gate's long side reads smc_ob_bullish_tap_recent_5d; short side reads smc_ob_bearish_tap_recent_5d, absent from every R5 fire of that side, so the replay would read a default and no survival, and no offline band level, is measurable from this cube. Per the workflow's T1 gate the campaign RE-LANES TO W-L (engine): a run at the current gate produces fires carrying the key, and the producer bands below are the resim inventory it prices.**
 

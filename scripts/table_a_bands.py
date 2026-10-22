@@ -696,6 +696,20 @@ PRODUCER_BANDS.update({
            "BRACKET production (Wilder 14 adjacent)",
            "none - the channel at other periods is unpersisted",
            "the whole band", "backtest/signals/technical.py compute_keltner"),
+        # S6-B3254 (c), owner ruled 2026-10-22: the producer fires with NO
+        # prior squeeze, so a squeeze-RELEASE requirement is a NEW gate (the
+        # ask-every-time rule) offered at the T3 band review. A subset of the
+        # fires, but only the engine can see it - the bars before a fire are
+        # not persisted, and squeeze_in is False on every fire by the gate.
+        dict(_K("[NEW-GATE] prior squeeze: in a squeeze on at least one of the "
+                "last N bars (0 = none required)", 0, [0, 1, 5, 10],
+                "NEW-GATE offered at T3 (S6-B3254); Carter 2005 fires on the "
+                "first bar OUT of a squeeze, which is N = 1",
+                "none - the prior bars' squeeze state is unpersisted",
+                "N = 1, 5, 10 - fewer signals, engine-only; the trades are "
+                "not a subset (a dropped signal stops blocking a later one - L812)",
+                "backtest/signals/technical.py compute_squeeze"),
+             free_band=[0], resim_band=[1, 5, 10]),
     ],
     "insider_unique_buyers_30d": [
         _K("count window (days)", 30, "[14, 30, 60]",

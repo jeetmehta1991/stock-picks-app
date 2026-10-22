@@ -561,6 +561,15 @@ def registered_sets():
                              for p in e["params"]))}
 
 
+def _exit_cube_txt(row: dict) -> str:
+    """S6-B3258 (b): the status row's exit-cube count; a row without the
+    field (a planted fixture, or a status build older than S6-B3258) says
+    so - an absent measurement is never printed as a count (L580)."""
+    if "r5_exit_cube" not in row:
+        return "not recorded in this status build"
+    return bss.exit_cube_cell(row["r5_exit_cube"])
+
+
 def render(name: str, row: dict, frame, sigs, filtered: bool,
            comparisons, legs_helpers, idx, specs_names, stamp: str,
            body: str = "", specs_bands=None) -> str:
@@ -594,7 +603,9 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
         return "\n".join([
             f"# Table A - {name}", "", stamp, "",
             f"**Lane:** {row['stream']} | **family:** {row['family']} | "
-            f"**status:** {row['status']} | **R5 fires:** {row['r5_fires']} | "
+            f"**status:** {row['status']} | **R5 fires:** {row['r5_fires']} "
+            f"(closed fires in the exit cube: {_exit_cube_txt(row)}, "
+            "S6-B3258) | "
             f"**surviving fires (T1): 0** (survives_pct "
             f"{'UNMEASURED' if row['survives_pct'] is None and um else row['survives_pct']})",
             "",
@@ -615,7 +626,9 @@ def render(name: str, row: dict, frame, sigs, filtered: bool,
     L = [f"# Table A - {name}", "",
          stamp, "",
          f"**Lane:** {row['stream']} | **family:** {row['family']} | "
-         f"**status:** {row['status']} | **R5 fires:** {row['r5_fires']} | "
+         f"**status:** {row['status']} | **R5 fires:** {row['r5_fires']} "
+         f"(closed fires in the exit cube: {_exit_cube_txt(row)}, "
+         "S6-B3258) | "
          f"**surviving fires (T1):** {n_all}"
          + (f" (the {um_txt}, absent from every R5 fire of that side - its fires "
             "are UNMEASURED and dropped, S6-B3239)" if um else "")

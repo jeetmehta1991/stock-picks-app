@@ -78,6 +78,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 R5_DIR = ROOT / "output_r5_merged_1_7"
+# S6-B3258 (b): the committed exit-cube coverage record of R5_DIR
+# (scripts/exit_cube_coverage.py, S6-B3263) - read, never recomputed here
+EXIT_CUBE_COVERAGE = ROOT / "output_audit" / "b3258_exit_cube_coverage_r5.json"
 ADMISSIONS = ROOT / "output_audit" / "phase_1b_step2_admissions.json"
 QUEUE = ROOT / "EXECUTION_QUEUE.md"
 # the screener as it stood when the R5 cube was produced (trade_log 2026-07-24)
@@ -773,6 +776,38 @@ def ticket_fields(tickets_all: list, mentions_all: list) -> tuple[list, list]:
     return list(tickets_all), list(mentions_all)
 
 
+def load_exit_cube_coverage(closed_by_strategy: dict, path=None,
+                            cube=None) -> dict:
+    """S6-B3258 (b): {strategy: {closed, covered, missing, kind}} from the
+    committed exit-cube coverage record. RAISES when the record is
+    unreadable, names another cube, or disagrees with this build's own
+    closed-fire count for any strategy (L642) - a disclosure that could
+    describe a different cube would be worse than none. A strategy with no
+    closed fire is absent from the record and must count 0 here."""
+    p = Path(path) if path else EXIT_CUBE_COVERAGE
+    d = json.loads(p.read_text(encoding="utf-8"))
+    want = Path(cube or R5_DIR).name
+    if d.get("cube_dir") != want:
+        raise ValueError(f"{p.name} records cube {d.get('cube_dir')!r}, not {want!r}")
+    rec = d["strategies"]
+    bad = sorted(s for s in set(rec) | set(closed_by_strategy)
+                 if (rec.get(s) or {}).get("closed", 0) != closed_by_strategy.get(s, 0))
+    if bad:
+        raise ValueError(f"{p.name} closed counts disagree with the trade log "
+                         f"for {len(bad)} strategies, first {bad[:5]}")
+    return rec
+
+
+def exit_cube_cell(cov) -> str:
+    """The status-view and Table A rendering of one strategy's record:
+    'k of n' closed fires carrying an exit-cube row, the missing count
+    named when any is missing; '0 closed' when it has none (S6-B3258)."""
+    if not cov:
+        return "0 closed"
+    s = f"{cov['covered']} of {cov['closed']}"
+    return s + (f" - {cov['missing']} MISSING" if cov["missing"] else "")
+
+
 def status_for(name: str, *, admitted, roster_status, owner_closed, disabled,
                pruned, closed_neg, contained, live_tickets, tickets) -> str:
     """B2825 precedence - ONE status per strategy, mutually exclusive by
@@ -824,9 +859,12 @@ def main() -> int:
 
     tl = pd.read_csv(R5_DIR / "trade_log.csv", low_memory=False,
                      usecols=["strategy", "ticker", "entry_date", "direction",
-                              "signals_at_entry"])
+                              "signals_at_entry", "exit_date"])
     tl = tl.drop_duplicates(["strategy", "ticker", "entry_date"])
     by_strat = {k: v for k, v in tl.groupby("strategy")}
+    # S6-B3258 (b): the exit-cube count rides beside the trade-log count
+    exit_cov = load_exit_cube_coverage(
+        tl[tl["exit_date"].notna()].groupby("strategy").size().to_dict())
 
     # B2825: the admitted and CLOSED populations, from committed records
     _pop = closed_populations(ROOT)
@@ -955,6 +993,7 @@ def main() -> int:
                      "survives_pct_by_side": side_survives,
                      "unmeasured_gate_keys": unmeasured,
                      "r5_fires_by_side": dict(sorted(n_side.items())),
+                     "r5_exit_cube": exit_cov.get(name),
                      "projected_step1_fires": round(projected, 1),
                      "projected_current_gate": round(eff, 1),
                      "reopen_candidate": reopen,
@@ -1020,6 +1059,12 @@ def main() -> int:
              "stream and the proj column use the CURRENT-GATE projection "
              "(raw projection x survives_pct, B2822); projected_step1_fires "
              "in this JSON keeps the raw figure",
+             "r5_exit_cube (S6-B3258 (b)) is read from the committed record "
+             "output_audit/b3258_exit_cube_coverage_r5.json and checked against "
+             "this build's closed-fire counts: the CLOSED R5 fires that carry "
+             "a row in the exit cube (trade_exit_detail.csv), which every "
+             "re-grade over exits reads - r5_fires counts the trade log, open "
+             "fires included; None means no closed fire",
              "terminal statuses (ADMITTED / DISABLED / PRUNED-DUPLICATE / "
              "CLOSED-NEGATIVE / CONTAINED) are MUTUALLY EXCLUSIVE with the "
              "stream lanes and excluded from every work bucket (B2825); "
@@ -1141,10 +1186,15 @@ def main() -> int:
           "each with the owner's words). Terminal; never auto-reopened. A "
           "closed mirror stays ON the Phase 1B roster - the closure ends its "
           "campaign, not its membership.",
+          "- `exit cube` (S6-B3258 (b)): the R5 CLOSED fires that carry a row "
+          "in the exit cube, read from output_audit/b3258_exit_cube_coverage_r5.json "
+          "and checked against this build's trade log. `R5 fires` counts the "
+          "trade log, open fires included; a re-grade over exits sees only "
+          "the exit-cube count, so MISSING names fires a re-grade cannot see.",
           "",
           "## Per strategy", "",
-          "| strategy | family | R5 fires | proj. Step-1 (current-gate) | chg | survives | stream | status |",
-          "|---|---|---|---|---|---|---|---|"]
+          "| strategy | family | R5 fires | proj. Step-1 (current-gate) | chg | survives | stream | status | exit cube |",
+          "|---|---|---|---|---|---|---|---|---|"]
     for r in sorted(recs, key=lambda x: (-x["r5_fires"], x["strategy"])):
         sv = "-" if r["survives_pct"] is None else f"{r['survives_pct']:.1%}"
         if r["unmeasured_gate_keys"]:
@@ -1154,7 +1204,8 @@ def main() -> int:
                   else f"{sv} ({um} UNMEASURED)")
         L.append(f"| {r['strategy']} | {r['family']} | {r['r5_fires']} | "
                  f"{r['projected_current_gate']} | {'YES' if r['changed_since_r5'] else ''} | "
-                 f"{sv} | {r['stream']} | {r['status']} |")
+                 f"{sv} | {r['stream']} | {r['status']} | "
+                 f"{exit_cube_cell(r['r5_exit_cube'])} |")
     Path(a.out).write_text("\n".join(L) + "\n", encoding="utf-8")
 
     print(f"wrote {a.out} and {a.json}")

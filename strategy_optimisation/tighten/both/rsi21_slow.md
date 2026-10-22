@@ -1,8 +1,8 @@
 # Table A - rsi21_slow
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ab5dab247 | commit b0ce01e07 at 2026-10-21 18:58:10 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 77eb58e97 | commit 77eb58e97 at 2026-10-22 13:29:44 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** BOTH | **family:** mean_reversion | **status:** NOT-STARTED | **R5 fires:** 9 | **surviving fires (T1):** 9 (unchanged since R5 - filter is identity)
+**Lane:** BOTH | **family:** mean_reversion | **status:** NOT-STARTED | **R5 fires:** 9 (closed fires in the exit cube: 5 of 9 - 4 MISSING, S6-B3258) | **surviving fires (T1):** 9 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
 

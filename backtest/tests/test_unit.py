@@ -60925,9 +60925,188 @@ def test_b3248_table_a_single_render_writes_only_its_named_file(tmp_path):
     # engine-only - and the fire is stated as needing no prior squeeze
     assert "| P1.1 | BAND | squeeze definition: Keltner multiplier" in t
     assert "| P1.2 | BAND | squeeze definition: Bollinger std multiplier" in t
-    assert "FULL FACTORIAL     3 x 3 x 3 x 3 = 81" in t
+    # S6-B3254 (c): the prior-squeeze requirement is offered as a NEW-GATE
+    # band row at T3 - engine-only, so the factorial grows by its 4 levels
+    p15 = [ln for ln in t.splitlines() if ln.startswith("| P1.5 | BAND |")]
+    assert len(p15) == 1 and "[NEW-GATE] prior squeeze" in p15[0], p15
+    assert "| 0 | 0, 1, 5, 10 | offline 0 of 4 levels" in p15[0], p15
+    assert "FULL FACTORIAL     3 x 3 x 3 x 3 x 4 = 324" in t
     assert "offline gradings   3 level-combinations" in t
     assert "no prior squeeze is required" in t
+
+
+def test_b3254_squeeze_bullets_state_the_gate_not_a_release():
+    """S6-B3254 (c), owner ruled 2026-10-22 ('Addendum Approve all your
+    recommendations'): technical.compute_squeeze fires squeeze_fire_up / _dn
+    with NO prior squeeze - NOT in a squeeze on the fire bar AND the momentum
+    crossing zero - so a bullet claiming a squeeze RELEASE or a coil states a
+    condition no gate checks (the S6-B3221 rule). Pinned on the LIVE
+    strategies (every one whose gate reads the two keys), on the producer
+    (a fire with in_squeeze True on the prior bar is not required), and on
+    the census register keeping the six corrected texts retired."""
+    import json
+    from pathlib import Path as _P
+    import pandas as pd
+    from backtest.signals.screener import ALL_STRATEGIES as A
+    from backtest.signals.technical import compute_squeeze
+    root = _P(__file__).resolve().parents[2]
+    up = {"squeeze_fire_up": True, "vol_above_avg": True, "close_above_open": True}
+    dn = {"squeeze_fire_dn": True, "vol_above_avg": True, "days_to_cover": 1.0}
+    seen = 0
+    for name, s in (("squeeze_breakout", up), ("bb_squeeze_volume", up),
+                    ("bb_squeeze_volume", dn),
+                    ("squeeze_breakout_with_smart_money_long", up)):
+        r = A[name](s)
+        assert r and r.get("fires") and r["direction"] in ("long", "short"), (name, r)
+        for b in r["context_bullets"]:
+            low = b.lower()
+            assert "releas" not in low and "coil" not in low, (name, b)
+            assert "inside keltner" not in low, (name, b)
+            seen += 1
+    assert seen == 7, seen
+    # the population: every registered strategy reading either key
+    src = (root / "backtest" / "signals" / "screener.py").read_text(encoding="utf-8")
+    readers = sorted(n for n in A if f"def strat_{n}(" in src and any(
+        k in src.split(f"def strat_{n}(", 1)[1].split("\ndef ", 1)[0]
+        for k in ("squeeze_fire_up", "squeeze_fire_dn")))
+    assert readers == ["bb_squeeze_volume", "squeeze_breakout",
+                       "squeeze_breakout_with_smart_money_long"], readers
+    # the producer: a fire needs no squeeze before it - on a deterministic
+    # swinging series every fire's PRIOR bar is outside a squeeze
+    import math
+    n = 120
+    close = [100 + 12 * math.sin(i / 3.0) + (i % 5) for i in range(n)]
+    df = pd.DataFrame({"open": close, "high": [c + 3 for c in close],
+                       "low": [c - 3 for c in close], "close": close,
+                       "volume": [1e6] * n})
+    fires = [k for k in range(40, n + 1)
+             if compute_squeeze(df.iloc[:k]).get("squeeze_fire_up")]
+    assert len(fires) >= 2, fires
+    assert all(not compute_squeeze(df.iloc[:k - 1])["squeeze_in"] for k in fires)
+    reg = json.loads((root / "output_audit" / "b3221_bullet_census_reviewed.json")
+                     .read_text(encoding="utf-8"))
+    retired = [r for r in reg["retired"] if r[0] in (
+        "squeeze_breakout", "bb_squeeze_volume", "squeeze_breakout_with_smart_money_long")]
+    assert len(retired) == 6, retired
+
+
+def test_b3258_exit_cube_count_rides_beside_the_trade_log_count(tmp_path):
+    """S6-B3258 (b), owner ruled 2026-10-22 ('Addendum Approve all your
+    recommendations'): 349 of 189,471 closed R5 fires carry no exit-cube row
+    (scripts/exit_cube_coverage.py, the committed
+    output_audit/b3258_exit_cube_coverage_r5.json), and every re-grade over
+    exits sees only the covered ones. The status view and Table A now print
+    the exit-cube count beside the trade-log count. Pinned: the loader
+    refuses a record of another cube and one disagreeing with the trade
+    log's closed counts (L642); the cell text; the live status JSON and
+    markdown carry the record for every registered strategy; every Table A
+    header carries it."""
+    import json
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+    rec = {"cube_dir": "cubeX", "strategies": {
+        "a": {"closed": 5, "covered": 3, "missing": 2, "kind": "partial"},
+        "b": {"closed": 2, "covered": 2, "missing": 0, "kind": "complete"}}}
+    p = tmp_path / "cov.json"
+    p.write_text(json.dumps(rec), encoding="utf-8")
+    got = bss.load_exit_cube_coverage({"a": 5, "b": 2}, path=p, cube="x/cubeX")
+    assert got["a"]["missing"] == 2
+    with pytest.raises(ValueError, match="not 'cubeY'"):
+        bss.load_exit_cube_coverage({"a": 5, "b": 2}, path=p, cube="cubeY")
+    with pytest.raises(ValueError, match="disagree"):
+        bss.load_exit_cube_coverage({"a": 5, "b": 3}, path=p, cube="cubeX")
+    with pytest.raises(ValueError, match="disagree"):
+        bss.load_exit_cube_coverage({"a": 5, "b": 2, "c": 1}, path=p, cube="cubeX")
+    assert bss.exit_cube_cell(None) == "0 closed"
+    assert bss.exit_cube_cell(rec["strategies"]["b"]) == "2 of 2"
+    assert bss.exit_cube_cell(rec["strategies"]["a"]) == "3 of 5 - 2 MISSING"
+    import build_table_a as bta
+    assert bta._exit_cube_txt({}) == "not recorded in this status build"
+    assert bta._exit_cube_txt({"r5_exit_cube": None}) == "0 closed"
+    # the live artifacts
+    cov = json.loads((root / "output_audit" / "b3258_exit_cube_coverage_r5.json")
+                     .read_text(encoding="utf-8"))["strategies"]
+    view = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                      .read_text(encoding="utf-8"))
+    md = (root / "STRATEGY_OPTIMISATION_STATUS.md").read_text(encoding="utf-8")
+    head = [ln for ln in md.splitlines() if ln.startswith("| strategy | family |")]
+    assert len(head) == 1 and head[0].endswith("| status | exit cube |"), head
+    for r in view["rows"]:
+        assert r["r5_exit_cube"] == cov.get(r["strategy"]), r["strategy"]
+        line = [ln for ln in md.splitlines() if ln.startswith(f"| {r['strategy']} |")]
+        assert len(line) == 1, r["strategy"]
+        cell = [c.strip() for c in line[0].strip("|").split("|")][8]
+        assert cell == bss.exit_cube_cell(r["r5_exit_cube"]), (r["strategy"], cell)
+    miss = [r for r in view["rows"] if (r["r5_exit_cube"] or {}).get("missing")]
+    assert md.count(" MISSING |") == len(miss) > 0
+    # Table A: every generated header carries the count
+    files = sorted((root / "strategy_optimisation" / "tighten").rglob("*.md"))
+    files.append(root / "output_audit" / "b3248_squeeze_breakout_table_a.md")
+    by = {r["strategy"]: r for r in view["rows"]}
+    carried = 0
+    for f in files:
+        txt = f.read_text(encoding="utf-8")
+        name = txt.splitlines()[0].replace("# Table A - ", "").strip()
+        lane = [ln for ln in txt.splitlines() if ln.startswith("**Lane:**")]
+        if name not in by or by[name]["stream"] not in ("TIGHTEN", "BOTH") and f.parent.name != "output_audit":
+            continue   # a departed lane record - C18 refuses to stage it
+        want = f"(closed fires in the exit cube: {bss.exit_cube_cell(by[name]['r5_exit_cube'])}, S6-B3258)"
+        assert len(lane) == 1 and want in lane[0], (f.name, lane)
+        carried += 1
+    assert carried == 34, carried
+
+
+def test_b3237a_regime_entries_are_ruled_at_admission(tmp_path):
+    """S6-B3237 (A), owner ruled 2026-10-22 ('Addendum Approve all your
+    recommendations'): keep every regime-affinity entry and rule each at its
+    strategy's admission. build_phase_1b_roster - which renders every
+    admission (runbook 6.3 step 5) - names an admitted strategy that holds a
+    LIMITING entry the audit measured and carries no regime_entry_ruling.
+    Pinned on planted admissions both ways, on the audit fail-closed, on
+    the live 0 of 16, and on the runbook step."""
+    import json
+    import sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import build_phase_1b_roster as bpr
+    aud = tmp_path / "aud.json"
+    aud.write_text(json.dumps({"results": [
+        {"strategy": "lim", "current_regimes": ["bull", "neutral"]},
+        {"strategy": "every", "current_regimes": ["bear", "bull", "crisis", "neutral"]}]}),
+        encoding="utf-8")
+    adms = [{"strategy": "lim"}, {"strategy": "every"}, {"strategy": "other"}]
+    assert bpr.unruled_regime_entries(adms, aud) == ["lim"]
+    adms[0]["regime_entry_ruling"] = "keep - owner 2026-10-22"
+    assert bpr.unruled_regime_entries(adms, aud) == []
+    with pytest.raises(FileNotFoundError):
+        bpr.unruled_regime_entries(adms, tmp_path / "absent.json")
+    # live: the 15 limiting entries hold no admission today
+    live = bpr.load_admissions(None)
+    assert len(live) == 16 and bpr.unruled_regime_entries(live) == []
+    d = json.loads(bpr.REGIME_AUDIT.read_text(encoding="utf-8"))
+    assert sum(1 for r in d["results"]
+               if frozenset(r["current_regimes"]) != bpr.ALL_REGIMES) == 15
+    roster = (root / "PHASE_1B_ROSTER.md").read_text(encoding="utf-8")
+    assert "REGIME ENTRY UNRULED" not in roster
+    # the wiring: the admissions section calls it (L654)
+    import ast as _ast
+    src = (root / "scripts" / "build_phase_1b_roster.py").read_text(encoding="utf-8")
+    fn = next(n for n in _ast.parse(src).body if isinstance(n, _ast.FunctionDef)
+              and n.name == "step2_admissions_section")
+    assert any(isinstance(n, _ast.Call) and _ast.unparse(n.func) == "unruled_regime_entries"
+               for n in _ast.walk(fn))
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    sec = plan.split("### 6.3 ", 1)[1].split("\n## 7.", 1)[0]
+    assert "10. **Rule the strategy's REGIME-AFFINITY entry at its admission**" in sec
+    assert "regime_entry_ruling" in sec and "b3237_regime_entry_evidence.md" in sec
 
 
 def test_b3253_a_key_selector_knob_is_an_engine_axis_only_where_the_gate_reads_it():

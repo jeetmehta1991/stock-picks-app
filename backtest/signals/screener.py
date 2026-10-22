@@ -2147,9 +2147,9 @@ def strat_squeeze_breakout(s):
     fires = s.get("squeeze_fire_up")
     return _strat(fires, "long", "breakout",
         ["squeeze_fire_up"],
-        ["Bollinger Bands were inside Keltner Channels  -  coiling",
-         "Squeeze released with positive momentum  -  energy unleashing",
-         "One of the highest probability breakout signals"])
+        ["Not in a squeeze on the fire bar - Bollinger Bands outside Keltner Channels",
+         "Momentum (close minus the recent high/low midpoint) crossed above zero",
+         "No squeeze on earlier bars is required - only the fire bar is tested"])
 
 
 def strat_volume_spike_breakout(s):
@@ -2857,8 +2857,8 @@ def strat_bb_squeeze_volume(s):
     fs = (s.get("squeeze_fire_dn") and s.get("vol_above_avg")) and not _short_borrow_trap_active(s)
     return _strat3(fl, fs, "confluence",
         ["squeeze_fire_up","vol_above_avg"], ["squeeze_fire_dn","vol_above_avg", "borrow_ok"],
-        ["BB squeeze releasing upward with above-average volume (B1135 loosened)"],
-        ["BB squeeze releasing downward with above-average volume (B1135 loosened)"])
+        ["Momentum crossed above zero outside a squeeze, above-average volume (B1135 loosened)"],
+        ["Momentum crossed below zero outside a squeeze, above-average volume (B1135 loosened)"])
 
 
 def strat_pivot_fib_confluence(s):
@@ -8158,7 +8158,7 @@ def strat_squeeze_breakout_with_smart_money_long(s):
     )
     return _strat(fires, "long", "smart_money_sleeve",
         ["squeeze_fire_up", "close_above_open"],
-        ["TTM squeeze releasing (B1194: smart_money AND-gate dropped)",
+        ["Momentum crossed above zero outside a squeeze (B1194: smart_money AND-gate dropped)",
          "Bullish candle"])
 
 

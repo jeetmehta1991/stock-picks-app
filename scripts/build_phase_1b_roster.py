@@ -457,6 +457,24 @@ def net_headline(res: dict) -> str:
     return s
 
 
+# S6-B3237 (A), owner ruled 2026-10-22: every regime-affinity entry is kept
+# and ruled at its strategy's admission, beside that strategy's own holdout
+REGIME_AUDIT = REPO / "output_audit" / "b3237_direction_regime_audit_is.json"
+ALL_REGIMES = frozenset({"bull", "neutral", "bear", "crisis"})
+
+
+def unruled_regime_entries(adms, audit_path=None) -> list:
+    """Admitted strategies holding a LIMITING regime-affinity entry (fewer
+    than all four regimes) that the S6-B3237 audit measured, with no
+    regime_entry_ruling recorded on the admission. RAISES on an unreadable
+    audit (L642) - the disclosure is the owner ruling's only reminder."""
+    d = json.loads(Path(audit_path or REGIME_AUDIT).read_text(encoding="utf-8"))
+    limiting = {r["strategy"] for r in d["results"]
+                if frozenset(r["current_regimes"]) != ALL_REGIMES}
+    return sorted({a["strategy"] for a in adms
+                   if a["strategy"] in limiting and not a.get("regime_entry_ruling")})
+
+
 def step2_admissions_section(A, admissions_path=None) -> None:
     """S6-B2413 (owner instruction 2026-08-30): render owner-ruled Step-2
     admissions into the roster document.
@@ -523,6 +541,14 @@ def step2_admissions_section(A, admissions_path=None) -> None:
           f"{_fmt(r.get('win_rate'), 5, 3)} | {_fmt(r.get('expectancy'))} | "
           f"{r.get('holdout_n')} | {_admission_full_n(r)} | {mir} |")
     A("")
+    _unruled = unruled_regime_entries(adms)
+    if _unruled:
+        A("**REGIME ENTRY UNRULED (S6-B3237 (A), owner 2026-10-22):** "
+          + ", ".join(f"`{s}`" for s in _unruled)
+          + " - admitted with a limiting regime-affinity entry and no ruling; "
+          "rule it with output_audit/b3237_regime_entry_evidence.md beside "
+          "the strategy's own holdout by regime (runbook 6.3 step 10).")
+        A("")
     if any((a.get("net_near_miss") or {}).get("psr_source") not in (None, "net_rescore")
            for a in adms):
         A("\u2020 psr re-derived on CURRENT code, net basis (S6-B3136): the "

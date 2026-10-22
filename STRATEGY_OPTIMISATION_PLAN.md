@@ -2014,6 +2014,12 @@ sets the CRITERION - it does not waive the per-step approvals (§0.6).
    charter in `strategy_optimisation/tighten/` moves to `archive/<date>-<subject>-admission-table-a/`,
    with any live SPECS `evidence` citation and the `strategy_optimisation/README.md` count following
    it (B3116; test_b2836 holds file-set == lane-set, test_b3167 the README count).
+10. **Rule the strategy's REGIME-AFFINITY entry at its admission** (S6-B3237 (A), owner
+   2026-10-22): every entry is kept until then. Where the admitted strategy holds a LIMITING entry the
+   S6-B3237 audit measured, put its per-side in-sample table
+   (`output_audit/b3237_regime_entry_evidence.md`) beside the strategy's OWN holdout by regime, and
+   record the owner's ruling as `regime_entry_ruling` on the admission. Until then
+   `build_phase_1b_roster` prints REGIME ENTRY UNRULED for it (test_b3237a).
 
 **Once admitted, a line is BANKED:** it is closed to re-testing absent the owner's explicit override
 (§1.3).
