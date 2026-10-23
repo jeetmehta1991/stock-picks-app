@@ -6,15 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (177 entries), 2002 named checks have run and 20 have ever returned non-PASS.**
+**Across the entire ledger (178 entries), 2024 named checks have run and 20 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-72 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02).
+72 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-17T05:08:19 | engine-hook | 0 | none | 0 | ea2ffb91a | True | **NO** |
+| output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-17T05:08:19 | engine-hook | 0 | none | 0 | ea2ffb91a | True | yes 2026-10-17T11:17:32 |
 | output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-17T02:31:22 | engine-hook | 0 | none | 0 | f1077c149 | True | yes 2026-10-17T02:51:32 |
 | output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T23:51:52 | engine-hook | 0 | none | 0 | 4801ad035 | True | yes 2026-10-17T00:07:10 |
 | output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T20:20:16 | engine-hook | 0 | none | 0 | 44dc192f3 | True | yes 2026-10-16T23:53:54 |
@@ -90,297 +90,17 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## TABLE C - POST-RUN CONFIG FUNNEL (one row per config)
 
-_`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than a quality verdict. `graded` = reached `evaluate()` and produced a Sharpe. `distinct` = graded outcomes after equivalence-class collapse (L473). `bands` = distinct parameter VALUES exercised. `ci_lo` = the LOWER bound of the Sharpe confidence interval, which is what `best` ranks on - a higher Sharpe can carry a NEGATIVE lower bound (L455). `all producer bands tested` = EVERY parameter of this config's family (owner directive 2026-09-03), each marked how it was exercised: (fixed) pinned by this config, a bare list searched in-cube, (free) graded from the landed cube by the battery, (free, declared) gradable but not graded here, (not swept) held by design. The count is the family's own SPECS entry - 6 for smc_breaker_block_long, 9 for institutional_committed_growth_long._
-
-| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | max IS-Sharpe | IS-Sharpe at best ci_lo | best IS-CI-lo | best combination | entry window |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `b2183_sw30_sw30` | 300 | 106 | 0 | 184 | 61 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.565 | 5.149 | 2.757 | 0.362 | cm=False brk=0.020 age=120 tail=20 / time_stop_20d | - |
-| `b2177_sw50_sw50` | 300 | 225 | 0 | 75 | 29 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.697 | 3.006 | 0.889 | -0.508 | cm=True brk=none age=none tail=3 / chandelier_3x | - |
-| `b2190_sw10_sw10` | 300 | 45 | 0 | 245 | 133 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.46 | 2.074 | 0.746 | -0.091 | cm=False brk=0.020 age=none tail=10 / fixed_4r_2r | - |
-| `b2190_sw5_sw5` | 300 | 40 | 0 | 250 | 132 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.389 | 0.805 | 0.625 | 0.123 | cm=True brk=0.020 age=120 tail=5 / earnings_blackout | - |
-| `b2197_sw20sp9_sw20sp9` | 300 | 77 | 0 | 223 | 100 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.487 | 2.815 | 1.576 | 0.044 | cm=False brk=0.030 age=none tail=5 / r_multiple_2r | - |
-| `b2197_sw20sp20_sw20sp20` | 300 | 77 | 0 | 223 | 97 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.493 | 2.544 | 0.551 | 0.107 | cm=False brk=0.050 age=none tail=5 / hybrid_50pct_target | - |
-| `b2197_sw20sp21_sw20sp21` | 300 | 77 | 0 | 223 | 97 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=21(fixed) | 0.504 | 2.544 | 0.551 | 0.107 | cm=False brk=0.050 age=none tail=5 / hybrid_50pct_target | - |
-| `b2197_sw20sp50_sw20sp50` | 300 | 77 | 0 | 223 | 92 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.488 | 2.544 | 0.535 | 0.025 | cm=False brk=0.050 age=none tail=2 / hybrid_50pct_target | - |
-| `b2197_sw20sp100_sw20sp100` | 300 | 77 | 0 | 223 | 91 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.441 | 2.544 | 0.465 | -0.036 | cm=False brk=0.050 age=none tail=2 / hybrid_50pct_target | - |
-| `b2197_sw20sp150_sw20sp150` | 300 | 77 | 0 | 223 | 92 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.35 | 2.854 | 0.357 | -0.114 | cm=False brk=none age=250 tail=20 / hybrid_50pct_target | - |
-| `b2197_sw30sp9_sw30sp9` | 300 | 95 | 0 | 195 | 75 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.821 | 3.846 | 1.684 | 0.687 | cm=False brk=0.020 age=250 tail=20 / earnings_blackout | - |
-| `b2197_sw30sp20_sw30sp20` | 300 | 100 | 0 | 200 | 74 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.884 | 4.103 | 4.103 | 0.816 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
-| `b2197_sw30sp50_sw30sp50` | 300 | 100 | 0 | 200 | 68 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.896 | 4.103 | 4.103 | 0.816 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
-| `b2197_sw30sp100_sw30sp100` | 300 | 100 | 0 | 200 | 67 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.858 | 4.103 | 4.103 | 0.816 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
-| `b2197_sw30sp150_sw30sp150` | 300 | 106 | 0 | 194 | 65 | 18 | P1=30(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.8 | 4.807 | 4.807 | 1.214 | cm=False brk=0.010 age=250 tail=20 / time_stop_10d | - |
-| `b2197_sw10sp9_sw10sp9` | 300 | 42 | 0 | 258 | 138 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.431 | 2.839 | 0.714 | -0.014 | cm=False brk=0.020 age=none tail=2 / class_time_stop | - |
-| `b2197_sw10sp20_sw10sp20` | 300 | 41 | 0 | 259 | 129 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.432 | 2.839 | 0.47 | -0.07 | cm=True brk=0.050 age=none tail=10 / breakeven_plus_trail | - |
-| `b2197_sw10sp50_sw10sp50` | 300 | 45 | 0 | 250 | 128 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.418 | 0.846 | 0.422 | -0.042 | cm=False brk=0.050 age=none tail=10 / breakeven_plus_trail | - |
-| `b2197_sw10sp100_sw10sp100` | 300 | 40 | 0 | 250 | 127 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.402 | 1.352 | 0.34 | -0.12 | cm=False brk=none age=none tail=5 / breakeven_plus_trail | - |
-| `b2197_sw10sp150_sw10sp150` | 300 | 40 | 0 | 250 | 131 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.44 | 1.779 | 0.282 | -0.11 | cm=False brk=none age=none tail=2 / hybrid_50pct_target | - |
-| `b2197_sw5sp9_sw5sp9` | 300 | 45 | 0 | 250 | 126 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 0.462 | 0.767 | 0.6 | 0.098 | cm=True brk=0.050 age=none tail=3 / breakeven_plus_trail | - |
-| `b2197_sw5sp20_sw5sp20` | 300 | 45 | 0 | 250 | 125 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 0.388 | 0.734 | 0.49 | -0.005 | cm=True brk=0.050 age=none tail=3 / breakeven_plus_trail | - |
-| `b2197_sw5sp50_sw5sp50` | 300 | 45 | 0 | 250 | 124 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.392 | 0.711 | 0.402 | -0.005 | cm=True brk=none age=180 tail=20 / breakeven_plus_trail | - |
-| `b2197_sw5sp100_sw5sp100` | 300 | 40 | 0 | 250 | 132 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 0.359 | 0.738 | 0.513 | 0.027 | cm=True brk=0.020 age=120 tail=5 / earnings_blackout | - |
-| `b2197_sw5sp150_sw5sp150` | 300 | 40 | 0 | 250 | 132 | 18 | P1=5(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 0.355 | 0.739 | 0.508 | 0.019 | cm=True brk=0.020 age=120 tail=5 / earnings_blackout | - |
-| `b2197_sw50sp9_sw50sp9` | 300 | 200 | 0 | 100 | 42 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=9(fixed) | 1.589 | 2.994 | 2.82 | 0.724 | cm=True brk=0.020 age=none tail=3 / time_stop_10d | - |
-| `b2197_sw50sp20_sw50sp20` | 300 | 200 | 0 | 100 | 41 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=20(fixed) | 1.554 | 3.915 | 3.915 | 0.93 | cm=True brk=0.010 age=none tail=3 / time_stop_10d | - |
-| `b2197_sw50sp50_sw50sp50` | 300 | 200 | 0 | 100 | 42 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 1.488 | 4.301 | 4.301 | 1.25 | cm=True brk=0.010 age=none tail=3 / time_stop_10d | - |
-| `b2197_sw50sp100_sw50sp100` | 300 | 200 | 0 | 100 | 42 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=100(fixed) | 1.434 | 2.996 | 2.292 | -0.023 | cm=False brk=0.020 age=none tail=2 / r_multiple_3r | - |
-| `b2197_sw50sp150_sw50sp150` | 300 | 190 | 0 | 110 | 44 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=150(fixed) | 1.276 | 3.083 | 3.083 | 0.437 | cm=True brk=0.020 age=250 tail=20 / fixed_4r_2r | - |
-| `b2399_step2_sw50sp50_step2_sw50sp50` | 300 | 29 | 73 | 198 | 104 | 18 | P1=50(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=50(fixed) | 0.712 | 1.658 | 0.145 | -0.026 | cm=False brk=0.050 age=none tail=2 / trailing_15pct | - |
-| `b2174_sw20_sw20` | 300 | 82 | 0 | 218 | 89 | 18 | P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.204 | 2.811 | 0.282 | -0.196 | cm=False brk=none age=250 tail=20 / hybrid_50pct_target | - |
-| `icg_cfg1` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.62 | 0.263 | 0.263 | -0.087 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_span9_span9` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=9(fixed) | -0.349 | 0.489 | 0.489 | 0.167 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=9 / regime_flip | 2024-05-06..2025-05-02 |
-| `icg_span20_span20` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=20(fixed) | -0.597 | 0.3 | 0.3 | -0.015 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=20 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_span50_span50` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=50(fixed) | -0.485 | 0.288 | 0.288 | -0.067 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=50 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_span150_span150` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=150(fixed) | -0.516 | 0.24 | 0.24 | -0.11 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=150 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_mult1.5_mult1.5` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.500(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.785 | 0.176 | 0.176 | -0.223 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.500 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_lookback2_lookback2` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=2(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.629 | 0.305 | 0.305 | -0.075 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=2 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_minq8_minq8` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=8(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.459 | 0.452 | 0.452 | 0.054 | P4_min_consecutive_quarters=8 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_span100_span100` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free, declared); P8=5,6(free, declared); P9=100(fixed) | -0.396 | 0.438 | 0.438 | 0.062 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=100 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_mult1.0_mult1.0` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.000(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.679 | 0.224 | 0.224 | -0.091 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.000 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_mult1.25_mult1.25` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.250(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.786 | 0.092 | 0.092 | -0.297 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.250 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_lookback3_lookback3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=3(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.666 | 0.231 | 0.231 | -0.134 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=3 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_lookback6_lookback6` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=6(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.252 | 0.425 | 0.425 | 0.07 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=6 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_lookback8_lookback8` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=8(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.24 | 0.4 | 0.4 | 0.038 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=8 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_minq6_minq6` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=6(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.474 | 0.446 | 0.446 | 0.043 | P4_min_consecutive_quarters=6 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_minq3_minq3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=3(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.633 | 0.259 | 0.259 | -0.084 | P4_min_consecutive_quarters=3 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_minq2_minq2` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=2(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.586 | 0.28 | 0.28 | -0.051 | P4_min_consecutive_quarters=2 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_span100_rerun_span100` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=100(fixed) | -0.528 | 0.281 | 0.281 | -0.078 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=100 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `icg_cfg1_rerun_cfg1_rerun` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=200(fixed) | -0.643 | 0.241 | 0.241 | -0.106 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=200 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `icg_step2_span9_step2_span9` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 6 | P1=45(not swept); P2=0(not swept); P3=70..100(not swept); P4=4(fixed); P5=4(fixed); P6=1.100(fixed); P7=3,5,11,14(free); P8=5,6(free); P9=9(fixed) | 0.214 | 0.516 | 0.516 | 0.428 | P4_min_consecutive_quarters=4 P5_growth_lookback_quarters=4 P6_growth_multiple=1.100 P9_span=9 / breakeven_plus_trail | 2022-05-05..2026-05-04 |
-| `b2712_smc_sw10_sw10` | 300 | 44 | 0 | 241 | 113 | 18 | P1=10(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed) | 0.649 | 3.05 | 2.221 | 0.803 | cm=True brk=0.010 age=180 tail=3 / earnings_blackout | - |
-| `candle_tws_c01_b0.0_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.000(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.228 | 0.308 | 0.308 | 0.048 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `candle_tbc_c01_b0.0_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.000(fixed); P5=none(fixed); P6=45.094,50.132,54.066,58.812(free, declared); P7=5.000(not swept) | -0.373 | 0.378 | 0.378 | 0.067 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `candle_tws_c02_b0.0_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.17 | 0.504 | 0.504 | 0.028 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c03_b0.0_s0.1_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.100(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.225 | 0.305 | 0.305 | 0.034 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.100 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `candle_tws_c04_b0.0_s0.1_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.100(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.271 | 0.535 | 0.535 | 0.04 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.100 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c05_b0.0_s0.25_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.250(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.292 | 0.251 | 0.251 | -0.051 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.250 P5_max_wick_pct=none / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `candle_tws_c06_b0.0_s0.25_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.250(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.341 | 0.379 | 0.31 | -0.01 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.250 P5_max_wick_pct=0.300 / earnings_blackout | 2024-05-06..2025-05-02 |
-| `candle_tws_c07_b0.3_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.000(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.403 | 0.349 | 0.349 | -0.077 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.000 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c08_b0.3_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.291 | 0.63 | 0.63 | 0.075 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c09_b0.3_s0.1_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.100(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.366 | 0.364 | 0.364 | -0.074 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.100 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c10_b0.3_s0.1_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.100(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.406 | 0.546 | 0.546 | -0.022 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.100 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c11_b0.3_s0.25_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.250(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.534 | 0.083 | 0.083 | -0.409 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.250 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c12_b0.3_s0.25_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.300(fixed); P4=0.250(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.498 | 0.394 | 0.205 | -0.204 | P2_n_bars=3 P3_min_body_pct=0.300 P4_min_step_pct=0.250 P5_max_wick_pct=0.300 / hybrid_50pct_target | 2024-05-06..2025-05-02 |
-| `candle_tws_c13_b0.5_s0.0_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.000(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.58 | 0.72 | 0.72 | 0.067 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.000 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c15_b0.5_s0.1_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.100(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.537 | 0.682 | 0.682 | 0.018 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.100 P5_max_wick_pct=none / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c16_b0.5_s0.1_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.100(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.521 | 0.816 | 0.816 | 0.035 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.100 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c17_b0.5_s0.25_wNone` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.250(fixed); P5=none(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.682 | 0.11 | -0.12 | -0.625 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.250 P5_max_wick_pct=none / hybrid_50pct_target | 2024-05-06..2025-05-02 |
-| `candle_tws_c18_b0.5_s0.25_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.250(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.521 | 0.589 | 0.589 | -0.312 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.250 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tbc_c02_b0.0_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.000(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=45.094,50.132,54.066,58.812(free, declared); P7=5.000(not swept) | -0.329 | 0.245 | 0.225 | -0.297 | P2_n_bars=3 P3_min_body_pct=0.000 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / breakeven_plus_trail | 2024-05-07..2025-04-17 |
-| `candle_tws_c14_b0.5_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.562 | 0.909 | 0.909 | 0.141 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / regime_flip | 2024-05-06..2025-05-02 |
-| `candle_tws_c14_step2_step2_b0.5_s0.0_w0.3` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | 0 | P1=True(not swept); P2=3(fixed); P3=0.500(fixed); P4=0.000(fixed); P5=0.300(fixed); P6=41.97,46.31,50.16,54.42(free, declared) | -0.975 | 0.082 | 0.082 | -0.063 | P2_n_bars=3 P3_min_body_pct=0.500 P4_min_step_pct=0.000 P5_max_wick_pct=0.300 / earnings_blackout | 2022-05-16..2026-04-17 |
-| `bl_span009_span009` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | 0.052 | 1.047 | 0.957 | 0.582 | P4_ema_span=9 / breakeven_plus_trail | 2024-06-21..2025-04-25 |
-| `bl_span020_span020` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.65 | 0.98 | 0.979 | -0.361 | P4_ema_span=20 / regime_flip | 2024-08-07..2025-04-11 |
-| `bl_span021_span021` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.386 | 1.03 | 1.03 | -0.458 | P4_ema_span=21 / regime_flip | 2024-08-07..2025-04-11 |
-| `bl_span050_span050` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.088 | 0.53 | 0.53 | 0.042 | P4_ema_span=50 / breakeven_plus_trail | 2024-05-17..2025-04-14 |
-| `bl_span100_span100` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.128 | 0.548 | 0.548 | 0.24 | P4_ema_span=100 / breakeven_plus_trail | 2024-05-06..2025-04-30 |
-| `bl_span150_span150` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.206 | 0.396 | 0.396 | 0.124 | P4_ema_span=150 / breakeven_plus_trail | 2024-05-06..2025-04-29 |
-| `bl_span250_span250` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.139 | 0.502 | 0.502 | 0.295 | P4_ema_span=250 / reverse_signal | 2024-05-06..2025-04-28 |
-| `bl_step2_p4_9_p4_9` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | 0.126 | 0.694 | 0.694 | 0.554 | P4_ema_span=9 / breakeven_plus_trail | 2022-05-05..2026-05-04 |
-| `bl_step2_p4_250_p4_250` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=20/2.0/3(not swept); P2=20/2.0/3(not swept); P3=200(free, declared); P4=200(free, declared); P5=14(not swept); P6=2(not swept); P7=edge per P8(not swept); P8=0.25,0.75,1/3,2/3(free, declared); P9=17.69,20.976,23.96,27.51,35(free, declared); P10=5.0(not swept); P11=B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) | -0.254 | 0.425 | 0.425 | 0.338 | P4_ema_span=250 / breakeven_plus_trail | 2022-05-05..2026-05-04 |
-| `pairs_mrl_step1_production` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.301 | 1.011 | 1.011 | 0.659 | P1_pairs_identity=production / time_stop_10d | 2024-05-06..2025-05-02 |
-| `pairs_mrl_step2_production` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.219 | 0.6 | 0.6 | 0.522 | P1_pairs_identity=production / breakeven_plus_trail | 2022-05-05..2026-05-04 |
-| `pairs_mrl_s1_p5_0p01_p6_40_p5_0p01_p6_40` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.116 | 0.904 | 0.857 | 0.582 | P1_pairs_identity=eg0.01_zw40 P5_eg_significance=0.010 P6_z_window=40 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.285 | 1.18 | 0.882 | 0.6 | P1_pairs_identity=eg0.01_zw60 P5_eg_significance=0.010 P6_z_window=60 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.275 | 1.111 | 1.091 | 0.582 | P1_pairs_identity=eg0.01_zw90 P5_eg_significance=0.010 P6_z_window=90 / r_multiple_3r | 2024-05-06..2025-05-01 |
-| `pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.039 | 0.694 | 0.66 | 0.436 | P1_pairs_identity=eg0.05_zw40 P5_eg_significance=0.050 P6_z_window=40 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.215 | 0.898 | 0.776 | 0.545 | P1_pairs_identity=eg0.05_zw90 P5_eg_significance=0.050 P6_z_window=90 / breakeven_plus_trail | 2024-05-06..2025-05-01 |
-| `pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=T5b build: EG p<0.05, half-life 5-30d(not swept); P2=0,4,6,9,13(free, declared); P3=5,6.94,8.59,10.08,11.96(free, declared); P4=-3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared); P5=?; P6=? | 0.207 | 0.58 | 0.58 | 0.484 | P1_pairs_identity=eg0.01_zw60 P5_eg_significance=0.010 P6_z_window=60 / breakeven_plus_trail | 2022-05-05..2026-05-04 |
-| `npoc_s1_p2_126_p2_126` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.216 | 0.523 | 0.523 | 0.262 | P2_lookback=126 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p3_4_p3_4` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.195 | 0.499 | 0.499 | 0.224 | P2_lookback=252 P3_n_periods=4 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p3_8_p2_252_p4_40_p6_0p02_p3_8_p2_252_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.118 | 0.521 | 0.521 | 0.257 | P2_lookback=252 P3_n_periods=8 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p3_12_p2_252_p4_40_p6_0p02_p3_12_p2_252_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.218 | 0.485 | 0.485 | 0.228 | P2_lookback=252 P3_n_periods=12 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p3_50_p2_252_p4_40_p6_0p02_p3_50_p2_252_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.207 | 0.499 | 0.499 | 0.248 | P2_lookback=252 P3_n_periods=50 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p4_20_p2_252_p3_6_p6_0p02_p4_20_p2_252_p3_6_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.216 | 0.503 | 0.503 | 0.236 | P2_lookback=252 P3_n_periods=6 P4_n_bins=20 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p4_30_p2_252_p3_6_p6_0p02_p4_30_p2_252_p3_6_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.134 | 0.487 | 0.487 | 0.215 | P2_lookback=252 P3_n_periods=6 P4_n_bins=30 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.267 | 0.45 | 0.45 | 0.211 | P1_ema_span=9 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.282 | 0.509 | 0.509 | 0.257 | P1_ema_span=20 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.267 | 0.514 | 0.514 | 0.241 | P1_ema_span=50 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.248 | 0.495 | 0.495 | 0.223 | P1_ema_span=100 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-| `npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02` | 1 combination (24 exits ranked) | 0 | 0 | 24 | 1 | - | P1=200(free, declared); P2=252(free, declared); P3=6(free, declared); P4=40(free, declared); P5=0,1,2(free, declared); P6=0.0028,0.0059,0.0096,0.0141,0.02(free, declared); B1=require_true(free, declared); B2=q20,q40,q60,q80(free, declared); B3=q20,q40,q60,q80(free, declared); B4=q20,q40,q60,q80(free, declared); B5=q20,q40,q60,q80(free, declared); B6=q20,q40,q60,q80(free, declared) | -0.316 | 0.428 | 0.428 | 0.153 | P1_ema_span=150 P2_lookback=252 P3_n_periods=6 P4_n_bins=40 P6_max_distance_pct=0.020 / breakeven_plus_trail | 2024-05-06..2025-05-02 |
-
-**Parameters tested** - distinct values each config exercised per axis, read from the result rows themselves. `1 value` = the axis was PINNED and contributed no search; an axis absent from the artifact reads `not recorded`, never `1`. **P1 `swing_length` and P6 `span` are the CROSS-CONFIG axes** - they define which config a cube IS and are held FIXED within it, so they show a value rather than a count. Recorded in the artifact since B2138; anything graded before that reads `not recorded`, which is what let a swing-10 cube be re-graded as swing-20 (S6-B2136).
-
-| config | P1 swing_length | P2 close_mitigation | P3 tail_n | P4 age_bars_max | P5 break_pct_max | P6 span |
-|---|---|---|---|---|---|---|
-| `b2183_sw30_sw30` | FIXED at 30 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 200 |
-| `b2177_sw50_sw50` | FIXED at 50 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 200 |
-| `b2190_sw10_sw10` | FIXED at 10 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 200 |
-| `b2190_sw5_sw5` | FIXED at 5 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 200 |
-| `b2197_sw20sp9_sw20sp9` | FIXED at 20 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 9 |
-| `b2197_sw20sp20_sw20sp20` | FIXED at 20 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 20 |
-| `b2197_sw20sp21_sw20sp21` | FIXED at 20 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 21 |
-| `b2197_sw20sp50_sw20sp50` | FIXED at 20 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 50 |
-| `b2197_sw20sp100_sw20sp100` | FIXED at 20 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 100 |
-| `b2197_sw20sp150_sw20sp150` | FIXED at 20 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 150 |
-| `b2197_sw30sp9_sw30sp9` | FIXED at 30 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 9 |
-| `b2197_sw30sp20_sw30sp20` | FIXED at 30 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 20 |
-| `b2197_sw30sp50_sw30sp50` | FIXED at 30 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 50 |
-| `b2197_sw30sp100_sw30sp100` | FIXED at 30 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 100 |
-| `b2197_sw30sp150_sw30sp150` | FIXED at 30 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 150 |
-| `b2197_sw10sp9_sw10sp9` | FIXED at 10 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 9 |
-| `b2197_sw10sp20_sw10sp20` | FIXED at 10 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 20 |
-| `b2197_sw10sp50_sw10sp50` | FIXED at 10 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 50 |
-| `b2197_sw10sp100_sw10sp100` | FIXED at 10 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 100 |
-| `b2197_sw10sp150_sw10sp150` | FIXED at 10 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 150 |
-| `b2197_sw5sp9_sw5sp9` | FIXED at 5 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 9 |
-| `b2197_sw5sp20_sw5sp20` | FIXED at 5 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 20 |
-| `b2197_sw5sp50_sw5sp50` | FIXED at 5 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 50 |
-| `b2197_sw5sp100_sw5sp100` | FIXED at 5 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 100 |
-| `b2197_sw5sp150_sw5sp150` | FIXED at 5 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 150 |
-| `b2197_sw50sp9_sw50sp9` | FIXED at 50 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 9 |
-| `b2197_sw50sp20_sw50sp20` | FIXED at 50 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 20 |
-| `b2197_sw50sp50_sw50sp50` | FIXED at 50 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 50 |
-| `b2197_sw50sp100_sw50sp100` | FIXED at 50 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 100 |
-| `b2197_sw50sp150_sw50sp150` | FIXED at 50 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 150 |
-| `b2399_step2_sw50sp50_step2_sw50sp50` | FIXED at 50 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 50 |
-| `b2174_sw20_sw20` | FIXED at 20 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 200 |
-| `b2712_smc_sw10_sw10` | FIXED at 10 | 2: False,True | 6: 1,2,3,5,10,20 | 5: 60,120,180,250,None | 5: 0.01,0.02,0.03,0.05,None | FIXED at 200 |
-
-**Parameters tested - other strategy families.** These configs record their own axes in the artifact's `config` block rather than the SMC six above, so they are rendered from those keys. A family whose axes are all held fixed within a config shows values rather than counts, exactly as P1 and P6 do for SMC (S6-B2542a).
-
-| config | P1 REPORTING_LAG_DAYS | P2 positive_shares_floor | P3 quarterly_gap_tolerance_days | P4 min_consecutive_quarters | P5 growth_lookback_quarters | P6 growth_multiple | P7 min_committed_growth | P8 fallback_min_increased | P9 span |
-|---|---|---|---|---|---|---|---|---|---|
-| `icg_cfg1` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_span9_span9` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 9(fixed) |
-| `icg_span20_span20` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 20(fixed) |
-| `icg_span50_span50` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 50(fixed) |
-| `icg_span150_span150` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 150(fixed) |
-| `icg_mult1.5_mult1.5` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.500(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_lookback2_lookback2` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 2(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_minq8_minq8` | 45(not swept) | 0(not swept) | 70..100(not swept) | 8(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_span100_span100` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free, declared) | 5,6(free, declared) | 100(fixed) |
-| `icg_mult1.0_mult1.0` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.000(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_mult1.25_mult1.25` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.250(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_lookback3_lookback3` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 3(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_lookback6_lookback6` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 6(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_lookback8_lookback8` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 8(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_minq6_minq6` | 45(not swept) | 0(not swept) | 70..100(not swept) | 6(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_minq3_minq3` | 45(not swept) | 0(not swept) | 70..100(not swept) | 3(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_minq2_minq2` | 45(not swept) | 0(not swept) | 70..100(not swept) | 2(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_span100_rerun_span100` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 100(fixed) |
-| `icg_cfg1_rerun_cfg1_rerun` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
-| `icg_step2_span9_step2_span9` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 9(fixed) |
-
-| config | P1 three_white_soldiers (boolean leg) | P2 n_bars (pattern length) | P3 min_body_pct_of_range | P4 min_step_up_pct | P5 max_upper_wick_pct | P6 rsi_14 ceiling |
-|---|---|---|---|---|---|---|
-| `candle_tws_c01_b0.0_s0.0_wNone` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.000(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tbc_c01_b0.0_s0.0_wNone` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.000(fixed) | none(fixed) | 45.094,50.132,54.066,58.812(free, declared) | 5.000(not swept) |
-| `candle_tws_c02_b0.0_s0.0_w0.3` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.000(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c03_b0.0_s0.1_wNone` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.100(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c04_b0.0_s0.1_w0.3` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.100(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c05_b0.0_s0.25_wNone` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.250(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c06_b0.0_s0.25_w0.3` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.250(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c07_b0.3_s0.0_wNone` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.000(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c08_b0.3_s0.0_w0.3` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.000(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c09_b0.3_s0.1_wNone` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.100(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c10_b0.3_s0.1_w0.3` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.100(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c11_b0.3_s0.25_wNone` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.250(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c12_b0.3_s0.25_w0.3` | True(not swept) | 3(fixed) | 0.300(fixed) | 0.250(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c13_b0.5_s0.0_wNone` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.000(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c15_b0.5_s0.1_wNone` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.100(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c16_b0.5_s0.1_w0.3` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.100(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c17_b0.5_s0.25_wNone` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.250(fixed) | none(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c18_b0.5_s0.25_w0.3` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.250(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tbc_c02_b0.0_s0.0_w0.3` | True(not swept) | 3(fixed) | 0.000(fixed) | 0.000(fixed) | 0.300(fixed) | 45.094,50.132,54.066,58.812(free, declared) | 5.000(not swept) |
-| `candle_tws_c14_b0.5_s0.0_w0.3` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.000(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-| `candle_tws_c14_step2_step2_b0.5_s0.0_w0.3` | True(not swept) | 3(fixed) | 0.500(fixed) | 0.000(fixed) | 0.300(fixed) | 41.97,46.31,50.16,54.42(free, declared) |
-
-| config | P1 bb (period, k, recency) identity - lower reclaim | P2 bb identity - upper reclaim (mirror) | P3 ema span (below_ema_N, SHORT leg) | P4 ema span (price_above_ema_N, LONG leg) | P5 rsi span (slow) | P6 rsi span (fast escape-hatch) | P7 vix_band_high flag (upper edge feed) | P8 vix band edges on persisted vix_percentile | P9 adx ceiling | P10 days_to_cover cap (borrow guard, SHORT leg) | P11 VIX-conditional rsi edges |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| `bl_span009_span009` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span020_span020` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span021_span021` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span050_span050` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span100_span100` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span150_span150` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_span250_span250` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_step2_p4_9_p4_9` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-| `bl_step2_p4_250_p4_250` | 20/2.0/3(not swept) | 20/2.0/3(not swept) | 200(free, declared) | 200(free, declared) | 14(not swept) | 2(not swept) | edge per P8(not swept) | 0.25,0.75,1/3,2/3(free, declared) | 17.69,20.976,23.96,27.51,35(free, declared) | 5.0(not swept) | B1147 set (40/60, 45/55, 50/50),edges 5 tighter per band(free, declared) |
-
-| config | P1 pairs precompute identity (T5b cointegrated pairs) | P2 pair_count_active floor | P3 pair_half_life floor (days) | P4 pair_zscore_signed ceiling | P5 Engle-Granger cointegration significance | P6 pair z-score rolling window (bars) |
-|---|---|---|---|---|---|---|
-| `pairs_mrl_step1_production` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
-| `pairs_mrl_step2_production` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
-
-| config | P1 pairs precompute identity (T5b cointegrated pairs) | P2 pair_count_active floor | P3 pair_half_life floor (days) | P4 pair_zscore_signed ceiling | P5 Engle-Granger cointegration significance | P6 pair z-score rolling window (bars) |
-|---|---|---|---|---|---|---|
-| `pairs_mrl_s1_p5_0p01_p6_40_p5_0p01_p6_40` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
-| `pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
-| `pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
-| `pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
-| `pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
-| `pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60` | T5b build: EG p<0.05, half-life 5-30d(not swept) | 0,4,6,9,13(free, declared) | 5,6.94,8.59,10.08,11.96(free, declared) | -3.0505,-2.6313,-2.3749,-2.1619,-2.0(free, declared) | ? | ? |
-
-| config | P1 ema span (the N in price_above_ema_N; production 200) | P2 period_lookback (bars) | P3 n_periods (POC chunks) | P4 n_bins (price bins) | P5 count floor (> N naked POCs) | P6 distance ceiling (naked_poc_nearest_distance_pct) | B1 vix_term_backwardation | B2 po3_accum_range_pct | B3 xs_beta | B4 cot_rut_commercials_net_pct | B5 xs_momentum_decile | B6 pct_from_avwap_20low |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `npoc_s1_p2_126_p2_126` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p3_4_p3_4` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p3_8_p2_252_p4_40_p6_0p02_p3_8_p2_252_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p3_12_p2_252_p4_40_p6_0p02_p3_12_p2_252_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p3_50_p2_252_p4_40_p6_0p02_p3_50_p2_252_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p4_20_p2_252_p3_6_p6_0p02_p4_20_p2_252_p3_6_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p4_30_p2_252_p3_6_p6_0p02_p4_30_p2_252_p3_6_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-
-| config | P1 ema span (the N in price_above_ema_N; production 200) | P2 period_lookback (bars) | P3 n_periods (POC chunks) | P4 n_bins (price bins) | P5 count floor (> N naked POCs) | P6 distance ceiling (naked_poc_nearest_distance_pct) | B1 vix_term_backwardation | B2 po3_accum_range_pct | B3 xs_beta | B4 cot_rut_commercials_net_pct | B5 xs_momentum_decile | B6 pct_from_avwap_20low |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
-| `npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02` | 200(free, declared) | 252(free, declared) | 6(free, declared) | 40(free, declared) | 0,1,2(free, declared) | 0.0028,0.0059,0.0096,0.0141,0.02(free, declared) | require_true(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) | q20,q40,q60,q80(free, declared) |
+_TABLE C unavailable: KeyError: 'admit'_
 
 ## TABLE D - STEP-1 RANKED LIST (top 25)
 
-_Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admission is min-trades >= 10 plus this list, with NO gates applied (owner ruling B1608). `n` = fires in-sample, placed beside the sort key on purpose. `tier` = DEEP n>=100 / MID 30-99 / THIN 10-29. `dup` = this row's (ci_lo, sharpe, n, exit) signature appears in more than one config - one discovery, several parameter pairs, NOT independent confirmations. `cls` = equivalence-class size. Nothing here is filtered._
+_TABLE D unavailable: KeyError: 'admit'_
 
-**RANK IS NOT TRUSTWORTHINESS.** A conservative lower bound still favours a tight small sample over a noisy deep one; read `n` and `tier` beside every rank.
-
-**HOW `exit` WAS CHOSEN, AND BY WHICH RULER.** Step 1 picks each cell's exit by SHARPE alone - a cheap ranking pass (owner ruling B1605) - while this table RANKS by is_ci_lo. Two different objectives, disclosed because a row can lead on is_ci_lo while carrying the exit that won on Sharpe. Step 2 re-ranks ALL exits by gates passed and is the admission criterion; it has not run. **24 exit methods are registered; 22 are effective per cell** - next_pivot_target is refused on boundary-spanning cells (B2014, flagged by npt_excluded_identity_boundary) and 1 more is collapsed as byte-identical to a survivor (B1593). 24 - 1 - 1 = 22.
-
-_**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one unified table, no separate Table Ds). Axis labels come from the per-family registry D_AXIS_FAMILIES: P1 swing, P2 close_mit, P3 tail_n, P4 age_bars, P5 break_pct, P6 span. For smc_breaker_block: P2 close_mitigation (False = production, mitigate on high/low), P4 age_bars_max (None = production, no cap), P5 break_pct_max (None = production, no cap). `npt_excl` = next_pivot_target refused on this cell as boundary-spanning (B2014), one of the two exits missing from 24._
-
-| # | config | P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | P5 break_pct | P6 span | exit | is_ci_lo | n | tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict | npt_excl |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | b2197_sw50sp50_sw50sp50 | 50 | True | 3 | None | 0.01 | 50 | time_stop_10d | +1.250 | 14 | THIN | - | 4.301 | 1 | 0 | 14 | BELOW_POWER_FLOOR | yes |
-| 2 | b2197_sw30sp150_sw30sp150 | 30 | False | 20 | 250 | 0.01 | 150 | time_stop_10d | +1.214 | 11 | THIN | - | 4.807 | 5 | 0 | 11 | BELOW_POWER_FLOOR | - |
-| 3 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.02 | 50 | time_stop_10d | +1.189 | 19 | THIN | - | 3.724 | 1 | 0 | 19 | BELOW_POWER_FLOOR | - |
-| 4 | b2197_sw50sp50_sw50sp50 | 50 | True | 3 | None | 0.02 | 50 | time_stop_10d | +1.110 | 22 | THIN | - | 3.427 | 1 | 0 | 22 | BELOW_POWER_FLOOR | yes |
-| 5 | b2197_sw50sp50_sw50sp50 | 50 | True | 20 | None | 0.01 | 50 | time_stop_10d | +1.044 | 15 | THIN | - | 3.929 | 3 | 0 | 15 | BELOW_POWER_FLOOR | yes |
-| 6 | b2197_sw50sp50_sw50sp50 | 50 | True | 20 | None | 0.02 | 50 | time_stop_10d | +1.013 | 23 | THIN | - | 3.260 | 3 | 0 | 23 | BELOW_POWER_FLOOR | yes |
-| 7 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.01 | 50 | time_stop_10d | +0.993 | 13 | THIN | - | 4.127 | 1 | 0 | 13 | BELOW_POWER_FLOOR | - |
-| 8 | b2197_sw50sp20_sw50sp20 | 50 | True | 3 | None | 0.01 | 20 | time_stop_10d | +0.930 | 14 | THIN | - | 3.915 | 2 | 0 | 14 | BELOW_POWER_FLOOR | - |
-| 9 | b2197_sw30sp20_sw30sp20 | 30 | False | 20 | 250 | 0.01 | 20 | time_stop_10d | +0.816 | 12 | THIN | 1 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR | - |
-| 10 | b2197_sw30sp50_sw30sp50 | 30 | False | 20 | 250 | 0.01 | 50 | time_stop_10d | +0.816 | 12 | THIN | 2 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR | - |
-| 11 | b2197_sw30sp100_sw30sp100 | 30 | False | 20 | 250 | 0.01 | 100 | time_stop_10d | +0.816 | 12 | THIN | 3 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR | - |
-| 12 | b2712_smc_sw10_sw10 | 10 | True | 3 | 180 | 0.01 | 200 | earnings_blackout | +0.803 | 13 | THIN | - | 2.221 | 1 | 0 | 13 | BELOW_POWER_FLOOR | yes |
-| 13 | b2712_smc_sw10_sw10 | 10 | True | 20 | 120 | 0.01 | 200 | earnings_blackout | +0.766 | 12 | THIN | - | 2.252 | 4 | 0 | 12 | BELOW_POWER_FLOOR | yes |
-| 14 | b2197_sw50sp20_sw50sp20 | 50 | True | 20 | None | 0.01 | 20 | time_stop_10d | +0.759 | 15 | THIN | - | 3.592 | 3 | 0 | 15 | BELOW_POWER_FLOOR | - |
-| 15 | b2197_sw50sp9_sw50sp9 | 50 | True | 3 | None | 0.02 | 9 | time_stop_10d | +0.724 | 25 | THIN | - | 2.820 | 1 | 0 | 25 | BELOW_POWER_FLOOR | yes |
-| 16 | b2197_sw30sp20_sw30sp20 | 30 | False | 20 | 250 | 0.02 | 20 | earnings_blackout | +0.701 | 22 | THIN | - | 1.702 | 5 | 0 | 22 | BELOW_POWER_FLOOR | - |
-| 17 | b2197_sw30sp9_sw30sp9 | 30 | False | 20 | 250 | 0.02 | 9 | earnings_blackout | +0.687 | 22 | THIN | - | 1.684 | 5 | 0 | 22 | BELOW_POWER_FLOOR | - |
-| 18 | b2197_sw30sp150_sw30sp150 | 30 | True | 20 | 120 | 0.03 | 150 | earnings_blackout | +0.671 | 14 | THIN | - | 1.990 | 5 | 0 | 14 | BELOW_POWER_FLOOR | - |
-| 19 | b2197_sw50sp9_sw50sp9 | 50 | True | 20 | None | 0.02 | 9 | time_stop_10d | +0.661 | 26 | THIN | - | 2.706 | 3 | 0 | 26 | BELOW_POWER_FLOOR | yes |
-| 20 | pairs_mrl_step1_production | production | None | None | None | None | None | time_stop_10d | +0.659 | 797 | DEEP | - | 1.011 | 1 | 0 | 797 | RANKED | - |
-| 21 | b2197_sw50sp9_sw50sp9 | 50 | False | 3 | None | 0.02 | 9 | fixed_4r_2r | +0.656 | 33 | MID | - | 1.930 | 1 | 0 | 33 | BELOW_POWER_FLOOR | yes |
-| 22 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 250 | 0.02 | 50 | earnings_blackout | +0.644 | 16 | THIN | 1 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR | - |
-| 23 | b2197_sw30sp100_sw30sp100 | 30 | True | 20 | 250 | 0.02 | 100 | earnings_blackout | +0.644 | 16 | THIN | 2 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR | - |
-| 24 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.03 | 50 | time_stop_10d | +0.613 | 22 | THIN | - | 2.865 | 1 | 0 | 22 | BELOW_POWER_FLOOR | yes |
-| 25 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 120 | 0.03 | 20 | earnings_blackout | +0.604 | 15 | THIN | 1 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
-
-_1030 ranked outcomes across 103 graded configs; 1004 distinct signatures._
-
-**Best within each depth tier** (the comparison a rank order hides):
-
-| tier | best is_ci_lo | at n | rows |
-|---|---|---|---|
-| DEEP | +0.659 | 797 | 748 |
-| MID | +0.656 | 33 | 191 |
-| THIN | +1.250 | 14 | 91 |
-
-## Index - 103 graded config(s), newest first
+## Index - 104 graded config(s), newest first
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 0.516 | - | 0/0 combinations | 9/9 |
 | output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02 | 0.153 | 510 | 0/24 exits | 9/9 |
 | output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 0.223 | 523 | 0/24 exits | 9/9 |
 | output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02 | 0.241 | 543 | 0/24 exits | 9/9 |
@@ -487,6 +207,96 @@ _1030 ranked outcomes across 103 graded configs; 1004 distinct signatures._
 
 ## Per-config findings
 
+### output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45
+
+**Configuration:** P1_gate_budget={"k": 3, "mandatory": ["above_r1"]}
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.516** (is_sharpe 0.801, None fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | AUTO (S6-B3240); legs x exits at the cube's gate budget: lever4_step1 at manifest gate_budget={"pivot_r1_breakout": {"k": 3, "mandatory": ["above_r1"]}} -> output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_grid_auto.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B3240); the live strategy replayed on the cube's signals under the arm's budget: spot_check_replay at manifest gate_budget={"pivot_r1_breakout": {"k": 3, "mandatory": ["above_r1"]}}; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 11 run: 0 WARN / 0 FAIL / 11 INFO -> output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (11 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | DONE | AUTO (B2192): the grader collapses identical outcomes - 69 ranked outcome classes carry None parameter combinations; None distinct outcome classes among 0 combinations enumerated in output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_grid_auto.json |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 1 of 1 declared knobs read from the environment + consumer lists match the tree; verify_lever4_anchors.py exit 0 |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_grid_auto.json): 0 combinations enumerated: ; rank-1 [regime_flip] is_ci_lo 0.516 is_sharpe 0.801 fires None - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 26016 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is ... | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | 48f15723e1cfeddd | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an ... | PASS | a shortfall = exits silently dropped from the cube |
+| closed trade-log fires that have an exit-cube row | 1084 of 1084 closed trade-log fires have exit-cube rows; 0 ... | PASS | any missing = an entry the cube lost, which M2 cannot see (S6-B3267) |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha b988f6edeb63 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is ... | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; gate_budget={"pivot_r1_breakout": {"k": 3, ... | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ... | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 1 of 1 declared knobs read from the environment + consumer ... | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_spot_check.json.
+
+**Adversarial lenses (step 5) - 11 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family pivot_r1_breakout)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 1084 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.35 (2025Q2) over 5 quarters of 1084 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.07 of 1084 entries across 187 tickers; WARN > 0.30 |
+| eligibility_leak | INFO | 0 of 1084 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped) |
+| selection_margin | INFO | rank-1 [regime_flip] is_ci_lo 0.516 vs rank-2 [breakeven_plus_trail] 0.488: margin 0.028 between outcome classes; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a) |
+| empty_signals_share | INFO | 0 of 1084 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/1084 (0.0%) from replay_atr_fallback.json) |
+| grading_provenance | INFO | grading surface UNCHANGED since freeze (29 files, digest a543fcf8f094) |
+| direction_consistency | INFO | graded pivot_r1_breakout is DUAL (is_dual source check) - directions ['long', 'short'] are its own two legs, the design and not a finding (S6-B3119a) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_spot_check.json |
+| min_trades_floor | INFO | 1084 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 0 combinations enumerated (population field `results`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| None | 0.516 | 0.801 | None | regime_flip | None | (no knobs recorded) |
+| None | 0.488 | 0.73 | None | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.322 | 0.506 | None | hybrid_50pct_target | None | (no knobs recorded) |
+| None | 0.275 | 0.487 | None | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.218 | 0.575 | None | time_stop_10d | None | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_grid_auto.json._
+
 ### output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02
 
 **Configuration:** P1_ema_span=150, P2_lookback=252, P3_n_periods=6, P4_n_bins=40, P6_max_distance_pct=0.02
@@ -543,12 +353,14 @@ _1030 ranked outcomes across 103 graded configs; 1004 distinct signatures._
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12240 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=150 lookback=252 n_periods=6 n_bins=40 max_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 5 of 5 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 12240 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -644,12 +456,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_150_p2
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12552 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=100 lookback=252 n_periods=6 n_bins=40 max_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 5 of 5 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 12552 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -745,12 +559,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_100_p2
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 13032 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=50 lookback=252 n_periods=6 n_bins=40 max_d | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 5 of 5 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 13032 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -846,12 +662,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_50_p2_
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 15816 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=20 lookback=252 n_periods=6 n_bins=40 max_d | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 5 of 5 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 15816 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -947,12 +765,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_20_p2_
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 18360 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=9 lookback=252 n_periods=6 n_bins=40 max_di | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 5 of 5 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 18360 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1048,12 +868,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_9_p2_2
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12384 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; lookback=252 n_periods=6 n_bins=30 max_distance_pct= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 12384 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1149,12 +971,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_30_p2_
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12648 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; lookback=252 n_periods=6 n_bins=20 max_distance_pct= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 12648 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1250,12 +1074,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_20_p2_
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 14400 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; lookback=252 n_periods=50 n_bins=40 max_distance_pct | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 14400 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1351,12 +1177,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_50_p2_
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 13824 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; lookback=252 n_periods=12 n_bins=40 max_distance_pct | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 13824 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1452,12 +1280,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_12_p2_
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12888 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; lookback=252 n_periods=8 n_bins=40 max_distance_pct= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 12888 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1553,9 +1383,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_8_p2_2
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 11808 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 11808 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1651,9 +1483,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_4_p3_4
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 13416 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1729,7 +1563,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p2_126_p2
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| entries at or after the LOCKED holdout start | 21912 entries past 2025-05-05 (not declared a Step-1 cube | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
+| entries at or after the LOCKED holdout start | 21912 entries past 2025-05-05 (not declared a Step-1 cube; p | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
 | fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
 | pre-launch receipt matches the run manifest | receipt matches manifest sha a1aa7373ca8c | PASS | mismatch = this run is not the run that was gated |
 
@@ -1737,12 +1571,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p2_126_p2
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 84288 cube rows across 6 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; eg_significance=0.01 z_window=60 -> output_pairs_mrl | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 49 agree / 1 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 84288 cube rows across 6 leg(s); M6 boundary drops (B1076 caveat, measured): [{'leg': 1, 'sim_date': '2023-03-08', 'open_trades_carried': 274}, {'leg': 2, 'sim_date': '2024-01-10', 'open_trades_carried': 309}, {'leg': 3, 'sim_date': '2024-11-04', 'open_trades_carried': 294}, {'leg': 4, 'sim_date': '2025-08-01', 'open_trades_carried': 283}, {'leg': 5, 'sim_date': '2026-04-30', 'open_trades_carried': 247}]
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1828,12 +1664,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_p
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 18288 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; eg_significance=0.05 z_window=90 -> output_pairs_mrl | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 18288 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -1917,12 +1755,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_9
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 19656 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; eg_significance=0.05 z_window=40 -> output_pairs_mrl | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 19656 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2006,12 +1846,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_4
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 11424 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; eg_significance=0.01 z_window=90 -> output_pairs_mrl | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 11424 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2095,12 +1937,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 11928 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; eg_significance=0.01 z_window=60 -> output_pairs_mrl | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 11928 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2184,12 +2028,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12408 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; eg_significance=0.01 z_window=40 -> output_pairs_mrl | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 12408 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2265,7 +2111,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| entries at or after the LOCKED holdout start | 32136 entries past 2025-05-05 (not declared a Step-1 cube | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
+| entries at or after the LOCKED holdout start | 32136 entries past 2025-05-05 (not declared a Step-1 cube; p | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
 | fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
 | pre-launch receipt matches the run manifest | receipt matches manifest sha df2155de4cf0 | PASS | mismatch = this run is not the run that was gated |
 
@@ -2273,12 +2119,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 134928 cube rows across 6 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0;  -> output_pairs_mrl_step2_production_grid_auto.json | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 0 of 0 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 134928 cube rows across 6 leg(s); M6 boundary drops (B1076 caveat, measured): [{'leg': 1, 'sim_date': '2023-03-24', 'open_trades_carried': 331}, {'leg': 2, 'sim_date': '2023-09-21', 'open_trades_carried': 365}, {'leg': 3, 'sim_date': '2024-07-12', 'open_trades_carried': 396}, {'leg': 4, 'sim_date': '2025-04-21', 'open_trades_carried': 162}, {'leg': 5, 'sim_date': '2026-01-05', 'open_trades_carried': 394}]
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2362,12 +2210,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_p
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 19128 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0;  -> output_pairs_mrl_step1_production_grid_auto.json | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 0 of 0 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 19128 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2453,7 +2303,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step1_p
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| entries at or after the LOCKED holdout start | 34944 entries past 2025-05-05 (not declared a Step-1 cube | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
+| entries at or after the LOCKED holdout start | 34944 entries past 2025-05-05 (not declared a Step-1 cube; p | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
 | fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
 | pre-launch receipt matches the run manifest | receipt matches manifest sha 062a3a8b9554 | PASS | mismatch = this run is not the run that was gated |
 
@@ -2461,12 +2311,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step1_p
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 133728 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=250 -> output_bl_step2_p4_250_p4_250_grid_a | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 133728 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2552,7 +2404,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_250_p
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| entries at or after the LOCKED holdout start | 11160 entries past 2025-05-05 (not declared a Step-1 cube | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
+| entries at or after the LOCKED holdout start | 11160 entries past 2025-05-05 (not declared a Step-1 cube; p | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
 | fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
 | pre-launch receipt matches the run manifest | receipt matches manifest sha f2f82f100215 | PASS | mismatch = this run is not the run that was gated |
 
@@ -2560,12 +2412,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_250_p
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; ema_span=9 -> output_bl_step2_p4_9_p4_9_grid_auto.js | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 41688 cube rows across 5 leg(s); M6 boundary drops (B1076 caveat, measured): [{'leg': 1, 'sim_date': '2023-06-23', 'open_trades_carried': 3}, {'leg': 2, 'sim_date': '2024-06-27', 'open_trades_carried': 11}, {'leg': 3, 'sim_date': '2025-05-01', 'open_trades_carried': 14}, {'leg': 4, 'sim_date': '2026-03-09', 'open_trades_carried': 13}]
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2658,12 +2512,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_9_p4_
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 16752 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=250 -> output_bl_span250_span250_grid_auto. | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 16752 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2755,12 +2611,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span250_span25
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12936 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=150 -> output_bl_span150_span150_grid_auto. | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 12936 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2852,12 +2710,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span150_span15
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; ema_span=100 -> output_bl_span100_span100_grid_auto. | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 9936 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -2949,12 +2809,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span100_span10
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 3888 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=50 -> output_bl_span050_span050_grid_auto.j | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 3888 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3046,12 +2908,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span050_span05
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 696 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=21 -> output_bl_span021_span021_grid_auto.j | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 29 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 696 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3143,12 +3007,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span021_span02
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 888 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; ema_span=20 -> output_bl_span020_span020_grid_auto.j | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 37 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 888 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3240,12 +3106,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span020_span02
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; ema_span=9 -> output_bl_span009_span009_grid_auto.js | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 2 of 2 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 7392 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3329,7 +3197,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span009_span00
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| entries at or after the LOCKED holdout start | 4584 entries past 2025-05-05 (not declared a Step-1 cube | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
+| entries at or after the LOCKED holdout start | 4584 entries past 2025-05-05 (not declared a Step-1 cube; pa | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
 | fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
 | pre-launch receipt matches the run manifest | receipt matches manifest sha ad86ff2fd87e | PASS | mismatch = this run is not the run that was gated |
 
@@ -3337,12 +3205,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span009_span00
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 22920 cube rows across 4 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.5 min_step_pct=0.0 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 22920 cube rows across 4 leg(s); M6 boundary drops (B1076 caveat, measured): [{'leg': 1, 'sim_date': '2023-09-25', 'open_trades_carried': 60}, {'leg': 2, 'sim_date': '2025-01-28', 'open_trades_carried': 112}, {'leg': 3, 'sim_date': '2026-03-25', 'open_trades_carried': 50}]
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3434,12 +3304,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_st
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 2352 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.5 min_step_pct=0.0 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 2352 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3531,12 +3403,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 4464 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.0 min_step_pct=0.0 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 4464 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3610,7 +3484,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c02_b0
 |---|---|---|---|
 | cube produced rows | 1656 rows | PASS | zero rows = the config ran and emitted nothing |
 | exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
-| mega-caps present in the universe | none - small/deliberate universes SKIP | SKIP **<-- NOT PASS** | absent = the abandoned A-C chunk universe (L445) |
+| mega-caps present in the universe | none - small/deliberate universes SKIP; the archived A-C chu | SKIP **<-- NOT PASS** | absent = the abandoned A-C chunk universe (L445) |
 | universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
 | cube content hash | 0d2ab000784310ce | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
 | entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
@@ -3628,12 +3502,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c02_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 1656 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.5 min_step_pct=0.25 max_wick | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 1656 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3725,12 +3601,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c18_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 2352 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.5 min_step_pct=0.25 max_wick | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 2352 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3822,12 +3700,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c17_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 2280 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.5 min_step_pct=0.1 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 2280 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -3919,12 +3799,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c16_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 3168 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.5 min_step_pct=0.1 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 3168 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4016,12 +3898,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c15_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 3288 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.5 min_step_pct=0.0 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 3288 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4113,12 +3997,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c13_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 3144 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.3 min_step_pct=0.25 max_wick | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 3144 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4210,12 +4096,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c12_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 5808 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.3 min_step_pct=0.25 max_wick | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 5808 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4307,12 +4195,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c11_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 4152 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.3 min_step_pct=0.1 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 4152 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4404,12 +4294,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c10_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 7296 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.3 min_step_pct=0.1 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 7296 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4501,12 +4393,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c09_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 4344 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.3 min_step_pct=0.0 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 4344 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4598,12 +4492,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c08_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 7728 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.3 min_step_pct=0.0 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 7728 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4695,12 +4591,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c07_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 4464 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.0 min_step_pct=0.25 max_wick | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 4464 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4792,12 +4690,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c06_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 10176 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.0 min_step_pct=0.25 max_wick | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 10176 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4889,12 +4789,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c05_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 5760 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.0 min_step_pct=0.1 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 5760 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -4986,12 +4888,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c04_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12360 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.0 min_step_pct=0.1 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 12360 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5083,12 +4987,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c03_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 6264 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.0 min_step_pct=0.0 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 6264 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5180,12 +5086,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c02_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 12744 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.0 min_step_pct=0.0 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 12744 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5277,12 +5185,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c01_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 13440 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; n_bars=3 min_body_pct=0.0 min_step_pct=0.0 max_wick_ | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled None seed 42: 50 agree / 0 DISAGREE / 0 sk | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 13440 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5364,12 +5274,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c01_b0
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=10 span=200 -> output_b2712_smc_sw10_sw10_grid | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 20260816: 50 agree / 0 DISAGREE / | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 6 of 6 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 117048 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5453,7 +5365,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2712_smc_sw10_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| entries at or after the LOCKED holdout start | 26568 entries past 2025-05-05 (not declared a Step-1 cube | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
+| entries at or after the LOCKED holdout start | 26568 entries past 2025-05-05 (not declared a Step-1 cube; p | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
 | fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
 | pre-launch receipt matches the run manifest | receipt matches manifest sha ed51dce782ea | PASS | mismatch = this run is not the run that was gated |
 
@@ -5461,12 +5373,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2712_smc_sw10_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 280 beyond winsorize 300.0 (beyond-count is DISCL | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 110784 cube rows across 6 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; min_consecutive_quarters=4 growth_lookback_quarters= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 110784 cube rows across 6 leg(s); M6 boundary drops (B1076 caveat, measured): [{'leg': 1, 'sim_date': '2022-05-20', 'open_trades_carried': 122}, {'leg': 2, 'sim_date': '2023-06-01', 'open_trades_carried': 211}, {'leg': 3, 'sim_date': '2024-05-20', 'open_trades_carried': 321}, {'leg': 4, 'sim_date': '2025-01-16', 'open_trades_carried': 364}, {'leg': 5, 'sim_date': '2025-11-04', 'open_trades_carried': 310}]
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5558,12 +5472,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_step2_span9_s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 8952 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; min_consecutive_quarters=4 growth_lookback_quarters= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 8952 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5655,12 +5571,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_rerun_cf
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 8976 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; min_consecutive_quarters=4 growth_lookback_quarters= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 8976 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5752,12 +5670,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_rerun
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 9648 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; min_consecutive_quarters=2 growth_lookback_quarters= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 9648 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5849,12 +5769,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq2_minq2_g
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 9240 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; min_consecutive_quarters=3 growth_lookback_quarters= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 9240 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -5946,12 +5868,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq3_minq3_g
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 6120 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; min_consecutive_quarters=6 growth_lookback_quarters= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 6120 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6043,12 +5967,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq6_minq6_g
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 7896 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; min_consecutive_quarters=4 growth_lookback_quarters= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 7896 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6140,12 +6066,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback8_loo
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 8208 cube rows across 2 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; min_consecutive_quarters=4 growth_lookback_quarters= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 8208 cube rows across 2 leg(s); M6 boundary drops (B1076 caveat, measured): [{'leg': 1, 'sim_date': '2025-02-28', 'open_trades_carried': 80}]
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6237,12 +6165,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback6_loo
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 8112 cube rows across 2 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; min_consecutive_quarters=4 growth_lookback_quarters= | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 8112 cube rows across 2 leg(s); M6 boundary drops (B1076 caveat, measured): [{'leg': 1, 'sim_date': '2024-12-20', 'open_trades_carried': 41}]
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6334,12 +6264,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback3_loo
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 7224 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; minq=4 lookback=4 multiple=1.25 span=200 -> output_i | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 7224 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6431,12 +6363,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.25_mult
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 10800 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; minq=4 lookback=4 multiple=1.0 span=200 -> output_ic | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 10800 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6518,12 +6452,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.0_mult1
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 8976 cube rows across 2 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; minq=4 lookback=4 multiple=1.1 span=100 -> output_ic | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 49 agree / 0 DISAGREE / 1 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 8976 cube rows across 2 leg(s); M6 boundary drops (B1076 caveat, measured): [{'leg': 1, 'sim_date': '2025-04-23', 'open_trades_carried': 36}]
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6617,12 +6553,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_span1
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 6144 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; minq=8 lookback=4 multiple=1.1 span=200 -> output_ic | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 6144 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6713,12 +6651,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq8_minq8_g
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 7752 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; minq=4 lookback=2 multiple=1.1 span=200 -> output_ic | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 7752 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6809,12 +6749,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback2_loo
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 6384 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; minq=4 lookback=4 multiple=1.5 span=200 -> output_ic | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 6384 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -6905,12 +6847,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.5_mult1
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 8904 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; minq=4 lookback=4 multiple=1.1 span=150 -> output_ic | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 8904 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -7001,12 +6945,14 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span150_span1
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 9720 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; minq=4 lookback=4 multiple=1.1 span=50 -> output_icg | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 9720 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -7153,7 +7099,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span20_span20
 |---|---|---|---|
 | cube produced rows | 14616 rows | PASS | zero rows = the config ran and emitted nothing |
 | exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
-| mega-caps present in the universe | NVDA, TSLA | PASS | absent = the abandoned A-C chunk universe (L445) |
+| mega-caps present in the universe | NVDA, TSLA); M1_cont | PASS | absent = the abandoned A-C chunk universe (L445) |
 | every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -7245,11 +7191,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span9_span9_g
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; minq=4 lookback=4 multiple=1.1 span=200 -> output_ic | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -7333,12 +7279,12 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_grid_aut
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
-| engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
+| grading ran at this config's own parameters | exit 0; swing=20 span=200 -> output_b2174_sw20_sw20_grid_aut | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 20260816: 50 agree / 0 DISAGREE / | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | exit 0; PASS - every swept parameter reaches the engine. | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
 
@@ -7411,7 +7357,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2174_sw20_sw20_g
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| entries at or after the LOCKED holdout start | 3120 entries past 2025-05-05 (not declared a Step-1 cube | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
+| entries at or after the LOCKED holdout start | 3120 entries past 2025-05-05 (not declared a Step-1 cube; pa | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
 | fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
 | pre-launch receipt matches the run manifest | receipt matches manifest sha 77d9da3e802a | PASS | mismatch = this run is not the run that was gated |
 
@@ -7419,11 +7365,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2174_sw20_sw20_g
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=50 span=50 -> output_b2399_step2_sw50sp50_step | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2399_step2_sw50sp50_ste | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -7492,11 +7438,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2399_step2_sw50s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=50 span=150 -> output_b2197_sw50sp150_sw50sp15 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw50sp150_sw50sp15 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -7565,11 +7511,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp150_s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=50 span=100 -> output_b2197_sw50sp100_sw50sp10 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw50sp100_sw50sp10 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -7638,11 +7584,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp100_s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=50 span=50 -> output_b2197_sw50sp50_sw50sp50_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw50sp50_sw50sp50_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -7711,11 +7657,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp50_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=50 span=20 -> output_b2197_sw50sp20_sw50sp20_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw50sp20_sw50sp20_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -7784,11 +7730,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp20_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=50 span=9 -> output_b2197_sw50sp9_sw50sp9_grid | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw50sp9_sw50sp9_sp | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -7857,11 +7803,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp9_sw5
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=5 span=150 -> output_b2197_sw5sp150_sw5sp150_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw5sp150_sw5sp150_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -7930,11 +7876,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp150_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=5 span=100 -> output_b2197_sw5sp100_sw5sp100_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw5sp100_sw5sp100_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8003,11 +7949,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp100_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=5 span=50 -> output_b2197_sw5sp50_sw5sp50_grid | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw5sp50_sw5sp50_sp | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8076,11 +8022,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp50_sw5
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=5 span=20 -> output_b2197_sw5sp20_sw5sp20_grid | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw5sp20_sw5sp20_sp | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8149,11 +8095,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp20_sw5
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=5 span=9 -> output_b2197_sw5sp9_sw5sp9_grid_au | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw5sp9_sw5sp9_spot | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8222,11 +8168,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp9_sw5s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=10 span=150 -> output_b2197_sw10sp150_sw10sp15 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw10sp150_sw10sp15 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8295,11 +8241,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp150_s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=10 span=100 -> output_b2197_sw10sp100_sw10sp10 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw10sp100_sw10sp10 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8368,11 +8314,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp100_s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=10 span=50 -> output_b2197_sw10sp50_sw10sp50_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw10sp50_sw10sp50_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8441,11 +8387,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp50_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=10 span=20 -> output_b2197_sw10sp20_sw10sp20_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw10sp20_sw10sp20_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8514,11 +8460,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp20_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=10 span=9 -> output_b2197_sw10sp9_sw10sp9_grid | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw10sp9_sw10sp9_sp | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8587,11 +8533,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp9_sw1
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=30 span=150 -> output_b2197_sw30sp150_sw30sp15 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw30sp150_sw30sp15 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8660,11 +8606,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp150_s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=30 span=100 -> output_b2197_sw30sp100_sw30sp10 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw30sp100_sw30sp10 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8733,11 +8679,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp100_s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=30 span=50 -> output_b2197_sw30sp50_sw30sp50_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw30sp50_sw30sp50_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8806,11 +8752,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp50_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=30 span=20 -> output_b2197_sw30sp20_sw30sp20_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw30sp20_sw30sp20_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8879,11 +8825,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp20_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=30 span=9 -> output_b2197_sw30sp9_sw30sp9_grid | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw30sp9_sw30sp9_sp | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -8952,11 +8898,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp9_sw3
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=20 span=150 -> output_b2197_sw20sp150_sw20sp15 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw20sp150_sw20sp15 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -9025,11 +8971,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp150_s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=20 span=100 -> output_b2197_sw20sp100_sw20sp10 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw20sp100_sw20sp10 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -9098,11 +9044,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp100_s
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=20 span=50 -> output_b2197_sw20sp50_sw20sp50_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw20sp50_sw20sp50_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -9171,11 +9117,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp50_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=20 span=21 -> output_b2197_sw20sp21_sw20sp21_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw20sp21_sw20sp21_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -9244,11 +9190,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp21_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=20 span=20 -> output_b2197_sw20sp20_sw20sp20_g | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw20sp20_sw20sp20_ | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -9317,11 +9263,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp20_sw
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=20 span=9 -> output_b2197_sw20sp9_sw20sp9_grid | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2197_sw20sp9_sw20sp9_sp | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -9390,11 +9336,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp9_sw2
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=5 span=200 -> output_b2190_sw5_sw5_grid_auto.j | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2190_sw5_sw5_spot_check | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -9463,11 +9409,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw5_sw5_gri
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=10 span=200 -> output_b2190_sw10_sw10_grid_aut | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2190_sw10_sw10_spot_che | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -9536,11 +9482,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw10_sw10_g
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=50 span=200 -> output_b2177_sw50_sw50_grid_aut | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2177_sw50_sw50_spot_che | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**
@@ -9609,11 +9555,11 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2177_sw50_sw50_g
 
 | check | measured | outcome | what would have been alarming |
 |---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
 | rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| grading ran at this config's own parameters | exit 0; swing=30 span=200 -> output_b2183_sw30_sw30_grid_aut | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; ; wrote output_audit/output_b2183_sw30_sw30_spot_che | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
 
 **Independent re-derivation of sampled trades (step 4)**

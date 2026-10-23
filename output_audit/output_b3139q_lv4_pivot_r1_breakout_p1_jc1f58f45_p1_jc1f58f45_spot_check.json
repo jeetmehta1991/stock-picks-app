@@ -1,0 +1,439 @@
+{
+  "strategy": "pivot_r1_breakout",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45",
+  "generator": "scripts/spot_check_replay.py",
+  "n_sampled": 50,
+  "seed": 42,
+  "agree": 50,
+  "disagree": 0,
+  "skipped": 0,
+  "execution_failures": [],
+  "knobs": {
+    "LEVER4_GATE_BUDGET": {
+      "pivot_r1_breakout": {
+        "k": 3,
+        "mandatory": [
+          "above_r1"
+        ]
+      }
+    },
+    "STRAT_EMA_SPAN": 200
+  },
+  "gate_keys_by_side": {
+    "long": [
+      "above_avwap_50low",
+      "above_r1",
+      "macd_12_26_9_bullish",
+      "vol_spike_15x"
+    ],
+    "short": [
+      "below_avwap_50low",
+      "below_s1",
+      "macd_12_26_9_bearish",
+      "vol_spike_15x"
+    ]
+  },
+  "legs_disclosure": "LEG A the cube's persisted signals and recorded direction; LEG B the live strategy function replayed on them under this process's config (the landed arm's env when the battery runs it); LEG C execution against the cached bars. No precompute leg - the knob reads none. A fire whose gate key was not persisted is skipped, never agreed.",
+  "rows": [
+    {
+      "ticker": "NOW",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "ALGN",
+      "entry_date": "2024-05-30",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "ENPH",
+      "entry_date": "2024-12-20",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "KLAC",
+      "entry_date": "2024-10-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "BMY",
+      "entry_date": "2024-05-31",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "LVS",
+      "entry_date": "2024-07-16",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "RCL",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "BKNG",
+      "entry_date": "2024-08-19",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "BBY",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "SCHW",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "ON",
+      "entry_date": "2025-04-22",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "WBA",
+      "entry_date": "2025-02-18",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "MTCH",
+      "entry_date": "2025-04-22",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "NOC",
+      "entry_date": "2024-05-29",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "ENPH",
+      "entry_date": "2024-06-20",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "BA",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "F",
+      "entry_date": "2025-04-22",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "NEM",
+      "entry_date": "2025-04-04",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "UPS",
+      "entry_date": "2024-05-31",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "NUE",
+      "entry_date": "2025-02-03",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CCI",
+      "entry_date": "2024-05-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "CAT",
+      "entry_date": "2024-06-28",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "LUV",
+      "entry_date": "2024-05-13",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "FCX",
+      "entry_date": "2024-11-12",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "OXY",
+      "entry_date": "2024-08-08",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "KLAC",
+      "entry_date": "2024-05-06",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "DAL",
+      "entry_date": "2025-03-04",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "SBUX",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "INTC",
+      "entry_date": "2024-08-01",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "SHW",
+      "entry_date": "2025-04-29",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "ON",
+      "entry_date": "2024-11-25",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "AXP",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "ENPH",
+      "entry_date": "2025-04-08",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "MRNA",
+      "entry_date": "2025-03-05",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "LULU",
+      "entry_date": "2024-05-20",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "DAL",
+      "entry_date": "2025-04-22",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "INTU",
+      "entry_date": "2024-05-30",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "LRCX",
+      "entry_date": "2024-05-06",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "GILD",
+      "entry_date": "2025-04-30",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "FCX",
+      "entry_date": "2024-05-14",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "KO",
+      "entry_date": "2025-04-14",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "NOC",
+      "entry_date": "2025-04-11",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "FTNT",
+      "entry_date": "2025-04-09",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "TSLA",
+      "entry_date": "2025-02-25",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "MPC",
+      "entry_date": "2025-04-22",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "DIS",
+      "entry_date": "2025-03-11",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "NKE",
+      "entry_date": "2024-06-28",
+      "direction": "short",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "ENPH",
+      "entry_date": "2025-04-22",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "WYNN",
+      "entry_date": "2024-09-24",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    },
+    {
+      "ticker": "MRNA",
+      "entry_date": "2024-11-25",
+      "direction": "long",
+      "leg_b": "agree",
+      "why": "",
+      "execution_failed": []
+    }
+  ]
+}
