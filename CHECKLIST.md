@@ -5889,6 +5889,8 @@ detection of a stale verdict is JUDGMENT-ONLY.
 
 **INSTANCE (B3139q-r104 / L957) - STAGING IS AN EDIT TO THE TRACKED SET.** B3139q-r103 committed four specs whose subset files stayed untracked; test_b3184 passed in the r103 gate because the specs were untracked too, and HEAD 13afb8ee3 was RED. preflight C19 re-runs the tracked-set tests when a commit adds a file (test_b3287).
 
+**INSTANCE (B3139q-r107 / L959) - AN OFFLINE SWEEP IS A MEASUREMENT OF ONE TREE TOO.** The batch-C T4 driver and the r107 mutation probes were issued in one response; the probes rewrote three of the driver's own scripts on disk between 14:03:24Z and 14:04:49Z. Zero effect, measured from process creation times, the driver's step stamps and the backups' mtimes (the sweep imports once, no multiprocessing; the next launch came six minutes after the last restore). Rule: read the live process list for a consumer of a file before a probe rewrites it; a measurement and a probe that rewrites its code never share a response.
+
 ### #293 - A PATCHER WRITES BYTES; A GATE THAT READS A DIFF IS ENDING-BLIND (B2581 / L756)
 
 **Never `Path.write_text` a file you did not create.** On Windows it rewrites every line ending in the

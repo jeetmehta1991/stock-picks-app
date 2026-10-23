@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "13afb8ee3",
-    "generated_at": "2026-10-22 16:53:32"
+    "source_commit": "4a0836878",
+    "generated_at": "2026-10-23 10:01:02"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -124,7 +124,7 @@
       "strategy": "52w_high_breakout_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 66,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -157,7 +157,7 @@
       "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
       "family": "smart_money_sleeve",
       "r5_fires": 203,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -700,7 +700,7 @@
       "strategy": "bollinger_tight_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 840,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -1021,7 +1021,8 @@
         "S6-B3237",
         "S6-B3246",
         "S6-B3251",
-        "S6-B3270"
+        "S6-B3270",
+        "S6-B3289"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -1518,7 +1519,7 @@
       "strategy": "donchian_breakout_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 985,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -4936,10 +4937,10 @@
       "strategy": "post_inclusion_drift_long",
       "family": "-",
       "r5_fires": 27,
-      "changed_since_r5": false,
-      "survives_pct": 1.0,
+      "changed_since_r5": true,
+      "survives_pct": 0.963,
       "survives_pct_by_side": {
-        "long": 1.0
+        "long": 0.963
       },
       "unmeasured_gate_keys": {},
       "r5_fires_by_side": {
@@ -4952,7 +4953,7 @@
         "kind": "partial"
       },
       "projected_step1_fires": 2.5,
-      "projected_current_gate": 2.5,
+      "projected_current_gate": 2.4,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6609,10 +6610,13 @@
       "mention_tickets": [
         "S6-B2810b",
         "S6-B3232",
+        "S6-B3246",
         "S6-B3248",
         "S6-B3251",
         "S6-B3254",
-        "S6-B3270"
+        "S6-B3270",
+        "S6-B3289",
+        "S6-B3291"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6622,7 +6626,7 @@
       "strategy": "squeeze_breakout_with_smart_money_long",
       "family": "smart_money_sleeve",
       "r5_fires": 1139,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0
@@ -6649,7 +6653,8 @@
         "S6-B3235",
         "S6-B3248",
         "S6-B3252",
-        "S6-B3254"
+        "S6-B3254",
+        "S6-B3291"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7708,10 +7713,13 @@
         "S6-B3228",
         "S6-B3232",
         "S6-B3235",
+        "S6-B3246",
         "S6-B3247",
         "S6-B3251",
         "S6-B3253",
-        "S6-B3270"
+        "S6-B3270",
+        "S6-B3289",
+        "S6-B3290"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7832,7 +7840,7 @@
       "strategy": "xs_low_beta_long",
       "family": "factor",
       "r5_fires": 78,
-      "changed_since_r5": false,
+      "changed_since_r5": true,
       "survives_pct": 1.0,
       "survives_pct_by_side": {
         "long": 1.0

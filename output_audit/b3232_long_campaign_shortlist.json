@@ -1,9 +1,9 @@
 {
   "generator": "scripts/build_long_campaign_shortlist.py (S6-B3232)",
   "build": {
-    "source_commit": "8371cc71e",
-    "generated_at": "2026-10-22 00:19:28 UTC",
-    "status_view_build": "8371cc71e"
+    "source_commit": "4a0836878",
+    "generated_at": "2026-10-23 15:10:44 UTC",
+    "status_view_build": "4a0836878"
   },
   "population": {
     "open_long_capable": 122,
@@ -2296,10 +2296,10 @@
       "long_lane": "LOOSEN",
       "cost": "engine resim",
       "long_share_r5": 1.0,
-      "long_survival_r5": 1.0,
+      "long_survival_r5": 0.963,
       "long_survival_unmeasured_keys": null,
-      "projected_step1_fires_strategy": 2.5,
-      "projected_step1_fires_long": 2.5,
+      "projected_step1_fires_strategy": 2.4,
+      "projected_step1_fires_long": 2.4,
       "step1_floor_met": false,
       "exploratory": false,
       "deploy_bar": null,

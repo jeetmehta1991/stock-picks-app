@@ -1,0 +1,400 @@
+{
+  "strategy": "cmf_flip",
+  "axes": [
+    {
+      "key": "rsi_14",
+      "op": "lt",
+      "levels": [
+        50.0,
+        46.57,
+        43.52,
+        40.16,
+        35.49
+      ],
+      "group": null
+    },
+    {
+      "key": "po3_accum_range_pct",
+      "op": "ge",
+      "levels": [
+        0.0458,
+        0.0561,
+        0.0693,
+        0.0867,
+        0.1203
+      ],
+      "group": null
+    }
+  ],
+  "direction": "long",
+  "production_levels": [
+    50.0,
+    0.0458
+  ],
+  "evidence": {
+    "landed_fires": 1753,
+    "coverage": 1.0,
+    "cube_rows": 36426,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 89,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": true,
+    "direction": "long",
+    "survival_filter": {
+      "applied": true,
+      "fires_after": 1401,
+      "fires_dropped": 352
+    }
+  },
+  "reproduction": 1.0,
+  "cells_total": 25,
+  "cells_graded": 25,
+  "trials_searched": 650,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        50.0,
+        0.1203
+      ],
+      "is_trades": 290,
+      "is_cube_rows": 7540,
+      "best_exit": "regime_flip",
+      "is_sharpe": 1.195,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        46.57,
+        0.1203
+      ],
+      "is_trades": 259,
+      "is_cube_rows": 6734,
+      "best_exit": "regime_flip",
+      "is_sharpe": 1.055,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        43.52,
+        0.1203
+      ],
+      "is_trades": 206,
+      "is_cube_rows": 5356,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.045,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.16,
+        0.1203
+      ],
+      "is_trades": 149,
+      "is_cube_rows": 3874,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.955,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        50.0,
+        0.0867
+      ],
+      "is_trades": 526,
+      "is_cube_rows": 13676,
+      "best_exit": "regime_flip",
+      "is_sharpe": 0.92,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        35.49,
+        0.1203
+      ],
+      "is_trades": 90,
+      "is_cube_rows": 2340,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.902,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        43.52,
+        0.0867
+      ],
+      "is_trades": 356,
+      "is_cube_rows": 9256,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.856,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.16,
+        0.0867
+      ],
+      "is_trades": 248,
+      "is_cube_rows": 6448,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.851,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        46.57,
+        0.0867
+      ],
+      "is_trades": 447,
+      "is_cube_rows": 11622,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.835,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        50.0,
+        0.0693
+      ],
+      "is_trades": 731,
+      "is_cube_rows": 19006,
+      "best_exit": "regime_flip",
+      "is_sharpe": 0.809,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        43.52,
+        0.0693
+      ],
+      "is_trades": 474,
+      "is_cube_rows": 12324,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.809,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        35.49,
+        0.0867
+      ],
+      "is_trades": 141,
+      "is_cube_rows": 3666,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.791,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.16,
+        0.0693
+      ],
+      "is_trades": 332,
+      "is_cube_rows": 8632,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.788,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        35.49,
+        0.0561
+      ],
+      "is_trades": 206,
+      "is_cube_rows": 5356,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.772,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        46.57,
+        0.0693
+      ],
+      "is_trades": 609,
+      "is_cube_rows": 15834,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.767,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        35.49,
+        0.0693
+      ],
+      "is_trades": 178,
+      "is_cube_rows": 4628,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.747,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        35.49,
+        0.0458
+      ],
+      "is_trades": 227,
+      "is_cube_rows": 5902,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.74,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        43.52,
+        0.0561
+      ],
+      "is_trades": 583,
+      "is_cube_rows": 15158,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.736,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.16,
+        0.0561
+      ],
+      "is_trades": 393,
+      "is_cube_rows": 10218,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.728,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        46.57,
+        0.0561
+      ],
+      "is_trades": 765,
+      "is_cube_rows": 19890,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.698,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        50.0,
+        0.0561
+      ],
+      "is_trades": 945,
+      "is_cube_rows": 24570,
+      "best_exit": "regime_flip",
+      "is_sharpe": 0.688,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.16,
+        0.0458
+      ],
+      "is_trades": 446,
+      "is_cube_rows": 11596,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.675,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        50.0,
+        0.0458
+      ],
+      "is_trades": 1143,
+      "is_cube_rows": 29718,
+      "best_exit": "regime_flip",
+      "is_sharpe": 0.664,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        43.52,
+        0.0458
+      ],
+      "is_trades": 682,
+      "is_cube_rows": 17732,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.656,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        46.57,
+        0.0458
+      ],
+      "is_trades": 911,
+      "is_cube_rows": 23686,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.645,
+      "exits_evaluated": 26
+    }
+  ],
+  "preregistration_candidate": {
+    "levels": [
+      50.0,
+      0.1203
+    ],
+    "is_trades": 290,
+    "is_cube_rows": 7540,
+    "best_exit": "regime_flip",
+    "is_sharpe": 1.195,
+    "exits_evaluated": 26
+  },
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above",
+  "derive": null,
+  "permutation_null": {
+    "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+    "n_perms": 100,
+    "seed": 13,
+    "null_none_count": 0,
+    "null_max_is_sharpe_quantiles": {
+      "0.5": 1.06,
+      "0.9": 1.592,
+      "0.95": 1.807,
+      "0.99": 2.025
+    },
+    "observed_best_is_sharpe": 1.195,
+    "p_value_best": 0.3366
+  },
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 25,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 25,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 1.81,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis",
+    "reconciles": true,
+    "permutation_null": {
+      "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+      "n_perms": 100,
+      "seed": 13,
+      "null_none_count": 0,
+      "null_max_is_sharpe_quantiles": {
+        "0.5": 1.06,
+        "0.9": 1.592,
+        "0.95": 1.807,
+        "0.99": 2.025
+      },
+      "observed_best_is_sharpe": 1.195,
+      "p_value_best": 0.3366
+    },
+    "significance_basis": "permutation_null",
+    "trials_searched": 650
+  },
+  "band_ruling_verbatim": "Approve all recs / Implement now (owner 2026-10-22, on the B3139q-r104 close's decision 3: band reviews cmf_flip S6-B3246, williams_r_oversold S6-B3247, squeeze_breakout S6-B3248; recommendation 'Approve as rendered')",
+  "status_stamp_at_run": "4a0836878"
+}

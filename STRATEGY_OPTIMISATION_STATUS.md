@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 13afb8ee3 at 2026-10-22 16:53:32 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 4a0836878 at 2026-10-23 10:01:02 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -133,7 +133,7 @@
 | macd_bullish_with_smart_money_long | smart_money_sleeve | 1162 | 106.8 |  | 100.0% | NONE | NOT-STARTED | 1162 of 1162 |
 | squeeze_breakout | breakout | 1141 | 104.9 |  | 100.0% | NONE | IN-CAMPAIGN | 1141 of 1141 |
 | vol_spike_2x_below_ema_50_short | momentum_trend | 1140 | 104.8 |  | 100.0% | NONE | NOT-STARTED | 1140 of 1140 |
-| squeeze_breakout_with_smart_money_long | smart_money_sleeve | 1139 | 104.7 |  | 100.0% | - | DISABLED | 1139 of 1139 |
+| squeeze_breakout_with_smart_money_long | smart_money_sleeve | 1139 | 104.7 | YES | 100.0% | - | DISABLED | 1139 of 1139 |
 | institutional_recent_init_volume_long | institutional_persistence | 1075 | 98.8 |  | 100.0% | - | DONE-ADMITTED | 1075 of 1075 |
 | triangle_descending_short | chart_pattern | 1064 | 97.8 |  | 100.0% | LOOSEN | NOT-STARTED | 1064 of 1064 |
 | m_and_a_target_long | sec_edgar_sleeve | 1023 | 69.0 | YES | 73.4% | LOOSEN | NOT-STARTED | 1023 of 1023 |
@@ -143,7 +143,7 @@
 | donchian_breakdown_retest_short | breakout | 999 | 91.8 |  | 100.0% | LOOSEN | NOT-STARTED | 999 of 999 |
 | htf_aligned_breakout_short | multi_timeframe | 996 | 91.5 |  | 100.0% | LOOSEN | NOT-STARTED | 996 of 996 |
 | bullish_engulfing_support | candle | 991 | 91.1 |  | 100.0% | LOOSEN | NOT-STARTED | 991 of 991 |
-| donchian_breakout_with_smart_money_long | smart_money_sleeve | 985 | 90.5 |  | 100.0% | LOOSEN | NOT-STARTED | 985 of 985 |
+| donchian_breakout_with_smart_money_long | smart_money_sleeve | 985 | 90.5 | YES | 100.0% | LOOSEN | NOT-STARTED | 985 of 985 |
 | donchian_10_breakout | breakout | 966 | 88.8 |  | 100.0% | LOOSEN | NOT-STARTED | 966 of 966 |
 | smc_inverse_fvg | smc | 953 | 70.5 | YES | 80.5% | LOOSEN | STALLED-CAMPAIGN | 953 of 953 |
 | smc_breaker_block_long | smc | 948 | 87.1 | YES | UNMEASURED | - | DONE-ADMITTED | 948 of 948 |
@@ -153,7 +153,7 @@
 | donchian_breakdown_short | breakout | 872 | 80.1 |  | 100.0% | LOOSEN | NOT-STARTED | 872 of 872 |
 | pead_short | event_driven | 872 | 80.1 |  | 100.0% | LOOSEN | NOT-STARTED | 872 of 872 |
 | pivot_r1_breakout | pivot | 860 | 79.0 | YES | 100.0% | LOOSEN | NOT-STARTED | 860 of 860 |
-| bollinger_tight_with_smart_money_long | smart_money_sleeve | 840 | 77.2 |  | 100.0% | LOOSEN | NOT-STARTED | 840 of 840 |
+| bollinger_tight_with_smart_money_long | smart_money_sleeve | 840 | 77.2 | YES | 100.0% | LOOSEN | NOT-STARTED | 840 of 840 |
 | smc_equal_highs_sweep_short | smc | 838 | 28.1 | YES | 36.5% | LOOSEN | NOT-STARTED | 838 of 838 |
 | week_opening_gap_fill_up | ict | 834 | 76.7 |  | 100.0% | LOOSEN | NOT-STARTED | 834 of 834 |
 | prev_day_low_breakdown | breakout | 800 | 73.5 |  | 100.0% | LOOSEN | NOT-STARTED | 800 of 800 |
@@ -208,7 +208,7 @@
 | smc_ote_long | smc | 231 | 21.2 |  | 100.0% | LOOSEN | NOT-STARTED | 228 of 231 - 3 MISSING |
 | camarilla_s3_bounce | pivot | 228 | 21.0 |  | 100.0% | BOTH | NOT-STARTED | 227 of 228 - 1 MISSING |
 | xs_combined_momentum_low_ivol | factor | 212 | 19.5 |  | 100.0% | - | IN-ROSTER-FUNNEL | 211 of 212 - 1 MISSING |
-| 52w_high_breakout_with_smart_money_vol_below_long | smart_money_sleeve | 203 | 18.7 |  | 100.0% | LOOSEN | NOT-STARTED | 203 of 203 |
+| 52w_high_breakout_with_smart_money_vol_below_long | smart_money_sleeve | 203 | 18.7 | YES | 100.0% | LOOSEN | NOT-STARTED | 203 of 203 |
 | ichimoku_cloud_breakdown | trend | 197 | 7.8 | YES | 43.1% | LOOSEN | NOT-STARTED | 194 of 197 - 3 MISSING |
 | cup_and_handle_long | chart_pattern | 164 | 15.1 |  | 100.0% | LOOSEN | NOT-STARTED | 164 of 164 |
 | xs_momentum_quality_combined | factor | 163 | 15.0 |  | 100.0% | LOOSEN | NOT-STARTED | 163 of 163 |
@@ -234,11 +234,11 @@
 | xs_quality_top_quintile_long | factor | 89 | 8.2 |  | 100.0% | LOOSEN | NOT-STARTED | 85 of 89 - 4 MISSING |
 | judas_swing_short | ict | 84 | 7.7 |  | 100.0% | LOOSEN | NOT-STARTED | 80 of 84 - 4 MISSING |
 | avwap_20high_rejection_short | vwap | 81 | 7.4 | YES | 100.0% | LOOSEN | NOT-STARTED | 76 of 81 - 5 MISSING |
-| xs_low_beta_long | factor | 78 | 7.2 |  | 100.0% | LOOSEN | NOT-STARTED | 76 of 78 - 2 MISSING |
+| xs_low_beta_long | factor | 78 | 7.2 | YES | 100.0% | LOOSEN | NOT-STARTED | 76 of 78 - 2 MISSING |
 | 52wl_break_retest_short | breakout | 77 | 7.1 | YES | UNMEASURED | LOOSEN | NOT-STARTED | 74 of 77 - 3 MISSING |
 | mfi_oversold | mean_reversion | 77 | 7.1 |  | 100.0% | LOOSEN | NOT-STARTED | 71 of 77 - 6 MISSING |
 | pre_fomc_long_sleeve | event_driven | 69 | 6.3 |  | 100.0% | LOOSEN | NOT-STARTED | 68 of 69 - 1 MISSING |
-| 52w_high_breakout_with_smart_money_long | smart_money_sleeve | 66 | 6.1 |  | 100.0% | LOOSEN | NOT-STARTED | 65 of 66 - 1 MISSING |
+| 52w_high_breakout_with_smart_money_long | smart_money_sleeve | 66 | 6.1 | YES | 100.0% | LOOSEN | NOT-STARTED | 65 of 66 - 1 MISSING |
 | smc_fvg_retest_long | smc | 66 | 6.1 |  | 100.0% | LOOSEN | NOT-STARTED | 61 of 66 - 5 MISSING |
 | judas_swing_long | ict | 65 | 6.0 |  | 100.0% | LOOSEN | NOT-STARTED | 60 of 65 - 5 MISSING |
 | flag_bull_long | chart_pattern | 63 | 5.8 |  | 100.0% | LOOSEN | NOT-STARTED | 63 of 63 |
@@ -258,7 +258,7 @@
 | flag_bull_retest_long | chart_pattern | 33 | 3.0 |  | 100.0% | LOOSEN | NOT-STARTED | 24 of 33 - 9 MISSING |
 | death_cross_50_200_volume | trend | 31 | 2.8 |  | 100.0% | LOOSEN | NOT-STARTED | 26 of 31 - 5 MISSING |
 | pre_rebalance_long | - | 28 | 2.6 |  | 100.0% | LOOSEN | NOT-STARTED | 27 of 28 - 1 MISSING |
-| post_inclusion_drift_long | - | 27 | 2.5 |  | 100.0% | LOOSEN | NOT-STARTED | 23 of 27 - 4 MISSING |
+| post_inclusion_drift_long | - | 27 | 2.4 | YES | 96.3% | LOOSEN | NOT-STARTED | 23 of 27 - 4 MISSING |
 | weekly_bias_pullback_long | multi_timeframe | 27 | 2.5 |  | 100.0% | BOTH | NOT-STARTED | 20 of 27 - 7 MISSING |
 | pre_fomc_quality_momentum_long | event_driven | 25 | 2.3 |  | 100.0% | LOOSEN | NOT-STARTED | 12 of 25 - 13 MISSING |
 | insider_cluster_long | event_driven | 24 | 2.2 |  | 100.0% | LOOSEN | NOT-STARTED | 16 of 24 - 8 MISSING |

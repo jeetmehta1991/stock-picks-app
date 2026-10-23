@@ -63324,3 +63324,111 @@ def test_b3291_companion_screen_exact_name_and_chunked_read(tmp_path, monkeypatc
     whole = pd.read_csv(tl)
     chunked = ics._read_selected(tl, list(whole.columns), sel, chunksize=1)
     assert list(chunked["ticker"]) == list(whole[whole.strategy == "squeeze_breakout"]["ticker"])
+
+
+# ================================================================ B3139q-r107 S6-B3290b: derived keys ride the sweep
+def test_b3290b_sweep_derive_adds_keys_and_squeeze_rooms_reproduce_production(tmp_path, monkeypatch):
+    """S6-B3290b / S6-B3248: offline_level_sweep --derive loads a module's
+    derive(sig) -> dict and applies it to each fire's persisted dict before the
+    axes read it; scripts/squeeze_derived.py turns the persisted Bollinger /
+    Keltner edges into kc_room and bb_room. Arms: load_derive refuses an
+    absent file and a module with no derive(); on a fixture whose edges put
+    the fire OUTSIDE the squeeze at the production geometry, kc_room >= 2.0
+    and bb_room <= 2.0 (production reproduces), while an in-squeeze fixture
+    fails both at production; a missing edge yields None, never a default;
+    and load() with derive= exposes the derived key as an axis column."""
+    import json
+    import sys as _sys
+    from pathlib import Path as _P
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import offline_level_sweep as ols
+    import squeeze_derived as sd
+
+    with pytest.raises(SystemExit):
+        ols.load_derive(tmp_path / "absent.py")
+    bad = tmp_path / "bad.py"
+    bad.write_text("x = 1\n", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        ols.load_derive(bad)
+    fn, rec = ols.load_derive(root / "scripts" / "squeeze_derived.py")
+    assert rec["path"].endswith("squeeze_derived.py") and len(rec["sha256"]) == 64
+
+    # geometry: kc_mid 100, ATR 1 -> kc 98..102 at mult 2.0; the bb edges are
+    # ASYMMETRIC (upper room 3, lower room 1.5) so max-vs-min is load-bearing
+    outside = {"bb_20_20_lower": 98.5, "bb_20_20_upper": 103.0, "kc_lower": 98.0,
+               "kc_upper": 102.0, "kc_mid": 100.0}
+    d = sd.derive(outside)
+    assert d["kc_room"] == 3.0                                   # max(3.0, 1.5), not min
+    assert d["bb_room"] == pytest.approx(1.25 / 1.125)           # min(1.25, 2.75) / sd 1.125
+    assert d["kc_room"] >= 2.0 and d["bb_room"] <= 2.0          # production reproduces
+    assert d["kc_room"] >= 2.5 and d["bb_room"] <= 1.5          # this fire survives both tighter levels
+    inside = {"bb_20_20_lower": 99.0, "bb_20_20_upper": 101.0, "kc_lower": 98.0,
+              "kc_upper": 102.0, "kc_mid": 100.0}
+    d2 = sd.derive(inside)
+    assert d2["kc_room"] < 2.0 and d2["bb_room"] > 2.0           # an in-squeeze bar fails production
+    d3 = sd.derive({"kc_mid": 100.0})
+    assert d3["kc_room"] is None and d3["bb_room"] is None
+
+    rows = [{"ticker": "T1", "strategy": "sq", "entry_date": "2023-02-10", "direction": "long",
+             "signals_at_entry": json.dumps(outside)},
+            {"ticker": "T2", "strategy": "sq", "entry_date": "2023-03-10", "direction": "long",
+             "signals_at_entry": json.dumps(inside)}]
+    tl = tmp_path / "tl.csv"
+    pd.DataFrame(rows).to_csv(tl, index=False)
+    cube = tmp_path / "cube.csv"
+    pd.DataFrame([{"strategy": "sq", "direction": "long", "exit_method": "e1",
+                   "entry_date": r["entry_date"], "ticker": r["ticker"], "pnl_pct": 1.0,
+                   "hold_days": 2.0} for r in rows]).to_csv(cube, index=False)
+    monkeypatch.setattr(ols, "TRADE_LOG", tl)
+    monkeypatch.setattr(ols, "CUBE", cube)
+    axes = [ols.parse_axis("kc_room:ge:2.0,2.5")]
+    m, ev = ols.load("sq", axes, derive=fn)
+    assert "kc_room" in m.columns and ev["unmatched_join_rows"] == 0
+    assert set(ols.keep(m, axes, (2.5,))["ticker"]) == {"T1"}
+    m0, _ = ols.load("sq", axes)
+    assert m0["kc_room"].isna().all()                           # without --derive the key is absent
+
+
+# ================================================================ B3139q-r107 S6-B3291b: the consistent set is a tool
+def test_b3291b_companions_consistent_intersects_by_sign_and_clusters_by_module(tmp_path):
+    """S6-B3291b: runbook 3.6 steps 1-2 as a tool. Arms: a key surviving FDR in
+    both screens with the same effect sign is kept, an opposite-sign survivor
+    and a one-screen survivor are dropped; clusters key on the producer
+    module and pick the max joint effect (#165); a peeked screen is refused."""
+    import json
+    import subprocess
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import companions_consistent as cc
+
+    def row(k, kind, eff, surv=True, p=0.001):
+        r = {"key": k, "kind": kind, "p": p, "fdr_survivor": surv}
+        r["pnl_lift" if kind == "bool" else "q5_minus_q1"] = eff
+        return r
+    a = {"exit": "time_stop_10d", "survivors": 3, "selection": "exact", "strategies": ["sq"],
+         "results": [row("k1", "bool", 1.0), row("k2", "numeric", -2.0), row("k3", "bool", 0.5),
+                     row("k4", "numeric", 3.0, surv=False)]}
+    b = {"exit": "breakeven_plus_trail", "survivors": 3, "selection": "exact", "strategies": ["sq"],
+         "results": [row("k1", "bool", 0.4), row("k2", "numeric", 2.0), row("k3", "bool", -0.5),
+                     row("k4", "numeric", 2.5)]}
+    rows = cc.consistent(a, b)
+    assert [r["key"] for r in rows] == ["k1"], rows       # k2 opposite sign, k3 opposite, k4 one-screen
+    assert rows[0]["joint"] == 0.4 and rows[0]["sign"] == "+"
+    rows2 = [{"key": "k1", "kind": "bool", "joint": 0.4}, {"key": "k5", "kind": "bool", "joint": 0.9}]
+    cl = cc.cluster(rows2, lambda k: "m1" if k in ("k1", "k5") else None)
+    assert cl["m1"]["representative"] == "k5" and cl["m1"]["members"] == ["k5", "k1"]
+    # a peeked screen is refused at the CLI
+    pa, pb = tmp_path / "a.json", tmp_path / "b.json"
+    pa.write_text(json.dumps({**a, "peeked": True}), encoding="utf-8")
+    pb.write_text(json.dumps(b), encoding="utf-8")
+    r = subprocess.run([_sys.executable, str(root / "scripts" / "companions_consistent.py"),
+                        "--a", str(pa), "--b", str(pb), "--strategy", "sq",
+                        "--out", str(tmp_path / "out.json")], capture_output=True, text=True)
+    assert r.returncode != 0 and "peeked" in (r.stdout + r.stderr)

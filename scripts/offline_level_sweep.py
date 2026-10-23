@@ -191,8 +191,26 @@ def _survival_inputs(strategy: str) -> tuple:
     return r["survives_pct"], r.get("unmeasured_gate_keys")
 
 
+def load_derive(path) -> tuple:
+    """S6-B3290b: (derive_fn, {path, sha256}) from a module file exposing
+    derive(sig: dict) -> dict. Fails closed on an absent file or function."""
+    import hashlib
+    import importlib.util as ilu
+    p = Path(path)
+    if not p.is_file():
+        raise SystemExit(f"REFUSED: --derive {path} is not a file")
+    spec = ilu.spec_from_file_location("ols_derive_" + p.stem, p)
+    mod = ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    fn = getattr(mod, "derive", None)
+    if not callable(fn):
+        raise SystemExit(f"REFUSED: --derive {path} exposes no derive(sig) function")
+    return fn, {"path": str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p),
+                "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
+
+
 def load(strategy: str, axes: list[dict], direction: str | None = None,
-         survival: bool = False) -> tuple[pd.DataFrame, dict]:
+         survival: bool = False, derive=None) -> tuple[pd.DataFrame, dict]:
     """Merged cube + magnitudes, plus the refusal evidence. Raises on refusal.
 
     S6-B3290: `direction` keeps one leg of a dual strategy (the per-side
@@ -222,6 +240,10 @@ def load(strategy: str, axes: list[dict], direction: str | None = None,
             raise SystemExit(f"REFUSED: no surviving fires for {strategy} after the "
                              "T1 filter (S6-B3290)")
     sig = t["signals_at_entry"].map(_parse_sig)
+    if derive is not None:
+        # S6-B3290b: derived keys ride the persisted dict; an empty dict stays
+        # empty so the coverage refusal still sees the gap
+        sig = sig.map(lambda d: derive(d) if isinstance(d, dict) and d else d)
     covered = sig.map(lambda d: isinstance(d, dict) and len(d) > 0)
     coverage = float(covered.mean())
     for ax in axes:
@@ -307,8 +329,10 @@ def cell_family_rows(cells) -> list:
 
 def sweep(strategy: str, axes: list[dict], production: tuple,
           coverage_min: float, repro_min: float, min_n: int,
-          direction: str | None = None, survival: bool = False) -> dict:
-    m, ev = load(strategy, axes, direction=direction, survival=survival)
+          direction: str | None = None, survival: bool = False,
+          derive=None) -> dict:
+    m, ev = load(strategy, axes, direction=direction, survival=survival,
+                 derive=derive)
     if ev["coverage"] < coverage_min:
         raise SystemExit(f"REFUSED: signal coverage {ev['coverage']:.4f} < "
                          f"{coverage_min} - un-levellable rows would be dropped silently")
@@ -375,12 +399,13 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
 
 
 def attach_null(rec, strategy, axes, min_n, null_perms, null_seed,
-                direction=None, survival=False):
+                direction=None, survival=False, derive=None):
     """Compute the permutation null for a completed sweep record, in place.
     Reloads the frame (sweep does not retain it) - the same refusals apply
     upstream, so a record that graded is a record the null can price."""
     import numpy as np
-    m, _ = load(strategy, axes, direction=direction, survival=survival)
+    m, _ = load(strategy, axes, direction=direction, survival=survival,
+                derive=derive)
     IS = rc.in_sample(m)
     maxima = permutation_null(IS, axes, min_n, null_perms, null_seed)
     valid = [x for x in maxima if x is not None]
@@ -440,6 +465,10 @@ def main() -> int:
                          "axes sharing @group are OR-ed (S6-B3290)")
     ap.add_argument("--direction", choices=["long", "short"], default=None,
                     help="S6-B3290: grade ONE leg of a dual strategy")
+    ap.add_argument("--derive", default=None,
+                    help="S6-B3290b: a module file exposing derive(sig) -> dict "
+                         "that adds DERIVED keys to each fire's persisted dict "
+                         "before the axes read them")
     ap.add_argument("--survival", action="store_true",
                     help="S6-B3290: apply the T1 survival filter (status view "
                          "survives_pct) before grading; reproduction is then "
@@ -466,11 +495,13 @@ def main() -> int:
     if len(production) != len(axes):
         raise SystemExit(f"REFUSED: --production has {len(production)} values for "
                          f"{len(axes)} axes")
+    derive_fn, derive_rec = (load_derive(a.derive) if a.derive else (None, None))
     rec = sweep(a.strategy, axes, production, a.coverage_min, a.repro_min, a.min_n,
-                direction=a.direction, survival=a.survival)
+                direction=a.direction, survival=a.survival, derive=derive_fn)
+    rec["derive"] = derive_rec
     if a.null_perms > 0:
         attach_null(rec, a.strategy, axes, a.min_n, a.null_perms, a.null_seed,
-                    direction=a.direction, survival=a.survival)
+                    direction=a.direction, survival=a.survival, derive=derive_fn)
         pn = rec["permutation_null"]
         print(f"permutation null ({pn['n_perms']} perms): observed best "
               f"{pn['observed_best_is_sharpe']} | null q95 "

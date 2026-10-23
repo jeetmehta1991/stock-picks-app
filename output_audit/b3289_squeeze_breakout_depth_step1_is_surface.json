@@ -1,0 +1,166 @@
+{
+  "strategy": "squeeze_breakout",
+  "axes": [
+    {
+      "key": "kc_room",
+      "op": "ge",
+      "levels": [
+        2.0,
+        2.5
+      ],
+      "group": null
+    },
+    {
+      "key": "bb_room",
+      "op": "le",
+      "levels": [
+        2.0,
+        1.5
+      ],
+      "group": null
+    }
+  ],
+  "direction": null,
+  "production_levels": [
+    2.0,
+    2.0
+  ],
+  "evidence": {
+    "landed_fires": 1141,
+    "coverage": 1.0,
+    "cube_rows": 29666,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 164,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": true,
+    "direction": null,
+    "survival_filter": {
+      "applied": true,
+      "fires_after": 1141,
+      "fires_dropped": 0
+    }
+  },
+  "reproduction": 1.0,
+  "cells_total": 4,
+  "cells_graded": 4,
+  "trials_searched": 104,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        2.5,
+        2.0
+      ],
+      "is_trades": 492,
+      "is_cube_rows": 12792,
+      "best_exit": "class_time_stop",
+      "is_sharpe": 1.451,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        2.5,
+        1.5
+      ],
+      "is_trades": 434,
+      "is_cube_rows": 11284,
+      "best_exit": "class_time_stop",
+      "is_sharpe": 1.405,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        2.0,
+        1.5
+      ],
+      "is_trades": 440,
+      "is_cube_rows": 11440,
+      "best_exit": "class_time_stop",
+      "is_sharpe": 1.382,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        2.0,
+        2.0
+      ],
+      "is_trades": 953,
+      "is_cube_rows": 24778,
+      "best_exit": "class_time_stop",
+      "is_sharpe": 1.084,
+      "exits_evaluated": 26
+    }
+  ],
+  "preregistration_candidate": {
+    "levels": [
+      2.5,
+      2.0
+    ],
+    "is_trades": 492,
+    "is_cube_rows": 12792,
+    "best_exit": "class_time_stop",
+    "is_sharpe": 1.451,
+    "exits_evaluated": 26
+  },
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above",
+  "derive": {
+    "path": "scripts\\squeeze_derived.py",
+    "sha256": "48b2c0799162ce61c94e68c3bfb9bbdb0cb45ac61ee513a324648d891f832ad1"
+  },
+  "permutation_null": {
+    "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+    "n_perms": 100,
+    "seed": 13,
+    "null_none_count": 0,
+    "null_max_is_sharpe_quantiles": {
+      "0.5": 1.117,
+      "0.9": 1.269,
+      "0.95": 1.312,
+      "0.99": 1.432
+    },
+    "observed_best_is_sharpe": 1.451,
+    "p_value_best": 0.0198
+  },
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 4,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 4,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 0.81,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis",
+    "reconciles": true,
+    "permutation_null": {
+      "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+      "n_perms": 100,
+      "seed": 13,
+      "null_none_count": 0,
+      "null_max_is_sharpe_quantiles": {
+        "0.5": 1.117,
+        "0.9": 1.269,
+        "0.95": 1.312,
+        "0.99": 1.432
+      },
+      "observed_best_is_sharpe": 1.451,
+      "p_value_best": 0.0198
+    },
+    "significance_basis": "permutation_null",
+    "trials_searched": 104
+  },
+  "band_ruling_verbatim": "Approve all recs / Implement now (owner 2026-10-22, on the B3139q-r104 close's decision 3: band reviews cmf_flip S6-B3246, williams_r_oversold S6-B3247, squeeze_breakout S6-B3248; recommendation 'Approve as rendered')",
+  "status_stamp_at_run": "4a0836878"
+}
