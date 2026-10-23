@@ -1,0 +1,460 @@
+{
+  "strategy": "news_momentum_long",
+  "generator": "scripts/lever4_step1.py",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe",
+  "config": {
+    "P1_gate_budget": "{\"k\": 5, \"mandatory\": [\"news_sentiment_5d\"]}"
+  },
+  "reproduction": "VARIANT-CUBE-NO-R5-REPRODUCTION: produced at gate budget {\"k\": 5, \"mandatory\": [\"news_sentiment_5d\"]}; own fires 493",
+  "design": "base cell per leg x exits, IS-only; holdout untouched; npt barred; ranked on is_ci_lo; the LEVER4 budget is resim-only (a looser gate adds fires no cube holds), so the grid carries no offline numeric axis",
+  "reproduction_fires": 493,
+  "cells_graded": 24,
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 24,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 24,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 1.79,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis; NO per-row p-values and no permutation null supplied - this grid's significance is UNPRICED, which is not the same as nothing having been graded",
+    "reconciles": true,
+    "significance_basis": "none_available"
+  },
+  "step1_ranking": [
+    {
+      "is_sharpe": 0.442,
+      "is_ci_lo": 0.151,
+      "cell": "base:long",
+      "exit": "breakeven_plus_trail",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.299,
+      "is_ci_lo": 0.084,
+      "cell": "base:long",
+      "exit": "hybrid_50pct_target",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.423,
+      "is_ci_lo": 0.081,
+      "cell": "base:long",
+      "exit": "regime_flip",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.144,
+      "is_ci_lo": -0.055,
+      "cell": "base:long",
+      "exit": "earnings_blackout",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.185,
+      "is_ci_lo": -0.084,
+      "cell": "base:long",
+      "exit": "class_time_stop",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.087,
+      "is_ci_lo": -0.131,
+      "cell": "base:long",
+      "exit": "trailing_10pct",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.101,
+      "is_ci_lo": -0.22,
+      "cell": "base:long",
+      "exit": "time_stop_20d",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.095,
+      "is_ci_lo": -0.267,
+      "cell": "base:long",
+      "exit": "trailing_15pct",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.046,
+      "is_ci_lo": -0.32,
+      "cell": "base:long",
+      "exit": "fixed_4r_2r",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.21,
+      "is_ci_lo": -0.654,
+      "cell": "base:long",
+      "exit": "break_even_at_1r",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.258,
+      "is_ci_lo": -0.672,
+      "cell": "base:long",
+      "exit": "atr_trail_2x",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.417,
+      "is_ci_lo": -0.793,
+      "cell": "base:long",
+      "exit": "trailing_5pct",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.426,
+      "is_ci_lo": -0.885,
+      "cell": "base:long",
+      "exit": "chandelier_3x",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.451,
+      "is_ci_lo": -0.897,
+      "cell": "base:long",
+      "exit": "time_stop_10d",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.583,
+      "is_ci_lo": -1.128,
+      "cell": "base:long",
+      "exit": "r_multiple_3r",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.577,
+      "is_ci_lo": -1.201,
+      "cell": "base:long",
+      "exit": "r_multiple_2r",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.73,
+      "is_ci_lo": -1.333,
+      "cell": "base:long",
+      "exit": "ma_exit_ema9",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -1.126,
+      "is_ci_lo": -1.733,
+      "cell": "base:long",
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -2.681,
+      "is_ci_lo": -3.441,
+      "cell": "base:long",
+      "exit": "multi_tier_partial",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -3.025,
+      "is_ci_lo": -3.773,
+      "cell": "base:long",
+      "exit": "atr_trail_1x",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -3.025,
+      "is_ci_lo": -3.773,
+      "cell": "base:long",
+      "exit": "reverse_signal",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -3.248,
+      "is_ci_lo": -4.017,
+      "cell": "base:long",
+      "exit": "mfe_lockin_trail",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -5.161,
+      "is_ci_lo": -6.196,
+      "cell": "base:long",
+      "exit": "smc_mitigation_zone",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    }
+  ],
+  "rows": [
+    {
+      "is_sharpe": -3.025,
+      "is_ci_lo": -3.773,
+      "cell": "base:long",
+      "exit": "atr_trail_1x",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.258,
+      "is_ci_lo": -0.672,
+      "cell": "base:long",
+      "exit": "atr_trail_2x",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -1.126,
+      "is_ci_lo": -1.733,
+      "cell": "base:long",
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.21,
+      "is_ci_lo": -0.654,
+      "cell": "base:long",
+      "exit": "break_even_at_1r",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.442,
+      "is_ci_lo": 0.151,
+      "cell": "base:long",
+      "exit": "breakeven_plus_trail",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.426,
+      "is_ci_lo": -0.885,
+      "cell": "base:long",
+      "exit": "chandelier_3x",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.185,
+      "is_ci_lo": -0.084,
+      "cell": "base:long",
+      "exit": "class_time_stop",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.144,
+      "is_ci_lo": -0.055,
+      "cell": "base:long",
+      "exit": "earnings_blackout",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.046,
+      "is_ci_lo": -0.32,
+      "cell": "base:long",
+      "exit": "fixed_4r_2r",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.299,
+      "is_ci_lo": 0.084,
+      "cell": "base:long",
+      "exit": "hybrid_50pct_target",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.73,
+      "is_ci_lo": -1.333,
+      "cell": "base:long",
+      "exit": "ma_exit_ema9",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -3.248,
+      "is_ci_lo": -4.017,
+      "cell": "base:long",
+      "exit": "mfe_lockin_trail",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -2.681,
+      "is_ci_lo": -3.441,
+      "cell": "base:long",
+      "exit": "multi_tier_partial",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.172,
+      "is_ci_lo": -0.646,
+      "cell": "base:long",
+      "exit": "next_pivot_target",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": true
+    },
+    {
+      "is_sharpe": -0.577,
+      "is_ci_lo": -1.201,
+      "cell": "base:long",
+      "exit": "r_multiple_2r",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.583,
+      "is_ci_lo": -1.128,
+      "cell": "base:long",
+      "exit": "r_multiple_3r",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.423,
+      "is_ci_lo": 0.081,
+      "cell": "base:long",
+      "exit": "regime_flip",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -3.025,
+      "is_ci_lo": -3.773,
+      "cell": "base:long",
+      "exit": "reverse_signal",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -5.161,
+      "is_ci_lo": -6.196,
+      "cell": "base:long",
+      "exit": "smc_mitigation_zone",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.451,
+      "is_ci_lo": -0.897,
+      "cell": "base:long",
+      "exit": "time_stop_10d",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.101,
+      "is_ci_lo": -0.22,
+      "cell": "base:long",
+      "exit": "time_stop_20d",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": 0.087,
+      "is_ci_lo": -0.131,
+      "cell": "base:long",
+      "exit": "trailing_10pct",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.095,
+      "is_ci_lo": -0.267,
+      "cell": "base:long",
+      "exit": "trailing_15pct",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    },
+    {
+      "is_sharpe": -0.417,
+      "is_ci_lo": -0.793,
+      "cell": "base:long",
+      "exit": "trailing_5pct",
+      "is_n": 493,
+      "full_n_count_only": 493,
+      "npt_barred": false
+    }
+  ],
+  "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"
+}

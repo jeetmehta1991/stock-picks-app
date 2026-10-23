@@ -6,14 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (178 entries), 2024 named checks have run and 20 have ever returned non-PASS.**
+**Across the entire ledger (179 entries), 2043 named checks have run and 20 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-72 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+73 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 2026-10-22T21:50:07 | engine-hook | 0 | none | 0 | 773e2f193 | True | yes 2026-10-22T22:07:16 |
 | output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-17T05:08:19 | engine-hook | 0 | none | 0 | ea2ffb91a | True | yes 2026-10-17T11:17:32 |
 | output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-17T02:31:22 | engine-hook | 0 | none | 0 | f1077c149 | True | yes 2026-10-17T02:51:32 |
 | output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02 | 2026-10-16T23:51:52 | engine-hook | 0 | none | 0 | 4801ad035 | True | yes 2026-10-17T00:07:10 |
@@ -96,10 +97,11 @@ _TABLE C unavailable: KeyError: 'admit'_
 
 _TABLE D unavailable: KeyError: 'admit'_
 
-## Index - 104 graded config(s), newest first
+## Index - 105 graded config(s), newest first
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe | 0.151 | - | 0/0 combinations | 9/9 |
 | output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 0.516 | - | 0/0 combinations | 9/9 |
 | output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02 | 0.153 | 510 | 0/24 exits | 9/9 |
 | output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 0.223 | 523 | 0/24 exits | 9/9 |
@@ -207,6 +209,96 @@ _TABLE D unavailable: KeyError: 'admit'_
 
 ## Per-config findings
 
+### output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe
+
+**Configuration:** P1_gate_budget={"k": 5, "mandatory": ["news_sentiment_5d"]}
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.151** (is_sharpe 0.442, None fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | AUTO (S6-B3240); legs x exits at the cube's gate budget: lever4_step1 at manifest gate_budget={"news_momentum_long": {"k": 5, "mandatory": ["news_sentiment_5d"]}} -> output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B3240); the live strategy replayed on the cube's signals under the arm's budget: spot_check_replay at manifest gate_budget={"news_momentum_long": {"k": 5, "mandatory": ["news_sentiment_5d"]}}; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 11 run: 0 WARN / 0 FAIL / 11 INFO -> output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (11 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | DONE | AUTO (B2192): the grader collapses identical outcomes - 23 ranked outcome classes carry None parameter combinations; None distinct outcome classes among 0 combinations enumerated in output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 1 of 1 declared knobs read from the environment + consumer lists match the tree; verify_lever4_anchors.py exit 0 |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json): 0 combinations enumerated: ; rank-1 [breakeven_plus_trail] is_ci_lo 0.151 is_sharpe 0.442 fires None - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 11832 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is ... | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | d2c39072faf45612 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an ... | PASS | a shortfall = exits silently dropped from the cube |
+| closed trade-log fires that have an exit-cube row | 493 of 493 closed trade-log fires have exit-cube rows; 0 ... | PASS | any missing = an entry the cube lost, which M2 cannot see (S6-B3267) |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha 90702e749a43 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is ... | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': ... | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; gate_budget={"news_momentum_long": {"k": 5, ... | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ... | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 1 of 1 declared knobs read from the environment + consumer ... | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_spot_check.json.
+
+**Adversarial lenses (step 5) - 11 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family news_momentum_long)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 493 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.27 (2024Q2) over 5 quarters of 493 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.07 of 493 entries across 182 tickers; WARN > 0.30 |
+| eligibility_leak | INFO | 0 of 493 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped) |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.151 vs rank-2 [hybrid_50pct_target] 0.084: margin 0.067 between outcome classes; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a) |
+| empty_signals_share | INFO | 0 of 493 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/493 (0.0%) from replay_atr_fallback.json) |
+| grading_provenance | INFO | grading surface UNCHANGED since freeze (29 files, digest a543fcf8f094) |
+| direction_consistency | INFO | directions ['long'] (single direction) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_spot_check.json |
+| min_trades_floor | INFO | 493 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 0 combinations enumerated (population field `results`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| None | 0.151 | 0.442 | None | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.084 | 0.299 | None | hybrid_50pct_target | None | (no knobs recorded) |
+| None | 0.081 | 0.423 | None | regime_flip | None | (no knobs recorded) |
+| None | -0.055 | 0.144 | None | earnings_blackout | None | (no knobs recorded) |
+| None | -0.084 | 0.185 | None | class_time_stop | None | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json._
+
 ### output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45
 
 **Configuration:** P1_gate_budget={"k": 3, "mandatory": ["above_r1"]}
@@ -258,6 +350,8 @@ _TABLE D unavailable: KeyError: 'admit'_
 | grading ran at this config's own parameters | exit 0; gate_budget={"pivot_r1_breakout": {"k": 3, ... | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ... | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 1 of 1 declared knobs read from the environment + consumer ... | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 26016 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
