@@ -65,14 +65,43 @@ TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
 CANDIDATE_CAP = 30          # backtest.BacktestEngine.__init__ default; bypassed under isolation
 
 
+# S6-B3290: the four comparison ops. le/ge are the original pair; lt/gt are
+# their STRICT forms for gates written with < and > (williams_r_oversold reads
+# williams_r < -80 and rsi_2 < 5) - a level on a strict gate keeps one fewer
+# boundary fire, and a non-strict read would reproduce a different fire set.
+AXIS_OPS = ("le", "ge", "lt", "gt")
+TIGHTEN_DOWN = ("le", "lt")      # a LOWER level is tighter
+TIGHTEN_UP = ("ge", "gt")        # a HIGHER level is tighter
+
+
 def parse_axis(spec: str) -> dict:
-    """'key:op:v1,v2' -> {'key','op','levels'}. op is le (tighten downward)
-    or ge (tighten upward) - the direction the THRESHOLD is applied, which is
-    a property of the gate, never inferable from the numbers."""
+    """'key:op:v1,v2[@group]' -> {'key','op','levels','group'}. op is le/lt
+    (tighten downward) or ge/gt (tighten upward) - the direction the
+    THRESHOLD is applied, which is a property of the gate, never inferable
+    from the numbers. S6-B3290: an optional '@group' suffix names an OR arm -
+    axes sharing a group are OR-ed inside keep() (a fire passes the group when
+    ANY member passes), and every group is AND-ed with the plain axes, which
+    is the shape of an `(a OR b) AND c` gate. No group = a plain AND leg."""
+    group = None
+    if "@" in spec:
+        spec, group = spec.rsplit("@", 1)
+        if not group:
+            raise ValueError(f"axis {spec}: empty OR-group name after '@'")
     key, op, levels = spec.split(":", 2)
-    if op not in ("le", "ge"):
-        raise ValueError(f"axis {key}: op must be le or ge, got {op!r}")
-    return {"key": key, "op": op, "levels": [float(v) for v in levels.split(",")]}
+    if op not in AXIS_OPS:
+        raise ValueError(f"axis {key}: op must be one of {AXIS_OPS}, got {op!r}")
+    return {"key": key, "op": op, "levels": [float(v) for v in levels.split(",")],
+            "group": group}
+
+
+def _cmp(col: pd.Series, op: str, level: float) -> pd.Series:
+    if op == "le":
+        return col <= level
+    if op == "ge":
+        return col >= level
+    if op == "lt":
+        return col < level
+    return col > level
 
 
 def _parse_sig(s):
@@ -100,7 +129,7 @@ def looser_levels(axes: list[dict], production) -> list[str]:
     out = []
     for ax, pv in zip(axes, production):
         bad = [lv for lv in ax["levels"]
-               if (lv > pv if ax["op"] == "le" else lv < pv)]
+               if (lv > pv if ax["op"] in TIGHTEN_DOWN else lv < pv)]
         if bad:
             out.append(f"{ax['key']} {ax['op']}: levels {bad} are looser "
                        f"than production {pv}")
@@ -108,39 +137,122 @@ def looser_levels(axes: list[dict], production) -> list[str]:
 
 
 def keep(frame: pd.DataFrame, axes: list[dict], combo: tuple) -> pd.DataFrame:
+    """AND over plain axes; within an OR group (S6-B3290) a fire passes when
+    ANY member passes, and the group result is AND-ed with the rest. A null
+    magnitude fails its own comparison, so an OR member whose key the fire did
+    not persist contributes False and the other members decide."""
     m = pd.Series(True, index=frame.index)
+    groups: dict = {}
     for ax, level in zip(axes, combo):
-        col = frame[ax["key"]]
-        m &= (col <= level) if ax["op"] == "le" else (col >= level)
+        test = _cmp(frame[ax["key"]], ax["op"], level)
+        g = ax.get("group")
+        if g is None:
+            m &= test
+        else:
+            groups[g] = (groups[g] | test) if g in groups else test
+    for test in groups.values():
+        m &= test
     return frame[m]
 
 
-def load(strategy: str, axes: list[dict]) -> tuple[pd.DataFrame, dict]:
-    """Merged cube + magnitudes, plus the refusal evidence. Raises on refusal."""
-    tl = pd.read_csv(TRADE_LOG, low_memory=False,
-                     usecols=["ticker", "strategy", "entry_date", "signals_at_entry"])
-    t = tl[tl.strategy == strategy].copy()
+def _read_filtered(path: Path, usecols: list[str], strategy: str,
+                   direction: str | None, chunksize: int = 250_000) -> pd.DataFrame:
+    """S6-B3290: the merged R5 files are 4.6 GB (trade log) and 1.6 GB (cube);
+    a whole-file read beside a running chain is what the owner's memory
+    budget cannot carry. Stream in chunks and keep one strategy's rows (and
+    one direction's when --direction is set) - the same rows the whole-file
+    read then filtered, pinned by test_b3290."""
+    parts = []
+    for ch in pd.read_csv(path, low_memory=False, usecols=usecols, chunksize=chunksize):
+        sel = ch[ch["strategy"] == strategy]
+        if direction is not None:
+            sel = sel[sel["direction"] == direction]
+        if len(sel):
+            parts.append(sel)
+    if not parts:
+        return pd.DataFrame(columns=usecols)
+    return pd.concat(parts, ignore_index=True)
+
+
+def _survival_inputs(strategy: str) -> tuple:
+    """(survives_pct, unmeasured_gate_keys) for the strategy from the status
+    view - the T1 filter's inputs, the same fields build_table_a reads. Fails
+    closed on an absent row or stamp (L642)."""
+    from step1_gates import STATUS_JSON
+    view = json.loads(Path(STATUS_JSON).read_text(encoding="utf-8"))
+    rows = [r for r in view["rows"] if r.get("strategy") == strategy]
+    if len(rows) != 1:
+        raise SystemExit(f"REFUSED: {strategy} has {len(rows)} status rows - the "
+                         "T1 survival filter needs exactly one (S6-B3290)")
+    r = rows[0]
+    if "survives_pct" not in r:
+        raise SystemExit(f"REFUSED: the status row for {strategy} carries no "
+                         "survives_pct - regenerate the view (S6-B3290)")
+    return r["survives_pct"], r.get("unmeasured_gate_keys")
+
+
+def load(strategy: str, axes: list[dict], direction: str | None = None,
+         survival: bool = False) -> tuple[pd.DataFrame, dict]:
+    """Merged cube + magnitudes, plus the refusal evidence. Raises on refusal.
+
+    S6-B3290: `direction` keeps one leg of a dual strategy (the per-side
+    bands of S6-B3270 grade one side's fires); `survival` applies the T1
+    filter (build_table_a.surviving_fires on the status view's survives_pct)
+    BEFORE anything is graded, so reproduction is measured against the
+    SURVIVING subset as runbook T4 requires. Both read the files in chunks."""
+    keys = [ax["key"] for ax in axes]
+    if len(set(keys)) != len(keys):
+        raise SystemExit(f"REFUSED: an axis key repeats ({keys}) - one column per "
+                         "key, so two axes on one key cannot be joined (S6-B3290)")
+    t = _read_filtered(TRADE_LOG, ["ticker", "strategy", "entry_date", "direction",
+                                   "signals_at_entry"], strategy, direction)
     if t.empty:
-        raise SystemExit(f"REFUSED: {strategy} has no rows in {TRADE_LOG.name}")
+        raise SystemExit(f"REFUSED: {strategy} has no rows in {TRADE_LOG.name}"
+                         + (f" with direction {direction}" if direction else ""))
+    landed = int(len(t))
+    survival_dropped = 0
+    if survival:
+        import build_table_a as _bta
+        pct, unmeasured = _survival_inputs(strategy)
+        t = t.drop_duplicates(["strategy", "ticker", "entry_date"])
+        kept, _sigs, _filtered = _bta.surviving_fires(strategy, t, pct, unmeasured)
+        survival_dropped = int(len(t) - len(kept))
+        t = kept.copy()
+        if t.empty:
+            raise SystemExit(f"REFUSED: no surviving fires for {strategy} after the "
+                             "T1 filter (S6-B3290)")
     sig = t["signals_at_entry"].map(_parse_sig)
     covered = sig.map(lambda d: isinstance(d, dict) and len(d) > 0)
     coverage = float(covered.mean())
     for ax in axes:
         t[ax["key"]] = sig.map(lambda d, k=ax["key"]: d.get(k))
 
-    cube = pd.read_csv(CUBE, low_memory=False)
-    g = cube[cube.strategy == strategy].copy()
-    cols = ["ticker", "entry_date"] + [ax["key"] for ax in axes]
+    g = _read_filtered(CUBE, rc.CUBE_COLUMNS, strategy, direction)
+    if survival:
+        # the cube rows of a dropped fire would read as a join gap; restrict
+        # the cube to the surviving fires and keep the join refusal for the
+        # fires that survived and still found no row
+        g = g.merge(t[["ticker", "entry_date"]].drop_duplicates(),
+                    on=["ticker", "entry_date"], how="inner")
+    cols = ["ticker", "entry_date"] + keys
     m = g.merge(t[cols].drop_duplicates(["ticker", "entry_date"]),
                 on=["ticker", "entry_date"], how="left")
-    unmatched = int(m[axes[0]["key"]].isna().sum())
+    # a fire whose dict never persisted the FIRST key is a join gap only when
+    # the WHOLE row is missing; test the indicator column, not a magnitude
+    probe = g[["ticker", "entry_date"]].drop_duplicates().merge(
+        t[["ticker", "entry_date"]].drop_duplicates().assign(_hit=1),
+        on=["ticker", "entry_date"], how="left")
+    unmatched = int(probe["_hit"].isna().sum())
 
     per_day = t.groupby("entry_date").size()
-    ev = {"landed_fires": int(len(t)), "coverage": coverage,
+    ev = {"landed_fires": landed, "coverage": coverage,
           "cube_rows": int(len(g)), "unmatched_join_rows": unmatched,
           "max_fires_per_day": int(per_day.max()),
           "candidate_cap": CANDIDATE_CAP,
-          "cap_bypassed_evidence": bool(per_day.max() > CANDIDATE_CAP)}
+          "cap_bypassed_evidence": bool(per_day.max() > CANDIDATE_CAP),
+          "direction": direction,
+          "survival_filter": {"applied": bool(survival), "fires_after": int(len(t)),
+                              "fires_dropped": survival_dropped}}
     m["entry_date"] = pd.to_datetime(m["entry_date"], errors="coerce").dt.date
     return m, ev
 
@@ -194,8 +306,9 @@ def cell_family_rows(cells) -> list:
 
 
 def sweep(strategy: str, axes: list[dict], production: tuple,
-          coverage_min: float, repro_min: float, min_n: int) -> dict:
-    m, ev = load(strategy, axes)
+          coverage_min: float, repro_min: float, min_n: int,
+          direction: str | None = None, survival: bool = False) -> dict:
+    m, ev = load(strategy, axes, direction=direction, survival=survival)
     if ev["coverage"] < coverage_min:
         raise SystemExit(f"REFUSED: signal coverage {ev['coverage']:.4f} < "
                          f"{coverage_min} - un-levellable rows would be dropped silently")
@@ -246,7 +359,9 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
     graded.sort(key=lambda c: c["is_sharpe"], reverse=True)
     trials = sum(c["exits_evaluated"] for c in cells)
     return {"strategy": strategy,
-            "axes": [{"key": a["key"], "op": a["op"], "levels": a["levels"]} for a in axes],
+            "axes": [{"key": a["key"], "op": a["op"], "levels": a["levels"],
+                      "group": a.get("group")} for a in axes],
+            "direction": direction,
             "production_levels": list(production),
             "evidence": ev, "reproduction": repro,
             "cells_total": len(cells), "cells_graded": len(graded),
@@ -259,12 +374,13 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
                             "preregistration_candidate named above"}
 
 
-def attach_null(rec, strategy, axes, min_n, null_perms, null_seed):
+def attach_null(rec, strategy, axes, min_n, null_perms, null_seed,
+                direction=None, survival=False):
     """Compute the permutation null for a completed sweep record, in place.
     Reloads the frame (sweep does not retain it) - the same refusals apply
     upstream, so a record that graded is a record the null can price."""
     import numpy as np
-    m, _ = load(strategy, axes)
+    m, _ = load(strategy, axes, direction=direction, survival=survival)
     IS = rc.in_sample(m)
     maxima = permutation_null(IS, axes, min_n, null_perms, null_seed)
     valid = [x for x in maxima if x is not None]
@@ -299,7 +415,9 @@ def render_table(rec: dict) -> str:
             f"{rec['trials_searched']} trials (cells x exits); window "
             f"{rec['window']['is'][0]} .. {rec['window']['is'][1]}; "
             f"holdout NOT read by this artifact.\n\n")
-    cols = " | ".join(f"{a['key']} ({a['op']})" for a in axes)
+    cols = " | ".join(f"{a['key']} ({a['op']}"
+                      + (f", or:{a['group']}" if a.get("group") else "") + ")"
+                      for a in axes)
     lines = [f"| rank | {cols} | IS trades | best exit | IS sharpe |",
              "|" + "---|" * (len(axes) + 4)]
     prod = list(rec.get("production_levels", ()))
@@ -318,7 +436,14 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--strategy", required=True)
     ap.add_argument("--axes", nargs="+", required=True,
-                    help="key:op:v1,v2,... with op in {le,ge}")
+                    help="key:op:v1,v2,...[@group] with op in {le,ge,lt,gt}; "
+                         "axes sharing @group are OR-ed (S6-B3290)")
+    ap.add_argument("--direction", choices=["long", "short"], default=None,
+                    help="S6-B3290: grade ONE leg of a dual strategy")
+    ap.add_argument("--survival", action="store_true",
+                    help="S6-B3290: apply the T1 survival filter (status view "
+                         "survives_pct) before grading; reproduction is then "
+                         "measured on the surviving subset (runbook T4)")
     ap.add_argument("--production", required=True,
                     help="comma-separated production level per axis, in order")
     ap.add_argument("--out", required=True)
@@ -341,9 +466,11 @@ def main() -> int:
     if len(production) != len(axes):
         raise SystemExit(f"REFUSED: --production has {len(production)} values for "
                          f"{len(axes)} axes")
-    rec = sweep(a.strategy, axes, production, a.coverage_min, a.repro_min, a.min_n)
+    rec = sweep(a.strategy, axes, production, a.coverage_min, a.repro_min, a.min_n,
+                direction=a.direction, survival=a.survival)
     if a.null_perms > 0:
-        attach_null(rec, a.strategy, axes, a.min_n, a.null_perms, a.null_seed)
+        attach_null(rec, a.strategy, axes, a.min_n, a.null_perms, a.null_seed,
+                    direction=a.direction, survival=a.survival)
         pn = rec["permutation_null"]
         print(f"permutation null ({pn['n_perms']} perms): observed best "
               f"{pn['observed_best_is_sharpe']} | null q95 "

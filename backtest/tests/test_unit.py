@@ -63134,3 +63134,183 @@ def test_b3264_isolated_leg_runs_the_pinned_worktree_and_lands_in_main(tmp_path,
     rc = ls.main(["--manifest", str(man), "--output-dir", str(tmp_path / "o2"),
                   "--", "--phase", "1a-beta"])
     assert rc == 2 and calls == [], (rc, calls)
+
+
+# ================================================================ B3139q-r105 S6-B3252: default-True reads are a ruled register
+def test_b3252_default_true_reads_are_a_ruled_register(tmp_path):
+    """S6-B3252 (owner 2026-10-22, "Approve all recs / Implement now"): every
+    `.get(<key>, True)` read in backtest/signals/ is in
+    output_audit/b3252_default_true_reads.json with a ruling - (b) KEEP on an
+    admitted line's path, (a) FALSE-DEFAULT elsewhere, applied at CHAIN DONE.
+    The predicate: live census == (b) sites + unapplied (a) sites. Arms: the
+    live repo is CLEAN; a register missing a site fires; a register naming a
+    site the code lost fires; an (a) site marked applied while the code still
+    reads True fires; and find_sites credits a nested def's call to the
+    INNER def only (the structure the r102 census double-counted)."""
+    import copy
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import default_true_read_census as dtc
+    live = dtc.find_sites()
+    reg = dtc.load_register()
+    assert dtc.register_check(live, reg) == [], dtc.register_check(live, reg)
+    assert len(reg["sites"]) == len(live) >= 1
+    assert all(e["reason"].strip() for e in reg["sites"])
+    assert all(("applied" in e) == (e["ruling"] == "a") or e["ruling"] == "b"
+               for e in reg["sites"])
+    # the admitted line keeps its reads: ruled (b), by name
+    b_sites = {(e["function"], e["key"]) for e in reg["sites"] if e["ruling"] == "b"}
+    assert ("strat_xs_momentum_top_decile", "xs_avoid_high_ivol") in b_sites
+    # must-fire 1: a site dropped from the register
+    r1 = copy.deepcopy(reg)
+    r1["sites"] = r1["sites"][1:]
+    assert any("UNREGISTERED" in e for e in dtc.register_check(live, r1))
+    # must-fire 2: the register names a read the code does not have
+    r2 = copy.deepcopy(reg)
+    r2["sites"].append({"file": "screener.py", "function": "strat_nope", "key": "k",
+                        "ruling": "b", "reason": "x"})
+    assert any("no longer has" in e for e in dtc.register_check(live, r2))
+    # must-fire 3: an (a) site flagged applied while the code still reads True
+    r3 = copy.deepcopy(reg)
+    a_sites = [e for e in r3["sites"] if e["ruling"] == "a"]
+    assert a_sites, "the ruling has (a) sites"
+    a_sites[0]["applied"] = True
+    assert any("UNREGISTERED" in e for e in dtc.register_check(live, r3))
+    # structure: the innermost def owns the call
+    d = tmp_path / "sig"
+    d.mkdir()
+    (d / "x.py").write_text(
+        "def outer(s):\n    def inner(t):\n        return t.get('k', True)\n"
+        "    return inner(s) and s.get('j', True)\n", encoding="utf-8")
+    assert dtc.find_sites(d) == [("x.py", "inner", "k"), ("x.py", "outer", "j")]
+
+
+# ================================================================ B3139q-r105 S6-B3290: the sweep's OR groups, direction and chunked load
+def test_b3290_sweep_or_groups_direction_survival_and_chunked_load(tmp_path, monkeypatch):
+    """S6-B3290: offline_level_sweep grades a per-side leg (--direction), an
+    `(a OR b) AND c` gate (@group axes with strict lt/gt), the T1 survival
+    subset (--survival), and streams the two merged files in chunks. Arms:
+    parse_axis accepts @group and refuses a bad op or an empty group; keep()
+    ORs within a group (a null magnitude fails only its own member) and ANDs
+    the rest; looser_levels reads lt as le and gt as ge; _read_filtered at
+    chunksize 2 equals the whole read, by strategy and by direction, and an
+    absent strategy yields an empty frame with the columns; load() on a
+    fixture carries direction into the evidence, refuses a repeated key, and
+    the survival path drops what surviving_fires drops."""
+    import json
+    import sys as _sys
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import offline_level_sweep as ols
+    import pytest
+
+    ax = ols.parse_axis("williams_r:lt:-85,-90@hatch")
+    assert ax["op"] == "lt" and ax["group"] == "hatch" and ax["levels"] == [-85.0, -90.0]
+    assert ols.parse_axis("a:le:1")["group"] is None
+    with pytest.raises(ValueError):
+        ols.parse_axis("a:eq:1")
+    with pytest.raises(ValueError):
+        ols.parse_axis("a:le:1@")
+    f = pd.DataFrame({"x": [-90.0, -70.0, None, -70.0], "y": [10.0, 2.0, 2.0, 10.0],
+                      "z": [1.0, 1.0, 1.0, 5.0]})
+    axes = [ols.parse_axis("x:lt:-85@g"), ols.parse_axis("y:lt:5@g"), ols.parse_axis("z:le:3")]
+    kept = ols.keep(f, axes, (-85.0, 5.0, 3.0))
+    # row0 passes x; row1 passes y; row2 null x, passes y; row3 fails z
+    assert list(kept.index) == [0, 1, 2], list(kept.index)
+    # strict: a fire AT the level fails an lt leg
+    assert list(ols.keep(f, [ols.parse_axis("y:lt:10")], (10.0,)).index) == [1, 2]
+    assert ols.looser_levels([ols.parse_axis("a:lt:1,3"), ols.parse_axis("b:gt:0.5,0.1")],
+                             (2.0, 0.5)) and \
+        ols.looser_levels([ols.parse_axis("a:lt:1,2"), ols.parse_axis("b:gt:0.5,0.9")],
+                          (2.0, 0.5)) == []
+
+    rows = []
+    for i in range(7):
+        s = "alpha" if i % 2 == 0 else "beta"
+        d = "long" if i < 5 else "short"
+        rows.append({"ticker": f"T{i}", "strategy": s, "entry_date": f"2023-0{i % 6 + 1}-10",
+                     "direction": d, "signals_at_entry": json.dumps({"m": float(i)})})
+    tl = tmp_path / "trade_log.csv"
+    pd.DataFrame(rows).to_csv(tl, index=False)
+    cube_rows = [{"strategy": r["strategy"], "direction": r["direction"],
+                  "exit_method": ex, "entry_date": r["entry_date"], "ticker": r["ticker"],
+                  "pnl_pct": 1.0 + i, "hold_days": 3.0}
+                 for i, r in enumerate(rows) for ex in ("e1", "e2")]
+    cube = tmp_path / "cube.csv"
+    pd.DataFrame(cube_rows).to_csv(cube, index=False)
+    cols = ["ticker", "strategy", "entry_date", "direction", "signals_at_entry"]
+    whole = pd.read_csv(tl)
+    got = ols._read_filtered(tl, cols, "alpha", None, chunksize=2)
+    assert list(got["ticker"]) == list(whole[whole.strategy == "alpha"]["ticker"])
+    got_s = ols._read_filtered(tl, cols, "alpha", "short", chunksize=2)
+    assert list(got_s["ticker"]) == ["T6"]
+    empty = ols._read_filtered(tl, cols, "gamma", None, chunksize=2)
+    assert empty.empty and list(empty.columns) == cols
+
+    monkeypatch.setattr(ols, "TRADE_LOG", tl)
+    monkeypatch.setattr(ols, "CUBE", cube)
+    m, ev = ols.load("alpha", [ols.parse_axis("m:le:9")], direction="long")
+    assert ev["direction"] == "long" and ev["landed_fires"] == 3 and ev["cube_rows"] == 6
+    assert ev["unmatched_join_rows"] == 0 and set(m["ticker"]) == {"T0", "T2", "T4"}
+    with pytest.raises(SystemExit):
+        ols.load("alpha", [ols.parse_axis("m:le:9"), ols.parse_axis("m:ge:0")])
+    # survival: the T1 filter's verdict drives the subset and the cube follows
+    import build_table_a as bta
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (0.5, None))
+    monkeypatch.setattr(bta, "surviving_fires",
+                        lambda name, frame, pct, unmeasured=None:
+                        (frame[frame["ticker"] != "T0"], [], True))
+    m2, ev2 = ols.load("alpha", [ols.parse_axis("m:le:9")], survival=True)
+    assert ev2["survival_filter"] == {"applied": True, "fires_after": 3, "fires_dropped": 1}
+    assert "T0" not in set(m2["ticker"]) and ev2["cube_rows"] == 6 and ev2["unmatched_join_rows"] == 0
+    # the record and the table carry the group
+    rec = {"strategy": "alpha", "cells_graded": 1, "cells_total": 1, "trials_searched": 2,
+           "window": {"is": ["a", "b"]}, "production_levels": [-85.0],
+           "axes": [{"key": "x", "op": "lt", "levels": [-85.0], "group": "g"}],
+           "ranked": [{"levels": [-85.0], "is_trades": 3, "best_exit": "e1", "is_sharpe": 0.5}]}
+    assert "x (lt, or:g)" in ols.render_table(rec)
+
+
+# ================================================================ B3139q-r105 S6-B3291: the companion screen selects by exact name
+def test_b3291_companion_screen_exact_name_and_chunked_read(tmp_path, monkeypatch):
+    """S6-B3291: institutional_companion_screen.py's prefix selection takes
+    every strategy whose name EXTENDS the subject's (squeeze_breakout takes
+    squeeze_breakout_with_smart_money_long), so a single-strategy screen read
+    the wrong population. --strategy selects by exact name; the reads stream
+    in chunks. Arms: exact names exclude the prefix sibling, the prefix form
+    still includes it, and a chunked read equals the whole read."""
+    import json
+    import sys as _sys
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import institutional_companion_screen as ics
+    rows, cube = [], []
+    for i, s in enumerate(["squeeze_breakout", "squeeze_breakout_with_smart_money_long",
+                           "squeeze_breakout", "other"]):
+        rows.append({"strategy": s, "ticker": f"T{i}", "entry_date": "2023-03-01",
+                     "signals_at_entry": json.dumps({"k": True})})
+        cube.append({"strategy": s, "ticker": f"T{i}", "entry_date": "2023-03-01",
+                     "exit_method": "time_stop_10d", "pnl_pct": 1.0})
+    tl, cb = tmp_path / "tl.csv", tmp_path / "cube.csv"
+    pd.DataFrame(rows).to_csv(tl, index=False)
+    pd.DataFrame(cube).to_csv(cb, index=False)
+    monkeypatch.setattr(ics, "TRADE_LOG", tl)
+    monkeypatch.setattr(ics, "CUBE", cb)
+    monkeypatch.setattr(ics, "FAMILY_PREFIX", "squeeze_breakout")
+    exact = ics.load_entries("time_stop_10d", "is", names=["squeeze_breakout"])
+    assert sorted(exact["ticker"]) == ["T0", "T2"], sorted(exact["ticker"])
+    prefix = ics.load_entries("time_stop_10d", "is")
+    assert sorted(prefix["ticker"]) == ["T0", "T1", "T2"]
+    sel = ics._selector(["squeeze_breakout"])
+    whole = pd.read_csv(tl)
+    chunked = ics._read_selected(tl, list(whole.columns), sel, chunksize=1)
+    assert list(chunked["ticker"]) == list(whole[whole.strategy == "squeeze_breakout"]["ticker"])

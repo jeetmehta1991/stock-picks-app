@@ -1,0 +1,123 @@
+{
+  "ticket": "S6-B3252",
+  "owner_ruling": {
+    "date": "2026-10-22",
+    "verbatim": "Approve all recs / Implement now",
+    "recommendation_approved": "(b) for the admitted strategy and (a) for the rest (B3139q-r102 row)"
+  },
+  "generator": "scratchpad make_b3252_register.py over scripts/default_true_read_census.py (find_sites + exposure, streamed)",
+  "cube": "output_r5_merged_1_7/trade_log.csv",
+  "generated_at": "2026-10-22 19:37:03",
+  "sites": [
+    {
+      "file": "index_rebalance.py",
+      "function": "strat_post_inclusion_drift_long",
+      "key": "price_above_ema_200",
+      "strategy": "post_inclusion_drift_long",
+      "ruling": "a",
+      "reason": "not a Phase-1B member (phase1b_membership.py, run 2026-10-22): a False default reads an absent key as a failed gate, the fail-closed form C7 requires of new code; applied at CHAIN DONE because backtest/signals/ is in the LEVER4 chain's leg-code closure (S6-B3289)",
+      "applied": false,
+      "r5_fires": 27,
+      "r5_fires_key_absent": 1
+    },
+    {
+      "file": "screener.py",
+      "function": "screen_instrument",
+      "key": "close_above_open",
+      "strategy": "screen_instrument",
+      "ruling": "b",
+      "reason": "the Batch 263 candle-confirmation read sits on EVERY non-mean-reversion long fire, the 22 admitted longs included (0 of 87,246 R5 fires had the key absent) - held with the admitted lines for the same closure reason; a DISCLOSED split from the r104 wording '(a) for the rest', which the owner may overrule with one word",
+      "applied": null,
+      "r5_fires": 87246,
+      "r5_fires_key_absent": 0
+    },
+    {
+      "file": "screener.py",
+      "function": "strat_52w_high_breakout_with_smart_money_long",
+      "key": "close_above_open",
+      "strategy": "52w_high_breakout_with_smart_money_long",
+      "ruling": "a",
+      "reason": "not a Phase-1B member (phase1b_membership.py, run 2026-10-22): a False default reads an absent key as a failed gate, the fail-closed form C7 requires of new code; applied at CHAIN DONE because backtest/signals/ is in the LEVER4 chain's leg-code closure (S6-B3289)",
+      "applied": false,
+      "r5_fires": 66,
+      "r5_fires_key_absent": 0
+    },
+    {
+      "file": "screener.py",
+      "function": "strat_52w_high_breakout_with_smart_money_vol_below_long",
+      "key": "close_above_open",
+      "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+      "ruling": "a",
+      "reason": "not a Phase-1B member (phase1b_membership.py, run 2026-10-22): a False default reads an absent key as a failed gate, the fail-closed form C7 requires of new code; applied at CHAIN DONE because backtest/signals/ is in the LEVER4 chain's leg-code closure (S6-B3289)",
+      "applied": false,
+      "r5_fires": 203,
+      "r5_fires_key_absent": 0
+    },
+    {
+      "file": "screener.py",
+      "function": "strat_bollinger_tight_with_smart_money_long",
+      "key": "close_above_open",
+      "strategy": "bollinger_tight_with_smart_money_long",
+      "ruling": "a",
+      "reason": "not a Phase-1B member (phase1b_membership.py, run 2026-10-22): a False default reads an absent key as a failed gate, the fail-closed form C7 requires of new code; applied at CHAIN DONE because backtest/signals/ is in the LEVER4 chain's leg-code closure (S6-B3289)",
+      "applied": false,
+      "r5_fires": 840,
+      "r5_fires_key_absent": 0
+    },
+    {
+      "file": "screener.py",
+      "function": "strat_donchian_breakout_with_smart_money_long",
+      "key": "close_above_open",
+      "strategy": "donchian_breakout_with_smart_money_long",
+      "ruling": "a",
+      "reason": "not a Phase-1B member (phase1b_membership.py, run 2026-10-22): a False default reads an absent key as a failed gate, the fail-closed form C7 requires of new code; applied at CHAIN DONE because backtest/signals/ is in the LEVER4 chain's leg-code closure (S6-B3289)",
+      "applied": false,
+      "r5_fires": 985,
+      "r5_fires_key_absent": 0
+    },
+    {
+      "file": "screener.py",
+      "function": "strat_squeeze_breakout_with_smart_money_long",
+      "key": "close_above_open",
+      "strategy": "squeeze_breakout_with_smart_money_long",
+      "ruling": "a",
+      "reason": "not a Phase-1B member (phase1b_membership.py, run 2026-10-22): a False default reads an absent key as a failed gate, the fail-closed form C7 requires of new code; applied at CHAIN DONE because backtest/signals/ is in the LEVER4 chain's leg-code closure (S6-B3289)",
+      "applied": false,
+      "r5_fires": 1139,
+      "r5_fires_key_absent": 0
+    },
+    {
+      "file": "screener.py",
+      "function": "strat_xs_low_beta_long",
+      "key": "xs_avoid_high_ivol",
+      "strategy": "xs_low_beta_long",
+      "ruling": "a",
+      "reason": "not a Phase-1B member (phase1b_membership.py, run 2026-10-22): a False default reads an absent key as a failed gate, the fail-closed form C7 requires of new code; applied at CHAIN DONE because backtest/signals/ is in the LEVER4 chain's leg-code closure (S6-B3289)",
+      "applied": false,
+      "r5_fires": 78,
+      "r5_fires_key_absent": 0
+    },
+    {
+      "file": "screener.py",
+      "function": "strat_xs_momentum_top_decile",
+      "key": "xs_avoid_high_ivol",
+      "strategy": "xs_momentum_top_decile",
+      "ruling": "b",
+      "reason": "xs_momentum_top_decile is a Phase-1B Step-2 admission (phase1b_membership.py) - an admitted line is CLOSED to re-testing, so its gate keeps the default it was graded with",
+      "applied": null,
+      "r5_fires": 255,
+      "r5_fires_key_absent": 0
+    },
+    {
+      "file": "screener.py",
+      "function": "strat_xs_momentum_top_decile",
+      "key": "xs_avoid_high_max",
+      "strategy": "xs_momentum_top_decile",
+      "ruling": "b",
+      "reason": "same admitted line as xs_avoid_high_ivol",
+      "applied": null,
+      "r5_fires": 255,
+      "r5_fires_key_absent": 0
+    }
+  ]
+}

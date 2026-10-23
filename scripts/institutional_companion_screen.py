@@ -72,16 +72,36 @@ def _parse(s):
             return {}
 
 
-def load_entries(exit_method: str, window: str) -> pd.DataFrame:
-    tl = pd.read_csv(TRADE_LOG, low_memory=False,
-                     usecols=["strategy", "ticker", "entry_date", "signals_at_entry"])
-    fam = tl[tl.strategy.str.startswith(FAMILY_PREFIX)]
+def _selector(names):
+    """S6-B3291: the family is selected by EXACT NAME when --strategy is
+    given, by prefix otherwise. The prefix form also takes every strategy
+    whose name extends the subject's (squeeze_breakout takes
+    squeeze_breakout_with_smart_money_long), so a single-strategy screen
+    reads the wrong population - the exact form is what a campaign runs."""
+    if names:
+        want = set(names)
+        return lambda s: s.isin(want)
+    return lambda s: s.str.startswith(FAMILY_PREFIX)
+
+
+def _read_selected(path, usecols, sel, chunksize: int = 250_000) -> pd.DataFrame:
+    """S6-B3291: stream the merged file in chunks and keep the selected
+    strategies' rows - the whole-file read (4.6 GB trade log, 1.6 GB cube)
+    cannot run beside a chain on the owner's memory budget."""
+    parts = [ch[sel(ch["strategy"])]
+             for ch in pd.read_csv(path, low_memory=False, usecols=usecols,
+                                   chunksize=chunksize)]
+    parts = [p for p in parts if len(p)]
+    return pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(columns=usecols)
+
+
+def load_entries(exit_method: str, window: str, names=None) -> pd.DataFrame:
+    sel = _selector(names)
+    fam = _read_selected(TRADE_LOG, ["strategy", "ticker", "entry_date", "signals_at_entry"], sel)
     ent = fam.drop_duplicates(["ticker", "entry_date"]).copy()
 
-    cube = pd.read_csv(CUBE, low_memory=False,
-                       usecols=["strategy", "ticker", "entry_date", "exit_method", "pnl_pct"])
-    cc = cube[(cube.strategy.str.startswith(FAMILY_PREFIX))
-              & (cube.exit_method == exit_method)]
+    cube = _read_selected(CUBE, ["strategy", "ticker", "entry_date", "exit_method", "pnl_pct"], sel)
+    cc = cube[cube.exit_method == exit_method]
     pnl = cc.drop_duplicates(["ticker", "entry_date"])[["ticker", "entry_date", "pnl_pct"]]
 
     m = ent.merge(pnl, on=["ticker", "entry_date"], how="inner")
@@ -158,7 +178,9 @@ def screen(m: pd.DataFrame, min_side: int, min_n: int) -> tuple[list, dict]:
 def render(rows: list, meta: dict, args) -> str:
     surv = [r for r in rows if r["fdr_survivor"]]
     surv.sort(key=lambda r: -(abs(r.get("pnl_lift", 0)) + abs(r.get("q5_minus_q1", 0))))
-    head = (f"# COMPANION-SIGNAL SCREEN - {FAMILY_PREFIX}family\n\n"
+    fam_label = (", ".join(args.strategy) + " (exact names)" if getattr(args, "strategy", None)
+                 else f"{FAMILY_PREFIX}family")
+    head = (f"# COMPANION-SIGNAL SCREEN - {fam_label}\n\n"
             f"exit {args.exit}; window {args.window}"
             f"{' (PEEKED - spent holdout, confirmation only)' if args.window == 'holdout' else ''}; "
             f"{meta['entries']} unique entries; {meta['trials']} signals tested; "
@@ -186,6 +208,9 @@ def main() -> int:
     # B2672 (L754: second family extracts the contract): the family is a
     # parameter, not a constant. Default preserves institutional behaviour.
     ap.add_argument("--family", default=FAMILY_PREFIX)
+    ap.add_argument("--strategy", action="append", default=None,
+                    help="S6-B3291: select by EXACT strategy name (repeatable); "
+                         "overrides the --family prefix selection")
     ap.add_argument("--window", default="is", choices=["is", "holdout"])
     ap.add_argument("--min-side", type=int, default=100)
     ap.add_argument("--min-n", type=int, default=500)
@@ -193,11 +218,13 @@ def main() -> int:
     args = ap.parse_args()
 
     FAMILY_PREFIX = args.family
-    m = load_entries(args.exit, args.window)
+    m = load_entries(args.exit, args.window, names=args.strategy)
     if len(m) < 500:
         raise SystemExit(f"REFUSED: only {len(m)} entries in window - underpowered")
     rows, meta = screen(m, args.min_side, args.min_n)
-    rec = {"family": FAMILY_PREFIX, "exit": args.exit, "window": args.window,
+    rec = {"family": FAMILY_PREFIX, "strategies": args.strategy,
+           "selection": "exact" if args.strategy else "prefix",
+           "exit": args.exit, "window": args.window,
            "peeked": args.window == "holdout", **meta, "results": rows}
     out = Path(args.out)
     out.write_text(json.dumps(rec, indent=2), encoding="utf-8")

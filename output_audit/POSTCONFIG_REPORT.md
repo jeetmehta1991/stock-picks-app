@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-75 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+76 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a | 2026-10-23T08:09:35 | engine-hook | 0 | none | 0 | 901e1f1e2 | True | **NO** |
 | output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef | 2026-10-23T04:52:21 | engine-hook | 0 | none | 0 | e6192b875 | True | yes 2026-10-23T05:00:53 |
 | output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe | 2026-10-23T01:12:01 | engine-hook | 0 | none | 0 | 0dff9743b | True | yes 2026-10-23T01:27:57 |
 | output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 2026-10-22T21:50:07 | engine-hook | 0 | none | 0 | 773e2f193 | True | yes 2026-10-22T22:07:16 |
@@ -264,6 +265,8 @@ _TABLE D unavailable: KeyError: 'admit'_
 | grading ran at this config's own parameters | exit 0; gate_budget={"orb_stocks_in_play_long": {"k": 3, ... | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ... | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 1 of 1 declared knobs read from the environment + consumer ... | PASS | non-zero = the wiring is absent |
+
+**Orchestrator check (run_wave, appended to step 1):** run_wave verified 8352 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg
 
 **Independent re-derivation of sampled trades (step 4)**
 
