@@ -63157,28 +63157,38 @@ def test_b3252_default_true_reads_are_a_ruled_register(tmp_path):
     live = dtc.find_sites()
     reg = dtc.load_register()
     assert dtc.register_check(live, reg) == [], dtc.register_check(live, reg)
-    assert len(reg["sites"]) == len(live) >= 1
+    expected = [e for e in reg["sites"]
+                if e["ruling"] == "b" or not e.get("applied", False)]
+    assert len(expected) == len(live) >= 1, (len(expected), len(live))
+    assert len(reg["sites"]) >= len(live)
     assert all(e["reason"].strip() for e in reg["sites"])
     assert all(("applied" in e) == (e["ruling"] == "a") or e["ruling"] == "b"
                for e in reg["sites"])
     # the admitted line keeps its reads: ruled (b), by name
     b_sites = {(e["function"], e["key"]) for e in reg["sites"] if e["ruling"] == "b"}
     assert ("strat_xs_momentum_top_decile", "xs_avoid_high_ivol") in b_sites
-    # must-fire 1: a site dropped from the register
+    # must-fire 1: a LIVE site dropped from the register - a (b) site is live
+    # by construction (an applied (a) site is not expected, so dropping it
+    # would change nothing - the B3139q-r106 state)
     r1 = copy.deepcopy(reg)
-    r1["sites"] = r1["sites"][1:]
+    b0 = next(i for i, e in enumerate(r1["sites"]) if e["ruling"] == "b")
+    del r1["sites"][b0]
     assert any("UNREGISTERED" in e for e in dtc.register_check(live, r1))
     # must-fire 2: the register names a read the code does not have
     r2 = copy.deepcopy(reg)
     r2["sites"].append({"file": "screener.py", "function": "strat_nope", "key": "k",
                         "ruling": "b", "reason": "x"})
     assert any("no longer has" in e for e in dtc.register_check(live, r2))
-    # must-fire 3: an (a) site flagged applied while the code still reads True
+    # must-fire 3: an (a) site whose `applied` flag contradicts the code -
+    # flagged applied while the code still reads True (UNREGISTERED), or
+    # flagged unapplied after the flip landed (no longer has). B3139q-r106
+    # landed the flip, so the arm toggles whichever state the register holds.
     r3 = copy.deepcopy(reg)
     a_sites = [e for e in r3["sites"] if e["ruling"] == "a"]
     assert a_sites, "the ruling has (a) sites"
-    a_sites[0]["applied"] = True
-    assert any("UNREGISTERED" in e for e in dtc.register_check(live, r3))
+    a_sites[0]["applied"] = not a_sites[0]["applied"]
+    errs3 = dtc.register_check(live, r3)
+    assert errs3 and any(("UNREGISTERED" in e) or ("no longer has" in e) for e in errs3), errs3
     # structure: the innermost def owns the call
     d = tmp_path / "sig"
     d.mkdir()

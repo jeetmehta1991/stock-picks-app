@@ -177,7 +177,7 @@ def strat_post_inclusion_drift_long(s: dict) -> dict:
     fires = (
         s.get("within_post_inclusion_window", False)
         and "add" in str(s.get("last_event_type", ""))
-        and s.get("price_above_ema_200", True)
+        and s.get("price_above_ema_200", False)  # S6-B3252 (a): was True
     )
     dse = s.get("days_since_inclusion", 0)
     return _strat_signal(fires, "long", "index_rebalance",

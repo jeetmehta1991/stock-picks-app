@@ -2717,6 +2717,706 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
     ],
 }})
 
+# B3139q-r106 F1 (S6-B3246 / S6-B3247 / S6-B3248) - written from the owner-approved T3 bands (2026-10-22 'Approve all recs' / 'Implement now'); offline campaigns, no engine leg owed, so PHASE0 is the registry (tools={} stub, the bollinger_lower precedent). Baseline figures measured from the R5 trade log by the batch's measure script.
+SPECS_PHASE0.update({
+    "cmf_flip": {
+        "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (each tunable step is a Table A row with that\nid; the charter strategy_optimisation/tighten/cmf_flip.md numbers the same\nsteps P1/P1.1/P2/P2.1/P2.2/P3/P4/P4.1/P5/P5.1/P6 - integer ids here, as\nbollinger_lower's entry cites its charter's P1.x rows). NO breadth rows: the\n655 B-row candidates in the charter are NEW-GATE and outside the approved band.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  cmf_cross_dn  (CMF crosses the zero line downward vs the prior bar,\n       technical.py compute_volume (the cmf cross test); identity UNACTUATED - charter P1)\nP2  cmf_cross_up  (the upward cross; charter P2)\nP3  cmf window 20  (technical.py compute_volume (the cmf window); charter P2.1 - DEFINED-NO-ACTUATOR)\nP4  cross level, upward (zero line, technical.py compute_volume (the cmf cross test); charter P2.2 - the\n       LEVEL side is persisted as cmf, the FRESHNESS side (prior bar <=\n       level) is not, so no offline level reproduces the gate)\nP5  cross level, downward mirror (charter P1.1 - as P4)\n\n=============================== STRATEGY LAYER ===============================\n\nP6  po3_accum_range_pct >= 0.0458   [EXISTING-THRESHOLD; both legs]\nP7  rsi_14 < 50   [EXISTING-THRESHOLD; LONG leg ceiling]\nP8  rsi_14 > 50   [EXISTING-THRESHOLD; SHORT leg floor]\nP9  rsi span 14  (charter P4.1 / P5.1 - DEFINED-NO-ACTUATOR)\nP10 _short_borrow_trap_active(s)  (days_to_cover > 5.0 blocks the SHORT fire;\n       band OWNER-GATED, not in the approved grid)\n\nlong_fires  = P2 AND P7 AND P6\nshort_fires = P1 AND P8 AND P6 AND NOT P10\n",
+        "baseline": {
+            "artifact": "output_r5_merged_1_7",
+            "fires": 2994,
+            "tickers": 544,
+            "holdout_n": 658,
+            "band": "T",
+            "window": "2022-05-05..2026-05-05"
+        },
+        "gate": "(cmf_cross_up AND rsi_14 < 50 AND po3_accum_range_pct >= 0.0458) | short mirror (cmf_cross_dn AND rsi_14 > 50 AND po3_accum_range_pct >= 0.0458 AND NOT borrow) (screener strat_cmf_flip ~:1920-1927)",
+        "tools": {},
+        "params": [
+            {
+                "id": "P1",
+                "producer": "technical.py cmf block -> screener emit",
+                "param": "cmf_cross_dn identity",
+                "production": "cross-dn",
+                "band": [
+                    "cross-dn"
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P1)",
+                "type": "identity",
+                "engine_implemented": False,
+                "evidence": "technical.py compute_volume (the cmf cross test); charter P1",
+                "derivation": "held at production - no actuator, no resim promise (S6-B2569a)"
+            },
+            {
+                "id": "P2",
+                "producer": "technical.py cmf block -> screener emit",
+                "param": "cmf_cross_up identity",
+                "production": "cross-up",
+                "band": [
+                    "cross-up"
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P2)",
+                "type": "identity",
+                "engine_implemented": False,
+                "evidence": "technical.py compute_volume (the cmf cross test); charter P2",
+                "derivation": "as P1"
+            },
+            {
+                "id": "P3",
+                "producer": "technical.py cmf block",
+                "param": "cmf window",
+                "production": 20,
+                "band": [
+                    20
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P2.1: 14/20/30 aspirational, values at other windows unpersisted)",
+                "type": "int",
+                "engine_implemented": False,
+                "evidence": "technical.py compute_volume (the cmf window); charter P2.1",
+                "derivation": "held at production"
+            },
+            {
+                "id": "P4",
+                "producer": "technical.py cmf block",
+                "param": "cross level, upward (zero line)",
+                "production": 0.0,
+                "band": [
+                    0.0
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P2.2: 0/0.02/0.05 aspirational - the prior-bar cmf is unpersisted, so a level-only filter would not reproduce the cross)",
+                "type": "float",
+                "engine_implemented": False,
+                "evidence": "technical.py compute_volume (the cmf cross test); charter P2.2",
+                "derivation": "held at production"
+            },
+            {
+                "id": "P5",
+                "producer": "technical.py cmf block",
+                "param": "cross level, downward mirror",
+                "production": 0.0,
+                "band": [
+                    0.0
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P1.1, as P4)",
+                "type": "float",
+                "engine_implemented": False,
+                "evidence": "technical.py compute_volume (the cmf cross test); charter P1.1",
+                "derivation": "held at production"
+            },
+            {
+                "id": "P6",
+                "producer": "screener strategy gate",
+                "param": "po3_accum_range_pct floor (both legs)",
+                "production": 0.0458,
+                "band": [
+                    0.0458,
+                    0.0561,
+                    0.0693,
+                    0.0867,
+                    0.1203
+                ],
+                "free_band": [
+                    0.0458,
+                    0.0561,
+                    0.0693,
+                    0.0867,
+                    0.1203
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - all four tighter levels, both legs",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter free-band line (QUANTS retention on the 2250 surviving fires: 1801/1351/903/452); ict_producers.py compute_po3_signals persists the magnitude",
+                "derivation": "TIGHTER = RAISE the floor; production included as the offline identity level; op ge",
+                "signal_keys": [
+                    "po3_accum_range_pct"
+                ]
+            },
+            {
+                "id": "P7",
+                "producer": "screener strategy gate",
+                "param": "rsi_14 ceiling (LONG leg)",
+                "production": 50,
+                "band": [
+                    50,
+                    46.57,
+                    43.52,
+                    40.16,
+                    35.49
+                ],
+                "free_band": [
+                    50,
+                    46.57,
+                    43.52,
+                    40.16,
+                    35.49
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - LONG leg only; graded with offline_level_sweep --direction long (S6-B3290)",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter free-band line (QUANTS retention on the 1401 long survivors: 1121/841/562/281, S6-B3270 per-side)",
+                "derivation": "TIGHTER = LOWER the ceiling; op lt on persisted rsi_14; production included as identity",
+                "signal_keys": [
+                    "rsi_14"
+                ]
+            },
+            {
+                "id": "P8",
+                "producer": "screener strategy gate",
+                "param": "rsi_14 floor (SHORT leg)",
+                "production": 50,
+                "band": [
+                    50,
+                    53.11,
+                    55.866,
+                    59.542,
+                    64.152
+                ],
+                "free_band": [
+                    50,
+                    53.11,
+                    55.866,
+                    59.542,
+                    64.152
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - SHORT leg only; graded with offline_level_sweep --direction short (S6-B3290). The axis key rsi_14 is P7's signal key (one key maps to one column, S6-B3139an), so a family Table D keys this leg's rows to P7's column - the per-side offline Table D (offline_level_sweep render_table) is the leg's own view",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter free-band line (QUANTS retention on the 849 short survivors: 679/509/340/170)",
+                "derivation": "TIGHTER = RAISE the floor; op gt on persisted rsi_14; production included as identity"
+            },
+            {
+                "id": "P9",
+                "producer": "technical.py rsi block",
+                "param": "rsi span",
+                "production": 14,
+                "band": [
+                    14
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P4.1 / P5.1: 9/14/21 aspirational, other spans unpersisted)",
+                "type": "int",
+                "engine_implemented": False,
+                "evidence": "technical.py compute_rsi; charter P4.1",
+                "derivation": "held at production"
+            },
+            {
+                "id": "P10",
+                "producer": "_short_borrow_trap_active (shared screener helper)",
+                "param": "days_to_cover cap (borrow guard, SHORT leg)",
+                "production": "5.0",
+                "band": [
+                    "5.0"
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "BANDABLE-OWNER-GATED (B718a); NOT in the approved grid",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter P6; B718a ruling",
+                "derivation": "tighter cap is offline on persisted days_to_cover; band only on the owner's word"
+            }
+        ]
+    },
+    "williams_r_oversold": {
+        "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (the charter\nstrategy_optimisation/tighten/williams_r_oversold.md numbers the same steps\nP1/P1.1/P2/P2.1/P3/P3.1/P4/P4.1/P5/P5.1/P6/P6.1/P6.2/P7/P8/P9 - integer ids\nhere). NO breadth rows: the 651 B-row candidates are NEW-GATE and outside the\napproved band.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  below_ema_200  (literal key; the STRAT_EMA_SPAN knob does not reach this\n       gate - S6-B3253 - so the span row is DEFINED-NO-ACTUATOR; charter P1/P1.1)\nP2  cmf_negative level  (cmf < 0 on persisted cmf; charter P2/P2.1 - SHORT leg)\nP3  cmf_positive level  (cmf > 0 on persisted cmf; charter P3/P3.1 - LONG leg)\nP4  price_above_ema_200  (literal key, as P1; charter P4/P4.1)\nP5  rsi_2 span  (charter P5/P5.1 - DEFINED-NO-ACTUATOR)\nP6  williams period 14  (technical.py compute_williams_r; charter P6.1 - DEFINED-NO-ACTUATOR)\nP7  williams_r oversold threshold  (williams_r < -80 on the persisted\n       williams_r; charter P6.2 - LONG OR-arm member)\n\n=============================== STRATEGY LAYER ===============================\n\nP8  williams_r > -20   [EXISTING-THRESHOLD; SHORT OR-arm member - NO band:\n       not an AND-leg of either side (production satisfaction long 0 pct,\n       short 85 pct, S6-B3270), the render offered none]\nP9  rsi_2 < 5   [EXISTING-THRESHOLD; LONG escape hatch, OR-arm member]\nP10 rsi_2 > 95  [EXISTING-THRESHOLD; SHORT escape hatch, OR-arm member]\nP11 _short_borrow_trap_active(s)  (days_to_cover > 5.0; band OWNER-GATED)\n\nlong_fires  = (P7 OR P9) AND P4 AND P3\nshort_fires = (P8 OR P10) AND P1 AND P2 AND NOT P11\nThe OR arms are expressed to offline_level_sweep as @group axes (S6-B3290):\nlong  williams_r:lt:-80,-85,-90@hatch  rsi_2:lt:5,3@hatch  cmf:gt:0,0.02,0.05\nshort williams_r:gt:-20@hatch  rsi_2:gt:95,97@hatch  cmf:lt:0,-0.02,-0.05\n",
+        "baseline": {
+            "artifact": "output_r5_merged_1_7",
+            "fires": 2535,
+            "tickers": 544,
+            "holdout_n": 702,
+            "band": "T",
+            "window": "2022-05-05..2026-05-05"
+        },
+        "gate": "((williams_r_oversold OR rsi_2 < 5) AND price_above_ema_200 AND cmf_positive) | short ((williams_r > -20 OR rsi_2 > 95) AND below_ema_200 AND cmf_negative AND NOT borrow) (screener strat_williams_r_oversold ~:1244-1284)",
+        "tools": {},
+        "params": [
+            {
+                "id": "P1",
+                "producer": "compute_ema_sma -> literal key",
+                "param": "below_ema_200 identity (SHORT trend leg)",
+                "production": "span 200",
+                "band": [
+                    "span 200"
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P1.1: the gate reads the literal 200 key - S6-B3253)",
+                "type": "identity",
+                "engine_implemented": False,
+                "evidence": "screener.py strat_williams_r_oversold reads below_ema_200 literally; charter P1.1",
+                "derivation": "held at production; no span resim reaches this gate"
+            },
+            {
+                "id": "P2",
+                "producer": "technical.py cmf block",
+                "param": "cmf_negative level (SHORT leg)",
+                "production": 0.0,
+                "band": [
+                    0.0,
+                    -0.02,
+                    -0.05
+                ],
+                "free_band": [
+                    0.0,
+                    -0.02,
+                    -0.05
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - SHORT leg; op lt on persisted cmf. The key cmf is P3's signal key (S6-B3139an one-key-one-column), so a family Table D keys this leg's rows to P3's column - the per-side offline Table D is the leg's own view",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter P2.1 (offline 2 of 3 levels - TIGHTER on persisted cmf, technical.py compute_volume (the cmf block))",
+                "derivation": "TIGHTER = LOWER the ceiling below zero; production included as identity"
+            },
+            {
+                "id": "P3",
+                "producer": "technical.py cmf block",
+                "param": "cmf_positive level (LONG leg)",
+                "production": 0.0,
+                "band": [
+                    0.0,
+                    0.02,
+                    0.05
+                ],
+                "free_band": [
+                    0.0,
+                    0.02,
+                    0.05
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - LONG leg; op gt on persisted cmf",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter P3.1 (offline 2 of 3 levels - TIGHTER on persisted cmf, technical.py compute_volume (the cmf level))",
+                "derivation": "TIGHTER = RAISE the floor above zero; production included as identity",
+                "signal_keys": [
+                    "cmf"
+                ]
+            },
+            {
+                "id": "P4",
+                "producer": "compute_ema_sma -> literal key",
+                "param": "price_above_ema_200 identity (LONG trend leg)",
+                "production": "span 200",
+                "band": [
+                    "span 200"
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P4.1, as P1)",
+                "type": "identity",
+                "engine_implemented": False,
+                "evidence": "screener.py strat_williams_r_oversold reads price_above_ema_200 literally; charter P4.1",
+                "derivation": "as P1"
+            },
+            {
+                "id": "P5",
+                "producer": "technical.py rsi block",
+                "param": "rsi_2 span (escape hatch)",
+                "production": 2,
+                "band": [
+                    2
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P5.1: 2/3/5 aspirational, other spans unpersisted)",
+                "type": "int",
+                "engine_implemented": False,
+                "evidence": "technical.py compute_rsi; charter P5.1",
+                "derivation": "held at production"
+            },
+            {
+                "id": "P6",
+                "producer": "technical.py williams block",
+                "param": "williams period",
+                "production": 14,
+                "band": [
+                    14
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (charter P6.1: 10/14/20 aspirational, other periods unpersisted)",
+                "type": "int",
+                "engine_implemented": False,
+                "evidence": "technical.py compute_williams_r; charter P6.1",
+                "derivation": "held at production"
+            },
+            {
+                "id": "P7",
+                "producer": "technical.py williams block -> screener OR-arm",
+                "param": "williams_r oversold threshold (LONG OR-arm)",
+                "production": -80,
+                "band": [
+                    -80,
+                    -85,
+                    -90
+                ],
+                "free_band": [
+                    -80,
+                    -85,
+                    -90
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - LONG leg OR-arm member (with P9) - graded as an @group axis",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter P6.2 (offline 2 of 3 levels - TIGHTER on persisted williams_r, technical.py compute_williams_r (the oversold test))",
+                "derivation": "TIGHTER = LOWER the threshold; op lt on persisted williams_r; production included as identity",
+                "signal_keys": [
+                    "williams_r"
+                ]
+            },
+            {
+                "id": "P8",
+                "producer": "screener strategy gate (OR-arm)",
+                "param": "williams_r > -20 (SHORT OR-arm)",
+                "production": -20,
+                "band": [
+                    -20
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "NO BAND RULED - an OR-arm member, not an AND-leg of either side (S6-B3270 measure); held at production in the short @group axis",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter P7 (production satisfaction long 0 pct, short 85 pct)",
+                "derivation": "held at production"
+            },
+            {
+                "id": "P9",
+                "producer": "screener strategy gate (local rsi_2 compare)",
+                "param": "rsi_2 escape hatch (LONG OR-arm)",
+                "production": 5,
+                "band": [
+                    5,
+                    3
+                ],
+                "free_band": [
+                    5,
+                    3
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - LONG leg OR-arm member (with P7); list band since S6-B3228",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter P9 (rsi_2 persisted; Connors RSI-2 canon)",
+                "derivation": "TIGHTER = LOWER; op lt on persisted rsi_2; production included as identity",
+                "signal_keys": [
+                    "rsi_2"
+                ]
+            },
+            {
+                "id": "P10",
+                "producer": "screener strategy gate (local rsi_2 compare)",
+                "param": "rsi_2 escape hatch (SHORT OR-arm)",
+                "production": 95,
+                "band": [
+                    95,
+                    97
+                ],
+                "free_band": [
+                    95,
+                    97
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - SHORT leg OR-arm member (with P8); rsi_2 is P9's signal key, the per-side offline Table D is the leg's own view",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter P9 (rsi_2 persisted)",
+                "derivation": "TIGHTER = RAISE; op gt on persisted rsi_2; production included as identity"
+            },
+            {
+                "id": "P11",
+                "producer": "_short_borrow_trap_active (shared screener helper)",
+                "param": "days_to_cover cap (borrow guard, SHORT leg)",
+                "production": "5.0",
+                "band": [
+                    "5.0"
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "BANDABLE-OWNER-GATED (B718a); NOT in the approved grid",
+                "type": "float",
+                "engine_implemented": True,
+                "evidence": "charter P8; B718a ruling",
+                "derivation": "tighter cap is offline on persisted days_to_cover; band only on the owner's word"
+            }
+        ]
+    },
+    "squeeze_breakout": {
+        "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (the render\noutput_audit/b3248_squeeze_breakout_table_a.md numbers them P1/P1.1-P1.5 -\ninteger ids here). P1.5 of the render (the prior-squeeze NEW-GATE row,\nS6-B3254 option c) is NOT registered: it is UNRULED - the r104 close\nrecommended the four original rows and the owner's word reached those. The\n603 B-row candidates are NEW-GATE and outside the approved band; the breadth\nscreen (runbook 3.6) runs under S6-B3289 and its B-rows come to the owner at a\nsecond T3.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  squeeze_fire_up  (NOT in a squeeze on the fire bar - BB(20, 2.0) outside\n       KC(20, 2.0 x ATR20) - AND the close-minus-20-bar-midpoint momentum\n       crossing above zero; technical.py compute_squeeze; no prior squeeze\n       required, S6-B3254)\nP2  Keltner multiplier 2.0  (render P1.1; 2.5 is offline through the\n       persisted kc_mid / kc_upper geometry, 1.5 is engine-only with no knob)\nP3  Bollinger std multiplier 2.0  (render P1.2; 1.5 is offline through the\n       persisted bb_20_20 geometry, 2.5 is engine-only with no knob)\nP4  momentum window 20  (render P1.3 - DEFINED-NO-ACTUATOR)\nP5  Keltner EMA / ATR period 20  (render P1.4 - DEFINED-NO-ACTUATOR)\n\n=============================== STRATEGY LAYER ===============================\n\n(none - the gate is the one producer boolean)\n\nlong_fires = P1\n",
+        "baseline": {
+            "artifact": "output_r5_merged_1_7",
+            "fires": 1141,
+            "tickers": 544,
+            "holdout_n": 188,
+            "band": "T",
+            "window": "2022-05-05..2026-05-05"
+        },
+        "gate": "squeeze_fire_up (screener strat_squeeze_breakout ~:2146-2153)",
+        "tools": {},
+        "params": [
+            {
+                "id": "P1",
+                "producer": "technical.py compute_squeeze -> screener emit",
+                "param": "squeeze_fire_up identity",
+                "production": "fire-up",
+                "band": [
+                    "fire-up"
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (the boolean; its knobs are P2-P5)",
+                "type": "identity",
+                "engine_implemented": False,
+                "evidence": "technical.py compute_squeeze (in_squeeze at :1525-1528); render P1",
+                "derivation": "held at production"
+            },
+            {
+                "id": "P2",
+                "producer": "technical.py compute_keltner + compute_squeeze",
+                "param": "Keltner multiplier (squeeze definition)",
+                "production": 2.0,
+                "band": [
+                    2.0,
+                    2.5
+                ],
+                "free_band": [
+                    2.0,
+                    2.5
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - render P1.1 band 1.5/2.0/2.5: 2.5 OFFLINE through a DERIVED-KEY filter (kc_mid, kc_upper and bb_20_20_upper/lower are persisted; ATR20 = (kc_upper - kc_mid) / 2.0) - the filter is S6-B3289 step 6 work, not a bare key:op axis; 1.5 (the Carter 2005 canon) is engine-only with no knob and stays out of the band (DEFINED-NO-ACTUATOR)",
+                "type": "float",
+                "engine_implemented": False,
+                "evidence": "render P1.1: at 2.5, 578 of 1141 fires stay out of the squeeze (the r86 measure)",
+                "derivation": "TIGHTER = WIDER channel (more bars read in-squeeze, fewer fire); offline via the persisted geometry"
+            },
+            {
+                "id": "P3",
+                "producer": "technical.py compute_bollinger + compute_squeeze",
+                "param": "Bollinger std multiplier (squeeze definition)",
+                "production": 2.0,
+                "band": [
+                    2.0,
+                    1.5
+                ],
+                "free_band": [
+                    2.0,
+                    1.5
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED (owner-approved T3 band 2026-10-22, verbatim 'Approve all recs' / 'Implement now' on the r104 close's decision 3, recommendation 'Approve as rendered') - render P1.2 band 1.5/2.0/2.5: 1.5 OFFLINE through the same derived-key filter (bb_20_20 mid and half-width give the 1.5 band); 2.5 is engine-only with no knob and stays out of the band (DEFINED-NO-ACTUATOR)",
+                "type": "float",
+                "engine_implemented": False,
+                "evidence": "render P1.2: at 1.5, 519 of 1141 fires stay out of the squeeze (the r86 measure)",
+                "derivation": "TIGHTER = NARROWER band (more bars read in-squeeze, fewer fire); offline via the persisted geometry"
+            },
+            {
+                "id": "P4",
+                "producer": "technical.py compute_squeeze",
+                "param": "momentum window",
+                "production": 20,
+                "band": [
+                    20
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (render P1.3: 10/20/30 aspirational, the midpoint at other windows unpersisted)",
+                "type": "int",
+                "engine_implemented": False,
+                "evidence": "render P1.3",
+                "derivation": "held at production"
+            },
+            {
+                "id": "P5",
+                "producer": "technical.py compute_keltner",
+                "param": "Keltner EMA / ATR period",
+                "production": 20,
+                "band": [
+                    20
+                ],
+                "free_band": None,
+                "resim_band": None,
+                "env": None,
+                "consumers": [
+                    "backtest/signals/screener.py"
+                ],
+                "sweep_levels": None,
+                "subset_safe": False,
+                "status": "DEFINED-NO-ACTUATOR (render P1.4: 14/20/30 aspirational, the channel at other periods unpersisted)",
+                "type": "int",
+                "engine_implemented": False,
+                "evidence": "render P1.4",
+                "derivation": "held at production"
+            }
+        ]
+    }
+})
+
 # B3119 - THE FAMILY ADAPTER (S6-B2883): bollinger_lower PROMOTED into SPECS
 # for the owner-approved span campaign (verbatim 2026-09-27: "Q2 approved one
 # line change fix. I want to test various spans"). The SPECS entry is DERIVED

@@ -3101,6 +3101,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r90 / L950) - READERS THAT NAME NO STRATEGY.** L801's grep is by the changed subject's NAME. This turn's state changes reached readers that name none: the long-campaign shortlist built from the status view (test_b3232, r86), test_b3171b's derived first fresh family (r89), Table A's 'in SPECS' predicate (r89). The first two turned full gates RED; the third was caught reading the re-render diff.
 
+**INSTANCE (B3139q-r106 / L958) - RENDER TEXT COPIED INTO CODE CARRIES THE RENDER'S LINE CITATIONS.** Three new SPECS_PHASE0 entries took 16 producer line citations from the Table A renders they were written from, two batches after instance 2 put 'cite a symbol, never a line' here; the S6-B3269 pre-gate selection ran the S6-B3139bb ratchet (85 against a frozen 69) before the gate. Rewritten to the enclosing functions. The same batch's test_b3252 went red on the register state it was built to record (three position-bound arms), a compliance failure against #226 recorded in L958.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in

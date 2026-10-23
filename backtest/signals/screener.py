@@ -4196,7 +4196,7 @@ def strat_xs_low_beta_long(s):
     """
     fires = (
         s.get("xs_low_beta_decile_entry_recent_5d", False)
-        and s.get("xs_avoid_high_ivol", True)
+        and s.get("xs_avoid_high_ivol", False)  # S6-B3252 (a): was True
     )
     return _strat(fires, "long", "factor",
         ["xs_avoid_high_ivol", "xs_low_beta_decile_entry_recent_5d"],
@@ -7988,7 +7988,7 @@ def strat_bollinger_tight_with_smart_money_long(s):
     # - canonical BB squeeze definitions vary (Bollinger 1992 uses 20-period 2-stdev)".
     base_fires = (
         (s.get("bb_20_20_squeeze", False) or s.get("bb_20_15_squeeze", False))  # B1161: was bb_20_20_squeeze only
-        and s.get("close_above_open", True)
+        and s.get("close_above_open", False)  # S6-B3252 (a): was True
         and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
@@ -8071,7 +8071,7 @@ def strat_52w_high_breakout_with_smart_money_long(s):
     # Base breakout thesis fires alone; smart_money contributes as OR boost.
     base_fires = (
         s.get("near_52w_high_95pct", False)
-        and s.get("close_above_open", True)
+        and s.get("close_above_open", False)  # S6-B3252 (a): was True
         and s.get("close_in_top_40pct_of_range", False)
         and s.get("vol_spike_12x", False)
     )
@@ -8115,7 +8115,7 @@ def strat_52w_high_breakout_with_smart_money_vol_below_long(s):
     # "retest absorption thesis fires when EITHER condition holds, not both".
     base_fires = (
         s.get("near_52w_high_95pct", False)
-        and s.get("close_above_open", True)
+        and s.get("close_above_open", False)  # S6-B3252 (a): was True
         and s.get("close_in_top_40pct_of_range", False)
         and (s.get("vol_below_avg", False) or s.get("institutional_buy", False))
     )
@@ -8154,7 +8154,7 @@ def strat_squeeze_breakout_with_smart_money_long(s):
     # over-constrains".
     fires = (
         s.get("squeeze_fire_up", False)
-        and s.get("close_above_open", True)
+        and s.get("close_above_open", False)  # S6-B3252 (a): was True
     )
     return _strat(fires, "long", "smart_money_sleeve",
         ["squeeze_fire_up", "close_above_open"],
@@ -8203,7 +8203,7 @@ def strat_donchian_breakout_with_smart_money_long(s):
     entry; smart-money confirms the breakout has fundamental backing."""
     base_fires = (
         s.get("dc20_breakout_up", False)
-        and s.get("close_above_open", True)
+        and s.get("close_above_open", False)  # S6-B3252 (a): was True
     )
     fires = base_fires and _has_smart_money_buy(s)
     return _strat(fires, "long", "smart_money_sleeve",
