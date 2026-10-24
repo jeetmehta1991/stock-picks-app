@@ -70,6 +70,14 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
     production = tuple(rec1["production_levels"])
     prereg = rec1["preregistration_candidate"]
     strategy = rec1["strategy"]
+    # S6-B3293: re-evaluated HERE as well, so an artifact written before the
+    # rule (one still naming a negative or noise best cell) is refused too.
+    _why = rec1.get("preregistration_refusal") or ols.preregistration_refusal(rec1)
+    if _why:
+        raise SystemExit(
+            "REFUSED (S6-B3293): the Step-1 artifact names no preregistration "
+            f"candidate worth the read - {_why}. A holdout read spends a one-way "
+            "door; nothing here is worth it.")
 
     # ---- S6-B2886: THE BAND-COVERAGE REFUSAL -----------------------
     # THIS SCRIPT SPENDS THE PRE-REGISTRATION - a one-way door. The

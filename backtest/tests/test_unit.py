@@ -63694,7 +63694,9 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
     step1 = {"strategy": "sq", "direction": "long",
              "axes": [{"key": "rsi_14", "op": "lt", "levels": [50, 45]}],
              "production_levels": [50],
-             "preregistration_candidate": {"levels": [45], "best_exit": "e1"},
+             # S6-B3293 (r110e): a candidate carries a positive IS sharpe, or the
+             # read's door refuses it before the subject arms below are reached
+             "preregistration_candidate": {"levels": [45], "best_exit": "e1", "is_sharpe": 0.5},
              "evidence": {"survival_filter": {"applied": False}}, "derive": None}
     p1 = tmp_path / "step1.json"
     p1.write_text(_json.dumps(step1), encoding="utf-8")
@@ -63722,3 +63724,156 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
     with pytest.raises(SystemExit) as e:
         ohr.read_step2(p2, 0.99, 0.999, 1, band_coverage=ok)
     assert "S6-B3294" in str(e.value) and "derive module" in str(e.value)
+
+
+# ================================================================ B3139q-r110 S6-B3293: a candidate is a cell worth the read
+def test_b3293_no_preregistration_candidate_on_a_negative_or_noise_surface(tmp_path, monkeypatch):
+    """S6-B3293: offline_level_sweep.preregistration_refusal voids the
+    candidate when the best cell's IS sharpe is not positive, or when the
+    search's own null prices it above producer_variant_table.DEPTH_NULL_P_MAX
+    (the S6-B3206 noise bar); a positive best under the bar stays a candidate;
+    Table D prints the refusal; offline_holdout_read refuses an artifact that
+    names no candidate (S6-B3293) before any data read."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import offline_level_sweep as ols
+    import offline_holdout_read as ohr
+    from producer_variant_table import DEPTH_NULL_P_MAX
+
+    def rec(sharpe, p):
+        return {"strategy": "syn", "cells_graded": 1, "cells_total": 1, "trials_searched": 26,
+                "window": {"is": ["2022-05-05", "2025-05-05"]},
+                "axes": [{"key": "k", "op": "lt", "levels": [50, 45]}],
+                "production_levels": [50], "ranked": [{"levels": [45], "is_sharpe": sharpe,
+                                                       "is_trades": 30, "best_exit": "e1"}],
+                "preregistration_candidate": {"levels": [45], "is_sharpe": sharpe, "is_trades": 30,
+                                              "best_exit": "e1"},
+                "permutation_null": {"p_value_best": p}}
+    assert "not positive" in ols.preregistration_refusal(rec(-0.198, 1.0))
+    assert "not positive" in ols.preregistration_refusal(rec(0.0, 0.01))
+    r = ols.preregistration_refusal(rec(0.6, DEPTH_NULL_P_MAX + 0.01))
+    assert "noise bar" in r and str(DEPTH_NULL_P_MAX) in r
+    assert ols.preregistration_refusal(rec(0.6, DEPTH_NULL_P_MAX)) == ""      # AT the bar is not above it
+    assert ols.preregistration_refusal(rec(0.6, None)) == ""                  # no null ran: sign alone decides
+    assert ols.preregistration_refusal({"preregistration_candidate": None}) == "no graded cell"
+    voided = rec(-0.198, 1.0)
+    voided["preregistration_refusal"] = ols.preregistration_refusal(voided)
+    voided["preregistration_candidate"] = None
+    md = ols.render_table(voided)
+    assert "NO PREREGISTRATION CANDIDATE (S6-B3293)" in md and "not positive" in md
+    kept = rec(0.6, 0.05)
+    kept["preregistration_refusal"] = ""
+    assert "NO PREREGISTRATION CANDIDATE" not in ols.render_table(kept)
+    # the read refuses before touching any data or gate
+    p1 = tmp_path / "step1.json"
+    p1.write_text(_json.dumps(voided), encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        ohr.read_step2(p1, 0.99, 0.999, 1, band_coverage={"evaluable": True, "complete": True, "params": []})
+    assert "S6-B3293" in str(e.value) and "not positive" in str(e.value)
+    # an artifact written BEFORE the rule still names its negative cell (the
+    # committed williams short sweep): the read re-evaluates and refuses too
+    stale = rec(-0.198, 1.0)
+    p2 = tmp_path / "stale.json"
+    p2.write_text(_json.dumps(stale), encoding="utf-8")
+    with pytest.raises(SystemExit) as e2:
+        ohr.read_step2(p2, 0.99, 0.999, 1, band_coverage={"evaluable": True, "complete": True, "params": []})
+    assert "S6-B3293" in str(e2.value) and "not positive" in str(e2.value)
+    # and a kept candidate passes this door (it fails later, on the synthetic strategy)
+    p3 = tmp_path / "kept.json"
+    p3.write_text(_json.dumps(kept), encoding="utf-8")
+    with pytest.raises(SystemExit) as e3:
+        ohr.read_step2(p3, 0.99, 0.999, 1, band_coverage={"evaluable": True, "complete": True, "params": []})
+    assert "S6-B3293" not in str(e3.value)
+    # the sweep's main() voids through apply_preregistration_refusal: behaviour
+    # both ways, and the wiring pinned on main()'s AST (a mutation that left
+    # the candidate in place SURVIVED before this arm - B3139q-r110c)
+    v = rec(-0.198, 1.0)
+    assert "not positive" in ols.apply_preregistration_refusal(v)
+    assert v["preregistration_candidate"] is None and "not positive" in v["preregistration_refusal"]
+    k = rec(0.6, 0.05)
+    assert ols.apply_preregistration_refusal(k) == "" and k["preregistration_candidate"] is not None
+    import ast as _ast
+    import inspect as _inspect
+    import textwrap as _tw
+    mtree = _ast.parse(_tw.dedent(_inspect.getsource(ols.main)))
+    calls = [n for n in _ast.walk(mtree) if isinstance(n, _ast.Call)
+             and getattr(n.func, "id", getattr(n.func, "attr", None)) == "apply_preregistration_refusal"]
+    assert len(calls) == 1, "main() must void the candidate through apply_preregistration_refusal"
+
+
+# ================================================================ B3139q-r110 S6-B3296: the mutation probe is a repo tool
+def test_b3296_mutation_probe_refuses_live_readers_and_restores_bytes(tmp_path, monkeypatch):
+    """S6-B3296 (L959 / #292): the mutation harness that rewrote three
+    scripts on disk while a live sweep read them is a repo tool now. Arms:
+    a live python process naming a target REFUSES (injected process list;
+    --allow-live records the override); an anchor that occurs twice is
+    REFUSED per case; a case whose pin fails under the mutant is 'killed',
+    one whose pin passes 'SURVIVED'; every target is restored byte-identical
+    even when the runner raises; a pin RED on the unmutated tree is REFUSED
+    per case before any write (L686 - B3139q-r110d, after 5 mutants read
+    'killed' against a failing pin)."""
+    import hashlib
+    import sys as _sys
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import mutation_probe as mp
+
+    # a scratch target INSIDE the repo root (the tool resolves targets against ROOT)
+    rel = f"output_audit/_b3296_target_{tmp_path.name}.py"
+    target = root / rel
+    target.write_bytes(b"def f():\n    return 1\n\nX = 1\nX = 1\n")
+    sha0 = hashlib.sha256(target.read_bytes()).hexdigest()
+    try:
+        case_ok = {"file": rel, "test": "t::k", "label": "killable",
+                   "anchor": "    return 1\n", "mutant": "    return 2\n"}
+        case_dup = {"file": rel, "test": "t::k", "label": "double anchor",
+                    "anchor": "X = 1\n", "mutant": "X = 2\n"}
+        # (a) a live reader refuses, and --allow-live records it
+        procs = ["python.exe scripts/other.py", f"python.exe {rel}"]
+        assert mp.live_readers([rel], procs) == {rel: [f"python.exe {rel}"]}
+        with pytest.raises(SystemExit) as e:
+            mp.run_cases([case_ok], processes=procs, runner=lambda t: 1)
+        assert "S6-B3296" in str(e.value) and "live process" in str(e.value)
+        assert target.read_bytes() and hashlib.sha256(target.read_bytes()).hexdigest() == sha0
+        def seq(*codes):
+            it = iter(codes)
+            return lambda t: next(it)
+        rep = mp.run_cases([case_ok], processes=procs, allow_live=True, runner=seq(0, 1))
+        assert rep["live_readers_overridden"] == {rel: [f"python.exe {rel}"]}
+        # (b) killed vs survived, through the injected runner: the control run
+        # sees the ORIGINAL, the mutant run sees the mutant on disk
+        seen = []
+        def runner_sees(t):
+            seen.append(target.read_text(encoding="utf-8"))
+            return 0 if len(seen) == 1 else 1
+        rep = mp.run_cases([case_ok], processes=[], runner=runner_sees)
+        assert rep["killed"] == 1 and rep["survived"] == [] and rep["restored_all"] is True
+        assert "return 1" in seen[0] and "return 2" in seen[1]
+        rep2 = mp.run_cases([case_ok], processes=[], runner=lambda t: 0)
+        assert rep2["killed"] == 0 and rep2["survived"] == ["killable"]
+        # (b2) a pin RED before any mutation is refused per case, nothing written
+        rep_red = mp.run_cases([case_ok], processes=[], runner=lambda t: 1)
+        assert rep_red["refused"] == ["killable"] and rep_red["killed"] == 0
+        assert "RED on the unmutated tree" in rep_red["results"][0]["reason"]
+        assert hashlib.sha256(target.read_bytes()).hexdigest() == sha0
+        # (c) an anchor that occurs twice is refused per case, nothing written
+        rep3 = mp.run_cases([case_dup], processes=[], runner=seq(0, 1))
+        assert rep3["refused"] == ["double anchor"] and rep3["killed"] == 0
+        # (d) a runner that raises still restores the target
+        def boom(t):
+            raise RuntimeError("pytest died")
+        with pytest.raises(RuntimeError):
+            mp.run_cases([case_ok], processes=[], runner=boom)
+        assert hashlib.sha256(target.read_bytes()).hexdigest() == sha0
+    finally:
+        target.unlink(missing_ok=True)

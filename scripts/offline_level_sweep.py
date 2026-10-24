@@ -425,6 +425,42 @@ def attach_null(rec, strategy, axes, min_n, null_perms, null_seed,
 
 
 
+def preregistration_refusal(rec: dict) -> str:
+    """S6-B3293: the reason this artifact names NO preregistration candidate,
+    or '' when its best cell is one. A candidate is a cell worth spending the
+    one-shot holdout read on: its IS sharpe must be positive, and when a
+    permutation null ran, the search's own null must not price it above the
+    S6-B3206 noise bar (producer_variant_table.DEPTH_NULL_P_MAX). MEASURED
+    before this rule: the williams_r_oversold short sweep named a best cell
+    with IS sharpe -0.198 at p 1.0 as its candidate."""
+    best = rec.get("preregistration_candidate")
+    if not best:
+        return "no graded cell"
+    sh = best.get("is_sharpe")
+    if sh is None or float(sh) <= 0:
+        return (f"best cell IS sharpe {sh} is not positive - no level in the band "
+                "beats zero in-sample, nothing to read on the holdout")
+    p = (rec.get("permutation_null") or {}).get("p_value_best")
+    if p is not None:
+        from producer_variant_table import DEPTH_NULL_P_MAX
+        if float(p) > DEPTH_NULL_P_MAX:
+            return (f"the search's own permutation null prices the best cell at p {p} "
+                    f"> {DEPTH_NULL_P_MAX} (the S6-B3206 noise bar) - the surface is "
+                    "noise, nothing to read on the holdout")
+    return ""
+
+
+def apply_preregistration_refusal(rec: dict) -> str:
+    """S6-B3293: record the refusal on the artifact and VOID the candidate
+    when there is one; returns the refusal ('' keeps the candidate). main()
+    routes through this before the multiplicity report - pinned by
+    test_b3293's wiring arm, because main() itself runs the whole sweep."""
+    rec["preregistration_refusal"] = preregistration_refusal(rec)
+    if rec["preregistration_refusal"]:
+        rec["preregistration_candidate"] = None
+    return rec["preregistration_refusal"]
+
+
 def render_table(rec: dict) -> str:
     """B2643 (owner directive 2026-09-08): TABLE D, OFFLINE FORM.
 
@@ -440,6 +476,9 @@ def render_table(rec: dict) -> str:
             f"{rec['trials_searched']} trials (cells x exits); window "
             f"{rec['window']['is'][0]} .. {rec['window']['is'][1]}; "
             f"holdout NOT read by this artifact.\n\n")
+    if rec.get("preregistration_refusal"):
+        head += (f"**NO PREREGISTRATION CANDIDATE (S6-B3293): "
+                 f"{rec['preregistration_refusal']}**\n\n")
     cols = " | ".join(f"{a['key']} ({a['op']}"
                       + (f", or:{a['group']}" if a.get("group") else "") + ")"
                       for a in axes)
@@ -511,6 +550,11 @@ def main() -> int:
     # under --null-perms > 0, default 0, so a default T4 grid carried none and
     # breadth_step2_read refused it, fail-closed). trials_searched rides beside
     # it: the partition counts CELLS, the search spanned cells x exits.
+    # S6-B3293: a best cell is a CANDIDATE only when it is worth the one-shot
+    # read; the refusal is recorded and the candidate voided, so the holdout
+    # read tool refuses instead of spending the door on nothing.
+    if apply_preregistration_refusal(rec):
+        print(f"NO PREREGISTRATION CANDIDATE: {rec['preregistration_refusal']}")
     rec["multiplicity"] = rc.bh_fdr_report(
         rec.pop("_family_rows"), permutation_null=rec.get("permutation_null"))
     rec["multiplicity"]["trials_searched"] = rec.get("trials_searched")

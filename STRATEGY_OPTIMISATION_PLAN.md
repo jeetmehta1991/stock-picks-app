@@ -922,9 +922,9 @@ config.
 |---|---|---|---|
 | F1 | Write the SPECS entry (R1) with every parameter's `free_band` / `resim_band`. A parameter with NO env knob can have NO resim level - `validate_spec` refuses it (the S6-B2569a class) | `producer_variant_table.py --strategy <s>` | the SPECS entry + Table A |
 | F2 | Confirm which parameters actually reach THIS strategy's gate: read the gate expression in `screener.py` and follow each signal to its producer. A producer's parameter that gates only a SIBLING's signal is not this strategy's axis | grep the gate, read the producer | a per-parameter LIVE / SIBLING mark |
-| F3 | Run the sweep IN-SAMPLE ONLY, priced against its own permutation null | `offline_level_sweep.py --strategy <s> --axes '<key>:le\|ge:<levels>' --production <values> --band-ruling "<the owner's T3 words, verbatim>" --null-perms <n> --out output_audit/<b>_<s>_step1_is_surface.json` (`--band-ruling` is REQUIRED - S6-B2848a; the pre-B3096 text of this command predated it) | the ranked artifact, carrying `trials_searched` and `preregistration_candidate`, PLUS **Table D (offline form)** written unconditionally beside it as `<out>.md` (B2643, owner directive 2026-09-08: the ranked producer-combination view does not wait for an engine run; pinned by test_b2643) |
+| F3 | Run the sweep IN-SAMPLE ONLY, priced against its own permutation null | `offline_level_sweep.py --strategy <s> --axes '<key>:le\|ge:<levels>' --production <values> --band-ruling "<the owner's T3 words, verbatim>" --null-perms <n> --out output_audit/<b>_<s>_step1_is_surface.json` (`--band-ruling` is REQUIRED - S6-B2848a; the pre-B3096 text of this command predated it). **S6-B3290 / S6-B3290b forms (B3139q-r105..r107):** `lt` / `gt` beside `le` / `ge` where the gate is strict; `<key>:<op>:<levels>@<group>` for an OR-arm (members of a group OR, groups AND the plain axes); `--direction long\|short` for one leg of a dual strategy (per-side bands, S6-B3270) with the Step-1 artifact recording the leg; `--survival` when T1 restricted the fires (reproduction is then measured on the surviving subset, as T4 requires); `--derive <module.py>` for a band whose level is a DERIVED key of persisted geometry (a `derive(sig) -> dict` module, its path and sha256 recorded in the artifact - a holdout read refuses when that sha moved, S6-B3294). **A best cell is a preregistration_candidate only when it is worth the one-shot read (S6-B3293, B3139q-r110): the sweep VOIDS the candidate and records `preregistration_refusal` when the best cell's IS sharpe is not positive or its null p is above the S6-B3206 noise bar (`producer_variant_table.DEPTH_NULL_P_MAX`); Table D prints NO PREREGISTRATION CANDIDATE; the holdout read re-evaluates the same rule on any artifact it is handed and refuses, so an artifact written before the rule is refused too - say so in the row and spend nothing** | the ranked artifact, carrying `trials_searched` and `preregistration_candidate`, PLUS **Table D (offline form)** written unconditionally beside it as `<out>.md` (B2643, owner directive 2026-09-08: the ranked producer-combination view does not wait for an engine run; pinned by test_b2643) |
 | F4 | PRE-REGISTER the single cell BEFORE any holdout code path runs, in a COMMITTED artifact. The ordering IS the pre-registration | the artifact + the commit | the commit hash in the queue row |
-| F5 | Owner-gated Step 2 (owner ruling 2026-09-08): compute the holdout for ALL cells x exits IN ONE READ - offline, one artifact, every cell's six-gate line rendered. The PRE-REGISTERED cell's numbers CARRY ADMISSION against the six LIVE_GATES; every OTHER cell's holdout figure is DIAGNOSTIC / PEEKED BY CONSTRUCTION and is labelled so in the artifact - it can never pick a different winner, because the pre-registration is spent the moment the read runs | `scripts/offline_holdout_read.py` (built B2644, closing S6-B2638b; the pre-B3096 table still said PROPOSED-NOT-BUILT, stale since B2644) | the Step-2 grid with peeked cells LABELLED |
+| F5 | Owner-gated Step 2 (owner ruling 2026-09-08): compute the holdout for ALL cells x exits IN ONE READ - offline, one artifact, every cell's six-gate line rendered. The PRE-REGISTERED cell's numbers CARRY ADMISSION against the six LIVE_GATES; every OTHER cell's holdout figure is DIAGNOSTIC / PEEKED BY CONSTRUCTION and is labelled so in the artifact - it can never pick a different winner, because the pre-registration is spent the moment the read runs. **S6-B3294 (L912): the read takes its SUBJECT from the Step-1 artifact - the leg, the survival filter, the derive module (sha-checked) - never from a flag; a per-side campaign's read passes the sibling leg's Step-1 artifact as `--coverage-artifact` so the band-coverage gate sees both legs' graded levels. Whether a generic sweep's in-sample SURFACE counts toward band coverage the way a free-level evaluation does (S6-B3139o) is the owner's ruling S6-B3295; until it lands the gate REPORTS the surface's graded levels per param and counts none, so no sweep-based campaign reaches F5** | `scripts/offline_holdout_read.py` (built B2644, closing S6-B2638b; the pre-B3096 table still said PROPOSED-NOT-BUILT, stale since B2644) | the Step-2 grid with peeked cells LABELLED |
 
 **BAND-COVERAGE GATE (B2704, owner-mandated 2026-09-12, verbatim): "Each and every band once approved in
 table A needs to be tested before a strategy can be declared as a failure in step 2. Bands can be
@@ -981,7 +981,11 @@ meaning.
 1. **FAMILY COMPANION SCREEN** - `scripts/institutional_companion_screen.py --family <prefix>` (named
    for its first family; generic by argument), IS-only window, run at TWO exits (`time_stop_10d` +
    `breakeven_plus_trail`), one BH-FDR pass per run; keep only signals whose effect sign is CONSISTENT
-   under both exits (the `_consistent` intersect artifact). A SCREEN, never a gate.
+   under both exits (the `_consistent` intersect artifact). A SCREEN, never a gate. **Per strategy:
+   `--strategy <s>` selects by exact name (S6-B3291); the intersect and the clustering below are
+   `scripts/companions_consistent.py --a <screen at exit 1> --b <screen at exit 2> --strategy <s>`
+   (S6-B3291b) - a peeked screen is refused, and keys the producer index cannot place are reported
+   as an `unindexed` bucket, a mixed bag that is never a cluster.**
 2. **CLUSTER -> REPRESENTATIVES** - group consistent survivors by producer family (momentum /
    compression / volume-profile / volatility / candlestick-pattern / gap ...); pick ONE representative per cluster
    with the criterion stated (#165). Collinearity with an existing depth axis is flagged on the row.
@@ -2579,7 +2583,13 @@ Sharpe of -7.4), and the positive-only shrunk subset (n=5) implied 0.62, under t
 recorded in `output_audit/b2182_gate_philosophy_decision.md`:** keep the per-strategy gate; the binding
 constraint is candidate quality, not gate philosophy; re-run at selected-exit grain once ~20 strategies
 carry graded cells. Caveats are stamped in the artifact (production-exit grain, the 2022-23 bear in
-window, winner's curse both ways).
+window, winner's curse both ways). **The selected-exit grain the verdict asked for exists since
+S6-B3288 (owner-ruled 2026-10-22): `scripts/build_phase1b_portfolio.py --correlation` blends every
+long Phase-1B member that carries a graded selected-exit line - the Step-2 admissions through the
+#290 reproduction gate and the funnel cells against the sidecar's own holdout record - on the
+holdout window and writes `output_audit/b3288_selected_exit_correlation.json`: pairwise rho, the
+eigenvalue effective N, the equal-weight holdout blend against the live pooled bar, SPY as the
+control; mirrors are listed, never blended; any refused member refuses the artifact.**
 
 ### 8.12 The turn-close that every step requires (formerly §11.3)
 
