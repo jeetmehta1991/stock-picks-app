@@ -62,7 +62,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from verify_postconfig_complete import STEPS  # noqa: E402  (the gate's list)
-from grid_population import grid_population  # noqa: E402  (B2521 S6-B2520m)
+from grid_population import grid_population, ranked_count  # noqa: E402  (B2521 S6-B2520m; S6-B3292)
 
 MEGA = ("NVDA", "MSFT", "GOOGL", "META", "TSLA", "AAPL")
 TERMINAL = ("DONE", "N/A")
@@ -1145,8 +1145,10 @@ def verdict_from_grid(grid: dict, step: int) -> str:
             s += f"; provisional_qualifiers {len(pq)}"
     if top:
         t = top[0]
+        # S6-B3292: the count carries the key it was counted under -
+        # lever4 rows have no `fires` and read 'fires None' for 4 of 4 legs
         s += (f"; rank-1 [{row_label(t)}] is_ci_lo {t.get('is_ci_lo')} "
-              f"is_sharpe {t.get('is_sharpe')} fires {t.get('fires')}")
+              f"is_sharpe {t.get('is_sharpe')} {ranked_count(t)}")
     else:
         s += "; NO ranked row (nothing cleared the power floor)"
     if step == 1:

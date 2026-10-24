@@ -62,3 +62,26 @@ def main() -> int:
 if __name__ == "__main__":
     import sys
     sys.exit(main())
+
+
+def ranked_count(row: dict) -> str:
+    """S6-B3292: a ranked row's trade count WITH THE KEY IT WAS COUNTED UNDER.
+
+    Two row dialects reach the verdict line and the postconfig renders: the
+    sweep / grid family writes `fires` (the combination's full-period fires);
+    lever4_step1 and breadth_step1_grid write `is_n` beside
+    `full_n_count_only` and no `fires` at all - so 4 of 4 LEVER4 verdict
+    lines read 'fires None' beside an M11 count the battery had just
+    measured (the L580 class), 5 of 145 grid artifacts on disk at r107.
+    Rendering is_n under the word 'fires' would be the L849 label-vs-key
+    defect, so the label follows the key: `fires`, then the full-period
+    `full_n`, then the in-sample `is_n`; a row carrying none renders
+    'count n/a' rather than a figure nobody measured.
+    """
+    if isinstance(row, dict):
+        for key, label in (("fires", "fires"), ("full_n_count_only", "full_n"),
+                           ("is_n", "is_n")):
+            v = row.get(key)
+            if v is not None:
+                return f"{label} {v}"
+    return "count n/a"

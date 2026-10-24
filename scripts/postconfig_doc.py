@@ -48,7 +48,7 @@ DOC = AUDIT / "POSTCONFIG_REPORT.md"
 if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
 from verify_postconfig_complete import STEPS, is_closed  # noqa: E402
-from grid_population import grid_population  # noqa: E402  (B2521 S6-B2520m)
+from grid_population import grid_population, ranked_count  # noqa: E402  (B2521 S6-B2520m; S6-B3292)
 import postconfig_landing as _landing  # noqa: E402
 # S6-B2409 (owner ruling 2026-08-30): the selection-noise floor is RETIRED IN
 # ITS ENTIRETY - this renderer no longer frames any value against it, not even
@@ -291,7 +291,7 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
         cl = top.get("is_ci_lo")
         lines += [f"**STEP-1 RANKING (no gates applied - owner ruling B1608): "
                   f"best cell is_ci_lo {cl}** (is_sharpe "
-                  f"{top.get('is_sharpe')}, {top.get('fires')} fires, exit "
+                  f"{top.get('is_sharpe')}, {ranked_count(top)}, exit "
                   f"{top.get('exit')}). Step-1 admission is min-trades >= 10 "
                   f"plus this ranked list; is_ci_lo is the RANKING KEY, not a "
                   f"gate. A ranked cell is a CANDIDATE for Step-2 validation, "
@@ -481,13 +481,13 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
                   f"{grid.get('step1_combinations_carried')} combinations "
                   "forward to Step 2 (tighten_breaker_block.py:449-454).", ""]
         if rank:
-            lines += ["| rank | is_ci_lo | is_sharpe | fires | exit | "
+            lines += ["| rank | is_ci_lo | is_sharpe | count | exit | "
                       "class size | combination |",
                       "|---|---|---|---|---|---|---|"]
             for r in rank[:5]:
                 combo = combination_label(r.get("admit") or {})
                 lines.append(f"| {r.get('rank')} | {r.get('is_ci_lo')} | "
-                             f"{r.get('is_sharpe')} | {r.get('fires')} | "
+                             f"{r.get('is_sharpe')} | {ranked_count(r)} | "
                              f"{r.get('exit')} | {r.get('class_size')} | "
                              f"{combo} |")
             lines += ["", "_Top 5 of the ranking; the full list is in "
@@ -567,7 +567,7 @@ def build(cubes: list[str] | None = None) -> str:
                 "then, green means 'nothing obviously wrong was detected', "
                 "never 'this cube is correct'."]
     out += ["", f"## Index - {len(graded)} graded config(s), newest first", "",
-            "| config | best is_ci_lo | fires | starved | steps closed "
+            "| config | best is_ci_lo | count | starved | steps closed "
             "(DONE+N/A of 9; the gate's own is_closed) |",
             "|---|---|---|---|---|"]
     for c in graded:
@@ -584,7 +584,7 @@ def build(cubes: list[str] | None = None) -> str:
         n_closed = sum(1 for s in STEPS if is_closed(entry.get(s)))
         open_names = [s for s in STEPS if not is_closed(entry.get(s))]
         out.append(f"| {c} | {cl if cl is not None else '-'} | "
-                   f"{top.get('fires', '-')} | {starved}/{len(res)} {_pu} | "
+                   f"{ranked_count(top)} | {starved}/{len(res)} {_pu} | "
                    f"{n_closed}/{len(STEPS)}"
                    + (f" **OPEN: {', '.join(open_names)}**" if open_names else "")
                    + " |")

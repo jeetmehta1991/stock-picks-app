@@ -63432,3 +63432,157 @@ def test_b3291b_companions_consistent_intersects_by_sign_and_clusters_by_module(
                         "--a", str(pa), "--b", str(pb), "--strategy", "sq",
                         "--out", str(tmp_path / "out.json")], capture_output=True, text=True)
     assert r.returncode != 0 and "peeked" in (r.stdout + r.stderr)
+
+
+# ================================================================ B3139q-r108 S6-B3288: the selected-exit correlation
+def test_b3288_selected_exit_correlation_gates_members_and_measures_breadth(tmp_path):
+    """S6-B3288 (owner-ruled (a) 2026-10-22): build_phase1b_portfolio
+    --correlation. Arms: (1) _effective_n is N on an identity matrix, 1 on
+    an all-ones matrix, 1.6 on a 2x2 with rho 0.5, None on NaN; (2)
+    _holdout_matrix indexes the holdout business days, zero-fills, and two
+    identical frames correlate at 1.0; (3) _funnel_trade_sets reproduces a
+    cell whose recorded holdout n and net Sharpe match (#290), REFUSES a cell
+    whose recorded n is off by one naming holdout_n, and matches a cell
+    recorded under the truthful exit name whose cube rows carry the
+    pre-B1593 label; (4) the committed artifact blends every long roster
+    member (the membership reader's own count), carries a square matrix, an
+    effective N inside [1, N], the holdout blend Sharpe and the live pooled
+    bar, and smc's admitted 180 trades."""
+    import json as _json
+    import sys as _sys
+    from datetime import date as _d, timedelta as _td
+    from pathlib import Path as _P
+    import numpy as _np
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import build_phase1b_portfolio as bpp
+    import roster_core as rc
+    import phase1b_membership as pm
+
+    # (1) the eigenvalue effective N
+    assert bpp._effective_n(_pd.DataFrame(_np.eye(3))) == 3.0
+    assert bpp._effective_n(_pd.DataFrame(_np.ones((3, 3)))) == 1.0
+    assert bpp._effective_n(_pd.DataFrame([[1.0, 0.5], [0.5, 1.0]])) == pytest.approx(1.6)
+    assert bpp._effective_n(_pd.DataFrame([[1.0, _np.nan], [_np.nan, 1.0]])) is None
+
+    # (2) the holdout matrix: two identical frames correlate at 1.0
+    def frame(seed, n=40, start=_d(2025, 6, 2)):
+        rng = _np.random.default_rng(seed)
+        days = [start + _td(days=int(k)) for k in rng.integers(0, 300, size=n)]
+        return _pd.DataFrame({"ticker": [f"T{k}" for k in range(n)],
+                              "entry_date": days,
+                              "pnl_pct": rng.normal(2.0, 5.0, size=n),
+                              "hold_days": rng.integers(1, 12, size=n)})
+    fa = frame(1)
+    m = bpp._holdout_matrix({"a": fa, "b": fa.copy()})
+    assert list(m.index)[0] >= rc.HO_START and list(m.index)[-1] < rc.HO_END
+    assert set(m.columns) == {"a", "b"} and (m["a"] == 0).sum() > 0
+    assert m.corr().at["a", "b"] == pytest.approx(1.0)
+
+    # (3) the funnel reproduction gate on a fixture sidecar + cube
+    cube = tmp_path / "cubeX"
+    cube.mkdir()
+    (tmp_path / "output_audit").mkdir()
+    rows = []
+    recorded = {}
+    for strat, exit_col, exit_truth in (("sa", "e1", "e1"),
+                                        ("sb", "e1", "e1"),
+                                        ("sc", "regime_flip", "time_stop_20d")):
+        f = frame(hash(strat) % 1000, n=40)                     # 40 holdout trades
+        g = frame(hash(strat) % 1000 + 7, n=40, start=_d(2023, 6, 1))   # 40 in-sample
+        both = _pd.concat([f, g], ignore_index=True)
+        for r in both.itertuples():
+            rows.append({"ticker": r.ticker, "strategy": strat,
+                         "entry_date": str(r.entry_date), "direction": "long",
+                         "exit_method": exit_col, "pnl_pct": float(r.pnl_pct),
+                         "hold_days": float(r.hold_days)})
+        sub = both.copy()
+        sub["entry_date"] = sub["entry_date"].map(lambda x: x)
+        ho = sub[[(x >= rc.HO_START and x < rc.HO_END) for x in sub["entry_date"]]]
+        ev = rc.evaluate(rc.net_pnl(ho["pnl_pct"].astype("float32")),
+                         ho["hold_days"], full_period_n=len(sub))
+        recorded[strat] = {"n": int(len(ho)), "sharpe": ev["sharpe"], "exit": exit_truth}
+    # noise rows of another strategy and the other direction never leak in
+    rows.append({"ticker": "Z", "strategy": "sa", "entry_date": "2025-07-01",
+                 "direction": "short", "exit_method": "e1", "pnl_pct": 50.0, "hold_days": 2.0})
+    _pd.DataFrame(rows).to_csv(cube / "trade_exit_detail.csv", index=False)
+    side = {"cubes": {"X": "cubeX"}, "roster": [
+        {"cube": "X", "strategy": "sa", "direction": "long", "exit": "e1",
+         "holdout": {"n": recorded["sa"]["n"], "sharpe": recorded["sa"]["sharpe"]}},
+        {"cube": "X", "strategy": "sb", "direction": "long", "exit": "e1",
+         "holdout": {"n": recorded["sb"]["n"] + 1, "sharpe": recorded["sb"]["sharpe"]}},
+        {"cube": "X", "strategy": "sc", "direction": "long", "exit": "time_stop_20d",
+         "holdout": {"n": recorded["sc"]["n"], "sharpe": recorded["sc"]["sharpe"]}},
+    ]}
+    (tmp_path / "output_audit" / "b1453_phase_1b_roster.json").write_text(
+        _json.dumps(side), encoding="utf-8")
+    lines, frames = bpp._funnel_trade_sets(root=tmp_path)
+    by = {l["strategy"]: l for l in lines}
+    assert by["sa"]["status"] == "OK" and by["sa"]["trades"] == 80, by["sa"]
+    assert by["sb"]["status"] == "REFUSED" and "holdout_n" in by["sb"]["how"], by["sb"]
+    assert by["sc"]["status"] == "OK", by["sc"]          # matched through the degraded label
+    assert set(frames) == {"sa", "sc"} and "sb" not in frames
+    assert (frames["sa"]["direction"] == "long").all()
+    with pytest.raises(ValueError):
+        (tmp_path / "output_audit" / "b1453_phase_1b_roster.json").write_text(
+            _json.dumps({"cubes": {}}), encoding="utf-8")
+        bpp._funnel_trade_sets(root=tmp_path)
+
+    # (4) the committed artifact
+    d = _json.loads((root / "output_audit" / "b3288_selected_exit_correlation.json")
+                    .read_text(encoding="utf-8"))
+    assert d["status"] == "OK" and d["refused"] == [] and d["members_not_in_membership"] == []
+    n_long = pm.summary(pm.members())["long"]
+    assert d["members_long"] == n_long == d["members_blended"] == len(d["lines"])
+    assert all(l["status"] == "OK" for l in d["lines"])
+    smc = next(l for l in d["lines"] if l["strategy"] == "smc_breaker_block_long")
+    assert smc["trades"] == 180 and smc["role"] == "STEP2_ADMISSION"
+    assert sum(l["role"] == "FUNNEL_CELL" for l in d["lines"]) == pm.summary(pm.members())["funnel_cells"]
+    cm = d["correlation_matrix"]
+    assert len(cm["members"]) == d["members_blended"]
+    assert all(len(r) == d["members_blended"] for r in cm["rho"])
+    assert 1.0 <= d["effective_n"] <= d["members_blended"]
+    assert d["portfolio_holdout"]["sharpe"] is not None
+    assert d["gate"]["min_sharpe_overall"] == rc.PC["min_sharpe_overall"]
+    assert d["gate"]["clears"] == (d["portfolio_holdout"]["sharpe"] >= d["gate"]["min_sharpe_overall"])
+    assert d["benchmark_spy_holdout"]["sharpe"] is not None
+    assert "metric_code" in d
+
+
+# ================================================================ B3139q-r108 S6-B3292: the count carries its key
+def test_b3292_ranked_count_renders_the_key_it_counted_under():
+    """S6-B3292: 4 of 4 LEVER4 verdict lines read 'fires None' because the
+    lever4_step1 rows carry is_n / full_n_count_only and no fires. Arms:
+    ranked_count prefers fires, then the full-period count, then is_n, and
+    renders 'count n/a' for a row carrying none (never a fabricated figure);
+    verdict_from_grid on a lever4-shaped grid carries the count under its
+    key and no 'fires None'; neither reader reads `fires` directly any
+    more (the text arm, so a reverted site is caught)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    from grid_population import ranked_count
+    import run_postconfig as rp
+
+    assert ranked_count({"fires": 180, "is_n": 41}) == "fires 180"
+    assert ranked_count({"is_n": 348, "full_n_count_only": 348}) == "full_n 348"
+    assert ranked_count({"is_n": 5}) == "is_n 5"
+    assert ranked_count({"fires": None, "is_n": 7}) == "is_n 7"
+    assert ranked_count({}) == "count n/a" and ranked_count(None) == "count n/a"
+
+    grid = {"strategy": "x", "results": [], "step1_ranking": [
+        {"is_sharpe": 0.275, "is_ci_lo": -0.075, "cell": "base:long",
+         "exit": "breakeven_plus_trail", "is_n": 348, "full_n_count_only": 348,
+         "npt_barred": False}]}
+    s = rp.verdict_from_grid(grid, 1)
+    assert "full_n 348" in s and "fires None" not in s, s
+    for rel in ("scripts/run_postconfig.py", "scripts/postconfig_doc.py"):
+        src = (root / rel).read_text(encoding="utf-8")
+        assert "get('fires'" not in src and 'get("fires"' not in src, rel
