@@ -2916,6 +2916,7 @@ SPECS_PHASE0.update({
                 "id": "P8",
                 "producer": "screener strategy gate",
                 "param": "rsi_14 floor (SHORT leg)",
+                "coverage_key": "rsi_14",  # S6-B3294: P7 owns the signal key (S6-B3139an); coverage reads the shared axis
                 "production": 50,
                 "band": [
                     50,
@@ -3029,6 +3030,7 @@ SPECS_PHASE0.update({
                 "id": "P2",
                 "producer": "technical.py cmf block",
                 "param": "cmf_negative level (SHORT leg)",
+                "coverage_key": "cmf",  # S6-B3294: P3 owns the signal key (S6-B3139an); coverage reads the shared axis
                 "production": 0.0,
                 "band": [
                     0.0,
@@ -3236,6 +3238,7 @@ SPECS_PHASE0.update({
                 "id": "P10",
                 "producer": "screener strategy gate (local rsi_2 compare)",
                 "param": "rsi_2 escape hatch (SHORT OR-arm)",
+                "coverage_key": "rsi_2",  # S6-B3294: P9 owns the signal key (S6-B3139an); coverage reads the shared axis
                 "production": 95,
                 "band": [
                     95,
@@ -3321,6 +3324,7 @@ SPECS_PHASE0.update({
                 "id": "P2",
                 "producer": "technical.py compute_keltner + compute_squeeze",
                 "param": "Keltner multiplier (squeeze definition)",
+                "signal_keys": ["kc_room"],  # S6-B3294: the derived key scripts/squeeze_derived.py puts on each fire
                 "production": 2.0,
                 "band": [
                     2.0,
@@ -3347,6 +3351,7 @@ SPECS_PHASE0.update({
                 "id": "P3",
                 "producer": "technical.py compute_bollinger + compute_squeeze",
                 "param": "Bollinger std multiplier (squeeze definition)",
+                "signal_keys": ["bb_room"],  # S6-B3294: the derived key scripts/squeeze_derived.py puts on each fire
                 "production": 2.0,
                 "band": [
                     2.0,

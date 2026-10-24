@@ -51744,18 +51744,29 @@ def test_b3139_offline_holdout_reads_refuse_a_closed_strategy(tmp_path, monkeypa
     assert pvt.offline_retest_refusal("bollinger_lower") is None
     monkeypatch.setattr(pvt, "RETEST_OVERRIDES", tmp_path / "absent.json")
     assert "unreadable" in (pvt.offline_retest_refusal("bollinger_lower") or "")
+    import ast as _ast
+    import textwrap as _tw
     import offline_holdout_read as ohr
-    src = inspect.getsource(ohr.read_step2)
-    i_band = src.index("band_coverage.get(\"complete\", False)")
-    i_closed = src.index("_pvt.offline_retest_refusal(strategy)")
-    i_load = src.index("m, ev = ols.load(strategy, axes)")
-    assert i_band < i_closed < i_load
+    src = _tw.dedent(inspect.getsource(ohr.read_step2))
+    # S6-B3294 (B3139q-r109): the ohr half is ordered on the AST too - the
+    # load call grew direction= / survival= / derive= and the substring form
+    # broke in the pre-gate (L748, the class the breadth half below already
+    # records). ols.load is matched on its OWNER so json.load cannot stand in.
+    otree = _ast.parse(src)
+    def _first_ohr_line(pred):
+        lines = [n.lineno for n in _ast.walk(otree)
+                 if isinstance(n, _ast.Call) and pred(n.func)]
+        assert lines, "call not found in read_step2"
+        return min(lines)
+    l_band = src[:src.index("band_coverage.get(\"complete\", False)")].count("\n") + 1
+    l_closed = _first_ohr_line(lambda f: getattr(f, "attr", None) == "offline_retest_refusal")
+    l_load = _first_ohr_line(lambda f: getattr(f, "attr", None) == "load"
+                             and getattr(getattr(f, "value", None), "id", None) == "ols")
+    assert l_band < l_closed < l_load, (l_band, l_closed, l_load)
     import breadth_step2_read as b2
     # S6-B3139ag: ordered on the AST, not on the call's text - adding the
     # recorded basis= to the subject build_frame broke the substring form
     # (L748: a text pin on a call site breaks on any new argument).
-    import ast as _ast
-    import textwrap as _tw
     tree = _ast.parse(_tw.dedent(inspect.getsource(b2.main)))
     def _first_line(fname):
         lines = [n.lineno for n in _ast.walk(tree) if isinstance(n, _ast.Call)
@@ -63586,3 +63597,128 @@ def test_b3292_ranked_count_renders_the_key_it_counted_under():
     for rel in ("scripts/run_postconfig.py", "scripts/postconfig_doc.py"):
         src = (root / rel).read_text(encoding="utf-8")
         assert "get('fires'" not in src and 'get("fires"' not in src, rel
+
+
+# ================================================================ B3139q-r109 S6-B3294: the surface dialect and the read's subject
+def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subject_from_the_artifact(tmp_path, monkeypatch):
+    """S6-B3294: (1) band_coverage_gate reads an offline_level_sweep IS
+    surface - graded levels per axis key, a param mapped through its
+    signal_keys or its coverage_key - and REPORTS them per param as
+    is_surface_graded; it COUNTS them only when COUNT_IS_SURFACE is True (the
+    S6-B3295 owner ruling, False until it lands), pinned both ways; a param
+    whose levels no artifact graded stays untested either way. (2)
+    offline_holdout_read takes direction, survival and the derive module
+    from the Step-1 artifact (L912): a short fire in the cube does not enter
+    a long read, and a derive module whose sha moved since the
+    pre-registration refuses. Real-artifact arms skip when the b3289
+    artifacts are absent."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import band_coverage_gate as bcg
+    import offline_holdout_read as ohr
+    import offline_level_sweep as ols
+
+    # (1) fixture: two axes, one param keyed by signal_keys, one by coverage_key,
+    # one with a level nothing graded
+    art = {"strategy": "syn", "direction": "long", "cells_graded": 4, "cells_total": 4,
+           "axes": [{"key": "rsi_14", "op": "lt", "levels": [50, 45]},
+                    {"key": "cmf", "op": "gt", "levels": [0.0, 0.02]}],
+           "ranked": [{"levels": [50, 0.0], "is_sharpe": 0.1}, {"levels": [45, 0.0], "is_sharpe": 0.2},
+                      {"levels": [50, 0.02], "is_sharpe": 0.3}, {"levels": [40, 0.05], "is_sharpe": None}]}
+    assert bcg.artifact_kind(art) == bcg.KIND_IS_SURFACE
+    g = bcg._surface_graded(art)
+    assert g == {"rsi_14": {50, 45}, "cmf": {0.0, 0.02}}      # the None-sharpe row (40, 0.05) grades nothing
+    spec = {"params": [
+        {"id": "P1", "param": "rsi_14 ceiling (LONG leg)", "band": [50, 45], "production": 50,
+         "signal_keys": ["rsi_14"]},
+        {"id": "P2", "param": "cmf floor (LONG leg)", "band": [0.0, 0.02], "production": 0.0,
+         "coverage_key": "cmf"},
+        {"id": "P3", "param": "cmf floor (SHORT leg)", "band": [0.0, -0.02], "production": 0.0,
+         "coverage_key": "cmf"},
+    ]}
+    rep = bcg.coverage_report("syn", [], spec=spec, arts=[art])
+    by = {p["id"]: p for p in rep["params"]}
+    assert rep["is_surface_counted"] is False and rep["complete"] is False
+    assert by["P1"]["is_surface_graded"] == [45] and by["P1"]["untested"] == [45]
+    assert by["P2"]["is_surface_graded"] == [0.02] and by["P2"]["untested"] == [0.02]
+    assert by["P3"]["is_surface_graded"] == [] and by["P3"]["untested"] == [-0.02]
+    assert rep["is_surface_evaluations"][0]["axes"]["rsi_14"] == [45, 50]
+    monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", True)
+    rep2 = bcg.coverage_report("syn", [], spec=spec, arts=[art])
+    by2 = {p["id"]: p for p in rep2["params"]}
+    assert rep2["is_surface_counted"] is True and rep2["complete"] is False   # P3 still ungraded
+    assert by2["P1"]["untested"] == [] and by2["P1"]["is_surface_covered"] == [45]
+    assert by2["P2"]["untested"] == [] and by2["P3"]["untested"] == [-0.02]
+    monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", False)
+
+    # real-artifact arms: the b3289 sweeps against the registered bands
+    A = root / "output_audit"
+    wl, ws = A / "b3289_williams_r_oversold_long_step1_is_surface.json", A / "b3289_williams_r_oversold_short_step1_is_surface.json"
+    sq = A / "b3289_squeeze_breakout_depth_step1_is_surface.json"
+    if wl.exists() and ws.exists() and sq.exists():
+        r = bcg.coverage_report("williams_r_oversold", [str(wl), str(ws)])
+        gaps = {p["param"]: p for p in r["params"] if p["untested"]}
+        assert r["complete"] is False and gaps, r      # uncounted pending S6-B3295
+        assert all(p["is_surface_graded"] == p["untested"] for p in gaps.values()), gaps
+        monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", True)
+        assert bcg.coverage_report("williams_r_oversold", [str(wl), str(ws)])["complete"] is True
+        assert bcg.coverage_report("squeeze_breakout", [str(sq)])["complete"] is True
+        one = bcg.coverage_report("williams_r_oversold", [str(wl)])
+        assert one["complete"] is False                   # the short leg's bands need the short sweep
+        assert {p["param"] for p in one["params"] if p["untested"]} == {
+            "cmf_negative level (SHORT leg)", "rsi_2 escape hatch (SHORT OR-arm)"}
+        monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", False)
+
+    # (2) the read's subject from the artifact
+    rows = [{"ticker": "T1", "strategy": "sq", "entry_date": "2025-06-10", "direction": "long",
+             "signals_at_entry": _json.dumps({"rsi_14": 40.0})},
+            {"ticker": "T2", "strategy": "sq", "entry_date": "2025-07-10", "direction": "long",
+             "signals_at_entry": _json.dumps({"rsi_14": 48.0})},
+            {"ticker": "T3", "strategy": "sq", "entry_date": "2025-08-10", "direction": "short",
+             "signals_at_entry": _json.dumps({"rsi_14": 60.0})}]
+    _pd.DataFrame(rows).to_csv(tmp_path / "tl.csv", index=False)
+    _pd.DataFrame([{"strategy": "sq", "direction": r["direction"], "exit_method": "e1",
+                    "entry_date": r["entry_date"], "ticker": r["ticker"], "pnl_pct": 1.0,
+                    "hold_days": 2.0} for r in rows]).to_csv(tmp_path / "cube.csv", index=False)
+    monkeypatch.setattr(ols, "TRADE_LOG", tmp_path / "tl.csv")
+    monkeypatch.setattr(ols, "CUBE", tmp_path / "cube.csv")
+    import producer_variant_table as pvt
+    monkeypatch.setattr(pvt, "offline_retest_refusal", lambda s: "")
+    step1 = {"strategy": "sq", "direction": "long",
+             "axes": [{"key": "rsi_14", "op": "lt", "levels": [50, 45]}],
+             "production_levels": [50],
+             "preregistration_candidate": {"levels": [45], "best_exit": "e1"},
+             "evidence": {"survival_filter": {"applied": False}}, "derive": None}
+    p1 = tmp_path / "step1.json"
+    p1.write_text(_json.dumps(step1), encoding="utf-8")
+    ok = {"evaluable": True, "complete": True, "params": []}
+    rec = ohr.read_step2(p1, 0.99, 0.999, 1, band_coverage=ok)
+    assert rec["subject"]["direction"] == "long" and rec["subject"]["survival"] is False
+    assert rec["evidence"]["landed_fires"] == 2                 # the short fire never entered
+    assert rec["reproduction"] == 1.0 and rec["band_coverage"] is ok
+    # without the subject the short fire (rsi_14 60) would break reproduction at the long production level
+    m_all, _ = ols.load("sq", [ols.parse_axis("rsi_14:lt:50,45")])
+    assert len(m_all) == 3
+    # the sibling leg's artifact reaches the coverage gate beside the sweep's own
+    import band_coverage_gate as _bcg
+    got = {}
+    def fake_cov(strategy, paths):
+        got["paths"] = list(paths)
+        return ok
+    monkeypatch.setattr(_bcg, "coverage_report", fake_cov)
+    rec2 = ohr.read_step2(p1, 0.99, 0.999, 1, coverage_artifacts=[tmp_path / "sibling.json"])
+    assert got["paths"] == [str(p1), str(tmp_path / "sibling.json")]
+    assert rec2["subject"]["coverage_artifacts"] == [str(tmp_path / "sibling.json")]
+    bad = dict(step1, derive={"path": "scripts/squeeze_derived.py", "sha256": "0" * 64})
+    p2 = tmp_path / "step1_bad.json"
+    p2.write_text(_json.dumps(bad), encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        ohr.read_step2(p2, 0.99, 0.999, 1, band_coverage=ok)
+    assert "S6-B3294" in str(e.value) and "derive module" in str(e.value)

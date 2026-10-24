@@ -44,8 +44,27 @@ import roster_core as rc           # noqa: E402
 
 
 def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
-               min_n: int, *, band_coverage=None) -> dict:
+               min_n: int, *, band_coverage=None, coverage_artifacts=()) -> dict:
     rec1 = json.loads(sweep_artifact.read_text(encoding="utf-8"))
+    # S6-B3294 (L912): the read's SUBJECT comes from the Step-1 artifact it
+    # re-scores - the leg it swept, whether the survival filter restricted
+    # the fires, and the derive module whose keys its axes read - never from
+    # a flag or a default; a derive module that moved since the
+    # pre-registration is a different experiment and refuses.
+    subject = {"direction": rec1.get("direction"),
+               "survival": bool(((rec1.get("evidence") or {}).get("survival_filter")
+                                 or {}).get("applied")),
+               "derive": rec1.get("derive"),
+               "coverage_artifacts": [str(c) for c in coverage_artifacts]}
+    derive_fn = None
+    if subject["derive"]:
+        derive_fn, now = ols.load_derive(ROOT / subject["derive"]["path"])
+        if now["sha256"] != subject["derive"].get("sha256"):
+            raise SystemExit(
+                f"REFUSED (S6-B3294): derive module {subject['derive']['path']} has "
+                f"sha {now['sha256'][:12]} but the pre-registered sweep recorded "
+                f"{str(subject['derive'].get('sha256'))[:12]} - a changed derivation "
+                "is a different experiment wearing the pre-registration's name")
     axes = [{"key": a["key"], "op": a["op"], "levels": a["levels"]}
             for a in rec1["axes"]]
     production = tuple(rec1["production_levels"])
@@ -71,7 +90,8 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
     if band_coverage is None:
         from band_coverage_gate import coverage_report
         try:
-            band_coverage = coverage_report(strategy, [str(sweep_artifact)])
+            band_coverage = coverage_report(
+                strategy, [str(sweep_artifact)] + [str(c) for c in coverage_artifacts])
         except SystemExit as exc:
             # the helper exits hard when a strategy has no Table A spec;
             # translate it into THIS script's refusal rather than
@@ -112,7 +132,8 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
     _closed = _pvt.offline_retest_refusal(strategy)
     if _closed:
         raise SystemExit("REFUSED (S6-B3139g): " + _closed)
-    m, ev = ols.load(strategy, axes)
+    m, ev = ols.load(strategy, axes, direction=subject["direction"],
+                     survival=subject["survival"], derive=derive_fn)
     if ev["coverage"] < coverage_min:
         raise SystemExit(f"REFUSED: coverage {ev['coverage']:.4f} < {coverage_min}")
     if ev["unmatched_join_rows"]:
@@ -165,6 +186,7 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
                       "pre-registered cell carries admission",
             "window": {"holdout": [str(rc.HO_START), str(rc.HO_END)]},
             "sweep_artifact": str(sweep_artifact),
+            "subject": subject, "band_coverage": band_coverage,
             "preregistered": prereg, "evidence": ev, "reproduction": repro,
             "trials": len(rows), "graded": len(graded),
             "admission": adm[0],
@@ -221,13 +243,18 @@ def main() -> int:
     ap.add_argument("--repro-min", type=float, default=0.999)
     ap.add_argument("--min-n", type=int, default=15)
     ap.add_argument("--force-rerun", action="store_true")
+    ap.add_argument("--coverage-artifact", action="append", default=[],
+                    help="S6-B3294: a sibling Step-1 artifact (the other leg's "
+                         "sweep) whose graded levels count toward the band-"
+                         "coverage gate beside --sweep-artifact's")
     a = ap.parse_args()
 
     out = Path(a.out)
     if out.exists() and not a.force_rerun:
         raise SystemExit(f"REFUSED: {out} exists - the holdout is already spent; "
                          "--force-rerun labels a re-read as such")
-    rec = read_step2(Path(a.sweep_artifact), a.coverage_min, a.repro_min, a.min_n)
+    rec = read_step2(Path(a.sweep_artifact), a.coverage_min, a.repro_min, a.min_n,
+                     coverage_artifacts=[Path(c) for c in a.coverage_artifact])
     if a.force_rerun:
         rec["rerun_of_spent_holdout"] = True
     from roster_core import stamp_metric_code as _smc  # S6-B3139i

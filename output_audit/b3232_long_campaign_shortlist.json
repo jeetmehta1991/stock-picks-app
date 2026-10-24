@@ -1,18 +1,39 @@
 {
   "generator": "scripts/build_long_campaign_shortlist.py (S6-B3232)",
   "build": {
-    "source_commit": "4a0836878",
-    "generated_at": "2026-10-23 15:10:44 UTC",
-    "status_view_build": "4a0836878"
+    "source_commit": "91dc039ed",
+    "generated_at": "2026-10-24 04:54:01 UTC",
+    "status_view_build": "91dc039ed"
   },
   "population": {
-    "open_long_capable": 122,
-    "ranked": 90,
+    "open_long_capable": 123,
+    "ranked": 91,
     "unranked": 32,
     "step1_floor": 100
   },
   "order": "long-side lane cost (TIGHTEN, NONE, BOTH, LOOSEN - the lane carries the Step-1 floor), then in-sample gates cleared, then in-sample Sharpe - a selection order on in-sample evidence, not a holdout prediction",
   "ranked": [
+    {
+      "strategy": "cmf_flip",
+      "kind": "dual",
+      "family": "mean_reversion",
+      "status": "STALLED-CAMPAIGN",
+      "strategy_lane": "TIGHTEN",
+      "long_lane": "TIGHTEN",
+      "cost": "offline - zero engine hours",
+      "long_share_r5": 0.5855,
+      "long_survival_r5": 0.7992,
+      "long_survival_unmeasured_keys": null,
+      "projected_step1_fires_strategy": 206.8,
+      "projected_step1_fires_long": 128.8,
+      "step1_floor_met": true,
+      "exploratory": false,
+      "deploy_bar": null,
+      "is_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.569,
+      "is_gates_cleared": 4,
+      "rank": 1
+    },
     {
       "strategy": "camarilla_r4_breakout",
       "kind": "dual",
@@ -32,7 +53,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.643,
       "is_gates_cleared": 4,
-      "rank": 1
+      "rank": 2
     },
     {
       "strategy": "avwap_252_breakout",
@@ -53,7 +74,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.581,
       "is_gates_cleared": 4,
-      "rank": 2
+      "rank": 3
     },
     {
       "strategy": "macd_fast_crossover",
@@ -74,7 +95,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.526,
       "is_gates_cleared": 4,
-      "rank": 3
+      "rank": 4
     },
     {
       "strategy": "macd_crossover",
@@ -95,7 +116,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.522,
       "is_gates_cleared": 4,
-      "rank": 4
+      "rank": 5
     },
     {
       "strategy": "force_index_breakout",
@@ -116,7 +137,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.509,
       "is_gates_cleared": 4,
-      "rank": 5
+      "rank": 6
     },
     {
       "strategy": "r1_break_retest",
@@ -137,7 +158,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.506,
       "is_gates_cleared": 4,
-      "rank": 6
+      "rank": 7
     },
     {
       "strategy": "rsi_oversold_with_smart_money_long",
@@ -158,7 +179,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.49,
       "is_gates_cleared": 4,
-      "rank": 7
+      "rank": 8
     },
     {
       "strategy": "macd_bullish_with_smart_money_long",
@@ -179,7 +200,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.489,
       "is_gates_cleared": 4,
-      "rank": 8
+      "rank": 9
     },
     {
       "strategy": "mmbm_long",
@@ -200,7 +221,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.347,
       "is_gates_cleared": 4,
-      "rank": 9
+      "rank": 10
     },
     {
       "strategy": "hammer_at_support_long",
@@ -221,7 +242,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 1.919,
       "is_gates_cleared": 5,
-      "rank": 10
+      "rank": 11
     },
     {
       "strategy": "vix_backwardation_long",
@@ -242,7 +263,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.875,
       "is_gates_cleared": 5,
-      "rank": 11
+      "rank": 12
     },
     {
       "strategy": "news_momentum_long",
@@ -263,7 +284,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.015,
       "is_gates_cleared": 5,
-      "rank": 12
+      "rank": 13
     },
     {
       "strategy": "ultimate_oscillator",
@@ -284,7 +305,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 0.725,
       "is_gates_cleared": 4,
-      "rank": 13
+      "rank": 14
     },
     {
       "strategy": "rsi_volume_200ema",
@@ -305,7 +326,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.649,
       "is_gates_cleared": 4,
-      "rank": 14
+      "rank": 15
     },
     {
       "strategy": "cpr_narrow_momentum",
@@ -326,7 +347,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.594,
       "is_gates_cleared": 4,
-      "rank": 15
+      "rank": 16
     },
     {
       "strategy": "inside_bar_breakout",
@@ -347,7 +368,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.514,
       "is_gates_cleared": 4,
-      "rank": 16
+      "rank": 17
     },
     {
       "strategy": "morning_star",
@@ -368,7 +389,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.513,
       "is_gates_cleared": 4,
-      "rank": 17
+      "rank": 18
     },
     {
       "strategy": "cup_and_handle_retest_long",
@@ -389,7 +410,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.503,
       "is_gates_cleared": 4,
-      "rank": 18
+      "rank": 19
     },
     {
       "strategy": "smc_order_block_bounce",
@@ -412,7 +433,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.501,
       "is_gates_cleared": 4,
-      "rank": 19
+      "rank": 20
     },
     {
       "strategy": "news_sentiment_shift_long",
@@ -433,7 +454,7 @@
       "is_exit": "chandelier_3x",
       "is_sharpe": 0.485,
       "is_gates_cleared": 4,
-      "rank": 20
+      "rank": 21
     },
     {
       "strategy": "camarilla_s3_bounce",
@@ -454,7 +475,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.472,
       "is_gates_cleared": 4,
-      "rank": 21
+      "rank": 22
     },
     {
       "strategy": "hull_rsi",
@@ -475,7 +496,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.442,
       "is_gates_cleared": 4,
-      "rank": 22
+      "rank": 23
     },
     {
       "strategy": "news_sentiment_long",
@@ -496,7 +517,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.431,
       "is_gates_cleared": 4,
-      "rank": 23
+      "rank": 24
     },
     {
       "strategy": "stochrsi_oversold",
@@ -517,7 +538,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.3,
       "is_gates_cleared": 3,
-      "rank": 24
+      "rank": 25
     },
     {
       "strategy": "pivot_s2_bounce",
@@ -538,7 +559,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 0.297,
       "is_gates_cleared": 2,
-      "rank": 25
+      "rank": 26
     },
     {
       "strategy": "rsi9_extreme",
@@ -559,7 +580,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 2.819,
       "is_gates_cleared": 5,
-      "rank": 26
+      "rank": 27
     },
     {
       "strategy": "bb_squeeze_volume",
@@ -580,7 +601,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.636,
       "is_gates_cleared": 5,
-      "rank": 27
+      "rank": 28
     },
     {
       "strategy": "supertrend_macd",
@@ -601,7 +622,7 @@
       "is_exit": "mfe_lockin_trail",
       "is_sharpe": 1.602,
       "is_gates_cleared": 5,
-      "rank": 28
+      "rank": 29
     },
     {
       "strategy": "smc_bos_continuation",
@@ -622,7 +643,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 1.556,
       "is_gates_cleared": 5,
-      "rank": 29
+      "rank": 30
     },
     {
       "strategy": "xs_low_beta_long",
@@ -643,7 +664,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 1.328,
       "is_gates_cleared": 5,
-      "rank": 30
+      "rank": 31
     },
     {
       "strategy": "prev_day_high_break",
@@ -664,7 +685,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.322,
       "is_gates_cleared": 5,
-      "rank": 31
+      "rank": 32
     },
     {
       "strategy": "ichimoku_cloud_breakout",
@@ -685,7 +706,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 1.314,
       "is_gates_cleared": 5,
-      "rank": 32
+      "rank": 33
     },
     {
       "strategy": "xs_quality_top_quintile_long",
@@ -706,7 +727,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 1.268,
       "is_gates_cleared": 5,
-      "rank": 33
+      "rank": 34
     },
     {
       "strategy": "bollinger_tight",
@@ -727,7 +748,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 1.265,
       "is_gates_cleared": 5,
-      "rank": 34
+      "rank": 35
     },
     {
       "strategy": "pre_fomc_long_sleeve",
@@ -748,7 +769,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 1.17,
       "is_gates_cleared": 5,
-      "rank": 35
+      "rank": 36
     },
     {
       "strategy": "mfi_oversold",
@@ -769,7 +790,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.141,
       "is_gates_cleared": 5,
-      "rank": 36
+      "rank": 37
     },
     {
       "strategy": "pivot_r1_breakout",
@@ -790,7 +811,7 @@
       "is_exit": "reverse_signal",
       "is_sharpe": 1.128,
       "is_gates_cleared": 5,
-      "rank": 37
+      "rank": 38
     },
     {
       "strategy": "xs_momentum_quality_combined",
@@ -811,7 +832,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 1.122,
       "is_gates_cleared": 5,
-      "rank": 38
+      "rank": 39
     },
     {
       "strategy": "52w_high_breakout_with_smart_money_long",
@@ -832,7 +853,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.085,
       "is_gates_cleared": 5,
-      "rank": 39
+      "rank": 40
     },
     {
       "strategy": "orb_stocks_in_play_long",
@@ -853,7 +874,7 @@
       "is_exit": "ma_exit_ema9",
       "is_sharpe": 1.064,
       "is_gates_cleared": 5,
-      "rank": 40
+      "rank": 41
     },
     {
       "strategy": "week_opening_gap_fill_up",
@@ -874,7 +895,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 1.048,
       "is_gates_cleared": 5,
-      "rank": 41
+      "rank": 42
     },
     {
       "strategy": "pivot_fib_confluence",
@@ -895,7 +916,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 1.186,
       "is_gates_cleared": 4,
-      "rank": 42
+      "rank": 43
     },
     {
       "strategy": "htf_aligned_breakout_long",
@@ -916,7 +937,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 0.917,
       "is_gates_cleared": 4,
-      "rank": 43
+      "rank": 44
     },
     {
       "strategy": "flag_bull_long",
@@ -937,7 +958,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 0.915,
       "is_gates_cleared": 4,
-      "rank": 44
+      "rank": 45
     },
     {
       "strategy": "turtle_soup_long",
@@ -958,7 +979,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.883,
       "is_gates_cleared": 4,
-      "rank": 45
+      "rank": 46
     },
     {
       "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
@@ -979,7 +1000,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.838,
       "is_gates_cleared": 4,
-      "rank": 46
+      "rank": 47
     },
     {
       "strategy": "smc_inverse_fvg",
@@ -1000,7 +1021,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.816,
       "is_gates_cleared": 4,
-      "rank": 47
+      "rank": 48
     },
     {
       "strategy": "stoch_oversold",
@@ -1021,7 +1042,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.791,
       "is_gates_cleared": 4,
-      "rank": 48
+      "rank": 49
     },
     {
       "strategy": "smc_equal_lows_sweep_long",
@@ -1042,7 +1063,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 0.768,
       "is_gates_cleared": 4,
-      "rank": 49
+      "rank": 50
     },
     {
       "strategy": "awesome_oscillator",
@@ -1063,7 +1084,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.755,
       "is_gates_cleared": 4,
-      "rank": 50
+      "rank": 51
     },
     {
       "strategy": "head_and_shoulders_bottom_long",
@@ -1084,7 +1105,7 @@
       "is_exit": "chandelier_3x",
       "is_sharpe": 0.728,
       "is_gates_cleared": 4,
-      "rank": 51
+      "rank": 52
     },
     {
       "strategy": "smc_fvg_retest_long",
@@ -1105,7 +1126,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.706,
       "is_gates_cleared": 4,
-      "rank": 52
+      "rank": 53
     },
     {
       "strategy": "smc_discount_long",
@@ -1126,7 +1147,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.7,
       "is_gates_cleared": 4,
-      "rank": 53
+      "rank": 54
     },
     {
       "strategy": "ppo_crossover",
@@ -1147,7 +1168,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.648,
       "is_gates_cleared": 4,
-      "rank": 54
+      "rank": 55
     },
     {
       "strategy": "roc_burst",
@@ -1168,7 +1189,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.645,
       "is_gates_cleared": 4,
-      "rank": 55
+      "rank": 56
     },
     {
       "strategy": "triangle_ascending_long",
@@ -1189,7 +1210,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 0.621,
       "is_gates_cleared": 4,
-      "rank": 56
+      "rank": 57
     },
     {
       "strategy": "m_and_a_target_long",
@@ -1210,7 +1231,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.605,
       "is_gates_cleared": 4,
-      "rank": 57
+      "rank": 58
     },
     {
       "strategy": "bullish_engulfing_support",
@@ -1231,7 +1252,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.599,
       "is_gates_cleared": 4,
-      "rank": 58
+      "rank": 59
     },
     {
       "strategy": "smc_liquidity_sweep_reversal",
@@ -1252,7 +1273,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.591,
       "is_gates_cleared": 4,
-      "rank": 59
+      "rank": 60
     },
     {
       "strategy": "golden_cross_20_50",
@@ -1273,7 +1294,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.578,
       "is_gates_cleared": 4,
-      "rank": 60
+      "rank": 61
     },
     {
       "strategy": "tema_dema",
@@ -1294,7 +1315,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.573,
       "is_gates_cleared": 4,
-      "rank": 61
+      "rank": 62
     },
     {
       "strategy": "cup_and_handle_long",
@@ -1315,7 +1336,7 @@
       "is_exit": "chandelier_3x",
       "is_sharpe": 0.571,
       "is_gates_cleared": 4,
-      "rank": 62
+      "rank": 63
     },
     {
       "strategy": "golden_cross_9_21",
@@ -1336,7 +1357,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 0.568,
       "is_gates_cleared": 4,
-      "rank": 63
+      "rank": 64
     },
     {
       "strategy": "parabolic_sar_flip",
@@ -1357,7 +1378,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 0.563,
       "is_gates_cleared": 4,
-      "rank": 64
+      "rank": 65
     },
     {
       "strategy": "break_retest_volume",
@@ -1378,7 +1399,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.542,
       "is_gates_cleared": 4,
-      "rank": 65
+      "rank": 66
     },
     {
       "strategy": "doji_at_support",
@@ -1399,7 +1420,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.537,
       "is_gates_cleared": 4,
-      "rank": 66
+      "rank": 67
     },
     {
       "strategy": "volume_spike_breakout",
@@ -1420,7 +1441,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 0.519,
       "is_gates_cleared": 4,
-      "rank": 67
+      "rank": 68
     },
     {
       "strategy": "po3_bullish",
@@ -1441,7 +1462,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.509,
       "is_gates_cleared": 4,
-      "rank": 68
+      "rank": 69
     },
     {
       "strategy": "ichimoku_tk_cross",
@@ -1462,7 +1483,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.506,
       "is_gates_cleared": 4,
-      "rank": 69
+      "rank": 70
     },
     {
       "strategy": "donchian_10_breakout",
@@ -1483,7 +1504,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.5,
       "is_gates_cleared": 4,
-      "rank": 70
+      "rank": 71
     },
     {
       "strategy": "dc20_break_retest",
@@ -1504,7 +1525,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.496,
       "is_gates_cleared": 4,
-      "rank": 71
+      "rank": 72
     },
     {
       "strategy": "donchian_breakout_retest_long",
@@ -1525,7 +1546,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.49,
       "is_gates_cleared": 4,
-      "rank": 72
+      "rank": 73
     },
     {
       "strategy": "donchian_breakout_long",
@@ -1546,7 +1567,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.479,
       "is_gates_cleared": 4,
-      "rank": 73
+      "rank": 74
     },
     {
       "strategy": "donchian_breakout_with_smart_money_long",
@@ -1567,7 +1588,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 0.476,
       "is_gates_cleared": 4,
-      "rank": 74
+      "rank": 75
     },
     {
       "strategy": "value_area_breakout_long",
@@ -1588,7 +1609,7 @@
       "is_exit": "chandelier_3x",
       "is_sharpe": 0.465,
       "is_gates_cleared": 4,
-      "rank": 75
+      "rank": 76
     },
     {
       "strategy": "cpr_narrow_bullish",
@@ -1609,7 +1630,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.441,
       "is_gates_cleared": 4,
-      "rank": 76
+      "rank": 77
     },
     {
       "strategy": "double_bottom_long",
@@ -1630,7 +1651,7 @@
       "is_exit": "fixed_4r_2r",
       "is_sharpe": 0.413,
       "is_gates_cleared": 4,
-      "rank": 77
+      "rank": 78
     },
     {
       "strategy": "rsi_oversold",
@@ -1651,7 +1672,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.397,
       "is_gates_cleared": 4,
-      "rank": 78
+      "rank": 79
     },
     {
       "strategy": "pre_holiday_long",
@@ -1672,7 +1693,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.39,
       "is_gates_cleared": 4,
-      "rank": 79
+      "rank": 80
     },
     {
       "strategy": "pivot_s1_bounce",
@@ -1693,7 +1714,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.383,
       "is_gates_cleared": 4,
-      "rank": 80
+      "rank": 81
     },
     {
       "strategy": "prev_day_low_bounce",
@@ -1714,7 +1735,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.382,
       "is_gates_cleared": 4,
-      "rank": 81
+      "rank": 82
     },
     {
       "strategy": "williams_stoch_dual",
@@ -1735,7 +1756,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.382,
       "is_gates_cleared": 4,
-      "rank": 82
+      "rank": 83
     },
     {
       "strategy": "bollinger_tight_with_smart_money_long",
@@ -1756,7 +1777,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.352,
       "is_gates_cleared": 4,
-      "rank": 83
+      "rank": 84
     },
     {
       "strategy": "break_retest_confluence",
@@ -1777,7 +1798,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.332,
       "is_gates_cleared": 4,
-      "rank": 84
+      "rank": 85
     },
     {
       "strategy": "judas_swing_long",
@@ -1798,7 +1819,7 @@
       "is_exit": "ma_exit_ema9",
       "is_sharpe": 0.988,
       "is_gates_cleared": 3,
-      "rank": 85
+      "rank": 86
     },
     {
       "strategy": "avwap_50_reclaim",
@@ -1821,7 +1842,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.567,
       "is_gates_cleared": 3,
-      "rank": 86
+      "rank": 87
     },
     {
       "strategy": "activist_13d_long",
@@ -1842,7 +1863,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.47,
       "is_gates_cleared": 3,
-      "rank": 87
+      "rank": 88
     },
     {
       "strategy": "smc_ote_long",
@@ -1863,7 +1884,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.367,
       "is_gates_cleared": 3,
-      "rank": 88
+      "rank": 89
     },
     {
       "strategy": "triangle_ascending_retest_long",
@@ -1884,7 +1905,7 @@
       "is_exit": "atr_trail_2x",
       "is_sharpe": 0.358,
       "is_gates_cleared": 2,
-      "rank": 89
+      "rank": 90
     },
     {
       "strategy": "smc_choch_reversal",
@@ -1905,7 +1926,7 @@
       "is_exit": "hybrid_50pct_target",
       "is_sharpe": -0.153,
       "is_gates_cleared": 2,
-      "rank": 90
+      "rank": 91
     }
   ],
   "unranked": [

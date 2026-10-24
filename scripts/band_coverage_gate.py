@@ -89,6 +89,15 @@ KIND_FREE_LEVELS = "free_levels"
 KIND_COMPANION_SCREEN = "companion_screen"
 KIND_PERMUTATION_NULL = "permutation_null"
 KIND_IS_SURFACE = "is_surface"
+# S6-B3294 / S6-B3295: the generic sweep's in-sample surface grades every
+# free level x every exit (reproduction-gated, Table D beside it), which is
+# the T4 Step-1 grid itself - but whether a SURFACE evaluation counts toward
+# band coverage the way a FREE-LEVEL evaluation does (S6-B3139o) is the
+# owner's ruling, pending as S6-B3295. Until it lands the surface's graded
+# levels are REPORTED per param (is_surface_graded) and never counted;
+# flipping this constant is the ruling's one-line landing, pinned both ways
+# by test_b3294.
+COUNT_IS_SURFACE = False
 ZERO_COVERAGE = {
     KIND_GRID_AUTO: "rows is a COUNT - it cannot say which levels ran; the "
                     "landed producer config is reported under landed_configs",
@@ -186,6 +195,30 @@ def _gather(arts: list) -> tuple[dict, dict, dict, dict]:
     return graded, structural, discarded, resim
 
 
+def _surface_graded(a: dict) -> dict:
+    """S6-B3294: {axis key: set(levels)} graded by an offline_level_sweep
+    IS surface - each ranked row's levels, positionally against the artifact's
+    axes; a row with no is_sharpe grades nothing (the L783 SKIP rule)."""
+    keys = [str(ax.get("key")) for ax in (a.get("axes") or [])]
+    out: dict = {}
+    for r in a.get("ranked") or []:
+        if r.get("is_sharpe") is None:
+            continue
+        for k, lev in zip(keys, r.get("levels") or []):
+            out.setdefault(k, set()).add(lev)
+    return out
+
+
+def _param_keys(p: dict) -> list:
+    """The artifact axis keys a param's levels are graded under: its
+    signal_keys, plus a coverage_key where the one-key-one-column rule
+    (S6-B3139an) denied a per-side twin the shared signal key."""
+    keys = list(p.get("signal_keys") or [])
+    if p.get("coverage_key"):
+        keys.append(str(p["coverage_key"]))
+    return keys
+
+
 def _num_eq(a, b) -> bool:
     try:
         return abs(float(a) - float(b)) <= _TOL
@@ -238,7 +271,16 @@ def coverage_report(strategy: str, artifact_paths: list, *,
     # p11_tight = the 5-tighter edge set).
     free_axis: dict[str, set] = {}
     tight_ids: set[str] = set()
+    surface_axis: dict[str, set] = {}
+    surface_evals = []
     for n, k, a in zip(names, kinds, arts):
+        if k == KIND_IS_SURFACE:
+            g = _surface_graded(a)
+            for key, levs in g.items():
+                surface_axis.setdefault(key, set()).update(levs)
+            surface_evals.append({"artifact": n, "direction": a.get("direction"),
+                                  "axes": {key: sorted(levs, key=float)
+                                           for key, levs in g.items()}})
         if k == KIND_FREE_LEVELS:
             ax = str(a.get("axis") or "unnamed axis")
             levs = set(a.get("levels_searched")
@@ -267,6 +309,10 @@ def coverage_report(strategy: str, artifact_paths: list, *,
         name, band, prod = p["param"], p["band"], p["production"]
         free_seen = free_axis.get(p["id"], set()) | free_axis.get(name, set())
         free_covered = []
+        surf_seen: set = set()
+        for _k in _param_keys(p):
+            surf_seen |= surface_axis.get(_k, set())
+        surface_graded, surface_covered = [], []
         q_labels = [b for b in band if isinstance(b, str) and b.startswith("q")]
         tested, untested = [], []
         if q_labels:
@@ -294,6 +340,13 @@ def coverage_report(strategy: str, artifact_paths: list, *,
                         # counted, and LABELLED per level
                         ok = True
                         free_covered.append(lev)
+                    if not ok and any(_num_eq(lev, s) for s in surf_seen):
+                        # S6-B3294: graded by the sweep's IS surface -
+                        # reported always, counted only on the S6-B3295 ruling
+                        surface_graded.append(lev)
+                        if COUNT_IS_SURFACE:
+                            ok = True
+                            surface_covered.append(lev)
                     if (not ok and p["id"] in tight_ids
                             and not _num_eq(lev, prod)):
                         # the id's <id>_tight extra evaluated its approved
@@ -305,12 +358,16 @@ def coverage_report(strategy: str, artifact_paths: list, *,
         out.append({"id": p["id"], "param": name, "band": band,
                     "production": prod, "tested": tested,
                     "untested": untested,
-                    "free_level_covered": free_covered})
+                    "free_level_covered": free_covered,
+                    "is_surface_graded": surface_graded,
+                    "is_surface_covered": surface_covered})
     return {"strategy": strategy, "evaluable": True,
             "complete": untested_total == 0,
             "untested_total": untested_total, "params": out,
             "artifacts": artifacts,
             "free_level_evaluations": free_evals,
+            "is_surface_evaluations": surface_evals,
+            "is_surface_counted": COUNT_IS_SURFACE,
             "landed_configs": landed,
             "registry_conflicts": (_registry_conflicts(strategy)
                                    if spec is None else {}),

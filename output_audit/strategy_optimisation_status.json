@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "4a0836878",
-    "generated_at": "2026-10-23 10:01:02"
+    "source_commit": "91dc039ed",
+    "generated_at": "2026-10-24 00:52:23"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -1009,9 +1009,7 @@
       "tickets": [
         "S6-B3246"
       ],
-      "live_campaign_tickets": [
-        "S6-B3246"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2836",
         "S6-B2841",
@@ -1022,11 +1020,12 @@
         "S6-B3246",
         "S6-B3251",
         "S6-B3270",
-        "S6-B3289"
+        "S6-B3289",
+        "S6-B3294"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "IN-CAMPAIGN"
+      "status": "STALLED-CAMPAIGN"
     },
     {
       "strategy": "consec_downdays_quality_long",
@@ -2564,7 +2563,8 @@
         "S6-B3122",
         "S6-B3154a",
         "S6-B3180",
-        "S6-B3253"
+        "S6-B3253",
+        "S6-B3288"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2602,7 +2602,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2807",
-        "S6-B3122"
+        "S6-B3122",
+        "S6-B3288"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2710,7 +2711,8 @@
         "S6-B2807",
         "S6-B3116b",
         "S6-B3122",
-        "S6-B3135"
+        "S6-B3135",
+        "S6-B3288"
       ],
       "admitted": true,
       "roster_roles": [
@@ -3034,7 +3036,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3122"
+        "S6-B3122",
+        "S6-B3288"
       ],
       "admitted": true,
       "roster_roles": [
@@ -4960,7 +4963,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3252"
+        "S6-B3252",
+        "S6-B3289"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6616,7 +6620,10 @@
         "S6-B3254",
         "S6-B3270",
         "S6-B3289",
-        "S6-B3291"
+        "S6-B3290b",
+        "S6-B3291",
+        "S6-B3291b",
+        "S6-B3294"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7063,7 +7070,9 @@
         "S6-B3161",
         "S6-B3167",
         "S6-B3169",
-        "S6-B3204"
+        "S6-B3204",
+        "S6-B3248",
+        "S6-B3291b"
       ],
       "admitted": true,
       "roster_roles": [
@@ -7719,7 +7728,8 @@
         "S6-B3253",
         "S6-B3270",
         "S6-B3289",
-        "S6-B3290"
+        "S6-B3290",
+        "S6-B3294"
       ],
       "admitted": false,
       "roster_roles": [],

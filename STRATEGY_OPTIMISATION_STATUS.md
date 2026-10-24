@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 4a0836878 at 2026-10-23 10:01:02 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 91dc039ed at 2026-10-24 00:52:23 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -20,8 +20,8 @@
 | IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | 7 |
 | IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded beyond R5, terminal (its Step 2 dropped 2026-10-20, S6-B2420) | 8 |
 | DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 4 |
-| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | 3 |
-| STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | 4 |
+| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | 2 |
+| STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | 5 |
 | NOT-STARTED | 167 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
@@ -79,7 +79,7 @@
 | r1_break_retest | pivot | 3371 | 309.8 |  | 100.0% | NONE | NOT-STARTED | 3371 of 3371 |
 | simple_below_ema_50_short | momentum_trend | 3299 | 177.8 | YES | 58.7% | NONE | NOT-STARTED | 3299 of 3299 |
 | force_index_breakout | breakout | 3013 | 276.9 |  | 100.0% | NONE | NOT-STARTED | 3013 of 3013 |
-| cmf_flip | mean_reversion | 2994 | 206.8 | YES | 75.1% | TIGHTEN | IN-CAMPAIGN | 2994 of 2994 |
+| cmf_flip | mean_reversion | 2994 | 206.8 | YES | 75.1% | TIGHTEN | STALLED-CAMPAIGN | 2994 of 2994 |
 | smc_liquidity_sweep_reversal | smc | 2933 | 13.9 | YES | 5.1% | LOOSEN | STALLED-CAMPAIGN | 2933 of 2933 |
 | macd_crossover | momentum | 2910 | 267.5 |  | 100.0% | NONE | NOT-STARTED | 2910 of 2910 |
 | macd_ichimoku | confluence | 2907 | 267.2 |  | 100.0% | - | DISABLED | 2907 of 2907 |

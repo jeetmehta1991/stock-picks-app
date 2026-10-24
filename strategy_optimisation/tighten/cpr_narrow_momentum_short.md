@@ -1,6 +1,6 @@
 # Table A - cpr_narrow_momentum_short
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 77eb58e97 | commit 77eb58e97 at 2026-10-22 13:28:04 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 91dc039ed | commit 91dc039ed at 2026-10-24 01:05:12 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** confluence | **status:** NOT-STARTED | **R5 fires:** 1696 (closed fires in the exit cube: 1696 of 1696, S6-B3258) | **surviving fires (T1):** 1696 (unchanged since R5 - filter is identity)
 

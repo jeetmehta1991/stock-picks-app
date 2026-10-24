@@ -1,10 +1,10 @@
 # Table A - cmf_flip
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 77eb58e97 | commit 77eb58e97 at 2026-10-22 13:28:04 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 91dc039ed | commit 91dc039ed at 2026-10-24 01:05:12 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** TIGHTEN | **family:** mean_reversion | **status:** IN-CAMPAIGN | **R5 fires:** 2994 (closed fires in the exit cube: 2994 of 2994, S6-B3258) | **surviving fires (T1):** 2250 (survives_pct 0.7515)
+**Lane:** TIGHTEN | **family:** mean_reversion | **status:** STALLED-CAMPAIGN | **R5 fires:** 2994 (closed fires in the exit cube: 2994 of 2994, S6-B3258) | **surviving fires (T1):** 2250 (survives_pct 0.7515)
 
-**SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+**SPECS entry:** registered in producer_variant_table
 
 ## Formula (Section 1 of the SS6/#183 locked artifact)
 
@@ -44,9 +44,9 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | cmf_cross_dn - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | CMF crosses the zero line vs the prior bar (technical.py:1706-1707) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | cmf_cross_dn - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | CMF crosses the zero line vs the prior bar (technical.py:1706-1707) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
 | P1.1 | BAND | as cmf_cross_up, mirrored - backtest/signals/technical.py:1707 | mirror | 0.0 | 0, -0.02, -0.05 | offline 0 of 3 levels - none - the cross needs FRESHNESS (prior bar >= level), and the prior cmf is unpersisted; the level side alone is persisted (mirror of cmf_cross_up) | freshness; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P2 | PRODUCER | cmf_cross_up - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | CMF crosses the zero line vs the prior bar (technical.py:1706-1707) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2 | PRODUCER | cmf_cross_up - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | CMF crosses the zero line vs the prior bar (technical.py:1706-1707) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
 | P2.1 | BAND | cmf window - backtest/signals/technical.py:1695 | BRACKET production | 20 | 14, 20, 30 | offline 0 of 3 levels - none | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P2.2 | BAND | cross level (zero line) - technical.py:1706 | BRACKET zero upward (require conviction, not a graze) | 0.0 | 0, 0.02, 0.05 | offline 0 of 3 levels - LEVEL side (cmf > 0.02/0.05) - persisted cmf; the FRESHNESS (prior bar <= level) needs the unpersisted prior cmf | freshness at any non-production level; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | STRATEGY | po3_accum_range_pct `>= 0.0458` [EXISTING-THRESHOLD] | gate threshold on the persisted magnitude | `>= 0.0458` | production + 4 tighter measured levels | offline 4 of 5 levels - measured tighter QUANTS levels - see the free-band section below | looser side - band at R1 | MEASURED-PRE-R1 |
@@ -66,9 +66,9 @@ STRICTLY tighter than production enter the free band.
 
 | key | source (module writing the key) | gate | coverage | OFFLINE free_band: level -> retained (n, %) | RESIM side |
 |---|---|---|---|---|---|
-| po3_accum_range_pct | backtest/signals/ict_producers.py | `>= 0.0458` | 100.0% | TIGHTER = RAISE the floor: 0.0561 -> 1801 (80%); 0.0693 -> 1351 (60%); 0.0867 -> 903 (40%); 0.1203 -> 452 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
-| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `< 50` | 100.0% | [long leg only] TIGHTER = LOWER the ceiling: 35.49 -> 281 (20%); 40.16 -> 562 (40%); 43.52 -> 841 (60%); 46.57 -> 1121 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry (to be built) |
-| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `> 50` | 100.0% | [short leg only] TIGHTER = RAISE the floor: 53.11 -> 679 (80%); 55.866 -> 509 (60%); 59.542 -> 340 (40%); 64.152 -> 170 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry (to be built) |
+| po3_accum_range_pct | backtest/signals/ict_producers.py | `>= 0.0458` | 100.0% | TIGHTER = RAISE the floor: 0.0561 -> 1801 (80%); 0.0693 -> 1351 (60%); 0.0867 -> 903 (40%); 0.1203 -> 452 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry |
+| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `< 50` | 100.0% | [long leg only] TIGHTER = LOWER the ceiling: 35.49 -> 281 (20%); 40.16 -> 562 (40%); 43.52 -> 841 (60%); 46.57 -> 1121 (80%) | LOOSER = RAISE the threshold: RESIM - band from the SPECS entry |
+| rsi_14 | backtest/signals/polars_panel.py (f-string template) +2 | `> 50` | 100.0% | [short leg only] TIGHTER = RAISE the floor: 53.11 -> 679 (80%); 55.866 -> 509 (60%); 59.542 -> 340 (40%); 64.152 -> 170 (20%) | LOOSER = LOWER the threshold: RESIM - band from the SPECS entry |
 
 ### B-row candidate census - companion producers persisted on the fires [NEW-GATE]
 
