@@ -21003,7 +21003,7 @@ def test_b1945_no_new_dangling_learnings_citation():
         _txt = "\n".join(_re.sub(r"`[^`]*`", " ", _ln)
                          for _ln in p.read_text(encoding="utf-8").splitlines())
         cited = {f"L{c}" for c in _re.findall(r"\bL(\d{2,3})\b", _txt)
-                  if 80 <= int(c) <= 700}
+                  if 80 <= int(c) <= 999}  # S6-B3311 (L962): was 700, blind to every later lesson
         dangling = cited - exist
         # B1993: COUNTS frozen too, not only identities. B1992 measured 13
         # new #237 citations riding the number-freeze in one session; this
@@ -26068,6 +26068,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r91: S6-B3269's selector, same call as the skill edit.
         ("scripts/pregate_select.py, S6-B3269, selects this turn's 6 of 6: run it before the gate",
          'L950 / S6-B3269 (B3139q-r91): the pre-gate selector'),
+        # B3139q-r113: L960, same call as the skill edit.
+        ("PRINT ITS WHOLE HISTORY AND READ IT BEFORE THE ROW IS WRITTEN",
+         'L960 (B3139q-r111): a ticket row written from a summary of its history'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26311,7 +26314,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 353 -> 354 at B3139q-r91 (S6-B3269's selector clause; same call).
     # 354 -> 355 at B3139q-r92 (the L953 second-renderer fragment; same call).
     # 355 -> 356 at B3139q-r95 (the L954 qualifier fragment; same call).
-    assert len(gutted) == 356, gutted
+    # 356 -> 357 at B3139q-r113 (the L960 history-read fragment; same call).
+    assert len(gutted) == 357, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -48216,6 +48220,19 @@ _B3121_SEAMS_SOUND = {
     ("scan_obligation_in_closing_row", "rows"):
         "list seam (list(rows)) for the list _queue_rows_added() returns; both paths feed "
         "obligation_in_closing_rows unchanged",
+    # B3139q-r113 (S6-B3307): the history-read gate's three seams.
+    ("scan_ticket_history_unread", "rows"):
+        "list seam (list[str] of queue rows) for the list _history_rows_this_turn returns - "
+        "the working-tree rows plus the last commit's when a git commit ran; both feed "
+        "ticket_history_gaps unchanged, and the live collection is driven by test_b3307",
+    ("scan_ticket_history_unread", "queue_text"):
+        "str seam for EXECUTION_QUEUE.md's text, which the live branch reads and both paths "
+        "split into lines for ticket_history_gaps' _history_row_id parse unchanged",
+    ("scan_ticket_history_unread", "results"):
+        "str seam for the joined text _context_tool_results returns; both pass through "
+        "_history_norm in ticket_history_gaps, and the live branch over constructed "
+        "tool_result entries - a compaction resets it, a task notice does not - is "
+        "driven by test_b3307",
     ("scan_count_without_members", "rows"):
         "list seam (list(rows)) for the list _queue_rows_added() returns",
     ("scan_ticket_claim_without_pin", "rows"):
@@ -64077,3 +64094,150 @@ def test_b3310_selector_sees_listings_and_repo_reads(tmp_path):
                readset={"t::oa": ["output_audit/"]}) == {"t::oa": ["R7"]}
     assert ps.added_or_deleted(["EXECUTION_QUEUE.md", "no/such/b3310_file.md"]) == [
         "no/such/b3310_file.md"]
+
+
+# ================================================================ B3139q-r113 S6-B3307: a ticket's history is read before a row is appended
+def test_b3307_a_row_on_a_ticket_with_history_needs_that_history_read():
+    """S6-B3307 (B3139q-r113, L960): the owner's 2026-10-25 'get context for
+    each ticket', made mechanical for its detectable half. (1) Both VERBATIM
+    incidents fire - the batch-G draft LEVER4 row with none of its history in
+    front of the turn, and the draft S6-B3248 row with only its r109 row there
+    (not the first row, which cites the precedent it broke). (2) Quiet when the
+    rows were printed - numbered and folded prints included, which the
+    normalisation absorbs; quiet for a NEW ticket. (3) A partial print fires
+    and names the count; another ticket's row sharing the text opening does
+    not satisfy it (the whole-row fingerprint). (4) The LIVE branch:
+    _context_tool_results reads tool_result blocks since the last COMPACTION -
+    an owner message or a task notice in between keeps a printed history in
+    front of the turn, a compaction summary drops it. (5) Wired in main. (6)
+    The REMEDY runs (L820): the queue's oldest rows carry an unbolded id, so a
+    history printed from the bold rows leaves the gate firing, while what
+    scripts/ticket_history.py prints - queue_state.history, through the
+    row_id the gate shares - quiets it; a mistyped id exits 1."""
+    import inspect as _insp
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gic
+    import verify_turn_compliance as vtc
+    lv = "S6-B1248-LEVER4-GATE-BUDGET"
+    _text, fires, inc = gic.INCIDENTS["scan_ticket_history_unread"]
+    assert fires
+    g_row = inc["rows"][0]
+    prior = [ln for ln in inc["queue_text"].splitlines() if ln != g_row]
+    assert len(prior) == 2 and "a Step-1 ranked list, no gates" in prior[0]
+    # (1)
+    out = vtc.scan_ticket_history_unread([], **inc)
+    assert len(out) == 1 and lv in out[0] and "2 of 2 earlier rows unseen" in out[0], out
+    sq = gic.EXTRA_INCIDENTS["scan_ticket_history_unread"][3]
+    assert sq[1] is True and "B-ROWS RENDERED" in sq[2]["rows"][0]
+    out = vtc.scan_ticket_history_unread([], **sq[2])
+    assert len(out) == 1 and "S6-B3248 (1 of 2 earlier rows unseen)" in out[0], out
+    # (2)
+    numbered = "\n".join(f"{15200 + i}:{p}" for i, p in enumerate(prior))
+    folded = "\n".join(p[i:i + 77] for p in prior for i in range(0, len(p), 77))
+    for shown in (numbered, folded):
+        assert vtc.scan_ticket_history_unread([], rows=[g_row], queue_text=inc["queue_text"],
+                                              results=shown) == []
+    new = "| **S6-B9998** | **OPEN** | P2 | **NEW: no earlier rows** | _reason:_ OPEN - planted |"
+    assert vtc.scan_ticket_history_unread([], rows=[new], queue_text=new, results="") == []
+    # (3)
+    out = vtc.scan_ticket_history_unread([], rows=[g_row], queue_text=inc["queue_text"],
+                                         results=prior[1])
+    assert len(out) == 1 and "1 of 2 earlier rows unseen" in out[0], out
+    twin_a = ("| **S6-B9001** | **DEFERRED** | P2 | **RE-CHECKED (B9): held on the owner's "
+              "ruling of the same day, nothing new** | _reason:_ DEFERRED - held |")
+    twin_b = twin_a.replace("S6-B9001", "S6-B9002")
+    add_b = "| **S6-B9002** | **DEFERRED** | P2 | **RE-CHECKED (B10): still held** | _reason:_ DEFERRED - held |"
+    assert vtc.ticket_history_gaps([add_b], "\n".join([twin_a, twin_b, add_b]), twin_a) == {
+        "S6-B9002": (1, 1)}
+    assert vtc.ticket_history_gaps([add_b], "\n".join([twin_a, twin_b, add_b]), twin_b) == {}
+
+    # (4) the live branch over constructed entries
+    def user(text):
+        return {"type": "user", "message": {"content": text}}
+
+    def result(text):
+        return {"type": "user", "message": {"content": [
+            {"type": "tool_result", "content": [{"type": "text", "text": text}]}]}}
+
+    owner = user("continue fable mode get context for each ticket")
+    notice = user("<task-notification><task-id>b1</task-id><status>completed</status></task-notification>")
+    compact = user("This session is being continued from a previous conversation that ran out of context.")
+    shown = "\n".join(prior)
+    assert vtc._context_tool_results([result(shown), owner, notice, result("ok")]) == shown + "\nok"
+    assert vtc._context_tool_results([owner, result(shown), compact, result("ok")]) == "ok"
+    kept = vtc.scan_ticket_history_unread([owner, result(shown), notice, result("ok")],
+                                          rows=[g_row], queue_text=inc["queue_text"])
+    assert kept == [], kept
+    dropped = vtc.scan_ticket_history_unread([owner, result(shown), compact, result("ok")],
+                                             rows=[g_row], queue_text=inc["queue_text"])
+    assert len(dropped) == 1 and "2 of 2" in dropped[0], dropped
+    # (5) wired: a NAME in main's code, not a mention - a commented-out call
+    # keeps the word in the source and must not pass (L748)
+    import ast as _ast
+    names = {n.id for n in _ast.walk(_ast.parse(_insp.getsource(vtc.main)))
+             if isinstance(n, _ast.Name)}
+    assert "scan_ticket_history_unread" in names
+    # (6) the remedy, executed: an old-schema first row is part of the history
+    import contextlib
+    import io
+    import tempfile
+    import queue_state as qs
+    import ticket_history as th
+    legacy = "| S6-B9003 | the ticket's definition in the old schema | P2 |"
+    b1 = "| **S6-B9003** | **OPEN** | P2 | **PROGRESS (B1): the first bold row** | _reason:_ OPEN - planted |"
+    add = "| **S6-B9003** | **OPEN** | P2 | **PROGRESS (B2): the row being added** | _reason:_ OPEN - planted |"
+    q3 = "\n".join([legacy, b1, add])
+    assert vtc.ticket_history_gaps([add], q3, b1) == {"S6-B9003": (1, 2)}
+    assert [n for n, _ in qs.history("S6-B9003", text=q3)] == [1, 2, 3]
+    assert qs.row_id("| S6-B1503a/b/c | one row, three tickets |") is None
+    with tempfile.TemporaryDirectory() as d:
+        qp = _P(d) / "q.md"
+        qp.write_text(q3 + "\n", encoding="utf-8")
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            assert th.main(["S6-B9003", "--queue", str(qp)]) == 0
+        assert vtc.ticket_history_gaps([add], q3, buf.getvalue()) == {}
+        with contextlib.redirect_stdout(io.StringIO()):
+            assert th.main(["S6-B9999", "--queue", str(qp)]) == 1
+    # the live queue: LEVER4's history opens with its unbolded definition row
+    lv_rows = qs.history(lv)
+    assert len(lv_rows) >= 15 and not lv_rows[0][1].startswith("| **"), lv_rows[:1]
+
+
+# ================================================================ B3139q-r113 S6-B3311: the dangling-citation window reaches past the newest lesson
+def test_b3311_dangling_citation_window_covers_every_lesson():
+    """S6-B3311 (B3139q-r113, L962): test_b1945 checks that the four anchor
+    docs cite only lessons that exist, but its window of checked numbers
+    stopped at L700 - headroom when B1945 set it, near L595 - so every lesson
+    numbered above 700 fell outside it (701 to 959 at B3139q-r112) and a
+    citation of a lesson not yet written passed unseen. The window is now the
+    3-digit ceiling the citation pattern can match. This pins it to the
+    CORPUS, not to the day it was chosen: the bound read from test_b1945's
+    own comparison must reach past the newest lesson in LEARNINGS, so the
+    next lesson, cited before it is written, is inside it."""
+    import ast as _ast
+    import re as _re
+    from pathlib import Path as _P
+    here = _P(__file__)
+    lm = (here.resolve().parents[2] / "LEARNINGS.md").read_text(encoding="utf-8")
+    nums = [int(n) for n in _re.findall(r"^#{2,3} L(\d+)", lm, _re.M)]
+    assert len(nums) > 300, len(nums)        # the parse saw the corpus, not nothing
+    newest = max(nums)
+    fn = [n for n in _ast.parse(here.read_text(encoding="utf-8")).body
+          if isinstance(n, _ast.FunctionDef)
+          and n.name == "test_b1945_no_new_dangling_learnings_citation"]
+    assert len(fn) == 1, len(fn)
+    windows = [c for c in _ast.walk(fn[0]) if isinstance(c, _ast.Compare)
+               and len(c.ops) == 2 and all(isinstance(o, _ast.LtE) for o in c.ops)]
+    assert len(windows) == 1, len(windows)   # the 80 <= int(c) <= HI window
+    hi = windows[0].comparators[1].value
+    assert newest + 1 <= hi, (
+        f"test_b1945 checks lesson citations only up to L{hi} while LEARNINGS "
+        f"runs to L{newest}: a citation of L{newest + 1}, the next lesson, "
+        "passes unchecked (S6-B3311). Raise the bound - and past L999 widen "
+        "the pattern to four digits, keeping out the queue's L-prefixed line "
+        "anchors (CHECKLIST.md#L1651).")

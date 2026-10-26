@@ -187,3 +187,28 @@ def next_free(prefix, start=1, path=None):
     while ("%s%d" % (prefix, n)) in used:
         n += 1
     return "%s%d" % (prefix, n)
+
+
+def row_id(row):
+    """S6-B3307 (B3139q-r113): the ticket id in a row's first cell, BOLD OR
+    NOT - the queue's oldest schema carries an unbolded id (the tickets
+    unparsed() discloses), and a reader that requires bold drops those rows.
+    None for a composite first cell (S6-B1503a/b/c - one row, several tickets)
+    or a line that is not a row. ONE definition (L593): the turn gate's
+    ticket-history scan and ticket_history.py both read rows through it."""
+    m = _LOOSE.match((row or "").strip())
+    if not m or "/" in m.group(1):
+        return None
+    return m.group(1)
+
+
+def history(tid, path=None, text=None):
+    """S6-B3307: every row of ONE ticket as (line_no, row), in file order,
+    bold id or not. MEASURED B3139q-r113: 2 of the 16 OPEN and DEFERRED
+    tickets begin with an unbolded definition row (S6-B1248-LEVER4-GATE-BUDGET
+    at line 5487, S6-B1250-ENG11-POOL-PANEL-PERF at line 5472), and a history
+    printed from the bold rows alone missed both. `text` is a fixture seam."""
+    if text is None:
+        p = pathlib.Path(path) if path else QUEUE
+        text = p.read_text(encoding="utf-8", errors="replace")
+    return [(n, ln) for n, ln in enumerate(text.splitlines(), 1) if row_id(ln) == tid]

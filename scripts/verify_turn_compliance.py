@@ -6305,6 +6305,168 @@ def scan_obligation_in_closing_row(entries, *, rows=None) -> list[str]:
             "the phrase if the row only reports it."]
 
 
+
+# S6-B3307 (B3139q-r113, L960): A TICKET'S HISTORY IS READ BEFORE A ROW IS
+# APPENDED TO IT. MEASURED by streaming the transcript to the moment the
+# B3139q-r111 batch-G draft rows were first written: 0 of the LEVER4 ticket's 14
+# earlier rows and 1 of S6-B3248's 6 had their fingerprint in the tool output
+# since the compaction that split that turn - the LEVER4 row then recommended a
+# Step-1 gate its own r105b row had ruled out ('a Step-1 ranked list, no
+# gates'), and the S6-B3248 B-rows were registered ahead of the owner's word
+# against a precedent its first row cites. WINDOW (L610 / B1983): a printed
+# history stays in front of the turn until a COMPACTION drops it, so the window
+# is session-since-last-compaction - an owner instruction or a task
+# notification that starts a new turn removes nothing from context (MEASURED: a
+# task notification delivered as a new turn opened the turn window 180 lines
+# before the incident write).
+_HISTORY_HEAD = "TICKET HISTORY NOT READ SINCE THE LAST COMPACTION"
+
+
+def _context_tool_results(entries) -> str:
+    """S6-B3307: the OUTPUT of every tool call since the last compaction - what
+    is still in front of the model. A tool_result is typed 'user' but is not
+    the user; its content is a string or a list of text blocks. Reset at each
+    compaction marker, as _skill_context_text is (B1983)."""
+    out: list = []
+    for e in entries or ():
+        if not isinstance(e, dict) or e.get("type") != "user":
+            continue
+        content = (e.get("message") or {}).get("content")
+        if isinstance(content, str):
+            if _COMPACTION_MARKER in content.lower():
+                out = []
+            continue
+        for c in content if isinstance(content, list) else ():
+            if not isinstance(c, dict):
+                continue
+            if c.get("type") == "text" and _COMPACTION_MARKER in str(c.get("text") or "").lower():
+                out = []
+            elif c.get("type") == "tool_result":
+                cc = c.get("content")
+                out.append(cc if isinstance(cc, str) else " ".join(
+                    str(x.get("text") or "") for x in (cc or ()) if isinstance(x, dict)))
+    return "\n".join(out)
+
+
+def _history_norm(text) -> str:
+    """Markdown emphasis and ALL whitespace removed, so a row printed through
+    sed, fold, cut or a numbered grep still matches the row as stored."""
+    import re
+    return re.sub(r"[\s*_`]", "", text or "")
+
+
+def _history_fragment(row: str, n: int = 120) -> str:
+    """The opening of the WHOLE row, normalised - its id, state and priority
+    and the text's opening. The text cell alone is not unique: two tickets'
+    re-check rows can share their first sixty characters (S6-B3205 and
+    S6-B3207 at B3139q-r111), and one ticket's printed history would then
+    satisfy the other's."""
+    return _history_norm((row or "").strip())[:n]
+
+
+def _history_row_id(row: str):
+    """queue_state.row_id - ONE definition of a row's ticket, bold id or not
+    (L593): the remedy command scripts/ticket_history.py reads rows through
+    the same function, so what it prints is what this gate counts."""
+    from queue_state import row_id
+    return row_id(row)
+
+
+def _history_rows_this_turn(entries) -> list:
+    """Rows added in the working tree, plus the last commit's rows ONLY when a
+    git commit ran this turn - a turn that touched no queue row is not asked
+    about the previous turn's commit. LIMIT: in a turn of several commits only
+    the last one is read (the any-vs-each limit, disclosed)."""
+    import subprocess
+    spans = [["git", "diff", "HEAD", "--unified=0", "--ignore-cr-at-eol", "--",
+              "EXECUTION_QUEUE.md"]]
+    if "git commit" in _executed_tool_text(entries):
+        spans.append(["git", "diff", "HEAD~1", "HEAD", "--unified=0",
+                      "--ignore-cr-at-eol", "--", "EXECUTION_QUEUE.md"])
+    rows: list = []
+    for cmd in spans:
+        try:
+            d = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
+                               errors="replace", timeout=20, cwd=REPO_ROOT).stdout or ""
+        except Exception:
+            continue
+        rows.extend(r for r in _queue_rows_added(d) if r not in rows)
+    return rows
+
+
+def ticket_history_gaps(added, queue_text, seen_text) -> dict:
+    """{ticket: (unseen, earlier)} for each ticket that got a row in `added`
+    while some of its EARLIER rows - every row of it in `queue_text` that is
+    not itself in `added` - has no opening fingerprint in `seen_text`. A ticket
+    with no earlier row (a NEW ticket) is never a gap."""
+    seen = _history_norm(seen_text)
+    mine = {r.strip() for r in added}
+    prior: dict = {}
+    for ln in (queue_text or "").splitlines():
+        tid = _history_row_id(ln)
+        if tid and ln.strip() not in mine:
+            prior.setdefault(tid, []).append(ln)
+    gaps: dict = {}
+    for r in added:
+        tid = _history_row_id(r)
+        if not tid or tid in gaps or tid not in prior:
+            continue
+        frags = [f for f in (_history_fragment(p) for p in prior[tid]) if f]
+        unseen = [f for f in frags if f not in seen]
+        if unseen:
+            gaps[tid] = (len(unseen), len(frags))
+    return gaps
+
+
+def scan_ticket_history_unread(entries, *, rows=None, queue_text=None,
+                               results=None) -> list[str]:
+    """S6-B3307 / L960: a row appended to a ticket whose EARLIER rows are not in
+    the tool output since the last compaction. A ticket's next line was written
+    with the context its author had then; acting on it from a summary of that
+    history is how the r111 LEVER4 row re-introduced a gate its own r105b row
+    had ruled out. Every earlier row's opening (ticket_history_gaps) must be in
+    that output; a NEW ticket passes. This checks the history was READ, never
+    that it was APPLIED - applying it stays judgment.
+
+    Seams (#241): rows (list[str], what _history_rows_this_turn returns),
+    queue_text (str, EXECUTION_QUEUE.md's text), results (str, what
+    _context_tool_results returns)."""
+    added = _history_rows_this_turn(entries) if rows is None else list(rows)
+    if not added:
+        return []
+    q = ((REPO_ROOT / "EXECUTION_QUEUE.md").read_text(encoding="utf-8", errors="replace")
+         if queue_text is None else queue_text)
+    seen = _context_tool_results(entries) if results is None else results
+    gaps = ticket_history_gaps(added, q, seen)
+    if not gaps:
+        return []
+    # B1763 / #244: the rule is universal - EACH ticket that got a row has its
+    # history read - so the check routes through require_each, which names
+    # every unsatisfied member with no cap on the list (the first draft named
+    # at most six) and lists the satisfied ones; a NEW ticket is satisfied,
+    # having no history to read.
+    required: dict = {}
+    for r in added:
+        tid = _history_row_id(r)
+        if not tid:
+            continue
+        if tid in gaps:
+            u, n = gaps[tid]
+            required.setdefault(f"{tid} ({u} of {n} earlier rows unseen)", False)
+        else:
+            required.setdefault(tid, True)
+    return require_each(
+        f"{_HISTORY_HEAD} (S6-B3307 / L960) - a ticket got a row while its earlier rows are "
+        "not in the tool output since the last compaction", required,
+        why=("A ticket's next line was written with the context its author had then; print "
+             "the whole history now - python scripts/ticket_history.py <id>, every row bold "
+             "id or not (a grep for the bold id misses the queue's oldest rows), and Read the "
+             "saved file if the tool shows only a preview - and act on it after reading. "
+             "MEASURED (B3139q-r111): the LEVER4 ticket got a row closing three arms on a "
+             "Step-1 gate with 0 of its 14 earlier rows in front of the turn, one of which had "
+             "ruled out gates at Step 1."))
+
+
 def main(argv: list[str] | None = None) -> int:
     # B1746: RUN EVERY GATE, REPORT EVERY VIOLATION.
     #
@@ -6402,6 +6564,9 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B3260 (B3139q-r90, L949): L704's detectable
                 # slice - an obligation deferred in a closing row.
                 scan_obligation_in_closing_row,
+                # S6-B3307 (B3139q-r113, L960): a ticket's history is in
+                # front of the turn before a row is appended to it.
+                scan_ticket_history_unread,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):

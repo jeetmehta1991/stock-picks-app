@@ -1,0 +1,131 @@
+{
+ "ticket": "S6-B3306 (B3139q-r113)",
+ "question": "why R5 recorded far fewer production-gate long fires than the isolated Step-1 runs on the same 200 tickers and window",
+ "window": "2024-05-05..2025-05-05",
+ "universe": "output_audit/_sweep_200.txt",
+ "r5_occupancy_rule": "v1 - a candidate whose ticker one co-firing strategy held was skipped whole; the row's strategy column is the literal '(same-strategy)' (backtest.py _mode_c_skip_row docstring, S6-B3139r)",
+ "measured": {
+  "pivot_r1_breakout": {
+   "cube": "output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45",
+   "production_subset_long_fires": 81,
+   "r5_long_fires_same_200_same_window": 38,
+   "what_r5_recorded_at_those_fires": {
+    "R5 occupancy skip of the candidate (v1, holders unnamed)": 63,
+    "R5 traded it": 18
+   },
+   "nothing_recorded_days_r5_entered_tickers": {
+    "n": 0,
+    "at_or_over_cap_30": 0,
+    "median": null,
+    "max": null
+   },
+   "budget_only_long_fires_with_an_occupancy_row": "506 of 708",
+   "base_rate_occupancy_row_per_ticker_day": 0.7661,
+   "changed_since_r5": true
+  },
+  "news_momentum_long": {
+   "cube": "output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe",
+   "production_subset_long_fires": 58,
+   "r5_long_fires_same_200_same_window": 4,
+   "what_r5_recorded_at_those_fires": {
+    "R5 occupancy skip of the candidate (v1, holders unnamed)": 56,
+    "R5 traded it": 2
+   },
+   "nothing_recorded_days_r5_entered_tickers": {
+    "n": 0,
+    "at_or_over_cap_30": 0,
+    "median": null,
+    "max": null
+   },
+   "budget_only_long_fires_with_an_occupancy_row": "360 of 435",
+   "base_rate_occupancy_row_per_ticker_day": 0.7661,
+   "changed_since_r5": true
+  },
+  "smc_bos_continuation": {
+   "cube": "output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef",
+   "production_subset_long_fires": 47,
+   "r5_long_fires_same_200_same_window": 9,
+   "what_r5_recorded_at_those_fires": {
+    "R5 occupancy skip of the candidate (v1, holders unnamed)": 40,
+    "R5 traded it": 7
+   },
+   "nothing_recorded_days_r5_entered_tickers": {
+    "n": 0,
+    "at_or_over_cap_30": 0,
+    "median": null,
+    "max": null
+   },
+   "budget_only_long_fires_with_an_occupancy_row": "172 of 181",
+   "base_rate_occupancy_row_per_ticker_day": 0.7661,
+   "changed_since_r5": true
+  },
+  "orb_stocks_in_play_long": {
+   "cube": "output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a",
+   "production_subset_long_fires": 72,
+   "r5_long_fires_same_200_same_window": 6,
+   "what_r5_recorded_at_those_fires": {
+    "R5 occupancy skip of the candidate (v1, holders unnamed)": 66,
+    "R5 traded it": 6
+   },
+   "nothing_recorded_days_r5_entered_tickers": {
+    "n": 0,
+    "at_or_over_cap_30": 0,
+    "median": null,
+    "max": null
+   },
+   "budget_only_long_fires_with_an_occupancy_row": "237 of 276",
+   "base_rate_occupancy_row_per_ticker_day": 0.7661,
+   "changed_since_r5": true
+  }
+ },
+ "generators": {
+  "b3306_rca_probe.py": "\"\"\"S6-B3306 RCA probe (B3139q-r113): why did R5 record far fewer production-gate\nLONG fires than the isolated Step-1 runs on the same 200 tickers and window?\n\nFor each LEVER4 strategy: the production-passing long fires of its Step-1\nbudget cube (build_table_a.surviving_fires, forced replay of the LIVE gate - no\nLEVER4_GATE_BUDGET in this process, so production AND), and for each such\n(ticker, entry_date) what R5 recorded there (signal date = entry date or one\nbusiness day earlier):\n  - an R5 trade of this strategy;\n  - an R5 skip row NAMING this strategy, with its reason;\n  - an R5 OCCUPANCY skip of the candidate: R5 ran the v1 occupancy rule, which\n    silenced every co-firing strategy when one held the ticker, and wrote the\n    literal '(same-strategy)' in the strategy column (391,782 rows - L837: a\n    bucket a per-strategy filter cannot populate, so it is joined on\n    ticker-day and labelled UNATTRIBUTED, never counted as this strategy's);\n  - nothing - an over-cap candidate is dropped SILENTLY (backtest.py\n    candidates[:max_cands], no row), so 'nothing' is a cap drop OR no R5\n    fire at all; the number of distinct tickers R5 entered that day (all\n    strategies, all tickers) is reported beside it - at the cap of 30 the\n    cap could have bound.\nRead-only over the cubes; writes output_audit/b3306_r5_fire_gap_rca.json with\nthis source embedded.\"\"\"\nimport json\nimport os\nimport sys\nfrom collections import Counter\nfrom pathlib import Path\n\nimport pandas as pd\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nsys.path.insert(0, str(ROOT / \"scripts\"))\nsys.path.insert(0, str(ROOT))\nassert not os.environ.get(\"LEVER4_GATE_BUDGET\"), \"the replay must be the production AND\"\nimport build_table_a as bta  # noqa: E402\n\nOUT = ROOT / \"output_audit\" / \"b3306_r5_fire_gap_rca.json\"\nLFL = json.loads((ROOT / \"output_audit\" / \"b3139q_lv4_like_for_like_step1_read.json\").read_text(encoding=\"utf-8\"))\nCUBES = {r[\"strategy\"]: r[\"cube\"] for r in LFL[\"rows\"]}\nLO, HI = pd.Timestamp(\"2024-05-05\"), pd.Timestamp(\"2025-05-05\")\nT200 = {t.strip() for t in (ROOT / \"output_audit\" / \"_sweep_200.txt\").read_text(encoding=\"utf-8\").split()\n        if t.strip()}\nassert len(T200) == 200, len(T200)\nVIEW = {r[\"strategy\"]: r for r in json.loads(\n    (ROOT / \"output_audit\" / \"strategy_optimisation_status.json\").read_text(encoding=\"utf-8\"))[\"rows\"]}\nMAX_CANDS = 30          # backtest.py BacktestEngine(max_candidates_per_day=30), READ B3139q-r113\nOCC = \"(same-strategy)\"\n\nr5all = pd.read_csv(ROOT / \"output_r5_merged_1_7\" / \"trade_log.csv\", low_memory=False,\n                    usecols=[\"strategy\", \"ticker\", \"entry_date\", \"direction\"])\nr5all[\"entry_date\"] = pd.to_datetime(r5all[\"entry_date\"], errors=\"coerce\")\nr5all = r5all[(r5all[\"entry_date\"] >= LO - pd.Timedelta(days=7)) & (r5all[\"entry_date\"] < HI)]\nr5all = r5all.drop_duplicates([\"strategy\", \"ticker\", \"entry_date\", \"direction\"])\nentered_per_day = r5all.groupby(\"entry_date\")[\"ticker\"].nunique()\nr5 = r5all[r5all[\"ticker\"].isin(T200) & (r5all[\"entry_date\"] >= LO)]\nsk = pd.read_csv(ROOT / \"output_r5_merged_1_7\" / \"skipped_trades.csv\", low_memory=False,\n                 usecols=[\"ticker\", \"date\", \"strategy\", \"reason\"])\nsk[\"date\"] = pd.to_datetime(sk[\"date\"], errors=\"coerce\")\nsk = sk[(sk[\"date\"] >= LO - pd.Timedelta(days=7)) & (sk[\"date\"] < HI) & sk[\"ticker\"].isin(T200)]\nocc_keys = set(zip(sk.loc[sk[\"strategy\"] == OCC, \"ticker\"], sk.loc[sk[\"strategy\"] == OCC, \"date\"]))\nprint(\"R5 occupancy rows on the 200 in the window:\", len(occ_keys),\n      \"- strategy column values:\", dict(Counter(sk[\"strategy\"] == OCC)))\n# the BASE RATE an attribution must beat (L837): R5 v1 occupancy rows over every\n# ticker-day of the 200 in the window, on R5's own trading days\ndays = sorted(d for d in set(r5all[\"entry_date\"]) if LO <= d < HI)\nocc_in = {(t, d) for t, d in occ_keys if LO <= d < HI}\nBASE = round(len(occ_in) / (len(days) * len(T200)), 4) if days else None\nprint(f\"base rate: {len(occ_in)} occupancy ticker-days of {len(days)} days x 200 = {BASE}\")\n\n\ndef occ_at(t, d):\n    return (t, d) in occ_keys      # exact: a trade's entry_date IS its signal day (backtest.py entry_date=as_of)\n\nres = {}\nfor name, cube in CUBES.items():\n    tl = pd.read_csv(ROOT / cube / \"trade_log.csv\", low_memory=False,\n                     usecols=[\"strategy\", \"ticker\", \"entry_date\", \"direction\", \"signals_at_entry\"])\n    tl = tl[tl[\"strategy\"] == name].drop_duplicates([\"ticker\", \"entry_date\", \"direction\"])\n    kept, _sigs, _f = bta.surviving_fires(name, tl, 0.0, None)\n    kept = kept[kept[\"direction\"] == \"long\"].copy()\n    kept[\"entry_date\"] = pd.to_datetime(kept[\"entry_date\"], errors=\"coerce\")\n    kept = kept[(kept[\"entry_date\"] >= LO) & (kept[\"entry_date\"] < HI) & kept[\"ticker\"].isin(T200)]\n    r5s = r5[(r5[\"strategy\"] == name) & (r5[\"direction\"] == \"long\")]\n    r5_keys = set(zip(r5s[\"ticker\"], r5s[\"entry_date\"]))\n    named = sk[sk[\"strategy\"] == name]\n    named_by = {}\n    for t, d, why in zip(named[\"ticker\"], named[\"date\"], named[\"reason\"]):\n        named_by.setdefault((t, d), []).append(str(why))\n    tally, nothing_days = Counter(), []\n    for t, d in zip(kept[\"ticker\"], kept[\"entry_date\"]):\n        prev = d                   # exact date: entry_date=as_of (backtest.py), the skip row's date\n        if (t, d) in r5_keys:\n            tally[\"R5 traded it\"] += 1\n        elif named_by.get((t, d)) or named_by.get((t, prev)):\n            why = (named_by.get((t, d)) or named_by.get((t, prev)))[0]\n            tally[\"R5 skip naming this strategy: \" + why[:50]] += 1\n        elif (t, d) in occ_keys or (t, prev) in occ_keys:\n            tally[\"R5 occupancy skip of the candidate (v1, holders unnamed)\"] += 1\n        else:\n            tally[\"R5 recorded nothing\"] += 1\n            nothing_days.append(int(entered_per_day.get(d, 0)))\n    at_cap = sum(1 for n in nothing_days if n >= MAX_CANDS)\n    # comparison population: the budget cube's LONG fires the production gate\n    # REJECTS - same strategy, same kind of bar - so an occupancy row's rate\n    # there is what co-occurrence alone gives\n    allf = tl[tl[\"direction\"] == \"long\"].copy()\n    allf[\"entry_date\"] = pd.to_datetime(allf[\"entry_date\"], errors=\"coerce\")\n    allf = allf[(allf[\"entry_date\"] >= LO) & (allf[\"entry_date\"] < HI) & allf[\"ticker\"].isin(T200)]\n    prod_keys = set(zip(kept[\"ticker\"], kept[\"entry_date\"]))\n    rej = [(t, d) for t, d in zip(allf[\"ticker\"], allf[\"entry_date\"]) if (t, d) not in prod_keys]\n    rej_occ = sum(1 for t, d in rej if occ_at(t, d))\n    res[name] = {\"cube\": cube,\n                 \"production_subset_long_fires\": int(len(kept)),\n                 \"r5_long_fires_same_200_same_window\": int(len(r5s)),\n                 \"what_r5_recorded_at_those_fires\": dict(tally.most_common()),\n                 \"nothing_recorded_days_r5_entered_tickers\": {\n                     \"n\": len(nothing_days), \"at_or_over_cap_30\": at_cap,\n                     \"median\": float(pd.Series(nothing_days).median()) if nothing_days else None,\n                     \"max\": max(nothing_days) if nothing_days else None},\n                 \"budget_only_long_fires_with_an_occupancy_row\": f\"{rej_occ} of {len(rej)}\",\n                 \"base_rate_occupancy_row_per_ticker_day\": BASE,\n                 \"changed_since_r5\": VIEW.get(name, {}).get(\"changed_since_r5\")}\n    print(name, json.dumps(res[name], default=str))\n\nart = {\"ticket\": \"S6-B3306 (B3139q-r113)\",\n       \"question\": \"why R5 recorded far fewer production-gate long fires than the isolated Step-1 runs \"\n                   \"on the same 200 tickers and window\",\n       \"window\": f\"{LO.date()}..{HI.date()}\", \"universe\": \"output_audit/_sweep_200.txt\",\n       \"r5_occupancy_rule\": \"v1 - a candidate whose ticker one co-firing strategy held was skipped \"\n                            \"whole; the row's strategy column is the literal '(same-strategy)' \"\n                            \"(backtest.py _mode_c_skip_row docstring, S6-B3139r)\",\n       \"measured\": res,\n       \"generators\": {Path(__file__).name: Path(__file__).read_text(encoding=\"utf-8\")}}\nOUT.write_text(json.dumps(art, indent=1, default=str) + \"\\n\", encoding=\"utf-8\")\nprint(\"wrote\", OUT)\n"
+ },
+ "r5_gate_replay": {
+  "method": "R5's screener at fee970996 (git show, loaded as a separate module) and today's, each called on the Step-1 budget cube's persisted long-fire signals",
+  "limit": "the persisted signals are today's producers' values - the replay isolates the gate-logic change since R5, never a producer or data change; the old module imports today's config",
+  "measured": {
+   "pivot_r1_breakout": {
+    "budget_long_fires": 789,
+    "today_gate_passes": 81,
+    "r5_gate_passes": 81,
+    "both_pass": 81,
+    "today_only": 0,
+    "r5_only": 0,
+    "r5_gate_errors_or_absent": 0,
+    "r5_recorded_long_fires_same_200_same_window": 38
+   },
+   "news_momentum_long": {
+    "budget_long_fires": 493,
+    "today_gate_passes": 58,
+    "r5_gate_passes": 53,
+    "both_pass": 53,
+    "today_only": 5,
+    "r5_only": 0,
+    "r5_gate_errors_or_absent": 0,
+    "r5_recorded_long_fires_same_200_same_window": 4
+   },
+   "smc_bos_continuation": {
+    "budget_long_fires": 228,
+    "today_gate_passes": 47,
+    "r5_gate_passes": 47,
+    "both_pass": 47,
+    "today_only": 0,
+    "r5_only": 0,
+    "r5_gate_errors_or_absent": 0,
+    "r5_recorded_long_fires_same_200_same_window": 9
+   },
+   "orb_stocks_in_play_long": {
+    "budget_long_fires": 348,
+    "today_gate_passes": 72,
+    "r5_gate_passes": 72,
+    "both_pass": 72,
+    "today_only": 0,
+    "r5_only": 0,
+    "r5_gate_errors_or_absent": 0,
+    "r5_recorded_long_fires_same_200_same_window": 6
+   }
+  },
+  "generator": "\"\"\"S6-B3306 discriminating probe (B3139q-r113): the occupancy co-occurrence\ncannot attribute R5's missing fires (v1 rows on 76.6 pct of all ticker-days and\n89-98 pct of budget-only fires). So replay R5's OWN gate - the screener at\nR5_SCREENER_COMMIT fee970996, loaded as a separate module - on the same\npersisted signals of the four LEVER4 Step-1 cubes, beside today's production\ngate. A production fire R5's gate rejects is explained by the GATE CHANGE since\nR5; one R5's gate also passes, where R5 recorded no trade, was suppressed by\nsomething else (portfolio mechanics - the v1 occupancy coupling, a held\nticker). LIMIT, stated: the persisted signals are TODAY's producers' values -\nthe replay isolates the gate-logic change, never a producer or data change;\nthe old module imports today's config and producer modules. Read-only;\nupdates output_audit/b3306_r5_fire_gap_rca.json with a 'r5_gate_replay' key.\"\"\"\nimport importlib.util\nimport json\nimport os\nimport subprocess\nimport sys\nfrom pathlib import Path\n\nimport pandas as pd\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nS = Path(__file__).parent\nsys.path.insert(0, str(ROOT / \"scripts\"))\nsys.path.insert(0, str(ROOT))\nassert not os.environ.get(\"LEVER4_GATE_BUDGET\")\nimport build_strategy_status as bss  # noqa: E402\nimport build_table_a as bta  # noqa: E402\n\nold_src = subprocess.run([\"git\", \"show\", f\"{bss.R5_SCREENER_COMMIT}:backtest/signals/screener.py\"],\n                         cwd=ROOT, capture_output=True, check=True).stdout.decode(\"utf-8\")\nold_path = S / \"_r5_screener_fee970996.py\"\nold_path.write_text(old_src, encoding=\"utf-8\")\nspec = importlib.util.spec_from_file_location(\"r5_screener_fee970996\", old_path)\nr5s = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(r5s)\nOLD = r5s.ALL_STRATEGIES\nfrom backtest.signals.screener import ALL_STRATEGIES as NOW  # noqa: E402\n\nART = ROOT / \"output_audit\" / \"b3306_r5_fire_gap_rca.json\"\nart = json.loads(ART.read_text(encoding=\"utf-8\"))\nLO, HI = pd.Timestamp(\"2024-05-05\"), pd.Timestamp(\"2025-05-05\")\nT200 = {t.strip() for t in (ROOT / \"output_audit\" / \"_sweep_200.txt\").read_text(encoding=\"utf-8\").split() if t.strip()}\n\n\ndef fires(fn, s):\n    try:\n        r = fn(s)\n    except Exception:\n        return None\n    return bool(r and r.get(\"fires\") and r.get(\"direction\") == \"long\")\n\n\nout = {}\nfor name, row in art[\"measured\"].items():\n    tl = pd.read_csv(ROOT / row[\"cube\"] / \"trade_log.csv\", low_memory=False,\n                     usecols=[\"strategy\", \"ticker\", \"entry_date\", \"direction\", \"signals_at_entry\"])\n    tl = tl[(tl[\"strategy\"] == name) & (tl[\"direction\"] == \"long\")].drop_duplicates(\n        [\"ticker\", \"entry_date\", \"direction\"])\n    tl[\"entry_date\"] = pd.to_datetime(tl[\"entry_date\"], errors=\"coerce\")\n    tl = tl[(tl[\"entry_date\"] >= LO) & (tl[\"entry_date\"] < HI) & tl[\"ticker\"].isin(T200)]\n    sigs = [bss._parse_signals(x) for x in tl[\"signals_at_entry\"]]\n    now = [fires(NOW[name], s) for s in sigs]\n    old = [fires(OLD[name], s) if name in OLD else None for s in sigs]\n    both = sum(1 for a, b in zip(now, old) if a and b)\n    now_only = sum(1 for a, b in zip(now, old) if a and not b)\n    old_only = sum(1 for a, b in zip(now, old) if b and not a)\n    errs = sum(1 for b in old if b is None)\n    out[name] = {\"budget_long_fires\": len(sigs), \"today_gate_passes\": sum(1 for a in now if a),\n                 \"r5_gate_passes\": sum(1 for b in old if b),\n                 \"both_pass\": both, \"today_only\": now_only, \"r5_only\": old_only,\n                 \"r5_gate_errors_or_absent\": errs,\n                 \"r5_recorded_long_fires_same_200_same_window\": row[\"r5_long_fires_same_200_same_window\"]}\n    print(name, json.dumps(out[name]))\nart[\"r5_gate_replay\"] = {\n    \"method\": \"R5's screener at \" + bss.R5_SCREENER_COMMIT + \" (git show, loaded as a separate module) \"\n              \"and today's, each called on the Step-1 budget cube's persisted long-fire signals\",\n    \"limit\": \"the persisted signals are today's producers' values - the replay isolates the gate-logic \"\n             \"change since R5, never a producer or data change; the old module imports today's config\",\n    \"measured\": out,\n    \"generator\": Path(__file__).read_text(encoding=\"utf-8\")}\nART.write_text(json.dumps(art, indent=1, default=str) + \"\\n\", encoding=\"utf-8\")\nold_path.unlink()\nprint(\"updated\", ART)\n"
+ }
+}

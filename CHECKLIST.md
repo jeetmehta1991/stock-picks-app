@@ -3103,6 +3103,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r106 / L958) - RENDER TEXT COPIED INTO CODE CARRIES THE RENDER'S LINE CITATIONS.** Three new SPECS_PHASE0 entries took 16 producer line citations from the Table A renders they were written from, two batches after instance 2 put 'cite a symbol, never a line' here; the S6-B3269 pre-gate selection ran the S6-B3139bb ratchet (85 against a frozen 69) before the gate. Rewritten to the enclosing functions. The same batch's test_b3252 went red on the register state it was built to record (three position-bound arms), a compliance failure against #226 recorded in L958.
 
+**INSTANCE (B3139q-r111 / L961) - A LANE MOVE OWES THE LANE'S STANDING RULES.** The S6-B3305 reader fix moved six strategies into TIGHTEN / BOTH, and the S6-B2845 rule (every producer leg there carries a defined band) owed 15 rows over 12 legs; test_b2836 found them before any commit, not an enumeration of what the move required, and the full gate found two more - the README's lane counts and an ambiguous sentence in a new row. When a fix moves a member into a population, the population's standing rules are read for what they now ask of it; the selector now sees folder listings and data read through imports (S6-B3310, test_b3310).
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
@@ -3294,6 +3296,8 @@ plan section 10.1 specifies Step 1 produces **"ranked combinations"** and Step 2
 
 **Retroactive coverage (#136):** catches the "0 PASS" reports, and the drift where Step 1's
 window and universe were re-argued from scratch while section 10.1 already held the answer.
+
+**INSTANCE (B3139q-r111 / L960) - THE TICKET'S OWN RECORD IS THE SPEC.** After a compaction a LEVER4 row recommended closing three arms on a Step-1 gate with 0 of the ticket's 14 earlier rows in front of the turn - its r105b row had said 'a Step-1 ranked list, no gates' - and S6-B3248's B-rows were registered early with 1 of its 6, not the first row that cites the precedent. A ticket's next row is written from its printed history, not from a summary of it - scan_ticket_history_unread (S6-B3307, test_b3307) blocks a close whose added row's ticket history is not in the tool output since the last compaction, and scripts/ticket_history.py prints that history, bold id or not; applying what was read stays judgment.
 
 ### #203 — A SWEPT LEVEL THAT CHANGES NOTHING IS A WASTED DIMENSION (B1610 / L473)
 
@@ -4003,6 +4007,8 @@ post-config gate built and left uninvoked.
 **INSTANCE (B3139q-r71k / L926) - A NEW REFUSAL PLACED BEFORE THE CHECK THAT VALIDATES ITS PREMISE.** S6-B3195's looser-level refusal ran before the reproduction refusal, so test_b2638_reproduction_failure_refuses's wrong production read as a looser level under a misleading message; the targeted run passed and only the full suite found it (L632). The refusal now runs after reproduction and before any cell is graded.
 
 **INSTANCE (B3139q-r71m / L927) - A PIN THAT ACCEPTED A FAILURE EXIT WITHOUT ASKING WHY.** test_b3193_posted_close_must_equal_its_tested_draft accepted the probe's exit 1, which means either that a gate fired on the draft or that the probe broke; scripts/probe_close.py had called scan_unrecorded_miss without its required argument and it RAISED, which read as a firing gate. Found by the first real use of the probe. The pin now asserts no gate raised.
+
+**INSTANCE (B3139q-r113 / L962) - A RATCHET'S WINDOW OUTGROWN BY ITS CORPUS.** test_b1945 checked lesson citations numbered 80 to 700 only - headroom when B1945 set it, near L595 - so every lesson above 700 sat outside the ratchet and a citation of an unwritten lesson there passed unseen; latent, 0 such citations measured. The window is now the 3-digit ceiling its pattern can match, and test_b3311 fails once the window stops reaching past the newest lesson (S6-B3311).
 
 ### #227 - COMPARING TWO RANKINGS MEANS COMPUTING THE RANK CORRELATION (B1716 / L502)
 
@@ -5236,6 +5242,8 @@ wrong**, not just the new one.
 as vocabulary while 69 tickets sat in two of them. **Fixing the names did nothing to the data, and
 was reported as though it had.**
 
+**INSTANCE (B3139q-r112 / L961) - TWO CALENDARS UNDER ONE WORD.** The blend's in-sample '778 days' was read against SPY's '751 days' as a lower-end overflow; the blend counts Monday-to-Friday business days (782 in that window) and SPY exchange trading days. The fix puts each blend and per-line window's own business-day count beside its day count (window_bdays, S6-B3298, test_b3298).
+
 ### #272 - A CLASSIFIER OVER A POPULATION HAS NO DEFAULT BRANCH (B1795 / L546)
 
 **JUDGMENT-ONLY: no mechanism.** Detecting a semantically-wrong `else` requires knowing which
@@ -5889,7 +5897,7 @@ detection of a stale verdict is JUDGMENT-ONLY.
 
 **INSTANCE (B3139q-r104 / L957) - STAGING IS AN EDIT TO THE TRACKED SET.** B3139q-r103 committed four specs whose subset files stayed untracked; test_b3184 passed in the r103 gate because the specs were untracked too, and HEAD 13afb8ee3 was RED. preflight C19 re-runs the tracked-set tests when a commit adds a file (test_b3287).
 
-**INSTANCE (B3139q-r107 / L959) - AN OFFLINE SWEEP IS A MEASUREMENT OF ONE TREE TOO.** The batch-C T4 driver and the r107 mutation probes were issued in one response; the probes rewrote three of the driver's own scripts on disk between 14:03:24Z and 14:04:49Z. Zero effect, measured from process creation times, the driver's step stamps and the backups' mtimes (the sweep imports once, no multiprocessing; the next launch came six minutes after the last restore). Rule: read the live process list for a consumer of a file before a probe rewrites it; a measurement and a probe that rewrites its code never share a response.
+**INSTANCE (B3139q-r107 / L959) - AN OFFLINE SWEEP IS A MEASUREMENT OF ONE TREE TOO.** The batch-C T4 driver and the r107 mutation probes were issued in one response; the probes rewrote three of the driver's own scripts on disk between 14:03:24Z and 14:04:49Z. Zero effect, measured from process creation times, the driver's step stamps and the backups' mtimes (the sweep imports once, no multiprocessing; the next launch came six minutes after the last restore). Rule: read the live process list for a consumer of a file before a probe rewrites it; a measurement and a probe that rewrites its code never share a response. Mechanised B3139q-r110: scripts/mutation_probe.py refuses on a live reader (S6-B3296, test_b3296).
 
 ### #293 - A PATCHER WRITES BYTES; A GATE THAT READS A DIFF IS ENDING-BLIND (B2581 / L756)
 
@@ -6367,6 +6375,8 @@ Two additions, both from L852. (a) **ORDER.** A targeted test step runs AFTER ev
 **INSTANCE (B3139q-r82 / L945) - THE PIN SEARCH STOPPED AT THE TESTS JUST WRITTEN.** r80 ran its own pins and an extended-tier control and never grepped test_unit.py for the changed strategies' names; test_batch216 pinned the S6-B3222 defect and turned the gate RED (1 failed, 1,812 passed), and spot_check_smc_family.GATES carried the same stale leg with no pin on it. Mechanism: the full gate, and test_b3222's every-leg check of that table.
 
 **INSTANCE (B3139q-r90 / L950) - FOUR DEFECTS REACHED FULL GATES; THE SELECTIONS NAMED NONE OF THE FOUR FAILING TESTS.** r86: test_b3232 (a derived shortlist); r89: test_b3171b (a derived test subject) and test_b1974 (a generator's freshness stamp); r89b: test_b2128 (a repo-wide ratchet - the fix's own except:pass, 129 against 128). Each selection ran the change's own pins. The reach of a change is every test that reads what it touched; the gate's read-set records that for output_audit/ only, so it would have selected 1 of the 4 - a selector needs source reads too: scripts/pregate_select.py (S6-B3269, B3139q-r91, pinned by test_b3269) selects these 4 and the r90 gate's 2, 6 of 6, from their own changes.
+
+**INSTANCE 5 (B3139q-r109c / L950) - THE SELECTOR CAUGHT WHAT THE SEARCH MISSED.** Batch E grew a call's argument list and ran its own pins; the pin asserting that call's ORDER by its text (test_b3139's ohr half, the L748 class its own breadth half had already left) was never grepped for. pregate_select selected it among 188 and it failed before the gate - the first catch by the mechanism this item's r90 instance built. Fix: order on the AST, matched on the call's owner. A pin search for a changed call site greps the tests for the call's text as written, and a text pin on a call site is converted to the AST when found, not re-quoted.
 
 ### #316 - EVERY ARM OF ONE BOOLEAN COMPARES THE SAME WAY (L853, S6-B3036, 2026-09-23)
 
