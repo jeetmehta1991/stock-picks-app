@@ -178,6 +178,80 @@ def _factorial_block_rows(a: dict, params: list,
 _PID_KEY = re.compile(r"^p(\d+)$")
 
 
+def _is_surface(a: dict) -> bool:
+    """S6-B3316: an offline_level_sweep IS surface - the ONE kind test
+    band_coverage_gate.artifact_kind applies (L593), so the two readers of
+    one artifact cannot disagree about what it is."""
+    import band_coverage_gate as _bcg
+    return _bcg.artifact_kind(a) == _bcg.KIND_IS_SURFACE
+
+
+def _surface_rows(a: dict, params: list) -> list:
+    """S6-B3316: one row per graded cell of a depth sweep's in-sample
+    surface. The surface stores each cell's BEST exit only and no lower
+    bound (offline_level_sweep's 'ranked'), so a row carries that exit, its
+    IS sharpe and IS trade count and is_ci_lo None - it ranks after every
+    row that records a bound and renders it '-'. Each axis key maps to a
+    Table A label (directly or through signal_keys); a key mapping to
+    none REFUSES, as the S6-B3140b factorial reader does. Before this the
+    renderer read no surface cell, so a campaign's unified Table D called
+    the depth axes NOT TESTED while the sweep had graded them."""
+    by_key: dict = {}
+    for p in params:
+        by_key[p["param"]] = p
+        for k in (p.get("signal_keys") or []):
+            by_key.setdefault(k, p)
+    axes = [ax["key"] for ax in a.get("axes") or []]
+    out = []
+    for c in a.get("ranked") or []:
+        levels = {}
+        for key, lev in zip(axes, c.get("levels") or []):
+            p = by_key.get(key)
+            if p is None:
+                raise SystemExit(
+                    f"REFUSED (S6-B3316): surface axis {key!r} maps to no "
+                    f"Table A param label or signal key: {sorted(by_key)}")
+            levels[p["param"]] = lev
+        out.append({"exit": c.get("best_exit"), "is_sharpe": c.get("is_sharpe"),
+                    "is_ci_lo": None, "is_n": c.get("is_trades"),
+                    "levels": levels, "cube": a.get("cube"),
+                    "offline_surface": True})
+    return out
+
+
+def _null_line(a: dict, name: str):
+    """S6-B3316: ONE reader for every permutation-null schema this renderer
+    meets, or None when the artifact ran no null. The block it replaces read
+    hub-1's keys only and hardcoded hub-1's '3-of-4 axes swept', so every
+    S6-B3139ag breadth grid rendered 'best None vs q95 None, p None' -
+    MEASURED on 4 committed bollinger files whose nulls ran 200 permutations.
+    The label states only the scope the artifact itself records; a value it
+    does not record is named, never printed as None (L580)."""
+    pn = a.get("permutation_null") or {}
+    if not pn:
+        return None
+    best = pn.get("observed_best_is_sharpe", pn.get("observed_breadth_best_is_sharpe"))
+    q = pn.get("null_max_quantiles") or pn.get("null_max_is_sharpe_quantiles") or {}
+    q95 = pn.get("null_max_p95", q.get("0.95"))
+    p = pn.get("p_value", pn.get("p_value_best"))
+    if a.get("axis"):
+        label = f"single-axis null ({a['axis']}, {name})"
+    elif isinstance(a.get("axes"), list) and "skipped_axes" in a:
+        n_ax, n_skip = len(a["axes"]), len(a.get("skipped_axes") or [])
+        label = (f"breadth-grid null ({n_ax - n_skip} of {n_ax} axes graded, "
+                 f"{pn.get('graded_cells_nonbarred')} non-npt cells, {name})")
+    elif _is_surface(a):
+        label = (f"depth-surface null ({a.get('cells_graded')} of "
+                 f"{a.get('cells_total')} cells graded, {name})")
+    else:
+        label = f"numeric-breadth null (search scope not recorded in {name})"
+    missing = [k for k, v in (("best", best), ("q95", q95), ("p", p)) if v is None]
+    return (f"{label}: best {best} vs q95 {q95}, p {p} "
+            f"({pn.get('n_perms')} perms, SYNTHETIC)"
+            + (f" - NOT RECORDED in the artifact: {', '.join(missing)}"
+               if missing else ""))
+
+
 def _is_levels_block(a: dict) -> bool:
     """S6-B3173a: a FREE-LEVELS artifact - a `levels` container and no
     graded rows list or offline factorial block of its own."""
@@ -388,6 +462,8 @@ def load(paths: list, params: list | None = None) -> tuple[list, list, list]:
             src = _free_level_rows(
                 a, params or [],
                 skip_production=_cube_dir(a.get("cube")) in carried)
+        elif _is_surface(a):                      # S6-B3316
+            src = _surface_rows(a, params or [])
         else:
             src = _factorial_rows(a)
         run = _run_levels(a, params or [])
@@ -451,7 +527,14 @@ def _design(rows: list) -> str:
     have is the same defect as a label asserting a test that never
     ran. Derived from the rows, so it cannot drift from them.
     """
-    if any(r.get("levels") for r in rows):
+    fact = any(r.get("levels") for r in rows)
+    # S6-B3316: a unified render can carry BOTH shapes - a depth surface's
+    # factorial cells beside a breadth grid's one-axis rows - and a header
+    # naming one design would assert it of rows that do not have it
+    if fact and any(r.get("axis") for r in rows):
+        return ("MIXED design - a factorial row varies several axes at once, a "
+                "sweep row one axis on the production base")
+    if fact:
         return "FACTORIAL design - a row is one corner, several axes at once"
     return "one-at-a-time design"
 
@@ -551,6 +634,10 @@ def _holdout_clause(arts: list) -> str:
         if isinstance(w, str) and w.strip().upper().startswith("IS ONLY"):
             is_only += 1
             continue
+        # S6-B3316: a depth surface records its window as {'is': [start, end]}
+        if isinstance(w, dict) and set(w) == {"is"}:
+            is_only += 1
+            continue
         step, _bad = _manifest_step(a)
         if step == 1:
             is_only += 1
@@ -639,7 +726,8 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             tested_levels.setdefault(name, set()).add(lev)
             # S6-B3140b: no engine ran per offline-factorial combination
             # S6-B3173a: nor per offline free level
-            if not (r.get("offline_factorial") or r.get("offline_free_level")):
+            if not (r.get("offline_factorial") or r.get("offline_free_level")
+                    or r.get("offline_surface")):     # S6-B3316
                 resim_tested.add(name)
     # S6-B3139w: a resim-swept axis is one cube per level, so its evidence is
     # the cube's run manifest, not row variance. A value equal to production
@@ -758,21 +846,8 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                      " arm env for this cube, production NOT assumed")
         inv.append(line)
 
-    nulls = []
-    for a, path in zip(arts, artifact_paths):
-        pn = a.get("permutation_null") or {}
-        if not pn:
-            continue
-        name = Path(path).name
-        if a.get("axis"):
-            label = f"single-axis null ({a['axis']}, {name})"
-            best = pn.get("observed_best_is_sharpe")
-        else:
-            label = f"numeric-breadth null (3-of-4 axes swept in {name})"
-            best = pn.get("observed_breadth_best_is_sharpe")
-        nulls.append(f"{label}: best {best} vs q95 "
-                     f"{pn.get('null_max_quantiles', {}).get('0.95')}, "
-                     f"p {pn.get('p_value_best')} ({pn.get('n_perms')} perms, SYNTHETIC)")
+    nulls = [x for x in (_null_line(a, Path(path).name)
+                         for a, path in zip(arts, artifact_paths)) if x]
 
     skip_notes = []
     for s in skips:
@@ -810,7 +885,13 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                "holdout."]
               if any(r.get("levels") and not r.get("offline_factorial")
                      and not r.get("offline_free_level")
+                     and not r.get("offline_surface")
                      for r in ranked) else []),
+            *(["DEPTH SURFACE - an offline_level_sweep surface stores each "
+               "cell's BEST exit only and no lower bound, so its rows show that "
+               "exit with IS ci_lo blank and rank after every row that records "
+               "one (L580; S6-B3316)"]
+              if any(r.get("offline_surface") for r in ranked) else []),
             *([_offline_factorial_note(arts)]
               if any(r.get("offline_factorial") for r in ranked) else []),
             *([_free_level_note(arts)]
@@ -859,9 +940,32 @@ def main() -> int:
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
     md = build_table(a.strategy, a.artifacts, a.top)
-    Path(a.out).write_text(md, encoding="utf-8")
+    Path(a.out).write_text(build_stamp(a.artifacts, a.top) + md, encoding="utf-8")
     print(f"wrote {a.out}")
     return 0
+
+
+def build_stamp(artifacts: list, top: int) -> str:
+    """S6-B3316 (L803): the render's build identity, written by main() itself.
+    The committed bollinger renders carried this line from a hand-run wrapper
+    (nothing under scripts/ wrote it) and a render through main() carried
+    none, so a re-render could not be told from a stale copy."""
+    import subprocess as _sp
+    import time as _t
+    try:
+        sha = _sp.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT,
+                      capture_output=True, text=True, timeout=15).stdout.strip()
+        dirty = bool(_sp.run(["git", "status", "--porcelain", "--untracked-files=no"],
+                             cwd=ROOT, capture_output=True, text=True,
+                             timeout=120).stdout.strip())
+    except (OSError, _sp.SubprocessError):
+        sha, dirty = "", False
+    where = ((f"working tree on {sha}" if dirty else f"commit {sha}") if sha
+             else "commit UNKNOWN (git unreadable)")
+    rows = "all rows" if top >= 10**9 else f"top {top} rows"
+    return (f"_Rendered by scripts/table_d_render.py from {', '.join(map(str, artifacts))},"
+            f" {rows} - {where}, {_t.strftime('%Y-%m-%dT%H:%MZ', _t.gmtime())}"
+            " (L803 build stamp)._\n\n")
 
 
 if __name__ == "__main__":

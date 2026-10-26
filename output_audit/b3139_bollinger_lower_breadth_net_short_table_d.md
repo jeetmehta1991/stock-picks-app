@@ -1,4 +1,4 @@
-_Rendered by scripts/table_d_render.py from output_audit/b3139_bollinger_lower_breadth_net_short.json, all rows - B3139q-r23 working tree (parent a8f1c5956), 2026-10-01T21:08Z (L803 build stamp)._
+_Rendered by scripts/table_d_render.py from output_audit/b3139_bollinger_lower_breadth_net_short.json, all rows - working tree on d2615c7e7, 2026-10-26T13:46Z (L803 build stamp)._
 
 # TABLE D (OFFLINE FORM, unified) - bollinger_lower step UNKNOWN (no readable run manifest recorded)
 
@@ -23,7 +23,7 @@ INVENTORY (one column per Table A row; '-' = breadth axis not applied, productio
   - B7 bb_20_15_pctb: TESTED at {0.9121, 0.998, 1.0573, 1.115} (4 of 4 band levels)
   - B8 bb_10_20_pctb: TESTED at {0.6757, 0.7363, 0.7866, 0.8339} (4 of 4 band levels)
   - B6 institutional_new_positions: TESTED at {1.0} (1 of 1 band levels)
-NULL PRICE - numeric-breadth null (3-of-4 axes swept in b3139_bollinger_lower_breadth_net_short.json): best None vs q95 None, p None (200 perms, SYNTHETIC)
+NULL PRICE - breadth-grid null (13 of 13 axes graded, 725 non-npt cells, b3139_bollinger_lower_breadth_net_short.json): best 1.698 vs q95 1.6927, p 0.0547 (200 perms, SYNTHETIC)
 TIER - DEEP n>=100, MID 30-99, THIN 10-29. Rank improves monotonically as evidence thins, so RANK IS NOT TRUSTWORTHINESS and the depth band sits beside the ranking key deliberately.
 SORT - is_ci_lo DESCENDING, then IS n descending, nothing filtered (runbook section 7.5). Ranking on Sharpe is the REJECTED order: a higher Sharpe can carry a NEGATIVE lower bound (L455).
 EXITS - Step 1 picks each cell's exit by SHARPE alone (B1605) while this table RANKS by is_ci_lo. Two objectives, so a leading row can carry the exit that won on Sharpe.

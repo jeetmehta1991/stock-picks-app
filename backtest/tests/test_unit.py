@@ -64540,3 +64540,84 @@ def test_b3312_ledger_id_readers_take_dashed_and_unbolded_ids(tmp_path):
     assert live == canon, (len(live), len(canon))
     assert (sum(1 for s in live.values() if not qst.is_closed(s))
             == sum(1 for s in canon.values() if s not in qs.TERMINAL))
+
+
+# ================================================================ B3139q-r117 S6-B3316: Table D reads every null schema and the depth surface
+def test_b3316_table_d_reads_every_null_schema_and_the_depth_surface(tmp_path, monkeypatch):
+    """S6-B3316 (B3139q-r117): Table D's NULL PRICE block read hub-1's keys
+    only and hardcoded hub-1's '3-of-4 axes swept', so every S6-B3139ag
+    breadth grid rendered 'best None vs q95 None, p None' (4 committed
+    bollinger files, nulls of 200 permutations each); and the renderer read
+    no offline_level_sweep IS surface, so a campaign's unified Table D called
+    its depth axes NOT TESTED. (1) ONE null reader returns each schema's
+    measured best / q95 / p - breadth grid, depth surface, single-axis
+    re-sweep, hub-1 - and NAMES a value an artifact does not record instead
+    of printing None (L580); (2) the surface's cells are rows: squeeze's
+    unified render calls P2 / P3 TESTED, keeps B10 / B12 NOT TESTED, reads
+    both artifacts in-sample-only, and names its design MIXED; (3) main()
+    stamps its render (L803) and no committed Table D prints a None null."""
+    import json as _j
+    import subprocess as _sp
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import table_d_render as tdr
+    A = root / "output_audit"
+
+    def art(name):
+        return _j.loads((A / name).read_text(encoding="utf-8"))
+
+    cases = {
+        "b3139ar_bollinger_lower_breadth_net_long.json": ("observed_best_is_sharpe", "null_max_p95", "p_value"),
+        "b3289_squeeze_breakout_depth_step1_is_surface.json": ("observed_best_is_sharpe", None, "p_value_best"),
+        "b2698_momentum_resweep.json": ("observed_best_is_sharpe", None, "p_value_best"),
+        "b2694_smc_lsr_step1.json": ("observed_breadth_best_is_sharpe", None, "p_value_best"),
+    }
+    for name, (bk, qk, pk) in cases.items():
+        a = art(name)
+        pn = a["permutation_null"]
+        line = tdr._null_line(a, name)
+        assert line and "None" not in line and "NOT RECORDED" not in line, (name, line)
+        assert f"best {pn[bk]} " in line and f", p {pn[pk]} " in line, (name, line)
+        if qk:
+            assert f"vs q95 {pn[qk]}," in line, (name, line)
+        assert "3-of-4" not in line, line                 # the hub-1 hardcode is gone
+    assert "breadth-grid null (11 of 11 axes graded" in tdr._null_line(
+        art("b3139ar_bollinger_lower_breadth_net_long.json"), "x")
+    bare = tdr._null_line({"permutation_null": {"n_perms": 9}}, "bare.json")
+    assert "NOT RECORDED in the artifact: best, q95, p" in bare, bare
+    assert tdr._null_line({"rows": []}, "none.json") is None
+
+    out = tdr.build_table("squeeze_breakout",
+                          [str(A / "b3289_squeeze_breakout_depth_step1_is_surface.json"),
+                           str(A / "b3248_squeeze_breakout_breadth_net_long.json")], top=5)
+    inv = {ln.split(" ", 4)[3]: ln for ln in out.splitlines() if ln.startswith("  - ")}
+    assert "TESTED at {2.0, 2.5} (2 of 2 band levels)" in inv["P2"], inv["P2"]
+    assert "TESTED at {1.5, 2.0} (2 of 2 band levels)" in inv["P3"], inv["P3"]
+    assert "NOT TESTED" in inv["B10"] and "NOT TESTED" in inv["B12"]
+    assert "2 in-sample-only artifact(s)" in out and "UNRECORDED" not in out
+    assert "MIXED design" in out and "DEPTH SURFACE -" in out
+    assert "depth-surface null (4 of 4 cells graded" in out and "p 0.0198" in out
+    assert "breadth-grid null (10 of 12 axes graded" in out and "p 0.0099" in out
+
+    o = tmp_path / "td.md"
+    monkeypatch.setattr(_s, "argv", ["td", "--strategy", "squeeze_breakout", "--artifacts",
+                                     str(A / "b3248_squeeze_breakout_breadth_net_long.json"),
+                                     "--out", str(o)])
+    assert tdr.main() == 0
+    first = o.read_text(encoding="utf-8").splitlines()[0]
+    assert first.startswith("_Rendered by scripts/table_d_render.py from ") and "L803 build stamp" in first
+
+    tracked = _sp.run(["git", "ls-files", "output_audit/*table_d*.md"], cwd=root,
+                      capture_output=True, text=True).stdout.split()
+    assert len(tracked) >= 5, tracked
+    for f in tracked:
+        for ln in (root / f).read_text(encoding="utf-8").splitlines():
+            if ln.startswith("NULL PRICE"):
+                assert "p None" not in ln and "best None" not in ln, (f, ln)
+    for b in ("b3139_bollinger_lower_breadth_net_long", "b3139ar_bollinger_lower_breadth_net_short",
+              "b3248_squeeze_breakout"):
+        head = (A / f"{b}_table_d.md").read_text(encoding="utf-8").splitlines()[0]
+        assert head.startswith("_Rendered by scripts/table_d_render.py"), (b, head)
