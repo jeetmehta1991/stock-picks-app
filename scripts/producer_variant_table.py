@@ -3286,7 +3286,7 @@ SPECS_PHASE0.update({
         ]
     },
     "squeeze_breakout": {
-        "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (the render\noutput_audit/b3248_squeeze_breakout_table_a.md numbers them P1/P1.1-P1.5 -\ninteger ids here). P1.5 of the render (the prior-squeeze NEW-GATE row,\nS6-B3254 option c) is NOT registered: it is UNRULED - the r104 close\nrecommended the four original rows and the owner's word reached those. The\n603 B-row candidates are NEW-GATE and outside the approved band; the breadth\nscreen (runbook 3.6) runs under S6-B3289 and its B-rows come to the owner at a\nsecond T3.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  squeeze_fire_up  (NOT in a squeeze on the fire bar - BB(20, 2.0) outside\n       KC(20, 2.0 x ATR20) - AND the close-minus-20-bar-midpoint momentum\n       crossing above zero; technical.py compute_squeeze; no prior squeeze\n       required, S6-B3254)\nP2  Keltner multiplier 2.0  (render P1.1; 2.5 is offline through the\n       persisted kc_mid / kc_upper geometry, 1.5 is engine-only with no knob)\nP3  Bollinger std multiplier 2.0  (render P1.2; 1.5 is offline through the\n       persisted bb_20_20 geometry, 2.5 is engine-only with no knob)\nP4  momentum window 20  (render P1.3 - DEFINED-NO-ACTUATOR)\nP5  Keltner EMA / ATR period 20  (render P1.4 - DEFINED-NO-ACTUATOR)\n\n=============================== STRATEGY LAYER ===============================\n\n(none - the gate is the one producer boolean)\n\nlong_fires = P1\n",
+        "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (the render\noutput_audit/b3248_squeeze_breakout_table_a.md numbers them P1/P1.1-P1.5 -\ninteger ids here). P1.5 of the render (the prior-squeeze NEW-GATE row,\nS6-B3254 option c) is NOT registered: it is UNRULED - the r104 close\nrecommended the four original rows and the owner's word reached those. B1-B12\n(BREADTH LAYER) are the consistent companion screen's cluster\nrepresentatives, registered on the owner's 2026-10-26 word - the second\nT3 (S6-B3248); the census's other B-row candidates stay NEW-GATE and\noutside the band.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  squeeze_fire_up  (NOT in a squeeze on the fire bar - BB(20, 2.0) outside\n       KC(20, 2.0 x ATR20) - AND the close-minus-20-bar-midpoint momentum\n       crossing above zero; technical.py compute_squeeze; no prior squeeze\n       required, S6-B3254)\nP2  Keltner multiplier 2.0  (render P1.1; 2.5 is offline through the\n       persisted kc_mid / kc_upper geometry, 1.5 is engine-only with no knob)\nP3  Bollinger std multiplier 2.0  (render P1.2; 1.5 is offline through the\n       persisted bb_20_20 geometry, 2.5 is engine-only with no knob)\nP4  momentum window 20  (render P1.3 - DEFINED-NO-ACTUATOR)\nP5  Keltner EMA / ATR period 20  (render P1.4 - DEFINED-NO-ACTUATOR)\n\n=============================== BREADTH LAYER ===============================\n\nB1  short_interest_observations  >= q       (keep HIGH; short_interest.py cluster, 1 member)\nB2  gold_silver_ratio  >= q                 (keep HIGH; cross_asset.py cluster, 13 members)\nB3  xs_max_anomaly  >= q                    (keep HIGH; cross_sectional.py cluster, 3 members)\nB4  vix_value  >= q                         (keep HIGH; technical.py cluster, 39 members)\nB5  trading_day_of_month  <= q              (keep LOW; calendar_effects.py cluster, 5 members)\nB6  po3_accum_range_pct  >= q               (keep HIGH; ict_producers.py cluster, 1 member)\nB7  three_white_soldiers  require FALSE     (require FALSE; screener.py cluster, 2 members)\nB8  news_sentiment_30d  >= q                (keep HIGH; news_sentiment.py cluster, 2 members)\nB9  days_since_last_earnings  >= q          (keep HIGH; earnings_surprise_yoy.py cluster, 2 members)\nB10  total_active_holders  >= q             (keep HIGH; institutional_persistence_consumer.py cluster, 4 members)\nB11  smc_inverse_fvg_bullish  require FALSE (require FALSE; smc_ict.py cluster, 3 members)\nB12  pair_zscore_signed  >= q               (keep HIGH; pairs_trading.py cluster, 1 member)\n\n=============================== STRATEGY LAYER ===============================\n\n(none - the gate is the one producer boolean; B1-B12 are breadth\naxes swept as added AND-conditions, never production)\n\nlong_fires = P1\n",
         "baseline": {
             "artifact": "output_r5_merged_1_7",
             "fires": 1141,
@@ -3417,6 +3417,330 @@ SPECS_PHASE0.update({
                 "engine_implemented": False,
                 "evidence": "render P1.4",
                 "derivation": "held at production"
+            },
+            {
+                "id": "B1",
+                "producer": "backtest/signals/short_interest.py",
+                "param": "short_interest_observations",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 +7.115 / bept +18.331, joint 7.115)",
+                "derivation": "BREADTH (runbook 3.6): the short_interest.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
+            },
+            {
+                "id": "B2",
+                "producer": "backtest/signals/cross_asset.py",
+                "param": "gold_silver_ratio",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 +5.008 / bept +10.927, joint 5.008)",
+                "derivation": "BREADTH (runbook 3.6): the cross_asset.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
+            },
+            {
+                "id": "B3",
+                "producer": "backtest/signals/cross_sectional.py",
+                "param": "xs_max_anomaly",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 +4.292 / bept +19.833, joint 4.292)",
+                "derivation": "BREADTH (runbook 3.6): the cross_sectional.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
+            },
+            {
+                "id": "B4",
+                "producer": "backtest/signals/technical.py",
+                "param": "vix_value",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 +3.336 / bept +16.793, joint 3.336)",
+                "derivation": "BREADTH (runbook 3.6): the technical.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
+            },
+            {
+                "id": "B5",
+                "producer": "backtest/signals/calendar_effects.py",
+                "param": "trading_day_of_month",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op le (keep LOW)",
+                "type": "float<=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 -2.915 / bept -5.652, joint 2.915)",
+                "derivation": "BREADTH (runbook 3.6): the calendar_effects.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
+            },
+            {
+                "id": "B6",
+                "producer": "backtest/signals/ict_producers.py",
+                "param": "po3_accum_range_pct",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 +2.865 / bept +17.809, joint 2.865)",
+                "derivation": "BREADTH (runbook 3.6): the ict_producers.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
+            },
+            {
+                "id": "B7",
+                "producer": "backtest/signals/screener.py",
+                "param": "three_white_soldiers",
+                "production": "not gated",
+                "band": [
+                    "require_false"
+                ],
+                "free_band": [
+                    "require_false"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op eq_false (require FALSE)",
+                "type": "bool",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 -2.790 / bept -3.902, joint 2.790)",
+                "derivation": "BREADTH (runbook 3.6): the screener.py cluster's representative (max joint effect, #165); keep the fires where it is FALSE"
+            },
+            {
+                "id": "B8",
+                "producer": "backtest/signals/news_sentiment.py",
+                "param": "news_sentiment_30d",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 +2.418 / bept +4.007, joint 2.418)",
+                "derivation": "BREADTH (runbook 3.6): the news_sentiment.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
+            },
+            {
+                "id": "B9",
+                "producer": "backtest/signals/earnings_surprise_yoy.py",
+                "param": "days_since_last_earnings",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 +2.413 / bept +10.089, joint 2.413)",
+                "derivation": "BREADTH (runbook 3.6): the earnings_surprise_yoy.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
+            },
+            {
+                "id": "B10",
+                "producer": "backtest/signals/institutional_persistence_consumer.py",
+                "param": "total_active_holders",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 +2.343 / bept +10.150, joint 2.343)",
+                "derivation": "BREADTH (runbook 3.6): the institutional_persistence_consumer.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
+            },
+            {
+                "id": "B11",
+                "producer": "backtest/signals/smc_ict.py",
+                "param": "smc_inverse_fvg_bullish",
+                "production": "not gated",
+                "band": [
+                    "require_false"
+                ],
+                "free_band": [
+                    "require_false"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op eq_false (require FALSE)",
+                "type": "bool",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 -2.235 / bept -6.985, joint 2.235)",
+                "derivation": "BREADTH (runbook 3.6): the smc_ict.py cluster's representative (max joint effect, #165); keep the fires where it is FALSE"
+            },
+            {
+                "id": "B12",
+                "producer": "backtest/signals/pairs_trading.py",
+                "param": "pair_zscore_signed",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'all 12, after the depth read'; S6-B3248); op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "b3289_squeeze_breakout_companions_consistent.json (ts10 +1.912 / bept +1.281, joint 1.281)",
+                "derivation": "BREADTH (runbook 3.6): the pairs_trading.py cluster's representative (max joint effect, #165); levels = retention quantiles on the strategy's own fires at grid time"
             }
         ]
     }

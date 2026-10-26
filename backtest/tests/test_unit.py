@@ -63708,7 +63708,17 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
         assert all(p["is_surface_graded"] == p["untested"] for p in gaps.values()), gaps
         monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", True)
         assert bcg.coverage_report("williams_r_oversold", [str(wl), str(ws)])["complete"] is True
-        assert bcg.coverage_report("squeeze_breakout", [str(sq)])["complete"] is True
+        # S6-B3248 (B3139q-r116): B1-B12 are registered, so the depth sweep alone
+        # no longer covers squeeze; the breadth grid grades 10 of the 12 and the two
+        # COVERAGE-SKIPPED axes (B10 at 0.912, B12 at 0.928 < the 0.98 floor) stay UNTESTED
+        sq_d = bcg.coverage_report("squeeze_breakout", [str(sq)])
+        assert sq_d["complete"] is False
+        assert {p["id"] for p in sq_d["params"] if p["untested"]} == {
+            f"B{i}" for i in range(1, 13)}
+        sqb = A / "b3248_squeeze_breakout_breadth_net_long.json"
+        if sqb.exists():
+            sq_db = bcg.coverage_report("squeeze_breakout", [str(sq), str(sqb)])
+            assert {p["id"] for p in sq_db["params"] if p["untested"]} == {"B10", "B12"}
         one = bcg.coverage_report("williams_r_oversold", [str(wl)])
         assert one["complete"] is False                   # the short leg's bands need the short sweep
         assert {p["param"] for p in one["params"] if p["untested"]} == {

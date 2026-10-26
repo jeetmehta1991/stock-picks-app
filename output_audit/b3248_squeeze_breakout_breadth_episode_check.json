@@ -1,0 +1,109 @@
+{
+  "ticket": "S6-B3248 (B3139q-r116); the instrument gap is S6-B3315",
+  "question": "are squeeze_breakout's top breadth cells (b3248_squeeze_breakout_breadth_net_long.json) spread over the in-sample window, or concentrated in one market episode? IN-SAMPLE ONLY - the holdout is never read (roster_core.in_sample)",
+  "measured": {
+    "production_base": {
+      "exit": "class_time_stop",
+      "is_n": 953,
+      "is_sharpe": 1.031
+    },
+    "cells": [
+      {
+        "cell": "gold_silver_ratio ge 10.1703",
+        "exit": "class_time_stop",
+        "is_n": 198,
+        "months": 2,
+        "top_months": [
+          [
+            "2025-04",
+            193
+          ],
+          [
+            "2025-05",
+            5
+          ]
+        ],
+        "top_month_share": 0.975,
+        "is_sharpe": 4.55,
+        "is_sharpe_without_top_month": null,
+        "n_without_top_month": 5
+      },
+      {
+        "cell": "vix_value ge 31.37",
+        "exit": "class_time_stop",
+        "is_n": 192,
+        "months": 3,
+        "top_months": [
+          [
+            "2025-04",
+            173
+          ],
+          [
+            "2022-10",
+            17
+          ],
+          [
+            "2022-05",
+            2
+          ]
+        ],
+        "top_month_share": 0.901,
+        "is_sharpe": 4.468,
+        "is_sharpe_without_top_month": 1.748,
+        "n_without_top_month": 19
+      },
+      {
+        "cell": "short_interest_observations ge 65.0",
+        "exit": "class_time_stop",
+        "is_n": 249,
+        "months": 3,
+        "top_months": [
+          [
+            "2025-04",
+            237
+          ],
+          [
+            "2025-05",
+            9
+          ],
+          [
+            "2025-03",
+            3
+          ]
+        ],
+        "top_month_share": 0.952,
+        "is_sharpe": 3.805,
+        "is_sharpe_without_top_month": 1.115,
+        "n_without_top_month": 12
+      },
+      {
+        "cell": "po3_accum_range_pct ge 0.1427",
+        "exit": "class_time_stop",
+        "is_n": 191,
+        "months": 19,
+        "top_months": [
+          [
+            "2025-04",
+            159
+          ],
+          [
+            "2022-05",
+            4
+          ],
+          [
+            "2022-11",
+            3
+          ]
+        ],
+        "top_month_share": 0.832,
+        "is_sharpe": 3.599,
+        "is_sharpe_without_top_month": 0.732,
+        "n_without_top_month": 32
+      }
+    ]
+  },
+  "reading": "each top cell's in-sample trades sit mostly in ONE month (2025-04, the last month of the in-sample window); removing that month leaves a handful of trades. The grid's joint-shuffle null shuffles magnitudes across fires, so it prices the association and cannot see whether the association is one episode.",
+  "generators": {
+    "episode_check_r116.py": "\"\"\"IS-only episode concentration of squeeze_breakout's top breadth cells (the\ngrid's own frame, net basis, long leg). For each cell: IS trades, distinct\nmonths, the largest month's share, and the cell's IS Sharpe with that month\nremoved - a regime-clustered edge shows as a large share and a collapse when\nits month leaves. Holdout never read (rc.in_sample). Prints and writes JSON.\"\"\"\nimport json\nimport sys\nfrom pathlib import Path\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nsys.path.insert(0, str(ROOT / \"scripts\"))\nimport roster_core as rc  # noqa: E402\nimport breadth_step1_grid as g  # noqa: E402\n\nCELLS = [(\"gold_silver_ratio\", \"ge\", 10.1703), (\"vix_value\", \"ge\", 31.37),\n         (\"short_interest_observations\", \"ge\", 65.0), (\"po3_accum_range_pct\", \"ge\", 0.1427)]\nEXIT = \"class_time_stop\"\nkeys = [k for k, _, _ in CELLS]\nm, _ = g.build_frame(\"squeeze_breakout\", None, keys, basis=\"net\", leg=\"long\")\nIS = rc.in_sample(m)\nout = []\nbase = IS[IS.exit_method == EXIT]\nrb = rc._sharpe(base[\"pnl_pct\"].values, base[\"hold_days\"], min_n=10)\nprint(f\"production base {EXIT}: IS n {len(base)} sharpe {rb['sharpe']}\")\nfor key, op, lev in CELLS:\n    sub = IS[(IS.exit_method == EXIT) & g._cell_mask(IS, key, op, lev) & IS[key].notna()].copy()\n    sub[\"month\"] = [str(d)[:7] for d in sub[\"entry_date\"]]\n    vc = sub[\"month\"].value_counts()\n    top_m, top_n = vc.index[0], int(vc.iloc[0])\n    r_all = rc._sharpe(sub[\"pnl_pct\"].values, sub[\"hold_days\"], min_n=10)\n    rest = sub[sub[\"month\"] != top_m]\n    r_rest = rc._sharpe(rest[\"pnl_pct\"].values, rest[\"hold_days\"], min_n=10)\n    top3 = [(m_, int(n_)) for m_, n_ in vc.head(3).items()]\n    rec = {\"cell\": f\"{key} {op} {lev}\", \"exit\": EXIT, \"is_n\": int(len(sub)),\n           \"months\": int(vc.size), \"top_months\": top3,\n           \"top_month_share\": round(top_n / len(sub), 3),\n           \"is_sharpe\": r_all[\"sharpe\"] if r_all else None,\n           \"is_sharpe_without_top_month\": r_rest[\"sharpe\"] if r_rest else None,\n           \"n_without_top_month\": int(len(rest))}\n    out.append(rec)\n    print(json.dumps(rec))\nPath(sys.argv[1]).write_text(json.dumps({\"production_base\": {\"exit\": EXIT, \"is_n\": int(len(base)),\n                                                             \"is_sharpe\": rb[\"sharpe\"]},\n                                         \"cells\": out}, indent=2), encoding=\"utf-8\")\n"
+  }
+}

@@ -1,6 +1,6 @@
 # Table A - camarilla_r4_breakout
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build c762fcbd3 | commit c762fcbd3 at 2026-10-26 08:40:36 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build dd8f72941 | commit dd8f72941 at 2026-10-26 09:12:09 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** pivot | **status:** IN-CAMPAIGN | **R5 fires:** 5774 (closed fires in the exit cube: 5774 of 5774, S6-B3258) | **surviving fires (T1):** 3073 (survives_pct 0.5322)
 
