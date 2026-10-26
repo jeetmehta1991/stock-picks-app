@@ -49,6 +49,19 @@ def consistent(a: dict, b: dict) -> list[dict]:
     return out
 
 
+def module_of(key: str, idx) -> str | None:
+    """S6-B3317 (B3139q-r118): the producer module that WRITES `key`, by the
+    ONE attribution rule, build_table_a.attribute (S6-B3251) - a literal
+    writer first, else the most specific f-string template. The literal-only
+    lookup this replaces sent every f-string-written key to 'unindexed'.
+    MEASURED: squeeze_breakout's committed consistent set held 45 such keys
+    (cot_positioning.py 9, technical.py 35, polars_panel.py 1 - attribute
+    places all 45), williams_r_oversold's long set 5 of 5 (all COT)."""
+    import build_table_a as bta
+    a = bta.attribute(key, idx)
+    return None if a.startswith("(") else a.split(" ")[0]
+
+
 def cluster(rows: list[dict], module_of) -> dict:
     """key -> producer module (build_table_a._module_index); unknown keys go
     to their own 'unindexed' cluster so nothing is silently dropped."""
@@ -82,22 +95,21 @@ def main() -> int:
         want = [args.strategy]
         if art.get("selection") == "exact" and sorted(art.get("strategies") or []) != want:
             raise SystemExit(f"REFUSED: screen {name} selected {art.get('strategies')}, not {want}")
+    # S6-B3247 (B3139q-r117): both screens must read the SAME leg - an
+    # intersect of a long screen and a pooled one would mix populations
+    if a.get("direction") != b.get("direction"):
+        raise SystemExit(f"REFUSED: screen a read direction {a.get('direction')!r}, "
+                         f"screen b {b.get('direction')!r} - one leg per consistent set")
     rows = consistent(a, b)
     import build_table_a as bta
     idx = bta._module_index()      # [(module path, text, (written keys, ...))]
-
-    def module_of(k):
-        for mod, _text, written in idx:
-            keys = written[0] if isinstance(written, tuple) else written
-            if k in keys:
-                return mod
-        return None
-    cl = cluster(rows, module_of)
+    cl = cluster(rows, lambda k: module_of(k, idx))
     rec = {"_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, "
                    "clustered by the producer module that writes the key (build_table_a module "
                    "index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, "
                    "never a gate - B-row registration happens at the T3 owner band review.",
-           "strategy": args.strategy, "exit_a": a["exit"], "exit_b": b["exit"],
+           "strategy": args.strategy, "direction": a.get("direction"),
+           "exit_a": a["exit"], "exit_b": b["exit"],
            "screens": {"a": str(args.a), "b": str(args.b)},
            "survivors_a": a.get("survivors"), "survivors_b": b.get("survivors"),
            "n_consistent": len(rows), "clusters": cl}

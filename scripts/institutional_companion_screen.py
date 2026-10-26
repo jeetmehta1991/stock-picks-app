@@ -95,12 +95,27 @@ def _read_selected(path, usecols, sel, chunksize: int = 250_000) -> pd.DataFrame
     return pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(columns=usecols)
 
 
-def load_entries(exit_method: str, window: str, names=None) -> pd.DataFrame:
+def load_entries(exit_method: str, window: str, names=None,
+                 direction: str | None = None) -> pd.DataFrame:
+    """S6-B3247 (B3139q-r117): `direction` keeps ONE leg of a dual strategy -
+    a pooled screen ranks companions on long and short trades together,
+    whose winners and losers have different drivers. None pools, as
+    before (every artifact up to r116 is pooled)."""
+    if direction not in (None, "long", "short"):
+        raise SystemExit(f"REFUSED: direction {direction!r} is not long or short")
     sel = _selector(names)
     fam = _read_selected(TRADE_LOG, ["strategy", "ticker", "entry_date", "signals_at_entry"], sel)
     ent = fam.drop_duplicates(["ticker", "entry_date"]).copy()
 
-    cube = _read_selected(CUBE, ["strategy", "ticker", "entry_date", "exit_method", "pnl_pct"], sel)
+    # the leg is decided by the CUBE's direction: the inner merge below drops
+    # every entry with no pnl row on the kept leg, so a trade-log filter would
+    # repeat it (a mutation probe found that copy unkillable). The pooled path
+    # reads exactly the columns it always read (test_b3291's fixture has none)
+    leg = ["direction"] if direction is not None else []
+    cube = _read_selected(CUBE, ["strategy", "ticker", "entry_date",
+                                 "exit_method", "pnl_pct"] + leg, sel)
+    if direction is not None:
+        cube = cube[cube["direction"] == direction]
     cc = cube[cube.exit_method == exit_method]
     pnl = cc.drop_duplicates(["ticker", "entry_date"])[["ticker", "entry_date", "pnl_pct"]]
 
@@ -212,18 +227,22 @@ def main() -> int:
                     help="S6-B3291: select by EXACT strategy name (repeatable); "
                          "overrides the --family prefix selection")
     ap.add_argument("--window", default="is", choices=["is", "holdout"])
+    ap.add_argument("--direction", default=None, choices=["long", "short"],
+                    help="S6-B3247: screen ONE leg of a dual strategy (default: pooled)")
     ap.add_argument("--min-side", type=int, default=100)
     ap.add_argument("--min-n", type=int, default=500)
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
     FAMILY_PREFIX = args.family
-    m = load_entries(args.exit, args.window, names=args.strategy)
+    m = load_entries(args.exit, args.window, names=args.strategy,
+                     direction=args.direction)
     if len(m) < 500:
         raise SystemExit(f"REFUSED: only {len(m)} entries in window - underpowered")
     rows, meta = screen(m, args.min_side, args.min_n)
     rec = {"family": FAMILY_PREFIX, "strategies": args.strategy,
            "selection": "exact" if args.strategy else "prefix",
+           "direction": args.direction,
            "exit": args.exit, "window": args.window,
            "peeked": args.window == "holdout", **meta, "results": rows}
     out = Path(args.out)

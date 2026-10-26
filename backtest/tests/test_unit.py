@@ -64621,3 +64621,95 @@ def test_b3316_table_d_reads_every_null_schema_and_the_depth_surface(tmp_path, m
               "b3248_squeeze_breakout"):
         head = (A / f"{b}_table_d.md").read_text(encoding="utf-8").splitlines()[0]
         assert head.startswith("_Rendered by scripts/table_d_render.py"), (b, head)
+
+
+# ================================================================ B3139q-r117 S6-B3247: the companion screen reads one leg of a dual
+def test_b3247b_companion_screen_reads_one_leg_of_a_dual(tmp_path, monkeypatch):
+    """S6-B3247 (B3139q-r117): the companion screen pooled a DUAL strategy's
+    long and short trades, whose winners and losers have different drivers -
+    the breadth GRID has been per-leg since B3118, the screen never was.
+    --direction keeps one leg and None pools exactly as before (every screen
+    artifact up to r116 is pooled); the artifact names its leg; the
+    consistent set refuses two screens read on different legs. Fixture: a
+    dual with 2 long and 1 short in-sample entries."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import institutional_companion_screen as ics
+    import companions_consistent as cc
+
+    rows = [("T1", "2024-06-10", "long"), ("T2", "2024-07-10", "long"),
+            ("T3", "2024-08-12", "short")]
+    _pd.DataFrame([{"strategy": "dx", "ticker": t, "entry_date": d, "direction": dr,
+                    "signals_at_entry": "{}"} for t, d, dr in rows]).to_csv(
+        tmp_path / "tl.csv", index=False)
+    _pd.DataFrame([{"strategy": "dx", "ticker": t, "entry_date": d, "direction": dr,
+                    "exit_method": "time_stop_10d", "pnl_pct": 1.0}
+                   for t, d, dr in rows]).to_csv(tmp_path / "cube.csv", index=False)
+    monkeypatch.setattr(ics, "TRADE_LOG", tmp_path / "tl.csv")
+    monkeypatch.setattr(ics, "CUBE", tmp_path / "cube.csv")
+    assert len(ics.load_entries("time_stop_10d", "is", names=["dx"])) == 3
+    longs = ics.load_entries("time_stop_10d", "is", names=["dx"], direction="long")
+    assert sorted(longs["ticker"]) == ["T1", "T2"]
+    assert list(ics.load_entries("time_stop_10d", "is", names=["dx"],
+                                 direction="short")["ticker"]) == ["T3"]
+    with pytest.raises(SystemExit):
+        ics.load_entries("time_stop_10d", "is", names=["dx"], direction="both")
+
+    a = {"exit": "time_stop_10d", "selection": "exact", "strategies": ["dx"],
+         "direction": "long", "results": [], "survivors": 0}
+    b = dict(a, exit="breakeven_plus_trail", direction=None)
+    pa, pb, po = tmp_path / "a.json", tmp_path / "b.json", tmp_path / "o.json"
+    pa.write_text(_j.dumps(a), encoding="utf-8")
+    pb.write_text(_j.dumps(b), encoding="utf-8")
+    monkeypatch.setattr(_s, "argv", ["cc", "--a", str(pa), "--b", str(pb),
+                                     "--strategy", "dx", "--out", str(po)])
+    with pytest.raises(SystemExit, match="one leg per consistent set"):
+        cc.main()
+    assert not po.exists()
+    b["direction"] = "long"
+    pb.write_text(_j.dumps(b), encoding="utf-8")
+    assert cc.main() == 0
+    assert _j.loads(po.read_text(encoding="utf-8"))["direction"] == "long"
+
+
+# ================================================================ B3139q-r118 S6-B3317: the consistent set attributes keys by the one rule
+def test_b3317_consistent_set_attributes_fstring_written_keys(tmp_path):
+    """S6-B3317 (B3139q-r118): companions_consistent clustered keys by a
+    LITERAL-only lookup of the producer index, so every key a producer writes
+    through an f-string template (cot_<series>_*, the bb_<n>_<k>_* variants)
+    fell into 'unindexed' - MEASURED 45 of squeeze_breakout's 121 consistent
+    keys and 5 of 5 of williams_r_oversold's long ones. module_of now calls
+    build_table_a.attribute, the ONE attribution rule (S6-B3251), which
+    places all of them. Behaviour on three keys (f-string, literal, absent),
+    then the re-clustered committed sets carry no unindexed bucket, and the
+    squeeze re-cluster keeps the twelve approved representatives."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import build_table_a as bta
+    import companions_consistent as cc
+    idx = bta._module_index()
+    assert cc.module_of("cot_dow_commercials_pctile_3y", idx) == "backtest/signals/cot_positioning.py"
+    assert cc.module_of("bb_10_20_bandwidth", idx) == "backtest/signals/technical.py"
+    assert cc.module_of("no_such_key_anywhere_b3317", idx) is None
+    A = root / "output_audit"
+    for name in ("b3317_squeeze_breakout_companions_consistent.json",
+                 "b3247_williams_r_oversold_long_companions_consistent.json",
+                 "b3247_williams_r_oversold_short_companions_consistent.json"):
+        d = _j.loads((A / name).read_text(encoding="utf-8"))
+        assert "unindexed" not in d["clusters"], (name, d["clusters"].get("unindexed"))
+    new = _j.loads((A / "b3317_squeeze_breakout_companions_consistent.json").read_text(encoding="utf-8"))
+    from producer_variant_table import SPECS_PHASE0
+    approved = {p["param"] for p in SPECS_PHASE0["squeeze_breakout"]["params"] if p["id"].startswith("B")}
+    reps = {c["representative"] for c in new["clusters"].values()}
+    assert approved <= reps, approved - reps
+    assert reps - approved == {"cot_dxy_mmoney_pctile_3y", "rsi_9_bullish"}, reps - approved

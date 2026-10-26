@@ -1,0 +1,84 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "williams_r_oversold",
+  "direction": "long",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3247_williams_r_oversold_long_companions_ts10.json",
+    "b": "output_audit/b3247_williams_r_oversold_long_companions_bept.json"
+  },
+  "survivors_a": 10,
+  "survivors_b": 25,
+  "n_consistent": 5,
+  "clusters": {
+    "backtest/signals/cot_positioning.py": {
+      "representative": "cot_dow_commercials_pctile_3y",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "cot_dow_commercials_pctile_3y",
+        "cot_rut_commercials_net_pct",
+        "cot_dow_commercials_net_pct",
+        "cot_dow_mmoney_pctile_3y",
+        "cot_dxy_commercials_pctile_3y"
+      ],
+      "rows": [
+        {
+          "key": "cot_dow_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -2.7755464002300174,
+          "effect_b": -2.842376684876365,
+          "joint": 2.7755464002300174,
+          "p_a": 1.102752685337732e-07,
+          "p_b": 3.0796253865381664e-07,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_rut_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -2.770807121947737,
+          "effect_b": -3.7102795087819502,
+          "joint": 2.770807121947737,
+          "p_a": 1.2653937724484861e-05,
+          "p_b": 3.514539658467889e-09,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dow_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -2.644350215470804,
+          "effect_b": -1.3715010073260074,
+          "joint": 1.3715010073260074,
+          "p_a": 4.141612700973496e-07,
+          "p_b": 9.546293296769709e-07,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dow_mmoney_pctile_3y",
+          "kind": "numeric",
+          "effect_a": 2.2188401456515616,
+          "effect_b": 1.1209902371235574,
+          "joint": 1.1209902371235574,
+          "p_a": 0.00037869462335314585,
+          "p_b": 0.001370063723690519,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dxy_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": 2.5624904423315416,
+          "effect_b": 0.21846636902301209,
+          "joint": 0.21846636902301209,
+          "p_a": 4.5453013040329125e-05,
+          "p_b": 0.00022177869180974746,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        }
+      ]
+    }
+  }
+}
