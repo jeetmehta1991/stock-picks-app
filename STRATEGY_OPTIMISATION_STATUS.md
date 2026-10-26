@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 91dc039ed at 2026-10-24 00:52:23 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit adafdd452 at 2026-10-25 20:30:30 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -20,9 +20,9 @@
 | IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | 7 |
 | IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded beyond R5, terminal (its Step 2 dropped 2026-10-20, S6-B2420) | 8 |
 | DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 4 |
-| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | 2 |
+| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | 3 |
 | STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | 5 |
-| NOT-STARTED | 167 |
+| NOT-STARTED | 166 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
 | CONTAINED-IN-REPRESENTATIVE (b2647) | 1 |
@@ -33,10 +33,10 @@
 
 | stream | meaning | count |
 |---|---|---|
-| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 7 |
-| BOTH | tightenable AND fire-starved | 26 |
-| LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 115 |
-| NONE | no numeric knob and not starved - a BREADTH candidate | 26 |
+| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 11 |
+| BOTH | tightenable AND fire-starved | 28 |
+| LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 113 |
+| NONE | no numeric knob and not starved - a BREADTH candidate | 22 |
 
 ## Tightening candidates by family - largest families first
 
@@ -46,13 +46,14 @@
 | momentum | 5 |
 | confluence | 4 |
 | mean_reversion | 3 |
+| breakout | 3 |
+| pivot | 3 |
 | candle | 3 |
+| trend | 3 |
 | smc | 3 |
-| pivot | 2 |
 | chart_pattern | 1 |
-| breakout | 1 |
 | event_driven | 1 |
-| trend | 1 |
+| sec_edgar_sleeve | 1 |
 | cross_asset | 1 |
 | ict | 1 |
 | multi_timeframe | 1 |
@@ -71,7 +72,7 @@
 
 | strategy | family | R5 fires | proj. Step-1 (current-gate) | chg | survives | stream | status | exit cube |
 |---|---|---|---|---|---|---|---|---|
-| camarilla_r4_breakout | pivot | 5774 | 282.4 | YES | 53.2% | NONE | NOT-STARTED | 5774 of 5774 |
+| camarilla_r4_breakout | pivot | 5774 | 282.4 | YES | 53.2% | TIGHTEN | IN-CAMPAIGN | 5774 of 5774 |
 | pairs_mean_reversion_short | pairs | 5698 | 410.0 | YES | 78.3% | - | IN-ROSTER-MIRROR | 5698 of 5698 |
 | pairs_mean_reversion_long | pairs | 5036 | 462.9 |  | 100.0% | - | DONE-ADMITTED | 5036 of 5036 |
 | stochrsi_overbought_short | momentum | 4287 | 394.0 |  | 100.0% | TIGHTEN | NOT-STARTED | 4287 of 4287 |
@@ -93,13 +94,13 @@
 | mmsm_short | ict | 2456 | 225.7 |  | 100.0% | NONE | NOT-STARTED | 2456 of 2456 |
 | institutional_cluster_long | - | 2451 | 225.3 |  | 100.0% | - | PRUNED-DUPLICATE | 2451 of 2451 |
 | stochrsi_oversold | momentum | 2433 | 223.6 |  | 100.0% | TIGHTEN | NOT-STARTED | 2433 of 2433 |
-| dc20_break_retest | breakout | 2414 | 109.7 | YES | 49.4% | NONE | NOT-STARTED | 2414 of 2414 |
+| dc20_break_retest | breakout | 2414 | 109.7 | YES | 49.4% | TIGHTEN | NOT-STARTED | 2414 of 2414 |
 | institutional_persistence_momentum_long | institutional_persistence | 2324 | 213.6 |  | 100.0% | - | PRUNED-DUPLICATE | 2324 of 2324 |
 | avwap_252_breakout | vwap | 2294 | 210.8 |  | 100.0% | NONE | NOT-STARTED | 2294 of 2294 |
 | morning_star | candle | 2280 | 96.8 | YES | 46.2% | BOTH | NOT-STARTED | 2280 of 2280 |
 | institutional_recent_init_momentum_long | institutional_persistence | 2268 | 208.5 |  | 100.0% | - | DONE-ADMITTED | 2268 of 2268 |
 | pead_short_negative_yoy_growth | event_driven | 2215 | 203.6 |  | 100.0% | - | IN-ROSTER-MIRROR | 2215 of 2215 |
-| break_retest_volume | breakout | 2164 | 98.6 | YES | 49.6% | LOOSEN | NOT-STARTED | 2164 of 2164 |
+| break_retest_volume | breakout | 2164 | 98.6 | YES | 49.6% | BOTH | NOT-STARTED | 2164 of 2164 |
 | pead_long_high_yoy_growth_only | event_driven | 2116 | 194.5 |  | 100.0% | - | DONE-ADMITTED | 2116 of 2116 |
 | institutional_persistent_holders_long | institutional_persistence | 1955 | 179.7 |  | 100.0% | - | PRUNED-DUPLICATE | 1955 of 1955 |
 | rsi_oversold | mean_reversion | 1945 | 178.8 |  | 100.0% | NONE | NOT-STARTED | 1945 of 1945 |
@@ -107,7 +108,7 @@
 | risk_off_bond_equity_short | cross_asset | 1895 | 174.2 | YES | UNMEASURED | NONE | NOT-STARTED | 1895 of 1895 |
 | break_retest_confluence | confluence | 1889 | 173.6 |  | 100.0% | NONE | NOT-STARTED | 1889 of 1889 |
 | turtle_soup_short | ict | 1880 | 28.6 | YES | 16.5% | LOOSEN | NOT-STARTED | 1880 of 1880 |
-| tema_dema | trend | 1876 | 124.2 | YES | 72.0% | NONE | NOT-STARTED | 1876 of 1876 |
+| tema_dema | trend | 1876 | 124.2 | YES | 72.0% | TIGHTEN | NOT-STARTED | 1876 of 1876 |
 | institutional_strong_conviction_long | institutional_persistence | 1826 | 167.8 |  | 100.0% | - | DONE-ADMITTED | 1826 of 1826 |
 | naked_poc_retest_long | volume_profile | 1788 | 164.3 | YES | 100.0% | - | DONE-OWNER-CLOSED | 1788 of 1788 |
 | cpr_narrow_momentum_short | confluence | 1696 | 155.9 |  | 100.0% | TIGHTEN | NOT-STARTED | 1696 of 1696 |
@@ -126,7 +127,7 @@
 | smc_order_block_bounce | smc | 1340 | 123.2 | YES | UNMEASURED | TIGHTEN | STALLED-CAMPAIGN | 1340 of 1340 |
 | mmbm_long | ict | 1337 | 122.9 |  | 100.0% | NONE | NOT-STARTED | 1337 of 1337 |
 | avwap_50_reclaim | vwap | 1336 | 122.8 | YES | 100.0% (long UNMEASURED) | NONE | NOT-STARTED | 1336 of 1336 |
-| ichimoku_tk_cross | trend | 1319 | 112.9 | YES | 93.1% | NONE | NOT-STARTED | 1319 of 1319 |
+| ichimoku_tk_cross | trend | 1319 | 112.9 | YES | 93.1% | TIGHTEN | NOT-STARTED | 1319 of 1319 |
 | hull_rsi | momentum | 1270 | 116.7 |  | 100.0% | TIGHTEN | NOT-STARTED | 1270 of 1270 |
 | cpr_narrow_bullish | pivot | 1248 | 114.7 |  | 100.0% | NONE | NOT-STARTED | 1248 of 1248 |
 | institutional_persistence_volume_long | institutional_persistence | 1199 | 110.2 |  | 100.0% | - | PRUNED-DUPLICATE | 1199 of 1199 |
@@ -136,7 +137,7 @@
 | squeeze_breakout_with_smart_money_long | smart_money_sleeve | 1139 | 104.7 | YES | 100.0% | - | DISABLED | 1139 of 1139 |
 | institutional_recent_init_volume_long | institutional_persistence | 1075 | 98.8 |  | 100.0% | - | DONE-ADMITTED | 1075 of 1075 |
 | triangle_descending_short | chart_pattern | 1064 | 97.8 |  | 100.0% | LOOSEN | NOT-STARTED | 1064 of 1064 |
-| m_and_a_target_long | sec_edgar_sleeve | 1023 | 69.0 | YES | 73.4% | LOOSEN | NOT-STARTED | 1023 of 1023 |
+| m_and_a_target_long | sec_edgar_sleeve | 1023 | 69.0 | YES | 73.4% | BOTH | NOT-STARTED | 1023 of 1023 |
 | bb_squeeze_volume | confluence | 1013 | 93.1 |  | 100.0% | LOOSEN | NOT-STARTED | 1013 of 1013 |
 | awesome_oscillator | momentum | 1012 | 65.5 | YES | 70.5% | LOOSEN | NOT-STARTED | 1012 of 1012 |
 | cpr_narrow_momentum | confluence | 1001 | 92.0 |  | 100.0% | BOTH | NOT-STARTED | 1001 of 1001 |

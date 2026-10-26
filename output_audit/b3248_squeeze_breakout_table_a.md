@@ -1,10 +1,10 @@
 # Table A - squeeze_breakout
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 77eb58e97 | commit 77eb58e97 at 2026-10-22 13:33:29 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build adafdd452 | commit adafdd452 at 2026-10-25 20:32:52 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** NONE | **family:** breakout | **status:** IN-CAMPAIGN | **R5 fires:** 1141 (closed fires in the exit cube: 1141 of 1141, S6-B3258) | **surviving fires (T1):** 1141 (unchanged since R5 - filter is identity)
 
-**SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
+**SPECS entry:** registered in producer_variant_table
 
 ## Formula (Section 1 of the SS6/#183 locked artifact)
 
@@ -34,7 +34,7 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | squeeze_fire_up - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | NOT in a squeeze (BB(20, 2.0) not inside KC(20, 2.0 x ATR20)) AND close-minus-20-bar-midpoint momentum crosses above zero (technical.py compute_squeeze) - no prior squeeze is required (S6-B3254) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1 | PRODUCER | squeeze_fire_up - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | NOT in a squeeze (BB(20, 2.0) not inside KC(20, 2.0 x ATR20)) AND close-minus-20-bar-midpoint momentum crosses above zero (technical.py compute_squeeze) - no prior squeeze is required (S6-B3254) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
 | P1.1 | BAND | squeeze definition: Keltner multiplier (BB inside KC = squeeze) - backtest/signals/technical.py compute_keltner + compute_squeeze | BRACKET production; canon TTM squeeze (Carter 2005) uses 1.5 | 2.0 | 1.5, 2, 2.5 | offline 1 of 3 levels - TIGHTER (2.5) - a wider channel holds more bars in the squeeze; derived from persisted kc_mid / kc_upper and bb_20_20 bands | LOOSER (1.5) - the canon value; adds bars the cube never fired; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P1.2 | BAND | squeeze definition: Bollinger std multiplier - backtest/signals/technical.py compute_bollinger + compute_squeeze | BRACKET production; bb_20_15 is already emitted | 2.0 | 1.5, 2, 2.5 | offline 1 of 3 levels - TIGHTER (1.5) - a narrower band sits inside the channel more often; persisted bb_20_15 bands | LOOSER (2.5) - adds bars the cube never fired; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P1.3 | BAND | momentum window (close vs the N-bar high/low midpoint) - backtest/signals/technical.py compute_squeeze | BRACKET production | 20 | 10, 20, 30 | offline 0 of 3 levels - none - the high/low midpoint at other windows is unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |

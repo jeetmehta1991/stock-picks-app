@@ -61150,7 +61150,7 @@ def test_b3258_exit_cube_count_rides_beside_the_trade_log_count(tmp_path):
         want = f"(closed fires in the exit cube: {bss.exit_cube_cell(by[name]['r5_exit_cube'])}, S6-B3258)"
         assert len(lane) == 1 and want in lane[0], (f.name, lane)
         carried += 1
-    assert carried == 34, carried
+    assert carried == 40, carried  # r111: 34 + the six S6-B3305 lane newcomers, 0 departures
 
 
 def test_b3237a_regime_entries_are_ruled_at_admission(tmp_path):
@@ -63828,8 +63828,10 @@ def test_b3296_mutation_probe_refuses_live_readers_and_restores_bytes(tmp_path, 
         _sys.path.insert(0, sp)
     import mutation_probe as mp
 
-    # a scratch target INSIDE the repo root (the tool resolves targets against ROOT)
-    rel = f"output_audit/_b3296_target_{tmp_path.name}.py"
+    # a scratch target INSIDE the repo root (the tool resolves targets against
+    # ROOT) - under backtest/tests, not output_audit, so the pyramid's read-set
+    # sees no suite write under the production audit folder (S6-B3130a / L689)
+    rel = f"backtest/tests/_b3296_scratch_{tmp_path.name}.py"
     target = root / rel
     target.write_bytes(b"def f():\n    return 1\n\nX = 1\nX = 1\n")
     sha0 = hashlib.sha256(target.read_bytes()).hexdigest()
@@ -63877,3 +63879,85 @@ def test_b3296_mutation_probe_refuses_live_readers_and_restores_bytes(tmp_path, 
         assert hashlib.sha256(target.read_bytes()).hexdigest() == sha0
     finally:
         target.unlink(missing_ok=True)
+
+
+# ================================================================ B3139q-r111 S6-B3305: one numeric-compare pattern
+def test_b3305_one_compare_pattern_reaches_every_reader():
+    """S6-B3305 (B3139q-r111): build_strategy_status.numeric_thresholds kept a
+    pre-B2841 private copy of the s.get-compare regex whose argument span
+    stopped at the first ')': a default with its own parentheses -
+    float('-inf'), the B1422 selectivity idiom - hid the comparison, so 13 of
+    225 strategies lost a tightenable key and 6 lanes read wrong
+    (camarilla_r4_breakout NONE where TIGHTEN). B2841 had fixed the same
+    defect in build_table_a, for its own two extractors only. Arms: (1) ONE
+    definition - build_table_a._NUM_CMP IS build_strategy_status.NUM_CMP;
+    (2) the idiom is found, synthetic and live; (3) the two readers agree on
+    every strategy (72 of 72 at r111; 60 is a non-vacuity floor, chosen below
+    the measured count); (4) measure_clause_admission.clauses_of reads the
+    floor as a threshold, not a boolean; (5) a shrink-only freeze of s.get
+    regex literals still stopping at the first ')' - the four July-2026 batch
+    scripts, one-off runs that predate the idiom - and nothing else (a script
+    fixed must leave the set, #279)."""
+    import ast as _ast
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import build_strategy_status as bss
+    import build_table_a as bta
+    import measure_clause_admission as mca
+
+    # (1) one definition, not two copies that agree today
+    assert bta._NUM_CMP is bss.NUM_CMP
+
+    # (2) synthetic: the B1422 idiom AND the plain form are both found
+    toy = (
+        "def strat_toy(s):\n"
+        "    fl = s.get('a', False) and s.get('x', float('-inf')) >= 0.25\n"
+        "    fl = fl and s.get('y', 0) > 1\n"
+        "    return fl\n")
+    assert bss.numeric_thresholds(toy) == {"toy": ["x", "y"]}, bss.numeric_thresholds(toy)
+    # live: the incident, and B2841's own control
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    live = bss.numeric_thresholds(src)
+    assert live.get("camarilla_r4_breakout") == ["xs_ivol"], live.get("camarilla_r4_breakout")
+    assert {"po3_accum_range_pct", "rsi_14"} <= set(live.get("cmf_flip", [])), live.get("cmf_flip")
+
+    # (3) the two readers agree on every strategy
+    dep = bta.depth_comparisons(src)
+    names = set(live) | set(dep)
+    bad = {n: (sorted(live.get(n, [])), sorted({k for k, _, _ in dep.get(n, [])}))
+           for n in names if set(live.get(n, [])) != {k for k, _, _ in dep.get(n, [])}}
+    assert not bad, f"the compare readers disagree: {dict(list(bad.items())[:5])}"
+    assert len(names) >= 60, len(names)
+
+    # (4) the clause tool reads the floor as a threshold
+    cl = mca.clauses_of("toy", toy + "ALL_STRATEGIES = {}\n")
+    assert ("x", ">=", 0.25) in cl and ("a", "bool", None) in cl, cl
+    cam = {k: (op, th) for k, op, th in mca.clauses_of("camarilla_r4_breakout", src)}
+    assert cam.get("xs_ivol") == (">=", 0.2598), cam
+
+    # (5) the freeze: s.get regex literals that still stop at the first ')'
+    FROZEN = {
+        "add_updated_producer_signals_columns.py",
+        "apply_csv_loosen_autonomous.py",
+        "enhance_skip_recs_per_strategy.py",
+        "fix_change_from_original_and_gate_structure.py",
+    }
+    found = set()
+    for p in sorted((root / "scripts").glob("*.py")):
+        tree = _ast.parse(p.read_text(encoding="utf-8", errors="replace"))
+        for node in _ast.walk(tree):
+            if isinstance(node, _ast.JoinedStr):
+                text = "".join(v.value for v in node.values
+                               if isinstance(v, _ast.Constant) and isinstance(v.value, str))
+            elif isinstance(node, _ast.Constant) and isinstance(node.value, str):
+                text = node.value
+            else:
+                continue
+            if "s\\.get\\(" in text and "[^)]*\\)" in text:
+                found.add(p.name)
+    assert found == FROZEN, (sorted(found - FROZEN), sorted(FROZEN - found))

@@ -73,9 +73,9 @@ def fire_logic_config_reads(name: str):
 # S6-B3171 extends the RHS: a gate that reads its threshold from config
 # (s.get(key) < _cfg.NAME) is matched and resolved to the production value
 # by _resolve_rhs - the S6-B3120h precedent one token to the right.
-_NUM_CMP = (r"s\.get\(f?['\"]([a-zA-Z0-9_{}.]+)['\"]"
-            r"(?:[^()]|\([^()]*\))*\)\s*([<>]=?)\s*"
-            r"(-?[0-9.]+|_cfg\.[A-Z0-9_]+)")
+_NUM_CMP = bss.NUM_CMP   # S6-B3305: ONE definition, in build_strategy_status,
+# shared by numeric_thresholds and this module's two extractors (the status
+# reader had kept a pre-B2841 private copy that float('-inf') defaults broke)
 
 # S6-B3120h: a SPAN-KEYED gate reads its signal through an f-string whose
 # placeholder is a config constant - s.get(f"price_above_ema_{_cfg.

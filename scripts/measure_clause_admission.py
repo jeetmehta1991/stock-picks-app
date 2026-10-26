@@ -81,7 +81,7 @@ def clauses_of(strategy: str, source: str) -> list[tuple[str, str, float | None]
     body = m.group(1)
     out: dict[str, tuple[str, float | None]] = {}
     for k, op, num in re.findall(
-            r's\.get\(["\']([a-z_][a-z_0-9]*)["\']\s*,[^)]*\)\s*([<>=!]{1,2})\s*([0-9.]+)', body):
+            r's\.get\(["\']([a-z_][a-z_0-9]*)["\']\s*,(?:[^()]|\([^()]*\))*\)\s*([<>=!]{1,2})\s*([0-9.]+)', body):
         out[k] = (op, float(num))
     for k in re.findall(r's\.get\(["\']([a-z_][a-z_0-9]*)', body):
         out.setdefault(k, ("bool", None))

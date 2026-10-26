@@ -21,8 +21,8 @@ the formula <-> Table A cross-check.
 
 **Generated, never hand-edited.** Regenerate with:
 
-    python scripts/build_table_a.py --lane TIGHTEN                      # tighten/ (10 files; an admitted/terminal row's charter moves to archive/ - B3115 three_white_soldiers, S6-B3145 pairs_mean_reversion_long, the S6-B2420 drop pairs_mean_reversion_short (a terminal roster mirror, 2026-10-20); a lane move moves the file - S6-B3239 smc_order_block_bounce from tighten/both/ (2026-10-21); test_b2836 holds file-set == lane-set, test_b3167 this count)
-    python scripts/build_table_a.py --lane BOTH --subdir tighten/both   # tighten/both/ (28 files, owner-directed placement)
+    python scripts/build_table_a.py --lane TIGHTEN                      # tighten/ (14 files; an admitted/terminal row's charter moves to archive/ - B3115 three_white_soldiers, S6-B3145 pairs_mean_reversion_long, the S6-B2420 drop pairs_mean_reversion_short (a terminal roster mirror, 2026-10-20); a lane move moves the file - S6-B3239 smc_order_block_bounce from tighten/both/ (2026-10-21), and the S6-B3305 reader fix brought camarilla_r4_breakout, dc20_break_retest, ichimoku_tk_cross and tema_dema here (2026-10-25); test_b2836 holds file-set == lane-set, test_b3167 this count)
+    python scripts/build_table_a.py --lane BOTH --subdir tighten/both   # tighten/both/ (30 files, owner-directed placement; S6-B3305 brought break_retest_volume and m_and_a_target_long, 2026-10-25)
 
 A campaign on a NONE-lane strategy (a breadth candidate) has no lane folder; its Table A is rendered alone with `python scripts/build_table_a.py --strategy <name> --out output_audit/<batch>_<name>_table_a.md` (S6-B3232; squeeze_breakout first).
 

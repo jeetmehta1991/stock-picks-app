@@ -73,6 +73,15 @@
       "tickets": [
         "S6-B3248"
       ]
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "opened": "2026-10-24",
+      "ruling_verbatim": "Approve all recs execute",
+      "role": "S6-B3249, the first open member of the shortlist's remaining 9 offline-and-over-floor long candidates, opened in the shortlist's order as a slot freed (cmf_flip's campaign closed on the owner's 2026-10-24 word, S6-B3246) under the owner's 2026-10-21 ruling on S6-B3232 (a) and the 2026-10-24 word 'address other open tickets too / approve all recommendations / implement now'; a dual strategy whose long leg is the campaign toward the 30-long target (S6-B3220); lane TIGHTEN once S6-B3305 counted its xs_ivol floor (it read NONE before)",
+      "tickets": [
+        "S6-B3304"
+      ]
     }
   ]
 }

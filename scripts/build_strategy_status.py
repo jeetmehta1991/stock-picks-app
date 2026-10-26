@@ -165,9 +165,9 @@ def numeric_thresholds(src: str) -> dict:
                 and isinstance(stmts[0].value, ast.Constant):
             stmts = stmts[1:]
         body = "\n".join(ast.unparse(x) for x in stmts)
-        keys = set(re.findall(
-            r"s\.get\(f?['\"]([a-z0-9_{}]+)['\"][^)]*\)\s*[<>]=?\s*"
-            r"(?:-?[0-9.]+|_cfg\.[A-Z0-9_]+)", body))  # S6-B3171: config-read RHS
+        keys = {k for k, _op, _rhs in re.findall(NUM_CMP, body)}  # S6-B3305:
+        # the ONE compare pattern (B2841's, defined above the main guard and
+        # shared with build_table_a) - a private copy here went stale for weeks
         if keys:
             out[n.name[len("strat_"):]] = sorted(keys)
     return out
@@ -1218,6 +1218,22 @@ def main() -> int:
     print("  tighten candidates, top families: " + ", ".join(
         f"{f}={c}" for f, c in famcount.most_common(6)))
     return 0
+
+
+# S6-B3305 (B3139q-r111): THE ONE NUMERIC-COMPARE PATTERN. B2841 widened
+# the s.get(...) argument span to cross ONE nested call - a default like
+# float('-inf'), the B1422 selectivity idiom - and called it one pattern for
+# BOTH extractors, meaning build_table_a's two; numeric_thresholds kept its
+# own pre-B2841 copy, so 13 of 225 strategies lost a tightenable key and 6
+# lanes read wrong (camarilla_r4_breakout NONE for TIGHTEN, among them).
+# Defined here, the lower module (build_table_a imports this one), and read
+# by numeric_thresholds AND build_table_a._NUM_CMP; test_b3305 pins one
+# definition, the two readers' agreement on every strategy, and a
+# shrink-only freeze of the s.get regexes still stopping at the first ')'.
+# S6-B3171 extends the RHS: a threshold read from config (_cfg.NAME).
+NUM_CMP = (r"s\.get\(f?['\"]([a-zA-Z0-9_{}.]+)['\"]"
+           r"(?:[^()]|\([^()]*\))*\)\s*([<>]=?)\s*"
+           r"(-?[0-9.]+|_cfg\.[A-Z0-9_]+)")
 
 
 if __name__ == "__main__":

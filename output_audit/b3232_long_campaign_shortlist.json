@@ -1,13 +1,13 @@
 {
   "generator": "scripts/build_long_campaign_shortlist.py (S6-B3232)",
   "build": {
-    "source_commit": "91dc039ed",
-    "generated_at": "2026-10-24 04:54:01 UTC",
-    "status_view_build": "91dc039ed"
+    "source_commit": "adafdd452",
+    "generated_at": "2026-10-26 00:30:32 UTC",
+    "status_view_build": "adafdd452"
   },
   "population": {
-    "open_long_capable": 123,
-    "ranked": 91,
+    "open_long_capable": 122,
+    "ranked": 90,
     "unranked": 32,
     "step1_floor": 100
   },
@@ -35,27 +35,6 @@
       "rank": 1
     },
     {
-      "strategy": "camarilla_r4_breakout",
-      "kind": "dual",
-      "family": "pivot",
-      "status": "NOT-STARTED",
-      "strategy_lane": "NONE",
-      "long_lane": "NONE",
-      "cost": "breadth - offline companion grid",
-      "long_share_r5": 0.4713,
-      "long_survival_r5": 0.5954,
-      "long_survival_unmeasured_keys": null,
-      "projected_step1_fires_strategy": 282.4,
-      "projected_step1_fires_long": 148.9,
-      "step1_floor_met": true,
-      "exploratory": false,
-      "deploy_bar": null,
-      "is_exit": "breakeven_plus_trail",
-      "is_sharpe": 0.643,
-      "is_gates_cleared": 4,
-      "rank": 2
-    },
-    {
       "strategy": "avwap_252_breakout",
       "kind": "dual",
       "family": "vwap",
@@ -74,7 +53,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.581,
       "is_gates_cleared": 4,
-      "rank": 3
+      "rank": 2
     },
     {
       "strategy": "macd_fast_crossover",
@@ -95,7 +74,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.526,
       "is_gates_cleared": 4,
-      "rank": 4
+      "rank": 3
     },
     {
       "strategy": "macd_crossover",
@@ -116,7 +95,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.522,
       "is_gates_cleared": 4,
-      "rank": 5
+      "rank": 4
     },
     {
       "strategy": "force_index_breakout",
@@ -137,7 +116,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.509,
       "is_gates_cleared": 4,
-      "rank": 6
+      "rank": 5
     },
     {
       "strategy": "r1_break_retest",
@@ -158,7 +137,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.506,
       "is_gates_cleared": 4,
-      "rank": 7
+      "rank": 6
     },
     {
       "strategy": "rsi_oversold_with_smart_money_long",
@@ -179,7 +158,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.49,
       "is_gates_cleared": 4,
-      "rank": 8
+      "rank": 7
     },
     {
       "strategy": "macd_bullish_with_smart_money_long",
@@ -200,7 +179,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.489,
       "is_gates_cleared": 4,
-      "rank": 9
+      "rank": 8
     },
     {
       "strategy": "mmbm_long",
@@ -221,7 +200,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.347,
       "is_gates_cleared": 4,
-      "rank": 10
+      "rank": 9
     },
     {
       "strategy": "hammer_at_support_long",
@@ -242,7 +221,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 1.919,
       "is_gates_cleared": 5,
-      "rank": 11
+      "rank": 10
     },
     {
       "strategy": "vix_backwardation_long",
@@ -263,7 +242,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.875,
       "is_gates_cleared": 5,
-      "rank": 12
+      "rank": 11
     },
     {
       "strategy": "news_momentum_long",
@@ -284,7 +263,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.015,
       "is_gates_cleared": 5,
-      "rank": 13
+      "rank": 12
     },
     {
       "strategy": "ultimate_oscillator",
@@ -305,7 +284,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 0.725,
       "is_gates_cleared": 4,
-      "rank": 14
+      "rank": 13
     },
     {
       "strategy": "rsi_volume_200ema",
@@ -325,6 +304,27 @@
       "deploy_bar": null,
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.649,
+      "is_gates_cleared": 4,
+      "rank": 14
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "kind": "long",
+      "family": "sec_edgar_sleeve",
+      "status": "NOT-STARTED",
+      "strategy_lane": "BOTH",
+      "long_lane": "BOTH",
+      "cost": "offline first, engine after",
+      "long_share_r5": 1.0,
+      "long_survival_r5": 0.7341,
+      "long_survival_unmeasured_keys": null,
+      "projected_step1_fires_strategy": 69.0,
+      "projected_step1_fires_long": 69.0,
+      "step1_floor_met": false,
+      "exploratory": true,
+      "deploy_bar": null,
+      "is_exit": "earnings_blackout",
+      "is_sharpe": 0.605,
       "is_gates_cleared": 4,
       "rank": 15
     },
@@ -350,6 +350,48 @@
       "rank": 16
     },
     {
+      "strategy": "tema_dema",
+      "kind": "dual",
+      "family": "trend",
+      "status": "NOT-STARTED",
+      "strategy_lane": "TIGHTEN",
+      "long_lane": "BOTH",
+      "cost": "offline first, engine after",
+      "long_share_r5": 0.4877,
+      "long_survival_r5": 0.9945,
+      "long_survival_unmeasured_keys": null,
+      "projected_step1_fires_strategy": 124.2,
+      "projected_step1_fires_long": 83.6,
+      "step1_floor_met": false,
+      "exploratory": false,
+      "deploy_bar": null,
+      "is_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.573,
+      "is_gates_cleared": 4,
+      "rank": 17
+    },
+    {
+      "strategy": "break_retest_volume",
+      "kind": "dual",
+      "family": "breakout",
+      "status": "NOT-STARTED",
+      "strategy_lane": "BOTH",
+      "long_lane": "BOTH",
+      "cost": "offline first, engine after",
+      "long_share_r5": 0.3535,
+      "long_survival_r5": 0.9791,
+      "long_survival_unmeasured_keys": null,
+      "projected_step1_fires_strategy": 98.6,
+      "projected_step1_fires_long": 68.8,
+      "step1_floor_met": false,
+      "exploratory": false,
+      "deploy_bar": null,
+      "is_exit": "r_multiple_2r",
+      "is_sharpe": 0.542,
+      "is_gates_cleared": 4,
+      "rank": 18
+    },
+    {
       "strategy": "inside_bar_breakout",
       "kind": "long",
       "family": "breakout",
@@ -368,7 +410,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.514,
       "is_gates_cleared": 4,
-      "rank": 17
+      "rank": 19
     },
     {
       "strategy": "morning_star",
@@ -389,7 +431,28 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.513,
       "is_gates_cleared": 4,
-      "rank": 18
+      "rank": 20
+    },
+    {
+      "strategy": "ichimoku_tk_cross",
+      "kind": "dual",
+      "family": "trend",
+      "status": "NOT-STARTED",
+      "strategy_lane": "TIGHTEN",
+      "long_lane": "BOTH",
+      "cost": "offline first, engine after",
+      "long_share_r5": 0.4352,
+      "long_survival_r5": 0.9111,
+      "long_survival_unmeasured_keys": null,
+      "projected_step1_fires_strategy": 112.9,
+      "projected_step1_fires_long": 48.1,
+      "step1_floor_met": false,
+      "exploratory": false,
+      "deploy_bar": null,
+      "is_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.506,
+      "is_gates_cleared": 4,
+      "rank": 21
     },
     {
       "strategy": "cup_and_handle_retest_long",
@@ -410,7 +473,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.503,
       "is_gates_cleared": 4,
-      "rank": 19
+      "rank": 22
     },
     {
       "strategy": "smc_order_block_bounce",
@@ -433,7 +496,28 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.501,
       "is_gates_cleared": 4,
-      "rank": 20
+      "rank": 23
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "kind": "dual",
+      "family": "breakout",
+      "status": "NOT-STARTED",
+      "strategy_lane": "TIGHTEN",
+      "long_lane": "BOTH",
+      "cost": "offline first, engine after",
+      "long_share_r5": 0.3571,
+      "long_survival_r5": 0.9733,
+      "long_survival_unmeasured_keys": null,
+      "projected_step1_fires_strategy": 109.7,
+      "projected_step1_fires_long": 77.1,
+      "step1_floor_met": false,
+      "exploratory": false,
+      "deploy_bar": null,
+      "is_exit": "r_multiple_2r",
+      "is_sharpe": 0.496,
+      "is_gates_cleared": 4,
+      "rank": 24
     },
     {
       "strategy": "news_sentiment_shift_long",
@@ -454,7 +538,7 @@
       "is_exit": "chandelier_3x",
       "is_sharpe": 0.485,
       "is_gates_cleared": 4,
-      "rank": 21
+      "rank": 25
     },
     {
       "strategy": "camarilla_s3_bounce",
@@ -475,7 +559,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.472,
       "is_gates_cleared": 4,
-      "rank": 22
+      "rank": 26
     },
     {
       "strategy": "hull_rsi",
@@ -496,7 +580,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.442,
       "is_gates_cleared": 4,
-      "rank": 23
+      "rank": 27
     },
     {
       "strategy": "news_sentiment_long",
@@ -517,7 +601,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.431,
       "is_gates_cleared": 4,
-      "rank": 24
+      "rank": 28
     },
     {
       "strategy": "stochrsi_oversold",
@@ -538,7 +622,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.3,
       "is_gates_cleared": 3,
-      "rank": 25
+      "rank": 29
     },
     {
       "strategy": "pivot_s2_bounce",
@@ -559,7 +643,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 0.297,
       "is_gates_cleared": 2,
-      "rank": 26
+      "rank": 30
     },
     {
       "strategy": "rsi9_extreme",
@@ -580,7 +664,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 2.819,
       "is_gates_cleared": 5,
-      "rank": 27
+      "rank": 31
     },
     {
       "strategy": "bb_squeeze_volume",
@@ -601,7 +685,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.636,
       "is_gates_cleared": 5,
-      "rank": 28
+      "rank": 32
     },
     {
       "strategy": "supertrend_macd",
@@ -622,7 +706,7 @@
       "is_exit": "mfe_lockin_trail",
       "is_sharpe": 1.602,
       "is_gates_cleared": 5,
-      "rank": 29
+      "rank": 33
     },
     {
       "strategy": "smc_bos_continuation",
@@ -643,7 +727,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 1.556,
       "is_gates_cleared": 5,
-      "rank": 30
+      "rank": 34
     },
     {
       "strategy": "xs_low_beta_long",
@@ -664,7 +748,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 1.328,
       "is_gates_cleared": 5,
-      "rank": 31
+      "rank": 35
     },
     {
       "strategy": "prev_day_high_break",
@@ -685,7 +769,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.322,
       "is_gates_cleared": 5,
-      "rank": 32
+      "rank": 36
     },
     {
       "strategy": "ichimoku_cloud_breakout",
@@ -706,7 +790,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 1.314,
       "is_gates_cleared": 5,
-      "rank": 33
+      "rank": 37
     },
     {
       "strategy": "xs_quality_top_quintile_long",
@@ -727,7 +811,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 1.268,
       "is_gates_cleared": 5,
-      "rank": 34
+      "rank": 38
     },
     {
       "strategy": "bollinger_tight",
@@ -748,7 +832,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 1.265,
       "is_gates_cleared": 5,
-      "rank": 35
+      "rank": 39
     },
     {
       "strategy": "pre_fomc_long_sleeve",
@@ -769,7 +853,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 1.17,
       "is_gates_cleared": 5,
-      "rank": 36
+      "rank": 40
     },
     {
       "strategy": "mfi_oversold",
@@ -790,7 +874,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.141,
       "is_gates_cleared": 5,
-      "rank": 37
+      "rank": 41
     },
     {
       "strategy": "pivot_r1_breakout",
@@ -811,7 +895,7 @@
       "is_exit": "reverse_signal",
       "is_sharpe": 1.128,
       "is_gates_cleared": 5,
-      "rank": 38
+      "rank": 42
     },
     {
       "strategy": "xs_momentum_quality_combined",
@@ -832,7 +916,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 1.122,
       "is_gates_cleared": 5,
-      "rank": 39
+      "rank": 43
     },
     {
       "strategy": "52w_high_breakout_with_smart_money_long",
@@ -853,7 +937,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 1.085,
       "is_gates_cleared": 5,
-      "rank": 40
+      "rank": 44
     },
     {
       "strategy": "orb_stocks_in_play_long",
@@ -874,7 +958,7 @@
       "is_exit": "ma_exit_ema9",
       "is_sharpe": 1.064,
       "is_gates_cleared": 5,
-      "rank": 41
+      "rank": 45
     },
     {
       "strategy": "week_opening_gap_fill_up",
@@ -895,7 +979,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 1.048,
       "is_gates_cleared": 5,
-      "rank": 42
+      "rank": 46
     },
     {
       "strategy": "pivot_fib_confluence",
@@ -916,7 +1000,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 1.186,
       "is_gates_cleared": 4,
-      "rank": 43
+      "rank": 47
     },
     {
       "strategy": "htf_aligned_breakout_long",
@@ -937,7 +1021,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 0.917,
       "is_gates_cleared": 4,
-      "rank": 44
+      "rank": 48
     },
     {
       "strategy": "flag_bull_long",
@@ -958,7 +1042,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 0.915,
       "is_gates_cleared": 4,
-      "rank": 45
+      "rank": 49
     },
     {
       "strategy": "turtle_soup_long",
@@ -979,7 +1063,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.883,
       "is_gates_cleared": 4,
-      "rank": 46
+      "rank": 50
     },
     {
       "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
@@ -1000,7 +1084,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.838,
       "is_gates_cleared": 4,
-      "rank": 47
+      "rank": 51
     },
     {
       "strategy": "smc_inverse_fvg",
@@ -1021,7 +1105,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.816,
       "is_gates_cleared": 4,
-      "rank": 48
+      "rank": 52
     },
     {
       "strategy": "stoch_oversold",
@@ -1042,7 +1126,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.791,
       "is_gates_cleared": 4,
-      "rank": 49
+      "rank": 53
     },
     {
       "strategy": "smc_equal_lows_sweep_long",
@@ -1063,7 +1147,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 0.768,
       "is_gates_cleared": 4,
-      "rank": 50
+      "rank": 54
     },
     {
       "strategy": "awesome_oscillator",
@@ -1084,7 +1168,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.755,
       "is_gates_cleared": 4,
-      "rank": 51
+      "rank": 55
     },
     {
       "strategy": "head_and_shoulders_bottom_long",
@@ -1105,7 +1189,7 @@
       "is_exit": "chandelier_3x",
       "is_sharpe": 0.728,
       "is_gates_cleared": 4,
-      "rank": 52
+      "rank": 56
     },
     {
       "strategy": "smc_fvg_retest_long",
@@ -1126,7 +1210,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.706,
       "is_gates_cleared": 4,
-      "rank": 53
+      "rank": 57
     },
     {
       "strategy": "smc_discount_long",
@@ -1147,7 +1231,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.7,
       "is_gates_cleared": 4,
-      "rank": 54
+      "rank": 58
     },
     {
       "strategy": "ppo_crossover",
@@ -1168,7 +1252,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.648,
       "is_gates_cleared": 4,
-      "rank": 55
+      "rank": 59
     },
     {
       "strategy": "roc_burst",
@@ -1189,7 +1273,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.645,
       "is_gates_cleared": 4,
-      "rank": 56
+      "rank": 60
     },
     {
       "strategy": "triangle_ascending_long",
@@ -1210,28 +1294,7 @@
       "is_exit": "r_multiple_3r",
       "is_sharpe": 0.621,
       "is_gates_cleared": 4,
-      "rank": 57
-    },
-    {
-      "strategy": "m_and_a_target_long",
-      "kind": "long",
-      "family": "sec_edgar_sleeve",
-      "status": "NOT-STARTED",
-      "strategy_lane": "LOOSEN",
-      "long_lane": "LOOSEN",
-      "cost": "engine resim",
-      "long_share_r5": 1.0,
-      "long_survival_r5": 0.7341,
-      "long_survival_unmeasured_keys": null,
-      "projected_step1_fires_strategy": 69.0,
-      "projected_step1_fires_long": 69.0,
-      "step1_floor_met": false,
-      "exploratory": true,
-      "deploy_bar": null,
-      "is_exit": "earnings_blackout",
-      "is_sharpe": 0.605,
-      "is_gates_cleared": 4,
-      "rank": 58
+      "rank": 61
     },
     {
       "strategy": "bullish_engulfing_support",
@@ -1252,7 +1315,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.599,
       "is_gates_cleared": 4,
-      "rank": 59
+      "rank": 62
     },
     {
       "strategy": "smc_liquidity_sweep_reversal",
@@ -1273,7 +1336,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.591,
       "is_gates_cleared": 4,
-      "rank": 60
+      "rank": 63
     },
     {
       "strategy": "golden_cross_20_50",
@@ -1294,28 +1357,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.578,
       "is_gates_cleared": 4,
-      "rank": 61
-    },
-    {
-      "strategy": "tema_dema",
-      "kind": "dual",
-      "family": "trend",
-      "status": "NOT-STARTED",
-      "strategy_lane": "NONE",
-      "long_lane": "LOOSEN",
-      "cost": "engine resim",
-      "long_share_r5": 0.4877,
-      "long_survival_r5": 0.9945,
-      "long_survival_unmeasured_keys": null,
-      "projected_step1_fires_strategy": 124.2,
-      "projected_step1_fires_long": 83.6,
-      "step1_floor_met": false,
-      "exploratory": false,
-      "deploy_bar": null,
-      "is_exit": "breakeven_plus_trail",
-      "is_sharpe": 0.573,
-      "is_gates_cleared": 4,
-      "rank": 62
+      "rank": 64
     },
     {
       "strategy": "cup_and_handle_long",
@@ -1336,7 +1378,7 @@
       "is_exit": "chandelier_3x",
       "is_sharpe": 0.571,
       "is_gates_cleared": 4,
-      "rank": 63
+      "rank": 65
     },
     {
       "strategy": "golden_cross_9_21",
@@ -1357,7 +1399,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 0.568,
       "is_gates_cleared": 4,
-      "rank": 64
+      "rank": 66
     },
     {
       "strategy": "parabolic_sar_flip",
@@ -1378,28 +1420,7 @@
       "is_exit": "class_time_stop",
       "is_sharpe": 0.563,
       "is_gates_cleared": 4,
-      "rank": 65
-    },
-    {
-      "strategy": "break_retest_volume",
-      "kind": "dual",
-      "family": "breakout",
-      "status": "NOT-STARTED",
-      "strategy_lane": "LOOSEN",
-      "long_lane": "LOOSEN",
-      "cost": "engine resim",
-      "long_share_r5": 0.3535,
-      "long_survival_r5": 0.9791,
-      "long_survival_unmeasured_keys": null,
-      "projected_step1_fires_strategy": 98.6,
-      "projected_step1_fires_long": 68.8,
-      "step1_floor_met": false,
-      "exploratory": false,
-      "deploy_bar": null,
-      "is_exit": "r_multiple_2r",
-      "is_sharpe": 0.542,
-      "is_gates_cleared": 4,
-      "rank": 66
+      "rank": 67
     },
     {
       "strategy": "doji_at_support",
@@ -1420,7 +1441,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.537,
       "is_gates_cleared": 4,
-      "rank": 67
+      "rank": 68
     },
     {
       "strategy": "volume_spike_breakout",
@@ -1441,7 +1462,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 0.519,
       "is_gates_cleared": 4,
-      "rank": 68
+      "rank": 69
     },
     {
       "strategy": "po3_bullish",
@@ -1461,27 +1482,6 @@
       "deploy_bar": "do not deploy",
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.509,
-      "is_gates_cleared": 4,
-      "rank": 69
-    },
-    {
-      "strategy": "ichimoku_tk_cross",
-      "kind": "dual",
-      "family": "trend",
-      "status": "NOT-STARTED",
-      "strategy_lane": "NONE",
-      "long_lane": "LOOSEN",
-      "cost": "engine resim",
-      "long_share_r5": 0.4352,
-      "long_survival_r5": 0.9111,
-      "long_survival_unmeasured_keys": null,
-      "projected_step1_fires_strategy": 112.9,
-      "projected_step1_fires_long": 48.1,
-      "step1_floor_met": false,
-      "exploratory": false,
-      "deploy_bar": null,
-      "is_exit": "breakeven_plus_trail",
-      "is_sharpe": 0.506,
       "is_gates_cleared": 4,
       "rank": 70
     },
@@ -1507,27 +1507,6 @@
       "rank": 71
     },
     {
-      "strategy": "dc20_break_retest",
-      "kind": "dual",
-      "family": "breakout",
-      "status": "NOT-STARTED",
-      "strategy_lane": "NONE",
-      "long_lane": "LOOSEN",
-      "cost": "engine resim",
-      "long_share_r5": 0.3571,
-      "long_survival_r5": 0.9733,
-      "long_survival_unmeasured_keys": null,
-      "projected_step1_fires_strategy": 109.7,
-      "projected_step1_fires_long": 77.1,
-      "step1_floor_met": false,
-      "exploratory": false,
-      "deploy_bar": null,
-      "is_exit": "r_multiple_2r",
-      "is_sharpe": 0.496,
-      "is_gates_cleared": 4,
-      "rank": 72
-    },
-    {
       "strategy": "donchian_breakout_retest_long",
       "kind": "long",
       "family": "breakout",
@@ -1546,7 +1525,7 @@
       "is_exit": "r_multiple_2r",
       "is_sharpe": 0.49,
       "is_gates_cleared": 4,
-      "rank": 73
+      "rank": 72
     },
     {
       "strategy": "donchian_breakout_long",
@@ -1567,7 +1546,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.479,
       "is_gates_cleared": 4,
-      "rank": 74
+      "rank": 73
     },
     {
       "strategy": "donchian_breakout_with_smart_money_long",
@@ -1588,7 +1567,7 @@
       "is_exit": "time_stop_10d",
       "is_sharpe": 0.476,
       "is_gates_cleared": 4,
-      "rank": 75
+      "rank": 74
     },
     {
       "strategy": "value_area_breakout_long",
@@ -1609,7 +1588,7 @@
       "is_exit": "chandelier_3x",
       "is_sharpe": 0.465,
       "is_gates_cleared": 4,
-      "rank": 76
+      "rank": 75
     },
     {
       "strategy": "cpr_narrow_bullish",
@@ -1630,7 +1609,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.441,
       "is_gates_cleared": 4,
-      "rank": 77
+      "rank": 76
     },
     {
       "strategy": "double_bottom_long",
@@ -1651,7 +1630,7 @@
       "is_exit": "fixed_4r_2r",
       "is_sharpe": 0.413,
       "is_gates_cleared": 4,
-      "rank": 78
+      "rank": 77
     },
     {
       "strategy": "rsi_oversold",
@@ -1672,7 +1651,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.397,
       "is_gates_cleared": 4,
-      "rank": 79
+      "rank": 78
     },
     {
       "strategy": "pre_holiday_long",
@@ -1693,7 +1672,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.39,
       "is_gates_cleared": 4,
-      "rank": 80
+      "rank": 79
     },
     {
       "strategy": "pivot_s1_bounce",
@@ -1714,7 +1693,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.383,
       "is_gates_cleared": 4,
-      "rank": 81
+      "rank": 80
     },
     {
       "strategy": "prev_day_low_bounce",
@@ -1735,7 +1714,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.382,
       "is_gates_cleared": 4,
-      "rank": 82
+      "rank": 81
     },
     {
       "strategy": "williams_stoch_dual",
@@ -1756,7 +1735,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.382,
       "is_gates_cleared": 4,
-      "rank": 83
+      "rank": 82
     },
     {
       "strategy": "bollinger_tight_with_smart_money_long",
@@ -1777,7 +1756,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.352,
       "is_gates_cleared": 4,
-      "rank": 84
+      "rank": 83
     },
     {
       "strategy": "break_retest_confluence",
@@ -1798,7 +1777,7 @@
       "is_exit": "breakeven_plus_trail",
       "is_sharpe": 0.332,
       "is_gates_cleared": 4,
-      "rank": 85
+      "rank": 84
     },
     {
       "strategy": "judas_swing_long",
@@ -1819,7 +1798,7 @@
       "is_exit": "ma_exit_ema9",
       "is_sharpe": 0.988,
       "is_gates_cleared": 3,
-      "rank": 86
+      "rank": 85
     },
     {
       "strategy": "avwap_50_reclaim",
@@ -1842,7 +1821,7 @@
       "is_exit": "time_stop_20d",
       "is_sharpe": 0.567,
       "is_gates_cleared": 3,
-      "rank": 87
+      "rank": 86
     },
     {
       "strategy": "activist_13d_long",
@@ -1863,7 +1842,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.47,
       "is_gates_cleared": 3,
-      "rank": 88
+      "rank": 87
     },
     {
       "strategy": "smc_ote_long",
@@ -1884,7 +1863,7 @@
       "is_exit": "earnings_blackout",
       "is_sharpe": 0.367,
       "is_gates_cleared": 3,
-      "rank": 89
+      "rank": 88
     },
     {
       "strategy": "triangle_ascending_retest_long",
@@ -1905,7 +1884,7 @@
       "is_exit": "atr_trail_2x",
       "is_sharpe": 0.358,
       "is_gates_cleared": 2,
-      "rank": 90
+      "rank": 89
     },
     {
       "strategy": "smc_choch_reversal",
@@ -1926,7 +1905,7 @@
       "is_exit": "hybrid_50pct_target",
       "is_sharpe": -0.153,
       "is_gates_cleared": 2,
-      "rank": 91
+      "rank": 90
     }
   ],
   "unranked": [

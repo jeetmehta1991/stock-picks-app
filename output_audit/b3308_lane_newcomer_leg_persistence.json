@@ -1,0 +1,152 @@
+{
+ "ticket": "S6-B3308 (B3139q-r111)",
+ "question": "for the twelve producer legs the S6-B3305 lane moves brought into TIGHTEN / BOTH with no R1 band (S6-B2845 standing rule), which input magnitudes do the strategies' R5 fires persist, does the persisted state reproduce each leg, and where do the tighter magnitudes sit?",
+ "population": "output_r5_merged_1_7/trade_log.csv, one row per distinct (strategy, ticker, entry_date, direction)",
+ "measured": {
+  "tema_dema": {
+   "fires": 1876,
+   "by_direction": {
+    "short": 961,
+    "long": 915
+   },
+   "coverage": {
+    "tema": "1876 of 1876",
+    "dema": "1876 of 1876",
+    "vwap": "1876 of 1876",
+    "pct_from_vwap": "1876 of 1876"
+   },
+   "price_vs_tema_leg_reproduced_by_close_est": "1876 of 1876",
+   "tema_vs_dema_level_side_agrees_with_cross_flag": "1873 of 1876",
+   "smallest_relative_price_tema_margin": 0.000164,
+   "price_tema_margin_q20_q40_q60_q80_fraction_of_tema": [
+    0.01399,
+    0.0209,
+    0.03132,
+    0.04721
+   ]
+  },
+  "ichimoku_tk_cross": {
+   "fires": 1319,
+   "by_direction": {
+    "long": 574,
+    "short": 745
+   },
+   "coverage": {
+    "ichi_tenkan": "1319 of 1319",
+    "ichi_kijun": "1319 of 1319"
+   },
+   "tenkan_kijun_level_side_reproduced": "1319 of 1319",
+   "smallest_relative_tenkan_kijun_gap": 2.5e-05,
+   "tenkan_kijun_gap_q20_q40_q60_q80_fraction_of_kijun": [
+    0.00173,
+    0.00364,
+    0.00617,
+    0.01182
+   ]
+  },
+  "dc20_break_retest": {
+   "fires": 2414,
+   "by_direction": {
+    "long": 862,
+    "short": 1552
+   },
+   "coverage": {
+    "vol_ratio_20d": "2414 of 2414",
+    "dc20_resistance_break_retest_strong": "2414 of 2414",
+    "dc20_support_break_retest_strong": "2414 of 2414",
+    "dc20_high": "0 of 2414",
+    "dc20_low": "0 of 2414"
+   },
+   "vol_ratio_20d_below_1_agrees_with_vol_below_avg": "2391 of 2414",
+   "vol_ratio_20d_max": 1.0,
+   "vol_ratio_20d_q20_q40_q60_q80": [
+    0.65,
+    0.74,
+    0.83,
+    0.91
+   ],
+   "strong_variant_flag_on_the_fires": {
+    "long True": 599,
+    "long False": 263,
+    "short False": 431,
+    "short True": 1121
+   }
+  },
+  "break_retest_volume": {
+   "fires": 2164,
+   "by_direction": {
+    "long": 765,
+    "short": 1399
+   },
+   "coverage": {
+    "vol_ratio_20d": "2164 of 2164",
+    "dc20_resistance_break_retest_strong": "2164 of 2164",
+    "dc20_support_break_retest_strong": "2164 of 2164",
+    "dc20_high": "0 of 2164",
+    "dc20_low": "0 of 2164"
+   },
+   "vol_ratio_20d_below_1_agrees_with_vol_below_avg": "2142 of 2164",
+   "vol_ratio_20d_max": 1.0,
+   "vol_ratio_20d_q20_q40_q60_q80": [
+    0.65,
+    0.75,
+    0.83,
+    0.92
+   ],
+   "strong_variant_flag_on_the_fires": {
+    "long True": 532,
+    "long False": 233,
+    "short False": 390,
+    "short True": 1009
+   }
+  },
+  "m_and_a_target_long": {
+   "fires": 1023,
+   "by_direction": {
+    "long": 1023
+   },
+   "sec_edgar_keys_on_the_fires": {
+    "8k_item_1_01_filed_within_30d": 1023,
+    "8k_item_5_02_filed_within_7d": 1023,
+    "sc_13g_filed_within_30d": 977,
+    "sc_13g_latest_percent_owned": 19,
+    "sc_13d_filed_within_30d": 346,
+    "sc_13g_latest_filer_identity": 10
+   },
+   "filing_date_or_days_since_key_present": 0
+  },
+  "camarilla_r4_breakout": {
+   "fires": 5774,
+   "by_direction": {
+    "short": 3053,
+    "long": 2721
+   },
+   "coverage": {
+    "cam_r4": "5774 of 5774",
+    "cam_s4": "5774 of 5774",
+    "prev_close": "5774 of 5774",
+    "prev_high": "5774 of 5774",
+    "prev_low": "5774 of 5774",
+    "vwap": "5774 of 5774",
+    "pct_from_vwap": "5774 of 5774"
+   },
+   "fires_with_a_zero_prior_range": 1,
+   "distance_in_prior_ranges_min": 0.55,
+   "distance_in_prior_ranges_q20_q40_q60_q80": [
+    0.7221,
+    0.9388,
+    1.2375,
+    1.7676
+   ],
+   "fires_beyond_level": {
+    "0.75": "4447 of 5773",
+    "1.0": "3153 of 5773",
+    "1.25": "2261 of 5773"
+   }
+  }
+ },
+ "conclusion": "OFFLINE tighter sides where the inputs are persisted and the leg reproduces: the Camarilla distance (S6-B3304's artifact), the price buffer over TEMA, the Tenkan-over-Kijun margin, the volume-ratio ceiling, and the break-retest 0.5 x ATR clearance (the persisted strong flag). ENGINE-only: every period, window, lookback and tolerance, and the 8-K filing window (no filing date persisted). The bands are R1 definitions awaiting the T3 band review.",
+ "generators": {
+  "b3308_leg_persistence.py": "\"\"\"S6-B3308 (B3139q-r111): the S6-B2845 standing rule - every producer leg\nin the TIGHTEN and BOTH lanes carries a defined R1 band - applied to the six\nstrategies the S6-B3305 reader fix moved into those lanes. Twelve legs had no\nband. For each, which INPUT magnitudes are persisted on the strategy's R5\nfires, and does the persisted state reproduce the leg exactly - the offline\nprecondition the S6-B3304 camarilla measurement used? Also the fires' own\ndistribution of each tighter magnitude, which the MEASURED bands cite.\n\nPopulation: output_r5_merged_1_7/trade_log.csv, one row per distinct\n(strategy, ticker, entry_date, direction) - the trade log replays every entry\nthrough every exit, so the raw row count is a multiple of the fires.\nRead-only over the cube; writes output_audit/b3308_lane_newcomer_leg_persistence.json\nwith this source embedded.\"\"\"\nimport json\nimport sys\nfrom collections import Counter\nfrom pathlib import Path\n\nimport pandas as pd\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nsys.path.insert(0, str(ROOT / \"scripts\"))\nimport build_strategy_status as bss  # noqa: E402\n\nOUT = ROOT / \"output_audit\" / \"b3308_lane_newcomer_leg_persistence.json\"\nSTRATS = [\"tema_dema\", \"ichimoku_tk_cross\", \"dc20_break_retest\",\n          \"break_retest_volume\", \"m_and_a_target_long\", \"camarilla_r4_breakout\"]\nQ = [0.2, 0.4, 0.6, 0.8]\n\ntl = pd.read_csv(ROOT / \"output_r5_merged_1_7\" / \"trade_log.csv\", low_memory=False,\n                 usecols=[\"strategy\", \"ticker\", \"entry_date\", \"direction\",\n                          \"signals_at_entry\"])\ntl = tl[tl[\"strategy\"].isin(STRATS)].drop_duplicates(\n    [\"strategy\", \"ticker\", \"entry_date\", \"direction\"])\n\n\ndef f(s, k):\n    try:\n        v = s.get(k)\n        return None if v is None else float(v)\n    except (TypeError, ValueError):\n        return None\n\n\ndef cover(sigs, keys):\n    n = len(sigs)\n    return {k: f\"{sum(1 for s in sigs if s.get(k) is not None)} of {n}\" for k in keys}\n\n\ndef qs(xs, nd):\n    return [round(float(v), nd) for v in pd.Series(xs).quantile(Q)] if xs else []\n\n\nR = {}\nfor name in STRATS:\n    sub = tl[tl[\"strategy\"] == name]\n    sigs = [bss._parse_signals(x) for x in sub[\"signals_at_entry\"]]\n    dirs = list(sub[\"direction\"])\n    n = len(sigs)\n    r = {\"fires\": n, \"by_direction\": dict(Counter(dirs))}\n    if name == \"tema_dema\":\n        r[\"coverage\"] = cover(sigs, [\"tema\", \"dema\", \"vwap\", \"pct_from_vwap\"])\n        ok_px = ok_x = have = 0\n        m = []\n        for s, d in zip(sigs, dirs):\n            t, dm, v, p = f(s, \"tema\"), f(s, \"dema\"), f(s, \"vwap\"), f(s, \"pct_from_vwap\")\n            if None in (t, dm, v, p):\n                continue\n            have += 1\n            c = v * (1 + p / 100)\n            if d == \"long\":\n                ok_px += (c > t) == bool(s.get(\"price_above_tema\"))\n                ok_x += (t > dm) == bool(s.get(\"tema_cross_up\"))\n                m.append((c - t) / t)\n            else:\n                ok_px += (c < t) == bool(s.get(\"price_below_tema\"))\n                ok_x += (t < dm) == bool(s.get(\"tema_cross_dn\"))\n                m.append((t - c) / t)\n        r[\"price_vs_tema_leg_reproduced_by_close_est\"] = f\"{ok_px} of {have}\"\n        r[\"tema_vs_dema_level_side_agrees_with_cross_flag\"] = f\"{ok_x} of {have}\"\n        r[\"smallest_relative_price_tema_margin\"] = round(min(m), 6) if m else None\n        r[\"price_tema_margin_q20_q40_q60_q80_fraction_of_tema\"] = qs(m, 5)\n    elif name == \"ichimoku_tk_cross\":\n        r[\"coverage\"] = cover(sigs, [\"ichi_tenkan\", \"ichi_kijun\"])\n        ok = have = 0\n        g = []\n        for s, d in zip(sigs, dirs):\n            t, k = f(s, \"ichi_tenkan\"), f(s, \"ichi_kijun\")\n            if None in (t, k) or k == 0:\n                continue\n            have += 1\n            if d == \"long\":\n                ok += (t > k) == bool(s.get(\"ichi_tk_cross_up\"))\n                g.append((t - k) / k)\n            else:\n                ok += (t < k) == bool(s.get(\"ichi_tk_cross_dn\"))\n                g.append((k - t) / k)\n        r[\"tenkan_kijun_level_side_reproduced\"] = f\"{ok} of {have}\"\n        r[\"smallest_relative_tenkan_kijun_gap\"] = round(min(g), 6) if g else None\n        r[\"tenkan_kijun_gap_q20_q40_q60_q80_fraction_of_kijun\"] = qs(g, 5)\n    elif name in (\"dc20_break_retest\", \"break_retest_volume\"):\n        r[\"coverage\"] = cover(sigs, [\"vol_ratio_20d\", \"dc20_resistance_break_retest_strong\",\n                                     \"dc20_support_break_retest_strong\", \"dc20_high\", \"dc20_low\"])\n        vr = [f(s, \"vol_ratio_20d\") for s in sigs]\n        vr = [x for x in vr if x is not None]\n        agree = sum(1 for s in sigs if f(s, \"vol_ratio_20d\") is not None\n                    and (f(s, \"vol_ratio_20d\") < 1.0) == bool(s.get(\"vol_below_avg\")))\n        r[\"vol_ratio_20d_below_1_agrees_with_vol_below_avg\"] = f\"{agree} of {len(vr)}\"\n        r[\"vol_ratio_20d_max\"] = max(vr) if vr else None\n        r[\"vol_ratio_20d_q20_q40_q60_q80\"] = qs(vr, 3)\n        strong = Counter()\n        for s, d in zip(sigs, dirs):\n            key = (\"dc20_resistance_break_retest_strong\" if d == \"long\"\n                   else \"dc20_support_break_retest_strong\")\n            strong[f\"{d} {bool(s.get(key))}\"] += 1\n        r[\"strong_variant_flag_on_the_fires\"] = dict(strong)\n    elif name == \"m_and_a_target_long\":\n        r[\"sec_edgar_keys_on_the_fires\"] = dict(Counter(\n            k for s in sigs for k in s if k.startswith(\"8k_\") or k.startswith(\"sc_13\")))\n        r[\"filing_date_or_days_since_key_present\"] = sum(\n            1 for s in sigs for k in s if \"8k\" in k and (\"date\" in k or \"days_since\" in k))\n    elif name == \"camarilla_r4_breakout\":\n        r[\"coverage\"] = cover(sigs, [\"cam_r4\", \"cam_s4\", \"prev_close\", \"prev_high\",\n                                     \"prev_low\", \"vwap\", \"pct_from_vwap\"])\n        fr = []\n        zero_range = 0\n        for s, d in zip(sigs, dirs):\n            c0, h, lo = f(s, \"prev_close\"), f(s, \"prev_high\"), f(s, \"prev_low\")\n            v, p = f(s, \"vwap\"), f(s, \"pct_from_vwap\")\n            if None in (c0, h, lo, v, p):\n                continue\n            if h - lo <= 0:\n                zero_range += 1\n                continue\n            c = v * (1 + p / 100)\n            fr.append((c - c0) / (h - lo) if d == \"long\" else (c0 - c) / (h - lo))\n        r[\"fires_with_a_zero_prior_range\"] = zero_range\n        r[\"distance_in_prior_ranges_min\"] = round(min(fr), 4) if fr else None\n        r[\"distance_in_prior_ranges_q20_q40_q60_q80\"] = qs(fr, 4)\n        r[\"fires_beyond_level\"] = {str(lv): f\"{sum(1 for x in fr if x > lv)} of {len(fr)}\"\n                                   for lv in (0.75, 1.0, 1.25)}\n    R[name] = r\n    print(name, json.dumps(r, default=str))\n\nart = {\n    \"ticket\": \"S6-B3308 (B3139q-r111)\",\n    \"question\": (\"for the twelve producer legs the S6-B3305 lane moves brought into \"\n                 \"TIGHTEN / BOTH with no R1 band (S6-B2845 standing rule), which input \"\n                 \"magnitudes do the strategies' R5 fires persist, does the persisted \"\n                 \"state reproduce each leg, and where do the tighter magnitudes sit?\"),\n    \"population\": \"output_r5_merged_1_7/trade_log.csv, one row per distinct \"\n                  \"(strategy, ticker, entry_date, direction)\",\n    \"measured\": R,\n    \"conclusion\": (\"OFFLINE tighter sides where the inputs are persisted and the leg \"\n                   \"reproduces: the Camarilla distance (S6-B3304's artifact), the price \"\n                   \"buffer over TEMA, the Tenkan-over-Kijun margin, the volume-ratio \"\n                   \"ceiling, and the break-retest 0.5 x ATR clearance (the persisted \"\n                   \"strong flag). ENGINE-only: every period, window, lookback and \"\n                   \"tolerance, and the 8-K filing window (no filing date persisted). \"\n                   \"The bands are R1 definitions awaiting the T3 band review.\"),\n    \"generators\": {Path(__file__).name: Path(__file__).read_text(encoding=\"utf-8\")},\n}\nOUT.write_text(json.dumps(art, indent=1, default=str) + \"\\n\", encoding=\"utf-8\")\nprint(\"wrote\", OUT)\n"
+ }
+}

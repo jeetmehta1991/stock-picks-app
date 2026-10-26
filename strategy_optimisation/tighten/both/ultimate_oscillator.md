@@ -1,6 +1,6 @@
 # Table A - ultimate_oscillator
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 77eb58e97 | commit 77eb58e97 at 2026-10-22 13:29:44 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build adafdd452 | commit adafdd452 at 2026-10-25 20:59:24 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** BOTH | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 592 (closed fires in the exit cube: 592 of 592, S6-B3258) | **surviving fires (T1):** 592 (unchanged since R5 - filter is identity)
 

@@ -1,0 +1,183 @@
+{
+ "ticket": "S6-B1248-LEVER4-GATE-BUDGET (B3139q-r111); S6-B3306",
+ "question": "each LEVER4 budget arm against the PRODUCTION-GATE SUBSET of its own Step-1 cube",
+ "window": "2024-05-05..2025-05-05 (phase_table.resolve(1), the Step-1 row)",
+ "universe": "output_audit/_sweep_200.txt (200 tickers)",
+ "method": "the live strategy function, no LEVER4_GATE_BUDGET in the process (production AND), replayed on each fire's persisted signals_at_entry (build_table_a.surviving_fires); the cube's exit rows filtered to the reproduced fires; graded by lever4_step1.grade_cells / rank (IS-only). Control: the full cube graded the same way reproduces each landed grid's best cell.",
+ "caveat": "a subset of a budget run is not a production run: a budget-only fire can hold a ticker and block a later production fire (one open position per ticker, L812), so the subset's counts are a lower bound on production alone",
+ "rows": [
+  {
+   "strategy": "pivot_r1_breakout",
+   "cube": "output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45",
+   "fires_budget_cube": 1084,
+   "fires_production_subset": 376,
+   "full_best": {
+    "exit": "regime_flip",
+    "cell": "base:long",
+    "is_n": 789,
+    "is_sharpe": 0.801,
+    "is_ci_lo": 0.516
+   },
+   "full_graded": 72,
+   "landed_grid_best": {
+    "exit": "regime_flip",
+    "cell": "base:long",
+    "is_n": 789,
+    "is_sharpe": 0.801,
+    "is_ci_lo": 0.516
+   },
+   "control_reproduces_landed": true,
+   "production_subset_best": {
+    "exit": "breakeven_plus_trail",
+    "cell": "base:long",
+    "is_n": 81,
+    "is_sharpe": 0.464,
+    "is_ci_lo": -0.291
+   },
+   "production_subset_graded": 72
+  },
+  {
+   "strategy": "news_momentum_long",
+   "cube": "output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe",
+   "fires_budget_cube": 493,
+   "fires_production_subset": 58,
+   "full_best": {
+    "exit": "breakeven_plus_trail",
+    "cell": "base:long",
+    "is_n": 493,
+    "is_sharpe": 0.442,
+    "is_ci_lo": 0.151
+   },
+   "full_graded": 24,
+   "landed_grid_best": {
+    "exit": "breakeven_plus_trail",
+    "cell": "base:long",
+    "is_n": 493,
+    "is_sharpe": 0.442,
+    "is_ci_lo": 0.151
+   },
+   "control_reproduces_landed": true,
+   "production_subset_best": {
+    "exit": "breakeven_plus_trail",
+    "cell": "base:long",
+    "is_n": 58,
+    "is_sharpe": 0.578,
+    "is_ci_lo": -0.244
+   },
+   "production_subset_graded": 24
+  },
+  {
+   "strategy": "smc_bos_continuation",
+   "cube": "output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef",
+   "fires_budget_cube": 367,
+   "fires_production_subset": 186,
+   "full_best": {
+    "exit": "breakeven_plus_trail",
+    "cell": "base:long",
+    "is_n": 228,
+    "is_sharpe": 0.481,
+    "is_ci_lo": 0.082
+   },
+   "full_graded": 72,
+   "landed_grid_best": {
+    "exit": "breakeven_plus_trail",
+    "cell": "base:long",
+    "is_n": 228,
+    "is_sharpe": 0.481,
+    "is_ci_lo": 0.082
+   },
+   "control_reproduces_landed": true,
+   "production_subset_best": {
+    "exit": "earnings_blackout",
+    "cell": "base:long",
+    "is_n": 47,
+    "is_sharpe": 0.293,
+    "is_ci_lo": -0.354
+   },
+   "production_subset_graded": 72
+  },
+  {
+   "strategy": "orb_stocks_in_play_long",
+   "cube": "output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a",
+   "fires_budget_cube": 348,
+   "fires_production_subset": 72,
+   "full_best": {
+    "exit": "breakeven_plus_trail",
+    "cell": "base:long",
+    "is_n": 348,
+    "is_sharpe": 0.275,
+    "is_ci_lo": -0.075
+   },
+   "full_graded": 24,
+   "landed_grid_best": {
+    "exit": "breakeven_plus_trail",
+    "cell": "base:long",
+    "is_n": 348,
+    "is_sharpe": 0.275,
+    "is_ci_lo": -0.075
+   },
+   "control_reproduces_landed": true,
+   "production_subset_best": {
+    "exit": "earnings_blackout",
+    "cell": "base:long",
+    "is_n": 72,
+    "is_sharpe": 0.303,
+    "is_ci_lo": -0.182
+   },
+   "production_subset_graded": 24
+  }
+ ],
+ "long_fires": {
+  "pivot_r1_breakout": {
+   "budget": 789,
+   "production_subset": 81
+  },
+  "news_momentum_long": {
+   "budget": 493,
+   "production_subset": 58
+  },
+  "smc_bos_continuation": {
+   "budget": 228,
+   "production_subset": 47
+  },
+  "orb_stocks_in_play_long": {
+   "budget": 348,
+   "production_subset": 72
+  }
+ },
+ "r5_long_fires_same_window_same_200": {
+  "pivot_r1_breakout": 38,
+  "news_momentum_long": 4,
+  "smc_bos_continuation": 9,
+  "orb_stocks_in_play_long": 6
+ },
+ "m7_degraded_exit_maps": {
+  "output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45": {},
+  "output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe": {
+   "reverse_signal": "atr_trail_1x"
+  },
+  "output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef": {
+   "reverse_signal": "atr_trail_1x"
+  },
+  "output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a": {
+   "reverse_signal": "atr_trail_1x"
+  },
+  "output_r5_merged_1_7": {
+   "atr_trail_mae_conditional": "atr_trail_1x",
+   "time_stop_20d": "regime_flip"
+  }
+ },
+ "step2_price_data_point": {
+  "run": "bl_step2_p4_9 (bollinger_lower, one arm, 544 tickers x 2022-05-05..2026-05-05)",
+  "launch": "2026-09-29T08:53:39Z",
+  "done": "2026-09-30T05:39:27Z",
+  "wall_clock": "20 h 46 min in 5 legs",
+  "source": "output_audit/b3131_chain_detached.log"
+ },
+ "generators": {
+  "lv4_like_for_like.py": "\"\"\"S6-B1248-LEVER4 Step-1 budget read, LIKE FOR LIKE (read-only on the repo).\n\nThe r111 read compared each budget arm (Step-1 cube: 200 tickers, 2024-05-05..\n2025-05-05) with the production gate graded on R5 (544 tickers, three in-sample\nyears) - a different window and universe. Here the baseline is the PRODUCTION-\nGATE SUBSET of each budget cube: the live strategy function (no budget set in\nthis process, so the production AND) replayed on each fire's persisted signals\n(build_table_a.surviving_fires, the T1 replay), the cube's exit rows filtered\nto those fires, graded by the same grader (lever4_step1's grade_cells / rank).\nControl: the FULL cube graded here must reproduce the landed grid's best cell.\nCaveat carried into the output: a subset of a budget run is not a production\nrun - a budget-only fire can hold a ticker and block a later production fire\n(the engine's one-open-position rule, L812), so the subset can be short of\nwhat production alone would trade.\n\nWrites ONLY a scratch JSON (lv4_like_for_like.json beside this file).\"\"\"\nimport json\nimport os\nimport sys\nfrom pathlib import Path\n\nimport pandas as pd\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nOUT = Path(__file__).parent / \"lv4_like_for_like.json\"\nos.environ.pop(\"LEVER4_GATE_BUDGET\", None)          # production gate in THIS process\nsys.path.insert(0, str(ROOT / \"scripts\"))\nsys.path.insert(0, str(ROOT))\nimport build_table_a as bta  # noqa: E402\nimport lever4_step1 as l4  # noqa: E402\n\nCUBES = {\n    \"pivot_r1_breakout\": \"output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45\",\n    \"news_momentum_long\": \"output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe\",\n    \"smc_bos_continuation\": \"output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef\",\n    \"orb_stocks_in_play_long\": \"output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a\",\n}\nLANDED = {s: ROOT / \"output_audit\" / f\"{c}_grid_auto.json\" for s, c in CUBES.items()}\n\n\ndef best(rows):\n    g = [r for r in rows if r.get(\"is_sharpe\") is not None]\n    if not g:\n        return None, 0\n    rk = l4.rank(g)\n    b = rk[0]\n    return {k: b.get(k) for k in (\"exit\", \"cell\", \"is_n\", \"is_sharpe\", \"is_ci_lo\")}, len(g)\n\n\nout = {\"generator\": \"scratchpad lv4_like_for_like.py\", \"rows\": []}\nfor strat, cube in CUBES.items():\n    d = ROOT / cube\n    m = l4._build(d, strat=strat, keys=[])\n    tl = pd.read_csv(d / \"trade_log.csv\", low_memory=False,\n                     usecols=[\"ticker\", \"strategy\", \"entry_date\", \"direction\", \"signals_at_entry\"])\n    tl = tl[tl[\"strategy\"] == strat].drop_duplicates([\"ticker\", \"entry_date\"])\n    kept, _sigs, _replayed = bta.surviving_fires(strat, tl, 0.0, None)\n    keys = set(zip(kept[\"ticker\"].astype(str), kept[\"entry_date\"].astype(str)))\n    mk = list(zip(m[\"ticker\"].astype(str), m[\"entry_date\"].astype(str)))\n    sub = m[pd.Series([k in keys for k in mk], index=m.index)]\n    full_rows = l4.grade_cells(m, strat, 10, legs=l4.FAMILY[strat][\"legs\"])\n    sub_rows = l4.grade_cells(sub, strat, 10, legs=l4.FAMILY[strat][\"legs\"])\n    fb, fg = best(full_rows)\n    sb, sg = best(sub_rows)\n    landed = json.loads(LANDED[strat].read_text(encoding=\"utf-8\"))\n    lb, _ = best(landed.get(\"rows\") or [])\n    rec = {\"strategy\": strat, \"cube\": cube,\n           \"fires_budget_cube\": int(len(tl)), \"fires_production_subset\": int(len(kept)),\n           \"full_best\": fb, \"full_graded\": fg, \"landed_grid_best\": lb,\n           \"control_reproduces_landed\": fb == lb,\n           \"production_subset_best\": sb, \"production_subset_graded\": sg}\n    out[\"rows\"].append(rec)\n    print(json.dumps(rec))\nOUT.write_text(json.dumps(out, indent=1), encoding=\"utf-8\")\nprint(\"wrote\", OUT)\n",
+  "lv4_long_counts.py": "\"\"\"Exact LONG counts per LEVER4 budget cube: all long fires, and the long\nfires the production gate reproduces (live function, no budget in this\nprocess). Read-only.\"\"\"\nimport os\nimport sys\nfrom pathlib import Path\n\nimport pandas as pd\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nos.environ.pop(\"LEVER4_GATE_BUDGET\", None)\nsys.path.insert(0, str(ROOT / \"scripts\"))\nsys.path.insert(0, str(ROOT))\nimport build_table_a as bta  # noqa: E402\n\nCUBES = {\n    \"pivot_r1_breakout\": \"output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45\",\n    \"news_momentum_long\": \"output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe\",\n    \"smc_bos_continuation\": \"output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef\",\n    \"orb_stocks_in_play_long\": \"output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a\",\n}\nfor s, c in CUBES.items():\n    tl = pd.read_csv(ROOT / c / \"trade_log.csv\", low_memory=False,\n                     usecols=[\"ticker\", \"strategy\", \"entry_date\", \"direction\", \"signals_at_entry\"])\n    tl = tl[tl[\"strategy\"] == s].drop_duplicates([\"ticker\", \"entry_date\"])\n    lg = tl[tl[\"direction\"] == \"long\"]\n    kept, _, _ = bta.surviving_fires(s, lg, 0.0, None)\n    print(f\"{s}: long fires {len(lg)}, production-gate long fires {len(kept)} ({len(kept) / len(lg):.3f})\")\n",
+  "lv4_density.py": "\"\"\"Why do the production-gate subsets (376/58/186/72) dwarf the status view's\nproduction projections (79/10/9/5)? Read-only. For each LEVER4 strategy:\nthe status row's projection fields; R5's long fires (all, and inside the\nStep-1 window on the Step-1 200 tickers); and the per-leg truth rates on the\nbudget cube's fires from persisted signals (smc legs written out from the\nscreener body read this turn).\"\"\"\nimport json\nimport sys\nfrom pathlib import Path\n\nimport pandas as pd\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nsys.path.insert(0, str(ROOT / \"scripts\"))\nimport build_strategy_status as bss  # noqa: E402\n\nview = {r[\"strategy\"]: r for r in json.loads(\n    (ROOT / \"output_audit\" / \"strategy_optimisation_status.json\").read_text(encoding=\"utf-8\"))[\"rows\"]}\ns200 = set((ROOT / \"output_audit\" / \"_sweep_200.txt\").read_text(encoding=\"utf-8\").split())\ntl = pd.read_csv(ROOT / \"output_r5_merged_1_7\" / \"trade_log.csv\", low_memory=False,\n                 usecols=[\"strategy\", \"ticker\", \"entry_date\", \"direction\"])\ntl = tl.drop_duplicates([\"strategy\", \"ticker\", \"entry_date\"])\nfor s in (\"pivot_r1_breakout\", \"news_momentum_long\", \"smc_bos_continuation\", \"orb_stocks_in_play_long\"):\n    r = view[s]\n    t = tl[(tl[\"strategy\"] == s) & (tl[\"direction\"] == \"long\")]\n    w = t[(t[\"entry_date\"] >= \"2024-05-05\") & (t[\"entry_date\"] < \"2025-05-05\") & t[\"ticker\"].isin(s200)]\n    print(f\"{s}: view r5_fires_by_side={r.get('r5_fires_by_side')} survives_by_side={r.get('survives_pct_by_side')} \"\n          f\"projected_step1_fires={r.get('projected_step1_fires')} projected_current_gate={r.get('projected_current_gate')} \"\n          f\"| R5 long fires {len(t)}, in the Step-1 window on the Step-1 200: {len(w)}\")\n\ncube = ROOT / \"output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef\"\nb = pd.read_csv(cube / \"trade_log.csv\", low_memory=False,\n                usecols=[\"ticker\", \"strategy\", \"entry_date\", \"direction\", \"signals_at_entry\"])\nb = b[(b[\"strategy\"] == \"smc_bos_continuation\")].drop_duplicates([\"ticker\", \"entry_date\"])\nsig = [bss._parse_signals(x) for x in b[\"signals_at_entry\"]]\nlegs = {\n    \"smc_bos_bullish\": lambda s: bool(s.get(\"smc_bos_bullish\", False)),\n    \"price_above_ema_200\": lambda s: bool(s.get(\"price_above_ema_200\", False)),\n    \"vol_confirms\": lambda s: bool(s.get(\"vol_spike_2x\", False) or s.get(\"force_index_cross_up\", False)),\n    \"rsi_14>50\": lambda s: (s.get(\"rsi_14\", 50) or 50) > 50,\n}\ntab = {k: sum(1 for s in sig if f(s)) for k, f in legs.items()}\nallf = sum(1 for s in sig if all(f(s) for f in legs.values()))\nprint(f\"smc budget cube fires {len(sig)} (directions {b['direction'].value_counts().to_dict()}); per-leg true: {tab}; all four: {allf}\")\n",
+  "ctx_lv4_checks2.py": "\"\"\"LEVER4 context checks, part 2 (read-only):\n(1) the ruled Step-1 and Step-2 window + universe from phase_table.resolve -\n    the launcher's own resolver (B2713), not a recollection;\n(2) the M7 degraded-exit map on each landed budget cube, through the same call\n    the battery makes (rc.measure_degraded_exits(rc.load_cube(f))), and the\n    same map on the R5 cube for contrast.\"\"\"\nimport inspect\nimport json\nimport sys\nfrom pathlib import Path\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nsys.path.insert(0, str(ROOT / \"scripts\"))\nimport phase_table as pt  # noqa: E402\nimport roster_core as rc  # noqa: E402\n\nfor step in (1, 2):\n    try:\n        print(f\"step {step}:\", json.dumps(pt.resolve(step), default=str)[:400])\n    except SystemExit as e:\n        print(f\"step {step}: REFUSED {e}\")\n    except Exception as e:  # noqa: BLE001\n        print(f\"step {step}: {type(e).__name__} {e}\")\n\nprint(\"load_cube signature:\", inspect.signature(rc.load_cube))\ncubes = sorted(p for p in ROOT.glob(\"output_b3139q_lv4_*\") if p.is_dir())\nfor d in cubes + [ROOT / \"output_r5_merged_1_7\"]:\n    f = None\n    for name in (\"cube.parquet\", \"cube.csv\", \"exit_cube.parquet\", \"exit_cube.csv\", \"trade_exit_detail.csv\"):\n        if (d / name).exists():\n            f = d / name\n            break\n    if f is None:\n        print(d.name[:64], \"no cube file found:\", sorted(x.name for x in d.glob(\"*cube*\"))[:6])\n        continue\n    try:\n        cube = rc.load_cube(f)\n        deg = rc.measure_degraded_exits(cube)\n        n = len(cube)\n        rf = cube[cube[\"exit_method\"] == \"regime_flip\"] if \"exit_method\" in cube.columns else []\n        print(f\"{d.name[:64]} | {f.name} rows={n} regime_flip_rows={len(rf)} | degraded map: {deg or '{}'}\")\n    except Exception as e:  # noqa: BLE001\n        print(d.name[:64], f.name, \"ERROR\", type(e).__name__, str(e)[:200])\n"
+ }
+}

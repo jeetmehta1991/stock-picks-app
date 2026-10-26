@@ -2699,6 +2699,16 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **F1 REGISTERED (B3139q-r106):** SPECS_PHASE0['cmf_flip'] in scripts/producer_variant_table.py, written from the approved band - P6 po3 floor (4 free levels, both legs), P7 rsi_14 ceiling (LONG, 4 free levels), P8 rsi_14 floor (SHORT, 4 free levels); P1-P5, P9 DEFINED-NO-ACTUATOR, P10 owner-gated; validate_spec clean; baseline measured from the R5 trade log (see the entry). The CHAIN DONE hold on F1 is lifted (the LEVER4 chain landed 12:09Z 2026-10-23).
 - **T4 PER-SIDE SWEEPS (B3139q-r107):** LONG - cmf_flip long: production reproduces 1.0000 of its fires (coverage 1.0000, 1753 landed fires, 0 unmatched join rows; the survival filter dropped 352 leaving 1401); 25 of 25 cells graded over 650 trials; best cell rsi_14 lt 50.0, po3_accum_range_pct ge 0.1203 at regime_flip with IS sharpe 1.195 on 290 IS trades; production ranks 23 of 25; the 100-permutation null prices the best cell at p 0.3366 (null 95th percentile 1.807); holdout NOT read; status stamp 4a0836878. SHORT - cmf_flip short: production reproduces 1.0000 of its fires (coverage 1.0000, 1241 landed fires, 0 unmatched join rows; the survival filter dropped 392 leaving 849); 24 of 25 cells graded over 650 trials; best cell rsi_14 gt 59.542, po3_accum_range_pct ge 0.1203 at ma_exit_ema9 with IS sharpe 0.716 on 39 IS trades; production ranks 17 of 24; the 100-permutation null prices the best cell at p 0.3663 (null 95th percentile 1.604); holdout NOT read; status stamp 4a0836878. Artifacts output_audit/b3289_cmf_flip_long_step1_is_surface.json and output_audit/b3289_cmf_flip_short_step1_is_surface.json (Table D renders beside them). The one-shot holdout read of a preregistration candidate is the owner's decision (S6-B3246).
 
+### L.3 Closed (B3139q-r109; owner word 2026-10-24, verbatim "approve all recommendations", on the r107 close's recommendation for S6-B3246: spend no read)
+
+- **T5 (breadth):** not run - the depth sweeps found nothing worth a read; waived with that reason.
+- **T6 NOT SPENT:** neither leg's best cell beats the search's own permutation null (long p 0.3366,
+  short p 0.3663; production ranks 23 of 25 and 17 of 24 in its own surface, b3289_cmf_flip_long /
+  _short step1 artifacts). No holdout read; the pre-registration is unspent.
+- **T7:** no proposal. **T8:** at the r109 build the status view reads STALLED-CAMPAIGN and the
+  long-campaign shortlist ranks cmf_flip first again; S6-B3303 asks the owner for a terminal lane
+  for a campaign closed without a read. The mirror rule (m) is unaffected: nothing was admitted.
+
 ## M. MOMENTUM FAMILY (williams_r_oversold - IN CAMPAIGN)
 
 ### M.1 Opened (B3139q-r86; owner word 2026-10-21, verbatim "Approve all recs execute", approving S6-B3232 (a); S6-B3247)
@@ -2758,3 +2768,55 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **T3 RULED, DEPTH ROWS (B3139q-r105):** owner word 2026-10-22, verbatim "Approve all recs" / "Implement now", on the r104 close's decision 3 ("Band reviews: cmf_flip (S6-B3246), williams_r_oversold (S6-B3247), squeeze_breakout (S6-B3248, including the new prior-squeeze row)") where the recommendation was "Approve as rendered". The approved depth band is the r86 set in output_audit/b3248_squeeze_breakout_table_a.md: P1 Keltner multiplier 1.5 / 2.0 / 2.5 (2.5 offline), P2 Bollinger std 1.5 / 2.0 / 2.5 (1.5 offline), P3 momentum window and P4 Keltner period engine-only with no knob. **P1.5 (the prior-squeeze NEW-GATE row, S6-B3254 option (c)) is UNRULED:** the r104 close recommended the four original rows only, so the owner's "Approve all recs" does not reach it; it needs its own per-strategy word (runbook 0.6, NEW-GATE wiring). The breadth B-rows are not yet rendered from a screen - the companion screen's prefix selection takes squeeze_breakout_with_smart_money_long too, fixed by the exact-name filter (S6-B3291); the screen runs at the two runbook exits, then the B-rows come to the owner at a second T3 (item 4). **What waits:** the offline depth levels need a derived-key filter (in_squeeze is persisted as a boolean at production geometry, not as the BB/KC widths), so the two offline cells are engine-or-derivation work ticketed under S6-B3289; registration at CHAIN DONE.
 - **F1 REGISTERED, DEPTH ROWS (B3139q-r106):** SPECS_PHASE0['squeeze_breakout'] - P2 Keltner multiplier band 2.0/2.5 and P3 Bollinger std band 2.0/1.5 (the approved offline levels, graded through a derived-key filter on the persisted kc_mid / kc_upper / bb_20_20 geometry - S6-B3289 step 6), the engine-only looser levels held out with no knob; P1/P4/P5 DEFINED-NO-ACTUATOR; P1.5 NOT registered (unruled); no B-rows yet (the screen comes first). validate_spec clean.
 - **T4 DEPTH SWEEP + BREADTH SCREENS (B3139q-r107):** depth through the derived-key filter (S6-B3290b, derive sha 48b2c0799162): squeeze_breakout: production reproduces 1.0000 of its fires (coverage 1.0000, 1141 landed fires, 0 unmatched join rows; the survival filter dropped 0 leaving 1141); 4 of 4 cells graded over 104 trials; best cell kc_room ge 2.5, bb_room le 2.0 at class_time_stop with IS sharpe 1.451 on 492 IS trades; production ranks 4 of 4; the 100-permutation null prices the best cell at p 0.0198 (null 95th percentile 1.312); holdout NOT read; status stamp 4a0836878. Breadth: the companion screen at time_stop_10d (124 FDR survivors of 440 keys) and at breakeven_plus_trail (259 of 440), window is, peeked false; consistent set 121 keys in 13 clusters: backtest/signals/short_interest.py: short_interest_observations (numeric, +, joint 7.115, 1 member(s)); backtest/signals/cross_asset.py: gold_silver_ratio (numeric, +, joint 5.008, 13 member(s)); backtest/signals/cross_sectional.py: xs_max_anomaly (numeric, +, joint 4.292, 3 member(s)); unindexed: cot_dxy_mmoney_pctile_3y (numeric, +, joint 4.188, 45 member(s)); backtest/signals/technical.py: vix_value (numeric, +, joint 3.336, 39 member(s)); backtest/signals/calendar_effects.py: trading_day_of_month (numeric, -, joint 2.915, 5 member(s)); backtest/signals/ict_producers.py: po3_accum_range_pct (numeric, +, joint 2.865, 1 member(s)); backtest/signals/screener.py: three_white_soldiers (bool, -, joint 2.79, 2 member(s)); backtest/signals/news_sentiment.py: news_sentiment_30d (numeric, +, joint 2.418, 2 member(s)); backtest/signals/earnings_surprise_yoy.py: days_since_last_earnings (numeric, +, joint 2.413, 2 member(s)); backtest/signals/institutional_persistence_consumer.py: total_active_holders (numeric, +, joint 2.343, 4 member(s)); backtest/signals/smc_ict.py: smc_inverse_fvg_bullish (bool, -, joint 2.235, 3 member(s)); backtest/signals/pairs_trading.py: pair_zscore_signed (numeric, +, joint 1.281, 1 member(s)). DISCLOSED: 45 of 121 consistent keys sit in the 'unindexed' bucket (no producer module placed by build_table_a._module_index), a mixed bag rather than a cluster; 12 clusters are module-indexed. NEXT: B-rows from the cluster representatives and the second T3 render (S6-B3248); P1.5 UNRULED.
+- **SECOND T3 CANDIDATES, NOT REGISTERED (B3139q-r111):** the consistent companion screen's 12
+  module-cluster representatives (b3289_squeeze_breakout_companions_consistent.json, 121 companions
+  consistent under time_stop_10d and breakeven_plus_trail), ordered by the representative's joint
+  effect: B1 short_interest_observations ge q, B2 gold_silver_ratio ge q, B3 xs_max_anomaly ge q, B4 vix_value ge q, B5 trading_day_of_month le q, B6 po3_accum_range_pct ge q, B7 three_white_soldiers require FALSE, B8 news_sentiment_30d ge q, B9 days_since_last_earnings ge q, B10 total_active_holders ge q, B11 smc_inverse_fvg_bullish require FALSE, B12 pair_zscore_signed ge q. Bands q20/q40/q60/q80 on the strategy's own fires at grid time; the
+  unindexed bucket (45 keys) yields no row (runbook 3.6). They enter SPECS_PHASE0 on the owner's
+  word - the bollinger B3118 and naked_poc S6-B3171 precedent this campaign's first row cites. A
+  registered B-row is part of the question band_coverage_gate asks before any holdout read, so
+  registering them early holds the approved depth read behind unapproved rows: a draft of r111 did,
+  the pre-gate caught it on test_b3294's real-artifact arm, and it was reverted before commit.
+
+## O. PIVOT FAMILY (camarilla_r4_breakout - IN CAMPAIGN)
+
+### O.1 Opened (B3139q-r111; owner word 2026-10-21, verbatim "Approve all recs execute", approving
+S6-B3232 (a) - the remaining nine follow in the shortlist's order as slots free (S6-B3249) - and
+2026-10-24, verbatim "address other open tickets too / approve all recommendations / implement now";
+S6-B3304)
+
+- **Why this strategy:** the slot cmf_flip held freed when its campaign closed (S6-B3246, L.3), and
+  camarilla_r4_breakout is the first open member of S6-B3249's list in that list's own order. The
+  order is a SELECTION on in-sample evidence, never a holdout prediction: long side 148.9 projected
+  Step-1 fires, in-sample best exit breakeven_plus_trail, in-sample Sharpe 0.643, 4 in-sample gates
+  cleared. The holdout is read only on the owner's own word (runbook 0.6).
+- **Gate (screener.py strat_camarilla_r4_breakout, READ):** long above_cam_r4 AND vol_above_avg AND
+  xs_ivol >= 0.2598 (the B1422 selectivity floor); short below_cam_s4 AND vol_above_avg AND the same
+  floor AND the borrow gate. Dual: 2721 long and 3053 short R5 fires. The docstring's owner re-scope
+  (B787 option b, 2026-06-15) reads Camarilla pivots on daily bars as DAILY momentum context, with
+  pivot-precision language dropped - the campaign tests that framing and no other.
+- **Producer, READ (technical.py compute_pivots and the volume block):** R4 / S4 sit at C +/- Range x
+  1.1 / 2 from the prior bar; above_cam_r4 / below_cam_s4 compare today's close with them.
+  vol_above_avg is vol_ratio_20d >= 1.0 (today's volume over its 20-day mean).
+
+### O.2 Campaign state (runbook 3.2, W-T)
+
+- **T0:** status row quoted in S6-B3304 - lane TIGHTEN at the r111 build. It read NONE until
+  S6-B3305 fixed the status reader, which could not see an s.get default with its own parentheses
+  and so missed the xs_ivol floor; Table A had always listed it.
+- **T1:** survival 0.5322 (long 0.5954 of 2721, short 0.4759 of 3053). R5 ran under the widened
+  volume gate (minimum vol_ratio_20d 1.000 over its 5774 fires), so the B1200 widening left no
+  loosened fires outside R5; the xs_ivol floor is the tightening survival removes.
+- **T2:** the TIGHTEN lane charter strategy_optimisation/tighten/camarilla_r4_breakout.md. Depth rows
+  on keys persisted at 100 pct coverage: the xs_ivol floor 0.2598 with tighter levels 0.2918 / 0.3301
+  / 0.3814 / 0.4621, and the volume-ratio floor 1.0 with tighter levels 1.2 / 1.5 / 2.0. The R4 / S4
+  distance (1.1 / 2 = 0.55 of the prior range) has no knob, but its TIGHTER side is derivable offline
+  (MEASURED B3139q-r111): the levels reproduce from prev_close / prev_high / prev_low on 5774 of 5774
+  fires, and a close recovered as vwap x (1 + pct_from_vwap / 100) reproduces the breakout leg on
+  5774 of 5774 (2 fires sit inside the rounding bound, relative 5e-6) - a derive module, the
+  S6-B3290b pattern, not yet built. Its R1 band is defined in Table A (P1.1 on above_cam_r4, the short
+  leg mirrored; S6-B3308): production 0.55, tighter 0.75 / 1.0 / 1.25 near the fires' distance
+  quantiles (q20 0.72, q40 0.94, q60 1.24 prior ranges; 4447, 3153 and 2261 of 5773 fires reach
+  them), and one looser level, 0.45, that needs the engine; the T3 band words decide. The B-row
+  census feeds the breadth leg.
+- **T3:** awaits the owner's band words, depth and breadth rows together (runbook 3.6 item 4).

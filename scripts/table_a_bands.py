@@ -746,6 +746,142 @@ PRODUCER_BANDS.update({
         _K("(not a gate) display field naming the paired ticker", "-", "-",
            "no band - rationale text only", "-", "-",
            "backtest/signals/pairs_trading.py:377 region")],
+    # ---- B3139q-r111 lane newcomers (S6-B3308) ------------------------------
+    # The S6-B3305 reader fix moved six strategies into TIGHTEN / BOTH, and the
+    # S6-B2845 standing rule - every producer leg in those lanes carries a
+    # defined band - owed these twelve legs. Producer source READ this batch;
+    # every OFFLINE split MEASURED on the strategies' R5 fires
+    # (output_audit/b3308_lane_newcomer_leg_persistence.json). A short leg that
+    # mirrors its long leg's knob contributes no axis of its own (S6-B2862).
+    "above_cam_r4": [
+        dict(_K("R4 distance from the prior close, in prior ranges "
+                "(R4 = C + 1.1/2 x range)", 0.55, [0.45, 0.55, 0.75, 1.0, 1.25],
+                "MEASURED - production is the Camarilla 1.1 / 2; the tighter "
+                "levels sit near the R5 fires' distance quantiles (q20 0.72, "
+                "q40 0.94, q60 1.24 prior ranges); 0.45 the one looser bracket",
+                "TIGHTER (0.75, 1.0, 1.25) - derivable from the persisted "
+                "prev_close / prev_high / prev_low and a close recovered as "
+                "vwap x (1 + pct_from_vwap / 100); both legs reproduce on 5774 "
+                "of 5774 R5 fires (output_audit/"
+                "b3304_camarilla_distance_derivability.json); the derive "
+                "module, the S6-B3290b pattern, is not built",
+                "LOOSER (0.45) - adds fires the cube never recorded",
+                "backtest/signals/technical.py compute_pivots (Camarilla block)"),
+             free_band=[0.55, 0.75, 1.0, 1.25], resim_band=[0.45])],
+    "below_cam_s4": [
+        _K("mirror of above_cam_r4 (S4 = C - 1.1/2 x range)", 0.55,
+           "as long, mirrored", "mirror",
+           "TIGHTER - mirrored, on the same persisted keys",
+           "LOOSER - mirrored",
+           "backtest/signals/technical.py compute_pivots (Camarilla block)")],
+    "tema_cross_up": [
+        _K("TEMA / DEMA EMA period (one period drives both averages)", 20,
+           [10, 20, 30],
+           "BRACKET production - compute_dema_tema's default; its call site "
+           "passes no period",
+           "none - the averages at other periods are unpersisted",
+           "the whole band",
+           "backtest/signals/technical.py compute_dema_tema")],
+    "tema_cross_dn": [
+        _K("mirror of tema_cross_up (the same period)", 20,
+           "as long, mirrored", "mirror",
+           "none - mirrored", "the whole band, mirrored",
+           "backtest/signals/technical.py compute_dema_tema")],
+    "price_above_tema": [
+        _K("buffer above TEMA (close > tema x (1 + b)); the period is "
+           "tema_cross_up's knob", 0.0, [0.0, 0.01, 0.02, 0.03],
+           "MEASURED - production strict close > tema; 1-pct steps through "
+           "the R5 fires' price-over-tema margin (q20 1.40pct, q40 2.09pct, "
+           "q60 3.13pct of tema)",
+           "TIGHTER (0.01, 0.02, 0.03) - subset on the persisted tema and a "
+           "close recovered as vwap x (1 + pct_from_vwap / 100); the "
+           "price-vs-tema legs reproduce on 1876 of 1876 R5 fires",
+           "LOOSER (a negative buffer) - adds fires; outside the band",
+           "backtest/signals/technical.py compute_dema_tema")],
+    "price_below_tema": [
+        _K("mirror of price_above_tema (close < tema x (1 - b))", 0.0,
+           "as long, mirrored", "mirror",
+           "TIGHTER - mirrored, on the same persisted keys",
+           "LOOSER - mirrored",
+           "backtest/signals/technical.py compute_dema_tema")],
+    "ichi_tk_cross_up": [
+        dict(_K("Tenkan / Kijun periods", "(9, 26)",
+                "tenkan [7, 9, 12]; kijun [22, 26, 30]",
+                "BRACKET production (Hosoda 9 / 26 on six-day weeks; 7 / 22 "
+                "rescales them to five-day weeks)",
+                "none - the midpoints at other periods are unpersisted",
+                "the whole band",
+                "backtest/signals/technical.py compute_ichimoku"),
+             axes=[3, 3]),
+        _K("cross margin - Tenkan above Kijun by m on the cross bar "
+           "(t > k x (1 + m))", 0.0, [0.0, 0.0025, 0.005, 0.01],
+           "MEASURED - production strict t > k; levels near the R5 fires' "
+           "Tenkan-over-Kijun gap (q20 0.17pct, q40 0.36pct, q60 0.62pct, "
+           "q80 1.18pct of kijun)",
+           "TIGHTER (0.0025, 0.005, 0.01) - subset on the persisted "
+           "ichi_tenkan / ichi_kijun; the level side reproduces on 1319 of "
+           "1319 R5 fires",
+           "LOOSER - adds fires; outside the band",
+           "backtest/signals/technical.py compute_ichimoku")],
+    "ichi_tk_cross_dn": [
+        _K("mirror of ichi_tk_cross_up (the same periods and margin)",
+           "(9, 26) / 0", "as long, mirrored", "mirror",
+           "TIGHTER margin - mirrored, on the same persisted keys",
+           "the periods and a looser margin - mirrored",
+           "backtest/signals/technical.py compute_ichimoku")],
+    "resistance_break_retest": [
+        dict(_K("breakout clearance - the breakout bar closed beyond the "
+                "level by c x ATR(14)", 0.0, [0.0, 0.5, 1.0],
+                "BRACKET production; 0.5 is the shipped B594 strong variant",
+                "TIGHTER (0.5) - the persisted "
+                "dc20_resistance_break_retest_strong, set only inside the same "
+                "hold check, so a subset of the leg: True on 599 of 862 "
+                "dc20_break_retest and 532 of 765 break_retest_volume R5 long "
+                "fires",
+                "1.0 - tighter but unpersisted, engine-only",
+                "backtest/signals/technical.py compute_break_retest_signals"),
+             free_band=[0.0, 0.5], resim_band=[1.0]),
+        _K("retest tolerance - a later bar's low within t x ATR(14) of the "
+           "level", 1.5, [1.0, 1.5, 2.0], "BRACKET production",
+           "none - the post-break bars are unpersisted", "the whole band",
+           "backtest/signals/technical.py compute_break_retest_signals"),
+        dict(_K("breakout window - lag 2 to N bars ago, and the close-based "
+                "lookback that sets the level", "lag 2-8 / lookback 20",
+                "lag max [5, 8, 12]; lookback [10, 20, 50]",
+                "BRACKET production",
+                "none - the earlier bars are unpersisted", "the whole band",
+                "backtest/signals/technical.py compute_break_retest_signals"),
+             axes=[3, 3])],
+    "support_break_retest": [
+        _K("mirror of resistance_break_retest (the close-based low; the same "
+           "clearance, tolerance and window)", "as resistance_break_retest",
+           "as long, mirrored", "mirror",
+           "TIGHTER clearance 0.5 - the persisted "
+           "dc20_support_break_retest_strong: True on 1121 of 1552 "
+           "dc20_break_retest and 1009 of 1399 break_retest_volume R5 short "
+           "fires",
+           "the rest - mirrored",
+           "backtest/signals/technical.py compute_break_retest_signals")],
+    "vol_below_avg": [
+        _K("volume ratio ceiling (vol / avg, strict <)", 1.0, [0.6, 0.8, 1.0],
+           "MEASURED - production 1.0 (B594, the retest dry-up); levels near "
+           "the R5 fires' vol_ratio_20d (q20 0.65, q60 0.83 on both "
+           "consumers); avg window is the second knob [10, 20, 50]",
+           "TIGHTER ceilings (0.8, 0.6) on the persisted vol_ratio_20d, which "
+           "is rounded to 2 dp - a level is blurred by 0.005 either way (the "
+           "rounding already reads 1.00 on 23 of 2414 and 22 of 2164 R5 fires "
+           "the strict production gate admitted)",
+           "LOOSER, and any window change",
+           "backtest/signals/technical.py compute_volume")],
+    "8k_item_1_01_filed_within_30d": [
+        _K("filing window - an Item 1.01 8-K filed within the last N days", 30,
+           [7, 14, 30, 60], "BRACKET production",
+           "none - no filing date is persisted on the fire, only the 30-day "
+           "boolean (the 7-day key on the fires is item 5.02's)",
+           "the whole band - 7 and 14 are tighter and 60 looser, and every "
+           "one needs the producer re-run",
+           "backtest/signals/sec_edgar_extractor.py "
+           "eight_k_item_filed_within_days")],
 })
 
 # S6-B3253 (B3139q-r86): an env knob that only SELECTS which emitted key a
@@ -906,6 +1042,16 @@ LEG_DEFN.update(_same("NOT in a squeeze (BB(20, 2.0) not inside KC(20, 2.0 x ATR
 LEG_DEFN.update(_same("today's price below cpr_bottom (technical.py:146)", "below_cpr"))
 LEG_DEFN.update(_same("Wilder RSI over the named period - the persisted numeric the strategy thresholds (technical.py:540)", "rsi_14", "rsi_2"))
 LEG_DEFN.update(_same("VIX percentile tercile flag: low < 1/3, high > 2/3 (technical.py:2690-2702)", "vix_band_low", "vix_band_high"))
+# S6-B3308 (B3139q-r111): the twelve lane-newcomer legs, source READ this
+# batch; each names its producer by symbol, never by line (L901 / #196)
+LEG_DEFN.update(_same("today's close above Camarilla R4 = prior close + 1.1/2 x prior range (technical.py compute_pivots)", "above_cam_r4"))
+LEG_DEFN.update(_same("today's close below Camarilla S4 = prior close - 1.1/2 x prior range (technical.py compute_pivots)", "below_cam_s4"))
+LEG_DEFN.update(_same("TEMA(20) crosses above / below DEMA(20) against the prior bar (technical.py compute_dema_tema)", "tema_cross_up", "tema_cross_dn"))
+LEG_DEFN.update(_same("close above / below TEMA(20) (technical.py compute_dema_tema)", "price_above_tema", "price_below_tema"))
+LEG_DEFN.update(_same("Ichimoku Tenkan(9) crosses above / below Kijun(26) against the prior bar (technical.py compute_ichimoku)", "ichi_tk_cross_up", "ichi_tk_cross_dn"))
+LEG_DEFN.update(_same("a close-based 20-bar high / low broken 2-8 bars ago, a later bar retesting it within 1.5 x ATR(14), today's close still beyond it (technical.py compute_break_retest_signals)", "resistance_break_retest", "support_break_retest"))
+LEG_DEFN.update(_same("volume / 20d average < 1.0 (technical.py compute_volume)", "vol_below_avg"))
+LEG_DEFN.update(_same("an 8-K carrying Item 1.01 (material definitive agreement) filed in the last 30 days (sec_edgar_extractor.py eight_k_item_filed_within_days)", "8k_item_1_01_filed_within_30d"))
 
 
 # ---------------------------------------------------------------------------
