@@ -285,19 +285,27 @@ def _risk_diagnostics(r) -> dict:
 
 def _window_stats(series, lo=None, hi=None) -> dict:
     import numpy as np
+    import pandas as pd
     s = series
     if lo is not None:
         s = s[[d >= lo for d in s.index]]
     if hi is not None:
         s = s[[d < hi for d in s.index]]
+    # S6-B3298: the series runs on Monday-to-Friday business days
+    # and the SPY control on exchange trading days, so a day count is read
+    # against its OWN window first - window_bdays rides beside it
+    span = (None if lo is None or hi is None else
+            len([d for d in pd.bdate_range(lo, hi).date if lo <= d < hi]))
     r = s.values * TRADE_FRACTION / 100.0      # daily portfolio return
     if len(r) < 20 or float(np.std(r)) == 0:
-        return {"days": int(len(r)), "sharpe": None, "mdd_pct": None,
+        return {"days": int(len(r)), "window_bdays": span,
+                "sharpe": None, "mdd_pct": None,
                 "calmar": None, "deflated_sharpe": None, "psr": None}
     sharpe = float(np.mean(r) / np.std(r) * np.sqrt(252))
     eq = np.cumprod(1.0 + r)
     mdd = float((eq / np.maximum.accumulate(eq) - 1.0).min())
-    return {"days": int(len(r)), "sharpe": round(sharpe, 3),
+    return {"days": int(len(r)), "window_bdays": span,
+            "sharpe": round(sharpe, 3),
             "mdd_pct": round(100 * mdd, 2),
             "total_return_pct": round(100 * (eq[-1] - 1.0), 2),
             **_risk_diagnostics(r)}
@@ -355,16 +363,18 @@ def blend() -> dict:
                  "DISCLOSURES: equal weight per line (no admitted line carries"
                  " a ruled tier); each trade at TRADE_FRACTION of book for the"
                  " MDD scale; pnl realized at exit date, so intra-trade "
-                 "drawdown is understated."),
+                 "drawdown is understated. Day counts: Monday-to-Friday "
+                 "business days, window_bdays beside each window (S6-B3298);"
+                 " the SPY control counts exchange trading days."),
         "basis": "net = roster_core.net_pnl (winsorize %s, cost %s bps)" % (
             rc.WINSORIZE, rc.COST_BPS),
         "trade_fraction": TRADE_FRACTION,
         "is_holdout_boundary": str(boundary),
         "lines": lines,
         "portfolio": {
-            "full": _window_stats(series),
-            "in_sample": _window_stats(series, hi=boundary),
-            "holdout": _window_stats(series, lo=boundary),
+            "full": _window_stats(series, lo=rc.IS_START, hi=rc.HO_END),
+            "in_sample": _window_stats(series, lo=rc.IS_START, hi=boundary),
+            "holdout": _window_stats(series, lo=boundary, hi=rc.HO_END),
         },
         "benchmark_spy": {
             "in_sample": _benchmark(rc.IS_START, rc.IS_END),
@@ -372,14 +382,14 @@ def blend() -> dict:
         },
         "per_line_holdout": {
             s: _window_stats(
-                _daily_curve({s: f})[1], lo=boundary)
+                _daily_curve({s: f})[1], lo=boundary, hi=rc.HO_END)
             for s, f in frames.items()
         },
         # L525: a pooled IS-vs-holdout gap is decomposed per line before it
         # is explained - the in-sample leg per line, beside the holdout leg
         "per_line_in_sample": {
             s: _window_stats(
-                _daily_curve({s: f})[1], hi=boundary)
+                _daily_curve({s: f})[1], lo=rc.IS_START, hi=boundary)
             for s, f in frames.items()
         },
         "status": "OK",
@@ -648,7 +658,8 @@ def _corr_md(out: dict) -> str:
           f"- average pairwise rho {out['avg_pairwise_rho']}, median {out['median_pairwise_rho']}, "
           f"{out['pairs_above_0_5']} of {out['pairs_total']} pairs above 0.5 in magnitude",
           f"- eigenvalue effective N {out['effective_n']} of {out['members_blended']}",
-          f"- equal-weight holdout blend: Sharpe {p['sharpe']} over {p['days']} days, "
+          f"- equal-weight holdout blend: Sharpe {p['sharpe']} over {p['days']} of "
+          f"{p.get('window_bdays')} business days (SPY: exchange trading days), "
           f"max drawdown {p['mdd_pct']} pct; the live pooled bar {out['gate']['min_sharpe_overall']} "
           f"is {'cleared' if out['gate']['clears'] else 'NOT cleared'}",
           f"- admissions-only blend Sharpe {out['portfolio_holdout_admissions_only']['sharpe']}; "

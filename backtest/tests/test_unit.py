@@ -63961,3 +63961,119 @@ def test_b3305_one_compare_pattern_reaches_every_reader():
             if "s\\.get\\(" in text and "[^)]*\\)" in text:
                 found.add(p.name)
     assert found == FROZEN, (sorted(found - FROZEN), sorted(FROZEN - found))
+
+
+# ================================================================ B3139q-r112 S6-B3298: every window stat names both bounds
+def test_b3298_every_window_stat_names_both_bounds():
+    """S6-B3298 (B3139q-r112, L717): build_phase1b_portfolio.blend()
+    bounded its holdout and per-line holdout stats at ONE end and its 'full'
+    window at neither, so pnl realised after 2026-05-05 counted under labels
+    naming a window that ends there - MEASURED before the fix: the holdout
+    series held 270 days against the 261 Monday-to-Friday business days of its
+    window. (1) STRUCTURE: every _window_stats call in the builder passes lo=
+    AND hi=; (2) every blend and per-line window carries window_bdays, its own business-
+    day count (the series' calendar, pd.bdate_range), and the committed
+    artifacts' day counts fit inside it - the blend's three windows, its 16+16
+    per-line legs and the correlation mode's holdout blend."""
+    import ast as _ast
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import roster_core as rc
+
+    src = (root / "scripts" / "build_phase1b_portfolio.py").read_text(encoding="utf-8")
+    calls = [n for n in _ast.walk(_ast.parse(src)) if isinstance(n, _ast.Call)
+             and getattr(n.func, "id", None) == "_window_stats"]
+    assert len(calls) >= 8, len(calls)          # not vacuous: 8 call sites at r112
+    open_ended = [_ast.unparse(c) for c in calls
+                  if not {"lo", "hi"} <= {k.arg for k in c.keywords}]
+    assert not open_ended, open_ended
+
+    def bdays(lo, hi):
+        return len([x for x in _pd.bdate_range(lo, hi).date if lo <= x < hi])
+
+    win = {"full": bdays(rc.IS_START, rc.HO_END),
+           "in_sample": bdays(rc.IS_START, rc.HO_START),
+           "holdout": bdays(rc.HO_START, rc.HO_END)}
+
+    def fits(stats, w):
+        return stats.get("window_bdays") == win[w] and stats["days"] <= win[w]
+
+    d = _json.loads((root / "output_audit" / "b3204_portfolio_eval.json").read_text(encoding="utf-8"))
+    bad = {w: d["portfolio"][w] for w in win if not fits(d["portfolio"][w], w)}
+    assert not bad, (win, bad)
+    for leg, w in (("per_line_holdout", "holdout"), ("per_line_in_sample", "in_sample")):
+        assert len(d[leg]) == 16, (leg, len(d[leg]))
+        bad = {s: v for s, v in d[leg].items() if not fits(v, w)}
+        assert not bad, (leg, bad)
+    c = _json.loads((root / "output_audit" / "b3288_selected_exit_correlation.json")
+                    .read_text(encoding="utf-8"))
+    for k in ("portfolio_holdout", "portfolio_holdout_admissions_only",
+              "portfolio_holdout_funnel_only"):
+        assert fits(c[k], "holdout"), (k, c[k])
+
+
+# ================================================================ B3139q-r112b S6-B3310: the selector sees listings and repo-wide reads
+def test_b3310_selector_sees_listings_and_repo_reads(tmp_path):
+    """S6-B3310 (B3139q-r112b): the r111 gate failed on two tests the
+    pre-gate selector had not chosen - test_b3106 reads EXECUTION_QUEUE.md
+    through an imported script's default, test_b3167 lists a folder the batch
+    added files to. (1) The read-set plugin, driven through _hook on a PRIVATE
+    copy: a repo-wide non-.py read and a directory listing land under
+    repo_tests; a .py read, a skipped tree and a write do not; the keys the
+    gate reads ('tests', 'writes') are untouched. (2) The selector: R6 picks a
+    test that read a changed file, R7 a test that listed the folder an added
+    path sits in - in either map; a MODIFIED file changes no listing; an
+    unrelated change selects neither. (3) added_or_deleted on the live repo."""
+    import os
+    import sys
+    pr = _b3139_private("pytest_plugins/pyramid_readset.py", "pyramid_readset_b3310")
+    root = tmp_path
+    pr._STATE["oa"] = os.path.normcase(str(root / "output_audit")) + os.sep
+    pr._STATE["repo"] = os.path.normcase(str(root)) + os.sep
+    pr._STATE["current"] = "t::q"
+    pr._hook("open", (str(root / "EXECUTION_QUEUE.md"), "r", os.O_RDONLY))
+    pr._hook("open", (str(root / "scripts" / "x.py"), "r", os.O_RDONLY))
+    pr._hook("open", (str(root / ".venv" / "lib" / "a.txt"), "r", os.O_RDONLY))
+    pr._hook("open", (str(root / "README.md"), "w", os.O_WRONLY))
+    pr._STATE["current"] = "t::l"
+    pr._hook("os.scandir", (str(root / "strategy_optimisation" / "tighten"),))
+    pr._hook("os.scandir", (str(root),))
+    pr._hook("open", (str(root / "output_audit" / "a.json"), "r", os.O_RDONLY))
+    pr._STATE["current"] = None
+    assert pr._STATE["repo_tests"] == {"t::q": {"EXECUTION_QUEUE.md"},
+                                       "t::l": {"strategy_optimisation/tighten/", "./"}}, \
+        pr._STATE["repo_tests"]
+    assert pr._STATE["tests"] == {"t::l": {"output_audit/a.json"}}, pr._STATE["tests"]
+    assert pr._STATE["writes"] == {}, pr._STATE["writes"]
+
+    if str(_B3139_SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(_B3139_SCRIPTS))
+    import pregate_select as ps
+    q = "backtest/tests/test_unit.py::test_b3106_open_ticket_calling_a_closed_ticket_unfixed_is_flagged"
+    lt = "backtest/tests/test_unit.py::test_b3167_admission_ripples_live_where_the_next_admission_reads"
+    rr = {q: ["EXECUTION_QUEUE.md"],
+          lt: ["strategy_optimisation/README.md", "strategy_optimisation/tighten/"]}
+
+    def sel(changed, listed, readset=None):
+        return ps.select(changed, readset=readset or {}, repo_readset=rr, listed=listed,
+                         edited={}, test_files=())
+    assert sel(["EXECUTION_QUEUE.md"], []) == {q: ["R6"]}
+    new = "strategy_optimisation/tighten/camarilla_r4_breakout.md"
+    assert sel([new], [new]) == {lt: ["R7"]}
+    assert sel([new], []) == {}
+    assert sel(["docs/other.md"], ["docs/other.md"]) == {}
+    # the import machinery lists every sys.path folder (the live run recorded
+    # 'scripts/' for both misses): an added .py is R3's, an added data file R7's
+    rr["t::imp"] = ["scripts/"]
+    assert sel(["scripts/new_tool.py"], ["scripts/new_tool.py"]) == {}
+    assert sel(["scripts/notes.md"], ["scripts/notes.md"]) == {"t::imp": ["R7"]}
+    assert sel(["output_audit/new.json"], ["output_audit/new.json"],
+               readset={"t::oa": ["output_audit/"]}) == {"t::oa": ["R7"]}
+    assert ps.added_or_deleted(["EXECUTION_QUEUE.md", "no/such/b3310_file.md"]) == [
+        "no/such/b3310_file.md"]

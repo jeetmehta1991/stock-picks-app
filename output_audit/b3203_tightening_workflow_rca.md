@@ -87,6 +87,7 @@ CORRECTED B3139q-r72d: the per-regime Sharpe floor is 0.5 (min_sharpe_per_regime
 - A (S6-B3204): EXECUTED and CLOSED on the owner's word ("S6-B3204 (A) close approved").
   output_audit/b3204_portfolio_eval.json: in-sample book Sharpe 0.129 vs SPY 0.594 over the same
   window; holdout 4.679 vs 1.972 (commit b5a19f49f). The selection-free reading sits below holding SPY.
+  CORRECTED B3139q-r112 (S6-B3298): that holdout counted 9 days of pnl realised on or after 2026-05-05, the window's open end; bounded at both ends the holdout reads 4.558 over 261 of 261 business days (SPY 1.972 over its 251 exchange trading days), and the in-sample 0.129 - the reading this status line rests on - is unchanged.
 - C (S6-B3206): EXECUTED - the depth-null declaration gate inside launch_refusals, the no-surface case
   per the owner's ruling "A" (this batch).
 - B (S6-B3205), D (S6-B3207): OPEN, the owner's word; the A result argues against loosening admission.

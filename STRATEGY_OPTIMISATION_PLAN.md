@@ -2114,7 +2114,7 @@ ONE line's trade series and returns no `max_drawdown`, `calmar` or `deflated_sha
 psr, sharpe, sortino, win_rate`, and it computes the deflated Sharpe only to derive `psr`. A BOOK's
 drawdown is not a line's, so the three are reported by the portfolio evaluator,
 `scripts/build_phase1b_portfolio.py` (`_risk_diagnostics`, through the deflated-Sharpe function
-`evaluate` calls), for the blended book's three windows, each line's two legs and SPY's two windows.
+`evaluate` calls), for the blended book's three windows, each line's two legs and SPY's two windows - every window bounded at both ends of the span its label names; the blend's windows and each line's legs carry `window_bdays`, their own Monday-to-Friday count, because SPY's windows count exchange trading days (S6-B3298).
 Reported, never gated; the ledger row S6-B1509a that read EXECUTED against the earlier gap is
 superseded by S6-B3096b.
 

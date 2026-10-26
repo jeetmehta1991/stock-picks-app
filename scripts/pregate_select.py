@@ -7,7 +7,7 @@ generator's freshness stamp (test_b1974) and a repo-wide ratchet
 (test_b2128) - and none of the four failing tests ran between its change and
 the gate. The gate's read-set (scripts/pytest_plugins/pyramid_readset.py)
 watches output_audit/ only, so alone it selects 1 of the 4. This selector
-unions five rules, each a LOWER bound - the full gate stays the authority:
+unions seven rules, each a LOWER bound - the full gate stays the authority:
 
   R1 read-set  tests whose reads, in the newest gate read-set
                (output_audit/*_pyramid.json.readset.json), include a changed
@@ -21,7 +21,14 @@ unions five rules, each a LOWER bound - the full gate stays the authority:
   R5 self-read tests that read a CHANGED test module's own source - via
                __file__, or by naming the module in a quoted literal -
                which R2 skips (S6-B3283: test_b2557, unselected, turned
-               the r95 gate RED).
+               the r95 gate RED);
+  R6 repo-read tests whose reads, in the newest gate read-set's repo_tests,
+               include a changed non-.py file outside output_audit/ - a
+               read through an imported script's default (S6-B3310:
+               test_b3106 read the queue via audit_ticket_staleness);
+  R7 listing   tests that LISTED the parent directory of an ADDED or
+               DELETED path, in either map (S6-B3310: test_b3167 lists
+               strategy_optimisation/tighten/, where r111 added files).
 
     python scripts/pregate_select.py                       # changed = git diff HEAD + untracked
     python scripts/pregate_select.py --changed scripts/make_spec.py --run
@@ -29,6 +36,7 @@ unions five rules, each a LOWER bound - the full gate stays the authority:
 import argparse
 import ast
 import json
+import os
 import re
 import subprocess
 import sys
@@ -129,24 +137,51 @@ def _names(text, tok) -> bool:
     return rx.search(text) is not None
 
 
-def newest_readset(root=ROOT):
-    """The newest gate read-set's {nodeid: [reads]} or None."""
+def newest_readset(root=ROOT, key="tests"):
+    """The newest gate read-set's {nodeid: [reads]} under `key` ("tests":
+    output_audit reads; "repo_tests": the S6-B3310 repo-wide reads and
+    listings), or None."""
     cands = sorted((root / "output_audit").glob("*_pyramid.json.readset.json"),
                    key=lambda q: q.stat().st_mtime)
     if not cands:
         return None
     try:
-        return json.loads(cands[-1].read_text(encoding="utf-8")).get("tests") or {}
+        return json.loads(cands[-1].read_text(encoding="utf-8")).get(key) or {}
     except (OSError, ValueError):
         return None
 
 
-def select(changed, root=ROOT, readset=None, edited=None) -> dict:
+def _fold(p) -> str:
+    p = str(p).replace("\\", "/")
+    return p.lower() if os.name == "nt" else p
+
+
+def added_or_deleted(changed, root=ROOT) -> list:
+    """S6-B3310: the changed paths that change a directory LISTING - absent
+    from HEAD's tree (added) or absent from the disk (deleted)."""
+    r = subprocess.run(["git", "ls-tree", "-r", "--name-only", "HEAD"], cwd=root,
+                       capture_output=True, text=True, timeout=120)
+    head = {_fold(ln.strip()) for ln in r.stdout.splitlines() if ln.strip()}
+    return [c for c in changed
+            if _fold(c) not in head or not (Path(root) / c).exists()]
+
+
+def _parent(p) -> str:
+    d = str(p).replace("\\", "/").rsplit("/", 1)
+    return d[0] + "/" if len(d) == 2 else "./"
+
+
+def select(changed, root=ROOT, readset=None, edited=None, repo_readset=None,
+           listed=None, test_files=TEST_FILES) -> dict:
     """{nodeid: [rules]} for the changed paths. `readset` injects R1's map
     (None reads the newest on disk); `edited` maps a test file to the line
-    numbers its diff touches (None reads git)."""
+    numbers its diff touches (None reads git); `repo_readset` injects
+    R6/R7's repo-wide map and `listed` the added-or-deleted paths (None
+    reads the read-set / git); `test_files` the modules R2-R5 parse."""
     changed = [str(c).replace("\\", "/") for c in changed]
     rs = newest_readset(root) if readset is None else readset
+    rrs = newest_readset(root, "repo_tests") if repo_readset is None else repo_readset
+    lst = added_or_deleted(changed, root) if listed is None else list(listed)
     py_changed = [c for c in changed if c.endswith(".py") and c not in TEST_FILES]
     oa_changed = {c for c in changed if c.startswith("output_audit/")}
     test_changed = [c for c in changed if c in TEST_FILES]
@@ -162,7 +197,20 @@ def select(changed, root=ROOT, readset=None, edited=None) -> dict:
     for k, reads in (rs or {}).items():
         if oa_changed & {str(x).replace("\\", "/") for x in (reads or [])}:
             add(k, "R1")
-    for tf in TEST_FILES:
+    # S6-B3310 R6: a changed non-.py file outside output_audit that a test read
+    repo_changed = {_fold(c) for c in changed if not c.startswith("output_audit/")
+                    and not c.endswith(".py") and c not in TEST_FILES}
+    for k, reads in (rrs or {}).items():
+        if repo_changed & {_fold(x) for x in (reads or [])}:
+            add(k, "R6")
+    # S6-B3310 R7: a test that LISTED the folder an added/deleted path sits in;
+    # a .py is R3's - the import machinery lists every sys.path folder
+    parents = {_fold(_parent(p)) for p in lst if not str(p).endswith(".py")}
+    for m in (rs or {}, rrs or {}):
+        for k, reads in m.items():
+            if any(str(x).endswith("/") and _fold(x) in parents for x in (reads or [])):
+                add(k, "R7")
+    for tf in test_files:
         f = root / tf
         if not f.is_file():
             continue
@@ -205,10 +253,10 @@ def main(argv=None) -> int:
                else changed_files(all_untracked=a.all_untracked))
     sel = select(changed)
     by_rule = {r: sum(1 for v in sel.values() if r in v)
-               for r in ("R1", "R2", "R3", "R4", "R5")}
+               for r in ("R1", "R2", "R3", "R4", "R5", "R6", "R7")}
     print(f"pregate_select: {len(changed)} changed path(s) -> {len(sel)} test(s) "
           f"(R1 {by_rule['R1']}, R2 {by_rule['R2']}, R3 {by_rule['R3']}, R4 {by_rule['R4']}, "
-          f"R5 {by_rule['R5']}) "
+          f"R5 {by_rule['R5']}, R6 {by_rule['R6']}, R7 {by_rule['R7']}) "
           "- a LOWER bound; the full gate stays the authority")
     if a.json:
         Path(a.json).write_text(json.dumps({"changed": changed, "selected": sel},

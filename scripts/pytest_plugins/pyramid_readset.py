@@ -38,6 +38,16 @@ WHY: tracked output_audit files are TEST INPUTS (L880), and the gate's tree
 fingerprint excludes output_audit by design (a landing mid-run is not an edit
 to the code under test). The gate already DISCLOSED a moved input; this lets
 it name the tests that read one and re-run exactly those.
+
+S6-B3310 (B3139q-r112b): REPO-WIDE READS, UNDER THEIR OWN KEYS. A test
+that reads EXECUTION_QUEUE.md through an imported script, or lists a folder a
+batch added a file to, is invisible to the pre-gate selector's static rules
+(the r111 gate failed on one of each). Every non-.py file a test OPENS FOR
+READING anywhere in the repo outside output_audit/ and the skipped trees, and
+every directory it LISTS ('<dir>/', './' for the root), is recorded under
+repo_tests / repo_session - keys the gate itself never reads, so its
+verdicts cannot move; writes stay output_audit-only (the suite-writes
+disclosure keeps its meaning). scripts/pregate_select.py reads them (R6, R7).
 """
 from __future__ import annotations
 
@@ -54,11 +64,16 @@ LIST_EVENTS = ("os.listdir", "os.scandir")
 SPAWN_EVENTS = ("subprocess.Popen", "_winapi.CreateProcess", "os.system",
                 "os.posix_spawn", "os.spawn", "os.exec", "os.fork")
 SESSION = "session"
+# S6-B3310: trees a repo-wide read is never recorded under
+REPO_SKIP = (".git", ".venv", "__pycache__", "node_modules", ".pytest_cache")
 
 _STATE = {"current": None, "tests": {}, "session": set(), "spawned": set(),
           "addr": {}, "oa": None, "installed": False,
           "fixture_stack": [], "fixture_reads": {}, "fixture_scope": {},
-          "uses": {}, "writes": {}}
+          "uses": {}, "writes": {},
+          # S6-B3310: repo-wide reads and listings, apart from the above
+          "repo": None, "repo_tests": {}, "repo_session": set(),
+          "repo_fixture_reads": {}}
 
 
 def is_read(mode, flags) -> bool:
@@ -111,6 +126,42 @@ def rel_dir_under(path, oa_norm: str):
     return "output_audit/" + (sub.replace(os.sep, "/") + "/" if sub else "")
 
 
+def _repo_rel(path, repo_norm: str, oa_norm: str, listing: bool = False):
+    """S6-B3310: the repo-relative name of a read file (a non-.py file) or a
+    LISTED directory ('<dir>/', './' for the root) under the repo and outside
+    output_audit/ and REPO_SKIP, case as written; None for anything else."""
+    if repo_norm is None or path is None or isinstance(path, int):
+        return None
+    try:
+        orig = os.path.abspath(os.fsdecode(os.fspath(path)))
+    except (TypeError, ValueError):
+        return None
+    norm = os.path.normcase(orig)
+    if listing:
+        norm = norm.rstrip(os.sep) + os.sep
+        orig = orig.rstrip(os.sep) + os.sep
+    if not norm.startswith(repo_norm) or norm.startswith(oa_norm):
+        return None
+    rel = orig[len(repo_norm):].replace(os.sep, "/")
+    if any(part in REPO_SKIP for part in rel.split("/")):
+        return None
+    if listing:
+        return rel if rel else "./"
+    if not rel or rel.endswith((".py", ".pyc")):
+        return None
+    return rel
+
+
+def _record_repo(st, rel):
+    for f in st["fixture_stack"]:
+        st["repo_fixture_reads"].setdefault(f, set()).add(rel)
+    cur = st["current"]
+    if cur is None:
+        st["repo_session"].add(rel)
+    else:
+        st["repo_tests"].setdefault(cur, set()).add(rel)
+
+
 def _record(st, rel):
     for f in st["fixture_stack"]:
         st["fixture_reads"].setdefault(f, set()).add(rel)
@@ -128,10 +179,14 @@ def _hook(event, args):
         return
     if event == "open":
         rel = rel_under(args[0] if args else None, oa)
-        if rel is None:
-            return
         mode = args[1] if len(args) > 1 else None
         flags = args[2] if len(args) > 2 else None
+        if rel is None:
+            # S6-B3310: a repo-wide READ goes under its own key, never a write
+            rr = _repo_rel(args[0] if args else None, st["repo"], oa)
+            if rr is not None and is_read(mode, flags):
+                _record_repo(st, rr)
+            return
         if is_write(mode, flags):
             st["writes"].setdefault(st["current"] or SESSION, set()).add(rel)
         if not is_read(mode, flags):
@@ -141,6 +196,10 @@ def _hook(event, args):
         rel = rel_dir_under(args[0] if args else None, oa)
         if rel is not None:
             _record(st, rel)
+        else:
+            rr = _repo_rel(args[0] if args else None, st["repo"], oa, listing=True)
+            if rr is not None:
+                _record_repo(st, rr)
     elif event in SPAWN_EVENTS:
         st["spawned"].add(st["current"] or SESSION)
 
@@ -152,6 +211,7 @@ def pytest_configure(config):
     root = os.environ.get(ENV_ROOT) or os.getcwd()
     _STATE["oa"] = os.path.normcase(os.path.join(os.path.abspath(root),
                                                  "output_audit")) + os.sep
+    _STATE["repo"] = os.path.normcase(os.path.abspath(root)) + os.sep   # S6-B3310
     if not _STATE["installed"]:
         sys.addaudithook(_hook)       # cannot be removed; inert when oa is None
         _STATE["installed"] = True
@@ -195,6 +255,12 @@ def pytest_sessionfinish(session, exitstatus):
         inherited = set().union(*(fr[n] for n in names if n in fr)) if fr else set()
         if inherited:
             tests.setdefault(node, set()).update(inherited)
+    rtests = {k: set(v) for k, v in _STATE["repo_tests"].items()}
+    rfr = _STATE["repo_fixture_reads"]
+    for node, names in _STATE["uses"].items():
+        inherited = set().union(*(rfr[n] for n in names if n in rfr)) if rfr else set()
+        if inherited:
+            rtests.setdefault(node, set()).update(inherited)
     doc = {"schema": 1,
            "watched": _STATE["oa"],
            "n_items": len(getattr(session, "items", []) or []),
@@ -204,5 +270,9 @@ def pytest_sessionfinish(session, exitstatus):
            "session": sorted(_STATE["session"]),
            "writes": {k: sorted(v) for k, v in sorted(_STATE["writes"].items())},
            "spawned": sorted(_STATE["spawned"]),
-           "addr": dict(sorted(_STATE["addr"].items()))}
+           "addr": dict(sorted(_STATE["addr"].items())),
+           # S6-B3310: read by scripts/pregate_select.py, never by the gate
+           "repo_watched": _STATE["repo"],
+           "repo_tests": {k: sorted(v) for k, v in sorted(rtests.items())},
+           "repo_session": sorted(_STATE["repo_session"])}
     Path(out).write_text(json.dumps(doc, indent=1), encoding="utf-8")

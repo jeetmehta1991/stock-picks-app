@@ -1,5 +1,5 @@
 {
-  "_doc": "S6-B3204 (owner approved 2026-10-18): the Phase-1B PORTFOLIO-UNIT evaluation - equal-weight blend of the 16 admitted lines' reproduced NET trade sets. DISCLOSED-RE-READ: the holdout window was read per-strategy at admission; this blend re-uses those banked trades and spends no new read. DISCLOSURES: equal weight per line (no admitted line carries a ruled tier); each trade at TRADE_FRACTION of book for the MDD scale; pnl realized at exit date, so intra-trade drawdown is understated.",
+  "_doc": "S6-B3204 (owner approved 2026-10-18): the Phase-1B PORTFOLIO-UNIT evaluation - equal-weight blend of the 16 admitted lines' reproduced NET trade sets. DISCLOSED-RE-READ: the holdout window was read per-strategy at admission; this blend re-uses those banked trades and spends no new read. DISCLOSURES: equal weight per line (no admitted line carries a ruled tier); each trade at TRADE_FRACTION of book for the MDD scale; pnl realized at exit date, so intra-trade drawdown is understated. Day counts: Monday-to-Friday business days, window_bdays beside each window (S6-B3298); the SPY control counts exchange trading days.",
   "basis": "net = roster_core.net_pnl (winsorize 300.0, cost 20.0 bps)",
   "trade_fraction": 0.015,
   "is_holdout_boundary": "2025-05-05",
@@ -119,16 +119,18 @@
   ],
   "portfolio": {
     "full": {
-      "days": 1048,
-      "sharpe": 1.694,
+      "days": 1039,
+      "window_bdays": 1043,
+      "sharpe": 1.631,
       "mdd_pct": -20.82,
-      "total_return_pct": 152.03,
-      "calmar": 1.196,
-      "deflated_sharpe": 1.468,
+      "total_return_pct": 141.65,
+      "calmar": 1.146,
+      "deflated_sharpe": 1.429,
       "psr": 1.0
     },
     "in_sample": {
       "days": 778,
+      "window_bdays": 782,
       "sharpe": 0.129,
       "mdd_pct": -20.82,
       "total_return_pct": 2.64,
@@ -137,12 +139,13 @@
       "psr": 0.5926
     },
     "holdout": {
-      "days": 270,
-      "sharpe": 4.679,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 4.558,
       "mdd_pct": -5.68,
-      "total_return_pct": 145.56,
-      "calmar": 23.126,
-      "deflated_sharpe": 0.375,
+      "total_return_pct": 135.44,
+      "calmar": 22.652,
+      "deflated_sharpe": 1.222,
       "psr": 1.0
     }
   },
@@ -168,25 +171,28 @@
   },
   "per_line_holdout": {
     "smc_breaker_block_long": {
-      "days": 264,
-      "sharpe": 1.448,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 1.504,
       "mdd_pct": -0.29,
-      "total_return_pct": 0.81,
-      "calmar": 2.66,
-      "deflated_sharpe": 1.411,
-      "psr": 0.942
+      "total_return_pct": 0.83,
+      "calmar": 2.776,
+      "deflated_sharpe": 1.462,
+      "psr": 0.9479
     },
     "pead_long_high_yoy_growth_only": {
-      "days": 264,
-      "sharpe": 3.211,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 3.304,
       "mdd_pct": -0.73,
-      "total_return_pct": 8.09,
-      "calmar": 10.527,
-      "deflated_sharpe": 2.902,
+      "total_return_pct": 8.27,
+      "calmar": 10.886,
+      "deflated_sharpe": 2.97,
       "psr": 1.0
     },
     "pead_with_smart_money_long": {
       "days": 260,
+      "window_bdays": 261,
       "sharpe": 2.31,
       "mdd_pct": -0.37,
       "total_return_pct": 2.06,
@@ -195,106 +201,118 @@
       "psr": 0.9998
     },
     "institutional_breakout_confirmation_long": {
-      "days": 264,
-      "sharpe": 2.918,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 2.781,
       "mdd_pct": -0.38,
-      "total_return_pct": 2.21,
-      "calmar": 5.573,
-      "deflated_sharpe": 2.672,
-      "psr": 1.0
+      "total_return_pct": 1.9,
+      "calmar": 4.828,
+      "deflated_sharpe": 2.591,
+      "psr": 0.9999
     },
     "institutional_committed_growth_long": {
-      "days": 266,
-      "sharpe": 2.997,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 2.948,
       "mdd_pct": -1.29,
-      "total_return_pct": 12.58,
-      "calmar": 9.234,
-      "deflated_sharpe": 1.1,
+      "total_return_pct": 12.15,
+      "calmar": 9.103,
+      "deflated_sharpe": 1.164,
       "psr": 1.0
     },
     "institutional_high_conviction_long": {
-      "days": 266,
-      "sharpe": 2.91,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 2.833,
       "mdd_pct": -1.59,
-      "total_return_pct": 14.3,
-      "calmar": 8.501,
-      "deflated_sharpe": 2.132,
+      "total_return_pct": 13.66,
+      "calmar": 8.282,
+      "deflated_sharpe": 2.113,
       "psr": 1.0
     },
     "institutional_multi_quarter_persistence_long": {
-      "days": 266,
-      "sharpe": 3.296,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 3.293,
       "mdd_pct": -0.88,
-      "total_return_pct": 11.68,
-      "calmar": 12.579,
-      "deflated_sharpe": 1.484,
+      "total_return_pct": 11.42,
+      "calmar": 12.544,
+      "deflated_sharpe": 1.41,
       "psr": 1.0
     },
     "institutional_oversold_long": {
-      "days": 270,
-      "sharpe": 1.422,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 1.004,
       "mdd_pct": -0.26,
-      "total_return_pct": 0.72,
-      "calmar": 2.536,
-      "deflated_sharpe": 1.403,
-      "psr": 0.9482
+      "total_return_pct": 0.48,
+      "calmar": 1.743,
+      "deflated_sharpe": 0.997,
+      "psr": 0.8645
     },
     "institutional_persistence_oversold_long": {
-      "days": 266,
-      "sharpe": 1.892,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 1.636,
       "mdd_pct": -0.85,
-      "total_return_pct": 1.96,
-      "calmar": 2.167,
-      "deflated_sharpe": 1.818,
-      "psr": 0.9834
+      "total_return_pct": 1.49,
+      "calmar": 1.689,
+      "deflated_sharpe": 1.595,
+      "psr": 0.956
     },
     "institutional_recent_init_momentum_long": {
-      "days": 264,
-      "sharpe": 2.53,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 2.436,
       "mdd_pct": -0.85,
-      "total_return_pct": 8.99,
-      "calmar": 10.066,
-      "deflated_sharpe": 1.727,
+      "total_return_pct": 8.55,
+      "calmar": 9.688,
+      "deflated_sharpe": 1.724,
       "psr": 1.0
     },
     "institutional_recent_init_volume_long": {
-      "days": 264,
-      "sharpe": 2.767,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 2.737,
       "mdd_pct": -0.29,
-      "total_return_pct": 3.82,
-      "calmar": 12.532,
-      "deflated_sharpe": 2.391,
+      "total_return_pct": 3.75,
+      "calmar": 12.455,
+      "deflated_sharpe": 2.376,
       "psr": 1.0
     },
     "institutional_strong_conviction_long": {
-      "days": 266,
-      "sharpe": 2.965,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 2.911,
       "mdd_pct": -1.48,
-      "total_return_pct": 12.14,
-      "calmar": 7.75,
-      "deflated_sharpe": 0.798,
+      "total_return_pct": 11.73,
+      "calmar": 7.638,
+      "deflated_sharpe": 0.945,
       "psr": 1.0
     },
     "xs_momentum_top_decile": {
-      "days": 266,
-      "sharpe": 2.526,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 2.211,
       "mdd_pct": -0.22,
-      "total_return_pct": 1.91,
-      "calmar": 8.261,
-      "deflated_sharpe": 2.256,
-      "psr": 0.9999
+      "total_return_pct": 1.34,
+      "calmar": 5.889,
+      "deflated_sharpe": 2.095,
+      "psr": 0.9978
     },
     "xs_low_beta_with_smart_money_long": {
-      "days": 266,
-      "sharpe": 1.759,
+      "days": 261,
+      "window_bdays": 261,
+      "sharpe": 1.014,
       "mdd_pct": -0.47,
-      "total_return_pct": 1.48,
-      "calmar": 3.005,
-      "deflated_sharpe": 1.695,
-      "psr": 0.9826
+      "total_return_pct": 0.65,
+      "calmar": 1.347,
+      "deflated_sharpe": 1.006,
+      "psr": 0.854
     },
     "three_white_soldiers": {
       "days": 205,
+      "window_bdays": 261,
       "sharpe": 1.512,
       "mdd_pct": -0.15,
       "total_return_pct": 0.54,
@@ -304,6 +322,7 @@
     },
     "pairs_mean_reversion_long": {
       "days": 27,
+      "window_bdays": 261,
       "sharpe": 14.821,
       "mdd_pct": -0.02,
       "total_return_pct": 12.49,
@@ -315,6 +334,7 @@
   "per_line_in_sample": {
     "smc_breaker_block_long": {
       "days": 730,
+      "window_bdays": 782,
       "sharpe": 0.606,
       "mdd_pct": -0.77,
       "total_return_pct": 0.74,
@@ -324,6 +344,7 @@
     },
     "pead_long_high_yoy_growth_only": {
       "days": 768,
+      "window_bdays": 782,
       "sharpe": 1.767,
       "mdd_pct": -2.12,
       "total_return_pct": 17.21,
@@ -333,6 +354,7 @@
     },
     "pead_with_smart_money_long": {
       "days": 767,
+      "window_bdays": 782,
       "sharpe": 0.507,
       "mdd_pct": -3.06,
       "total_return_pct": 1.46,
@@ -342,6 +364,7 @@
     },
     "institutional_breakout_confirmation_long": {
       "days": 778,
+      "window_bdays": 782,
       "sharpe": -0.383,
       "mdd_pct": -0.82,
       "total_return_pct": -0.52,
@@ -351,6 +374,7 @@
     },
     "institutional_committed_growth_long": {
       "days": 759,
+      "window_bdays": 782,
       "sharpe": 0.445,
       "mdd_pct": -1.56,
       "total_return_pct": 2.39,
@@ -360,6 +384,7 @@
     },
     "institutional_high_conviction_long": {
       "days": 768,
+      "window_bdays": 782,
       "sharpe": -0.088,
       "mdd_pct": -3.58,
       "total_return_pct": -0.52,
@@ -369,6 +394,7 @@
     },
     "institutional_multi_quarter_persistence_long": {
       "days": 767,
+      "window_bdays": 782,
       "sharpe": 0.603,
       "mdd_pct": -2.59,
       "total_return_pct": 4.38,
@@ -378,6 +404,7 @@
     },
     "institutional_oversold_long": {
       "days": 747,
+      "window_bdays": 782,
       "sharpe": -1.034,
       "mdd_pct": -1.92,
       "total_return_pct": -2.43,
@@ -387,6 +414,7 @@
     },
     "institutional_persistence_oversold_long": {
       "days": 727,
+      "window_bdays": 782,
       "sharpe": -0.289,
       "mdd_pct": -2.24,
       "total_return_pct": -0.6,
@@ -396,6 +424,7 @@
     },
     "institutional_recent_init_momentum_long": {
       "days": 778,
+      "window_bdays": 782,
       "sharpe": -0.799,
       "mdd_pct": -2.92,
       "total_return_pct": -2.47,
@@ -405,6 +434,7 @@
     },
     "institutional_recent_init_volume_long": {
       "days": 778,
+      "window_bdays": 782,
       "sharpe": -0.0,
       "mdd_pct": -2.47,
       "total_return_pct": -0.01,
@@ -414,6 +444,7 @@
     },
     "institutional_strong_conviction_long": {
       "days": 752,
+      "window_bdays": 782,
       "sharpe": 0.367,
       "mdd_pct": -2.32,
       "total_return_pct": 2.38,
@@ -423,6 +454,7 @@
     },
     "xs_momentum_top_decile": {
       "days": 468,
+      "window_bdays": 782,
       "sharpe": 1.769,
       "mdd_pct": -0.31,
       "total_return_pct": 1.61,
@@ -432,6 +464,7 @@
     },
     "xs_low_beta_with_smart_money_long": {
       "days": 768,
+      "window_bdays": 782,
       "sharpe": -0.538,
       "mdd_pct": -3.72,
       "total_return_pct": -2.12,
@@ -441,6 +474,7 @@
     },
     "three_white_soldiers": {
       "days": 739,
+      "window_bdays": 782,
       "sharpe": -0.964,
       "mdd_pct": -2.55,
       "total_return_pct": -2.29,
@@ -450,6 +484,7 @@
     },
     "pairs_mean_reversion_long": {
       "days": 743,
+      "window_bdays": 782,
       "sharpe": -1.063,
       "mdd_pct": -14.95,
       "total_return_pct": -12.93,

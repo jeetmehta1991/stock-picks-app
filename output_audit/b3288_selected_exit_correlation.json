@@ -343,6 +343,7 @@
   "effective_n": 12.165,
   "portfolio_holdout": {
     "days": 261,
+    "window_bdays": 261,
     "sharpe": 6.244,
     "mdd_pct": -4.6,
     "total_return_pct": 326.46,
@@ -352,6 +353,7 @@
   },
   "portfolio_holdout_admissions_only": {
     "days": 261,
+    "window_bdays": 261,
     "sharpe": 4.558,
     "mdd_pct": -5.68,
     "total_return_pct": 135.44,
@@ -361,6 +363,7 @@
   },
   "portfolio_holdout_funnel_only": {
     "days": 261,
+    "window_bdays": 261,
     "sharpe": 5.314,
     "mdd_pct": -1.07,
     "total_return_pct": 82.0,

@@ -4,7 +4,7 @@
 - holdout window 2025-05-05 .. 2026-05-05; basis net = roster_core.net_pnl (winsorize 300.0, cost 20.0 bps)
 - average pairwise rho 0.0948, median 0.0303, 10 of 253 pairs above 0.5 in magnitude
 - eigenvalue effective N 12.165 of 23
-- equal-weight holdout blend: Sharpe 6.244 over 261 days, max drawdown -4.6 pct; the live pooled bar 1.0 is cleared
+- equal-weight holdout blend: Sharpe 6.244 over 261 of 261 business days (SPY: exchange trading days), max drawdown -4.6 pct; the live pooled bar 1.0 is cleared
 - admissions-only blend Sharpe 4.558; funnel-only blend Sharpe 5.314; SPY buy-and-hold Sharpe 1.972 (the control)
 
 | pair | rho |
