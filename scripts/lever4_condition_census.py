@@ -51,8 +51,17 @@ import signals_used_lint as sul  # noqa: E402
 OUT = ROOT / "output_audit" / "b3139_lever4_condition_census.json"
 VIEW = ROOT / "output_audit" / "strategy_optimisation_status.json"
 OPEN = {"NOT-STARTED", "STALLED-CAMPAIGN"}
+# S6-B3303 (B3139q-r115): an owner-opened campaign owns its strategy, so it
+# is not open for a rewrite. MEASURED r115: without this class the census
+# refused the view's IN-CAMPAIGN rows (exit 1). Classified BY HAND on
+# purpose - a new status must refuse here, not fall silently on a side -
+# and test_b3303 holds OPEN | BUSY | CLOSED equal to the builder's
+# build_strategy_status.ALL_STATUSES, so the next status fails a pin at the
+# commit that adds it instead of this run weeks later.
+BUSY = {"IN-CAMPAIGN"}
 CLOSED = {"DONE-ADMITTED", "IN-ROSTER-FUNNEL", "IN-ROSTER-MIRROR", "DONE-OWNER-CLOSED",
-          "DISABLED", "PRUNED-DUPLICATE", "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE"}
+          "CLOSED-NO-READ", "DISABLED", "PRUNED-DUPLICATE", "CLOSED-NEGATIVE",
+          "CONTAINED-IN-REPRESENTATIVE"}
 
 
 def budget_legs(node):
@@ -130,7 +139,7 @@ def main(argv=None) -> int:
     if a.out:
         OUT = Path(a.out)
     view = {r["strategy"]: r for r in json.loads(VIEW.read_text(encoding="utf-8"))["rows"]}
-    unknown = {r.get("status") for r in view.values()} - OPEN - CLOSED
+    unknown = {r.get("status") for r in view.values()} - OPEN - BUSY - CLOSED
     if unknown:
         raise SystemExit(f"status view has statuses this census does not classify: "
                          f"{sorted(unknown)}")

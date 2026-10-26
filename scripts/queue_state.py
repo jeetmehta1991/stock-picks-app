@@ -202,6 +202,24 @@ def row_id(row):
     return m.group(1)
 
 
+_BULLET = re.compile(r"^-\s*\*\*(" + TICKET_ID + r")\*\*")
+
+
+def opening_id(line):
+    """S6-B3312 (B3139q-r115): the ticket id a ledger LINE opens with - a
+    table row, bold or not (row_id), or a legacy `- **id**` bullet (91
+    bullet lines over 75 ids, MEASURED r115). A reader that wants every row
+    NAMING a ticket reads ids here; one that wants a row's STATE reads
+    rows(), which takes the bold schema only - an unbolded row's second
+    cell is a description, and reading it as a state would invent one
+    (B1969). None for a composite id or a line that opens with no id."""
+    rid = row_id(line)
+    if rid:
+        return rid
+    m = _BULLET.match((line or "").strip())
+    return m.group(1) if m and "/" not in m.group(1) else None
+
+
 def history(tid, path=None, text=None):
     """S6-B3307: every row of ONE ticket as (line_no, row), in file order,
     bold id or not. MEASURED B3139q-r113: 2 of the 16 OPEN and DEFERRED

@@ -2668,7 +2668,7 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **Programme note:** the close triggered the owner-directed RCA on the tightening workflow -
   output_audit/b3203_tightening_workflow_rca.md (S6-B3203); decision tickets S6-B3204..S6-B3207.
 
-## L. MEAN-REVERSION FAMILY (cmf_flip - IN CAMPAIGN)
+## L. MEAN-REVERSION FAMILY (cmf_flip - CLOSED, NO READ)
 
 ### L.1 Opened (B3139q-r86; owner word 2026-10-21, verbatim "Approve all recs execute", approving S6-B3232 (a); S6-B3246)
 
@@ -2709,6 +2709,14 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   long-campaign shortlist ranks cmf_flip first again; S6-B3303 asks the owner for a terminal lane
   for a campaign closed without a read. The mirror rule (m) is unaffected: nothing was admitted.
 
+### L.4 The lane (B3139q-r115; owner word 2026-10-26, verbatim "Approve all recs fable mode", on the r113 close's recommendation (a) for S6-B3303)
+
+- **CLOSED-NO-READ:** scripts/build_strategy_status.py reads this part's T6 NOT SPENT entry
+  (load_no_read_closures) and the view gives cmf_flip the terminal status CLOSED-NO-READ, ranked
+  below DONE-OWNER-CLOSED and outside every work lane; the long shortlist leaves it out. Its
+  Table A file stays in strategy_optimisation/tighten/ as a departed record, as an outright
+  closure's does. Reopening is the owner's word.
+
 ## M. MOMENTUM FAMILY (williams_r_oversold - IN CAMPAIGN)
 
 ### M.1 Opened (B3139q-r86; owner word 2026-10-21, verbatim "Approve all recs execute", approving S6-B3232 (a); S6-B3247)
@@ -2740,6 +2748,7 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **F1 REGISTERED (B3139q-r106):** SPECS_PHASE0['williams_r_oversold'] - P7 williams_r threshold (LONG OR-arm, 2 free levels), P9 rsi_2 hatch long (1), P3 cmf_positive (2), P2 cmf_negative (SHORT, 2), P10 rsi_2 hatch short (1), P8 williams_r > -20 held with no band; P1/P4/P5/P6 DEFINED-NO-ACTUATOR, P11 owner-gated; validate_spec clean; the OR arms are written as the @group axes the sweep takes.
 - **T4 PER-SIDE SWEEPS (B3139q-r107):** LONG - williams_r_oversold long: production reproduces 1.0000 of its fires (coverage 1.0000, 1327 landed fires, 0 unmatched join rows; the survival filter dropped 0 leaving 1327); 18 of 18 cells graded over 468 trials; best cell williams_r lt -90.0, rsi_2 lt 3.0, cmf gt 0.05 at time_stop_10d with IS sharpe 0.592 on 267 IS trades; production ranks 14 of 18; the 100-permutation null prices the best cell at p 0.0396 (null 95th percentile 0.557); holdout NOT read; status stamp 4a0836878. SHORT - williams_r_oversold short: production reproduces 1.0000 of its fires (coverage 1.0000, 1208 landed fires, 0 unmatched join rows; the survival filter dropped 0 leaving 1208); 6 of 6 cells graded over 156 trials; best cell williams_r gt -20.0, rsi_2 gt 95.0, cmf lt 0.0 at breakeven_plus_trail with IS sharpe -0.198 on 911 IS trades; production ranks 1 of 6; the 100-permutation null prices the best cell at p 1.0 (null 95th percentile -0.16); holdout NOT read; status stamp 4a0836878. Artifacts output_audit/b3289_williams_r_oversold_long_step1_is_surface.json and output_audit/b3289_williams_r_oversold_short_step1_is_surface.json. Preregistration candidates: long williams_r lt -90.0 and rsi_2 lt 3.0 and cmf gt 0.05 at time_stop_10d; short NONE - the best cell (williams_r gt -20.0 and rsi_2 gt 95.0 and cmf lt 0.0 at breakeven_plus_trail) has IS sharpe -0.198, so no level in the band beats zero in-sample and there is nothing to read on the holdout. The holdout read is the owner's decision (S6-B3247).
 - **T5 STEP-2 READ (B3139q-r114; the owner approved the read 2026-10-24, and S6-B3295 (a), ruled 2026-10-26 'Approve all recs', let it run):** the first attempt REFUSED before any holdout cell was read - production reproduced 0.2298 of the fires against the sweep's 1.0000, because offline_holdout_read rebuilt the axes without the S6-B3290 OR group and ANDed the williams_r and rsi_2 arms (S6-B3313, fixed and pinned). Re-run: verdict **FAIL** - the pre-registered cell williams_r lt -90.0, rsi_2 lt 3.0, cmf gt 0.05 at time_stop_10d: holdout Sharpe 0.639 on 125 trades (full 392), PF 1.402, sortino 0.869, PSR 0.9204; 3 of 6 live gates pass (failed: pooled_sharpe, sortino, psr). Reproduction 1.0, band coverage complete with the surface counted; peek bound 0 of 468 other lines clear all gates (diagnostic, never promotable). The short leg had nothing to read (S6-B3293). Artifact output_audit/b3299_williams_r_oversold_long_step2_holdout.json. **What waits:** the campaign's closure is the owner's word, as bollinger_lower's and naked_poc_retest_long's were (output_audit/owner_campaign_closures.json); S6-B3247.
+- **BASIS (B3139q-r115):** GROSS - this read graded the cube's raw P&L (offline_level_sweep.load, a named raw scorer, L879), as did the T4 sweep that chose its candidate. The roster's net basis clips at +/-300 pct and subtracts 0.2 a trade, so the FAIL holds net unless a holdout trade in the cell moved more than 300 pct (not checked - the check re-reads the spent holdout). The depth instruments' basis is the owner's decision S6-B3314.
 
 ## N. SQUEEZE FAMILY (squeeze_breakout - IN CAMPAIGN)
 
@@ -2779,6 +2788,7 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   registering them early holds the approved depth read behind unapproved rows: a draft of r111 did,
   the pre-gate caught it on test_b3294's real-artifact arm, and it was reverted before commit.
 - **T5 DEPTH STEP-2 READ (B3139q-r114; approved 2026-10-24, run after S6-B3295 (a)):** verdict **FAIL** - the pre-registered cell kc_room ge 2.5, bb_room le 2.0 at class_time_stop: holdout Sharpe -0.154 on 86 trades (full 578), PF 0.87, sortino -0.185, PSR 0.3346; 2 of 6 live gates pass (failed: pooled_sharpe, profit_factor, sortino, psr). Reproduction 1.0, depth band coverage complete; peek bound 0 of 104. Diagnostic only, a peek that promotes nothing: production's own best holdout line is breakeven_plus_trail at 0.3 (4 of 6 gates). Artifact output_audit/b3299_squeeze_breakout_depth_step2_holdout.json. **What follows (owner word 2026-10-26 'Approve all recs', on the r113 close's recommendation 'all 12, after the depth read'):** B1-B12 enter SPECS_PHASE0 as the breadth leg, their Step-1 grid runs, and their own Step-3 read is labelled DISCLOSED-RE-READ; S6-B3248.
+- **BASIS (B3139q-r115):** GROSS - this read graded the cube's raw P&L (offline_level_sweep.load, a named raw scorer, L879), as did the T4 sweep that chose its candidate. The roster's net basis clips at +/-300 pct and subtracts 0.2 a trade, so the FAIL holds net unless a holdout trade in the cell moved more than 300 pct (not checked - the check re-reads the spent holdout). The depth instruments' basis is the owner's decision S6-B3314.
 
 ## O. PIVOT FAMILY (camarilla_r4_breakout - IN CAMPAIGN)
 

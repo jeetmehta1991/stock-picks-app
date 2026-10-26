@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit adafdd452 at 2026-10-25 20:30:30 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit c762fcbd3 at 2026-10-26 08:40:12 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -20,8 +20,9 @@
 | IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | 7 |
 | IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded beyond R5, terminal (its Step 2 dropped 2026-10-20, S6-B2420) | 8 |
 | DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 4 |
+| CLOSED-NO-READ - a campaign the owner closed without spending its Step-2 read, terminal (S6-B3303) | 1 |
 | IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | 3 |
-| STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | 5 |
+| STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | 4 |
 | NOT-STARTED | 166 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
@@ -33,7 +34,7 @@
 
 | stream | meaning | count |
 |---|---|---|
-| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 11 |
+| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 10 |
 | BOTH | tightenable AND fire-starved | 28 |
 | LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 113 |
 | NONE | no numeric knob and not starved - a BREADTH candidate | 22 |
@@ -45,12 +46,12 @@
 | news_sentiment | 6 |
 | momentum | 5 |
 | confluence | 4 |
-| mean_reversion | 3 |
 | breakout | 3 |
 | pivot | 3 |
 | candle | 3 |
 | trend | 3 |
 | smc | 3 |
+| mean_reversion | 2 |
 | chart_pattern | 1 |
 | event_driven | 1 |
 | sec_edgar_sleeve | 1 |
@@ -66,6 +67,8 @@
 - `IN-CAMPAIGN` / `STALLED-CAMPAIGN` read the **owner-opened register** (`output_audit/owner_campaign_opens.json`, S6-B3194): a listed strategy is IN-CAMPAIGN while one of its register tickets is non-terminal (B2829), and STALLED-CAMPAIGN (B2833, owner-approved 2026-09-15) once every one is terminal - campaigned, concluded mid-path, still in its stream lane. **A mention is not a campaign**: an unlisted strategy is NOT-STARTED whatever tickets name it. The vocabulary heuristic this replaces labelled 44 strategies and 4 were campaign subjects when read one by one; `mention_tickets` in the JSON keeps the full mention list.
 - `IN-ROSTER-FUNNEL` / `IN-ROSTER-MIRROR` (S6-B3135): read from scripts/phase1b_membership.py, the one reader of the Phase 1B roster. A funnel cell is terminal like an admission and closed to re-testing like one (owner 2026-09-29); a mirror is ungraded beyond R5 and terminal too - the owner dropped its Step 2 (S6-B2420, 2026-10-20).
 - `DONE-OWNER-CLOSED` (S6-B3135a, owner 2026-09-29): a campaign the owner closed outright (output_audit/owner_campaign_closures.json, each with the owner's words). Terminal; never auto-reopened. A closed mirror stays ON the Phase 1B roster - the closure ends its campaign, not its membership.
+- `CLOSED-NO-READ` (S6-B3303 (a), owner 2026-10-26): a campaign the owner closed without spending its Step-2 read - read from the campaign log's T6 NOT SPENT entries, each inside an owner-worded 'Closed' subsection. Terminal; never auto-reopened; the long shortlist leaves it out.
+- `proj. Step-1` (S6-B3306 (a)) is R5's fires scaled to the Step-1 shape. Where an ISOLATED Step-1 cube exists, its production-gate LONG fires against R5's on the same 200 tickers and window: news_momentum_long isolated 58 vs R5 4 (this view's proj. 10.4); orb_stocks_in_play_long isolated 72 vs R5 6 (this view's proj. 5.0); pivot_r1_breakout isolated 81 vs R5 38 (this view's proj. 79.0); smc_bos_continuation isolated 47 vs R5 9 (this view's proj. 8.0). Cause narrowed, not identified (R5's v1 occupancy coupling or producer / data drift; output_audit/b3306_r5_fire_gap_rca.json). Every lane still reads the R5 projection; re-basing it is the owner's decision (S6-B3306 (b)).
 - `exit cube` (S6-B3258 (b)): the R5 CLOSED fires that carry a row in the exit cube, read from output_audit/b3258_exit_cube_coverage_r5.json and checked against this build's trade log. `R5 fires` counts the trade log, open fires included; a re-grade over exits sees only the exit-cube count, so MISSING names fires a re-grade cannot see.
 
 ## Per strategy
@@ -80,7 +83,7 @@
 | r1_break_retest | pivot | 3371 | 309.8 |  | 100.0% | NONE | NOT-STARTED | 3371 of 3371 |
 | simple_below_ema_50_short | momentum_trend | 3299 | 177.8 | YES | 58.7% | NONE | NOT-STARTED | 3299 of 3299 |
 | force_index_breakout | breakout | 3013 | 276.9 |  | 100.0% | NONE | NOT-STARTED | 3013 of 3013 |
-| cmf_flip | mean_reversion | 2994 | 206.8 | YES | 75.1% | TIGHTEN | STALLED-CAMPAIGN | 2994 of 2994 |
+| cmf_flip | mean_reversion | 2994 | 206.8 | YES | 75.1% | - | CLOSED-NO-READ | 2994 of 2994 |
 | smc_liquidity_sweep_reversal | smc | 2933 | 13.9 | YES | 5.1% | LOOSEN | STALLED-CAMPAIGN | 2933 of 2933 |
 | macd_crossover | momentum | 2910 | 267.5 |  | 100.0% | NONE | NOT-STARTED | 2910 of 2910 |
 | macd_ichimoku | confluence | 2907 | 267.2 |  | 100.0% | - | DISABLED | 2907 of 2907 |

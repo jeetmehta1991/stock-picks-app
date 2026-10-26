@@ -10,6 +10,14 @@ read LIVE CODE instead of trusting the queue.
 
 This resolves LAST-ROW-WINS at read time. History is untouched.
 
+S6-B3312 (B3139q-r115): it now reads rows through queue_state, the reducer
+that superseded it (B1795). MEASURED before: its own bold-only pattern
+missed 158 of 2749 ticket ids (every dashed id, LEVER4 and S6-B1250 among
+them), and its closed-state list predated the six classes (B1784), so it
+reported OPEN 2591 / CLOSED 0 - every EXECUTED and DROPPED ticket open. The
+terminal set is queue_state.TERMINAL; the queue's unbolded legacy rows carry
+no state cell and are DISCLOSED (queue_state.unparsed), never counted.
+
 Usage:
     python scripts/queue_status.py                # counts by resolved status
     python scripts/queue_status.py --open         # only what is still open
@@ -19,25 +27,26 @@ from __future__ import annotations
 
 import argparse
 import collections
-import re
+import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import queue_state  # noqa: E402
+
 QUEUE = Path("EXECUTION_QUEUE.md")
-CLOSED_PREFIXES = ("DONE", "RESOLVED", "CLOSED", "SUPERSEDED", "RETRACTED",
-                   "NOTE", "N/A", "REVERTED")
-ROW = re.compile(r"^\|\s*\*\*(S6-B\d+\w*)\*\*\s*\|\s*\*{0,2}([^|]*?)\*{0,2}\s*\|", re.M)
 
 
-def parse(text: str) -> dict[str, list[str]]:
-    """ticket -> every status it has carried, in document order."""
+def parse(path) -> dict[str, list[str]]:
+    """ticket -> every state it has carried, in file order - read through
+    queue_state.rows (S6-B3312), never a pattern of this module's own."""
     out: dict[str, list[str]] = collections.defaultdict(list)
-    for tid, status in ROW.findall(text):
-        out[tid].append(status.strip())
+    for _, tid, state in queue_state.rows(path):
+        out[tid].append(state)
     return dict(out)
 
 
 def is_closed(status: str) -> bool:
-    return any(status.upper().startswith(p) for p in CLOSED_PREFIXES)
+    return status in queue_state.TERMINAL
 
 
 def resolve(history: dict[str, list[str]]) -> dict[str, str]:
@@ -52,8 +61,8 @@ def main() -> int:
     ap.add_argument("--queue", default=str(QUEUE))
     a = ap.parse_args()
 
-    text = Path(a.queue).read_text(encoding="utf-8", errors="ignore")
-    hist = parse(text)
+    hist = parse(a.queue)
+    skipped = queue_state.unparsed(a.queue)
     cur = resolve(hist)
     still_open = {t: s for t, s in cur.items() if not is_closed(s)}
 
@@ -75,6 +84,8 @@ def main() -> int:
         return 0
 
     print(f"tickets: {len(cur)} | rows: {sum(len(v) for v in hist.values())}")
+    print(f"  (+ {len(skipped)} ids in unbolded legacy rows with no state cell - "
+          "disclosed, not counted; queue_state.unparsed)")
     print(f"  OPEN   {len(still_open)}")
     print(f"  CLOSED {len(cur) - len(still_open)}")
     naive = sum(1 for v in hist.values() for s in v if not is_closed(s))

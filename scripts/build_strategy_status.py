@@ -36,13 +36,13 @@ judgement:
                     output_audit/owner_campaign_opens.json (S6-B3194);
                     mention_tickets keeps every ledger row naming it
   admitted          present in phase_1b_step2_admissions.json
-  status            one of eleven, mutually exclusive (B2825/B2833/
-                    S6-B3135/S6-B3135a), decided by status_for():
-                    DONE-ADMITTED / IN-ROSTER-FUNNEL / DONE-OWNER-CLOSED /
-                    DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE /
+  status            one of twelve, mutually exclusive (B2825/B2833/
+                    S6-B3135/S6-B3135a/S6-B3303), decided by status_for():
+                    DONE-ADMITTED / IN-ROSTER-FUNNEL / IN-ROSTER-MIRROR /
+                    DONE-OWNER-CLOSED / CLOSED-NO-READ / DISABLED /
+                    PRUNED-DUPLICATE / CLOSED-NEGATIVE /
                     CONTAINED-IN-REPRESENTATIVE (terminal)
-                    IN-ROSTER-MIRROR / IN-CAMPAIGN / STALLED-CAMPAIGN /
-                    NOT-STARTED (in lanes)
+                    IN-CAMPAIGN / STALLED-CAMPAIGN / NOT-STARTED (in lanes)
 
 STREAM IS THE HONEST PART, so its rule is stated rather than implied:
   TIGHTEN  the entry condition compares a signal to a NUMBER and that magnitude
@@ -442,11 +442,24 @@ CAMPAIGN_VOCAB = ("campaign", "step 1", "step-1", "step 2", "step-2",
                   "grader", "admission")
 
 
+def _qs():
+    """queue_state - the ONE reader of ledger ids (S6-B3312, L593) -
+    imported on first use with scripts/ on the path, so a caller that
+    imports this module alone reads ids the way main() does."""
+    sp = str(ROOT / "scripts")
+    if sp not in sys.path:
+        sys.path.insert(0, sp)
+    import queue_state
+    return queue_state
+
+
 def campaign_tickets(qtext: str, name: str) -> tuple:
     """(campaign_ids, mention_ids) for `name`, ROW-scoped.
 
-    A ledger row opens with its ticket id (table `| **id**` or legacy
-    `- **id**` form) - the structural anchor L748 requires - and the name
+    A ledger row opens with its ticket id - a table row, bold or not, or a
+    legacy `- **id**` bullet, read by queue_state.opening_id (S6-B3312: a
+    bold-only pattern blind to dashed ids dropped 211 ids, LEVER4 among
+    them) - the structural anchor L748 requires - and the name
     must appear in THAT row. campaign_ids additionally require a
     CAMPAIGN_VOCAB token in the row; mention_ids do not, and are kept so a
     reader can still ask "who talks about this strategy".
@@ -458,19 +471,19 @@ def campaign_tickets(qtext: str, name: str) -> tuple:
     """
     camp, ment = set(), set()
     for line in qtext.splitlines():
-        m = re.match(r"[|-]\s*\*\*(S6-B\d+[a-z]?(?:\.[a-z0-9]+)?)\*\*", line)
+        tid = _qs().opening_id(line)
         # B2830: WORD-BOUNDED name match. Bare `name in line` flagged
         # 52w_low_breakdown off a ticket naming only
         # 52w_low_breakdown_pullback_short - a strategy whose name is a
         # substring of a sibling's inherits the sibling's campaigns
         # (L748, substring variant; found by the #270 whole-row re-read).
-        if not m or not re.search(
+        if not tid or not re.search(
                 r"(?<![a-z0-9_])" + re.escape(name) + r"(?![a-z0-9_])", line):
             continue
-        ment.add(m.group(1))
+        ment.add(tid)
         low = line.lower()
         if any(v in low for v in CAMPAIGN_VOCAB):
-            camp.add(m.group(1))
+            camp.add(tid)
     return sorted(camp), sorted(ment)
 
 
@@ -645,11 +658,21 @@ def classify_stream(tightenable: bool, projected: float) -> str:
 # mirror policy, closed to re-testing like every member ('2 yes. No more
 # retesting', 2026-09-29), with no work scheduled - and, being an owner
 # decision rather than a gate verdict, never flagged for reopening.
+# S6-B3303 (a) (owner ruled 2026-10-26): CLOSED-NO-READ is terminal and, an
+# owner decision rather than a gate verdict, never flagged for reopening -
+# reopening it is the owner's word, as every reopening is.
 TERMINAL_STATUSES = ("DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED",
-                     "IN-ROSTER-MIRROR", "DISABLED", "PRUNED-DUPLICATE",
-                     "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE")
+                     "CLOSED-NO-READ", "IN-ROSTER-MIRROR", "DISABLED",
+                     "PRUNED-DUPLICATE", "CLOSED-NEGATIVE",
+                     "CONTAINED-IN-REPRESENTATIVE")
 NEVER_REOPEN = ("DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED",
-                "IN-ROSTER-MIRROR")
+                "CLOSED-NO-READ", "IN-ROSTER-MIRROR")
+# the work lanes' statuses: TERMINAL_STATUSES + LANE_STATUSES is the whole
+# vocabulary status_for can return, which a reader of the view classifies
+# against (S6-B3303 - MEASURED B3139q-r115: the LEVER4 census, holding its
+# own copy, refused the view's IN-CAMPAIGN rows; test_b3303 holds them equal)
+LANE_STATUSES = ("IN-CAMPAIGN", "STALLED-CAMPAIGN", "NOT-STARTED")
+ALL_STATUSES = TERMINAL_STATUSES + LANE_STATUSES
 OWNER_CLOSURES = Path("output_audit") / "owner_campaign_closures.json"
 
 
@@ -715,6 +738,85 @@ def load_campaign_opens(root=ROOT) -> dict:
         if s in out:
             raise ValueError(f"{p}: {s} is opened twice")
         out[s] = r
+    return out
+
+
+# S6-B3303 (a) (owner ruled 2026-10-26, 'Approve all recs fable mode'): a
+# campaign the owner CLOSED WITHOUT A READ - its Step-2 pre-registration left
+# unspent on the owner's word - is TERMINAL. Before the ruling such a row fell
+# to STALLED-CAMPAIGN, a work lane: the r109 build ranked cmf_flip 1 of 91 on
+# the long shortlist one build after the owner closed it (L804 - a vocabulary
+# naming only planned states resurrects finished work). Read from the
+# campaign log's T6 NOT SPENT entries, the record the ruling names.
+CAMPAIGN_LOG = Path("STRATEGY_CAMPAIGN_LOG.md")
+NO_READ_MARK = "- **T6 NOT SPENT"
+_LOG_PART = re.compile(r"^## [A-Z]+\. .*\(([^()]*)\)\s*$")
+_LOG_CLOSED = re.compile(r"^### [A-Z]+\.\d+ Closed \(.*owner word")
+
+
+def load_no_read_closures(names, campaign_opens, root=ROOT, text=None) -> dict:
+    """{strategy: {line, part, closed}} - one record per T6 NOT SPENT entry
+    of the campaign log, attributed to the ONE strategy its part heading
+    names (the text before ' - ' inside the heading's parentheses). FAILS
+    CLOSED (L642): an entry outside an owner-worded 'Closed' subsection, a
+    heading naming no registered strategy or several, a strategy the owner
+    never opened (the S6-B3194 register) or one closed twice RAISES - a
+    reader that skipped a malformed entry would hand a closed campaign back
+    to the work lanes. `text` is a fixture seam."""
+    if text is None:
+        text = (Path(root) / CAMPAIGN_LOG).read_text(encoding="utf-8")
+    part = sub = None
+    out = {}
+    for n, ln in enumerate(text.splitlines(), 1):
+        if ln.startswith("## "):
+            part, sub = ln, None
+        elif ln.startswith("### "):
+            sub = ln
+        elif ln.startswith(NO_READ_MARK):
+            where = f"{CAMPAIGN_LOG} line {n}"
+            if not sub or not _LOG_CLOSED.match(sub):
+                raise ValueError(f"{where}: a T6 NOT SPENT entry outside an "
+                                 f"owner-worded 'Closed' subsection - got {sub!r}")
+            m = _LOG_PART.match(part or "")
+            subject = m.group(1).split(" - ")[0].strip() if m else ""
+            if subject not in names:
+                raise ValueError(f"{where}: the part heading must name ONE "
+                                 f"registered strategy - got {subject!r}")
+            if subject not in campaign_opens:
+                raise ValueError(f"{where}: {subject} has no owner-opened "
+                                 "campaign to close (S6-B3194)")
+            if subject in out:
+                raise ValueError(f"{where}: {subject} is closed twice")
+            out[subject] = {"line": n, "part": part.strip(),
+                            "closed": sub.strip()}
+    return out
+
+
+# S6-B3306 (a) (owner 2026-10-26, 'Approve all recs fable mode' on 'neither
+# (b) nor (c) yet'): projected_step1_fires scales R5's fires to the Step-1
+# shape; where an ISOLATED Step-1 cube exists, the isolated run's production
+# gate and R5 fired differently on the same 200 tickers and window. The
+# committed RCA's figures ride each such row; NO lane reads them - re-basing
+# the floor is the owner's option (b).
+R5_FIRE_GAP = ROOT / "output_audit" / "b3306_r5_fire_gap_rca.json"
+
+
+def load_isolated_step1_checks(names, path=None) -> dict:
+    """{strategy: disclosure} from the committed S6-B3306 record. An
+    unreadable record, a missing figure or an unregistered strategy RAISES
+    (L642: a disclosure that silently vanished would read as no gap)."""
+    p = Path(path) if path else R5_FIRE_GAP
+    d = json.loads(p.read_text(encoding="utf-8"))
+    out = {}
+    for s, v in _required(p, d, "measured", dict).items():
+        if s not in names:
+            raise ValueError(f"{p.name}: {s} is not a registered strategy")
+        out[s] = {"isolated_step1_production_long_fires":
+                  int(v["production_subset_long_fires"]),
+                  "r5_long_fires_same_200_same_window":
+                  int(v["r5_long_fires_same_200_same_window"]),
+                  "isolated_cube": str(v["cube"]),
+                  "source": "output_audit/" + p.name, "ticket": "S6-B3306"}
     return out
 
 
@@ -808,8 +910,9 @@ def exit_cube_cell(cov) -> str:
     return s + (f" - {cov['missing']} MISSING" if cov["missing"] else "")
 
 
-def status_for(name: str, *, admitted, roster_status, owner_closed, disabled,
-               pruned, closed_neg, contained, live_tickets, tickets) -> str:
+def status_for(name: str, *, admitted, roster_status, owner_closed,
+               no_read_closed, disabled, pruned, closed_neg, contained,
+               live_tickets, tickets) -> str:
     """B2825 precedence - ONE status per strategy, mutually exclusive by
     construction; a terminal disposition beats a campaign mention.
     S6-B3135a: an owner-closed campaign (DONE-OWNER-CLOSED) outranks every
@@ -817,13 +920,17 @@ def status_for(name: str, *, admitted, roster_status, owner_closed, disabled,
     DONE-OWNER-CLOSED, any other mirror IN-ROSTER-MIRROR; both are terminal
     since the owner dropped the mirrors' Step 2 (S6-B2420, 2026-10-20).
     An admission or a graded funnel cell outranks a closure: both are already
-    terminal, and the admission is the stronger fact."""
+    terminal, and the admission is the stronger fact. S6-B3303 (a): a campaign
+    closed WITHOUT a read (CLOSED-NO-READ) ranks just below an outright
+    closure; `no_read_closed` is REQUIRED, so a caller cannot forget it."""
     if name in admitted:
         return "DONE-ADMITTED"
     if roster_status == "IN-ROSTER-FUNNEL":
         return "IN-ROSTER-FUNNEL"
     if name in owner_closed:
         return "DONE-OWNER-CLOSED"
+    if name in no_read_closed:
+        return "CLOSED-NO-READ"
     if name in disabled:
         return "DISABLED"
     if name in pruned:
@@ -889,6 +996,10 @@ def main() -> int:
     # S6-B3194: the owner-opened campaigns - the ONLY source of the
     # campaign lanes (IN-CAMPAIGN / STALLED-CAMPAIGN)
     campaign_opens = load_campaign_opens(ROOT)
+    # S6-B3303 (a): campaigns the owner closed without spending the read
+    no_read = load_no_read_closures(set(ALL_STRATEGIES), campaign_opens)
+    # S6-B3306 (a): the isolated Step-1 checks of the R5 projection
+    iso_checks = load_isolated_step1_checks(set(ALL_STRATEGIES))
     ticket_states = {k: (v.get("state") if isinstance(v, dict) else v)
                      for k, v in _qs.tickets().items()}
 
@@ -968,7 +1079,8 @@ def main() -> int:
         # mention, and the stream lane below is voided for terminal rows.
         status = status_for(
             name, admitted=admitted, roster_status=_pm.roster_status(name, _mem),
-            owner_closed=owner_closed, disabled=disabled, pruned=pruned,
+            owner_closed=owner_closed, no_read_closed=no_read,
+            disabled=disabled, pruned=pruned,
             closed_neg=closed_neg, contained=contained,
             live_tickets=live_tickets, tickets=tickets)
         terminal = status in TERMINAL_STATUSES
@@ -996,6 +1108,7 @@ def main() -> int:
                      "r5_exit_cube": exit_cov.get(name),
                      "projected_step1_fires": round(projected, 1),
                      "projected_current_gate": round(eff, 1),
+                     "isolated_step1_check": iso_checks.get(name),
                      "reopen_candidate": reopen,
                      "stream": "-" if terminal
                      else classify_stream(tightenable, eff),
@@ -1083,9 +1196,19 @@ def main() -> int:
              "with the owner's words; it outranks the mirror lane, so "
              "IN-ROSTER-MIRROR is exactly the mirrors the owner has not closed. "
              "A closed mirror stays ON the Phase 1B roster - the closure "
-             "ends its campaign, not its membership"],
+             "ends its campaign, not its membership",
+             "CLOSED-NO-READ (S6-B3303 (a), owner 2026-10-26) is a campaign the "
+             "owner closed without spending its Step-2 read, read from the "
+             "campaign log's T6 NOT SPENT entries; terminal and never flagged "
+             "for reopening - DONE-OWNER-CLOSED outranks it",
+             "isolated_step1_check (S6-B3306 (a)) carries, where an ISOLATED "
+             "Step-1 cube exists, its production-gate LONG fires against R5's "
+             "on the same 200 tickers and window "
+             "(output_audit/b3306_r5_fire_gap_rca.json); the R5 projection "
+             "still drives every lane - re-basing it is the owner's option (b)"],
          "phase1b_roster": _mem_sum,
          "owner_closures": sorted(owner_closed),
+         "no_read_closures": sorted(no_read),
          "campaign_opens": sorted(campaign_opens),
          "rows": recs}, indent=2), encoding="utf-8")
 
@@ -1097,6 +1220,12 @@ def main() -> int:
     todo = [r for r in recs if r["status"] not in _TERMINAL]
     famcount = collections.Counter(r["family"] for r in todo
                                    if r["stream"] in ("TIGHTEN", "BOTH"))
+    iso_txt = "; ".join(
+        f"{r['strategy']} isolated "
+        f"{r['isolated_step1_check']['isolated_step1_production_long_fires']} "
+        f"vs R5 {r['isolated_step1_check']['r5_long_fires_same_200_same_window']}"
+        f" (this view's proj. {r['projected_current_gate']})"
+        for r in recs if r["isolated_step1_check"])
 
     L = ["<!-- AUTO-GENERATED by scripts/build_strategy_status.py (S6-B2808).",
          "     Do NOT hand-edit; regenerate. -->", "",
@@ -1127,6 +1256,7 @@ def main() -> int:
          f"| IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | {bystatus.get('IN-ROSTER-FUNNEL', 0)} |",
          f"| IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded beyond R5, terminal (its Step 2 dropped 2026-10-20, S6-B2420) | {bystatus.get('IN-ROSTER-MIRROR', 0)} |",
          f"| DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | {bystatus.get('DONE-OWNER-CLOSED', 0)} |",
+         f"| CLOSED-NO-READ - a campaign the owner closed without spending its Step-2 read, terminal (S6-B3303) | {bystatus.get('CLOSED-NO-READ', 0)} |",
          f"| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | {bystatus.get('IN-CAMPAIGN', 0)} |",
          f"| STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | {bystatus.get('STALLED-CAMPAIGN', 0)} |",
          f"| NOT-STARTED | {bystatus.get('NOT-STARTED', 0)} |",
@@ -1186,6 +1316,19 @@ def main() -> int:
           "each with the owner's words). Terminal; never auto-reopened. A "
           "closed mirror stays ON the Phase 1B roster - the closure ends its "
           "campaign, not its membership.",
+          "- `CLOSED-NO-READ` (S6-B3303 (a), owner 2026-10-26): a campaign the "
+          "owner closed without spending its Step-2 read - read from the "
+          "campaign log's T6 NOT SPENT entries, each inside an owner-worded "
+          "'Closed' subsection. Terminal; never auto-reopened; the long "
+          "shortlist leaves it out.",
+          "- `proj. Step-1` (S6-B3306 (a)) is R5's fires scaled to the Step-1 "
+          "shape. Where an ISOLATED Step-1 cube exists, its production-gate "
+          "LONG fires against R5's on the same 200 tickers and window: "
+          + iso_txt + ". Cause narrowed, not identified (R5's v1 occupancy "
+          "coupling or producer / data drift; "
+          "output_audit/b3306_r5_fire_gap_rca.json). Every lane still reads "
+          "the R5 projection; re-basing it is the owner's decision "
+          "(S6-B3306 (b)).",
           "- `exit cube` (S6-B3258 (b)): the R5 CLOSED fires that carry a row "
           "in the exit cube, read from output_audit/b3258_exit_cube_coverage_r5.json "
           "and checked against this build's trade log. `R5 fires` counts the "

@@ -1,6 +1,6 @@
 # Table A - williams_r_oversold
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build adafdd452 | commit adafdd452 at 2026-10-25 20:58:28 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build c762fcbd3 | commit c762fcbd3 at 2026-10-26 08:40:36 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** IN-CAMPAIGN | **R5 fires:** 2535 (closed fires in the exit cube: 2535 of 2535, S6-B3258) | **surviving fires (T1):** 2535 (unchanged since R5 - filter is identity)
 

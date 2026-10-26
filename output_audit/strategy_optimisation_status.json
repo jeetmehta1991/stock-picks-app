@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "adafdd452",
-    "generated_at": "2026-10-25 20:30:30"
+    "source_commit": "c762fcbd3",
+    "generated_at": "2026-10-26 08:40:12"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -20,7 +20,9 @@
     "r5_exit_cube (S6-B3258 (b)) is read from the committed record output_audit/b3258_exit_cube_coverage_r5.json and checked against this build's closed-fire counts: the CLOSED R5 fires that carry a row in the exit cube (trade_exit_detail.csv), which every re-grade over exits reads - r5_fires counts the trade log, open fires included; None means no closed fire",
     "terminal statuses (ADMITTED / DISABLED / PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED) are MUTUALLY EXCLUSIVE with the stream lanes and excluded from every work bucket (B2825); reopen_candidate flags a terminal row whose entry condition changed since its closure evidence (survives < 1.0) - flagged for the owner, never auto-reopened",
     "IN-ROSTER-FUNNEL / IN-ROSTER-MIRROR (S6-B3135) come from scripts/phase1b_membership.py: a graded 3-cube funnel cell is on the Phase 1B roster, terminal like an admission and CLOSED to re-testing like one (owner 2026-09-29, '2 yes. No more retesting'); a short mirror retained by the owner's mirror policy is on the roster, UNGRADED beyond R5, and terminal since the owner dropped its Step 2 (S6-B2420, 2026-10-20)",
-    "DONE-OWNER-CLOSED (S6-B3135a) is a campaign the owner closed outright, read from output_audit/owner_campaign_closures.json with the owner's words; it outranks the mirror lane, so IN-ROSTER-MIRROR is exactly the mirrors the owner has not closed. A closed mirror stays ON the Phase 1B roster - the closure ends its campaign, not its membership"
+    "DONE-OWNER-CLOSED (S6-B3135a) is a campaign the owner closed outright, read from output_audit/owner_campaign_closures.json with the owner's words; it outranks the mirror lane, so IN-ROSTER-MIRROR is exactly the mirrors the owner has not closed. A closed mirror stays ON the Phase 1B roster - the closure ends its campaign, not its membership",
+    "CLOSED-NO-READ (S6-B3303 (a), owner 2026-10-26) is a campaign the owner closed without spending its Step-2 read, read from the campaign log's T6 NOT SPENT entries; terminal and never flagged for reopening - DONE-OWNER-CLOSED outranks it",
+    "isolated_step1_check (S6-B3306 (a)) carries, where an ISOLATED Step-1 cube exists, its production-gate LONG fires against R5's on the same 200 tickers and window (output_audit/b3306_r5_fire_gap_rca.json); the R5 projection still drives every lane - re-basing it is the owner's option (b)"
   ],
   "phase1b_roster": {
     "funnel_cells": 7,
@@ -35,6 +37,9 @@
     "naked_poc_retest_long",
     "smc_breaker_block_short",
     "three_black_crows_short"
+  ],
+  "no_read_closures": [
+    "cmf_flip"
   ],
   "campaign_opens": [
     "camarilla_r4_breakout",
@@ -68,6 +73,7 @@
       },
       "projected_step1_fires": 3.0,
       "projected_current_gate": 3.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -103,6 +109,7 @@
       },
       "projected_step1_fires": 13.8,
       "projected_current_gate": 13.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -142,6 +149,7 @@
       },
       "projected_step1_fires": 6.1,
       "projected_current_gate": 6.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -175,12 +183,15 @@
       },
       "projected_step1_fires": 18.7,
       "projected_current_gate": 18.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-LEVER7-OR-ARM-GREP-SWEEP"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -206,6 +217,7 @@
       },
       "projected_step1_fires": 8.7,
       "projected_current_gate": 8.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -243,6 +255,7 @@
       },
       "projected_step1_fires": 39.2,
       "projected_current_gate": 39.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -280,12 +293,15 @@
       },
       "projected_step1_fires": 1.7,
       "projected_current_gate": 1.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B1248-LEVER6-RETEST-INTEGRITY",
         "S6-B3227",
         "S6-B3258"
       ],
@@ -318,12 +334,14 @@
       },
       "projected_step1_fires": 7.1,
       "projected_current_gate": 7.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER6-RETEST-INTEGRITY",
         "S6-B3227",
         "S6-B3239"
       ],
@@ -352,6 +370,7 @@
       },
       "projected_step1_fires": 10.9,
       "projected_current_gate": 10.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -387,12 +406,14 @@
       },
       "projected_step1_fires": 3.6,
       "projected_current_gate": 3.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B3139bi",
         "S6-B3221",
         "S6-B3237",
         "S6-B3262"
@@ -422,6 +443,7 @@
       },
       "projected_step1_fires": 7.4,
       "projected_current_gate": 7.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -459,6 +481,7 @@
       },
       "projected_step1_fires": 210.8,
       "projected_current_gate": 210.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -501,12 +524,14 @@
       },
       "projected_step1_fires": 122.8,
       "projected_current_gate": 122.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER6-RETEST-INTEGRITY",
         "S6-B2810b",
         "S6-B3221",
         "S6-B3232",
@@ -540,6 +565,7 @@
       },
       "projected_step1_fires": 93.0,
       "projected_current_gate": 65.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {
@@ -579,6 +605,7 @@
       },
       "projected_step1_fires": 93.1,
       "projected_current_gate": 93.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -614,6 +641,7 @@
       },
       "projected_step1_fires": 149.1,
       "projected_current_gate": 149.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -622,6 +650,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2178c",
         "S6-B2383",
         "S6-B2872",
@@ -637,6 +666,22 @@
         "S6-B3134",
         "S6-B3134a",
         "S6-B3139a",
+        "S6-B3139ab",
+        "S6-B3139ag",
+        "S6-B3139ah",
+        "S6-B3139am",
+        "S6-B3139ar",
+        "S6-B3139aw",
+        "S6-B3139ay",
+        "S6-B3139az",
+        "S6-B3139bf",
+        "S6-B3139bh",
+        "S6-B3139bt",
+        "S6-B3139bu",
+        "S6-B3139bv",
+        "S6-B3139bx",
+        "S6-B3139by",
+        "S6-B3139bz",
         "S6-B3139c",
         "S6-B3139o",
         "S6-B3139s",
@@ -654,6 +699,7 @@
         "S6-B3224",
         "S6-B3228",
         "S6-B3231",
+        "S6-B3247",
         "S6-B3253",
         "S6-B3258"
       ],
@@ -684,6 +730,7 @@
       },
       "projected_step1_fires": 24.9,
       "projected_current_gate": 24.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -691,6 +738,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383",
+        "S6-B3139bi",
         "S6-B3139c",
         "S6-B3221",
         "S6-B3237"
@@ -720,6 +768,7 @@
       },
       "projected_step1_fires": 77.2,
       "projected_current_gate": 77.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -754,6 +803,7 @@
       },
       "projected_step1_fires": 11.9,
       "projected_current_gate": 11.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -792,12 +842,14 @@
       },
       "projected_step1_fires": 173.6,
       "projected_current_gate": 173.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3227",
         "S6-B3235"
       ],
@@ -828,6 +880,7 @@
       },
       "projected_step1_fires": 198.9,
       "projected_current_gate": 98.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -836,9 +889,11 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3227",
         "S6-B3232",
-        "S6-B3305"
+        "S6-B3305",
+        "S6-B3308"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -867,6 +922,7 @@
       },
       "projected_step1_fires": 91.1,
       "projected_current_gate": 91.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -900,6 +956,7 @@
       },
       "projected_step1_fires": 530.7,
       "projected_current_gate": 282.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -914,7 +971,8 @@
       "mention_tickets": [
         "S6-B3249",
         "S6-B3304",
-        "S6-B3305"
+        "S6-B3305",
+        "S6-B3308"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -943,6 +1001,7 @@
       },
       "projected_step1_fires": 21.0,
       "projected_current_gate": 21.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -982,6 +1041,7 @@
       },
       "projected_step1_fires": 0.6,
       "projected_current_gate": 0.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -1015,8 +1075,9 @@
       },
       "projected_step1_fires": 275.2,
       "projected_current_gate": 206.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
-      "stream": "TIGHTEN",
+      "stream": "-",
       "tightenable_keys": {
         "po3_accum_range_pct": 1.0,
         "rsi_14": 1.0
@@ -1044,7 +1105,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "STALLED-CAMPAIGN"
+      "status": "CLOSED-NO-READ"
     },
     {
       "strategy": "consec_downdays_quality_long",
@@ -1058,12 +1119,14 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-NEW-STRATEGIES-M1-M15",
         "S6-B3139q"
       ],
       "admitted": false,
@@ -1093,12 +1156,14 @@
       },
       "projected_step1_fires": 114.7,
       "projected_current_gate": 114.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2810b"
       ],
       "admitted": false,
@@ -1128,6 +1193,7 @@
       },
       "projected_step1_fires": 92.0,
       "projected_current_gate": 92.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -1136,6 +1202,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3253"
       ],
       "admitted": false,
@@ -1163,6 +1230,7 @@
       },
       "projected_step1_fires": 155.9,
       "projected_current_gate": 155.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -1196,12 +1264,15 @@
       },
       "projected_step1_fires": 15.1,
       "projected_current_gate": 15.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1227,6 +1298,7 @@
       },
       "projected_step1_fires": 9.1,
       "projected_current_gate": 9.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -1235,6 +1307,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B1248-LEVER6-RETEST-INTEGRITY",
         "S6-B3253"
       ],
       "admitted": false,
@@ -1264,6 +1338,7 @@
       },
       "projected_step1_fires": 221.9,
       "projected_current_gate": 109.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -1272,9 +1347,12 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B1248-LEVER6-RETEST-INTEGRITY",
         "S6-B3221",
         "S6-B3232",
-        "S6-B3305"
+        "S6-B3305",
+        "S6-B3308"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -1301,6 +1379,7 @@
       },
       "projected_step1_fires": 2.8,
       "projected_current_gate": 2.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1332,6 +1411,7 @@
       },
       "projected_step1_fires": 28.1,
       "projected_current_gate": 28.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1363,6 +1443,7 @@
       },
       "projected_step1_fires": 21.3,
       "projected_current_gate": 21.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1396,12 +1477,15 @@
       },
       "projected_step1_fires": 88.8,
       "projected_current_gate": 88.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1427,6 +1511,7 @@
       },
       "projected_step1_fires": 91.8,
       "projected_current_gate": 91.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1460,6 +1545,7 @@
       },
       "projected_step1_fires": 80.1,
       "projected_current_gate": 80.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1491,12 +1577,14 @@
       },
       "projected_step1_fires": 46.6,
       "projected_current_gate": 46.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3227"
       ],
       "admitted": false,
@@ -1524,12 +1612,14 @@
       },
       "projected_step1_fires": 50.3,
       "projected_current_gate": 50.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B1901a"
       ],
       "admitted": false,
@@ -1557,6 +1647,7 @@
       },
       "projected_step1_fires": 90.5,
       "projected_current_gate": 90.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1590,6 +1681,7 @@
       },
       "projected_step1_fires": 26.7,
       "projected_current_gate": 26.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1612,6 +1704,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1634,12 +1727,14 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-NEW-STRATEGIES-M1-M15",
         "S6-B3192"
       ],
       "admitted": false,
@@ -1667,6 +1762,7 @@
       },
       "projected_step1_fires": 5.1,
       "projected_current_gate": 5.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1701,6 +1797,7 @@
       },
       "projected_step1_fires": 5.8,
       "projected_current_gate": 5.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1732,12 +1829,15 @@
       },
       "projected_step1_fires": 3.0,
       "projected_current_gate": 3.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1765,6 +1865,7 @@
       },
       "projected_step1_fires": 276.9,
       "projected_current_gate": 276.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -1790,12 +1891,15 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-NEW-STRATEGIES-M1-M15"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -1812,6 +1916,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1845,6 +1950,7 @@
       },
       "projected_step1_fires": 38.0,
       "projected_current_gate": 38.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1878,6 +1984,7 @@
       },
       "projected_step1_fires": 10.0,
       "projected_current_gate": 10.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1911,6 +2018,7 @@
       },
       "projected_step1_fires": 81.7,
       "projected_current_gate": 81.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1946,6 +2054,7 @@
       },
       "projected_step1_fires": 4.0,
       "projected_current_gate": 4.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -1977,6 +2086,7 @@
       },
       "projected_step1_fires": 0.6,
       "projected_current_gate": 0.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -2008,6 +2118,7 @@
       },
       "projected_step1_fires": 10.1,
       "projected_current_gate": 10.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -2043,6 +2154,7 @@
       },
       "projected_step1_fires": 13.4,
       "projected_current_gate": 13.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -2078,12 +2190,14 @@
       },
       "projected_step1_fires": 43.8,
       "projected_current_gate": 43.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-HNS-NECKLINE-GATE",
         "S6-B3227",
         "S6-B3239"
       ],
@@ -2112,6 +2226,7 @@
       },
       "projected_step1_fires": 30.0,
       "projected_current_gate": 30.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -2143,6 +2258,7 @@
       },
       "projected_step1_fires": 91.5,
       "projected_current_gate": 91.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -2176,6 +2292,7 @@
       },
       "projected_step1_fires": 116.7,
       "projected_current_gate": 116.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -2184,6 +2301,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2810b",
         "S6-B2810c",
         "S6-B2872",
@@ -2220,12 +2338,15 @@
       },
       "projected_step1_fires": 18.1,
       "projected_current_gate": 7.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-ICHI-BREAKDOWN-ASYMMETRY"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -2253,6 +2374,7 @@
       },
       "projected_step1_fires": 47.0,
       "projected_current_gate": 47.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -2289,6 +2411,7 @@
       },
       "projected_step1_fires": 121.2,
       "projected_current_gate": 112.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -2299,7 +2422,8 @@
       "mention_tickets": [
         "S6-B2810b",
         "S6-B3221",
-        "S6-B3305"
+        "S6-B3305",
+        "S6-B3308"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -2326,6 +2450,7 @@
       },
       "projected_step1_fires": 62.2,
       "projected_current_gate": 62.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -2359,6 +2484,7 @@
       },
       "projected_step1_fires": 24.7,
       "projected_current_gate": 24.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -2392,6 +2518,7 @@
       },
       "projected_step1_fires": 2.2,
       "projected_current_gate": 2.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -2423,6 +2550,7 @@
       },
       "projected_step1_fires": 2.2,
       "projected_current_gate": 2.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -2460,6 +2588,7 @@
       },
       "projected_step1_fires": 59.0,
       "projected_current_gate": 59.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -2468,7 +2597,8 @@
       "mention_tickets": [
         "S6-B3122",
         "S6-B3221",
-        "S6-B3227"
+        "S6-B3227",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2497,6 +2627,7 @@
       },
       "projected_step1_fires": 243.0,
       "projected_current_gate": 243.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -2528,6 +2659,7 @@
       },
       "projected_step1_fires": 225.3,
       "projected_current_gate": 225.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -2562,6 +2694,7 @@
       },
       "projected_step1_fires": 178.4,
       "projected_current_gate": 178.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -2586,10 +2719,12 @@
         "S6-B3032",
         "S6-B3094e",
         "S6-B3122",
+        "S6-B3139bf",
         "S6-B3154a",
         "S6-B3180",
         "S6-B3253",
-        "S6-B3288"
+        "S6-B3288",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2618,6 +2753,7 @@
       },
       "projected_step1_fires": 227.3,
       "projected_current_gate": 227.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2628,7 +2764,8 @@
       "mention_tickets": [
         "S6-B2807",
         "S6-B3122",
-        "S6-B3288"
+        "S6-B3288",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2657,6 +2794,7 @@
       },
       "projected_step1_fires": 9.8,
       "projected_current_gate": 9.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2691,6 +2829,7 @@
       },
       "projected_step1_fires": 252.8,
       "projected_current_gate": 2.0,
+      "isolated_step1_check": null,
       "reopen_candidate": true,
       "stream": "-",
       "tightenable_keys": {},
@@ -2724,6 +2863,7 @@
       },
       "projected_step1_fires": 231.2,
       "projected_current_gate": 231.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2737,7 +2877,8 @@
         "S6-B3116b",
         "S6-B3122",
         "S6-B3135",
-        "S6-B3288"
+        "S6-B3288",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2766,6 +2907,7 @@
       },
       "projected_step1_fires": 35.5,
       "projected_current_gate": 35.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2775,7 +2917,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2874",
-        "S6-B3122"
+        "S6-B3122",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2804,6 +2947,7 @@
       },
       "projected_step1_fires": 48.9,
       "projected_current_gate": 48.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2837,6 +2981,7 @@
       },
       "projected_step1_fires": 213.6,
       "projected_current_gate": 213.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2872,6 +3017,7 @@
       },
       "projected_step1_fires": 65.8,
       "projected_current_gate": 65.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2881,7 +3027,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3122"
+        "S6-B3122",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -2910,6 +3057,7 @@
       },
       "projected_step1_fires": 110.2,
       "projected_current_gate": 110.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2945,6 +3093,7 @@
       },
       "projected_step1_fires": 179.7,
       "projected_current_gate": 179.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2978,6 +3127,7 @@
       },
       "projected_step1_fires": 208.5,
       "projected_current_gate": 208.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -2986,7 +3136,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3122"
+        "S6-B3122",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -3015,6 +3166,7 @@
       },
       "projected_step1_fires": 98.8,
       "projected_current_gate": 98.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -3023,7 +3175,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3122"
+        "S6-B3122",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -3052,6 +3205,7 @@
       },
       "projected_step1_fires": 167.8,
       "projected_current_gate": 167.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -3062,7 +3216,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3122",
-        "S6-B3288"
+        "S6-B3288",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -3091,6 +3246,7 @@
       },
       "projected_step1_fires": 127.5,
       "projected_current_gate": 98.3,
+      "isolated_step1_check": null,
       "reopen_candidate": true,
       "stream": "-",
       "tightenable_keys": {
@@ -3127,6 +3283,7 @@
       },
       "projected_step1_fires": 10.6,
       "projected_current_gate": 10.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -3160,6 +3317,7 @@
       },
       "projected_step1_fires": 9.5,
       "projected_current_gate": 9.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -3194,6 +3352,7 @@
       },
       "projected_step1_fires": 33.6,
       "projected_current_gate": 33.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -3227,6 +3386,7 @@
       },
       "projected_step1_fires": 0.1,
       "projected_current_gate": 0.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -3258,6 +3418,7 @@
       },
       "projected_step1_fires": 6.0,
       "projected_current_gate": 6.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -3289,6 +3450,7 @@
       },
       "projected_step1_fires": 7.7,
       "projected_current_gate": 7.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -3324,6 +3486,7 @@
       },
       "projected_step1_fires": 3.8,
       "projected_current_gate": 3.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -3355,6 +3518,7 @@
       },
       "projected_step1_fires": 94.0,
       "projected_current_gate": 69.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -3363,7 +3527,8 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
-        "S6-B3305"
+        "S6-B3305",
+        "S6-B3308"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -3390,6 +3555,7 @@
       },
       "projected_step1_fires": 106.8,
       "projected_current_gate": 106.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -3426,6 +3592,7 @@
       },
       "projected_step1_fires": 267.5,
       "projected_current_gate": 267.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -3459,6 +3626,7 @@
       },
       "projected_step1_fires": 140.1,
       "projected_current_gate": 140.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -3492,6 +3660,7 @@
       },
       "projected_step1_fires": 374.1,
       "projected_current_gate": 374.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -3529,12 +3698,15 @@
       },
       "projected_step1_fires": 267.2,
       "projected_current_gate": 267.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-STALE-NAME-SWEEP"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "DISABLED"
@@ -3551,6 +3723,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -3559,6 +3732,7 @@
       "mention_tickets": [
         "S6-B2420",
         "S6-B2669",
+        "S6-B3139bf",
         "S6-B3168",
         "S6-B3192"
       ],
@@ -3591,6 +3765,7 @@
       },
       "projected_step1_fires": 7.1,
       "projected_current_gate": 7.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -3624,6 +3799,7 @@
       },
       "projected_step1_fires": 22.4,
       "projected_current_gate": 22.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -3664,12 +3840,14 @@
       },
       "projected_step1_fires": 122.9,
       "projected_current_gate": 122.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER3-STATE-EVENT-SWEEP",
         "S6-B2810b",
         "S6-B3249"
       ],
@@ -3698,12 +3876,15 @@
       },
       "projected_step1_fires": 225.7,
       "projected_current_gate": 225.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-LEVER3-STATE-EVENT-SWEEP"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -3729,12 +3910,15 @@
       },
       "projected_step1_fires": 3.4,
       "projected_current_gate": 3.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3139bi"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -3762,6 +3946,7 @@
       },
       "projected_step1_fires": 209.6,
       "projected_current_gate": 96.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -3771,6 +3956,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER5-PRODUCER-TOLERANCE",
         "S6-B2822c",
         "S6-B2845",
         "S6-B3221",
@@ -3804,6 +3990,7 @@
       },
       "projected_step1_fires": 164.3,
       "projected_current_gate": 164.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -3829,6 +4016,7 @@
         "S6-B3209",
         "S6-B3223",
         "S6-B3231",
+        "S6-B3247",
         "S6-B3253",
         "S6-B3258"
       ],
@@ -3857,6 +4045,13 @@
       },
       "projected_step1_fires": 10.4,
       "projected_current_gate": 10.4,
+      "isolated_step1_check": {
+        "isolated_step1_production_long_fires": 58,
+        "r5_long_fires_same_200_same_window": 4,
+        "isolated_cube": "output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe",
+        "source": "output_audit/b3306_r5_fire_gap_rca.json",
+        "ticket": "S6-B3306"
+      },
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -3866,6 +4061,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3221",
         "S6-B3227",
         "S6-B3240",
@@ -3898,6 +4094,7 @@
       },
       "projected_step1_fires": 1.2,
       "projected_current_gate": 1.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -3934,6 +4131,7 @@
       },
       "projected_step1_fires": 0.1,
       "projected_current_gate": 0.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -3944,7 +4142,9 @@
       },
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -3970,6 +4170,7 @@
       },
       "projected_step1_fires": 5.5,
       "projected_current_gate": 5.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -4009,6 +4210,7 @@
       },
       "projected_step1_fires": 83.3,
       "projected_current_gate": 83.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -4047,6 +4249,7 @@
       },
       "projected_step1_fires": 32.8,
       "projected_current_gate": 32.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -4074,6 +4277,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4105,12 +4309,20 @@
       },
       "projected_step1_fires": 5.0,
       "projected_current_gate": 5.0,
+      "isolated_step1_check": {
+        "isolated_step1_production_long_fires": 72,
+        "r5_long_fires_same_200_same_window": 6,
+        "isolated_cube": "output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a",
+        "source": "output_audit/b3306_r5_fire_gap_rca.json",
+        "ticket": "S6-B3306"
+      },
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3240",
         "S6-B3306"
       ],
@@ -4139,6 +4351,7 @@
       },
       "projected_step1_fires": 10.6,
       "projected_current_gate": 10.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4170,6 +4383,7 @@
       },
       "projected_step1_fires": 462.9,
       "projected_current_gate": 462.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -4180,6 +4394,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-F23-F24-DECISIONS",
         "S6-B3116b",
         "S6-B3140",
         "S6-B3140a",
@@ -4216,6 +4431,7 @@
       },
       "projected_step1_fires": 523.7,
       "projected_current_gate": 410.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -4262,6 +4478,7 @@
       },
       "projected_step1_fires": 148.7,
       "projected_current_gate": 148.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -4295,6 +4512,7 @@
       },
       "projected_step1_fires": 153.7,
       "projected_current_gate": 153.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -4328,6 +4546,7 @@
       },
       "projected_step1_fires": 12.9,
       "projected_current_gate": 12.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -4338,7 +4557,8 @@
         "S6-B2634a",
         "S6-B2645b",
         "S6-B2758",
-        "S6-B2825"
+        "S6-B2825",
+        "S6-B3139bi"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4365,6 +4585,7 @@
       },
       "projected_step1_fires": 194.5,
       "projected_current_gate": 194.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -4379,7 +4600,9 @@
         "S6-B2644a",
         "S6-B3112c",
         "S6-B3122",
-        "S6-B3210"
+        "S6-B3139am",
+        "S6-B3210",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -4408,6 +4631,7 @@
       },
       "projected_step1_fires": 80.1,
       "projected_current_gate": 80.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4443,6 +4667,7 @@
       },
       "projected_step1_fires": 203.6,
       "projected_current_gate": 203.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -4458,6 +4683,7 @@
         "S6-B2733",
         "S6-B3135",
         "S6-B3135a",
+        "S6-B3139am",
         "S6-B3168a"
       ],
       "admitted": false,
@@ -4487,6 +4713,7 @@
       },
       "projected_step1_fires": 0.9,
       "projected_current_gate": 0.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4522,6 +4749,7 @@
       },
       "projected_step1_fires": 60.3,
       "projected_current_gate": 60.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -4567,6 +4795,7 @@
       },
       "projected_step1_fires": 8.4,
       "projected_current_gate": 8.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4600,12 +4829,20 @@
       },
       "projected_step1_fires": 79.0,
       "projected_current_gate": 79.0,
+      "isolated_step1_check": {
+        "isolated_step1_production_long_fires": 81,
+        "r5_long_fires_same_200_same_window": 38,
+        "isolated_cube": "output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45",
+        "source": "output_audit/b3306_r5_fire_gap_rca.json",
+        "ticket": "S6-B3306"
+      },
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2383",
         "S6-B3221",
         "S6-B3240",
@@ -4638,12 +4875,14 @@
       },
       "projected_step1_fires": 5.1,
       "projected_current_gate": 5.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2383",
         "S6-B3221"
       ],
@@ -4672,6 +4911,7 @@
       },
       "projected_step1_fires": 0.8,
       "projected_current_gate": 0.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4705,6 +4945,7 @@
       },
       "projected_step1_fires": 42.1,
       "projected_current_gate": 42.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4738,6 +4979,7 @@
       },
       "projected_step1_fires": 5.1,
       "projected_current_gate": 5.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -4771,6 +5013,7 @@
       },
       "projected_step1_fires": 0.3,
       "projected_current_gate": 0.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4802,6 +5045,7 @@
       },
       "projected_step1_fires": 241.2,
       "projected_current_gate": 241.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -4833,6 +5077,7 @@
       },
       "projected_step1_fires": 67.2,
       "projected_current_gate": 67.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4864,6 +5109,7 @@
       },
       "projected_step1_fires": 54.1,
       "projected_current_gate": 54.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -4897,6 +5143,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -4925,12 +5172,15 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-NEW-STRATEGIES-M1-M15"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -4956,6 +5206,7 @@
       },
       "projected_step1_fires": 5.0,
       "projected_current_gate": 4.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -4993,6 +5244,7 @@
       },
       "projected_step1_fires": 2.5,
       "projected_current_gate": 2.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5027,6 +5279,7 @@
       },
       "projected_step1_fires": 9.2,
       "projected_current_gate": 7.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5064,6 +5317,7 @@
       },
       "projected_step1_fires": 146.0,
       "projected_current_gate": 146.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -5097,6 +5351,7 @@
       },
       "projected_step1_fires": 6.3,
       "projected_current_gate": 6.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5128,6 +5383,7 @@
       },
       "projected_step1_fires": 2.3,
       "projected_current_gate": 2.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5161,6 +5417,7 @@
       },
       "projected_step1_fires": 11.4,
       "projected_current_gate": 11.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5192,6 +5449,7 @@
       },
       "projected_step1_fires": 2.6,
       "projected_current_gate": 2.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5227,6 +5485,7 @@
       },
       "projected_step1_fires": 130.9,
       "projected_current_gate": 58.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5263,6 +5522,7 @@
       },
       "projected_step1_fires": 53.0,
       "projected_current_gate": 53.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5296,6 +5556,7 @@
       },
       "projected_step1_fires": 73.5,
       "projected_current_gate": 73.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5329,12 +5590,14 @@
       },
       "projected_step1_fires": 309.8,
       "projected_current_gate": 309.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2418",
         "S6-B3227",
         "S6-B3235",
@@ -5369,12 +5632,14 @@
       },
       "projected_step1_fires": 174.2,
       "projected_current_gate": 174.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER3-STATE-EVENT-SWEEP",
         "S6-B3237",
         "S6-B3239"
       ],
@@ -5405,6 +5670,7 @@
       },
       "projected_step1_fires": 84.4,
       "projected_current_gate": 84.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5427,6 +5693,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5460,6 +5727,7 @@
       },
       "projected_step1_fires": 0.8,
       "projected_current_gate": 0.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -5495,6 +5763,7 @@
       },
       "projected_step1_fires": 5.1,
       "projected_current_gate": 5.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5519,6 +5788,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5555,6 +5825,7 @@
       },
       "projected_step1_fires": 178.8,
       "projected_current_gate": 178.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -5592,6 +5863,7 @@
       },
       "projected_step1_fires": 253.0,
       "projected_current_gate": 253.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -5630,6 +5902,7 @@
       },
       "projected_step1_fires": 50.4,
       "projected_current_gate": 50.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -5656,6 +5929,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5687,6 +5961,7 @@
       },
       "projected_step1_fires": 23.0,
       "projected_current_gate": 23.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -5695,7 +5970,9 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER7-OR-ARM-GREP-SWEEP",
         "S6-B2872",
+        "S6-B3139bf",
         "S6-B3221",
         "S6-B3223",
         "S6-B3239"
@@ -5716,6 +5993,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -5747,6 +6025,7 @@
       },
       "projected_step1_fires": 303.2,
       "projected_current_gate": 177.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {
@@ -5782,12 +6061,20 @@
       },
       "projected_step1_fires": 9.2,
       "projected_current_gate": 8.0,
+      "isolated_step1_check": {
+        "isolated_step1_production_long_fires": 47,
+        "r5_long_fires_same_200_same_window": 9,
+        "isolated_cube": "output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef",
+        "source": "output_audit/b3306_r5_fire_gap_rca.json",
+        "ticket": "S6-B3306"
+      },
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2756",
         "S6-B3212",
         "S6-B3213",
@@ -5821,12 +6108,14 @@
       },
       "projected_step1_fires": 62.7,
       "projected_current_gate": 62.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER6-RETEST-INTEGRITY",
         "S6-B2420",
         "S6-B2644c",
         "S6-B2756",
@@ -5866,12 +6155,14 @@
       },
       "projected_step1_fires": 87.1,
       "projected_current_gate": 87.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER3-STATE-EVENT-SWEEP",
         "S6-B1505b",
         "S6-B1518c",
         "S6-B1520a",
@@ -5893,6 +6184,7 @@
         "S6-B2135a",
         "S6-B2174a",
         "S6-B2178c",
+        "S6-B2188-OWNER-RULINGS",
         "S6-B2207a",
         "S6-B2216",
         "S6-B2335",
@@ -5935,6 +6227,8 @@
         "S6-B3094e",
         "S6-B3122",
         "S6-B3136",
+        "S6-B3139ao",
+        "S6-B3139bo",
         "S6-B3139r",
         "S6-B3139x",
         "S6-B3154a",
@@ -5944,7 +6238,8 @@
         "S6-B3179",
         "S6-B3180",
         "S6-B3204",
-        "S6-B3239"
+        "S6-B3239",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -5977,6 +6272,7 @@
       },
       "projected_step1_fires": 146.9,
       "projected_current_gate": 146.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -6025,6 +6321,7 @@
       },
       "projected_step1_fires": 50.6,
       "projected_current_gate": 50.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6061,6 +6358,7 @@
       },
       "projected_step1_fires": 30.6,
       "projected_current_gate": 30.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6088,12 +6386,14 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B3139bf",
         "S6-B3192",
         "S6-B3244"
       ],
@@ -6122,16 +6422,19 @@
       },
       "projected_step1_fires": 77.0,
       "projected_current_gate": 28.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-OR-ARM-ATTRIBUTION",
         "S6-B2756",
         "S6-B2763",
         "S6-B2931",
         "S6-B3043",
+        "S6-B3139bf",
         "S6-B3212",
         "S6-B3213",
         "S6-B3221"
@@ -6161,6 +6464,7 @@
       },
       "projected_step1_fires": 35.1,
       "projected_current_gate": 35.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6204,6 +6508,7 @@
       },
       "projected_step1_fires": 6.1,
       "projected_current_gate": 6.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6239,6 +6544,7 @@
       },
       "projected_step1_fires": 26.5,
       "projected_current_gate": 26.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6274,6 +6580,7 @@
       },
       "projected_step1_fires": 87.6,
       "projected_current_gate": 70.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6322,6 +6629,7 @@
       },
       "projected_step1_fires": 269.6,
       "projected_current_gate": 13.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6334,6 +6642,7 @@
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER7-OR-ARM-GREP-SWEEP",
         "S6-B2033a",
         "S6-B2692",
         "S6-B2693",
@@ -6383,6 +6692,7 @@
       },
       "projected_step1_fires": 1.4,
       "projected_current_gate": 1.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -6421,6 +6731,7 @@
       },
       "projected_step1_fires": 4.0,
       "projected_current_gate": 4.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -6468,6 +6779,7 @@
       },
       "projected_step1_fires": 123.2,
       "projected_current_gate": 123.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -6480,6 +6792,7 @@
       ],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER3-STATE-EVENT-SWEEP",
         "S6-B1531a",
         "S6-B1617b",
         "S6-B2692",
@@ -6533,6 +6846,7 @@
       },
       "projected_step1_fires": 21.2,
       "projected_current_gate": 21.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6570,6 +6884,7 @@
       },
       "projected_step1_fires": 24.1,
       "projected_current_gate": 24.1,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6605,6 +6920,7 @@
       },
       "projected_step1_fires": 39.8,
       "projected_current_gate": 39.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6641,6 +6957,7 @@
       },
       "projected_step1_fires": 104.9,
       "projected_current_gate": 104.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
@@ -6651,6 +6968,7 @@
         "S6-B3248"
       ],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B2810b",
         "S6-B3232",
         "S6-B3246",
@@ -6662,7 +6980,8 @@
         "S6-B3290b",
         "S6-B3291",
         "S6-B3291b",
-        "S6-B3294"
+        "S6-B3294",
+        "S6-B3304"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6689,6 +7008,7 @@
       },
       "projected_step1_fires": 104.7,
       "projected_current_gate": 104.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -6718,6 +7038,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6751,6 +7072,7 @@
       },
       "projected_step1_fires": 26.3,
       "projected_current_gate": 26.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6785,6 +7107,7 @@
       },
       "projected_step1_fires": 394.0,
       "projected_current_gate": 394.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -6820,6 +7143,7 @@
       },
       "projected_step1_fires": 223.6,
       "projected_current_gate": 223.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -6828,6 +7152,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET",
         "S6-B3189",
         "S6-B3194",
         "S6-B3223",
@@ -6858,6 +7183,7 @@
       },
       "projected_step1_fires": 0.4,
       "projected_current_gate": 0.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6891,6 +7217,7 @@
       },
       "projected_step1_fires": 44.7,
       "projected_current_gate": 44.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -6925,6 +7252,7 @@
       },
       "projected_step1_fires": 24.9,
       "projected_current_gate": 21.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -6960,6 +7288,7 @@
       },
       "projected_step1_fires": 172.4,
       "projected_current_gate": 124.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -6969,7 +7298,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B3237",
-        "S6-B3305"
+        "S6-B3305",
+        "S6-B3308"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -6996,6 +7326,7 @@
       },
       "projected_step1_fires": 153.9,
       "projected_current_gate": 153.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -7025,6 +7356,7 @@
         "S6-B3135",
         "S6-B3135a",
         "S6-B3136",
+        "S6-B3139bu",
         "S6-B3161",
         "S6-B3168a",
         "S6-B3169",
@@ -7060,6 +7392,7 @@
       },
       "projected_step1_fires": 146.7,
       "projected_current_gate": 146.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -7068,6 +7401,7 @@
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-LEVER5-PRODUCER-TOLERANCE",
         "S6-B2178c",
         "S6-B2420",
         "S6-B2842",
@@ -7104,6 +7438,11 @@
         "S6-B3134a",
         "S6-B3135a",
         "S6-B3136",
+        "S6-B3139ak",
+        "S6-B3139as",
+        "S6-B3139au",
+        "S6-B3139av",
+        "S6-B3139ax",
         "S6-B3139j",
         "S6-B3139r",
         "S6-B3139x",
@@ -7143,6 +7482,7 @@
       },
       "projected_step1_fires": 31.5,
       "projected_current_gate": 31.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -7173,6 +7513,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -7181,6 +7522,7 @@
       "mention_tickets": [
         "S6-B2420",
         "S6-B2669",
+        "S6-B3139bf",
         "S6-B3168",
         "S6-B3192"
       ],
@@ -7211,6 +7553,7 @@
       },
       "projected_step1_fires": 30.3,
       "projected_current_gate": 30.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -7242,6 +7585,7 @@
       },
       "projected_step1_fires": 10.3,
       "projected_current_gate": 10.3,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -7273,6 +7617,7 @@
       },
       "projected_step1_fires": 97.8,
       "projected_current_gate": 97.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -7295,12 +7640,14 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B3139bf",
         "S6-B3192",
         "S6-B3244"
       ],
@@ -7329,6 +7676,7 @@
       },
       "projected_step1_fires": 29.8,
       "projected_current_gate": 29.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -7362,17 +7710,20 @@
       },
       "projected_step1_fires": 172.8,
       "projected_current_gate": 28.6,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-OR-ARM-ATTRIBUTION",
         "S6-B2756",
         "S6-B2810c",
         "S6-B2931",
         "S6-B3043",
         "S6-B3078",
+        "S6-B3139bf",
         "S6-B3221"
       ],
       "admitted": false,
@@ -7402,6 +7753,7 @@
       },
       "projected_step1_fires": 54.4,
       "projected_current_gate": 54.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {},
@@ -7439,6 +7791,7 @@
       },
       "projected_step1_fires": 34.5,
       "projected_current_gate": 34.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -7470,6 +7823,7 @@
       },
       "projected_step1_fires": 49.9,
       "projected_current_gate": 49.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -7505,12 +7859,14 @@
       },
       "projected_step1_fires": 104.8,
       "projected_current_gate": 104.8,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-STALE-NAME-SWEEP",
         "S6-B2810b",
         "S6-B3235"
       ],
@@ -7541,12 +7897,15 @@
       },
       "projected_step1_fires": 137.9,
       "projected_current_gate": 137.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-LEVER4-GATE-BUDGET"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -7563,12 +7922,15 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B3139bf"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"
@@ -7585,6 +7947,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -7618,6 +7981,7 @@
       },
       "projected_step1_fires": 58.2,
       "projected_current_gate": 58.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -7651,6 +8015,7 @@
       },
       "projected_step1_fires": 76.7,
       "projected_current_gate": 76.7,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {
@@ -7684,6 +8049,7 @@
       },
       "projected_step1_fires": 2.5,
       "projected_current_gate": 2.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -7710,6 +8076,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -7743,6 +8110,7 @@
       },
       "projected_step1_fires": 233.0,
       "projected_current_gate": 233.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "TIGHTEN",
       "tightenable_keys": {
@@ -7773,7 +8141,9 @@
         "S6-B3290",
         "S6-B3293",
         "S6-B3294",
-        "S6-B3300"
+        "S6-B3295",
+        "S6-B3300",
+        "S6-B3313"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7802,6 +8172,7 @@
       },
       "projected_step1_fires": 68.9,
       "projected_current_gate": 68.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "BOTH",
       "tightenable_keys": {
@@ -7830,6 +8201,7 @@
       "r5_exit_cube": null,
       "projected_step1_fires": 0.0,
       "projected_current_gate": 0.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -7867,6 +8239,7 @@
       },
       "projected_step1_fires": 19.5,
       "projected_current_gate": 19.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -7911,6 +8284,7 @@
       },
       "projected_step1_fires": 7.2,
       "projected_current_gate": 7.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -7944,6 +8318,7 @@
       },
       "projected_step1_fires": 41.5,
       "projected_current_gate": 30.9,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {
@@ -7953,7 +8328,8 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2674a",
-        "S6-B3122"
+        "S6-B3122",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -7982,6 +8358,7 @@
       },
       "projected_step1_fires": 127.2,
       "projected_current_gate": 127.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -8023,6 +8400,7 @@
       },
       "projected_step1_fires": 15.0,
       "projected_current_gate": 15.0,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
@@ -8054,6 +8432,7 @@
       },
       "projected_step1_fires": 23.4,
       "projected_current_gate": 23.4,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
@@ -8071,11 +8450,14 @@
         "S6-B2758",
         "S6-B3122",
         "S6-B3135",
+        "S6-B3139ah",
+        "S6-B3139ak",
         "S6-B3139c",
         "S6-B3171",
         "S6-B3215",
         "S6-B3252",
-        "S6-B3258"
+        "S6-B3258",
+        "S6-B3298"
       ],
       "admitted": true,
       "roster_roles": [
@@ -8104,12 +8486,14 @@
       },
       "projected_step1_fires": 60.5,
       "projected_current_gate": 60.5,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "-",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
       "mention_tickets": [
+        "S6-B1248-STALE-NAME-SWEEP",
         "S6-B1589b",
         "S6-B1593d",
         "S6-B1595c",
@@ -8147,12 +8531,16 @@
       },
       "projected_step1_fires": 8.2,
       "projected_current_gate": 8.2,
+      "isolated_step1_check": null,
       "reopen_candidate": false,
       "stream": "LOOSEN",
       "tightenable_keys": {},
       "tickets": [],
       "live_campaign_tickets": [],
-      "mention_tickets": [],
+      "mention_tickets": [
+        "S6-B1248-STALE-NAME-SWEEP",
+        "S6-B3139bi"
+      ],
       "admitted": false,
       "roster_roles": [],
       "status": "NOT-STARTED"

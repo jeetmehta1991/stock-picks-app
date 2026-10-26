@@ -39119,10 +39119,15 @@ def test_b2825_status_groups_are_mutually_exclusive():
     d = json.loads((root / "output_audit" / "strategy_optimisation_status.json")
                    .read_text(encoding="utf-8"))
     rows = d["rows"]
-    # S6-B2420 DROPPED (owner 2026-10-20): the mirror lane is terminal too
-    TERMINAL = {"DONE-ADMITTED", "IN-ROSTER-FUNNEL", "DONE-OWNER-CLOSED",
-                "IN-ROSTER-MIRROR", "DISABLED", "PRUNED-DUPLICATE",
-                "CLOSED-NEGATIVE", "CONTAINED-IN-REPRESENTATIVE"}
+    # S6-B2420 DROPPED (owner 2026-10-20): the mirror lane is terminal too.
+    # S6-B3303 (B3139q-r115): the terminal set is READ from the builder - the
+    # copy that stood here missed CLOSED-NO-READ (the census's class, L645);
+    # test_b3303 pins the vocabulary's contents
+    import sys as _s0
+    if str(root / "scripts") not in _s0.path:
+        _s0.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as _b0
+    TERMINAL = set(_b0.TERMINAL_STATUSES)
     import collections
     st = collections.Counter(r["status"] for r in rows)
     assert sum(st.values()) == len(rows) == 225
@@ -39155,6 +39160,9 @@ def test_b2825_status_groups_are_mutually_exclusive():
     # S6-B3139bt: a closure ends ANY strategy's campaign (the register's
     # semantics); the first two records were mirrors, which is not a rule
     assert by["DONE-OWNER-CLOSED"] == _closed
+    # S6-B3303 (a): the no-read lane from ITS defining source (L697)
+    assert by["CLOSED-NO-READ"] == set(_bss.load_no_read_closures(
+        {r["strategy"] for r in rows}, _bss.load_campaign_opens(root), root=root))
     assert _closed & _mirrors <= by["DONE-OWNER-CLOSED"]
     assert by["IN-ROSTER-MIRROR"] == _mirrors - _closed
     # S6-B3145 (owner 2026-10-13): + pairs_mean_reversion_short (an in-roster
@@ -39371,8 +39379,10 @@ def test_b2836_table_a_directory_is_complete_and_honest():
     # (DONE-OWNER-CLOSED, the 2026-09-29 ruling-4 effect) but its Table A
     # file is a historical deliverable and stays - a closure closes the
     # campaign, it does not delete its record.
+    # S6-B3303 (a) (owner 2026-10-26): a campaign closed WITHOUT a read is
+    # an owner closure too - its file stays as a departed record
     owner_closed = {r["strategy"] for r in view["rows"]
-                    if r["status"] == "DONE-OWNER-CLOSED"}
+                    if r["status"] in ("DONE-OWNER-CLOSED", "CLOSED-NO-READ")}
     d = root / "strategy_optimisation" / "tighten"
     files = {p.stem for p in d.glob("*.md")}
     assert tighten <= files, (tighten - files,
@@ -50751,6 +50761,7 @@ def test_b3137_status_precedence_puts_owner_closure_above_the_mirror_lane():
     with two mutation arms that must each fire (#226)."""
     import build_strategy_status as bss
     base = dict(admitted=set(), roster_status=None, owner_closed=set(),
+                no_read_closed=set(),              # S6-B3303: required
                 disabled=set(), pruned=set(), closed_neg=set(),
                 contained=set(), live_tickets=[], tickets=[])
 
@@ -50842,7 +50853,8 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
     pop = bss.closed_populations(_REPO_B3135)
     got = {n for n in mirrors if bss.status_for(
         n, admitted=pop["admitted"], roster_status=pm.roster_status(n, mem),
-        owner_closed=reg, disabled=pop["disabled"], pruned=pop["pruned"],
+        owner_closed=reg, no_read_closed=set(),
+        disabled=pop["disabled"], pruned=pop["pruned"],
         closed_neg=pop["closed_neg"], contained=pop["contained"],
         live_tickets=[], tickets=[]) == "IN-ROSTER-MIRROR"}
     assert got == {"52w_low_breakdown_pullback_short", "mfi_overbought_short",
@@ -58239,6 +58251,7 @@ def test_b3194_campaign_lanes_read_the_owner_register(tmp_path):
     m = _b2811_mod()
     root = _P(__file__).resolve().parents[2]
     kw = dict(admitted=set(), roster_status=None, owner_closed={},
+              no_read_closed=set(),
               disabled=set(), pruned=set(), closed_neg=set(), contained=set())
 
     # 1. the incident shape: a live, campaign-worded row names the strategy
@@ -61167,7 +61180,9 @@ def test_b3258_exit_cube_count_rides_beside_the_trade_log_count(tmp_path):
         want = f"(closed fires in the exit cube: {bss.exit_cube_cell(by[name]['r5_exit_cube'])}, S6-B3258)"
         assert len(lane) == 1 and want in lane[0], (f.name, lane)
         carried += 1
-    assert carried == 40, carried  # r111: 34 + the six S6-B3305 lane newcomers, 0 departures
+    # r111: 34 + the six S6-B3305 lane newcomers = 40; r115: minus cmf_flip,
+    # which left the TIGHTEN lane as CLOSED-NO-READ (S6-B3303) - a departed record
+    assert carried == 39, carried
 
 
 def test_b3237a_regime_entries_are_ruled_at_admission(tmp_path):
@@ -64317,3 +64332,201 @@ def test_b3313_holdout_read_keeps_the_sweep_axes_or_group(tmp_path, monkeypatch)
     anded = [dict(a, group=None) for a in axes]
     assert len(ols.keep(fires, anded, tuple(step1["production_levels"]))) == 0
     assert len(ols.keep(fires, axes, tuple(step1["production_levels"]))) == 2
+
+
+# ================================================================ B3139q-r115 S6-B3303: the CLOSED-NO-READ lane
+def test_b3303_closed_no_read_is_terminal_and_read_from_the_campaign_log():
+    """S6-B3303 (a) (owner ruled 2026-10-26, 'Approve all recs fable mode'): a
+    campaign the owner closed WITHOUT a read is TERMINAL. Before, cmf_flip -
+    closed on the owner's 2026-10-24 word with its pre-registration unspent -
+    read STALLED-CAMPAIGN, a work lane, and the long shortlist ranked it 1 of
+    91. (1) the reader: a T6 NOT SPENT entry inside an owner-worded 'Closed'
+    subsection closes the ONE strategy its part heading names; outside such a
+    subsection, under a heading naming two strategies or an unregistered one,
+    for a strategy never opened, or twice, it RAISES (L642). (2) precedence:
+    below DONE-OWNER-CLOSED, above every other population and every lane, and
+    the argument is required. (3) the vocabulary: terminal, never flagged for
+    reopening, and the LEVER4 census classifies exactly the builder's
+    statuses (it refused IN-CAMPAIGN on a copied list - MEASURED B3139q-r115).
+    (4) the live tree: the log closes cmf_flip and nothing else, the
+    committed view reads it CLOSED-NO-READ with stream '-', and the committed
+    shortlist leaves it out."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+    import build_long_campaign_shortlist as bls
+    import lever4_condition_census as lc
+
+    names = {"toy_a", "toy_b"}
+    opens = {"toy_a": {}, "toy_b": {}}
+    good = ("## Z. TOY FAMILY (toy_a - CLOSED, NO READ)\n\n"
+            "### Z.3 Closed (B1; owner word 2026-10-24, verbatim 'ok')\n\n"
+            "- **T6 NOT SPENT:** no read.\n")
+    got = bss.load_no_read_closures(names, opens, text=good)
+    assert list(got) == ["toy_a"] and got["toy_a"]["line"] == 5, got
+    for bad in (good.replace("### Z.3 Closed (B1; owner word", "### Z.3 State (B1; owner word"),
+                good.replace("owner word", "my call"),
+                good.replace("(toy_a - CLOSED", "(toy_a / toy_b - CLOSED"),
+                good.replace("(toy_a - CLOSED", "(toy_zz - CLOSED"),
+                good + "- **T6 NOT SPENT:** again.\n"):
+        with pytest.raises(ValueError):
+            bss.load_no_read_closures(names, opens, text=bad)
+    with pytest.raises(ValueError):                 # an unopened campaign
+        bss.load_no_read_closures(names, {"toy_b": {}}, text=good)
+    assert bss.load_no_read_closures(names, opens, text="## Z. X (toy_a)\n") == {}
+
+    base = dict(admitted=set(), roster_status=None, owner_closed=set(),
+                no_read_closed=set(), disabled=set(), pruned=set(),
+                closed_neg=set(), contained=set(), live_tickets=[], tickets=[])
+
+    def f(**kw):
+        return bss.status_for("x", **{**base, **kw})
+    assert f(no_read_closed={"x"}, live_tickets=["S6-B1"], tickets=["S6-B1"]) == "CLOSED-NO-READ"
+    assert f(no_read_closed={"x"}, tickets=["S6-B1"]) == "CLOSED-NO-READ"
+    assert f(no_read_closed={"x"}, owner_closed={"x"}) == "DONE-OWNER-CLOSED"
+    assert f(no_read_closed={"x"}, admitted={"x"}) == "DONE-ADMITTED"
+    for k in ("disabled", "pruned", "closed_neg", "contained"):
+        assert f(**{k: {"x"}}, no_read_closed={"x"}) == "CLOSED-NO-READ", k
+    assert f(no_read_closed={"y"}, tickets=["S6-B1"]) == "STALLED-CAMPAIGN"
+    nb = {k: v for k, v in base.items() if k != "no_read_closed"}
+    with pytest.raises(TypeError):                  # required - never forgotten
+        bss.status_for("x", **nb)
+    assert "CLOSED-NO-READ" in bss.TERMINAL_STATUSES
+    assert "CLOSED-NO-READ" in bss.NEVER_REOPEN
+    allst = set(bss.ALL_STATUSES)
+    assert len(allst) == len(bss.ALL_STATUSES) == 12
+    assert not set(bss.TERMINAL_STATUSES) & set(bss.LANE_STATUSES)
+    assert lc.OPEN | lc.BUSY | lc.CLOSED == allst, (allst ^ (lc.OPEN | lc.BUSY | lc.CLOSED))
+    assert not (lc.OPEN & lc.BUSY or lc.OPEN & lc.CLOSED or lc.BUSY & lc.CLOSED)
+    assert set(bls.OPEN_STATUSES) <= set(bss.LANE_STATUSES)
+
+    view = _j.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                    .read_text(encoding="utf-8"))
+    rows = {r["strategy"]: r for r in view["rows"]}
+    live = bss.load_no_read_closures(set(rows), bss.load_campaign_opens(root), root=root)
+    assert sorted(live) == ["cmf_flip"], live
+    assert view["no_read_closures"] == ["cmf_flip"]
+    assert rows["cmf_flip"]["status"] == "CLOSED-NO-READ" and rows["cmf_flip"]["stream"] == "-"
+    assert sorted(n for n, r in rows.items() if r["status"] == "CLOSED-NO-READ") == ["cmf_flip"]
+    sl = _j.loads((root / "output_audit" / "b3232_long_campaign_shortlist.json")
+                  .read_text(encoding="utf-8"))
+    listed = [r["strategy"] for r in sl["ranked"] + sl["unranked"]]
+    assert listed and "cmf_flip" not in listed
+    assert all(r["status"] in bls.OPEN_STATUSES for r in sl["ranked"] + sl["unranked"])
+
+
+# ================================================================ B3139q-r115 S6-B3306 (a): the isolated-Step-1 disclosure
+def test_b3306a_isolated_step1_check_is_disclosed_and_read_by_no_lane(tmp_path):
+    """S6-B3306 (a) (owner 2026-10-26, 'Approve all recs fable mode' on 'neither
+    (b) nor (c) yet'): the status view's projected_step1_fires is R5's fires
+    scaled to the Step-1 shape, and on the strategies with an ISOLATED Step-1
+    cube the isolated run's production gate fired differently from R5 on the
+    same 200 tickers and window. (1) the loader carries the committed RCA's
+    figures and RAISES on an unreadable record, a missing figure or an
+    unregistered strategy (L642); (2) every measured strategy's committed view
+    row carries exactly those figures and every other row None; (3) the MD
+    view's caveat names each with both figures; (4) no lane reads it - the
+    stream and projection functions never name the field."""
+    import inspect
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+
+    rca = _j.loads((root / "output_audit" / "b3306_r5_fire_gap_rca.json").read_text(encoding="utf-8"))
+    view = _j.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                    .read_text(encoding="utf-8"))
+    rows = {r["strategy"]: r for r in view["rows"]}
+    got = bss.load_isolated_step1_checks(set(rows))
+    assert sorted(got) == sorted(rca["measured"]) and len(got) == 4, sorted(got)
+    for s, v in rca["measured"].items():
+        g = got[s]
+        assert g["isolated_step1_production_long_fires"] == v["production_subset_long_fires"]
+        assert g["r5_long_fires_same_200_same_window"] == v["r5_long_fires_same_200_same_window"]
+        assert rows[s]["isolated_step1_check"] == g, s
+    assert all(r["isolated_step1_check"] is None for n, r in rows.items() if n not in got)
+    with pytest.raises(ValueError):
+        bss.load_isolated_step1_checks(set(rows) - {"pivot_r1_breakout"})
+    p = tmp_path / "rca.json"
+    p.write_text(_j.dumps({"measured": {"pivot_r1_breakout": {"cube": "c"}}}), encoding="utf-8")
+    with pytest.raises(KeyError):
+        bss.load_isolated_step1_checks(set(rows), path=p)
+    p.write_text("{not json", encoding="utf-8")
+    with pytest.raises(ValueError):
+        bss.load_isolated_step1_checks(set(rows), path=p)
+    md = (root / "STRATEGY_OPTIMISATION_STATUS.md").read_text(encoding="utf-8")
+    line = [l for l in md.splitlines() if l.startswith("- `proj. Step-1` (S6-B3306 (a))")]
+    assert len(line) == 1, line
+    for s, v in rca["measured"].items():
+        frag = (f"{s} isolated {v['production_subset_long_fires']} "
+                f"vs R5 {v['r5_long_fires_same_200_same_window']}")
+        assert frag in line[0], frag
+    for fn in (bss.classify_stream, bss.current_gate_projection, bss.status_for):
+        assert "isolated" not in inspect.getsource(fn), fn.__name__
+
+
+# ================================================================ B3139q-r115 S6-B3312: ledger-id readers take dashed and unbolded ids
+def test_b3312_ledger_id_readers_take_dashed_and_unbolded_ids(tmp_path):
+    """S6-B3312 (B3139q-r113 measured, r115 fixed): readers whose id pattern was
+    narrower than the ledger's. (1) queue_state.opening_id reads the id a
+    ledger LINE opens with - bold or not, a dashed suffix, a legacy bullet -
+    and None for a composite or a line that opens with none. (2) the status
+    view's mention list reads ids through it, so a dashed bold row and an
+    unbolded row both mention their strategy (LEVER4 was absent from the
+    mention lists of the four strategies its rows name). (3) queue_status, the
+    superseded counter, reads STATES through queue_state.rows: an EXECUTED or
+    DROPPED ticket is closed (its pre-six-class list called them all open -
+    MEASURED r115: OPEN 2591 / CLOSED 0), a dashed bold row is counted, and an
+    unbolded legacy row - a description in its state column - is DISCLOSED,
+    never counted (B1969). (4) on the live ledger the two counters agree."""
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import queue_state as qs
+    import queue_status as qst
+    import build_strategy_status as bss
+
+    oid = qs.opening_id
+    assert oid("| **S6-B9001** | **OPEN** | P1 | x |") == "S6-B9001"
+    assert oid("| **S6-B9002-LEVER9-X** | **OPEN** | P1 | x |") == "S6-B9002-LEVER9-X"
+    assert oid("| S6-B9003-OLD-SCHEMA | a description | P2 |") == "S6-B9003-OLD-SCHEMA"
+    assert oid("- **S6-B9004a** - a legacy bullet") == "S6-B9004a"
+    assert oid("| **S6-B9005a/b/c** | **OPEN** | P1 | x |") is None
+    assert oid("plain prose naming S6-B9006") is None and oid("") is None
+
+    q = ("| **S6-B9101-LV-DASHED** | **OPEN** | P2 | step 2 for toy_pick_long |\n"
+         "| S6-B9102-OLD | budget conversion for toy_pick_long | P2 |\n"
+         "- **S6-B9103** - a bullet naming toy_pick_long\n"
+         "| **S6-B9104** | **OPEN** | P2 | names another_strategy |\n")
+    _camp, ment = bss.campaign_tickets(q, "toy_pick_long")
+    assert ment == ["S6-B9101-LV-DASHED", "S6-B9102-OLD", "S6-B9103"], ment
+
+    led = tmp_path / "Q.md"
+    led.write_text("| **S6-B9201** | **OPEN** | P1 | x | _reason:_ y |\n"
+                   "| **S6-B9201** | **EXECUTED** | P1 | x | _reason:_ y |\n"
+                   "| **S6-B9202** | **DROPPED** | P1 | x | _reason:_ y |\n"
+                   "| **S6-B9203-LV-DASHED** | **OPEN** | P2 | x | _reason:_ y |\n"
+                   "| S6-B9204-OLD | a description, not a state | P2 |\n", encoding="utf-8")
+    cur = qst.resolve(qst.parse(led))
+    assert cur == {"S6-B9201": "EXECUTED", "S6-B9202": "DROPPED",
+                   "S6-B9203-LV-DASHED": "OPEN"}, cur
+    assert qst.is_closed("EXECUTED") and qst.is_closed("DROPPED")
+    assert not qst.is_closed("OPEN") and not qst.is_closed("DEFERRED")
+    assert set(qs.unparsed(led)) == {"S6-B9204-OLD"}
+
+    live = qst.resolve(qst.parse(qs.QUEUE))
+    canon = qs.tickets()
+    assert live == canon, (len(live), len(canon))
+    assert (sum(1 for s in live.values() if not qst.is_closed(s))
+            == sum(1 for s in canon.values() if s not in qs.TERMINAL))
