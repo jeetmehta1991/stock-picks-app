@@ -72,6 +72,15 @@ BASES = ("gross", "net")
 LEGS = ("both", "long", "short")
 
 
+def _row_sharpe(d) -> float | None:
+    """S6-B3315: the grid's row score - rc._sharpe at the row loop's floor
+    (test_b3315 asserts the two calls pass the same min_n) - handed to
+    month_concentration, so the IS Sharpe without a cell's top month is
+    scored exactly as the row's ranking key, on the frame's own basis."""
+    r = rc._sharpe(d["pnl_pct"].values, d["hold_days"], min_n=10)
+    return r["sharpe"] if r else None
+
+
 def build_frame(strategy: str, depth: str | None, axis_keys: list[str],
                 basis: str = "gross", leg: str = "both"):
     """B2678: the joined fires+cube frame both steps read - ONE loader so
@@ -183,6 +192,7 @@ def breadth_permutation_null(IS, cells, n_perms, seed, min_n=10):
 
 
 from step1_gates import require_band_ruling, require_fresh_status  # noqa: E402  (B2848)
+from episode_disclosure import month_concentration  # noqa: E402  (S6-B3315)
 
 
 def main() -> int:
@@ -299,7 +309,9 @@ def main() -> int:
                     "is_n": int(len(si)),
                     "full_n_count_only": int(len(sub)),
                     "is_retention": round(len(si) / max(len(is_all[is_all.exit_method == ex]), 1), 3),
-                    "npt_barred": ex == BARRED_EXIT})
+                    "npt_barred": ex == BARRED_EXIT,
+                    # S6-B3315: the null cannot see ONE episode - say it per row
+                    "episode": month_concentration(si, _row_sharpe)})
     ranked = sorted((r for r in rows if not r["npt_barred"]),
                     key=lambda r: -r["is_sharpe"])
     # S6-B3139ag: runbook 3.6 item 6 - price the search, and GENERATE the

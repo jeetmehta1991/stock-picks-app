@@ -448,6 +448,16 @@ pair is now consistent.
   SYNTHETIC and price the search, never performance. MEASURED on a 390-trial grid: the null's best
   reached ~1.2 at q95 by luck, so a bare 1.0 in-sample bar sits inside search-luck range. Pinned by
   `test_b2676_permutation_null_prices_the_grid`.
+- **Read the best cell's month concentration beside its null (S6-B3315, B3139q-r119).** The null
+  prices the ASSOCIATION between a level and the outcome and cannot see ONE market episode - a count
+  that only grows, or a macro level, is a time proxy and selects a date. MEASURED at S6-B3248 on
+  a breadth grid: the four top cells put 83.2 to 97.5 pct of their IS trades in 2025-04 while the
+  null priced the best at p 0.0099. `breadth_step1_grid.py` writes `episode` on
+  every graded row and `offline_level_sweep.py` on every cell's best exit
+  (`episode_disclosure.month_concentration`, the one definition: the largest month's share, the
+  span, and the IS Sharpe without that month - None below the power floor); Table D names the head
+  rows over the share flag in an EPISODE line. A disclosure, never a gate. The registry's graders
+  do not write it yet - a shrinking set named in `test_b3318` (S6-B3318).
 - **Record `trials_searched` (cells x exits) with every ranked list.** BH-FDR runs only at the
   ROSTER stage, across DIFFERENT strategies (`build_phase_1b_roster.py:366`, re-derived at B3096 - B2639
   had corrected an inherited 252 to 350, L664, and the line has moved again since); PSR is a
@@ -1002,7 +1012,8 @@ meaning.
    gate against the admitted or production base; IS-only grading; `next_pivot_target` barred from
    ranking; per-leg for dual strategies).
 6. **MULTIPLICITY PRICE** - the grid's best priced against its own permutation null (the B2676
-   instrument pattern; SYNTHETIC maxima, p on the artifact's face).
+   instrument pattern; SYNTHETIC maxima, p on the artifact's face), read beside each row's
+   `episode` month concentration, which the null cannot see (S6-B3315).
 7. **THE HOLDOUT READ** - ONE holdout read of every registered cell, on the owner's explicit word
    (Step 3's own read, or the Step-2 read when the cells were registered before it)
    (`scripts/breadth_step2_read.py`, fail-closed `--ruling`; a DISCLOSED-RE-READ label when the

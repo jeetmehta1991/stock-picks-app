@@ -373,11 +373,21 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
                 best_sh, best_ex = r["sharpe"], ex
         # owner directive: report TRADES, never cube rows - a cell's row count
         # is trades x exits and overstates the evidence ~26x.
+        # S6-B3315: the best exit's trades, one month at a time - a null over
+        # magnitudes shuffled ACROSS fires cannot see one episode; the rest is
+        # scored by the cell's own scorer (rc.evaluate at min_n)
+        from episode_disclosure import month_concentration
+        ep = (month_concentration(
+                  k[k["exit_method"] == best_ex],
+                  lambda d: (rc.evaluate(d["pnl_pct"], d["hold_days"], min_n=min_n)
+                             or {}).get("sharpe"))
+              if best_ex is not None else None)
         cells.append({"levels": list(combo),
                       "is_trades": int(len(k.drop_duplicates(["ticker", "entry_date"]))),
                       "is_cube_rows": int(len(k)),
                       "best_exit": best_ex, "is_sharpe": best_sh,
-                      "exits_evaluated": int(k["exit_method"].nunique())})
+                      "exits_evaluated": int(k["exit_method"].nunique()),
+                      "episode": ep})
     graded = [c for c in cells if c["is_sharpe"] is not None]
     _family_rows = cell_family_rows(cells)   # S6-B3096f (B3101)
     graded.sort(key=lambda c: c["is_sharpe"], reverse=True)

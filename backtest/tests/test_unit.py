@@ -54414,6 +54414,10 @@ def test_b3140b_table_d_reads_the_offline_factorial_block():
     twice = [r for r in off if all(prod.get(k) == v for k, v in r["levels"].items())]
     assert not twice, "a production cell rendered twice"
     committed = (root / "output_audit" / "b3140_pairs_step1_table_d.md").read_text(encoding="utf-8")
+    # S6-B3316 (B3139q-r117): main() now stamps its render (L803); the BODY
+    # after a stamp line is what build_table produces
+    if committed.startswith("_Rendered by scripts/table_d_render.py"):
+        committed = committed.split("\n\n", 1)[1]
     assert committed == md, "the committed pairs Table D is stale against the renderer"
 
 
@@ -64713,3 +64717,192 @@ def test_b3317_consistent_set_attributes_fstring_written_keys(tmp_path):
     reps = {c["representative"] for c in new["clusters"].values()}
     assert approved <= reps, approved - reps
     assert reps - approved == {"cot_dxy_mmoney_pctile_3y", "rsi_9_bullish"}, reps - approved
+
+
+# ================================================================ B3139q-r119 S6-B3315: a Step-1 search discloses a one-episode cell
+def test_b3315_step1_searches_disclose_one_episode_cells():
+    """S6-B3315 (B3139q-r119): a Step-1 search prices its best cell against a
+    permutation null that shuffles signal magnitudes ACROSS fires, which prices
+    the association and cannot see ONE market episode - MEASURED on
+    squeeze_breakout's breadth grid, whose four top cells put 83.2 to 97.5 pct
+    of their IS trades in 2025-04 while the null priced the best at p 0.0099.
+    scripts/episode_disclosure.month_concentration is the ONE definition (it
+    reproduced the committed hand check field for field, 24 of 24);
+    breadth_step1_grid writes it on every graded row, offline_level_sweep on
+    every cell's best exit, and table_d_render names the head rows over
+    SHARE_FLAG in an EPISODE line written only when a row records it. Arms:
+    the value (the rest of the frame, not all of it; None below the power
+    floor, never 0), the deterministic tie, the must-fire and must-quiet line,
+    the no-record line (an older render is unchanged), and the wiring of both
+    instruments and the renderer (AST - prose cannot satisfy it, L748), and
+    the scorer: the helper scores no trade itself - each caller hands it the
+    scorer that ranked the row, so test_b3122's census classifies the caller,
+    which owns the pnl basis."""
+    import ast as _ast
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import episode_disclosure as ed
+    import roster_core as rc
+    import table_d_render as tdr
+    # 20 trades in 2025-04 and 12 across 2025-01..03, pnl varying so std > 0
+    dates = ([f"2025-04-{d:02d}" for d in range(1, 21)]
+             + [f"2025-0{m}-{d:02d}" for m in (1, 2, 3) for d in (3, 10, 17, 24)])
+    pnl = [2.0, -1.0] * 10 + [1.5, -0.5, 1.0, -1.0] * 3
+    f = _pd.DataFrame({"entry_date": dates, "pnl_pct": pnl, "hold_days": [5] * len(dates)})
+    def sc(d):        # a caller's row scorer - the grid's own (rc._sharpe, min_n 10)
+        r = rc._sharpe(d["pnl_pct"].values, d["hold_days"], min_n=10)
+        return r["sharpe"] if r else None
+    e = ed.month_concentration(f, sc)
+    assert (e["top_month"], e["n"], e["months"]) == ("2025-04", 32, 4), e
+    assert e["top_month_share"] == round(20 / 32, 3) and e["n_without_top_month"] == 12, e
+    rest = f[~f["entry_date"].str.startswith("2025-04")]
+    want = rc._sharpe(rest["pnl_pct"].values, rest["hold_days"], min_n=10)["sharpe"]
+    whole = rc._sharpe(f["pnl_pct"].values, f["hold_days"], min_n=10)["sharpe"]
+    assert want != whole and e["is_sharpe_without_top_month"] == want, (want, whole, e)
+    # below the power floor the Sharpe is None, never 0 (L580)
+    assert ed.month_concentration(f.iloc[:25], sc)["is_sharpe_without_top_month"] is None
+    assert ed.month_concentration(f.iloc[0:0], sc) is None
+    # a tie on the largest count resolves to the EARLIEST month
+    tie = _pd.DataFrame({"entry_date": ["2025-03-01", "2025-02-01", "2025-03-02", "2025-02-02"],
+                         "pnl_pct": [1.0, -1.0, 2.0, 0.5], "hold_days": [5] * 4})
+    assert ed.month_concentration(tie, sc)["top_month"] == "2025-02"
+    # the EPISODE line: a row over the flag is named, a row AT it is not
+    hot = {"is_sharpe": 3.0, "episode": {"top_month": "2025-04", "top_month_share": 0.9,
+                                         "months": 3, "n": 40, "n_without_top_month": 4,
+                                         "is_sharpe_without_top_month": None}}
+    cool = {"is_sharpe": 2.0, "episode": {"top_month": "2024-11",
+                                          "top_month_share": ed.SHARE_FLAG, "months": 9,
+                                          "n": 40, "n_without_top_month": 20,
+                                          "is_sharpe_without_top_month": 1.1}}
+    lines = tdr._episode_lines([hot, cool], 25)
+    assert len(lines) == 1 and lines[0].startswith("EPISODE (S6-B3315) - 1 of the 2 top-2 rows"), lines
+    assert "rank 1: 2025-04 holds 0.9 of 40" in lines[0] and "below the power floor" in lines[0], lines
+    assert "rank 2" not in lines[0], lines
+    # a row past the head the caller passes is not read
+    assert tdr._episode_lines([cool, hot], 1)[0].startswith("EPISODE (S6-B3315) - 0 of the 1 top-1"), \
+        tdr._episode_lines([cool, hot], 1)
+    # no row records it: no line, so an older artifact renders as before
+    assert tdr._episode_lines([{"is_sharpe": 3.0}, {"is_sharpe": 2.0}], 25) == []
+
+    def _appended_dicts(path, target):
+        tree = _ast.parse(path.read_text(encoding="utf-8"))
+        out = []
+        for n in _ast.walk(tree):
+            if (isinstance(n, _ast.Call) and isinstance(n.func, _ast.Attribute)
+                    and n.func.attr == "append" and isinstance(n.func.value, _ast.Name)
+                    and n.func.value.id == target and n.args and isinstance(n.args[0], _ast.Dict)):
+                out.append({k.value: v for k, v in zip(n.args[0].keys, n.args[0].values)
+                            if isinstance(k, _ast.Constant)})
+        return tree, out
+
+    _t, g = _appended_dicts(root / "scripts" / "breadth_step1_grid.py", "rows")
+    assert len(g) == 1 and "episode" in g[0], g
+    v = g[0]["episode"]
+    assert (isinstance(v, _ast.Call) and getattr(v.func, "id", None) == "month_concentration"
+            and [getattr(a, "id", None) for a in v.args] == ["si", "_row_sharpe"]), _ast.dump(v)
+    # the grid's row scorer and its row loop pass ONE floor: the two _sharpe
+    # calls over the row frame (si) and the rest (d) carry the same min_n
+    floors = [_ast.unparse(kw.value) for n in _ast.walk(_t) if isinstance(n, _ast.Call)
+              and getattr(n.func, "attr", None) == "_sharpe"
+              and any(isinstance(a, _ast.Subscript) and _ast.unparse(a).startswith(("si[", "d["))
+                      for a in n.args)
+              for kw in n.keywords if kw.arg == "min_n"]
+    assert len(floors) == 2 and len(set(floors)) == 1, floors
+    tree, s = _appended_dicts(root / "scripts" / "offline_level_sweep.py", "cells")
+    assert len(s) == 1 and getattr(s[0].get("episode"), "id", None) == "ep", s
+    fn = next(n for n in _ast.walk(tree) if isinstance(n, _ast.FunctionDef) and n.name == "sweep")
+    ep = [n for n in _ast.walk(fn) if isinstance(n, _ast.Assign)
+          and [getattr(t, "id", None) for t in n.targets] == ["ep"]]
+    assert len(ep) == 1 and any(isinstance(c, _ast.Call) and getattr(c.func, "id", None) == "month_concentration"
+                                for c in _ast.walk(ep[0].value)), ep
+    # the sweep scores the rest with the cell's own scorer, at the cell's floor
+    assert any(isinstance(c, _ast.Call) and getattr(c.func, "attr", None) == "evaluate"
+               and any(kw.arg == "min_n" and getattr(kw.value, "id", None) == "min_n"
+                       for kw in c.keywords)
+               for c in _ast.walk(ep[0].value)), _ast.unparse(ep[0].value)
+    # the helper scores no trade itself - its callers own the basis
+    edt = _ast.parse((root / "scripts" / "episode_disclosure.py").read_text(encoding="utf-8"))
+    assert not [n for n in _ast.walk(edt) if isinstance(n, _ast.Call)
+                and (getattr(n.func, "attr", None) or getattr(n.func, "id", None))
+                in ("_sharpe", "evaluate")]
+    rt = _ast.parse((root / "scripts" / "table_d_render.py").read_text(encoding="utf-8"))
+    bt = next(n for n in _ast.walk(rt) if isinstance(n, _ast.FunctionDef) and n.name == "build_table")
+    calls = [c for c in _ast.walk(bt) if isinstance(c, _ast.Call)
+             and getattr(c.func, "id", None) == "_episode_lines"]
+    assert len(calls) == 1 and _ast.unparse(calls[0].args[1]) == "min(top, EPISODE_HEAD)", \
+        [_ast.unparse(c) for c in calls]
+
+
+# ================================================================ B3139q-r119 S6-B3318: graders without the episode disclosure, a shrinking set
+def test_b3318_episode_disclosure_unwired_graders_is_a_shrinking_set():
+    """S6-B3318 (B3139q-r119): S6-B3315's one-episode disclosure reached the
+    two generic offline Step-1 instruments (breadth_step1_grid,
+    offline_level_sweep). Every grader the SPECS registry names - each
+    family's tools.grade and tools.free_levels script, MEASURED 15 at
+    B3139q-r119 - ranks cells without it. That set is frozen here BY NAME,
+    with a reason per member (L747), and may only shrink: a grader that gains
+    the month_concentration call must leave it, and a grader added to the
+    registry must make the call or join it in the open. The population comes
+    from the registry walk, never a filename pattern, and an empty walk fails
+    (a vacuous set passes nothing)."""
+    import ast as _ast
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    def scripts_of(spec):
+        out, stack = set(), [spec]
+        while stack:
+            x = stack.pop()
+            if isinstance(x, dict):
+                for k, v in x.items():
+                    if (k in ("grade", "free_levels") and isinstance(v, dict)
+                            and isinstance(v.get("script"), str)):
+                        out.add(v["script"])
+                    stack.append(v)
+            elif isinstance(x, (list, tuple)):
+                stack.extend(x)
+        return out
+
+    def calls_mc(name):
+        tree = _ast.parse((root / "scripts" / name).read_text(encoding="utf-8"))
+        return any(isinstance(n, _ast.Call)
+                   and "month_concentration" in (getattr(n.func, "id", None),
+                                                 getattr(n.func, "attr", None))
+                   for n in _ast.walk(tree))
+
+    pop = set()
+    for reg in (pvt.SPECS, getattr(pvt, "SPECS_PHASE0", {})):
+        for spec in reg.values():
+            pop |= scripts_of(spec)
+    assert len(pop) >= 15, sorted(pop)
+    for wired in ("breadth_step1_grid.py", "offline_level_sweep.py"):   # S6-B3315
+        assert calls_mc(wired), wired
+    CFG = "S6-B3318: an engine-config grader (grid_auto) - ranks configs' cells, no episode field"
+    FREE = "S6-B3318: a free-level grader - grades a config's free levels, no episode field"
+    STEP1 = "S6-B3318: a Step-1 search script - ranks its cells, no episode field"
+    UNWIRED_EPISODE = {
+        "grade_bollinger_config.py": CFG, "grade_candle_config.py": CFG,
+        "grade_institutional_config.py": CFG, "grade_npoc_config.py": CFG,
+        "grade_pairs_config.py": CFG,
+        "grade_free_levels_bollinger.py": FREE, "grade_free_levels_candle.py": FREE,
+        "grade_free_levels_institutional.py": FREE, "grade_free_levels_npoc.py": FREE,
+        "grade_free_levels_pairs.py": FREE,
+        "lever4_step1.py": STEP1, "smc_family_step1.py": STEP1, "smc_lsr_step1.py": STEP1,
+        "smc_obb_step1.py": STEP1, "tighten_breaker_block.py": STEP1,
+    }
+    unwired = {s for s in pop if not calls_mc(s)}
+    assert unwired <= set(UNWIRED_EPISODE), (
+        "a registry grader ranks cells without the episode disclosure - call "
+        "episode_disclosure.month_concentration, or name it here with its reason",
+        sorted(unwired - set(UNWIRED_EPISODE)))
+    assert set(UNWIRED_EPISODE) <= unwired, (
+        "these entries no longer need the exemption (they call it, or left the "
+        "registry) - remove them so the set shrinks", sorted(set(UNWIRED_EPISODE) - unwired))

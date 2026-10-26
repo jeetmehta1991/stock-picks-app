@@ -215,7 +215,8 @@ def _surface_rows(a: dict, params: list) -> list:
         out.append({"exit": c.get("best_exit"), "is_sharpe": c.get("is_sharpe"),
                     "is_ci_lo": None, "is_n": c.get("is_trades"),
                     "levels": levels, "cube": a.get("cube"),
-                    "offline_surface": True})
+                    "offline_surface": True,
+                    "episode": c.get("episode")})      # S6-B3315
     return out
 
 
@@ -250,6 +251,40 @@ def _null_line(a: dict, name: str):
             f"({pn.get('n_perms')} perms, SYNTHETIC)"
             + (f" - NOT RECORDED in the artifact: {', '.join(missing)}"
                if missing else ""))
+
+
+# CHOSEN (#165): the EPISODE line reads the head of the ranking, where a reader
+# acts - build_table's own default `top` (25). The CLI renders every row (the
+# squeeze unified table shows 854), and a line naming every hot row of such a
+# table would bury its point; each row's concentration stays in its artifact.
+EPISODE_HEAD = 25
+
+
+def _episode_lines(ranked: list, top: int) -> list:
+    """S6-B3315: name the rows of ranked[:top] whose in-sample trades sit
+    mostly in ONE month (build_table passes min(its top, EPISODE_HEAD); `top`
+    has no default, so caller and helper cannot drift). Written ONLY when a
+    row records its concentration (the Step-1 instruments write it since
+    S6-B3315), so a render of an older artifact is byte-identical to before -
+    test_b3140 compares one."""
+    head = list(enumerate(ranked[:top], 1))
+    rec = [(i, r) for i, r in head if isinstance(r.get("episode"), dict)]
+    if not rec:
+        return []
+    from episode_disclosure import SHARE_FLAG
+    hot = [(i, r["episode"]) for i, r in rec
+           if r["episode"]["top_month_share"] > SHARE_FLAG]
+
+    def one(i, e):
+        w = e.get("is_sharpe_without_top_month")
+        return (f"rank {i}: {e['top_month']} holds {e['top_month_share']} of "
+                f"{e['n']} (without it n {e['n_without_top_month']}, IS sharpe "
+                + ("- below the power floor" if w is None else str(w)) + ")")
+    return [f"EPISODE (S6-B3315) - {len(hot)} of the {len(rec)} top-{len(head)} rows "
+            f"recording it put more than {SHARE_FLAG:g} of their IS trades in ONE "
+            "month (the null shuffles magnitudes across fires and cannot see this; "
+            "every row's share is in its artifact's 'episode' field)"
+            + (": " + "; ".join(one(i, e) for i, e in hot) if hot else "")]
 
 
 def _is_levels_block(a: dict) -> bool:
@@ -887,6 +922,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                      and not r.get("offline_free_level")
                      and not r.get("offline_surface")
                      for r in ranked) else []),
+            *_episode_lines(ranked, min(top, EPISODE_HEAD)),
             *(["DEPTH SURFACE - an offline_level_sweep surface stores each "
                "cell's BEST exit only and no lower bound, so its rows show that "
                "exit with IS ci_lo blank and rank after every row that records "
