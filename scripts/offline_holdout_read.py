@@ -65,8 +65,8 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
                 f"sha {now['sha256'][:12]} but the pre-registered sweep recorded "
                 f"{str(subject['derive'].get('sha256'))[:12]} - a changed derivation "
                 "is a different experiment wearing the pre-registration's name")
-    axes = [{"key": a["key"], "op": a["op"], "levels": a["levels"]}
-            for a in rec1["axes"]]
+    axes = [dict(a) for a in rec1["axes"]]  # S6-B3313: every field the sweep wrote
+    # rides - a key/op/levels rebuild dropped the OR 'group' and ANDed the arms
     production = tuple(rec1["production_levels"])
     prereg = rec1["preregistration_candidate"]
     strategy = rec1["strategy"]

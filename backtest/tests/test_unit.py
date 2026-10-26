@@ -63621,8 +63621,9 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
     """S6-B3294: (1) band_coverage_gate reads an offline_level_sweep IS
     surface - graded levels per axis key, a param mapped through its
     signal_keys or its coverage_key - and REPORTS them per param as
-    is_surface_graded; it COUNTS them only when COUNT_IS_SURFACE is True (the
-    S6-B3295 owner ruling, False until it lands), pinned both ways; a param
+    is_surface_graded; it COUNTS them when COUNT_IS_SURFACE is True - the
+    S6-B3295 owner ruling (a), 2026-10-26, the module default - and the
+    report-only False branch stays as the negative control; a param
     whose levels no artifact graded stays untested either way. (2)
     offline_holdout_read takes direction, survival and the derive module
     from the Step-1 artifact (L912): a short fire in the cube does not enter
@@ -63641,6 +63642,8 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
     import band_coverage_gate as bcg
     import offline_holdout_read as ohr
     import offline_level_sweep as ols
+    # S6-B3295 RULED (a) 2026-10-26: the module default COUNTS the surface
+    assert bcg.COUNT_IS_SURFACE is True
 
     # (1) fixture: two axes, one param keyed by signal_keys, one by coverage_key,
     # one with a level nothing graded
@@ -63660,6 +63663,7 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
         {"id": "P3", "param": "cmf floor (SHORT leg)", "band": [0.0, -0.02], "production": 0.0,
          "coverage_key": "cmf"},
     ]}
+    monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", False)    # the report-only control
     rep = bcg.coverage_report("syn", [], spec=spec, arts=[art])
     by = {p["id"]: p for p in rep["params"]}
     assert rep["is_surface_counted"] is False and rep["complete"] is False
@@ -63669,6 +63673,8 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
     assert rep["is_surface_evaluations"][0]["axes"]["rsi_14"] == [45, 50]
     monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", True)
     rep2 = bcg.coverage_report("syn", [], spec=spec, arts=[art])
+    assert rep2["artifacts"][0]["coverage"].startswith("counted (in-sample surface")
+    assert rep["artifacts"][0]["coverage"].startswith("none - ")
     by2 = {p["id"]: p for p in rep2["params"]}
     assert rep2["is_surface_counted"] is True and rep2["complete"] is False   # P3 still ungraded
     assert by2["P1"]["untested"] == [] and by2["P1"]["is_surface_covered"] == [45]
@@ -63680,9 +63686,10 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
     wl, ws = A / "b3289_williams_r_oversold_long_step1_is_surface.json", A / "b3289_williams_r_oversold_short_step1_is_surface.json"
     sq = A / "b3289_squeeze_breakout_depth_step1_is_surface.json"
     if wl.exists() and ws.exists() and sq.exists():
+        monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", False)    # the report-only control
         r = bcg.coverage_report("williams_r_oversold", [str(wl), str(ws)])
         gaps = {p["param"]: p for p in r["params"] if p["untested"]}
-        assert r["complete"] is False and gaps, r      # uncounted pending S6-B3295
+        assert r["complete"] is False and gaps, r      # uncounted on the control branch
         assert all(p["is_surface_graded"] == p["untested"] for p in gaps.values()), gaps
         monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", True)
         assert bcg.coverage_report("williams_r_oversold", [str(wl), str(ws)])["complete"] is True
@@ -64241,3 +64248,72 @@ def test_b3311_dangling_citation_window_covers_every_lesson():
         "passes unchecked (S6-B3311). Raise the bound - and past L999 widen "
         "the pattern to four digits, keeping out the queue's L-prefixed line "
         "anchors (CHECKLIST.md#L1651).")
+
+
+# ================================================================ B3139q-r114 S6-B3313: the holdout read keeps a sweep axis's OR group
+def test_b3313_holdout_read_keeps_the_sweep_axes_or_group(tmp_path, monkeypatch):
+    """S6-B3313 (B3139q-r114): offline_holdout_read rebuilt the Step-1
+    artifact's axes from key / op / levels and DROPPED 'group', the S6-B3290
+    OR-arm marker offline_level_sweep.keep reads - so an (a OR b) AND c gate
+    was re-scored as a AND b AND c. MEASURED on the approved williams_r_oversold
+    long read: production reproduced 0.2298 of its fires against the sweep's
+    1.0000, and the read refused before any holdout cell was graded. Here two
+    long fires each pass a DIFFERENT arm of one OR group: with the group kept
+    production reproduces 1.0 and the read runs; ANDed, it would reproduce 0.
+    The CLASS arm: the reader copies each axis whole, so a field the sweep
+    writes later (here 'note') reaches the matcher too - a reader that
+    rebuilds an axis from a field subset drops the next field the same way."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import offline_holdout_read as ohr
+    import offline_level_sweep as ols
+    import producer_variant_table as pvt
+
+    sig = [{"williams_r": -85.0, "rsi_2": 10.0, "cmf": 0.1},     # passes the williams_r arm only
+           {"williams_r": -50.0, "rsi_2": 2.0, "cmf": 0.1}]       # passes the rsi_2 arm only
+    rows = [{"ticker": f"T{i}", "strategy": "orx", "entry_date": d, "direction": "long",
+             "signals_at_entry": _json.dumps(s)}
+            for i, (d, s) in enumerate(zip(["2025-06-10", "2025-07-10"], sig), 1)]
+    _pd.DataFrame(rows).to_csv(tmp_path / "tl.csv", index=False)
+    _pd.DataFrame([{"strategy": "orx", "direction": "long", "exit_method": "e1",
+                    "entry_date": r["entry_date"], "ticker": r["ticker"], "pnl_pct": 1.0,
+                    "hold_days": 2.0} for r in rows]).to_csv(tmp_path / "cube.csv", index=False)
+    monkeypatch.setattr(ols, "TRADE_LOG", tmp_path / "tl.csv")
+    monkeypatch.setattr(ols, "CUBE", tmp_path / "cube.csv")
+    monkeypatch.setattr(pvt, "offline_retest_refusal", lambda s: "")
+    axes = [{"key": "williams_r", "op": "lt", "levels": [-80.0, -85.0], "group": "hatch"},
+            {"key": "rsi_2", "op": "lt", "levels": [5.0, 3.0], "group": "hatch"},
+            {"key": "cmf", "op": "gt", "levels": [0.0], "group": None,
+             "note": "a field a later sweep writes"}]
+    step1 = {"strategy": "orx", "direction": "long", "axes": axes,
+             "production_levels": [-80.0, 5.0, 0.0],
+             "preregistration_candidate": {"levels": [-85.0, 3.0, 0.0], "best_exit": "e1",
+                                           "is_sharpe": 0.5},
+             "evidence": {"survival_filter": {"applied": False}}, "derive": None}
+    p1 = tmp_path / "step1.json"
+    p1.write_text(_json.dumps(step1), encoding="utf-8")
+    ok = {"evaluable": True, "complete": True, "params": []}
+    seen = []
+    _keep = ols.keep
+
+    def _spy(frame, ax, combo):
+        seen.append([dict(a) for a in ax])
+        return _keep(frame, ax, combo)
+    monkeypatch.setattr(ols, "keep", _spy)
+    rec = ohr.read_step2(p1, 0.99, 0.999, 1, band_coverage=ok)
+    assert rec["reproduction"] == 1.0, rec["reproduction"]
+    assert rec["evidence"]["landed_fires"] == 2
+    # the class: every axis reaches the matcher exactly as the sweep wrote it
+    assert seen and all(s == axes for s in seen), seen[:1]
+    # the same axes with the group stripped reproduce NOTHING - the shape the read had
+    fires = _pd.DataFrame([dict(s, ticker=f"T{i}", entry_date=d) for i, (d, s)
+                           in enumerate(zip(["2025-06-10", "2025-07-10"], sig), 1)])
+    anded = [dict(a, group=None) for a in axes]
+    assert len(ols.keep(fires, anded, tuple(step1["production_levels"]))) == 0
+    assert len(ols.keep(fires, axes, tuple(step1["production_levels"]))) == 2

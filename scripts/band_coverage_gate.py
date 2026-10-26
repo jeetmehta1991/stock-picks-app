@@ -91,13 +91,13 @@ KIND_PERMUTATION_NULL = "permutation_null"
 KIND_IS_SURFACE = "is_surface"
 # S6-B3294 / S6-B3295: the generic sweep's in-sample surface grades every
 # free level x every exit (reproduction-gated, Table D beside it), which is
-# the T4 Step-1 grid itself - but whether a SURFACE evaluation counts toward
-# band coverage the way a FREE-LEVEL evaluation does (S6-B3139o) is the
-# owner's ruling, pending as S6-B3295. Until it lands the surface's graded
-# levels are REPORTED per param (is_surface_graded) and never counted;
-# flipping this constant is the ruling's one-line landing, pinned both ways
-# by test_b3294.
-COUNT_IS_SURFACE = False
+# the T4 Step-1 grid itself. RULED (a) by the owner 2026-10-26 ('Approve all
+# recs'): a SURFACE evaluation counts toward band coverage with the same
+# standing as a FREE-LEVEL evaluation (S6-B3139o) - its graded levels are
+# REPORTED per param (is_surface_graded) AND counted (is_surface_covered).
+# This constant is the ruling's landing; False keeps the pre-ruling
+# report-only branch, pinned both ways by test_b3294.
+COUNT_IS_SURFACE = True
 ZERO_COVERAGE = {
     KIND_GRID_AUTO: "rows is a COUNT - it cannot say which levels ran; the "
                     "landed producer config is reported under landed_configs",
@@ -105,10 +105,10 @@ ZERO_COVERAGE = {
     KIND_PERMUTATION_NULL: "a null distribution grades no band level",
     # B3139 (found by test_b2886 on the pead family): an in-sample search
     # surface reports. The S6-B3139o ruling (2026-09-30) covered FREE-LEVEL
-    # evaluations only; an IS surface stays zero-coverage pending its own ask.
-    KIND_IS_SURFACE: "an in-sample search surface - reported, never counted "
-                     "toward coverage (the S6-B3139o ruling covered "
-                     "free-level evaluations only)",
+    # evaluations only; an IS surface counts since S6-B3295 (a), 2026-10-26.
+    KIND_IS_SURFACE: "an in-sample search surface - reported and, while "
+                     "COUNT_IS_SURFACE is False, not counted (the S6-B3295 "
+                     "ruling counts it)",
 }
 
 
@@ -259,6 +259,9 @@ def coverage_report(strategy: str, artifact_paths: list, *,
                                else "counted (free-level, S6-B3139o owner "
                                     "ruling 2026-09-30)"
                                if k == KIND_FREE_LEVELS
+                               else "counted (in-sample surface, S6-B3295 "
+                                    "owner ruling 2026-10-26)"
+                               if k == KIND_IS_SURFACE and COUNT_IS_SURFACE
                                else "none - " + ZERO_COVERAGE[k])}
                  for n, k in zip(names, kinds)]
     free_evals = {}
@@ -342,7 +345,7 @@ def coverage_report(strategy: str, artifact_paths: list, *,
                         free_covered.append(lev)
                     if not ok and any(_num_eq(lev, s) for s in surf_seen):
                         # S6-B3294: graded by the sweep's IS surface -
-                        # reported always, counted only on the S6-B3295 ruling
+                        # reported always, counted under S6-B3295 (a)
                         surface_graded.append(lev)
                         if COUNT_IS_SURFACE:
                             ok = True
