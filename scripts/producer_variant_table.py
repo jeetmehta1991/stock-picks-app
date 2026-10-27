@@ -3746,6 +3746,274 @@ SPECS_PHASE0.update({
     }
 })
 
+# S6-B3304 (B3139q-r119): camarilla_r4_breakout F1 - written FROM the owner's T3
+# band (2026-10-26); the distance knob grades offline through the derived
+# cam_r4_room / cam_s4_room of scripts/camarilla_derived.py (S6-B3290b pattern).
+SPECS_PHASE0.update({"camarilla_r4_breakout": {
+    "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (the charter\nstrategy_optimisation/tighten/camarilla_r4_breakout.md numbers the same steps\nP1/P1.1/P2/P2.1/P3/P3.1/P4/P5 - integer ids here). NO breadth rows: the\ncharter's B-row candidates are NEW-GATE and outside the approved band.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  above_cam_r4  (close > R4 = prev_close + 1.1/2 x prev range; technical.py\n       compute_pivots; charter P1)\nP2  R4 distance multiplier  (charter P1.1: production 1.1/2 = 0.55 prior ranges;\n       the tighter levels are OFFLINE through scripts/camarilla_derived.py's\n       cam_r4_room - LONG leg; the looser 0.45 is engine-only, held)\nP3  below_cam_s4  (close < S4 = prev_close - 1.1/2 x prev range; charter P2)\nP4  S4 distance multiplier  (charter P2.1, the mirror, through cam_s4_room -\n       SHORT leg)\nP5  vol_above_avg  (vol / 20-day average >= 1.0; technical.py; charter P3)\nP6  volume ratio floor  (charter P3.1 on the persisted vol_ratio_20d, both\n       legs; the tighter floors are OFFLINE)\nP7  volume average window 20  (charter P3.1's second knob - DEFINED-NO-ACTUATOR)\n\n=============================== STRATEGY LAYER ===============================\n\nP8  xs_ivol >= 0.2598   [EXISTING-THRESHOLD, B1422 - both legs; charter P4]\nP9  _short_borrow_trap_active(s)  (days_to_cover > 5.0 blocks the SHORT fire;\n       charter P5 - band OWNER-GATED, not in the approved grid)\n\nlong_fires  = P1 AND P5 AND P8        (P2 / P6 tighten P1 / P5 offline)\nshort_fires = P3 AND P5 AND NOT P9 AND P8   (P4 / P6 tighten P3 / P5 offline)\nSwept per leg by offline_level_sweep.py --direction --survival --derive\nscripts/camarilla_derived.py: long cam_r4_room:gt, vol_ratio_20d:ge,\nxs_ivol:ge; short cam_s4_room:gt and the same two.\n",
+    "baseline": {
+        "artifact": "output_r5_merged_1_7",
+        "fires": 5774,
+        "tickers": 544,
+        "holdout_n": 1296,
+        "band": "T",
+        "window": "2022-05-05..2026-05-05",
+        "fires_by_side": {
+            "long": 2721,
+            "short": 3053
+        }
+    },
+    "gate": "(above_cam_r4 AND vol_above_avg AND xs_ivol >= 0.2598) | short (below_cam_s4 AND vol_above_avg AND NOT borrow AND xs_ivol >= 0.2598) (screener strat_camarilla_r4_breakout)",
+    "tools": {},
+    "params": [
+        {
+            "id": "P1",
+            "producer": "technical.py compute_pivots",
+            "param": "above_cam_r4 identity (LONG)",
+            "production": "R4 = C + 1.1/2 x range",
+            "band": [
+                "R4 = C + 1.1/2 x range"
+            ],
+            "free_band": None,
+            "resim_band": None,
+            "env": None,
+            "consumers": [
+                "backtest/signals/screener.py"
+            ],
+            "sweep_levels": None,
+            "subset_safe": False,
+            "status": "DEFINED-NO-ACTUATOR (the boolean; its knob is P2)",
+            "type": "identity",
+            "engine_implemented": False,
+            "evidence": "charter P1",
+            "derivation": "held at production"
+        },
+        {
+            "id": "P2",
+            "producer": "technical.py compute_pivots (derived)",
+            "param": "R4 distance multiplier (LONG)",
+            "signal_keys": [
+                "cam_r4_room"
+            ],
+            "production": 0.55,
+            "band": [
+                0.55,
+                0.75,
+                1.0,
+                1.25
+            ],
+            "free_band": [
+                0.55,
+                0.75,
+                1.0,
+                1.25
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [
+                "backtest/signals/screener.py"
+            ],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'the offline tighter levels (distance 0.75/1.0/1.25, volume 1.2/1.5/2.0, four xs_ivol floors)'; S6-B3304) - charter P1.1 band 0.45/0.55/0.75/1.0/1.25: 0.75/1.0/1.25 OFFLINE through the derived cam_r4_room; 0.45 is engine-only with no knob and stays out of the band",
+            "type": "float",
+            "engine_implemented": True,
+            "evidence": "output_audit/b3304_camarilla_distance_derivability.json (5774 of 5774 reproduced)",
+            "derivation": "TIGHTER = a larger multiplier (fewer closes clear R4); cam_r4_room > m"
+        },
+        {
+            "id": "P3",
+            "producer": "technical.py compute_pivots",
+            "param": "below_cam_s4 identity (SHORT)",
+            "production": "S4 = C - 1.1/2 x range",
+            "band": [
+                "S4 = C - 1.1/2 x range"
+            ],
+            "free_band": None,
+            "resim_band": None,
+            "env": None,
+            "consumers": [
+                "backtest/signals/screener.py"
+            ],
+            "sweep_levels": None,
+            "subset_safe": False,
+            "status": "DEFINED-NO-ACTUATOR (the boolean; its knob is P4)",
+            "type": "identity",
+            "engine_implemented": False,
+            "evidence": "charter P2",
+            "derivation": "held at production"
+        },
+        {
+            "id": "P4",
+            "producer": "technical.py compute_pivots (derived)",
+            "param": "S4 distance multiplier (SHORT)",
+            "signal_keys": [
+                "cam_s4_room"
+            ],
+            "production": 0.55,
+            "band": [
+                0.55,
+                0.75,
+                1.0,
+                1.25
+            ],
+            "free_band": [
+                0.55,
+                0.75,
+                1.0,
+                1.25
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [
+                "backtest/signals/screener.py"
+            ],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'the offline tighter levels (distance 0.75/1.0/1.25, volume 1.2/1.5/2.0, four xs_ivol floors)'; S6-B3304) - charter P2.1, the mirror of P2",
+            "type": "float",
+            "engine_implemented": True,
+            "evidence": "as P2",
+            "derivation": "TIGHTER = a larger multiplier; cam_s4_room > m"
+        },
+        {
+            "id": "P5",
+            "producer": "technical.py volume ratio",
+            "param": "vol_above_avg identity",
+            "production": "vol / avg20 >= 1.0",
+            "band": [
+                "vol / avg20 >= 1.0"
+            ],
+            "free_band": None,
+            "resim_band": None,
+            "env": None,
+            "consumers": [
+                "backtest/signals/screener.py"
+            ],
+            "sweep_levels": None,
+            "subset_safe": False,
+            "status": "DEFINED-NO-ACTUATOR (the boolean; its floor is P6)",
+            "type": "identity",
+            "engine_implemented": False,
+            "evidence": "charter P3",
+            "derivation": "held at production"
+        },
+        {
+            "id": "P6",
+            "producer": "technical.py volume ratio",
+            "param": "volume ratio floor (both legs)",
+            "signal_keys": [
+                "vol_ratio_20d"
+            ],
+            "production": 1.0,
+            "band": [
+                1.0,
+                1.2,
+                1.5,
+                2.0
+            ],
+            "free_band": [
+                1.0,
+                1.2,
+                1.5,
+                2.0
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [
+                "backtest/signals/screener.py"
+            ],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'the offline tighter levels (distance 0.75/1.0/1.25, volume 1.2/1.5/2.0, four xs_ivol floors)'; S6-B3304) - charter P3.1: 1.2/1.5/2.0 OFFLINE on the persisted vol_ratio_20d (2 dp)",
+            "type": "float",
+            "engine_implemented": True,
+            "evidence": "charter P3.1; vol_ratio_20d minimum on the R5 fires 1.0 (b3304 derivability record)",
+            "derivation": "TIGHTER = a higher floor; vol_ratio_20d >= f"
+        },
+        {
+            "id": "P7",
+            "producer": "technical.py volume ratio",
+            "param": "volume average window",
+            "production": 20,
+            "band": [
+                20
+            ],
+            "free_band": None,
+            "resim_band": None,
+            "env": None,
+            "consumers": [
+                "backtest/signals/screener.py"
+            ],
+            "sweep_levels": None,
+            "subset_safe": False,
+            "status": "DEFINED-NO-ACTUATOR (charter P3.1 second knob [10, 20, 50]; no knob)",
+            "type": "int",
+            "engine_implemented": False,
+            "evidence": "charter P3.1",
+            "derivation": "held at production"
+        },
+        {
+            "id": "P8",
+            "producer": "cross_sectional.py xs_ivol",
+            "param": "xs_ivol floor (both legs)",
+            "signal_keys": [
+                "xs_ivol"
+            ],
+            "production": 0.2598,
+            "band": [
+                0.2598,
+                0.2918,
+                0.3301,
+                0.3814,
+                0.4621
+            ],
+            "free_band": [
+                0.2598,
+                0.2918,
+                0.3301,
+                0.3814,
+                0.4621
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [
+                "backtest/signals/screener.py"
+            ],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "status": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'the offline tighter levels (distance 0.75/1.0/1.25, volume 1.2/1.5/2.0, four xs_ivol floors)'; S6-B3304) - charter P4: the four measured tighter floors OFFLINE",
+            "type": "float",
+            "engine_implemented": True,
+            "evidence": "charter P4 free-band section (retention 80/60/40/20 pct of the surviving fires)",
+            "derivation": "TIGHTER = a higher floor; xs_ivol >= f"
+        },
+        {
+            "id": "P9",
+            "producer": "screener._short_borrow_trap_active",
+            "param": "days_to_cover cap (borrow guard, SHORT leg)",
+            "production": "5.0",
+            "band": [
+                "5.0"
+            ],
+            "free_band": None,
+            "resim_band": None,
+            "env": None,
+            "consumers": [
+                "backtest/signals/screener.py"
+            ],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "status": "BANDABLE-OWNER-GATED (B718a); NOT in the approved grid",
+            "type": "float",
+            "engine_implemented": True,
+            "evidence": "charter P5; B718a ruling",
+            "derivation": "tighter cap is offline on persisted days_to_cover; band only on the owner's word"
+        }
+    ]
+}})
+
+
 # B3119 - THE FAMILY ADAPTER (S6-B2883): bollinger_lower PROMOTED into SPECS
 # for the owner-approved span campaign (verbatim 2026-09-27: "Q2 approved one
 # line change fix. I want to test various spans"). The SPECS entry is DERIVED

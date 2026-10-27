@@ -64906,3 +64906,65 @@ def test_b3318_episode_disclosure_unwired_graders_is_a_shrinking_set():
     assert set(UNWIRED_EPISODE) <= unwired, (
         "these entries no longer need the exemption (they call it, or left the "
         "registry) - remove them so the set shrinks", sorted(set(UNWIRED_EPISODE) - unwired))
+
+
+# ================================================================ B3139q-r120 S6-B3304: camarilla F1, derived rooms, depth surfaces
+def test_b3304_camarilla_f1_derived_rooms_and_depth_surfaces():
+    """S6-B3304 (B3139q-r120): camarilla_r4_breakout's F1 is written FROM the
+    owner's T3 band (2026-10-26, 'Approve all recs fable mode' on 'the offline
+    tighter levels (distance 0.75/1.0/1.25, volume 1.2/1.5/2.0, four xs_ivol
+    floors)'). The R4 / S4 distance has no engine knob; its TIGHTER side grades
+    offline through scripts/camarilla_derived.py, which recovers the close as
+    vwap x (1 + pct_from_vwap / 100) and writes cam_r4_room = (close -
+    prev_close) / range and cam_s4_room = (prev_close - close) / range, so a
+    fire survives multiplier m iff its room > m. Arms: the rooms on fixtures
+    (a production long fire clears 0.55 and 0.75 but not 1.0; a bar just under
+    R4 does not clear 0.55, matching the boolean gate; the short mirror; None on
+    a missing input or a zero range); the entry validates and carries exactly
+    the approved levels; the committed per-leg surfaces graded 80 of 80 cells,
+    reproduced production at 1.0 under the T1 survival filter, read no
+    holdout, and carry S6-B3315's episode on every ranked row."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import camarilla_derived as cd
+    from producer_variant_table import SPECS_PHASE0, validate_spec
+    base = {"prev_close": 100.0, "prev_high": 102.0, "prev_low": 98.0, "vwap": 100.0}
+    up = cd.derive({**base, "pct_from_vwap": 3.3})               # close 103.3, range 4
+    assert up["cam_r4_room"] == pytest.approx(0.825) and up["cam_s4_room"] == pytest.approx(-0.825)
+    assert up["cam_r4_room"] > 0.55 and up["cam_r4_room"] > 0.75 and not up["cam_r4_room"] > 1.0
+    r4 = 100.0 + 1.1 / 2 * 4.0                                    # the producer's R4, 102.2
+    for pfv in (2.1, 2.3):                                        # just under, just over R4
+        close = 100.0 * (1 + pfv / 100.0)
+        assert (cd.derive({**base, "pct_from_vwap": pfv})["cam_r4_room"] > 0.55) == (close > r4)
+    dn = cd.derive({**base, "pct_from_vwap": -5.0})              # close 95
+    assert dn["cam_s4_room"] == pytest.approx(1.25) and dn["cam_s4_room"] > 1.0
+    assert cd.derive({"vwap": 100.0})["cam_r4_room"] is None
+    flat = cd.derive({**base, "prev_high": 100.0, "prev_low": 100.0, "pct_from_vwap": 1.0})
+    assert flat["cam_r4_room"] is None and flat["cam_s4_room"] is None
+    assert cd.PRODUCTION_MULT == pytest.approx(0.55)
+
+    e = SPECS_PHASE0["camarilla_r4_breakout"]
+    assert validate_spec(e) == [], validate_spec(e)
+    p = {x["id"]: x for x in e["params"]}
+    assert p["P2"]["band"] == p["P4"]["band"] == [0.55, 0.75, 1.0, 1.25]
+    assert p["P6"]["band"] == [1.0, 1.2, 1.5, 2.0]
+    assert p["P8"]["band"] == [0.2598, 0.2918, 0.3301, 0.3814, 0.4621]
+    for i in ("P2", "P4", "P6", "P8"):
+        assert p[i]["free_band"] == p[i]["band"] and "T3-APPROVED 2026-10-26" in p[i]["status"], i
+    assert p["P2"]["signal_keys"] == ["cam_r4_room"] and p["P4"]["signal_keys"] == ["cam_s4_room"]
+
+    for leg, key in (("long", "cam_r4_room"), ("short", "cam_s4_room")):
+        d = _j.loads((root / "output_audit" / f"b3304_camarilla_r4_breakout_{leg}_step1_is_surface.json")
+                     .read_text(encoding="utf-8"))
+        assert d["direction"] == leg and d["reproduction"] == 1.0
+        assert d["cells_graded"] == d["cells_total"] == 80
+        assert [a["key"] for a in d["axes"]] == [key, "vol_ratio_20d", "xs_ivol"]
+        assert d["derive"]["path"].endswith("camarilla_derived.py") and len(d["derive"]["sha256"]) == 64
+        assert d["evidence"]["survival_filter"]["applied"] is True
+        assert str(d["holdout_read"]).startswith("NOT FIRED")
+        assert all(isinstance(c.get("episode"), dict) for c in d["ranked"])

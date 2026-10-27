@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "dd8f72941",
-    "generated_at": "2026-10-26 09:12:06"
+    "source_commit": "db046c8a9",
+    "generated_at": "2026-10-26 12:06:52"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -701,7 +701,9 @@
         "S6-B3231",
         "S6-B3247",
         "S6-B3253",
-        "S6-B3258"
+        "S6-B3258",
+        "S6-B3316",
+        "S6-B3317"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -4845,6 +4847,7 @@
       "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B1248-LEVER4-GATE-BUDGET",
+        "S6-B1250-ENG11-POOL-PANEL-PERF",
         "S6-B2383",
         "S6-B3221",
         "S6-B3240",
@@ -6984,7 +6987,10 @@
         "S6-B3291b",
         "S6-B3294",
         "S6-B3304",
-        "S6-B3314"
+        "S6-B3314",
+        "S6-B3315",
+        "S6-B3316",
+        "S6-B3317"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -8148,7 +8154,8 @@
         "S6-B3295",
         "S6-B3300",
         "S6-B3313",
-        "S6-B3314"
+        "S6-B3314",
+        "S6-B3317"
       ],
       "admitted": false,
       "roster_roles": [],

@@ -1,0 +1,50 @@
+{
+ "ticket": "S6-B1250-ENG11-POOL-PANEL-PERF (B3139q-r121)",
+ "question": "the pool path's discarded main-process panel pre-pass, as a share of a Step-2 sim-day",
+ "universe": "output_audit/r5_universe_544.txt (phase_table step 2)",
+ "load_start": "2021-05-06",
+ "load_s": 1.9,
+ "upper_bound_note": "all PIT-sliced tickers; the engine screens the screenable subset",
+ "prepass": [
+  {
+   "as_of": "2022-06-01",
+   "tickers_in_pit": 525,
+   "panel_rows": 271,
+   "panel_cols": 525,
+   "tickers_with_signals": 525,
+   "reps_s": [
+    0.2748,
+    0.2112,
+    0.2342
+   ],
+   "median_s": 0.2342
+  },
+  {
+   "as_of": "2024-05-01",
+   "tickers_in_pit": 535,
+   "panel_rows": 752,
+   "panel_cols": 535,
+   "tickers_with_signals": 535,
+   "reps_s": [
+    0.3078,
+    0.3095,
+    0.3086
+   ],
+   "median_s": 0.3086
+  },
+  {
+   "as_of": "2026-04-30",
+   "tickers_in_pit": 544,
+   "panel_rows": 1252,
+   "panel_cols": 544,
+   "tickers_with_signals": 544,
+   "reps_s": [
+    0.4378,
+    0.3901,
+    0.4025
+   ],
+   "median_s": 0.4025
+  }
+ ],
+ "generator": "\"\"\"B3139q-r121 (S6-B1250-ENG11-POOL-PANEL-PERF): the pool path's DISCARDED\npanel pre-pass, timed on the Step-2 universe. screen_universe (screener.py)\nbuilds close_panel and runs compute_panel_signals_for_as_of in the MAIN\nprocess every screen day; on the pool path the work items never carry the\nresult, and the workers recompute those indicators. This times exactly that\nblock - the close_panel build plus the panel call - on the engine's own\ninputs: the phase table's Step-2 universe (output_audit/r5_universe_544.txt),\nloaded from DATA_LOAD_START like BacktestEngine.load_data, sliced to as_of\nlike _pit_and_screenable (>= 30 bars). The engine screens the screenable\nSUBSET of that dict, so this is an UPPER BOUND per day. Three as_of dates\nspanning the Step-2 window, three repetitions each (median), run with no other\nCPU-heavy process (L621). Read-only: writes one JSON to the path given.\"\"\"\nimport json\nimport statistics\nimport sys\nimport time\nfrom datetime import date\nfrom pathlib import Path\n\nimport pandas as pd\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nsys.path.insert(0, str(ROOT))\nfrom backtest.config import DATA_LOAD_START  # noqa: E402\nfrom backtest.data.cache import get_ohlcv_bulk  # noqa: E402\nfrom backtest.signals.technical_panel import compute_panel_signals_for_as_of  # noqa: E402\n\nout_path = Path(sys.argv[1])\ntickers = [t.strip() for t in (ROOT / \"output_audit\" / \"r5_universe_544.txt\")\n           .read_text(encoding=\"utf-8\").splitlines() if t.strip()]\nassert len(tickers) == 544, len(tickers)\nt0 = time.perf_counter()\nohlcv = get_ohlcv_bulk(tickers, start=DATA_LOAD_START, end=date(2026, 5, 5))\nload_s = time.perf_counter() - t0\nprint(f\"loaded {len(ohlcv)} of {len(tickers)} tickers in {load_s:.1f}s\")\nres = []\nfor as_of in (date(2022, 6, 1), date(2024, 5, 1), date(2026, 4, 30)):\n    pit = {}\n    for t, df in ohlcv.items():\n        if df is None:\n            continue\n        s = df[df.index.date <= as_of]\n        if len(s) >= 30:\n            pit[t] = s\n    reps = []\n    for _ in range(3):\n        a = time.perf_counter()\n        close_series = {t: df[\"close\"] for t, df in pit.items()\n                        if df is not None and \"close\" in df.columns and not df.empty}\n        close_panel = pd.DataFrame(close_series)\n        out = compute_panel_signals_for_as_of(close_panel)\n        reps.append(time.perf_counter() - a)\n    rec = {\"as_of\": str(as_of), \"tickers_in_pit\": len(pit), \"panel_rows\": int(close_panel.shape[0]),\n           \"panel_cols\": int(close_panel.shape[1]), \"tickers_with_signals\": len(out),\n           \"reps_s\": [round(x, 4) for x in reps], \"median_s\": round(statistics.median(reps), 4)}\n    res.append(rec)\n    print(rec)\nrec = {\"ticket\": \"S6-B1250-ENG11-POOL-PANEL-PERF (B3139q-r121)\",\n       \"question\": \"the pool path's discarded main-process panel pre-pass, as a share of a Step-2 sim-day\",\n       \"universe\": \"output_audit/r5_universe_544.txt (phase_table step 2)\",\n       \"load_start\": str(DATA_LOAD_START), \"load_s\": round(load_s, 1),\n       \"upper_bound_note\": \"all PIT-sliced tickers; the engine screens the screenable subset\",\n       \"prepass\": res,\n       \"generator\": Path(__file__).read_text(encoding=\"utf-8\")}\nout_path.write_text(json.dumps(rec, indent=1), encoding=\"utf-8\")\nprint(\"wrote\", out_path)\n"
+}
