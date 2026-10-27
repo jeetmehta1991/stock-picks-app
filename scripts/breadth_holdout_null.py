@@ -59,7 +59,8 @@ def prepare(art: dict):
     axis_keys = sorted({c[0] for c in cells})
     m, _ = bg.build_frame(art["strategy"], art.get("depth_base"), axis_keys,
                           basis=art.get("basis") or "gross",
-                          leg=art.get("leg") or "both")
+                          leg=art.get("leg") or "both",
+                          survival=bool(art.get("survival")))   # S6-B3321 (L912)
     F = m.drop_duplicates(FK)[FK + axis_keys].reset_index(drop=True)
     F["_fid"] = np.arange(len(F))
     ed = pd.to_datetime(F["entry_date"]).dt.date

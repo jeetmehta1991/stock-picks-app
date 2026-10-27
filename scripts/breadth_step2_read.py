@@ -198,7 +198,11 @@ def main() -> int:
     # S6-B3139am: grade the leg the Step-1 artifact RECORDED. An artifact
     # without the key predates per-leg grids (B3118) and was graded on both.
     leg = art.get("leg") or "both"
-    m, _ = build_frame(strategy, depth, axis_keys, basis=basis, leg=leg)
+    # S6-B3321: the survival setting the Step-1 artifact RECORDED (L912); an
+    # artifact without the key predates the filter and read every R5 fire
+    survival = bool(art.get("survival"))
+    m, _ = build_frame(strategy, depth, axis_keys, basis=basis, leg=leg,
+                       survival=survival)
     print(f"leg {leg} (from the Step-1 artifact)")
     print(f"frame {len(m):,} rows; {len(cells)} registered (axis,op,level) cells "
           f"; basis {basis} ({time.time()-t0:.0f}s)")
@@ -239,7 +243,11 @@ def main() -> int:
         ckeys = sorted({q["axis"] for q in quals})
         # S6-B3113a: control on its OWN fires - the R5 default, always
         _g.CUBE, _g.TRADE_LOG = _default_paths
-        cm, _ = build_frame(a.control, None, ckeys, basis=basis)
+        # S6-B3321: the control's own surviving fires when it reads R5 (the
+        # identity when its gate is unchanged since R5); any other source holds
+        # the gate its own run used, and the loader refuses the filter there
+        _ctl_r5 = Path(_g.TRADE_LOG).resolve() == Path(_g.R5_TRADE_LOG).resolve()
+        cm, _ = build_frame(a.control, None, ckeys, basis=basis, survival=_ctl_r5)
         for q in quals:
             base_cell = cm[cm.exit_method == q["exit"]]
             filt = base_cell[mask(base_cell, q["axis"], q["op"], q["level"])]
@@ -279,6 +287,7 @@ def main() -> int:
                            "reason": a.breadth_reason.strip()},
            "strategy": strategy, "depth_base": depth, "leg": leg,
            "basis": basis, "basis_source": basis_source,
+           "survival": survival,        # S6-B3321
            "step1_artifact": a.step1_artifact,
            "provenance": {
                "subject_holdout_previously_read": prior,

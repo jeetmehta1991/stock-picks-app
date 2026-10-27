@@ -538,6 +538,10 @@ def main() -> int:
     a = ap.parse_args()
     _ruling = require_band_ruling(a.band_ruling, a.strategy)   # S6-B2848a + B2855
     _stamp = require_fresh_status()                # S6-B2848b
+    # S6-B3321: a strategy whose gate changed since R5 is swept on the
+    # SURVIVING fires - the one guard (step1_gates)
+    from step1_gates import require_surviving_or_unchanged
+    require_surviving_or_unchanged(a.strategy, a.survival)
 
     axes = [parse_axis(s) for s in a.axes]
     production = tuple(float(v) for v in a.production.split(","))

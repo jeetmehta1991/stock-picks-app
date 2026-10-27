@@ -273,17 +273,12 @@ def main() -> int:
     FAMILY_PREFIX = args.family
     m = load_entries(args.exit, args.window, names=args.strategy,
                      direction=args.direction, survival=args.survival)
-    if not args.survival:
-        # S6-B3320: fail closed (L642) - a strategy whose current gate keeps
-        # fewer than all of its R5 fires is screened on the fires it keeps
-        from offline_level_sweep import _survival_inputs
-        for s in sorted(set(m["strategy"])):
-            pct, unmeasured = _survival_inputs(s)
-            if unmeasured or pct is None or pct < 1.0:
-                raise SystemExit(
-                    f"REFUSED (S6-B3320): {s}'s current gate keeps {pct} of its R5 "
-                    f"fires (unmeasured sides: {unmeasured or 'none'}) - a screen "
-                    "without --survival reads fires the gate now removes; pass --survival")
+    # S6-B3320: fail closed (L642) - a strategy whose current gate keeps fewer
+    # than all of its R5 fires is screened on the fires it keeps; the ONE guard
+    # every R5 instrument calls (step1_gates, S6-B3321)
+    from step1_gates import require_surviving_or_unchanged
+    for s in sorted(set(m["strategy"])):
+        require_surviving_or_unchanged(s, args.survival)
     if len(m) < 500:
         raise SystemExit(f"REFUSED: only {len(m)} entries in window - underpowered")
     rows, meta = screen(m, args.min_side, args.min_n)

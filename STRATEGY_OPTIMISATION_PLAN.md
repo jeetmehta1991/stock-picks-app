@@ -1013,7 +1013,8 @@ meaning.
 5. **THE IN-SAMPLE GRID** (Step 3's search; the tool's name predates the renumbering) -
    `scripts/breadth_step1_grid.py` (shared `build_frame`; fail-closed reproduction
    gate against the admitted or production base; IS-only grading; `next_pivot_target` barred from
-   ranking; per-leg for dual strategies).
+   ranking; per-leg for dual strategies; `--survival` when the subject's gate changed since R5 - the
+   loader refuses otherwise, and the read and the holdout null inherit the grid's setting, S6-B3321).
 6. **MULTIPLICITY PRICE** - the grid's best priced against its own permutation null (the B2676
    instrument pattern; SYNTHETIC maxima, p on the artifact's face), read beside each row's
    `episode` month concentration, which the null cannot see (S6-B3315).

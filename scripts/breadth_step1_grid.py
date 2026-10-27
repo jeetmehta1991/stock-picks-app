@@ -43,6 +43,9 @@ TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
 MIN_COVERAGE = 0.98
 QUANTS = (0.2, 0.4, 0.6, 0.8)
 BARRED_EXIT = "next_pivot_target"
+# S6-B3321: the R5 source, kept when --cube-dir rebinds TRADE_LOG to a run's
+# own cube - the survival filter and its guard apply to R5 fires only
+R5_TRADE_LOG = TRADE_LOG
 
 
 def _parse(s):
@@ -82,7 +85,7 @@ def _row_sharpe(d) -> float | None:
 
 
 def build_frame(strategy: str, depth: str | None, axis_keys: list[str],
-                basis: str = "gross", leg: str = "both"):
+                basis: str = "gross", leg: str = "both", survival: bool = False):
     """B2678: the joined fires+cube frame both steps read - ONE loader so
     Step-1 and Step-2 cannot drift. Returns (m, depth_tuple).
 
@@ -99,11 +102,33 @@ def build_frame(strategy: str, depth: str | None, axis_keys: list[str],
     # a per-leg Step-1 artifact's cells on BOTH legs' fires.
     if leg not in LEGS:
         raise SystemExit(f"REFUSED: leg {leg!r} not in {LEGS} (S6-B3139am)")
+    # S6-B3321 (B3139q-r122): the survival filter belongs to the ONE loader too.
+    # Reading R5, a strategy whose current gate keeps fewer than all of its R5
+    # fires is graded on the fires it keeps (the guard refuses otherwise); a
+    # run's OWN cube (--cube-dir) already holds the gate it ran under, so the
+    # filter is refused there - the status view's survival describes R5.
+    from step1_gates import require_surviving_or_unchanged
+    reads_r5 = Path(TRADE_LOG).resolve() == Path(R5_TRADE_LOG).resolve()
+    if survival and not reads_r5:
+        raise SystemExit("REFUSED (S6-B3321): survival filters R5 fires to the "
+                         f"current gate; {TRADE_LOG} is not R5 - a run's own cube "
+                         "already holds the gate it ran under")
+    if reads_r5:
+        require_surviving_or_unchanged(strategy, survival)
     tl = pd.read_csv(TRADE_LOG, low_memory=False,
-                     usecols=["strategy", "ticker", "entry_date", "signals_at_entry"])
+                     usecols=["strategy", "ticker", "entry_date", "signals_at_entry"]
+                     + (["direction"] if survival else []))
     fam = tl[tl.strategy == strategy].drop_duplicates(["ticker", "entry_date"]).copy()
     if fam.empty:
         raise SystemExit(f"REFUSED: no fires for {strategy}")
+    if survival:
+        import build_table_a as _bta
+        from offline_level_sweep import _survival_inputs
+        _pct, _unm = _survival_inputs(strategy)
+        fam, _s, _f = _bta.surviving_fires(strategy, fam, _pct, _unm)
+        fam = fam.drop(columns=["direction"]).copy()
+        if fam.empty:
+            raise SystemExit(f"REFUSED: no surviving fires for {strategy} (S6-B3321)")
     sigs = [_parse(s) for s in fam["signals_at_entry"]]
     need = list(axis_keys)
     dep = None
@@ -121,6 +146,11 @@ def build_frame(strategy: str, depth: str | None, axis_keys: list[str],
                                 "direction",   # B3119: the --leg filter reads it
                                 "exit_method", "pnl_pct", "hold_days"])
     cube = cube[cube.strategy == strategy].copy()
+    if survival:
+        # a removed fire's cube rows would join as NaN magnitudes on the left
+        # merge below; keep only the surviving fires' rows (the sweep's rule)
+        cube = cube.merge(fam[["ticker", "entry_date"]].drop_duplicates(),
+                          on=["ticker", "entry_date"], how="inner")
     if basis == "net":
         cube["pnl_pct"] = rc.net_pnl(cube["pnl_pct"])
     m = cube.merge(fam, on=["strategy", "ticker", "entry_date"], how="left")
@@ -208,6 +238,9 @@ def main() -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--band-ruling", required=True,
                     help="the owner's T3 band words, verbatim (S6-B2848a)")
+    ap.add_argument("--survival", action="store_true",
+                    help="S6-B3321: grade the fires the CURRENT gate keeps (required "
+                         "when the strategy's gate changed since R5; R5 only)")
     ap.add_argument("--leg", default="both",
                     choices=["long", "short", "both"],
                     help="B3118: per-leg grading for DUAL strategies "
@@ -245,7 +278,7 @@ def main() -> int:
     axes = [_axis_spec(x) for x in a.axes.split(",")]
 
     m, _dep = build_frame(a.strategy, a.depth, [k for k, _ in axes],
-                          basis=a.basis, leg=a.leg)
+                          basis=a.basis, leg=a.leg, survival=a.survival)
     print(f"frame ready: cube rows {len(m):,} after depth base, basis "
           f"{a.basis} ({time.time()-t0:.0f}s)")
     if a.leg != "both":   # applied inside build_frame (S6-B3139am)
@@ -350,6 +383,7 @@ def main() -> int:
            "basis": a.basis,
            "cube_dir": a.cube_dir or "output_r5_merged_1_7 (default)",
            "leg": a.leg,
+           "survival": a.survival,      # S6-B3321: the read and the null take it from here
            "axes": [{"key": k, "op": o} for k, o in axes],
            "quants": list(QUANTS), "min_coverage": MIN_COVERAGE,
            "window": "IS only (< 2025-05-05); holdout untouched - Step 2 needs its own owner word",

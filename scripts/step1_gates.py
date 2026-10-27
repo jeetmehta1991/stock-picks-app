@@ -76,3 +76,26 @@ def require_fresh_status(head: str | None = None) -> str:
             "REGENERATE FIRST (scripts/build_strategy_status.py) and commit "
             "the fresh build; runbook section 0.5 made mechanical (S6-B2848b)")
     return stamp
+
+
+def require_surviving_or_unchanged(strategy: str, survival: bool) -> None:
+    """S6-B3321 (B3139q-r122): the ONE fail-closed guard for an offline
+    instrument that grades a strategy's R5 fires. S6-B3320 found the class:
+    the depth sweep read the surviving fires, while the companion screen and
+    the breadth loader read every R5 fire. When the strategy's CURRENT gate
+    keeps fewer than all of its R5 fires - the status view's survives_pct
+    below 1, or a side it cannot measure - the instrument must read the
+    surviving fires (survival=True); otherwise it grades fires the gate now
+    removes. Silent when survival is requested or the gate is unchanged;
+    fails closed on an absent status row (offline_level_sweep._survival_inputs,
+    L642)."""
+    if survival:
+        return
+    from offline_level_sweep import _survival_inputs
+    pct, unmeasured = _survival_inputs(strategy)
+    if unmeasured or pct is None or pct < 1.0:
+        raise SystemExit(
+            f"REFUSED (S6-B3320/S6-B3321): {strategy}'s current gate keeps {pct} of "
+            f"its R5 fires (unmeasured sides: {unmeasured or 'none'}) - grading R5 "
+            "without the survival filter reads fires the gate now removes; pass "
+            "--survival")

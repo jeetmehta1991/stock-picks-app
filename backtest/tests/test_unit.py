@@ -65066,3 +65066,94 @@ def test_b3320_companion_screen_reads_the_surviving_fires(tmp_path, monkeypatch)
                                                dep["survival_filter"]["fires_after"]], (leg, sv, dep)
         c = _j.loads((A / f"b3304_{S}_{leg}_companions_consistent.json").read_text(encoding="utf-8"))
         assert c["survival_applied"] is True and c["direction"] == leg
+
+
+# ================================================================ B3139q-r122 S6-B3321: the breadth loader grades the surviving fires
+def test_b3321_breadth_loader_grades_the_surviving_fires(tmp_path, monkeypatch):
+    """S6-B3321 (B3139q-r122): breadth_step1_grid.build_frame - the one loader
+    the breadth grid, the Step-2 read and the holdout null share - read every
+    R5 fire, so for a strategy whose gate changed since R5 each graded fires
+    the gate now removes (S6-B3320's class remainder). ONE guard,
+    step1_gates.require_surviving_or_unchanged, now serves every R5
+    instrument (the sweep, the screen, the loader): it refuses a strategy
+    whose current gate keeps fewer than all of its R5 fires, or has an
+    unmeasured side, unless the surviving fires are read. The loader's
+    survival= drops a removed fire AND its cube rows (the left merge would
+    keep them as NaN magnitudes), is the identity for an unchanged gate, and
+    is refused on a run's own cube; the grid records the setting and the read
+    and the null take it from the artifact they re-score (L912). Fixture:
+    three camarilla long fires through the REAL gate function, one under the
+    B1422 xs_ivol floor."""
+    import ast as _ast
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import breadth_step1_grid as bg
+    import offline_level_sweep as ols
+    import step1_gates as sg
+    S = "camarilla_r4_breakout"
+
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (0.5, {}))
+    with pytest.raises(SystemExit, match="S6-B3321"):
+        sg.require_surviving_or_unchanged(S, False)
+    assert sg.require_surviving_or_unchanged(S, True) is None
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (1.0, {}))
+    assert sg.require_surviving_or_unchanged(S, False) is None
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (1.0, {"short": "borrow"}))
+    with pytest.raises(SystemExit, match="S6-B3321"):
+        sg.require_surviving_or_unchanged(S, False)
+
+    def sig(iv):
+        return _j.dumps({"above_cam_r4": True, "vol_above_avg": True, "xs_ivol": iv})
+    fires = [("T1", "2024-06-10", 0.30), ("T2", "2024-07-10", 0.50), ("T3", "2024-08-12", 0.10)]
+    tl, cube = tmp_path / "tl.csv", tmp_path / "cube.csv"
+    _pd.DataFrame([{"strategy": S, "ticker": t, "entry_date": d, "direction": "long",
+                    "signals_at_entry": sig(iv)} for t, d, iv in fires]).to_csv(tl, index=False)
+    _pd.DataFrame([{"strategy": S, "ticker": t, "entry_date": d, "direction": "long",
+                    "exit_method": ex, "pnl_pct": 1.0, "hold_days": 3.0}
+                   for t, d, iv in fires for ex in ("time_stop_10d", "breakeven_plus_trail")]
+                  ).to_csv(cube, index=False)
+    monkeypatch.setattr(bg, "TRADE_LOG", tl)
+    monkeypatch.setattr(bg, "CUBE", cube)
+    monkeypatch.setattr(bg, "R5_TRADE_LOG", tl)                  # the fixture plays R5
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (0.5, {}))
+    with pytest.raises(SystemExit, match="S6-B3321"):
+        bg.build_frame(S, None, ["xs_ivol"])                      # a changed gate, unfiltered
+    m, _ = bg.build_frame(S, None, ["xs_ivol"], survival=True)
+    assert sorted(set(m["ticker"])) == ["T1", "T2"] and len(m) == 4, m   # T3's cube rows gone too
+    assert m["xs_ivol"].notna().all()
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (1.0, {}))
+    assert len(bg.build_frame(S, None, ["xs_ivol"])[0]) == 6      # an unchanged gate: no flag needed
+    assert len(bg.build_frame(S, None, ["xs_ivol"], survival=True)[0]) == 6   # and the filter is the identity
+    monkeypatch.setattr(bg, "R5_TRADE_LOG", tmp_path / "elsewhere.csv")       # a run's own cube
+    with pytest.raises(SystemExit, match="is not R5"):
+        bg.build_frame(S, None, ["xs_ivol"], survival=True)
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (0.5, {}))
+    assert len(bg.build_frame(S, None, ["xs_ivol"])[0]) == 6      # an own cube: no guard
+
+    def tree(p):
+        return _ast.parse((root / "scripts" / p).read_text(encoding="utf-8"))
+
+    def calls(t, name):
+        return [n for n in _ast.walk(t) if isinstance(n, _ast.Call)
+                and name in (getattr(n.func, "id", None), getattr(n.func, "attr", None))]
+
+    def kw(t, name, arg):
+        return sorted(_ast.unparse(k.value) for c in calls(t, name) for k in c.keywords if k.arg == arg)
+    gt, rt, nt = tree("breadth_step1_grid.py"), tree("breadth_step2_read.py"), tree("breadth_holdout_null.py")
+    assert kw(gt, "build_frame", "survival") == ["a.survival"], kw(gt, "build_frame", "survival")
+    assert any(isinstance(n, _ast.Dict) and any(isinstance(k, _ast.Constant) and k.value == "survival"
+               and _ast.unparse(v) == "a.survival" for k, v in zip(n.keys, n.values))
+               for n in _ast.walk(gt)), "the grid artifact records survival"
+    # the subject takes the artifact's setting; the control filters only when it reads R5
+    assert kw(rt, "build_frame", "survival") == ["_ctl_r5", "survival"], kw(rt, "build_frame", "survival")
+    assert any(isinstance(n, _ast.Assign) and [getattr(x, "id", None) for x in n.targets] == ["survival"]
+               and _ast.unparse(n.value) == "bool(art.get('survival'))" for n in _ast.walk(rt))
+    assert kw(nt, "build_frame", "survival") == ["bool(art.get('survival'))"], kw(nt, "build_frame", "survival")
+    for p in ("offline_level_sweep.py", "institutional_companion_screen.py", "breadth_step1_grid.py"):
+        assert calls(tree(p), "require_surviving_or_unchanged"), p
