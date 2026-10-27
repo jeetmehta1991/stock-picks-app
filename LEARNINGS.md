@@ -25356,3 +25356,43 @@ MEASURED: scripts/probe_close.py tested the r123 close draft (58 gates, 0 firing
 **Rule.** No new rule - #282 stands: post the tested file verbatim; any edit goes back through the probe first.
 
 **Mechanism.** scan_close_differs_from_tested_draft (S6-B3193), pinned by test_b3193_posted_close_must_equal_its_tested_draft - it fired on its first chance and held. Record-of-fact.
+
+### L967 - THE BACKSLASH CLASS RECURRED THE DAY AFTER L963, AND A DOUBLED BACKSLASH IS HALVED EVEN INSIDE SINGLE QUOTES (B3139q-r125..r129, 2026-10-27)
+
+MEASURED from the transcript, every instance since the r124 close: four probes refused by scripts/pretooluse_heredoc_guard.py before they ran - a double-quoted python -c counting line endings (13:09Z, S6-B3144), a --help probe of scripts/queue_state.py, which builds no argument parser (13:11Z, S6-B3268), a python heredoc carrying a newline escape (16:12Z, S6-B3139ae), and the 13:09Z line-ending count typed again in the same refused form (16:17Z, S6-B3144) although its file remedy had sat in the scratchpad for three hours. A fifth was not refused: a sed substitution written as a control (14:12Z, the case-insensitive recount behind S6-B3325) carried doubled backslashes in its pattern and changed nothing; the python run after it printed the case-sensitive count again, and only the grep line printed beside it showed the pattern still in place, so the probe was rewritten with the Write tool. Probed at B3139q-r129: a doubled backslash written in a Bash tool command reaches the program halved - two become one and four become two - inside single quotes and inside a quoted heredoc body alike, while a lone backslash before another character (n, t, the alternation bar) arrives unchanged, and the Write tool stores both bytes. A single-quoted python -c printing the length of a string written as backslash, backslash, n printed 1; the 14:12Z sed expression read from a file applied.
+
+**Why.** Compliance failures against #259 (L885, L893: a backslash payload through a shell layer can arrive altered, so it is written to a file and the file is run) and #327 (L947: a script's interface is learned by reading it), one day after L963 recorded four of the same. The rules were in context and the remedy file was on disk, and the hook was what stopped them (L570). The sed was the expensive one: a control that silently did not run, read past because the command after it printed a plausible number - a check that cannot stop the thing it checks (#226).
+
+**Rule.** No new rule - #259 stands, and the measurement widens what it covers: single quotes do not protect a doubled backslash on this transport, so any payload carrying one is written with the Write tool and run as a file.
+
+**Mechanism.** The PreToolUse guard held 4 of 4 before anything ran, pinned by test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter, test_b3144_a_refused_command_is_not_a_turn_end_incident and test_b3268_pretooluse_refuses_help_on_a_parserless_script. It does not see a doubled backslash in a single-quoted argument or in a heredoc to a non-interpreter, and its refusal message calls a single-quoted -c payload fine - a negative claim (L733) the measurement contradicts; that gap, and the skill's shell-safety row, are S6-B3327. Record-of-fact.
+
+### L968 - SIX DRAFT DEFECTS WERE CAUGHT BEFORE ANY COMMIT, TWO OF THEM REGISTRATION RIPPLES NOT GREPPED FOR (B3139q-r125..r128, 2026-10-27)
+
+MEASURED from the transcript, none reached a commit: (1) r125 - the depth renderers printed a basis line for records that carry none, and test_b2643, a writer-reader contract over an older render, failed in the pre-gate run (12:55Z); the basis now prints only when the record carries one; (2) r125 - my new pin restated the net formula instead of calling rc.net_pnl, and test_b3139ai failed in the pre-gate run (13:00Z); (3) r126 - the SPECS patcher assumed an LF working copy, and its own dry-run assertion stopped it before any write (13:49Z) - producer_variant_table.py is CRLF in the working tree (L850); (4) r127 - registering williams_r_oversold's B1-B7 turned test_b3294's williams arm red, a pin holding the pre-registration state (pre-gate, 14:56Z); (5) r128 - registering squeeze_breakout's B13 and B14 turned test_b3294's squeeze arm and test_b3317 red the same way (pre-gate, 15:39Z); (6) r128 - mutation M5 survived test_b3248c because the B13 and B14 status op words were unpinned (4 of 5 killed), and the strengthened pin killed 5 of 5.
+
+**Why.** (4) and (5) are compliance failures against #196 with L801: a change that makes a previously-false statement true - registering a member - starts with a grep of the test tree for the subject's name, and the second came one batch after the first. (1), (2) and (6) are instances of standing rules (the writer-reader contract, #226) caught by the machinery built for them; (3) is the L850 line-ending class, caught by the patcher's own assertion.
+
+**Rule.** No new rule - #196 and L801 stand.
+
+**Mechanism.** scripts/pregate_select.py (S6-B3269) selected the reading tests of every changed file before each full gate and caught (1), (2), (4) and (5); the patcher's dry-run assertion caught (3); scripts/mutation_probe.py caught (6). Record-of-fact.
+
+### L969 - AN OPEN DATE WAS TAKEN FROM A COMMIT, NOT FROM THE RECORD THAT DEFINES IT (B3139q-r125..r126, 2026-10-27)
+
+MEASURED from the transcript: answering the owner's request for the week's work (13:57Z), a table said camarilla_r4_breakout's campaign 'opened 10-25' - the local date of the commit that opened it (B3139q-r111, f442cea2a, 2026-10-25T21:56-04:00). output_audit/owner_campaign_opens.json records 'opened': '2026-10-24', the day of the owner's word. Retracted as the next answer's first line (14:38Z), before anything was decided on it; the table's other three open dates were right.
+
+**Why.** Compliance failure against #201: a figure names its source, and a date is a figure. A commit's timestamp answers when the work was committed, in whatever zone the clock printed; the record answers when the campaign opened. They differ whenever the work lands after the ruling - here by a day.
+
+**Rule.** No new rule - #201 stands: a date is quoted from the record that defines it.
+
+**Mechanism.** JUDGMENT-ONLY for detection - no scan can tell which recorded date answers which question; durability: output_audit/owner_campaign_opens.json carries the open date as a field, named above. Record-of-fact.
+
+### L970 - A COMPARISON CRITERION WAS FIXED BEFORE ITS BASELINE'S SIGN WAS PRINTED (B3139q-r128, 2026-10-27)
+
+MEASURED: S6-B3248 (2)'s criterion, written before the r128 grids ran, called an edge surviving when a row's in-sample Sharpe without its own largest month beat production's at the same exit without that month. Production without 2025-04 is negative at 17 of 26 exits on the 14-axis grid's own frame - non-negative only at breakeven_plus_trail, class_time_stop, earnings_blackout, fixed_4r_2r, hybrid_50pct_target, next_pivot_target, regime_flip, time_stop_20d and trailing_15pct (output_audit/b3139q_r129_squeeze_production_without_2025_04.json, measured at B3139q-r129) - so 'beats production' admitted rows that are merely less negative: 788 survivors, of which 399 stay positive without their month on 30 or more trades (344, 2 and 53 across the three grids, the episode artifact's POST-HOC field). The verdict holds under either reading, and the looseness was disclosed in the artifact and the queue row before any decision.
+
+**Why.** Compliance failure against #226 with L734: run a rule on the motivating case's own numbers before relying on it. One print of production per exit without the month would have shown the baseline's sign before the criterion was fixed.
+
+**Rule.** No new rule - #226 and L734 stand: before a criterion compares against a baseline, print the baseline at every point the comparison will use.
+
+**Mechanism.** JUDGMENT-ONLY for detection - no scan reads what a criterion compares against; durability: output_audit/b3248_squeeze_breakout_episode_robust_check.json embeds its generator and criterion and labels its POST-HOC field as never changing the verdict, and the baseline is now its own artifact. Record-of-fact.

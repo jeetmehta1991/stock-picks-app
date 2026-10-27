@@ -1,0 +1,227 @@
+{
+ "lesson": "L970",
+ "batch": "B3139q-r129",
+ "month_removed": "2025-04",
+ "grid": "output_audit\\b3248_squeeze_breakout_breadth_net_long_b14.json",
+ "strategy": "squeeze_breakout",
+ "basis": "net",
+ "leg": "long",
+ "exits": 26,
+ "negative_without_month": [
+  "atr_trail_1x",
+  "atr_trail_2x",
+  "atr_trail_mae_conditional",
+  "atr_trail_vix_conditional",
+  "break_even_at_1r",
+  "chandelier_3x",
+  "ma_exit_ema9",
+  "mfe_lockin_trail",
+  "multi_tier_partial",
+  "r_multiple_2r",
+  "r_multiple_3r",
+  "reverse_signal",
+  "smart_money_reversal",
+  "smc_mitigation_zone",
+  "time_stop_10d",
+  "trailing_10pct",
+  "trailing_5pct"
+ ],
+ "non_negative_without_month": [
+  "breakeven_plus_trail",
+  "class_time_stop",
+  "earnings_blackout",
+  "fixed_4r_2r",
+  "hybrid_50pct_target",
+  "next_pivot_target",
+  "regime_flip",
+  "time_stop_20d",
+  "trailing_15pct"
+ ],
+ "unscored_without_month": [],
+ "rows": [
+  {
+   "exit": "atr_trail_1x",
+   "is_n": 953,
+   "is_sharpe": -1.63,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -2.464
+  },
+  {
+   "exit": "atr_trail_2x",
+   "is_n": 953,
+   "is_sharpe": 0.689,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -0.147
+  },
+  {
+   "exit": "atr_trail_mae_conditional",
+   "is_n": 953,
+   "is_sharpe": -1.63,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -2.464
+  },
+  {
+   "exit": "atr_trail_vix_conditional",
+   "is_n": 953,
+   "is_sharpe": 0.275,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -2.106
+  },
+  {
+   "exit": "break_even_at_1r",
+   "is_n": 953,
+   "is_sharpe": 0.214,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -1.074
+  },
+  {
+   "exit": "breakeven_plus_trail",
+   "is_n": 953,
+   "is_sharpe": 0.799,
+   "n_without_month": 708,
+   "is_sharpe_without_month": 0.43
+  },
+  {
+   "exit": "chandelier_3x",
+   "is_n": 953,
+   "is_sharpe": -0.084,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -0.086
+  },
+  {
+   "exit": "class_time_stop",
+   "is_n": 953,
+   "is_sharpe": 1.031,
+   "n_without_month": 708,
+   "is_sharpe_without_month": 0.317
+  },
+  {
+   "exit": "earnings_blackout",
+   "is_n": 953,
+   "is_sharpe": 0.765,
+   "n_without_month": 708,
+   "is_sharpe_without_month": 0.338
+  },
+  {
+   "exit": "fixed_4r_2r",
+   "is_n": 953,
+   "is_sharpe": 0.761,
+   "n_without_month": 708,
+   "is_sharpe_without_month": 0.189
+  },
+  {
+   "exit": "hybrid_50pct_target",
+   "is_n": 953,
+   "is_sharpe": 0.617,
+   "n_without_month": 708,
+   "is_sharpe_without_month": 0.206
+  },
+  {
+   "exit": "ma_exit_ema9",
+   "is_n": 953,
+   "is_sharpe": -0.412,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -0.407
+  },
+  {
+   "exit": "mfe_lockin_trail",
+   "is_n": 953,
+   "is_sharpe": -1.973,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -2.368
+  },
+  {
+   "exit": "multi_tier_partial",
+   "is_n": 953,
+   "is_sharpe": -1.722,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -1.959
+  },
+  {
+   "exit": "next_pivot_target",
+   "is_n": 953,
+   "is_sharpe": 0.548,
+   "n_without_month": 708,
+   "is_sharpe_without_month": 0.106
+  },
+  {
+   "exit": "r_multiple_2r",
+   "is_n": 953,
+   "is_sharpe": 0.032,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -0.292
+  },
+  {
+   "exit": "r_multiple_3r",
+   "is_n": 953,
+   "is_sharpe": 0.309,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -0.149
+  },
+  {
+   "exit": "regime_flip",
+   "is_n": 953,
+   "is_sharpe": 0.963,
+   "n_without_month": 708,
+   "is_sharpe_without_month": 0.343
+  },
+  {
+   "exit": "reverse_signal",
+   "is_n": 953,
+   "is_sharpe": -1.63,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -2.464
+  },
+  {
+   "exit": "smart_money_reversal",
+   "is_n": 953,
+   "is_sharpe": -1.745,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -2.538
+  },
+  {
+   "exit": "smc_mitigation_zone",
+   "is_n": 953,
+   "is_sharpe": -3.739,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -3.288
+  },
+  {
+   "exit": "time_stop_10d",
+   "is_n": 953,
+   "is_sharpe": 0.585,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -0.092
+  },
+  {
+   "exit": "time_stop_20d",
+   "is_n": 953,
+   "is_sharpe": 0.963,
+   "n_without_month": 708,
+   "is_sharpe_without_month": 0.343
+  },
+  {
+   "exit": "trailing_10pct",
+   "is_n": 953,
+   "is_sharpe": 0.435,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -0.001
+  },
+  {
+   "exit": "trailing_15pct",
+   "is_n": 953,
+   "is_sharpe": 0.373,
+   "n_without_month": 708,
+   "is_sharpe_without_month": 0.072
+  },
+  {
+   "exit": "trailing_5pct",
+   "is_n": 953,
+   "is_sharpe": -0.251,
+   "n_without_month": 708,
+   "is_sharpe_without_month": -0.44
+  }
+ ],
+ "scope": "in-sample only; production base of the grid's own frame",
+ "generator": "\"\"\"L970 (B3139q-r129): production's in-sample Sharpe per exit WITH and WITHOUT\n2025-04, on the exact frame a breadth grid graded - the same build_frame\ncall, basis, leg and row scorer as S6-B3248 (2)'s episode check\n(output_audit/b3248_squeeze_breakout_episode_robust_check.json, whose\ncriterion compared each row against production without that month). It\nmeasures the baseline that criterion compared against, which was not printed\nbefore the criterion was fixed. In-sample only - no holdout row is read.\n\nUsage: prod_wo_april.py <grid.json> --out <json>\n\"\"\"\nimport argparse\nimport json\nimport sys\nfrom pathlib import Path\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nsys.path.insert(0, str(ROOT / \"scripts\"))\nimport breadth_step1_grid as bg  # noqa: E402\nimport roster_core as rc  # noqa: E402\n\nMONTH = \"2025-04\"\n\n\ndef main() -> int:\n    ap = argparse.ArgumentParser()\n    ap.add_argument(\"grid\")\n    ap.add_argument(\"--out\", required=True)\n    a = ap.parse_args()\n    gp = Path(a.grid).resolve()\n    g = json.loads(gp.read_text(encoding=\"utf-8\"))\n    keys = [x[\"key\"] for x in g[\"axes\"]]\n    m, _ = bg.build_frame(g[\"strategy\"], g.get(\"depth_base\"), keys, basis=g[\"basis\"],\n                          leg=g[\"leg\"], survival=bool(g.get(\"survival\")))\n    if g.get(\"widen_coverage\"):\n        m = m[m[g[\"axis\"]].notna()].copy()\n    ins = rc.in_sample(m)\n    ins = ins.assign(_month=[str(d)[:7] for d in ins[\"entry_date\"]])\n    rows = []\n    for ex in sorted(ins[\"exit_method\"].unique()):\n        sub = ins[ins[\"exit_method\"] == ex]\n        wo = sub[sub[\"_month\"] != MONTH]\n        rows.append({\"exit\": ex, \"is_n\": int(len(sub)), \"is_sharpe\": bg._row_sharpe(sub),\n                     \"n_without_month\": int(len(wo)),\n                     \"is_sharpe_without_month\": bg._row_sharpe(wo)})\n    neg = [r[\"exit\"] for r in rows if r[\"is_sharpe_without_month\"] is not None\n           and r[\"is_sharpe_without_month\"] < 0]\n    nonneg = [r[\"exit\"] for r in rows if r[\"is_sharpe_without_month\"] is not None\n              and r[\"is_sharpe_without_month\"] >= 0]\n    rec = {\"lesson\": \"L970\", \"batch\": \"B3139q-r129\", \"month_removed\": MONTH,\n           \"grid\": str(gp.relative_to(ROOT)) if gp.is_relative_to(ROOT) else str(gp),\n           \"strategy\": g[\"strategy\"], \"basis\": g[\"basis\"], \"leg\": g[\"leg\"],\n           \"exits\": len(rows), \"negative_without_month\": neg,\n           \"non_negative_without_month\": nonneg,\n           \"unscored_without_month\": [r[\"exit\"] for r in rows\n                                      if r[\"is_sharpe_without_month\"] is None],\n           \"rows\": rows, \"scope\": \"in-sample only; production base of the grid's own frame\",\n           \"generator\": Path(__file__).read_text(encoding=\"utf-8\")}\n    Path(a.out).write_text(json.dumps(rec, indent=1), encoding=\"utf-8\")\n    print(f\"exits {len(rows)}: negative without {MONTH} {len(neg)}, non-negative {len(nonneg)}\")\n    print(\"non-negative:\", \", \".join(nonneg))\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n"
+}

@@ -3105,6 +3105,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r111 / L961) - A LANE MOVE OWES THE LANE'S STANDING RULES.** The S6-B3305 reader fix moved six strategies into TIGHTEN / BOTH, and the S6-B2845 rule (every producer leg there carries a defined band) owed 15 rows over 12 legs; test_b2836 found them before any commit, not an enumeration of what the move required, and the full gate found two more - the README's lane counts and an ambiguous sentence in a new row. When a fix moves a member into a population, the population's standing rules are read for what they now ask of it; the selector now sees folder listings and data read through imports (S6-B3310, test_b3310).
 
+**INSTANCE (B3139q-r129 / L968) - TWO REGISTRATION RIPPLES, ONE BATCH APART.** Registering williams_r_oversold's B1-B7 (B3139q-r127) and squeeze_breakout's B13 and B14 (B3139q-r128) each turned a pin holding the pre-registration state red - test_b3294's williams and squeeze arms, and test_b3317; the pre-gate selection caught both before any commit, and neither batch had grepped the test tree for the subject first (L801).
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
@@ -3273,6 +3275,8 @@ rate-for-total substitutions above.
 **INSTANCE (B3139q-r90 / L951) - A COUNT TYPED AHEAD OF ITS PROBE.** The S6-B3237 correction's docstring first said '15 of 17' entries; the probe returned 14 of 17 and the draft was fixed before applying - L776's shape, inside a scratch patcher no turn gate reads.
 
 **INSTANCE (B3139q-r103 / L955) - A NAME TYPED FROM RECALL BESIDE THE ADDRESS A TOOL PRINTED.** The B3139q-r100 commit message named the citing test of a disclosed citation as test_b2541's plan check; the line sits in test_b2520_l736_count_the_asks_rule_is_anchored, and test_b2541 is a real, unrelated test, so no existence check could catch it. moved_line_citations now names each hit's enclosing function (test_b3285).
+
+**INSTANCE (B3139q-r129 / L969) - A DATE FROM THE WRONG RECORD.** camarilla_r4_breakout's campaign open date was given as 10-25, the local date of the commit that opened it; output_audit/owner_campaign_opens.json records 2026-10-24. Retracted as the next answer's first line.
 
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
 
@@ -4009,6 +4013,8 @@ post-config gate built and left uninvoked.
 **INSTANCE (B3139q-r71m / L927) - A PIN THAT ACCEPTED A FAILURE EXIT WITHOUT ASKING WHY.** test_b3193_posted_close_must_equal_its_tested_draft accepted the probe's exit 1, which means either that a gate fired on the draft or that the probe broke; scripts/probe_close.py had called scan_unrecorded_miss without its required argument and it RAISED, which read as a firing gate. Found by the first real use of the probe. The pin now asserts no gate raised.
 
 **INSTANCE (B3139q-r113 / L962) - A RATCHET'S WINDOW OUTGROWN BY ITS CORPUS.** test_b1945 checked lesson citations numbered 80 to 700 only - headroom when B1945 set it, near L595 - so every lesson above 700 sat outside the ratchet and a citation of an unwritten lesson there passed unseen; latent, 0 such citations measured. The window is now the 3-digit ceiling its pattern can match, and test_b3311 fails once the window stops reaching past the newest lesson (S6-B3311).
+
+**INSTANCE (B3139q-r129 / L970) - A BASELINE'S SIGN, UNPRINTED.** S6-B3248 (2)'s criterion compared each row against production without 2025-04, which is negative at 17 of 26 exits (output_audit/b3139q_r129_squeeze_production_without_2025_04.json), so 788 rows survived while 399 stay positive on 30 or more trades; the looseness was disclosed in the episode artifact's POST-HOC field.
 
 ### #227 - COMPARING TWO RANKINGS MEANS COMPUTING THE RANK CORRELATION (B1716 / L502)
 
@@ -4925,6 +4931,8 @@ same defect since B1721b - recorded, never gated.**
 **REFUSED BEFORE IT RUNS since B3139q-r49 (S6-B3139ae, owner ruling 2026-10-06 'approve'):** a PreToolUse hook on Bash, `scripts/pretooluse_heredoc_guard.py`, wired in `.claude/settings.json`, refuses the command when `heredoc_escape_hits` - the same function the Stop scan calls - finds a backslash pair in a heredoc body fed to an interpreter; git commit/tag message heredocs are exempt. MEASURED over this session's transcript: 42 such commands ran after the Stop scan shipped, 23 of them on 2026-10-06, the last in the turn that built the refusal (B3139q-r47's pin-widening command). A record at turn close did not change the habit; a refusal before the command runs is the remedy. The double-quoted `python -c` sibling stayed on the Stop scan until S6-B3144 (owner ruling 2026-10-13, 'Approve all other recommendations'): the guard now refuses it too through `dash_c_escape_hits`, which strips heredoc bodies first (a commit message quoting a payload is data). MEASURED before it shipped: 157 such commands ran in one session, and the Stop record raised none after its first report because its one-report key is the hit text. The guard fails OPEN on its own error (exit 1 is non-blocking), and its pin runs it as a subprocess on the incident corpus.
 
 **INSTANCE (B3139q-r123 / L963) - FOUR HOOK REFUSALS ON ONE-LINE PROBES.** In one session the PreToolUse hook refused two double-quoted python -c payloads and one heredoc, each carrying a backslash pair, before they ran; every probe written to a file ran clean.
+
+**INSTANCE (B3139q-r129 / L967) - A DOUBLED BACKSLASH IS HALVED EVEN INSIDE SINGLE QUOTES.** On 2026-10-27 the guard refused three probes before they ran (13:09Z, 16:12Z and 16:17Z - two double-quoted line-ending counts and a newline escape in a python heredoc), and a sed control whose pattern carried doubled backslashes changed nothing (14:12Z). Measured at B3139q-r129: a doubled backslash in a Bash tool command arrives halved inside single quotes and quoted heredoc bodies too, a lone backslash arrives unchanged, and the Write tool keeps both bytes - so the guard's 'a single-quoted -c payload is fine' does not hold for a doubled backslash (S6-B3327).
 
 ### #260 - SHOW EVERY CLASS OR CITE NO TOTAL (B1779 / L534)
 
@@ -6622,6 +6630,8 @@ test_b3259. Refusing such a command BEFORE it runs is S6-B3268, the owner's
 decision (a refusal is a behaviour change).
 
 **INSTANCE (B3139q-r123 / L963) - --HELP ON A PARSERLESS SCRIPT, AGAIN.** A --help probe of scripts/queue_state.py, which builds no parser, was refused by the hook (S6-B3268) before it ran; its functions were then read from the source.
+
+**INSTANCE (B3139q-r129 / L967) - A --HELP PROBE OF A PARSERLESS SCRIPT, REFUSED.** A --help probe of scripts/queue_state.py (2026-10-27T13:11Z) was refused by the PreToolUse guard (S6-B3268) before it ran; the script builds no argument parser.
 
 ### #328 - A CLOSED TICKET'S REMAINDER RIDES A NEW TICKET OPENED IN THE SAME APPEND (B3139q-r90 / L949, citing L704 and L640, self-caught 2026-10-21)
 
