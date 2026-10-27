@@ -100,6 +100,13 @@ def main() -> int:
     if a.get("direction") != b.get("direction"):
         raise SystemExit(f"REFUSED: screen a read direction {a.get('direction')!r}, "
                          f"screen b {b.get('direction')!r} - one leg per consistent set")
+    # S6-B3320 (B3139q-r121): and the SAME population - a survival-filtered
+    # screen and an unfiltered one count different fires
+    sa = bool((a.get("survival") or {}).get("applied"))
+    sb = bool((b.get("survival") or {}).get("applied"))
+    if sa != sb:
+        raise SystemExit(f"REFUSED: screen a survival {sa}, screen b {sb} - "
+                         "one population per consistent set")
     rows = consistent(a, b)
     import build_table_a as bta
     idx = bta._module_index()      # [(module path, text, (written keys, ...))]
@@ -109,6 +116,7 @@ def main() -> int:
                    "index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, "
                    "never a gate - B-row registration happens at the T3 owner band review.",
            "strategy": args.strategy, "direction": a.get("direction"),
+           "survival_applied": sa,
            "exit_a": a["exit"], "exit_b": b["exit"],
            "screens": {"a": str(args.a), "b": str(args.b)},
            "survivors_a": a.get("survivors"), "survivors_b": b.get("survivors"),

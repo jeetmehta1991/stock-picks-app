@@ -64968,3 +64968,101 @@ def test_b3304_camarilla_f1_derived_rooms_and_depth_surfaces():
         assert d["evidence"]["survival_filter"]["applied"] is True
         assert str(d["holdout_read"]).startswith("NOT FIRED")
         assert all(isinstance(c.get("episode"), dict) for c in d["ranked"])
+
+
+# ================================================================ B3139q-r121 S6-B3320: the companion screen reads the surviving fires
+def test_b3320_companion_screen_reads_the_surviving_fires(tmp_path, monkeypatch):
+    """S6-B3320 (B3139q-r121): the companion screen read every R5 fire of its
+    subject, while the depth sweep reads the fires the CURRENT gate keeps
+    (--survival, S6-B3290) - so for a strategy whose gate changed since R5 the
+    breadth screen ranked companions partly on fires the gate now removes
+    (MEASURED: camarilla_r4_breakout survives 0.5322, so about 47 pct of its
+    first screens' fires). load_entries(survival=True) applies
+    build_table_a.surviving_fires on the status view's inputs - the one T1
+    definition the sweep applies; main() REFUSES a subject whose gate keeps
+    fewer than all of its R5 fires, or has an unmeasured side, when
+    --survival is absent (fail closed, L642), and passes an unchanged one;
+    companions_consistent refuses a consistent set across two populations.
+    Fixture: three camarilla long fires through the REAL gate function, one
+    under the B1422 xs_ivol floor. Then the committed camarilla screens and
+    consistent sets are survival-filtered."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import institutional_companion_screen as ics
+    import companions_consistent as cc
+    import offline_level_sweep as ols
+    S = "camarilla_r4_breakout"
+
+    def sig(iv):
+        return _j.dumps({"above_cam_r4": True, "vol_above_avg": True, "xs_ivol": iv})
+    rows = [("T1", "2024-06-10", 0.30), ("T2", "2024-07-10", 0.50), ("T3", "2024-08-12", 0.10)]
+    _pd.DataFrame([{"strategy": S, "ticker": t, "entry_date": d, "direction": "long",
+                    "signals_at_entry": sig(iv)} for t, d, iv in rows]).to_csv(
+        tmp_path / "tl.csv", index=False)
+    _pd.DataFrame([{"strategy": S, "ticker": t, "entry_date": d, "direction": "long",
+                    "exit_method": "time_stop_10d", "pnl_pct": 1.0}
+                   for t, d, iv in rows]).to_csv(tmp_path / "cube.csv", index=False)
+    monkeypatch.setattr(ics, "TRADE_LOG", tmp_path / "tl.csv")
+    monkeypatch.setattr(ics, "CUBE", tmp_path / "cube.csv")
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (0.5, {}))
+    every = ics.load_entries("time_stop_10d", "is", names=[S])
+    assert len(every) == 3 and every.attrs["survival"] == {"applied": False}
+    kept = ics.load_entries("time_stop_10d", "is", names=[S], survival=True)
+    assert sorted(kept["ticker"]) == ["T1", "T2"], list(kept["ticker"])
+    sv = kept.attrs["survival"]
+    assert sv["applied"] is True and (sv["fires_before"], sv["fires_after"]) == (3, 2), sv
+    assert sv["by_strategy"] == {S: [3, 2]} and sv["by_direction"] == {"long": [3, 2]}, sv
+
+    out = tmp_path / "scr.json"
+    base = ["ics", "--exit", "time_stop_10d", "--strategy", S, "--window", "is", "--out", str(out)]
+    monkeypatch.setattr(_s, "argv", base)
+    with pytest.raises(SystemExit, match="S6-B3320"):
+        ics.main()
+    monkeypatch.setattr(_s, "argv", base + ["--survival"])
+    with pytest.raises(SystemExit, match="underpowered"):      # past the guard, to the entry floor
+        ics.main()
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (1.0, {}))
+    monkeypatch.setattr(_s, "argv", base)
+    with pytest.raises(SystemExit, match="underpowered"):      # an unchanged gate needs no flag
+        ics.main()
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (1.0, {"short": "borrow"}))
+    with pytest.raises(SystemExit, match="S6-B3320"):          # an unmeasured side refuses too
+        ics.main()
+    assert not out.exists()
+
+    a = {"exit": "time_stop_10d", "selection": "exact", "strategies": [S], "direction": "long",
+         "survival": {"applied": True}, "results": [], "survivors": 0}
+    b = dict(a, exit="breakeven_plus_trail", survival={"applied": False})
+    pa, pb, po = tmp_path / "a.json", tmp_path / "b.json", tmp_path / "o.json"
+    pa.write_text(_j.dumps(a), encoding="utf-8")
+    pb.write_text(_j.dumps(b), encoding="utf-8")
+    monkeypatch.setattr(_s, "argv", ["cc", "--a", str(pa), "--b", str(pb),
+                                     "--strategy", S, "--out", str(po)])
+    with pytest.raises(SystemExit, match="one population per consistent set"):
+        cc.main()
+    assert not po.exists()
+    b["survival"] = {"applied": True}
+    pb.write_text(_j.dumps(b), encoding="utf-8")
+    assert cc.main() == 0
+    assert _j.loads(po.read_text(encoding="utf-8"))["survival_applied"] is True
+
+    A = root / "output_audit"
+    for leg in ("long", "short"):
+        for tag in ("ts10", "bept"):
+            d = _j.loads((A / f"b3304_{S}_{leg}_companions_{tag}.json").read_text(encoding="utf-8"))
+            sv = d["survival"]
+            assert d["direction"] == leg and sv["applied"] is True, (leg, tag, sv)
+            assert sv["fires_after"] < sv["fires_before"], (leg, tag, sv)
+            # one survival definition, one count: the depth sweep on the same leg
+            dep = _j.loads((A / f"b3304_{S}_{leg}_step1_is_surface.json")
+                           .read_text(encoding="utf-8"))["evidence"]
+            assert sv["by_direction"][leg] == [dep["landed_fires"],
+                                               dep["survival_filter"]["fires_after"]], (leg, sv, dep)
+        c = _j.loads((A / f"b3304_{S}_{leg}_companions_consistent.json").read_text(encoding="utf-8"))
+        assert c["survival_applied"] is True and c["direction"] == leg

@@ -95,17 +95,49 @@ def _read_selected(path, usecols, sel, chunksize: int = 250_000) -> pd.DataFrame
     return pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(columns=usecols)
 
 
+def _surviving(ent: pd.DataFrame) -> tuple:
+    """S6-B3320 (B3139q-r121): the T1 survival filter, per strategy - the
+    fires the CURRENT gate keeps, build_table_a.surviving_fires on the status
+    view's inputs (offline_level_sweep._survival_inputs): the one definition
+    the depth sweep's --survival applies. Returns (kept, disclosure). The
+    filter runs on every fire of the selection, BOTH legs - the leg is cut
+    afterwards on the cube - so the per-leg counts sit in by_direction."""
+    import build_table_a as bta
+    from offline_level_sweep import _survival_inputs
+    parts, by = [], {}
+    for s, part in ent.groupby("strategy", sort=True):
+        pct, unmeasured = _survival_inputs(s)
+        kept, _sigs, _f = bta.surviving_fires(s, part, pct, unmeasured)
+        by[s] = [int(len(part)), int(len(kept))]
+        parts.append(kept)
+    out = pd.concat(parts) if parts else ent.iloc[0:0]
+    legs = sorted(set(ent["direction"].astype(str)))
+    by_dir = {d: [int((ent["direction"].astype(str) == d).sum()),
+                  int((out["direction"].astype(str) == d).sum())] for d in legs}
+    return out, {"applied": True, "scope": "every fire of the selection, both legs",
+                 "fires_before": int(len(ent)), "fires_after": int(len(out)),
+                 "by_strategy": by, "by_direction": by_dir}
+
+
 def load_entries(exit_method: str, window: str, names=None,
-                 direction: str | None = None) -> pd.DataFrame:
+                 direction: str | None = None, survival: bool = False) -> pd.DataFrame:
     """S6-B3247 (B3139q-r117): `direction` keeps ONE leg of a dual strategy -
     a pooled screen ranks companions on long and short trades together,
     whose winners and losers have different drivers. None pools, as
-    before (every artifact up to r116 is pooled)."""
+    before (every artifact up to r116 is pooled).
+    S6-B3320 (B3139q-r121): `survival` keeps the fires the CURRENT gate keeps
+    (_surviving); without it a strategy whose gate changed since R5 is
+    screened on fires the gate now removes, which main() refuses. The
+    disclosure rides the returned frame's attrs['survival']."""
     if direction not in (None, "long", "short"):
         raise SystemExit(f"REFUSED: direction {direction!r} is not long or short")
     sel = _selector(names)
-    fam = _read_selected(TRADE_LOG, ["strategy", "ticker", "entry_date", "signals_at_entry"], sel)
+    cols = ["strategy", "ticker", "entry_date", "signals_at_entry"]
+    fam = _read_selected(TRADE_LOG, cols + (["direction"] if survival else []), sel)
     ent = fam.drop_duplicates(["ticker", "entry_date"]).copy()
+    surv = {"applied": False}
+    if survival:
+        ent, surv = _surviving(ent)
 
     # the leg is decided by the CUBE's direction: the inner merge below drops
     # every entry with no pnl row on the kept leg, so a trade-log filter would
@@ -127,6 +159,7 @@ def load_entries(exit_method: str, window: str, names=None,
         m = m[m.entry_d >= IS_END]
     else:
         raise SystemExit(f"unknown --window {window!r}")
+    m.attrs["survival"] = surv
     return m
 
 
@@ -229,6 +262,9 @@ def main() -> int:
     ap.add_argument("--window", default="is", choices=["is", "holdout"])
     ap.add_argument("--direction", default=None, choices=["long", "short"],
                     help="S6-B3247: screen ONE leg of a dual strategy (default: pooled)")
+    ap.add_argument("--survival", action="store_true",
+                    help="S6-B3320: screen only the fires the CURRENT gate keeps "
+                         "(required when a strategy's gate changed since R5)")
     ap.add_argument("--min-side", type=int, default=100)
     ap.add_argument("--min-n", type=int, default=500)
     ap.add_argument("--out", required=True)
@@ -236,13 +272,25 @@ def main() -> int:
 
     FAMILY_PREFIX = args.family
     m = load_entries(args.exit, args.window, names=args.strategy,
-                     direction=args.direction)
+                     direction=args.direction, survival=args.survival)
+    if not args.survival:
+        # S6-B3320: fail closed (L642) - a strategy whose current gate keeps
+        # fewer than all of its R5 fires is screened on the fires it keeps
+        from offline_level_sweep import _survival_inputs
+        for s in sorted(set(m["strategy"])):
+            pct, unmeasured = _survival_inputs(s)
+            if unmeasured or pct is None or pct < 1.0:
+                raise SystemExit(
+                    f"REFUSED (S6-B3320): {s}'s current gate keeps {pct} of its R5 "
+                    f"fires (unmeasured sides: {unmeasured or 'none'}) - a screen "
+                    "without --survival reads fires the gate now removes; pass --survival")
     if len(m) < 500:
         raise SystemExit(f"REFUSED: only {len(m)} entries in window - underpowered")
     rows, meta = screen(m, args.min_side, args.min_n)
     rec = {"family": FAMILY_PREFIX, "strategies": args.strategy,
            "selection": "exact" if args.strategy else "prefix",
            "direction": args.direction,
+           "survival": m.attrs.get("survival"),     # S6-B3320
            "exit": args.exit, "window": args.window,
            "peeked": args.window == "holdout", **meta, "results": rows}
     out = Path(args.out)

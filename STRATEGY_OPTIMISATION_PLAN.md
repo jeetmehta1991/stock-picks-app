@@ -995,7 +995,10 @@ meaning.
    `--strategy <s>` selects by exact name (S6-B3291); the intersect and the clustering below are
    `scripts/companions_consistent.py --a <screen at exit 1> --b <screen at exit 2> --strategy <s>`
    (S6-B3291b) - a peeked screen is refused, and keys the producer index cannot place are reported
-   as an `unindexed` bucket, a mixed bag that is never a cluster.**
+   as an `unindexed` bucket, a mixed bag that is never a cluster.** **Per leg, on the surviving fires:
+   `--direction long|short` screens one leg of a dual (S6-B3247), and `--survival` keeps the fires the
+   CURRENT gate keeps - the depth sweep's T1 definition (S6-B3320). The screen refuses a subject whose
+   gate changed since R5 without it, and the consistent set refuses two populations or two legs.**
 2. **CLUSTER -> REPRESENTATIVES** - group consistent survivors by producer family (momentum /
    compression / volume-profile / volatility / candlestick-pattern / gap ...); pick ONE representative per cluster
    with the criterion stated (#165). Collinearity with an existing depth axis is flagged on the row.

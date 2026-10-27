@@ -1,0 +1,257 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "camarilla_r4_breakout",
+  "direction": "long",
+  "survival_applied": true,
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3304_camarilla_r4_breakout_long_companions_ts10.json",
+    "b": "output_audit/b3304_camarilla_r4_breakout_long_companions_bept.json"
+  },
+  "survivors_a": 20,
+  "survivors_b": 89,
+  "n_consistent": 16,
+  "clusters": {
+    "backtest/signals/cross_asset.py": {
+      "representative": "bond_equity_20d_pct_change",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "bond_equity_20d_pct_change",
+        "sector_strongest_rs",
+        "gold_silver_20d_pct_change",
+        "gold_silver_ratio"
+      ],
+      "rows": [
+        {
+          "key": "bond_equity_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": 10.966153707805908,
+          "effect_b": 5.8675544092826994,
+          "joint": 5.8675544092826994,
+          "p_a": 0.0003240802969689891,
+          "p_b": 1.2110546825299003e-05,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "sector_strongest_rs",
+          "kind": "numeric",
+          "effect_a": -3.6663211029411764,
+          "effect_b": -18.96456481092437,
+          "joint": 3.6663211029411764,
+          "p_a": 1.713339639489876e-08,
+          "p_b": 2.0732377806960152e-20,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "gold_silver_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": 1.1618934516307906,
+          "effect_b": 15.79254262909378,
+          "joint": 1.1618934516307906,
+          "p_a": 0.00024701876557928345,
+          "p_b": 7.701078141027671e-13,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "gold_silver_ratio",
+          "kind": "numeric",
+          "effect_a": 0.8754131567796608,
+          "effect_b": 14.632215077683615,
+          "joint": 0.8754131567796608,
+          "p_a": 0.0012919413326470815,
+          "p_b": 3.4029231064103486e-11,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    },
+    "backtest/signals/cot_positioning.py": {
+      "representative": "cot_ndx_commercials_net_pct",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "cot_ndx_commercials_net_pct",
+        "cot_sp500_commercials_pctile_3y",
+        "cot_dxy_mmoney_pctile_3y",
+        "cot_dxy_commercials_net_pct",
+        "cot_sp500_commercials_net_pct",
+        "cot_rut_commercials_net_pct",
+        "cot_copper_commercials_net_pct"
+      ],
+      "rows": [
+        {
+          "key": "cot_ndx_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -14.9700955372549,
+          "effect_b": -17.012924462745097,
+          "joint": 14.9700955372549,
+          "p_a": 0.0018760191388167175,
+          "p_b": 2.3725186699795686e-06,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_sp500_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -11.255559769347636,
+          "effect_b": -18.417604293080426,
+          "joint": 11.255559769347636,
+          "p_a": 7.303098895808304e-10,
+          "p_b": 1.378716327026881e-10,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dxy_mmoney_pctile_3y",
+          "kind": "numeric",
+          "effect_a": 13.06050694507284,
+          "effect_b": 11.065995805809433,
+          "joint": 11.065995805809433,
+          "p_a": 0.0006953195815970841,
+          "p_b": 1.5725450025103368e-08,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dxy_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -9.582115245202557,
+          "effect_b": -9.81674651538227,
+          "joint": 9.582115245202557,
+          "p_a": 0.001801991511102686,
+          "p_b": 2.9536427120671287e-12,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_sp500_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -3.807850030669202,
+          "effect_b": -13.24094597926762,
+          "joint": 3.807850030669202,
+          "p_a": 8.925331446185457e-11,
+          "p_b": 6.429563608254013e-12,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_rut_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -2.860649008075161,
+          "effect_b": -18.99743992351891,
+          "joint": 2.860649008075161,
+          "p_a": 5.803863413316244e-08,
+          "p_b": 6.08428263442618e-20,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_copper_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": 1.6236035007849294,
+          "effect_b": 9.308199427873713,
+          "joint": 1.6236035007849294,
+          "p_a": 0.0011811183355766352,
+          "p_b": 1.0223484889115061e-11,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        }
+      ]
+    },
+    "backtest/signals/technical.py": {
+      "representative": "pct_from_avwap_20low",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "pct_from_avwap_20low",
+        "pct_from_avwap_20high"
+      ],
+      "rows": [
+        {
+          "key": "pct_from_avwap_20low",
+          "kind": "numeric",
+          "effect_a": 15.668772101865136,
+          "effect_b": 24.108174356767094,
+          "joint": 15.668772101865136,
+          "p_a": 0.0006729814852037069,
+          "p_b": 2.385002526369357e-07,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "pct_from_avwap_20high",
+          "kind": "numeric",
+          "effect_a": 4.5608220512820505,
+          "effect_b": 3.049039487179483,
+          "joint": 3.049039487179483,
+          "p_a": 2.98787478229815e-05,
+          "p_b": 0.001354305102209571,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        }
+      ]
+    },
+    "backtest/signals/ict_producers.py": {
+      "representative": "po3_accum_range_pct",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "po3_accum_range_pct"
+      ],
+      "rows": [
+        {
+          "key": "po3_accum_range_pct",
+          "kind": "numeric",
+          "effect_a": 14.987133472803347,
+          "effect_b": 37.002625523012554,
+          "joint": 14.987133472803347,
+          "p_a": 1.6294681812103246e-05,
+          "p_b": 3.538673328195824e-22,
+          "sign": "+",
+          "module": "backtest/signals/ict_producers.py"
+        }
+      ]
+    },
+    "backtest/signals/short_interest.py": {
+      "representative": "short_interest_observations",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "short_interest_observations"
+      ],
+      "rows": [
+        {
+          "key": "short_interest_observations",
+          "kind": "numeric",
+          "effect_a": 3.1836338940285955,
+          "effect_b": 18.354752060555086,
+          "joint": 3.1836338940285955,
+          "p_a": 0.00011296575900814273,
+          "p_b": 1.4282435986762428e-14,
+          "sign": "+",
+          "module": "backtest/signals/short_interest.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_sectional.py": {
+      "representative": "xs_max_anomaly",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "xs_max_anomaly"
+      ],
+      "rows": [
+        {
+          "key": "xs_max_anomaly",
+          "kind": "numeric",
+          "effect_a": 14.602916414683028,
+          "effect_b": 33.79656660279174,
+          "joint": 14.602916414683028,
+          "p_a": 8.156643876715057e-06,
+          "p_b": 7.302397202435962e-18,
+          "sign": "+",
+          "module": "backtest/signals/cross_sectional.py"
+        }
+      ]
+    }
+  }
+}

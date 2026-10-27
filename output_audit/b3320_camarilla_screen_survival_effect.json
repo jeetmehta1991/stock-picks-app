@@ -1,0 +1,215 @@
+{
+ "long": {
+  "screens": {
+   "ts10": {
+    "entries_before": 2127,
+    "entries_after": 1194,
+    "survivors_before": 54,
+    "survivors_after": 20,
+    "survival": {
+     "applied": true,
+     "fires_before": 5774,
+     "fires_after": 3073,
+     "by_strategy": {
+      "camarilla_r4_breakout": [
+       5774,
+       3073
+      ]
+     }
+    }
+   },
+   "bept": {
+    "entries_before": 2127,
+    "entries_after": 1194,
+    "survivors_before": 155,
+    "survivors_after": 89,
+    "survival": {
+     "applied": true,
+     "fires_before": 5774,
+     "fires_after": 3073,
+     "by_strategy": {
+      "camarilla_r4_breakout": [
+       5774,
+       3073
+      ]
+     }
+    }
+   }
+  },
+  "consistent_before": 36,
+  "consistent_after": 16,
+  "clusters_before": 11,
+  "clusters_after": 6,
+  "keys_kept": 13,
+  "keys_dropped": [
+   "atr",
+   "atr_14",
+   "atr_pct",
+   "avg_position_age_quarters",
+   "bb_10_20_bandwidth",
+   "bond_equity_ratio",
+   "cmf",
+   "cot_dxy_commercials_pctile_3y",
+   "cot_ndx_commercials_pctile_3y",
+   "cpr_width",
+   "dxy_20d_pct_change",
+   "dxy_proxy_close",
+   "near_52w_low_105pct",
+   "near_avwap_20high_atr_10x",
+   "otc_volume_recent",
+   "pct_from_avwap_252low",
+   "pct_from_avwap_50low",
+   "pct_from_vwap",
+   "smc_retracement_pct",
+   "squeeze_momentum",
+   "vol_ratio_20d",
+   "williams_r_oversold",
+   "within_pead_window"
+  ],
+  "keys_added": [
+   "cot_copper_commercials_net_pct",
+   "cot_rut_commercials_net_pct",
+   "pct_from_avwap_20high"
+  ],
+  "representatives_before": {
+   "screener.py": "atr le q",
+   "technical.py": "pct_from_avwap_20low ge q",
+   "institutional_persistence_consumer.py": "avg_position_age_quarters le q",
+   "cross_asset.py": "dxy_20d_pct_change le q",
+   "cot_positioning.py": "cot_dxy_mmoney_pctile_3y ge q",
+   "congressional_alt_data.py": "otc_volume_recent ge q",
+   "ict_producers.py": "po3_accum_range_pct ge q",
+   "short_interest.py": "short_interest_observations ge q",
+   "smc_ict.py": "smc_retracement_pct le q",
+   "earnings_surprise_yoy.py": "within_pead_window require FALSE",
+   "cross_sectional.py": "xs_max_anomaly ge q"
+  },
+  "representatives_after": {
+   "cross_asset.py": "bond_equity_20d_pct_change ge q",
+   "cot_positioning.py": "cot_ndx_commercials_net_pct le q",
+   "technical.py": "pct_from_avwap_20low ge q",
+   "ict_producers.py": "po3_accum_range_pct ge q",
+   "short_interest.py": "short_interest_observations ge q",
+   "cross_sectional.py": "xs_max_anomaly ge q"
+  },
+  "clusters_dropped": [
+   "congressional_alt_data.py",
+   "earnings_surprise_yoy.py",
+   "institutional_persistence_consumer.py",
+   "screener.py",
+   "smc_ict.py"
+  ],
+  "clusters_added": [],
+  "representative_changed": [
+   "cot_positioning.py",
+   "cross_asset.py"
+  ]
+ },
+ "short": {
+  "screens": {
+   "ts10": {
+    "entries_before": 2351,
+    "entries_after": 1025,
+    "survivors_before": 121,
+    "survivors_after": 81,
+    "survival": {
+     "applied": true,
+     "fires_before": 5774,
+     "fires_after": 3073,
+     "by_strategy": {
+      "camarilla_r4_breakout": [
+       5774,
+       3073
+      ]
+     }
+    }
+   },
+   "bept": {
+    "entries_before": 2351,
+    "entries_after": 1025,
+    "survivors_before": 129,
+    "survivors_after": 120,
+    "survival": {
+     "applied": true,
+     "fires_before": 5774,
+     "fires_after": 3073,
+     "by_strategy": {
+      "camarilla_r4_breakout": [
+       5774,
+       3073
+      ]
+     }
+    }
+   }
+  },
+  "consistent_before": 75,
+  "consistent_after": 65,
+  "clusters_before": 8,
+  "clusters_after": 9,
+  "keys_kept": 56,
+  "keys_dropped": [
+   "bb_20_15_expanding",
+   "bb_20_20_expanding",
+   "below_ema_50",
+   "close_in_bottom_40pct_of_range",
+   "gold_silver_20d_pct_change",
+   "near_avwap_252low_atr_05x",
+   "po3_close_position",
+   "price_above_ema_50",
+   "risk_off_regime_bond_signal",
+   "risk_off_regime_bond_signal_strong",
+   "rsi_9",
+   "sector_strongest_rs",
+   "stochrsi_cross_up",
+   "uo",
+   "vix_percentile",
+   "vol_ratio_20d",
+   "vp_in_value_area",
+   "weekly_above_ema_10",
+   "williams_r"
+  ],
+  "keys_added": [
+   "cot_ndx_commercials_net_pct",
+   "macd_12_26_9_line",
+   "macd_12_26_9_signal",
+   "po3_accum_range_pct",
+   "smc_in_discount_zone",
+   "vix_today",
+   "vix_value",
+   "vp_above_value_area",
+   "weekly_momentum_4w"
+  ],
+  "representatives_before": {
+   "technical.py": "vix_percentile le q",
+   "cross_asset.py": "vix_term_backwardation require FALSE",
+   "cot_positioning.py": "cot_dxy_mmoney_pctile_3y le q",
+   "multi_timeframe.py": "monthly_momentum_6m ge q",
+   "polars_panel.py": "rsi_21 ge q",
+   "short_interest.py": "short_interest_observations le q",
+   "smc_ict.py": "smc_dealing_range_pct ge q",
+   "volume_profile.py": "vp_below_value_area require FALSE"
+  },
+  "representatives_after": {
+   "technical.py": "ppo_signal ge q",
+   "cross_asset.py": "vix_term_backwardation require FALSE",
+   "cot_positioning.py": "cot_copper_commercials_net_pct le q",
+   "multi_timeframe.py": "monthly_momentum_6m ge q",
+   "ict_producers.py": "po3_accum_range_pct le q",
+   "polars_panel.py": "rsi_21 ge q",
+   "short_interest.py": "short_interest_observations le q",
+   "smc_ict.py": "smc_in_premium_zone require TRUE",
+   "volume_profile.py": "vp_below_value_area require FALSE"
+  },
+  "clusters_dropped": [],
+  "clusters_added": [
+   "ict_producers.py"
+  ],
+  "representative_changed": [
+   "cot_positioning.py",
+   "smc_ict.py",
+   "technical.py"
+  ]
+ },
+ "_doc": "S6-B3320 (B3139q-r121): camarilla_r4_breakout's breadth screens before and after the T1 survival filter - the pre-survival screens read every R5 fire, about 47 pct of which the current gate removes (survival 0.5322)",
+ "generator": "\"\"\"B3139q-r121: what the T1 survival filter changed in camarilla's breadth screens -\nthe pre-survival artifacts (moved to the scratchpad at r120) against the\ncommitted survival-filtered ones. Prints per leg: the screens' survival\ncounts, the consistent keys added / removed, and each cluster's representative\nbefore and after (key, operator). Writes a JSON record; read-only otherwise.\"\"\"\nimport json\nimport sys\nfrom pathlib import Path\n\nROOT = Path(r\"C:\\Users\\jeetm\\Github\\stock-picks-app\")\nPRE = Path(__file__).parent / \"presurvival_screens\"\nS = \"camarilla_r4_breakout\"\n\n\ndef op(r):\n    if r[\"kind\"] == \"bool\":\n        return \"require FALSE\" if r[\"sign\"] == \"-\" else \"require TRUE\"\n    return \"ge q\" if r[\"sign\"] == \"+\" else \"le q\"\n\n\ndef reps(c):\n    return {m.split(\"/\")[-1]: f\"{cl['representative']} {op(cl['rows'][0])}\" for m, cl in c[\"clusters\"].items()}\n\n\nout = {}\nfor leg in (\"long\", \"short\"):\n    rec = {\"screens\": {}}\n    for tag in (\"ts10\", \"bept\"):\n        a = json.loads((PRE / f\"b3304_{S}_{leg}_companions_{tag}.json\").read_text(encoding=\"utf-8\"))\n        b = json.loads((ROOT / \"output_audit\" / f\"b3304_{S}_{leg}_companions_{tag}.json\").read_text(encoding=\"utf-8\"))\n        rec[\"screens\"][tag] = {\"entries_before\": a[\"entries\"], \"entries_after\": b[\"entries\"],\n                               \"survivors_before\": a[\"survivors\"], \"survivors_after\": b[\"survivors\"],\n                               \"survival\": b[\"survival\"]}\n    ca = json.loads((PRE / f\"b3304_{S}_{leg}_companions_consistent.json\").read_text(encoding=\"utf-8\"))\n    cb = json.loads((ROOT / \"output_audit\" / f\"b3304_{S}_{leg}_companions_consistent.json\").read_text(encoding=\"utf-8\"))\n    ka = {k for cl in ca[\"clusters\"].values() for k in cl[\"members\"]}\n    kb = {k for cl in cb[\"clusters\"].values() for k in cl[\"members\"]}\n    ra, rb = reps(ca), reps(cb)\n    rec.update({\"consistent_before\": len(ka), \"consistent_after\": len(kb),\n                \"clusters_before\": len(ra), \"clusters_after\": len(rb),\n                \"keys_kept\": len(ka & kb), \"keys_dropped\": sorted(ka - kb), \"keys_added\": sorted(kb - ka),\n                \"representatives_before\": ra, \"representatives_after\": rb,\n                \"clusters_dropped\": sorted(set(ra) - set(rb)), \"clusters_added\": sorted(set(rb) - set(ra)),\n                \"representative_changed\": sorted(m for m in set(ra) & set(rb) if ra[m] != rb[m])})\n    out[leg] = rec\n    print(leg, json.dumps({k: v for k, v in rec.items() if k not in (\"keys_dropped\", \"keys_added\")}, indent=1))\n    print(leg, \"keys dropped\", len(rec[\"keys_dropped\"]), \"added\", len(rec[\"keys_added\"]))\ndst = ROOT / \"output_audit\" / \"b3320_camarilla_screen_survival_effect.json\"\nout[\"_doc\"] = (\"S6-B3320 (B3139q-r121): camarilla_r4_breakout's breadth screens before and after the T1 \"\n               \"survival filter - the pre-survival screens read every R5 fire, about 47 pct of which the \"\n               \"current gate removes (survival 0.5322)\")\nout[\"generator\"] = Path(__file__).read_text(encoding=\"utf-8\")\ndst.write_text(json.dumps(out, indent=1), encoding=\"utf-8\")\nprint(\"wrote\", dst)\n"
+}

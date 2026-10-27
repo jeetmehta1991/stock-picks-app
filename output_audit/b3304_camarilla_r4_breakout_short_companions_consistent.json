@@ -1,0 +1,869 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "camarilla_r4_breakout",
+  "direction": "short",
+  "survival_applied": true,
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3304_camarilla_r4_breakout_short_companions_ts10.json",
+    "b": "output_audit/b3304_camarilla_r4_breakout_short_companions_bept.json"
+  },
+  "survivors_a": 81,
+  "survivors_b": 120,
+  "n_consistent": 65,
+  "clusters": {
+    "backtest/signals/technical.py": {
+      "representative": "ppo_signal",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "ppo_signal",
+        "near_avwap_252low_atr_10x",
+        "avwap_252low_loss_recent_3d",
+        "pct_change_20d",
+        "pct_from_avwap_20high",
+        "ppo",
+        "above_avwap_252low",
+        "below_avwap_252low",
+        "pct_from_avwap_252low",
+        "near_avwap_252low_atr_15x",
+        "macd_12_26_9_line",
+        "ichi_above_cloud",
+        "near_avwap_252low_atr_20x",
+        "ichi_weekly_below_cloud",
+        "below_sma_50",
+        "price_above_sma_50",
+        "macd_12_26_9_signal",
+        "sma_20_50_bullish",
+        "near_avwap_20high_atr_10x",
+        "ichi_below_cloud",
+        "ema_20_50_bearish",
+        "ema_20_50_bullish",
+        "below_ema_200",
+        "price_above_ema_200",
+        "bb_10_20_bandwidth",
+        "vix_value",
+        "adx_di_minus"
+      ],
+      "rows": [
+        {
+          "key": "ppo_signal",
+          "kind": "numeric",
+          "effect_a": 3.337119512195122,
+          "effect_b": 4.435364390243902,
+          "joint": 3.337119512195122,
+          "p_a": 7.3587464780181805e-06,
+          "p_b": 2.883089956065851e-09,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "near_avwap_252low_atr_10x",
+          "kind": "bool",
+          "effect_a": -2.9758637741790372,
+          "effect_b": -2.904657584345479,
+          "joint": 2.904657584345479,
+          "p_a": 2.0253949553478873e-05,
+          "p_b": 0.004421932298249652,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "avwap_252low_loss_recent_3d",
+          "kind": "bool",
+          "effect_a": -2.8800665675324018,
+          "effect_b": -3.319900168133967,
+          "joint": 2.8800665675324018,
+          "p_a": 0.00020062448747365326,
+          "p_b": 0.0027762834348828117,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "pct_change_20d",
+          "kind": "numeric",
+          "effect_a": 2.797383414634146,
+          "effect_b": 4.157447804878049,
+          "joint": 2.797383414634146,
+          "p_a": 0.0005038922322200367,
+          "p_b": 1.933410592486006e-06,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "pct_from_avwap_20high",
+          "kind": "numeric",
+          "effect_a": 2.675122513089005,
+          "effect_b": 2.802507329842932,
+          "joint": 2.675122513089005,
+          "p_a": 0.0022773673045341555,
+          "p_b": 1.296011919261952e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "ppo",
+          "kind": "numeric",
+          "effect_a": 2.5785512195121947,
+          "effect_b": 5.2336780487804875,
+          "joint": 2.5785512195121947,
+          "p_a": 7.92515761910221e-05,
+          "p_b": 1.8891552051629816e-09,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "above_avwap_252low",
+          "kind": "bool",
+          "effect_a": 2.462200563267567,
+          "effect_b": 3.040829454071634,
+          "joint": 2.462200563267567,
+          "p_a": 4.9286330544810885e-05,
+          "p_b": 0.0005638413614031338,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "below_avwap_252low",
+          "kind": "bool",
+          "effect_a": -2.462200563267567,
+          "effect_b": -3.040829454071634,
+          "joint": 2.462200563267567,
+          "p_a": 4.9286330544810885e-05,
+          "p_b": 0.0005638413614031338,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "pct_from_avwap_252low",
+          "kind": "numeric",
+          "effect_a": 2.753980681818182,
+          "effect_b": 2.4037295454545453,
+          "joint": 2.4037295454545453,
+          "p_a": 1.4573255443398292e-05,
+          "p_b": 2.8787896968965507e-06,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "near_avwap_252low_atr_15x",
+          "kind": "bool",
+          "effect_a": -2.381287762341999,
+          "effect_b": -2.888438049129502,
+          "joint": 2.381287762341999,
+          "p_a": 9.387694293944904e-05,
+          "p_b": 0.0006032301222284923,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "macd_12_26_9_line",
+          "kind": "numeric",
+          "effect_a": 2.26688243902439,
+          "effect_b": 2.9588946341463416,
+          "joint": 2.26688243902439,
+          "p_a": 0.0028394716251073475,
+          "p_b": 1.0811345711794126e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "ichi_above_cloud",
+          "kind": "bool",
+          "effect_a": 2.246792023524356,
+          "effect_b": 2.864251845102143,
+          "joint": 2.246792023524356,
+          "p_a": 2.224822631950107e-05,
+          "p_b": 3.4875883016186145e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "near_avwap_252low_atr_20x",
+          "kind": "bool",
+          "effect_a": -2.218517264391891,
+          "effect_b": -2.7870348370860363,
+          "joint": 2.218517264391891,
+          "p_a": 9.010219555558435e-05,
+          "p_b": 0.0003078297063490161,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "ichi_weekly_below_cloud",
+          "kind": "bool",
+          "effect_a": -2.2087378996504397,
+          "effect_b": -2.425293784636372,
+          "joint": 2.2087378996504397,
+          "p_a": 0.0003711241294206488,
+          "p_b": 0.008103320686660063,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "below_sma_50",
+          "kind": "bool",
+          "effect_a": -2.152406183574879,
+          "effect_b": -2.5686066570048314,
+          "joint": 2.152406183574879,
+          "p_a": 4.970745882261463e-05,
+          "p_b": 0.0002084104492037878,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "price_above_sma_50",
+          "kind": "bool",
+          "effect_a": 2.152406183574879,
+          "effect_b": 2.5686066570048314,
+          "joint": 2.152406183574879,
+          "p_a": 4.970745882261463e-05,
+          "p_b": 0.0002084104492037878,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "macd_12_26_9_signal",
+          "kind": "numeric",
+          "effect_a": 2.045186829268293,
+          "effect_b": 3.1652312195121945,
+          "joint": 2.045186829268293,
+          "p_a": 0.0031670861521131246,
+          "p_b": 1.220024831359166e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "sma_20_50_bullish",
+          "kind": "bool",
+          "effect_a": 1.9796402008977108,
+          "effect_b": 3.2837356424533284,
+          "joint": 1.9796402008977108,
+          "p_a": 0.00027249421668786386,
+          "p_b": 4.760720621818385e-06,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "near_avwap_20high_atr_10x",
+          "kind": "bool",
+          "effect_a": 1.9521701189674525,
+          "effect_b": 2.220487396184063,
+          "joint": 1.9521701189674525,
+          "p_a": 0.00047177063381902183,
+          "p_b": 0.002866576188010145,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "ichi_below_cloud",
+          "kind": "bool",
+          "effect_a": -1.9165612151074884,
+          "effect_b": -3.1926306962001023,
+          "joint": 1.9165612151074884,
+          "p_a": 0.00039291734838871166,
+          "p_b": 7.825726334021625e-06,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "ema_20_50_bearish",
+          "kind": "bool",
+          "effect_a": -1.8551552196906156,
+          "effect_b": -3.307226618752524,
+          "joint": 1.8551552196906156,
+          "p_a": 0.0006485840494246284,
+          "p_b": 3.9801519294212575e-06,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "ema_20_50_bullish",
+          "kind": "bool",
+          "effect_a": 1.8551552196906156,
+          "effect_b": 3.307226618752524,
+          "joint": 1.8551552196906156,
+          "p_a": 0.0006485840494246284,
+          "p_b": 3.9801519294212575e-06,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "below_ema_200",
+          "kind": "bool",
+          "effect_a": -1.4724270876353465,
+          "effect_b": -2.489084462842034,
+          "joint": 1.4724270876353465,
+          "p_a": 0.005582333778976861,
+          "p_b": 0.0003762196651897561,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "price_above_ema_200",
+          "kind": "bool",
+          "effect_a": 1.4724270876353465,
+          "effect_b": 2.489084462842034,
+          "joint": 1.4724270876353465,
+          "p_a": 0.005582333778976861,
+          "p_b": 0.0003762196651897561,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "bb_10_20_bandwidth",
+          "kind": "numeric",
+          "effect_a": -3.2066042339569023,
+          "effect_b": -1.2893773525929437,
+          "joint": 1.2893773525929437,
+          "p_a": 1.7470637279453004e-07,
+          "p_b": 5.434859310246384e-06,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "vix_value",
+          "kind": "numeric",
+          "effect_a": -0.5999637566641277,
+          "effect_b": -4.026433149276466,
+          "joint": 0.5999637566641277,
+          "p_a": 0.0029451122815039796,
+          "p_b": 5.925627527376815e-06,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "adx_di_minus",
+          "kind": "numeric",
+          "effect_a": -1.4990448780487804,
+          "effect_b": -0.30700048780487843,
+          "joint": 0.30700048780487843,
+          "p_a": 0.0038826295626226202,
+          "p_b": 0.004478141729778452,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_asset.py": {
+      "representative": "vix_term_backwardation",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "vix_term_backwardation",
+        "vix_term_contango",
+        "vix_vix3m_ratio",
+        "usd_weakening",
+        "sector_weakest_rs",
+        "dxy_20d_pct_change",
+        "gold_silver_ratio",
+        "dxy_proxy_close",
+        "bond_equity_20d_pct_change",
+        "vix_today"
+      ],
+      "rows": [
+        {
+          "key": "vix_term_backwardation",
+          "kind": "bool",
+          "effect_a": -6.083835456533176,
+          "effect_b": -7.599404929473268,
+          "joint": 6.083835456533176,
+          "p_a": 6.773588200388368e-16,
+          "p_b": 1.9561461699263263e-15,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_term_contango",
+          "kind": "bool",
+          "effect_a": 6.083835456533176,
+          "effect_b": 7.599404929473268,
+          "joint": 6.083835456533176,
+          "p_a": 6.773588200388368e-16,
+          "p_b": 1.9561461699263263e-15,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_vix3m_ratio",
+          "kind": "numeric",
+          "effect_a": -4.422382926829268,
+          "effect_b": -6.917687317073171,
+          "joint": 4.422382926829268,
+          "p_a": 3.5803877466774075e-05,
+          "p_b": 8.516037035684661e-09,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "usd_weakening",
+          "kind": "bool",
+          "effect_a": -3.7222390338928726,
+          "effect_b": -3.9518179630223154,
+          "joint": 3.7222390338928726,
+          "p_a": 2.9980562449908636e-06,
+          "p_b": 0.001327486795791359,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "sector_weakest_rs",
+          "kind": "numeric",
+          "effect_a": 2.6590076120756674,
+          "effect_b": 3.24900192191414,
+          "joint": 2.6590076120756674,
+          "p_a": 1.101671720382845e-05,
+          "p_b": 5.614733932396869e-06,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "dxy_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": 3.204390076390376,
+          "effect_b": 1.8860502201280314,
+          "joint": 1.8860502201280314,
+          "p_a": 1.1150578314565261e-05,
+          "p_b": 0.0013490784919303808,
+          "sign": "+",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "gold_silver_ratio",
+          "kind": "numeric",
+          "effect_a": -1.687119907648591,
+          "effect_b": -3.112156497750414,
+          "joint": 1.687119907648591,
+          "p_a": 5.045534408388957e-06,
+          "p_b": 6.065293286099781e-06,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "dxy_proxy_close",
+          "kind": "numeric",
+          "effect_a": -3.465750082164377,
+          "effect_b": -1.407456686274977,
+          "joint": 1.407456686274977,
+          "p_a": 4.124475044105512e-06,
+          "p_b": 0.0004734009081209879,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "bond_equity_20d_pct_change",
+          "kind": "numeric",
+          "effect_a": -1.3569132630654366,
+          "effect_b": -0.8201204216073779,
+          "joint": 0.8201204216073779,
+          "p_a": 0.004169800022433528,
+          "p_b": 0.001791757294425486,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_today",
+          "kind": "numeric",
+          "effect_a": -0.5999637566641277,
+          "effect_b": -4.026433149276466,
+          "joint": 0.5999637566641277,
+          "p_a": 0.0029451122815039796,
+          "p_b": 5.925627527376815e-06,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    },
+    "backtest/signals/cot_positioning.py": {
+      "representative": "cot_copper_commercials_net_pct",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "cot_copper_commercials_net_pct",
+        "cot_rut_commercials_net_pct",
+        "cot_copper_commercials_pctile_3y",
+        "cot_ndx_commercials_net_pct",
+        "cot_dxy_mmoney_pctile_3y"
+      ],
+      "rows": [
+        {
+          "key": "cot_copper_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -1.9877112444800096,
+          "effect_b": -2.5195714560919953,
+          "joint": 1.9877112444800096,
+          "p_a": 1.1168835060449762e-07,
+          "p_b": 2.9159253156514324e-07,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_rut_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": 1.9749954451559593,
+          "effect_b": 2.950153971286924,
+          "joint": 1.9749954451559593,
+          "p_a": 4.578337062200211e-06,
+          "p_b": 9.55555373337364e-10,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_copper_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -1.7298407085561496,
+          "effect_b": -2.604387091217606,
+          "joint": 1.7298407085561496,
+          "p_a": 9.109988409770758e-06,
+          "p_b": 5.085919161273688e-06,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_ndx_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -1.5139425810708897,
+          "effect_b": -2.798525320512821,
+          "joint": 1.5139425810708897,
+          "p_a": 0.0006616140483226348,
+          "p_b": 0.0002626765209917071,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dxy_mmoney_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -1.238792449192706,
+          "effect_b": -1.8190330334431146,
+          "joint": 1.238792449192706,
+          "p_a": 0.0012728706618159208,
+          "p_b": 2.493628609515816e-05,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        }
+      ]
+    },
+    "backtest/signals/multi_timeframe.py": {
+      "representative": "monthly_momentum_6m",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "monthly_momentum_6m",
+        "htf_aligned_bear",
+        "weekly_momentum_4w",
+        "monthly_above_sma_6",
+        "monthly_bias_bear",
+        "monthly_bias_bull",
+        "monthly_momentum_pos",
+        "monthly_above_sma_12",
+        "weekly_above_ema_20",
+        "htf_aligned_bull",
+        "weekly_bias_bear",
+        "weekly_bias_bull"
+      ],
+      "rows": [
+        {
+          "key": "monthly_momentum_6m",
+          "kind": "numeric",
+          "effect_a": 4.243365053763441,
+          "effect_b": 5.218089247311828,
+          "joint": 4.243365053763441,
+          "p_a": 6.28650298045791e-11,
+          "p_b": 3.980472130177685e-11,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "htf_aligned_bear",
+          "kind": "bool",
+          "effect_a": -3.274258314675611,
+          "effect_b": -3.595448929486579,
+          "joint": 3.274258314675611,
+          "p_a": 2.0225994637726795e-08,
+          "p_b": 1.2231513811464411e-05,
+          "sign": "-",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "weekly_momentum_4w",
+          "kind": "numeric",
+          "effect_a": 2.8611331707317076,
+          "effect_b": 4.878596097560976,
+          "joint": 2.8611331707317076,
+          "p_a": 0.000879385430843182,
+          "p_b": 4.1722520381011316e-07,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "monthly_above_sma_6",
+          "kind": "bool",
+          "effect_a": 2.8155758255284495,
+          "effect_b": 3.7116524673305444,
+          "joint": 2.8155758255284495,
+          "p_a": 2.508493536554152e-07,
+          "p_b": 8.243164196439159e-07,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "monthly_bias_bear",
+          "kind": "bool",
+          "effect_a": -2.790674704186567,
+          "effect_b": -3.431678809001334,
+          "joint": 2.790674704186567,
+          "p_a": 8.941935330694064e-07,
+          "p_b": 2.049593740528881e-05,
+          "sign": "-",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "monthly_bias_bull",
+          "kind": "bool",
+          "effect_a": 2.623801438583024,
+          "effect_b": 3.1374099847896852,
+          "joint": 2.623801438583024,
+          "p_a": 1.6990536884147278e-06,
+          "p_b": 2.5575123691716898e-05,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "monthly_momentum_pos",
+          "kind": "bool",
+          "effect_a": 2.5549633415315354,
+          "effect_b": 2.6110042686231187,
+          "joint": 2.5549633415315354,
+          "p_a": 3.263753346230429e-06,
+          "p_b": 0.0006378402039576219,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "monthly_above_sma_12",
+          "kind": "bool",
+          "effect_a": 2.4525031451672725,
+          "effect_b": 2.678862939507455,
+          "joint": 2.4525031451672725,
+          "p_a": 8.733721154994493e-06,
+          "p_b": 0.0004941380738970669,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "weekly_above_ema_20",
+          "kind": "bool",
+          "effect_a": 2.004894672577503,
+          "effect_b": 2.621768502554034,
+          "joint": 2.004894672577503,
+          "p_a": 0.00014871008814463222,
+          "p_b": 0.00015994275375923712,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "htf_aligned_bull",
+          "kind": "bool",
+          "effect_a": 1.7311534524536023,
+          "effect_b": 2.1089386132749404,
+          "joint": 1.7311534524536023,
+          "p_a": 0.001673845179712913,
+          "p_b": 0.003048286269424606,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "weekly_bias_bear",
+          "kind": "bool",
+          "effect_a": -1.7298816190476192,
+          "effect_b": -2.482277571428571,
+          "joint": 1.7298816190476192,
+          "p_a": 0.0011287364742010057,
+          "p_b": 0.0003913082709587607,
+          "sign": "-",
+          "module": "backtest/signals/multi_timeframe.py"
+        },
+        {
+          "key": "weekly_bias_bull",
+          "kind": "bool",
+          "effect_a": 1.6843051157429796,
+          "effect_b": 2.317864608118129,
+          "joint": 1.6843051157429796,
+          "p_a": 0.001512735433003907,
+          "p_b": 0.0007666355309005042,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        }
+      ]
+    },
+    "backtest/signals/ict_producers.py": {
+      "representative": "po3_accum_range_pct",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "po3_accum_range_pct"
+      ],
+      "rows": [
+        {
+          "key": "po3_accum_range_pct",
+          "kind": "numeric",
+          "effect_a": -2.051898536585366,
+          "effect_b": -1.7933624390243899,
+          "joint": 1.7933624390243899,
+          "p_a": 0.001514850811247907,
+          "p_b": 0.0006998317547242879,
+          "sign": "-",
+          "module": "backtest/signals/ict_producers.py"
+        }
+      ]
+    },
+    "backtest/signals/polars_panel.py": {
+      "representative": "rsi_21",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "rsi_21",
+        "rsi_14"
+      ],
+      "rows": [
+        {
+          "key": "rsi_21",
+          "kind": "numeric",
+          "effect_a": 2.376084878048781,
+          "effect_b": 3.777836585365854,
+          "joint": 2.376084878048781,
+          "p_a": 0.00023603281390706483,
+          "p_b": 1.7545920557145452e-07,
+          "sign": "+",
+          "module": "backtest/signals/polars_panel.py"
+        },
+        {
+          "key": "rsi_14",
+          "kind": "numeric",
+          "effect_a": 1.844607967479675,
+          "effect_b": 2.367679256336681,
+          "joint": 1.844607967479675,
+          "p_a": 0.002813428310432488,
+          "p_b": 1.4364958487083158e-05,
+          "sign": "+",
+          "module": "backtest/signals/polars_panel.py"
+        }
+      ]
+    },
+    "backtest/signals/short_interest.py": {
+      "representative": "short_interest_observations",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "short_interest_observations"
+      ],
+      "rows": [
+        {
+          "key": "short_interest_observations",
+          "kind": "numeric",
+          "effect_a": -4.95961157014157,
+          "effect_b": -3.3032963191763187,
+          "joint": 3.3032963191763187,
+          "p_a": 1.5051270853071396e-07,
+          "p_b": 1.2194485887207535e-06,
+          "sign": "-",
+          "module": "backtest/signals/short_interest.py"
+        }
+      ]
+    },
+    "backtest/signals/smc_ict.py": {
+      "representative": "smc_in_premium_zone",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "smc_in_premium_zone",
+        "smc_dealing_range_pct",
+        "smc_in_discount_zone"
+      ],
+      "rows": [
+        {
+          "key": "smc_in_premium_zone",
+          "kind": "bool",
+          "effect_a": 1.8417268299189076,
+          "effect_b": 1.8928689432046824,
+          "joint": 1.8417268299189076,
+          "p_a": 0.0005803568477789426,
+          "p_b": 0.007631129753035073,
+          "sign": "+",
+          "module": "backtest/signals/smc_ict.py"
+        },
+        {
+          "key": "smc_dealing_range_pct",
+          "kind": "numeric",
+          "effect_a": 1.6888619512195122,
+          "effect_b": 1.8256053658536586,
+          "joint": 1.6888619512195122,
+          "p_a": 0.000397731132550978,
+          "p_b": 1.6473149156587349e-06,
+          "sign": "+",
+          "module": "backtest/signals/smc_ict.py"
+        },
+        {
+          "key": "smc_in_discount_zone",
+          "kind": "bool",
+          "effect_a": -1.4429108863431566,
+          "effect_b": -1.9830644532423325,
+          "joint": 1.4429108863431566,
+          "p_a": 0.00673790965206358,
+          "p_b": 0.00416054668062569,
+          "sign": "-",
+          "module": "backtest/signals/smc_ict.py"
+        }
+      ]
+    },
+    "backtest/signals/volume_profile.py": {
+      "representative": "vp_below_value_area",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "vp_below_value_area",
+        "vp_close_above_poc",
+        "vp_close_below_poc",
+        "vp_above_value_area"
+      ],
+      "rows": [
+        {
+          "key": "vp_below_value_area",
+          "kind": "bool",
+          "effect_a": -2.5383341379310345,
+          "effect_b": -3.2671602183908046,
+          "joint": 2.5383341379310345,
+          "p_a": 1.8238538341253568e-05,
+          "p_b": 1.720552595247148e-05,
+          "sign": "-",
+          "module": "backtest/signals/volume_profile.py"
+        },
+        {
+          "key": "vp_close_above_poc",
+          "kind": "bool",
+          "effect_a": 1.7570753747356398,
+          "effect_b": 2.225076622439371,
+          "joint": 1.7570753747356398,
+          "p_a": 0.0009093088022771361,
+          "p_b": 0.0013819070461048913,
+          "sign": "+",
+          "module": "backtest/signals/volume_profile.py"
+        },
+        {
+          "key": "vp_close_below_poc",
+          "kind": "bool",
+          "effect_a": -1.7570753747356398,
+          "effect_b": -2.225076622439371,
+          "joint": 1.7570753747356398,
+          "p_a": 0.0009093088022771361,
+          "p_b": 0.0013819070461048913,
+          "sign": "-",
+          "module": "backtest/signals/volume_profile.py"
+        },
+        {
+          "key": "vp_above_value_area",
+          "kind": "bool",
+          "effect_a": 1.631786286891335,
+          "effect_b": 2.396594790189325,
+          "joint": 1.631786286891335,
+          "p_a": 0.00758521739810004,
+          "p_b": 0.003401742964558459,
+          "sign": "+",
+          "module": "backtest/signals/volume_profile.py"
+        }
+      ]
+    }
+  }
+}
