@@ -1,0 +1,1732 @@
+{
+  "strategy": "camarilla_r4_breakout",
+  "axes": [
+    {
+      "key": "cam_r4_room",
+      "op": "gt",
+      "levels": [
+        0.55,
+        0.75,
+        1.0,
+        1.25
+      ],
+      "group": null
+    },
+    {
+      "key": "vol_ratio_20d",
+      "op": "ge",
+      "levels": [
+        1.0,
+        1.2,
+        1.5,
+        2.0
+      ],
+      "group": null
+    },
+    {
+      "key": "xs_ivol",
+      "op": "ge",
+      "levels": [
+        0.2598,
+        0.2918,
+        0.3301,
+        0.3814,
+        0.4621
+      ],
+      "group": null
+    }
+  ],
+  "direction": "long",
+  "basis": "net",
+  "production_levels": [
+    0.55,
+    1.0,
+    0.2598
+  ],
+  "evidence": {
+    "landed_fires": 2721,
+    "coverage": 1.0,
+    "cube_rows": 42120,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 205,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": true,
+    "direction": "long",
+    "basis": "net",
+    "survival_filter": {
+      "applied": true,
+      "fires_after": 1620,
+      "fires_dropped": 1101
+    }
+  },
+  "reproduction": 1.0,
+  "cells_total": 80,
+  "cells_graded": 80,
+  "trials_searched": 2080,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        1.25,
+        2.0,
+        0.4621
+      ],
+      "is_trades": 34,
+      "is_cube_rows": 884,
+      "best_exit": "r_multiple_2r",
+      "is_sharpe": 1.556,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.176,
+        "months": 20,
+        "n": 34,
+        "n_without_top_month": 28,
+        "is_sharpe_without_top_month": null
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        2.0,
+        0.4621
+      ],
+      "is_trades": 48,
+      "is_cube_rows": 1248,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.346,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.188,
+        "months": 22,
+        "n": 48,
+        "n_without_top_month": 39,
+        "is_sharpe_without_top_month": 1.401
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        2.0,
+        0.4621
+      ],
+      "is_trades": 40,
+      "is_cube_rows": 1040,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.317,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.2,
+        "months": 21,
+        "n": 40,
+        "n_without_top_month": 32,
+        "is_sharpe_without_top_month": 1.426
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        2.0,
+        0.3814
+      ],
+      "is_trades": 57,
+      "is_cube_rows": 1482,
+      "best_exit": "r_multiple_2r",
+      "is_sharpe": 1.305,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.193,
+        "months": 25,
+        "n": 57,
+        "n_without_top_month": 46,
+        "is_sharpe_without_top_month": 1.505
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        2.0,
+        0.4621
+      ],
+      "is_trades": 44,
+      "is_cube_rows": 1144,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.289,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.205,
+        "months": 21,
+        "n": 44,
+        "n_without_top_month": 35,
+        "is_sharpe_without_top_month": 1.337
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        2.0,
+        0.3301
+      ],
+      "is_trades": 75,
+      "is_cube_rows": 1950,
+      "best_exit": "r_multiple_2r",
+      "is_sharpe": 1.204,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.213,
+        "months": 27,
+        "n": 75,
+        "n_without_top_month": 59,
+        "is_sharpe_without_top_month": 1.424
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        2.0,
+        0.3814
+      ],
+      "is_trades": 65,
+      "is_cube_rows": 1690,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.147,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.215,
+        "months": 26,
+        "n": 65,
+        "n_without_top_month": 51,
+        "is_sharpe_without_top_month": 0.852
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.5,
+        0.3814
+      ],
+      "is_trades": 114,
+      "is_cube_rows": 2964,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.146,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.272,
+        "months": 31,
+        "n": 114,
+        "n_without_top_month": 83,
+        "is_sharpe_without_top_month": 0.677
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.5,
+        0.4621
+      ],
+      "is_trades": 83,
+      "is_cube_rows": 2158,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.132,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.241,
+        "months": 26,
+        "n": 83,
+        "n_without_top_month": 63,
+        "is_sharpe_without_top_month": 1.014
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.5,
+        0.4621
+      ],
+      "is_trades": 113,
+      "is_cube_rows": 2938,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.118,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.23,
+        "months": 30,
+        "n": 113,
+        "n_without_top_month": 87,
+        "is_sharpe_without_top_month": 1.003
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.5,
+        0.3814
+      ],
+      "is_trades": 133,
+      "is_cube_rows": 3458,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.116,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.293,
+        "months": 32,
+        "n": 133,
+        "n_without_top_month": 94,
+        "is_sharpe_without_top_month": 0.749
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.5,
+        0.4621
+      ],
+      "is_trades": 69,
+      "is_cube_rows": 1794,
+      "best_exit": "r_multiple_2r",
+      "is_sharpe": 1.115,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.217,
+        "months": 25,
+        "n": 69,
+        "n_without_top_month": 54,
+        "is_sharpe_without_top_month": 1.272
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.5,
+        0.4621
+      ],
+      "is_trades": 97,
+      "is_cube_rows": 2522,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.102,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.237,
+        "months": 28,
+        "n": 97,
+        "n_without_top_month": 74,
+        "is_sharpe_without_top_month": 0.968
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.5,
+        0.3814
+      ],
+      "is_trades": 162,
+      "is_cube_rows": 4212,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.098,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.315,
+        "months": 33,
+        "n": 162,
+        "n_without_top_month": 111,
+        "is_sharpe_without_top_month": 0.673
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.5,
+        0.3301
+      ],
+      "is_trades": 147,
+      "is_cube_rows": 3822,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.096,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 32,
+        "n": 147,
+        "n_without_top_month": 103,
+        "is_sharpe_without_top_month": 0.633
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.5,
+        0.2918
+      ],
+      "is_trades": 191,
+      "is_cube_rows": 4966,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.094,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.33,
+        "months": 33,
+        "n": 191,
+        "n_without_top_month": 128,
+        "is_sharpe_without_top_month": 0.603
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        2.0,
+        0.2918
+      ],
+      "is_trades": 92,
+      "is_cube_rows": 2392,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.087,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.261,
+        "months": 28,
+        "n": 92,
+        "n_without_top_month": 68,
+        "is_sharpe_without_top_month": 0.673
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        2.0,
+        0.3301
+      ],
+      "is_trades": 91,
+      "is_cube_rows": 2366,
+      "best_exit": "atr_trail_vix_conditional",
+      "is_sharpe": 1.08,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.275,
+        "months": 29,
+        "n": 91,
+        "n_without_top_month": 66,
+        "is_sharpe_without_top_month": 0.081
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        2.0,
+        0.3814
+      ],
+      "is_trades": 87,
+      "is_cube_rows": 2262,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.076,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.241,
+        "months": 28,
+        "n": 87,
+        "n_without_top_month": 66,
+        "is_sharpe_without_top_month": 1.013
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.5,
+        0.3301
+      ],
+      "is_trades": 182,
+      "is_cube_rows": 4732,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.075,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.335,
+        "months": 34,
+        "n": 182,
+        "n_without_top_month": 121,
+        "is_sharpe_without_top_month": 0.701
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        2.0,
+        0.3814
+      ],
+      "is_trades": 74,
+      "is_cube_rows": 1924,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.074,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.216,
+        "months": 27,
+        "n": 74,
+        "n_without_top_month": 58,
+        "is_sharpe_without_top_month": 0.748
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.2,
+        0.4621
+      ],
+      "is_trades": 122,
+      "is_cube_rows": 3172,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.057,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.221,
+        "months": 34,
+        "n": 122,
+        "n_without_top_month": 95,
+        "is_sharpe_without_top_month": 0.941
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.2,
+        0.4621
+      ],
+      "is_trades": 93,
+      "is_cube_rows": 2418,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.042,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.194,
+        "months": 31,
+        "n": 93,
+        "n_without_top_month": 75,
+        "is_sharpe_without_top_month": 0.696
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.5,
+        0.3301
+      ],
+      "is_trades": 221,
+      "is_cube_rows": 5746,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.039,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.335,
+        "months": 35,
+        "n": 221,
+        "n_without_top_month": 147,
+        "is_sharpe_without_top_month": 0.598
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.5,
+        0.2918
+      ],
+      "is_trades": 237,
+      "is_cube_rows": 6162,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.035,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.359,
+        "months": 35,
+        "n": 237,
+        "n_without_top_month": 152,
+        "is_sharpe_without_top_month": 0.636
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.5,
+        0.3814
+      ],
+      "is_trades": 197,
+      "is_cube_rows": 5122,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.027,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.315,
+        "months": 35,
+        "n": 197,
+        "n_without_top_month": 135,
+        "is_sharpe_without_top_month": 0.638
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.2,
+        0.4621
+      ],
+      "is_trades": 148,
+      "is_cube_rows": 3848,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.025,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.23,
+        "months": 37,
+        "n": 148,
+        "n_without_top_month": 114,
+        "is_sharpe_without_top_month": 0.885
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        2.0,
+        0.2918
+      ],
+      "is_trades": 110,
+      "is_cube_rows": 2860,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 1.022,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.309,
+        "months": 30,
+        "n": 110,
+        "n_without_top_month": 76,
+        "is_sharpe_without_top_month": 0.678
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.0,
+        0.4621
+      ],
+      "is_trades": 159,
+      "is_cube_rows": 4134,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.015,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.182,
+        "months": 34,
+        "n": 159,
+        "n_without_top_month": 130,
+        "is_sharpe_without_top_month": 0.881
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.2,
+        0.4621
+      ],
+      "is_trades": 181,
+      "is_cube_rows": 4706,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 1.003,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.215,
+        "months": 37,
+        "n": 181,
+        "n_without_top_month": 142,
+        "is_sharpe_without_top_month": 0.868
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.5,
+        0.2918
+      ],
+      "is_trades": 295,
+      "is_cube_rows": 7670,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.996,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.369,
+        "months": 35,
+        "n": 295,
+        "n_without_top_month": 186,
+        "is_sharpe_without_top_month": 0.548
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        2.0,
+        0.3301
+      ],
+      "is_trades": 121,
+      "is_cube_rows": 3146,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.995,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.264,
+        "months": 31,
+        "n": 121,
+        "n_without_top_month": 89,
+        "is_sharpe_without_top_month": 0.883
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        2.0,
+        0.2598
+      ],
+      "is_trades": 107,
+      "is_cube_rows": 2782,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.995,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.262,
+        "months": 30,
+        "n": 107,
+        "n_without_top_month": 79,
+        "is_sharpe_without_top_month": 0.623
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        2.0,
+        0.3301
+      ],
+      "is_trades": 105,
+      "is_cube_rows": 2730,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.993,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.257,
+        "months": 30,
+        "n": 105,
+        "n_without_top_month": 78,
+        "is_sharpe_without_top_month": 0.851
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.5,
+        0.3301
+      ],
+      "is_trades": 270,
+      "is_cube_rows": 7020,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.98,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.326,
+        "months": 37,
+        "n": 270,
+        "n_without_top_month": 182,
+        "is_sharpe_without_top_month": 0.58
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.0,
+        0.4621
+      ],
+      "is_trades": 118,
+      "is_cube_rows": 3068,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.977,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.169,
+        "months": 31,
+        "n": 118,
+        "n_without_top_month": 98,
+        "is_sharpe_without_top_month": 0.626
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.2,
+        0.3814
+      ],
+      "is_trades": 160,
+      "is_cube_rows": 4160,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.971,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.237,
+        "months": 34,
+        "n": 160,
+        "n_without_top_month": 122,
+        "is_sharpe_without_top_month": 0.623
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.5,
+        0.2598
+      ],
+      "is_trades": 233,
+      "is_cube_rows": 6058,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.965,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.322,
+        "months": 34,
+        "n": 233,
+        "n_without_top_month": 158,
+        "is_sharpe_without_top_month": 0.461
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.2,
+        0.3814
+      ],
+      "is_trades": 211,
+      "is_cube_rows": 5486,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.964,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.261,
+        "months": 36,
+        "n": 211,
+        "n_without_top_month": 156,
+        "is_sharpe_without_top_month": 0.754
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        2.0,
+        0.2598
+      ],
+      "is_trades": 129,
+      "is_cube_rows": 3354,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.96,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.318,
+        "months": 32,
+        "n": 129,
+        "n_without_top_month": 88,
+        "is_sharpe_without_top_month": 0.635
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.5,
+        0.2598
+      ],
+      "is_trades": 294,
+      "is_cube_rows": 7644,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.951,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.367,
+        "months": 36,
+        "n": 294,
+        "n_without_top_month": 186,
+        "is_sharpe_without_top_month": 0.524
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.2,
+        0.3814
+      ],
+      "is_trades": 269,
+      "is_cube_rows": 6994,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.95,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.271,
+        "months": 37,
+        "n": 269,
+        "n_without_top_month": 196,
+        "is_sharpe_without_top_month": 0.706
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.0,
+        0.4621
+      ],
+      "is_trades": 209,
+      "is_cube_rows": 5434,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.939,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.177,
+        "months": 37,
+        "n": 209,
+        "n_without_top_month": 172,
+        "is_sharpe_without_top_month": 0.78
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.5,
+        0.2918
+      ],
+      "is_trades": 353,
+      "is_cube_rows": 9178,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.938,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.354,
+        "months": 37,
+        "n": 353,
+        "n_without_top_month": 228,
+        "is_sharpe_without_top_month": 0.505
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.0,
+        0.4621
+      ],
+      "is_trades": 258,
+      "is_cube_rows": 6708,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.936,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.167,
+        "months": 37,
+        "n": 258,
+        "n_without_top_month": 215,
+        "is_sharpe_without_top_month": 0.801
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        2.0,
+        0.2918
+      ],
+      "is_trades": 131,
+      "is_cube_rows": 3406,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.93,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.305,
+        "months": 31,
+        "n": 131,
+        "n_without_top_month": 91,
+        "is_sharpe_without_top_month": 0.563
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.5,
+        0.2598
+      ],
+      "is_trades": 371,
+      "is_cube_rows": 9646,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.925,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.383,
+        "months": 36,
+        "n": 371,
+        "n_without_top_month": 229,
+        "is_sharpe_without_top_month": 0.455
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.2,
+        0.3814
+      ],
+      "is_trades": 333,
+      "is_cube_rows": 8658,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.923,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.27,
+        "months": 37,
+        "n": 333,
+        "n_without_top_month": 243,
+        "is_sharpe_without_top_month": 0.704
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.2,
+        0.3301
+      ],
+      "is_trades": 219,
+      "is_cube_rows": 5694,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.92,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.251,
+        "months": 36,
+        "n": 219,
+        "n_without_top_month": 164,
+        "is_sharpe_without_top_month": 0.473
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        2.0,
+        0.2918
+      ],
+      "is_trades": 152,
+      "is_cube_rows": 3952,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.916,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.309,
+        "months": 32,
+        "n": 152,
+        "n_without_top_month": 105,
+        "is_sharpe_without_top_month": 0.811
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.0,
+        0.3814
+      ],
+      "is_trades": 222,
+      "is_cube_rows": 5772,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.916,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.185,
+        "months": 35,
+        "n": 222,
+        "n_without_top_month": 181,
+        "is_sharpe_without_top_month": 0.602
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.0,
+        0.3814
+      ],
+      "is_trades": 293,
+      "is_cube_rows": 7618,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.912,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.208,
+        "months": 37,
+        "n": 293,
+        "n_without_top_month": 232,
+        "is_sharpe_without_top_month": 0.708
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.2,
+        0.2918
+      ],
+      "is_trades": 285,
+      "is_cube_rows": 7410,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.908,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.281,
+        "months": 36,
+        "n": 285,
+        "n_without_top_month": 205,
+        "is_sharpe_without_top_month": 0.419
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.2,
+        0.3301
+      ],
+      "is_trades": 296,
+      "is_cube_rows": 7696,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.902,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.277,
+        "months": 36,
+        "n": 296,
+        "n_without_top_month": 214,
+        "is_sharpe_without_top_month": 0.66
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.2,
+        0.3301
+      ],
+      "is_trades": 385,
+      "is_cube_rows": 10010,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.882,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.275,
+        "months": 37,
+        "n": 385,
+        "n_without_top_month": 279,
+        "is_sharpe_without_top_month": 0.604
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.0,
+        0.3814
+      ],
+      "is_trades": 399,
+      "is_cube_rows": 10374,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.879,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.203,
+        "months": 37,
+        "n": 399,
+        "n_without_top_month": 318,
+        "is_sharpe_without_top_month": 0.642
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.2,
+        0.2918
+      ],
+      "is_trades": 385,
+      "is_cube_rows": 10010,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.877,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.301,
+        "months": 36,
+        "n": 385,
+        "n_without_top_month": 269,
+        "is_sharpe_without_top_month": 0.621
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        2.0,
+        0.2598
+      ],
+      "is_trades": 154,
+      "is_cube_rows": 4004,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.872,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.312,
+        "months": 33,
+        "n": 154,
+        "n_without_top_month": 106,
+        "is_sharpe_without_top_month": 0.536
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.0,
+        0.3814
+      ],
+      "is_trades": 494,
+      "is_cube_rows": 12844,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.868,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.2,
+        "months": 37,
+        "n": 494,
+        "n_without_top_month": 395,
+        "is_sharpe_without_top_month": 0.665
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.2,
+        0.3301
+      ],
+      "is_trades": 477,
+      "is_cube_rows": 12402,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.865,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.273,
+        "months": 37,
+        "n": 477,
+        "n_without_top_month": 347,
+        "is_sharpe_without_top_month": 0.609
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.5,
+        0.2598
+      ],
+      "is_trades": 443,
+      "is_cube_rows": 11518,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.864,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.366,
+        "months": 37,
+        "n": 443,
+        "n_without_top_month": 281,
+        "is_sharpe_without_top_month": 0.407
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        2.0,
+        0.2598
+      ],
+      "is_trades": 179,
+      "is_cube_rows": 4654,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.853,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.318,
+        "months": 34,
+        "n": 179,
+        "n_without_top_month": 122,
+        "is_sharpe_without_top_month": 0.747
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.0,
+        0.3301
+      ],
+      "is_trades": 310,
+      "is_cube_rows": 8060,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.853,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.187,
+        "months": 36,
+        "n": 310,
+        "n_without_top_month": 252,
+        "is_sharpe_without_top_month": 0.534
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.2,
+        0.2918
+      ],
+      "is_trades": 510,
+      "is_cube_rows": 13260,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.839,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.302,
+        "months": 37,
+        "n": 510,
+        "n_without_top_month": 356,
+        "is_sharpe_without_top_month": 0.567
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.0,
+        0.3301
+      ],
+      "is_trades": 421,
+      "is_cube_rows": 10946,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.838,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.211,
+        "months": 37,
+        "n": 421,
+        "n_without_top_month": 332,
+        "is_sharpe_without_top_month": 0.606
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.0,
+        0.2918
+      ],
+      "is_trades": 403,
+      "is_cube_rows": 10478,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.834,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.206,
+        "months": 36,
+        "n": 403,
+        "n_without_top_month": 320,
+        "is_sharpe_without_top_month": 0.489
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.2,
+        0.2598
+      ],
+      "is_trades": 362,
+      "is_cube_rows": 9412,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.828,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.271,
+        "months": 37,
+        "n": 362,
+        "n_without_top_month": 264,
+        "is_sharpe_without_top_month": 0.48
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.2,
+        0.2918
+      ],
+      "is_trades": 622,
+      "is_cube_rows": 16172,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.825,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.289,
+        "months": 37,
+        "n": 622,
+        "n_without_top_month": 442,
+        "is_sharpe_without_top_month": 0.57
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.2,
+        0.2598
+      ],
+      "is_trades": 488,
+      "is_cube_rows": 12688,
+      "best_exit": "hybrid_50pct_target",
+      "is_sharpe": 0.823,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.305,
+        "months": 37,
+        "n": 488,
+        "n_without_top_month": 339,
+        "is_sharpe_without_top_month": 0.428
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.0,
+        0.2918
+      ],
+      "is_trades": 551,
+      "is_cube_rows": 14326,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.812,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.227,
+        "months": 37,
+        "n": 551,
+        "n_without_top_month": 426,
+        "is_sharpe_without_top_month": 0.567
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.0,
+        0.3301
+      ],
+      "is_trades": 572,
+      "is_cube_rows": 14872,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.811,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.201,
+        "months": 37,
+        "n": 572,
+        "n_without_top_month": 457,
+        "is_sharpe_without_top_month": 0.551
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.0,
+        0.3301
+      ],
+      "is_trades": 717,
+      "is_cube_rows": 18642,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.797,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.197,
+        "months": 37,
+        "n": 717,
+        "n_without_top_month": 576,
+        "is_sharpe_without_top_month": 0.567
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.2,
+        0.2598
+      ],
+      "is_trades": 655,
+      "is_cube_rows": 17030,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.78,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.307,
+        "months": 37,
+        "n": 655,
+        "n_without_top_month": 454,
+        "is_sharpe_without_top_month": 0.512
+      }
+    },
+    {
+      "levels": [
+        1.0,
+        1.0,
+        0.2598
+      ],
+      "is_trades": 683,
+      "is_cube_rows": 17758,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.774,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.237,
+        "months": 37,
+        "n": 683,
+        "n_without_top_month": 521,
+        "is_sharpe_without_top_month": 0.541
+      }
+    },
+    {
+      "levels": [
+        1.25,
+        1.0,
+        0.2598
+      ],
+      "is_trades": 496,
+      "is_cube_rows": 12896,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.772,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.206,
+        "months": 37,
+        "n": 496,
+        "n_without_top_month": 394,
+        "is_sharpe_without_top_month": 0.465
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.0,
+        0.2918
+      ],
+      "is_trades": 766,
+      "is_cube_rows": 19916,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.771,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.218,
+        "months": 37,
+        "n": 766,
+        "n_without_top_month": 599,
+        "is_sharpe_without_top_month": 0.512
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.2,
+        0.2598
+      ],
+      "is_trades": 795,
+      "is_cube_rows": 20670,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.765,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.293,
+        "months": 37,
+        "n": 795,
+        "n_without_top_month": 562,
+        "is_sharpe_without_top_month": 0.511
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.0,
+        0.2918
+      ],
+      "is_trades": 950,
+      "is_cube_rows": 24700,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.757,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.208,
+        "months": 37,
+        "n": 950,
+        "n_without_top_month": 752,
+        "is_sharpe_without_top_month": 0.528
+      }
+    },
+    {
+      "levels": [
+        0.75,
+        1.0,
+        0.2598
+      ],
+      "is_trades": 958,
+      "is_cube_rows": 24908,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.739,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.228,
+        "months": 37,
+        "n": 958,
+        "n_without_top_month": 740,
+        "is_sharpe_without_top_month": 0.489
+      }
+    },
+    {
+      "levels": [
+        0.55,
+        1.0,
+        0.2598
+      ],
+      "is_trades": 1194,
+      "is_cube_rows": 31044,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.723,
+      "exits_evaluated": 26,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.216,
+        "months": 37,
+        "n": 1194,
+        "n_without_top_month": 936,
+        "is_sharpe_without_top_month": 0.496
+      }
+    }
+  ],
+  "preregistration_candidate": null,
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above",
+  "derive": {
+    "path": "scripts\\camarilla_derived.py",
+    "sha256": "4389d87e5712b502bf0ef93fbc133dc0a45e32b8b7af7db3a27e4e197df33fa1"
+  },
+  "permutation_null": {
+    "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+    "n_perms": 100,
+    "seed": 13,
+    "null_none_count": 0,
+    "null_max_is_sharpe_quantiles": {
+      "0.5": 1.199,
+      "0.9": 2.044,
+      "0.95": 2.193,
+      "0.99": 2.49
+    },
+    "observed_best_is_sharpe": 1.556,
+    "p_value_best": 0.2574
+  },
+  "preregistration_refusal": "the search's own permutation null prices the best cell at p 0.2574 > 0.2 (the S6-B3206 noise bar) - the surface is noise, nothing to read on the holdout",
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 80,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 80,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 2.28,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis",
+    "reconciles": true,
+    "permutation_null": {
+      "provenance": "SYNTHETIC - rng permutations of the magnitude block across fires; prices the search, never performance",
+      "n_perms": 100,
+      "seed": 13,
+      "null_none_count": 0,
+      "null_max_is_sharpe_quantiles": {
+        "0.5": 1.199,
+        "0.9": 2.044,
+        "0.95": 2.193,
+        "0.99": 2.49
+      },
+      "observed_best_is_sharpe": 1.556,
+      "p_value_best": 0.2574
+    },
+    "significance_basis": "permutation_null",
+    "trials_searched": 2080
+  },
+  "band_ruling_verbatim": "T3-APPROVED 2026-10-26 (owner verbatim 'Approve all recs fable mode' on the r113 close's 'the offline tighter levels (distance 0.75/1.0/1.25, volume 1.2/1.5/2.0, four xs_ivol floors)'; S6-B3304)",
+  "status_stamp_at_run": "fcfe3b6e7"
+}

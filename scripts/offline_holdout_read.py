@@ -18,6 +18,13 @@ holdout that is already spent; the artifact records the first run's identity so
 a re-run cannot masquerade as a fresh test (it REFUSES if the out file exists,
 unless --force-rerun, which labels the artifact RERUN_OF_SPENT_HOLDOUT).
 
+THE BASIS IS THE STEP-1 ARTIFACT'S (S6-B3314, owner ruling 2026-10-27, option
+(a)): the read scores on the P&L basis the sweep RECORDED - net through
+roster_core.net_pnl when the sweep says net. A sweep written before S6-B3314
+records none and graded raw cube pnl, so an absent field reads 'gross' and the
+artifact says where the basis came from (basis_source), as the breadth read
+does (S6-B3139ag).
+
 Refusals inherited from the sweep (fail closed, L642): reproduction of the
 landed fire set at production levels, signal coverage, join completeness. Plus
 one of its own: the axes and production levels passed here must EQUAL the
@@ -51,10 +58,17 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
     # the fires, and the derive module whose keys its axes read - never from
     # a flag or a default; a derive module that moved since the
     # pre-registration is a different experiment and refuses.
+    # S6-B3314: the basis is part of the subject - the sweep RECORDED it, and
+    # a sweep from before S6-B3314 scored raw cube pnl, so absent reads gross
+    basis = rec1.get("basis") or "gross"
+    basis_source = ("the Step-1 artifact's recorded basis" if rec1.get("basis")
+                    else "absent from the Step-1 artifact - read as gross, the "
+                         "raw cube pnl every depth sweep graded before S6-B3314")
     subject = {"direction": rec1.get("direction"),
                "survival": bool(((rec1.get("evidence") or {}).get("survival_filter")
                                  or {}).get("applied")),
                "derive": rec1.get("derive"),
+               "basis": basis,
                "coverage_artifacts": [str(c) for c in coverage_artifacts]}
     derive_fn = None
     if subject["derive"]:
@@ -141,7 +155,8 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
     if _closed:
         raise SystemExit("REFUSED (S6-B3139g): " + _closed)
     m, ev = ols.load(strategy, axes, direction=subject["direction"],
-                     survival=subject["survival"], derive=derive_fn)
+                     survival=subject["survival"], derive=derive_fn,
+                     basis=basis)
     if ev["coverage"] < coverage_min:
         raise SystemExit(f"REFUSED: coverage {ev['coverage']:.4f} < {coverage_min}")
     if ev["unmatched_join_rows"]:
@@ -194,6 +209,7 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
                       "pre-registered cell carries admission",
             "window": {"holdout": [str(rc.HO_START), str(rc.HO_END)]},
             "sweep_artifact": str(sweep_artifact),
+            "basis": basis, "basis_source": basis_source,     # S6-B3314
             "subject": subject, "band_coverage": band_coverage,
             "preregistered": prereg, "evidence": ev, "reproduction": repro,
             "trials": len(rows), "graded": len(graded),
@@ -215,7 +231,12 @@ def render_table(rec: dict, top: int = 20) -> str:
     head = (f"# STEP-2 HOLDOUT READ - {rec['strategy']}\n\n"
             f"{rec['design']}. Window {rec['window']['holdout'][0]} .. "
             f"{rec['window']['holdout'][1]}; {rec['trials']} (cell, exit) lines, "
-            f"{rec['graded']} graded.\n\n"
+            f"{rec['graded']} graded"
+            # S6-B3314: the basis the read records - a pre-S6-B3314 read
+            # records none, and its render stays byte-identical to the
+            # committed table beside it (test_b2644's writer-reader contract)
+            + (f"; basis {rec['basis']} ({rec['basis_source']})" if rec.get("basis") else "")
+            + ".\n\n"
             f"**ADMISSION-BEARING CELL VERDICT: {rec['verdict']}**\n\n")
     a = rec["admission"]
     g = a.get("gates", {})
@@ -271,7 +292,8 @@ def main() -> int:
     out.with_suffix(".md").write_text(render_table(rec), encoding="utf-8")
 
     adm = rec["admission"]
-    print(f"{rec['strategy']} STEP 2: {rec['verdict']}")
+    print(f"{rec['strategy']} STEP 2: {rec['verdict']} (basis {rec['basis']}: "
+          f"{rec['basis_source']})")
     print(f"  pre-registered {adm['levels']} exit {adm['exit']}: holdout sharpe "
           f"{adm.get('holdout_sharpe')} on n={adm['holdout_n']} "
           f"(full {adm['full_n']}); PF {adm.get('profit_factor')} sortino "

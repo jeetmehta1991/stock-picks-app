@@ -38,6 +38,13 @@ WHAT THE ARTIFACT IS FOR. The written JSON is the pre-registration record: it
 names the trials count, the selected cell and the axis map BEFORE any holdout
 code runs. A ranked list produced after a holdout read is not evidence.
 
+THE P&L BASIS IS STATED (S6-B3314, owner ruling 2026-10-27 'Approve all recs
+fable mode', option (a)). --basis is REQUIRED and recorded on the artifact,
+as on the breadth grid (S6-B3139ag): 'net' scores through roster_core.net_pnl,
+the roster's transform; 'gross' scores the raw cube pnl that every depth
+artifact before S6-B3314 graded by omission. New depth campaigns run net. The
+holdout read grades on the basis the Step-1 artifact recorded.
+
 Usage:
   python scripts/offline_level_sweep.py --strategy pead_long_high_yoy_growth_only \
       --axes "days_since_last_earnings:le:20,40,60" \
@@ -59,6 +66,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import roster_core as rc  # noqa: E402
+# S6-B3314: ONE basis vocabulary - the breadth grid's (S6-B3139ag)
+from breadth_step1_grid import BASES  # noqa: E402
 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
@@ -210,14 +219,24 @@ def load_derive(path) -> tuple:
 
 
 def load(strategy: str, axes: list[dict], direction: str | None = None,
-         survival: bool = False, derive=None) -> tuple[pd.DataFrame, dict]:
+         survival: bool = False, derive=None,
+         basis: str = "gross") -> tuple[pd.DataFrame, dict]:
     """Merged cube + magnitudes, plus the refusal evidence. Raises on refusal.
 
     S6-B3290: `direction` keeps one leg of a dual strategy (the per-side
     bands of S6-B3270 grade one side's fires); `survival` applies the T1
     filter (build_table_a.surviving_fires on the status view's survives_pct)
     BEFORE anything is graded, so reproduction is measured against the
-    SURVIVING subset as runbook T4 requires. Both read the files in chunks."""
+    SURVIVING subset as runbook T4 requires. Both read the files in chunks.
+
+    S6-B3314: `basis` decides what pnl_pct the cube rows carry - 'net'
+    applies roster_core.net_pnl (winsorize, then the COST_BPS round trip),
+    the transform the breadth loader applies; 'gross' keeps the raw cube pnl.
+    The default keeps the pre-S6-B3314 callers' behaviour; the CLI requires
+    the flag and the holdout read passes the basis its Step-1 artifact
+    recorded. Anything else refuses."""
+    if basis not in BASES:
+        raise SystemExit(f"REFUSED: basis {basis!r} not in {BASES} (S6-B3314)")
     keys = [ax["key"] for ax in axes]
     if len(set(keys)) != len(keys):
         raise SystemExit(f"REFUSED: an axis key repeats ({keys}) - one column per "
@@ -256,6 +275,8 @@ def load(strategy: str, axes: list[dict], direction: str | None = None,
         # fires that survived and still found no row
         g = g.merge(t[["ticker", "entry_date"]].drop_duplicates(),
                     on=["ticker", "entry_date"], how="inner")
+    if basis == "net":
+        g["pnl_pct"] = rc.net_pnl(g["pnl_pct"])      # S6-B3314
     cols = ["ticker", "entry_date"] + keys
     m = g.merge(t[cols].drop_duplicates(["ticker", "entry_date"]),
                 on=["ticker", "entry_date"], how="left")
@@ -272,7 +293,7 @@ def load(strategy: str, axes: list[dict], direction: str | None = None,
           "max_fires_per_day": int(per_day.max()),
           "candidate_cap": CANDIDATE_CAP,
           "cap_bypassed_evidence": bool(per_day.max() > CANDIDATE_CAP),
-          "direction": direction,
+          "direction": direction, "basis": basis,
           "survival_filter": {"applied": bool(survival), "fires_after": int(len(t)),
                               "fires_dropped": survival_dropped}}
     m["entry_date"] = pd.to_datetime(m["entry_date"], errors="coerce").dt.date
@@ -330,9 +351,9 @@ def cell_family_rows(cells) -> list:
 def sweep(strategy: str, axes: list[dict], production: tuple,
           coverage_min: float, repro_min: float, min_n: int,
           direction: str | None = None, survival: bool = False,
-          derive=None) -> dict:
+          derive=None, basis: str = "gross") -> dict:
     m, ev = load(strategy, axes, direction=direction, survival=survival,
-                 derive=derive)
+                 derive=derive, basis=basis)
     if ev["coverage"] < coverage_min:
         raise SystemExit(f"REFUSED: signal coverage {ev['coverage']:.4f} < "
                          f"{coverage_min} - un-levellable rows would be dropped silently")
@@ -396,6 +417,7 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
             "axes": [{"key": a["key"], "op": a["op"], "levels": a["levels"],
                       "group": a.get("group")} for a in axes],
             "direction": direction,
+            "basis": basis,                         # S6-B3314
             "production_levels": list(production),
             "evidence": ev, "reproduction": repro,
             "cells_total": len(cells), "cells_graded": len(graded),
@@ -409,13 +431,15 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
 
 
 def attach_null(rec, strategy, axes, min_n, null_perms, null_seed,
-                direction=None, survival=False, derive=None):
+                direction=None, survival=False, derive=None, basis="gross"):
     """Compute the permutation null for a completed sweep record, in place.
     Reloads the frame (sweep does not retain it) - the same refusals apply
-    upstream, so a record that graded is a record the null can price."""
+    upstream, so a record that graded is a record the null can price. The
+    null scores on the sweep's basis (S6-B3314), or it would price a
+    different search than the one it is set against."""
     import numpy as np
     m, _ = load(strategy, axes, direction=direction, survival=survival,
-                derive=derive)
+                derive=derive, basis=basis)
     IS = rc.in_sample(m)
     maxima = permutation_null(IS, axes, min_n, null_perms, null_seed)
     valid = [x for x in maxima if x is not None]
@@ -485,7 +509,11 @@ def render_table(rec: dict) -> str:
             f"{rec['cells_graded']} of {rec['cells_total']} cells, "
             f"{rec['trials_searched']} trials (cells x exits); window "
             f"{rec['window']['is'][0]} .. {rec['window']['is'][1]}; "
-            f"holdout NOT read by this artifact.\n\n")
+            # S6-B3314: the basis the record carries - a pre-S6-B3314
+            # record carries none, and its render stays byte-identical to the
+            # committed table beside it (test_b2643's writer-reader contract)
+            + (f"basis {rec['basis']}; " if rec.get("basis") else "")
+            + "holdout NOT read by this artifact.\n\n")
     if rec.get("preregistration_refusal"):
         head += (f"**NO PREREGISTRATION CANDIDATE (S6-B3293): "
                  f"{rec['preregistration_refusal']}**\n\n")
@@ -524,6 +552,11 @@ def main() -> int:
                          "measured on the surviving subset (runbook T4)")
     ap.add_argument("--production", required=True,
                     help="comma-separated production level per axis, in order")
+    ap.add_argument("--basis", required=True, choices=BASES,
+                    help="S6-B3314: the pnl basis, stated on every run and "
+                         "recorded on the artifact - 'net' is the roster basis "
+                         "(roster_core.net_pnl) and the one new depth campaigns "
+                         "run; 'gross' is the raw cube pnl")
     ap.add_argument("--out", required=True)
     ap.add_argument("--band-ruling", required=True,
                     help="the owner's T3 band words, verbatim (S6-B2848a; "
@@ -550,11 +583,13 @@ def main() -> int:
                          f"{len(axes)} axes")
     derive_fn, derive_rec = (load_derive(a.derive) if a.derive else (None, None))
     rec = sweep(a.strategy, axes, production, a.coverage_min, a.repro_min, a.min_n,
-                direction=a.direction, survival=a.survival, derive=derive_fn)
+                direction=a.direction, survival=a.survival, derive=derive_fn,
+                basis=a.basis)
     rec["derive"] = derive_rec
     if a.null_perms > 0:
         attach_null(rec, a.strategy, axes, a.min_n, a.null_perms, a.null_seed,
-                    direction=a.direction, survival=a.survival, derive=derive_fn)
+                    direction=a.direction, survival=a.survival, derive=derive_fn,
+                    basis=a.basis)
         pn = rec["permutation_null"]
         print(f"permutation null ({pn['n_perms']} perms): observed best "
               f"{pn['observed_best_is_sharpe']} | null q95 "
@@ -581,7 +616,8 @@ def main() -> int:
 
     print(f"{rec['strategy']}: reproduction {rec['reproduction']:.4f} | coverage "
           f"{rec['evidence']['coverage']:.4f} | {rec['cells_graded']} of "
-          f"{rec['cells_total']} cells graded | {rec['trials_searched']} trials")
+          f"{rec['cells_total']} cells graded | {rec['trials_searched']} trials "
+          f"| basis {rec['basis']}")
     for c in rec["ranked"][:5]:
         print(f"   {c['levels']}  IS sharpe {c['is_sharpe']:.3f}  "
               f"exit {c['best_exit']}  n={c['is_trades']}")

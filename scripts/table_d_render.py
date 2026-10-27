@@ -186,6 +186,40 @@ def _is_surface(a: dict) -> bool:
     return _bcg.artifact_kind(a) == _bcg.KIND_IS_SURFACE
 
 
+def _basis_line(arts: list, paths: list):
+    """S6-B3314 (owner ruling 2026-10-27, option (a)): the P&L basis of each
+    rendered artifact, or None when no DEPTH SURFACE is among them. The
+    ruling made the depth instrument basis-explicit; its case against was
+    that a depth surface ranks beside a breadth grid in one campaign's table
+    and every comparison then needs the label. A recorded basis prints as
+    recorded (its first word); a depth surface with no field is gross by the
+    instrument's omission (offline_level_sweep scored raw cube pnl before
+    S6-B3314); any other artifact with no field is NOT RECORDED - an engine
+    grid scores through its family grader and states no basis, so its
+    absence is not evidence of gross. CHOSEN (#165): the depth-surface
+    trigger leaves every render without one byte-identical (test_b3140b
+    compares the committed pairs render)."""
+    if not any(_is_surface(a) for a in arts):
+        return None
+    parts, seen = [], set()
+    for a, p in zip(arts, paths):
+        b = a.get("basis")
+        if isinstance(b, str) and b.strip():
+            word = b.split(":", 1)[0].strip()
+            seen.add(word)
+        elif _is_surface(a):
+            word = "gross (not recorded - pre-S6-B3314 depth sweep, raw cube pnl)"
+            seen.add("gross")
+        else:
+            word = "NOT RECORDED in the artifact"
+        parts.append(f"{Path(p).name}: {word}")
+    mixed = len(seen) > 1
+    return ("BASIS (S6-B3314) - " + "; ".join(parts)
+            + (" - MIXED BASES: a gross row and a net row are not comparable"
+               " (net winsorizes and subtracts the round-trip cost from every"
+               " trade, roster_core.net_pnl)" if mixed else ""))
+
+
 def _surface_rows(a: dict, params: list) -> list:
     """S6-B3316: one row per graded cell of a depth sweep's in-sample
     surface. The surface stores each cell's BEST exit only and no lower
@@ -883,6 +917,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
 
     nulls = [x for x in (_null_line(a, Path(path).name)
                          for a, path in zip(arts, artifact_paths)) if x]
+    basis_line = _basis_line(arts, artifact_paths)     # S6-B3314
 
     skip_notes = []
     for s in skips:
@@ -898,6 +933,8 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
             f"{len(rows)} graded cells across {len(arts)} artifact(s)"
             + (f"; reproduction {fires} fires" if fires else "")
             + "; " + _holdout_clause(arts) + "; npt excluded from ranking.",
+            # S6-B3314: each artifact's P&L basis, when a depth surface renders
+            *([basis_line] if basis_line else []),
             # S6-B3139an: a dropped row is COUNTED, never silent.
             *([f"ROWS NOT RENDERED - {sum(dropped.values())} artifact row(s)"
                " whose axis is neither a Table A label nor a declared signal"

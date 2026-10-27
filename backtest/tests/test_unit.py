@@ -48520,9 +48520,9 @@ _B3122_RAW_SCORERS = {
     "institutional_companion_grid.py":
         "reads the cube with pd.read_csv (the 9 institutional admission reads)",
     "offline_holdout_read.py":
-        "grades offline_level_sweep.load, a raw read of the cube (the 2 pead admission reads)",
-    "offline_level_sweep.py":
-        "reads TRADE_LOG and CUBE with pd.read_csv",
+        "grades offline_level_sweep.load on the basis its Step-1 artifact RECORDED "
+        "(S6-B3314): NET via roster_core.net_pnl when the sweep says net; raw for "
+        "the pre-S6-B3314 sweeps behind the 2 pead admission reads and the r114 reads",
     # S6-B3139aj (B3139q-r23): the population widened to _sharpe callers made
     # these 7 visible; each was READ before it was named. S6-B3139ai lifted
     # r5_gate_ladder_analysis onto roster_core.net_pnl, so 6 of the 7 remain.
@@ -48570,7 +48570,9 @@ def test_b3122_every_trade_scorer_is_net_or_named_gross(tmp_path):
     OR _sharpe; the 7 scripts that made visible were each READ and named, and
     the cap re-baselined 10 -> 15 on that wider population (shrink-only from
     here). S6-B3139ai: r5_gate_ladder_analysis now calls net_pnl and left the
-    set, 15 -> 14. Planted modules prove the census both ways."""
+    set, 15 -> 14. S6-B3314 (B3139q-r125): offline_level_sweep calls net_pnl
+    on its net basis and left the set, 14 -> 13. Planted modules prove the
+    census both ways."""
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2] / "scripts"
     raw = _b3122_census(root)
@@ -48581,7 +48583,7 @@ def test_b3122_every_trade_scorer_is_net_or_named_gross(tmp_path):
                      f"or roster_core.net_pnl: {sorted(new)}")
     assert not fixed, ("these scripts now score net or are gone - remove them from "
                        f"_B3122_RAW_SCORERS (shrink-only): {sorted(fixed)}")
-    assert len(_B3122_RAW_SCORERS) <= 14, "the raw-scorer set is shrink-only"
+    assert len(_B3122_RAW_SCORERS) <= 13, "the raw-scorer set is shrink-only"
     plant = tmp_path / "plant"
     plant.mkdir()
     (plant / "raw_sharpe.py").write_text(
@@ -65161,3 +65163,157 @@ def test_b3321_breadth_loader_grades_the_surviving_fires(tmp_path, monkeypatch):
     assert kw(nt, "build_frame", "survival") == ["bool(art.get('survival'))"], kw(nt, "build_frame", "survival")
     for p in ("offline_level_sweep.py", "institutional_companion_screen.py", "breadth_step1_grid.py"):
         assert calls(tree(p), "require_surviving_or_unchanged"), p
+
+
+# ================================================================ B3139q-r125 S6-B3314: the depth instruments state their P&L basis
+def _b3314_fixture(tmp_path):
+    """46 long fires of strategy fx - 40 in-sample (2023..2024), 6 in the
+    holdout (2025-06..) - two exits each; deterministic magnitudes, and one
+    in-sample pnl of 450 so the winsorize clip bites. m = i % 30."""
+    import json as _j
+    from datetime import date, timedelta
+    import pandas as pd
+    tl, cube = [], []
+    for i in range(46):
+        d = (date(2023, 1, 2) + timedelta(days=10 * i) if i < 40
+             else date(2025, 6, 2) + timedelta(days=14 * (i - 40)))
+        tl.append({"ticker": f"T{i}", "strategy": "fx", "entry_date": str(d),
+                   "direction": "long", "signals_at_entry": _j.dumps({"m": float(i % 30)})})
+        p = float((i * 7) % 11) - 4.0
+        for ex, pnl in (("e1", 450.0 if i == 3 else p), ("e2", p + 0.5)):
+            cube.append({"strategy": "fx", "direction": "long", "exit_method": ex,
+                         "entry_date": str(d), "ticker": f"T{i}", "pnl_pct": pnl,
+                         "hold_days": 3.0})
+    pd.DataFrame(tl).to_csv(tmp_path / "tl.csv", index=False)
+    pd.DataFrame(cube).to_csv(tmp_path / "cube.csv", index=False)
+    return tmp_path / "tl.csv", tmp_path / "cube.csv"
+
+
+def test_b3314_depth_instruments_state_their_pnl_basis(tmp_path, monkeypatch, capsys):
+    """S6-B3314 (B3139q-r125; owner 2026-10-27, verbatim 'Approve all recs fable
+    mode', option (a)): the depth sweep and its holdout read graded GROSS by
+    omission while the breadth instruments state their basis (S6-B3139ag) and
+    the roster judges NET. (1) offline_level_sweep.load scores the ONE net
+    transform, roster_core.net_pnl, on 'net' - the 450 pnl clips and every row
+    pays the round trip - and the raw cube pnl on 'gross', the default its
+    pre-S6-B3314 callers keep; an unknown basis refuses. (2) sweep() grades on
+    the basis it records: the net cell's IS sharpe is the net frame's and not
+    the gross one's; the CLI refuses a run without --basis, and main() hands the
+    basis to sweep() and attach_null(), which hand it to load() (AST). (3)
+    offline_holdout_read grades on the basis the Step-1 artifact RECORDED - a
+    net artifact reads net, an artifact with no field reads gross and says so
+    in basis_source. (4) the unified Table D prints each artifact's basis when
+    a depth surface renders - the committed squeeze pair reads MIXED - and adds
+    no line without one; an engine grid with no field reads NOT RECORDED."""
+    import ast
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import numpy as np
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+    import offline_level_sweep as ols
+    import offline_holdout_read as ohr
+    import table_d_render as tdr
+    LF2 = chr(10) * 2
+    tl, cube = _b3314_fixture(tmp_path)
+    monkeypatch.setattr(ols, "TRADE_LOG", tl)
+    monkeypatch.setattr(ols, "CUBE", cube)
+    axes = [ols.parse_axis("m:le:100,20")]
+
+    # (1) the loader's two bases
+    mg, evg = ols.load("fx", axes)                        # the default: gross
+    mn, evn = ols.load("fx", axes, basis="net")
+    assert evg["basis"] == "gross" and evn["basis"] == "net"
+    key = ["ticker", "entry_date", "exit_method"]
+    j = mg.merge(mn, on=key, suffixes=("_g", "_n"))
+    assert len(j) == len(mg) == len(mn) == 92
+    assert (j["pnl_pct_g"] > rc.WINSORIZE).sum() == 1      # the clip is exercised
+    # the ONE definition, applied by the loader - test_b3139ag's oracle checks
+    # the formula itself, and a restatement here is a copy (S6-B3139ai)
+    assert np.allclose(j["pnl_pct_n"], rc.net_pnl(j["pnl_pct_g"]))
+    assert (j["pnl_pct_n"] < j["pnl_pct_g"]).all()      # every row pays the round trip
+    with pytest.raises(SystemExit) as e:
+        ols.load("fx", axes, basis="bogus")
+    assert "S6-B3314" in str(e.value) and "bogus" in str(e.value)
+
+    # (2) the sweep grades on the basis it records
+    rg = ols.sweep("fx", axes, (100.0,), 0.99, 0.999, 5, basis="gross")
+    rn = ols.sweep("fx", axes, (100.0,), 0.99, 0.999, 5, basis="net")
+    assert rg["basis"] == "gross" and rn["basis"] == "net" and rn["evidence"]["basis"] == "net"
+    cg = next(c for c in rg["ranked"] if c["levels"] == [100.0])
+    cn = next(c for c in rn["ranked"] if c["levels"] == [100.0])
+    ins = rc.in_sample(mn)
+    sub = ins[ins["exit_method"] == cn["best_exit"]]
+    assert cn["is_sharpe"] == pytest.approx(
+        rc.evaluate(sub["pnl_pct"], sub["hold_days"], min_n=5)["sharpe"])
+    assert cn["is_sharpe"] != pytest.approx(cg["is_sharpe"])
+    assert "basis net;" in ols.render_table(rn)
+    old = {k: v for k, v in rn.items() if k != "basis"}
+    assert "basis" not in ols.render_table(old).split(LF2)[1]   # a pre-S6-B3314 record
+    monkeypatch.setattr(_s, "argv", ["ols", "--strategy", "fx", "--axes", "m:le:100",
+                                     "--production", "100", "--out", str(tmp_path / "o.json"),
+                                     "--band-ruling", "pin probe"])
+    with pytest.raises(SystemExit) as e:
+        ols.main()
+    assert e.value.code == 2 and "--basis" in capsys.readouterr().err
+    tree = ast.parse((root / "scripts" / "offline_level_sweep.py").read_text(encoding="utf-8"))
+    fns = {n.name: n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)}
+
+    def calls(fn, callee):
+        return [c for c in ast.walk(fns[fn]) if isinstance(c, ast.Call)
+                and getattr(c.func, "id", getattr(c.func, "attr", None)) == callee]
+    for fn, callee in (("main", "sweep"), ("main", "attach_null"),
+                       ("sweep", "load"), ("attach_null", "load")):
+        cs = calls(fn, callee)
+        assert cs and all(any(k.arg == "basis" for k in c.keywords) for c in cs), (fn, callee)
+    req = [c for c in calls("main", "add_argument")
+           if c.args and getattr(c.args[0], "value", None) == "--basis"]
+    assert len(req) == 1 and any(k.arg == "required" and getattr(k.value, "value", None) is True
+                                 for k in req[0].keywords)
+
+    # (3) the holdout read takes the basis the Step-1 artifact recorded
+    import producer_variant_table as pvt
+    monkeypatch.setattr(pvt, "offline_retest_refusal", lambda s: "")
+    step1 = {"strategy": "fx", "direction": "long",
+             "axes": [{"key": "m", "op": "le", "levels": [100.0, 20.0]}],
+             "production_levels": [100.0],
+             "preregistration_candidate": {"levels": [20.0], "best_exit": "e1", "is_sharpe": 0.5},
+             "evidence": {"survival_filter": {"applied": False}}, "derive": None}
+    pn, pa = tmp_path / "s1_net.json", tmp_path / "s1_absent.json"
+    pn.write_text(_j.dumps(dict(step1, basis="net")), encoding="utf-8")
+    pa.write_text(_j.dumps(step1), encoding="utf-8")
+    ok = {"evaluable": True, "complete": True, "params": []}
+    hn = ohr.read_step2(pn, 0.99, 0.999, 1, band_coverage=ok)
+    ha = ohr.read_step2(pa, 0.99, 0.999, 1, band_coverage=ok)
+    assert hn["basis"] == hn["subject"]["basis"] == "net"
+    assert hn["basis_source"].startswith("the Step-1 artifact's recorded basis")
+    assert ha["basis"] == "gross" and "absent" in ha["basis_source"]
+    assert hn["admission"]["holdout_n"] == ha["admission"]["holdout_n"] == 6
+    assert hn["admission"]["holdout_sharpe"] != pytest.approx(ha["admission"]["holdout_sharpe"])
+    assert "basis net (the Step-1 artifact's recorded basis)" in ohr.render_table(hn)
+    pre = {k: v for k, v in hn.items() if k not in ("basis", "basis_source")}
+    assert "basis" not in ohr.render_table(pre).split(LF2)[1]   # renders as before
+
+    # (4) the unified Table D names each artifact's basis beside a depth surface
+    A = root / "output_audit"
+    sq_s = A / "b3289_squeeze_breakout_depth_step1_is_surface.json"
+    sq_b = A / "b3248_squeeze_breakout_breadth_net_long.json"
+    out = tdr.build_table("squeeze_breakout", [str(sq_s), str(sq_b)], top=3)
+    bl = [ln for ln in out.splitlines() if ln.startswith("BASIS (S6-B3314)")]
+    assert len(bl) == 1, bl
+    assert f"{sq_s.name}: gross (not recorded" in bl[0] and f"{sq_b.name}: net" in bl[0]
+    assert "MIXED BASES" in bl[0]
+    lines = out.splitlines()                 # line [2] keeps its place (test_b3139w reads it)
+    assert "graded cells across 2 artifact(s)" in lines[2] and lines[3] == bl[0]
+    grid_only = tdr.build_table("squeeze_breakout", [str(sq_b)], top=3)
+    assert not any(ln.startswith("BASIS") for ln in grid_only.splitlines())
+    s_net = dict(_j.loads(sq_s.read_text(encoding="utf-8")), basis="net")
+    g = _j.loads(sq_b.read_text(encoding="utf-8"))
+    assert "MIXED" not in tdr._basis_line([s_net, g], ["s.json", "g.json"])
+    assert "e.json: NOT RECORDED in the artifact" in tdr._basis_line([s_net, {"rows": []}],
+                                                                       ["s.json", "e.json"])
+    assert tdr._basis_line([g], ["g.json"]) is None
