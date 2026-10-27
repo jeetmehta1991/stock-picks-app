@@ -25316,3 +25316,33 @@ MEASURED (B3139q-r112): test_b1945, the ratchet that holds B1945's rule - a cita
 **Rule.** No new rule - #226 and L715 stand. A bound sized as headroom is pinned against the corpus, never against the day it was chosen.
 
 **Mechanism.** The window is now 999, the 3-digit ceiling the citation pattern can match (the queue's 4-digit L-references are line anchors, such as CHECKLIST.md#L1651, and stay outside); test_b3311 reads the newest lesson from LEARNINGS and the bound from test_b1945's own comparison by AST, and fails with the remedy once the window stops reaching past the newest lesson (S6-B3311, whose row carries the mutation probes). Record-of-fact; the rule stands in #226 as an instance.
+
+### L963 - FOUR SHELL-SAFETY REFUSALS IN ONE SESSION, EACH ON A ONE-LINE PROBE (B3139q-r118..r121, 2026-10-26/27)
+
+MEASURED, every one refused by scripts/pretooluse_heredoc_guard.py BEFORE it ran: (1) at B3139q-r118 a double-quoted python -c carrying a backslash pair (S6-B3144 / L893); (2) at B3139q-r119 a python heredoc whose body carried a two-newline escape, written to re-render a committed Table D (S6-B3139ae / L885); (3) at B3139q-r120 a --help probe of scripts/queue_state.py, which builds no argument parser (S6-B3268 / L947); (4) at B3139q-r121 a double-quoted python -c carrying a regex backslash pair, written to find a run's leg logs (S6-B3144 / L893). A fifth of the same transport class was not a hook catch: a sed expression carrying a line-continuation backslash failed to parse (B3139q-r121). All five were quick, read-only one-liners; every patcher and probe written to a FILE in the same session ran clean.
+
+**Why.** Compliance failures against #259 (L885, L893: a backslash payload through a shell layer can arrive altered, so it is written to a file and the file is run) and #327 (L947: a script's interface is learned by reading it). The rules were in context each time and the hook was what stopped them - L570's shape, a rule recalled is not a rule applied - and the lapse sat exactly where L759 puts it: short, read-only calls that feel safe.
+
+**Rule.** No new rule - #259 and #327 stand: a probe that carries a backslash, or that runs a script whose interface is unread, is written with the Write tool and run as a file, from the first call.
+
+**Mechanism.** The PreToolUse hook held 4 of 4 before anything ran - pinned by test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter, test_b3144_a_refused_command_is_not_a_turn_end_incident and test_b3268_pretooluse_refuses_help_on_a_parserless_script. JUDGMENT-ONLY for the habit itself (no scan sees the call an author is about to type); the hook is the durable half and it worked. Record-of-fact.
+
+### L964 - A STEP-2 PRICE WAS QUOTED FROM ANOTHER STRATEGY'S RUN, AND THE OWNER APPROVED ON IT (B3139q-r111 / r121, 2026-10-25/26)
+
+MEASURED (B3139q-r121): LEVER4's r111 row priced pivot_r1_breakout's Step-2 engine run at 'about a day of machine time by the one run measured' - bollinger_lower's b3131 chain, 20.762 h - and the owner approved the Step-2 recommendation on that price on 2026-10-26 ('Approve all recs fable mode'). make_spec.step2_sizing, the generator a Step-2 spec runs through, computes the strategy's OWN projection: its R2-budget Step-1 elapsed (4.038 h) times the measured Step-2/Step-1 ratios (5 runs across 4 other families, 9.847 to 26.719) gives 39.8 to 107.9 h, sized at 36 legs of 4.5 h. The quoted day understated that 1.9 to 5.2 times, and the real cost is a code freeze of the same length (no pyramid runs beside a live wave). Caught while preparing the spec, before any launch; the launch was held and a re-rule filed at the true price (S6-B1248-LEVER4-GATE-BUDGET, the S6-B2612c/d precedent).
+
+**Why.** Compliance failure against #295 with L868 - another campaign's measurement used as evidence for this strategy, here as its PRICE - and against the L767 tripwire: the price was quoted without opening the mechanism that would consume it. The one measured run was the number in front of me, which is why it stood in for this strategy's own.
+
+**Rule.** No new rule - #295 stands. A duration or cost quoted to the owner comes from the subject's own record through the generator the launch will use.
+
+**Mechanism.** JUDGMENT-ONLY for detection - no scan can tell which strategy a quoted duration belongs to; durability: the skill's tripwire row 'Quote a run's duration or cost to the owner', pinned by test_b2123's fragment (S6-B3323). The generator already refuses to size a Step-2 arm without the subject's own Step-1 cube.
+
+### L965 - FOUR OF MY DRAFT DEFECTS WERE CAUGHT BY EXISTING PINS BEFORE ANY COMMIT (B3139q-r119..r122, 2026-10-26/27)
+
+MEASURED, none reached a commit: (1) S6-B3315's runbook bullet named a strategy in the class-level runbook, and test_b3096 refused it (the L934 class, instance 2); (2) S6-B3315's first month_concentration scored trades with rc._sharpe inside a module with no net marker, and test_b3122's census refused it as a new raw scorer - redesigned so each caller hands in the scorer that ranked the row, which owns the basis; (3) S6-B3321's Step-2 read passed survival=True to its control unconditionally, and test_b3139bx, whose control reads a fixture, refused it - the control now filters only when it reads R5; (4) S6-B3315's queue row was appended before the pre-gate reshaped the design and quoted a stale mutation count - replaced inside the uncommitted append (L765: derive first, then write once). Caught by reading, not by a pin: the r120 test patcher's own line-ending handling was typed as escaped text (the L834 / L858 class) and fixed before it ran, and a blast-radius detector over-matched three subjects whose files a hand-check showed other scripts had written (L644).
+
+**Why.** Compliance failures against #295 for (1), #290 for (2) - every trade scorer is net or named gross (L879) - #226 for (3) - a branch not exercised by the case that reaches it - and L765 for (4). The pins did their job: each defect met a test that already existed, which is what the pre-gate selection (S6-B3269) is for.
+
+**Rule.** No new rule - each is an instance of a standing one.
+
+**Mechanism.** test_b3096, test_b3122 and test_b3139bx caught (1)-(3) in the pre-gate selection; (4) is JUDGMENT-ONLY - preflight C14 refuses a drafting marker in a staged queue row, not a stale figure. Record-of-fact.

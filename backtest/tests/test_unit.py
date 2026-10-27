@@ -26071,6 +26071,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r113: L960, same call as the skill edit.
         ("PRINT ITS WHOLE HISTORY AND READ IT BEFORE THE ROW IS WRITTEN",
          'L960 (B3139q-r111): a ticket row written from a summary of its history'),
+        # B3139q-r123: L964, same call as the skill edit.
+        ("PRICE IT FROM THE SUBJECT'S OWN RECORD THROUGH THE GENERATOR THE LAUNCH WILL USE",
+         'L964 (B3139q-r121): a Step-2 price quoted from another strategy run'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26315,7 +26318,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 354 -> 355 at B3139q-r92 (the L953 second-renderer fragment; same call).
     # 355 -> 356 at B3139q-r95 (the L954 qualifier fragment; same call).
     # 356 -> 357 at B3139q-r113 (the L960 history-read fragment; same call).
-    assert len(gutted) == 357, gutted
+    # 357 -> 358 at B3139q-r123 (the L964 price-from-the-subject fragment; same call).
+    assert len(gutted) == 358, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

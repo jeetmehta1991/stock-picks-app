@@ -4924,6 +4924,8 @@ same defect since B1721b - recorded, never gated.**
 
 **REFUSED BEFORE IT RUNS since B3139q-r49 (S6-B3139ae, owner ruling 2026-10-06 'approve'):** a PreToolUse hook on Bash, `scripts/pretooluse_heredoc_guard.py`, wired in `.claude/settings.json`, refuses the command when `heredoc_escape_hits` - the same function the Stop scan calls - finds a backslash pair in a heredoc body fed to an interpreter; git commit/tag message heredocs are exempt. MEASURED over this session's transcript: 42 such commands ran after the Stop scan shipped, 23 of them on 2026-10-06, the last in the turn that built the refusal (B3139q-r47's pin-widening command). A record at turn close did not change the habit; a refusal before the command runs is the remedy. The double-quoted `python -c` sibling stayed on the Stop scan until S6-B3144 (owner ruling 2026-10-13, 'Approve all other recommendations'): the guard now refuses it too through `dash_c_escape_hits`, which strips heredoc bodies first (a commit message quoting a payload is data). MEASURED before it shipped: 157 such commands ran in one session, and the Stop record raised none after its first report because its one-report key is the hit text. The guard fails OPEN on its own error (exit 1 is non-blocking), and its pin runs it as a subprocess on the incident corpus.
 
+**INSTANCE (B3139q-r123 / L963) - FOUR HOOK REFUSALS ON ONE-LINE PROBES.** In one session the PreToolUse hook refused two double-quoted python -c payloads and one heredoc, each carrying a backslash pair, before they ran; every probe written to a file ran clean.
+
 ### #260 - SHOW EVERY CLASS OR CITE NO TOTAL (B1779 / L534)
 
 **MEASURED: I reported "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649".** Three of SEVEN classes
@@ -5848,6 +5850,8 @@ JUDGMENT-ONLY; the pin holds the wiring that exists.
 
 **INSTANCE (B3139q-r72g / L931) - AN EXEMPTION GRANTED FOR ONE QUESTION WAS READ AS COVERING ANOTHER.** The S6-B3204 portfolio builder reproduced 14 of 16 admitted lines through the #290 gate and extracted the 2 ALREADY-NET lines with only a non-empty check; smc took 437 cube rows for its 180-trade admitted line. ALREADY-NET certifies a read's cost basis, never a fresh extraction's trade set. Caught before any figure was reported; ENFORCED BY build_phase1b_portfolio._count_gate, pinned both directions by test_b3204_portfolio_count_gate_and_artifact.
 
+**INSTANCE (B3139q-r123 / L965) - A NEW HELPER SCORED TRADES WITH NO NET MARKER.** S6-B3315's first month_concentration called rc._sharpe itself; test_b3122's census refused it before the commit, and the caller now hands in the scorer that owns the basis.
+
 ### #291 - A SCRIPT WITH A STRAT CONSTANT IS THE FIRST INSTANCE OF A PORTABILITY CLASS; REGISTRATION IS CHECKED AT LAUNCH (B2573 / L754)
 
 **Any grader, spot-check, verifier, or table renderer written for ONE strategy (a `STRAT`
@@ -5967,6 +5971,8 @@ feedback_strategy_scope_no_zoom_out.
 **B3096 SUPERSESSION.** The owner then directed a runbook that names no strategy at all (2026-09-24), so the labelled INSTANCE paragraphs moved byte-for-byte to STRATEGY_CAMPAIGN_LOG.md; the whole-runbook enforcer is test_b3096_runbook_is_class_level_and_numbered_consistently, and test_b3095 now asserts the Step-2 launch procedure carries no instance.
 
 **INSTANCE (B3139q-r72j / L934):** a register rule added to runbook section 0.7 named its open instance by family word; test_b3096 refused it at gate r72j (1 failed of 1,787) before the commit, and the sentence now points to the queue ticket instead.
+
+**INSTANCE (B3139q-r123 / L964, L965) - ANOTHER STRATEGY'S RUN AS THIS ONE'S PRICE.** A Step-2 price for pivot_r1_breakout was quoted from bollinger_lower's run ('about a day') and approved on; the subject's own projection by make_spec.step2_sizing is 39.8 to 107.9 h, and the launch was held for a re-rule. Same batch, L965: a runbook bullet named a strategy and test_b3096 refused it before the commit.
 
 ### #296 - PRICE AN OPTION FROM THE PLAN ROW THAT DEFINES IT (B2612 / L767)
 
@@ -6612,6 +6618,8 @@ parser library nor compares against a --help literal, both read from the AST
 (builds_arg_parser, which test_b3243's census now shares), pinned by
 test_b3259. Refusing such a command BEFORE it runs is S6-B3268, the owner's
 decision (a refusal is a behaviour change).
+
+**INSTANCE (B3139q-r123 / L963) - --HELP ON A PARSERLESS SCRIPT, AGAIN.** A --help probe of scripts/queue_state.py, which builds no parser, was refused by the hook (S6-B3268) before it ran; its functions were then read from the source.
 
 ### #328 - A CLOSED TICKET'S REMAINDER RIDES A NEW TICKET OPENED IN THE SAME APPEND (B3139q-r90 / L949, citing L704 and L640, self-caught 2026-10-21)
 
