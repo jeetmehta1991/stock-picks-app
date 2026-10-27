@@ -2992,7 +2992,7 @@ SPECS_PHASE0.update({
         ]
     },
     "williams_r_oversold": {
-        "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (the charter\nstrategy_optimisation/tighten/williams_r_oversold.md numbers the same steps\nP1/P1.1/P2/P2.1/P3/P3.1/P4/P4.1/P5/P5.1/P6/P6.1/P6.2/P7/P8/P9 - integer ids\nhere). NO breadth rows: the 651 B-row candidates are NEW-GATE and outside the\napproved band.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  below_ema_200  (literal key; the STRAT_EMA_SPAN knob does not reach this\n       gate - S6-B3253 - so the span row is DEFINED-NO-ACTUATOR; charter P1/P1.1)\nP2  cmf_negative level  (cmf < 0 on persisted cmf; charter P2/P2.1 - SHORT leg)\nP3  cmf_positive level  (cmf > 0 on persisted cmf; charter P3/P3.1 - LONG leg)\nP4  price_above_ema_200  (literal key, as P1; charter P4/P4.1)\nP5  rsi_2 span  (charter P5/P5.1 - DEFINED-NO-ACTUATOR)\nP6  williams period 14  (technical.py compute_williams_r; charter P6.1 - DEFINED-NO-ACTUATOR)\nP7  williams_r oversold threshold  (williams_r < -80 on the persisted\n       williams_r; charter P6.2 - LONG OR-arm member)\n\n=============================== STRATEGY LAYER ===============================\n\nP8  williams_r > -20   [EXISTING-THRESHOLD; SHORT OR-arm member - NO band:\n       not an AND-leg of either side (production satisfaction long 0 pct,\n       short 85 pct, S6-B3270), the render offered none]\nP9  rsi_2 < 5   [EXISTING-THRESHOLD; LONG escape hatch, OR-arm member]\nP10 rsi_2 > 95  [EXISTING-THRESHOLD; SHORT escape hatch, OR-arm member]\nP11 _short_borrow_trap_active(s)  (days_to_cover > 5.0; band OWNER-GATED)\n\nlong_fires  = (P7 OR P9) AND P4 AND P3\nshort_fires = (P8 OR P10) AND P1 AND P2 AND NOT P11\nThe OR arms are expressed to offline_level_sweep as @group axes (S6-B3290):\nlong  williams_r:lt:-80,-85,-90@hatch  rsi_2:lt:5,3@hatch  cmf:gt:0,0.02,0.05\nshort williams_r:gt:-20@hatch  rsi_2:gt:95,97@hatch  cmf:lt:0,-0.02,-0.05\n",
+        "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (the charter\nstrategy_optimisation/tighten/williams_r_oversold.md numbers the same steps\nP1/P1.1/P2/P2.1/P3/P3.1/P4/P4.1/P5/P5.1/P6/P6.1/P6.2/P7/P8/P9 - integer ids\nhere). NO breadth rows: the 651 B-row candidates are NEW-GATE and outside the\napproved band.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  below_ema_200  (literal key; the STRAT_EMA_SPAN knob does not reach this\n       gate - S6-B3253 - so the span row is DEFINED-NO-ACTUATOR; charter P1/P1.1)\nP2  cmf_negative level  (cmf < 0 on persisted cmf; charter P2/P2.1 - SHORT leg)\nP3  cmf_positive level  (cmf > 0 on persisted cmf; charter P3/P3.1 - LONG leg)\nP4  price_above_ema_200  (literal key, as P1; charter P4/P4.1)\nP5  rsi_2 span  (charter P5/P5.1 - DEFINED-NO-ACTUATOR)\nP6  williams period 14  (technical.py compute_williams_r; charter P6.1 - DEFINED-NO-ACTUATOR)\nP7  williams_r oversold threshold  (williams_r < -80 on the persisted\n       williams_r; charter P6.2 - LONG OR-arm member)\n\n=============================== BREADTH LAYER ===============================\n\nB1-B7: the per-leg consistent companion screens' cluster representatives, registered on\nthe owner's 2026-10-27 word (S6-B3247, the second T3); each row's legs field names its leg.\n\nB1  cot_dow_commercials_pctile_3y  LONG <= q  (cot_positioning.py cluster)\nB2  sector_weakest_rs  SHORT >= q  (cross_asset.py cluster)\nB3  vix_value  SHORT <= q  (technical.py cluster)\nB4  xs_max_anomaly  SHORT <= q  (cross_sectional.py cluster)\nB5  days_until_fomc  SHORT >= q  (macro_events.py cluster)\nB6  cot_gold_commercials_net_pct  SHORT <= q  (cot_positioning.py cluster)\nB7  po3_accum_range_pct  SHORT <= q  (ict_producers.py cluster)\n\n=============================== STRATEGY LAYER ===============================\n\nP8  williams_r > -20   [EXISTING-THRESHOLD; SHORT OR-arm member - NO band:\n       not an AND-leg of either side (production satisfaction long 0 pct,\n       short 85 pct, S6-B3270), the render offered none]\nP9  rsi_2 < 5   [EXISTING-THRESHOLD; LONG escape hatch, OR-arm member]\nP10 rsi_2 > 95  [EXISTING-THRESHOLD; SHORT escape hatch, OR-arm member]\nP11 _short_borrow_trap_active(s)  (days_to_cover > 5.0; band OWNER-GATED)\n\nlong_fires  = (P7 OR P9) AND P4 AND P3\nshort_fires = (P8 OR P10) AND P1 AND P2 AND NOT P11\nThe OR arms are expressed to offline_level_sweep as @group axes (S6-B3290):\nlong  williams_r:lt:-80,-85,-90@hatch  rsi_2:lt:5,3@hatch  cmf:gt:0,0.02,0.05\nshort williams_r:gt:-20@hatch  rsi_2:gt:95,97@hatch  cmf:lt:0,-0.02,-0.05\nBreadth per leg by breadth_step1_grid.py --leg --basis net: long --axes cot_dow_commercials_pctile_3y:le\nshort --axes sector_weakest_rs:ge,vix_value:le,xs_max_anomaly:le,days_until_fomc:ge,cot_gold_commercials_net_pct:le,po3_accum_range_pct:le\n",
         "baseline": {
             "artifact": "output_r5_merged_1_7",
             "fires": 2535,
@@ -3008,6 +3008,9 @@ SPECS_PHASE0.update({
                 "id": "P1",
                 "producer": "compute_ema_sma -> literal key",
                 "param": "below_ema_200 identity (SHORT trend leg)",
+                "legs": [
+                    "short"
+                ],
                 "production": "span 200",
                 "band": [
                     "span 200"
@@ -3030,6 +3033,9 @@ SPECS_PHASE0.update({
                 "id": "P2",
                 "producer": "technical.py cmf block",
                 "param": "cmf_negative level (SHORT leg)",
+                "legs": [
+                    "short"
+                ],
                 "coverage_key": "cmf",  # S6-B3294: P3 owns the signal key (S6-B3139an); coverage reads the shared axis
                 "production": 0.0,
                 "band": [
@@ -3059,6 +3065,9 @@ SPECS_PHASE0.update({
                 "id": "P3",
                 "producer": "technical.py cmf block",
                 "param": "cmf_positive level (LONG leg)",
+                "legs": [
+                    "long"
+                ],
                 "production": 0.0,
                 "band": [
                     0.0,
@@ -3090,6 +3099,9 @@ SPECS_PHASE0.update({
                 "id": "P4",
                 "producer": "compute_ema_sma -> literal key",
                 "param": "price_above_ema_200 identity (LONG trend leg)",
+                "legs": [
+                    "long"
+                ],
                 "production": "span 200",
                 "band": [
                     "span 200"
@@ -3156,6 +3168,9 @@ SPECS_PHASE0.update({
                 "id": "P7",
                 "producer": "technical.py williams block -> screener OR-arm",
                 "param": "williams_r oversold threshold (LONG OR-arm)",
+                "legs": [
+                    "long"
+                ],
                 "production": -80,
                 "band": [
                     -80,
@@ -3187,6 +3202,9 @@ SPECS_PHASE0.update({
                 "id": "P8",
                 "producer": "screener strategy gate (OR-arm)",
                 "param": "williams_r > -20 (SHORT OR-arm)",
+                "legs": [
+                    "short"
+                ],
                 "production": -20,
                 "band": [
                     -20
@@ -3209,6 +3227,9 @@ SPECS_PHASE0.update({
                 "id": "P9",
                 "producer": "screener strategy gate (local rsi_2 compare)",
                 "param": "rsi_2 escape hatch (LONG OR-arm)",
+                "legs": [
+                    "long"
+                ],
                 "production": 5,
                 "band": [
                     5,
@@ -3238,6 +3259,9 @@ SPECS_PHASE0.update({
                 "id": "P10",
                 "producer": "screener strategy gate (local rsi_2 compare)",
                 "param": "rsi_2 escape hatch (SHORT OR-arm)",
+                "legs": [
+                    "short"
+                ],
                 "coverage_key": "rsi_2",  # S6-B3294: P9 owns the signal key (S6-B3139an); coverage reads the shared axis
                 "production": 95,
                 "band": [
@@ -3265,6 +3289,9 @@ SPECS_PHASE0.update({
                 "id": "P11",
                 "producer": "_short_borrow_trap_active (shared screener helper)",
                 "param": "days_to_cover cap (borrow guard, SHORT leg)",
+                "legs": [
+                    "short"
+                ],
                 "production": "5.0",
                 "band": [
                     "5.0"
@@ -3282,6 +3309,223 @@ SPECS_PHASE0.update({
                 "engine_implemented": True,
                 "evidence": "charter P8; B718a ruling",
                 "derivation": "tighter cap is offline on persisted days_to_cover; band only on the owner's word"
+            },
+            {
+                "id": "B1",
+                "producer": "backtest/signals/cot_positioning.py",
+                "param": "cot_dow_commercials_pctile_3y",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "legs": [
+                    "long"
+                ],
+                "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 7' breadth candidates; S6-B3247); LONG leg op le (keep LOW)",
+                "type": "float<=q",
+                "engine_implemented": False,
+                "evidence": "long: b3247_williams_r_oversold_long_companions_consistent.json (ts10 -2.776 / bept -2.842, joint 2.776, cluster of 5)",
+                "derivation": "BREADTH (runbook 3.6): the cot_positioning.py cluster's representative on the long leg (max joint effect, #165); levels = retention quantiles on the leg's own fires at grid time"
+            },
+            {
+                "id": "B2",
+                "producer": "backtest/signals/cross_asset.py",
+                "param": "sector_weakest_rs",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "legs": [
+                    "short"
+                ],
+                "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 7' breadth candidates; S6-B3247); SHORT leg op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "short: b3247_williams_r_oversold_short_companions_consistent.json (ts10 +3.109 / bept +11.580, joint 3.109, cluster of 2)",
+                "derivation": "BREADTH (runbook 3.6): the cross_asset.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own fires at grid time"
+            },
+            {
+                "id": "B3",
+                "producer": "backtest/signals/technical.py",
+                "param": "vix_value",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "legs": [
+                    "short"
+                ],
+                "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 7' breadth candidates; S6-B3247); SHORT leg op le (keep LOW)",
+                "type": "float<=q",
+                "engine_implemented": False,
+                "evidence": "short: b3247_williams_r_oversold_short_companions_consistent.json (ts10 -2.700 / bept -3.154, joint 2.700, cluster of 2)",
+                "derivation": "BREADTH (runbook 3.6): the technical.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own fires at grid time"
+            },
+            {
+                "id": "B4",
+                "producer": "backtest/signals/cross_sectional.py",
+                "param": "xs_max_anomaly",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "legs": [
+                    "short"
+                ],
+                "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 7' breadth candidates; S6-B3247); SHORT leg op le (keep LOW)",
+                "type": "float<=q",
+                "engine_implemented": False,
+                "evidence": "short: b3247_williams_r_oversold_short_companions_consistent.json (ts10 -2.190 / bept -16.095, joint 2.190, cluster of 1)",
+                "derivation": "BREADTH (runbook 3.6): the cross_sectional.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own fires at grid time"
+            },
+            {
+                "id": "B5",
+                "producer": "backtest/signals/macro_events.py",
+                "param": "days_until_fomc",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "legs": [
+                    "short"
+                ],
+                "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 7' breadth candidates; S6-B3247); SHORT leg op ge (keep HIGH)",
+                "type": "float>=q",
+                "engine_implemented": False,
+                "evidence": "short: b3247_williams_r_oversold_short_companions_consistent.json (ts10 +1.896 / bept +2.189, joint 1.896, cluster of 1)",
+                "derivation": "BREADTH (runbook 3.6): the macro_events.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own fires at grid time"
+            },
+            {
+                "id": "B6",
+                "producer": "backtest/signals/cot_positioning.py",
+                "param": "cot_gold_commercials_net_pct",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "legs": [
+                    "short"
+                ],
+                "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 7' breadth candidates; S6-B3247); SHORT leg op le (keep LOW)",
+                "type": "float<=q",
+                "engine_implemented": False,
+                "evidence": "short: b3247_williams_r_oversold_short_companions_consistent.json (ts10 -1.525 / bept -1.970, joint 1.525, cluster of 2)",
+                "derivation": "BREADTH (runbook 3.6): the cot_positioning.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own fires at grid time"
+            },
+            {
+                "id": "B7",
+                "producer": "backtest/signals/ict_producers.py",
+                "param": "po3_accum_range_pct",
+                "production": "not gated",
+                "band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "free_band": [
+                    "q20",
+                    "q40",
+                    "q60",
+                    "q80"
+                ],
+                "resim_band": [],
+                "env": None,
+                "consumers": [],
+                "sweep_levels": None,
+                "subset_safe": True,
+                "legs": [
+                    "short"
+                ],
+                "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 7' breadth candidates; S6-B3247); SHORT leg op le (keep LOW)",
+                "type": "float<=q",
+                "engine_implemented": False,
+                "evidence": "short: b3247_williams_r_oversold_short_companions_consistent.json (ts10 -1.367 / bept -15.743, joint 1.367, cluster of 1)",
+                "derivation": "BREADTH (runbook 3.6): the ict_producers.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own fires at grid time"
             }
         ]
     },

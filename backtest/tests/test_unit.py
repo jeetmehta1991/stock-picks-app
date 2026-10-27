@@ -63713,11 +63713,19 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
     if wl.exists() and ws.exists() and sq.exists():
         monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", False)    # the report-only control
         r = bcg.coverage_report("williams_r_oversold", [str(wl), str(ws)])
-        gaps = {p["param"]: p for p in r["params"] if p["untested"]}
+        # S6-B3247 (B3139q-r127): B1-B7 are registered, so the depth surfaces
+        # cover the P rows only; the per-leg breadth grids cover the B rows
+        gaps = {p["param"]: p for p in r["params"]
+                if p["untested"] and p["id"].startswith("P")}
         assert r["complete"] is False and gaps, r      # uncounted on the control branch
         assert all(p["is_surface_graded"] == p["untested"] for p in gaps.values()), gaps
         monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", True)
-        assert bcg.coverage_report("williams_r_oversold", [str(wl), str(ws)])["complete"] is True
+        r2 = bcg.coverage_report("williams_r_oversold", [str(wl), str(ws)])
+        assert {p["id"] for p in r2["params"] if p["untested"]} == {f"B{i}" for i in range(1, 8)}
+        wbg = [A / f"b3247_williams_r_oversold_breadth_net_{leg}.json" for leg in ("long", "short")]
+        if all(x.exists() for x in wbg):
+            assert bcg.coverage_report("williams_r_oversold", [str(wl), str(ws)]
+                                       + [str(x) for x in wbg])["complete"] is True
         # S6-B3248 (B3139q-r116): B1-B12 are registered, so the depth sweep alone
         # no longer covers squeeze; the breadth grid grades 10 of the 12 and the two
         # COVERAGE-SKIPPED axes (B10 at 0.912, B12 at 0.928 < the 0.98 floor) stay UNTESTED
@@ -63731,7 +63739,8 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
             assert {p["id"] for p in sq_db["params"] if p["untested"]} == {"B10", "B12"}
         one = bcg.coverage_report("williams_r_oversold", [str(wl)])
         assert one["complete"] is False                   # the short leg's bands need the short sweep
-        assert {p["param"] for p in one["params"] if p["untested"]} == {
+        assert {p["param"] for p in one["params"]
+                if p["untested"] and p["id"].startswith("P")} == {
             "cmf_negative level (SHORT leg)", "rsi_2 escape hatch (SHORT OR-arm)"}
         monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", False)
 
@@ -65431,3 +65440,72 @@ def test_b3304b_camarilla_breadth_rows_carry_their_legs(tmp_path):
         assert axes == {(k, o) for k, L, o in want if L == leg}, axes
         assert g["permutation_null"]["n_perms"] == 100 and g["graded"] > 0
         assert all(isinstance(r.get("episode"), dict) for r in g["rows"])
+
+
+# ================================================================ B3139q-r127 S6-B3247: williams' breadth rows, per leg
+def test_b3247c_williams_breadth_rows_legs_and_grids():
+    """S6-B3247 (B3139q-r127; owner 2026-10-27, verbatim 'Approve all recs fable
+    mode', on the r124 close's 'all 7'): williams_r_oversold's 7 per-leg breadth
+    candidates register as B1-B7 (one key each), built from the two committed
+    consistent screens; its 9 per-side params carry the legs field the
+    S6-B3304 readers honour; the committed per-leg grids ran net over exactly
+    the registered per-leg axes; and each unified per-leg Table D names MIXED
+    bases - the depth surfaces stay gross (the S6-B3314 ruling leaves the b3289
+    artifacts as they are), the breadth grids are net - and labels the other
+    leg's params LEG ONLY."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    from producer_variant_table import SPECS_PHASE0, validate_spec
+    A = root / "output_audit"
+    S = "williams_r_oversold"
+
+    def op_of(r):
+        if r["kind"] == "bool":
+            return "eq_true" if r["sign"] == "+" else "eq_false"
+        return "ge" if r["sign"] == "+" else "le"
+    want = set()
+    for leg in ("long", "short"):
+        d = _j.loads((A / f"b3247_williams_r_oversold_{leg}_companions_consistent.json")
+                     .read_text(encoding="utf-8"))
+        assert d["direction"] == leg
+        for c in d["clusters"].values():
+            r = next(x for x in c["rows"] if x["key"] == c["representative"])
+            want.add((r["key"], leg, op_of(r)))
+    assert len(want) == 7
+    e = SPECS_PHASE0[S]
+    assert validate_spec(e) == [], validate_spec(e)
+    brows = [p for p in e["params"] if p["id"].startswith("B")]
+    assert [p["id"] for p in brows] == [f"B{i}" for i in range(1, 8)]
+    got = {(p["param"], p["legs"][0], p["status"].split(" leg op ", 1)[1].split(" ", 1)[0])
+           for p in brows}
+    assert got == want and all(len(p["legs"]) == 1 for p in brows), sorted(got ^ want)
+    legs = {p["id"]: p.get("legs") for p in e["params"]}
+    assert {k for k, v in legs.items() if v == ["short"] and k.startswith("P")} == {
+        "P1", "P2", "P8", "P10", "P11"}
+    assert {k for k, v in legs.items() if v == ["long"] and k.startswith("P")} == {
+        "P3", "P4", "P7", "P9"}
+    assert legs["P5"] is None and legs["P6"] is None          # both legs: no field
+    for p in e["params"]:                                      # a tag agrees with its label
+        if p.get("legs") and p["id"].startswith("P"):
+            assert p["legs"][0].upper() in p["param"], (p["id"], p["param"])
+
+    for leg in ("long", "short"):
+        g = _j.loads((A / f"b3247_williams_r_oversold_breadth_net_{leg}.json").read_text(encoding="utf-8"))
+        assert g["basis"] == "net" and g["leg"] == leg
+        assert {(a["key"], a["op"]) for a in g["axes"]} == {(k, o) for k, L, o in want if L == leg}
+        assert g["permutation_null"]["n_perms"] == 100
+        assert all(isinstance(r.get("episode"), dict) for r in g["rows"])
+        md = (A / f"b3247_williams_r_oversold_{leg}_table_d.md").read_text(encoding="utf-8")
+        lines = md.splitlines()
+        bl = [ln for ln in lines if ln.startswith("BASIS (S6-B3314)")]
+        assert len(bl) == 1 and "MIXED BASES" in bl[0], bl
+        assert f"b3289_williams_r_oversold_{leg}_step1_is_surface.json: gross" in bl[0]
+        assert f"b3247_williams_r_oversold_breadth_net_{leg}.json: net" in bl[0]
+        inv = {ln.split(" ", 4)[3]: ln for ln in lines if ln.startswith("  - ")}
+        other = "SHORT" if leg == "long" else "LONG"
+        probe = "P2" if leg == "long" else "B1"                # a param of the other leg
+        assert f"{other} LEG ONLY" in inv[probe], inv[probe]
