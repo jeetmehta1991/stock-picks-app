@@ -1,0 +1,25 @@
+pytest_exit=0 tree=SAME exit=6
+  pytest: 1896 passed, 3 skipped in 1553.75s (0:25:53)
+  elapsed_s=1951
+  chain_inflight=b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45
+  chain_inflight_start=b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45
+  chain_inflight_end=b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45
+  power_start=ac
+  power_end=ac
+  engine_inflight=launch_sweep:output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45,run_phase1a:output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45,run_serial_chain,run_wave:b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_spec.json
+  engine_inflight_start=launch_sweep:output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45,run_phase1a:output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45,run_serial_chain,run_wave:b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_spec.json
+  engine_inflight_end=launch_sweep:output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45,run_serial_chain,run_wave:b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_spec.json
+  engine_dead_within_window=output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45
+  beside_wave_override=owner 2026-10-27T20:13Z 'No approval needed (5) / Proceed fable mode execute now' - S6-B3327 guard and preflight C20; this commit stages no path a leg reads (C20 PASS live)
+  output_audit_created=none
+  output_audit_modified_tracked=none
+  output_audit_modified_untracked=output_audit/b3139q_lv4s2_chain_detached.log
+  readset=SUSPECT:inputs-moved-again-during-rerun
+  readset_rerun=105 tests rc=0 log=b3139q_r131_pyramid.json.rerun.txt
+  readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+  moved_line_citations=none
+  stamp_binding=would-demote
+  NOTE (L621/S6-B3061): a config was IN FLIGHT while this pyramid ran - b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45. Its wall-clock is contended.
+  NOTE (B3091/runbook Step 2.4): an ENGINE heartbeat was fresh while this pyramid ran - launch_sweep:output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45,run_phase1a:output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45,run_serial_chain,run_wave:b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_spec.json. A pyramid beside a live wave can exhaust commit; runbook Step 2.4 says run the full suite BEFORE the launch - there is no leg-boundary window.
+  NOTE (S6-B3130a): read-set SUSPECT:inputs-moved-again-during-rerun (re-run: 105 tests rc=0 log=b3139q_r131_pyramid.json.rerun.txt; stamp: would-demote)
+  NOTE (S6-B3130a/L689): test(s) WROTE under the production output_audit in-process: 2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways

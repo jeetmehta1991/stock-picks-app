@@ -25396,3 +25396,33 @@ MEASURED: S6-B3248 (2)'s criterion, written before the r128 grids ran, called an
 **Rule.** No new rule - #226 and L734 stand: before a criterion compares against a baseline, print the baseline at every point the comparison will use.
 
 **Mechanism.** JUDGMENT-ONLY for detection - no scan reads what a criterion compares against; durability: output_audit/b3248_squeeze_breakout_episode_robust_check.json embeds its generator and criterion and labels its POST-HOC field as never changing the verdict, and the baseline is now its own artifact. Record-of-fact.
+
+### L971 - A TICKET WHOSE FIX LANDED UNDER ANOTHER TICKET STAYED OPEN, AND TWO CLOSES LISTED IT AS WAITING WORK (B3139q-r126..r130, 2026-10-27)
+
+MEASURED: S6-B3319 (B3139q-r120) said a per-leg Table D of a dual campaign called the other leg's knob 'NOT TESTED in this campaign', and named its fix - a leg field on SPECS params that validate_spec checks and the renderer reads. B3139q-r126 built that field under S6-B3304: table_d_render reads legs and labels the other leg's params LEG ONLY, and both camarilla per-leg renders now carry LEG ONLY lines (10 long, 6 short) whose only 'NOT TESTED' lines are B1 and B8, the genuinely untested coverage-skipped axes. S6-B3319 was never updated: the r129 close and the r129 LEVER4 row listed it as code waiting out the run, and the r130 answer found it while reading the latest row of every one of the 18 open tickets. What remains is the validate_spec check its fix option named - none exists in scripts/producer_variant_table.py - which joins S6-B3325, the same class's remaining members.
+
+**Why.** Compliance failure against #196 with L828: after a fix, re-check what was already decided - here an open ticket naming the symptom the fix removed. The r126 row cited the r120 render that showed the defect, so the link existed only in prose, in no field a reader follows.
+
+**Rule.** No new rule - #196 and L828 stand.
+
+**Mechanism.** JUDGMENT-ONLY for detection: no detection mechanism exists - a fix that resolves another ticket's symptom carries no machine-readable link, and the moved-code detector in scripts/audit_ticket_staleness.py watches DEFERRED tickets that name code paths, while S6-B3319 was OPEN and named none. Durability: the #196 INSTANCE. Record-of-fact.
+
+### L972 - AN ANSWER OFFERED AN OVERRIDE ROUTE ACROSS A GATE IT NEVER OPENED: COMMITTING THREE OF FIVE TICKETS WOULD HAVE HALTED THE LIVE RUN (B3139q-r130..r131, 2026-10-27)
+
+MEASURED: asked which tickets could be executed without approval, the r130 answer named five and said none could close before the LEVER4 Step-2 landing because no pyramid runs beside a live wave - and offered 'the earlier route, not recommended: a recorded --beside-wave override'. The owner replied 'No approval needed (5) / Proceed fable mode execute now'. Opening the other gate that route crosses showed it fails for three of the five: launch_sweep.drift_check refuses the next leg when a commit since the wave froze changes a path a leg reads - an uncommitted change too - and launch_sweep.leg_code_closure() held 74 scripts, producer_variant_table.py (S6-B3325 and S6-B3319's remainder), all ten graders (S6-B3318) and every Step-1 search script (S6-B3318, S6-B3322) among them. The same rule refuses an output_audit record by kind unless it ends md, json, jsonl, log, stdout, csv, html, png or svg, so even a batch's usual gate record, a .out file, would have halted the run. Caught before any edit to a leg-read path; this batch's gate record was written as .stdout.
+
+**Why.** Compliance failure against #230 with L866: a route is a claim about every gate it crosses - the answer named the pyramid gate and never opened drift_check, and the owner acted on the answer.
+
+**Rule.** No new rule - #230 and L866 stand: before quoting a route or an override, list every gate it crosses and read what each compares.
+
+**Mechanism.** preflight C20 (check_leg_paths_while_wave_live, S6-B3328): while a runner is live, a commit staging a path launch_sweep.drift_allowed refuses is itself refused, deletions included, with an ALLOW_LEG_PATH_COMMIT_WHILE_LIVE=<reason> override; pinned by test_b3328_leg_paths_refused_while_a_wave_is_live, 5 of 5 mutants killed. Residual, stated: an uncommitted edit to a leg-read path that straddles a leg boundary inside one turn is not caught at the commit; the skill's live-wave tripwire row is its durable half, pinned by test_b2123's fragment.
+
+### L973 - THE EDITED GUARD'S OWN PIN, WHICH FREEZES ITS IMPORT SET, WAS NOT IN THE TARGETED RUN (B3139q-r131, 2026-10-27)
+
+MEASURED from the transcript and the pre-gate output: S6-B3327 made scripts/pretooluse_heredoc_guard.py import backslash_run_hits from verify_turn_compliance. The targeted run before the pre-gate (transcript entry 221508, 20:30Z) named three tests - test_b3327_a_backslash_run_is_refused_before_running, test_b3328_leg_paths_refused_while_a_wave_is_live and test_b2123_session_rules_survive_in_the_always_read_skills - and passed 3 of 3. test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter, one of the guard's three existing pins, asserts the set of names the guard imports from that module EXACTLY, under its one-definition rule. The pre-gate - scripts/pregate_select.py over the batch's 22 changed paths, run from an id file - failed it before any commit: 1 failed, 419 passed and 1 skipped of 421, the other two guard pins (test_b3144, test_b3268) among the passes. Fixed line-count neutral: the set gains backslash_run_hits, which the pin's rule admits, since the guard imports the Stop scan's detector and compiles no pattern of its own.
+
+**Why.** Compliance failure against #315 with L851: a change's test selector names the pins it breaks, not only the pins it adds. The targeted list named what the batch built; the pin encoding the edited file's existing contract was not on it, while a grep of the test tree for the file's name finds it among 4 tests, 3 of them existing pins.
+
+**Rule.** No new rule - #315 and L851 stand, and L950's pre-gate is the search they prescribe.
+
+**Mechanism.** scripts/pregate_select.py (S6-B3269, pinned by test_b3269_pregate_selector_reaches_the_tests_that_read_a_change), run before the gate, selected the pin because it reads the edited guard, and the pin failed there before any commit - the mechanism working as built. Record-of-fact.

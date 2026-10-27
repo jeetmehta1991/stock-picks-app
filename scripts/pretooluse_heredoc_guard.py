@@ -28,6 +28,17 @@ transcript ran such a payload (the last at 2026-10-14T02:11Z), and the Stop-time
 its first report - its one-report key is the hit text, identical for every
 payload with the same escape set. A refusal before running closes that.
 
+S6-B3327 (B3139q-r131, L967; executed on the owner's word 2026-10-27, "No
+approval needed (5) / Proceed fable mode execute now"): a RUN of two or more
+backslashes anywhere in a Bash command, through verify_turn_compliance's
+backslash_run_hits. MEASURED: this tool halves every such run before bash
+parses the command, inside single quotes and quoted heredoc bodies alike,
+while a lone backslash before another character arrives unchanged - so the
+S6-B3144 message's "a single-quoted -c payload ... is fine" held only for a
+payload without a run, and is corrected. A git commit or tag message heredoc
+stays exempt. The rule runs after the two above, so their refusals keep
+their own messages. Bash only: the PowerShell tool's transport is unmeasured.
+
 Failure mode: an internal error exits 1, which Claude Code treats as a
 NON-blocking hook error, so a broken guard lets commands through (fail-open)
 rather than refusing every Bash call. The pin runs this file as a subprocess
@@ -67,30 +78,50 @@ def decide(payload: dict, root=None) -> tuple[int, str]:
                        "to learn its flags; a script that imports argparse, "
                        "optparse, click, typer or docopt, or compares against "
                        "a --help literal, is not refused.")
-    if tool != "Bash" or ("<<" not in cmd and "-c" not in cmd):
+    if tool != "Bash" or ("<<" not in cmd and "-c" not in cmd
+                          and "\\\\" not in cmd):
         return 0, ""
-    from verify_turn_compliance import dash_c_escape_hits, heredoc_escape_hits
+    from verify_turn_compliance import (backslash_run_hits,
+                                        dash_c_escape_hits,
+                                        heredoc_escape_hits)
     hits = heredoc_escape_hits(cmd) if "<<" in cmd else []
-    if not hits:
-        dash = dash_c_escape_hits(cmd) if "-c" in cmd else []
-        if not dash:
-            return 0, ""
+    if hits:
+        return 2, ("REFUSED BEFORE RUNNING (S6-B3139ae / #259 / L885): "
+                   f"{len(hits)} heredoc body(ies) fed to an interpreter carry a "
+                   f"backslash pair - first: {hits[0]!r}. A backslash pair can "
+                   "arrive altered through the shell and tool layers. Write the "
+                   "script with the Write tool and run the FILE. A heredoc with no "
+                   "backslash is fine, and a git commit or tag message heredoc is "
+                   "exempt.")
+    dash = dash_c_escape_hits(cmd) if "-c" in cmd else []
+    if dash:
+        # S6-B3327 corrected the last sentence: a single-quoted payload is
+        # fine only without a backslash RUN, which the transport halves
         return 2, ("REFUSED BEFORE RUNNING (S6-B3144 / #259 / L893): "
                    f"{len(dash)} double-quoted python -c payload(s) carry a "
                    f"backslash pair the shell does not consume - first: "
                    f"{dash[0]!r}. Inside double quotes bash leaves such a "
                    "pair for the interpreter, so what runs depends on two "
                    "quoting layers at once. Write the script with the Write "
-                   "tool and run the FILE. A single-quoted -c payload, or a "
-                   "pair bash consumes inside double quotes (before a quote, "
-                   "a dollar, a backtick or a backslash), is fine.")
-    return 2, ("REFUSED BEFORE RUNNING (S6-B3139ae / #259 / L885): "
-               f"{len(hits)} heredoc body(ies) fed to an interpreter carry a "
-               f"backslash pair - first: {hits[0]!r}. A backslash pair can "
-               "arrive altered through the shell and tool layers. Write the "
-               "script with the Write tool and run the FILE. A heredoc with no "
-               "backslash is fine, and a git commit or tag message heredoc is "
-               "exempt.")
+                   "tool and run the FILE. A single-quoted -c payload with no "
+                   "run of two or more backslashes, or a pair bash consumes "
+                   "inside double quotes (before a quote, a dollar or a "
+                   "backtick), is fine.")
+    # S6-B3327 (B3139q-r131, L967): last, so the two rules above keep their
+    # own refusals and messages for the commands they already cover
+    runs = backslash_run_hits(cmd) if "\\\\" in cmd else []
+    if runs:
+        return 2, ("REFUSED BEFORE RUNNING (S6-B3327 / #259 / L967): "
+                   f"{len(runs)} run(s) of two or more backslashes - first: "
+                   f"{runs[0]!r}. This tool halves every backslash run before "
+                   "bash reads the command (MEASURED: a doubled backslash in "
+                   "single quotes reached the program as one, and four as "
+                   "two), so no quoting delivers it as written. Write a single "
+                   "backslash where one is meant, or write the payload with "
+                   "the Write tool and run the FILE. A lone backslash before "
+                   "another character arrives unchanged, and a git commit or "
+                   "tag message heredoc is exempt.")
+    return 0, ""
 
 
 def main() -> int:

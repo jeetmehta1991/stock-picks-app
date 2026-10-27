@@ -5947,7 +5947,9 @@ def dash_c_escape_hits(cmd: str) -> list[str]:
     """S6-B3139v: one line per double-quoted `python -c "..."` payload in
     `cmd` carrying a backslash pair the SHELL DOES NOT CONSUME (it reaches
     the interpreter); [] when every pair is shell-consumed or none exists.
-    A single-quoted -c payload is untouched by bash and stays out of scope.
+    A single-quoted -c payload is untouched by bash and stays out of scope
+    here; a RUN of backslashes in one is still halved by the tool's
+    transport (S6-B3327, backslash_run_hits).
 
     S6-B3144 (owner ruling 2026-10-13, "Approve all other recommendations"):
     the PreToolUse guard now REFUSES on this function before a command runs,
@@ -5963,6 +5965,48 @@ def dash_c_escape_hits(cmd: str) -> list[str]:
                         if p not in _SHELL_CONSUMED})
         if pairs:
             out.append('python -c "..." payload: ' + " ".join(pairs[:6]))
+    return out
+
+
+# S6-B3327 (B3139q-r131, L967): the Bash tool's transport HALVES every RUN of
+# backslashes before bash parses the command. MEASURED 2026-10-27 through the
+# tool: a doubled backslash inside single quotes reached printf as one, a run
+# of four arrived as two, a quoted heredoc body arrived halved, and a
+# single-quoted python -c printing the length of a string written as
+# backslash, backslash, n printed 1 - while a LONE backslash before another
+# character (n, t, the alternation bar, a dollar, a backtick) arrived
+# unchanged and the Write tool kept both bytes. The PreToolUse hook sees the
+# command AS WRITTEN (a double-quoted -c holding a doubled backslash before n
+# ran instead of being refused as an unconsumed pair), so a run is detectable
+# before the transport halves it. No quoting delivers a run as written, so the
+# guard refuses one anywhere in a Bash command except a git commit or tag
+# message heredoc body (exempt, as in heredoc_escape_hits). MEASURED before
+# shipping over this session's transcript: 195 Bash commands carried such a
+# run - 1 inside a git message heredoc; 186 of the other 194 ran, among them
+# a sed pattern written to match a literal backslash-d and test code carrying
+# a Windows path, neither of which can have reached its program as written.
+_BACKSLASH_RUN_RE = re.compile(r"\\{2,}")
+
+
+def backslash_run_hits(cmd: str) -> list[str]:
+    """S6-B3327: one line per run of two or more backslashes in a Bash
+    command, outside a git commit or tag message heredoc body; [] when there
+    is none. The exempt bodies are blanked IN PLACE (same length), never cut,
+    so every other offset stays where it was (L582)."""
+    text = str(cmd or "")
+
+    def _blank_git_message(m):
+        if not re.search(r"\bgit\s+(?:commit|tag)\b", m.group("head")):
+            return m.group(0)
+        s, e = m.start("body") - m.start(), m.end("body") - m.start()
+        whole = m.group(0)
+        return whole[:s] + re.sub(r"[^\n]", " ", whole[s:e]) + whole[e:]
+
+    text = _HEREDOC_RE.sub(_blank_git_message, text)
+    out = []
+    for m in _BACKSLASH_RUN_RE.finditer(text):
+        a = max(0, m.start() - 30)
+        out.append(text[a:m.end() + 12].replace("\n", " / "))
     return out
 
 

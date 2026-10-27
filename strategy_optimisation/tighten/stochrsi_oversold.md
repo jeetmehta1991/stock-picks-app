@@ -1,6 +1,6 @@
 # Table A - stochrsi_oversold
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build c95f28a98 | commit c95f28a98 at 2026-10-27 12:16:03 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build f8636206d | commit f8636206d at 2026-10-27 16:39:23 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 2433 (closed fires in the exit cube: 2433 of 2433, S6-B3258) | **surviving fires (T1):** 2433 (unchanged since R5 - filter is identity)
 

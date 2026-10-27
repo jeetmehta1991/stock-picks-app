@@ -3107,6 +3107,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r129 / L968) - TWO REGISTRATION RIPPLES, ONE BATCH APART.** Registering williams_r_oversold's B1-B7 (B3139q-r127) and squeeze_breakout's B13 and B14 (B3139q-r128) each turned a pin holding the pre-registration state red - test_b3294's williams and squeeze arms, and test_b3317; the pre-gate selection caught both before any commit, and neither batch had grepped the test tree for the subject first (L801).
 
+**INSTANCE (B3139q-r131 / L971) - A FIX LANDED UNDER ANOTHER TICKET, AND THE TICKET IT FIXED STAYED OPEN.** B3139q-r126 built the legs field S6-B3319 had named as its fix, under S6-B3304; S6-B3319 stayed OPEN and two closes listed it as waiting work until the r130 classification read its row. Closed at B3139q-r131; its validate_spec remainder joined S6-B3325.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
@@ -4128,6 +4130,8 @@ to that shape only.**
 **INSTANCE (B3139q-r82 / L945) - A PACKET PRICED A CHANGE FROM THE CODE PATH IN FRONT OF IT.** The r77 decision packet described S6-B1248-SHORT-REGIME-AFFINITY (a) by the campaign path (which bypasses the regime filter) and missed Phase 1B and 23 explicit entries, and priced S6-B1248-LEVER4 (a) as one Step-1 run each while 0 of 4 strategies had any on-ramp rung. Both were found at execution, after the owner had approved on the packet's words. Mechanism: the L945 skill clause (a packet option's scope and price come from its reach), pinned by test_b2123.
 
 **INSTANCE (B3139q-r90 / L950):** registering news_momentum_long for its LEVER4 budget was scoped as an on-ramp for four strategies; its reach included Table A's producer and threshold rows, which read 'in SPECS' as 'its bands are inventoried'. GATE_STRUCTURE_KNOBS and build_table_a.registered_sets() split the two (test_b3240).
+
+**INSTANCE (B3139q-r131 / L972) - AN OVERRIDE ROUTE ACROSS AN UNREAD GATE.** An answer offered --beside-wave as the earlier route for five tickets; launch_sweep.drift_check, which the route also crosses, would have halted the live LEVER4 run at its next leg for three of them, whose files sit in the 74-script leg closure. Mechanism: preflight C20 (S6-B3328).
 
 ### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
 
@@ -6393,6 +6397,8 @@ Two additions, both from L852. (a) **ORDER.** A targeted test step runs AFTER ev
 **INSTANCE (B3139q-r90 / L950) - FOUR DEFECTS REACHED FULL GATES; THE SELECTIONS NAMED NONE OF THE FOUR FAILING TESTS.** r86: test_b3232 (a derived shortlist); r89: test_b3171b (a derived test subject) and test_b1974 (a generator's freshness stamp); r89b: test_b2128 (a repo-wide ratchet - the fix's own except:pass, 129 against 128). Each selection ran the change's own pins. The reach of a change is every test that reads what it touched; the gate's read-set records that for output_audit/ only, so it would have selected 1 of the 4 - a selector needs source reads too: scripts/pregate_select.py (S6-B3269, B3139q-r91, pinned by test_b3269) selects these 4 and the r90 gate's 2, 6 of 6, from their own changes.
 
 **INSTANCE 5 (B3139q-r109c / L950) - THE SELECTOR CAUGHT WHAT THE SEARCH MISSED.** Batch E grew a call's argument list and ran its own pins; the pin asserting that call's ORDER by its text (test_b3139's ohr half, the L748 class its own breadth half had already left) was never grepped for. pregate_select selected it among 188 and it failed before the gate - the first catch by the mechanism this item's r90 instance built. Fix: order on the AST, matched on the call's owner. A pin search for a changed call site greps the tests for the call's text as written, and a text pin on a call site is converted to the AST when found, not re-quoted.
+
+**INSTANCE 6 (B3139q-r131 / L973) - THE EDITED FILE'S OWN PIN WAS NOT IN THE TARGETED RUN.** S6-B3327 added an import to scripts/pretooluse_heredoc_guard.py; the targeted run named the two new pins and the skill-fragment pin, and test_b3139ae - which freezes the guard's import set from verify_turn_compliance under its one-definition rule - failed in the pre-gate before any commit (1 of 421). Fix: the set gains backslash_run_hits, which that rule admits. A change to a file greps the test tree for the FILE's name, not only for the names the change adds; scripts/pregate_select.py (S6-B3269) is that search, run before the gate.
 
 ### #316 - EVERY ARM OF ONE BOOLEAN COMPARES THE SAME WAY (L853, S6-B3036, 2026-09-23)
 

@@ -1094,6 +1094,76 @@ def check_generated_artifact_matches_generator(paths, *, regenerate=None,
     return bad
 
 
+# C20 (B3139q-r131 / L972, S6-B3328): while an engine wave is live, a commit
+# that changes a path a LEG reads makes the next leg's launch_sweep.drift_check
+# refuse, and the wave halts at its next boundary. MEASURED 2026-10-27 during
+# the LEVER4 Step-2 run: launch_sweep.leg_code_closure() held 74 scripts -
+# producer_variant_table.py, all ten graders and every Step-1 search script
+# among them - so three of the five tickets the owner said to execute could
+# not commit without halting the run, and an answer had offered an override
+# route that crossed this gate unread. Even the gate's own stdout record is
+# refused by kind when it ends in .out (output_audit artifacts are allowed
+# only as md, json, jsonl, log, stdout, csv, html, png or svg). ONE
+# definition: the policy is launch_sweep.drift_allowed over leg_code_closure
+# (drift_check's own), and liveness is pyramid_gate._engine_inflight (the
+# process table; anything but 'none' counts as live - fail closed). The staged
+# set includes DELETIONS, as drift_check's own diff does. Override, stated
+# and printed: ALLOW_LEG_PATH_COMMIT_WHILE_LIVE=<reason>, accepting the halt.
+LEG_PATH_OVERRIDE_ENV = "ALLOW_LEG_PATH_COMMIT_WHILE_LIVE"
+
+
+def check_leg_paths_while_wave_live(*, staged=None, inflight=None,
+                                    closure=None, env=None) -> list[str]:
+    """C20: the staged paths a leg reads, refused while a wave is live.
+    `staged`, `inflight`, `closure` and `env` are the test seams."""
+    import os
+    env = os.environ if env is None else env
+    if staged is None:
+        try:
+            r = subprocess.run(["git", "diff", "--cached", "--name-only"],
+                               cwd=REPO_ROOT, capture_output=True, text=True,
+                               check=False)
+            staged = [ln.strip() for ln in r.stdout.splitlines() if ln.strip()]
+        except Exception as exc:
+            return [f"C20: the staged set could not be read ({exc!r}) - "
+                    "fail closed while it is unknown"]
+    rels = sorted({str(p).replace(chr(92), "/") for p in staged})
+    if not rels:
+        return []
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts"))
+        import launch_sweep as _ls
+        if inflight is None:
+            import pyramid_gate as _pg
+            inflight = _pg._engine_inflight()
+        if closure is None:
+            closure = _ls.leg_code_closure(REPO_ROOT)
+        legs = frozenset(closure)
+        blocked = [p for p in rels if not _ls.drift_allowed(p, frozenset(), legs)]
+    except Exception as exc:
+        blocked = [p for p in rels if p.startswith(("scripts/", "backtest/"))
+                   and not p.startswith("backtest/tests/")]
+        if not blocked:
+            return []
+        return [f"C20: the live-wave leg-path rule could not be evaluated "
+                f"({exc!r}); {len(blocked)} staged code path(s) refused, fail "
+                "closed: " + ", ".join(blocked[:6])]
+    if str(inflight).strip() == "none" or not blocked:
+        return []
+    why = str(env.get(LEG_PATH_OVERRIDE_ENV) or "").strip()
+    if why:
+        print(f"preflight C20: {len(blocked)} leg-read path(s) committed while "
+              f"{inflight} is live - overridden: {why}")
+        return []
+    return [f"C20 LIVE WAVE (S6-B3328 / L972): {inflight} is in flight and this "
+            f"commit changes {len(blocked)} path(s) a leg reads - "
+            + ", ".join(blocked[:6])
+            + ". launch_sweep.drift_check refuses the next leg on such a "
+            "commit, so the wave would halt at its next boundary. Wait for the "
+            f"landing, or set {LEG_PATH_OVERRIDE_ENV}=<reason> to accept the "
+            "halt."]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--staged", action="store_true", help="check git-staged files only")
@@ -1153,6 +1223,9 @@ def main() -> int:
         all_violations += check_generated_artifact_matches_generator(files)
         # C17 (B3139q-r75 / L942): a committed gate record is write-once
         all_violations += check_gate_records_are_write_once()
+        # C20 (B3139q-r131 / L972): no leg-read path committed while a
+        # wave is live - drift_check would halt it at its next leg
+        all_violations += check_leg_paths_while_wave_live()
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

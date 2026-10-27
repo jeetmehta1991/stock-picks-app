@@ -26074,6 +26074,12 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r123: L964, same call as the skill edit.
         ("PRICE IT FROM THE SUBJECT'S OWN RECORD THROUGH THE GENERATOR THE LAUNCH WILL USE",
          'L964 (B3139q-r121): a Step-2 price quoted from another strategy run'),
+        # B3139q-r131: S6-B3327's transport clause in the L759 row and the
+        # L972 live-wave row, same call as the skill edit.
+        ("THIS TOOL HALVES EVERY RUN OF TWO OR MORE BACKSLASHES",
+         'S6-B3327 / L967 (B3139q-r131): single quotes do not protect a backslash run'),
+        ("CHECK EACH PATH AGAINST launch_sweep.leg_code_closure() FIRST",
+         'L972 (B3139q-r131): a commit to a leg-read path halts a live wave'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26319,7 +26325,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 355 -> 356 at B3139q-r95 (the L954 qualifier fragment; same call).
     # 356 -> 357 at B3139q-r113 (the L960 history-read fragment; same call).
     # 357 -> 358 at B3139q-r123 (the L964 price-from-the-subject fragment; same call).
-    assert len(gutted) == 358, gutted
+    # 358 -> 360 at B3139q-r131 (the S6-B3327 transport clause and the L972
+    # live-wave row; same call).
+    assert len(gutted) == 360, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -54151,11 +54159,11 @@ def test_b3139ae_pretooluse_refuses_backslash_heredoc_to_interpreter():
     cmds = [h.get("command", "") for e in s["hooks"]["PreToolUse"]
             if e.get("matcher") == "Bash" for h in e.get("hooks", [])]
     assert any("scripts/pretooluse_heredoc_guard.py" in c for c in cmds), cmds
-    # one definition: the guard imports the Stop scan's function and compiles no pattern of its own
+    # one definition: the guard imports the Stop scan's functions (S6-B3327 added backslash_run_hits) and compiles no pattern of its own
     tree = ast.parse(guard.read_text(encoding="utf-8"))
     imported = {a.name for n in ast.walk(tree) if isinstance(n, ast.ImportFrom)
                 and n.module == "verify_turn_compliance" for a in n.names}
-    assert imported == {"heredoc_escape_hits", "dash_c_escape_hits",
+    assert imported == {"heredoc_escape_hits", "dash_c_escape_hits", "backslash_run_hits",
                         "help_on_parserless_hits", "_HELP_PARSERLESS_HEAD"}, imported
     assert not [n for n in ast.walk(tree) if isinstance(n, ast.Attribute) and n.attr == "compile"]
 
@@ -65639,3 +65647,112 @@ def test_b3248c_widened_coverage_b13_b14_and_the_episode_check(tmp_path, monkeyp
     assert ep["verdict"].startswith(("AN EDGE SURVIVES", "NO EDGE SURVIVES"))
     assert (ep["survivors_total"] > 0) == ep["verdict"].startswith("AN EDGE SURVIVES")
     assert "def evaluate" in ep["generator"] and len(ep["artifacts"]) == 3
+
+
+def test_b3327_a_backslash_run_is_refused_before_running():
+    """S6-B3327 (B3139q-r131, L967): the Bash tool halves every run of two or
+    more backslashes before bash parses the command, so no quoting delivers
+    one as written. MEASURED 2026-10-27: a doubled backslash in single quotes
+    reached printf as one, four arrived as two, a quoted heredoc body arrived
+    halved; a lone backslash before another character arrived unchanged. The
+    PreToolUse guard refuses a run anywhere in a Bash command except a git
+    commit or tag message heredoc. Runs the guard as a SUBPROCESS, the way the
+    hook runs it, on cases built with chr(92) so this test's own source
+    carries no run."""
+    import importlib.util as _ilu
+    import json as _json
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    guard = root / "scripts" / "pretooluse_heredoc_guard.py"
+    BS, NL = chr(92), chr(10)
+
+    def run(cmd, tool="Bash"):
+        payload = _json.dumps({"tool_name": tool, "tool_input": {"command": cmd}})
+        r = _sp.run([_sys.executable, str(guard)], input=payload,
+                    capture_output=True, text=True, timeout=120)
+        return r.returncode, r.stderr
+
+    fire = [
+        "python -c 'print(len(\"" + BS * 2 + "n\"))'",
+        "sed -i 's/a" + BS * 2 + "d/x/' f.txt",
+        "cat > f.py <<'EOF'" + NL + "x = 'a" + BS * 2 + "b'" + NL + "EOF",
+        'grep -n "a' + BS * 2 + '|b" f.txt',
+        "printf '%s' 'X" + BS * 4 + "Y'",
+    ]
+    quiet = [
+        "grep -n 'a" + BS + "|b' f.txt",
+        'grep -n "a' + BS + '|b" f.txt',
+        "printf '%s' 'a" + BS + "$b'",
+        "git commit -q -F - <<'MSG'" + NL + "a message with " + BS * 2 + " in it" + NL + "MSG",
+        "ls -la",
+    ]
+    for cmd in fire:
+        rc, err = run(cmd)
+        assert rc == 2 and "S6-B3327" in err, (cmd, rc, err)
+    for cmd in quiet:
+        rc, err = run(cmd)
+        assert rc == 0 and not err, (cmd, rc, err)
+    # Bash only, as measured: the PowerShell tool's transport is unmeasured
+    rc, err = run("Write-Output 'C:" + BS * 2 + "x'", tool="PowerShell")
+    assert rc == 0, (rc, err)
+    # precedence: a heredoc fed to an interpreter keeps its own S6-B3139ae refusal
+    rc, err = run("python - <<'EOF'" + NL + "print('a" + BS * 2 + "b')" + NL + "EOF")
+    assert rc == 2 and "S6-B3139ae" in err and "S6-B3327" not in err, err
+    # the detector is ONE definition, beside heredoc_escape_hits
+    spec = _ilu.spec_from_file_location(
+        "vtc_b3327", root / "scripts" / "verify_turn_compliance.py")
+    vtc = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(vtc)
+    assert len(vtc.backslash_run_hits("echo 'a" + BS * 2 + "b' 'c" + BS * 3 + "d'")) == 2
+    assert vtc.backslash_run_hits("echo 'a" + BS + "nb'") == []
+    # the git message body is blanked IN PLACE: a run after it is still seen
+    hits = vtc.backslash_run_hits("git commit -q -F - <<'MSG'" + NL + BS * 2 + NL
+                                  + "MSG" + NL + "echo 'z" + BS * 2 + "z'")
+    assert len(hits) == 1 and "z" in hits[0], hits
+
+
+def test_b3328_leg_paths_refused_while_a_wave_is_live():
+    """S6-B3328 (B3139q-r131, L972): preflight C20. While an engine wave is
+    live, a commit that changes a path a LEG reads makes the next leg's
+    launch_sweep.drift_check refuse, and the wave halts at its next boundary.
+    C20 refuses such a commit; its policy is launch_sweep.drift_allowed (one
+    definition) and liveness is the process table, where anything but 'none'
+    counts as live. Seams: staged, inflight, closure, env."""
+    import ast as _ast
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location("pf_b3328", root / "scripts" / "preflight.py")
+    pf = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(pf)
+    chk = pf.check_leg_paths_while_wave_live
+    closure = {"scripts/producer_variant_table.py", "scripts/launch_sweep.py"}
+    live = "run_wave:b3139q_lv4s2_x_spec.json"
+    # MUST FIRE while a wave is live: a closure script, engine code, a gate
+    # record ending .out, an underscore input
+    for p in ("scripts/producer_variant_table.py", "backtest/signals/screener.py",
+              "output_audit/b3139q_r999_pyramid.out", "output_audit/_subset_x.txt"):
+        v = chk(staged=[p], inflight=live, closure=closure, env={})
+        assert len(v) == 1 and p in v[0] and "C20" in v[0], (p, v)
+    # an unreadable process table counts as live (fail closed)
+    assert chk(staged=["scripts/producer_variant_table.py"], inflight="unknown",
+               closure=closure, env={})
+    # MUST STAY QUIET: no wave; paths no leg reads; the stated override
+    assert chk(staged=["scripts/producer_variant_table.py"], inflight="none",
+               closure=closure, env={}) == []
+    for p in ("EXECUTION_QUEUE.md", "backtest/tests/test_unit.py",
+              "output_audit/b3139q_r999_pyramid.stdout", "output_audit/x.json",
+              "scripts/verify_turn_compliance.py", ".claude/skills/x/SKILL.md"):
+        assert chk(staged=[p], inflight=live, closure=closure, env={}) == [], p
+    assert chk(staged=["scripts/producer_variant_table.py"], inflight=live,
+               closure=closure,
+               env={pf.LEG_PATH_OVERRIDE_ENV: "owner accepted the halt"}) == []
+    # wired: main() calls it (an AST call, not prose - L748)
+    tree = _ast.parse((root / "scripts" / "preflight.py").read_text(encoding="utf-8"))
+    main = next(n for n in tree.body
+                if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    calls = {c.func.id for c in _ast.walk(main)
+             if isinstance(c, _ast.Call) and isinstance(c.func, _ast.Name)}
+    assert "check_leg_paths_while_wave_live" in calls
