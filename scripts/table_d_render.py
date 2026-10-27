@@ -220,6 +220,22 @@ def _basis_line(arts: list, paths: list):
                " trade, roster_core.net_pnl)" if mixed else ""))
 
 
+def _render_leg(arts: list):
+    """S6-B3304: the ONE leg every rendered artifact records - a breadth
+    grid's `leg`, a depth surface's `direction` - or None when any artifact
+    records none, a pooled leg, or the two disagree. A per-leg table renders
+    one side of a dual strategy; a param whose `legs` excludes that side is
+    the OTHER leg's, not an untested one (the r120 long render called the
+    short distance multiplier 'NOT TESTED in this campaign')."""
+    seen = set()
+    for a in arts:
+        leg = a.get("leg") if "leg" in a else a.get("direction")
+        if leg not in ("long", "short"):
+            return None
+        seen.add(leg)
+    return seen.pop() if len(seen) == 1 else None
+
+
 def _surface_rows(a: dict, params: list) -> list:
     """S6-B3316: one row per graded cell of a depth sweep's in-sample
     surface. The surface stores each cell's BEST exit only and no lower
@@ -655,7 +671,12 @@ def _row_cells(r: dict, params: list) -> dict:
     elif r.get("axis"):
         p = next((x for x in params if x["param"] == r["axis"]), None)
         if p is not None:
-            vals[r["axis"]] = _level_cell(p, r["level"])
+            # S6-B3304: the comparison the ROW was graded with - one column
+            # can hold a key graded on two legs in opposite directions, so the
+            # registry type cannot say which; a ge / le row names its own
+            sym = {"ge": ">=", "le": "<="}.get(r.get("op"))
+            vals[r["axis"]] = (f"{sym}{r['level']}" if sym
+                               else _level_cell(p, r["level"]))
         else:
             # S6-B3139an: a row keyed by a declared signal key lands in its
             # param's column, naming the key and its condition.
@@ -824,6 +845,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                   if a.get("reproduction_fires")), None)
 
     inv = []
+    render_leg = _render_leg(arts)                     # S6-B3304
     for p in params:
         # S6-B2874: `.get`, not a subscript. MEASURED at B2874: 29 of 70
         # params across both registries carry NO free_band, and this line
@@ -863,6 +885,11 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
                          f" (owner option (b); {c['excluded_gap_pct']}% gap"
                          " excluded from both arms - verdict binds the covered"
                          " subpopulation only)")
+        elif render_leg and p.get("legs") and render_leg not in p["legs"]:
+            # S6-B3304: the other leg's param in a per-leg table
+            line = (f"{p['id']} {p['param']}: {'/'.join(p['legs']).upper()} LEG"
+                    f" ONLY - outside the {render_leg} leg this table renders;"
+                    " graded in that leg's table")
         elif p.get("free_band"):
             # B3082c: previously this printed the BAND under a "TESTED at"
             # heading whenever nothing had tested it - announcing a test

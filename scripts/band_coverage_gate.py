@@ -195,6 +195,23 @@ def _gather(arts: list) -> tuple[dict, dict, dict, dict]:
     return graded, structural, discarded, resim
 
 
+def _graded_by_leg(arts: list) -> dict:
+    """S6-B3304 (B3139q-r126): {axis: {leg: set(levels)}} from axis grids,
+    the leg each grid RECORDS ('long' / 'short'; anything else - a pooled
+    grid, or none recorded - is 'both'). A param that declares `legs` is
+    covered per leg from this map, so one leg's grid cannot stand in for the
+    other leg's: a key approved on both legs in opposite directions is one
+    Table A row graded once per leg. A SKIP row grades nothing (L783)."""
+    out: dict = {}
+    for a in arts:
+        leg = a.get("leg") if a.get("leg") in ("long", "short") else "both"
+        for r in a.get("rows", []):
+            if r.get("is_sharpe") is None or not r.get("axis"):
+                continue
+            out.setdefault(r["axis"], {}).setdefault(leg, set()).add(r["level"])
+    return out
+
+
 def _surface_graded(a: dict) -> dict:
     """S6-B3294: {axis key: set(levels)} graded by an offline_level_sweep
     IS surface - each ranked row's levels, positionally against the artifact's
@@ -304,6 +321,8 @@ def coverage_report(strategy: str, artifact_paths: list, *,
             landed.append({"artifact": n, "config": a["config"]})
     graded, structural, discarded, resim = _gather(
         [a for a, k in zip(arts, kinds) if k == KIND_AXIS_GRID])
+    graded_leg = _graded_by_leg(                          # S6-B3304
+        [a for a, k in zip(arts, kinds) if k == KIND_AXIS_GRID])
     for p, vals in (resim_evidence or {}).items():
         resim.setdefault(p, set()).update(vals)
 
@@ -318,7 +337,27 @@ def coverage_report(strategy: str, artifact_paths: list, *,
         surface_graded, surface_covered = [], []
         q_labels = [b for b in band if isinstance(b, str) and b.startswith("q")]
         tested, untested = [], []
-        if q_labels:
+        # S6-B3304: a param declaring `legs` is covered PER LEG, from the
+        # grids of that leg (a pooled grid counts for every leg); a param
+        # without the field counts exactly as before
+        legs = p.get("legs")
+        by_leg = graded_leg.get(name, {})
+
+        def _leg_levels(leg):
+            return by_leg.get(leg, set()) | by_leg.get("both", set())
+        if q_labels and legs:
+            gaps = [(leg, len(_leg_levels(leg))) for leg in legs
+                    if len(_leg_levels(leg)) < len(q_labels)]
+            if not gaps:
+                tested = list(band)
+            else:
+                short_legs = {g[0] for g in gaps}
+                tested = [f"{len(_leg_levels(leg))} distinct graded levels on the "
+                          f"{leg} leg" for leg in legs if leg not in short_legs]
+                untested = [f"needs >= {len(q_labels)} distinct levels on the {leg} "
+                            f"leg ({len(q_labels)} quantile labels), got {got}"
+                            for leg, got in gaps]
+        elif q_labels:
             got = len(graded.get(name, set()) | free_seen)
             if got >= len(q_labels):
                 tested = list(band)
@@ -333,8 +372,10 @@ def coverage_report(strategy: str, artifact_paths: list, *,
                 if isinstance(lev, bool) or lev in BOOL_BAND_LABELS:
                     # a boolean axis has ONE tested state per band entry and
                     # its graded level may carry a leg qualifier ("True(long)")
-                    # - any graded row of the axis covers it
-                    ok = bool(graded.get(name))
+                    # - any graded row of the axis covers it; a legs-declaring
+                    # param needs a graded row on EACH of its legs (S6-B3304)
+                    ok = (all(_leg_levels(leg) for leg in legs) if legs
+                          else bool(graded.get(name)))
                 else:
                     ok = (_num_eq(lev, prod)
                           or any(_num_eq(lev, s) for s in seen))

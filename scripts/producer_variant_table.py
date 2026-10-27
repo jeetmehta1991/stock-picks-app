@@ -3750,7 +3750,7 @@ SPECS_PHASE0.update({
 # band (2026-10-26); the distance knob grades offline through the derived
 # cam_r4_room / cam_s4_room of scripts/camarilla_derived.py (S6-B3290b pattern).
 SPECS_PHASE0.update({"camarilla_r4_breakout": {
-    "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (the charter\nstrategy_optimisation/tighten/camarilla_r4_breakout.md numbers the same steps\nP1/P1.1/P2/P2.1/P3/P3.1/P4/P5 - integer ids here). NO breadth rows: the\ncharter's B-row candidates are NEW-GATE and outside the approved band.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  above_cam_r4  (close > R4 = prev_close + 1.1/2 x prev range; technical.py\n       compute_pivots; charter P1)\nP2  R4 distance multiplier  (charter P1.1: production 1.1/2 = 0.55 prior ranges;\n       the tighter levels are OFFLINE through scripts/camarilla_derived.py's\n       cam_r4_room - LONG leg; the looser 0.45 is engine-only, held)\nP3  below_cam_s4  (close < S4 = prev_close - 1.1/2 x prev range; charter P2)\nP4  S4 distance multiplier  (charter P2.1, the mirror, through cam_s4_room -\n       SHORT leg)\nP5  vol_above_avg  (vol / 20-day average >= 1.0; technical.py; charter P3)\nP6  volume ratio floor  (charter P3.1 on the persisted vol_ratio_20d, both\n       legs; the tighter floors are OFFLINE)\nP7  volume average window 20  (charter P3.1's second knob - DEFINED-NO-ACTUATOR)\n\n=============================== STRATEGY LAYER ===============================\n\nP8  xs_ivol >= 0.2598   [EXISTING-THRESHOLD, B1422 - both legs; charter P4]\nP9  _short_borrow_trap_active(s)  (days_to_cover > 5.0 blocks the SHORT fire;\n       charter P5 - band OWNER-GATED, not in the approved grid)\n\nlong_fires  = P1 AND P5 AND P8        (P2 / P6 tighten P1 / P5 offline)\nshort_fires = P3 AND P5 AND NOT P9 AND P8   (P4 / P6 tighten P3 / P5 offline)\nSwept per leg by offline_level_sweep.py --direction --survival --derive\nscripts/camarilla_derived.py: long cam_r4_room:gt, vol_ratio_20d:ge,\nxs_ivol:ge; short cam_s4_room:gt and the same two.\n",
+    "formula": "\nID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in\nthe producer->gate derivation (the charter\nstrategy_optimisation/tighten/camarilla_r4_breakout.md numbers the same steps\nP1/P1.1/P2/P2.1/P3/P3.1/P4/P5 - integer ids here). B1-B13 (BREADTH LAYER) are\nthe per-leg consistent companion screens' cluster representatives on the\nsurviving fires (S6-B3320), registered on the owner's 2026-10-27 word (S6-B3304):\n15 candidates on 13 keys - a key approved on both legs is ONE row graded per\nleg (the one-key-one-column rule); each row's legs field names its legs. The\ncharter's other B-row candidates stay NEW-GATE and outside the band.\n\n=============================== PRODUCER LAYER ===============================\n\nP1  above_cam_r4  (close > R4 = prev_close + 1.1/2 x prev range; technical.py\n       compute_pivots; charter P1)\nP2  R4 distance multiplier  (charter P1.1: production 1.1/2 = 0.55 prior ranges;\n       the tighter levels are OFFLINE through scripts/camarilla_derived.py's\n       cam_r4_room - LONG leg; the looser 0.45 is engine-only, held)\nP3  below_cam_s4  (close < S4 = prev_close - 1.1/2 x prev range; charter P2)\nP4  S4 distance multiplier  (charter P2.1, the mirror, through cam_s4_room -\n       SHORT leg)\nP5  vol_above_avg  (vol / 20-day average >= 1.0; technical.py; charter P3)\nP6  volume ratio floor  (charter P3.1 on the persisted vol_ratio_20d, both\n       legs; the tighter floors are OFFLINE)\nP7  volume average window 20  (charter P3.1's second knob - DEFINED-NO-ACTUATOR)\n\n=============================== BREADTH LAYER ===============================\n\nB1  pct_from_avwap_20low  LONG >= q  (technical.py cluster)\nB2  po3_accum_range_pct  LONG >= q / SHORT <= q  (ict_producers.py cluster)\nB3  cot_ndx_commercials_net_pct  LONG <= q  (cot_positioning.py cluster)\nB4  xs_max_anomaly  LONG >= q  (cross_sectional.py cluster)\nB5  bond_equity_20d_pct_change  LONG >= q  (cross_asset.py cluster)\nB6  short_interest_observations  LONG >= q / SHORT <= q  (short_interest.py cluster)\nB7  vix_term_backwardation  SHORT require FALSE  (cross_asset.py cluster)\nB8  monthly_momentum_6m  SHORT >= q  (multi_timeframe.py cluster)\nB9  ppo_signal  SHORT >= q  (technical.py cluster)\nB10  vp_below_value_area  SHORT require FALSE  (volume_profile.py cluster)\nB11  rsi_21  SHORT >= q  (polars_panel.py cluster)\nB12  cot_copper_commercials_net_pct  SHORT <= q  (cot_positioning.py cluster)\nB13  smc_in_premium_zone  SHORT require TRUE  (smc_ict.py cluster)\n\n=============================== STRATEGY LAYER ===============================\n\nP8  xs_ivol >= 0.2598   [EXISTING-THRESHOLD, B1422 - both legs; charter P4]\nP9  _short_borrow_trap_active(s)  (days_to_cover > 5.0 blocks the SHORT fire;\n       charter P5 - band OWNER-GATED, not in the approved grid)\n\nlong_fires  = P1 AND P5 AND P8        (P2 / P6 tighten P1 / P5 offline)\nshort_fires = P3 AND P5 AND NOT P9 AND P8   (P4 / P6 tighten P3 / P5 offline)\nSwept per leg by offline_level_sweep.py --direction --survival --derive\nscripts/camarilla_derived.py: long cam_r4_room:gt, vol_ratio_20d:ge,\nxs_ivol:ge; short cam_s4_room:gt and the same two.\nBreadth per leg by breadth_step1_grid.py --leg --survival --basis net:\nlong --axes pct_from_avwap_20low:ge,po3_accum_range_pct:ge,cot_ndx_commercials_net_pct:le,xs_max_anomaly:ge,bond_equity_20d_pct_change:ge,short_interest_observations:ge\nshort --axes po3_accum_range_pct:le,short_interest_observations:le,vix_term_backwardation:eq_false,monthly_momentum_6m:ge,ppo_signal:ge,vp_below_value_area:eq_false,rsi_21:ge,cot_copper_commercials_net_pct:le,smc_in_premium_zone:eq_true\n",
     "baseline": {
         "artifact": "output_r5_merged_1_7",
         "fires": 5774,
@@ -3786,7 +3786,10 @@ SPECS_PHASE0.update({"camarilla_r4_breakout": {
             "type": "identity",
             "engine_implemented": False,
             "evidence": "charter P1",
-            "derivation": "held at production"
+            "derivation": "held at production",
+            "legs": [
+                "long"
+            ]
         },
         {
             "id": "P2",
@@ -3819,7 +3822,10 @@ SPECS_PHASE0.update({"camarilla_r4_breakout": {
             "type": "float",
             "engine_implemented": True,
             "evidence": "output_audit/b3304_camarilla_distance_derivability.json (5774 of 5774 reproduced)",
-            "derivation": "TIGHTER = a larger multiplier (fewer closes clear R4); cam_r4_room > m"
+            "derivation": "TIGHTER = a larger multiplier (fewer closes clear R4); cam_r4_room > m",
+            "legs": [
+                "long"
+            ]
         },
         {
             "id": "P3",
@@ -3841,7 +3847,10 @@ SPECS_PHASE0.update({"camarilla_r4_breakout": {
             "type": "identity",
             "engine_implemented": False,
             "evidence": "charter P2",
-            "derivation": "held at production"
+            "derivation": "held at production",
+            "legs": [
+                "short"
+            ]
         },
         {
             "id": "P4",
@@ -3874,7 +3883,10 @@ SPECS_PHASE0.update({"camarilla_r4_breakout": {
             "type": "float",
             "engine_implemented": True,
             "evidence": "as P2",
-            "derivation": "TIGHTER = a larger multiplier; cam_s4_room > m"
+            "derivation": "TIGHTER = a larger multiplier; cam_s4_room > m",
+            "legs": [
+                "short"
+            ]
         },
         {
             "id": "P5",
@@ -4008,7 +4020,397 @@ SPECS_PHASE0.update({"camarilla_r4_breakout": {
             "type": "float",
             "engine_implemented": True,
             "evidence": "charter P5; B718a ruling",
-            "derivation": "tighter cap is offline on persisted days_to_cover; band only on the owner's word"
+            "derivation": "tighter cap is offline on persisted days_to_cover; band only on the owner's word",
+            "legs": [
+                "short"
+            ]
+        },
+        {
+            "id": "B1",
+            "producer": "backtest/signals/technical.py",
+            "param": "pct_from_avwap_20low",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "long"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); LONG leg op ge (keep HIGH)",
+            "type": "float>=q",
+            "engine_implemented": False,
+            "evidence": "long: b3304_camarilla_r4_breakout_long_companions_consistent.json (ts10 +15.669 / bept +24.108, joint 15.669, cluster of 2)",
+            "derivation": "BREADTH (runbook 3.6): the technical.py cluster's representative on the long leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B2",
+            "producer": "backtest/signals/ict_producers.py",
+            "param": "po3_accum_range_pct",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "long",
+                "short"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); LONG leg op ge (keep HIGH); SHORT leg op le (keep LOW)",
+            "type": "float",
+            "engine_implemented": False,
+            "evidence": "long: b3304_camarilla_r4_breakout_long_companions_consistent.json (ts10 +14.987 / bept +37.003, joint 14.987, cluster of 1); short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 -2.052 / bept -1.793, joint 1.793, cluster of 1)",
+            "derivation": "BREADTH (runbook 3.6): the ict_producers.py cluster's representative on the long and short legs (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B3",
+            "producer": "backtest/signals/cot_positioning.py",
+            "param": "cot_ndx_commercials_net_pct",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "long"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); LONG leg op le (keep LOW)",
+            "type": "float<=q",
+            "engine_implemented": False,
+            "evidence": "long: b3304_camarilla_r4_breakout_long_companions_consistent.json (ts10 -14.970 / bept -17.013, joint 14.970, cluster of 7)",
+            "derivation": "BREADTH (runbook 3.6): the cot_positioning.py cluster's representative on the long leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B4",
+            "producer": "backtest/signals/cross_sectional.py",
+            "param": "xs_max_anomaly",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "long"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); LONG leg op ge (keep HIGH)",
+            "type": "float>=q",
+            "engine_implemented": False,
+            "evidence": "long: b3304_camarilla_r4_breakout_long_companions_consistent.json (ts10 +14.603 / bept +33.797, joint 14.603, cluster of 1)",
+            "derivation": "BREADTH (runbook 3.6): the cross_sectional.py cluster's representative on the long leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B5",
+            "producer": "backtest/signals/cross_asset.py",
+            "param": "bond_equity_20d_pct_change",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "long"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); LONG leg op ge (keep HIGH)",
+            "type": "float>=q",
+            "engine_implemented": False,
+            "evidence": "long: b3304_camarilla_r4_breakout_long_companions_consistent.json (ts10 +10.966 / bept +5.868, joint 5.868, cluster of 4)",
+            "derivation": "BREADTH (runbook 3.6): the cross_asset.py cluster's representative on the long leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B6",
+            "producer": "backtest/signals/short_interest.py",
+            "param": "short_interest_observations",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "long",
+                "short"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); LONG leg op ge (keep HIGH); SHORT leg op le (keep LOW)",
+            "type": "float",
+            "engine_implemented": False,
+            "evidence": "long: b3304_camarilla_r4_breakout_long_companions_consistent.json (ts10 +3.184 / bept +18.355, joint 3.184, cluster of 1); short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 -4.960 / bept -3.303, joint 3.303, cluster of 1)",
+            "derivation": "BREADTH (runbook 3.6): the short_interest.py cluster's representative on the long and short legs (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B7",
+            "producer": "backtest/signals/cross_asset.py",
+            "param": "vix_term_backwardation",
+            "production": "not gated",
+            "band": [
+                "require_false"
+            ],
+            "free_band": [
+                "require_false"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "short"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); SHORT leg op eq_false (require FALSE)",
+            "type": "bool",
+            "engine_implemented": False,
+            "evidence": "short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 -6.084 / bept -7.599, joint 6.084, cluster of 10)",
+            "derivation": "BREADTH (runbook 3.6): the cross_asset.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B8",
+            "producer": "backtest/signals/multi_timeframe.py",
+            "param": "monthly_momentum_6m",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "short"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); SHORT leg op ge (keep HIGH)",
+            "type": "float>=q",
+            "engine_implemented": False,
+            "evidence": "short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 +4.243 / bept +5.218, joint 4.243, cluster of 12)",
+            "derivation": "BREADTH (runbook 3.6): the multi_timeframe.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B9",
+            "producer": "backtest/signals/technical.py",
+            "param": "ppo_signal",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "short"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); SHORT leg op ge (keep HIGH)",
+            "type": "float>=q",
+            "engine_implemented": False,
+            "evidence": "short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 +3.337 / bept +4.435, joint 3.337, cluster of 27)",
+            "derivation": "BREADTH (runbook 3.6): the technical.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B10",
+            "producer": "backtest/signals/volume_profile.py",
+            "param": "vp_below_value_area",
+            "production": "not gated",
+            "band": [
+                "require_false"
+            ],
+            "free_band": [
+                "require_false"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "short"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); SHORT leg op eq_false (require FALSE)",
+            "type": "bool",
+            "engine_implemented": False,
+            "evidence": "short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 -2.538 / bept -3.267, joint 2.538, cluster of 4)",
+            "derivation": "BREADTH (runbook 3.6): the volume_profile.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B11",
+            "producer": "backtest/signals/polars_panel.py",
+            "param": "rsi_21",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "short"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); SHORT leg op ge (keep HIGH)",
+            "type": "float>=q",
+            "engine_implemented": False,
+            "evidence": "short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 +2.376 / bept +3.778, joint 2.376, cluster of 2)",
+            "derivation": "BREADTH (runbook 3.6): the polars_panel.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B12",
+            "producer": "backtest/signals/cot_positioning.py",
+            "param": "cot_copper_commercials_net_pct",
+            "production": "not gated",
+            "band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "free_band": [
+                "q20",
+                "q40",
+                "q60",
+                "q80"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "short"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); SHORT leg op le (keep LOW)",
+            "type": "float<=q",
+            "engine_implemented": False,
+            "evidence": "short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 -1.988 / bept -2.520, joint 1.988, cluster of 5)",
+            "derivation": "BREADTH (runbook 3.6): the cot_positioning.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
+        },
+        {
+            "id": "B13",
+            "producer": "backtest/signals/smc_ict.py",
+            "param": "smc_in_premium_zone",
+            "production": "not gated",
+            "band": [
+                "require_true"
+            ],
+            "free_band": [
+                "require_true"
+            ],
+            "resim_band": [],
+            "env": None,
+            "consumers": [],
+            "sweep_levels": None,
+            "subset_safe": True,
+            "legs": [
+                "short"
+            ],
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); SHORT leg op eq_true (require TRUE)",
+            "type": "bool",
+            "engine_implemented": False,
+            "evidence": "short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 +1.842 / bept +1.893, joint 1.842, cluster of 3)",
+            "derivation": "BREADTH (runbook 3.6): the smc_ict.py cluster's representative on the short leg (max joint effect, #165); levels = retention quantiles on the leg's own surviving fires at grid time"
         }
     ]
 }})

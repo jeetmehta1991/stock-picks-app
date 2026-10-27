@@ -1,6 +1,6 @@
 # Table A - ichimoku_tk_cross
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build fcfe3b6e7 | commit fcfe3b6e7 at 2026-10-27 09:14:01 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 6d884d139 | commit 6d884d139 at 2026-10-27 10:10:00 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** trend | **status:** NOT-STARTED | **R5 fires:** 1319 (closed fires in the exit cube: 1319 of 1319, S6-B3258) | **surviving fires (T1):** 1228 (survives_pct 0.931)
 

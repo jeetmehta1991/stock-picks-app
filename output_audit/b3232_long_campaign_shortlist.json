@@ -1,9 +1,9 @@
 {
   "generator": "scripts/build_long_campaign_shortlist.py (S6-B3232)",
   "build": {
-    "source_commit": "fcfe3b6e7",
-    "generated_at": "2026-10-27 13:14:00 UTC",
-    "status_view_build": "fcfe3b6e7"
+    "source_commit": "6d884d139",
+    "generated_at": "2026-10-27 14:09:59 UTC",
+    "status_view_build": "6d884d139"
   },
   "population": {
     "open_long_capable": 121,

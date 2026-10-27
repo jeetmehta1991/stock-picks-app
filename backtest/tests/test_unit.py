@@ -65317,3 +65317,117 @@ def test_b3314_depth_instruments_state_their_pnl_basis(tmp_path, monkeypatch, ca
     assert "e.json: NOT RECORDED in the artifact" in tdr._basis_line([s_net, {"rows": []}],
                                                                        ["s.json", "e.json"])
     assert tdr._basis_line([g], ["g.json"]) is None
+
+
+# ================================================================ B3139q-r126 S6-B3304: camarilla's breadth rows, per leg
+def test_b3304b_camarilla_breadth_rows_carry_their_legs(tmp_path):
+    """S6-B3304 (B3139q-r126; owner 2026-10-27, verbatim 'Approve all recs fable
+    mode', on the r124 close's 'all 15'): camarilla_r4_breakout's 15 per-leg
+    breadth candidates register as B1-B13 on 13 keys - a key approved on both
+    legs in opposite directions is ONE row graded per leg (validate_spec's
+    one-key-one-column rule, S6-B3139an) - and every B-row and per-leg depth
+    param carries a structured `legs` field, which two readers now honour:
+    (1) the registry: the (key, leg, op) set equals the 15 representatives the
+    two committed consistent screens name, derived here from those files;
+    (2) band_coverage_gate counts a legs-declaring row PER LEG - one leg's grid
+    no longer covers the other leg's row (fail closed), a pooled grid covers
+    both, and a row without legs counts exactly as before; (3) table_d_render
+    shows the comparison a breadth row was GRADED with (a shared key's two legs
+    run opposite ops on one column), and a single-leg render labels the other
+    leg's params LEG ONLY instead of 'NOT TESTED in this campaign' - the label
+    the r120 long render printed for P4; (4) the committed per-leg grids ran
+    net, on the surviving fires, over exactly the registered per-leg axes."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    from producer_variant_table import SPECS_PHASE0, validate_spec
+    import band_coverage_gate as bcg
+    import table_d_render as tdr
+    A = root / "output_audit"
+    S = "camarilla_r4_breakout"
+
+    # (1) the registry, derived from the committed screens
+    def op_of(r):
+        if r["kind"] == "bool":
+            return "eq_true" if r["sign"] == "+" else "eq_false"
+        return "ge" if r["sign"] == "+" else "le"
+    want = set()
+    for leg in ("long", "short"):
+        d = _j.loads((A / f"b3304_camarilla_r4_breakout_{leg}_companions_consistent.json")
+                     .read_text(encoding="utf-8"))
+        assert d["survival_applied"] is True and d["direction"] == leg
+        for c in d["clusters"].values():
+            r = next(x for x in c["rows"] if x["key"] == c["representative"])
+            want.add((r["key"], leg, op_of(r)))
+    assert len(want) == 15
+    e = SPECS_PHASE0[S]
+    assert validate_spec(e) == [], validate_spec(e)
+    brows = [p for p in e["params"] if p["id"].startswith("B")]
+    assert [p["id"] for p in brows] == [f"B{i}" for i in range(1, 14)]
+    got = set()
+    for p in brows:
+        for leg in p["legs"]:
+            word = p["status"].split(f"{leg.upper()} leg op ", 1)[1].split(" ", 1)[0]
+            got.add((p["param"], leg, word))
+    assert got == want, sorted(got ^ want)
+    shared = {p["param"] for p in brows if p["legs"] == ["long", "short"]}
+    assert shared == {"po3_accum_range_pct", "short_interest_observations"}
+    legs = {p["id"]: p.get("legs") for p in e["params"]}
+    assert legs["P2"] == ["long"] and legs["P4"] == ["short"] and legs["P9"] == ["short"]
+    assert legs["P6"] is None and legs["P8"] is None          # both legs: no field
+
+    # (2) the coverage gate counts a legs-declaring row per leg
+    q = ["q20", "q40", "q60", "q80"]
+    spec = {"params": [
+        {"id": "B1", "param": "k_shared", "band": q, "production": "not gated",
+         "legs": ["long", "short"]},
+        {"id": "B2", "param": "k_plain", "band": q, "production": "not gated"},
+        {"id": "B3", "param": "k_flag", "band": ["require_false"], "production": "not gated",
+         "legs": ["short"]}]}
+
+    def grid(leg, rows):
+        return {"leg": leg, "axes": [], "rows": [
+            {"axis": k, "level": lv, "is_sharpe": 0.1, "op": "ge", "exit": "e"} for k, lv in rows]}
+    four = [1.0, 2.0, 3.0, 4.0]
+    long_g = grid("long", [("k_shared", x) for x in four] + [("k_plain", x) for x in four]
+                  + [("k_flag", 0.0)])
+    rep = bcg.coverage_report("syn", [], spec=spec, arts=[long_g])
+    by = {p["id"]: p for p in rep["params"]}
+    assert by["B1"]["untested"] and "short leg" in by["B1"]["untested"][0], by["B1"]
+    assert by["B2"]["untested"] == []                         # no legs: counted as before
+    assert by["B3"]["untested"] == ["require_false"], by["B3"]  # graded on the wrong leg
+    short_g = grid("short", [("k_shared", x) for x in four] + [("k_flag", 0.0)])
+    rep2 = bcg.coverage_report("syn", [], spec=spec, arts=[long_g, short_g])
+    assert rep2["complete"] is True, rep2["params"]
+    pooled = grid("both", [("k_shared", x) for x in four] + [("k_plain", x) for x in four]
+                  + [("k_flag", 0.0)])
+    assert bcg.coverage_report("syn", [], spec=spec, arts=[pooled])["complete"] is True
+
+    # (3) the renderer: the row's own comparison, and the other leg labelled
+    p_ge = {"id": "B9", "param": "kk", "type": "float>=q", "production": "not gated"}
+    cells = tdr._row_cells({"axis": "kk", "op": "le", "level": 5.0}, [p_ge])
+    assert cells["kk"] == "<=5.0", cells
+    assert tdr._row_cells({"axis": "kk", "op": "ge", "level": 5.0}, [p_ge])["kk"] == ">=5.0"
+    out = tdr.build_table(S, [str(A / "b3314_camarilla_r4_breakout_long_net_step1_is_surface.json"),
+                              str(A / "b3304_camarilla_r4_breakout_breadth_net_long.json")], top=5)
+    inv = {ln.split(" ", 4)[3]: ln for ln in out.splitlines() if ln.startswith("  - ")}
+    assert "SHORT LEG ONLY" in inv["P4"] and "NOT TESTED" not in inv["P4"], inv["P4"]
+    assert "SHORT LEG ONLY" in inv["B7"], inv["B7"]           # vix_term_backwardation: short only
+    assert "TESTED at" in inv["B2"] and "LEG ONLY" not in inv["B2"], inv["B2"]   # shared key
+    assert "TESTED at" in inv["P2"], inv["P2"]
+    pooled_out = tdr.build_table(S, [str(A / "b3314_camarilla_r4_breakout_long_net_step1_is_surface.json"),
+                                     str(A / "b3314_camarilla_r4_breakout_short_net_step1_is_surface.json")],
+                                 top=3)
+    assert "LEG ONLY" not in pooled_out                       # two legs rendered: no single leg
+
+    # (4) the committed per-leg grids
+    for leg in ("long", "short"):
+        g = _j.loads((A / f"b3304_camarilla_r4_breakout_breadth_net_{leg}.json").read_text(encoding="utf-8"))
+        assert g["basis"] == "net" and g["survival"] is True and g["leg"] == leg
+        axes = {(a["key"], a["op"]) for a in g["axes"]}
+        assert axes == {(k, o) for k, L, o in want if L == leg}, axes
+        assert g["permutation_null"]["n_perms"] == 100 and g["graded"] > 0
+        assert all(isinstance(r.get("episode"), dict) for r in g["rows"])

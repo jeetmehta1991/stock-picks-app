@@ -959,7 +959,9 @@ addendum tables are barred. Renderer: `scripts/table_d_render.py`; pinned by `te
 **When a depth surface is among the rendered artifacts, the table prints a BASIS line naming each
 artifact's P&L basis and flags MIXED BASES (S6-B3314)** - a gross depth row and a net breadth row in
 one ranking are not comparable without it; an artifact that records no basis reads NOT RECORDED,
-except a pre-S6-B3314 depth surface, which is gross by the instrument's omission.
+except a pre-S6-B3314 depth surface, which is gross by the instrument's omission. **A per-leg table
+(every artifact records one leg) labels a param whose `legs` excludes that leg `<LEG> LEG ONLY`, never
+NOT TESTED, and a breadth cell shows the comparison its row was graded with (S6-B3304).**
 
 **What does NOT apply offline, and why.** The post-config battery, the landing hook, `LANDING REPORT`,
 the launch gate, `gate_receipt.json`, the chain and its monitor are all triggered by an ENGINE RUN.
@@ -1012,6 +1014,12 @@ meaning.
    at grid time, subset-safe TRUE by construction (added AND-conditions tighten). ID SEMANTICS: P<n> =
    a numbered computation step of the producer -> gate derivation; B<n> = a breadth companion axis. The
    formula block (§7.1's two-layer format) shows both layers plus a BREADTH LAYER listing the B-axes.
+   **A DUAL strategy's B-rows are per leg (S6-B3304):** each row carries a `legs` field naming the
+   legs whose screen chose it, and a key chosen on both legs - even in opposite directions - is ONE
+   row graded once per leg (validate_spec's one-key-one-column rule, S6-B3139an); each leg's grid
+   takes that leg's ops. `band_coverage_gate` counts a legs-declaring row PER LEG, so one leg's grid
+   never covers the other leg's row (a pooled grid counts for both); per-leg depth params carry the
+   same field.
 4. **BAND REVIEW** - the owner reviews the full band (depth + breadth rows) before Step 1 (§0.6).
    Nothing runs earlier.
 5. **THE IN-SAMPLE GRID** (Step 3's search; the tool's name predates the renumbering) -
