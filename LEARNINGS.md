@@ -25346,3 +25346,13 @@ MEASURED, none reached a commit: (1) S6-B3315's runbook bullet named a strategy 
 **Rule.** No new rule - each is an instance of a standing one.
 
 **Mechanism.** test_b3096, test_b3122 and test_b3139bx caught (1)-(3) in the pre-gate selection; (4) is JUDGMENT-ONLY - preflight C14 refuses a drafting marker in a staged queue row, not a stale figure. Record-of-fact.
+
+### L966 - THE TESTED CLOSE WAS REWORDED AT POSTING, AGAIN (B3139q-r123, 2026-10-27)
+
+MEASURED: scripts/probe_close.py tested the r123 close draft (58 gates, 0 firing) and stamped it; the posted response reworded the draft's first line - 'Six batches landed and pushed' became a rewritten lead - and scan_close_differs_from_tested_draft (S6-B3193) blocked the turn end, naming the first differing line. Nothing else in the close changed; the gate held before the turn ended.
+
+**Why.** Compliance failure against #282 with L921 and L925: a close tested as a draft is posted verbatim, because the test certifies only the text it read and a rewording is where a new trigger enters. The reword was a style edit made at posting time - the lead felt improvable once it was on screen, the impulse L925 names.
+
+**Rule.** No new rule - #282 stands: post the tested file verbatim; any edit goes back through the probe first.
+
+**Mechanism.** scan_close_differs_from_tested_draft (S6-B3193), pinned by test_b3193_posted_close_must_equal_its_tested_draft - it fired on its first chance and held. Record-of-fact.

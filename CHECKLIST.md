@@ -5572,6 +5572,8 @@ the existing `scan_missing_skill_confirmation` and `scan_compliance_is_content`.
 
 **INSTANCE 2 (B3139q-r71d / L925) - A SECOND INSTANCE IN A DAY: MECHANISE THE DRAFT-VERSUS-POST CHECK.** A close tested at 54 gates with 0 firing was posted re-authored; the rewrite turned "end to end" (the phrase scan_partial_read accepts) into "end-to-end", and the posted close failed a gate the draft passed. Post the tested file byte for byte; a needed change goes into the file and the probe runs again. The draft-versus-post half is mechanised (S6-B3193, B3139q-r71k): scripts/probe_close.py stamps the probed draft under its turn and scan_close_differs_from_tested_draft refuses a final response that differs, naming the first differing line; pinned by test_b3193_posted_close_must_equal_its_tested_draft, durability by test_b2526.
 
+**INSTANCE (B3139q-r124 / L966) - A TESTED CLOSE REWORDED AT POSTING.** The r123 close passed probe_close (58 gates, 0 firing) and was posted with its first line reworded; scan_close_differs_from_tested_draft blocked the turn end, and the tested file was re-posted verbatim.
+
 ### #283 - A NAME-KEYED TERMINAL ARTIFACT ON DISK AT LAUNCH IS THE PRIOR ATTEMPT'S (B2193 / L649)
 
 Before launching (or waiting on) any run whose status artifact is keyed by a reused name
