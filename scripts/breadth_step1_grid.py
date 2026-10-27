@@ -260,6 +260,11 @@ def main() -> int:
                     help="S6-B3139ag: price the search with the B2676 joint-"
                          "shuffle null (runbook 3.6 item 6); 0 = no null")
     ap.add_argument("--null-seed", type=int, default=20260928)
+    ap.add_argument("--widen-coverage", default=None,
+                    help="S6-B3248 (1)(a), the B2698 rule made generic: grade ONE axis the "
+                         "coverage floor skips on its COVERED fires - --axes must be exactly "
+                         "that key; the uncovered fires leave the graded arm AND the null, and "
+                         "the gap is written on the artifact (owner-ruled per axis)")
     a = ap.parse_args()
     _ruling = require_band_ruling(a.band_ruling, a.strategy)   # S6-B2848a + B2855
     _stamp = require_fresh_status()                # S6-B2848b
@@ -283,6 +288,29 @@ def main() -> int:
           f"{a.basis} ({time.time()-t0:.0f}s)")
     if a.leg != "both":   # applied inside build_frame (S6-B3139am)
         print(f"leg filter: {a.leg} -> cube rows {len(m):,} (B3118 per-leg)")
+    # S6-B3248 (1)(a) / B2698: ONE coverage-skipped axis graded on its covered
+    # fires - the gap leaves BOTH arms (this frame feeds the grid and the
+    # null), so the verdict binds the covered subpopulation only
+    widened = None
+    if a.widen_coverage:
+        wkey = a.widen_coverage
+        if [k for k, _ in axes] != [wkey]:
+            raise SystemExit("REFUSED (S6-B3248): --widen-coverage grades ONE axis - "
+                             f"--axes must be exactly {wkey!r}")
+        wcov = float(rc.in_sample(m).drop_duplicates(["ticker", "entry_date"])[wkey]
+                     .notna().mean())
+        if wcov >= MIN_COVERAGE:
+            raise SystemExit(f"REFUSED (S6-B3248): {wkey} covers {wcov:.4f} of the IS fires, at "
+                             f"or over the {MIN_COVERAGE} floor - the ordinary grid grades it")
+        m = m[m[wkey].notna()].copy()
+        widened = {"is_fire_coverage": round(wcov, 4),
+                   "excluded_gap_pct": round(100.0 * (1.0 - wcov), 1),
+                   "scope": "the covered subpopulation only - the uncovered fires are "
+                            "excluded from the graded arm and from the null",
+                   "rule": "S6-B3248 (1)(a), the B2698 precedent (owner option (b), "
+                           "2026-09-12), made generic"}
+        print(f"widened coverage: {wkey} covers {wcov:.4f} of IS fires - grading the "
+              f"covered subpopulation ({widened['excluded_gap_pct']} pct gap excluded)")
 
     # ---- REPRODUCTION GATE (fail-closed) ------------------------------------
     base_cell = m[m.exit_method == a.repro_exit]
@@ -392,6 +420,11 @@ def main() -> int:
            "multiplicity": multiplicity,
            "permutation_null": null_block,
            "step1_ranking": ranked[:60], "rows": rows}
+    if widened:
+        # the gap on the artifact's face; axis + coverage are the re-sweep
+        # fields table_d_render integrates (the B2698 artifact's shape)
+        rec.update({"widen_coverage": widened, "axis": a.widen_coverage,
+                    "coverage": widened})
     rec["band_ruling_verbatim"] = _ruling
     rec["status_stamp_at_run"] = _stamp
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")

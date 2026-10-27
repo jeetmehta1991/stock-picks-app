@@ -1,0 +1,3376 @@
+{
+  "strategy": "squeeze_breakout",
+  "depth_base": null,
+  "basis": "net",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "leg": "long",
+  "survival": false,
+  "axes": [
+    {
+      "key": "total_active_holders",
+      "op": "ge"
+    }
+  ],
+  "quants": [
+    0.2,
+    0.4,
+    0.6,
+    0.8
+  ],
+  "min_coverage": 0.98,
+  "window": "IS only (< 2025-05-05); holdout untouched - Step 2 needs its own owner word",
+  "reproduction": {
+    "exit": "time_stop_10d",
+    "base_is_sharpe": 0.563,
+    "base_is_n": 869,
+    "base_full_n": 1034
+  },
+  "trials": 104,
+  "graded": 104,
+  "skipped_axes": [],
+  "multiplicity": {
+    "method": "benjamini-hochberg",
+    "q": 0.1,
+    "searched": 104,
+    "graded": 0,
+    "unpriceable": 0,
+    "no_candidate": 0,
+    "scored_unpriced": 104,
+    "unclassified": 0,
+    "rejected": 0,
+    "threshold": null,
+    "smallest_p": null,
+    "uncorrected_p05": 0,
+    "expected_best_under_null_se": null,
+    "expected_best_if_all_searched_counted_se": 2.38,
+    "report_only": true,
+    "note": "complete partition: graded + unpriceable + no_candidate + unclassified == searched. no_candidate rows produced no candidate to rank and are non-observations; unpriceable rows selected a candidate that could not be scored; scored_unpriced rows WERE graded and carry no p - their significance is established elsewhere, see significance_basis",
+    "reconciles": true,
+    "permutation_null": {
+      "instrument": "B2676 joint shuffle over this grid's exact search (breadth_permutation_null; npt excluded both sides)",
+      "label": "SYNTHETIC maxima (rng) - prices the search, never performance",
+      "n_perms": 100,
+      "seed": 20260928,
+      "n_valid_perms": 100,
+      "observed_best_is_sharpe": 2.021,
+      "null_max_median": 1.0925,
+      "null_max_p95": 1.3893,
+      "p_value": 0.0099,
+      "graded_cells_nonbarred": 100
+    },
+    "significance_basis": "permutation_null",
+    "trials": 104,
+    "basis_note": "4 (axis, level) cells x their exits = 104 searched; every searched (cell, exit) is a family row - graded, or BELOW_POWER_FLOOR / ZERO_FIRES - so the partition reconciles to the search, not to the graded subset (S6-B3139ag)"
+  },
+  "permutation_null": {
+    "instrument": "B2676 joint shuffle over this grid's exact search (breadth_permutation_null; npt excluded both sides)",
+    "label": "SYNTHETIC maxima (rng) - prices the search, never performance",
+    "n_perms": 100,
+    "seed": 20260928,
+    "n_valid_perms": 100,
+    "observed_best_is_sharpe": 2.021,
+    "null_max_median": 1.0925,
+    "null_max_p95": 1.3893,
+    "p_value": 0.0099,
+    "graded_cells_nonbarred": 100
+  },
+  "step1_ranking": [
+    {
+      "is_sharpe": 2.021,
+      "is_ci_lo": 1.252,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "time_stop_10d",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": 0.022
+      }
+    },
+    {
+      "is_sharpe": 1.77,
+      "is_ci_lo": 1.264,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "class_time_stop",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.601
+      }
+    },
+    {
+      "is_sharpe": 1.58,
+      "is_ci_lo": 1.028,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "regime_flip",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.625
+      }
+    },
+    {
+      "is_sharpe": 1.58,
+      "is_ci_lo": 1.028,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "time_stop_20d",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.625
+      }
+    },
+    {
+      "is_sharpe": 1.428,
+      "is_ci_lo": 0.807,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -2.637
+      }
+    },
+    {
+      "is_sharpe": 1.39,
+      "is_ci_lo": 1.042,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "class_time_stop",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.071
+      }
+    },
+    {
+      "is_sharpe": 1.386,
+      "is_ci_lo": 0.892,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "atr_trail_2x",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.745
+      }
+    },
+    {
+      "is_sharpe": 1.243,
+      "is_ci_lo": 0.86,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "regime_flip",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.104
+      }
+    },
+    {
+      "is_sharpe": 1.243,
+      "is_ci_lo": 0.86,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "time_stop_20d",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.104
+      }
+    },
+    {
+      "is_sharpe": 1.176,
+      "is_ci_lo": 0.646,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "time_stop_10d",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.206
+      }
+    },
+    {
+      "is_sharpe": 1.157,
+      "is_ci_lo": 0.778,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "fixed_4r_2r",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.201
+      }
+    },
+    {
+      "is_sharpe": 1.108,
+      "is_ci_lo": 0.834,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "class_time_stop",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.085
+      }
+    },
+    {
+      "is_sharpe": 1.074,
+      "is_ci_lo": 0.752,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "earnings_blackout",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.241
+      }
+    },
+    {
+      "is_sharpe": 1.049,
+      "is_ci_lo": 0.739,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "breakeven_plus_trail",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": 0.101
+      }
+    },
+    {
+      "is_sharpe": 1.038,
+      "is_ci_lo": 0.67,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "atr_trail_2x",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.452
+      }
+    },
+    {
+      "is_sharpe": 1.023,
+      "is_ci_lo": 0.784,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "class_time_stop",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.148
+      }
+    },
+    {
+      "is_sharpe": 0.998,
+      "is_ci_lo": 0.514,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -2.333
+      }
+    },
+    {
+      "is_sharpe": 0.987,
+      "is_ci_lo": 0.684,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "regime_flip",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.052
+      }
+    },
+    {
+      "is_sharpe": 0.987,
+      "is_ci_lo": 0.684,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "time_stop_20d",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.052
+      }
+    },
+    {
+      "is_sharpe": 0.953,
+      "is_ci_lo": 0.687,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "regime_flip",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.191
+      }
+    },
+    {
+      "is_sharpe": 0.953,
+      "is_ci_lo": 0.687,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "time_stop_20d",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.191
+      }
+    },
+    {
+      "is_sharpe": 0.928,
+      "is_ci_lo": 0.696,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "breakeven_plus_trail",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": 0.257
+      }
+    },
+    {
+      "is_sharpe": 0.905,
+      "is_ci_lo": 0.603,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "atr_trail_2x",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.299
+      }
+    },
+    {
+      "is_sharpe": 0.898,
+      "is_ci_lo": 0.708,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "breakeven_plus_trail",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": 0.33
+      }
+    },
+    {
+      "is_sharpe": 0.892,
+      "is_ci_lo": 0.599,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "hybrid_50pct_target",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.639
+      }
+    },
+    {
+      "is_sharpe": 0.891,
+      "is_ci_lo": 0.469,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "time_stop_10d",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.152
+      }
+    },
+    {
+      "is_sharpe": 0.871,
+      "is_ci_lo": 0.599,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "fixed_4r_2r",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.077
+      }
+    },
+    {
+      "is_sharpe": 0.866,
+      "is_ci_lo": 0.643,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "earnings_blackout",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": 0.054
+      }
+    },
+    {
+      "is_sharpe": 0.856,
+      "is_ci_lo": 0.625,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "fixed_4r_2r",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": 0.015
+      }
+    },
+    {
+      "is_sharpe": 0.831,
+      "is_ci_lo": 0.661,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "breakeven_plus_trail",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.414
+      }
+    },
+    {
+      "is_sharpe": 0.786,
+      "is_ci_lo": 0.575,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "fixed_4r_2r",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.113
+      }
+    },
+    {
+      "is_sharpe": 0.772,
+      "is_ci_lo": 0.5,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "atr_trail_2x",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.201
+      }
+    },
+    {
+      "is_sharpe": 0.763,
+      "is_ci_lo": 0.586,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "earnings_blackout",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": 0.044
+      }
+    },
+    {
+      "is_sharpe": 0.754,
+      "is_ci_lo": 0.542,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "hybrid_50pct_target",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.046
+      }
+    },
+    {
+      "is_sharpe": 0.711,
+      "is_ci_lo": 0.299,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -2.426
+      }
+    },
+    {
+      "is_sharpe": 0.711,
+      "is_ci_lo": 0.395,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "trailing_10pct",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -1.549
+      }
+    },
+    {
+      "is_sharpe": 0.71,
+      "is_ci_lo": 0.556,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "earnings_blackout",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.171
+      }
+    },
+    {
+      "is_sharpe": 0.683,
+      "is_ci_lo": 0.018,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "r_multiple_3r",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -1.62
+      }
+    },
+    {
+      "is_sharpe": 0.659,
+      "is_ci_lo": 0.489,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "hybrid_50pct_target",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.088
+      }
+    },
+    {
+      "is_sharpe": 0.626,
+      "is_ci_lo": 0.475,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "hybrid_50pct_target",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.116
+      }
+    },
+    {
+      "is_sharpe": 0.626,
+      "is_ci_lo": 0.109,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "break_even_at_1r",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -5.766
+      }
+    },
+    {
+      "is_sharpe": 0.589,
+      "is_ci_lo": 0.221,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "time_stop_10d",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.241
+      }
+    },
+    {
+      "is_sharpe": 0.583,
+      "is_ci_lo": 0.36,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "trailing_15pct",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.398
+      }
+    },
+    {
+      "is_sharpe": 0.548,
+      "is_ci_lo": 0.317,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "trailing_10pct",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.812
+      }
+    },
+    {
+      "is_sharpe": 0.503,
+      "is_ci_lo": 0.016,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "r_multiple_3r",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.486
+      }
+    },
+    {
+      "is_sharpe": 0.493,
+      "is_ci_lo": 0.307,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "trailing_10pct",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.503
+      }
+    },
+    {
+      "is_sharpe": 0.474,
+      "is_ci_lo": 0.308,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "trailing_15pct",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.208
+      }
+    },
+    {
+      "is_sharpe": 0.467,
+      "is_ci_lo": 0.304,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "trailing_10pct",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.08
+      }
+    },
+    {
+      "is_sharpe": 0.45,
+      "is_ci_lo": 0.07,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -2.268
+      }
+    },
+    {
+      "is_sharpe": 0.442,
+      "is_ci_lo": 0.027,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "r_multiple_3r",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.301
+      }
+    },
+    {
+      "is_sharpe": 0.442,
+      "is_ci_lo": 0.051,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "break_even_at_1r",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -2.854
+      }
+    },
+    {
+      "is_sharpe": 0.405,
+      "is_ci_lo": 0.087,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "break_even_at_1r",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -1.277
+      }
+    },
+    {
+      "is_sharpe": 0.391,
+      "is_ci_lo": 0.259,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "trailing_15pct",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.231
+      }
+    },
+    {
+      "is_sharpe": 0.378,
+      "is_ci_lo": 0.004,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "r_multiple_3r",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.131
+      }
+    },
+    {
+      "is_sharpe": 0.37,
+      "is_ci_lo": -0.244,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "r_multiple_2r",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.286
+      }
+    },
+    {
+      "is_sharpe": 0.364,
+      "is_ci_lo": 0.247,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "trailing_15pct",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.052
+      }
+    },
+    {
+      "is_sharpe": 0.286,
+      "is_ci_lo": -0.008,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "break_even_at_1r",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.984
+      }
+    },
+    {
+      "is_sharpe": 0.241,
+      "is_ci_lo": -0.271,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "r_multiple_2r",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.235
+      }
+    },
+    {
+      "is_sharpe": 0.218,
+      "is_ci_lo": -0.614,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "r_multiple_2r",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -1.848
+      }
+    },
+    {
+      "is_sharpe": 0.124,
+      "is_ci_lo": -0.333,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "r_multiple_2r",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.216
+      }
+    }
+  ],
+  "rows": [
+    {
+      "is_sharpe": -1.39,
+      "is_ci_lo": -1.922,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "atr_trail_1x",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -2.393
+      }
+    },
+    {
+      "is_sharpe": 0.772,
+      "is_ci_lo": 0.5,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "atr_trail_2x",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.201
+      }
+    },
+    {
+      "is_sharpe": -1.39,
+      "is_ci_lo": -1.922,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "atr_trail_mae_conditional",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -2.393
+      }
+    },
+    {
+      "is_sharpe": 0.45,
+      "is_ci_lo": 0.07,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -2.268
+      }
+    },
+    {
+      "is_sharpe": 0.286,
+      "is_ci_lo": -0.008,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "break_even_at_1r",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.984
+      }
+    },
+    {
+      "is_sharpe": 0.831,
+      "is_ci_lo": 0.661,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "breakeven_plus_trail",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.414
+      }
+    },
+    {
+      "is_sharpe": -0.115,
+      "is_ci_lo": -0.5,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "chandelier_3x",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.145
+      }
+    },
+    {
+      "is_sharpe": 1.023,
+      "is_ci_lo": 0.784,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "class_time_stop",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.148
+      }
+    },
+    {
+      "is_sharpe": 0.71,
+      "is_ci_lo": 0.556,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "earnings_blackout",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.171
+      }
+    },
+    {
+      "is_sharpe": 0.786,
+      "is_ci_lo": 0.575,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "fixed_4r_2r",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.113
+      }
+    },
+    {
+      "is_sharpe": 0.626,
+      "is_ci_lo": 0.475,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "hybrid_50pct_target",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.116
+      }
+    },
+    {
+      "is_sharpe": -0.392,
+      "is_ci_lo": -0.869,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "ma_exit_ema9",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.511
+      }
+    },
+    {
+      "is_sharpe": -1.849,
+      "is_ci_lo": -2.413,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "mfe_lockin_trail",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -2.404
+      }
+    },
+    {
+      "is_sharpe": -1.635,
+      "is_ci_lo": -2.181,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "multi_tier_partial",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -2.07
+      }
+    },
+    {
+      "is_sharpe": 0.631,
+      "is_ci_lo": 0.257,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "next_pivot_target",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": true,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.077
+      }
+    },
+    {
+      "is_sharpe": 0.124,
+      "is_ci_lo": -0.333,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "r_multiple_2r",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.216
+      }
+    },
+    {
+      "is_sharpe": 0.378,
+      "is_ci_lo": 0.004,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "r_multiple_3r",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.131
+      }
+    },
+    {
+      "is_sharpe": 0.953,
+      "is_ci_lo": 0.687,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "regime_flip",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.191
+      }
+    },
+    {
+      "is_sharpe": -1.39,
+      "is_ci_lo": -1.922,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "reverse_signal",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -2.393
+      }
+    },
+    {
+      "is_sharpe": -1.531,
+      "is_ci_lo": -2.072,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "smart_money_reversal",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -2.515
+      }
+    },
+    {
+      "is_sharpe": -4.033,
+      "is_ci_lo": -4.913,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "smc_mitigation_zone",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -3.706
+      }
+    },
+    {
+      "is_sharpe": 0.589,
+      "is_ci_lo": 0.221,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "time_stop_10d",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.241
+      }
+    },
+    {
+      "is_sharpe": 0.953,
+      "is_ci_lo": 0.687,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "time_stop_20d",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": 0.191
+      }
+    },
+    {
+      "is_sharpe": 0.467,
+      "is_ci_lo": 0.304,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "trailing_10pct",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.08
+      }
+    },
+    {
+      "is_sharpe": 0.364,
+      "is_ci_lo": 0.247,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "trailing_15pct",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.052
+      }
+    },
+    {
+      "is_sharpe": -0.295,
+      "is_ci_lo": -0.628,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 10.0,
+      "exit": "trailing_5pct",
+      "is_n": 708,
+      "full_n_count_only": 871,
+      "is_retention": 0.815,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.299,
+        "months": 37,
+        "n": 708,
+        "n_without_top_month": 496,
+        "is_sharpe_without_top_month": -0.694
+      }
+    },
+    {
+      "is_sharpe": -1.152,
+      "is_ci_lo": -1.742,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "atr_trail_1x",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -2.323
+      }
+    },
+    {
+      "is_sharpe": 0.905,
+      "is_ci_lo": 0.603,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "atr_trail_2x",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.299
+      }
+    },
+    {
+      "is_sharpe": -1.152,
+      "is_ci_lo": -1.742,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "atr_trail_mae_conditional",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -2.323
+      }
+    },
+    {
+      "is_sharpe": 0.711,
+      "is_ci_lo": 0.299,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -2.426
+      }
+    },
+    {
+      "is_sharpe": 0.405,
+      "is_ci_lo": 0.087,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "break_even_at_1r",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -1.277
+      }
+    },
+    {
+      "is_sharpe": 0.898,
+      "is_ci_lo": 0.708,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "breakeven_plus_trail",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": 0.33
+      }
+    },
+    {
+      "is_sharpe": -0.237,
+      "is_ci_lo": -0.683,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "chandelier_3x",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.371
+      }
+    },
+    {
+      "is_sharpe": 1.108,
+      "is_ci_lo": 0.834,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "class_time_stop",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.085
+      }
+    },
+    {
+      "is_sharpe": 0.763,
+      "is_ci_lo": 0.586,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "earnings_blackout",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": 0.044
+      }
+    },
+    {
+      "is_sharpe": 0.856,
+      "is_ci_lo": 0.625,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "fixed_4r_2r",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": 0.015
+      }
+    },
+    {
+      "is_sharpe": 0.659,
+      "is_ci_lo": 0.489,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "hybrid_50pct_target",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.088
+      }
+    },
+    {
+      "is_sharpe": -0.345,
+      "is_ci_lo": -0.893,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "ma_exit_ema9",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.539
+      }
+    },
+    {
+      "is_sharpe": -1.676,
+      "is_ci_lo": -2.305,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "mfe_lockin_trail",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -2.411
+      }
+    },
+    {
+      "is_sharpe": -1.502,
+      "is_ci_lo": -2.107,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "multi_tier_partial",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -2.138
+      }
+    },
+    {
+      "is_sharpe": 0.866,
+      "is_ci_lo": 0.451,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "next_pivot_target",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": true,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": 0.252
+      }
+    },
+    {
+      "is_sharpe": 0.241,
+      "is_ci_lo": -0.271,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "r_multiple_2r",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.235
+      }
+    },
+    {
+      "is_sharpe": 0.442,
+      "is_ci_lo": 0.027,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "r_multiple_3r",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.301
+      }
+    },
+    {
+      "is_sharpe": 0.987,
+      "is_ci_lo": 0.684,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "regime_flip",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.052
+      }
+    },
+    {
+      "is_sharpe": -1.152,
+      "is_ci_lo": -1.742,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "reverse_signal",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -2.323
+      }
+    },
+    {
+      "is_sharpe": -1.252,
+      "is_ci_lo": -1.851,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "smart_money_reversal",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -2.315
+      }
+    },
+    {
+      "is_sharpe": -4.334,
+      "is_ci_lo": -5.367,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "smc_mitigation_zone",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -4.371
+      }
+    },
+    {
+      "is_sharpe": 0.891,
+      "is_ci_lo": 0.469,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "time_stop_10d",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.152
+      }
+    },
+    {
+      "is_sharpe": 0.987,
+      "is_ci_lo": 0.684,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "time_stop_20d",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.052
+      }
+    },
+    {
+      "is_sharpe": 0.493,
+      "is_ci_lo": 0.307,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "trailing_10pct",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.503
+      }
+    },
+    {
+      "is_sharpe": 0.391,
+      "is_ci_lo": 0.259,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "trailing_15pct",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.231
+      }
+    },
+    {
+      "is_sharpe": -0.245,
+      "is_ci_lo": -0.619,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 15.0,
+      "exit": "trailing_5pct",
+      "is_n": 544,
+      "full_n_count_only": 701,
+      "is_retention": 0.626,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.373,
+        "months": 37,
+        "n": 544,
+        "n_without_top_month": 341,
+        "is_sharpe_without_top_month": -0.817
+      }
+    },
+    {
+      "is_sharpe": -1.096,
+      "is_ci_lo": -1.811,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "atr_trail_1x",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -2.553
+      }
+    },
+    {
+      "is_sharpe": 1.038,
+      "is_ci_lo": 0.67,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "atr_trail_2x",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.452
+      }
+    },
+    {
+      "is_sharpe": -1.096,
+      "is_ci_lo": -1.811,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "atr_trail_mae_conditional",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -2.553
+      }
+    },
+    {
+      "is_sharpe": 0.998,
+      "is_ci_lo": 0.514,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -2.333
+      }
+    },
+    {
+      "is_sharpe": 0.442,
+      "is_ci_lo": 0.051,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "break_even_at_1r",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -2.854
+      }
+    },
+    {
+      "is_sharpe": 0.928,
+      "is_ci_lo": 0.696,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "breakeven_plus_trail",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": 0.257
+      }
+    },
+    {
+      "is_sharpe": -0.309,
+      "is_ci_lo": -0.86,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "chandelier_3x",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.855
+      }
+    },
+    {
+      "is_sharpe": 1.39,
+      "is_ci_lo": 1.042,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "class_time_stop",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.071
+      }
+    },
+    {
+      "is_sharpe": 0.866,
+      "is_ci_lo": 0.643,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "earnings_blackout",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": 0.054
+      }
+    },
+    {
+      "is_sharpe": 0.871,
+      "is_ci_lo": 0.599,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "fixed_4r_2r",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.077
+      }
+    },
+    {
+      "is_sharpe": 0.754,
+      "is_ci_lo": 0.542,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "hybrid_50pct_target",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.046
+      }
+    },
+    {
+      "is_sharpe": -0.758,
+      "is_ci_lo": -1.458,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "ma_exit_ema9",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -1.545
+      }
+    },
+    {
+      "is_sharpe": -1.567,
+      "is_ci_lo": -2.326,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "mfe_lockin_trail",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -2.297
+      }
+    },
+    {
+      "is_sharpe": -1.269,
+      "is_ci_lo": -1.999,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "multi_tier_partial",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -1.882
+      }
+    },
+    {
+      "is_sharpe": 1.105,
+      "is_ci_lo": 0.593,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "next_pivot_target",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": true,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": 0.463
+      }
+    },
+    {
+      "is_sharpe": 0.37,
+      "is_ci_lo": -0.244,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "r_multiple_2r",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.286
+      }
+    },
+    {
+      "is_sharpe": 0.503,
+      "is_ci_lo": 0.016,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "r_multiple_3r",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.486
+      }
+    },
+    {
+      "is_sharpe": 1.243,
+      "is_ci_lo": 0.86,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "regime_flip",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.104
+      }
+    },
+    {
+      "is_sharpe": -1.096,
+      "is_ci_lo": -1.811,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "reverse_signal",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -2.553
+      }
+    },
+    {
+      "is_sharpe": -1.212,
+      "is_ci_lo": -1.939,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "smart_money_reversal",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -2.528
+      }
+    },
+    {
+      "is_sharpe": -3.956,
+      "is_ci_lo": -5.212,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "smc_mitigation_zone",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -3.886
+      }
+    },
+    {
+      "is_sharpe": 1.176,
+      "is_ci_lo": 0.646,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "time_stop_10d",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.206
+      }
+    },
+    {
+      "is_sharpe": 1.243,
+      "is_ci_lo": 0.86,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "time_stop_20d",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.104
+      }
+    },
+    {
+      "is_sharpe": 0.548,
+      "is_ci_lo": 0.317,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "trailing_10pct",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.812
+      }
+    },
+    {
+      "is_sharpe": 0.474,
+      "is_ci_lo": 0.308,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "trailing_15pct",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -0.208
+      }
+    },
+    {
+      "is_sharpe": -0.469,
+      "is_ci_lo": -0.951,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 32.6,
+      "exit": "trailing_5pct",
+      "is_n": 348,
+      "full_n_count_only": 495,
+      "is_retention": 0.4,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.448,
+        "months": 35,
+        "n": 348,
+        "n_without_top_month": 192,
+        "is_sharpe_without_top_month": -1.596
+      }
+    },
+    {
+      "is_sharpe": -1.439,
+      "is_ci_lo": -2.429,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "atr_trail_1x",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -3.416
+      }
+    },
+    {
+      "is_sharpe": 1.386,
+      "is_ci_lo": 0.892,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "atr_trail_2x",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.745
+      }
+    },
+    {
+      "is_sharpe": -1.439,
+      "is_ci_lo": -2.429,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "atr_trail_mae_conditional",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -3.416
+      }
+    },
+    {
+      "is_sharpe": 1.428,
+      "is_ci_lo": 0.807,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "atr_trail_vix_conditional",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -2.637
+      }
+    },
+    {
+      "is_sharpe": 0.626,
+      "is_ci_lo": 0.109,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "break_even_at_1r",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -5.766
+      }
+    },
+    {
+      "is_sharpe": 1.049,
+      "is_ci_lo": 0.739,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "breakeven_plus_trail",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": 0.101
+      }
+    },
+    {
+      "is_sharpe": -0.283,
+      "is_ci_lo": -1.072,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "chandelier_3x",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -1.714
+      }
+    },
+    {
+      "is_sharpe": 1.77,
+      "is_ci_lo": 1.264,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "class_time_stop",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.601
+      }
+    },
+    {
+      "is_sharpe": 1.074,
+      "is_ci_lo": 0.752,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "earnings_blackout",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.241
+      }
+    },
+    {
+      "is_sharpe": 1.157,
+      "is_ci_lo": 0.778,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "fixed_4r_2r",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.201
+      }
+    },
+    {
+      "is_sharpe": 0.892,
+      "is_ci_lo": 0.599,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "hybrid_50pct_target",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.639
+      }
+    },
+    {
+      "is_sharpe": -1.128,
+      "is_ci_lo": -2.181,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "ma_exit_ema9",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -2.809
+      }
+    },
+    {
+      "is_sharpe": -1.758,
+      "is_ci_lo": -2.803,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "mfe_lockin_trail",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -2.888
+      }
+    },
+    {
+      "is_sharpe": -1.647,
+      "is_ci_lo": -2.652,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "multi_tier_partial",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -2.145
+      }
+    },
+    {
+      "is_sharpe": 1.232,
+      "is_ci_lo": 0.504,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "next_pivot_target",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": true,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": 0.08
+      }
+    },
+    {
+      "is_sharpe": 0.218,
+      "is_ci_lo": -0.614,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "r_multiple_2r",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -1.848
+      }
+    },
+    {
+      "is_sharpe": 0.683,
+      "is_ci_lo": 0.018,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "r_multiple_3r",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -1.62
+      }
+    },
+    {
+      "is_sharpe": 1.58,
+      "is_ci_lo": 1.028,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "regime_flip",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.625
+      }
+    },
+    {
+      "is_sharpe": -1.439,
+      "is_ci_lo": -2.429,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "reverse_signal",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -3.416
+      }
+    },
+    {
+      "is_sharpe": -1.704,
+      "is_ci_lo": -2.723,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "smart_money_reversal",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -3.416
+      }
+    },
+    {
+      "is_sharpe": -6.174,
+      "is_ci_lo": -8.066,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "smc_mitigation_zone",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -6.259
+      }
+    },
+    {
+      "is_sharpe": 2.021,
+      "is_ci_lo": 1.252,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "time_stop_10d",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": 0.022
+      }
+    },
+    {
+      "is_sharpe": 1.58,
+      "is_ci_lo": 1.028,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "time_stop_20d",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.625
+      }
+    },
+    {
+      "is_sharpe": 0.711,
+      "is_ci_lo": 0.395,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "trailing_10pct",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -1.549
+      }
+    },
+    {
+      "is_sharpe": 0.583,
+      "is_ci_lo": 0.36,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "trailing_15pct",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -0.398
+      }
+    },
+    {
+      "is_sharpe": -0.216,
+      "is_ci_lo": -0.894,
+      "axis": "total_active_holders",
+      "op": "ge",
+      "level": 682.8,
+      "exit": "trailing_5pct",
+      "is_n": 174,
+      "full_n_count_only": 284,
+      "is_retention": 0.2,
+      "npt_barred": false,
+      "episode": {
+        "top_month": "2025-04",
+        "top_month_share": 0.598,
+        "months": 19,
+        "n": 174,
+        "n_without_top_month": 70,
+        "is_sharpe_without_top_month": -1.825
+      }
+    }
+  ],
+  "widen_coverage": {
+    "is_fire_coverage": 0.9119,
+    "excluded_gap_pct": 8.8,
+    "scope": "the covered subpopulation only - the uncovered fires are excluded from the graded arm and from the null",
+    "rule": "S6-B3248 (1)(a), the B2698 precedent (owner option (b), 2026-09-12), made generic"
+  },
+  "axis": "total_active_holders",
+  "coverage": {
+    "is_fire_coverage": 0.9119,
+    "excluded_gap_pct": 8.8,
+    "scope": "the covered subpopulation only - the uncovered fires are excluded from the graded arm and from the null",
+    "rule": "S6-B3248 (1)(a), the B2698 precedent (owner option (b), 2026-09-12), made generic"
+  },
+  "band_ruling_verbatim": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's '(1)(a), then (2)(b) unless an edge survives outside April 2025, and (3) add both'; S6-B3248)",
+  "status_stamp_at_run": "06a7ff8bb"
+}

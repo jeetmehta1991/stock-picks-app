@@ -63731,12 +63731,14 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
         # COVERAGE-SKIPPED axes (B10 at 0.912, B12 at 0.928 < the 0.98 floor) stay UNTESTED
         sq_d = bcg.coverage_report("squeeze_breakout", [str(sq)])
         assert sq_d["complete"] is False
+        # S6-B3248 (3), B3139q-r128: B13/B14 registered - 14 B rows
         assert {p["id"] for p in sq_d["params"] if p["untested"]} == {
-            f"B{i}" for i in range(1, 13)}
+            f"B{i}" for i in range(1, 15)}
         sqb = A / "b3248_squeeze_breakout_breadth_net_long.json"
         if sqb.exists():
             sq_db = bcg.coverage_report("squeeze_breakout", [str(sq), str(sqb)])
-            assert {p["id"] for p in sq_db["params"] if p["untested"]} == {"B10", "B12"}
+            # the r116 grid predates B13/B14 and coverage-skipped B10/B12
+            assert {p["id"] for p in sq_db["params"] if p["untested"]} == {"B10", "B12", "B13", "B14"}
         one = bcg.coverage_report("williams_r_oversold", [str(wl)])
         assert one["complete"] is False                   # the short leg's bands need the short sweep
         assert {p["param"] for p in one["params"]
@@ -64731,7 +64733,9 @@ def test_b3317_consistent_set_attributes_fstring_written_keys(tmp_path):
     approved = {p["param"] for p in SPECS_PHASE0["squeeze_breakout"]["params"] if p["id"].startswith("B")}
     reps = {c["representative"] for c in new["clusters"].values()}
     assert approved <= reps, approved - reps
-    assert reps - approved == {"cot_dxy_mmoney_pctile_3y", "rsi_9_bullish"}, reps - approved
+    # S6-B3248 (3), B3139q-r128: the two clusters this fix found are registered as B13/B14
+    assert reps == approved, reps ^ approved
+    assert {"cot_dxy_mmoney_pctile_3y", "rsi_9_bullish"} <= approved
 
 
 # ================================================================ B3139q-r119 S6-B3315: a Step-1 search discloses a one-episode cell
@@ -65509,3 +65513,129 @@ def test_b3247c_williams_breadth_rows_legs_and_grids():
         other = "SHORT" if leg == "long" else "LONG"
         probe = "P2" if leg == "long" else "B1"                # a param of the other leg
         assert f"{other} LEG ONLY" in inv[probe], inv[probe]
+
+
+# ================================================================ B3139q-r128 S6-B3248: widened coverage, B13/B14, the episode check
+def _b3248c_fixture(tmp_path):
+    """The _b3139ag_fixture shape plus an axis g missing on every tenth fire,
+    so g covers 36 of the 40 in-sample fires (0.9). Deterministic."""
+    import json as _j
+    import pandas as pd
+    tl, cube = [], []
+    days = ([f"2023-{(i % 12) + 1:02d}-{(i % 27) + 1:02d}" for i in range(40)]
+            + [f"2025-06-{i + 2:02d}" for i in range(6)])
+    for i, d in enumerate(days):
+        tk = f"T{i:02d}"
+        sig = {"k": float(i)}
+        if i % 10:
+            sig["g"] = float(i % 13)
+        tl.append({"strategy": "fx", "ticker": tk, "entry_date": d,
+                   "signals_at_entry": _j.dumps(sig)})
+        for ex, pnl in (("time_stop_10d", ((i * 37) % 11) - 4.0),
+                        ("other_exit", ((i * 13) % 7) - 2.5)):
+            cube.append({"strategy": "fx", "ticker": tk, "entry_date": d,
+                         "direction": "long", "exit_method": ex, "pnl_pct": pnl,
+                         "hold_days": 10})
+    run = tmp_path / "run"
+    run.mkdir()
+    pd.DataFrame(tl).to_csv(run / "trade_log.csv", index=False)
+    pd.DataFrame(cube).to_csv(run / "trade_exit_detail.csv", index=False)
+    return run
+
+
+def test_b3248c_widened_coverage_b13_b14_and_the_episode_check(tmp_path, monkeypatch):
+    """S6-B3248 (B3139q-r128; owner 2026-10-27, verbatim 'Approve all recs fable
+    mode', on '(1)(a), then (2)(b) unless an edge survives outside April 2025,
+    and (3) add both'). (1) breadth_step1_grid --widen-coverage makes the B2698
+    rule generic: ONE axis the 0.98 floor skips is graded on its covered fires,
+    the gap leaves the graded arm and the null, and the artifact carries the
+    gap and the re-sweep fields Table D reads; it refuses two axes and an axis
+    the floor already admits. (2) B13 / B14 are the two clusters the S6-B3317
+    re-clustering added, registered from that screen. (3) the committed grids:
+    the 14-axis grid skips B10 / B12 as before, the two covered-fire
+    re-sweeps grade them, and with all three the coverage gate reads the
+    squeeze band complete. (4) the committed episode check states its
+    criterion and reaches a verdict with its generator embedded."""
+    import importlib
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import breadth_step1_grid as bg
+    importlib.reload(bg)
+    monkeypatch.setattr(bg, "require_band_ruling", lambda *a, **k: "stub")
+    monkeypatch.setattr(bg, "require_fresh_status", lambda *a, **k: "stub")
+    run = _b3248c_fixture(tmp_path)
+
+    def grid(extra, name):
+        out = tmp_path / name
+        monkeypatch.setattr(_s, "argv", ["bg", "--strategy", "fx", "--out", str(out),
+                                         "--band-ruling", "pin probe", "--basis", "net",
+                                         "--null-perms", "3", "--cube-dir", str(run)] + extra)
+        assert bg.main() == 0
+        return _j.loads(out.read_text(encoding="utf-8"))
+    plain = grid(["--axes", "g:ge"], "plain.json")
+    assert plain["skipped_axes"] == [{"axis": "g", "coverage": 0.9}] and plain["graded"] == 0
+    assert "widen_coverage" not in plain and "axis" not in plain
+    wide = grid(["--axes", "g:ge", "--widen-coverage", "g"], "wide.json")
+    cov = wide["widen_coverage"]
+    assert cov["is_fire_coverage"] == 0.9 and cov["excluded_gap_pct"] == 10.0, cov
+    assert wide["axis"] == "g" and wide["coverage"] == cov and wide["skipped_axes"] == []
+    assert wide["graded"] > 0 and wide["reproduction"]["base_is_n"] == 36   # covered IS fires only
+    assert plain["reproduction"]["base_is_n"] == 40
+    assert all(r["is_n"] <= 36 for r in wide["rows"])
+    with pytest.raises(SystemExit) as e:
+        grid(["--axes", "g:ge,k:ge", "--widen-coverage", "g"], "two.json")
+    assert "ONE axis" in str(e.value)
+    with pytest.raises(SystemExit) as e:
+        grid(["--axes", "k:ge", "--widen-coverage", "k"], "full.json")
+    assert "floor" in str(e.value)
+    importlib.reload(bg)
+
+    # (2) B13 / B14 from the S6-B3317 screen
+    from producer_variant_table import SPECS_PHASE0, validate_spec
+    A = root / "output_audit"
+    e = SPECS_PHASE0["squeeze_breakout"]
+    assert validate_spec(e) == [], validate_spec(e)
+    p = {x["id"]: x for x in e["params"]}
+    assert [i for i in p if i.startswith("B")] == [f"B{n}" for n in range(1, 15)]
+    scr = _j.loads((A / "b3317_squeeze_breakout_companions_consistent.json").read_text(encoding="utf-8"))
+    reps = {c["representative"]: next(r for r in c["rows"] if r["key"] == c["representative"])
+            for c in scr["clusters"].values()}
+    assert {x["param"] for x in p.values() if x["id"].startswith("B")} == set(reps)
+    assert p["B13"]["param"] == "cot_dxy_mmoney_pctile_3y" and p["B13"]["type"] == "float>=q"
+    assert p["B14"]["param"] == "rsi_9_bullish" and p["B14"]["band"] == ["require_false"]
+    assert reps["rsi_9_bullish"]["sign"] == "-" and reps["cot_dxy_mmoney_pctile_3y"]["sign"] == "+"
+    # the status a reader sees names the same comparison the band encodes (mutation M5)
+    assert p["B13"]["status"].endswith("op ge (keep HIGH)"), p["B13"]["status"]
+    assert p["B14"]["status"].endswith("op eq_false (require FALSE)"), p["B14"]["status"]
+    assert "COVERED fires" in p["B10"]["status"] and "COVERED fires" in p["B12"]["status"]
+
+    # (3) the committed grids and the coverage gate
+    import band_coverage_gate as bcg
+    g14 = _j.loads((A / "b3248_squeeze_breakout_breadth_net_long_b14.json").read_text(encoding="utf-8"))
+    assert {s["axis"] for s in g14["skipped_axes"]} == {"total_active_holders", "pair_zscore_signed"}
+    assert len(g14["axes"]) == 14 and g14["basis"] == "net"
+    cov_files = []
+    for b, key in (("b10", "total_active_holders"), ("b12", "pair_zscore_signed")):
+        f = A / f"b3248_squeeze_breakout_breadth_net_long_{b}_covered.json"
+        r = _j.loads(f.read_text(encoding="utf-8"))
+        assert r["axis"] == key and r["widen_coverage"]["is_fire_coverage"] < bg.MIN_COVERAGE
+        assert r["graded"] > 0 and r["skipped_axes"] == []
+        cov_files.append(str(f))
+    depth = str(A / "b3289_squeeze_breakout_depth_step1_is_surface.json")
+    monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", True)
+    part = bcg.coverage_report("squeeze_breakout", [depth, str(A / "b3248_squeeze_breakout_breadth_net_long_b14.json")])
+    assert {x["id"] for x in part["params"] if x["untested"]} == {"B10", "B12"}
+    full = bcg.coverage_report("squeeze_breakout", [depth, str(A / "b3248_squeeze_breakout_breadth_net_long_b14.json")] + cov_files)
+    assert full["complete"] is True, [x for x in full["params"] if x["untested"]]
+
+    # (4) the episode check
+    ep = _j.loads((A / "b3248_squeeze_breakout_episode_robust_check.json").read_text(encoding="utf-8"))
+    assert "NOT blind" in ep["criterion"] and "same month removed" in ep["criterion"]
+    assert ep["verdict"].startswith(("AN EDGE SURVIVES", "NO EDGE SURVIVES"))
+    assert (ep["survivors_total"] > 0) == ep["verdict"].startswith("AN EDGE SURVIVES")
+    assert "def evaluate" in ep["generator"] and len(ep["artifacts"]) == 3

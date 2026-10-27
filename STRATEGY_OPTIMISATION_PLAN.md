@@ -1027,6 +1027,11 @@ meaning.
    gate against the admitted or production base; IS-only grading; `next_pivot_target` barred from
    ranking; per-leg for dual strategies; `--survival` when the subject's gate changed since R5 - the
    loader refuses otherwise, and the read and the holdout null inherit the grid's setting, S6-B3321).
+   **An axis the 0.98 coverage floor skips stays UNTESTED until the owner rules on it; on the owner's
+   word it is graded on its COVERED fires by `--widen-coverage <key>` (S6-B3248 (1)(a), the B2698
+   rule made generic): one axis per run, the uncovered fires leave the graded arm AND the null, and the
+   gap is written on the artifact's face - the verdict binds the covered subpopulation only. Table D
+   reads such a run as the axis's re-sweep, and the band-coverage gate counts its levels.**
 6. **MULTIPLICITY PRICE** - the grid's best priced against its own permutation null (the B2676
    instrument pattern; SYNTHETIC maxima, p on the artifact's face), read beside each row's
    `episode` month concentration, which the null cannot see (S6-B3315).
