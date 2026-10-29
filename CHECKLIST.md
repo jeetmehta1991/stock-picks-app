@@ -5977,6 +5977,8 @@ there the fix reached fewer SITES, here fewer SHAPES. Detection is JUDGMENT-ONLY
 pinned by test_b2581's uniform-LF arm and the skill fragment in test_b2123.
 **AND THE SWEEP ITSELF NEEDS A CONTROL (B2588).** The enumerator inherits the accidents of the examples that suggested it - measured on this item's own first application: a #245 sweep patterned on single-line examples returned 4 of a 6-member population, missing both multi-line cases. Before quoting a sweep's count, name a member you did NOT derive the pattern from and assert the pattern finds it (#162, #166); if you cannot, report the figure as a LOWER BOUND.
 
+**INSTANCE (B3139q-r138b / L982) - A RUNNER AS AN ARGUMENT.** The launch classifier counted a runner's name in any token of a non-reader segment, so a pregate run listing scripts/run_wave.py among its --changed paths read as a launch, and the monitor gate (#185) - which .stop_exempt cannot reach - fired on a close that had launched nothing. Fixed structurally: the program a segment runs decides (S6-B3357, test_b3357).
+
 ### #295 - WORK INSIDE THE CURRENT STRATEGY'S CONTEXT; A ZOOM-OUT IS SCOPE CREEP (B2584 / L758)
 
 **Owner directive 2026-09-03:** when working the optimisation plan for a strategy, work ONLY in the

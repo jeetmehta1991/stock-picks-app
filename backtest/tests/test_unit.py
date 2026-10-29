@@ -66115,3 +66115,56 @@ def test_b3338_launch_and_holdout_read_doors_need_the_owners_recorded_word(monke
     assert calls("run_wave.py", "main", "spec_refusals")
     assert calls("make_spec.py", "main", "refusals")
     assert calls("offline_holdout_read.py", "main", "refusals")
+
+
+def test_b3357_a_runner_named_as_an_argument_is_not_a_launch():
+    """S6-B3357 (B3139q-r138b): the launch classifier counted a runner's NAME in
+    any token, so a runner passed as an ARGUMENT read as a launch. MEASURED
+    2026-10-29: after the owner's 13:14:30Z message four commands - three
+    pregate runs listing scripts/run_wave.py among their --changed paths and a
+    line-ending census given it as a file - counted as launches, and
+    check_monitor_armed blocked the close; three earlier ones, a for-loop
+    header and a VAR=$(grep ...) substitution naming runners, had the same
+    shape. Now the program a segment RUNS decides: a runner run directly,
+    behind a wrapper or as a -m module is a launch; a runner after another
+    script is its argument; a background word still makes any other script's
+    run a launch (B2581d); a program that is not a named script keeps the
+    any-token rule. The quiet commands below are SHAPES of the incidents (the
+    pregate one is verbatim in the gate corpus)."""
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    from verify_turn_compliance import _segment_is_launch as seg, _executed_script
+    quiet = [
+        "timeout 2400 python scripts/pregate_select.py --run --json x.json "
+        "--changed scripts/make_spec.py scripts/run_wave.py scripts/owner_word.py "
+        "> x.out 2>&1",
+        "python /c/tmp/scratchpad/eol_census.py scripts/make_spec.py scripts/run_wave.py",
+        "python scripts/pregate_select.py --changed backtest/run_phase1a.py",
+        "for f in scripts/run_wave.py scripts/launch_sweep.py; do grep -c x $f; done",
+        "L=$(grep -n def scripts/run_wave.py | cut -d: -f1); sed -n 1p scripts/run_wave.py",
+        "python -m pytest backtest/tests/test_unit.py -k run_wave.py",
+        "for f in a; do python scripts/pregate_select.py --changed scripts/run_wave.py; done",
+    ]
+    fire = [
+        "timeout 600 python scripts/run_wave.py --spec x_spec.json",
+        "PYTHONPATH=. python -u scripts/launch_sweep.py --manifest m.json -- --phase 4",
+        "nohup python scripts/pregate_select.py --changed scripts/run_wave.py &",
+        "python3.11 -m backtest.run_phase1a --phase 1a-beta --tickers AAPL",
+        ".venv/Scripts/python.exe scripts/run_serial_chain.py --specs a.json",
+        "Start-Process python -ArgumentList scripts/run_wave.py",
+        "python scripts/universe_ladder_run.py --rungs 5",
+        "for s in a b; do python scripts/run_wave.py --spec $s; done",
+    ]
+    assert [c for c in quiet if seg(c)] == [], "a runner named as an argument read as a launch"
+    assert [c for c in fire if not seg(c)] == [], "a real launch read as quiet"
+    # the parser at the positions the classifier relies on
+    assert _executed_script("timeout 2400 python scripts/pregate_select.py "
+                            "--changed scripts/run_wave.py".split()) == "pregate_select.py"
+    assert _executed_script("PYTHONPATH=. nohup python -u scripts/run_wave.py "
+                            "--spec x".split()) == "run_wave.py"
+    assert _executed_script("python3.11 -m backtest.run_phase1a --phase 4".split()) == "run_phase1a.py"
+    assert _executed_script(["python", "-c"]) is None
+    assert _executed_script("Start-Process python -ArgumentList x".split()) is None

@@ -642,6 +642,26 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
                 "command": "python scripts/launch_detached.py --chain "
                            "--batch b3175 --specs a_spec.json"}}]}}],), True,
          "S6-B3178 must-fire kept - a real --chain launch with no monitor"),
+        # S6-B3357, verbatim incident (B3139q-r138, 2026-10-29T15:03Z): a
+        # pregate run listing scripts/run_wave.py among its --changed paths -
+        # the runner is an ARGUMENT of pregate_select.py, not the program run.
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "S=/c/Users/jeetm/AppData/Local/Temp/claude/c--Users-jeetm-Github-stock-picks-app/433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0/scratchpad; "
+                           "timeout 2400 python scripts/pregate_select.py --run --json $S/pregate_r138c.json "
+                           "--changed .claude/skills/execution-discipline/SKILL.md CHECKLIST.md CLAUDE.md "
+                           "EXECUTION_QUEUE.md LEARNINGS.md STRATEGY_OPTIMISATION_PLAN.md "
+                           "STRATEGY_OPTIMISATION_STATUS.md backtest/tests/test_unit.py "
+                           "output_audit/strategy_optimisation_status.json scripts/make_spec.py "
+                           "scripts/offline_holdout_read.py scripts/run_wave.py scripts/owner_word.py "
+                           "> $S/pregate_r138c.out 2>&1; rc=$?; "
+                           'echo "PREGATE_RC=$rc"; tail -3 $S/pregate_r138c.out; exit $rc'}}]}}],), False,
+         "S6-B3357 - a runner named as another script's argument starts no run"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "timeout 600 python scripts/run_wave.py --spec "
+                           "output_audit/x_spec.json"}}]}}],), True,
+         "S6-B3357 must-fire kept - a runner RUN behind a wrapper, no monitor"),
         # S6-B3178 arm side, verbatim shape (B3139q-r70w): a grep naming the
         # cron tool AFTER the real hourly cron must not disarm it.
         (([{"type": "assistant", "message": {"content": [

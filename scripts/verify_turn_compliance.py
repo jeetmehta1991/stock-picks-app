@@ -4876,6 +4876,87 @@ _READER_HEADS = {"grep", "rg", "sed", "cat", "head", "tail", "ls", "echo",
 _NON_LAUNCH_TARGETS = {"pyramid_gate.py", "pytest", "queue_state.py",
                        "verify_turn_compliance.py"}
 
+# S6-B3357 (B3139q-r138b): WHICH SCRIPT A SEGMENT RUNS. The runner clause in
+# _segment_is_launch matched a runner's name in ANY token, so a runner passed
+# as an ARGUMENT read as a launch. MEASURED 2026-10-29: four commands after the
+# owner's 13:14:30Z message - three pregate runs listing scripts/run_wave.py
+# among their --changed paths and one line-ending census given it as a file to
+# read - counted as launches, and check_monitor_armed blocked the close
+# demanding a monitor for a run that never started. The B1880 / B2028 / B2280 /
+# B2581d class again: naming is not invoking. Narrow by construction: only a
+# segment whose program is a Python interpreter running a NAMED .py file (or a
+# .py run directly) changes; any other program - Start-Process, cmd, a
+# variable, python -c - keeps the any-token rule, so a launch routed through
+# another program still fires.
+_ENV_ASSIGN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
+_WRAP_DURATION = re.compile(r"^\d+(?:\.\d+)?[smhd]?$")
+_PY_INTERPRETER = re.compile(r"^(?:python(?:\d+(?:\.\d+)*)?w?|py)(?:\.exe)?$")
+_WRAPPER_HEADS = {"timeout", "nohup", "setsid", "env", "time", "nice", "stdbuf"}
+_SHELL_KEYWORDS = {"do", "then", "else", "elif", "!", "exec"}
+
+
+def _seg_base(t: str) -> str:
+    return t.rsplit("/", 1)[-1].rsplit("\\", 1)[-1].lower()
+
+
+def _segment_program(toks) -> tuple[str | None, int]:
+    """S6-B3357: (lower-cased basename, token index) of the program a shell
+    segment executes, after leading VAR=value assignments, shell keywords
+    (do, then, else, elif, !, exec) and wrapper commands (timeout N, nohup,
+    setsid, env, time, nice, stdbuf, with their own options). A VAR=$(cmd
+    assignment's cmd is the program (the segment split leaves the rest of the
+    substitution in this segment). (None, len) when the segment holds none."""
+    i, n = 0, len(toks)
+    while i < n:
+        t = toks[i]
+        if _ENV_ASSIGN.match(t):
+            val = t.split("=", 1)[1]
+            sub = val[2:] if val.startswith("$(") else (val[1:] if val.startswith("`") else "")
+            if sub:
+                return _seg_base(sub), i
+            i += 1
+            continue
+        b = _seg_base(t)
+        if b in _SHELL_KEYWORDS:
+            i += 1
+            continue
+        if b in _WRAPPER_HEADS:
+            i += 1
+            while i < n and (toks[i].startswith("-") or _WRAP_DURATION.match(toks[i])
+                             or _ENV_ASSIGN.match(toks[i])):
+                i += 1
+            continue
+        return b, i
+    return None, n
+
+
+def _executed_script(toks) -> str | None:
+    """S6-B3357: the lower-cased basename of the .py file a shell segment RUNS -
+    the program _segment_program finds, or the script a Python interpreter
+    there is given after its own flags - or None when the segment runs no
+    named script (another program, python -c, a bare interpreter).
+    python -m pkg.mod reports mod.py, the module it runs."""
+    prog, i = _segment_program(toks)
+    n = len(toks)
+    if prog is None:
+        return None
+    if prog.endswith(".py"):
+        return prog
+    if not _PY_INTERPRETER.match(prog):
+        return None
+    i += 1
+    while i < n and toks[i].startswith("-"):
+        flag = toks[i]
+        if flag == "-c":
+            return None
+        if flag == "-m":
+            return (toks[i + 1].rsplit(".", 1)[-1].lower() + ".py") if i + 1 < n else None
+        i += 2 if flag in ("-X", "-W") else 1
+    if i >= n:
+        return None
+    script = _seg_base(toks[i])
+    return script if script.endswith(".py") else None
+
 
 def _segment_is_launch(cmd: str) -> bool:
     """True when some shell SEGMENT executes a runner, not merely names one."""
@@ -4914,11 +4995,24 @@ def _segment_is_launch(cmd: str) -> bool:
         head = toks[0].rsplit("/", 1)[-1].rsplit("\\", 1)[-1].lower()
         if head in _READER_HEADS:
             continue
+        # S6-B3357: the same test on the program actually run (after
+        # assignments, wrappers, keywords, or inside VAR=$(...)), and a bash
+        # for-loop header, which lists words and runs nothing (its body is a
+        # later segment, read on its own).
+        run_head, _ = _segment_program(toks)
+        if run_head in _READER_HEADS or run_head == "for":
+            continue
         bases = {t.rsplit("/", 1)[-1].rsplit("\\", 1)[-1].lower() for t in toks}
         # B2581d: a RUNNER file named in the segment is a launch however it is
         # spelled; a background word alone is one only when what it backgrounds
         # is not a known non-launch target.
         named = [m for m in RUNNER_SCRIPTS if any(m in t for t in toks)]
+        prog = _executed_script(toks)
+        if prog is not None:
+            # S6-B3357: when the segment runs a named script, only THAT script
+            # can be the runner - a runner after it is one of its arguments,
+            # and the module form (python -m backtest.run_phase1a) counts too.
+            named = [prog] if prog in RUNNER_SCRIPTS else []
         if named:
             # S6-B3178: a runner invoked in a NON-LAUNCH mode starts no run -
             # launch_detached.py --cleanup only unregisters a finished task.
@@ -4929,6 +5023,15 @@ def _segment_is_launch(cmd: str) -> bool:
                 return True
             continue
         if bases & _NON_LAUNCH_TARGETS:
+            continue
+        if prog is not None:
+            # S6-B3357: a launch script counts only as the program run; a
+            # background word still makes any other script's run a launch
+            # (B2581d - only the exact non-launch targets above are excused).
+            if prog in LAUNCH_MARKERS or any(
+                    m in t for m in LAUNCH_MARKERS if not m.endswith(".py")
+                    for t in toks):
+                return True
             continue
         if any(m in t for m in LAUNCH_MARKERS for t in toks):
             return True
