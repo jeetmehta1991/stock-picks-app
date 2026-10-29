@@ -6,15 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (181 entries), 2081 named checks have run and 20 have ever returned non-PASS.**
+**Across the entire ledger (182 entries), 2100 named checks have run and 22 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-76 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a).
+76 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a | 2026-10-23T08:09:35 | engine-hook | 0 | none | 0 | 901e1f1e2 | True | **NO** |
+| output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a | 2026-10-23T08:09:35 | engine-hook | 0 | none | 0 | 901e1f1e2 | True | yes 2026-10-23T12:11:26 |
 | output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef | 2026-10-23T04:52:21 | engine-hook | 0 | none | 0 | e6192b875 | True | yes 2026-10-23T05:00:53 |
 | output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe | 2026-10-23T01:12:01 | engine-hook | 0 | none | 0 | 0dff9743b | True | yes 2026-10-23T01:27:57 |
 | output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 2026-10-22T21:50:07 | engine-hook | 0 | none | 0 | 773e2f193 | True | yes 2026-10-22T22:07:16 |
@@ -100,125 +100,216 @@ _TABLE C unavailable: KeyError: 'admit'_
 
 _TABLE D unavailable: KeyError: 'admit'_
 
-## Index - 107 graded config(s), newest first
+## Index - 108 graded config(s), newest first
 
-| config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
+| config | best is_ci_lo | count | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
-| output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a | -0.075 | - | 0/0 combinations | 9/9 |
-| output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef | 0.082 | - | 0/0 combinations | 9/9 |
-| output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe | 0.151 | - | 0/0 combinations | 9/9 |
-| output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 0.516 | - | 0/0 combinations | 9/9 |
-| output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02 | 0.153 | 510 | 0/24 exits | 9/9 |
-| output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 0.223 | 523 | 0/24 exits | 9/9 |
-| output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02 | 0.241 | 543 | 0/24 exits | 9/9 |
-| output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02 | 0.257 | 659 | 0/24 exits | 9/9 |
-| output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02 | 0.211 | 765 | 0/24 exits | 9/9 |
-| output_npoc_s1_p4_30_p2_252_p3_6_p6_0p02_p4_30_p2_252_p3_6_p6_0p02 | 0.215 | 516 | 0/24 exits | 9/9 |
-| output_npoc_s1_p4_20_p2_252_p3_6_p6_0p02_p4_20_p2_252_p3_6_p6_0p02 | 0.236 | 527 | 0/24 exits | 9/9 |
-| output_npoc_s1_p3_50_p2_252_p4_40_p6_0p02_p3_50_p2_252_p4_40_p6_0p02 | 0.248 | 600 | 0/24 exits | 9/9 |
-| output_npoc_s1_p3_12_p2_252_p4_40_p6_0p02_p3_12_p2_252_p4_40_p6_0p02 | 0.228 | 576 | 0/24 exits | 9/9 |
-| output_npoc_s1_p3_8_p2_252_p4_40_p6_0p02_p3_8_p2_252_p4_40_p6_0p02 | 0.257 | 537 | 0/24 exits | 9/9 |
-| output_npoc_s1_p3_4_p3_4 | 0.224 | 492 | 0/24 exits | 9/9 |
-| output_npoc_s1_p2_126_p2_126 | 0.262 | 559 | 0/24 exits | 9/9 |
-| output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60 | 0.484 | 2599 | 0/24 exits | 9/9 |
-| output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05 | 0.545 | 762 | 0/24 exits | 9/9 |
-| output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05 | 0.436 | 819 | 0/24 exits | 9/9 |
-| output_pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90 | 0.582 | 476 | 0/24 exits | 9/9 |
-| output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60 | 0.6 | 497 | 0/24 exits | 9/9 |
-| output_pairs_mrl_s1_p5_0p01_p6_40_p5_0p01_p6_40 | 0.582 | 517 | 0/24 exits | 9/9 |
-| output_pairs_mrl_step2_production | 0.522 | 4283 | 0/24 exits | 9/9 |
-| output_pairs_mrl_step1_production | 0.659 | 797 | 0/24 exits | 9/9 |
-| output_bl_step2_p4_250_p4_250 | 0.338 | 4116 | 0/24 exits | 9/9 |
-| output_bl_step2_p4_9_p4_9 | 0.554 | 1272 | 0/24 exits | 9/9 |
-| output_bl_span250_span250 | 0.295 | 698 | 0/24 exits | 9/9 |
-| output_bl_span150_span150 | 0.124 | 539 | 0/24 exits | 9/9 |
-| output_bl_span100_span100 | 0.24 | 414 | 0/24 exits | 9/9 |
-| output_bl_span050_span050 | 0.042 | 162 | 0/24 exits | 9/9 |
-| output_bl_span021_span021 | -0.458 | 29 | 0/24 exits | 9/9 |
-| output_bl_span020_span020 | -0.361 | 37 | 0/24 exits | 9/9 |
-| output_bl_span009_span009 | 0.582 | 308 | 0/24 exits | 9/9 |
-| output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3 | -0.063 | 764 | 0/24 exits | 9/9 |
-| output_candle_tws_c14_b0.5_s0.0_w0.3 | 0.141 | 98 | 0/24 exits | 9/9 |
-| output_candle_tbc_c02_b0.0_s0.0_w0.3 | -0.297 | 186 | 0/24 exits | 9/9 |
-| output_candle_tws_c18_b0.5_s0.25_w0.3 | -0.312 | 69 | 0/24 exits | 9/9 |
-| output_candle_tws_c17_b0.5_s0.25_wNone | -0.625 | 98 | 0/24 exits | 9/9 |
-| output_candle_tws_c16_b0.5_s0.1_w0.3 | 0.035 | 95 | 0/24 exits | 9/9 |
-| output_candle_tws_c15_b0.5_s0.1_wNone | 0.018 | 132 | 0/24 exits | 9/9 |
-| output_candle_tws_c13_b0.5_s0.0_wNone | 0.067 | 137 | 0/24 exits | 9/9 |
-| output_candle_tws_c12_b0.3_s0.25_w0.3 | -0.204 | 131 | 0/24 exits | 9/9 |
-| output_candle_tws_c11_b0.3_s0.25_wNone | -0.409 | 242 | 0/24 exits | 9/9 |
-| output_candle_tws_c10_b0.3_s0.1_w0.3 | -0.022 | 173 | 0/24 exits | 9/9 |
-| output_candle_tws_c09_b0.3_s0.1_wNone | -0.074 | 304 | 0/24 exits | 9/9 |
-| output_candle_tws_c08_b0.3_s0.0_w0.3 | 0.075 | 181 | 0/24 exits | 9/9 |
-| output_candle_tws_c07_b0.3_s0.0_wNone | -0.077 | 322 | 0/24 exits | 9/9 |
-| output_candle_tws_c06_b0.0_s0.25_w0.3 | -0.01 | 186 | 0/24 exits | 9/9 |
-| output_candle_tws_c05_b0.0_s0.25_wNone | -0.051 | 424 | 0/24 exits | 9/9 |
-| output_candle_tws_c04_b0.0_s0.1_w0.3 | 0.04 | 240 | 0/24 exits | 9/9 |
-| output_candle_tws_c03_b0.0_s0.1_wNone | 0.034 | 515 | 0/24 exits | 9/9 |
-| output_candle_tws_c02_b0.0_s0.0_w0.3 | 0.028 | 261 | 0/24 exits | 9/9 |
-| output_candle_tbc_c01_b0.0_s0.0_wNone | 0.067 | 531 | 0/24 exits | 9/9 |
-| output_candle_tws_c01_b0.0_s0.0_wNone | 0.048 | 560 | 0/24 exits | 9/9 |
-| output_b2712_smc_sw10_sw10 | 0.803 | 13 | 44/300 combinations | 9/9 |
-| output_icg_step2_span9_step2_span9 | 0.428 | 3509 | 0/24 exits | 9/9 |
-| output_icg_cfg1_rerun_cfg1_rerun | -0.106 | 373 | 0/24 exits | 9/9 |
-| output_icg_span100_rerun_span100 | -0.078 | 374 | 0/24 exits | 9/9 |
-| output_icg_minq2_minq2 | -0.051 | 402 | 0/24 exits | 9/9 |
-| output_icg_minq3_minq3 | -0.084 | 385 | 0/24 exits | 9/9 |
-| output_icg_minq6_minq6 | 0.043 | 255 | 0/24 exits | 9/9 |
-| output_icg_lookback8_lookback8 | 0.038 | 329 | 0/24 exits | 9/9 |
-| output_icg_lookback6_lookback6 | 0.07 | 342 | 0/24 exits | 9/9 |
-| output_icg_lookback3_lookback3 | -0.134 | 338 | 0/24 exits | 9/9 |
-| output_icg_mult1.25_mult1.25 | -0.297 | 301 | 0/24 exits | 9/9 |
-| output_icg_mult1.0_mult1.0 | -0.091 | 450 | 0/24 exits | 9/9 |
-| output_icg_span100_span100 | 0.062 | 374 | 0/24 exits | 9/9 |
-| output_icg_minq8_minq8 | 0.054 | 256 | 0/24 exits | 9/9 |
-| output_icg_lookback2_lookback2 | -0.075 | 323 | 0/24 exits | 9/9 |
-| output_icg_mult1.5_mult1.5 | -0.223 | 266 | 0/24 exits | 9/9 |
-| output_icg_span150_span150 | -0.11 | 371 | 0/24 exits | 9/9 |
-| output_icg_span50_span50 | -0.067 | 405 | 0/24 exits | 9/9 |
-| output_icg_span20_span20 | -0.015 | 531 | 0/24 exits | 9/9 |
-| output_icg_span9_span9 | 0.167 | 609 | 0/24 exits | 9/9 |
-| output_icg_cfg1 | -0.087 | 373 | 0/24 exits | 9/9 |
-| output_b2174_sw20_sw20 | -0.196 | 79 | 82/300 combinations | 9/9 |
-| output_b2399_step2_sw50sp50_step2_sw50sp50 | -0.026 | 325 | 29/300 combinations | 9/9 |
-| output_b2197_sw50sp150_sw50sp150 | 0.437 | 10 | 190/300 combinations | 9/9 |
-| output_b2197_sw50sp100_sw50sp100 | -0.023 | 25 | 200/300 combinations | 9/9 |
-| output_b2197_sw50sp50_sw50sp50 | 1.25 | 14 | 200/300 combinations | 9/9 |
-| output_b2197_sw50sp20_sw50sp20 | 0.93 | 14 | 200/300 combinations | 9/9 |
-| output_b2197_sw50sp9_sw50sp9 | 0.724 | 25 | 200/300 combinations | 9/9 |
-| output_b2197_sw5sp150_sw5sp150 | 0.019 | 76 | 40/300 combinations | 9/9 |
-| output_b2197_sw5sp100_sw5sp100 | 0.027 | 77 | 40/300 combinations | 9/9 |
-| output_b2197_sw5sp50_sw5sp50 | -0.005 | 220 | 45/300 combinations | 9/9 |
-| output_b2197_sw5sp20_sw5sp20 | -0.005 | 140 | 45/300 combinations | 9/9 |
-| output_b2197_sw5sp9_sw5sp9 | 0.098 | 128 | 45/300 combinations | 9/9 |
-| output_b2197_sw10sp150_sw10sp150 | -0.11 | 119 | 40/300 combinations | 9/9 |
-| output_b2197_sw10sp100_sw10sp100 | -0.12 | 174 | 40/300 combinations | 9/9 |
-| output_b2197_sw10sp50_sw10sp50 | -0.042 | 156 | 45/300 combinations | 9/9 |
-| output_b2197_sw10sp20_sw10sp20 | -0.07 | 110 | 41/300 combinations | 9/9 |
-| output_b2197_sw10sp9_sw10sp9 | -0.014 | 68 | 42/300 combinations | 9/9 |
-| output_b2197_sw30sp150_sw30sp150 | 1.214 | 11 | 106/300 combinations | 9/9 |
-| output_b2197_sw30sp100_sw30sp100 | 0.816 | 12 | 100/300 combinations | 9/9 |
-| output_b2197_sw30sp50_sw30sp50 | 0.816 | 12 | 100/300 combinations | 9/9 |
-| output_b2197_sw30sp20_sw30sp20 | 0.816 | 12 | 100/300 combinations | 9/9 |
-| output_b2197_sw30sp9_sw30sp9 | 0.687 | 22 | 95/300 combinations | 9/9 |
-| output_b2197_sw20sp150_sw20sp150 | -0.114 | 80 | 77/300 combinations | 9/9 |
-| output_b2197_sw20sp100_sw20sp100 | -0.036 | 66 | 77/300 combinations | 9/9 |
-| output_b2197_sw20sp50_sw20sp50 | 0.025 | 62 | 77/300 combinations | 9/9 |
-| output_b2197_sw20sp21_sw20sp21 | 0.107 | 88 | 77/300 combinations | 9/9 |
-| output_b2197_sw20sp20_sw20sp20 | 0.107 | 88 | 77/300 combinations | 9/9 |
-| output_b2197_sw20sp9_sw20sp9 | 0.044 | 71 | 77/300 combinations | 9/9 |
-| output_b2190_sw5_sw5 | 0.123 | 74 | 40/300 combinations | 9/9 |
-| output_b2190_sw10_sw10 | -0.091 | 92 | 45/300 combinations | 9/9 |
-| output_b2177_sw50_sw50 | -0.508 | 33 | 225/300 combinations | 9/9 |
-| output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 combinations | 9/9 |
+| output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 0.538 | full_n 5361 | 0/0 combinations | 8/9 **OPEN: 2_grade_with_config_params** |
+| output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a | -0.075 | full_n 348 | 0/0 combinations | 9/9 |
+| output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef | 0.082 | full_n 228 | 0/0 combinations | 9/9 |
+| output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe | 0.151 | full_n 493 | 0/0 combinations | 9/9 |
+| output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45 | 0.516 | full_n 789 | 0/0 combinations | 9/9 |
+| output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02 | 0.153 | fires 510 | 0/24 exits | 9/9 |
+| output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02 | 0.223 | fires 523 | 0/24 exits | 9/9 |
+| output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02 | 0.241 | fires 543 | 0/24 exits | 9/9 |
+| output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02 | 0.257 | fires 659 | 0/24 exits | 9/9 |
+| output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02 | 0.211 | fires 765 | 0/24 exits | 9/9 |
+| output_npoc_s1_p4_30_p2_252_p3_6_p6_0p02_p4_30_p2_252_p3_6_p6_0p02 | 0.215 | fires 516 | 0/24 exits | 9/9 |
+| output_npoc_s1_p4_20_p2_252_p3_6_p6_0p02_p4_20_p2_252_p3_6_p6_0p02 | 0.236 | fires 527 | 0/24 exits | 9/9 |
+| output_npoc_s1_p3_50_p2_252_p4_40_p6_0p02_p3_50_p2_252_p4_40_p6_0p02 | 0.248 | fires 600 | 0/24 exits | 9/9 |
+| output_npoc_s1_p3_12_p2_252_p4_40_p6_0p02_p3_12_p2_252_p4_40_p6_0p02 | 0.228 | fires 576 | 0/24 exits | 9/9 |
+| output_npoc_s1_p3_8_p2_252_p4_40_p6_0p02_p3_8_p2_252_p4_40_p6_0p02 | 0.257 | fires 537 | 0/24 exits | 9/9 |
+| output_npoc_s1_p3_4_p3_4 | 0.224 | fires 492 | 0/24 exits | 9/9 |
+| output_npoc_s1_p2_126_p2_126 | 0.262 | fires 559 | 0/24 exits | 9/9 |
+| output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60 | 0.484 | fires 2599 | 0/24 exits | 9/9 |
+| output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05 | 0.545 | fires 762 | 0/24 exits | 9/9 |
+| output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05 | 0.436 | fires 819 | 0/24 exits | 9/9 |
+| output_pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90 | 0.582 | fires 476 | 0/24 exits | 9/9 |
+| output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60 | 0.6 | fires 497 | 0/24 exits | 9/9 |
+| output_pairs_mrl_s1_p5_0p01_p6_40_p5_0p01_p6_40 | 0.582 | fires 517 | 0/24 exits | 9/9 |
+| output_pairs_mrl_step2_production | 0.522 | fires 4283 | 0/24 exits | 9/9 |
+| output_pairs_mrl_step1_production | 0.659 | fires 797 | 0/24 exits | 9/9 |
+| output_bl_step2_p4_250_p4_250 | 0.338 | fires 4116 | 0/24 exits | 9/9 |
+| output_bl_step2_p4_9_p4_9 | 0.554 | fires 1272 | 0/24 exits | 9/9 |
+| output_bl_span250_span250 | 0.295 | fires 698 | 0/24 exits | 9/9 |
+| output_bl_span150_span150 | 0.124 | fires 539 | 0/24 exits | 9/9 |
+| output_bl_span100_span100 | 0.24 | fires 414 | 0/24 exits | 9/9 |
+| output_bl_span050_span050 | 0.042 | fires 162 | 0/24 exits | 9/9 |
+| output_bl_span021_span021 | -0.458 | fires 29 | 0/24 exits | 9/9 |
+| output_bl_span020_span020 | -0.361 | fires 37 | 0/24 exits | 9/9 |
+| output_bl_span009_span009 | 0.582 | fires 308 | 0/24 exits | 9/9 |
+| output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3 | -0.063 | fires 764 | 0/24 exits | 9/9 |
+| output_candle_tws_c14_b0.5_s0.0_w0.3 | 0.141 | fires 98 | 0/24 exits | 9/9 |
+| output_candle_tbc_c02_b0.0_s0.0_w0.3 | -0.297 | fires 186 | 0/24 exits | 9/9 |
+| output_candle_tws_c18_b0.5_s0.25_w0.3 | -0.312 | fires 69 | 0/24 exits | 9/9 |
+| output_candle_tws_c17_b0.5_s0.25_wNone | -0.625 | fires 98 | 0/24 exits | 9/9 |
+| output_candle_tws_c16_b0.5_s0.1_w0.3 | 0.035 | fires 95 | 0/24 exits | 9/9 |
+| output_candle_tws_c15_b0.5_s0.1_wNone | 0.018 | fires 132 | 0/24 exits | 9/9 |
+| output_candle_tws_c13_b0.5_s0.0_wNone | 0.067 | fires 137 | 0/24 exits | 9/9 |
+| output_candle_tws_c12_b0.3_s0.25_w0.3 | -0.204 | fires 131 | 0/24 exits | 9/9 |
+| output_candle_tws_c11_b0.3_s0.25_wNone | -0.409 | fires 242 | 0/24 exits | 9/9 |
+| output_candle_tws_c10_b0.3_s0.1_w0.3 | -0.022 | fires 173 | 0/24 exits | 9/9 |
+| output_candle_tws_c09_b0.3_s0.1_wNone | -0.074 | fires 304 | 0/24 exits | 9/9 |
+| output_candle_tws_c08_b0.3_s0.0_w0.3 | 0.075 | fires 181 | 0/24 exits | 9/9 |
+| output_candle_tws_c07_b0.3_s0.0_wNone | -0.077 | fires 322 | 0/24 exits | 9/9 |
+| output_candle_tws_c06_b0.0_s0.25_w0.3 | -0.01 | fires 186 | 0/24 exits | 9/9 |
+| output_candle_tws_c05_b0.0_s0.25_wNone | -0.051 | fires 424 | 0/24 exits | 9/9 |
+| output_candle_tws_c04_b0.0_s0.1_w0.3 | 0.04 | fires 240 | 0/24 exits | 9/9 |
+| output_candle_tws_c03_b0.0_s0.1_wNone | 0.034 | fires 515 | 0/24 exits | 9/9 |
+| output_candle_tws_c02_b0.0_s0.0_w0.3 | 0.028 | fires 261 | 0/24 exits | 9/9 |
+| output_candle_tbc_c01_b0.0_s0.0_wNone | 0.067 | fires 531 | 0/24 exits | 9/9 |
+| output_candle_tws_c01_b0.0_s0.0_wNone | 0.048 | fires 560 | 0/24 exits | 9/9 |
+| output_b2712_smc_sw10_sw10 | 0.803 | fires 13 | 44/300 combinations | 9/9 |
+| output_icg_step2_span9_step2_span9 | 0.428 | fires 3509 | 0/24 exits | 9/9 |
+| output_icg_cfg1_rerun_cfg1_rerun | -0.106 | fires 373 | 0/24 exits | 9/9 |
+| output_icg_span100_rerun_span100 | -0.078 | fires 374 | 0/24 exits | 9/9 |
+| output_icg_minq2_minq2 | -0.051 | fires 402 | 0/24 exits | 9/9 |
+| output_icg_minq3_minq3 | -0.084 | fires 385 | 0/24 exits | 9/9 |
+| output_icg_minq6_minq6 | 0.043 | fires 255 | 0/24 exits | 9/9 |
+| output_icg_lookback8_lookback8 | 0.038 | fires 329 | 0/24 exits | 9/9 |
+| output_icg_lookback6_lookback6 | 0.07 | fires 342 | 0/24 exits | 9/9 |
+| output_icg_lookback3_lookback3 | -0.134 | fires 338 | 0/24 exits | 9/9 |
+| output_icg_mult1.25_mult1.25 | -0.297 | fires 301 | 0/24 exits | 9/9 |
+| output_icg_mult1.0_mult1.0 | -0.091 | fires 450 | 0/24 exits | 9/9 |
+| output_icg_span100_span100 | 0.062 | fires 374 | 0/24 exits | 9/9 |
+| output_icg_minq8_minq8 | 0.054 | fires 256 | 0/24 exits | 9/9 |
+| output_icg_lookback2_lookback2 | -0.075 | fires 323 | 0/24 exits | 9/9 |
+| output_icg_mult1.5_mult1.5 | -0.223 | fires 266 | 0/24 exits | 9/9 |
+| output_icg_span150_span150 | -0.11 | fires 371 | 0/24 exits | 9/9 |
+| output_icg_span50_span50 | -0.067 | fires 405 | 0/24 exits | 9/9 |
+| output_icg_span20_span20 | -0.015 | fires 531 | 0/24 exits | 9/9 |
+| output_icg_span9_span9 | 0.167 | fires 609 | 0/24 exits | 9/9 |
+| output_icg_cfg1 | -0.087 | fires 373 | 0/24 exits | 9/9 |
+| output_b2174_sw20_sw20 | -0.196 | fires 79 | 82/300 combinations | 9/9 |
+| output_b2399_step2_sw50sp50_step2_sw50sp50 | -0.026 | fires 325 | 29/300 combinations | 9/9 |
+| output_b2197_sw50sp150_sw50sp150 | 0.437 | fires 10 | 190/300 combinations | 9/9 |
+| output_b2197_sw50sp100_sw50sp100 | -0.023 | fires 25 | 200/300 combinations | 9/9 |
+| output_b2197_sw50sp50_sw50sp50 | 1.25 | fires 14 | 200/300 combinations | 9/9 |
+| output_b2197_sw50sp20_sw50sp20 | 0.93 | fires 14 | 200/300 combinations | 9/9 |
+| output_b2197_sw50sp9_sw50sp9 | 0.724 | fires 25 | 200/300 combinations | 9/9 |
+| output_b2197_sw5sp150_sw5sp150 | 0.019 | fires 76 | 40/300 combinations | 9/9 |
+| output_b2197_sw5sp100_sw5sp100 | 0.027 | fires 77 | 40/300 combinations | 9/9 |
+| output_b2197_sw5sp50_sw5sp50 | -0.005 | fires 220 | 45/300 combinations | 9/9 |
+| output_b2197_sw5sp20_sw5sp20 | -0.005 | fires 140 | 45/300 combinations | 9/9 |
+| output_b2197_sw5sp9_sw5sp9 | 0.098 | fires 128 | 45/300 combinations | 9/9 |
+| output_b2197_sw10sp150_sw10sp150 | -0.11 | fires 119 | 40/300 combinations | 9/9 |
+| output_b2197_sw10sp100_sw10sp100 | -0.12 | fires 174 | 40/300 combinations | 9/9 |
+| output_b2197_sw10sp50_sw10sp50 | -0.042 | fires 156 | 45/300 combinations | 9/9 |
+| output_b2197_sw10sp20_sw10sp20 | -0.07 | fires 110 | 41/300 combinations | 9/9 |
+| output_b2197_sw10sp9_sw10sp9 | -0.014 | fires 68 | 42/300 combinations | 9/9 |
+| output_b2197_sw30sp150_sw30sp150 | 1.214 | fires 11 | 106/300 combinations | 9/9 |
+| output_b2197_sw30sp100_sw30sp100 | 0.816 | fires 12 | 100/300 combinations | 9/9 |
+| output_b2197_sw30sp50_sw30sp50 | 0.816 | fires 12 | 100/300 combinations | 9/9 |
+| output_b2197_sw30sp20_sw30sp20 | 0.816 | fires 12 | 100/300 combinations | 9/9 |
+| output_b2197_sw30sp9_sw30sp9 | 0.687 | fires 22 | 95/300 combinations | 9/9 |
+| output_b2197_sw20sp150_sw20sp150 | -0.114 | fires 80 | 77/300 combinations | 9/9 |
+| output_b2197_sw20sp100_sw20sp100 | -0.036 | fires 66 | 77/300 combinations | 9/9 |
+| output_b2197_sw20sp50_sw20sp50 | 0.025 | fires 62 | 77/300 combinations | 9/9 |
+| output_b2197_sw20sp21_sw20sp21 | 0.107 | fires 88 | 77/300 combinations | 9/9 |
+| output_b2197_sw20sp20_sw20sp20 | 0.107 | fires 88 | 77/300 combinations | 9/9 |
+| output_b2197_sw20sp9_sw20sp9 | 0.044 | fires 71 | 77/300 combinations | 9/9 |
+| output_b2190_sw5_sw5 | 0.123 | fires 74 | 40/300 combinations | 9/9 |
+| output_b2190_sw10_sw10 | -0.091 | fires 92 | 45/300 combinations | 9/9 |
+| output_b2177_sw50_sw50 | -0.508 | fires 33 | 225/300 combinations | 9/9 |
+| output_b2183_sw30_sw30 | 0.362 | fires 11 | 106/300 combinations | 9/9 |
 
 ## Per-config findings
+
+### output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45
+
+**Configuration:** P1_gate_budget={"k": 3, "mandatory": ["above_r1"]}
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.538** (is_sharpe 0.617, full_n 5361, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 8 of 9 steps closed** (7 DONE with evidence, 1 N/A with a reason: 6_post_fix_recheck). **1 step(s) NOT closed (2_grade_with_config_params) - this cube BLOCKS the turn gate until each is DONE with evidence or N/A with a reason; SKIPPED is not a disposition (B2520).**
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | FAIL **<-- NOT CLOSED** | lever4_step1 exit 0 at gate_budget={"pivot_r1_breakout": {"k": 3, "mandatory": ["above_r1"]}}: Step-2 cube with NO gate verdict (fail closed, L642): no `step2` block and no result row carries `gates` - the grader has no Step-2 leg, or nothing reached the holdout floor |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=SKIP; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (S6-B3240); the live strategy replayed on the cube's signals under the arm's budget: spot_check_replay at manifest gate_budget={"pivot_r1_breakout": {"k": 3, "mandatory": ["above_r1"]}}; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 11 run: 0 WARN / 0 FAIL / 11 INFO -> output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (11 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | DONE | AUTO (B2192): the grader collapses identical outcomes - 69 ranked outcome classes carry None parameter combinations; None distinct outcome classes among 0 combinations enumerated in output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_grid_auto.json |
+| 7_implement_in_engine | DONE | engine check PASS on a Step-2 cube: 1 of 1 declared knobs read from the environment + consumer lists match the tree; verify_lever4_anchors.py exit 0 |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_grid_auto.json): 0 combinations enumerated: ; rank-1 [breakeven_plus_trail] is_ci_lo 0.538 is_sharpe 0.617 full_n 5361 - Step-2: PASS rows are the admission candidates (S6-B2409: clearing the six live gates IS qualification) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 175632 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, GOOGL, META, TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/r5_universe_544.txt (verifier is ... | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | 28fd66a70edf4d32 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2022-05-05 .. 2026-05-04 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an ... | PASS | a shortfall = exits silently dropped from the cube |
+| closed trade-log fires that have an exit-cube row | 7318 of 7318 closed trade-log fires have exit-cube rows; 0 ... | PASS | any missing = an entry the cube lost, which M2 cannot see (S6-B3267) |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 35256 entries past 2025-05-05 (not declared a Step-1 cube; ... | SKIP **<-- NOT PASS** | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha 59cc0fdce1f8 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf; 2 beyond winsorize 300.0 (beyond-count is ... | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {} | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0; gate_budget={"pivot_r1_breakout": {"k": 3, ... | FAIL **<-- NOT PASS** | non-zero = the grid was never produced |
+| independent spot check ran | exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 ... | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 1 of 1 declared knobs read from the environment + consumer ... | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (parameters not recorded in the artifact).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_spot_check.json.
+
+**Adversarial lenses (step 5) - 11 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2026-05-05 > HO_START 2025-05-05 -> Step-2 cube; family pivot_r1_breakout)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 1469 of 7318 entries in the holdout (Step-2 cube: the holdout is graded separately, never ranked on) |
+| period_concentration | INFO | max year share 0.28 (2025) over 5 years of 7318 entries; WARN > 0.6 |
+| ticker_concentration | INFO | top-5 tickers carry 0.03 of 7318 entries across 542 tickers; WARN > 0.30 |
+| eligibility_leak | INFO | 0 of 7318 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped) |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.538 vs rank-2 [time_stop_20d] 0.479: margin 0.059 between outcome classes; WARN < 0.05 (selection at noise level); Step-2 cube: the IS selection names the admission exit (ruling 2i), so a noise margin is a live risk at any sign |
+| empty_signals_share | INFO | 0 of 7318 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/7318 (0.0%) from replay_atr_fallback.json) |
+| grading_provenance | INFO | grading surface UNCHANGED since freeze (29 files, digest 4d8825f4d8e2) |
+| direction_consistency | INFO | graded pivot_r1_breakout is DUAL (is_dual source check) - directions ['long', 'short'] are its own two legs, the design and not a finding (S6-B3119a) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_spot_check.json |
+| min_trades_floor | INFO | 7318 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 0 combinations enumerated (population field `results`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| None | 0.538 | 0.617 | full_n 5361 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.479 | 0.586 | full_n 5361 | time_stop_20d | None | (no knobs recorded) |
+| None | 0.471 | 0.533 | full_n 5361 | earnings_blackout | None | (no knobs recorded) |
+| None | 0.425 | 0.544 | full_n 5361 | regime_flip | None | (no knobs recorded) |
+| None | 0.407 | 0.479 | full_n 7318 | breakeven_plus_trail | None | (no knobs recorded) |
+
+_Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_grid_auto.json._
 
 ### output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a
 
 **Configuration:** P1_gate_budget={"k": 3, "mandatory": ["gap_up_pct"]}
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.075** (is_sharpe 0.275, None fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.075** (is_sharpe 0.275, full_n 348, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -296,13 +387,13 @@ _TABLE D unavailable: KeyError: 'admit'_
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| None | -0.075 | 0.275 | None | breakeven_plus_trail | None | (no knobs recorded) |
-| None | -0.114 | 0.12 | None | earnings_blackout | None | (no knobs recorded) |
-| None | -0.135 | 0.134 | None | hybrid_50pct_target | None | (no knobs recorded) |
-| None | -0.377 | -0.088 | None | trailing_10pct | None | (no knobs recorded) |
-| None | -0.408 | -0.088 | None | class_time_stop | None | (no knobs recorded) |
+| None | -0.075 | 0.275 | full_n 348 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | -0.114 | 0.12 | full_n 348 | earnings_blackout | None | (no knobs recorded) |
+| None | -0.135 | 0.134 | full_n 348 | hybrid_50pct_target | None | (no knobs recorded) |
+| None | -0.377 | -0.088 | full_n 348 | trailing_10pct | None | (no knobs recorded) |
+| None | -0.408 | -0.088 | full_n 348 | class_time_stop | None | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_orb_stocks_in_play_long_p1_j0924495a_p1_j0924495a_grid_auto.json._
 
@@ -310,7 +401,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_orb_st
 
 **Configuration:** P1_gate_budget={"k": 3, "mandatory": ["smc_bos_bullish"]}
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.082** (is_sharpe 0.481, None fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.082** (is_sharpe 0.481, full_n 228, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -388,13 +479,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_orb_st
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| None | 0.082 | 0.481 | None | breakeven_plus_trail | None | (no knobs recorded) |
-| None | -0.1 | 0.22 | None | hybrid_50pct_target | None | (no knobs recorded) |
-| None | -0.163 | 0.18 | None | breakeven_plus_trail | None | (no knobs recorded) |
-| None | -0.172 | 0.111 | None | earnings_blackout | None | (no knobs recorded) |
-| None | -0.207 | 0.178 | None | class_time_stop | None | (no knobs recorded) |
+| None | 0.082 | 0.481 | full_n 228 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | -0.1 | 0.22 | full_n 228 | hybrid_50pct_target | None | (no knobs recorded) |
+| None | -0.163 | 0.18 | full_n 367 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | -0.172 | 0.111 | full_n 228 | earnings_blackout | None | (no knobs recorded) |
+| None | -0.207 | 0.178 | full_n 228 | class_time_stop | None | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_smc_bos_continuation_p1_j213420ef_p1_j213420ef_grid_auto.json._
 
@@ -402,7 +493,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_smc_bo
 
 **Configuration:** P1_gate_budget={"k": 5, "mandatory": ["news_sentiment_5d"]}
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.151** (is_sharpe 0.442, None fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.151** (is_sharpe 0.442, full_n 493, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -480,13 +571,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_smc_bo
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 23 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| None | 0.151 | 0.442 | None | breakeven_plus_trail | None | (no knobs recorded) |
-| None | 0.084 | 0.299 | None | hybrid_50pct_target | None | (no knobs recorded) |
-| None | 0.081 | 0.423 | None | regime_flip | None | (no knobs recorded) |
-| None | -0.055 | 0.144 | None | earnings_blackout | None | (no knobs recorded) |
-| None | -0.084 | 0.185 | None | class_time_stop | None | (no knobs recorded) |
+| None | 0.151 | 0.442 | full_n 493 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.084 | 0.299 | full_n 493 | hybrid_50pct_target | None | (no knobs recorded) |
+| None | 0.081 | 0.423 | full_n 493 | regime_flip | None | (no knobs recorded) |
+| None | -0.055 | 0.144 | full_n 493 | earnings_blackout | None | (no knobs recorded) |
+| None | -0.084 | 0.185 | full_n 493 | class_time_stop | None | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_news_momentum_long_p1_j4bc78dbe_p1_j4bc78dbe_grid_auto.json._
 
@@ -494,7 +585,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_news_m
 
 **Configuration:** P1_gate_budget={"k": 3, "mandatory": ["above_r1"]}
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.516** (is_sharpe 0.801, None fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.516** (is_sharpe 0.801, full_n 789, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -572,13 +663,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_news_m
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 0 graded and ranked, collapsing to None distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 69 classes carry None combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| None | 0.516 | 0.801 | None | regime_flip | None | (no knobs recorded) |
-| None | 0.488 | 0.73 | None | breakeven_plus_trail | None | (no knobs recorded) |
-| None | 0.322 | 0.506 | None | hybrid_50pct_target | None | (no knobs recorded) |
-| None | 0.275 | 0.487 | None | breakeven_plus_trail | None | (no knobs recorded) |
-| None | 0.218 | 0.575 | None | time_stop_10d | None | (no knobs recorded) |
+| None | 0.516 | 0.801 | full_n 789 | regime_flip | None | (no knobs recorded) |
+| None | 0.488 | 0.73 | full_n 789 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.322 | 0.506 | full_n 789 | hybrid_50pct_target | None | (no knobs recorded) |
+| None | 0.275 | 0.487 | full_n 1084 | breakeven_plus_trail | None | (no knobs recorded) |
+| None | 0.218 | 0.575 | full_n 789 | time_stop_10d | None | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45_grid_auto.json._
 
@@ -586,7 +677,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_pivot_
 
 **Configuration:** P1_ema_span=150, P2_lookback=252, P3_n_periods=6, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.153** (is_sharpe 0.428, 510 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.153** (is_sharpe 0.428, fires 510, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 73 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -675,13 +766,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b3139q_lv4_pivot_
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.153 | 0.428 | 510 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.104 | 0.092 | 510 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.11 | 0.1 | 510 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.127 | 0.086 | 510 | trailing_10pct | 1 | (no knobs recorded) |
-| 5 | -0.219 | -0.054 | 510 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.153 | 0.428 | fires 510 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.104 | 0.092 | fires 510 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.11 | 0.1 | fires 510 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.127 | 0.086 | fires 510 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.219 | -0.054 | fires 510 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_150_p2_252_p3_6_p4_40_p6_0p02_p1_150_p2_252_p3_6_p4_40_p6_0p02_grid_auto.json._
 
@@ -689,7 +780,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_150_p2
 
 **Configuration:** P1_ema_span=100, P2_lookback=252, P3_n_periods=6, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.223** (is_sharpe 0.495, 523 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.223** (is_sharpe 0.495, fires 523, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 73 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -778,13 +869,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_150_p2
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.223 | 0.495 | 523 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.114 | 0.098 | 523 | trailing_10pct | 1 | (no knobs recorded) |
-| 3 | -0.119 | 0.09 | 523 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.2 | -0.007 | 523 | earnings_blackout | 1 | (no knobs recorded) |
-| 5 | -0.256 | 0.132 | 523 | break_even_at_1r | 1 | (no knobs recorded) |
+| 1 | 0.223 | 0.495 | fires 523 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.114 | 0.098 | fires 523 | trailing_10pct | 1 | (no knobs recorded) |
+| 3 | -0.119 | 0.09 | fires 523 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.2 | -0.007 | fires 523 | earnings_blackout | 1 | (no knobs recorded) |
+| 5 | -0.256 | 0.132 | fires 523 | break_even_at_1r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_100_p2_252_p3_6_p4_40_p6_0p02_p1_100_p2_252_p3_6_p4_40_p6_0p02_grid_auto.json._
 
@@ -792,7 +883,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_100_p2
 
 **Configuration:** P1_ema_span=50, P2_lookback=252, P3_n_periods=6, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.241** (is_sharpe 0.514, 543 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.241** (is_sharpe 0.514, fires 543, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 93 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -881,13 +972,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_100_p2
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.241 | 0.514 | 543 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.047 | 0.157 | 543 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.089 | 0.122 | 543 | trailing_10pct | 1 | (no knobs recorded) |
-| 4 | -0.161 | 0.031 | 543 | earnings_blackout | 1 | (no knobs recorded) |
-| 5 | -0.2 | -0.037 | 543 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.241 | 0.514 | fires 543 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.047 | 0.157 | fires 543 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.089 | 0.122 | fires 543 | trailing_10pct | 1 | (no knobs recorded) |
+| 4 | -0.161 | 0.031 | fires 543 | earnings_blackout | 1 | (no knobs recorded) |
+| 5 | -0.2 | -0.037 | fires 543 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_50_p2_252_p3_6_p4_40_p6_0p02_p1_50_p2_252_p3_6_p4_40_p6_0p02_grid_auto.json._
 
@@ -895,7 +986,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_50_p2_
 
 **Configuration:** P1_ema_span=20, P2_lookback=252, P3_n_periods=6, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.257** (is_sharpe 0.509, 659 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.257** (is_sharpe 0.509, fires 659, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 115 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -984,13 +1075,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_50_p2_
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.257 | 0.509 | 659 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.01 | 0.202 | 659 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.106 | 0.091 | 659 | trailing_10pct | 1 | (no knobs recorded) |
-| 4 | -0.109 | 0.195 | 659 | regime_flip | 1 | (no knobs recorded) |
-| 5 | -0.199 | -0.046 | 659 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.257 | 0.509 | fires 659 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.01 | 0.202 | fires 659 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.106 | 0.091 | fires 659 | trailing_10pct | 1 | (no knobs recorded) |
+| 4 | -0.109 | 0.195 | fires 659 | regime_flip | 1 | (no knobs recorded) |
+| 5 | -0.199 | -0.046 | fires 659 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_20_p2_252_p3_6_p4_40_p6_0p02_p1_20_p2_252_p3_6_p4_40_p6_0p02_grid_auto.json._
 
@@ -998,7 +1089,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_20_p2_
 
 **Configuration:** P1_ema_span=9, P2_lookback=252, P3_n_periods=6, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.211** (is_sharpe 0.45, 765 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.211** (is_sharpe 0.45, fires 765, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 135 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -1087,13 +1178,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_20_p2_
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.211 | 0.45 | 765 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.012 | 0.299 | 765 | regime_flip | 1 | (no knobs recorded) |
-| 3 | -0.02 | 0.162 | 765 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.143 | 0.023 | 765 | earnings_blackout | 1 | (no knobs recorded) |
-| 5 | -0.174 | 0.015 | 765 | trailing_10pct | 1 | (no knobs recorded) |
+| 1 | 0.211 | 0.45 | fires 765 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.012 | 0.299 | fires 765 | regime_flip | 1 | (no knobs recorded) |
+| 3 | -0.02 | 0.162 | fires 765 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.143 | 0.023 | fires 765 | earnings_blackout | 1 | (no knobs recorded) |
+| 5 | -0.174 | 0.015 | fires 765 | trailing_10pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_9_p2_252_p3_6_p4_40_p6_0p02_p1_9_p2_252_p3_6_p4_40_p6_0p02_grid_auto.json._
 
@@ -1101,7 +1192,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_9_p2_2
 
 **Configuration:** P2_lookback=252, P3_n_periods=6, P4_n_bins=30, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.215** (is_sharpe 0.487, 516 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.215** (is_sharpe 0.487, fires 516, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 73 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -1190,13 +1281,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p1_9_p2_2
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.215 | 0.487 | 516 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.014 | 0.199 | 516 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.032 | 0.164 | 516 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.1 | 0.115 | 516 | trailing_10pct | 1 | (no knobs recorded) |
-| 5 | -0.188 | -0.022 | 516 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.215 | 0.487 | fires 516 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.014 | 0.199 | fires 516 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.032 | 0.164 | fires 516 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.1 | 0.115 | fires 516 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.188 | -0.022 | fires 516 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_30_p2_252_p3_6_p6_0p02_p4_30_p2_252_p3_6_p6_0p02_grid_auto.json._
 
@@ -1204,7 +1295,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_30_p2_
 
 **Configuration:** P2_lookback=252, P3_n_periods=6, P4_n_bins=20, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.236** (is_sharpe 0.503, 527 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.236** (is_sharpe 0.503, fires 527, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 73 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -1293,13 +1384,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_30_p2_
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.236 | 0.503 | 527 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.031 | 0.179 | 527 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.053 | 0.141 | 527 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.142 | 0.072 | 527 | trailing_10pct | 1 | (no knobs recorded) |
-| 5 | -0.199 | -0.034 | 527 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.236 | 0.503 | fires 527 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.031 | 0.179 | fires 527 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.053 | 0.141 | fires 527 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.142 | 0.072 | fires 527 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.199 | -0.034 | fires 527 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_20_p2_252_p3_6_p6_0p02_p4_20_p2_252_p3_6_p6_0p02_grid_auto.json._
 
@@ -1307,7 +1398,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_20_p2_
 
 **Configuration:** P2_lookback=252, P3_n_periods=50, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.248** (is_sharpe 0.499, 600 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.248** (is_sharpe 0.499, fires 600, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 82 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -1396,13 +1487,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p4_20_p2_
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.248 | 0.499 | 600 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.003 | 0.201 | 600 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.064 | 0.119 | 600 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.136 | 0.069 | 600 | trailing_10pct | 1 | (no knobs recorded) |
-| 5 | -0.205 | -0.047 | 600 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.248 | 0.499 | fires 600 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.003 | 0.201 | fires 600 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.064 | 0.119 | fires 600 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.136 | 0.069 | fires 600 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.205 | -0.047 | fires 600 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_50_p2_252_p4_40_p6_0p02_p3_50_p2_252_p4_40_p6_0p02_grid_auto.json._
 
@@ -1410,7 +1501,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_50_p2_
 
 **Configuration:** P2_lookback=252, P3_n_periods=12, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.228** (is_sharpe 0.485, 576 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.228** (is_sharpe 0.485, fires 576, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 80 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -1499,13 +1590,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_50_p2_
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.228 | 0.485 | 576 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.013 | 0.214 | 576 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.067 | 0.119 | 576 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.163 | 0.045 | 576 | trailing_10pct | 1 | (no knobs recorded) |
-| 5 | -0.226 | -0.066 | 576 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.228 | 0.485 | fires 576 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.013 | 0.214 | fires 576 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.067 | 0.119 | fires 576 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.163 | 0.045 | fires 576 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.226 | -0.066 | fires 576 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_12_p2_252_p4_40_p6_0p02_p3_12_p2_252_p4_40_p6_0p02_grid_auto.json._
 
@@ -1513,7 +1604,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_12_p2_
 
 **Configuration:** P2_lookback=252, P3_n_periods=8, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.257** (is_sharpe 0.521, 537 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.257** (is_sharpe 0.521, fires 537, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 74 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -1602,13 +1693,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_12_p2_
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.257 | 0.521 | 537 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.042 | 0.248 | 537 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.036 | 0.157 | 537 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.119 | 0.092 | 537 | trailing_10pct | 1 | (no knobs recorded) |
-| 5 | -0.197 | -0.033 | 537 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.257 | 0.521 | fires 537 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.042 | 0.248 | fires 537 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.036 | 0.157 | fires 537 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.119 | 0.092 | fires 537 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.197 | -0.033 | fires 537 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_8_p2_252_p4_40_p6_0p02_p3_8_p2_252_p4_40_p6_0p02_grid_auto.json._
 
@@ -1616,7 +1707,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_8_p2_2
 
 **Configuration:** P2_lookback=252, P3_n_periods=4, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.224** (is_sharpe 0.499, 492 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.224** (is_sharpe 0.499, fires 492, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 71 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -1702,13 +1793,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_8_p2_2
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.224 | 0.499 | 492 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.002 | 0.203 | 492 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.062 | 0.156 | 492 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.148 | 0.072 | 492 | trailing_10pct | 1 | (no knobs recorded) |
-| 5 | -0.176 | -0.008 | 492 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.224 | 0.499 | fires 492 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.002 | 0.203 | fires 492 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.062 | 0.156 | fires 492 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.148 | 0.072 | fires 492 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.176 | -0.008 | fires 492 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_4_p3_4_grid_auto.json._
 
@@ -1716,7 +1807,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_4_p3_4
 
 **Configuration:** P2_lookback=126, P3_n_periods=6, P4_n_bins=40, P6_max_distance_pct=0.02
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.262** (is_sharpe 0.523, 559 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.262** (is_sharpe 0.523, fires 559, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 79 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_npoc.py (S6-B3171a)).
 
@@ -1802,13 +1893,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p3_4_p3_4
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.262 | 0.523 | 559 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.035 | 0.238 | 559 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.054 | 0.136 | 559 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.157 | 0.053 | 559 | trailing_10pct | 1 | (no knobs recorded) |
-| 5 | -0.203 | 0.051 | 559 | class_time_stop | 1 | (no knobs recorded) |
+| 1 | 0.262 | 0.523 | fires 559 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.035 | 0.238 | fires 559 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.054 | 0.136 | fires 559 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.157 | 0.053 | fires 559 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.203 | 0.051 | fires 559 | class_time_stop | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p2_126_p2_126_grid_auto.json._
 
@@ -1816,7 +1907,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p2_126_p2
 
 **Configuration:** P1_pairs_identity=eg0.01_zw60, P5_eg_significance=0.01, P6_z_window=60
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.484** (is_sharpe 0.58, 2599 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.484** (is_sharpe 0.58, fires 2599, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (8 DONE with evidence, 1 N/A with a reason: 6b_equivalence_class_check). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -1895,13 +1986,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_npoc_s1_p2_126_p2
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.484 | 0.58 | 2599 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.393 | 0.473 | 2599 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | 0.361 | 0.441 | 2599 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | 0.3 | 0.437 | 2599 | time_stop_20d | 1 | (no knobs recorded) |
-| 5 | 0.291 | 0.444 | 2599 | regime_flip | 1 | (no knobs recorded) |
+| 1 | 0.484 | 0.58 | fires 2599 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.393 | 0.473 | fires 2599 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | 0.361 | 0.441 | fires 2599 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | 0.3 | 0.437 | fires 2599 | time_stop_20d | 1 | (no knobs recorded) |
+| 5 | 0.291 | 0.444 | fires 2599 | regime_flip | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_p5_0p01_p6_60_p5_0p01_p6_60_grid_auto.json._
 
@@ -1909,7 +2000,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_p
 
 **Configuration:** P1_pairs_identity=eg0.05_zw90, P5_eg_significance=0.05, P6_z_window=90
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.545** (is_sharpe 0.776, 762 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.545** (is_sharpe 0.776, fires 762, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -1986,13 +2077,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_p
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.545 | 0.776 | 762 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.54 | 0.898 | 762 | time_stop_10d | 1 | (no knobs recorded) |
-| 3 | 0.47 | 0.803 | 762 | next_pivot_target | 1 | (no knobs recorded) |
-| 4 | 0.429 | 0.891 | 762 | r_multiple_2r | 1 | (no knobs recorded) |
-| 5 | 0.412 | 0.802 | 762 | r_multiple_3r | 1 | (no knobs recorded) |
+| 1 | 0.545 | 0.776 | fires 762 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.54 | 0.898 | fires 762 | time_stop_10d | 1 | (no knobs recorded) |
+| 3 | 0.47 | 0.803 | fires 762 | next_pivot_target | 1 | (no knobs recorded) |
+| 4 | 0.429 | 0.891 | fires 762 | r_multiple_2r | 1 | (no knobs recorded) |
+| 5 | 0.412 | 0.802 | fires 762 | r_multiple_3r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_90_p5_0p05_p6_90_p5_0p05_grid_auto.json._
 
@@ -2000,7 +2091,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_9
 
 **Configuration:** P1_pairs_identity=eg0.05_zw40, P5_eg_significance=0.05, P6_z_window=40
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.436** (is_sharpe 0.66, 819 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.436** (is_sharpe 0.66, fires 819, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -2077,13 +2168,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_9
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.436 | 0.66 | 819 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.327 | 0.577 | 819 | time_stop_20d | 1 | (no knobs recorded) |
-| 3 | 0.322 | 0.597 | 819 | regime_flip | 1 | (no knobs recorded) |
-| 4 | 0.312 | 0.694 | 819 | r_multiple_3r | 1 | (no knobs recorded) |
-| 5 | 0.248 | 0.595 | 819 | time_stop_10d | 1 | (no knobs recorded) |
+| 1 | 0.436 | 0.66 | fires 819 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.327 | 0.577 | fires 819 | time_stop_20d | 1 | (no knobs recorded) |
+| 3 | 0.322 | 0.597 | fires 819 | regime_flip | 1 | (no knobs recorded) |
+| 4 | 0.312 | 0.694 | fires 819 | r_multiple_3r | 1 | (no knobs recorded) |
+| 5 | 0.248 | 0.595 | fires 819 | time_stop_10d | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_40_p5_0p05_p6_40_p5_0p05_grid_auto.json._
 
@@ -2091,7 +2182,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_4
 
 **Configuration:** P1_pairs_identity=eg0.01_zw90, P5_eg_significance=0.01, P6_z_window=90
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.582** (is_sharpe 1.091, 476 fires, exit r_multiple_3r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.582** (is_sharpe 1.091, fires 476, exit r_multiple_3r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -2168,13 +2259,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p6_4
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.582 | 1.091 | 476 | r_multiple_3r | 1 | (no knobs recorded) |
-| 2 | 0.578 | 0.87 | 476 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 3 | 0.545 | 0.981 | 476 | next_pivot_target | 1 | (no knobs recorded) |
-| 4 | 0.523 | 0.975 | 476 | time_stop_10d | 1 | (no knobs recorded) |
-| 5 | 0.518 | 1.111 | 476 | r_multiple_2r | 1 | (no knobs recorded) |
+| 1 | 0.582 | 1.091 | fires 476 | r_multiple_3r | 1 | (no knobs recorded) |
+| 2 | 0.578 | 0.87 | fires 476 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 3 | 0.545 | 0.981 | fires 476 | next_pivot_target | 1 | (no knobs recorded) |
+| 4 | 0.523 | 0.975 | fires 476 | time_stop_10d | 1 | (no knobs recorded) |
+| 5 | 0.518 | 1.111 | fires 476 | r_multiple_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0p01_p6_90_p5_0p01_p6_90_grid_auto.json._
 
@@ -2182,7 +2273,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 **Configuration:** P1_pairs_identity=eg0.01_zw60, P5_eg_significance=0.01, P6_z_window=60
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.6** (is_sharpe 0.882, 497 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.6** (is_sharpe 0.882, fires 497, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -2259,13 +2350,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.6 | 0.882 | 497 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.598 | 0.92 | 497 | time_stop_20d | 1 | (no knobs recorded) |
-| 3 | 0.589 | 1.18 | 497 | r_multiple_2r | 1 | (no knobs recorded) |
-| 4 | 0.587 | 1.012 | 497 | next_pivot_target | 1 | (no knobs recorded) |
-| 5 | 0.57 | 1.016 | 497 | time_stop_10d | 1 | (no knobs recorded) |
+| 1 | 0.6 | 0.882 | fires 497 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.598 | 0.92 | fires 497 | time_stop_20d | 1 | (no knobs recorded) |
+| 3 | 0.589 | 1.18 | fires 497 | r_multiple_2r | 1 | (no knobs recorded) |
+| 4 | 0.587 | 1.012 | fires 497 | next_pivot_target | 1 | (no knobs recorded) |
+| 5 | 0.57 | 1.016 | fires 497 | time_stop_10d | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0p01_p6_60_p5_0p01_p6_60_grid_auto.json._
 
@@ -2273,7 +2364,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 **Configuration:** P1_pairs_identity=eg0.01_zw40, P5_eg_significance=0.01, P6_z_window=40
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.582** (is_sharpe 0.857, 517 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.582** (is_sharpe 0.857, fires 517, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -2350,13 +2441,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.582 | 0.857 | 517 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.493 | 0.904 | 517 | next_pivot_target | 1 | (no knobs recorded) |
-| 3 | 0.489 | 0.805 | 517 | time_stop_20d | 1 | (no knobs recorded) |
-| 4 | 0.388 | 0.73 | 517 | regime_flip | 1 | (no knobs recorded) |
-| 5 | 0.376 | 0.812 | 517 | time_stop_10d | 1 | (no knobs recorded) |
+| 1 | 0.582 | 0.857 | fires 517 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.493 | 0.904 | fires 517 | next_pivot_target | 1 | (no knobs recorded) |
+| 3 | 0.489 | 0.805 | fires 517 | time_stop_20d | 1 | (no knobs recorded) |
+| 4 | 0.388 | 0.73 | fires 517 | regime_flip | 1 | (no knobs recorded) |
+| 5 | 0.376 | 0.812 | fires 517 | time_stop_10d | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0p01_p6_40_p5_0p01_p6_40_grid_auto.json._
 
@@ -2364,7 +2455,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 
 **Configuration:** P1_pairs_identity=production
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.522** (is_sharpe 0.6, 4283 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.522** (is_sharpe 0.6, fires 4283, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -2441,13 +2532,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_s1_p5_0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.522 | 0.6 | 4283 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.455 | 0.517 | 4283 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | 0.416 | 0.535 | 4283 | regime_flip | 1 | (no knobs recorded) |
-| 4 | 0.373 | 0.437 | 4283 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | 0.351 | 0.457 | 4283 | time_stop_20d | 1 | (no knobs recorded) |
+| 1 | 0.522 | 0.6 | fires 4283 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.455 | 0.517 | fires 4283 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | 0.416 | 0.535 | fires 4283 | regime_flip | 1 | (no knobs recorded) |
+| 4 | 0.373 | 0.437 | fires 4283 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | 0.351 | 0.457 | fires 4283 | time_stop_20d | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_production_grid_auto.json._
 
@@ -2455,7 +2546,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_p
 
 **Configuration:** P1_pairs_identity=production
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.659** (is_sharpe 1.011, 797 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.659** (is_sharpe 1.011, fires 797, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -2532,13 +2623,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step2_p
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.659 | 1.011 | 797 | time_stop_10d | 1 | (no knobs recorded) |
-| 2 | 0.585 | 0.966 | 797 | r_multiple_3r | 1 | (no knobs recorded) |
-| 3 | 0.581 | 0.803 | 797 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 4 | 0.58 | 0.86 | 797 | regime_flip | 1 | (no knobs recorded) |
-| 5 | 0.55 | 0.999 | 797 | r_multiple_2r | 1 | (no knobs recorded) |
+| 1 | 0.659 | 1.011 | fires 797 | time_stop_10d | 1 | (no knobs recorded) |
+| 2 | 0.585 | 0.966 | fires 797 | r_multiple_3r | 1 | (no knobs recorded) |
+| 3 | 0.581 | 0.803 | fires 797 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 4 | 0.58 | 0.86 | fires 797 | regime_flip | 1 | (no knobs recorded) |
+| 5 | 0.55 | 0.999 | fires 797 | r_multiple_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step1_production_grid_auto.json._
 
@@ -2546,7 +2637,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step1_p
 
 **Configuration:** P4_ema_span=250
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.338** (is_sharpe 0.425, 4116 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.338** (is_sharpe 0.425, fires 4116, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 27 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_bollinger.py (S6-B3119)).
 
@@ -2633,13 +2724,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_pairs_mrl_step1_p
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.338 | 0.425 | 4116 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.253 | 0.332 | 4116 | reverse_signal | 1 | (no knobs recorded) |
-| 3 | 0.237 | 0.299 | 4116 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | 0.16 | 0.226 | 4116 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | 0.042 | 0.092 | 4116 | trailing_15pct | 1 | (no knobs recorded) |
+| 1 | 0.338 | 0.425 | fires 4116 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.253 | 0.332 | fires 4116 | reverse_signal | 1 | (no knobs recorded) |
+| 3 | 0.237 | 0.299 | fires 4116 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | 0.16 | 0.226 | fires 4116 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | 0.042 | 0.092 | fires 4116 | trailing_15pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_250_p4_250_grid_auto.json._
 
@@ -2647,7 +2738,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_250_p
 
 **Configuration:** P4_ema_span=9
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.554** (is_sharpe 0.694, 1272 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.554** (is_sharpe 0.694, fires 1272, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored; 12 in-sample entries exit inside the holdout and are scored with that exit (scripts/grade_free_levels_bollinger.py (S6-B3119)).
 
@@ -2733,13 +2824,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_250_p
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.554 | 0.694 | 1272 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.46 | 0.574 | 1272 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | 0.411 | 0.632 | 1272 | regime_flip | 1 | (no knobs recorded) |
-| 4 | 0.404 | 0.547 | 1272 | reverse_signal | 1 | (no knobs recorded) |
-| 5 | 0.363 | 0.538 | 1272 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 1 | 0.554 | 0.694 | fires 1272 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.46 | 0.574 | fires 1272 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | 0.411 | 0.632 | fires 1272 | regime_flip | 1 | (no knobs recorded) |
+| 4 | 0.404 | 0.547 | fires 1272 | reverse_signal | 1 | (no knobs recorded) |
+| 5 | 0.363 | 0.538 | fires 1272 | fixed_4r_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_9_p4_9_grid_auto.json._
 
@@ -2747,7 +2838,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_9_p4_
 
 **Configuration:** P4_ema_span=250
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.295** (is_sharpe 0.502, 698 fires, exit reverse_signal). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.295** (is_sharpe 0.502, fires 698, exit reverse_signal). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_bollinger.py (S6-B3119)).
 
@@ -2832,13 +2923,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_step2_p4_9_p4_
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.295 | 0.502 | 698 | reverse_signal | 1 | (no knobs recorded) |
-| 2 | 0.248 | 0.484 | 698 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 3 | -0.013 | 0.251 | 698 | time_stop_20d | 1 | (no knobs recorded) |
-| 4 | -0.022 | 0.139 | 698 | earnings_blackout | 1 | (no knobs recorded) |
-| 5 | -0.036 | 0.154 | 698 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 1 | 0.295 | 0.502 | fires 698 | reverse_signal | 1 | (no knobs recorded) |
+| 2 | 0.248 | 0.484 | fires 698 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 3 | -0.013 | 0.251 | fires 698 | time_stop_20d | 1 | (no knobs recorded) |
+| 4 | -0.022 | 0.139 | fires 698 | earnings_blackout | 1 | (no knobs recorded) |
+| 5 | -0.036 | 0.154 | fires 698 | hybrid_50pct_target | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_bl_span250_span250_grid_auto.json._
 
@@ -2846,7 +2937,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span250_span25
 
 **Configuration:** P4_ema_span=150
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.124** (is_sharpe 0.396, 539 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.124** (is_sharpe 0.396, fires 539, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_bollinger.py (S6-B3119)).
 
@@ -2931,13 +3022,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span250_span25
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.124 | 0.396 | 539 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.041 | 0.275 | 539 | reverse_signal | 1 | (no knobs recorded) |
-| 3 | -0.107 | 0.193 | 539 | time_stop_20d | 1 | (no knobs recorded) |
-| 4 | -0.144 | 0.073 | 539 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | -0.2 | -0.019 | 539 | earnings_blackout | 1 | (no knobs recorded) |
+| 1 | 0.124 | 0.396 | fires 539 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.041 | 0.275 | fires 539 | reverse_signal | 1 | (no knobs recorded) |
+| 3 | -0.107 | 0.193 | fires 539 | time_stop_20d | 1 | (no knobs recorded) |
+| 4 | -0.144 | 0.073 | fires 539 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | -0.2 | -0.019 | fires 539 | earnings_blackout | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_bl_span150_span150_grid_auto.json._
 
@@ -2945,7 +3036,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span150_span15
 
 **Configuration:** P4_ema_span=100
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.24** (is_sharpe 0.548, 414 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.24** (is_sharpe 0.548, fires 414, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_bollinger.py (S6-B3119)).
 
@@ -3030,13 +3121,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span150_span15
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.24 | 0.548 | 414 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.08 | 0.35 | 414 | reverse_signal | 1 | (no knobs recorded) |
-| 3 | -0.087 | 0.255 | 414 | time_stop_20d | 1 | (no knobs recorded) |
-| 4 | -0.092 | 0.157 | 414 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | -0.149 | 0.23 | 414 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 1 | 0.24 | 0.548 | fires 414 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.08 | 0.35 | fires 414 | reverse_signal | 1 | (no knobs recorded) |
+| 3 | -0.087 | 0.255 | fires 414 | time_stop_20d | 1 | (no knobs recorded) |
+| 4 | -0.092 | 0.157 | fires 414 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | -0.149 | 0.23 | fires 414 | fixed_4r_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_bl_span100_span100_grid_auto.json._
 
@@ -3044,7 +3135,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span100_span10
 
 **Configuration:** P4_ema_span=50
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.042** (is_sharpe 0.53, 162 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.042** (is_sharpe 0.53, fires 162, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_bollinger.py (S6-B3119)).
 
@@ -3129,13 +3220,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span100_span10
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.042 | 0.53 | 162 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.005 | 0.446 | 162 | reverse_signal | 1 | (no knobs recorded) |
-| 3 | -0.081 | 0.466 | 162 | time_stop_20d | 1 | (no knobs recorded) |
-| 4 | -0.298 | 0.306 | 162 | fixed_4r_2r | 1 | (no knobs recorded) |
-| 5 | -0.321 | 0.07 | 162 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 1 | 0.042 | 0.53 | fires 162 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.005 | 0.446 | fires 162 | reverse_signal | 1 | (no knobs recorded) |
+| 3 | -0.081 | 0.466 | fires 162 | time_stop_20d | 1 | (no knobs recorded) |
+| 4 | -0.298 | 0.306 | fires 162 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 5 | -0.321 | 0.07 | fires 162 | hybrid_50pct_target | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_bl_span050_span050_grid_auto.json._
 
@@ -3143,7 +3234,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span050_span05
 
 **Configuration:** P4_ema_span=21
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.458** (is_sharpe 1.03, 29 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.458** (is_sharpe 1.03, fires 29, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_bollinger.py (S6-B3119)).
 
@@ -3228,13 +3319,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span050_span05
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.458 | 1.03 | 29 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.49 | 0.701 | 29 | reverse_signal | 1 | (no knobs recorded) |
-| 3 | -0.523 | 0.55 | 29 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.696 | 0.635 | 29 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 5 | -0.87 | 0.044 | 29 | earnings_blackout | 1 | (no knobs recorded) |
+| 1 | -0.458 | 1.03 | fires 29 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.49 | 0.701 | fires 29 | reverse_signal | 1 | (no knobs recorded) |
+| 3 | -0.523 | 0.55 | fires 29 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.696 | 0.635 | fires 29 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 5 | -0.87 | 0.044 | fires 29 | earnings_blackout | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_bl_span021_span021_grid_auto.json._
 
@@ -3242,7 +3333,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span021_span02
 
 **Configuration:** P4_ema_span=20
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.361** (is_sharpe 0.979, 37 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.361** (is_sharpe 0.979, fires 37, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_bollinger.py (S6-B3119)).
 
@@ -3327,13 +3418,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span021_span02
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.361 | 0.979 | 37 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.409 | 0.767 | 37 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 3 | -0.419 | 0.647 | 37 | reverse_signal | 1 | (no knobs recorded) |
-| 4 | -0.588 | 0.384 | 37 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | -0.631 | 0.98 | 37 | time_stop_10d | 1 | (no knobs recorded) |
+| 1 | -0.361 | 0.979 | fires 37 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.409 | 0.767 | fires 37 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 3 | -0.419 | 0.647 | fires 37 | reverse_signal | 1 | (no knobs recorded) |
+| 4 | -0.588 | 0.384 | fires 37 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | -0.631 | 0.98 | fires 37 | time_stop_10d | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_bl_span020_span020_grid_auto.json._
 
@@ -3341,7 +3432,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span020_span02
 
 **Configuration:** P4_ema_span=9
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.582** (is_sharpe 0.957, 308 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.582** (is_sharpe 0.957, fires 308, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_bollinger.py (S6-B3119)).
 
@@ -3426,13 +3517,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span020_span02
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.582 | 0.957 | 308 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | 0.58 | 1.047 | 308 | regime_flip | 1 | (no knobs recorded) |
-| 3 | 0.328 | 0.764 | 308 | fixed_4r_2r | 1 | (no knobs recorded) |
-| 4 | 0.295 | 0.856 | 308 | time_stop_10d | 1 | (no knobs recorded) |
-| 5 | 0.276 | 0.59 | 308 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 1 | 0.582 | 0.957 | fires 308 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | 0.58 | 1.047 | fires 308 | regime_flip | 1 | (no knobs recorded) |
+| 3 | 0.328 | 0.764 | fires 308 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 4 | 0.295 | 0.856 | fires 308 | time_stop_10d | 1 | (no knobs recorded) |
+| 5 | 0.276 | 0.59 | fires 308 | hybrid_50pct_target | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_bl_span009_span009_grid_auto.json._
 
@@ -3440,7 +3531,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span009_span00
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.5, P4_min_step_pct=0.0, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.063** (is_sharpe 0.082, 764 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.063** (is_sharpe 0.082, fires 764, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -3525,13 +3616,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_bl_span009_span00
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.063 | 0.082 | 764 | earnings_blackout | 1 | (no knobs recorded) |
-| 2 | -0.131 | -0.022 | 764 | trailing_15pct | 1 | (no knobs recorded) |
-| 3 | -0.232 | -0.016 | 764 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 4 | -0.286 | -0.133 | 764 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | -0.293 | -0.135 | 764 | trailing_10pct | 1 | (no knobs recorded) |
+| 1 | -0.063 | 0.082 | fires 764 | earnings_blackout | 1 | (no knobs recorded) |
+| 2 | -0.131 | -0.022 | fires 764 | trailing_15pct | 1 | (no knobs recorded) |
+| 3 | -0.232 | -0.016 | fires 764 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 4 | -0.286 | -0.133 | fires 764 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | -0.293 | -0.135 | fires 764 | trailing_10pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_step2_step2_b0.5_s0.0_w0.3_grid_auto.json._
 
@@ -3539,7 +3630,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_st
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.5, P4_min_step_pct=0.0, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.141** (is_sharpe 0.909, 98 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.141** (is_sharpe 0.909, fires 98, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -3624,13 +3715,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_st
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.141 | 0.909 | 98 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.361 | 0.077 | 98 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.384 | 0.331 | 98 | time_stop_20d | 1 | (no knobs recorded) |
-| 4 | -0.623 | -0.113 | 98 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | -0.638 | 0.17 | 98 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 1 | 0.141 | 0.909 | fires 98 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.361 | 0.077 | fires 98 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.384 | 0.331 | fires 98 | time_stop_20d | 1 | (no knobs recorded) |
+| 4 | -0.623 | -0.113 | fires 98 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | -0.638 | 0.17 | fires 98 | fixed_4r_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_b0.5_s0.0_w0.3_grid_auto.json._
 
@@ -3638,7 +3729,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.0, P4_min_step_pct=0.0, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.297** (is_sharpe 0.225, 186 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.297** (is_sharpe 0.225, fires 186, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -3723,13 +3814,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c14_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.297 | 0.225 | 186 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.481 | 0.098 | 186 | fixed_4r_2r | 1 | (no knobs recorded) |
-| 3 | -0.517 | -0.211 | 186 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.544 | -0.148 | 186 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | -0.615 | 0.245 | 186 | class_time_stop | 1 | (no knobs recorded) |
+| 1 | -0.297 | 0.225 | fires 186 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.481 | 0.098 | fires 186 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 3 | -0.517 | -0.211 | fires 186 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.544 | -0.148 | fires 186 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | -0.615 | 0.245 | fires 186 | class_time_stop | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c02_b0.0_s0.0_w0.3_grid_auto.json._
 
@@ -3737,7 +3828,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c02_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.5, P4_min_step_pct=0.25, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.312** (is_sharpe 0.589, 69 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.312** (is_sharpe 0.589, fires 69, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -3822,13 +3913,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c02_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.312 | 0.589 | 69 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.377 | 0.143 | 69 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.4 | 0.193 | 69 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.557 | 0.302 | 69 | time_stop_20d | 1 | (no knobs recorded) |
-| 5 | -0.566 | 0.383 | 69 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 1 | -0.312 | 0.589 | fires 69 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.377 | 0.143 | fires 69 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.4 | 0.193 | fires 69 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.557 | 0.302 | fires 69 | time_stop_20d | 1 | (no knobs recorded) |
+| 5 | -0.566 | 0.383 | fires 69 | fixed_4r_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c18_b0.5_s0.25_w0.3_grid_auto.json._
 
@@ -3836,7 +3927,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c18_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.5, P4_min_step_pct=0.25, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.625** (is_sharpe -0.12, 98 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.625** (is_sharpe -0.12, fires 98, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -3921,13 +4012,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c18_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.625 | -0.12 | 98 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 2 | -0.628 | -0.19 | 98 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.651 | 0.11 | 98 | regime_flip | 1 | (no knobs recorded) |
-| 4 | -0.817 | -0.1 | 98 | time_stop_20d | 1 | (no knobs recorded) |
-| 5 | -0.879 | -0.389 | 98 | trailing_10pct | 1 | (no knobs recorded) |
+| 1 | -0.625 | -0.12 | fires 98 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 2 | -0.628 | -0.19 | fires 98 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.651 | 0.11 | fires 98 | regime_flip | 1 | (no knobs recorded) |
+| 4 | -0.817 | -0.1 | fires 98 | time_stop_20d | 1 | (no knobs recorded) |
+| 5 | -0.879 | -0.389 | fires 98 | trailing_10pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c17_b0.5_s0.25_wNone_grid_auto.json._
 
@@ -3935,7 +4026,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c17_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.5, P4_min_step_pct=0.1, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.035** (is_sharpe 0.816, 95 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.035** (is_sharpe 0.816, fires 95, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4020,13 +4111,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c17_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.035 | 0.816 | 95 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.358 | 0.087 | 95 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.479 | 0.248 | 95 | time_stop_20d | 1 | (no knobs recorded) |
-| 4 | -0.67 | -0.152 | 95 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | -0.709 | 0.11 | 95 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 1 | 0.035 | 0.816 | fires 95 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.358 | 0.087 | fires 95 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.479 | 0.248 | fires 95 | time_stop_20d | 1 | (no knobs recorded) |
+| 4 | -0.67 | -0.152 | fires 95 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | -0.709 | 0.11 | fires 95 | fixed_4r_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c16_b0.5_s0.1_w0.3_grid_auto.json._
 
@@ -4034,7 +4125,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c16_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.5, P4_min_step_pct=0.1, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.018** (is_sharpe 0.682, 132 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.018** (is_sharpe 0.682, fires 132, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4119,13 +4210,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c16_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.018 | 0.682 | 132 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.397 | 0.217 | 132 | time_stop_20d | 1 | (no knobs recorded) |
-| 3 | -0.459 | -0.078 | 132 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.601 | 0.064 | 132 | fixed_4r_2r | 1 | (no knobs recorded) |
-| 5 | -0.638 | -0.192 | 132 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 1 | 0.018 | 0.682 | fires 132 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.397 | 0.217 | fires 132 | time_stop_20d | 1 | (no knobs recorded) |
+| 3 | -0.459 | -0.078 | fires 132 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.601 | 0.064 | fires 132 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 5 | -0.638 | -0.192 | fires 132 | hybrid_50pct_target | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c15_b0.5_s0.1_wNone_grid_auto.json._
 
@@ -4133,7 +4224,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c15_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.5, P4_min_step_pct=0.0, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.067** (is_sharpe 0.72, 137 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.067** (is_sharpe 0.72, fires 137, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4218,13 +4309,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c15_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.067 | 0.72 | 137 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.347 | 0.258 | 137 | time_stop_20d | 1 | (no knobs recorded) |
-| 3 | -0.42 | -0.046 | 137 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.581 | -0.142 | 137 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 5 | -0.595 | 0.056 | 137 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 1 | 0.067 | 0.72 | fires 137 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.347 | 0.258 | fires 137 | time_stop_20d | 1 | (no knobs recorded) |
+| 3 | -0.42 | -0.046 | fires 137 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.581 | -0.142 | fires 137 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 5 | -0.595 | 0.056 | fires 137 | fixed_4r_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c13_b0.5_s0.0_wNone_grid_auto.json._
 
@@ -4232,7 +4323,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c13_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.3, P4_min_step_pct=0.25, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.204** (is_sharpe 0.205, 131 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.204** (is_sharpe 0.205, fires 131, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4317,13 +4408,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c13_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.204 | 0.205 | 131 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 2 | -0.257 | 0.119 | 131 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.261 | 0.394 | 131 | regime_flip | 1 | (no knobs recorded) |
-| 4 | -0.437 | 0.182 | 131 | time_stop_20d | 1 | (no knobs recorded) |
-| 5 | -0.582 | -0.037 | 131 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 1 | -0.204 | 0.205 | fires 131 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 2 | -0.257 | 0.119 | fires 131 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.261 | 0.394 | fires 131 | regime_flip | 1 | (no knobs recorded) |
+| 4 | -0.437 | 0.182 | fires 131 | time_stop_20d | 1 | (no knobs recorded) |
+| 5 | -0.582 | -0.037 | fires 131 | breakeven_plus_trail | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c12_b0.3_s0.25_w0.3_grid_auto.json._
 
@@ -4331,7 +4422,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c12_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.3, P4_min_step_pct=0.25, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.409** (is_sharpe 0.083, 242 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.409** (is_sharpe 0.083, fires 242, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4416,13 +4507,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c12_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.409 | 0.083 | 242 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.412 | -0.095 | 242 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.44 | -0.161 | 242 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.652 | -0.238 | 242 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 5 | -0.656 | -0.341 | 242 | trailing_10pct | 1 | (no knobs recorded) |
+| 1 | -0.409 | 0.083 | fires 242 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.412 | -0.095 | fires 242 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.44 | -0.161 | fires 242 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.652 | -0.238 | fires 242 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 5 | -0.656 | -0.341 | fires 242 | trailing_10pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c11_b0.3_s0.25_wNone_grid_auto.json._
 
@@ -4430,7 +4521,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c11_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.3, P4_min_step_pct=0.1, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.022** (is_sharpe 0.546, 173 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.022** (is_sharpe 0.546, fires 173, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4515,13 +4606,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c11_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.022 | 0.546 | 173 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.144 | 0.182 | 173 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.2 | 0.157 | 173 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.28 | 0.255 | 173 | time_stop_20d | 1 | (no knobs recorded) |
-| 5 | -0.416 | 0.05 | 173 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 1 | -0.022 | 0.546 | fires 173 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.144 | 0.182 | fires 173 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.2 | 0.157 | fires 173 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.28 | 0.255 | fires 173 | time_stop_20d | 1 | (no knobs recorded) |
+| 5 | -0.416 | 0.05 | fires 173 | breakeven_plus_trail | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c10_b0.3_s0.1_w0.3_grid_auto.json._
 
@@ -4529,7 +4620,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c10_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.3, P4_min_step_pct=0.1, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.074** (is_sharpe 0.364, 304 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.074** (is_sharpe 0.364, fires 304, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4614,13 +4705,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c10_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.074 | 0.364 | 304 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.169 | 0.08 | 304 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.296 | -0.016 | 304 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.366 | -0.005 | 304 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 5 | -0.468 | -0.063 | 304 | time_stop_20d | 1 | (no knobs recorded) |
+| 1 | -0.074 | 0.364 | fires 304 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.169 | 0.08 | fires 304 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.296 | -0.016 | fires 304 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.366 | -0.005 | fires 304 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 5 | -0.468 | -0.063 | fires 304 | time_stop_20d | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c09_b0.3_s0.1_wNone_grid_auto.json._
 
@@ -4628,7 +4719,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c09_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.3, P4_min_step_pct=0.0, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.075** (is_sharpe 0.63, 181 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.075** (is_sharpe 0.63, fires 181, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4713,13 +4804,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c09_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.075 | 0.63 | 181 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.155 | 0.371 | 181 | time_stop_20d | 1 | (no knobs recorded) |
-| 3 | -0.176 | 0.176 | 181 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.193 | 0.126 | 181 | earnings_blackout | 1 | (no knobs recorded) |
-| 5 | -0.35 | 0.101 | 181 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 1 | 0.075 | 0.63 | fires 181 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.155 | 0.371 | fires 181 | time_stop_20d | 1 | (no knobs recorded) |
+| 3 | -0.176 | 0.176 | fires 181 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.193 | 0.126 | fires 181 | earnings_blackout | 1 | (no knobs recorded) |
+| 5 | -0.35 | 0.101 | fires 181 | breakeven_plus_trail | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c08_b0.3_s0.0_w0.3_grid_auto.json._
 
@@ -4727,7 +4818,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c08_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.3, P4_min_step_pct=0.0, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.077** (is_sharpe 0.349, 322 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.077** (is_sharpe 0.349, fires 322, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4812,13 +4903,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c08_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.077 | 0.349 | 322 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.199 | 0.044 | 322 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.301 | -0.027 | 322 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.341 | 0.011 | 322 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 5 | -0.466 | -0.016 | 322 | trailing_5pct | 1 | (no knobs recorded) |
+| 1 | -0.077 | 0.349 | fires 322 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.199 | 0.044 | fires 322 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.301 | -0.027 | fires 322 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.341 | 0.011 | fires 322 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 5 | -0.466 | -0.016 | fires 322 | trailing_5pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c07_b0.3_s0.0_wNone_grid_auto.json._
 
@@ -4826,7 +4917,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c07_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.0, P4_min_step_pct=0.25, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.01** (is_sharpe 0.31, 186 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.01** (is_sharpe 0.31, fires 186, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -4911,13 +5002,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c07_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.01 | 0.31 | 186 | earnings_blackout | 1 | (no knobs recorded) |
-| 2 | -0.091 | 0.249 | 186 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.181 | 0.379 | 186 | regime_flip | 1 | (no knobs recorded) |
-| 4 | -0.334 | 0.118 | 186 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 5 | -0.343 | 0.231 | 186 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 1 | -0.01 | 0.31 | fires 186 | earnings_blackout | 1 | (no knobs recorded) |
+| 2 | -0.091 | 0.249 | fires 186 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.181 | 0.379 | fires 186 | regime_flip | 1 | (no knobs recorded) |
+| 4 | -0.334 | 0.118 | fires 186 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 5 | -0.343 | 0.231 | fires 186 | fixed_4r_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c06_b0.0_s0.25_w0.3_grid_auto.json._
 
@@ -4925,7 +5016,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c06_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.0, P4_min_step_pct=0.25, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.051** (is_sharpe 0.251, 424 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.051** (is_sharpe 0.251, fires 424, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -5010,13 +5101,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c06_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.051 | 0.251 | 424 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.155 | 0.058 | 424 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.193 | 0.04 | 424 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.27 | -0.037 | 424 | trailing_10pct | 1 | (no knobs recorded) |
-| 5 | -0.327 | 0.049 | 424 | regime_flip | 1 | (no knobs recorded) |
+| 1 | -0.051 | 0.251 | fires 424 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.155 | 0.058 | fires 424 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.193 | 0.04 | fires 424 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.27 | -0.037 | fires 424 | trailing_10pct | 1 | (no knobs recorded) |
+| 5 | -0.327 | 0.049 | fires 424 | regime_flip | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c05_b0.0_s0.25_wNone_grid_auto.json._
 
@@ -5024,7 +5115,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c05_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.0, P4_min_step_pct=0.1, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.04** (is_sharpe 0.535, 240 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.04** (is_sharpe 0.535, fires 240, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -5109,13 +5200,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c05_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.04 | 0.535 | 240 | regime_flip | 1 | (no knobs recorded) |
-| 2 | 0.011 | 0.291 | 240 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.081 | 0.215 | 240 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.21 | 0.248 | 240 | time_stop_20d | 1 | (no knobs recorded) |
-| 5 | -0.233 | 0.273 | 240 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 1 | 0.04 | 0.535 | fires 240 | regime_flip | 1 | (no knobs recorded) |
+| 2 | 0.011 | 0.291 | fires 240 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.081 | 0.215 | fires 240 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.21 | 0.248 | fires 240 | time_stop_20d | 1 | (no knobs recorded) |
+| 5 | -0.233 | 0.273 | fires 240 | fixed_4r_2r | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c04_b0.0_s0.1_w0.3_grid_auto.json._
 
@@ -5123,7 +5214,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c04_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.0, P4_min_step_pct=0.1, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.034** (is_sharpe 0.305, 515 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.034** (is_sharpe 0.305, fires 515, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -5208,13 +5299,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c04_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.034 | 0.305 | 515 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.024 | 0.171 | 515 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.126 | 0.087 | 515 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.19 | 0.153 | 515 | regime_flip | 1 | (no knobs recorded) |
-| 5 | -0.222 | -0.008 | 515 | trailing_10pct | 1 | (no knobs recorded) |
+| 1 | 0.034 | 0.305 | fires 515 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.024 | 0.171 | fires 515 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.126 | 0.087 | fires 515 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.19 | 0.153 | fires 515 | regime_flip | 1 | (no knobs recorded) |
+| 5 | -0.222 | -0.008 | fires 515 | trailing_10pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c03_b0.0_s0.1_wNone_grid_auto.json._
 
@@ -5222,7 +5313,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c03_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.0, P4_min_step_pct=0.0, P5_max_wick_pct=0.3
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.028** (is_sharpe 0.504, 261 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.028** (is_sharpe 0.504, fires 261, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -5307,13 +5398,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c03_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.028 | 0.504 | 261 | regime_flip | 1 | (no knobs recorded) |
-| 2 | -0.071 | 0.198 | 261 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.121 | 0.164 | 261 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.171 | 0.271 | 261 | time_stop_20d | 1 | (no knobs recorded) |
-| 5 | -0.206 | 0.169 | 261 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 1 | 0.028 | 0.504 | fires 261 | regime_flip | 1 | (no knobs recorded) |
+| 2 | -0.071 | 0.198 | fires 261 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.121 | 0.164 | fires 261 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.171 | 0.271 | fires 261 | time_stop_20d | 1 | (no knobs recorded) |
+| 5 | -0.206 | 0.169 | fires 261 | breakeven_plus_trail | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c02_b0.0_s0.0_w0.3_grid_auto.json._
 
@@ -5321,7 +5412,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c02_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.0, P4_min_step_pct=0.0, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.067** (is_sharpe 0.378, 531 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.067** (is_sharpe 0.378, fires 531, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -5406,13 +5497,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c02_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.067 | 0.378 | 531 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.278 | -0.047 | 531 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 3 | -0.361 | -0.177 | 531 | earnings_blackout | 1 | (no knobs recorded) |
-| 4 | -0.39 | -0.041 | 531 | fixed_4r_2r | 1 | (no knobs recorded) |
-| 5 | -0.442 | -0.116 | 531 | regime_flip | 1 | (no knobs recorded) |
+| 1 | 0.067 | 0.378 | fires 531 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.278 | -0.047 | fires 531 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 3 | -0.361 | -0.177 | fires 531 | earnings_blackout | 1 | (no knobs recorded) |
+| 4 | -0.39 | -0.041 | fires 531 | fixed_4r_2r | 1 | (no knobs recorded) |
+| 5 | -0.442 | -0.116 | fires 531 | regime_flip | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c01_b0.0_s0.0_wNone_grid_auto.json._
 
@@ -5420,7 +5511,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c01_b0
 
 **Configuration:** P2_n_bars=3, P3_min_body_pct=0.0, P4_min_step_pct=0.0, P5_max_wick_pct=None
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.048** (is_sharpe 0.308, 560 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.048** (is_sharpe 0.308, fires 560, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction - of - landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (scripts/grade_free_levels_candle.py (S6-B2904)).
 
@@ -5505,13 +5596,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tbc_c01_b0
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.048 | 0.308 | 560 | breakeven_plus_trail | 1 | (no knobs recorded) |
-| 2 | -0.045 | 0.143 | 560 | earnings_blackout | 1 | (no knobs recorded) |
-| 3 | -0.106 | 0.099 | 560 | hybrid_50pct_target | 1 | (no knobs recorded) |
-| 4 | -0.157 | 0.174 | 560 | regime_flip | 1 | (no knobs recorded) |
-| 5 | -0.267 | -0.058 | 560 | trailing_10pct | 1 | (no knobs recorded) |
+| 1 | 0.048 | 0.308 | fires 560 | breakeven_plus_trail | 1 | (no knobs recorded) |
+| 2 | -0.045 | 0.143 | fires 560 | earnings_blackout | 1 | (no knobs recorded) |
+| 3 | -0.106 | 0.099 | fires 560 | hybrid_50pct_target | 1 | (no knobs recorded) |
+| 4 | -0.157 | 0.174 | fires 560 | regime_flip | 1 | (no knobs recorded) |
+| 5 | -0.267 | -0.058 | fires 560 | trailing_10pct | 1 | (no knobs recorded) |
 
 _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c01_b0.0_s0.0_wNone_grid_auto.json._
 
@@ -5519,7 +5610,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c01_b0
 
 **Configuration:** P1_swing_length=10, P6_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.803** (is_sharpe 2.221, 13 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.803** (is_sharpe 2.221, fires 13, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -5594,13 +5685,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_candle_tws_c01_b0
 - **44 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 256 graded and ranked, collapsing to 113 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 22 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.803 | 2.221 | 13 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.01 age_bars_max=180 tail_n=3 |
-| 2 | 0.766 | 2.252 | 12 | earnings_blackout | 4 | close_mitigation=True break_pct_max=0.01 age_bars_max=120 tail_n=20 |
-| 3 | 0.52 | 1.743 | 15 | earnings_blackout | 3 | close_mitigation=True break_pct_max=0.01 age_bars_max=180 tail_n=20 |
-| 4 | 0.109 | 1.301 | 14 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=3 |
-| 5 | 0.106 | 0.846 | 33 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
+| 1 | 0.803 | 2.221 | fires 13 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.01 age_bars_max=180 tail_n=3 |
+| 2 | 0.766 | 2.252 | fires 12 | earnings_blackout | 4 | close_mitigation=True break_pct_max=0.01 age_bars_max=120 tail_n=20 |
+| 3 | 0.52 | 1.743 | fires 15 | earnings_blackout | 3 | close_mitigation=True break_pct_max=0.01 age_bars_max=180 tail_n=20 |
+| 4 | 0.109 | 1.301 | fires 14 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=3 |
+| 5 | 0.106 | 0.846 | fires 33 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2712_smc_sw10_sw10_grid_auto.json._
 
@@ -5608,7 +5699,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2712_smc_sw10_sw
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=9
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.428** (is_sharpe 0.516, 3509 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.428** (is_sharpe 0.516, fires 3509, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 4616 of 4616 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -5693,13 +5784,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2712_smc_sw10_sw
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.428 | 0.516 | 3509 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | 0.319 | 0.387 | 3509 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | 0.308 | 0.414 | 3509 | fixed_4r_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | 0.286 | 0.382 | 3509 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | 0.284 | 0.402 | 3509 | time_stop_20d | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | 0.428 | 0.516 | fires 3509 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | 0.319 | 0.387 | fires 3509 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | 0.308 | 0.414 | fires 3509 | fixed_4r_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | 0.286 | 0.382 | fires 3509 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | 0.284 | 0.402 | fires 3509 | time_stop_20d | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_step2_span9_step2_span9_grid_auto.json._
 
@@ -5707,7 +5798,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_step2_span9_s
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.106** (is_sharpe 0.241, 373 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.106** (is_sharpe 0.241, fires 373, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 373 of 373 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -5792,13 +5883,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_step2_span9_s
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.106 | 0.241 | 373 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.318 | -0.033 | 373 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.462 | -0.161 | 373 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.531 | -0.294 | 373 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.549 | -0.137 | 373 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.106 | 0.241 | fires 373 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.318 | -0.033 | fires 373 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.462 | -0.161 | fires 373 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.531 | -0.294 | fires 373 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.549 | -0.137 | fires 373 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_rerun_cfg1_rerun_grid_auto.json._
 
@@ -5806,7 +5897,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_rerun_cf
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=100
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.078** (is_sharpe 0.281, 374 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.078** (is_sharpe 0.281, fires 374, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 374 of 374 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -5891,13 +5982,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_rerun_cf
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.078 | 0.281 | 374 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.341 | -0.059 | 374 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.47 | -0.172 | 374 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.611 | -0.207 | 374 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.634 | -0.399 | 374 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.078 | 0.281 | fires 374 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.341 | -0.059 | fires 374 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.47 | -0.172 | fires 374 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.611 | -0.207 | fires 374 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.634 | -0.399 | fires 374 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_rerun_span100_grid_auto.json._
 
@@ -5905,7 +5996,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_rerun
 
 **Configuration:** P4_min_consecutive_quarters=2, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.051** (is_sharpe 0.28, 402 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.051** (is_sharpe 0.28, fires 402, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 402 of 402 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -5990,13 +6081,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_rerun
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.051 | 0.28 | 402 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.274 | -0.006 | 402 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.424 | -0.197 | 402 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.466 | -0.179 | 402 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.51 | -0.21 | 402 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.051 | 0.28 | fires 402 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.274 | -0.006 | fires 402 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.424 | -0.197 | fires 402 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.466 | -0.179 | fires 402 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.51 | -0.21 | fires 402 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_minq2_minq2_grid_auto.json._
 
@@ -6004,7 +6095,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq2_minq2_g
 
 **Configuration:** P4_min_consecutive_quarters=3, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.084** (is_sharpe 0.259, 385 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.084** (is_sharpe 0.259, fires 385, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 385 of 385 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -6089,13 +6180,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq2_minq2_g
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.084 | 0.259 | 385 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.334 | -0.057 | 385 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.463 | -0.169 | 385 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.485 | -0.252 | 385 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.542 | -0.235 | 385 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.084 | 0.259 | fires 385 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.334 | -0.057 | fires 385 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.463 | -0.169 | fires 385 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.485 | -0.252 | fires 385 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.542 | -0.235 | fires 385 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_minq3_minq3_grid_auto.json._
 
@@ -6103,7 +6194,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq3_minq3_g
 
 **Configuration:** P4_min_consecutive_quarters=6, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.043** (is_sharpe 0.446, 255 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.043** (is_sharpe 0.446, fires 255, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 255 of 255 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -6188,13 +6279,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq3_minq3_g
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.043 | 0.446 | 255 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.192 | 0.132 | 255 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.358 | -0.022 | 255 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.463 | -0.185 | 255 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.579 | -0.135 | 255 | time_stop_20d | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | 0.043 | 0.446 | fires 255 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.192 | 0.132 | fires 255 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.358 | -0.022 | fires 255 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.463 | -0.185 | fires 255 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.579 | -0.135 | fires 255 | time_stop_20d | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_minq6_minq6_grid_auto.json._
 
@@ -6202,7 +6293,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq6_minq6_g
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=8, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.038** (is_sharpe 0.4, 329 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.038** (is_sharpe 0.4, fires 329, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 329 of 329 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -6287,13 +6378,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq6_minq6_g
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.038 | 0.4 | 329 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.301 | -0.013 | 329 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.316 | -0.073 | 329 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.425 | -0.128 | 329 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.465 | -0.235 | 329 | trailing_15pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | 0.038 | 0.4 | fires 329 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.301 | -0.013 | fires 329 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.316 | -0.073 | fires 329 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.425 | -0.128 | fires 329 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.465 | -0.235 | fires 329 | trailing_15pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback8_lookback8_grid_auto.json._
 
@@ -6301,7 +6392,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback8_loo
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=6, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.07** (is_sharpe 0.425, 342 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.07** (is_sharpe 0.425, fires 342, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 342 of 342 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -6386,13 +6477,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback8_loo
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.07 | 0.425 | 342 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.14 | 0.272 | 342 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.186 | 0.096 | 342 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.406 | -0.109 | 342 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.448 | 0.085 | 342 | time_stop_10d | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | 0.07 | 0.425 | fires 342 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.14 | 0.272 | fires 342 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.186 | 0.096 | fires 342 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.406 | -0.109 | fires 342 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.448 | 0.085 | fires 342 | time_stop_10d | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback6_lookback6_grid_auto.json._
 
@@ -6400,7 +6491,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback6_loo
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=3, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.134** (is_sharpe 0.231, 338 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.134** (is_sharpe 0.231, fires 338, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 338 of 338 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -6485,13 +6576,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback6_loo
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.134 | 0.231 | 338 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.285 | -0.006 | 338 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.382 | -0.09 | 338 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.562 | -0.142 | 338 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.604 | -0.358 | 338 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.134 | 0.231 | fires 338 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.285 | -0.006 | fires 338 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.382 | -0.09 | fires 338 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.562 | -0.142 | fires 338 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.604 | -0.358 | fires 338 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback3_lookback3_grid_auto.json._
 
@@ -6499,7 +6590,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback3_loo
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.25, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.297** (is_sharpe 0.092, 301 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.297** (is_sharpe 0.092, fires 301, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 301 of 301 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -6584,13 +6675,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback3_loo
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.297 | 0.092 | 301 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.297 | -0.002 | 301 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.467 | -0.161 | 301 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.659 | -0.398 | 301 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.7 | -0.289 | 301 | time_stop_20d | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.297 | 0.092 | fires 301 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.297 | -0.002 | fires 301 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.467 | -0.161 | fires 301 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.659 | -0.398 | fires 301 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.7 | -0.289 | fires 301 | time_stop_20d | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.25_mult1.25_grid_auto.json._
 
@@ -6598,7 +6689,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.25_mult
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.0, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.091** (is_sharpe 0.224, 450 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.091** (is_sharpe 0.224, fires 450, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 450 of 450 landed fires covered (coverage 1.0); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -6683,13 +6774,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.25_mult
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.091 | 0.224 | 450 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.257 | -0.012 | 450 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.501 | -0.235 | 450 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.513 | -0.298 | 450 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.571 | -0.233 | 450 | time_stop_20d | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.091 | 0.224 | fires 450 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.257 | -0.012 | fires 450 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.501 | -0.235 | fires 450 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.513 | -0.298 | fires 450 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.571 | -0.233 | fires 450 | time_stop_20d | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.0_mult1.0_grid_auto.json._
 
@@ -6697,7 +6788,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.0_mult1
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=100
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.062** (is_sharpe 0.438, 374 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.062** (is_sharpe 0.438, fires 374, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -6774,13 +6865,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.0_mult1
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.062 | 0.438 | 374 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.232 | 0.061 | 374 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.472 | -0.175 | 374 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.619 | 0.198 | 374 | r_multiple_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.622 | -0.114 | 374 | fixed_4r_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | 0.062 | 0.438 | fires 374 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.232 | 0.061 | fires 374 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.472 | -0.175 | fires 374 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.619 | 0.198 | fires 374 | r_multiple_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.622 | -0.114 | fires 374 | fixed_4r_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_span100_grid_auto.json._
 
@@ -6788,7 +6879,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_span1
 
 **Configuration:** P4_min_consecutive_quarters=8, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.054** (is_sharpe 0.452, 256 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.054** (is_sharpe 0.452, fires 256, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 256 of 256 landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -6872,13 +6963,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span100_span1
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.054 | 0.452 | 256 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.264 | 0.05 | 256 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.39 | -0.063 | 256 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.451 | -0.173 | 256 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.495 | -0.123 | 256 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | 0.054 | 0.452 | fires 256 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.264 | 0.05 | fires 256 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.39 | -0.063 | fires 256 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.451 | -0.173 | fires 256 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.495 | -0.123 | fires 256 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_minq8_minq8_grid_auto.json._
 
@@ -6886,7 +6977,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq8_minq8_g
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=2, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.075** (is_sharpe 0.305, 323 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.075** (is_sharpe 0.305, fires 323, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 323 of 323 landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -6970,13 +7061,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_minq8_minq8_g
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.075 | 0.305 | 323 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.309 | -0.056 | 323 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.397 | -0.096 | 323 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.447 | -0.136 | 323 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.552 | -0.218 | 323 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.075 | 0.305 | fires 323 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.309 | -0.056 | fires 323 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.397 | -0.096 | fires 323 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.447 | -0.136 | fires 323 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.552 | -0.218 | fires 323 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback2_lookback2_grid_auto.json._
 
@@ -6984,7 +7075,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback2_loo
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.5, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.223** (is_sharpe 0.176, 266 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.223** (is_sharpe 0.176, fires 266, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 266 of 266 landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -7068,13 +7159,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_lookback2_loo
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.223 | 0.176 | 266 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.382 | -0.077 | 266 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.445 | -0.135 | 266 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.631 | -0.381 | 266 | trailing_15pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.67 | -0.399 | 266 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.223 | 0.176 | fires 266 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.382 | -0.077 | fires 266 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.445 | -0.135 | fires 266 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.631 | -0.381 | fires 266 | trailing_15pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.67 | -0.399 | fires 266 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.5_mult1.5_grid_auto.json._
 
@@ -7082,7 +7173,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.5_mult1
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=150
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.11** (is_sharpe 0.24, 371 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.11** (is_sharpe 0.24, fires 371, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 371 of 371 landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -7166,13 +7257,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.5_mult1
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.11 | 0.24 | 371 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.305 | -0.026 | 371 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.441 | -0.143 | 371 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.52 | -0.207 | 371 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.574 | -0.338 | 371 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.11 | 0.24 | fires 371 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.305 | -0.026 | fires 371 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.441 | -0.143 | fires 371 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.52 | -0.207 | fires 371 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.574 | -0.338 | fires 371 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_span150_span150_grid_auto.json._
 
@@ -7180,7 +7271,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span150_span1
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=50
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.067** (is_sharpe 0.288, 405 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.067** (is_sharpe 0.288, fires 405, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 405 of 405 landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -7264,13 +7355,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span150_span1
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.067 | 0.288 | 405 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.344 | -0.071 | 405 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.455 | -0.061 | 405 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.495 | -0.205 | 405 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.586 | -0.282 | 405 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.067 | 0.288 | fires 405 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.344 | -0.071 | fires 405 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.455 | -0.061 | fires 405 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.495 | -0.205 | fires 405 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.586 | -0.282 | fires 405 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_span50_span50_grid_auto.json._
 
@@ -7278,7 +7369,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span50_span50
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=20
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.015** (is_sharpe 0.3, 531 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.015** (is_sharpe 0.3, fires 531, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 531 of 531 landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -7338,13 +7429,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span50_span50
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.015 | 0.3 | 531 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.231 | 0.013 | 531 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.282 | 0.068 | 531 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.424 | -0.155 | 531 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.526 | -0.262 | 531 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.015 | 0.3 | fires 531 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.231 | 0.013 | fires 531 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.282 | 0.068 | fires 531 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.424 | -0.155 | fires 531 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.526 | -0.262 | fires 531 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_span20_span20_grid_auto.json._
 
@@ -7352,7 +7443,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span20_span20
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=9
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.167** (is_sharpe 0.489, 609 fires, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.167** (is_sharpe 0.489, fires 609, exit regime_flip). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 609 of 609 landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -7412,13 +7503,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span20_span20
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.167 | 0.489 | 609 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | 0.134 | 0.423 | 609 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.068 | 0.161 | 609 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.146 | 0.252 | 609 | time_stop_10d | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.274 | -0.024 | 609 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | 0.167 | 0.489 | fires 609 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | 0.134 | 0.423 | fires 609 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.068 | 0.161 | fires 609 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.146 | 0.252 | fires 609 | time_stop_10d | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.274 | -0.024 | fires 609 | class_time_stop | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_span9_span9_grid_auto.json._
 
@@ -7426,7 +7517,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span9_span9_g
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.087** (is_sharpe 0.263, 373 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.087** (is_sharpe 0.263, fires 373, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **FREE-LEVEL GRADES (B2569, reproduction-gated every landing):** reproduction 350 of 373 landed fires covered (coverage -); IS window only, entry-dated: no holdout-ENTERED row is scored (grade_free_levels_institutional).
 
@@ -7510,13 +7601,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_span9_span9_g
 - **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.087 | 0.263 | 373 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.285 | -0.001 | 373 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.462 | -0.161 | 373 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.53 | -0.293 | 373 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.549 | -0.137 | 373 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 1 | -0.087 | 0.263 | fires 373 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.285 | -0.001 | fires 373 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.462 | -0.161 | fires 373 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.53 | -0.293 | fires 373 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.549 | -0.137 | fires 373 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_grid_auto.json._
 
@@ -7524,7 +7615,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_grid_aut
 
 **Configuration:** P1_swing_length=20, P6_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.196** (is_sharpe 0.282, 79 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.196** (is_sharpe 0.282, fires 79, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -7596,13 +7687,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_grid_aut
 - **82 (27%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 218 graded and ranked, collapsing to 89 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 22 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.196 | 0.282 | 79 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
-| 2 | -0.198 | 0.275 | 76 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 |
-| 3 | -0.205 | 0.274 | 78 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=3 |
-| 4 | -0.236 | 0.286 | 66 | hybrid_50pct_target | 4 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
-| 5 | -0.24 | 0.268 | 65 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
+| 1 | -0.196 | 0.282 | fires 79 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
+| 2 | -0.198 | 0.275 | fires 76 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 |
+| 3 | -0.205 | 0.274 | fires 78 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=3 |
+| 4 | -0.236 | 0.286 | fires 66 | hybrid_50pct_target | 4 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
+| 5 | -0.24 | 0.268 | fires 65 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2174_sw20_sw20_grid_auto.json._
 
@@ -7610,7 +7701,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2174_sw20_sw20_g
 
 **Configuration:** P1_swing_length=50, P6_span=50
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.026** (is_sharpe 0.145, 325 fires, exit trailing_15pct). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.026** (is_sharpe 0.145, fires 325, exit trailing_15pct). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (8 DONE with evidence, 1 N/A with a reason: 6_post_fix_recheck). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -7669,13 +7760,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2174_sw20_sw20_g
 - **29 (10%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 271 graded and ranked, collapsing to 104 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.026 | 0.145 | 325 | trailing_15pct | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 sortino=1.737 psr=1.0 profit_factor=2.223 payoff=2.73 expectancy=6.2514 win_rate=0.449 p=0.0077498330916893265 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
-| 2 | -0.047 | 0.303 | 148 | hybrid_50pct_target | 4 | close_mitigation=True break_pct_max=0.03 age_bars_max=250 tail_n=20 sortino=999.0 psr=1.0 profit_factor=2.328 payoff=1.04 expectancy=4.1921 win_rate=0.69 p=0.023615591200037936 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
-| 3 | -0.047 | 0.186 | 339 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=20 sortino=2.052 psr=1.0 profit_factor=2.12 payoff=0.91 expectancy=3.0907 win_rate=0.7 p=0.004641593196346641 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
-| 4 | -0.047 | 0.186 | 338 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=5 sortino=2.017 psr=1.0 profit_factor=2.092 payoff=0.91 expectancy=3.0471 win_rate=0.697 p=0.005578254781933748 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
-| 5 | -0.047 | 0.175 | 397 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 sortino=2.348 psr=1.0 profit_factor=2.016 payoff=1.0 expectancy=3.1091 win_rate=0.669 p=0.0019491173483872398 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
+| 1 | -0.026 | 0.145 | fires 325 | trailing_15pct | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 sortino=1.737 psr=1.0 profit_factor=2.223 payoff=2.73 expectancy=6.2514 win_rate=0.449 p=0.0077498330916893265 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
+| 2 | -0.047 | 0.303 | fires 148 | hybrid_50pct_target | 4 | close_mitigation=True break_pct_max=0.03 age_bars_max=250 tail_n=20 sortino=999.0 psr=1.0 profit_factor=2.328 payoff=1.04 expectancy=4.1921 win_rate=0.69 p=0.023615591200037936 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
+| 3 | -0.047 | 0.186 | fires 339 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=20 sortino=2.052 psr=1.0 profit_factor=2.12 payoff=0.91 expectancy=3.0907 win_rate=0.7 p=0.004641593196346641 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
+| 4 | -0.047 | 0.186 | fires 338 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=5 sortino=2.017 psr=1.0 profit_factor=2.092 payoff=0.91 expectancy=3.0471 win_rate=0.697 p=0.005578254781933748 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
+| 5 | -0.047 | 0.175 | fires 397 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 sortino=2.348 psr=1.0 profit_factor=2.016 payoff=1.0 expectancy=3.1091 win_rate=0.669 p=0.0019491173483872398 gates={'pooled_sharpe': False, 'profit_factor': True, 'sortino': True, 'psr': True, 'min_trades_holdout': True, 'min_trades_full_period': True} gates_passed=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json._
 
@@ -7683,7 +7774,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2399_step2_sw50s
 
 **Configuration:** P1_swing_length=50, P6_span=150
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.437** (is_sharpe 3.083, 10 fires, exit fixed_4r_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.437** (is_sharpe 3.083, fires 10, exit fixed_4r_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -7742,13 +7833,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2399_step2_sw50s
 - **190 (63%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 110 graded and ranked, collapsing to 44 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.437 | 3.083 | 10 | fixed_4r_2r | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=250 tail_n=20 |
-| 2 | -0.164 | 1.083 | 38 | chandelier_3x | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=2 |
-| 3 | -0.205 | 2.057 | 27 | r_multiple_3r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=2 |
-| 4 | -0.205 | 0.932 | 43 | chandelier_3x | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=3 |
-| 5 | -0.218 | 1.885 | 30 | r_multiple_3r | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=2 |
+| 1 | 0.437 | 3.083 | fires 10 | fixed_4r_2r | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=250 tail_n=20 |
+| 2 | -0.164 | 1.083 | fires 38 | chandelier_3x | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=2 |
+| 3 | -0.205 | 2.057 | fires 27 | r_multiple_3r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=2 |
+| 4 | -0.205 | 0.932 | fires 43 | chandelier_3x | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=3 |
+| 5 | -0.218 | 1.885 | fires 30 | r_multiple_3r | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=2 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp150_sw50sp150_grid_auto.json._
 
@@ -7756,7 +7847,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp150_s
 
 **Configuration:** P1_swing_length=50, P6_span=100
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.023** (is_sharpe 2.292, 25 fires, exit r_multiple_3r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.023** (is_sharpe 2.292, fires 25, exit r_multiple_3r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -7815,13 +7906,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp150_s
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.023 | 2.292 | 25 | r_multiple_3r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=2 |
-| 2 | -0.032 | 2.49 | 21 | r_multiple_3r | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=2 |
-| 3 | -0.058 | 2.087 | 28 | r_multiple_3r | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=2 |
-| 4 | -0.077 | 2.229 | 24 | r_multiple_3r | 1 | close_mitigation=True break_pct_max=0.03 age_bars_max=None tail_n=2 |
-| 5 | -0.083 | 2.269 | 24 | r_multiple_3r | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
+| 1 | -0.023 | 2.292 | fires 25 | r_multiple_3r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=2 |
+| 2 | -0.032 | 2.49 | fires 21 | r_multiple_3r | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=2 |
+| 3 | -0.058 | 2.087 | fires 28 | r_multiple_3r | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=2 |
+| 4 | -0.077 | 2.229 | fires 24 | r_multiple_3r | 1 | close_mitigation=True break_pct_max=0.03 age_bars_max=None tail_n=2 |
+| 5 | -0.083 | 2.269 | fires 24 | r_multiple_3r | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp100_sw50sp100_grid_auto.json._
 
@@ -7829,7 +7920,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp100_s
 
 **Configuration:** P1_swing_length=50, P6_span=50
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 1.25** (is_sharpe 4.301, 14 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 1.25** (is_sharpe 4.301, fires 14, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -7888,13 +7979,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp100_s
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 1.25 | 4.301 | 14 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=3 |
-| 2 | 1.189 | 3.724 | 19 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=2 |
-| 3 | 1.11 | 3.427 | 22 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
-| 4 | 1.044 | 3.929 | 15 | time_stop_10d | 3 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=20 |
-| 5 | 1.013 | 3.26 | 23 | time_stop_10d | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=20 |
+| 1 | 1.25 | 4.301 | fires 14 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=3 |
+| 2 | 1.189 | 3.724 | fires 19 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=2 |
+| 3 | 1.11 | 3.427 | fires 22 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
+| 4 | 1.044 | 3.929 | fires 15 | time_stop_10d | 3 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=20 |
+| 5 | 1.013 | 3.26 | fires 23 | time_stop_10d | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp50_sw50sp50_grid_auto.json._
 
@@ -7902,7 +7993,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp50_sw
 
 **Configuration:** P1_swing_length=50, P6_span=20
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.93** (is_sharpe 3.915, 14 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.93** (is_sharpe 3.915, fires 14, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -7961,13 +8052,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp50_sw
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 100 graded and ranked, collapsing to 41 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.93 | 3.915 | 14 | time_stop_10d | 2 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=3 |
-| 2 | 0.759 | 3.592 | 15 | time_stop_10d | 3 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=20 |
-| 3 | 0.578 | 2.7 | 24 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
-| 4 | 0.563 | 1.865 | 32 | fixed_4r_2r | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
-| 5 | 0.551 | 1.84 | 32 | fixed_4r_2r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=3 |
+| 1 | 0.93 | 3.915 | fires 14 | time_stop_10d | 2 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=3 |
+| 2 | 0.759 | 3.592 | fires 15 | time_stop_10d | 3 | close_mitigation=True break_pct_max=0.01 age_bars_max=None tail_n=20 |
+| 3 | 0.578 | 2.7 | fires 24 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
+| 4 | 0.563 | 1.865 | fires 32 | fixed_4r_2r | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
+| 5 | 0.551 | 1.84 | fires 32 | fixed_4r_2r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=3 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp20_sw50sp20_grid_auto.json._
 
@@ -7975,7 +8066,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp20_sw
 
 **Configuration:** P1_swing_length=50, P6_span=9
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.724** (is_sharpe 2.82, 25 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.724** (is_sharpe 2.82, fires 25, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8034,13 +8125,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp20_sw
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.724 | 2.82 | 25 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
-| 2 | 0.661 | 2.706 | 26 | time_stop_10d | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=20 |
-| 3 | 0.656 | 1.93 | 33 | fixed_4r_2r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=3 |
-| 4 | 0.597 | 1.851 | 34 | fixed_4r_2r | 3 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=20 |
-| 5 | 0.472 | 1.651 | 37 | fixed_4r_2r | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=3 |
+| 1 | 0.724 | 2.82 | fires 25 | time_stop_10d | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=3 |
+| 2 | 0.661 | 2.706 | fires 26 | time_stop_10d | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=20 |
+| 3 | 0.656 | 1.93 | fires 33 | fixed_4r_2r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=3 |
+| 4 | 0.597 | 1.851 | fires 34 | fixed_4r_2r | 3 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=20 |
+| 5 | 0.472 | 1.651 | fires 37 | fixed_4r_2r | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=3 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp9_sw50sp9_grid_auto.json._
 
@@ -8048,7 +8139,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp9_sw5
 
 **Configuration:** P1_swing_length=5, P6_span=150
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.019** (is_sharpe 0.508, 76 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.019** (is_sharpe 0.508, fires 76, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8107,13 +8198,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp9_sw5
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.019 | 0.508 | 76 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=5 |
-| 2 | 0.007 | 0.394 | 120 | earnings_blackout | 2 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=5 |
-| 3 | 0.001 | 0.486 | 77 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=20 |
-| 4 | -0.01 | 0.458 | 82 | earnings_blackout | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=5 |
-| 5 | -0.018 | 0.39 | 109 | earnings_blackout | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=5 |
+| 1 | 0.019 | 0.508 | fires 76 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=5 |
+| 2 | 0.007 | 0.394 | fires 120 | earnings_blackout | 2 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=5 |
+| 3 | 0.001 | 0.486 | fires 77 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=20 |
+| 4 | -0.01 | 0.458 | fires 82 | earnings_blackout | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=5 |
+| 5 | -0.018 | 0.39 | fires 109 | earnings_blackout | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp150_sw5sp150_grid_auto.json._
 
@@ -8121,7 +8212,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp150_sw
 
 **Configuration:** P1_swing_length=5, P6_span=100
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.027** (is_sharpe 0.513, 77 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.027** (is_sharpe 0.513, fires 77, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8180,13 +8271,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp150_sw
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 24 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.027 | 0.513 | 77 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=5 |
-| 2 | 0.009 | 0.491 | 78 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=20 |
-| 3 | -0.002 | 0.463 | 83 | earnings_blackout | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=5 |
-| 4 | -0.017 | 0.439 | 86 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.02 age_bars_max=180 tail_n=20 |
-| 5 | -0.049 | 0.523 | 103 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.03 age_bars_max=None tail_n=3 |
+| 1 | 0.027 | 0.513 | fires 77 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=5 |
+| 2 | 0.009 | 0.491 | fires 78 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=20 |
+| 3 | -0.002 | 0.463 | fires 83 | earnings_blackout | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=5 |
+| 4 | -0.017 | 0.439 | fires 86 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.02 age_bars_max=180 tail_n=20 |
+| 5 | -0.049 | 0.523 | fires 103 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.03 age_bars_max=None tail_n=3 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp100_sw5sp100_grid_auto.json._
 
@@ -8194,7 +8285,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp100_sw
 
 **Configuration:** P1_swing_length=5, P6_span=50
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.005** (is_sharpe 0.402, 220 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.005** (is_sharpe 0.402, fires 220, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8253,13 +8344,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp100_sw
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 124 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.005 | 0.402 | 220 | breakeven_plus_trail | 2 | close_mitigation=True break_pct_max=None age_bars_max=180 tail_n=20 |
-| 2 | -0.017 | 0.402 | 208 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=180 tail_n=5 |
-| 3 | -0.018 | 0.428 | 178 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=20 |
-| 4 | -0.021 | 0.48 | 139 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
-| 5 | -0.022 | 0.392 | 215 | breakeven_plus_trail | 2 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=5 |
+| 1 | -0.005 | 0.402 | fires 220 | breakeven_plus_trail | 2 | close_mitigation=True break_pct_max=None age_bars_max=180 tail_n=20 |
+| 2 | -0.017 | 0.402 | fires 208 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=180 tail_n=5 |
+| 3 | -0.018 | 0.428 | fires 178 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=20 |
+| 4 | -0.021 | 0.48 | fires 139 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
+| 5 | -0.022 | 0.392 | fires 215 | breakeven_plus_trail | 2 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp50_sw5sp50_grid_auto.json._
 
@@ -8267,7 +8358,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp50_sw5
 
 **Configuration:** P1_swing_length=5, P6_span=20
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.005** (is_sharpe 0.49, 140 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.005** (is_sharpe 0.49, fires 140, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8326,13 +8417,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp50_sw5
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 125 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 27 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.005 | 0.49 | 140 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
-| 2 | -0.01 | 0.525 | 115 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.03 age_bars_max=None tail_n=3 |
-| 3 | -0.014 | 0.444 | 162 | breakeven_plus_trail | 2 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=5 |
-| 4 | -0.023 | 0.419 | 178 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=10 |
-| 5 | -0.024 | 0.417 | 181 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=20 |
+| 1 | -0.005 | 0.49 | fires 140 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
+| 2 | -0.01 | 0.525 | fires 115 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.03 age_bars_max=None tail_n=3 |
+| 3 | -0.014 | 0.444 | fires 162 | breakeven_plus_trail | 2 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=5 |
+| 4 | -0.023 | 0.419 | fires 178 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=10 |
+| 5 | -0.024 | 0.417 | fires 181 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp20_sw5sp20_grid_auto.json._
 
@@ -8340,7 +8431,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp20_sw5
 
 **Configuration:** P1_swing_length=5, P6_span=9
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.098** (is_sharpe 0.6, 128 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.098** (is_sharpe 0.6, fires 128, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8399,13 +8490,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp20_sw5
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 126 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.098 | 0.6 | 128 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
-| 2 | 0.083 | 0.626 | 105 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.03 age_bars_max=None tail_n=3 |
-| 3 | 0.072 | 0.431 | 287 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=20 |
-| 4 | 0.066 | 0.482 | 189 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=10 |
-| 5 | 0.064 | 0.456 | 222 | breakeven_plus_trail | 2 | close_mitigation=True break_pct_max=None age_bars_max=180 tail_n=20 |
+| 1 | 0.098 | 0.6 | fires 128 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
+| 2 | 0.083 | 0.626 | fires 105 | breakeven_plus_trail | 4 | close_mitigation=True break_pct_max=0.03 age_bars_max=None tail_n=3 |
+| 3 | 0.072 | 0.431 | fires 287 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=20 |
+| 4 | 0.066 | 0.482 | fires 189 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=10 |
+| 5 | 0.064 | 0.456 | fires 222 | breakeven_plus_trail | 2 | close_mitigation=True break_pct_max=None age_bars_max=180 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp9_sw5sp9_grid_auto.json._
 
@@ -8413,7 +8504,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp9_sw5s
 
 **Configuration:** P1_swing_length=10, P6_span=150
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.11** (is_sharpe 0.282, 119 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.11** (is_sharpe 0.282, fires 119, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8472,13 +8563,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp9_sw5s
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 131 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.11 | 0.282 | 119 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 |
-| 2 | -0.118 | 0.258 | 135 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=120 tail_n=20 |
-| 3 | -0.132 | 0.244 | 134 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=120 tail_n=3 |
-| 4 | -0.133 | 0.268 | 115 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=120 tail_n=2 |
-| 5 | -0.14 | 0.324 | 177 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=5 |
+| 1 | -0.11 | 0.282 | fires 119 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 |
+| 2 | -0.118 | 0.258 | fires 135 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=120 tail_n=20 |
+| 3 | -0.132 | 0.244 | fires 134 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=120 tail_n=3 |
+| 4 | -0.133 | 0.268 | fires 115 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=120 tail_n=2 |
+| 5 | -0.14 | 0.324 | fires 177 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp150_sw10sp150_grid_auto.json._
 
@@ -8486,7 +8577,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp150_s
 
 **Configuration:** P1_swing_length=10, P6_span=100
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.12** (is_sharpe 0.34, 174 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.12** (is_sharpe 0.34, fires 174, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8545,13 +8636,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp150_s
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 127 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.12 | 0.34 | 174 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=5 |
-| 2 | -0.127 | 0.362 | 154 | breakeven_plus_trail | 3 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
-| 3 | -0.131 | 0.337 | 161 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
-| 4 | -0.141 | 0.402 | 124 | breakeven_plus_trail | 3 | close_mitigation=True break_pct_max=None age_bars_max=180 tail_n=20 |
-| 5 | -0.141 | 0.344 | 161 | breakeven_plus_trail | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
+| 1 | -0.12 | 0.34 | fires 174 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=5 |
+| 2 | -0.127 | 0.362 | fires 154 | breakeven_plus_trail | 3 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
+| 3 | -0.131 | 0.337 | fires 161 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
+| 4 | -0.141 | 0.402 | fires 124 | breakeven_plus_trail | 3 | close_mitigation=True break_pct_max=None age_bars_max=180 tail_n=20 |
+| 5 | -0.141 | 0.344 | fires 161 | breakeven_plus_trail | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp100_sw10sp100_grid_auto.json._
 
@@ -8559,7 +8650,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp100_s
 
 **Configuration:** P1_swing_length=10, P6_span=50
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.042** (is_sharpe 0.422, 156 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.042** (is_sharpe 0.422, fires 156, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8618,13 +8709,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp100_s
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 128 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.042 | 0.422 | 156 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=10 |
-| 2 | -0.042 | 0.419 | 157 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
-| 3 | -0.051 | 0.4 | 172 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=5 |
-| 4 | -0.056 | 0.416 | 162 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=10 |
-| 5 | -0.059 | 0.421 | 153 | breakeven_plus_trail | 3 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
+| 1 | -0.042 | 0.422 | fires 156 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=10 |
+| 2 | -0.042 | 0.419 | fires 157 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
+| 3 | -0.051 | 0.4 | fires 172 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=5 |
+| 4 | -0.056 | 0.416 | fires 162 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=10 |
+| 5 | -0.059 | 0.421 | fires 153 | breakeven_plus_trail | 3 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp50_sw10sp50_grid_auto.json._
 
@@ -8632,7 +8723,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp50_sw
 
 **Configuration:** P1_swing_length=10, P6_span=20
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.07** (is_sharpe 0.47, 110 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.07** (is_sharpe 0.47, fires 110, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8691,13 +8782,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp50_sw
 - **41 (14%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 259 graded and ranked, collapsing to 129 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.07 | 0.47 | 110 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=10 |
-| 2 | -0.07 | 0.466 | 112 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=20 |
-| 3 | -0.078 | 0.357 | 102 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=120 tail_n=2 |
-| 4 | -0.081 | 0.397 | 156 | breakeven_plus_trail | 3 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
-| 5 | -0.084 | 0.344 | 105 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
+| 1 | -0.07 | 0.47 | fires 110 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=10 |
+| 2 | -0.07 | 0.466 | fires 112 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=20 |
+| 3 | -0.078 | 0.357 | fires 102 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=120 tail_n=2 |
+| 4 | -0.081 | 0.397 | fires 156 | breakeven_plus_trail | 3 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
+| 5 | -0.084 | 0.344 | fires 105 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp20_sw10sp20_grid_auto.json._
 
@@ -8705,7 +8796,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp20_sw
 
 **Configuration:** P1_swing_length=10, P6_span=9
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.014** (is_sharpe 0.714, 68 fires, exit class_time_stop). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.014** (is_sharpe 0.714, fires 68, exit class_time_stop). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8764,13 +8855,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp20_sw
 - **42 (14%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 258 graded and ranked, collapsing to 138 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.014 | 0.714 | 68 | class_time_stop | 3 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=2 |
-| 2 | -0.016 | 0.408 | 204 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=20 |
-| 3 | -0.021 | 0.433 | 181 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=10 |
-| 4 | -0.023 | 0.402 | 203 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=10 |
-| 5 | -0.024 | 0.428 | 183 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=20 |
+| 1 | -0.014 | 0.714 | fires 68 | class_time_stop | 3 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=2 |
+| 2 | -0.016 | 0.408 | fires 204 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=20 |
+| 3 | -0.021 | 0.433 | fires 181 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=10 |
+| 4 | -0.023 | 0.402 | fires 203 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=10 |
+| 5 | -0.024 | 0.428 | fires 183 | breakeven_plus_trail | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp9_sw10sp9_grid_auto.json._
 
@@ -8778,7 +8869,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp9_sw1
 
 **Configuration:** P1_swing_length=30, P6_span=150
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 1.214** (is_sharpe 4.807, 11 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 1.214** (is_sharpe 4.807, fires 11, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8837,13 +8928,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp9_sw1
 - **106 (35%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 194 graded and ranked, collapsing to 65 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 35 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 1.214 | 4.807 | 11 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
-| 2 | 0.671 | 1.99 | 14 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
-| 3 | 0.195 | 1.733 | 23 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
-| 4 | 0.146 | 2.493 | 11 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.03 age_bars_max=60 tail_n=20 |
-| 5 | 0.102 | 0.716 | 48 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
+| 1 | 1.214 | 4.807 | fires 11 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
+| 2 | 0.671 | 1.99 | fires 14 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
+| 3 | 0.195 | 1.733 | fires 23 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
+| 4 | 0.146 | 2.493 | fires 11 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.03 age_bars_max=60 tail_n=20 |
+| 5 | 0.102 | 0.716 | fires 48 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp150_sw30sp150_grid_auto.json._
 
@@ -8851,7 +8942,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp150_s
 
 **Configuration:** P1_swing_length=30, P6_span=100
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, 12 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, fires 12, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8910,13 +9001,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp150_s
 - **100 (33%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 200 graded and ranked, collapsing to 67 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.816 | 4.103 | 12 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
-| 2 | 0.644 | 1.83 | 16 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=250 tail_n=20 |
-| 3 | 0.604 | 1.849 | 15 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
-| 4 | 0.431 | 1.875 | 11 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=180 tail_n=20 |
-| 5 | 0.398 | 1.653 | 14 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=20 |
+| 1 | 0.816 | 4.103 | fires 12 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
+| 2 | 0.644 | 1.83 | fires 16 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=250 tail_n=20 |
+| 3 | 0.604 | 1.849 | fires 15 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
+| 4 | 0.431 | 1.875 | fires 11 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=180 tail_n=20 |
+| 5 | 0.398 | 1.653 | fires 14 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp100_sw30sp100_grid_auto.json._
 
@@ -8924,7 +9015,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp100_s
 
 **Configuration:** P1_swing_length=30, P6_span=50
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, 12 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, fires 12, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -8983,13 +9074,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp100_s
 - **100 (33%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 200 graded and ranked, collapsing to 68 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.816 | 4.103 | 12 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
-| 2 | 0.644 | 1.83 | 16 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=250 tail_n=20 |
-| 3 | 0.604 | 1.849 | 15 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
-| 4 | 0.431 | 1.875 | 11 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=180 tail_n=20 |
-| 5 | 0.398 | 1.653 | 14 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=20 |
+| 1 | 0.816 | 4.103 | fires 12 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
+| 2 | 0.644 | 1.83 | fires 16 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=250 tail_n=20 |
+| 3 | 0.604 | 1.849 | fires 15 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
+| 4 | 0.431 | 1.875 | fires 11 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=180 tail_n=20 |
+| 5 | 0.398 | 1.653 | fires 14 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp50_sw30sp50_grid_auto.json._
 
@@ -8997,7 +9088,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp50_sw
 
 **Configuration:** P1_swing_length=30, P6_span=20
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, 12 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, fires 12, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9056,13 +9147,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp50_sw
 - **100 (33%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 200 graded and ranked, collapsing to 74 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.816 | 4.103 | 12 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
-| 2 | 0.701 | 1.702 | 22 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
-| 3 | 0.604 | 1.849 | 15 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
-| 4 | 0.504 | 1.706 | 15 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=250 tail_n=20 |
-| 5 | 0.431 | 1.875 | 11 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=180 tail_n=20 |
+| 1 | 0.816 | 4.103 | fires 12 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
+| 2 | 0.701 | 1.702 | fires 22 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
+| 3 | 0.604 | 1.849 | fires 15 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
+| 4 | 0.504 | 1.706 | fires 15 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=250 tail_n=20 |
+| 5 | 0.431 | 1.875 | fires 11 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.02 age_bars_max=180 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp20_sw30sp20_grid_auto.json._
 
@@ -9070,7 +9161,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp20_sw
 
 **Configuration:** P1_swing_length=30, P6_span=9
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.687** (is_sharpe 1.684, 22 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.687** (is_sharpe 1.684, fires 22, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9129,13 +9220,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp20_sw
 - **95 (32%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 205 graded and ranked, collapsing to 75 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 37 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.687 | 1.684 | 22 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
-| 2 | 0.493 | 1.714 | 15 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=180 tail_n=20 |
-| 3 | 0.469 | 3.846 | 11 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
-| 4 | 0.444 | 1.706 | 14 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
-| 5 | 0.222 | 1.497 | 13 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=20 |
+| 1 | 0.687 | 1.684 | fires 22 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
+| 2 | 0.493 | 1.714 | fires 15 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=180 tail_n=20 |
+| 3 | 0.469 | 3.846 | fires 11 | time_stop_10d | 5 | close_mitigation=False break_pct_max=0.01 age_bars_max=250 tail_n=20 |
+| 4 | 0.444 | 1.706 | fires 14 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
+| 5 | 0.222 | 1.497 | fires 13 | earnings_blackout | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp9_sw30sp9_grid_auto.json._
 
@@ -9143,7 +9234,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp9_sw3
 
 **Configuration:** P1_swing_length=20, P6_span=150
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.114** (is_sharpe 0.357, 80 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.114** (is_sharpe 0.357, fires 80, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9202,13 +9293,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp9_sw3
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 92 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.114 | 0.357 | 80 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
-| 2 | -0.117 | 0.349 | 77 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 |
-| 3 | -0.12 | 0.31 | 95 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=5 |
-| 4 | -0.123 | 0.35 | 79 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=3 |
-| 5 | -0.128 | 0.366 | 68 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
+| 1 | -0.114 | 0.357 | fires 80 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
+| 2 | -0.117 | 0.349 | fires 77 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 |
+| 3 | -0.12 | 0.31 | fires 95 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=5 |
+| 4 | -0.123 | 0.35 | fires 79 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=3 |
+| 5 | -0.128 | 0.366 | fires 68 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp150_sw20sp150_grid_auto.json._
 
@@ -9216,7 +9307,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp150_s
 
 **Configuration:** P1_swing_length=20, P6_span=100
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.036** (is_sharpe 0.465, 66 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.036** (is_sharpe 0.465, fires 66, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9275,13 +9366,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp150_s
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 91 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.036 | 0.465 | 66 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
-| 2 | -0.04 | 0.433 | 75 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 |
-| 3 | -0.05 | 0.431 | 77 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
-| 4 | -0.051 | 0.471 | 65 | hybrid_50pct_target | 4 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
-| 5 | -0.052 | 0.46 | 67 | hybrid_50pct_target | 4 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=20 |
+| 1 | -0.036 | 0.465 | fires 66 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
+| 2 | -0.04 | 0.433 | fires 75 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 |
+| 3 | -0.05 | 0.431 | fires 77 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
+| 4 | -0.051 | 0.471 | fires 65 | hybrid_50pct_target | 4 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
+| 5 | -0.052 | 0.46 | fires 67 | hybrid_50pct_target | 4 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp100_sw20sp100_grid_auto.json._
 
@@ -9289,7 +9380,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp100_s
 
 **Configuration:** P1_swing_length=20, P6_span=50
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.025** (is_sharpe 0.535, 62 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.025** (is_sharpe 0.535, fires 62, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9348,13 +9439,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp100_s
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 92 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.025 | 0.535 | 62 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
-| 2 | 0.02 | 0.462 | 88 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=5 |
-| 3 | 0.01 | 0.53 | 63 | hybrid_50pct_target | 4 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=20 |
-| 4 | 0.0 | 0.488 | 73 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
-| 5 | -0.008 | 0.48 | 72 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=3 |
+| 1 | 0.025 | 0.535 | fires 62 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
+| 2 | 0.02 | 0.462 | fires 88 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=5 |
+| 3 | 0.01 | 0.53 | fires 63 | hybrid_50pct_target | 4 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=20 |
+| 4 | 0.0 | 0.488 | fires 73 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 |
+| 5 | -0.008 | 0.48 | fires 72 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=3 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp50_sw20sp50_grid_auto.json._
 
@@ -9362,7 +9453,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp50_sw
 
 **Configuration:** P1_swing_length=20, P6_span=21
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.107** (is_sharpe 0.551, 88 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.107** (is_sharpe 0.551, fires 88, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9421,13 +9512,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp50_sw
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 97 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 17 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.107 | 0.551 | 88 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=5 |
-| 2 | 0.083 | 0.605 | 64 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=20 |
-| 3 | 0.073 | 0.597 | 63 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=3 |
-| 4 | 0.061 | 0.493 | 93 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
-| 5 | 0.042 | 0.569 | 60 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=2 |
+| 1 | 0.107 | 0.551 | fires 88 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=5 |
+| 2 | 0.083 | 0.605 | fires 64 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=20 |
+| 3 | 0.073 | 0.597 | fires 63 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=3 |
+| 4 | 0.061 | 0.493 | fires 93 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
+| 5 | 0.042 | 0.569 | fires 60 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=2 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp21_sw20sp21_grid_auto.json._
 
@@ -9435,7 +9526,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp21_sw
 
 **Configuration:** P1_swing_length=20, P6_span=20
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.107** (is_sharpe 0.551, 88 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.107** (is_sharpe 0.551, fires 88, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9494,13 +9585,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp21_sw
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 97 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 17 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.107 | 0.551 | 88 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=5 |
-| 2 | 0.083 | 0.605 | 64 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=20 |
-| 3 | 0.073 | 0.597 | 63 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=3 |
-| 4 | 0.061 | 0.493 | 93 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
-| 5 | 0.042 | 0.569 | 60 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=2 |
+| 1 | 0.107 | 0.551 | fires 88 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=5 |
+| 2 | 0.083 | 0.605 | fires 64 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=20 |
+| 3 | 0.073 | 0.597 | fires 63 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=3 |
+| 4 | 0.061 | 0.493 | fires 93 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
+| 5 | 0.042 | 0.569 | fires 60 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=2 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp20_sw20sp20_grid_auto.json._
 
@@ -9508,7 +9599,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp20_sw
 
 **Configuration:** P1_swing_length=20, P6_span=9
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.044** (is_sharpe 1.576, 71 fires, exit r_multiple_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.044** (is_sharpe 1.576, fires 71, exit r_multiple_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9567,13 +9658,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp20_sw
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 100 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.044 | 1.576 | 71 | r_multiple_2r | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=5 |
-| 2 | -0.002 | 0.399 | 112 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=20 |
-| 3 | -0.008 | 0.504 | 66 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=3 |
-| 4 | -0.015 | 0.467 | 75 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=3 |
-| 5 | -0.032 | 0.499 | 64 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
+| 1 | 0.044 | 1.576 | fires 71 | r_multiple_2r | 1 | close_mitigation=False break_pct_max=0.03 age_bars_max=None tail_n=5 |
+| 2 | -0.002 | 0.399 | fires 112 | hybrid_50pct_target | 2 | close_mitigation=False break_pct_max=None age_bars_max=None tail_n=20 |
+| 3 | -0.008 | 0.504 | fires 66 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=250 tail_n=3 |
+| 4 | -0.015 | 0.467 | fires 75 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=3 |
+| 5 | -0.032 | 0.499 | fires 64 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=180 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp9_sw20sp9_grid_auto.json._
 
@@ -9581,7 +9672,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp9_sw2
 
 **Configuration:** P1_swing_length=5, P6_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.123** (is_sharpe 0.625, 74 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.123** (is_sharpe 0.625, fires 74, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9640,13 +9731,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp9_sw2
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.123 | 0.625 | 74 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=5 |
-| 2 | 0.102 | 0.6 | 75 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=20 |
-| 3 | 0.086 | 0.479 | 118 | earnings_blackout | 2 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=5 |
-| 4 | 0.078 | 0.553 | 81 | earnings_blackout | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=5 |
-| 5 | 0.071 | 0.489 | 106 | earnings_blackout | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=5 |
+| 1 | 0.123 | 0.625 | fires 74 | earnings_blackout | 1 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=5 |
+| 2 | 0.102 | 0.6 | fires 75 | earnings_blackout | 2 | close_mitigation=True break_pct_max=0.02 age_bars_max=120 tail_n=20 |
+| 3 | 0.086 | 0.479 | fires 118 | earnings_blackout | 2 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=5 |
+| 4 | 0.078 | 0.553 | fires 81 | earnings_blackout | 3 | close_mitigation=True break_pct_max=0.02 age_bars_max=None tail_n=5 |
+| 5 | 0.071 | 0.489 | fires 106 | earnings_blackout | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw5_sw5_grid_auto.json._
 
@@ -9654,7 +9745,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw5_sw5_gri
 
 **Configuration:** P1_swing_length=10, P6_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.091** (is_sharpe 0.746, 92 fires, exit fixed_4r_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.091** (is_sharpe 0.746, fires 92, exit fixed_4r_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9713,13 +9804,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw5_sw5_gri
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 133 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.091 | 0.746 | 92 | fixed_4r_2r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=10 |
-| 2 | -0.092 | 0.379 | 162 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=10 |
-| 3 | -0.092 | 0.377 | 163 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
-| 4 | -0.133 | 0.246 | 133 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=120 tail_n=20 |
-| 5 | -0.136 | 1.136 | 77 | r_multiple_3r | 3 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
+| 1 | -0.091 | 0.746 | fires 92 | fixed_4r_2r | 1 | close_mitigation=False break_pct_max=0.02 age_bars_max=None tail_n=10 |
+| 2 | -0.092 | 0.379 | fires 162 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=10 |
+| 3 | -0.092 | 0.377 | fires 163 | breakeven_plus_trail | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=20 |
+| 4 | -0.133 | 0.246 | fires 133 | hybrid_50pct_target | 3 | close_mitigation=False break_pct_max=None age_bars_max=120 tail_n=20 |
+| 5 | -0.136 | 1.136 | fires 77 | r_multiple_3r | 3 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw10_sw10_grid_auto.json._
 
@@ -9727,7 +9818,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw10_sw10_g
 
 **Configuration:** P1_swing_length=50, P6_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.508** (is_sharpe 0.889, 33 fires, exit chandelier_3x). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.508** (is_sharpe 0.889, fires 33, exit chandelier_3x). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9786,13 +9877,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw10_sw10_g
 - **225 (75%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 75 graded and ranked, collapsing to 29 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | -0.508 | 0.889 | 33 | chandelier_3x | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=3 |
-| 2 | -0.616 | 0.899 | 29 | chandelier_3x | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=2 |
-| 3 | -0.623 | 0.752 | 35 | chandelier_3x | 3 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=20 |
-| 4 | -0.628 | 0.86 | 28 | chandelier_3x | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
-| 5 | -0.681 | 0.793 | 29 | chandelier_3x | 3 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=20 |
+| 1 | -0.508 | 0.889 | fires 33 | chandelier_3x | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=3 |
+| 2 | -0.616 | 0.899 | fires 29 | chandelier_3x | 1 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=2 |
+| 3 | -0.623 | 0.752 | fires 35 | chandelier_3x | 3 | close_mitigation=True break_pct_max=None age_bars_max=None tail_n=20 |
+| 4 | -0.628 | 0.86 | fires 28 | chandelier_3x | 1 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=3 |
+| 5 | -0.681 | 0.793 | fires 29 | chandelier_3x | 3 | close_mitigation=True break_pct_max=0.05 age_bars_max=None tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2177_sw50_sw50_grid_auto.json._
 
@@ -9800,7 +9891,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2177_sw50_sw50_g
 
 **Configuration:** P1_swing_length=30, P6_span=200
 
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.362** (is_sharpe 2.757, 11 fires, exit time_stop_20d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.362** (is_sharpe 2.757, fires 11, exit time_stop_20d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
 **Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6_post_fix_recheck, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
@@ -9859,13 +9950,13 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2177_sw50_sw50_g
 - **106 (35%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 194 graded and ranked, collapsing to 61 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 46 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+| rank | is_ci_lo | is_sharpe | count | exit | class size | combination |
 |---|---|---|---|---|---|---|
-| 1 | 0.362 | 2.757 | 11 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=20 |
-| 2 | 0.244 | 1.755 | 10 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
-| 3 | 0.113 | 2.135 | 14 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=180 tail_n=20 |
-| 4 | 0.031 | 1.967 | 15 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.03 age_bars_max=120 tail_n=20 |
-| 5 | 0.0 | 1.797 | 17 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
+| 1 | 0.362 | 2.757 | fires 11 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=120 tail_n=20 |
+| 2 | 0.244 | 1.755 | fires 10 | earnings_blackout | 5 | close_mitigation=True break_pct_max=0.03 age_bars_max=120 tail_n=20 |
+| 3 | 0.113 | 2.135 | fires 14 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=180 tail_n=20 |
+| 4 | 0.031 | 1.967 | fires 15 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.03 age_bars_max=120 tail_n=20 |
+| 5 | 0.0 | 1.797 | fires 17 | time_stop_20d | 5 | close_mitigation=False break_pct_max=0.02 age_bars_max=250 tail_n=20 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2183_sw30_sw30_grid_auto.json._
 
