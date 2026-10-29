@@ -25,6 +25,7 @@ is that there is one reader.
 """
 from __future__ import annotations
 
+import argparse
 import collections
 import pathlib
 import re
@@ -130,7 +131,15 @@ def audit(path=None) -> dict[str, object]:
     }
 
 
-def main() -> int:
+def main(argv=()) -> int:
+    # S6-B3364 (B3139q-r140, L987): the script parses its arguments, so --help
+    # prints usage and an unknown flag is refused - three --help probes of
+    # this read-only counter were refused by the PreToolUse guard as a
+    # parserless script (L963, L967, L987). argv is explicit: an in-process
+    # main() parses nothing, never pytest's own sys.argv.
+    argparse.ArgumentParser(
+        description="Per-ticket state counts of EXECUTION_QUEUE.md - an append "
+                    "log read last-row-wins (B1795); read-only.").parse_args(list(argv))
     a = audit()
     print(f"EXECUTION_QUEUE.md  {a['rows']} rows -> {a['tickets']} distinct tickets")
     print(f"  duplicated ids      : {a['duplicated_ids']}")
@@ -159,7 +168,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
 
 
 def is_used(tid, path=None):

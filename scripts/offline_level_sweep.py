@@ -381,7 +381,7 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
         ev["truncation_note"] = (
             f"max fires/day {ev['max_fires_per_day']} <= cap {CANDIDATE_CAP}: no "
             "positive evidence the cap was bypassed. Subsetting is exact only if "
-            "the cube ran under isolation (backtest.py:2417).")
+            "the cube ran under isolation (backtest.py, _cand_iter's cube_isolation branch).")
 
     IS = rc.in_sample(m)          # the only window this module ever reads
     cells = []

@@ -26101,6 +26101,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r139: L984's clause in the #315 row, same call as the skill edit.
         ("THE GATE'S FOOTER NOW SAYS WHETHER A PRE-GATE RUN PASSED ON ITS TREE",
          'L984 (B3139q-r139): the gate ran without the pre-gate selector'),
+        # B3139q-r140: S6-B3358's engine-entry clause in the launch row, same call.
+        ("AND THE ENGINE'S OWN ENTRY CHECKS IT TOO",
+         'S6-B3358 (B3139q-r140): six engine routes bypassed every launch refusal'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26354,7 +26357,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 362 -> 363 at B3139q-r138 (the S6-B3338 launch-row clause; same call).
     # 363 -> 364 at B3139q-r139 (the L984 pre-gate-footer clause in the #315
     # row; the pre-gate selection caught the missed bump before the gate).
-    assert len(gutted) == 364, gutted
+    # 364 -> 365 at B3139q-r140 (S6-B3358's engine-entry clause; same call).
+    assert len(gutted) == 365, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -53419,7 +53423,6 @@ _B3139BB_LINE_CITATIONS = {
     "scripts/b987_tranche_2_stage5_candidates.py": 1,
     "scripts/build_strategy_roster.py": 28,
     "scripts/gate_incident_corpus.py": 1,
-    "scripts/offline_level_sweep.py": 1,
     "scripts/phase_1_add_investigation_columns.py": 2,
     "scripts/phase_1_analysis_turn_3.py": 1,
     "scripts/phase_1_correction_vol_spike_naming.py": 2,
@@ -66508,3 +66511,179 @@ def test_b3360_the_gate_discloses_whether_a_pregate_run_passed_on_its_tree(tmp_p
     import json as _json
     s = _json.loads((tmp_path / ps.STAMP_NAME).read_text(encoding="utf-8"))
     assert s["selected"] == 600 and s["pytest_exit"] == 0, s
+
+
+def test_b3358_the_engine_entry_needs_the_owners_recorded_word(tmp_path, monkeypatch):
+    """S6-B3358 (B3139q-r140): the owner's launch word at the ENGINE's own
+    entry. MEASURED at B3139q-r138, the word was checked on 2 of the 8 routes
+    that start the engine; backtest/run_phase1a.py main now checks it after the
+    B1432 mode assert and before any engine is built, so every route passes it.
+    (1) the helper in-process, both directions: the word in OWNER_WORD_JSON,
+    checked against the ledger the launcher names (STOCKPICKS_LANDING_ROOT) or
+    the engine's own repo, sys.path restored after; (2) end to end, a complete
+    cube invocation with no word is refused cleanly before the engine starts,
+    its run mode recorded first, and run to completion with a word; (3)
+    launch_sweep carries the manifest's word into the engine's environment on
+    both the live-tree and the worktree path; (4) wiring, by AST, and
+    conftest's session word uses owner_word's key; (5) the in-process route -
+    BacktestEngine.run checks the word first, for the four scripts that build
+    an engine without main. One definition: backtest/util/owner_word_gate.py."""
+    import ast as _ast
+    import json as _json
+    import os as _os
+    import subprocess
+    import sys as _sys
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import owner_word as ow
+    import backtest.util.owner_word_gate as og
+    assert _os.environ.get(ow.ENV_KEY), "conftest must give the session's engine runs a word"
+    # (1) the helper: a fixture main repo whose ledger records a fixture word
+    fx = tmp_path / "main_repo"
+    fx.mkdir()
+    (fx / "EXECUTION_QUEUE.md").write_text(
+        "| **S6-B9358** | **OPEN** | P1 | **RULED: 'run the fixture engine entry once' "
+        "(fixture).** | _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    word = {"ticket": "S6-B9358", "verbatim": "run the fixture engine entry once"}
+    land = {"STOCKPICKS_LANDING_ROOT": str(fx)}
+    assert og.engine_word_refusals(dict(land, **{ow.ENV_KEY: ow.env_value(word)})) == []
+    r = og.engine_word_refusals(dict(land))
+    assert len(r) == 1 and "S6-B3358" in r[0] and "no owner word" in r[0], r
+    r = og.engine_word_refusals(dict(land, **{ow.ENV_KEY: ow.env_value(
+        dict(word, verbatim="a launch nobody recorded"))}))
+    assert len(r) == 1 and "quotes" in r[0], r
+    r = og.engine_word_refusals(dict(land, **{ow.ENV_KEY: "{not json"}))
+    assert len(r) == 1 and "not JSON" in r[0], r
+
+    class _Boom(dict):                       # the check itself fails: closed (L642)
+        def get(self, k, d=None):
+            if k == ow.ENV_KEY:
+                raise RuntimeError("boom")
+            return super().get(k, d)
+    r = og.engine_word_refusals(_Boom(land))
+    assert len(r) == 1 and "could not run (RuntimeError)" in r[0], r
+    # the ledger is the LAUNCHER's: without the landing root the engine reads
+    # its own repo, where the fixture ticket has no row
+    r = og.engine_word_refusals({ow.ENV_KEY: ow.env_value(word)})
+    assert len(r) == 1 and "S6-B9358" in r[0], r
+    # a landing root with no ledger falls back to the engine's own repo, whose
+    # ledger records the session word
+    bare = tmp_path / "no_ledger"
+    bare.mkdir()
+    assert og.engine_word_refusals({ow.ENV_KEY: _os.environ[ow.ENV_KEY],
+                                    "STOCKPICKS_LANDING_ROOT": str(bare)}) == []
+    # sys.path is restored even though owner_word adds scripts/ to read the ledger
+    monkeypatch.setattr(_sys, "path", [p for p in _sys.path if p != str(root / "scripts")])
+    og.engine_word_refusals(dict(land, **{ow.ENV_KEY: ow.env_value(word)}))
+    assert str(root / "scripts") not in _sys.path, "the engine's import path must not change"
+    monkeypatch.undo()
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    # (2) end to end: every cube flag, no word - refused before any engine
+    # work; a tmp output dir and POSTCONFIG_LANDING=0 so a mutant that lets
+    # the engine through cannot write the production ledger (L910)
+    env = {k: v for k, v in _os.environ.items() if k != ow.ENV_KEY}
+    sub = tmp_path / "subset.txt"
+    sub.write_text("awesome_oscillator" + chr(10), encoding="utf-8")
+    env.update(STRATEGY_SUBSET_FILE=str(sub), PYTHONIOENCODING="utf-8", POSTCONFIG_LANDING="0")
+    run = subprocess.run(
+        [_sys.executable, str(root / "backtest" / "run_phase1a.py"), "--phase", "1a",
+         "--tickers", "AAPL", "--start", "2024-01-02", "--end", "2024-01-05", "--no-git",
+         "--no-news", "--cube-isolation", "--no-dd-halt", "--no-portfolio-cap",
+         "--no-regime-affinity", "--no-event-suppression", "--no-agents",
+         "--output-dir", str(tmp_path / "engine_out")],
+        capture_output=True, text=True, env=env, cwd=str(root), timeout=300)
+    out = run.stdout + run.stderr
+    assert run.returncode != 0 and "[S6-B3358 OWNER WORD]" in out, out[-1500:]
+    assert "[B1432 MODE ASSERT]" not in out, "the cube flag set must be complete here"
+    assert "[B1431 RUN MODE]" in out and "Traceback" not in out, out[-1500:]
+    # ... and the same invocation carrying the session's recorded word gets
+    # past the check and runs to completion (1 ticker x 4 days, output in tmp,
+    # landing off): an engine run that carries a word is not refused
+    env[ow.ENV_KEY] = _os.environ[ow.ENV_KEY]
+    run = subprocess.run(run.args, capture_output=True, text=True, env=env, cwd=str(root),
+                         timeout=600)
+    out = run.stdout + run.stderr
+    assert run.returncode == 0 and "[S6-B3358 OWNER WORD]" not in out, out[-1500:]
+    # (3) launch_sweep: the manifest's word reaches the engine's environment
+    spec = _ilu.spec_from_file_location("launch_sweep_b3358", root / "scripts" / "launch_sweep.py")
+    ls = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(ls)
+    man = tmp_path / "m.json"
+    rr = tmp_path / "repo"
+    rr.mkdir()
+    man.write_text(_json.dumps({"isolation": False, "owner_word": word}), encoding="utf-8")
+    _c, _w, extra, _e, probs = ls.isolated_engine_command(man, [], tmp_path / "o", root=rr,
+                                                          environ={})
+    assert probs == [] and extra == {ow.ENV_KEY: ow.env_value(word)}, extra
+    man.write_text(_json.dumps({"isolation": True, "frozen_sha": "0123456789abcdef",
+                                "owner_word": word}), encoding="utf-8")
+    _c, _w, extra, _e, probs = ls.isolated_engine_command(
+        man, [], tmp_path / "o", root=rr, environ={},
+        materialise=lambda s, r: (tmp_path / "wt", []))
+    assert probs == [] and extra == {"STOCKPICKS_LANDING_ROOT": str(rr),
+                                     ow.ENV_KEY: ow.env_value(word)}, extra
+    man.write_text(_json.dumps({"isolation": False}), encoding="utf-8")
+    assert ls.isolated_engine_command(man, [], tmp_path / "o", root=rr, environ={})[2] == {}
+    # (4) wiring: main checks the word after the cube-mode assert and before
+    # the engine is built; conftest's word uses owner_word's key
+    src = (root / "backtest" / "run_phase1a.py").read_text(encoding="utf-8")
+    mainf = next(n for n in _ast.parse(src).body
+                 if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    calls = [n for n in _ast.walk(mainf) if isinstance(n, _ast.Call)]
+    chk = [n.lineno for n in calls if _ast.unparse(n.func) == "require_engine_word"]
+    eng = [n.lineno for n in calls if _ast.unparse(n.func) == "BacktestEngine"]
+    mode = [n.lineno for n in _ast.walk(mainf) if isinstance(n, _ast.Assign)
+            and any(getattr(t, "id", "") == "CUBE_MODE_REQUIRED" for t in n.targets)]
+    assert chk and eng and mode and mode[0] < min(chk) < min(eng), (mode, chk, eng)
+    conf = (root / "backtest" / "tests" / "conftest.py").read_text(encoding="utf-8")
+    assert f'key = "{ow.ENV_KEY}"' in conf, "conftest's session word must use owner_word.ENV_KEY"
+    # (5) the in-process route: four scripts build a BacktestEngine and never
+    # pass run_phase1a's main, so BacktestEngine.run checks the word before it
+    # touches the engine - with a stub self, no word is a SystemExit carrying
+    # the tag, and a recorded word passes the check and reaches the first
+    # attribute the stub lacks
+    import pytest
+    from types import SimpleNamespace
+    from backtest.engine.backtest import BacktestEngine
+    monkeypatch.delenv(ow.ENV_KEY, raising=False)
+    with pytest.raises(SystemExit) as ex:
+        BacktestEngine.run(SimpleNamespace())
+    assert og.TAG in str(ex.value) and "no owner word" in str(ex.value), ex.value
+    monkeypatch.setenv(ow.ENV_KEY, ow.env_value({"ticket": "S6-B3337",
+                                                 "verbatim": "your rec approved"}))
+    with pytest.raises(AttributeError):
+        BacktestEngine.run(SimpleNamespace())
+    eng_src = (root / "backtest" / "engine" / "backtest.py").read_text(encoding="utf-8")
+    runf = next(n for n in _ast.walk(_ast.parse(eng_src))
+                if isinstance(n, _ast.FunctionDef) and n.name == "run")
+    first_call = next(n for st in runf.body for n in _ast.walk(st) if isinstance(n, _ast.Call))
+    assert _ast.unparse(first_call.func) == "require_engine_word", _ast.unparse(first_call.func)
+
+
+def test_b3364_queue_state_parses_its_arguments(capsys):
+    """S6-B3364 (B3139q-r140, L987): three --help probes of scripts/queue_state.py
+    were refused by the PreToolUse guard as a parserless script (L963, L967,
+    L987). The read-only counter now parses its arguments: --help prints usage
+    and exits 0, an unknown flag exits 2, an in-process main() parses nothing
+    (never pytest's own argv), and the guard's detector no longer flags it."""
+    import sys as _sys
+    import pytest
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import queue_state as qs
+    import verify_turn_compliance as vtc
+    capsys.readouterr()
+    with pytest.raises(SystemExit) as e:
+        qs.main(["--help"])
+    assert e.value.code == 0 and "Per-ticket state counts" in capsys.readouterr().out
+    with pytest.raises(SystemExit) as e:
+        qs.main(["--bogus"])
+    assert e.value.code == 2
+    assert qs.main() == 0 and "distinct tickets" in capsys.readouterr().out
+    assert vtc.help_on_parserless_hits("python scripts/queue_state.py --help", root=root) == []

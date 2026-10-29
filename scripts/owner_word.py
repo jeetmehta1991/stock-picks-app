@@ -46,28 +46,38 @@ whole ruling at 2026-10-28T16:50:12Z (recorded on S6-B3304 and S6-B3248), so a
 ruling that short can be cited, and a citation shorter than any ruling seen
 would match unrelated row text.
 
-WHERE THE ENGINE DOOR SITS - TWO ROUTES OF EIGHT (MEASURED 2026-10-29). The
-run_wave route (make_spec writes the spec, run_wave launches it through
-launch_sweep), the route the runbook prescribes (S6-B3154a) - a chain takes it
-too, since run_serial_chain.py and launch_detached.py start run_wave for each
-spec - and, from B3139q-r139, launch_sweep.py run by hand, whose
-prelaunch_gate.check now checks the word where B2578 put launch_refusals: all
-four launchers S6-B3338's first row counts. Of the 21 scripts that name the
-engine and spawn a process, 5 more build an engine command and are NOT
-checked: coverage_smoke.py, run_phase_1a_beta_local.py, universe_ladder_run.py,
-launch_phase_1a_beta_multibatch.py and aws_chunk_launch.py (EC2 user-data);
-nor is backtest/run_phase1a.py run directly. aws_b660_launch.py and
-aws_batch395_launch.py name the engine only in text and were not classified.
-These routes bypass every launch refusal, not only this one: S6-B3358.
+WHERE THE ENGINE DOOR SITS - AT THE ENGINE'S OWN ENTRY (S6-B3358, B3139q-r140).
+MEASURED at B3139q-r138, the word was checked on 2 of the 8 routes that start
+the engine: the run_wave route (make_spec writes the spec, run_wave launches it
+through launch_sweep; a chain takes it too, since run_serial_chain.py and
+launch_detached.py start run_wave for each spec) and, from B3139q-r139,
+launch_sweep.py run by hand (prelaunch_gate.check). The other six -
+backtest/run_phase1a.py run directly, coverage_smoke.py,
+run_phase_1a_beta_local.py, universe_ladder_run.py,
+launch_phase_1a_beta_multibatch.py and aws_chunk_launch.py (EC2 user-data) -
+bypassed every launch refusal; and that census, counting scripts that spawn a
+process, missed four that build and run a BacktestEngine in-process
+(profile_engine.py, smoke_test_cube_stage_d.py, smoke_test_screen_pool.py,
+validate_smc_panel_cache_semantic.py - L986). So the check sits in the engine
+itself: backtest/util/owner_word_gate.py, called by run_phase1a.main (after its
+B1432 mode assert, before the engine is built) and by BacktestEngine.run, which
+all 12 routes reach. The word arrives in the environment variable ENV_KEY
+(env_value writes it; launch_sweep sets it from the manifest's owner_word, any
+other launcher or in-process run sets it by hand), and env_refusals checks it
+against the ledger the launcher names (STOCKPICKS_LANDING_ROOT, the main repo a
+pinned worktree lands into) or the engine's own repo.
 """
 from __future__ import annotations
 
+import json
+import os
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 QUEUE = ROOT / "EXECUTION_QUEUE.md"
+ENV_KEY = "OWNER_WORD_JSON"     # S6-B3358: the engine entry's word, as JSON
 MIN_CHARS = 8
 _CURLY = {chr(0x2018): "'", chr(0x2019): "'", chr(0x201C): '"', chr(0x201D): '"'}
 
@@ -80,16 +90,18 @@ def normalise(text) -> str:
     return s.strip("'\" ").strip()
 
 
-def _rows(ticket: str) -> list:
+def _rows(ticket: str, queue=None) -> list:
     if str(ROOT / "scripts") not in sys.path:
         sys.path.insert(0, str(ROOT / "scripts"))
     import queue_state as _qs
-    return [row for _n, row in _qs.history(ticket, path=str(QUEUE))]
+    return [row for _n, row in _qs.history(ticket, path=str(queue or QUEUE))]
 
 
-def refusals(word, *, door: str) -> list:
+def refusals(word, *, door: str, queue=None) -> list:
     """[] when `word` cites a ticket whose ledger rows quote its words; else one
-    refusal naming what is missing. Fails CLOSED on every absent part (L642)."""
+    refusal naming what is missing. Fails CLOSED on every absent part (L642).
+    `queue` names the ledger to read (S6-B3358: the engine entry reads the one
+    its launcher names); None reads QUEUE."""
     if not isinstance(word, dict):
         return [f"REFUSED ({door}, S6-B3338): no owner word - this door needs "
                 "{'ticket': <S6 id>, 'verbatim': <the owner's words>} citing the "
@@ -102,13 +114,13 @@ def refusals(word, *, door: str) -> list:
         return [f"REFUSED ({door}, S6-B3338): the owner word {verbatim!r} is under "
                 f"{MIN_CHARS} characters - quote the ruling as the ledger row records it"]
     try:
-        rows = _rows(ticket)
+        rows = _rows(ticket, queue)
     except Exception as e:
         return [f"REFUSED ({door}, S6-B3338): the ledger could not be read "
                 f"({type(e).__name__}) - fail closed (L642)"]
     if not rows:
         return [f"REFUSED ({door}, S6-B3338): {ticket} has no row in "
-                f"{Path(QUEUE).name} - record the ruling on its ticket first"]
+                f"{Path(queue or QUEUE).name} - record the ruling on its ticket first"]
     if not any(verbatim in normalise(r) for r in rows):
         return [f"REFUSED ({door}, S6-B3338): no row of {ticket} quotes "
                 f"{verbatim[:120]!r} - record the owner's words on the ticket, "
@@ -119,3 +131,28 @@ def refusals(word, *, door: str) -> list:
 def spec_refusals(spec) -> list:
     """The engine-launch door: a spec carries its owner word in 'owner_word'."""
     return refusals((spec or {}).get("owner_word"), door="engine launch")
+
+
+def env_value(word) -> str:
+    """S6-B3358: the environment form of a word - what a launcher sets in
+    ENV_KEY so the engine's own entry can read it."""
+    w = word or {}
+    return json.dumps({"ticket": str(w.get("ticket") or ""),
+                       "verbatim": str(w.get("verbatim") or "")})
+
+
+def env_refusals(environ=None, *, door: str, queue=None) -> list:
+    """S6-B3358: the engine-entry door - the word in ENV_KEY, checked against
+    `queue`. Absent or unparseable is a refusal, never a pass (L642)."""
+    raw = (os.environ if environ is None else environ).get(ENV_KEY)
+    if not raw:
+        return [f"REFUSED ({door}, S6-B3358): no owner word in {ENV_KEY} - a launcher "
+                "sets it from the spec's owner_word (launch_sweep does); a direct or "
+                f"older-launcher run sets {ENV_KEY} to owner_word.env_value(word), the "
+                "word citing the ledger row that records the ruling"]
+    try:
+        word = json.loads(raw)
+    except ValueError:
+        return [f"REFUSED ({door}, S6-B3358): {ENV_KEY} is not JSON - "
+                "set it with owner_word.env_value"]
+    return refusals(word, door=door, queue=queue)

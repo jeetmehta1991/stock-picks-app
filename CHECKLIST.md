@@ -5983,6 +5983,8 @@ pinned by test_b2581's uniform-LF arm and the skill fragment in test_b2123.
 
 **INSTANCE (B3139q-r138b / L982) - A RUNNER AS AN ARGUMENT.** The launch classifier counted a runner's name in any token of a non-reader segment, so a pregate run listing scripts/run_wave.py among its --changed paths read as a launch, and the monitor gate (#185) - which .stop_exempt cannot reach - fired on a close that had launched nothing. Fixed structurally: the program a segment runs decides (S6-B3357, test_b3357).
 
+**INSTANCE (B3139q-r140 / L986) - THE ROUTE CENSUS COUNTED PROCESSES.** The B3139q-r138 census of routes that start the engine selected scripts that name it AND spawn a process - 8 routes - and B3139q-r139 repeated 'of the 8 engine routes, 2' in a ticket row, a commit message, a docstring and the runbook. Four scripts build and run a BacktestEngine in-process and never pass run_phase1a's main (profile_engine.py, smoke_test_cube_stage_d.py, smoke_test_screen_pool.py, validate_smc_panel_cache_semantic.py): the population was at least 12. Take a route population from what the routes SHARE - here a BacktestEngine that runs - not from the shape of the launchers. Fixed where the class meets: BacktestEngine.run checks the word first (S6-B3358, test_b3358).
+
 ### #295 - WORK INSIDE THE CURRENT STRATEGY'S CONTEXT; A ZOOM-OUT IS SCOPE CREEP (B2584 / L758)
 
 **Owner directive 2026-09-03:** when working the optimisation plan for a strategy, work ONLY in the
@@ -6672,6 +6674,8 @@ decision (a refusal is a behaviour change).
 **INSTANCE (B3139q-r123 / L963) - --HELP ON A PARSERLESS SCRIPT, AGAIN.** A --help probe of scripts/queue_state.py, which builds no parser, was refused by the hook (S6-B3268) before it ran; its functions were then read from the source.
 
 **INSTANCE (B3139q-r129 / L967) - A --HELP PROBE OF A PARSERLESS SCRIPT, REFUSED.** A --help probe of scripts/queue_state.py (2026-10-27T13:11Z) was refused by the PreToolUse guard (S6-B3268) before it ran; the script builds no argument parser.
+
+**INSTANCE (B3139q-r140 / L987) - THE THIRD REFUSAL ON ONE SCRIPT.** A --help probe of scripts/queue_state.py was refused by the guard before it ran, as at L963 and L967. The read-only counter now parses its arguments (S6-B3364, test_b3364), so where the probe keeps happening it prints usage.
 
 ### #328 - A CLOSED TICKET'S REMAINDER RIDES A NEW TICKET OPENED IN THE SAME APPEND (B3139q-r90 / L949, citing L704 and L640, self-caught 2026-10-21)
 

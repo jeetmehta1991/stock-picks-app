@@ -509,10 +509,19 @@ def isolated_engine_command(manifest_path, engine_args, out_dir, *, root=ROOT,
     environ = os.environ if environ is None else environ
     out_dir = Path(out_dir).resolve()
     man = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    # S6-B3358: the engine's own entry checks the owner's launch word, which
+    # reaches it here - from the manifest prelaunch_gate already judged. The
+    # path guard makes the import independent of how this module was loaded
+    # (a test loads it from its file under another name).
+    if str(ROOT / "scripts") not in sys.path:
+        sys.path.insert(0, str(ROOT / "scripts"))
+    import owner_word as _ow
+    word_env = ({_ow.ENV_KEY: _ow.env_value(man["owner_word"])}
+                if isinstance(man.get("owner_word"), dict) else {})
     if not man.get("isolation"):
         cmd = ([sys.executable, str(root / "backtest" / "run_phase1a.py")]
                + list(engine_args) + ["--output-dir", str(out_dir)])
-        return cmd, str(root), {}, str(root), []
+        return cmd, str(root), dict(word_env), str(root), []
     wt, problems = (materialise or materialise_worktree)(
         str(man.get("frozen_sha") or ""), root)
     if problems or wt is None:
@@ -521,7 +530,7 @@ def isolated_engine_command(manifest_path, engine_args, out_dir, *, root=ROOT,
     for i, tok in enumerate(args[:-1]):
         if tok in PATH_FLAGS and not Path(args[i + 1]).is_absolute():
             args[i + 1] = str(root / args[i + 1])
-    extra = {"STOCKPICKS_LANDING_ROOT": str(root)}
+    extra = {"STOCKPICKS_LANDING_ROOT": str(root), **word_env}
     sub = environ.get("STRATEGY_SUBSET_FILE")
     if sub and not Path(sub).is_absolute():
         extra["STRATEGY_SUBSET_FILE"] = str(root / sub)

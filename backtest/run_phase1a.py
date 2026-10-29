@@ -678,6 +678,13 @@ def main():
                 "event_suppression; cube_isolation and no_agents are NOT auto-enabled.)"
             )
 
+    # S6-B3358 (B3139q-r140): no engine is built without the owner's recorded
+    # launch word - after the run mode is recorded and asserted, so a refused
+    # launch is still auditable, and before any engine work. BacktestEngine.run
+    # checks again for the routes that never pass this main.
+    from backtest.util.owner_word_gate import require_engine_word
+    require_engine_word()
+
     engine = BacktestEngine(
         universe=universe, start=start, end=end,
         phase=phase_key, max_candidates_per_day=args.max_cands,

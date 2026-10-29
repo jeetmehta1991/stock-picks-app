@@ -25550,3 +25550,23 @@ MEASURED: applying L984's remedy, the first `scripts/pregate_select.py --run` of
 **Rule.** A list that grows with a selection or a population reaches a child process in a FILE - pytest's @argfile (its parser reads fromfile_prefix_chars "@"), git's --pathspec-from-file - never in argv.
 
 **Mechanism.** --run writes the node ids to an argfile, passes @argfile and removes it; the expanded ids still reach config.args, so conftest's node-id check writes no pyramid stamp (MEASURED with one id from each tier: the stamp's hash unchanged). Pinned by test_b3360's (4) arm, which drives main on a planted 600-id selection with the subprocess faked: the command line stays under 2,000 characters, the argfile carries every id and is gone after; mutants M23 (ids back on the command line, a 69,095-character line) and M24 (argfile left behind) killed. Sweep (AST, positive control the HEAD selector): 17 star-expanded argv sites remain across 1,051 files under scripts/ and backtest/ - the read-set re-run bounded by RERUN_CAP 150 (the 150 longest node ids make a 15,532-character line), the other 16 on fixed lists, a git wrapper's own arguments or a landing's artifact paths. Record and fix: S6-B3362.
+
+### L986 - THE ENGINE-ROUTE CENSUS COUNTED PROCESSES, AND FOUR ROUTES RUN THE ENGINE IN-PROCESS (B3139q-r140, 2026-10-29)
+
+MEASURED: the B3139q-r138 census of routes that start the engine selected scripts that name it AND spawn a process - 8 routes - and B3139q-r139 repeated its denominator, 'of the 8 engine routes measured at B3139q-r138, 2', in the S6-B3338 row, the r139 commit message, scripts/owner_word.py's docstring and runbook 0.6. Building S6-B3358's check at run_phase1a.main, a grep for BacktestEngine( outside the tests found four scripts that build and run an engine in-process and never pass that main - profile_engine.py, smoke_test_cube_stage_d.py, smoke_test_screen_pool.py and validate_smc_panel_cache_semantic.py, each calling .run(). The population was at least 12, so the r139 coverage figure read 2 of 8 where it was 2 of 12.
+
+**Why.** Compliance failure against #294 (L757): the census's precondition - spawns a process - selected the routes its author pictured, and its denominator came from the same predicate that found its members (L826). A check placed at main, sized on that census, would have left the four uncovered while every figure said 8 of 8.
+
+**Rule.** No new rule - #294 stands: take a route population from what the routes SHARE - a BacktestEngine that runs - not from the shape of the launchers.
+
+**Mechanism.** The check sits where the class meets: BacktestEngine.run calls backtest/util/owner_word_gate.require_engine_word before it touches the engine, so a route no census saw still meets it. Pinned by test_b3358's (5) arm - a stub self, refused with no word and past the check with one - and its AST check that run's first call is the check. The committed r139 figures stay in their commits; this entry, the #294 instance and S6-B3358's row carry the correction.
+
+### L987 - A THIRD --help PROBE OF queue_state.py, ANSWERED BY GIVING THE SCRIPT A PARSER (B3139q-r140, 2026-10-29)
+
+MEASURED: looking up a ticket id, I ran `python scripts/queue_state.py --help`; the PreToolUse guard (S6-B3268) refused it before it ran, as it had refused the same probe of the same script at L963 and L967. Nothing executed.
+
+**Why.** Compliance failure against #327 (L947): read a script's source before probing it with --help. Three refusals on one script are one habit repeated, and a fourth record of it would change nothing (L788: delete the degree of freedom rather than add a rule).
+
+**Rule.** No new rule - #327 stands. Its second half asks a WRITING script to parse its arguments; queue_state.py writes nothing, so its parser is what the third recurrence earns, not a new requirement.
+
+**Mechanism.** queue_state.py parses its arguments (argparse, argv explicit so an in-process main() parses nothing): --help prints usage and an unknown flag exits 2. Pinned by test_b3364_queue_state_parses_its_arguments, its one mutant (no parse_args) killed. The guard remains the mechanism for every other parserless script (S6-B3364).

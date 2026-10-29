@@ -141,3 +141,28 @@ def _workflow_state_out_isolated(tmp_path_factory):
             os.environ.pop("WORKFLOW_STATE_OUT", None)
         else:
             os.environ["WORKFLOW_STATE_OUT"] = prev
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _engine_owner_word():
+    """S6-B3358 (B3139q-r140): the engine refuses to start without the owner's
+    recorded launch word (backtest/run_phase1a.py _owner_word_refusals), so a
+    test session's engine runs carry one - the S6-B3337 ruling 'your rec
+    approved', which the launch-path fixtures already cite (test_b2116,
+    _b2159_ok_manifest), recorded in the real ledger the engine reads. It
+    rides os.environ, so child processes inherit it; a pin that needs NO word
+    removes it (monkeypatch.delenv or an explicit env). A word already set
+    before the session - an operator's own - is left alone. The key is
+    scripts/owner_word.ENV_KEY, which test_b3358 checks this value against."""
+    import json
+    import os
+    key = "OWNER_WORD_JSON"
+    prev = os.environ.get(key)
+    if prev is None:
+        os.environ[key] = json.dumps({"ticket": "S6-B3337",
+                                      "verbatim": "your rec approved"})
+    try:
+        yield
+    finally:
+        if prev is None:
+            os.environ.pop(key, None)
