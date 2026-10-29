@@ -118,6 +118,10 @@ State compliance visibly: "Checklist: ✅ [each item]"
     ruled 2026-09-30 (row 7, S6-B3139c) that exactly those corrections land at Phase-1B entry. 'This
     is open work' is a claim a start-work recommendation depends on: search the ledger for the work's
     CLASS, not only its subject, and read the rulings the search returns.
+    INSTANCE (B3139q-r137 / L980): a case against called one-level-at-a-time a departure from the
+    every-combination rule; the runbook holds both - the phase table's 1 SEARCH row and section 4.4's
+    coordinate-descent default (B2815). Search every passage on a step before calling a step a
+    departure from it; the conflict between the two is the owner's decision S6-B3351.
 
 27. RELEVANCE CHECK BEFORE EVERY RECOMMENDATION — no exceptions:
     a. State the specific question or problem being solved
@@ -4135,6 +4139,8 @@ to that shape only.**
 
 **INSTANCE (B3139q-r132 / L974) - A READ DESCRIBED WITHOUT OPENING ITS GRADER.** An option offered the owner one read of the pre-registered cell at the regime_flip exit; owner ruling 2(i), encoded in grade_npoc_config.grade_step2, reads the exit the Step-2 cube's own in-sample selects and records the pre-registered one unread. Caught before any holdout row was read; the owner then ruled per 2(i).
 
+**INSTANCE (B3139q-r137 / L977) - TWO CELLS FOR 43.** An option was described as a holdout re-read of two pre-registered cells while scripts/breadth_step2_read.py grades every cell of the Step-1 artifact at every exit - 43 cells in the two squeeze_breakout grids; the owner approved it on the two-cell description, and the scope was disclosed before any read ran.
+
 ### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
 
 **INSTANCE (B3139q-r68b / L909), compliance failure against this item:** the L908 Phase-5 commit (f5afa5e5f) was followed by a queue-only commit in the same turn, so the one-commit-deep gate could not see its members; the same close reported a five-config chain as five running when 1 of 5 ran (compliance failure against #122, the L738 level-per-member rule).
@@ -5588,6 +5594,8 @@ the existing `scan_missing_skill_confirmation` and `scan_compliance_is_content`.
 
 **INSTANCE (B3139q-r124 / L966) - A TESTED CLOSE REWORDED AT POSTING.** The r123 close passed probe_close (58 gates, 0 firing) and was posted with its first line reworded; scan_close_differs_from_tested_draft blocked the turn end, and the tested file was re-posted verbatim.
 
+**INSTANCE (B3139q-r137 / L978) - THE FOURTH REWORDED CLOSE.** close_r134.md was tested and its first line reworded at posting; scan_close_differs_from_tested_draft blocked the turn end at 2026-10-28T01:00:15Z and held.
+
 ### #283 - A NAME-KEYED TERMINAL ARTIFACT ON DISK AT LAUNCH IS THE PRIOR ATTEMPT'S (B2193 / L649)
 
 Before launching (or waiting on) any run whose status artifact is keyed by a reused name
@@ -5796,6 +5804,8 @@ retargeted: test_b2116, test_b2211, test_b2439, test_b2440, test_b2450.
 **NOT yet exercised on a real landing:** the git-push and toast paths - every landing so far ran
 `--no-git --no-notify`, and `commit_and_push` is covered only by the stub arms of the idempotence
 pin (S6-B2520g). Amends #223 (SKIPPED clause retired) and #284 (enforcement note).
+**INSTANCE (B3139q-r137 / L979) - THE THIRD ASK ON PRODUCER-BAND COVERAGE.** B2702, B2843, and on 2026-10-28 'Why were the producer bands in each strategy not approved by me?' - the class fix is the coverage gate reading Table A's pending levels, with a waiver record for any strike (S6-B3339, approved).
+
 ### #289 - A UNIFORM VALUE ACROSS EVERY ROW IS A PARSER HYPOTHESIS (B2520p / L724)
 
 **Before quoting any tally, distribution or coverage figure from an extractor written in the same
@@ -6085,6 +6095,8 @@ fragment pin (test_b2123) and test_b1486's banner sync.
 
 **INSTANCE (B3139q-r136 / L975) - A STEP-2 FAIL REPORTED WITHOUT ITS LEGS, OUTSIDE A CAMPAIGN.** The r132 close and its S6-B1248 row gave the LEVER4 pivot_r1_breakout arm 'FAIL, 5 of 6 live gates' and named neither leg; runbook 0.3 and this item name per-strategy campaigns, so nothing asked whether a breadth leg had run, and the owner asked 2026-10-29. The duty binds any Step-2 read. Mechanism: scan_step2_verdict_without_legs (S6-B3336, test_b3336); the arm's breadth decision is S6-B3335.
 
+**INSTANCE (B3139q-r137 / L979) - ENGINE-ONLY PRODUCER LEVELS SET ASIDE WITHOUT THE OWNER'S WORD.** In 3 of 3 live campaigns (squeeze_breakout 6 levels, williams_r_oversold 11, camarilla_r4_breakout 1) the levels the engine had no knob for were left out of the registered band - neither scheduled nor put to the owner as schedule-or-waive - and the coverage gate, reading the registry, reported complete. Owner-caught 2026-10-28, ruled per campaign at 11:01:42Z; the class fix is S6-B3339 (approved).
+
 ### #300 - MECHANIZE FIRST; JUDGMENT-ONLY IS EARNED BY A NAMED SEARCH (B2705 / L786, owner-mandated 2026-09-12)
 
 Owner, verbatim: "make all things mechanical especially if errors for the
@@ -6367,6 +6379,8 @@ Mechanism: JUDGMENT-ONLY for detection - no scan reads whether a change alters a
 Before any gate, audit or validator treats an ABSENCE-shaped observation as a defect - no rows, no file, nothing after date X, a count of zero - enumerate the lifecycles that legitimately produce that absence (delisting, rename, late listing, not-yet-fetched, window predating existence) and fail ONLY the shapes no lifecycle explains. Interior corruption (gaps between first and last bar, NaN, non-positive prices) indicts; edge absence reports. MEASURED: the pre-leg bar audit's first live run failed 5 of 200 tickers - TWTR, ATVI, PXD, FISV absent and MRO truncated - every one a sound delisted-complete history the engine and R5 handle by design. Corollary: LIVE-RUN a new gate against real data before wiring lets its refusal block anything - the wrong definition cost one rerun instead of a halted chain only because the audit ran standalone first. Pinned by test_b2947_preleg_bar_audit_flags_defects_and_spares_delistings.
 
 **INSTANCE (B3139 / L891):** the S6-B3134a slice monitor took a missing heartbeat pid (not yet written at startup) as a dead arm and printed DONE while all four arms ran; liveness now comes from the OS and DONE needs every arm's cube.
+
+**INSTANCE (B3139q-r137 / L976) - A MONITOR TRIPPED ON A PLANNED LEG END.** The LEVER4 Step-2 monitor (cron 5be10651) tripped on any non-zero exit while legs 1-6 of the run ended CAP_STOP with exit 1 by design, and bounded run_heartbeat.json's per-leg elapsed_hours by a whole-run projection it could never reach. Fixed in-session (3f4d143f reads run_wave.leg_outcome's vocabulary); the detectable slice is S6-B3352.
 
 ### #312 - PRINT A LOCKED TABLE OR DO NOT CALL IT THAT (L848, S6-B3013, 2026-09-23)
 

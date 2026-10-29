@@ -25446,3 +25446,53 @@ MEASURED from the r132 close, the S6-B1248 row and the code: the B3139q-r132 clo
 **Rule.** A failing Step-2 verdict, in any programme, names its depth leg and its breadth leg - run, waived in words, or not run with the ticket that decides it.
 
 **Mechanism.** scan_step2_verdict_without_legs (S6-B3336) blocks a close, or a queue row added in the turn, that states a failing six-gate count ('5 of 6 live gates', 'FAIL, 3 of 6') without the words depth and breadth - a lower bound: a verdict worded without a k-of-6 count is not read. Pinned by test_b3336_a_failing_step2_verdict_names_its_legs (the two verbatim r132 incidents fire; the B3139q-r114 S6-B3247 row, which names both legs, is quiet; 5 of 5 mutants killed, applied in memory). The instance: the S6-B1248 row now names the legs; whether pivot's arm gets a breadth leg is the owner's decision S6-B3335.
+
+### L976 - THE LEVER4 STEP-2 MONITOR COULD NOT TELL A PLANNED LEG END FROM A FAULT (B3139q-r129..r137, record-of-fact, 2026-10-27)
+
+MEASURED from the run's own record and the session transcript: cron 5be10651, created 2026-10-27T16:56:29Z before the 16:58:19Z launch of the LEVER4 Step-2 run, tripped on 'any non-zero exit or HALT line' and on 'elapsed hours above 2x the capacity-note projection' (2 x 107.89 = 215.78 h). The wave summary's leg_outcomes (output_audit/b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_wave_summary.json) show legs 1-6 ending CAP_STOP with exit 1 (status wall_time_kill, a planned leg end) and leg 7 COMPLETE with exit 0, so the first condition fired on every planned leg end; and run_heartbeat.json's elapsed_hours counts from the engine run's own start (backtest.py _run_start_time), resetting at every leg under a 4.5 h cap, so the second could never fire. Found at the 22:11Z firing and fixed in-session: 85c4fd17 at 22:13:24Z, then 3f4d143f at 22:18Z, which names the fault outcomes from scripts/run_wave.py leg_outcome (GATE_REFUSED, NO_CHECKPOINT, HANG_BACKSTOP, COMPLETE_NO_CUBE, CRASH) and times the run from the chain log's LAUNCH line; re-armed as 9be36f17 and deleted at the landing, 2026-10-29T00:54:18Z.
+
+**Why.** Compliance failure against #311 with L891: an outcome was indicted without its lifecycle - a planned stop read as a fault - and a per-leg quantity was read against a whole-run threshold.
+
+**Rule.** No new rule - #311 stands: classify an outcome against its lifecycle (here, run_wave.leg_outcome's vocabulary) before a check may indict it.
+
+**Mechanism.** None in the repository reaches it: the monitor gates (scan_monitor_not_retired, scan_monitor_pattern_unverified) check that a monitor is retired at landing and that its grep pattern matches a known line, and neither reads a cron prompt's trip conditions. The detectable slice - a chain-monitor prompt that trips on a non-zero exit without excluding CAP_STOP, or bounds a per-leg heartbeat field by a whole-run projection - is ticketed S6-B3352. Record-of-fact.
+
+### L977 - A READ'S SCOPE WAS DESCRIBED WITHOUT OPENING ITS TOOL: TWO CELLS FOR 43 (B3139q-r128..r137, 2026-10-27)
+
+MEASURED from the code and the artifacts: the B3139q-r128 S6-B3248 row and the 2026-10-27T22:42:00Z answer described option (a) as a re-read of squeeze_breakout's holdout 'on two pre-registered cells', and the owner approved (a) at 00:39:13Z on that description. scripts/breadth_step2_read.py grades every distinct (axis, op, level) cell of the Step-1 artifact at every exit - 39 cells in output_audit/b3248_squeeze_breakout_breadth_net_long_b14.json and 4 in output_audit/b3248_squeeze_breakout_breadth_net_long_b12_covered.json, 43 in all. Disclosed at 2026-10-28T00:56:01Z with a recommendation to read the whole grid (the B2836 no-pruning default); the read is held for the producer engine levels (11:01:42Z), and its scope is restated on S6-B3248.
+
+**Why.** Compliance failure against #230 with L866: a claim about what a tool will do, written without opening the tool - the shape L974 recorded again two days later.
+
+**Rule.** No new rule - #230 stands: before describing a read, open the reader and count what its loop touches.
+
+**Mechanism.** JUDGMENT-ONLY for detection - searched: no gate compares an option's description with the loop of the tool it names (L974's #230 half reached the same result); durability: the #230 instance. Record-of-fact.
+
+### L978 - A TESTED CLOSE WAS REWORDED AT POSTING, A FOURTH TIME (record-of-fact, 2026-10-28)
+
+MEASURED from the session transcript: at 2026-10-28T01:00:15Z the Stop hook blocked the turn end - CLOSE DIFFERS FROM ITS TESTED DRAFT: scripts/probe_close.py had tested close_r134.md, whose first line read 'all three approvals are prepared, and all three start right after the lever4 run lands ...', and the posted close opened 'I've prepared all three approvals, but none of them ran this turn: ...'.
+
+**Why.** Compliance failure against #282 with L921, L925 and L966 - the fourth instance of the class.
+
+**Rule.** No new rule - #282 stands: post the tested file verbatim; any edit goes back through the probe first.
+
+**Mechanism.** scan_close_differs_from_tested_draft (S6-B3193), pinned by test_b3193_posted_close_must_equal_its_tested_draft - it fired and held. Record-of-fact.
+
+### L979 - PRODUCER LEVELS WITH NO KNOB WERE SET ASIDE WITHOUT THE OWNER'S WORD, IN 3 OF 3 LIVE CAMPAIGNS (B3139q-r86..r128, owner-caught 2026-10-28)
+
+MEASURED in the 2026-10-28T01:45:57Z answer from each Table A factorial's pending column: squeeze_breakout 6 engine-only producer levels (+3 on the unruled new-gate row P1.5), williams_r_oversold 11, camarilla_r4_breakout 1 - each set aside where the engine had no knob, none scheduled and none put to the owner as schedule-or-waive at band review; 3 of the 4 closed campaigns with a Table A carry the same gap (cmf_flip 10, bollinger_lower at least 13, three_black_crows_short 2). scripts/band_coverage_gate.py reads the registry, not Table A, so it reported complete for squeeze_breakout and williams_r_oversold. The owner asked at 01:13:15Z, verbatim 'Why were the producer bands in each strategy not approved by me?', and ruled each live campaign at 11:01:42Z (camarilla and squeeze schedule, williams waived).
+
+**Why.** Compliance failure against #299 (L785): an unreachable axis is resim-scheduled or owner-waived in words at band review - the venue never narrows the mandate. The third ask on the class, after B2702 and B2843 (#288).
+
+**Rule.** No new rule - #299 stands: at band review every engine-only level goes to the owner as schedule or waive.
+
+**Mechanism.** The class fix S6-B3339, approved 2026-10-28T16:50:12Z and not yet built: the coverage gate reads Table A's pending levels, a strike needs a waiver record, and its numeric branch counts per leg. Until it lands no gate reads Table A's pending column; durability: the #299 and #288 instances.
+
+### L980 - A STEP WAS CALLED A DEPARTURE FROM THE RUNBOOK WHILE THE RUNBOOK HELD BOTH RULES (2026-10-28)
+
+MEASURED from the transcript and the runbook: the 2026-10-28T01:45:57Z answer's case against said testing one level at a time 'departs from the every-combination rule'. STRATEGY_OPTIMISATION_PLAN.md holds both rules - the phase table's 1 SEARCH row scopes Step 1 as 'all fire-adding configs', and section 4.4 item 4 (B2815, adopted 2026-09-15) makes coordinate descent the default for engine depth. I had cited only the phase table; the 11:29:18Z answer corrected it, and its retroactive search of 118 posted answers and the ledger found no other instance.
+
+**Why.** Compliance failure against #26: a claim the recommendation depended on was checked against the first source found, not every passage on the step.
+
+**Rule.** No new rule - #26 stands: before calling a step a departure from the runbook, search the runbook for every passage on that step.
+
+**Mechanism.** JUDGMENT-ONLY for detection - searched: no gate reads whether a cited rule has a sibling passage elsewhere in the runbook; durability: the #26 instance. The conflict the search exposed is the owner's decision S6-B3351. Record-of-fact.
