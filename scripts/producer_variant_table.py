@@ -6154,6 +6154,91 @@ def _admitted_retest_refusals(doc: dict, root: Path, strats: list) -> list:
     return out
 
 
+STATUS_VIEW = CODE_ROOT / "output_audit" / "strategy_optimisation_status.json"
+
+
+def _terminal_status_refusals(doc: dict, strats: list, *, view: dict | None = None,
+                              admitted=None) -> list:
+    """S6-B3338 door 4 (B3139q-r139): refuse to launch a strategy whose status
+    in the per-strategy view (scripts/build_strategy_status.py) is TERMINAL,
+    unless the spec carries the owner's recorded word reopening it:
+
+        "owner_override_reopen": {"<strategy>": {"ticket": "<S6 id>",
+                                                 "verbatim": "<owner words>"}}
+
+    checked against the ledger by scripts/owner_word.py. A strategy in the
+    Phase 1B admitted set, or holding roster roles in the view (an admission,
+    a graded funnel cell, a counted mirror), is left to
+    _admitted_retest_refusals (B2731), which carries its own override - one
+    refusal per strategy, from the arm that owns it. MEASURED 2026-10-29 on the view built at
+    430b8d9d0: 52 of 225 rows carried a terminal status, the admitted set
+    covered 33 of them, and the other 19 - PRUNED-DUPLICATE 8, DISABLED 4,
+    CLOSED-NEGATIVE 3, DONE-OWNER-CLOSED 2, CLOSED-NO-READ 1,
+    CONTAINED-IN-REPRESENTATIVE 1 - met no launch refusal at all.
+
+    The view is a REPO fact read from CODE_ROOT (L792), and its terminal set is
+    the vocabulary the view itself carries, so the builder stays out of the leg
+    gate's code closure. It is read AS BUILT, with no stamp-equals-HEAD rule: a
+    leg re-runs this check, and such a rule would refuse every leg after a
+    mid-wave commit (L866) - so a closure reaches a launch's refusal from the
+    next rebuild of the view. Fails CLOSED (L642) on an unreadable view, a view
+    without its vocabulary, and a strategy the view holds no row for.
+    Seams (#241): view (the parsed view), admitted (the admitted names)."""
+    if view is None:
+        import json as _json
+        try:
+            view = _json.loads(STATUS_VIEW.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            return [f"the strategy status view is unreadable ({type(exc).__name__}) - "
+                    "refusing rather than launching against an unknown status "
+                    "(S6-B3338, L642)"]
+    terminal = set(((view or {}).get("vocabulary") or {}).get("terminal") or [])
+    if not terminal:
+        return ["the strategy status view carries no terminal vocabulary - rebuild "
+                "scripts/build_strategy_status.py (S6-B3338, fail closed)"]
+    if admitted is None:
+        # an unreadable admissions file is _admitted_retest_refusals' refusal
+        admitted, _why = phase1b_admitted(None)
+    rows = {r.get("strategy"): r for r in (view.get("rows") or []) if isinstance(r, dict)}
+    status = {s: r.get("status") for s, r in rows.items()}
+    # a roster member - an admission, a graded funnel cell, a counted mirror -
+    # is B2731's to refuse, by the view's own record as well as the admitted set
+    roster = {s for s, r in rows.items() if r.get("roster_roles")}
+    ov = doc.get("owner_override_reopen") or {}
+    if not isinstance(ov, dict):
+        return ["owner_override_reopen must be a MAPPING of strategy -> the owner's "
+                "recorded word {ticket, verbatim} (L789 - an escape names its target)"]
+    try:
+        import owner_word as _ow
+    except ImportError as exc:  # fail CLOSED (L642)
+        return [f"owner_word unavailable ({exc}) - refusing rather than launching "
+                "without the reopen check (S6-B3338)"]
+    out = []
+    for s in strats:
+        if s in admitted or s in roster:
+            continue
+        st = status.get(s)
+        if st is None:
+            out.append(f"{s}: the strategy status view has no row for it - rebuild "
+                       "scripts/build_strategy_status.py before launching (S6-B3338; "
+                       "an unknown status is not permission, L642)")
+            continue
+        if st not in terminal:
+            continue
+        word = ov.get(s)
+        if word is None:
+            out.append(f"{s}: its status is {st}, TERMINAL in the strategy status view - "
+                       "a closed, pruned, contained or disabled strategy is not re-run "
+                       "without the owner's word (S6-B3338 door 4). To reopen it, record "
+                       "the ruling on its ticket and generate the spec with make_spec "
+                       "--reopen-word '<the words>' --reopen-word-ticket <S6 id>, which "
+                       f"writes owner_override_reopen[{s!r}] = {{'ticket': ..., "
+                       "'verbatim': ...}} into the spec")
+            continue
+        out += [f"{s}: {r}" for r in _ow.refusals(word, door=f"reopen {s} ({st})")]
+    return out
+
+
 RETEST_OVERRIDES = CODE_ROOT / "output_audit" / "s6_b2420_retest_overrides.json"
 
 
@@ -6409,7 +6494,8 @@ def _step2_grader_refusals(doc: dict, s: str, spec: dict) -> list:
 
 def launch_refusals(doc: dict, root: Path | None = None,
                     require_subset: bool = True,
-                    subset_override: tuple | list | None = None) -> list[str]:
+                    subset_override: tuple | list | None = None,
+                    draft: bool = False) -> list[str]:
     """Reasons NOT to launch `doc` (a wave spec or a run manifest - both carry
     strategy_subset + arms). Empty list = launch. Every reason names the
     class it refuses under so the HALT record reads without this file open.
@@ -6425,7 +6511,13 @@ def launch_refusals(doc: dict, root: Path | None = None,
     the real run creates before it validates - measured on a clean
     checkout, where test_b3141a failed on exactly that. Given, it replaces
     the file read (the field itself must still be present), so the dry
-    run judges what the real run would."""
+    run judges what the real run would.
+
+    draft (S6-B3338 door 4, B3139q-r139): make_spec --dry builds a DRAFT
+    that is priced and shown to the owner before any word is given - the
+    reason a draft needs no launch word - so the terminal-status arm is
+    skipped here and the caller prints its finding as a note; every real
+    launch path (run_wave, prelaunch_gate) leaves draft False."""
     root = Path(root) if root is not None else Path(__file__).resolve().parents[1]
     rel = doc.get("strategy_subset")
     if not rel:
@@ -6457,6 +6549,11 @@ def launch_refusals(doc: dict, root: Path | None = None,
     errs += _rider_refusals(doc, root, strats)
     # B2731: an ADMITTED strategy is closed to re-testing (owner ruling)
     errs += _admitted_retest_refusals(doc, root, strats)
+    # S6-B3338 door 4: a TERMINAL status in the per-strategy view (closed,
+    # pruned, contained, disabled) is refused without the owner's reopen word;
+    # a make_spec --dry draft reports it as a note instead (draft above)
+    if not draft:
+        errs += _terminal_status_refusals(doc, strats)
     # S6-B3206 (owner ruling 2026-10-18): a Step-1 engine chain must
     # DECLARE its depth null, and a depth surface the offline null
     # already prices as noise is refused without an owner override

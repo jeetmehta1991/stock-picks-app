@@ -104,10 +104,18 @@ LEG_READ_FILES: frozenset = frozenset()
 # the per-leg gate opens two more files of the same POLICY kind - re-read at
 # every leg so an admission of the wave's own strategy stops the wave, while
 # freezing them would let an unrelated admission halt a wave (L866's shape).
+# S6-B3338 (B3139q-r139): two more of the same POLICY kind - the ledger, read
+# to confirm the owner's recorded launch word (owner_word.spec_refusals; rows
+# are append-only, so a recorded word stays recorded at every leg), and the
+# per-strategy status view, read to refuse a terminal strategy
+# (producer_variant_table._terminal_status_refusals; a closure of the wave's
+# own strategy stops it at the next leg, an unrelated rebuild changes nothing).
 LEG_POLICY_FILES = frozenset({"PHASE_1B_ROSTER.md",
                               "output_audit/b1453_phase_1b_roster.json",
                               "output_audit/phase1b_closed_set_frozen.json",
-                              "output_audit/phase_1b_step2_admissions.json"})
+                              "output_audit/phase_1b_step2_admissions.json",
+                              "EXECUTION_QUEUE.md",
+                              "output_audit/strategy_optimisation_status.json"})
 # The engine WRITES tracked files under these roots during a leg - its OHLCV
 # cache index (backtest/data/cache.py _save_index, e.g. when an index entry is
 # missing) and its ticker-info cache (backtest/data/universe.py fetch_info_bulk).

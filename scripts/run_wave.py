@@ -382,6 +382,11 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
         # `shape_waiver` directly above is the same pattern.
         "owner_override_retest_admitted":
             spec.get("owner_override_retest_admitted"),
+        # S6-B3338 (B3139q-r139): the owner's launch word and any reopen word
+        # travel with the manifest for the same reason - prelaunch_gate judges
+        # the MANIFEST, at every leg.
+        "owner_word": spec.get("owner_word"),
+        "owner_override_reopen": spec.get("owner_override_reopen"),
         "window": spec["window"], "arms": [arm],
         "concurrency": "orchestrated legs, solo per arm",
         "budget_cap_usd": 0, "spent_usd": 0, "projected_batch_usd": 0,

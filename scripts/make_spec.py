@@ -473,6 +473,16 @@ def main() -> int:
                          "ledger row records it (required unless --dry)")
     ap.add_argument("--owner-word-ticket", default=None,
                     help="the ticket whose row records --owner-word")
+    # S6-B3338 door 4 (B3139q-r139): a strategy whose status in the
+    # per-strategy view is TERMINAL (closed, pruned, contained, disabled)
+    # launches only with the owner's recorded word reopening it, written into
+    # the spec as owner_override_reopen - the generator carries the escape
+    # the gate demands (the B2748 rule)
+    ap.add_argument("--reopen-word", default=None,
+                    help="the owner's words reopening a TERMINAL strategy, verbatim "
+                         "as its ledger row records them")
+    ap.add_argument("--reopen-word-ticket", default=None,
+                    help="the ticket whose row records --reopen-word")
     a = ap.parse_args()
 
     import owner_word
@@ -483,8 +493,22 @@ def main() -> int:
         werrs = owner_word.refusals(word, door="engine launch (make_spec)")
         if werrs:
             return refuse(werrs[0])
+    reopen = None
+    if a.reopen_word or a.reopen_word_ticket:
+        reopen = {"ticket": (a.reopen_word_ticket or "").strip(),
+                  "verbatim": owner_word.normalise(a.reopen_word)}
+        rerrs = owner_word.refusals(reopen, door="reopen a terminal strategy (make_spec)")
+        if rerrs:
+            return refuse(rerrs[0])
 
-    from producer_variant_table import SPECS, launch_refusals
+    from producer_variant_table import SPECS, launch_refusals, _terminal_status_refusals
+    if a.dry:
+        # a draft is priced and shown before any word, so a terminal status is
+        # a NOTE here and a refusal on the real run (S6-B3338 door 4)
+        for note in _terminal_status_refusals(
+                {"owner_override_reopen": {a.strategy: reopen}} if reopen else {},
+                [a.strategy]):
+            print(f"NOTE (S6-B3338 door 4, --dry draft): {note}")
     spec_entry = SPECS.get(a.strategy)
     if spec_entry is None:
         return refuse(f"{a.strategy!r} has no SPECS entry - register the "
@@ -615,7 +639,9 @@ def main() -> int:
             spec["_fires_basis"] = f"{basis} | {fires_grain(a.step)}"
         if word is not None:
             spec["owner_word"] = word
-        errs = launch_refusals(spec, ROOT, subset_override=(a.strategy,))
+        if reopen is not None:
+            spec["owner_override_reopen"] = {a.strategy: reopen}
+        errs = launch_refusals(spec, ROOT, subset_override=(a.strategy,), draft=a.dry)
         if errs:
             return refuse(f"the consumer's own gate refuses the draft for "
                           f"level {level!r}: {errs}")

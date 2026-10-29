@@ -32,9 +32,19 @@ unions seven rules, each a LOWER bound - the full gate stays the authority:
 
     python scripts/pregate_select.py                       # changed = git diff HEAD + untracked
     python scripts/pregate_select.py --changed scripts/make_spec.py --run
+
+S6-B3360 (B3139q-r139, L984): --run STAMPS the tree it ran on - every changed
+path with the sha256 of its bytes - in .pregate_stamp (gitignored), and
+scripts/pyramid_gate.py prints and footers pregate= (stamp_verdict) before
+pytest starts. MEASURED 2026-10-29: the r139 gate ran without this selector
+and went RED on 3 of 1,905; on that gate's own 16 changed paths R2 alone -
+which reads no read-set, so the answer does not depend on which gate ran
+last - selects 2 of the 3 failures (test_b2082 and test_b3171b). The third
+(test_b3120a) reaches make_spec through a subprocess and names no changed file.
 """
 import argparse
 import ast
+import hashlib
 import json
 import os
 import re
@@ -66,6 +76,65 @@ def changed_files(root=ROOT, all_untracked=False) -> list:
         out.update(ln.strip().replace("\\", "/") for ln in r.stdout.splitlines()
                    if ln.strip())
     return sorted(out)
+
+
+STAMP_NAME = ".pregate_stamp"
+
+
+def tree_state(paths, root=ROOT) -> dict:
+    """S6-B3360: {path: sha256 of its bytes, or 'absent'} for a changed set -
+    the tree a selection was computed and run against."""
+    state = {}
+    for p in paths:
+        f = Path(root) / p
+        state[p] = hashlib.sha256(f.read_bytes()).hexdigest() if f.is_file() else "absent"
+    return state
+
+
+def write_stamp(state, selected, pytest_exit, root=ROOT) -> Path:
+    """S6-B3360: record what a --run ran on and how it ended."""
+    import datetime as _dt
+    p = Path(root) / STAMP_NAME
+    p.write_text(json.dumps({
+        "utc": _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "selected": selected, "pytest_exit": pytest_exit, "state": state},
+        indent=1), encoding="utf-8")
+    return p
+
+
+def stamp_verdict(stamp, state) -> str:
+    """S6-B3360 (L984): what the newest --run says about the tree whose
+    changed set has `state`. NOTHING CHANGED - a clean tree, so there is no
+    selection to run; NONE - no stamp; STALE - a path changed now is not in
+    the stamp or its bytes moved since the run (a stamp covering MORE paths,
+    an --all-untracked run, still matches); FAILED / PASSED - that run's own
+    pytest exit, on this exact tree."""
+    if not state:
+        return "NOTHING CHANGED (a clean tree against HEAD)"
+    if not stamp:
+        return "NONE"
+    old = stamp.get("state") or {}
+    moved = sorted(p for p, h in state.items() if old.get(p) != h)
+    if moved:
+        return (f"STALE ({len(moved)} of {len(state)} changed path(s) differ from the "
+                f"run at {stamp.get('utc')}, first {moved[0]})")
+    if stamp.get("pytest_exit") != 0:
+        return (f"FAILED on this tree (pytest exit {stamp.get('pytest_exit')}, "
+                f"{stamp.get('selected')} tests, {stamp.get('utc')})")
+    return f"PASSED on this tree ({stamp.get('selected')} tests, {stamp.get('utc')})"
+
+
+def current_verdict(root=ROOT, changed=None) -> str:
+    """stamp_verdict for the working tree as it stands - the default changed
+    set, as a plain run computes it; `changed` is the seam (#241)."""
+    try:
+        stamp = json.loads((Path(root) / STAMP_NAME).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        stamp = None
+    except (OSError, ValueError) as exc:
+        return f"unreadable ({type(exc).__name__})"
+    paths = changed if changed is not None else changed_files(root)
+    return stamp_verdict(stamp, tree_state(paths, root))
 
 
 def changed_lines(test_file, root=ROOT) -> set:
@@ -251,6 +320,7 @@ def main(argv=None) -> int:
         return 2
     changed = (a.changed if a.changed is not None
                else changed_files(all_untracked=a.all_untracked))
+    state = tree_state(changed)        # S6-B3360: the tree this run is about
     sel = select(changed)
     by_rule = {r: sum(1 for v in sel.values() if r in v)
                for r in ("R1", "R2", "R3", "R4", "R5", "R6", "R7")}
@@ -267,9 +337,25 @@ def main(argv=None) -> int:
         return 0
     if not sel:
         print("nothing selected - nothing to run")
-        return 0
-    return subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
-                           *sel], cwd=ROOT).returncode
+        rc = 0
+    else:
+        # S6-B3360: the node ids go to pytest in an ARGFILE (@file - pytest's
+        # parser reads fromfile_prefix_chars "@"), never on the command line:
+        # this batch's own 493 overran the Windows limit (WinError 206). The
+        # expanded ids still reach config.args, so conftest's node-id check
+        # writes no pyramid stamp for the run (MEASURED, one id per tier).
+        import tempfile
+        fd, argfile = tempfile.mkstemp(prefix="pregate_", suffix=".txt")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                fh.write("\n".join(sel) + "\n")
+            rc = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
+                                 "@" + argfile], cwd=ROOT).returncode
+        finally:
+            os.unlink(argfile)
+    stamp = write_stamp(state, len(sel), rc)
+    print(f"pregate_select: stamped {stamp.name} - {stamp_verdict(json.loads(stamp.read_text(encoding='utf-8')), tree_state(changed))}")
+    return rc
 
 
 if __name__ == "__main__":

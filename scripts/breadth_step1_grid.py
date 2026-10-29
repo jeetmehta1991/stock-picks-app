@@ -223,6 +223,25 @@ def breadth_permutation_null(IS, cells, n_perms, seed, min_n=10):
 
 from step1_gates import require_band_ruling, require_fresh_status  # noqa: E402  (B2848)
 from episode_disclosure import month_concentration  # noqa: E402  (S6-B3315)
+import owner_word  # noqa: E402  (S6-B3338 door 3)
+
+
+def widen_word(a) -> dict | None:
+    """S6-B3338 door 3 (B3139q-r139): widening ONE axis past the coverage floor
+    (--widen-coverage) is ruled per axis by the owner - the general
+    --band-ruling text does not carry it. Returns None when the run widens
+    nothing; otherwise the owner word {ticket, verbatim}, which must be quoted
+    by a row of its ticket (scripts/owner_word.py), or the run stops before
+    any data is loaded. MEASURED 2026-10-28 census: this door held only the
+    general band ruling, which the ledger never checks."""
+    if not a.widen_coverage:
+        return None
+    word = ({"ticket": a.widen_ruling_ticket, "verbatim": a.widen_ruling}
+            if (a.widen_ruling or a.widen_ruling_ticket) else None)
+    refusals = owner_word.refusals(word, door="widen coverage (breadth_step1_grid)")
+    if refusals:
+        raise SystemExit(refusals[0])
+    return word
 
 
 def main() -> int:
@@ -265,9 +284,16 @@ def main() -> int:
                          "coverage floor skips on its COVERED fires - --axes must be exactly "
                          "that key; the uncovered fires leave the graded arm AND the null, and "
                          "the gap is written on the artifact (owner-ruled per axis)")
+    ap.add_argument("--widen-ruling", default=None,
+                    help="S6-B3338 door 3: the owner's words ruling THIS axis's widening, "
+                         "verbatim as a row of --widen-ruling-ticket records them; required "
+                         "with --widen-coverage (the general --band-ruling does not carry it)")
+    ap.add_argument("--widen-ruling-ticket", default=None,
+                    help="the ticket whose ledger row records --widen-ruling")
     a = ap.parse_args()
     _ruling = require_band_ruling(a.band_ruling, a.strategy)   # S6-B2848a + B2855
     _stamp = require_fresh_status()                # S6-B2848b
+    _widen_word = widen_word(a)                    # S6-B3338 door 3, before any load
     # S6-B3112c: a breadth subject whose depth line is a producer
     # reconfiguration has its fires only in its OWN cube - R5 cannot
     # express it as a row filter, so the source must be overridable.
@@ -424,7 +450,7 @@ def main() -> int:
         # the gap on the artifact's face; axis + coverage are the re-sweep
         # fields table_d_render integrates (the B2698 artifact's shape)
         rec.update({"widen_coverage": widened, "axis": a.widen_coverage,
-                    "coverage": widened})
+                    "coverage": widened, "widen_owner_word": _widen_word})
     rec["band_ruling_verbatim"] = _ruling
     rec["status_stamp_at_run"] = _stamp
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")

@@ -91,6 +91,7 @@ data_prefetch/sec_edgar_decoded/
 
 # B1254 compliance-gate artifacts (local state, never committed)
 .pyramid_stamp
+.pregate_stamp
 # S6-B3193: per-turn stamps of probe-tested closes (scripts/probe_close.py)
 .close_stamps/
 .queue_exempt_log

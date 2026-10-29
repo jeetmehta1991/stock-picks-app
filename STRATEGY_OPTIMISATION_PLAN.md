@@ -210,13 +210,19 @@ holdout read: `scripts/offline_holdout_read.py --ruling ... --ruling-ticket ...`
 `scripts/breadth_step2_read.py`, has required `--ruling` since B2678). Each door passes only when a
 row of the cited ticket quotes the owner's words (`scripts/owner_word.py`), so a ruling is recorded
 on its ticket before the door opens. The word is checked, not its scope: which levels a band word
-covered is read by the person citing it. The engine door sits on the `run_wave` route only - 1 of 8
-routes that start the engine (`scripts/owner_word.py` lists them); a chain takes it, since
-`run_serial_chain.py` and `launch_detached.py` start `run_wave` for each spec. Still unchecked, each on its
-ticket: a launch by any other route - `launch_sweep.py` or `backtest/run_phase1a.py` run by hand, and
-five older scripts that build their own engine command - widening an axis past the coverage floor
-and reopening a terminal strategy (S6-B3338), the engine-only producer levels
-Table A lists (S6-B3339), and the breadth leg (S6-B3353).
+covered is read by the person citing it. The engine door sits on 2 of the 8 routes that start the
+engine (`scripts/owner_word.py` lists them): the `run_wave` route - which a chain takes, since
+`run_serial_chain.py` and `launch_detached.py` start `run_wave` for each spec - and, from
+B3139q-r139, `launch_sweep.py` run by hand, whose `prelaunch_gate.py` checks the word at every leg.
+Two more doors from B3139q-r139: widening one breadth axis past the coverage floor
+(`breadth_step1_grid.py --widen-coverage`) needs `--widen-ruling` and `--widen-ruling-ticket`, the
+owner's word for that axis; and a launch of a strategy whose status in the per-strategy view is TERMINAL
+(closed, pruned, contained, disabled - roster members stay with the admitted-strategy refusal) is refused
+unless the spec carries `owner_override_reopen`, the owner's recorded reopen word, which
+`make_spec.py --reopen-word ... --reopen-word-ticket ...` writes (a `--dry` draft prints the status as a NOTE).
+Still unchecked, each on its ticket: `backtest/run_phase1a.py` run directly and five older scripts that
+build their own engine command - routes that bypass every launch refusal, not only this one (S6-B3358) -
+the engine-only producer levels Table A lists (S6-B3339), and the breadth leg (S6-B3353).
 
 The B2660 admission doctrine (§6.2) sets the CRITERION; it does not waive the per-step APPROVALS
 above. Violation lineage (L779): a campaign ran band design, the Step-2 spend and admission on

@@ -25520,3 +25520,33 @@ MEASURED from the transcript and the gate's code: probing this turn's close (scr
 **Rule.** No new rule - #294 stands. The fix is the third rung of L548: decide by the program a segment RUNS, not by a token it contains.
 
 **Mechanism.** _segment_program and _executed_script in scripts/verify_turn_compliance.py (S6-B3357): the program a segment runs - after VAR=value assignments, wrappers, shell keywords and inside VAR=$(...) - decides; a runner after another script is its argument; a for-loop header runs nothing; python -m backtest.run_phase1a counts as the run it is; a background word still makes any other script's run a launch (B2581d); any program that is not a named script keeps the any-token rule. Pinned by test_b3357_a_runner_named_as_an_argument_is_not_a_launch, 7 of 7 mutants killed, and two gate-corpus entries - the 15:03Z pregate command verbatim (must-quiet) and a wrapped run_wave launch (must-fire).
+
+### L983 - A SUM TYPED BEFORE IT WAS ADDED (B3139q-r139, 2026-10-29)
+
+MEASURED from the transcript: measuring S6-B3338's terminal-status door, a progress line told the owner that 53 rows of the status view carry a terminal status, beside the nine counts it came from - 16, 8, 8, 7, 4, 4, 3, 1, 1 - which add to 52. A later progress line retracted it with the sum written out; the two figures the design rested on, 33 roster members and 19 strategies that met no launch refusal, were computed and right.
+
+**Why.** Compliance failure against #201: a quantity is computed, never typed - here a sum whose parts were on the screen beside it.
+
+**Rule.** No new rule - #201 stands: do the arithmetic and SHOW it.
+
+**Mechanism.** No detection reaches the instance: a line between tool calls meets no turn gate, which read the close, and scan_partial_distribution - the one gate that adds a breakdown to its stated total - keys on the ledger's six classes. Durability: #201's text, applied in the retraction. Record-of-fact.
+
+### L984 - THE PRE-GATE SELECTOR EXISTED AND DID NOT RUN BEFORE THE GATE (B3139q-r139, 2026-10-29)
+
+MEASURED from the transcript: before the r139 gate, launched 18:34:32Z, I ran a hand-picked -k set of the doors' neighbouring tests and preflight C16's queue-reading tests - not scripts/pregate_select.py (S6-B3269). The gate went RED on 3 of 1,905 (output_audit/b3139q_r139_pyramid.stdout): test_b2082, test_b3120a and test_b3171b. On that gate's own 16 changed paths the selector's R2 rule alone - which reads no read-set, so the answer does not depend on which gate ran last - selects 2 of the 3, test_b2082 and test_b3171b; test_b3120a reaches make_spec through a subprocess and names no changed file. Of the 6 gate records named b3139q_r*_pyramid.stdout that carry an exit line, 2 ended RED - r138 and r139 - and the median run took 1,737 s.
+
+**Why.** Compliance failure against #315: its L950 instance built the selector, and its row in the skill's tripwire table says to run it before the gate. A hand-picked set names the tests the change was written for, which is the gap #315 describes - the tests a change reaches are the ones its author was not thinking about.
+
+**Rule.** No new rule - #315 stands, with its L950 row: run scripts/pregate_select.py --run before the gate.
+
+**Mechanism.** S6-B3360: pregate_select --run stamps the tree it ran on in .pregate_stamp (gitignored) - each changed path with the sha256 of its bytes - and scripts/pyramid_gate.py prints a NOTE before pytest starts and footers pregate= (PASSED or FAILED on this tree, STALE, NONE, NOTHING CHANGED). Pinned by test_b3360_the_gate_discloses_whether_a_pregate_run_passed_on_its_tree, 7 of 7 mutants killed, each by its own assertion. LIMIT: the gate runs with its stdout in a file, so the NOTE reaches me when the run ends; only a refusal or a fail-fast pre-run would save the cycle, and rule 7(c) puts that behaviour change with the owner (S6-B3361).
+
+### L985 - THE PRE-GATE SELECTOR'S RUN MODE HAD NO PIN, AND IT COULD NOT RUN THIS BATCH'S SELECTION (B3139q-r139, 2026-10-29)
+
+MEASURED: applying L984's remedy, the first `scripts/pregate_select.py --run` of this batch selected 493 tests over 21 changed paths and died before pytest started - `FileNotFoundError: [WinError 206] The filename or extension is too long` - because --run put every node id on the pytest command line, and Windows stops a command line at 32,767 characters. test_b3269, the selector's pin since B3139q-r91, drives select(), --help, changed_files and the root refusal; nothing in it drives --run, so the mode shipped with no pin at any size.
+
+**Why.** Compliance failure against #224 as L654 reads it: a pin on the rules is not a pin on the mode that runs them.
+
+**Rule.** A list that grows with a selection or a population reaches a child process in a FILE - pytest's @argfile (its parser reads fromfile_prefix_chars "@"), git's --pathspec-from-file - never in argv.
+
+**Mechanism.** --run writes the node ids to an argfile, passes @argfile and removes it; the expanded ids still reach config.args, so conftest's node-id check writes no pyramid stamp (MEASURED with one id from each tier: the stamp's hash unchanged). Pinned by test_b3360's (4) arm, which drives main on a planted 600-id selection with the subprocess faked: the command line stays under 2,000 characters, the argfile carries every id and is gone after; mutants M23 (ids back on the command line, a 69,095-character line) and M24 (argfile left behind) killed. Sweep (AST, positive control the HEAD selector): 17 star-expanded argv sites remain across 1,051 files under scripts/ and backtest/ - the read-set re-run bounded by RERUN_CAP 150 (the 150 longest node ids make a 15,532-character line), the other 16 on fixed lists, a git wrapper's own arguments or a landing's artifact paths. Record and fix: S6-B3362.

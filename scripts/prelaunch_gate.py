@@ -34,6 +34,7 @@ from pathlib import Path
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO_ROOT / "scripts"))
 from producer_variant_table import launch_refusals  # noqa: E402  (B2578)
+import owner_word  # noqa: E402  (S6-B3338: the owner's launch word, per leg)
 
 BUCKET = "stock-picks-r5-jm-2026"
 SIDECAR_KEY = "payload/r5_code.tar.sha"
@@ -132,6 +133,13 @@ def check(manifest: dict, ledger: dict, tar_sha: str) -> list[str]:
         fails += ["LAUNCH REFUSED (S6-B2573b): " + r
                   for r in launch_refusals(manifest, _REPO_ROOT,
                                            require_subset=False)]
+        # S6-B3338 (B3139q-r139): the owner's recorded launch word, checked on
+        # the around-the-gate route too, exactly as B2578 put launch_refusals
+        # here. run_wave.build_manifest carries the spec's word, so every
+        # run_wave leg is re-checked as well; the ledger is read per leg
+        # (EXECUTION_QUEUE.md is a LEG_POLICY_FILES member) and its rows are
+        # append-only, so a recorded word stays recorded across legs.
+        fails += owner_word.spec_refusals(manifest)
         return fails
     if not tar_sha:
         fails.append("S3 tar .sha sidecar missing/unreadable -- rebuild+upload "

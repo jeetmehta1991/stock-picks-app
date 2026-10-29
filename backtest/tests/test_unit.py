@@ -24262,6 +24262,10 @@ def test_b2082_launch_sweep_refuses_without_a_passing_gate():
                 "test fixture: exercising the launch path, not a real re-test"}
         # B2849 (S6-B2848c): a compliant manifest records the 0.5 smoke
         _m["fires_at_production"] = 12
+        # S6-B3338 (B3139q-r139): prelaunch_gate - the gate this pin drives
+        # through launch_sweep, a subprocess on the REAL ledger - now checks
+        # the owner's launch word; S6-B3337's row quotes this one
+        _m["owner_word"] = {"ticket": "S6-B3337", "verbatim": "your rec approved"}
         # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest), which reads
         # arm['env'] and the lower-case arm keys, never the legacy flat
         # UPPERCASE keys this pre-B2138 arm carries - so the copy, re-stamped
@@ -26094,6 +26098,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r138: the S6-B3338 owner-word clause in the launch row, same call.
         ("AND THE SPEC CITES THE OWNER'S WORD FOR THIS LAUNCH",
          'L981 (B3139q-r138): the launch word was unchecked on the engine path'),
+        # B3139q-r139: L984's clause in the #315 row, same call as the skill edit.
+        ("THE GATE'S FOOTER NOW SAYS WHETHER A PRE-GATE RUN PASSED ON ITS TREE",
+         'L984 (B3139q-r139): the gate ran without the pre-gate selector'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26345,7 +26352,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # same call).
     # 361 -> 362 at B3139q-r136 (the L975 every-programme clause; same call).
     # 362 -> 363 at B3139q-r138 (the S6-B3338 launch-row clause; same call).
-    assert len(gutted) == 363, gutted
+    # 363 -> 364 at B3139q-r139 (the L984 pre-gate-footer clause in the #315
+    # row; the pre-gate selection caught the missed bump before the gate).
+    assert len(gutted) == 364, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -27012,6 +27021,11 @@ def _b2159_ok_manifest():
         # - the stricter gate re-judged this baseline, correctly (its RED is
         # in the S6-B2848c closure row)
         "fires_at_production": 12,
+        # S6-B3338 (B3139q-r139): and the owner's launch word, which
+        # prelaunch_gate now checks on every LOCAL manifest against the REAL
+        # ledger - S6-B3337's row quotes it. A test that points owner_word at
+        # a fixture ledger replaces it with that ledger's word.
+        "owner_word": {"ticket": "S6-B3337", "verbatim": "your rec approved"},
     }
 
 
@@ -33689,7 +33703,10 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     assert rsc.summary_status({"wave": "b2578ok"}) == "COMPLETE"
 
     # ---- prelaunch_gate.check: the launch_sweep route refuses the same doc
-    ok = _b2159_ok_manifest()
+    # (S6-B3338: owner_word reads the fixture ledger patched above, so the
+    # baseline carries that ledger's recorded word)
+    ok = dict(_b2159_ok_manifest(),
+              owner_word={"ticket": "S6-B9338", "verbatim": "launch the smc fixture wave"})
     assert pg.check(ok, {}, "") == [], "the full-roster LOCAL manifest still passes"
     m = dict(ok, strategy_subset=str(bad_sub), arms=[{"tag": "a1", "env": {}}])
     fails = pg.check(m, {}, "")
@@ -45998,6 +46015,10 @@ def test_b3099_every_file_the_leg_gate_opens_is_refused_or_declared_policy(tmp_p
         "owner_override_retest_admitted": {
             "three_white_soldiers": "B3115 pin fixture - gate-plumbing "
                                     "probe, not a retest word"},
+        # S6-B3338 (B3139q-r139): the gate now checks the owner's launch word
+        # against the REAL ledger (this is a subprocess on the live repo), so
+        # the fixture cites a recorded one - S6-B3337's row quotes it.
+        "owner_word": {"ticket": "S6-B3337", "verbatim": "your rec approved"},
         # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest): all four
         # candle knobs at production ('' is the wick knob's None level).
         "arms": [{"tag": "t", "env": {"CANDLE_N_BARS": "3",
@@ -65616,6 +65637,14 @@ def test_b3248c_widened_coverage_b13_b14_and_the_episode_check(tmp_path, monkeyp
     importlib.reload(bg)
     monkeypatch.setattr(bg, "require_band_ruling", lambda *a, **k: "stub")
     monkeypatch.setattr(bg, "require_fresh_status", lambda *a, **k: "stub")
+    # S6-B3338 door 3 (B3139q-r139): a widening needs the owner's word for that
+    # axis, quoted by a row of its ticket - a fixture ledger records one
+    _q = tmp_path / "queue_b3248c.md"
+    _q.write_text("| **S6-B9248** | **OPEN** | P1 | **RULED: the owner's word, verbatim "
+                  "'widen the fixture axis' (fixture).** | _reason:_ OPEN - fixture |\n",
+                  encoding="utf-8")
+    monkeypatch.setattr(bg.owner_word, "QUEUE", _q)
+    _w = ["--widen-ruling", "widen the fixture axis", "--widen-ruling-ticket", "S6-B9248"]
     run = _b3248c_fixture(tmp_path)
 
     def grid(extra, name):
@@ -65628,19 +65657,23 @@ def test_b3248c_widened_coverage_b13_b14_and_the_episode_check(tmp_path, monkeyp
     plain = grid(["--axes", "g:ge"], "plain.json")
     assert plain["skipped_axes"] == [{"axis": "g", "coverage": 0.9}] and plain["graded"] == 0
     assert "widen_coverage" not in plain and "axis" not in plain
-    wide = grid(["--axes", "g:ge", "--widen-coverage", "g"], "wide.json")
+    wide = grid(["--axes", "g:ge", "--widen-coverage", "g"] + _w, "wide.json")
     cov = wide["widen_coverage"]
     assert cov["is_fire_coverage"] == 0.9 and cov["excluded_gap_pct"] == 10.0, cov
     assert wide["axis"] == "g" and wide["coverage"] == cov and wide["skipped_axes"] == []
     assert wide["graded"] > 0 and wide["reproduction"]["base_is_n"] == 36   # covered IS fires only
+    assert wide["widen_owner_word"] == {"ticket": "S6-B9248", "verbatim": "widen the fixture axis"}
     assert plain["reproduction"]["base_is_n"] == 40
     assert all(r["is_n"] <= 36 for r in wide["rows"])
     with pytest.raises(SystemExit) as e:
-        grid(["--axes", "g:ge,k:ge", "--widen-coverage", "g"], "two.json")
+        grid(["--axes", "g:ge,k:ge", "--widen-coverage", "g"] + _w, "two.json")
     assert "ONE axis" in str(e.value)
     with pytest.raises(SystemExit) as e:
-        grid(["--axes", "k:ge", "--widen-coverage", "k"], "full.json")
+        grid(["--axes", "k:ge", "--widen-coverage", "k"] + _w, "full.json")
     assert "floor" in str(e.value)
+    with pytest.raises(SystemExit) as e:       # S6-B3338 door 3: no word, no widening
+        grid(["--axes", "g:ge", "--widen-coverage", "g"], "noword.json")
+    assert "S6-B3338" in str(e.value) and "no owner word" in str(e.value)
     importlib.reload(bg)
 
     # (2) B13 / B14 from the S6-B3317 screen
@@ -66168,3 +66201,310 @@ def test_b3357_a_runner_named_as_an_argument_is_not_a_launch():
     assert _executed_script("python3.11 -m backtest.run_phase1a --phase 4".split()) == "run_phase1a.py"
     assert _executed_script(["python", "-c"]) is None
     assert _executed_script("Start-Process python -ArgumentList x".split()) is None
+
+
+def test_b3338b_the_remaining_doors_need_the_owners_recorded_word(tmp_path, monkeypatch,
+                                                                  capsys):
+    """S6-B3338 (B3139q-r139; owner 2026-10-29T17:52:26Z, verbatim 'Approve your
+    recommendations / Address and implement all open tickets test thoroughly').
+    The doors B3139q-r138 left open. (3) breadth_step1_grid --widen-coverage
+    needs the owner's word for THAT axis, quoted by a row of its ticket - the
+    general --band-ruling does not carry it - checked before any data loads.
+    (4) launch_refusals refuses a strategy whose status in the per-strategy view
+    is TERMINAL unless the spec carries the owner's recorded reopen word; an
+    admitted strategy stays with B2731's refusal; the view carries the
+    vocabulary the check reads. (5, launch_sweep route) prelaunch_gate - the
+    around-the-gate route - checks the owner's launch word where B2578 put
+    launch_refusals, and build_manifest carries the word to every leg.
+    (4b, the generator) make_spec --dry drafts a TERMINAL strategy and prints
+    the finding as a NOTE (a draft is priced and shown before any word, as
+    door 1 already treats it), --reopen-word writes owner_override_reopen, and
+    the SAME draft re-judged as a real launch is refused without the word and
+    clean with it - the refusal's own remedy, executed (L820)."""
+    import argparse
+    import ast
+    import json as _json
+    import subprocess
+    import sys as _sys
+    import pytest
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import owner_word as ow
+    q = tmp_path / "queue_b3338b.md"
+    q.write_text(
+        "| **S6-B9339** | **OPEN** | P1 | **RULED: the owner's word, verbatim "
+        "'grade the covered fires of B1' (fixture).** | _reason:_ OPEN - fixture |\n"
+        "| **S6-B9340** | **OPEN** | P1 | **RULED: 'reopen the pruned fixture for one "
+        "probe' (fixture).** | _reason:_ OPEN - fixture |\n"
+        "| **S6-B9341** | **OPEN** | P1 | **RULED: 'launch the gate fixture wave' "
+        "(fixture).** | _reason:_ OPEN - fixture |\n"
+        "| **S6-B9342** | **OPEN** | P1 | **RULED: 'reopen the closed fixture for a "
+        "draft' (fixture).** | _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+
+    def calls(path, func, callee):
+        tree = ast.parse((root / path).read_text(encoding="utf-8"))
+        f = next(n for n in ast.walk(tree)
+                 if isinstance(n, ast.FunctionDef) and n.name == func)
+        return sorted(n.lineno for n in ast.walk(f) if isinstance(n, ast.Call) and (
+            (isinstance(n.func, ast.Name) and n.func.id == callee)
+            or (isinstance(n.func, ast.Attribute) and n.func.attr == callee)))
+
+    # (3) the widen door
+    import breadth_step1_grid as bg
+
+    def ns(**k):
+        return argparse.Namespace(**{"widen_coverage": None, "widen_ruling": None,
+                                     "widen_ruling_ticket": None, **k})
+    assert bg.widen_word(ns()) is None                 # nothing widened, no word owed
+    with pytest.raises(SystemExit) as e:
+        bg.widen_word(ns(widen_coverage="g"))
+    assert "S6-B3338" in str(e.value) and "no owner word" in str(e.value)
+    with pytest.raises(SystemExit) as e:
+        bg.widen_word(ns(widen_coverage="g", widen_ruling="a word nobody recorded",
+                         widen_ruling_ticket="S6-B9339"))
+    assert "quotes" in str(e.value)
+    assert bg.widen_word(ns(widen_coverage="g", widen_ruling="grade the covered fires of B1",
+                            widen_ruling_ticket="S6-B9339")) == {
+        "ticket": "S6-B9339", "verbatim": "grade the covered fires of B1"}
+    door, load = calls("scripts/breadth_step1_grid.py", "main", "widen_word"), \
+        calls("scripts/breadth_step1_grid.py", "main", "build_frame")
+    assert door and load and door[0] < load[0], "the widen door must stand before any load"
+
+    # (4) the terminal-status door
+    import producer_variant_table as pvt
+    view = {"vocabulary": {"terminal": ["PRUNED-DUPLICATE", "DONE-ADMITTED",
+                                        "IN-ROSTER-MIRROR"]},
+            "rows": [{"strategy": "fx_pruned", "status": "PRUNED-DUPLICATE"},
+                     {"strategy": "fx_admitted", "status": "DONE-ADMITTED"},
+                     {"strategy": "fx_mirror", "status": "IN-ROSTER-MIRROR",
+                      "roster_roles": ["ADMISSION_MIRROR"]},
+                     {"strategy": "fx_lane", "status": "NOT-STARTED"}]}
+    adm = frozenset({"fx_admitted"})
+
+    def T(doc, strats, v=view):
+        return pvt._terminal_status_refusals(doc, strats, view=v, admitted=adm)
+    assert T({}, ["fx_lane"]) == []
+    assert T({}, ["fx_admitted"]) == []               # B2731's refusal owns it
+    assert T({}, ["fx_mirror"]) == []                 # a roster role: B2731's too
+    r = T({}, ["fx_pruned"])
+    assert len(r) == 1 and "PRUNED-DUPLICATE" in r[0] and "S6-B3338" in r[0], r
+    assert "has no row" in T({}, ["fx_unknown"])[0]
+    reopen = {"ticket": "S6-B9340", "verbatim": "reopen the pruned fixture for one probe"}
+    assert T({"owner_override_reopen": {"fx_pruned": reopen}}, ["fx_pruned"]) == []
+    assert "quotes" in T({"owner_override_reopen": {"fx_pruned": {
+        "ticket": "S6-B9340", "verbatim": "a word nobody recorded"}}}, ["fx_pruned"])[0]
+    assert "MAPPING" in T({"owner_override_reopen": True}, ["fx_pruned"])[0]
+    assert "no terminal vocabulary" in T({}, ["fx_lane"], v={"rows": view["rows"]})[0]
+    assert calls("scripts/producer_variant_table.py", "launch_refusals",
+                 "_terminal_status_refusals"), "launch_refusals must call the terminal arm"
+    import build_strategy_status as bss
+    live = _json.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                       .read_text(encoding="utf-8"))
+    assert live["vocabulary"]["terminal"] == list(bss.TERMINAL_STATUSES), (
+        "the view must carry the vocabulary the launch gate reads - rebuild it")
+
+    # (5) the launch_sweep route: prelaunch_gate checks the word on a manifest
+    # built exactly as run_wave builds one, and build_manifest carries it
+    import prelaunch_gate as pg
+    import run_wave as rw
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(root),
+                          capture_output=True, text=True).stdout.strip()
+
+    def manifest(word):
+        spec = rw.resolve_ruled_scope({
+            "wave": "zz_b3338b", "step": 1, "step1_cube": True,
+            "strategy_subset": "output_audit/_subset_three_white_soldiers.txt",
+            "leg_cap_hours": 4.5, "max_legs": 3, "pool_workers": 4,
+            "allow_engine_drift": False, "resume": False, "cube_riders": None,
+            "fires_at_production": 199,
+            "owner_override_retest_admitted": {
+                "three_white_soldiers": "B3338b pin fixture - gate plumbing, not a retest word"},
+            **({"owner_word": word} if word is not None else {}),
+            "arms": [{"tag": "t", "env": {"CANDLE_N_BARS": "3", "CANDLE_MIN_BODY_PCT": "0.0",
+                                         "CANDLE_MIN_STEP_PCT": "0.0",
+                                         "CANDLE_MAX_WICK_PCT": ""}}]})
+        mp = rw.build_manifest(spec, spec["arms"][0], tmp_path / f"out_{bool(word)}", head)
+        return _json.loads(mp.read_text(encoding="utf-8"))
+    tag = "REFUSED (engine launch, S6-B3338)"
+    m0 = manifest(None)
+    assert m0["owner_word"] is None
+    assert any(tag in f for f in pg.check(m0, {}, "")), "no word must be refused"
+    word = {"ticket": "S6-B9341", "verbatim": "launch the gate fixture wave"}
+    m1 = manifest(word)
+    assert m1["owner_word"] == word, "build_manifest must carry the spec's word"
+    assert not any(tag in f for f in pg.check(m1, {}, "")), "a recorded word passes"
+    assert calls("scripts/prelaunch_gate.py", "check", "spec_refusals")
+
+    # (4b) the generator. The subject is test_b3171b's (a strategy make_spec can
+    # draft); its TERMINAL status is PLANTED in a fixture view (L801), so the
+    # arm does not ride today's statuses. Last in the test: its patches of
+    # STATUS_VIEW and launch_refusals must not reach (5).
+    import make_spec as ms
+    subj = "naked_poc_retest_long"
+
+    def plant(status):
+        fv = tmp_path / f"view_{status}.json"
+        fv.write_text(_json.dumps({"vocabulary": {"terminal": ["DONE-OWNER-CLOSED"]},
+                                   "rows": [{"strategy": subj, "status": status}]}),
+                      encoding="utf-8")
+        monkeypatch.setattr(pvt, "STATUS_VIEW", fv)
+    real = pvt.launch_refusals
+    seen = []
+
+    def _capture(doc, *a, **k):
+        errs = real(doc, *a, **k)
+        seen.append((doc, dict(k), errs))
+        return errs
+    monkeypatch.setattr(pvt, "launch_refusals", _capture)
+    nul = tmp_path / "npoc_depth_null.json"
+    nul.write_text(_json.dumps({"strategy": subj, "permutation_null": {
+        "p_value_best": 0.05, "provenance": "TEST FIXTURE (S6-B3338b)"}}), encoding="utf-8")
+
+    def draft(*extra):
+        seen.clear()
+        monkeypatch.setattr(_sys, "argv", [
+            "make_spec.py", "--strategy", subj, "--param", "P3", "--levels", "8",
+            "--wave-prefix", "t_b3338b", "--depth-null", str(nul), "--dry", *extra])
+        capsys.readouterr()
+        rc = ms.main()
+        return rc, capsys.readouterr().out
+
+    def as_real(doc):
+        return real(doc, root, subset_override=(subj,), draft=False)
+    note, term = "NOTE (S6-B3338 door 4, --dry draft)", "TERMINAL in the strategy status view"
+    plant("DONE-OWNER-CLOSED")
+    rc, out = draft()
+    assert rc == 0 and note in out and "DONE-OWNER-CLOSED" in out, (rc, out[-400:])
+    assert len(seen) == 1 and seen[0][1].get("draft") is True and seen[0][2] == [], seen
+    doc = seen[0][0]
+    assert "owner_override_reopen" not in doc
+    refused = as_real(doc)                       # the same draft, judged as a launch
+    assert len(refused) == 1 and term in refused[0], refused
+    assert "--reopen-word" in refused[0], "the refusal must name the generator's escape"
+    rc, out = draft("--reopen-word", "reopen the closed fixture for a draft",
+                    "--reopen-word-ticket", "S6-B9342")
+    assert rc == 0 and note not in out, (rc, out[-400:])
+    doc = seen[0][0]
+    assert doc["owner_override_reopen"] == {subj: {
+        "ticket": "S6-B9342", "verbatim": "reopen the closed fixture for a draft"}}, doc
+    assert as_real(doc) == [], "the refusal's own remedy must clear it (L820)"
+    rc, out = draft("--reopen-word", "a reopen nobody recorded",
+                    "--reopen-word-ticket", "S6-B9342")
+    assert rc == 2 and "quotes" in out and not seen, (rc, out[-300:])
+    plant("NOT-STARTED")                         # must-quiet: a lane status
+    rc, out = draft()
+    assert rc == 0 and note not in out and as_real(seen[0][0]) == [], (rc, out[-400:])
+    # the flag is make_spec's alone: main judges a real run with draft=a.dry,
+    # and no launch path passes draft at all
+    tree = ast.parse((root / "scripts" / "make_spec.py").read_text(encoding="utf-8"))
+    mfn = next(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "main")
+    kws = [kw for n in ast.walk(mfn) if isinstance(n, ast.Call)
+           and getattr(n.func, "id", None) == "launch_refusals"
+           for kw in n.keywords if kw.arg == "draft"]
+    assert len(kws) == 1 and isinstance(kws[0].value, ast.Attribute) \
+        and kws[0].value.attr == "dry", "make_spec must pass draft=a.dry"
+    for path in ("scripts/run_wave.py", "scripts/prelaunch_gate.py"):
+        t = ast.parse((root / path).read_text(encoding="utf-8"))
+        lr = [n for n in ast.walk(t) if isinstance(n, ast.Call) and getattr(
+            n.func, "id", getattr(n.func, "attr", None)) == "launch_refusals"]
+        assert lr, f"{path} no longer calls launch_refusals - re-point this check"
+        assert not [n.lineno for n in lr if any(k.arg == "draft" for k in n.keywords)], (
+            f"{path}: a launch path must never pass draft")
+
+
+def test_b3360_the_gate_discloses_whether_a_pregate_run_passed_on_its_tree(tmp_path,
+                                                                          monkeypatch):
+    """S6-B3360 (B3139q-r139, L984): the r139 gate ran without
+    scripts/pregate_select.py and went RED on 3 of 1,905 - a compliance failure
+    against #315, whose L950 tripwire row says to run the selector before the
+    gate. --run now stamps the tree it ran on (every changed path with the
+    sha256 of its bytes) and the gate prints and footers pregate= before pytest
+    starts. (1) the verdict, every state in both directions; (2) the stamp
+    round trip on real files; (3) wiring (L654): main stamps after its run, and
+    the gate computes the line before pytest and footers it; (4) --run passes
+    its node ids in an argfile - the first real run of this batch's 493 died
+    on the Windows command-line limit (WinError 206) before pytest started."""
+    import ast as _ast
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import pregate_select as ps
+    import pyramid_gate as pg
+    # (1) the verdict
+    st = {"scripts/a.py": "h1", "backtest/b.py": "h2"}
+    ok = {"utc": "T", "selected": 7, "pytest_exit": 0, "state": dict(st)}
+    assert ps.stamp_verdict(ok, {}).startswith("NOTHING CHANGED")
+    assert ps.stamp_verdict(None, st) == "NONE"
+    assert ps.stamp_verdict(ok, st).startswith("PASSED on this tree (7 tests")
+    assert ps.stamp_verdict(dict(ok, pytest_exit=1), st).startswith("FAILED on this tree")
+    moved = ps.stamp_verdict(ok, dict(st, **{"scripts/a.py": "h9"}))
+    assert moved.startswith("STALE (1 of 2") and "scripts/a.py" in moved, moved
+    assert ps.stamp_verdict(ok, dict(st, **{"scripts/new.py": "h3"})).startswith("STALE (1 of 3")
+    wider = dict(ok, state=dict(st, **{"output_audit/x.json": "h4"}))
+    assert ps.stamp_verdict(wider, st).startswith("PASSED"), "a superset run still covers"
+    # (2) the round trip on real files: a stamp written for a tree passes on it
+    # and goes STALE the moment one of its bytes moves
+    (tmp_path / "scripts").mkdir()
+    f = tmp_path / "scripts" / "a.py"
+    f.write_bytes(b"x = 1\n")
+    paths = ["scripts/a.py", "scripts/gone.py"]
+    state = ps.tree_state(paths, tmp_path)
+    assert state["scripts/gone.py"] == "absent" and len(state["scripts/a.py"]) == 64
+    assert ps.current_verdict(tmp_path, changed=paths) == "NONE"
+    ps.write_stamp(state, 3, 0, tmp_path)
+    assert ps.current_verdict(tmp_path, changed=paths).startswith("PASSED on this tree (3 tests")
+    f.write_bytes(b"x = 2\n")
+    assert ps.current_verdict(tmp_path, changed=paths).startswith("STALE (1 of 2")
+    (tmp_path / ps.STAMP_NAME).write_text("{not json", encoding="utf-8")
+    assert ps.current_verdict(tmp_path, changed=paths).startswith("unreadable")
+    # (3) wiring: main stamps after its run; the gate reads it before pytest
+    src = (root / "scripts" / "pregate_select.py").read_text(encoding="utf-8")
+    main = next(n for n in _ast.parse(src).body
+                if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    mcalls = [n for n in _ast.walk(main) if isinstance(n, _ast.Call)]
+    ws = [n.lineno for n in mcalls if _ast.unparse(n.func) == "write_stamp"]
+    run = [n.lineno for n in mcalls if _ast.unparse(n.func) == "subprocess.run"]
+    assert ws and run and min(run) < min(ws), (run, ws)
+    gate = (root / "scripts" / "pyramid_gate.py").read_text(encoding="utf-8")
+    grun = next(n for n in _ast.parse(gate).body
+                if isinstance(n, _ast.FunctionDef) and n.name == "run")
+    gcalls = [n for n in _ast.walk(grun) if isinstance(n, _ast.Call)]
+    pl = [n.lineno for n in gcalls if _ast.unparse(n.func) == "_pregate_line"]
+    pc = [n.lineno for n in gcalls if _ast.unparse(n.func) == "subprocess.call"]
+    assert pl and pc and min(pl) < min(pc), (pl, pc)
+    assert any(isinstance(n, _ast.JoinedStr) and "pregate=" in _ast.unparse(n)
+               for n in _ast.walk(grun)), "the footer must carry pregate="
+    assert not pg._pregate_line(root).startswith("unreadable")
+    assert ps.STAMP_NAME in (root / ".gitignore").read_text(encoding="utf-8").split()
+    # (4) --run hands pytest its node ids in an argfile: this batch's own 493
+    # overran the Windows command line (WinError 206). Driven through main on
+    # a planted 600-id selection; the subprocess is faked, so nothing runs
+    fake = {f"backtest/tests/test_unit.py::test_fake_{i:04d}_" + "x" * 70: ["R2"]
+            for i in range(600)}
+    seen = {}
+
+    class _Done:
+        returncode = 0
+
+    def _run(cmd, **k):
+        at = [c for c in cmd if str(c).startswith("@")]
+        seen.update(cmd=cmd, argfile=at[0][1:] if at else None,
+                    ids=_P(at[0][1:]).read_text(encoding="utf-8").split() if at else [])
+        return _Done()
+    real_ws = ps.write_stamp
+    monkeypatch.setattr(ps, "select", lambda changed: fake)
+    monkeypatch.setattr(ps.subprocess, "run", _run)
+    monkeypatch.setattr(ps, "write_stamp", lambda state, n, rc: real_ws(state, n, rc, tmp_path))
+    assert ps.main(["--changed", "scripts/pregate_select.py", "--run"]) == 0
+    monkeypatch.undo()
+    assert len(" ".join(map(str, seen["cmd"]))) < 2000, "node ids must not ride the command line"
+    assert seen["ids"] == list(fake), "the argfile must carry every selected id"
+    assert not _P(seen["argfile"]).exists(), "the argfile is removed after the run"
+    import json as _json
+    s = _json.loads((tmp_path / ps.STAMP_NAME).read_text(encoding="utf-8"))
+    assert s["selected"] == 600 and s["pytest_exit"] == 0, s

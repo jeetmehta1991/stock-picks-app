@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "430b8d9d0",
-    "generated_at": "2026-10-29 12:53:08"
+    "source_commit": "82aba1ae3",
+    "generated_at": "2026-10-29 15:39:01"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -10,6 +10,31 @@
     "coverage_floor": 0.98,
     "min_fires_for_grid": 100,
     "step1_shape": "200 tickers x 1y"
+  },
+  "vocabulary": {
+    "terminal": [
+      "DONE-ADMITTED",
+      "IN-ROSTER-FUNNEL",
+      "DONE-OWNER-CLOSED",
+      "CLOSED-NO-READ",
+      "IN-ROSTER-MIRROR",
+      "DISABLED",
+      "PRUNED-DUPLICATE",
+      "CLOSED-NEGATIVE",
+      "CONTAINED-IN-REPRESENTATIVE"
+    ],
+    "never_reopen": [
+      "DONE-ADMITTED",
+      "IN-ROSTER-FUNNEL",
+      "DONE-OWNER-CLOSED",
+      "CLOSED-NO-READ",
+      "IN-ROSTER-MIRROR"
+    ],
+    "lanes": [
+      "IN-CAMPAIGN",
+      "STALLED-CAMPAIGN",
+      "NOT-STARTED"
+    ]
   },
   "caveats": [
     "changed_since_r5 compares FIRE LOGIC (S6-B3235): the strategy's body and every function, module constant and config value it reaches - a delegation to another signals module included - with docstrings and the signals_used / context-bullet payload removed, against the R5-era code; a reviewed fire-neutral change (FIRE_NEUTRAL_CHANGES) counts only once its digest goes stale. An UPPER BOUND on behaviour (a configurable-span swap identical at its default counts) and blind to the producers that compute the signals",
@@ -707,6 +732,7 @@
         "S6-B3321",
         "S6-B3325",
         "S6-B3332",
+        "S6-B3338",
         "S6-B3349"
       ],
       "admitted": false,
@@ -4035,7 +4061,8 @@
         "S6-B3247",
         "S6-B3253",
         "S6-B3258",
-        "S6-B3321"
+        "S6-B3321",
+        "S6-B3338"
       ],
       "admitted": false,
       "roster_roles": [],

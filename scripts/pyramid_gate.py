@@ -581,6 +581,15 @@ def run(out: Path, root: Path, pytest_args: list[str],
         print("  NOTE (S6-B3245/L943): this tree's edits MOVED code line "
               "citations - %s. A text-only edit can be reflowed "
               "line-count-neutral before the commit." % moved_cites, flush=True)
+    # S6-B3360 (L984): has a pre-gate selection passed on THIS tree? Shown
+    # before pytest starts, while the few-minute run is still cheaper than
+    # the gate it precedes, and written into the footer.
+    pregate = _pregate_line(root)
+    if not pregate.startswith(("PASSED", "NOTHING CHANGED")):
+        print("  NOTE (S6-B3360/L984): no passing pre-gate selection on this "
+              "tree - %s. scripts/pregate_select.py --run runs the tests that "
+              "read what the tree changed, before this gate (S6-B3269, #315)."
+              % pregate, flush=True)
     # S6-B3245: every print before pytest happens BEFORE the output_audit
     # snapshot - the gate's stdout is usually redirected INTO output_audit,
     # and a flushed line after the snapshot reads as a mid-run write (gate
@@ -672,6 +681,7 @@ def run(out: Path, root: Path, pytest_args: list[str],
                   f"readset_rerun={rs_rerun}\n"
                   f"readset_suite_writes={rs_writes}\n"
                   f"moved_line_citations={moved_cites}\n"
+                  f"pregate={pregate}\n"
                   f"stamp_binding={binding}\n")
         with open(out, "a", encoding="utf-8") as fh:
             fh.write("\n" + footer)
@@ -1101,6 +1111,19 @@ def _moved_citations_line(root) -> str:
     try:
         import moved_line_citations as _mlc
         return _mlc.summary(_mlc.moved_citations(Path(root)))
+    except Exception as e:
+        return f"unreadable ({type(e).__name__})"
+
+
+def _pregate_line(root) -> str:
+    """S6-B3360 (L984): what the newest scripts/pregate_select.py --run says
+    about this working tree - PASSED / FAILED on this tree, STALE, NONE,
+    NOTHING CHANGED, or 'unreadable (<error>)'. A disclosure, never a
+    refusal (a refusal is a behaviour change the owner rules on, S6-B3361) -
+    and never raises, like the gate's other disclosures."""
+    try:
+        import pregate_select as _ps
+        return _ps.current_verdict(Path(root))
     except Exception as e:
         return f"unreadable ({type(e).__name__})"
 

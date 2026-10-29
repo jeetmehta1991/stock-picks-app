@@ -1,0 +1,255 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+..............................................s......................... [ 34%]
+....................s.................................................s. [ 37%]
+........................................................................ [ 41%]
+........................................................................ [ 45%]
+........................................................................ [ 49%]
+............................................F........................... [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................F............... [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+................................F....................................... [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+.................................                                        [100%]
+================================== FAILURES ===================================
+___________ test_b2082_launch_sweep_refuses_without_a_passing_gate ____________
+
+    def test_b2082_launch_sweep_refuses_without_a_passing_gate():
+        """B2082 (S6-B1704c option c): the wrapper is the ONE launch path and the
+        gate is structurally unskippable through it. Both directions via the
+        --engine-cmd seam: a failing manifest REFUSES (engine never invoked,
+        sentinel absent, exit 2); the proven-passing B2070 manifest LAUNCHES
+        (sentinel written, ELAPSED + CUBE_ROWS recorded)."""
+        import subprocess
+        import sys as _sys
+        import tempfile
+        from pathlib import Path as _P
+    
+        root = _P(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory() as td:
+            td = _P(td)
+            fake_engine = td / "fake_engine.py"
+            sentinel = td / "engine_ran.txt"
+            fake_engine.write_text(
+                "import pathlib; pathlib.Path(r'%s').write_text('ran')\n"
+                % str(sentinel), encoding="utf-8")
+    
+            bad = td / "bad_manifest.json"
+            bad.write_text("{}", encoding="utf-8")
+            r = subprocess.run(
+                [_sys.executable, str(root / "scripts" / "launch_sweep.py"),
+                 "--manifest", str(bad), "--output-dir", str(td / "out"),
+                 "--engine-cmd", str(fake_engine)],
+                cwd=str(root), capture_output=True, text=True)
+            assert r.returncode == 2, r.stdout + r.stderr
+            assert not sentinel.exists(), "engine invoked despite a failing gate"
+    
+            # B2127: this pin's happy path reused a HISTORICAL manifest, whose
+            # frozen_sha is by definition stale - and the new drift refusal
+            # (S6-B2122a) correctly rejects it. The pin's intent is "gate passes
+            # -> engine IS invoked", so re-stamp the copy at the CURRENT HEAD and
+            # keep everything else. (This is the fixtures-rot class: the fixture
+            # drifted from the live path while the assertion kept passing.)
+            import json as _bj
+            _head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(root),
+                                   capture_output=True, text=True).stdout.strip()
+            _m = _bj.loads((root / "output_b1831b_200t" / "run_manifest.json"
+                            ).read_text(encoding="utf-8"))
+            _m["frozen_sha"] = _head
+            # B2159: the gate now FAILS CLOSED on an undeclared leg cap, and
+            # this historical manifest predates the field. The pin firing here
+            # is the new rule working - this manifest passed an hour ago.
+            _m["leg_cap_hours"] = 2.5
+            # B2713/B2714: same fixtures-rot class one more time - the
+            # typed-scope rule refuses a no-step manifest, and this is a
+            # HISTORICAL manifest driving the GATE, not a campaign step.
+            _m["shape_waiver"] = ("test fixture: a historical manifest driving "
+                                  "the launch gate, not an engine campaign step")
+            # B2578: same class again. The B2578 launch gate is the FIRST consumer
+            # of `strategy_subset` as a path, and this historical manifest holds
+            # "output_audit/_subset_one.txt (smc_breaker_block_long)" - a path with
+            # a human annotation, which the gate refuses rather than parse (six
+            # pre-B2118 manifests share the form; every manifest run_wave writes
+            # carries a bare path). Re-point the COPY at the bare path that exists.
+            _m["strategy_subset"] = "output_audit/_subset_one.txt"
+            # B2738 (B2450/L721 disposal): this pin drives a REAL launch through
+            # launch_sweep.py, and B2731 now refuses a graded strategy that is
+            # admitted to Phase 1B. smc_breaker_block_long is admitted, so the
+            # manifest carries the DOCUMENTED escape - the owner's words naming
+            # the strategy - which is exactly what a sanctioned re-test needs.
+            # A bare boolean would be refused (L789), so this also exercises the
+            # override's required SHAPE on the live path.
+            _m["owner_override_retest_admitted"] = {
+                "smc_breaker_block_long":
+                    "test fixture: exercising the launch path, not a real re-test"}
+            # B2849 (S6-B2848c): a compliant manifest records the 0.5 smoke
+            _m["fires_at_production"] = 12
+            # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest), which reads
+            # arm['env'] and the lower-case arm keys, never the legacy flat
+            # UPPERCASE keys this pre-B2138 arm carries - so the copy, re-stamped
+            # like every rule above, states the SAME two values in the modern env
+            # form (arm_env_matches reads both forms, so the declared config is
+            # unchanged).
+            _m["arms"][0]["env"] = {"SMC_SWING_LENGTH": "20",
+                                    "STRAT_EMA_SPAN": "200"}
+            good = str(td / "good_manifest.json")
+            (td / "good_manifest.json").write_text(_bj.dumps(_m), encoding="utf-8")
+            r = subprocess.run(
+                [_sys.executable, str(root / "scripts" / "launch_sweep.py"),
+                 "--manifest", good, "--output-dir", str(td / "out"),
+                 "--tag", "pin", "--engine-cmd", str(fake_engine)],
+                cwd=str(root), capture_output=True, text=True)
+>           assert r.returncode == 0, r.stdout + r.stderr
+E           AssertionError: PRELAUNCH_GATE: LOCAL mode - skipping S3 tar sidecar and USD budget checks
+E             PRELAUNCH_GATE_FAIL (#160/#161):
+E               - REFUSED (engine launch, S6-B3338): no owner word - this door needs {'ticket': <S6 id>, 'verbatim': <the owner's words>} citing the ledger row that records the ruling
+E             LAUNCH REFUSED: prelaunch_gate failed for C:\Users\jeetm\AppData\Local\Temp\tmp3fqppk68\good_manifest.json - fix the manifest; the engine was NOT invoked.
+E             pandas-ta not installed  -  using manual implementations
+E             
+E           assert 2 == 0
+E            +  where 2 = CompletedProcess(args=['C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe', 'C:\\Users\\jeetm\\Git... fix the manifest; the engine was NOT invoked.\n", stderr='pandas-ta not installed  -  using manual implementations\n').returncode
+
+backtest\tests\test_unit.py:24280: AssertionError
+_______ test_b3120a_make_spec_generates_launchable_and_refuses_offband ________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-4123/test_b3120a_make_spec_generate0')
+
+    def test_b3120a_make_spec_generates_launchable_and_refuses_offband(tmp_path):
+        """S6-B3120a: the generator's output passes the CONSUMER'S OWN gate
+        (launch_refusals) and an off-band level is refused with the band
+        quoted - both directions, through the real CLI on the venv interpreter
+        (L573/L827: validate through the argv a caller builds)."""
+        import subprocess
+        import sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        # S6-B3206: a Step-1 spec DECLARES its depth null. bollinger_lower has
+        # offline-gradable levels and no committed depth null, so the honest
+        # fixture is a PLANTED null in tmp (never output_audit), not "none"
+        import json as _json
+        _bl_null = tmp_path / "bl_depth_null.json"
+        _bl_null.write_text(_json.dumps({
+            "strategy": "bollinger_lower",
+            "permutation_null": {"p_value_best": 0.05,
+                                 "provenance": "TEST FIXTURE (S6-B3206)"}}),
+            encoding="utf-8")
+        ok = subprocess.run(
+            [sys.executable, str(root / "scripts" / "make_spec.py"),
+             "--strategy", "bollinger_lower", "--param", "P4",
+             "--levels", "50", "--wave-prefix", "bl_pin_demo", "--dry",
+             "--depth-null", str(_bl_null)],
+            capture_output=True, text=True, cwd=str(root))
+>       assert ok.returncode == 0 and "launch_refusals clean" in ok.stdout, (
+            ok.returncode, ok.stdout[-300:], ok.stderr[-300:])
+E       AssertionError: (2, 'R-CLOSED, TERMINAL in the strategy status view - a closed, pruned, contained or disabled strategy is not re-run w... = {\'ticket\': ..., \'verbatim\': ...} in the spec"]
+E         ', 'pandas-ta not installed  -  using manual implementations
+E         ')
+E       assert (2 == 0)
+E        +  where 2 = CompletedProcess(args=['C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe', 'C:\\Users\\jeetm\\Git...icket\': ..., \'verbatim\': ...} in the spec"]\n', stderr='pandas-ta not installed  -  using manual implementations\n').returncode
+
+backtest\tests\test_unit.py:48112: AssertionError
+_________ test_b3171b_make_spec_pins_every_battery_key_at_production __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000019E4E1E92B0>
+capsys = <_pytest.capture.CaptureFixture object at 0x0000019EA421BF00>
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-4123/test_b3171b_make_spec_pins_eve0')
+
+    def test_b3171b_make_spec_pins_every_battery_key_at_production(monkeypatch, capsys,
+                                                                   tmp_path):
+        """S6-B3171b part (a), L788: make_spec writes EVERY knob the battery reads.
+    
+        The b3171 chain's configs 1 and 2 named one of four naked-POC knobs and
+        each landing's battery failed CLOSED in params_from_manifest after the
+        engine had run. Driven through make_spec.main --dry on the live registry:
+        the draft the consumer's gate judged is captured, read back through the
+        battery's OWN reader, and checked for the auto-pins at production - one
+        family with numeric knobs, and the candle family whose wick knob is None
+        at production (the engine's unset form ''). The dry run is judged with
+        subset_override (S6-B3184), so it never refuses for a file it did not
+        write. The swept-only tag is kept: production pins stay out of it.
+        """
+        import sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        if str(root / "scripts") not in sys.path:
+            sys.path.insert(0, str(root / "scripts"))
+        import make_spec as ms
+        import producer_variant_table as pvt
+        import run_postconfig as rp
+    
+        real = pvt.launch_refusals
+        seen = []
+    
+        def _capture(doc, *a, **k):
+            errs = real(doc, *a, **k)
+            seen.append((doc, dict(k), errs))
+            return errs
+        monkeypatch.setattr(pvt, "launch_refusals", _capture)
+    
+        def _run(argv):
+            seen.clear()
+            # S6-B3206: each draft DECLARES a depth null - a planted fixture
+            # per strategy (tmp, never output_audit), so the real gate stays
+            # live and this pin also proves make_spec carries the declaration
+            import json as _jsn
+            _s = argv[argv.index("--strategy") + 1]
+            _nf = tmp_path / f"{_s}_depth_null.json"
+            _nf.write_text(_jsn.dumps({"strategy": _s, "permutation_null": {
+                "p_value_best": 0.05, "provenance": "TEST FIXTURE (S6-B3206)"}}),
+                encoding="utf-8")
+            argv = argv + ["--depth-null", str(_nf)]
+            monkeypatch.setattr(sys, "argv", ["make_spec.py"] + argv + ["--dry"])
+            capsys.readouterr()
+            rc = ms.main()
+            return rc, capsys.readouterr().out
+    
+        rc, out = _run(["--strategy", "naked_poc_retest_long", "--param", "P3",
+                        "--levels", "8", "--wave-prefix", "t_b3171b"])
+>       assert rc == 0, out
+E       AssertionError: REFUSED (make_spec, S6-B3120a): the consumer's own gate refuses the draft for level 8: ["naked_poc_retest_long: its status is DONE-OWNER-CLOSED, TERMINAL in the strategy status view - a closed, pruned, contained or disabled strategy is not re-run without the owner's word (S6-B3338 door 4). To reopen it, record the ruling on its ticket and put owner_override_reopen['naked_poc_retest_long'] = {'ticket': ..., 'verbatim': ...} in the spec"]
+E         
+E       assert 2 == 0
+
+backtest\tests\test_unit.py:57124: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2082_launch_sweep_refuses_without_a_passing_gate
+FAILED backtest/tests/test_unit.py::test_b3120a_make_spec_generates_launchable_and_refuses_offband
+FAILED backtest/tests/test_unit.py::test_b3171b_make_spec_pins_every_battery_key_at_production
+3 failed, 1899 passed, 3 skipped in 1733.05s (0:28:53)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1768
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=ac
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+moved_line_citations=none
+stamp_binding=already-red

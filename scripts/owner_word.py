@@ -22,7 +22,12 @@ the words - compared after whitespace is collapsed and curly quotes are
 straightened - so a launch or a read cites a ruling the ledger records, where
 the owner reads it. ONE definition (L593) for the doors that use it: the
 engine launch (run_wave.main, before any arm; make_spec.main, before a spec is
-written) and a depth candidate's Step-2 holdout read (offline_holdout_read.main).
+written; prelaunch_gate.check, at every leg and on a hand-run launch_sweep),
+a depth candidate's Step-2 holdout read (offline_holdout_read.main), a widened
+breadth axis (breadth_step1_grid.widen_word) and the reopening of a terminal
+strategy (producer_variant_table._terminal_status_refusals; make_spec
+--reopen-word / --reopen-word-ticket writes that word into a spec, and a --dry
+draft prints the terminal status as a NOTE, as it needs no launch word).
 
 THE LEDGER IS A REPOSITORY FACT (L792 / #305): it is read from the CODE tree,
 never from a run's root that a test or a staged launch may relocate; QUEUE is
@@ -41,19 +46,19 @@ whole ruling at 2026-10-28T16:50:12Z (recorded on S6-B3304 and S6-B3248), so a
 ruling that short can be cited, and a citation shorter than any ruling seen
 would match unrelated row text.
 
-WHERE THE ENGINE DOOR SITS - ONE ROUTE OF EIGHT (MEASURED 2026-10-29). It is
-the run_wave route (make_spec writes the spec, run_wave launches it through
-launch_sweep), the route the runbook prescribes (S6-B3154a); a chain takes it
+WHERE THE ENGINE DOOR SITS - TWO ROUTES OF EIGHT (MEASURED 2026-10-29). The
+run_wave route (make_spec writes the spec, run_wave launches it through
+launch_sweep), the route the runbook prescribes (S6-B3154a) - a chain takes it
 too, since run_serial_chain.py and launch_detached.py start run_wave for each
-spec - three of the four launchers S6-B3338's first row counts. Of the 21
-scripts that name the engine and spawn a process, 6 besides run_wave build an
-engine command and are NOT checked: launch_sweep.py run by hand
-(prelaunch_gate.py re-runs launch_refusals there since B2578, not this check),
-coverage_smoke.py, run_phase_1a_beta_local.py, universe_ladder_run.py,
+spec - and, from B3139q-r139, launch_sweep.py run by hand, whose
+prelaunch_gate.check now checks the word where B2578 put launch_refusals: all
+four launchers S6-B3338's first row counts. Of the 21 scripts that name the
+engine and spawn a process, 5 more build an engine command and are NOT
+checked: coverage_smoke.py, run_phase_1a_beta_local.py, universe_ladder_run.py,
 launch_phase_1a_beta_multibatch.py and aws_chunk_launch.py (EC2 user-data);
 nor is backtest/run_phase1a.py run directly. aws_b660_launch.py and
 aws_batch395_launch.py name the engine only in text and were not classified.
-The unchecked routes are S6-B3338's open item (5).
+These routes bypass every launch refusal, not only this one: S6-B3358.
 """
 from __future__ import annotations
 

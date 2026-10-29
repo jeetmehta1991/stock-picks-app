@@ -1140,6 +1140,14 @@ def main() -> int:
          "rules": {"coverage_floor": COVERAGE_FLOOR,
                    "min_fires_for_grid": MIN_FIRES_FOR_GRID,
                    "step1_shape": f"{STEP1_TICKERS} tickers x {STEP1_YEARS}y"},
+         # S6-B3338 door 4 (B3139q-r139): the view carries its own status
+         # vocabulary, so the launch gate reads the terminal set from the
+         # artifact it already reads instead of importing this builder - an
+         # import would put the builder in the leg gate's code closure, and
+         # editing it would then halt a running wave (L866's shape).
+         "vocabulary": {"terminal": list(TERMINAL_STATUSES),
+                        "never_reopen": list(NEVER_REOPEN),
+                        "lanes": list(LANE_STATUSES)},
          "caveats": [
              "changed_since_r5 compares FIRE LOGIC (S6-B3235): the strategy's "
              "body and every function, module constant and config value it "
