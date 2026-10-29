@@ -6511,6 +6511,57 @@ def scan_ticket_history_unread(entries, *, rows=None, queue_text=None,
              "ruled out gates at Step 1."))
 
 
+# S6-B3336 (B3139q-r136, L975): CHECKLIST #299 OUTSIDE THE CAMPAIGN FRAME - a
+# failing Step-2 verdict names its legs, depth and breadth, run, waived or not
+# run. MEASURED 2026-10-29: the B3139q-r132 close and its S6-B1248 row reported
+# the LEVER4 pivot_r1_breakout arm 'FAIL, 5 of 6 live gates' and named neither
+# leg. Runbook 0.3's two-leg rule and #299 are written for per-strategy
+# campaigns and a LEVER4 arm is not one, so nothing asked whether a breadth leg
+# had run; the owner asked. The two B3139q-r114 rows that named both legs
+# (S6-B3247, S6-B3248) read quiet here - the S6-B3247 one is the corpus's
+# must-quiet control.
+_STEP2_LEGS_HEAD = "STEP-2 VERDICT WITHOUT ITS LEGS"
+_STEP2_FAIL_COUNT = r"\b[0-5] of 6 (?:live )?gates?\b|\bfail\w*[,:]?\s+[0-5] of 6\b"
+
+
+def step2_verdicts_without_legs(blocks) -> list:
+    """(index, verdict phrase) for each block - a response, or one queue row -
+    that states a FAILING six-gate count ('5 of 6 live gates', 'FAIL, 3 of 6')
+    and does not name both legs by the words depth and breadth. A pass (6 of 6)
+    is not read. A lower bound (L757): a verdict worded without a k-of-6 count
+    is not seen, and a block carrying both words anywhere passes."""
+    import re
+    verdict = re.compile(_STEP2_FAIL_COUNT)
+    out = []
+    for i, block in enumerate(blocks):
+        t = (block or "").lower()
+        m = verdict.search(t)
+        if m and not (re.search(r"\bdepth\b", t) and re.search(r"\bbreadth\b", t)):
+            out.append((i, m.group(0)))
+    return out
+
+
+def scan_step2_verdict_without_legs(entries, *, text=None, rows=None) -> list[str]:
+    """S6-B3336 / L975 / #299: a failing Step-2 verdict names its legs.
+
+    Reads the final response block (code spans stripped - a backticked
+    MENTION of a verdict is not a verdict, B1738) and the queue rows added
+    this turn, one row at a time. Seams (#241): `text` the response, `rows`
+    the added rows."""
+    t = _response_text(entries, text)
+    added = _queue_rows_added() if rows is None else list(rows)
+    hits = step2_verdicts_without_legs([t] + added)
+    if not hits:
+        return []
+    i, phrase = hits[0]
+    where = "the response" if i == 0 else f"queue row {i} added this turn"
+    return [f"{_STEP2_LEGS_HEAD} (S6-B3336 / L975 / #299): {len(hits)} block(s) "
+            f"state a failing Step-2 gate count without naming both legs - "
+            f"first: {where} ({phrase!r}). Say beside the verdict which legs "
+            "ran - the depth leg and the breadth leg, run, waived or not run - "
+            "in any programme, a LEVER4 arm included (runbook 0.3)."]
+
+
 def main(argv: list[str] | None = None) -> int:
     # B1746: RUN EVERY GATE, REPORT EVERY VIOLATION.
     #
@@ -6611,6 +6662,9 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B3307 (B3139q-r113, L960): a ticket's history is in
                 # front of the turn before a row is appended to it.
                 scan_ticket_history_unread,
+                # S6-B3336 (B3139q-r136, L975): #299 outside the campaign
+                # frame - a failing Step-2 verdict names both legs.
+                scan_step2_verdict_without_legs,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):

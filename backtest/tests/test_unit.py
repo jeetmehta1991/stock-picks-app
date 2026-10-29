@@ -26083,6 +26083,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r132: L974's clause in the #291 row, same call as the skill edit.
         ("AND THE LAUNCH CHECK COVERS THE STEP",
          'L974 (B3139q-r132): a Step-2 launch whose grader had no Step-2 leg'),
+        # B3139q-r136: L975's clause in the #299 row, same call as the skill edit.
+        ("AND IN EVERY PROGRAMME, NOT ONLY A CAMPAIGN",
+         'L975 (B3139q-r136): a LEVER4 Step-2 FAIL reported without its legs'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26332,7 +26335,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # live-wave row; same call).
     # 360 -> 361 at B3139q-r132 (the L974 step-not-only-registration clause;
     # same call).
-    assert len(gutted) == 361, gutted
+    # 361 -> 362 at B3139q-r136 (the L975 every-programme clause; same call).
+    assert len(gutted) == 362, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -48247,6 +48251,11 @@ _B3121_SEAMS_SOUND = {
     ("scan_obligation_in_closing_row", "rows"):
         "list seam (list(rows)) for the list _queue_rows_added() returns; both paths feed "
         "obligation_in_closing_rows unchanged",
+    # B3139q-r136 (S6-B3336): the legs gate's rows seam.
+    ("scan_step2_verdict_without_legs", "rows"):
+        "list seam (list(rows)) for the list _queue_rows_added() returns; both paths feed "
+        "step2_verdicts_without_legs one row per block unchanged, and the live branch is "
+        "driven with that helper's own output by test_b3336",
     # B3139q-r113 (S6-B3307): the history-read gate's three seams.
     ("scan_ticket_history_unread", "rows"):
         "list seam (list[str] of queue rows) for the list _history_rows_this_turn returns - "
@@ -65906,3 +65915,55 @@ def test_b3332_a_step2_spec_needs_a_grader_with_a_step2_leg():
     calls = {c.func.id for c in _ast.walk(fn)
              if isinstance(c, _ast.Call) and isinstance(c.func, _ast.Name)}
     assert "_step2_grader_refusals" in calls
+
+
+# ================================================================ B3139q-r136 S6-B3336: a failing Step-2 verdict names its legs (#299 / L975)
+def test_b3336_a_failing_step2_verdict_names_its_legs(monkeypatch):
+    """S6-B3336 / L975 / #299: the B3139q-r132 close and its S6-B1248 row
+    reported the LEVER4 pivot_r1_breakout arm 'FAIL, 5 of 6 live gates' and
+    named neither leg; the owner asked 2026-10-29 whether breadth steps run
+    for strategies whose legs failed. Arms: the two VERBATIM incidents fire
+    (response path and row path); the B3139q-r114 S6-B3247 row, which names
+    DEPTH and BREADTH, is quiet on both paths; one leg named is not enough; a
+    pass (6 of 6) is not read; a count without the word 'gates' is read; a
+    backticked mention is not a verdict; and the gate is a Name inside main(),
+    the runner's scan tuple (#224: defined is not run)."""
+    import ast
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import verify_turn_compliance as v
+    import gate_incident_corpus as gc
+    scan = v.scan_step2_verdict_without_legs
+    text, must_fire, state = gc.INCIDENTS["scan_step2_verdict_without_legs"]
+    assert must_fire and scan([], text=text, **state)
+    extra = gc.EXTRA_INCIDENTS["scan_step2_verdict_without_legs"]
+    fire = [(t, s) for t, f, s in extra if f]
+    quiet = [(t, s) for t, f, s in extra if not f]
+    assert fire and all(scan([], text=t, **s) for t, s in fire)
+    assert quiet and not any(scan([], text=t, **s) for t, s in quiet)
+    assert any(s.get("rows") for t, s in fire), "the row path needs a must-fire arm"
+    legs = " The depth leg ran; the breadth leg was not run."
+    assert scan([], text=text + legs, rows=[]) == []
+    assert scan([], text=text + " The breadth leg was not run.", rows=[])
+    assert scan([], text="Admitted: it cleared 6 of 6 live gates.", rows=[]) == []
+    assert scan([], text="The long read was FAIL 3 of 6 on its holdout.", rows=[])
+    assert scan([], text="The trigger phrase is `5 of 6 live gates`.", rows=[]) == []
+    # L878 / #324: drive the LIVE branch once - rows=None calls
+    # _queue_rows_added(), fed with that helper's own output (its diff_text
+    # seam) for the verbatim r132 S6-B1248 row, then for the r114 S6-B3247 row.
+    lv4 = next(s["rows"][0] for t, s in fire if s.get("rows"))
+    wil = next(s["rows"][0] for t, s in quiet if s.get("rows"))
+    live_fire = v._queue_rows_added(diff_text="+" + lv4)
+    live_quiet = v._queue_rows_added(diff_text="+" + wil)
+    assert live_fire == [lv4] and live_quiet == [wil]
+    monkeypatch.setattr(v, "_queue_rows_added", lambda diff_text=None: live_fire)
+    assert scan([], text="")
+    monkeypatch.setattr(v, "_queue_rows_added", lambda diff_text=None: live_quiet)
+    assert scan([], text="") == []
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8")
+    main = next(n for n in ast.parse(src).body
+                if isinstance(n, ast.FunctionDef) and n.name == "main")
+    assert "scan_step2_verdict_without_legs" in {
+        n.id for n in ast.walk(main) if isinstance(n, ast.Name)}

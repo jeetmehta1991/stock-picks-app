@@ -6083,6 +6083,8 @@ call-site reachability. The broader leg-completeness judgment for
 non-failure closures remains JUDGMENT-ONLY; durability via the L785
 fragment pin (test_b2123) and test_b1486's banner sync.
 
+**INSTANCE (B3139q-r136 / L975) - A STEP-2 FAIL REPORTED WITHOUT ITS LEGS, OUTSIDE A CAMPAIGN.** The r132 close and its S6-B1248 row gave the LEVER4 pivot_r1_breakout arm 'FAIL, 5 of 6 live gates' and named neither leg; runbook 0.3 and this item name per-strategy campaigns, so nothing asked whether a breadth leg had run, and the owner asked 2026-10-29. The duty binds any Step-2 read. Mechanism: scan_step2_verdict_without_legs (S6-B3336, test_b3336); the arm's breadth decision is S6-B3335.
+
 ### #300 - MECHANIZE FIRST; JUDGMENT-ONLY IS EARNED BY A NAMED SEARCH (B2705 / L786, owner-mandated 2026-09-12)
 
 Owner, verbatim: "make all things mechanical especially if errors for the
