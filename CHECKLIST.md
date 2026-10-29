@@ -4133,6 +4133,8 @@ to that shape only.**
 
 **INSTANCE (B3139q-r131 / L972) - AN OVERRIDE ROUTE ACROSS AN UNREAD GATE.** An answer offered --beside-wave as the earlier route for five tickets; launch_sweep.drift_check, which the route also crosses, would have halted the live LEVER4 run at its next leg for three of them, whose files sit in the 74-script leg closure. Mechanism: preflight C20 (S6-B3328).
 
+**INSTANCE (B3139q-r132 / L974) - A READ DESCRIBED WITHOUT OPENING ITS GRADER.** An option offered the owner one read of the pre-registered cell at the regime_flip exit; owner ruling 2(i), encoded in grade_npoc_config.grade_step2, reads the exit the Step-2 cube's own in-sample selects and records the pre-registered one unread. Caught before any holdout row was read; the owner then ruled per 2(i).
+
 ### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
 
 **INSTANCE (B3139q-r68b / L909), compliance failure against this item:** the L908 Phase-5 commit (f5afa5e5f) was followed by a queue-only commit in the same turn, so the one-commit-deep gate could not see its members; the same close reported a five-config chain as five running when 1 of 5 ran (compliance failure against #122, the L738 level-per-member rule).
@@ -5887,6 +5889,8 @@ cites is named with its file or marked PROPOSED-NOT-BUILT (B1335 rule 2 applies 
 generic sites, 5 stale numbers, and a documented launch command that is not the live path.
 Tickets S6-B2573a-i carry the class fixes; none are built. Detection is JUDGMENT-ONLY until the
 S6-B2573a adapter pin exists; the pin holds the contract that exists.
+
+**INSTANCE (B3139q-r132 / L974) - A STEP-2 LAUNCH WHOSE GRADER HAD NO STEP-2 LEG.** The LEVER4 Step-2 run of pivot_r1_breakout landed 2026-10-29 after 7 legs (31.89 h), and its battery failed step 2 closed: lever4_step1 had no Step-2 leg and the family declared no step2_flag. The launch check covered the family's registration, not the step. Mechanism: launch_refusals refuses a Step-2 spec whose grader has no Step-2 leg (S6-B3332, test_b3332); the leg itself is S6-B3331.
 
 ### #292 - A PYRAMID IS A MEASUREMENT OF ONE TREE; AN EDIT DURING THE RUN VOIDS IT (B2580 / L755)
 

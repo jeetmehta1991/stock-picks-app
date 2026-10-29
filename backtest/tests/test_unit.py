@@ -26080,6 +26080,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          'S6-B3327 / L967 (B3139q-r131): single quotes do not protect a backslash run'),
         ("CHECK EACH PATH AGAINST launch_sweep.leg_code_closure() FIRST",
          'L972 (B3139q-r131): a commit to a leg-read path halts a live wave'),
+        # B3139q-r132: L974's clause in the #291 row, same call as the skill edit.
+        ("AND THE LAUNCH CHECK COVERS THE STEP",
+         'L974 (B3139q-r132): a Step-2 launch whose grader had no Step-2 leg'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26327,7 +26330,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 357 -> 358 at B3139q-r123 (the L964 price-from-the-subject fragment; same call).
     # 358 -> 360 at B3139q-r131 (the S6-B3327 transport clause and the L972
     # live-wave row; same call).
-    assert len(gutted) == 360, gutted
+    # 360 -> 361 at B3139q-r132 (the L974 step-not-only-registration clause;
+    # same call).
+    assert len(gutted) == 361, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -65756,3 +65761,148 @@ def test_b3328_leg_paths_refused_while_a_wave_is_live():
     calls = {c.func.id for c in _ast.walk(main)
              if isinstance(c, _ast.Call) and isinstance(c.func, _ast.Name)}
     assert "check_leg_paths_while_wave_live" in calls
+
+
+# ================================================================ B3139q-r132 S6-B3331: the LEVER4 grader's Step-2 leg
+def test_b3331_lever4_step2_leg_reads_the_long_leg_once_on_the_is_selected_exit(tmp_path):
+    """S6-B3331 (B3139q-r132; the owner's words 2026-10-29 'Build the leg,
+    read once' and 'breakeven_plus_trail, per 2(i)'): lever4_step1 --step2
+    reads a Step-2 cube's LONG leg once, on the exit the long leg's own
+    in-sample selects, and records the pre-registered exit beside it without
+    reading it (owner ruling 2(i)). The synthetic dual cube is built so a
+    wrong leg changes the answer: long in-sample favours eA, the pooled legs
+    favour eB (the short side's eB is strong - the control proves it), and
+    the short side holds holdout rows of eA that a pooled read would count.
+    Arms: the selection is eA; holdout_n counts the long eA holdout rows only
+    and full_period_n the long eA rows; the pre-registered eB is a disclosed
+    MISMATCH with no eB statistic; run_postconfig.grid_step2_graded accepts
+    the grid; without --step2 the grid has no step2 block and its
+    holdout_read is unchanged; --step2 on the R5 cube refuses before reading
+    it; all four LEVER4 families declare both flags."""
+    import json
+    import sys
+    from pathlib import Path as _P
+    import pandas as pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import lever4_step1 as l4
+    import producer_variant_table as pvt
+    import roster_core as rc
+    import run_postconfig as rp
+    name = "pivot_r1_breakout"
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    is_days = pd.date_range("2024-01-02", periods=20, freq="7D")
+    ho_days = pd.date_range("2025-06-02", periods=20, freq="7D")
+    wave = [1.2, 0.4, 1.6, 0.8, 1.0]
+    # long eA good and eB poor in sample; short eA terrible and eB strong in
+    # sample, so the POOLED legs select eB while the long leg selects eA
+    plan = [("long", is_days, {"eA": list(wave), "eB": [-0.3 + 0.1 * w for w in wave]}),
+            ("short", is_days, {"eA": [-2.0 - w for w in wave], "eB": [3.0 + w for w in wave]}),
+            ("long", ho_days, {"eA": [0.9, 0.2, 1.4, 0.6, 1.1], "eB": [0.1, 0.2, 0.0, 0.1, 0.3]}),
+            ("short", ho_days[:15], {"eA": [-5.0, -4.0, -6.0, -5.5, -4.5],
+                                     "eB": [-5.0, -4.0, -6.0, -5.5, -4.5]})]
+    tl, ed = [], []
+    for li, (leg, days, pnls) in enumerate(plan):
+        for i, d in enumerate(days):
+            t = f"T{li}x{i}"
+            ds = d.strftime("%Y-%m-%d")
+            tl.append({"strategy": name, "ticker": t, "entry_date": ds, "direction": leg,
+                       "signals_at_entry": "{}", "hold_days": 5, "pnl_pct": 1.0})
+            for ex, vals in pnls.items():
+                ed.append({"ticker": t, "strategy": name, "entry_date": ds, "direction": leg,
+                           "exit_method": ex, "pnl_pct": vals[i % len(vals)], "hold_days": 5})
+    pd.DataFrame(tl).to_csv(cube / "trade_log.csv", index=False)
+    pd.DataFrame(ed).to_csv(cube / "trade_exit_detail.csv", index=False)
+    r2 = pvt.lever4_r2_level(name)
+    out = tmp_path / "grid.json"
+    assert l4.main(["--strategy", name, "--cube", str(cube), "--gate-budget", r2,
+                    "--min-n", "5", "--step2", "--preregistered-exit", "eB",
+                    "--out", str(out)]) == 0
+    g = json.loads(out.read_text(encoding="utf-8"))
+    s2 = g["step2"]
+    assert s2["leg"] == "long" and s2["holdout_read"] is True, s2
+    assert s2["selected_exit"] == "eA", s2
+    assert s2["holdout_n"] == 20 and s2["full_period_n"] == 40, s2
+    assert s2["preregistered_exit"] == "eB" and s2["mismatch"] is True, s2
+    assert "NOT evaluated on the holdout" in s2["mismatch_disclosure"]
+    assert set(s2["gates"]) == set(rc.LIVE_GATES) and s2["verdict"] in ("PASS", "FAIL")
+    assert g["holdout_read"].startswith("FIRED ONCE (S6-B3331)"), g["holdout_read"]
+    ok, why = rp.grid_step2_graded(g)
+    assert ok, why
+    # the control: the POOLED legs select eB, so the long filter decides it
+    pooled = pd.read_csv(cube / "trade_exit_detail.csv")
+    pooled["entry_date"] = pd.to_datetime(pooled["entry_date"]).dt.date
+    assert rc.select_exit(pooled, objective="gates", min_n=5)[0] == "eB"
+    # Step 1 is unchanged: no step2 block, the holdout untouched
+    out1 = tmp_path / "grid1.json"
+    assert l4.main(["--strategy", name, "--cube", str(cube), "--gate-budget", r2,
+                    "--min-n", "5", "--out", str(out1)]) == 0
+    g1 = json.loads(out1.read_text(encoding="utf-8"))
+    assert "step2" not in g1 and g1["holdout_read"].startswith("NOT FIRED")
+    # --step2 on the R5 cube refuses before any cube is read
+    with pytest.raises(SystemExit) as e:
+        l4.main(["--strategy", name, "--step2", "--out", str(tmp_path / "x.json")])
+    assert "R5 cube" in str(e.value)
+    for n in l4.FAMILY:
+        gb = pvt.SPECS[n]["tools"]["grade"]
+        assert gb.get("step2_flag") == "--step2", n
+        assert gb.get("preregistered_flag") == "--preregistered-exit", n
+
+
+# ================================================================ B3139q-r132 S6-B3332: a Step-2 launch needs a grader with a Step-2 leg
+def test_b3332_a_step2_spec_needs_a_grader_with_a_step2_leg():
+    """S6-B3332 (L974): launch_refusals refuses a Step-2 spec whose family
+    grader cannot grade the holdout - the class behind the first LEVER4
+    Step-2 landing, whose battery failed step 2 closed after the whole engine
+    run because lever4_step1 had no Step-2 leg. MUST-FIRE: a Step-2 spec for
+    smc_liquidity_sweep_reversal (smc_lsr_step1: no step2_flag, not an
+    implicit-holdout grader), declared by its step field and, separately, by
+    a window ending past HO_START. MUST-QUIET: the same strategy at Step 1;
+    Step 2 for pivot_r1_breakout (S6-B3331 declared its flags),
+    bollinger_lower (step2_flag) and smc_breaker_block_long
+    (tighten_breaker_block reads any holdout - STEP2_IMPLICIT_GRADERS). A
+    pre-registered exit with no preregistered_flag refuses on a step2_flag
+    grader, and passes when no exit is pre-registered. Wired: launch_refusals
+    calls the check (an AST call, L748)."""
+    import ast as _ast
+    import copy
+    import sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    tag = "S6-B3332"
+
+    def doc(step=None, window=None, pre="time_stop_10d"):
+        d = {"wave": "t", "strategy_subset": "x", "fires_at_production": 1,
+             "arms": [{"tag": "a1", "env": {}, "preregistered_exit": pre}]}
+        if step is not None:
+            d["step"] = step
+        if window is not None:
+            d["window"] = window
+        return d
+
+    def hits(d, s):
+        return [e for e in pvt.launch_refusals(d, subset_override=[s]) if tag in e]
+
+    assert len(hits(doc(2), "smc_liquidity_sweep_reversal")) == 1
+    assert len(hits(doc(window={"start": "2022-05-05", "end": "2026-05-05"}),
+                    "smc_liquidity_sweep_reversal")) == 1
+    assert hits(doc(1), "smc_liquidity_sweep_reversal") == []
+    for s in ("pivot_r1_breakout", "bollinger_lower", "smc_breaker_block_long"):
+        assert hits(doc(2), s) == [], s
+    assert "tighten_breaker_block.py" in pvt.STEP2_IMPLICIT_GRADERS
+    spec = copy.deepcopy(pvt.SPECS["bollinger_lower"])
+    spec["tools"]["grade"].pop("preregistered_flag")
+    assert len(pvt._step2_grader_refusals(doc(2), "bollinger_lower", spec)) == 1
+    assert pvt._step2_grader_refusals(doc(2, pre=None), "bollinger_lower", spec) == []
+    tree = _ast.parse((root / "scripts" / "producer_variant_table.py").read_text(encoding="utf-8"))
+    fn = next(n for n in tree.body
+              if isinstance(n, _ast.FunctionDef) and n.name == "launch_refusals")
+    calls = {c.func.id for c in _ast.walk(fn)
+             if isinstance(c, _ast.Call) and isinstance(c.func, _ast.Name)}
+    assert "_step2_grader_refusals" in calls

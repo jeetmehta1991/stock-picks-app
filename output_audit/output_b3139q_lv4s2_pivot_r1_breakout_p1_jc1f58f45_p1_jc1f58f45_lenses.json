@@ -3,7 +3,7 @@
  "step": 2,
  "step_basis": "manifest window.end 2026-05-05 > HO_START 2025-05-05 -> Step-2 cube",
  "family": "pivot_r1_breakout",
- "ts": "2026-10-28T20:50:37",
+ "ts": "2026-10-28T21:44:44",
  "lenses": [
   {
    "lens": "holdout_untouched",
@@ -43,7 +43,7 @@
   {
    "lens": "grading_provenance",
    "level": "INFO",
-   "evidence": "grading surface UNCHANGED since freeze (29 files, digest 4d8825f4d8e2)"
+   "evidence": "grading surface MOVED since freeze: freeze 4d8825f4d8e2 (29) -> now e2cc81bec8d1 (29) - DISCLOSED, not refused (L857b); each landing's own code identity is its graded_with stamp"
   },
   {
    "lens": "direction_consistency",

@@ -6,7 +6,7 @@
     "P1_gate_budget": "{\"k\": 3, \"mandatory\": [\"above_r1\"]}"
   },
   "reproduction": "VARIANT-CUBE-NO-R5-REPRODUCTION: produced at gate budget {\"k\": 3, \"mandatory\": [\"above_r1\"]}; own fires 7318",
-  "design": "base cell per leg x exits, IS-only; holdout untouched; npt barred; ranked on is_ci_lo; the LEVER4 budget is resim-only (a looser gate adds fires no cube holds), so the grid carries no offline numeric axis",
+  "design": "base cell per leg x exits, IS-only ranking; npt barred; ranked on is_ci_lo; Step 2: the long leg's holdout read ONCE in `step2` on the exit its own in-sample selects (S6-B3331, owner ruling 2(i))",
   "reproduction_fires": 7318,
   "cells_graded": 72,
   "multiplicity": {
@@ -1302,5 +1302,46 @@
       "npt_barred": false
     }
   ],
-  "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"
+  "holdout_read": "FIRED ONCE (S6-B3331): FAIL on the long leg's breakeven_plus_trail",
+  "step2": {
+    "holdout_read": true,
+    "holdout_rows": 25752,
+    "selected_exit": "breakeven_plus_trail",
+    "selection": "rc.select_exit(objective='gates', min_n=10) on IS rows only - key (n_gates, sharpe); byte-identical exits collapsed (S6-B2216), next_pivot_target refused for NPT-spanning cells (B2014/D7)",
+    "preregistered_exit": "regime_flip",
+    "mismatch": true,
+    "gates": {
+      "pooled_sharpe": false,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": true,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+    },
+    "verdict": "FAIL",
+    "rule": "S6-B2409: PASS = all six LIVE_GATES clear on the holdout of the IS-selected exit; FAIL otherwise; margin is a number, not a gate",
+    "is_stats": {
+      "n": 4288,
+      "sharpe": 0.617,
+      "ci_lo": 0.538,
+      "n_gates": 4,
+      "exits_effective": 23,
+      "exits_collapsed": null,
+      "npt_excluded_identity_boundary": true
+    },
+    "mismatch_disclosure": "the Step-1 pre-registered exit 'regime_flip' is NOT the exit this cube's own IS selected ('breakeven_plus_trail'); the admission verdict is on the selected exit, the pre-registered exit is recorded here and NOT evaluated on the holdout - one read, no re-roll (owner ruling 2(i) 2026-09-05)",
+    "holdout_n": 1073,
+    "full_period_n": 5361,
+    "sharpe": 0.642,
+    "sortino": 2.87,
+    "psr": 1.0,
+    "profit_factor": 2.156,
+    "payoff": 4.59,
+    "expectancy": 2.7045,
+    "win_rate": 0.32,
+    "p": 1.5148020989604085e-10,
+    "ci_lo": 0.44,
+    "gates_passed": 5,
+    "leg": "long"
+  }
 }

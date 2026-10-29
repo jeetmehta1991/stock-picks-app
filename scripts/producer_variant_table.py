@@ -1367,7 +1367,13 @@ def _lever4_spec(name: str) -> dict:
                       "flags": {"P1": "--gate-budget"},
                       "extra": ["--strategy", name, "--min-n", "10"],
                       "pythonpath": ".;scripts",
-                      "note": "AUTO (S6-B3240); legs x exits at the cube's gate budget"},
+                      # S6-B3331: a Step-2 cube's long leg is read ONCE on the
+                      # exit its own in-sample selects (owner ruling 2(i))
+                      "step2_flag": "--step2",
+                      "preregistered_flag": "--preregistered-exit",
+                      "note": ("AUTO (S6-B3240); legs x exits at the cube's gate "
+                               "budget; Step 2 (S6-B3331): the long leg's "
+                               "holdout read once")},
             "free_levels": None,
             "spot_check": {"script": "spot_check_replay.py", "cube": "",
                            "flags": {}, "extra": ["--n", "50"],
@@ -6340,6 +6346,67 @@ def _depth_null_refusals(doc: dict, strats: list) -> list:
     return errs
 
 
+# S6-B3332 (L974): graders that read ANY holdout they find, with no flag -
+# run_postconfig.run_family's comment: 'tighten_breaker_block grades whatever
+# holdout it finds'; its per-combination rows carry the six gates.
+STEP2_IMPLICIT_GRADERS = frozenset({"tighten_breaker_block.py"})
+
+
+def _declared_step(doc: dict):
+    """The step a wave spec or a run manifest declares: its `step` field,
+    else its window's end against HO_START (run_postconfig.derive_step's
+    rule), else None - an undeclared doc is not refused here."""
+    st = doc.get("step")
+    if st is not None:
+        try:
+            v = int(st)
+        except (TypeError, ValueError):
+            v = None          # an unparseable step reads as undeclared
+        if v in (1, 2):
+            return v
+    end = (doc.get("window") or {}).get("end")
+    if end:
+        try:
+            import datetime as _dtm
+            from roster_core import HO_START as _ho
+            return 2 if _dtm.date.fromisoformat(str(end)[:10]) > _ho else 1
+        except (ImportError, ValueError):
+            return None
+    return None
+
+
+def _step2_grader_refusals(doc: dict, s: str, spec: dict) -> list:
+    """S6-B3332 (L974): a Step-2 spec needs a grader WITH a Step-2 leg.
+    run_postconfig passes --step2 / --preregistered-exit only where tools.grade
+    declares step2_flag / preregistered_flag, and fails step 2 CLOSED on a
+    Step-2 grid with no gate verdict - so a Step-1-only grader is found at
+    LANDING, after the whole engine spend. MEASURED: the first LEVER4 Step-2
+    landing (pivot_r1_breakout, 2026-10-29) failed step 2 closed after a
+    7-leg, 31.89 h engine run. Refuses (1) a Step-2 spec whose grader has no
+    step2_flag and is not in STEP2_IMPLICIT_GRADERS, and (2) a Step-2 arm that
+    pre-registers an exit the grader has no flag to receive (B2612)."""
+    if _declared_step(doc) != 2:
+        return []
+    g = ((spec.get("tools") or {}).get("grade") or {})
+    if not g:
+        return []          # the family-registration refusals cover it
+    script = g.get("script")
+    if not g.get("step2_flag") and script not in STEP2_IMPLICIT_GRADERS:
+        return [f"{s}: a Step-2 spec, but the family grader {script} declares "
+                "no step2_flag and is not a grader that reads any holdout it "
+                "finds - the battery would FAIL step 2 closed at LANDING, after "
+                "the whole engine spend (S6-B3332, L974: the first LEVER4 "
+                "Step-2 landing, 2026-10-29). Give the grader a Step-2 leg and "
+                "declare its flags before the launch"]
+    pre = [a.get("tag", "?") for a in (doc.get("arms") or [])
+           if isinstance(a, dict) and a.get("preregistered_exit")]
+    if pre and g.get("step2_flag") and not g.get("preregistered_flag"):
+        return [f"{s}: arm(s) {pre} pre-register an exit, but the family grader "
+                f"{script} declares no preregistered_flag - the exit would never "
+                "reach the grader's record (B2612; S6-B3332)"]
+    return []
+
+
 def launch_refusals(doc: dict, root: Path | None = None,
                     require_subset: bool = True,
                     subset_override: tuple | list | None = None) -> list[str]:
@@ -6508,6 +6575,8 @@ def launch_refusals(doc: dict, root: Path | None = None,
                             "after the engine spend (S6-B3171b, L835); "
                             "make_spec pins the knobs you do not sweep at "
                             "production")
+        # S6-B3332 (L974): a Step-2 spec needs a grader with a Step-2 leg
+        errs += _step2_grader_refusals(doc, s, spec)
         errs += [f"{s}: {e}" for e in validate_spec(spec)]
         knobs = {p["env"]: p for p in spec["params"] if p.get("env")}
         for k in knobs:

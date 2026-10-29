@@ -27,6 +27,21 @@ fire count (the L754 portability contract).
 arm's LEVER4_GATE_BUDGET env value ('' at production, else the JSON object).
 The grid records THIS strategy's entry of it as config.P1_gate_budget (None
 at production) - the key the Table D axis family detects.
+
+STEP 2 (S6-B3331, B3139q-r132; the owner's words 2026-10-29 'Build the leg,
+read once' and 'breakeven_plus_trail, per 2(i)'): --step2 declares a Step-2
+cube, and the holdout is read ONCE by grade_npoc_config.grade_step2 -
+imported, not copied (L799) - on the LONG leg's rows: the exit the cube's OWN
+in-sample selects (roster_core.select_exit, objective 'gates'), that exit's
+holdout graded once with full_period_n, the six LIVE_GATES deciding PASS or
+FAIL. --preregistered-exit is RECORDED beside the selection and a mismatch
+DISCLOSED, never re-rolled and never read (owner ruling 2(i), 2026-09-05).
+The leg is LONG because the LEVER4 budget binds the long gate only
+(screener._gate_budget): a dual's short side is its production gate, outside
+the arm under test. Without --step2 the grid is unchanged - no step2 block,
+the holdout untouched. Before this leg the battery failed step 2 CLOSED on
+the first LEVER4 Step-2 landing (pivot_r1_breakout, 2026-10-29): the family's
+tools block declared no step2_flag (L974).
 """
 from __future__ import annotations
 
@@ -41,6 +56,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
 from smc_family_step1 import grade_cells  # noqa: E402
 from smc_lsr_step1 import build as _build  # noqa: E402
+from grade_npoc_config import grade_step2 as _grade_step2  # noqa: E402
 
 R5_DIR = ROOT / "output_r5_merged_1_7"
 
@@ -53,6 +69,10 @@ FAMILY = {
     "smc_bos_continuation": {"legs": ("long", "short")},
     "orb_stocks_in_play_long": {"legs": ("long",)},
 }
+# S6-B3331: the leg a Step-2 read grades. The budget binds the LONG gate only
+# (screener._gate_budget), so a dual's short side is its production gate and
+# not the arm under test; the two long-only members have no other leg.
+STEP2_LEG = "long"
 
 
 def budget_for(raw, strat: str):
@@ -97,6 +117,13 @@ def main(argv=None) -> int:
     ap.add_argument("--gate-budget", default=None,
                     help="the LEVER4_GATE_BUDGET the cube was produced at - "
                          "identity, recorded not swept")
+    ap.add_argument("--step2", action="store_true",
+                    help="declare a Step-2 cube: the long leg's holdout is read "
+                         "ONCE on the exit the cube's own in-sample selects, "
+                         "the six LIVE_GATES decide (S6-B3331)")
+    ap.add_argument("--preregistered-exit", default=None,
+                    help="the Step-1 pre-registered exit - recorded beside the "
+                         "selection, never read (owner ruling 2(i))")
     a = ap.parse_args(argv)
     t0 = time.time()
     strat = a.strategy
@@ -109,6 +136,10 @@ def main(argv=None) -> int:
     if is_r5 and budget is not None:
         raise SystemExit(f"REFUSED: the R5 cube ran with no gate budget, "
                          f"but --gate-budget names {budget} (fail closed)")
+    if is_r5 and a.step2:
+        raise SystemExit("REFUSED: --step2 names the R5 cube - it carries no "
+                         "gate budget, so its holdout is the production "
+                         "strategy's, not a LEVER4 arm's (fail closed)")
     m = _build(None if is_r5 else cube_dir, strat=strat, keys=[])
     fires = m.drop_duplicates(["ticker", "entry_date"])
 
@@ -145,6 +176,30 @@ def main(argv=None) -> int:
            "multiplicity": rc.bh_fdr_report(rows),
            "step1_ranking": ranked[:80], "rows": rows,
            "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"}
+    if a.step2:
+        # S6-B3331: the ONE holdout read of a Step-2 cube, on the budget-bound
+        # leg; the in-sample ranking above is unchanged and never read past it
+        leg = m[m.direction == STEP2_LEG]
+        s2 = _grade_step2(leg, rc.holdout(leg), min_n=a.min_n,
+                          declared_step2=True,
+                          preregistered_exit=a.preregistered_exit)
+        s2["leg"] = STEP2_LEG
+        rec["step2"] = s2
+        rec["design"] = ("base cell per leg x exits, IS-only ranking; npt barred; "
+                         "ranked on is_ci_lo; Step 2: the long leg's holdout "
+                         "read ONCE in `step2` on the exit its own in-sample "
+                         "selects (S6-B3331, owner ruling 2(i))")
+        rec["holdout_read"] = (
+            f"FIRED ONCE (S6-B3331): {s2['verdict']} on the {STEP2_LEG} leg's "
+            f"{s2.get('selected_exit')}" if s2.get("holdout_read") else
+            f"DECLARED STEP 2, NOT READ: {s2['verdict']} - {s2.get('reason')}")
+        print(f"[STEP-2] {s2['verdict']}: {STEP2_LEG} leg, exit "
+              f"{s2.get('selected_exit')}, holdout_n {s2.get('holdout_n')} of "
+              f"full_period_n {s2.get('full_period_n')}, sharpe "
+              f"{s2.get('sharpe')}, gates {s2.get('gates_passed')} of "
+              f"{len(rc.LIVE_GATES)}; pre-registered {a.preregistered_exit} "
+              + ("MISMATCH - recorded, not read" if s2.get("mismatch")
+                 else "matches" if a.preregistered_exit else "none named"))
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     print(f"wrote {a.out}")
     return 0
