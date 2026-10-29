@@ -34,7 +34,12 @@ different experiment wearing the same name.
 Usage:
   python scripts/offline_holdout_read.py \
       --sweep-artifact output_audit/b2638_pead_step1_is_surface.json \
-      --out output_audit/b2644_pead_step2_holdout.json
+      --out output_audit/b2644_pead_step2_holdout.json --ruling WORDS --ruling-ticket S6-Bnnnn
+
+--ruling / --ruling-ticket (S6-B3338): required. The owner's own word for THIS
+read - a Step-2 holdout read is a one-way door - checked against the ticket's
+ledger rows (scripts/owner_word.py) before the read, and stamped into the
+artifact as owner_word.
 """
 from __future__ import annotations
 
@@ -276,14 +281,30 @@ def main() -> int:
                     help="S6-B3294: a sibling Step-1 artifact (the other leg's "
                          "sweep) whose graded levels count toward the band-"
                          "coverage gate beside --sweep-artifact's")
+    # S6-B3338: the holdout read is a one-way door that needs the owner's
+    # own word (runbook 0.6) - quoted in a row of its ticket and stamped
+    # into the artifact (scripts/owner_word.py; breadth_step2_read.py has
+    # required --ruling since B2678, this read had none)
+    ap.add_argument("--ruling", required=True,
+                    help="the owner's words opening this read, verbatim as its "
+                         "ledger row records them")
+    ap.add_argument("--ruling-ticket", required=True,
+                    help="the ticket whose row records --ruling")
     a = ap.parse_args()
 
+    import owner_word
+    word = {"ticket": a.ruling_ticket.strip(),
+            "verbatim": owner_word.normalise(a.ruling)}
+    werrs = owner_word.refusals(word, door="Step-2 holdout read")
+    if werrs:
+        raise SystemExit(werrs[0])
     out = Path(a.out)
     if out.exists() and not a.force_rerun:
         raise SystemExit(f"REFUSED: {out} exists - the holdout is already spent; "
                          "--force-rerun labels a re-read as such")
     rec = read_step2(Path(a.sweep_artifact), a.coverage_min, a.repro_min, a.min_n,
                      coverage_artifacts=[Path(c) for c in a.coverage_artifact])
+    rec["owner_word"] = word
     if a.force_rerun:
         rec["rerun_of_spent_holdout"] = True
     from roster_core import stamp_metric_code as _smc  # S6-B3139i

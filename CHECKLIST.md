@@ -3284,6 +3284,8 @@ rate-for-total substitutions above.
 
 **INSTANCE (B3139q-r129 / L969) - A DATE FROM THE WRONG RECORD.** camarilla_r4_breakout's campaign open date was given as 10-25, the local date of the commit that opened it; output_audit/owner_campaign_opens.json records 2026-10-24. Retracted as the next answer's first line.
 
+**INSTANCE (B3139q-r138 / L981) - A TIME FROM THE WRONG RECORD.** The owner sent the 2026-10-29 question at 13:14:30Z (the transcript's queue-operation enqueue record); the r137 S6-B3353 row and this batch's drafts dated it 13:20Z, the time it reached me mid-turn (the remove record, 13:20:17Z). Corrected before this batch's commit, the committed row by a correction row on S6-B3353; the batch's other four cited times match the transcript. Mechanism: S6-B3355.
+
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
 
 **L780 EXTENSION (B2671): the spec you must re-read includes the WORKBOOK AS AMENDED.** A queued campaign executed after a workbook rectification runs against the CURRENT template, not the design it was queued with - the top_decile campaign ran depth-only (3 own-knob axes) after the depth+breadth rectification had landed for the institutional family. Rectifications generalize into the template the turn they are ruled (runbook 11.2b2; pin test_b2671_two_legs_rule_is_in_the_runbook). **L781 (B2672):** the retroactive sweep for this class targets the workbook's RULES, not only the campaigns - the owner had to re-point the population; the rules-sweep then found 3 more family-local generals (control-family comparison, npt-bar, Jaccard de-dup), promoted same turn.
@@ -3308,6 +3310,8 @@ plan section 10.1 specifies Step 1 produces **"ranked combinations"** and Step 2
 window and universe were re-argued from scratch while section 10.1 already held the answer.
 
 **INSTANCE (B3139q-r111 / L960) - THE TICKET'S OWN RECORD IS THE SPEC.** After a compaction a LEVER4 row recommended closing three arms on a Step-1 gate with 0 of the ticket's 14 earlier rows in front of the turn - its r105b row had said 'a Step-1 ranked list, no gates' - and S6-B3248's B-rows were registered early with 1 of its 6, not the first row that cites the precedent. A ticket's next row is written from its printed history, not from a summary of it - scan_ticket_history_unread (S6-B3307, test_b3307) blocks a close whose added row's ticket history is not in the tool output since the last compaction, and scripts/ticket_history.py prints that history, bold id or not; applying what was read stays judgment.
+
+**INSTANCE (B3139q-r138 / L981) - A PRINT IN THE APPEND'S OWN CALL.** S6-B3338's r138 row was appended in the same command as a history print cut to 90 characters, then extended after a compaction with an engine-route census from this batch's rows alone; the ticket's first row counted four launchers, two of them chain wrappers the census missed (both start run_wave, so they pass the door). Found when the whole history was printed for scan_ticket_history_unread. Mechanism: S6-B3356, the print must come in an earlier call, uncut.
 
 ### #203 — A SWEPT LEVEL THAT CHANGES NOTHING IS A WASTED DIMENSION (B1610 / L473)
 
@@ -5805,6 +5809,8 @@ retargeted: test_b2116, test_b2211, test_b2439, test_b2440, test_b2450.
 `--no-git --no-notify`, and `commit_and_push` is covered only by the stub arms of the idempotence
 pin (S6-B2520g). Amends #223 (SKIPPED clause retired) and #284 (enforcement note).
 **INSTANCE (B3139q-r137 / L979) - THE THIRD ASK ON PRODUCER-BAND COVERAGE.** B2702, B2843, and on 2026-10-28 'Why were the producer bands in each strategy not approved by me?' - the class fix is the coverage gate reading Table A's pending levels, with a waiver record for any strike (S6-B3339, approved).
+
+**INSTANCE (B3139q-r138 / L981) - AN APPROVED 'FIRST' LEFT UNSCHEDULED, AND THE ASKS RETURNED.** The owner approved mechanizing the owner-word doors and the producer-band coverage 'first' (2026-10-28T16:50:12Z); the work list scheduled records and runbook text before them, so the owner asked again (2026-10-29T13:14:30Z) why bands were not shown before a run and why the breadth step was not followed - the fourth ask on bands, the third on breadth. Mechanism: scripts/owner_word.py at the engine-launch door's run_wave route (1 of 8 routes that start the engine) and the depth Step-2 read (S6-B3338); the rest scheduled next (S6-B3338's other routes, S6-B3339, S6-B3353).
 
 ### #289 - A UNIFORM VALUE ACROSS EVERY ROW IS A PARSER HYPOTHESIS (B2520p / L724)
 

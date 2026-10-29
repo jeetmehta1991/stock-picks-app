@@ -59,6 +59,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from producer_variant_table import launch_refusals  # noqa: E402  (B2578 launch gate)
+import owner_word  # noqa: E402  (S6-B3338: the owner's word at the launch door)
 from prelaunch_gate import OWNER_LOCAL_CAP_HOURS  # noqa: E402  (B2613 S6-B2612g)
 import wave_identity as _wi  # noqa: E402  (B3104 S6-B3102a: one identity, one decision)
 RATE_S_PER_TICKER_DAY = 0.2613   # canonical, B2021-bracketed end to end
@@ -795,7 +796,10 @@ def main() -> int:
     # the ruled fields only after it passes. Resolving first fed the gate
     # its own injection and drew "declares step AND types window" - a
     # correct verdict on the wrong input (live chain HALT, attempt 3).
-    refusals = launch_refusals(spec, ROOT)
+    # S6-B3338: and the spec must cite the owner's word for this launch,
+    # quoted in a row of its ticket (scripts/owner_word.py) - the launch
+    # word and the T3 band word were unchecked on the engine path.
+    refusals = launch_refusals(spec, ROOT) + owner_word.spec_refusals(spec)
     if refusals:
         for r in refusals:
             print(f"LAUNCH REFUSED (S6-B2573b): {r}")

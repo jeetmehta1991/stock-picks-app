@@ -202,6 +202,22 @@ This is the mandatory pre-execution check for every campaign:
 | NEW-GATE wiring into strategies or engine knobs | code change | per-strategy owner approval (the ask-every-time rule) |
 | Engine launch | cost + hours | NEVER without the owner's launch word (standing) |
 
+**MECHANIZED IN PART (S6-B3338, B3139q-r138): two one-way doors in this table now check the
+owner's word against the ledger.** An engine launch: `scripts/make_spec.py --owner-word ...
+--owner-word-ticket ...` writes the word into the spec (a `--dry` draft needs none), and
+`scripts/run_wave.py` refuses a spec without one before any arm runs. A depth candidate's Step-2
+holdout read: `scripts/offline_holdout_read.py --ruling ... --ruling-ticket ...` (the breadth read,
+`scripts/breadth_step2_read.py`, has required `--ruling` since B2678). Each door passes only when a
+row of the cited ticket quotes the owner's words (`scripts/owner_word.py`), so a ruling is recorded
+on its ticket before the door opens. The word is checked, not its scope: which levels a band word
+covered is read by the person citing it. The engine door sits on the `run_wave` route only - 1 of 8
+routes that start the engine (`scripts/owner_word.py` lists them); a chain takes it, since
+`run_serial_chain.py` and `launch_detached.py` start `run_wave` for each spec. Still unchecked, each on its
+ticket: a launch by any other route - `launch_sweep.py` or `backtest/run_phase1a.py` run by hand, and
+five older scripts that build their own engine command - widening an axis past the coverage floor
+and reopening a terminal strategy (S6-B3338), the engine-only producer levels
+Table A lists (S6-B3339), and the breadth leg (S6-B3353).
+
 The B2660 admission doctrine (§6.2) sets the CRITERION; it does not waive the per-step APPROVALS
 above. Violation lineage (L779): a campaign ran band design, the Step-2 spend and admission on
 'start the queued campaign' alone; the owner caught it and ratified the admission after the fact
@@ -1538,7 +1554,8 @@ instance is recorded in the campaign log).
 ```
 
 - **Generate it; do not type it (S6-B3154a).** `scripts/make_spec.py --step 2` (the Step-1 arguments:
-  `--strategy`, `--param`, `--levels`, `--with`, `--wave-prefix`) writes this spec SIZED from the
+  `--strategy`, `--param`, `--levels`, `--with`, `--wave-prefix`; and, unless `--dry`, the owner's
+  launch word, `--owner-word` and `--owner-word-ticket`, section 0.6) writes this spec SIZED from the
   config's own COMPLETE Step-1 cube: `max_legs` = ceil(that cube's engine hours x the family's largest
   measured Step-2/Step-1 ratio x `STEP2_LEG_MARGIN` / `leg_cap_hours`), the arm's `preregistered_exit` =
   that cube's grid `step1_ranking[0]` exit (the B2612 record `run_postconfig.preregistered_exit` reads

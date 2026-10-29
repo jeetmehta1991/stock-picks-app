@@ -36,8 +36,13 @@ Step-2 ratio has been measured anywhere. A Step-1 spec is unchanged.
 Usage:
   python scripts/make_spec.py --strategy bollinger_lower --param P4 \
       --levels 50 --wave-prefix bl_demo [--step 1] [--dry] \
-      [--with P6=40 ...]
+      [--with P6=40 ...] --owner-word WORDS --owner-word-ticket S6-Bnnnn
 One spec per level: output_audit/<wave-prefix>_<tag>_spec.json.
+
+--owner-word / --owner-word-ticket (S6-B3338): required unless --dry. The
+owner's launch word, checked against the ticket's ledger rows
+(scripts/owner_word.py) before any spec is written, and stamped into the spec,
+where run_wave checks it again before any arm runs.
 
 --with PARAM=LEVEL (S6-B3141a, opt-in, repeatable): pins a COMPANION knob of
 the same entry in every arm - its env actuator and its tools.keys arm key -
@@ -459,7 +464,25 @@ def main() -> int:
                     metavar="PARAM=LEVEL",
                     help="pin a companion knob of the same entry "
                          "(S6-B3141a; repeatable)")
+    # S6-B3338: a WRITTEN spec cites the owner's word for its launch - the
+    # T3 band word for a Step-1 run, the launch word for a Step-2 run -
+    # quoted in a row of its ticket (scripts/owner_word.py); --dry drafts
+    # the spec the owner is shown, so it needs no word yet
+    ap.add_argument("--owner-word", default=None,
+                    help="the owner's ruling for this launch, verbatim as its "
+                         "ledger row records it (required unless --dry)")
+    ap.add_argument("--owner-word-ticket", default=None,
+                    help="the ticket whose row records --owner-word")
     a = ap.parse_args()
+
+    import owner_word
+    word = None
+    if not a.dry:
+        word = {"ticket": (a.owner_word_ticket or "").strip(),
+                "verbatim": owner_word.normalise(a.owner_word)}
+        werrs = owner_word.refusals(word, door="engine launch (make_spec)")
+        if werrs:
+            return refuse(werrs[0])
 
     from producer_variant_table import SPECS, launch_refusals
     spec_entry = SPECS.get(a.strategy)
@@ -590,6 +613,8 @@ def main() -> int:
             spec["arms"][0]["preregistered_exit"] = sizing["preregistered_exit"]
             spec["arms"][0]["preregistered_note"] = sizing["preregistered_note"]
             spec["_fires_basis"] = f"{basis} | {fires_grain(a.step)}"
+        if word is not None:
+            spec["owner_word"] = word
         errs = launch_refusals(spec, ROOT, subset_override=(a.strategy,))
         if errs:
             return refuse(f"the consumer's own gate refuses the draft for "

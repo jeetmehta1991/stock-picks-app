@@ -24962,6 +24962,11 @@ if n == 1:
             # universe (and exercises the waiver path while doing it).
             "shape_waiver": ("test fixture: resume-loop probe on a "
                              "2-ticker temp universe, not a campaign step"),
+            # S6-B3338: a launch cites the owner's word, quoted in a row of
+            # its ticket. This subprocess reads the REAL ledger (a repository
+            # fact, L792), so it cites the committed row recording the ruling
+            # that approved the door: S6-B3337, 'your rec approved'.
+            "owner_word": {"ticket": "S6-B3337", "verbatim": "your rec approved"},
             "leg_cap_hours": 0.1, "max_legs": 3,
             # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest): the family
             # reads swing AND span, so the arm names both (span at production).
@@ -26086,6 +26091,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r136: L975's clause in the #299 row, same call as the skill edit.
         ("AND IN EVERY PROGRAMME, NOT ONLY A CAMPAIGN",
          'L975 (B3139q-r136): a LEVER4 Step-2 FAIL reported without its legs'),
+        # B3139q-r138: the S6-B3338 owner-word clause in the launch row, same call.
+        ("AND THE SPEC CITES THE OWNER'S WORD FOR THIS LAUNCH",
+         'L981 (B3139q-r138): the launch word was unchecked on the engine path'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26336,7 +26344,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 360 -> 361 at B3139q-r132 (the L974 step-not-only-registration clause;
     # same call).
     # 361 -> 362 at B3139q-r136 (the L975 every-programme clause; same call).
-    assert len(gutted) == 362, gutted
+    # 362 -> 363 at B3139q-r138 (the S6-B3338 launch-row clause; same call).
+    assert len(gutted) == 363, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -33662,7 +33671,14 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     # a registered spec goes through to run_arm - the gate is not a wall
     # S6-B3171b: launch_refusals now applies the battery's key rule (run_postconfig.params_from_manifest) - both smc
     # knobs are named (span at production) in the good spec and in m2 below.
+    # S6-B3338: a launch cites the owner's word, quoted in a row of its
+    # ticket - the fixture ledger records it
+    _q3338 = tmp_path / "queue_b3338.md"
+    _q3338.write_text("| **S6-B9338** | **OPEN** | P1 | **RULED: 'launch the smc fixture "
+                      "wave' (fixture)** | _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(rw.owner_word, "QUEUE", _q3338)
     good = {"wave": "b2578ok", "strategy_subset": str(sub_smc),
+            "owner_word": {"ticket": "S6-B9338", "verbatim": "launch the smc fixture wave"},
             "owner_override_retest_admitted": _ov_smc,
             "arms": [{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10",
                                           "STRAT_EMA_SPAN": "200"}}]}
@@ -36325,10 +36341,18 @@ def test_b2644_second_read_of_a_spent_holdout_is_refused(tmp_path, monkeypatch):
     root = Path(__file__).resolve().parents[2]
     out = tmp_path / "spent.json"
     out.write_text("{}", encoding="utf-8")
+    sys.path.insert(0, str(root / "scripts"))
+    import owner_word as _ow
+    _q = tmp_path / "queue_b3338.md"
+    _q.write_text("| **S6-B9644** | **OPEN** | P1 | **RULED: 'read the spent fixture "
+                  "holdout' (fixture)** | _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(_ow, "QUEUE", _q)
     monkeypatch.setattr(sys, "argv",
                         ["offline_holdout_read.py",
                          "--sweep-artifact", "does_not_matter.json",
-                         "--out", str(out)])
+                         "--out", str(out),
+                         "--ruling", "read the spent fixture holdout",
+                         "--ruling-ticket", "S6-B9644"])
     import importlib.util as ilu
     spec = ilu.spec_from_file_location(
         "ohr_b2644b", root / "scripts" / "offline_holdout_read.py")
@@ -46502,6 +46526,8 @@ def test_b3104_run_wave_stamps_identity_and_refuses_a_second_step2_read(
     oa.mkdir()
     monkeypatch.setattr(rw, "ROOT", tmp_path)
     monkeypatch.setattr(rw, "launch_refusals", lambda spec, root: [])
+    # S6-B3338: not this test's gate - stubbed as launch_refusals is
+    monkeypatch.setattr(rw.owner_word, "spec_refusals", lambda spec: [])
     ran = []
 
     def fake_arm(spec, arm, engine_cmd=None):
@@ -65967,3 +65993,125 @@ def test_b3336_a_failing_step2_verdict_names_its_legs(monkeypatch):
                 if isinstance(n, ast.FunctionDef) and n.name == "main")
     assert "scan_step2_verdict_without_legs" in {
         n.id for n in ast.walk(main) if isinstance(n, ast.Name)}
+
+
+# ================================================================ B3139q-r138 S6-B3338: the owner's word at the engine-launch and Step-2-read doors
+def test_b3338_launch_and_holdout_read_doors_need_the_owners_recorded_word(monkeypatch, tmp_path):
+    """S6-B3338 (approved 2026-10-28T16:50:12Z, 'your rec approved' on
+    'Mechanize the your-word steps ... first'): the 2026-10-28 census classed
+    the engine launch word UNENFORCED and T3 band review TEXT-PIN-ONLY on the
+    engine path, and a depth candidate's Step-2 holdout read took no ruling.
+    Arms: owner_word.refusals refuses a missing word, a word naming no ticket,
+    a word under MIN_CHARS, a ticket with no row and words no row quotes, and
+    passes words a row quotes once whitespace and curly quotes are normalised;
+    run_wave.main refuses a spec without a recorded word before any arm runs
+    and launches one with it; make_spec.main refuses to write without a word
+    (a --dry draft needs none) and passes a recorded one; offline_holdout_read
+    .main requires --ruling and refuses unrecorded words; and each entry point
+    calls the check (AST)."""
+    import ast
+    import importlib.util as _ilu
+    import json as _json
+    import sys
+    import pytest
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import owner_word as ow
+    q = tmp_path / "queue_b3338.md"
+    q.write_text("| **S6-B9338** | **OPEN** | P1 | **RULED: the owner's word, verbatim "
+                 + chr(0x2018) + "Approve all recs   fable mode" + chr(0x2019)
+                 + " (fixture).** | _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+    ok = {"ticket": "S6-B9338", "verbatim": "Approve all recs fable mode"}
+    assert ow.refusals(ok, door="t") == []
+    assert ow.refusals({"ticket": "S6-B9338",
+                        "verbatim": "'Approve all recs   fable mode'"}, door="t") == []
+    # only the curly mapping makes a curly apostrophe match the row's straight one
+    assert ow.refusals({"ticket": "S6-B9338",
+                        "verbatim": "the owner\u2019s word, verbatim"}, door="t") == []
+    assert "no owner word" in ow.refusals(None, door="t")[0]
+    assert "names no ticket" in ow.refusals({"verbatim": "Approve all recs"}, door="t")[0]
+    assert "under 8 characters" in ow.refusals({"ticket": "S6-B9338", "verbatim": "Approve"},
+                                               door="t")[0]
+    assert "has no row" in ow.refusals({"ticket": "S6-B9339", "verbatim": "Approve all recs"},
+                                       door="t")[0]
+    assert "quotes" in ow.refusals({"ticket": "S6-B9338", "verbatim": "Approve everything now"},
+                                   door="t")[0]
+    assert ow.spec_refusals({"arms": []}) and ow.spec_refusals({"owner_word": ok}) == []
+
+    # run_wave.main: refused before any arm without the word, launched with it
+    _s = _ilu.spec_from_file_location("run_wave_b3338", root / "scripts" / "run_wave.py")
+    rw = _ilu.module_from_spec(_s)
+    _s.loader.exec_module(rw)
+    (tmp_path / "output_audit").mkdir()
+    monkeypatch.setattr(rw, "ROOT", tmp_path)
+    monkeypatch.setattr(rw, "launch_refusals", lambda spec, root: [])
+    called = []
+    monkeypatch.setattr(rw, "run_arm", lambda spec, arm, engine_cmd=None: (
+        called.append(arm["tag"]) or {"arm": arm["tag"], "status": "COMPLETE", "legs": 1}))
+
+    def run(d, name):
+        p = tmp_path / name
+        p.write_text(_json.dumps(d), encoding="utf-8")
+        monkeypatch.setattr(sys, "argv", ["run_wave.py", "--spec", str(p)])
+        return rw.main()
+    assert run({"wave": "w3338a", "arms": [{"tag": "a", "env": {}}]}, "a.json") == 3
+    assert called == [], "no arm may run without the owner's word"
+    summ = _json.loads((tmp_path / "output_audit" / "w3338a_wave_summary.json")
+                       .read_text(encoding="utf-8"))
+    assert any("S6-B3338" in r for r in summ["refusals"]), summ
+    assert run({"wave": "w3338b", "owner_word": ok,
+                "arms": [{"tag": "b", "env": {}}]}, "b.json") == 0
+    assert called == ["b"], called
+
+    # make_spec.main: the word is checked first; --dry needs none
+    _m = _ilu.spec_from_file_location("make_spec_b3338", root / "scripts" / "make_spec.py")
+    ms = _ilu.module_from_spec(_m)
+    _m.loader.exec_module(ms)
+    base = ["make_spec.py", "--strategy", "no_such_strategy_b3338", "--param", "P1",
+            "--levels", "1", "--wave-prefix", "w3338"]
+    out = []
+    monkeypatch.setattr("builtins.print", lambda *a, **k: out.append(" ".join(map(str, a))))
+    monkeypatch.setattr(sys, "argv", base)
+    assert ms.main() == 2 and "S6-B3338" in out[-1], out
+    monkeypatch.setattr(sys, "argv", base + ["--dry"])
+    assert ms.main() == 2 and "no SPECS entry" in out[-1], out
+    monkeypatch.setattr(sys, "argv", base + ["--owner-word", "Approve all recs fable mode",
+                                             "--owner-word-ticket", "S6-B9338"])
+    assert ms.main() == 2 and "no SPECS entry" in out[-1], out
+    monkeypatch.undo()
+    monkeypatch.setattr(ow, "QUEUE", q)
+
+    # offline_holdout_read.main: --ruling required; unrecorded words refused
+    _o = _ilu.spec_from_file_location("ohr_b3338", root / "scripts" / "offline_holdout_read.py")
+    ohr = _ilu.module_from_spec(_o)
+    _o.loader.exec_module(ohr)
+    spent = tmp_path / "spent.json"
+    spent.write_text("{}", encoding="utf-8")
+    argv = ["offline_holdout_read.py", "--sweep-artifact", "x.json", "--out", str(spent)]
+    monkeypatch.setattr(sys, "argv", argv)
+    with pytest.raises(SystemExit) as e:
+        ohr.main()
+    assert e.value.code == 2, "argparse must require --ruling"
+    monkeypatch.setattr(sys, "argv", argv + ["--ruling", "Approve everything now",
+                                             "--ruling-ticket", "S6-B9338"])
+    with pytest.raises(SystemExit) as e:
+        ohr.main()
+    assert "S6-B3338" in str(e.value), e.value
+    monkeypatch.setattr(sys, "argv", argv + ["--ruling", "Approve all recs fable mode",
+                                             "--ruling-ticket", "S6-B9338"])
+    with pytest.raises(SystemExit) as e:
+        ohr.main()
+    assert "spent" in str(e.value), "a recorded word passes to the spent-holdout guard"
+
+    # each entry point CALLS the check (#224: defined is not run)
+    def calls(rel, fn, attr):
+        tree = ast.parse((root / "scripts" / rel).read_text(encoding="utf-8"))
+        f = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == fn)
+        return any(isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
+                   and n.func.attr == attr and isinstance(n.func.value, ast.Name)
+                   and n.func.value.id == "owner_word" for n in ast.walk(f))
+    assert calls("run_wave.py", "main", "spec_refusals")
+    assert calls("make_spec.py", "main", "refusals")
+    assert calls("offline_holdout_read.py", "main", "refusals")
