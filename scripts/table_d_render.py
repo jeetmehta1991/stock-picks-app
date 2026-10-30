@@ -111,7 +111,7 @@ def _factorial_rows(a: dict) -> list:
             # B3088 RETRACTION of B3082b. That comment said per_exit carries
             # no per-cell trade counts and rendered '-'. IT DOES CARRY THEM,
             # under a misleading name. grade_candle_config.grade builds
-            # full_n as cube.groupby("exit_method").size() and line 279 sets
+            # full_n as cube.groupby("exit_method").size() and its loop sets
             # "fires" to len(g) over is_rows grouped the same way - BOTH are
             # counts of CUBE ROWS, i.e. trades. VERIFIED across 18 of 18
             # configs: rows / results_n_exits == fires == full_period_n
@@ -121,6 +121,7 @@ def _factorial_rows(a: dict) -> list:
             # because holdout_n is 0 - Step 1 does not read the holdout.
             "is_n": pe.get("fires"),
             "full_n_count_only": (pe.get("admit") or {}).get("full_period_n"),
+            "episode": pe.get("episode"),      # S6-B3318: the EPISODE line
         })
     return out
 

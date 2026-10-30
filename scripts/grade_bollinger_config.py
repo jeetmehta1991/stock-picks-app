@@ -233,6 +233,7 @@ def grade(cube_csv: Path, config: dict, *, min_n: int = 10, top_n: int = 10,
     ho_n = ho_rows.groupby("exit_method", observed=True).size()
     full_n = cube.groupby("exit_method", observed=True).size()
 
+    from episode_disclosure import month_concentration  # S6-B3318
     per_exit = []
     for ex, g in is_rows.groupby("exit_method", observed=True):
         stats = rc.evaluate(g["pnl_pct"], g["hold_days"], min_n=1)
@@ -247,7 +248,14 @@ def grade(cube_csv: Path, config: dict, *, min_n: int = 10, top_n: int = 10,
             "admit": {"holdout_n": int(ho_n.get(ex, 0)),
                       "full_period_n": int(full_n.get(ex, 0)),
                       "verdict": ("RANKED" if len(g) >= min_n
-                                  else "BELOW_POWER_FLOOR")}})
+                                  else "BELOW_POWER_FLOOR")},
+            # S6-B3318 (B3139q-r158): the one-episode disclosure - the
+            # largest month's share of this exit's IS trades and the IS
+            # sharpe without it, scored at this grader's own floor (the
+            # depth sweep's call form); a disclosure, never a gate
+            "episode": month_concentration(
+                g, lambda d: (rc.evaluate(d["pnl_pct"], d["hold_days"],
+                                          min_n=min_n) or {}).get("sharpe"))})
     per_exit.sort(key=lambda r: (-(r["is_ci_lo"] if r["is_ci_lo"] is not None
                                    else -9e9), -r["fires"]))
     ranked = [r for r in per_exit if r["admit"]["verdict"] == "RANKED"]

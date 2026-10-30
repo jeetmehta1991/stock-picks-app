@@ -46336,6 +46336,11 @@ def test_b3101_candle_block_is_report_only_and_feeds_the_breadth_reader():
         note=stored["note"], disclosure=stored["manifest_check"]), default=float))
     mult = doc.pop("multiplicity")
     doc["cube"] = stored["cube"]
+    # S6-B3318 (B3139q-r158): the episode field is report-only too - present on
+    # every per-exit row, stripped, and then NOTHING else may differ
+    for key in ("per_exit", "step1_ranking"):
+        assert doc[key] and all(isinstance(r.get("episode"), dict) for r in doc[key]), key
+        doc[key] = [{k: v for k, v in r.items() if k != "episode"} for r in doc[key]]
     assert doc == stored, sorted(k for k in set(doc) | set(stored)
                                  if doc.get(k) != stored.get(k))
     n_exits = _pd.read_csv(cube, usecols=["exit_method"])["exit_method"].nunique()
@@ -59034,7 +59039,6 @@ _B3243_LEGACY_WRITERS = frozenset({
     "build_r6_change_list.py",
     "build_russell_events.py",
     "build_strategy_producer_map.py",
-    "build_strategy_return_correlation.py",
     "build_strategy_roster.py",
     "build_verification_matrix.py",
     "build_walk_verdict_ledger.py",
@@ -59147,7 +59151,7 @@ def test_b3243_a_writing_script_parses_its_arguments():
         "a legacy writer now parses its arguments or is gone - remove it from the frozen set",
         sorted(_B3243_LEGACY_WRITERS - writers))
     assert "lever4_condition_census.py" not in writers
-    assert len(_B3243_LEGACY_WRITERS) <= 120, len(_B3243_LEGACY_WRITERS)
+    assert len(_B3243_LEGACY_WRITERS) <= 119, len(_B3243_LEGACY_WRITERS)   # S6-B3383: 120 -> 119
 
 
 def test_b3155b_provenance_repair_holds_the_prefetch_bar(tmp_path):
@@ -65096,13 +65100,10 @@ def test_b3318_episode_disclosure_unwired_graders_is_a_shrinking_set():
     assert len(pop) >= 15, sorted(pop)
     for wired in ("breadth_step1_grid.py", "offline_level_sweep.py"):   # S6-B3315
         assert calls_mc(wired), wired
-    CFG = "S6-B3318: an engine-config grader (grid_auto) - ranks configs' cells, no episode field"
+    # B3139q-r158: the five engine-config graders write it (test_b3318b) and left the set
     FREE = "S6-B3318: a free-level grader - grades a config's free levels, no episode field"
     STEP1 = "S6-B3318: a Step-1 search script - ranks its cells, no episode field"
     UNWIRED_EPISODE = {
-        "grade_bollinger_config.py": CFG, "grade_candle_config.py": CFG,
-        "grade_institutional_config.py": CFG, "grade_npoc_config.py": CFG,
-        "grade_pairs_config.py": CFG,
         "grade_free_levels_bollinger.py": FREE, "grade_free_levels_candle.py": FREE,
         "grade_free_levels_institutional.py": FREE, "grade_free_levels_npoc.py": FREE,
         "grade_free_levels_pairs.py": FREE,
@@ -68525,10 +68526,7 @@ def test_b3382_companion_screen_scores_on_the_grids_basis(tmp_path, monkeypatch)
 
 # S6-B3382 (B3139q-r157): runbook-cited P&L readers that score gross by name,
 # each with its reason - shrink-only
-_B3382_NAMED_GROSS = {
-    "build_strategy_return_correlation.py":
-        "S6-B3383: daily mean pnl_pct per strategy for the return-correlation "
-        "matrix of the portfolio reframe - no basis stated, gross by omission",
+_B3382_NAMED_GROSS = {        # S6-B3383 (B3139q-r158) left it: --basis REQUIRED
     "family_pregate.py":
         "named gross in test_b3122's _B3122_RAW_SCORERS: reads the cube with "
         "pd.read_csv and scores holdout pnl_pct",
@@ -68581,8 +68579,9 @@ def test_b3382b_every_runbook_pnl_instrument_states_its_basis(tmp_path):
     assert len(got) >= 10, sorted(got)            # the population is not vacuous
     gross = {s for s, k in got.items() if k == "GROSS"}
     assert gross == set(_B3382_NAMED_GROSS), (sorted(gross), sorted(_B3382_NAMED_GROSS))
-    assert len(_B3382_NAMED_GROSS) <= 2 and all(len(r) >= 30 for r in _B3382_NAMED_GROSS.values())
-    for s in ("institutional_companion_screen.py", "breadth_step1_grid.py", "offline_level_sweep.py"):
+    assert len(_B3382_NAMED_GROSS) <= 1 and all(len(r) >= 30 for r in _B3382_NAMED_GROSS.values())
+    for s in ("institutional_companion_screen.py", "breadth_step1_grid.py", "offline_level_sweep.py",
+              "build_strategy_return_correlation.py"):
         assert got[s] == "BASIS-REQUIRED", (s, got.get(s))
     for s in ("breadth_step2_read.py", "offline_holdout_read.py"):
         assert got[s] == "BASIS-FROM-ARTIFACT", (s, got.get(s))
@@ -68608,6 +68607,116 @@ def test_b3382b_every_runbook_pnl_instrument_states_its_basis(tmp_path):
         "raw_screen.py": "GROSS", "net_screen.py": "NET", "flag_screen.py": "BASIS-REQUIRED",
         "opt_screen.py": "GROSS", "art_screen.py": "BASIS-FROM-ARTIFACT",
         "own_render.py": "GROSS"}, _b3382_census(rb, plant)
+
+
+def test_b3318b_engine_config_graders_write_the_episode(tmp_path):
+    """S6-B3318 (B3139q-r158): the five engine-config graders - bollinger,
+    candle, institutional, naked_poc and pairs, each grid_auto's per-exit
+    loop - write the one-episode disclosure on every per-exit row:
+    episode_disclosure.month_concentration on that exit's IS trades, the rest
+    scored at the GRADER'S OWN floor (min_n) in the depth sweep's call form,
+    and table_d_render's engine-grid reader carries it to the EPISODE line.
+    Fixture: 30 IS trades per exit, 20 of them in 2023-03. At min_n 10 the 10
+    trades without March are scored - equal to rc.evaluate on the same rows
+    of the same loaded cube; at min_n 11 they sit below the floor and read
+    None, never 0, which a scorer at a literal floor would not give."""
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+    import table_d_render as tdr
+    import grade_bollinger_config as gb
+    import grade_candle_config as gc
+    import grade_institutional_config as gi
+    import grade_npoc_config as gn
+    import grade_pairs_config as gp
+    days = ([f"2023-03-{d:02d}" for d in range(1, 21)]
+            + [f"2023-{m:02d}-{d}" for d in (15, 16) for m in range(4, 9)])
+    assert len(days) == 30 and len(set(days)) == 30
+    exits = ("time_stop_10d", "breakeven_plus_trail")
+
+    def pnl(i, ex):
+        return (1.5 if i % 3 else -1.0) + (0.25 if ex == exits[0] else -0.1) * (i % 4)
+    for mod, strat, extra in ((gb, gb.STRAT, {}), (gc, gc.FAMILY[0], {}),
+                              (gi, gi.STRAT, {"admit": {}}), (gn, gn.LONG, {}),
+                              (gp, gp.FAMILY[0], {})):
+        d = tmp_path / mod.__name__
+        d.mkdir()
+        csv = d / "trade_exit_detail.csv"
+        _pd.DataFrame([{"strategy": strat, "direction": "long", "exit_method": ex,
+                        "entry_date": day, "ticker": f"T{i}", "pnl_pct": pnl(i, ex),
+                        "hold_days": 5.0}
+                       for i, day in enumerate(days) for ex in exits]).to_csv(csv, index=False)
+        cube = rc.load_cube(csv)
+        for floor in (10, 11):
+            doc = mod.grade(csv, {}, min_n=floor, **extra)
+            eps = {r["exit"]: r.get("episode") for r in doc["per_exit"]}
+            assert set(eps) == set(exits), (mod.__name__, floor, eps)
+            for ex, e in eps.items():
+                assert (e["top_month"], e["top_month_share"], e["months"], e["n"],
+                        e["n_without_top_month"]) == ("2023-03", 0.667, 6, 30, 10), (
+                    mod.__name__, ex, e)
+                r = cube[(cube["exit_method"] == ex)
+                         & ~cube["entry_date"].astype(str).str.startswith("2023-03")]
+                want = (None if floor == 11 else
+                        rc.evaluate(r["pnl_pct"], r["hold_days"], min_n=10)["sharpe"])
+                assert e["is_sharpe_without_top_month"] == want, (mod.__name__, floor, ex, e, want)
+                assert floor == 11 or want is not None
+        rows = tdr._factorial_rows(doc)
+        assert {r["exit"]: r["episode"] for r in rows} == eps, mod.__name__
+        line = tdr._episode_lines(rows, 25)
+        assert len(line) == 1 and "2023-03 holds 0.667 of 30" in line[0], line
+    # an engine grid written before the field renders no EPISODE line (test_b3140's byte-identity)
+    old = tdr._factorial_rows({"config": {}, "per_exit": [{"exit": exits[0], "is_sharpe": 1.0}]})
+    assert old[0]["episode"] is None and tdr._episode_lines(old, 25) == []
+
+
+def test_b3383_return_correlation_states_its_basis(tmp_path, monkeypatch):
+    """S6-B3383 (B3139q-r158): build_strategy_return_correlation averaged the
+    raw pnl_pct by omission and parsed no arguments, so any run - --help
+    included - rewrote the committed B2182 artifact (a #327 writer). --basis is
+    REQUIRED from breadth_step1_grid.BASES; pnl_of is the one definition - net
+    is roster_core.net_pnl row for row; the artifact and its summary record the
+    basis. A run without --basis refuses before the trade log is read. Fixture:
+    3 strategies x 40 exit days, one +900 pct trade the net clip bites."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+    import build_strategy_return_correlation as bsrc
+    days = _pd.date_range("2023-01-02", periods=40, freq="B")
+    d = _pd.DataFrame([{"strategy": s, "exit_date": day,
+                        "pnl_pct": 900.0 if (s == "a" and i == 3) else ((i * (k + 2)) % 7) - 3.0}
+                       for k, s in enumerate("abc") for i, day in enumerate(days)])
+    assert list(bsrc.pnl_of(d, "net")) == list(rc.net_pnl(d["pnl_pct"]))
+    assert list(bsrc.pnl_of(d, "gross")) == list(d["pnl_pct"])
+    with pytest.raises(SystemExit, match="S6-B3383"):
+        bsrc.pnl_of(d, "netto")
+
+    def no_read(*a, **k):
+        raise AssertionError("the trade log was read before the arguments were checked")
+    monkeypatch.setattr(_pd, "read_parquet", no_read)
+    with pytest.raises(SystemExit) as e:
+        bsrc.main([])
+    assert e.value.code == 2
+    monkeypatch.setattr(_pd, "read_parquet", lambda *a, **k: d.copy())
+    got = {}
+    for basis in ("gross", "net"):
+        out = tmp_path / f"corr_{basis}.json"
+        assert bsrc.main(["--basis", basis, "--out", str(out)]) == 0
+        got[basis] = _j.loads(out.read_text(encoding="utf-8"))
+        md = out.with_name(out.stem + "_summary.md").read_text(encoding="utf-8")
+        assert got[basis]["basis"] == basis and f"- basis: {basis} (S6-B3383)" in md.splitlines()
+    # the clip moves the streams: strategy a's 900 is 299.8 on net
+    assert got["gross"]["sharpe_cross_section"] != got["net"]["sharpe_cross_section"]
 
 
 def test_b3384_an_owner_message_does_not_void_a_running_gate(tmp_path, monkeypatch):

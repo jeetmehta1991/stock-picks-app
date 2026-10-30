@@ -28,8 +28,13 @@ DISCLOSED CHOICES (v1, each cheap to revisit):
   219-way selection bias UP a level (the S6-B2178c decision package carries
   these verbatim).
 
-Usage: PYTHONPATH=".;scripts" python scripts/build_strategy_return_correlation.py
-Writes output_audit/b2182_strategy_correlation.json + _summary.md
+Usage: PYTHONPATH=".;scripts" python scripts/build_strategy_return_correlation.py --basis gross|net
+Writes output_audit/b2182_strategy_correlation.json + _summary.md on gross (the
+B2182 artifact), ..._net.json + _net_summary.md on net, or --out and its summary.
+S6-B3383 (B3139q-r158): --basis is REQUIRED (breadth_step1_grid.BASES, the
+grids' vocabulary) - the streams averaged the raw pnl_pct by omission; 'net' is
+roster_core.net_pnl. The script parses its arguments: an unknown one refuses,
+and --help prints the usage, before the trade log is read or a file written.
 """
 from __future__ import annotations
 
@@ -45,8 +50,31 @@ MIN_TRADES = 30
 SHRINK_K = 30.0
 SUBSET_N = 20
 
+from breadth_step1_grid import BASES  # noqa: E402  (one basis vocabulary, S6-B3314)
 
-def main() -> int:
+
+def pnl_of(d, basis: str):
+    """S6-B3383: the per-trade P&L the daily streams average - 'gross' is the
+    raw pnl_pct (the basis of B2182's committed artifact), 'net' the roster's
+    roster_core.net_pnl. One definition; main() calls nothing else."""
+    import roster_core as rc
+    if basis not in BASES:
+        raise SystemExit(f"REFUSED: basis {basis!r} not in {BASES} (S6-B3383)")
+    return rc.net_pnl(d["pnl_pct"]) if basis == "net" else d["pnl_pct"]
+
+
+def main(argv=None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description="B2182: strategy-return correlation "
+                                             "and effective breadth (S6-B3383)")
+    ap.add_argument("--basis", required=True, choices=BASES,
+                    help="S6-B3383: the pnl basis the streams average, stated on "
+                         "every run and recorded on the artifact - no default")
+    ap.add_argument("--out", default=None,
+                    help="the JSON to write (default output_audit/"
+                         "b2182_strategy_correlation[_net].json); the summary "
+                         ".md sits beside it")
+    a = ap.parse_args(argv)
     import numpy as np
     import pandas as pd
     from roster_core import HO_START
@@ -65,6 +93,7 @@ def main() -> int:
 
     # daily exit-date-attributed streams over the IS trading days
     days = pd.Index(sorted(d["exit_date"].unique()), name="exit_date")
+    d = d.assign(pnl_pct=pnl_of(d, a.basis))          # S6-B3383
     daily = (d.groupby(["exit_date", "strategy"])["pnl_pct"].mean()
              .unstack("strategy").reindex(days).fillna(0.0) / 100.0)
 
@@ -119,6 +148,7 @@ def main() -> int:
 
     out = {
         "source": "output_r5_merged_1_7/trade_log.parquet (production exits)",
+        "basis": a.basis,                                 # S6-B3383
         "window": f"IS only: exit_date < {HO_START} (holdout untouched)",
         "strategies_analyzed": int(n_s),
         "trades_analyzed": int(len(d)),
@@ -140,11 +170,13 @@ def main() -> int:
             "Sharpe claims",
         ],
     }
-    jp = ROOT / "output_audit" / "b2182_strategy_correlation.json"
+    jp = (Path(a.out) if a.out else ROOT / "output_audit" / (
+        "b2182_strategy_correlation%s.json" % ("" if a.basis == "gross" else "_net")))
     jp.write_text(json.dumps(out, indent=1), encoding="utf-8")
     md = [
         "# Strategy-return correlation and effective breadth (B2182, zero engine runs)",
         "",
+        f"- basis: {a.basis} (S6-B3383)",
         f"- IS trades analyzed: {len(d)} across {n_s} strategies (>= {MIN_TRADES} trades each)",
         f"- average pairwise rho: {rho_bar:.3f}",
         f"- cross-sectional annualized Sharpe: mean {grand:.3f}, median {float(sharpe.median()):.3f}",
@@ -157,7 +189,7 @@ def main() -> int:
         md.append(f"| {k} | {sb} | {v.get('rho_bar_all', v.get('rho_bar'))} | "
                   f"{v['implied_portfolio_sharpe']} |")
     md += ["", "Caveats: " + " / ".join(out["caveats"])]
-    (ROOT / "output_audit" / "b2182_strategy_correlation_summary.md").write_text(
+    jp.with_name(jp.stem + "_summary.md").write_text(
         "\n".join(md) + "\n", encoding="utf-8")
     print(json.dumps(out["portfolio_scenarios"], indent=1))
     print(f"[OK] wrote {jp}")
