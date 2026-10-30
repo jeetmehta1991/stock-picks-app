@@ -486,9 +486,13 @@ def readset_decide(out, root, st_before, st_after, readset_path) -> tuple[str, s
     rs2.unlink(missing_ok=True)
     log2 = Path(str(out) + RERUN_LOG_SUFFIX)
     st1 = output_audit_state(root)
-    with open(log2, "w", encoding="utf-8") as fh2, readset_env(root, rs2):
+    # S6-B3329: the re-run's node ids travel in an argfile - up to RERUN_CAP
+    # of them on the command line could overrun the Windows limit
+    import pytest_argfile
+    with open(log2, "w", encoding="utf-8") as fh2, readset_env(root, rs2), \
+            pytest_argfile.argfile(args, prefix="gate_rerun_") as af:
         rc2 = subprocess.call([sys.executable, "-m", "pytest", "-p", PLUGIN,
-                               "-q", "-p", "no:cacheprovider", *args],
+                               "-q", "-p", "no:cacheprovider", af],
                               stdout=fh2, stderr=subprocess.STDOUT, cwd=str(root))
     doc2 = load_readset(rs2)
     moved2 = _minus_own(output_audit_moved(st1, output_audit_state(root)), own)

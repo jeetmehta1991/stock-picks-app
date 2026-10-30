@@ -983,7 +983,9 @@ artifact's P&L basis and flags MIXED BASES (S6-B3314)** - a gross depth row and 
 one ranking are not comparable without it; an artifact that records no basis reads NOT RECORDED,
 except a pre-S6-B3314 depth surface, which is gross by the instrument's omission. **A per-leg table
 (every artifact records one leg) labels a param whose `legs` excludes that leg `<LEG> LEG ONLY`, never
-NOT TESTED, and a breadth cell shows the comparison its row was graded with (S6-B3304).**
+NOT TESTED, and a breadth cell shows the comparison its row was graded with (S6-B3304). A row keyed by
+a key two per-side twins share lands in the column of its own artifact's leg - the twin that carries
+the key as `coverage_key` on that leg - through `table_d_render._key_owners` (S6-B3372).**
 
 **What does NOT apply offline, and why.** The post-config battery, the landing hook, `LANDING REPORT`,
 the launch gate, `gate_receipt.json`, the chain and its monitor are all triggered by an ENGINE RUN.
@@ -1041,7 +1043,8 @@ meaning.
    row graded once per leg (validate_spec's one-key-one-column rule, S6-B3139an); each leg's grid
    takes that leg's ops. `band_coverage_gate` counts a legs-declaring row PER LEG, so one leg's grid
    never covers the other leg's row (a pooled grid counts for both); per-leg depth params carry the
-   same field.
+   same field, and `validate_spec` refuses a param whose label names a side (an upper-case LONG or
+   SHORT) without it, or with any other side (S6-B3325).
 4. **BAND REVIEW** - the owner reviews the full band (depth + breadth rows) before Step 1 (§0.6).
    Nothing runs earlier.
 5. **THE IN-SAMPLE GRID** (Step 3's search; the tool's name predates the renumbering) -

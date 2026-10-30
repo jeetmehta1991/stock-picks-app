@@ -67487,3 +67487,296 @@ def test_b3337_a_rule_inserted_into_the_runbook_names_its_mechanism():
         assert bool(v.scan_ungated_addition([], text=t, **st)) == mf, st
     assert "S6-B3337" in v.scan_ungated_addition([], text="", **cases[0][2])[0]
     assert "_RUNBOOK]" in _insp.getsource(v.scan_prose_only_rule)
+
+
+def test_b3329_every_unbounded_pytest_selection_travels_in_an_argfile(tmp_path, monkeypatch):
+    """S6-B3329 (B3139q-r148): a pytest launch that puts a selection on its
+    command line dies on Windows once the selection is large - MEASURED 421
+    ids (34,819 bytes) exited 126 at B3139q-r131 and 493 died on WinError 206
+    at B3139q-r139. scripts/pytest_argfile.argfile carries the list in an
+    @file. (1) The sweep: every list naming pytest that expands a non-literal
+    - a starred element, or a list joined with one - in tracked code outside
+    backtest/tests and the archives sits in one of the two launches classed
+    BOUNDED: the gate's run() passes its caller's own arguments, and
+    pre-launch phase 4 six fixed files. (2) The read-set re-run, preflight
+    C16 and C19 and the polluter bisection, each driven with a 2,000-item
+    selection and its subprocess faked, keep the command line under 2,000
+    characters, hand pytest every item in order and remove the file (the
+    pre-gate's arm is test_b3360's part 4). (3) An empty selection is refused
+    - pytest given an empty argfile runs its whole default suite (MEASURED, 4
+    of 4 tests in a throwaway directory) - and the file is removed when the
+    block raises."""
+    import ast as _ast
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    import pytest as _pt
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import bisect_test_polluter as btp
+    import preflight as pf
+    import pyramid_gate as pg
+    import pytest_argfile as paf
+
+    # (1) the sweep - each node is credited to its innermost function
+    def _names_pytest(n):
+        return isinstance(n, _ast.List) and any(
+            isinstance(e, _ast.Constant) and e.value == "pytest" for e in n.elts)
+
+    def _expands(n):
+        if _names_pytest(n) and any(isinstance(e, _ast.Starred) for e in n.elts):
+            return True
+        return (isinstance(n, _ast.BinOp) and isinstance(n.op, _ast.Add)
+                and (_names_pytest(n.left) or _names_pytest(n.right))
+                and not (isinstance(n.left, _ast.List) and isinstance(n.right, _ast.List)))
+
+    def _scan(node, where, out, rel):
+        for ch in _ast.iter_child_nodes(node):
+            if isinstance(ch, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                _scan(ch, ch.name, out, rel)
+                continue
+            if _expands(ch):
+                out.add((rel, where))
+            _scan(ch, where, out, rel)
+
+    tracked = _sp.run(["git", "ls-files", "-z", "*.py"], cwd=root, capture_output=True,
+                      text=True, check=True).stdout.split("\0")
+    found: set = set()
+    scanned = 0
+    for rel in filter(None, tracked):
+        if rel.startswith(("backtest/tests/", "archive/", ".archive/")):
+            continue
+        try:
+            tree = _ast.parse((root / rel).read_text(encoding="utf-8"))
+        except (SyntaxError, UnicodeDecodeError, OSError):
+            continue
+        scanned += 1
+        _scan(tree, "<module>", found, rel)
+    assert scanned > 500, f"the sweep read {scanned} files - the population is broken"
+    assert found == {("scripts/pyramid_gate.py", "run"),
+                     ("scripts/pre_launch_validation.py",
+                      "phase_4_silent_gap_regression")}, sorted(found)
+
+    # (2) each unbounded launch, driven with 2,000 items
+    seen: dict = {}
+
+    def _grab(cmd):
+        at = [str(c) for c in cmd if str(c).startswith("@")]
+        assert len(at) == 1, cmd
+        seen.update(cmd=[str(c) for c in cmd], path=at[0][1:],
+                    items=_P(at[0][1:]).read_text(encoding="utf-8").splitlines())
+
+    def _check(want, who):
+        assert len(" ".join(seen["cmd"])) < 2000, f"{who}: the selection rode the command line"
+        assert seen["items"] == list(want), f"{who}: the argfile must carry every item, in order"
+        assert not _P(seen["path"]).exists(), f"{who}: the argfile is removed after the run"
+        seen.clear()
+
+    ids = [f"backtest/tests/test_unit.py::test_fake_{i:04d}_" + "x" * 70 for i in range(2000)]
+
+    class _Done:
+        returncode = 0
+        stdout = "2000 passed in 1.00s\n"
+        stderr = ""
+
+    def _run(cmd, **k):
+        _grab(cmd)
+        return _Done()
+
+    # the read-set re-run (verdict and read-set faked; the real call shape)
+    verdicts = iter([("RERUN", ids), ("CLEAN", [])])
+    monkeypatch.setattr(pg, "readset_verdict", lambda doc, moved, cap=0: next(verdicts))
+    monkeypatch.setattr(pg, "load_readset", lambda p: {"schema": 1, "addr": {}})
+    monkeypatch.setattr(pg.subprocess, "call", lambda cmd, **k: (_grab(cmd), 0)[1])
+    verdict, line = pg.readset_decide(tmp_path / "g.out", tmp_path, None, None,
+                                      tmp_path / "g.out.readset.json")
+    monkeypatch.undo()
+    assert verdict == "RERUN-PASS:2000-tests", (verdict, line)
+    _check(ids, "readset_decide")
+
+    # preflight C16 and C19, each on its default runner
+    q = tmp_path / pf.C6_QUEUE_EXEMPT
+    q.write_text("x\n", encoding="utf-8")
+    row = ["| **S6-B0000** | **OPEN** | P2 | a row | _reason:_ x |"]
+    monkeypatch.setattr(pf, "queue_reading_tests", lambda test_path=None: ids)
+    monkeypatch.setattr(pf.subprocess, "run", _run)
+    assert pf.check_queue_readers_after_stamp([str(q)], added_lines=row, stamp_ts=0.0) == []
+    monkeypatch.undo()
+    _check(ids, "C16")
+    monkeypatch.setattr(pf, "tracked_set_tests", lambda test_path=None: ids)
+    monkeypatch.setattr(pf.subprocess, "run", _run)
+    assert pf.check_tracked_set_readers_on_add(added=["scripts/new_tool.py"],
+                                               queue_added_lines=row) == []
+    monkeypatch.undo()
+    _check(ids, "C19")
+
+    # the polluter bisection: candidate files, then its two targets
+    files = [f"backtest/tests/test_fake_{i:04d}_" + "y" * 40 + ".py" for i in range(2000)]
+    monkeypatch.setattr(btp.subprocess, "run", _run)
+    assert btp.run(files) is True
+    monkeypatch.undo()
+    _check(files + list(btp.TARGETS), "bisect run")
+
+    # (3) an empty selection is refused; a raising block still removes the file
+    with _pt.raises(ValueError):
+        with paf.argfile([]):
+            pass
+    held: dict = {}
+    with _pt.raises(RuntimeError):
+        with paf.argfile(["a.py::t"]) as af:
+            held["path"] = af[1:]
+            assert _P(held["path"]).read_text(encoding="utf-8") == "a.py::t\n"
+            raise RuntimeError("the run died")
+    assert not _P(held["path"]).exists()
+
+
+def test_b3325_a_param_whose_label_names_a_side_carries_that_leg(tmp_path):
+    """S6-B3325 (B3139q-r148): a per-leg Table D labels the other leg's params
+    LEG ONLY only where a param carries `legs` - bollinger_lower P3, P4, P10
+    and cmf_flip P7, P8, P10 carried none, so their per-leg renders called the
+    other leg's params NOT TESTED in this campaign (MEASURED before the tags:
+    the long bollinger render said so of P3 and P10, the short one of P4).
+    (1) the nine tags, in both registries; (2) validate_spec now refuses a
+    label naming a side (an upper-case LONG or SHORT, the registries'
+    convention) with no `legs`, a field naming a different side, and a field
+    that is not a non-empty list of distinct long / short values - a field on
+    a label naming no side (a breadth row) stays free; every entry of both
+    registries validates; (3) the real per-leg renders: each other-leg param
+    reads LEG ONLY."""
+    import copy as _copy
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import table_d_render as tdr
+
+    want = {("bollinger_lower", "P3"): ["short"], ("bollinger_lower", "P4"): ["long"],
+            ("bollinger_lower", "P10"): ["short"], ("cmf_flip", "P7"): ["long"],
+            ("cmf_flip", "P8"): ["short"], ("cmf_flip", "P10"): ["short"]}
+    for reg in (pvt.SPECS, pvt.SPECS_PHASE0):
+        for (s, i), legs in want.items():
+            if s in reg:
+                p = next(x for x in reg[s]["params"] if x["id"] == i)
+                assert p.get("legs") == legs, (s, i, p.get("legs"))
+    assert "bollinger_lower" in pvt.SPECS and "bollinger_lower" in pvt.SPECS_PHASE0
+    for name, reg in (("SPECS", pvt.SPECS), ("SPECS_PHASE0", pvt.SPECS_PHASE0)):
+        for s, e in reg.items():
+            bad = [m for m in pvt.validate_spec(e) if "legs" in m or "S6-B3325" in m]
+            assert not bad, (name, s, bad)
+
+    base = _copy.deepcopy(pvt.SPECS_PHASE0["cmf_flip"])
+    assert pvt.validate_spec(base) == [], pvt.validate_spec(base)
+
+    def _errs(pid, legs, drop=False, label=None):
+        e = _copy.deepcopy(base)
+        p = next(x for x in e["params"] if x["id"] == pid)
+        if drop:
+            p.pop("legs", None)
+        else:
+            p["legs"] = legs
+        if label is not None:
+            p["param"] = label
+        return [m for m in pvt.validate_spec(e) if "legs" in m or "S6-B3325" in m]
+    assert any("S6-B3325" in m for m in _errs("P7", None, drop=True))       # untagged side
+    assert any("disagree" in m for m in _errs("P7", ["short"]))             # the wrong side
+    assert any("disagree" in m for m in _errs("P7", ["long", "short"]))     # wider than its label
+    for bad in ([], ["up"], ["long", "long"], "long", [{"leg": "long"}]):
+        assert any("non-empty list" in m for m in _errs("P7", bad)), bad
+    assert _errs("P7", ["long"]) == []
+    assert _errs("P7", None, drop=True, label="rsi_14 ceiling (a long lookback)") == []
+    assert _errs("P7", ["long", "short"], label="rsi_14 ceiling") == []      # no side named
+
+    A = root / "output_audit"
+    for strat, art, ids in (
+            ("bollinger_lower", "b3139_bollinger_lower_breadth_net_long.json", ("P3", "P10")),
+            ("bollinger_lower", "b3139_bollinger_lower_breadth_net_short.json", ("P4",)),
+            ("cmf_flip", "b3289_cmf_flip_long_step1_is_surface.json", ("P8", "P10"))):
+        md = tdr.build_table(strat, [str(A / art)])
+        inv = {ln.split(" ", 4)[3]: ln for ln in md.splitlines() if ln.startswith("  - ")}
+        for i in ids:
+            other = "/".join(want[(strat, i)]).upper()
+            assert f"{other} LEG ONLY" in inv[i] and "NOT TESTED" not in inv[i], inv[i]
+
+
+def test_b3372_a_per_leg_render_credits_a_shared_axis_to_the_rendered_legs_param(tmp_path,
+                                                                                 monkeypatch):
+    """S6-B3372 (B3139q-r148): a per-side twin denied a shared signal key by
+    the one-key-one-column rule (S6-B3139an) carries it as coverage_key
+    (S6-B3294), and Table D resolved every row through signal_keys only - so
+    a SHORT-leg render credited the short sweep to the LONG param that owns
+    the key and called the swept SHORT param NOT TESTED. MEASURED before the
+    fix, 3 of 3 twins: the committed williams_r_oversold short Table D read P3
+    (LONG) 'TESTED at {-0.02, -0.05, 0.0} (3 of 3 band levels)' and P9 (LONG)
+    'TESTED at {95.0, 97.0}' while P2 and P10, the params swept, read NOT
+    TESTED; cmf_flip's short render did the same to P7 and P8. One resolver,
+    _key_owners, now hands a shared key to the rendered leg's param, for the
+    surface, the factorial block and breadth rows alike. (1) the resolver on
+    a planted registry; (2) the real renders, both legs of both strategies;
+    (3) a pooled render keeps each artifact's levels on its own leg's param;
+    (4) a planted one-leg BREADTH grid keyed by the shared key - no committed
+    artifact has one - puts its companion row and its body cell in the
+    graded leg's column, not the owner's."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import table_d_render as tdr
+
+    params = [{"id": "P1", "param": "level (LONG leg)", "legs": ["long"], "signal_keys": ["k"]},
+              {"id": "P2", "param": "level (SHORT leg)", "legs": ["short"], "coverage_key": "k"},
+              {"id": "P3", "param": "shared", "signal_keys": ["j"]},
+              {"id": "P4", "param": "twin (SHORT leg)", "legs": ["short"], "coverage_key": "j"}]
+    own = {leg: {k: p["id"] for k, p in tdr._key_owners(params, leg).items()}
+           for leg in (None, "long", "short")}
+    assert own[None]["k"] == "P1" and own["long"]["k"] == "P1"
+    assert own["short"]["k"] == "P2"
+    assert all(own[leg]["j"] == "P3" for leg in own)      # an owner of both legs keeps its key
+    assert own["short"]["level (SHORT leg)"] == "P2"         # labels resolve as before
+
+    A = root / "output_audit"
+
+    def inv(strat, arts):
+        md = tdr.build_table(strat, [str(A / a) for a in arts])
+        return {ln.split(" ", 4)[3]: ln for ln in md.splitlines() if ln.startswith("  - ")}
+    w = {leg: inv("williams_r_oversold", [f"b3289_williams_r_oversold_{leg}_step1_is_surface.json",
+                                          f"b3247_williams_r_oversold_breadth_net_{leg}.json"])
+         for leg in ("long", "short")}
+    assert "TESTED at {-0.02, -0.05, 0.0} (3 of 3 band levels)" in w["short"]["P2"], w["short"]["P2"]
+    assert "TESTED at {95.0, 97.0} (2 of 2 band levels)" in w["short"]["P10"], w["short"]["P10"]
+    for i in ("P3", "P9"):
+        assert "LONG LEG ONLY" in w["short"][i], w["short"][i]
+    assert "TESTED at {0.0, 0.02, 0.05} (3 of 3 band levels)" in w["long"]["P3"], w["long"]["P3"]
+    assert "TESTED at {3.0, 5.0} (2 of 2 band levels)" in w["long"]["P9"], w["long"]["P9"]
+    for i in ("P2", "P10"):
+        assert "SHORT LEG ONLY" in w["long"][i], w["long"][i]
+    c = {leg: inv("cmf_flip", [f"b3289_cmf_flip_{leg}_step1_is_surface.json"])
+         for leg in ("long", "short")}
+    assert "TESTED at {50.0, 53.11, 55.866, 59.542, 64.152} (5 of 5" in c["short"]["P8"], c["short"]["P8"]
+    assert "LONG LEG ONLY" in c["short"]["P7"], c["short"]["P7"]
+    assert "TESTED at {35.49, 40.16, 43.52, 46.57, 50.0} (5 of 5" in c["long"]["P7"], c["long"]["P7"]
+    assert "SHORT LEG ONLY" in c["long"]["P8"], c["long"]["P8"]
+    pooled = inv("cmf_flip", ["b3289_cmf_flip_long_step1_is_surface.json",
+                              "b3289_cmf_flip_short_step1_is_surface.json"])
+    assert "TESTED at {35.49, 40.16, 43.52, 46.57, 50.0}" in pooled["P7"], pooled["P7"]
+    assert "TESTED at {50.0, 53.11, 55.866, 59.542, 64.152}" in pooled["P8"], pooled["P8"]
+
+    import json as _j
+    planted = [{"id": "P1", "param": "level (LONG leg)", "legs": ["long"], "signal_keys": ["k"],
+                "production": 0.0, "band": [0.0], "free_band": [0.0]},
+               {"id": "P2", "param": "level (SHORT leg)", "legs": ["short"], "coverage_key": "k",
+                "production": 0.0, "band": [0.0], "free_band": [0.0]}]
+    monkeypatch.setattr(tdr, "_spec", lambda strategy: {"params": planted})
+    g = tmp_path / "g.json"
+    g.write_text(_j.dumps({"leg": "short", "rows": [
+        {"axis": "k", "op": "ge", "level": 5.0, "exit": "time_stop_10d",
+         "is_sharpe": 0.9, "is_ci_lo": 0.2, "is_n": 40}]}), encoding="utf-8")
+    md = tdr.build_table("planted", [str(g)])
+    pv = {ln.split(" ", 4)[3]: ln for ln in md.splitlines() if ln.startswith("  - ")}
+    assert "LONG LEG ONLY" in pv["P1"] and "COMPANION" not in pv["P1"], pv["P1"]
+    assert "OFFLINE COMPANION ROWS (1, in this column): k >= {5.0}" in pv["P2"], pv["P2"]
+    body = [ln for ln in md.splitlines() if ln.startswith("| 1 |")]
+    assert body == ["| 1 | 0.0 | k >= 5.0 | time_stop_10d | 0.900 | 0.2 | 40 | - | MID |"], body

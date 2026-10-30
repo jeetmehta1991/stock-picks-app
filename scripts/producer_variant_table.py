@@ -2544,7 +2544,7 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "evidence": "technical.py:1402 region; charter P2.x",
          "derivation": "as P1"},
         {"id": "P3", "producer": "compute_ema_sma",
-         "param": "ema span (below_ema_N, SHORT leg)", "production": 200,
+         "param": "ema span (below_ema_N, SHORT leg)", "legs": ["short"], "production": 200,
          "band": [200],
          "free_band": [200],
          "resim_band": [],
@@ -2565,7 +2565,7 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "signal_keys": ["below_ema_9", "below_ema_20", "below_ema_21",
                          "below_ema_50", "below_ema_200"]},
         {"id": "P4", "producer": "compute_ema_sma",
-         "param": "ema span (price_above_ema_N, LONG leg)", "production": 200,
+         "param": "ema span (price_above_ema_N, LONG leg)", "legs": ["long"], "production": 200,
          "band": [200],
          "free_band": [200],
          "resim_band": [],
@@ -2623,7 +2623,7 @@ short_fires = P2 AND (rsi_2 > 95 OR rsi_14 > thr_short[P11]) AND P3 AND P9
          "derivation": "TIGHTER = LOWER the ceiling; production included as the offline identity level",
          "signal_keys": ["adx"]},  # S6-B3139an: breadth rows carry axis "adx"
         {"id": "P10", "producer": "_short_borrow_trap_active (shared screener helper)",
-         "param": "days_to_cover cap (borrow guard, SHORT leg)",
+         "param": "days_to_cover cap (borrow guard, SHORT leg)", "legs": ["short"],
          "production": "5.0", "band": ["5.0"],
          "free_band": None, "resim_band": None, "env": None,
          "consumers": ["backtest/signals/screener.py"], "sweep_levels": None,
@@ -2886,7 +2886,7 @@ SPECS_PHASE0.update({
             {
                 "id": "P7",
                 "producer": "screener strategy gate",
-                "param": "rsi_14 ceiling (LONG leg)",
+                "param": "rsi_14 ceiling (LONG leg)", "legs": ["long"],
                 "production": 50,
                 "band": [
                     50,
@@ -2921,7 +2921,7 @@ SPECS_PHASE0.update({
             {
                 "id": "P8",
                 "producer": "screener strategy gate",
-                "param": "rsi_14 floor (SHORT leg)",
+                "param": "rsi_14 floor (SHORT leg)", "legs": ["short"],
                 "coverage_key": "rsi_14",  # S6-B3294: P7 owns the signal key (S6-B3139an); coverage reads the shared axis
                 "production": 50,
                 "band": [
@@ -2976,7 +2976,7 @@ SPECS_PHASE0.update({
             {
                 "id": "P10",
                 "producer": "_short_borrow_trap_active (shared screener helper)",
-                "param": "days_to_cover cap (borrow guard, SHORT leg)",
+                "param": "days_to_cover cap (borrow guard, SHORT leg)", "legs": ["short"],
                 "production": "5.0",
                 "band": [
                     "5.0"
@@ -5495,6 +5495,31 @@ def validate_spec(spec: dict) -> list[str]:
                         f"carries {len(_eng)} ENGINE-REQUIRING band(s) but its "
                         f"adapter sections lack {_gmiss} - the battery leg "
                         "would fail closed at landing (S6-B2883)")
+    # S6-B3325: a per-leg Table D labels the other leg's params LEG ONLY
+    # only where a param carries `legs`, so a label naming a side - an
+    # upper-case LONG or SHORT, the registries' convention - must carry the
+    # field and the field must name exactly that side. A field on a label
+    # naming no side (a breadth row) is free, but holds long / short only.
+    for _p in spec["params"]:
+        _named = {s.lower() for s in _re.findall(r"\b(LONG|SHORT)\b",
+                                                 str(_p.get("param") or ""))}
+        if "legs" not in _p:
+            if _named:
+                errs.append(f"{_p['id']} {_p['param']}: the label names the "
+                            f"{'/'.join(sorted(_named))} leg and the param "
+                            "carries no `legs` field - a per-leg Table D calls "
+                            "it NOT TESTED in the other leg's table (S6-B3325)")
+            continue
+        _legs = _p["legs"]
+        if (not isinstance(_legs, list) or not _legs
+                or not all(isinstance(x, str) for x in _legs)
+                or len(set(_legs)) != len(_legs)
+                or not set(_legs) <= {"long", "short"}):
+            errs.append(f"{_p['id']}: legs must be a non-empty list of "
+                        f"distinct 'long' / 'short' values (got {_legs!r})")
+        elif _named and set(_legs) != _named:
+            errs.append(f"{_p['id']} {_p['param']}: legs {_legs} disagree "
+                        f"with the side its label names ({sorted(_named)})")
     b = spec.get("baseline")
     if not isinstance(b, dict):
         errs.append("SPEC has no `baseline` block - main() reads it for the "

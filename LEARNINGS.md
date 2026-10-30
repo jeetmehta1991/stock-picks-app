@@ -25636,3 +25636,23 @@ MEASURED with scripts/transcript_timeline.py --owner-messages (S6-B3355), built 
 **Rule.** No new rule - L981's addendum and #322 stand: an owner's time is the send time, printed by the tool.
 
 **Mechanism.** scan_owner_time_is_delivery_time (S6-B3355) refuses a time given as the owner's in a row or lesson added that turn when it matches a message's delivery and no send, within one unit of its precision; its first draft paired a dequeue with the OLDEST pending message and misattributed deliveries until the raw queue showed a dequeue follows its own enqueue within milliseconds.
+
+### L994 - A LAUNCH CLASS SIZED BY ITS CALL FORM: TWO SWEEPS FOR PYTEST LAUNCHES MISSED A LIST BUILT OFF THE CALL LINE (B3139q-r148, 2026-10-30)
+
+MEASURED: S6-B3329's row (B3139q-r131) classified 4 pytest launch sites that expand a list onto the command line; an AST sweep over every tracked .py outside backtest/tests and the archives finds 7. The r131 sweep missed preflight C16 and C19, which join a list to the ids with `+`, and bisect_test_polluter.run, which builds its command with starred lists on a line of its own before the call. My own first sweep this batch, written to the call form (the call's first argument a list literal naming pytest), found 3 of the 6 sites still expanding and missed C16, C19 and the bisection the same way; a grep for the string '"pytest"' found all three.
+
+**Why.** Compliance failure against #182 (verdict scope), the L952 shape: the population searched was the shape the measured member had - a list literal written inside the call - and a launch can build its command anywhere before it calls.
+
+**Rule.** No new rule - #182 and L952 stand: a sweep for a class of launches searches every place the VALUE is built (each list naming the program, wherever it is written), not the call that consumes it.
+
+**Mechanism.** test_b3329's sweep reads every list literal naming pytest anywhere in tracked code - a starred element, or a list joined with a non-literal - and pins the result to the two launches classed BOUNDED; the five unbounded ones route through scripts/pytest_argfile.py (S6-B3329).
+
+### L995 - A PER-LEG TABLE D CREDITED THE SHORT LEG'S SWEEP TO THE LONG PARAM; ITS PIN READ ONE PROBE PER LEG (B3139q-r148, 2026-10-30)
+
+MEASURED: the committed output_audit/b3247_williams_r_oversold_short_table_d.md (rendered 2026-10-27T14:54Z) reads P3 cmf_positive (LONG leg) 'TESTED at {-0.02, -0.05, 0.0} (3 of 3 band levels)' and P9 (LONG OR-arm) 'TESTED at {95.0, 97.0}', while P2 and P10 - the short params whose levels those are - read NOT TESTED in this campaign; cmf_flip's short surface rendered the same way for P7 and P8. 3 of 3 per-side twins that carry a coverage_key. band_coverage_gate reads coverage_key per leg since S6-B3294 and was right; table_d_render resolved every row through signal_keys, which the one-key-one-column rule gives to the long twin. Found while writing S6-B3325's pin, not by a gate.
+
+**Why.** Compliance failure against #303 (a rule binds every renderer of the format): the coverage gate learned coverage_key at S6-B3294 and the renderer reading the same rows did not. The S6-B3304 pin (test_b3247c) checked one other-leg probe per table - P2 in the long table, B1 in the short - and never the twins whose columns the short sweep filled.
+
+**Rule.** No new rule - #303 stands.
+
+**Mechanism.** One resolver, table_d_render._key_owners, for the depth surface, the offline factorial block and breadth rows (S6-B3372), pinned by test_b3372 on both legs of both strategies, a pooled render and a planted one-leg breadth grid.

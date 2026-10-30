@@ -55,10 +55,16 @@ def run(files: list[str], timeout: int = 5400) -> bool:
     # contains 172 known failures, so -x aborted at the first one and the TARGETS never
     # ran -- which the script then read as "targets PASS". A bisection whose probe can
     # be skipped silently reports the opposite of the truth.
-    cmd = [sys.executable, "-m", "pytest", "-q", "-p", "no:randomly",
-           "--tb=no", *files, *TARGETS]
+    # S6-B3329: the candidate files and the targets travel in an argfile -
+    # the first split is every test file in backtest/tests, on a command line
+    # that grows with the suite
+    import pytest_argfile
     try:
-        r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=timeout)
+        with pytest_argfile.argfile([*files, *TARGETS], prefix="bisect_") as af:
+            cmd = [sys.executable, "-m", "pytest", "-q", "-p", "no:randomly",
+                   "--tb=no", af]
+            r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True,
+                               timeout=timeout)
     except subprocess.TimeoutExpired:
         # B1476: this used to `return True` ("targets pass, not reproducing"), which is the
         # SAME defect as the -x abort and the summary-reading: an absent result read as a

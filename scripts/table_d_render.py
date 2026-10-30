@@ -149,11 +149,7 @@ def _factorial_block_rows(a: dict, params: list,
     (it is that grid's production cell; shown once). A key mapping to no
     Table A param REFUSES the render: this shape has no axis field for the
     B2708 drop count to count it under, so dropping it would be silent."""
-    by_key: dict = {}
-    for p in params:
-        by_key[p["param"]] = p
-        for k in (p.get("signal_keys") or []):
-            by_key.setdefault(k, p)
+    by_key = _key_owners(params, _render_leg([a]))     # S6-B3372
     out = []
     for c in (a.get("factorial") or {}).get("results") or []:
         if c.get("is_production") and skip_production:
@@ -236,21 +232,45 @@ def _render_leg(arts: list):
     return seen.pop() if len(seen) == 1 else None
 
 
+def _key_owners(params: list, leg=None) -> dict:
+    """S6-B3372: axis key -> the Table A param whose column a row keyed by it
+    fills. A param's label and its signal_keys claim keys, first come first
+    served (S6-B3139an: one key, one column), so a per-side twin the rule
+    denied a shared key carries it as coverage_key (S6-B3294). In an
+    artifact graded on ONE leg, a key whose owner is the OTHER leg's param
+    passes to the param of the graded leg that names it. Before this every
+    reader resolved through signal_keys alone, and a short-leg render
+    credited the short sweep to the long param while calling the param it
+    swept NOT TESTED - 3 of 3 twins (MEASURED)."""
+    own: dict = {}
+    for p in params:
+        own[p["param"]] = p
+        for k in (p.get("signal_keys") or []):
+            own.setdefault(k, p)
+    if leg in ("long", "short"):
+        for p in params:
+            if leg not in (p.get("legs") or [leg]):
+                continue
+            for k in [*(p.get("signal_keys") or []), p.get("coverage_key")]:
+                cur = own.get(k) if k else None
+                if (cur is not None and cur is not p
+                        and leg not in (cur.get("legs") or [leg])):
+                    own[k] = p
+    return own
+
+
 def _surface_rows(a: dict, params: list) -> list:
     """S6-B3316: one row per graded cell of a depth sweep's in-sample
     surface. The surface stores each cell's BEST exit only and no lower
     bound (offline_level_sweep's 'ranked'), so a row carries that exit, its
     IS sharpe and IS trade count and is_ci_lo None - it ranks after every
     row that records a bound and renders it '-'. Each axis key maps to a
-    Table A label (directly or through signal_keys); a key mapping to
-    none REFUSES, as the S6-B3140b factorial reader does. Before this the
+    Table A label (directly or through signal_keys, and on a one-leg
+    surface through that leg's twin's coverage_key - S6-B3372); a key
+    mapping to none REFUSES, as the S6-B3140b factorial reader does. Before this the
     renderer read no surface cell, so a campaign's unified Table D called
     the depth axes NOT TESTED while the sweep had graded them."""
-    by_key: dict = {}
-    for p in params:
-        by_key[p["param"]] = p
-        for k in (p.get("signal_keys") or []):
-            by_key.setdefault(k, p)
+    by_key = _key_owners(params, _render_leg([a]))     # S6-B3372
     axes = [ax["key"] for ax in a.get("axes") or []]
     out = []
     for c in a.get("ranked") or []:
@@ -553,9 +573,12 @@ def load(paths: list, params: list | None = None) -> tuple[list, list, list]:
             src = _factorial_rows(a)
         run = _run_levels(a, params or [])
         a["_run_levels"] = run
+        leg = _render_leg([a])                    # S6-B3372
         for r in src:
             if run:
                 r = {**r, "run_levels": run}
+            if leg:
+                r = {**r, "_leg": leg}
             (skips if r.get("is_sharpe") is None else rows).append(r)
     return arts, rows, skips
 
@@ -680,8 +703,7 @@ def _row_cells(r: dict, params: list) -> dict:
         else:
             # S6-B3139an: a row keyed by a declared signal key lands in its
             # param's column, naming the key and its condition.
-            p = next(x for x in params
-                     if r["axis"] in (x.get("signal_keys") or []))
+            p = _key_owners(params, r.get("_leg"))[r["axis"]]   # S6-B3372
             vals[p["param"]] = _key_cond(r["axis"], r.get("op"), r["level"])
     return vals
 
@@ -846,6 +868,7 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
 
     inv = []
     render_leg = _render_leg(arts)                     # S6-B3304
+    owners = {leg: _key_owners(params, leg) for leg in (None, "long", "short")}
     for p in params:
         # S6-B2874: `.get`, not a subscript. MEASURED at B2874: 29 of 70
         # params across both registries carry NO free_band, and this line
@@ -857,7 +880,8 @@ def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
         # conditions on the production base). Their levels are the subject's
         # own quantiles or flags, not this param's band, so they are NAMED
         # here and never counted toward the band denominator below.
-        comp = [r for r in rows if r.get("axis") in (p.get("signal_keys") or [])]
+        comp = [r for r in rows if r.get("axis") and r["axis"] != p["param"]
+                and owners[r.get("_leg")].get(r["axis"]) is p]      # S6-B3372
         if levs:
             shown = ", ".join(str(x) for x in sorted(levs, key=str))
             # B3082c: name the MECHANISM. Re-simulation is stronger evidence

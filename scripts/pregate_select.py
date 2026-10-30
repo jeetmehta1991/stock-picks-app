@@ -344,15 +344,11 @@ def main(argv=None) -> int:
         # this batch's own 493 overran the Windows limit (WinError 206). The
         # expanded ids still reach config.args, so conftest's node-id check
         # writes no pyramid stamp for the run (MEASURED, one id per tier).
-        import tempfile
-        fd, argfile = tempfile.mkstemp(prefix="pregate_", suffix=".txt")
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as fh:
-                fh.write("\n".join(sel) + "\n")
+        # S6-B3329: one helper writes the file for every such launch.
+        import pytest_argfile
+        with pytest_argfile.argfile(sel, prefix="pregate_") as af:
             rc = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
-                                 "@" + argfile], cwd=ROOT).returncode
-        finally:
-            os.unlink(argfile)
+                                 af], cwd=ROOT).returncode
     stamp = write_stamp(state, len(sel), rc)
     print(f"pregate_select: stamped {stamp.name} - {stamp_verdict(json.loads(stamp.read_text(encoding='utf-8')), tree_state(changed))}")
     return rc

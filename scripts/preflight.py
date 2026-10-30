@@ -768,6 +768,20 @@ def queue_reading_tests(test_path: Path | None = None) -> list[str]:
     return out
 
 
+def _run_pytest_ids(node_ids) -> tuple[int, str]:
+    """C16's and C19's production runner: (exit code, last output line). The
+    ids travel in an argfile (S6-B3329) - C16 selects 80 queue readers today
+    and the selection grows with the suite, so a command line could overrun
+    the Windows limit as the pre-gate's 493 did (WinError 206)."""
+    import pytest_argfile
+    with pytest_argfile.argfile(node_ids, prefix="preflight_") as af:
+        r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p",
+                            "no:cacheprovider", af],
+                           capture_output=True, text=True, cwd=REPO_ROOT)
+    tail = (r.stdout.strip().splitlines() or [""])[-1]
+    return r.returncode, tail
+
+
 # C19 (S6-B3287 / L957): a commit that ADDS a tracked file changes the
 # tracked set, and tests read it (`git ls-files`). The pyramid measures the
 # tree as it stood - a file added at commit time was UNTRACKED when the gate
@@ -825,12 +839,7 @@ def check_tracked_set_readers_on_add(*, added=None, queue_added_lines=None,
         return ["C19 TRACKED-SET | the tracked-set test selector found 0 "
                 "tests - the selector is broken, refusing (L687)"]
     if run is None:
-        def run(node_ids):
-            r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p",
-                                "no:cacheprovider"] + node_ids,
-                               capture_output=True, text=True, cwd=REPO_ROOT)
-            tail = (r.stdout.strip().splitlines() or [""])[-1]
-            return r.returncode, tail
+        run = _run_pytest_ids                    # S6-B3329
     code, tail = run(ids)
     if code != 0:
         return [f"C19 TRACKED-SET | this commit ADDS {len(added)} file(s) "
@@ -871,12 +880,7 @@ def check_queue_readers_after_stamp(paths, *, added_lines=None, run=None,
         return ["C16 QUEUE-READERS | the queue-reading test selector found "
                 "0 tests - the selector is broken, refusing (L687)"]
     if run is None:
-        def run(node_ids):
-            r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p",
-                                "no:cacheprovider"] + node_ids,
-                               capture_output=True, text=True, cwd=REPO_ROOT)
-            tail = (r.stdout.strip().splitlines() or [""])[-1]
-            return r.returncode, tail
+        run = _run_pytest_ids                    # S6-B3329
     code, tail = run(ids)
     if code != 0:
         return [f"C16 QUEUE-READERS | EXECUTION_QUEUE.md changed after the "
