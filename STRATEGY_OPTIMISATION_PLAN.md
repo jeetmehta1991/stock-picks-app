@@ -1690,7 +1690,10 @@ The monitor contract is §8.9. Wave-specific rules:
   outcome=<...>`, read from the engine's stop status in `engine_state.json`: `CAP_STOP` (the planned
   in-loop stop at the first day boundary past the cap), `HANG_BACKSTOP` (the supervisor's kill),
   `CRASH` (neither kill path wrote), `COMPLETE`, `COMPLETE_NO_CUBE`, `GATE_REFUSED`, `NO_CHECKPOINT`;
-  the arm result carries them as `leg_outcomes`, and the ELAPSED reading is a cross-check. Before
+  the arm result carries them as `leg_outcomes`, and the ELAPSED reading is a cross-check. A chain
+  monitor's prompt names `CAP_STOP` and `COMPLETE` as non-faults and bounds only the CURRENT leg's
+  `elapsed_hours` (it resets every leg) - `scan_monitor_trips_on_planned_leg_end` refuses a turn that
+  arms one that does not (S6-B3352, L976). Before
   every resumed leg run_wave copies the checkpoint to `<out>/checkpoint_backups/leg<N>/`, and each leg
   start prints its free commit (`[B3100 leg-start]`).
   It resumes from the last PERIODIC checkpoint, which since S6-B3096g carries the whole portfolio like
@@ -2468,7 +2471,10 @@ per run  =  tickers x sim-days x 0.2613      <- a CANONICAL rate; a campaign's o
 - **COMMIT, not physical RAM, is the binding memory quantity** (B2229 / L670; §4.5 Step 1.0 b).
 - **Do NOT run a pyramid or any other CPU work during a timing A/B** - it inflates the arm in flight and
   biases the saving upward (L621). **Do not run the full suite beside a live wave either** - there the
-  risk is commit exhaustion, not timing (§4.9 Step 2.4) - and `pyramid_gate.py --beside-wave` cannot return a pass there by construction (exit 6, S6-B3330, open). Nor commit a change to a path a leg reads while a wave is live: preflight C20 refuses it (`launch_sweep.leg_code_closure()`, S6-B3328), because the next leg's `drift_check` would halt the wave.
+  risk is commit exhaustion, not timing (§4.9 Step 2.4). `pyramid_gate.py --beside-wave` no longer
+  fails by construction: a detached launch's own log (`output_audit/<name>_detached.log`, which the
+  engine grows every simulated day) is outside the read-set's moved inputs unless a test recorded
+  reading it (`_minus_run_logs`, S6-B3330); a leg boundary inside the run still moves real inputs. Nor commit a change to a path a leg reads while a wave is live: preflight C20 refuses it (`launch_sweep.leg_code_closure()`, S6-B3328), because the next leg's `drift_check` would halt the wave.
 
 ### 8.5 Engine settings for optimisation runs (formerly §10.3)
 

@@ -67780,3 +67780,135 @@ def test_b3372_a_per_leg_render_credits_a_shared_axis_to_the_rendered_legs_param
     assert "OFFLINE COMPANION ROWS (1, in this column): k >= {5.0}" in pv["P2"], pv["P2"]
     body = [ln for ln in md.splitlines() if ln.startswith("| 1 |")]
     assert body == ["| 1 | 0.0 | k >= 5.0 | time_stop_10d | 0.900 | 0.2 | 40 | - | MID |"], body
+
+
+def test_b3330_a_detached_launchs_own_log_is_not_a_moved_input(tmp_path, monkeypatch):
+    """S6-B3330 (B3139q-r149): the gate could not return a pass beside a live
+    wave. MEASURED at B3139q-r131: the only output_audit file that moved was
+    the wave's own log, output_audit/b3139q_lv4s2_chain_detached.log, which
+    the engine's stdout grows every simulated day; no test read it, but the
+    read-set re-runs every spawning test and every output_audit lister when
+    anything moves - 105 tests - and the log moved again during the re-run,
+    so readset=SUSPECT and exit 6 by construction. launch_detached.py's
+    logs (<name>_detached.log) are now outside the moved set unless a test
+    recorded reading one. (1) the filter both ways - an unread log dropped,
+    a log a test or a fixture read kept, any other file kept, and nothing
+    dropped when the read-set is unreadable;
+    (2) readset_decide on the r131 shape returns CLEAN with no re-run, and a
+    moved file a test read still re-runs that test (the re-run faked); (3)
+    the premise, swept: no tracked code names the log but its writer, this
+    filter and the corpus's quoted rows - a reader would make the filter
+    unsound."""
+    import ast as _ast
+    import json as _j
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import pyramid_gate as pg
+
+    LOG = "output_audit/b3139q_lv4s2_chain_detached.log"
+    WAVE_LOG = "output_audit/b9_wave_detached.log"
+    f = pg._minus_run_logs
+    doc = {"tests": {"t.py::test_a": ["output_audit/a.json"]}, "session": [],
+           "spawned": ["t.py::test_spawn"]}
+    assert f({LOG, WAVE_LOG, "output_audit/a.json"}, doc) == {"output_audit/a.json"}
+    assert f({LOG}, {"tests": {"t.py::test_r": [LOG]}}) == {LOG}
+    assert f({LOG}, {"fixtures": {"fx": {"scope": "module", "reads": [LOG]}}}) == {LOG}
+    assert f({"output_audit/serial_chain.log"}, doc) == {"output_audit/serial_chain.log"}
+    assert f(None, doc) is None and f({LOG}, None) == {LOG}     # unreadable read-set
+
+    calls = []
+    monkeypatch.setattr(pg.subprocess, "call", lambda cmd, **k: (calls.append(cmd), 0)[1])
+    rs = tmp_path / "g.out.readset.json"
+    rs.write_text(_j.dumps({"schema": 1, "tests": {"t.py::test_a": ["output_audit/a.json"],
+                                                   "t.py::test_list": ["output_audit/"]},
+                            "session": [], "spawned": ["t.py::test_spawn"], "addr": {}}),
+                  encoding="utf-8")
+    before = {"tracked": {"output_audit/a.json": "h1"}, "untracked": {LOG: (10, 1)}}
+    grown = {"tracked": {"output_audit/a.json": "h1"}, "untracked": {LOG: (99, 2)}}
+    v, line = pg.readset_decide(tmp_path / "g.out", tmp_path, before, grown, rs)
+    assert (v, line, calls) == ("CLEAN", "none", []), (v, line, calls)
+    moved_a = {"tracked": {"output_audit/a.json": "h2"}, "untracked": {LOG: (99, 2)}}
+    v, line = pg.readset_decide(tmp_path / "g.out", tmp_path, before, moved_a, rs)
+    assert v == "RERUN-PASS:3-tests" and len(calls) == 1, (v, line, calls)
+
+    tracked = _sp.run(["git", "ls-files", "-z", "*.py"], cwd=root, capture_output=True,
+                      text=True, check=True).stdout.split("\0")
+    namers = set()
+    for rel in filter(None, tracked):
+        if rel.startswith(("backtest/tests/", "archive/", ".archive/")):
+            continue
+        try:
+            tree = _ast.parse((root / rel).read_text(encoding="utf-8"))
+        except (SyntaxError, UnicodeDecodeError, OSError):
+            continue
+        if any(isinstance(n, _ast.Constant) and isinstance(n.value, str)
+               and pg.RUN_LOG_SUFFIX in n.value for n in _ast.walk(tree)):
+            namers.add(rel)
+    # the writer, this filter, the corpus's quoted rows, and the S6-B3352
+    # monitor gate, which names the suffix as a prompt cue and reads no log
+    assert namers == {"scripts/launch_detached.py", "scripts/pyramid_gate.py",
+                      "scripts/gate_incident_corpus.py",
+                      "scripts/verify_turn_compliance.py"}, sorted(namers)
+
+
+def test_b3352_a_chain_monitor_does_not_trip_on_a_planned_leg_end():
+    """S6-B3352 (B3139q-r149), the detectable slice of record S6-B3345 (L976):
+    cron 5be10651 watched the LEVER4 Step-2 chain and tripped on 'any non-zero
+    exit or HALT line' with no CAP_STOP exclusion - the planned stop at
+    max_run_hours exits rc=1 and the runner resumes - and on 'elapsed hours
+    above 2x the capacity-note projection' while run_heartbeat.json's elapsed
+    resets at every leg start. scan_monitor_trips_on_planned_leg_end reads the
+    turn's CronCreate prompts. (1) the corpus: 5be10651 VERBATIM fires on both
+    reasons, its replacement 3f4d143f VERBATIM stays quiet; (2) the live
+    branch: a CronCreate tool_use after the last user message is read, one
+    before it is not; (3) the cues each way - CAP_STOP named clears the exit
+    reason, 'current leg' clears the elapsed reason, a prompt watching no chain
+    log or heartbeat is out of scope."""
+    import json as _j
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as g
+    import verify_turn_compliance as v
+    s = v.scan_monitor_trips_on_planned_leg_end
+
+    _t, want, kw = g.INCIDENTS["scan_monitor_trips_on_planned_leg_end"]
+    hit = s([], **kw)
+    assert want and len(hit) == 1, hit
+    assert "never names CAP_STOP" in hit[0] and "current leg" in hit[0], hit[0]
+    assert '"cron": "17 * * * *"' in kw["blobs"][0] and "5be10651" not in kw["blobs"][0]
+    (_t2, want2, kw2), = g.EXTRA_INCIDENTS["scan_monitor_trips_on_planned_leg_end"]
+    assert not want2 and s([], **kw2) == []
+    assert "Replaces jobs 5be10651" in kw2["blobs"][0]
+
+    fire_in = _j.loads(kw["blobs"][0])
+    def _arm(inp):
+        return {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "id": "t1", "name": "CronCreate", "input": inp}]}}
+    user = {"type": "user", "message": {"content": "go"}}
+    assert len(s([user, _arm(fire_in)])) == 1
+    assert not s([_arm(fire_in), user])                      # an earlier turn's arm
+    assert not s([user, _arm(_j.loads(kw2["blobs"][0]))])
+
+    base = "watch output_audit/serial_chain.log hourly; alert on any non-zero exit"
+    assert len(s([], blobs=[base])) == 1
+    assert not s([], blobs=[base + " other than CAP_STOP (a planned leg end)"])
+    assert not s([], blobs=["watch the pyramid log; alert on any non-zero exit"])
+    el = "read run_heartbeat.json; alert when elapsed hours above 2x the projection"
+    assert len(s([], blobs=[el])) == 1
+    assert not s([], blobs=[el + " (elapsed_hours is the current leg's, it resets)"])
+
+    # (4) wired: one tuple element of the gate runner's scan list
+    import ast as _ast
+    tree = _ast.parse((root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8"))
+    wired = [t for t in _ast.walk(tree) if isinstance(t, _ast.Tuple) and any(
+        isinstance(e, _ast.Name) and e.id == "scan_monitor_trips_on_planned_leg_end"
+        for e in t.elts)]
+    assert len(wired) == 1 and wired[0].elts[-1].id == "scan_locked_format_edit_without_source_open", (
+        [len(t.elts) for t in wired])

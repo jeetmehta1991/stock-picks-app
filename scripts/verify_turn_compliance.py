@@ -5440,6 +5440,61 @@ def scan_monitor_pattern_unverified(entries, *, blobs=None) -> list[str]:
              "`scripts/grep_control.py`."))
 
 
+# S6-B3352 (L976): a chain monitor's trip conditions read a PLANNED leg end
+# as a fault. A prompt watches a multi-leg chain when it reads one of the
+# chain's logs or a leg heartbeat.
+LEG_CHAIN_CUES = ("serial_chain.log", "_detached.log", "run_heartbeat")
+NONZERO_TRIP_CUES = ("non-zero exit", "nonzero exit", "non zero exit",
+                     "exit code", "rc != 0", "rc!=0")
+
+
+def scan_monitor_trips_on_planned_leg_end(entries, *, blobs=None) -> list[str]:
+    """S6-B3352 / L976: a monitor of a multi-leg chain must not trip on the
+    chain's planned leg end. MEASURED: cron 5be10651 (2026-10-27) tripped on
+    'any non-zero exit or HALT line' with no CAP_STOP exclusion - the planned
+    stop at max_run_hours (scripts/run_wave.py leg_outcome) exits rc=1 - and
+    on 'elapsed hours above 2x the capacity-note projection', while
+    run_heartbeat.json's elapsed resets at every leg start. Fires on a
+    CronCreate prompt naming a chain log or a leg heartbeat that trips on a
+    non-zero exit without naming CAP_STOP, or bounds an 'elapsed hours'
+    reading by a threshold without saying the reading is the current leg's.
+    The replacement 3f4d143f says both and stays quiet."""
+    import json as _json
+
+    arms = []
+    for e in _since_last_user(entries):
+        if not isinstance(e, dict) or e.get("type") != "assistant":
+            continue
+        for c in (e.get("message") or {}).get("content") or ():
+            if (isinstance(c, dict) and c.get("type") == "tool_use"
+                    and "croncreate" in str(c.get("name", "")).lower()):
+                arms.append(_json.dumps(c.get("input", {})).lower())
+    if blobs is not None:
+        arms = [b.lower() for b in blobs]
+    found = {}
+    for a in arms:
+        if not any(cue in a for cue in LEG_CHAIN_CUES):
+            continue
+        why = []
+        if any(cue in a for cue in NONZERO_TRIP_CUES) and "cap_stop" not in a:
+            why.append("trips on a non-zero exit and never names CAP_STOP")
+        if (re.search(r"elapsed[ _]hours?\s+(?:is\s+)?(?:above|over|exceeds?|>)", a)
+                and "current leg" not in a):
+            why.append("bounds 'elapsed hours' by a threshold without saying "
+                       "it is the current leg's")
+        if why:
+            found[a[:90] + " - " + "; ".join(why)] = False
+    if not found:
+        return []
+    return require_each(
+        "CHAIN MONITOR TRIPS ON A PLANNED LEG END (S6-B3352 / L976)", found,
+        why=("A multi-leg chain ends each leg at max_run_hours with CAP_STOP, "
+             "an rc=1 the runner resumes from - name CAP_STOP (and COMPLETE) "
+             "as non-faults - and run_heartbeat.json's elapsed_hours resets at "
+             "every leg start, so a whole-run bound reads the wall-clock since "
+             "the LAUNCH line instead."))
+
+
 def scan_bare_python_launch(entries, *, cmds=None) -> list[str]:
     """B1877 / L573: a launch must name its INTERPRETER, never a bare `python`.
 
@@ -7018,6 +7073,9 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B3355 (B3139q-r146, L981): an owner's time is when
                 # the message was sent, not when it was delivered.
                 scan_owner_time_is_delivery_time,
+                # S6-B3352 (B3139q-r149, L976): a chain monitor does not
+                # trip on a planned leg end.
+                scan_monitor_trips_on_planned_leg_end,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):

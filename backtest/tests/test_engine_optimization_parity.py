@@ -93,6 +93,9 @@ def _run_engine_parity(out_dir: Path):
         "--start", PARITY_START.isoformat(),
         "--end", PARITY_END.isoformat(),
         "--output-dir", str(PARITY_OUTPUT_DIR),
+        # S6-B3365: the CLI requires a wall-clock cap for --phase 1a-beta
+        # (rc 2 before the engine starts without it); 5 tickers over months
+        "--max-run-hours", "1.0",
     ]
     rc = subprocess.call(cmd, cwd=str(REPO),
                          env={**os.environ, "POSTCONFIG_LANDING": "0"})

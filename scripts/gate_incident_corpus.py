@@ -41,6 +41,15 @@ from __future__ import annotations
 # incident produced several sentences, the one chosen is the one that appeared
 # in the response the owner reacted to.
 INCIDENTS: dict[str, tuple[str, bool, dict]] = {
+    # S6-B3352 (B3139q-r149, L976): VERBATIM - the CronCreate input of
+    # monitor 5be10651 (2026-10-27T16:56:28Z) for the LEVER4 Step-2 chain;
+    # it tripped on 'any non-zero exit' with no CAP_STOP exclusion and on a
+    # per-leg elapsed bounded by a whole-run projection.
+    "scan_monitor_trips_on_planned_leg_end": (
+        "",
+        True,
+        {"blobs": ['{"cron": "17 * * * *", "recurring": true, "prompt": "HOURLY MONITOR - LEVER4 Step-2 run of pivot_r1_breakout (ticket S6-B1248-LEVER4-GATE-BUDGET; chain batch b3139q_lv4s2; wave b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45). Report every hour, unconditionally: do not withhold; silence is correct only when nothing is running. Type no comparison value from memory - derive every value from these artifacts at firing time: (1) output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45/run_heartbeat.json (sim_day_index, total days, elapsed hours, open and closed trades, pid); (2) the tails of output_audit/b3139q_lv4s2_chain_detached.log and output_audit/serial_chain.log (LAUNCH, leg, [B2127 rate], HALT, CHAIN DONE lines, any Traceback) and output_audit/chain_halts.jsonl; (3) output_audit/b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_wave_summary.json if it exists; (4) PowerShell Get-CimInstance Win32_Process for python processes whose command line names run_serial_chain, run_wave, launch_sweep or run_phase1a; (5) the projection in the _capacity_note of output_audit/b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_spec.json. Decide liveness by the sim_day_index DIFF against the previous firing\'s reading in this session (L656), never by heartbeat age. TRIP CONDITIONS - put ALERT first and send a PushNotification: any non-zero exit or HALT line; no runner process and no wave summary or cube (death without an artifact); elapsed hours above 2x the capacity-note projection; sim_day_index unchanged since the previous firing while a runner process lives (stall). Report: sim-day N of total with percent, elapsed hours, the latest rate line and the finish it implies (labelled a projection, naming the sim-day it came from), legs completed, open and closed trades, and a verdict ALIVE / STALLED / DEAD / LANDED. When CHAIN DONE is logged or the wave summary exists: post the LANDING REPORT block, send a PushNotification, and CronDelete this job in the same turn (CHECKLIST #320)."}']},
+    ),
     # S6-B3336 (B3139q-r136, L975): VERBATIM - the lead of the B3139q-r132
     # close (2026-10-29), which reported the LEVER4 pivot_r1_breakout arm's
     # one Step-2 read and named neither leg; the owner then asked whether
@@ -748,6 +757,12 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # S6-B3352 (B3139q-r149): must-QUIET - VERBATIM, the CronCreate input
+    # of 3f4d143f, which replaced 5be10651 and names CAP_STOP and the
+    # current leg's elapsed.
+    "scan_monitor_trips_on_planned_leg_end": [
+        ("", False, {"blobs": ['{"cron": "17 * * * *", "recurring": true, "prompt": "HOURLY MONITOR - LEVER4 Step-2 run of pivot_r1_breakout (ticket S6-B1248-LEVER4-GATE-BUDGET; chain batch b3139q_lv4s2; wave b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45). Replaces jobs 5be10651 and 85c4fd17 (B3139q-r132): 5be10651\'s trip conditions read a planned leg end as a fault and compared a per-leg elapsed, which resets every leg, against a whole-run threshold; 85c4fd17\'s leg-end wording could misread the landing. Report every hour, unconditionally: do not withhold; silence is correct only when nothing is running. Type no comparison value from memory - derive every value from these artifacts at firing time: (1) output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45/run_heartbeat.json (sim_day_index, total days, elapsed_hours of the CURRENT LEG - it resets at every leg start - open and closed trades, pid, max_run_hours); (2) the tails of output_audit/b3139q_lv4s2_chain_detached.log and output_audit/serial_chain.log (the LAUNCH line and its UTC time, [B3100 leg-start] and [B3100 leg-end] lines, [B2127 rate], HALT, CHAIN DONE lines, any Traceback) and output_audit/chain_halts.jsonl; (3) output_audit/b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_wave_summary.json if it exists; (4) PowerShell Get-CimInstance Win32_Process for python processes whose command line names run_serial_chain, run_wave, launch_sweep or run_phase1a; (5) the projection in the _capacity_note of output_audit/b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_spec.json. Decide liveness by the sim_day_index DIFF against the previous firing\'s reading in this session (L656), never by heartbeat age. Leg outcomes come from scripts/run_wave.py leg_outcome: CAP_STOP is the PLANNED leg end at max_run_hours (the engine\'s wall_time_kill status; the runner resumes the next leg from its checkpoint, so its rc=1 is not a fault - count it as a leg completed) and COMPLETE means the cube landed; between legs run_phase1a can be briefly absent while launch_sweep lives. TRIP CONDITIONS - put ALERT first and send a PushNotification: any HALT line; any [B3100 leg-end] line whose outcome is not CAP_STOP or COMPLETE (GATE_REFUSED, NO_CHECKPOINT, HANG_BACKSTOP, COMPLETE_NO_CUBE and CRASH are faults); any other non-zero exit in the chain logs; no runner process and no wave summary or cube (death without an artifact); wall-clock hours since the serial_chain.log LAUNCH line above 2x the capacity-note projection; sim_day_index unchanged since the previous firing while a runner process lives (stall). Report: sim-day N of total with percent, the current leg\'s elapsed and the wall-clock hours since LAUNCH, the latest rate line and the finish it implies (labelled a projection, naming the sim-day it came from), legs completed, open and closed trades, and a verdict ALIVE / STALLED / DEAD / LANDED. When CHAIN DONE is logged or the wave summary exists: post the LANDING REPORT block, send a PushNotification, and CronDelete this job in the same turn (CHECKLIST #320)."}']}),
+    ],
     # S6-B3336 (B3139q-r136): the ROW path must FIRE on the r132 S6-B1248
     # row (VERBATIM); the B3139q-r114 S6-B3247 row, which names DEPTH and
     # BREADTH, must stay QUIET as a row and as response text (VERBATIM).
@@ -1498,6 +1513,9 @@ def all_incidents(name: str) -> list[tuple[str, bool, dict]]:
 # state that isolates TEXT, exactly as the incident run supplies the state the
 # incident had. A harness that gets either wrong reports on itself.
 NEUTRAL: dict[str, dict] = {
+    # S6-B3352 (B3139q-r149): reads the turn's CronCreate calls when no
+    # blobs are supplied.
+    "scan_monitor_trips_on_planned_leg_end": {"blobs": []},
     # S6-B3336 (B3139q-r136): reads the queue diff when no rows are
     # supplied; the text-only control must not measure the working tree.
     # S6-B3355 (B3139q-r146): reads the queue diff, LEARNINGS' diff and the

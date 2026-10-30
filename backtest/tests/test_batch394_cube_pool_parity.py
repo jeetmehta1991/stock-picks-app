@@ -56,6 +56,9 @@ def _run_engine(output_dir: Path, screen_pool_workers: int):
         "--end", PARITY_END.isoformat(),
         "--output-dir", str(output_dir),
         "--screen-pool-workers", str(screen_pool_workers),
+        # S6-B3365: the CLI requires a wall-clock cap for --phase 1a-beta
+        # (rc 2 before the engine starts without it); 5 tickers over months
+        "--max-run-hours", "1.0",
     ]
     # S6-B3363 (B3139q-r141): the landing hook stays off and the output dir
     # is the test's tmp dir - the run used to write REPO/output_batch394_*

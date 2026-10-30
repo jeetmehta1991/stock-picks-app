@@ -429,6 +429,33 @@ def _minus_own(moved, own: set):
     return None if moved is None else {m for m in moved if _fold(m) not in own}
 
 
+# S6-B3330: a detached launch's own log. launch_detached.py points a chain's
+# (or a single wave's) output at output_audit/<name>_detached.log, which the
+# engine grows every simulated day while the run lives. No tracked code but
+# its writer names one (test_b3330 sweeps it), so it is never a moved INPUT -
+# unless a test or fixture recorded reading it in-process, which keeps it.
+# Counted, it re-ran every spawning test and every output_audit lister and
+# moved again inside the re-run: readset=SUSPECT, exit 6, beside every live
+# wave (MEASURED B3139q-r131, 105 tests re-run).
+RUN_LOG_SUFFIX = "_detached.log"
+
+
+def _minus_run_logs(moved, doc):
+    """`moved` without the detached-launch logs no recorded read names. An
+    unreadable read-set drops nothing: no record can show a log unread (L642)."""
+    if moved is None or doc is None:
+        return moved
+    d = doc
+    read = {_fold(p) for ps in (d.get("tests") or {}).values() for p in ps or []}
+    read |= {_fold(p) for p in d.get("session") or []}
+    for fx in (d.get("fixtures") or {}).values():
+        read |= {_fold(p) for p in (fx or {}).get("reads") or []}
+    return {m for m in moved
+            if not (_fold(m).startswith("output_audit/")
+                    and _fold(m).endswith(RUN_LOG_SUFFIX)
+                    and _fold(m) not in read)}
+
+
 def suite_writes(doc) -> dict:
     """{folded output_audit path: [node ids]} for every in-process WRITE the
     read-set recorded (B3139, S6-B3130a). A spawned child's writes are not
@@ -475,8 +502,9 @@ def readset_decide(out, root, st_before, st_after, readset_path) -> tuple[str, s
     """Judge the main run's read-set; when it names tests, re-run EXACTLY
     those once on the now-settled inputs and judge that run the same way."""
     own = gate_own_paths(out, root)
-    moved = _minus_own(output_audit_moved(st_before, st_after), own)
     doc = load_readset(readset_path)
+    moved = _minus_run_logs(_minus_own(output_audit_moved(st_before, st_after),
+                                       own), doc)                # S6-B3330
     verdict, todo = readset_verdict(doc, moved)
     if verdict != "RERUN":
         return verdict, "none"
@@ -495,7 +523,8 @@ def readset_decide(out, root, st_before, st_after, readset_path) -> tuple[str, s
                                "-q", "-p", "no:cacheprovider", af],
                               stdout=fh2, stderr=subprocess.STDOUT, cwd=str(root))
     doc2 = load_readset(rs2)
-    moved2 = _minus_own(output_audit_moved(st1, output_audit_state(root)), own)
+    moved2 = _minus_run_logs(_minus_own(output_audit_moved(st1, output_audit_state(root)),
+                                        own), doc2)              # S6-B3330
     v2, _ = readset_verdict(doc2, moved2, cap=10 ** 9)
     line = f"{len(todo)} tests rc={rc2} log={log2.name}"
     if rc2 != 0:
