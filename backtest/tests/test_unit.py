@@ -26113,6 +26113,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r143: S6-B3342's correction of B1335 rule 1, same call.
         ("THIS PARAGRAPH IS STALE - THE GATE NOW",
          'S6-B3342 (B3139q-r143): rule 1 said prelaunch_gate had no automatic caller'),
+        # B3139q-r145: S6-B3367's Step-2 spec clause in the #299 row, same call.
+        ("A STEP-2 SPEC CARRIES ITS BREADTH LEG ON THE ARM",
+         'S6-B3367 (B3139q-r145): the battery read a Step-2 cube with no breadth leg'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26370,7 +26373,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 365 -> 366 at B3139q-r141 (S6-B3339's Table A clause; same call).
     # 366 -> 367 at B3139q-r142 (S6-B3353's both-legs clause; same call).
     # 367 -> 368 at B3139q-r143 (S6-B3342's rule-1 correction; same call).
-    assert len(gutted) == 368, gutted
+    # 368 -> 369 at B3139q-r145 (S6-B3367's Step-2 spec clause; same call).
+    assert len(gutted) == 369, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -34859,9 +34863,12 @@ def test_b2612_step2_cube_without_gate_verdicts_fails_closed(tmp_path, monkeypat
     cube.mkdir()
     params = {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
               "growth_multiple": 1.1, "ema_span": 9}
+    # S6-B3367 (B3139q-r145): a well-formed Step-2 arm carries its breadth leg
     step2_manifest = {"window": {"start": "2022-05-05", "end": "2026-05-05"},
                       "arms": [{"env": {"STRAT_EMA_SPAN": "9"},
-                                "preregistered_exit": "regime_flip"}]}
+                                "preregistered_exit": "regime_flip",
+                                "step2_breadth_leg": {"state": "ran",
+                                                      "evidence": "fixture breadth grid"}}]}
     six = {"pooled_sharpe": False, "profit_factor": True, "sortino": True,
            "psr": True, "min_trades_holdout": True, "min_trades_full_period": True}
     seen = []
@@ -65922,11 +65929,22 @@ def test_b3331_lever4_step2_leg_reads_the_long_leg_once_on_the_is_selected_exit(
     pd.DataFrame(ed).to_csv(cube / "trade_exit_detail.csv", index=False)
     r2 = pvt.lever4_r2_level(name)
     out = tmp_path / "grid.json"
+    # S6-B3367: --step2 takes the breadth leg from the cube's manifest arm
+    # and refuses before the holdout read without one
+    with pytest.raises(SystemExit) as e:
+        l4.main(["--strategy", name, "--cube", str(cube), "--gate-budget", r2,
+                 "--min-n", "5", "--step2", "--out", str(out)])
+    assert "S6-B3353" in str(e.value) and "breadth" in str(e.value) and not out.exists()
+    (cube / "run_manifest.json").write_text(json.dumps({"arms": [{"tag": "a1", "step2_breadth_leg": {
+        "state": "ran", "evidence": "fixture breadth grid"}}]}), encoding="utf-8")
     assert l4.main(["--strategy", name, "--cube", str(cube), "--gate-budget", r2,
                     "--min-n", "5", "--step2", "--preregistered-exit", "eB",
                     "--out", str(out)]) == 0
     g = json.loads(out.read_text(encoding="utf-8"))
     s2 = g["step2"]
+    assert s2["legs"]["depth"]["state"] == "ran" and s2["legs"]["breadth"]["state"] == "ran"
+    assert s2["disposition"] in ("QUALIFIERS FOUND - see rows",
+                                 "STEP-2 NEGATIVE - BOTH LEGS RAN OR WAIVED (S6-B3353)"), s2
     assert s2["leg"] == "long" and s2["holdout_read"] is True, s2
     assert s2["selected_exit"] == "eA", s2
     assert s2["holdout_n"] == 20 and s2["full_period_n"] == 40, s2
@@ -67132,3 +67150,101 @@ def test_b3343_the_gate_prints_which_added_tickets_the_runbook_does_not_name(mon
                for n in _ast.walk(grun)), "the footer must carry runbook_drift="
     live = pg._runbook_drift_line(root)
     assert not live.startswith("unreadable"), live
+
+
+def test_b3367_step2_specs_carry_the_breadth_leg_and_the_battery_names_both(monkeypatch, tmp_path):
+    """S6-B3367 (B3139q-r145; the remainder of S6-B3353, approved class -
+    2026-10-28T16:50:12Z 'mechanize first'): a Step-2 spec carries its
+    BREADTH leg on the arm (make_spec --breadth-leg), the launch gate refuses a
+    written Step-2 spec without a proven one, and the unattended battery reads
+    it from the landed cube's manifest. (1) step2_legs reads the arm and a
+    landed cube's legs, a missing manifest leaving breadth None; (2)
+    launch_refusals: a Step-2 doc without the leg refuses, with a proven leg
+    or as a draft or at Step 1 it does not; (3) the battery: a Step-2 FAIL
+    with breadth not run reads as that leg's verdict in a step2_legs row,
+    a manifest with no leg fails step 2 closed, a Step-1 cube carries no
+    legs row; (4) make_spec writes the leg on the Step-2 arm (AST)."""
+    import ast as _ast
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import owner_word as ow
+    import producer_variant_table as pvt
+    import step2_legs as sl
+    import scripts.run_postconfig as rp
+    q = tmp_path / "queue.md"
+    q.write_text("| **S6-B9367** | **OPEN** | P1 | **the fixture breadth decision** | "
+                 "_reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+    nr = {"state": "not_run", "ticket": "S6-B9367"}
+    # (1)
+    assert sl.arm_breadth_leg({"arms": [{"tag": "a1", sl.ARM_KEY: nr}]}) == nr
+    assert sl.arm_breadth_leg({"arms": []}) is None and sl.arm_breadth_leg(None) is None
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    assert sl.cube_legs(cube)["breadth"] is None
+    assert "no breadth leg" in sl.legs_refusals(sl.cube_legs(cube))[0]
+    (cube / "run_manifest.json").write_text(_json.dumps({"arms": [{sl.ARM_KEY: nr}]}),
+                                            encoding="utf-8")
+    assert sl.cube_legs(cube)["breadth"] == nr and sl.legs_refusals(sl.cube_legs(cube)) == []
+    # (2)
+    def doc(step, leg=None):
+        arm = {"tag": "a1", "env": {}}
+        if leg is not None:
+            arm[sl.ARM_KEY] = leg
+        return {"wave": "t", "strategy_subset": "x", "fires_at_production": 1,
+                "step": step, "arms": [arm]}
+    assert len(pvt._step2_breadth_leg_refusals(doc(2))) == 1
+    assert "S6-B3367" in pvt._step2_breadth_leg_refusals(doc(2))[0]
+    assert pvt._step2_breadth_leg_refusals(doc(2, nr)) == []
+    assert pvt._step2_breadth_leg_refusals(doc(1)) == []
+    assert len(pvt._step2_breadth_leg_refusals(doc(2, {"state": "ran"}))) == 1   # no evidence
+    hit = [e for e in pvt.launch_refusals(doc(2), subset_override=["pivot_r1_breakout"])
+           if "S6-B3367" in e]
+    assert len(hit) == 1, hit
+    assert not [e for e in pvt.launch_refusals(doc(2), subset_override=["pivot_r1_breakout"],
+                                               draft=True) if "S6-B3367" in e]
+    # (3) the battery, on the B2612 / S6-B2919 harness
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+
+    def make_run(grid_doc):
+        def _run(cmd, env=None):
+            class R:
+                returncode = 0
+                stdout = b""
+                stderr = b""
+            outs = [str(a) for a in cmd if str(a).endswith(".json")]
+            if outs:
+                _P(outs[-1]).write_text(_json.dumps(grid_doc), encoding="utf-8")
+            return R()
+        return _run
+    (cube / "trade_exit_detail.csv").write_text("x", encoding="utf-8")
+    p = {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+         "growth_multiple": 1.1, "ema_span": 200}
+    failing = {"results": [{"verdict": "FAIL"}],
+               "step2": {"verdict": "FAIL", "gates": {"pooled_sharpe": False}}}
+    monkeypatch.setattr(rp, "_run", make_run(failing))
+    man = {"window": {"start": "2021-05-05", "end": "2026-05-05"},
+           "arms": [{"env": {}, sl.ARM_KEY: nr}]}
+    res, notes, _, _ = rp.run_institutional(cube, p, man, step=2)
+    by = {n: (st, m) for n, st, m in res}
+    assert by["step2_legs"][0] == "PASS" and "BREADTH LEG NOT RUN" in by["step2_legs"][1], by
+    man_bad = {"window": man["window"], "arms": [{"env": {}}]}
+    res2, notes2, _, _ = rp.run_institutional(cube, p, man_bad, step=2)
+    by2 = {n: (st, m) for n, st, m in res2}
+    assert by2["step2_legs"][0] == "FAIL", by2["step2_legs"]
+    assert notes2["2_grade_with_config_params"][0] == "FAIL", notes2["2_grade_with_config_params"]
+    assert "step2_legs" in rp._GRADER_CHECKS, "an unproven leg fails STEP 2, not cube sanity"
+    res1, _, _, _ = rp.run_institutional(cube, p, man_bad, step=1)
+    assert "step2_legs" not in {n for n, _st, _m in res1}
+    # (4) make_spec writes the leg on the Step-2 arm
+    src = (root / "scripts" / "make_spec.py").read_text(encoding="utf-8")
+    mainf = next(n for n in _ast.parse(src).body
+                 if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    assert any(isinstance(n, _ast.Call) and _ast.unparse(n.func) == "step2_legs.add_cli"
+               for n in _ast.walk(mainf))
+    assert "step2_legs.ARM_KEY" in _ast.unparse(mainf)

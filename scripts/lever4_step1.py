@@ -140,6 +140,16 @@ def main(argv=None) -> int:
         raise SystemExit("REFUSED: --step2 names the R5 cube - it carries no "
                          "gate budget, so its holdout is the production "
                          "strategy's, not a LEVER4 arm's (fail closed)")
+    legs = None
+    if a.step2:
+        # S6-B3367 (#299): both legs before the holdout is read - depth is
+        # this cube, breadth what its spec's arm declared at launch
+        import step2_legs
+        legs = step2_legs.cube_legs(cube_dir)
+        lerrs = step2_legs.legs_refusals(legs)
+        if lerrs:
+            raise SystemExit(f"{lerrs[0]} (S6-B3367: the breadth leg rides the "
+                             "spec's arm - make_spec --breadth-leg)")
     m = _build(None if is_r5 else cube_dir, strat=strat, keys=[])
     fires = m.drop_duplicates(["ticker", "entry_date"])
 
@@ -184,6 +194,8 @@ def main(argv=None) -> int:
                           declared_step2=True,
                           preregistered_exit=a.preregistered_exit)
         s2["leg"] = STEP2_LEG
+        s2["legs"] = legs
+        s2["disposition"] = step2_legs.disposition(s2.get("verdict") == "FAIL", legs)
         rec["step2"] = s2
         rec["design"] = ("base cell per leg x exits, IS-only ranking; npt barred; "
                          "ranked on is_ci_lo; Step 2: the long leg's holdout "

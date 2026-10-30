@@ -66,7 +66,7 @@ from grid_population import grid_population, ranked_count  # noqa: E402  (B2521 
 
 MEGA = ("NVDA", "MSFT", "GOOGL", "META", "TSLA", "AAPL")
 TERMINAL = ("DONE", "N/A")
-_GRADER_CHECKS = ("step2_grade_auto", "step2_free_levels",
+_GRADER_CHECKS = ("step2_grade_auto", "step2_free_levels", "step2_legs",
                   "step4_spot_check_auto", "step7_engine_implemented")
 _LEDGER_WIDE = ("ledger_status_matches_evidence",)
 
@@ -662,6 +662,7 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
     ok2 = g.returncode == 0 and grid_out.exists()
     why2 = ""
     step2_na_row = None   # S6-B2919: set on an honest not-evaluable verdict
+    _grid: dict = {}      # S6-B3367: the Step-2 grid, read below when graded
     if ok2 and step == 2:
         # B2612 (S6-B2612a): a Step-2 cube's grid MUST carry a gate verdict;
         # a Step-1-shaped grid on a Step-2 cube fails step 2 CLOSED (L642) -
@@ -699,6 +700,24 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
                         f"exit {g.returncode}; {label} -> {grid_out.name}"
                         + (f"; {why2[:200]}" if why2 else "")
                         + ("" if ok2 or why2 else f"; {_tail(g)[:160]}")))
+    # S6-B3367 (#299): a Step-2 verdict names both legs - depth is this cube,
+    # breadth what the spec's arm declared at launch (make_spec --breadth-leg;
+    # the launch gate refuses a Step-2 spec without it). An unproven leg fails
+    # step 2 closed; a failing verdict with a leg not run reads as that leg's.
+    legs_errs: list = []
+    if step == 2:
+        import step2_legs as _sl
+        legs = {"depth": {"state": "ran",
+                          "evidence": f"{cube_dir.name} (this landing's Step-2 cube)"},
+                "breadth": _sl.arm_breadth_leg(manifest)}
+        legs_errs = _sl.legs_refusals(legs)
+        _s2b = _grid.get("step2") if isinstance(_grid, dict) else None
+        _s2v = _s2b.get("verdict") if ok2 and isinstance(_s2b, dict) else None
+        results.append((
+            "step2_legs", "FAIL" if legs_errs else "PASS",
+            legs_errs[0] if legs_errs else
+            (_sl.disposition(True, legs) if _s2v == "FAIL" else
+             "both legs named: depth ran, breadth " + str(legs["breadth"].get("state")))))
     # B2569 (owner directive 2026-09-02): a family whose band carries FREE
     # levels grades them on EVERY landing, reproduction-gated - never once at
     # strategy level (the S6-B2501/B2504 class bug). A reproduction failure
@@ -717,6 +736,8 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
                         f"-> {free_out.name}; {_verdict_line(fl)[:160]}"))
     note2 = gb.get("note", "AUTO")
     notes["2_grade_with_config_params"] = (
+        ("FAIL", f"Step-2 legs unproven (S6-B3367): {legs_errs[0][:200]}")
+        if ok2 and okf and legs_errs else
         ("DONE", f"{note2}: {Path(gb['script']).stem} at manifest {label} -> "
                  f"{grid_out.name}"
                  + (f"; {why2[:160]}" if why2 else "")

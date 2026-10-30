@@ -6495,6 +6495,28 @@ def _step2_grader_refusals(doc: dict, s: str, spec: dict) -> list:
     return []
 
 
+def _step2_breadth_leg_refusals(doc: dict) -> list:
+    """S6-B3367 (the remainder of S6-B3353): a Step-2 spec carries its BREADTH
+    leg on every arm - ran with evidence, waived with the owner's recorded
+    words, or not_run under the ticket deciding it (scripts/step2_legs.py) -
+    because the battery grades the landed cube unattended and a failing
+    verdict must name both legs; the depth leg is the run itself. make_spec
+    --breadth-leg writes it. Refused here, before the engine spend, rather
+    than at landing."""
+    if _declared_step(doc) != 2:
+        return []
+    import step2_legs as _sl
+    out = []
+    for arm in doc.get("arms") or []:
+        if not isinstance(arm, dict):
+            continue
+        for r in _sl.leg_refusals("breadth", arm.get(_sl.ARM_KEY)):
+            out.append(f"arm '{arm.get('tag', '?')}': {r} - a Step-2 spec carries its "
+                       f"breadth leg on the arm ({_sl.ARM_KEY}; make_spec --breadth-leg, "
+                       "S6-B3367)")
+    return out
+
+
 def launch_refusals(doc: dict, root: Path | None = None,
                     require_subset: bool = True,
                     subset_override: tuple | list | None = None,
@@ -6557,6 +6579,9 @@ def launch_refusals(doc: dict, root: Path | None = None,
     # a make_spec --dry draft reports it as a note instead (draft above)
     if not draft:
         errs += _terminal_status_refusals(doc, strats)
+        # S6-B3367: a Step-2 spec's arm names its breadth leg, so the verdict
+        # the battery gives at landing names both legs (#299)
+        errs += _step2_breadth_leg_refusals(doc)
     # S6-B3206 (owner ruling 2026-10-18): a Step-1 engine chain must
     # DECLARE its depth null, and a depth surface the offline null
     # already prices as noise is refused without an owner override

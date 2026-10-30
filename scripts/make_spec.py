@@ -483,6 +483,12 @@ def main() -> int:
                          "as its ledger row records them")
     ap.add_argument("--reopen-word-ticket", default=None,
                     help="the ticket whose row records --reopen-word")
+    # S6-B3367: a Step-2 spec carries its BREADTH leg on the arm - ran (with
+    # evidence), waived (the owner's recorded words) or not_run (the ticket
+    # deciding it) - so the battery and every Step-2 reader read it from the
+    # landed cube's manifest; the depth leg is the Step-2 run itself
+    import step2_legs
+    step2_legs.add_cli(ap, "breadth", required=False)
     a = ap.parse_args()
 
     import owner_word
@@ -637,6 +643,14 @@ def main() -> int:
             spec["arms"][0]["preregistered_exit"] = sizing["preregistered_exit"]
             spec["arms"][0]["preregistered_note"] = sizing["preregistered_note"]
             spec["_fires_basis"] = f"{basis} | {fires_grain(a.step)}"
+            # S6-B3367: the breadth leg rides the arm; launch_refusals refuses
+            # a written Step-2 spec without a proven one, a --dry draft
+            # prints it as a NOTE
+            if a.breadth_leg:
+                spec["arms"][0][step2_legs.ARM_KEY] = step2_legs.from_args(a, "breadth")
+            elif a.dry:
+                print("NOTE (S6-B3367): no --breadth-leg - the written spec needs "
+                      "one (ran / waived / not_run with its evidence, words or ticket)")
         if word is not None:
             spec["owner_word"] = word
         if reopen is not None:

@@ -222,7 +222,7 @@ unless the spec carries `owner_override_reopen`, the owner's recorded reopen wor
 `make_spec.py --reopen-word ... --reopen-word-ticket ...` writes (a `--dry` draft prints the status as a NOTE).
 Table A's engine-only producer levels: `band_coverage_gate.py` counts them untested unless run or waived
 in `output_audit/producer_level_waivers.json` by a recorded word (S6-B3339). Both legs: the Step-2 readers
-and the closure register name them (`step2_legs.py`, S6-B3353); LEVER4's and the battery's: S6-B3367. A sentence saying a ruling is still owed fails the pyramid once the ticket it names is terminal (`stale_pending_claims.py`, S6-B3346).
+and the closure register name them (`step2_legs.py`, S6-B3353); a Step-2 spec carries its breadth leg on the arm (`make_spec.py --breadth-leg`), the launch gate refuses one without it, and the battery and LEVER4's reader read it from the landed cube's manifest (S6-B3367). A sentence saying a ruling is still owed fails the pyramid once the ticket it names is terminal (`stale_pending_claims.py`, S6-B3346).
 
 The B2660 admission doctrine (§6.2) sets the CRITERION; it does not waive the per-step APPROVALS
 above. Violation lineage (L779): a campaign ran band design, the Step-2 spend and admission on
@@ -1561,7 +1561,7 @@ instance is recorded in the campaign log).
 
 - **Generate it; do not type it (S6-B3154a).** `scripts/make_spec.py --step 2` (the Step-1 arguments:
   `--strategy`, `--param`, `--levels`, `--with`, `--wave-prefix`; and, unless `--dry`, the owner's
-  launch word, `--owner-word` and `--owner-word-ticket`, section 0.6) writes this spec SIZED from the
+  launch word, `--owner-word` and `--owner-word-ticket`, section 0.6; and the breadth leg, `--breadth-leg` ran / waived / not_run with its evidence, words or ticket, which the arm carries and the launch gate requires - S6-B3367) writes this spec SIZED from the
   config's own COMPLETE Step-1 cube: `max_legs` = ceil(that cube's engine hours x the family's largest
   measured Step-2/Step-1 ratio x `STEP2_LEG_MARGIN` / `leg_cap_hours`), the arm's `preregistered_exit` =
   that cube's grid `step1_ranking[0]` exit (the B2612 record `run_postconfig.preregistered_exit` reads

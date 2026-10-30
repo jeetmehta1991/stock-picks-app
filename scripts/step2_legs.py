@@ -96,9 +96,10 @@ def disposition(negative: bool, legs) -> str:
     return "STEP-2 NEGATIVE - BOTH LEGS RAN OR WAIVED (S6-B3353)"
 
 
-def add_cli(ap, name: str) -> None:
-    """--<name>-leg plus the field that proves it."""
-    ap.add_argument(f"--{name}-leg", required=True, choices=STATES,
+def add_cli(ap, name: str, required: bool = True) -> None:
+    """--<name>-leg plus the field that proves it. `required=False` is for a
+    command where the leg matters on one path only (make_spec: Step 2)."""
+    ap.add_argument(f"--{name}-leg", required=required, choices=STATES,
                     help=f"S6-B3353: the {name} leg - ran, waived or not_run")
     ap.add_argument(f"--{name}-evidence", default=None,
                     help=f"ran: the artifact or record that ran the {name} leg")
@@ -108,6 +109,33 @@ def add_cli(ap, name: str) -> None:
                     help=f"waived: the ticket whose row records --{name}-word")
     ap.add_argument(f"--{name}-ticket", default=None,
                     help=f"not_run: the ticket that decides the {name} leg")
+
+
+ARM_KEY = "step2_breadth_leg"
+
+
+def arm_breadth_leg(doc) -> object:
+    """S6-B3367: the breadth leg a Step-2 spec or manifest carries on its first
+    arm (make_spec --breadth-leg writes it), or None."""
+    arms = (doc or {}).get("arms") if isinstance(doc, dict) else None
+    arm = arms[0] if isinstance(arms, list) and arms and isinstance(arms[0], dict) else {}
+    return arm.get(ARM_KEY)
+
+
+def cube_legs(cube_dir) -> dict:
+    """S6-B3367: the legs of a landed Step-2 cube - depth ran (the cube is the
+    depth read), breadth as the spec's arm declared it at launch, read from the
+    cube's run_manifest.json. An unreadable manifest leaves breadth None,
+    which legs_refusals names (fail closed, L642)."""
+    import json
+    cube = Path(cube_dir)
+    try:
+        man = json.loads((cube / "run_manifest.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        man = {}
+    return {"depth": {"state": "ran",
+                      "evidence": f"{cube.name} (the landed Step-2 cube)"},
+            "breadth": arm_breadth_leg(man)}
 
 
 def from_args(a, name: str) -> dict:
