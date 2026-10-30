@@ -129,6 +129,15 @@ def main() -> int:
                     choices=("ran", "waived"))
     ap.add_argument("--breadth-reason", default="",
                     help="required non-empty when --breadth-disposition=waived")
+    # S6-B3353 (B3139q-r142): a waived breadth leg carries the owner's words,
+    # quoted by a row of the cited ticket, and the DEPTH leg is stated too -
+    # ran, waived or not run - so a Step-2 verdict names both legs
+    ap.add_argument("--breadth-word", default=None,
+                    help="waived: the owner's words waiving the breadth leg, verbatim")
+    ap.add_argument("--breadth-word-ticket", default=None,
+                    help="waived: the ticket whose row records --breadth-word")
+    import step2_legs
+    step2_legs.add_cli(ap, "depth")
     ap.add_argument("--out", required=True)
     # S6-B3139ah: provenance is the CALLER's statement, recorded verbatim -
     # no default, so a read can never inherit another campaign's history.
@@ -150,6 +159,16 @@ def main() -> int:
         raise SystemExit(
             "REFUSED: --breadth-disposition=waived with no --breadth-reason "
             "- a waiver without its reason is a silent skip (S6-B2848d)")
+    import owner_word
+    legs = {"depth": step2_legs.from_args(a, "depth"),
+            "breadth": ({"state": "ran", "evidence": a.step1_artifact}
+                        if a.breadth_disposition == "ran" else
+                        {"state": "waived", "reason": a.breadth_reason.strip(),
+                         "word": {"ticket": (a.breadth_word_ticket or "").strip(),
+                                  "verbatim": owner_word.normalise(a.breadth_word)}})}
+    lerrs = step2_legs.legs_refusals(legs)
+    if lerrs:
+        raise SystemExit(lerrs[0])
     prior = a.prior_read.strip()
     if not prior:
         raise SystemExit("REFUSED: empty --prior-read - name the subject's "
@@ -273,12 +292,15 @@ def main() -> int:
     except SystemExit as e:
         bc = {"evaluable": False, "reason": str(e)}
     disposition = (
+        # S6-B3353: a leg not run makes a negative read that leg's verdict
+        step2_legs.disposition(True, legs)
+        if (not quals) and bc.get("complete") and step2_legs.not_run(legs) else
         "STEP-2 NEGATIVE - ALL TABLE A BANDS TESTED - failure declarable"
         if (not quals) and bc.get("complete") else
         "READ LEG NEGATIVE; UNTESTED TABLE A BAND LEVELS REMAIN - NO "
         "FAILURE VERDICT (CHECKLIST #299/B2704)" if not quals else
         "QUALIFIERS FOUND - see rows")
-    rec = {"band_coverage": bc, "disposition": disposition,
+    rec = {"band_coverage": bc, "disposition": disposition, "legs": legs,
            "_doc": ("B2678 breadth Step-2 - one holdout read of every registered "
                     "b2673 cell (S6-B2671c) + B2658 control comparison; "
                     "DISCLOSED-RE-READ provenance travels with any admission"),

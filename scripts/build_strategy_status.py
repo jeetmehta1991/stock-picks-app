@@ -689,10 +689,39 @@ def _required(path, doc, key: str, typ: type):
     return v
 
 
+# S6-B3353 (B3139q-r142): a closure names BOTH legs - each 'ran' (with what
+# ran) or 'waived' (the owner's words, quoted by a row of the cited ticket),
+# checked by scripts/step2_legs.py. 'not_run' is no state for a CLOSED
+# campaign: closing ends it, so an unrun leg is waived by the closing words
+# or the closure is refused. The four closures recorded before this rule
+# state their legs in prose ('scope') and are grandfathered BY NAME - a set
+# that never grows (L721: a stricter rule over a backlog lands with its
+# disposal plan); a re-closure of one of them names its legs like any other.
+CLOSURES_BEFORE_LEGS = frozenset({"three_black_crows_short", "smc_breaker_block_short",
+                                  "bollinger_lower", "naked_poc_retest_long"})
+
+
+def closure_leg_refusals(record: dict) -> list:
+    """S6-B3353: what a closure lacks for its two legs; [] when both stand."""
+    import sys as _sys
+    _sp = str(ROOT / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    import step2_legs as _sl
+    legs = record.get("legs")
+    out = _sl.legs_refusals(legs)
+    if not out and _sl.not_run(legs):
+        out = [f"REFUSED (S6-B3353): a closed campaign leaves no leg not run - the "
+               f"{' and '.join(_sl.not_run(legs))} leg is waived by the closing words "
+               "or the campaign is not closed"]
+    return out
+
+
 def load_owner_closures(root=ROOT) -> dict:
     """{strategy: record} for campaigns the OWNER closed outright (S6-B3135a).
     Every record carries the owner's words (verbatim, or in substance with the
-    rows that record them) and the date ruled. An unreadable or malformed
+    rows that record them) and the date ruled, and - after the four in
+    CLOSURES_BEFORE_LEGS - both legs (S6-B3353). An unreadable or malformed
     register RAISES - a closure list that silently read empty would reopen
     closed campaigns (L642)."""
     p = Path(root) / OWNER_CLOSURES
@@ -706,6 +735,10 @@ def load_owner_closures(root=ROOT) -> dict:
                              f"owner's words - got {r!r}")
         if s in out:
             raise ValueError(f"{p}: {s} is closed twice")
+        if s not in CLOSURES_BEFORE_LEGS:
+            errs = closure_leg_refusals(r)
+            if errs:
+                raise ValueError(f"{p}: the closure of {s} - {errs[0]}")
         out[s] = r
     return out
 

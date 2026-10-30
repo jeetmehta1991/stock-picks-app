@@ -26107,6 +26107,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r141: S6-B3339's Table A clause in the #299 row, same call.
         ("AND THE GATE READS TABLE A'S PENDING PRODUCER LEVELS",
          'S6-B3339 (B3139q-r141): the coverage gate read the registry, not Table A'),
+        # B3139q-r142: S6-B3353's both-legs clause in the #299 row, same call.
+        ("THE READERS TAKE BOTH LEGS BEFORE THEY READ",
+         'S6-B3353 (B3139q-r142): only the breadth read asked for a leg'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26362,7 +26365,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # row; the pre-gate selection caught the missed bump before the gate).
     # 364 -> 365 at B3139q-r140 (S6-B3358's engine-entry clause; same call).
     # 365 -> 366 at B3139q-r141 (S6-B3339's Table A clause; same call).
-    assert len(gutted) == 366, gutted
+    # 366 -> 367 at B3139q-r142 (S6-B3353's both-legs clause; same call).
+    assert len(gutted) == 367, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -36377,7 +36381,9 @@ def test_b2644_second_read_of_a_spent_holdout_is_refused(tmp_path, monkeypatch):
                          "--sweep-artifact", "does_not_matter.json",
                          "--out", str(out),
                          "--ruling", "read the spent fixture holdout",
-                         "--ruling-ticket", "S6-B9644"])
+                         "--ruling-ticket", "S6-B9644",
+                         # S6-B3353: the breadth leg is stated before any read
+                         "--breadth-leg", "not_run", "--breadth-ticket", "S6-B9644"])
     import importlib.util as ilu
     spec = ilu.spec_from_file_location(
         "ohr_b2644b", root / "scripts" / "offline_holdout_read.py")
@@ -47545,6 +47551,7 @@ def test_b3113a_step2_read_subject_cube_control_r5(tmp_path):
         [sys.executable, str(root / "scripts" / "breadth_step2_read.py"),
          "--step1-artifact", str(tmp_path / "absent.json"),
          "--ruling", "pin probe", "--breadth-disposition", "ran",
+         "--depth-leg", "ran", "--depth-evidence", "pin fixture",  # S6-B3353
          "--prior-read", "none",               # S6-B3139ah: required
          "--out", str(tmp_path / "o.json"), "--cube-dir", str(missing)],
         cwd=str(root), capture_output=True, text=True, timeout=120)
@@ -50952,7 +50959,11 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
     p.write_text("{not json", encoding="utf-8")
     with pytest.raises(ValueError):
         bss.load_owner_closures(tmp_path)
-    ok = {"strategy": "a", "ruled": "2026-09-29", "ruling_verbatim": "done"}
+    # S6-B3353 (B3139q-r142): a closure outside the grandfathered four names
+    # both legs, so the well-formed fixture carries them
+    ok = {"strategy": "a", "ruled": "2026-09-29", "ruling_verbatim": "done",
+          "legs": {"depth": {"state": "ran", "evidence": "fixture.json"},
+                   "breadth": {"state": "ran", "evidence": "fixture.json"}}}
     for bad in ([{k: v for k, v in ok.items() if k != "ruling_verbatim"}],
                 [{k: v for k, v in ok.items() if k != "ruled"}],
                 [{k: v for k, v in ok.items() if k != "strategy"}],
@@ -52975,6 +52986,7 @@ def test_b3139ah_reader_provenance_comes_from_the_caller(tmp_path, monkeypatch):
     def _read(out, prior, disclosure):
         argv = ["r", "--step1-artifact", str(grid), "--ruling", "pin probe",
                 "--breadth-disposition", "ran", "--out", str(out),
+                "--depth-leg", "ran", "--depth-evidence", "pin fixture",  # S6-B3353
                 "--cube-dir", str(run), "--prior-read", prior]
         if disclosure is not None:
             argv += ["--disclosure", disclosure]
@@ -54413,6 +54425,7 @@ def test_b3139bx_every_holdout_read_carries_its_own_chance_price(tmp_path, monke
     monkeypatch.setattr(sys, "argv", [
         "breadth_step2_read.py", "--step1-artifact", str(s1), "--ruling", "pin probe",
         "--control", "fx", "--breadth-disposition", "ran", "--prior-read", "none",
+        "--depth-leg", "ran", "--depth-evidence", "pin fixture",  # S6-B3353
         "--out", str(out)])
     monkeypatch.setattr(b2, "NULL_PERMS", 3)
     assert b2.main() == 0
@@ -66141,7 +66154,8 @@ def test_b3338_launch_and_holdout_read_doors_need_the_owners_recorded_word(monke
     _o.loader.exec_module(ohr)
     spent = tmp_path / "spent.json"
     spent.write_text("{}", encoding="utf-8")
-    argv = ["offline_holdout_read.py", "--sweep-artifact", "x.json", "--out", str(spent)]
+    argv = ["offline_holdout_read.py", "--sweep-artifact", "x.json", "--out", str(spent),
+            "--breadth-leg", "ran", "--breadth-evidence", "pin fixture"]   # S6-B3353
     monkeypatch.setattr(sys, "argv", argv)
     with pytest.raises(SystemExit) as e:
         ohr.main()
@@ -66807,3 +66821,135 @@ def test_b3339_band_coverage_reads_table_a_pending_levels_and_waivers(tmp_path, 
         msg = str(ex.value)
         assert "S6-B3339" in msg and "P1.1 ema span: 7 pending" in msg, msg
         assert "producer_level_waivers.json" in msg, msg
+
+
+def test_b3353_step2_readers_and_closures_name_both_legs(tmp_path, monkeypatch):
+    """S6-B3353 (B3139q-r142; approved 2026-10-28T16:50:12Z, the mechanize-first
+    ruling; the owner asked 2026-10-29T13:14:30Z why the breadth step was not
+    followed). (1) scripts/step2_legs.py: a leg is ran (with evidence), waived
+    (with words a ledger row quotes) or not_run (with a ticket that has a row),
+    both directions each; a negative read with a leg not run is that leg's
+    verdict. (2) offline_holdout_read takes the breadth leg before any read,
+    refuses an unproven one with nothing written, and records both legs and the
+    disposition. (3) breadth_step2_read takes the depth leg and a waived
+    breadth leg's words, checked before the Step-1 artifact is read. (4) the
+    closure reader refuses a closure without both legs, or with one not run,
+    outside the four grandfathered by name; the live register loads."""
+    import ast as _ast
+    import json as _j
+    import sys as _sys
+    import pytest
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import owner_word as ow
+    import step2_legs as sl
+    q = tmp_path / "queue.md"
+    q.write_text("| **S6-B9353** | **OPEN** | P1 | **RULED: 'waive the fixture breadth leg "
+                 "once' (fixture).** | _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+    word = {"ticket": "S6-B9353", "verbatim": "waive the fixture breadth leg once"}
+    # (1)
+    assert sl.leg_refusals("depth", {"state": "ran", "evidence": "grid.json"}) == []
+    assert "no evidence" in sl.leg_refusals("depth", {"state": "ran"})[0]
+    assert sl.leg_refusals("breadth", {"state": "waived", "word": word}) == []
+    assert "quotes" in sl.leg_refusals("breadth", {"state": "waived", "word": dict(
+        word, verbatim="a waiver nobody recorded")})[0]
+    assert sl.leg_refusals("breadth", {"state": "not_run", "ticket": "S6-B9353"}) == []
+    assert "has no row" in sl.leg_refusals("breadth", {"state": "not_run",
+                                                       "ticket": "S6-B9999"})[0]
+    assert "no breadth leg" in sl.leg_refusals("breadth", None)[0]
+    assert "no legs record" in sl.legs_refusals(None)[0]
+    legs_nr = {"depth": {"state": "ran", "evidence": "g"},
+               "breadth": {"state": "not_run", "ticket": "S6-B9353"}}
+    assert "BREADTH LEG NOT RUN" in sl.disposition(True, legs_nr)
+    assert "BOTH LEGS RAN OR WAIVED" in sl.disposition(
+        True, {"depth": legs_nr["depth"], "breadth": {"state": "waived", "word": word}})
+    assert sl.disposition(False, legs_nr).startswith("QUALIFIERS")
+    # (2) offline_holdout_read: the breadth leg before any read
+    import importlib.util as _ilu
+    spec = _ilu.spec_from_file_location("ohr_b3353", root / "scripts" / "offline_holdout_read.py")
+    ohr = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(ohr)
+    q.write_text(q.read_text(encoding="utf-8") + "| **S6-B9354** | **OPEN** | P1 | **RULED: "
+                 "'read the fixture holdout once' (fixture).** | _reason:_ OPEN |\n",
+                 encoding="utf-8")
+    out = tmp_path / "read.json"
+    base = ["ohr", "--sweep-artifact", str(tmp_path / "s1.json"), "--out", str(out),
+            "--ruling", "read the fixture holdout once", "--ruling-ticket", "S6-B9354"]
+    monkeypatch.setattr(_sys, "argv", base)
+    with pytest.raises(SystemExit) as e:
+        ohr.main()
+    assert e.value.code == 2, "argparse must require --breadth-leg"
+    monkeypatch.setattr(_sys, "argv", base + ["--breadth-leg", "waived", "--breadth-word",
+                                               "a waiver nobody recorded",
+                                               "--breadth-word-ticket", "S6-B9353"])
+    with pytest.raises(SystemExit) as e:
+        ohr.main()
+    assert "S6-B3353" in str(e.value) and not out.exists(), e.value
+    adm = {"levels": {}, "exit": "x", "holdout_sharpe": 0.4, "holdout_n": 20, "full_n": 80,
+           "profit_factor": 1.1, "sortino": 0.5, "psr": 0.6, "n_gates": 3,
+           "n_gates_evaluable": 6, "verdict": "FAIL"}
+    fake = {"strategy": "fx", "verdict": "FAIL", "basis": "net", "basis_source": "fx",
+            "admission": adm, "trials": 3,
+            "peek_bound": {"cells_clearing_all_gates_besides_admission": 0}}
+    monkeypatch.setattr(ohr, "read_step2", lambda *a, **k: dict(fake))
+    monkeypatch.setattr(ohr, "render_table", lambda rec: "")
+    monkeypatch.setattr(_sys, "argv", base + ["--breadth-leg", "not_run",
+                                               "--breadth-ticket", "S6-B9353"])
+    assert ohr.main() == 0
+    rec = _j.loads(out.read_text(encoding="utf-8"))
+    assert rec["legs"]["depth"]["state"] == "ran" and str(tmp_path / "s1.json") in \
+        rec["legs"]["depth"]["evidence"]
+    assert rec["legs"]["breadth"] == {"state": "not_run", "ticket": "S6-B9353"}
+    assert "BREADTH LEG NOT RUN" in rec["disposition"], rec["disposition"]
+    # (3) breadth_step2_read: the depth leg and the waiver's words, before the read
+    import breadth_step2_read as b2
+    s1 = tmp_path / "absent_step1.json"
+    common = ["b2", "--step1-artifact", str(s1), "--ruling", "pin probe",
+              "--prior-read", "none", "--out", str(tmp_path / "b.json")]
+    monkeypatch.setattr(_sys, "argv", common + ["--breadth-disposition", "ran"])
+    with pytest.raises(SystemExit) as e:
+        b2.main()
+    assert e.value.code == 2, "argparse must require --depth-leg"
+    monkeypatch.setattr(_sys, "argv", common + [
+        "--breadth-disposition", "waived", "--breadth-reason", "fixture",
+        "--depth-leg", "ran", "--depth-evidence", "pin fixture"])
+    with pytest.raises(SystemExit) as e:
+        b2.main()
+    assert "S6-B3353" in str(e.value) and "words" in str(e.value), e.value
+    src = (root / "scripts" / "breadth_step2_read.py").read_text(encoding="utf-8")
+    mainf = next(n for n in _ast.parse(src).body
+                 if isinstance(n, _ast.FunctionDef) and n.name == "main")
+    calls = [n for n in _ast.walk(mainf) if isinstance(n, _ast.Call)]
+    chk = [n.lineno for n in calls if _ast.unparse(n.func) == "step2_legs.legs_refusals"]
+    rd = [n.lineno for n in calls if "a.step1_artifact" in _ast.unparse(n)
+          and _ast.unparse(n.func) == "Path"]
+    assert chk and rd and min(chk) < min(rd), (chk, rd)
+    # (4) the closure reader
+    import build_strategy_status as bss
+    def _write(closures):
+        (tmp_path / "output_audit").mkdir(exist_ok=True)
+        (tmp_path / bss.OWNER_CLOSURES).write_text(_j.dumps({"closures": closures}),
+                                                   encoding="utf-8")
+    base_c = {"strategy": "fx_closed", "ruled": "2026-10-29",
+              "ruling_verbatim": "waive the fixture breadth leg once"}
+    _write([base_c])
+    with pytest.raises(ValueError, match="S6-B3353"):
+        bss.load_owner_closures(tmp_path)
+    _write([dict(base_c, legs={"depth": {"state": "ran", "evidence": "g.json"},
+                               "breadth": {"state": "not_run", "ticket": "S6-B9353"}})])
+    with pytest.raises(ValueError, match="no leg not run"):
+        bss.load_owner_closures(tmp_path)
+    _write([dict(base_c, legs={"depth": {"state": "ran", "evidence": "g.json"},
+                               "breadth": {"state": "waived", "word": word}})])
+    assert "fx_closed" in bss.load_owner_closures(tmp_path)
+    _write([dict(base_c, strategy="bollinger_lower")])          # grandfathered by name
+    assert "bollinger_lower" in bss.load_owner_closures(tmp_path)
+    assert bss.CLOSURES_BEFORE_LEGS == frozenset({
+        "three_black_crows_short", "smc_breaker_block_short", "bollinger_lower",
+        "naked_poc_retest_long"}), "the grandfathered set never grows (L721)"
+    monkeypatch.undo()
+    live = bss.load_owner_closures(root)
+    assert set(live) >= bss.CLOSURES_BEFORE_LEGS

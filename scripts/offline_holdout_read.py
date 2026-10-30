@@ -302,6 +302,11 @@ def main() -> int:
                          "ledger row records them")
     ap.add_argument("--ruling-ticket", required=True,
                     help="the ticket whose row records --ruling")
+    # S6-B3353: this read IS the depth leg; the breadth leg is stated - ran,
+    # waived with the owner's words, or not run under its deciding ticket -
+    # before anything is read, and both legs ride the artifact
+    import step2_legs
+    step2_legs.add_cli(ap, "breadth")
     a = ap.parse_args()
 
     import owner_word
@@ -310,6 +315,13 @@ def main() -> int:
     werrs = owner_word.refusals(word, door="Step-2 holdout read")
     if werrs:
         raise SystemExit(werrs[0])
+    legs = {"depth": {"state": "ran",
+                      "evidence": f"{a.sweep_artifact} (the Step-1 surface) and this "
+                                  f"read, {a.out}"},
+            "breadth": step2_legs.from_args(a, "breadth")}
+    lerrs = step2_legs.legs_refusals(legs)
+    if lerrs:
+        raise SystemExit(lerrs[0])
     out = Path(a.out)
     if out.exists() and not a.force_rerun:
         raise SystemExit(f"REFUSED: {out} exists - the holdout is already spent; "
@@ -317,6 +329,8 @@ def main() -> int:
     rec = read_step2(Path(a.sweep_artifact), a.coverage_min, a.repro_min, a.min_n,
                      coverage_artifacts=[Path(c) for c in a.coverage_artifact])
     rec["owner_word"] = word
+    rec["legs"] = legs                                        # S6-B3353
+    rec["disposition"] = step2_legs.disposition(rec["verdict"] != "QUALIFIES", legs)
     if a.force_rerun:
         rec["rerun_of_spent_holdout"] = True
     from roster_core import stamp_metric_code as _smc  # S6-B3139i
@@ -327,6 +341,8 @@ def main() -> int:
     adm = rec["admission"]
     print(f"{rec['strategy']} STEP 2: {rec['verdict']} (basis {rec['basis']}: "
           f"{rec['basis_source']})")
+    print(f"  {rec['disposition']} - depth {legs['depth']['state']}, "
+          f"breadth {legs['breadth']['state']}")
     print(f"  pre-registered {adm['levels']} exit {adm['exit']}: holdout sharpe "
           f"{adm.get('holdout_sharpe')} on n={adm['holdout_n']} "
           f"(full {adm['full_n']}); PF {adm.get('profit_factor')} sortino "

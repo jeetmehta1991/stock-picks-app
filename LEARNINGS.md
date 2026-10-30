@@ -25580,3 +25580,13 @@ MEASURED: (1) sizing S6-B3339, a scratch probe kept each Table A Factorial's 8-c
 **Rule.** No new rule - #182 stands, and L701's 'sample the misses': the rows a reader skips are a class of their own and belong in the figure.
 
 **Mechanism.** (1) The figure is re-measured through band_coverage_gate.table_a_pending, the gate's one definition, which raises on an old render and on an unsplittable row - pinned by test_b3339's (1) arm, mutants N1 and N2 killed. (2) The guard held, 1 of 1.
+
+### L989 - TWO MORE PROBES THE GUARD REFUSED: A NEWLINE ESCAPE IN A DOUBLE-QUOTED -c AND IN A HEREDOC (B3139q-r142, 2026-10-29)
+
+MEASURED: after L988 the PreToolUse guard refused two more of my commands before they ran - a python -c payload in double quotes carrying a newline escape (reading the closure scopes) and a python heredoc carrying a newline escape (filling a commit message's gate line); each was redone from a file written with the Write or Edit tool. With L987's and L988's, the guard refused 4 of my commands in this session, and none of the 4 ran.
+
+**Why.** Compliance failure against #259 (L885, L893), record-of-fact - the same habit as L963 and L967: a one-line probe typed inline when its payload carried an escape.
+
+**Rule.** No new rule - #259 stands: a payload carrying an escape goes through a file.
+
+**Mechanism.** The guard (S6-B3139ae for heredocs, S6-B3144 for double-quoted -c payloads) held, 4 of 4 in this session; no new mechanism.

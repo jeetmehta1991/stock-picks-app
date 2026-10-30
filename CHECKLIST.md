@@ -4958,6 +4958,8 @@ same defect since B1721b - recorded, never gated.**
 
 **INSTANCE (B3139q-r141 / L988) - A REGEX IN A HEREDOC, REFUSED.** A scan of the coverage tests was written as a python heredoc carrying regex backslashes; the PreToolUse guard (S6-B3139ae) refused it before it ran, and the scan ran from a file written with the Write tool. The guard held, 1 of 1.
 
+**INSTANCE (B3139q-r142 / L989) - TWO MORE ESCAPES, REFUSED.** A double-quoted python -c payload and a python heredoc, each carrying a newline escape, were refused by the guard before they ran; 4 of my commands in one session, none of which ran.
+
 ### #260 - SHOW EVERY CLASS OR CITE NO TOTAL (B1779 / L534)
 
 **MEASURED: I reported "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649".** Three of SEVEN classes
