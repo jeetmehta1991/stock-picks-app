@@ -53546,7 +53546,6 @@ _B3139BB_LINE_CITATIONS = {
     "scripts/phase_1_investigation_turn_6_final.py": 3,
     "scripts/phase_1_investigation_turn_7_silent_misses.py": 4,
     "scripts/phase_1_investigation_turn_8_adjacent_family.py": 2,
-    "scripts/postconfig_doc.py": 1,
     "scripts/producer_variant_table.py": 69,
     "scripts/roster_core.py": 1,
     "scripts/smc_lsr_step1.py": 1,
@@ -68334,3 +68333,70 @@ def test_b3322_step1_searches_read_the_surviving_r5_fires(tmp_path, monkeypatch)
         assert cs and all(not c.keywords and not c.args for c in cs), p
     tb = tree("tighten_breaker_block.py")
     assert calls(tb, "require_surviving_or_unchanged") and calls(tb, "surviving_fam")
+
+
+def test_b3335_companion_screen_reads_a_run_directory(tmp_path, monkeypatch):
+    """S6-B3335 (B3139q-r156), step 1 of the ruled (a): the companion screen
+    read only R5 (its CUBE and TRADE_LOG constants), so the LEVER4
+    pivot_r1_breakout arm - whose fires live in its own run directory - could
+    not be screened. --cube-dir now rebinds both to the run's files
+    (breadth_step1_grid's S6-B3112c convention); the survival filter and its
+    guard stay R5-only - refused and skipped on a run's own cube, which holds
+    the gate its run used - and the artifact records the directory. The R5
+    paths point at files that do not exist, so a screen that ignored the flag
+    fails here at once instead of reading the real trade log."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import institutional_companion_screen as ics
+    import offline_level_sweep as ols
+    S = "pivot_r1_breakout"
+    absent = tmp_path / "absent_r5.csv"
+    monkeypatch.setattr(ics, "TRADE_LOG", absent)
+    monkeypatch.setattr(ics, "CUBE", absent)
+    monkeypatch.setattr(ics, "R5_TRADE_LOG", absent)
+    monkeypatch.setattr(ics, "FAMILY_PREFIX", ics.FAMILY_PREFIX)
+
+    run = tmp_path / "run"
+    run.mkdir()
+    tl, cube = [], []
+    for i in range(600):
+        d = str(_pd.Timestamp("2022-01-03") + _pd.Timedelta(days=i))
+        k = i % 2 == 0
+        tl.append({"strategy": S, "ticker": f"T{i}", "entry_date": d[:10], "direction": "long",
+                   "signals_at_entry": _j.dumps({"k1": k, "x": float(i % 7)})})
+        cube.append({"strategy": S, "ticker": f"T{i}", "entry_date": d[:10], "direction": "long",
+                     "exit_method": "time_stop_10d", "pnl_pct": (2.0 if k else -1.0) + (i % 5) * 0.1})
+    _pd.DataFrame(tl).to_csv(run / "trade_log.csv", index=False)
+    _pd.DataFrame(cube).to_csv(run / "trade_exit_detail.csv", index=False)
+
+    def go(*extra):
+        out = tmp_path / "screen.json"
+        monkeypatch.setattr(_s, "argv", ["institutional_companion_screen.py", "--exit",
+                                         "time_stop_10d", "--strategy", S, "--direction",
+                                         "long", "--out", str(out), *extra])
+        ics.main()
+        return _j.loads(out.read_text(encoding="utf-8"))
+
+    # (1) a run directory is screened in place of R5, with no survival guard
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (0.5, {}))
+    rec = go("--cube-dir", str(run))
+    assert rec["cube_dir"] == str(run) and rec["entries"] == 600, rec
+    assert any(r["key"] == "k1" and r["fdr_survivor"] for r in rec["results"]), rec["results"]
+    # (2) the survival filter is refused on a run's own cube
+    with pytest.raises(SystemExit, match="S6-B3335"):
+        go("--cube-dir", str(run), "--survival")
+    # (3) R5 still runs the guard: the fixture plays R5, a changed gate refuses
+    monkeypatch.setattr(ics, "TRADE_LOG", run / "trade_log.csv")
+    monkeypatch.setattr(ics, "CUBE", run / "trade_exit_detail.csv")
+    monkeypatch.setattr(ics, "R5_TRADE_LOG", run / "trade_log.csv")
+    with pytest.raises(SystemExit, match="S6-B3321"):
+        go()
+    # (4) a missing run directory is refused, not silently replaced by R5
+    with pytest.raises(SystemExit, match="file missing"):
+        go("--cube-dir", str(tmp_path / "nowhere"))

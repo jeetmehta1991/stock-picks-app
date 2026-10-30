@@ -479,7 +479,7 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
                   "overstates the evidence - L473); the top "
                   f"{len(rank)} classes carry "
                   f"{grid.get('step1_combinations_carried')} combinations "
-                  "forward to Step 2 (tighten_breaker_block.py:449-454).", ""]
+                  "forward to Step 2 (tighten_breaker_block.main, its --top-n classes).", ""]
         if rank:
             lines += ["| rank | is_ci_lo | is_sharpe | count | exit | "
                       "class size | combination |",

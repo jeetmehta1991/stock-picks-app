@@ -56,6 +56,10 @@ from walk_forward_r5_cells import bh_fdr  # noqa: E402  (canonical FDR)
 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
+# S6-B3335 (B3139q-r156): the R5 source, kept when --cube-dir rebinds TRADE_LOG
+# and CUBE to a run's own directory - the survival filter and its guard
+# describe R5 fires only (breadth_step1_grid's S6-B3321 convention)
+R5_TRADE_LOG = TRADE_LOG
 from roster_core import IS_END  # noqa: E402  (the one roster boundary, S6-B3139bc)
 FAMILY_PREFIX = "institutional_"
 
@@ -250,7 +254,7 @@ def render(rows: list, meta: dict, args) -> str:
 
 
 def main() -> int:
-    global FAMILY_PREFIX
+    global FAMILY_PREFIX, CUBE, TRADE_LOG
     ap = argparse.ArgumentParser()
     ap.add_argument("--exit", required=True)
     # B2672 (L754: second family extracts the contract): the family is a
@@ -265,20 +269,41 @@ def main() -> int:
     ap.add_argument("--survival", action="store_true",
                     help="S6-B3320: screen only the fires the CURRENT gate keeps "
                          "(required when a strategy's gate changed since R5)")
+    ap.add_argument("--cube-dir", default=None,
+                    help="S6-B3335: screen a run DIRECTORY's own fires (its "
+                         "trade_log.csv and trade_exit_detail.csv) in place of "
+                         "R5 - breadth_step1_grid's --cube-dir (S6-B3112c); "
+                         "--survival and its guard are R5-only")
     ap.add_argument("--min-side", type=int, default=100)
     ap.add_argument("--min-n", type=int, default=500)
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
     FAMILY_PREFIX = args.family
+    if args.cube_dir:
+        CUBE = ROOT / args.cube_dir / "trade_exit_detail.csv"
+        TRADE_LOG = ROOT / args.cube_dir / "trade_log.csv"
+        for _f in (CUBE, TRADE_LOG):
+            if not _f.exists():
+                raise SystemExit(f"REFUSED: --cube-dir file missing: {_f}")
+        print(f"cube-dir override: {args.cube_dir} (S6-B3335)")
+    # no --cube-dir reads the module's own source (R5, or a test's stand-in);
+    # a --cube-dir that names R5 is R5 as well
+    reads_r5 = (not args.cube_dir
+                or Path(TRADE_LOG).resolve() == Path(R5_TRADE_LOG).resolve())
+    if args.survival and not reads_r5:
+        raise SystemExit("REFUSED (S6-B3335): --survival filters R5 fires to the "
+                         f"current gate; {args.cube_dir} is a run's own cube, which "
+                         "holds the gate it ran under")
     m = load_entries(args.exit, args.window, names=args.strategy,
                      direction=args.direction, survival=args.survival)
     # S6-B3320: fail closed (L642) - a strategy whose current gate keeps fewer
     # than all of its R5 fires is screened on the fires it keeps; the ONE guard
     # every R5 instrument calls (step1_gates, S6-B3321)
     from step1_gates import require_surviving_or_unchanged
-    for s in sorted(set(m["strategy"])):
-        require_surviving_or_unchanged(s, args.survival)
+    if reads_r5:                 # S6-B3335: a run's own cube needs no guard
+        for s in sorted(set(m["strategy"])):
+            require_surviving_or_unchanged(s, args.survival)
     if len(m) < 500:
         raise SystemExit(f"REFUSED: only {len(m)} entries in window - underpowered")
     rows, meta = screen(m, args.min_side, args.min_n)
@@ -286,6 +311,7 @@ def main() -> int:
            "selection": "exact" if args.strategy else "prefix",
            "direction": args.direction,
            "survival": m.attrs.get("survival"),     # S6-B3320
+           "cube_dir": args.cube_dir or "output_r5_merged_1_7 (default)",   # S6-B3335
            "exit": args.exit, "window": args.window,
            "peeked": args.window == "holdout", **meta, "results": rows}
     out = Path(args.out)
