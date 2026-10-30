@@ -4121,6 +4121,8 @@ hypothesis disproven by one group-by (B1717).
 
 **INSTANCE (B3097 / L871) - CALLED FULLY LOADED ON A PREVIEW.** After a mid-turn compaction I wrote 'execution-discipline FULLY LOADED (invoked this turn, re-injected after the compaction)'; the only re-injection was the B1744 hook's output, which the harness persisted as a 367.5 KB file with a 2 KB preview. scan_discipline_not_loaded blocked the close and a Skill call loaded the file. This item's own lesson - run the probe that separates a LIMIT from an OMISSION - applied to the hook: it RUNS every turn and no longer DELIVERS. Remedy row in the skill's tripwire table; the hook redesign is S6-B3097b.
 
+**INSTANCE (B3139q-r154 / L998) - A MID-TURN COMPACTION, SEVEN HOURS UNCHECKED.** The compaction at 2026-10-30T08:04:49Z was followed by six commits and no Skill(execution-discipline) call for 7 h 42 min. scan_discipline_not_loaded fires on that window and runs only at a close, which the turn did not reach. The earlier check - a PreToolUse refusal reusing the gate's window - is the owner decision S6-B3377.
+
 ### #230 - A CLAIM ABOUT A CAPABILITY IS A CLAIM, AND NEEDS THE SAME EVIDENCE (B1731 / L505)
 
 **INSTANCE (B3120/L876, artifact-schema arm L506-a):** make_spec was drafted against a guessed status-artifact schema (`strategies`; the file holds `rows`) and its own fires_at_production refusal blocked the happy path; the artifact was opened, the key corrected, the both-ways CLI pin (test_b3120a) holds it.
@@ -6720,3 +6722,23 @@ MECHANISM: scan_obligation_in_closing_row (scripts/verify_turn_compliance.py)
 fires on such a row added in the turn, the phrase outside quotes, pinned by
 test_b3260. A lower bound: 'next session' is left out (4 of its 5 terminal-row
 uses are context), so L704's own incident is outside the slice.
+
+### #329 - A COMMAND MOVED TO THE BACKGROUND HAS NOT FINISHED UNTIL A NOTICE OR A STOP SAYS SO (B3139q-r154 / L999, citing L641, self-caught 2026-10-30)
+
+When the harness answers a Bash call that it 'was moved to the background
+(ID: ...)' after its timeout, or that the command is 'running in background
+with ID: ...', the command has ended only when a completion notice or a
+TaskStop result for that id is recorded: the notice is written on completion
+and never comes for a hang (L641). Read its output file in the same turn, let
+it finish or stop it, and name by its id in the close any task that must
+outlive the turn. MEASURED (L999): bsxn9wc3u was moved at 14:45:06Z on
+2026-10-30, never ended, and spun one core for 69.5 minutes unseen, beside
+two gates; across the session's 1,361 background task ids, 1 then had no
+ending - the gate chain running at the time.
+
+MECHANISM: scan_background_task_unaccounted (scripts/verify_turn_compliance.py)
+reads the harness channels session-wide and fires at the close on an id with
+neither ending unless the final response names it, pinned by test_b3378. It
+fires at the close, not before - at any close between 14:45:06Z and 15:52:53Z
+it would have named bsxn9wc3u; inside a long turn the post-compaction listing
+of running shells is the earlier point (L998).

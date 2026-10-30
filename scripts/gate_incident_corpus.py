@@ -41,6 +41,15 @@ from __future__ import annotations
 # incident produced several sentences, the one chosen is the one that appeared
 # in the response the owner reacted to.
 INCIDENTS: dict[str, tuple[str, bool, dict]] = {
+    # S6-B3378 (B3139q-r154, L999): VERBATIM - the harness result that moved
+    # bsxn9wc3u to the background (2026-10-30T14:45:06Z, transcript line
+    # 251377). No notice and no TaskStop followed until 15:52:53Z; its
+    # `python -`, fed an empty heredoc, spun one core for 69.5 minutes.
+    "scan_background_task_unaccounted": (
+        "",
+        True,
+        {"records": [("result", 'Command did not complete within its 120s timeout and was moved to the background (ID: bsxn9wc3u). Output is being written to: C:\\Users\\jeetm\\AppData\\Local\\Temp\\claude\\c--Users-jeetm-Github-stock-picks-app\\433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0\\tasks\\bsxn9wc3u.output. You will be notified when it completes. To check interim output, use Read on that file path.')]},
+    ),
     # S6-B3352 (B3139q-r149, L976): VERBATIM - the CronCreate input of
     # monitor 5be10651 (2026-10-27T16:56:28Z) for the LEVER4 Step-2 chain;
     # it tripped on 'any non-zero exit' with no CAP_STOP exclusion and on a
@@ -757,6 +766,16 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # S6-B3378 (B3139q-r154, L999): VERBATIM must-QUIET - the same launch
+    # ended by the TaskStop that settled it (15:52:53Z, line 251860), and the
+    # bx8eb855q launch (2026-10-24, line 199962) ended by its queue-operation
+    # notice (line 200011).
+    "scan_background_task_unaccounted": [
+        ("", False, {"records": [("result", 'Command did not complete within its 120s timeout and was moved to the background (ID: bsxn9wc3u). Output is being written to: C:\\Users\\jeetm\\AppData\\Local\\Temp\\claude\\c--Users-jeetm-Github-stock-picks-app\\433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0\\tasks\\bsxn9wc3u.output. You will be notified when it completes. To check interim output, use Read on that file path.'),
+                                ("result", '{"message":"Successfully stopped task: bsxn9wc3u (grep -rn \\"^EXPLORATORY_STRATEGIES\\\\|EXPLORATORY_STRATEGIES\\\\s*=\\\\|EXPLORATORY_STRATEGIES:\\" backtest/ scripts/*.py | head -3; f=$(grep -rln \\"^EXPLORATORY_STRATEGIES\\" backtest/ | head -1); echo \\"file $f\\"; python - <<\'EOF\' 2>/dev/null || true\\nEOF\\ngrep -n \\"avwap_252_breakout\\\\|williams_r_oversold\\\\|camarilla_r4_breakout\\" $(grep -rln \\"^EXPLORATORY_STRATEGIES\\" backtest/ | head -1) | head)","task_id":"bsxn9wc3u","task_type":"local_bash","command":"grep -rn \\"^EXPLORATORY_STRATEGIES\\\\|EXPLORATORY_STRATEGIES\\\\s*=\\\\|EXPLORATORY_STRATEGIES:\\" backtest/ scripts/*.py | head -3; f=$(grep -rln \\"^EXPLORATORY_STRATEGIES\\" backtest/ | head -1); echo \\"file $f\\"; python - <<\'EOF\' 2>/dev/null || true\\nEOF\\ngrep -n \\"avwap_252_breakout\\\\|williams_r_oversold\\\\|camarilla_r4_breakout\\" $(grep -rln \\"^EXPLORATORY_STRATEGIES\\" backtest/ | head -1) | head"}')]}),
+        ("", False, {"records": [("result", "Command running in background with ID: bx8eb855q. Output is being written to: C:\\Users\\jeetm\\AppData\\Local\\Temp\\claude\\c--Users-jeetm-Github-stock-picks-app\\433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0\\tasks\\bx8eb855q.output. You will be notified when it completes \u2014 do not poll that file or sleep while waiting. Read the file only if the user asks for progress, or if you need a line it prints before you can go on, such as a server's ready line or port."),
+                                ("notice", '<task-notification>\n<task-id>bx8eb855q</task-id>\n<tool-use-id>toolu_01REFkC1nV2RpwJJomJMj7Pb</tool-use-id>\n<output-file>C:\\Users\\jeetm\\AppData\\Local\\Temp\\claude\\c--Users-jeetm-Github-stock-picks-app\\433f0dcd-be9f-40ae-8e1a-d85ed86ac2e0\\tasks\\bx8eb855q.output</output-file>\n<status>failed</status>\n<summary>Background command "Land the campaign-log B-row line and the r111b queue rows, select and run the tests reading batch G\'s files, then run gate r111 only if they pass (background)" failed with exit code 1</summary>\n</task-notification>')]}),
+    ],
     # S6-B3352 (B3139q-r149): must-QUIET - VERBATIM, the CronCreate input
     # of 3f4d143f, which replaced 5be10651 and names CAP_STOP and the
     # current leg's elapsed.
@@ -1513,6 +1532,7 @@ def all_incidents(name: str) -> list[tuple[str, bool, dict]]:
 # state that isolates TEXT, exactly as the incident run supplies the state the
 # incident had. A harness that gets either wrong reports on itself.
 NEUTRAL: dict[str, dict] = {
+    "scan_background_task_unaccounted": {"records": []},
     # S6-B3352 (B3139q-r149): reads the turn's CronCreate calls when no
     # blobs are supplied.
     "scan_monitor_trips_on_planned_leg_end": {"blobs": []},

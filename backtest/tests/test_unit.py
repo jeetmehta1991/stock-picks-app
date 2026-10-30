@@ -15759,15 +15759,25 @@ def test_b1626_orphan_gate_fails_closed():
     S = _pl.Path(".claude/skills/execution-discipline/SKILL.md").read_text(
         encoding="utf-8")
 
+    # B3139q-r154: the fixtures take lesson numbers no entry holds yet. They
+    # were the literals L999 and L998; once those were written and cited in
+    # CHECKLIST.md the first arm went quiet and the second passed by its
+    # anchor instead of its escape (L703). Derive them past the newest lesson.
+    L = _pl.Path("LEARNINGS.md").read_text(encoding="utf-8")
+    top = max(int(n) for n in re.findall(r"^#{2,3} L(\d+)\b", L, re.M))
+    fresh, fresh2 = f"L{top + 1}", f"L{top + 2}"
+    assert fresh not in C + S and fresh2 not in C + S   # unanchored, by construction
     # an entry that states a rule WITHOUT the magic words must now FLAG
-    unanchored = "\n### L999\n\nsomething worth remembering, phrased normally\n"
-    assert m.scan_orphan_rule(unanchored, C, S, ["L999"]), (
+    unanchored = f"\n### {fresh}\n\nsomething worth remembering, phrased normally\n"
+    assert m.scan_orphan_rule(unanchored, C, S, [fresh]), (
         "the gate must FAIL CLOSED - an entry is rule-bearing unless it says "
         "otherwise")
     # ...and an explicit opt-out must be honoured, so the escape is a written
-    # decision rather than a default
-    rec = "\n### L998\n\n**record-of-fact** a measurement, no rule.\n"
-    assert m.scan_orphan_rule(rec, C, S, ["L998"]) == []
+    # decision rather than a default - and the ESCAPE is what silences it: the
+    # same entry without the marker flags
+    rec = f"\n### {fresh2}\n\n**record-of-fact** a measurement, no rule.\n"
+    assert m.scan_orphan_rule(rec, C, S, [fresh2]) == []
+    assert m.scan_orphan_rule(rec.replace("**record-of-fact** ", ""), C, S, [fresh2])
     # anchoring still silences it
     anchored = "\n### L484\n\nstates a rule\n"
     assert m.scan_orphan_rule(anchored, C, S, ["L484"]) == []
@@ -20964,7 +20974,6 @@ def test_b1945_no_new_dangling_learnings_citation():
 
     LEGACY = {
         'EXECUTION_QUEUE.md': {
-            'L81',
             'L611',
         },
         'CHECKLIST.md': {
@@ -20986,6 +20995,16 @@ def test_b1945_no_new_dangling_learnings_citation():
         f"only {len(exist)} L-entries parsed - the heading regex has drifted "
         "and this test would pass by seeing nothing")
 
+    # B3139q-r154: ONE definition of a lesson citation (L593), with its
+    # positive control - a bare citation and both ends of a lesson range are
+    # seen; a file-line anchor, the end of an anchor range and a word that
+    # merely contains L and digits are not
+    _CITE = _re.compile(
+        r"(?<![#\w])(?<!#L\d\d-)(?<!#L\d\d\d-)(?<!#L\d\d\d\d-)L(\d{2,4})\b")
+    assert _CITE.findall("see L998, L976-L980 and (L1003)") == ["998", "976", "980", "1003"]
+    assert _CITE.findall("CHECKLIST.md#L1651, smc_ict.py#L81 and screener.py#L1040-L1050") == []
+    assert _CITE.findall("AL2023 and XL100") == []
+
     for name, legacy in LEGACY.items():
         p = root / name
         if not p.is_file():
@@ -21002,15 +21021,21 @@ def test_b1945_no_new_dangling_learnings_citation():
         # per-line stripping contains each historical oddity to its own line.
         _txt = "\n".join(_re.sub(r"`[^`]*`", " ", _ln)
                          for _ln in p.read_text(encoding="utf-8").splitlines())
-        cited = {f"L{c}" for c in _re.findall(r"\bL(\d{2,3})\b", _txt)
-                  if 80 <= int(c) <= 999}  # S6-B3311 (L962): was 700, blind to every later lesson
+        # B3139q-r154 (S6-B3311's past-L999 clause): four digits once the
+        # corpus reached L999. A file-line anchor is not a lesson id - #L1651,
+        # and the end of #L2730-L2733 - so the lookbehinds drop them (the old
+        # pattern read smc_ict.py#L81 as a dangling L81); prose line numbers
+        # (L8016, L9725 and L9784 in the queue) sit above the window by value,
+        # and test_b3311 raises the window before the corpus reaches it.
+        cited = {f"L{c}" for c in _CITE.findall(_txt)
+                  if 80 <= int(c) <= 1099}  # S6-B3311 (L962): was 700, then 999
         dangling = cited - exist
         # B1993: COUNTS frozen too, not only identities. B1992 measured 13
         # new #237 citations riding the number-freeze in one session; this
         # register had the identical gap - a 14th L611 citation would have
         # passed silently. Baseline measured LAST, after every edit of the
         # batch that wrote it (L562). Update DOWNWARD when cleaning one up.
-        _LBASE = {'EXECUTION_QUEUE.md': {'L81': 3, 'L611': 13}, 'CHECKLIST.md': {'L137': 1, 'L138': 2, 'L139': 6, 'L140': 2, 'L141': 2}}
+        _LBASE = {'EXECUTION_QUEUE.md': {'L611': 13}, 'CHECKLIST.md': {'L137': 1, 'L138': 2, 'L139': 6, 'L140': 2, 'L141': 2}}
         for _n, _cap in _LBASE.get(name, {}).items():
             _got = len(_re.findall(rf"\b{_n}\b",
                                    p.read_text(encoding="utf-8",
@@ -26124,6 +26149,12 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r147: S6-B3337's runbook clause, same call.
         ("THE RUNBOOK IS A RULE DOCUMENT TOO",
          'S6-B3337 (B3139q-r147): neither rule-addition gate read the runbook'),
+        # B3139q-r154: L998's close-only clause in the L871 row and L999's
+        # background-task row, same call.
+        ("INSIDE ONE LONG TURN THE GATE THAT CATCHES A MISSED RELOAD RUNS ONLY AT THE CLOSE",
+         'L998 (B3139q-r154): a mid-turn compaction went unchecked for 7 h 42 min'),
+        ("A COMMAND THE HARNESS MOVED TO THE BACKGROUND HAS NOT FINISHED",
+         'L999 (B3139q-r154): a backgrounded command spun a core for 69.5 min unseen'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26384,7 +26415,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 368 -> 369 at B3139q-r145 (S6-B3367's Step-2 spec clause; same call).
     # 369 -> 371 at B3139q-r146 (S6-B3355's and S6-B3356's clauses; same call).
     # 371 -> 372 at B3139q-r147 (S6-B3337's runbook clause; same call).
-    assert len(gutted) == 372, gutted
+    # 372 -> 374 at B3139q-r154 (L998's close-only clause and L999's row; same call).
+    assert len(gutted) == 374, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -45273,7 +45305,7 @@ def test_b3096_compaction_claims_in_learnings_cite_the_transcript():
     trigger = re.compile(r"(after|before|across)\s+(a|the|that)\s+(mid-turn\s+)?"
                          r"(context\s+)?compaction|from\s+the\s+summary|"
                          r"post-compaction|pre-compaction", re.I)
-    cite = re.compile(r"\b\d{2}:\d{2}:\d{2}\b|\bentry\s+\d{3,}\b")
+    cite = re.compile(r"\b\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?\b|\bentry\s+\d{3,}\b")
 
     def uncited(body):
         return bool(trigger.search(body)) and not (
@@ -45287,6 +45319,12 @@ def test_b3096_compaction_claims_in_learnings_cite_the_transcript():
     assert uncited(first_version), "the check no longer fires on L869's first version"
     assert not uncited(first_version + " Transcript entry 65167 at 13:42:22."), \
         "a version citing the transcript must pass"
+    # B3139q-r154: the canonical UTC form carries a Z, and the old word
+    # boundary after the seconds failed against it - 14:43:04Z cited nothing
+    assert not uncited(first_version + " Transcript at 13:42:22Z."), \
+        "a UTC time with its Z suffix is a citation"
+    assert uncited(first_version + " At 13:42:22Z."), \
+        "a time with no transcript named is still no citation"
 
     text = (Path(__file__).resolve().parents[2] / "LEARNINGS.md").read_text(encoding="utf-8")
     bad = []
@@ -48320,6 +48358,12 @@ def _b3121_call_site_seams(src: str) -> set:
 # returns and the PROCESSING it applies (#276b). A new seam fails the pin until
 # it is read and entered here with its reason.
 _B3121_SEAMS_SOUND = {
+    ("scan_background_task_unaccounted", "records"):
+        "list seam (list[tuple[str, str]] of (channel, harness text head)) for the list the "
+        "live _bg_records builds from the session's entries; both get the same launch, TaskStop "
+        "and notice parsing, and the live channel selection - a tool_result, a user, "
+        "queue-operation or queued_command notice - is driven on the live branch by "
+        "test_b3378_a_backgrounded_command_ends_only_on_a_notice_or_a_stop",
     ("scan_decision_without_ticket", "ticket_ids"):
         "list seam (list[str] of ticket ids) for the non-terminal ids the live branch reads "
         "from queue_state.tickets(); both get the same lowercasing and fragment matching, and "
@@ -68120,3 +68164,77 @@ def test_b3373_avwap_252_breakout_campaign_opened_on_the_freed_slot():
     assert all("BANDS-TO-DEFINE" in ln for ln in rows[:2]) and "rsi_14" not in "\n".join(rows)
     log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(encoding="utf-8")
     assert "## P. VWAP FAMILY (avwap_252_breakout - IN CAMPAIGN)" in log
+
+
+def test_b3378_a_backgrounded_command_ends_only_on_a_notice_or_a_stop():
+    """S6-B3378 (B3139q-r154), the mechanism of record L999 / #329: a Bash
+    command the harness moved to the background after its 120 s timeout -
+    bsxn9wc3u, 2026-10-30T14:45:06Z - never completed and spun one core for
+    69.5 minutes unseen. scan_background_task_unaccounted fires at the close
+    on a background task id with no completion notice and no TaskStop unless
+    the final response names it. (1) the corpus: the verbatim moved result
+    fires; the same launch with its verbatim TaskStop, and the bx8eb855q
+    launch with its verbatim queue-operation notice, are quiet; (2) the live
+    branch: _bg_records reads each harness channel - a tool_result (string or
+    text-block content), a user entry's notice, a queue-operation notice, a
+    queued_command attachment - and a phrase quoted inside tool output or
+    assistant text is neither a launch nor an ending; (3) the id named in the
+    close, backticks included, clears it and a close that does not name it
+    fires; (4) wired before the runner's tuple-final scan."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as g
+    import verify_turn_compliance as v
+    s = v.scan_background_task_unaccounted
+
+    _t, want, kw = g.INCIDENTS["scan_background_task_unaccounted"]
+    hit = s([], **kw)
+    assert want and len(hit) == 1 and "bsxn9wc3u" in hit[0], hit
+    assert "moved to the background after its timeout" in hit[0], hit[0]
+    (_a, w1, k1), (_b, w2, k2) = g.EXTRA_INCIDENTS["scan_background_task_unaccounted"]
+    assert not w1 and not s([], **k1)            # ended by its TaskStop
+    assert not w2 and not s([], **k2)            # ended by its notice
+    moved = kw["records"][0][1]
+    stop = k1["records"][1][1]
+    launch, notice = k2["records"][0][1], k2["records"][1][1]
+    assert moved.startswith("Command did not complete within its 120s timeout")
+    assert stop.startswith('{"message":"Successfully stopped task: bsxn9wc3u')
+    assert launch.startswith("Command running in background with ID: bx8eb855q")
+    assert notice.startswith("<task-notification>") and "bx8eb855q" in notice
+
+    def _res(t):
+        return {"type": "user", "message": {"content": [
+            {"type": "tool_result", "tool_use_id": "t", "content": t}]}}
+    # (2) the live branch, one channel at a time
+    assert len(s([_res(launch)])) == 1
+    assert not s([_res(launch), {"type": "user", "message": {"content": notice}}])
+    assert not s([_res(launch), {"type": "queue-operation", "content": notice}])
+    assert not s([_res(launch), {"type": "attachment", "attachment": {
+        "type": "queued_command", "prompt": notice}}])
+    assert not s([_res(moved), _res(stop)])
+    assert not s([_res([{"type": "text", "text": moved}]), _res(stop)])
+    # tool output or assistant text quoting the phrases is neither
+    assert not s([_res("grep output: " + moved)])
+    # the same two through the records seam: the patterns themselves anchor
+    assert not s([], records=[("result", "grep output: " + moved)])
+    assert len(s([], records=[("result", moved), ("result", "echo " + stop)])) == 1
+    assert len(s([_res(moved), _res("echo " + stop)])) == 1
+    assert len(s([_res(moved), {"type": "assistant", "message": {"content": [
+        {"type": "text", "text": notice}]}}])) == 1
+    # (3) a task that must outlive the turn is named in the close
+    assert not s([], text="gate task `bx8eb855q` is still running",
+                 records=[("result", launch)])
+    assert len(s([], text="the gate is still running",
+                 records=[("result", launch)])) == 1
+
+    # (4) wired: one tuple element of the gate runner's scan list, not its last
+    import ast as _ast
+    tree = _ast.parse((root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8"))
+    wired = [t for t in _ast.walk(tree) if isinstance(t, _ast.Tuple) and any(
+        isinstance(e, _ast.Name) and e.id == "scan_background_task_unaccounted"
+        for e in t.elts)]
+    assert len(wired) == 1 and wired[0].elts[-1].id == "scan_locked_format_edit_without_source_open", (
+        [len(t.elts) for t in wired])

@@ -5495,6 +5495,121 @@ def scan_monitor_trips_on_planned_leg_end(entries, *, blobs=None) -> list[str]:
              "the LAUNCH line instead."))
 
 
+# S6-B3378 (B3139q-r154, L999 / #329): the harness's own words for a Bash
+# command that left the foreground, and for the two records of its ending.
+# Each is matched at the START of a harness-written channel, never inside
+# tool output, which quotes them freely - this session's probes printed all
+# three while measuring the class.
+BG_LAUNCH_RE = re.compile(
+    r"^(?:Command running in background with ID: ([A-Za-z0-9]+)"
+    r"|Command did not complete within its \d+s timeout and was moved to "
+    r"the background \(ID: ([A-Za-z0-9]+)\))")
+BG_STOP_RE = re.compile(r'^\{"message":"Successfully stopped task: ([A-Za-z0-9]+)')
+BG_NOTICE_RE = re.compile(r"<task-id>([A-Za-z0-9]+)</task-id>")
+BG_NOTICE_HEAD = "<task-notification>"
+_BG_RESULT_HEADS = ("Command ", '{"message":"Successfully stopped task: ')
+
+
+def _bg_records(entries) -> list:
+    """(channel, head) for each harness-written string a background task's
+    life is recorded in, oldest first. 'result': a tool_result whose text
+    starts with a launch or a TaskStop phrase. 'notice': a completion notice,
+    which the harness stores in three channels - a user entry whose content
+    starts with it, a queue-operation entry's content and a queued_command
+    attachment's prompt. MEASURED over this session's 1,361 background task
+    ids: read through the attachment channel alone, 283 showed no ending;
+    through all three channels and TaskStop, 1 did - the r153 gate chain,
+    then running."""
+    out = []
+    for e in entries or ():
+        if not isinstance(e, dict):
+            continue
+        typ = e.get("type")
+        if typ == "user":
+            c = (e.get("message") or {}).get("content")
+            if isinstance(c, str):
+                if c.lstrip().startswith(BG_NOTICE_HEAD):
+                    out.append(("notice", c[:600]))
+                continue
+            for b in c if isinstance(c, list) else ():
+                if not isinstance(b, dict) or b.get("type") != "tool_result":
+                    continue
+                cc = b.get("content")
+                if isinstance(cc, list):
+                    cc = next((x.get("text") for x in cc if isinstance(x, dict)
+                               and isinstance(x.get("text"), str)), "")
+                # a memory filter, not the semantic anchor: it keeps only
+                # the heads the anchored patterns below can match
+                if isinstance(cc, str) and cc.startswith(_BG_RESULT_HEADS):
+                    out.append(("result", cc[:600]))
+        elif typ == "queue-operation":
+            c = e.get("content")
+            if isinstance(c, str) and c.lstrip().startswith(BG_NOTICE_HEAD):
+                out.append(("notice", c[:600]))
+        elif typ == "attachment":
+            att = e.get("attachment")
+            if not isinstance(att, dict) or att.get("type") != "queued_command":
+                continue
+            p = att.get("prompt")
+            if isinstance(p, str) and p.lstrip().startswith(BG_NOTICE_HEAD):
+                out.append(("notice", p[:600]))
+    return out
+
+
+def scan_background_task_unaccounted(entries, *, text=None,
+                                     records=None) -> list[str]:
+    """S6-B3378 / L999 / #329: a Bash command the harness moved to the
+    background after its timeout, or launched there, has ENDED only when a
+    completion notice or a TaskStop result for its id is recorded.
+
+    MEASURED 2026-10-30: a call issued at 14:43:04Z - two greps and a
+    `python -` fed an empty heredoc, which on this machine enters the Python
+    3.14 REPL and loops on a console OSError (reproduced: 15.4 MB of
+    tracebacks in about 5 s) - was moved to the background at 14:45:06Z as
+    bsxn9wc3u with 'You will be notified when it completes'. It never
+    completed, so no notice came; its output file went unread; its
+    interpreter spun one core for 69.5 minutes, beside the r152 gate and
+    r153's pre-gate, until TaskStop at 15:52:53Z.
+
+    Fires at the close on a launched id with no ending unless the final
+    response names it - a task that must outlive the turn is named there.
+    Session-wide, because the incident's launch preceded a compaction, and
+    the continuation message starts a new turn window. It runs at the close
+    (L998's limit): inside a long turn, the post-compaction listing of
+    running shells is the earlier point a forgotten task shows."""
+    if records is None:
+        records = _bg_records(entries)
+    launched, ended = {}, set()
+    for channel, head in records:
+        if channel == "result":
+            m = BG_LAUNCH_RE.match(head)
+            if m:
+                launched.setdefault(
+                    m.group(1) or m.group(2),
+                    "moved to the background after its timeout" if m.group(2)
+                    else "launched in the background")
+            m = BG_STOP_RE.match(head)
+            if m:
+                ended.add(m.group(1))
+        elif channel == "notice":
+            ended.update(BG_NOTICE_RE.findall(head))
+    final = _response_text(entries, text, keep_code=True)
+    found = {f"{tid} ({how})": False for tid, how in launched.items()
+             if tid not in ended and tid.lower() not in final}
+    if not found:
+        return []
+    return require_each(
+        "BACKGROUND TASK WITH NO ENDING (S6-B3378 / L999 / #329)", found,
+        why=("A command the harness moved to the background after its "
+             "timeout, or launched there, has ended only when a completion "
+             "notice or a TaskStop result says so - the notice is promised "
+             "for completion and never comes for a hang (L641: silence is "
+             "not a finish). MEASURED: bsxn9wc3u was moved at 14:45:06Z and "
+             "spun one core for 69.5 minutes unseen. Read its output file, "
+             "let it finish or stop it with TaskStop - or name its id in the "
+             "close if it must outlive the turn."))
+
+
 def scan_bare_python_launch(entries, *, cmds=None) -> list[str]:
     """B1877 / L573: a launch must name its INTERPRETER, never a bare `python`.
 
@@ -7076,6 +7191,9 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B3352 (B3139q-r149, L976): a chain monitor does not
                 # trip on a planned leg end.
                 scan_monitor_trips_on_planned_leg_end,
+                # S6-B3378 (B3139q-r154, L999): a command moved to the
+                # background has ended only on a notice or a TaskStop.
+                scan_background_task_unaccounted,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):

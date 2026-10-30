@@ -25678,3 +25678,31 @@ MEASURED: my first draft of the S6-B3373 opening row for avwap_252_breakout said
 **Rule.** No new rule - #166 stands: when a new record is written from an old one, every attribute it carries is re-derived for the new subject.
 
 **Mechanism.** Record-of-fact. A gate keyed on one word in one kind of row would be built from a single bite; the habit the rule names caught it before the commit.
+
+### L998 - A COMPACTION INSIDE ONE LONG TURN WENT 7 H 42 MIN AND SIX COMMITS WITHOUT A SKILL RELOAD (B3139q-r154, 2026-10-30)
+
+MEASURED (the session transcript, entry indices read with scripts/transcript_timeline.py's loader): the compaction at entry 247246 (2026-10-30T08:04:49Z) was followed by no Skill(execution-discipline) call until entry 251742 (15:47:03Z), 7 h 42 min later, and six batches committed in between - r147 (ee6b5b0ef, 08:54:42Z) through r152 (8843fab80, 15:42:23Z). The compactions either side were each followed by a Skill call within 10 s (entries 242462 and 251812). The rule was in context throughout: MEMORY.md's first entry says the first step after a compaction is to re-invoke the skill.
+
+The close-time gate is sound and was never reached. scan_discipline_not_loaded over the 4,542 entries from that boundary to the 15:47:03Z call fires (EXECUTED); it runs at a close, and this turn - opened by the owner's message of 2026-10-29T17:52:26Z - had no close in that window. The harness's post-compaction block of earlier skills is an attachment entry, which the gate does not count as a load, so its verdict on the window is right.
+
+**Why.** Compliance failure against #229 with L871: the rule and its gate both exist, and the gate's window is the close - a turn that spans compactions reaches its close hours after the miss.
+
+**Rule.** No new rule - #229 and L871 stand. The skill's L871 tripwire row now says the reload comes before the next tool call, because the gate that would catch a missed one runs only at the close.
+
+**Mechanism.** scan_discipline_not_loaded (existing; fires on this window, EXECUTED). The earlier check is S6-B3377, put to the owner: a PreToolUse refusal while the last compaction is newer than the last load, deciding with the gate's own _skill_context_text over the transcript after the marker; a scratchpad prototype decided 4 of 4 simulated moments right at 12 to 66 ms of reading per call. Every refusal in pretooluse_heredoc_guard shipped on an owner ruling (L857 (c)). Durability: the clause is pinned by test_b2123.
+
+### L999 - A COMMAND THE HARNESS MOVED TO THE BACKGROUND SPUN A CORE FOR 69.5 MINUTES UNSEEN (B3139q-r154, 2026-10-30)
+
+MEASURED (the session transcript; process data from Windows): a Bash call issued at 14:43:04Z - two greps and a `python -` fed an empty heredoc - did not finish within its 120 s timeout, and at 14:45:06Z (transcript entry 251376) the harness answered that it 'was moved to the background (ID: bsxn9wc3u) ... You will be notified when it completes.' It never completed, so no notice came, and I did not read its output file. Its interpreter (PID 16308, started 14:43:22Z) had used about 4,040 CPU-seconds - one core - when I stopped it with TaskStop at 15:52:53Z, after the post-compaction context (the compaction at transcript entry 251768, 15:52:05Z) listed the shell as still running: 69.5 minutes, beside the r152 gate (about 15:08Z to 15:42Z) and r153's pre-gate.
+
+The cause, reproduced: on this machine `python -` given empty stdin - an empty heredoc, or /dev/null - enters the Python 3.14 interactive REPL, whose Windows console layer raises OSError (WinError 6, then 123) on a non-console handle and retries forever: 15.4 MB of tracebacks in about 5 s from an empty heredoc, 119.3 MB in about 2.5 min from /dev/null; the incident's 2>/dev/null discarded them. The same call with a one-line program runs and exits 0.
+
+The first count of the class was wrong before it was used. Read through the queued_command attachment channel alone, 283 of the session's 1,361 background task ids showed no ending; a sample showed the notices also arrive as a queue-operation entry and as a user entry's content, and through all three channels and TaskStop the count is 1 of 1,361 - the r153 gate chain, then running. 238 of the 1,361 were moved after a timeout; none of them is now without an ending.
+
+**Why.** L641: silence is never evidence of work in progress, and a notice promised 'when it completes' is a record written only on the success path - it never comes for a hang. No CHECKLIST item carried the rule, and nothing read a backgrounded command's state between its timeout and the close.
+
+**Rule.** #329 (new): a command the harness moved to the background, or launched there, has ended only when a completion notice or a TaskStop result says so; read its output in the same turn, let it finish or stop it, and name any task that must outlive the turn in the close.
+
+**Mechanism.** scan_background_task_unaccounted (S6-B3378) reads the harness-written channels session-wide - a launch or a TaskStop at the start of a tool_result, a notice in a user, queue-operation or queued_command channel - and fires at the close on an id with neither ending unless the final response names it; tool output quoting the phrases does not count. Corpus: the verbatim moved result fires; that launch with its TaskStop, and the bx8eb855q launch with its queue-operation notice, stay quiet. On the live session it costs 0.31 s and is quiet; over the session as it stood before the TaskStop it fires on bsxn9wc3u (and on the r153 chain, which a close then would have named). Pinned by test_b3378, 7 of 7 behavioural mutations killed. It runs at the close (L998's limit); a refusal of `python -` on empty stdin is S6-B3379, put to the owner.
+
+**Fifth addendum to L989 (B3139q-r154).** A tenth: a double-quoted python -c counting a file's carriage returns, refused before it ran - the two greps in the same command waited too, and all three were redone through a file. The guard held 10 of 10.
