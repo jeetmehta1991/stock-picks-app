@@ -25612,3 +25612,15 @@ MEASURED, all in scripts/stale_pending_claims.py and its pin, all before any com
 **Rule.** No new rule: #166 and #226 stand. Two notes for the next reader: escape characters into code through chr(), never a backslash-u typed into a tool call; and run every mutation probe's unmutated baseline first, in the same script.
 
 **Mechanism.** C1 and C16 held, 2 of 2; the baseline assertion lives in the probe script, and the CHECKLIST #226 instance carries the habit.
+
+### L992 - WORKFLOW CHANGES SHIPPED AND THE RUNBOOK DID NOT FOLLOW: A RULE WITH NO CHECK (B3139q-r144, 2026-10-29)
+
+MEASURED on 2026-10-28 (scripts/runbook_ticket_drift.py's draft, its window mode run from 2026-10-21): of 103 tickets touched in that week the runbook named 24; the other 79 were read in full, and S6-B3342's row lists 14 ticket ids among them that changed the optimisation workflow or one of its reports while STRATEGY_OPTIMISATION_PLAN.md stayed as it was - battery check M11, legs run from a pinned worktree, preflight C20, key-selector knobs, CLOSED-NO-READ, the --beside-wave dead end, the long-campaign shortlist, two status-view columns, the superseded-grid marker, the lane band rule and Table D's surface rows. The owner asked on 2026-10-28 whether the runbook was stale; it was.
+
+**Why.** Compliance failure against #67 (the per-turn doc sweep) in the batches that shipped those changes: the sweep was a judgment about which documents a change touches, and the runbook - the class-level procedure - was the document most often judged untouched.
+
+**Rule.** A batch whose ticket changes the optimisation workflow or one of its reports edits the runbook in the same batch and cites the ticket id where the rule is described (owner 2026-10-28T22:18:34Z, now in the runbook's preamble).
+
+**Mechanism.** A PRINTED check by the owner's ruling, never a refusal: scripts/runbook_ticket_drift.py lists the tickets a batch adds that the runbook does not name and the lessons it does not cite, and scripts/pyramid_gate.py prints it as runbook_drift= in every gate record (S6-B3343, test_b3343). A blocking gate was weighed and set aside: a file-level signal ('a commit naming the ticket touched a script the runbook cites') caught the true cases and fired on most of the tickets that owed the runbook nothing, so the check lists and a person decides. The 14 were folded in at S6-B3369.
+
+**Addendum to L989 (B3139q-r144).** A seventh inline escape, a double-quoted python -c counting carriage returns, refused by the guard before it ran - the whole command, a file copy included, waited for its redo through a file. The guard held 7 of 7.

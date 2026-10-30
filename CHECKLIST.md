@@ -693,6 +693,8 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
     **Anti-pattern to avoid:** "Single atomic commit when ALL pending runs complete" — this conflates doc-sync (turn-bound) with run-finalization (independent). Multiple commits per turn are fine if pending runs complete asynchronously. Each commit is atomic for its scope (doc-sync OR run-output), not for "everything happening this turn."
 
+    **INSTANCE (B3139q-r144 / L992) - WORKFLOW CHANGES THE RUNBOOK NEVER FOLLOWED.** The 2026-10-28 measurement read the tickets touched 2026-10-21..28 that STRATEGY_OPTIMISATION_PLAN.md did not name, and S6-B3342's row lists the 14 ticket ids among them that changed the workflow or one of its reports (battery M11, worktree legs, preflight C20, key-selector knobs, CLOSED-NO-READ, the --beside-wave dead end, the long shortlist, two status-view columns, the superseded-grid marker, the lane band rule, Table D surface rows); folded in at S6-B3369. The runbook now carries the same-batch rule, and every gate record prints runbook_drift= (scripts/runbook_ticket_drift.py, S6-B3343).
+
 68. **Smoke → demo → full execution protocol for ALL multi-call API operations (Pass 53 owner directive 2026-05-05; codified after T2 SCREENER batching violation):**
     For ANY operation that issues N>10 API calls (prefetch, screener, bulk fetch, mass refresh), execute in three explicit stages with verification gates between each:
 

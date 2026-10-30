@@ -27,7 +27,7 @@ search. **APPENDIX M** maps every old section to its new home.
 
 **Adding a strategy-specific fact here is the defect this restructure removed.** A measured
 instance, a dated slate or a family's knob values goes in `STRATEGY_CAMPAIGN_LOG.md`; this file
-states the rule it instantiates. Pinned by `test_b3096_runbook_is_class_level_and_numbered_consistently`.
+states the rule it instantiates. Pinned by `test_b3096_runbook_is_class_level_and_numbered_consistently`. **A batch whose ticket changes the optimisation workflow or one of its reports edits this file in the same batch and cites the ticket id where the rule is described** (owner 2026-10-28T22:18:34Z, 'Yes approved'; S6-B3369, L992). Every pyramid gate record prints `runbook_drift=` - the batch's added tickets this file does not name and lessons it does not cite (`scripts/runbook_ticket_drift.py`; `--since YYYY-MM-DD` lists a window) - a printed check by that ruling: nothing is refused (S6-B3343).
 
 ---
 
@@ -243,7 +243,7 @@ one of TWELVE, mutually exclusive (B2825/B2833/S6-B3135/S6-B3135a/S6-B2420/S6-B3
 (DONE-ADMITTED / IN-ROSTER-FUNNEL / DONE-OWNER-CLOSED / CLOSED-NO-READ / IN-ROSTER-MIRROR / DISABLED /
 PRUNED-DUPLICATE / CLOSED-NEGATIVE / CONTAINED-IN-REPRESENTATIVE - the mirror lane closed when the
 owner dropped its Step 2, 2026-10-20) and three in lanes (IN-CAMPAIGN / STALLED-CAMPAIGN /
-NOT-STARTED). The ticket column is the campaign's tickets from the owner-opened register (S6-B3194).
+NOT-STARTED). The ticket column is the campaign's tickets from the owner-opened register (S6-B3194). The last column, exit cube, sets the exit-cube count beside the trade-log count, MISSING named (S6-B3258), and a strategy with an isolated Step-1 cube carries that cube's fire check in the caveats (`isolated_step1_check`, S6-B3306).
 
 **STREAM is the optimisation lane, and the rule is mechanical:**
 
@@ -281,14 +281,14 @@ when 4 were (output_audit/b3194_campaign_classification.json); they now come fro
 **AN OWNER-OPENED CAMPAIGN IS RECORDED THE TURN THE OWNER OPENS IT (S6-B3194, owner 'A approved'
 2026-10-19).** Append a record to `output_audit/owner_campaign_opens.json` - `strategy`, `opened`
 (the date), `ruling_verbatim` (the owner's words) and `tickets` (the campaign's tickets, never
-empty) - then rebuild the view. The register is the ONLY source of IN-CAMPAIGN and
+empty) - then rebuild the view. Which long candidate opens next is read from the long-campaign shortlist in its order (`scripts/build_long_campaign_shortlist.py --write`, S6-B3232), whose long lane reads LONG-side tightenability (S6-B3271), regenerated with the view. The register is the ONLY source of IN-CAMPAIGN and
 STALLED-CAMPAIGN: its reader RAISES on an unreadable file, a file with no `opens` list, a record
 missing its `strategy`, its `opened` date, a non-empty `tickets` list or the owner's words
 (`ruling_verbatim`, or `ruling_in_substance` where the words were not verbatim), or a strategy
 listed twice, and test_b3194 pins that the lanes read nothing else. Which members a
 FAMILY campaign records is the owner's word, ruled per family; an open instance is a queue
 ticket, never named here. The closure register, `output_audit/owner_campaign_closures.json`, is its mirror
-and outranks it.
+and outranks it. A close the owner ruled with no holdout read is CLOSED-NO-READ, read from the campaign log's T6 NOT SPENT entries (`load_no_read_closures`, S6-B3303).
 
 ---
 
@@ -436,7 +436,7 @@ pair is now consistent.
 | Admitted strategies | **CLOSED to re-testing** (owner 2026-09-12: *"We stop testing the strategies once they are in the phase 1B unless you get specific over rides from me!!"*). Enforced at launch: `phase1b_admitted()` + `_admitted_retest_refusals()` inside `launch_refusals` (B2731; the admissions JSON and PHASE_1B_ROSTER.md unioned, fail-closed, B2733; CHECKLIST #304 / L791). The only escape is the owner's dated words in the spec under `owner_override_retest_admitted[<strategy>]`; a bare boolean is refused (L789) |
 | Depth null before engine spend | **A Step-1 engine chain DECLARES its offline depth null** (owner 2026-10-18: *"B3206 approved"*; the no-surface case ruled *"A"*; RCA S6-B3203 RC5 - naked_poc's depth surface priced flat at p 0.6733 and its Step-1 chains ran anyway). Enforced at launch: `_depth_null_refusals()` inside `launch_refusals` (S6-B3206). The spec carries `depth_null[<strategy>]` = a committed depth-surface artifact whose `permutation_null.p_value_best` must be <= 0.20, or `"none: <reason>"`, which is CROSS-CHECKED (refused when `leverage()` counts more than one offline-gradable combination, or when a committed depth null for the strategy exists). `make_spec.py --depth-null` writes it; an undeclared Step-1 spec is refused (L642). The only escape for a noise-priced surface is the owner's dated words under `owner_override_depth_null[<strategy>]`; a bare boolean is refused (L789). Residual, disclosed: with several committed nulls the declared one governs |
 | `next_pivot_target` | barred as a selected exit (owner 2026-09-10; §0.3) |
-| Launch path | ONLY `run_wave.py` (writes `run_manifest.json` from the spec) -> `launch_sweep.py` (runs `prelaunch_gate.py --manifest` and REFUSES on non-zero, `launch_sweep.gate_passes`, then writes `gate_receipt.json`; battery check M10 SKIPs a cube without one - a SKIP on a NEW cube is a finding, it was launched around the gate - and FAILS a receipt whose manifest is missing or no longer hashes to it, S6-B3342). A direct `run_phase1a.py` invocation bypasses all three (S6-B2159b class), though the engine's own owner-word check still runs (S6-B3358) - never launch that way |
+| Launch path | ONLY `run_wave.py` (writes `run_manifest.json` from the spec) -> `launch_sweep.py` (runs `prelaunch_gate.py --manifest` and REFUSES on non-zero, `launch_sweep.gate_passes`, then writes `gate_receipt.json`; battery check M10 SKIPs a cube without one - a SKIP on a NEW cube is a finding, it was launched around the gate - and FAILS a receipt whose manifest is missing or no longer hashes to it, S6-B3342). Each leg's engine runs from a git worktree pinned at the manifest's frozen sha (`launch_sweep.isolated_engine_command`, S6-B3264), `drift_check` staying the leg-boundary detection. A direct `run_phase1a.py` invocation bypasses all three (S6-B2159b class), though the engine's own owner-word check still runs (S6-B3358) - never launch that way |
 | A running chain is LIVE CODE | `run_postconfig.py`, `postconfig_landing.py`, `run_wave.py`, `launch_sweep.py` and the engine are re-read at each landing/launch, so an edit while a chain runs is a deploy onto every queued spec (S6-B2573i); do not edit them mid-chain without saying so |
 | Isolation bypasses tier sizing | approved; comparability loss accepted (B1545; §8.1) |
 | Hourly updates while any run is active | STANDING (§8.9) |
@@ -745,13 +745,13 @@ written after grading, from `--results` with `--out`, §4.6.)
 moves ONE direction - tighter (§1.5). So for every PERSISTED threshold parameter the
 looser-than-production side is ENGINE-ONLY **by construction**, and each such level must at band time
 be either (a) SCHEDULED as an engine config **with an actuation mechanism proven to exist** (an env
-knob reaching the gate - Step 0.3's check applies to gate thresholds too, not just producer params;
+knob reaching the gate - Step 0.3's check applies to gate thresholds too, not just producer params; a KEY-SELECTOR knob - one that only chooses which emitted key a gate reads - reaches only a gate that reads the selected key, so Table A counts it as an engine axis only there (`table_a_bands.KEY_SELECTOR_KNOBS` names the reviewed set; S6-B3253 with S6-B3238);
 §2.3), or (b) STRUCK with an explicit NOT-MEASURED-BY-DESIGN disposition and its reason. A band row
 that is neither is dead weight advertising coverage the programme cannot deliver - the S6-B2569a
 class: four banded resim levels (two per parameter, all off production) were unscheduled AND
 unrunnable, because the screener hardcoded both
 thresholds and no env knob had ever been built. Assert this per parameter before Step 1.0 signs the
-pre-spend manifest.
+pre-spend manifest. Every producer leg of a strategy in the TIGHTEN or BOTH lane carries a defined band (S6-B2845, owner 2026-09-17), a lane move included (S6-B3308) - `test_b2836` pins it across the lane files.
 
 ### 2.3 ACTUATION - A BAND WHOSE PARAMETER DOES NOT EXIST IS NOT A BAND (B2866, owner-directed 2026-09-19; formerly §11.0b)
 
@@ -977,7 +977,7 @@ labelled peeked. One campaign therefore leaves BOTH views on disk, and neither w
 Columns = the FULL Table A inventory (every P<n> and B<n> row of SPECS / SPECS_PHASE0), tested axes
 carrying their thresholds, untested axes at production value marked resim-only / UNTESTED-OFFLINE; a
 late-landing axis (a re-swept coverage skip, a widened band) RE-RENDERS the one table - separate
-addendum tables are barred. Renderer: `scripts/table_d_render.py`; pinned by `test_b2699` (L784).
+addendum tables are barred. Renderer: `scripts/table_d_render.py`; pinned by `test_b2699` (L784). An `offline_level_sweep` in-sample surface renders as rows - each graded cell's best exit, IS Sharpe and IS trades - and every null line reads its artifact's own keys, a value it does not record named NOT RECORDED (S6-B3316).
 **When a depth surface is among the rendered artifacts, the table prints a BASIS line naming each
 artifact's P&L basis and flags MIXED BASES (S6-B3314)** - a gross depth row and a net breadth row in
 one ranking are not comparable without it; an artifact that records no basis reads NOT RECORDED,
@@ -1739,7 +1739,7 @@ M3 fill_date, M4 window + holdout-touch (FAIL on a Step-1 cube; the step comes f
 `--step1-cube` / `--step2-cube` flag, else from the manifest window - `run_postconfig.derive_step`. On a
 real landing the engine hook passes NO flag, so the window decides; run_wave's flag, taken from the
 spec's `step1_cube`, applies only when its `--if-not-landed` call is the one that lands the cube), M5 pnl integrity (NaN / inf / winsorize), M7 degraded exits, M9 the
-universe artifact via the cube's own manifest, and **M10 the gate receipt** (§8.6); M6 (boundary
+universe artifact via the cube's own manifest, **M10 the gate receipt** (§8.6), and **M11 closed trade-log fires against the exit cube** (S6-B3267: FAILs a cube that drops a closed fire, SKIPs one with no trade_log.csv - a finding on a new cube); M6 (boundary
 carryover - the pre-B3096 text said boundary DROPS; open trades are restored at a leg boundary
 (S6-B2213a), and S6-B2404 renamed the counter to what it counts, `run_arm`'s `boundary_carryover`) is recorded by run_wave and is meaningful only
 after B2167. M8 (a short borrow-rate check) never entered the battery - the pre-B3096 text said it was
@@ -2294,7 +2294,7 @@ outcomes rank highest"** - one row per (config x exit) outcome, top 25 by defaul
   registered exit is effective per cell: `next_pivot_target` is refused on boundary-spanning cells
   (B2014, `npt_excluded_identity_boundary`) and a byte-identical collapse removes another (B1593) - 22
   effective per cell when this was written; derive the effective count live (§7.6).
-- **A per-tier best summary is appended** - the comparison a rank order hides.
+- **A per-tier best summary is appended** - the comparison a rank order hides; a SUPERSEDED grid (`producer_variant_table.SUPERSEDED_GRIDS`, each with its recorded reason) is marked in Tables C and D and skipped by that best (S6-B3266).
 - **The renderer is the only source:** `python scripts/show_table_d.py` (grid form) and
   `scripts/table_d_render.py` (offline form). Print it, never retype it (L652). Regenerated at every
   landing: `postconfig_doc.build()` renders it through `producer_variant_table.table_d`, invoked by the
@@ -2465,7 +2465,7 @@ per run  =  tickers x sim-days x 0.2613      <- a CANONICAL rate; a campaign's o
 - **COMMIT, not physical RAM, is the binding memory quantity** (B2229 / L670; §4.5 Step 1.0 b).
 - **Do NOT run a pyramid or any other CPU work during a timing A/B** - it inflates the arm in flight and
   biases the saving upward (L621). **Do not run the full suite beside a live wave either** - there the
-  risk is commit exhaustion, not timing (§4.9 Step 2.4).
+  risk is commit exhaustion, not timing (§4.9 Step 2.4) - and `pyramid_gate.py --beside-wave` cannot return a pass there by construction (exit 6, S6-B3330, open). Nor commit a change to a path a leg reads while a wave is live: preflight C20 refuses it (`launch_sweep.leg_code_closure()`, S6-B3328), because the next leg's `drift_check` would halt the wave.
 
 ### 8.5 Engine settings for optimisation runs (formerly §10.3)
 

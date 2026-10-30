@@ -67061,3 +67061,74 @@ def test_b3342_runbook_statements_match_the_code_they_describe():
     # (6)
     scope = phase_table.resolve(1)["scope"]
     assert "coordinate descent" in scope and "4.4" in scope, scope
+
+
+def test_b3343_the_gate_prints_which_added_tickets_the_runbook_does_not_name(monkeypatch, capsys):
+    """S6-B3343 (B3139q-r144; owner 2026-10-28T22:18:34Z 'Yes approved', a
+    PRINTED check): scripts/runbook_ticket_drift.py lists the tickets a batch
+    adds that STRATEGY_OPTIMISATION_PLAN.md does not name and the lessons it
+    adds that the runbook does not cite; pyramid_gate prints its summary as
+    runbook_drift= before pytest and in the footer. Nothing is refused. (1)
+    added rows bold and plain, a removed or context row not counted; (2)
+    named = the full id or its bare batch form as a whole token, a longer id
+    sharing the prefix NOT named; (3) a generated START..END block does not
+    name, with a raw-text control, and blanking keeps the length; (4) lessons
+    whole-number only; (5) the summary reads none or lists; (6) main exits 0
+    and prints unreadable when the root cannot be found; (7) the gate wiring."""
+    import ast as _ast
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import runbook_ticket_drift as rtd
+    import pyramid_gate as pg
+    # (1)
+    diff = ("+| **S6-B9343** | **OPEN** | P1 | **NEW: fixture** | _reason:_ OPEN |\n"
+            "+| S6-B9344 | an old unbolded row |\n"
+            "-| **S6-B9345** | **OPEN** | P2 | removed | x |\n"
+            " | **S6-B9346** | **OPEN** | P2 | context | x |\n"
+            "+| **S6-B9343** | **EXECUTED** | P1 | **second row** | x |\n"
+            "+| **S6-LANDING-output_x_m1.25-20260101T000000** | **EXECUTED** | P1 | **a** | b |\n")
+    rows = rtd.added_ticket_rows(diff)
+    assert list(rows) == ["S6-B9343", "S6-B9344"], rows   # the machine row is skipped
+    assert rows["S6-B9343"].startswith("OPEN")
+    # (2)
+    assert rtd.is_named("see S6-B9343 here", "S6-B9343")
+    assert rtd.is_named("ruled at B9343.", "S6-B9343")
+    assert not rtd.is_named("see S6-B93430 here", "S6-B9343")
+    assert not rtd.is_named("see B93430 here", "S6-B9343")
+    # (3)
+    gen = "text <!-- LINEAGE:START --> S6-B9343 <!-- LINEAGE:END --> more"
+    assert rtd.is_named(gen, "S6-B9343"), "control: the raw text names it"
+    blank = rtd.outside_generated(gen)
+    assert len(blank) == len(gen) and not rtd.is_named(blank, "S6-B9343")
+    # (4)
+    assert rtd.is_cited("see L974 here", 974) and not rtd.is_cited("see L9740", 974)
+    les = rtd.added_lessons("+### L9991 - A FIXTURE LESSON\n- ### L9992 - removed\n")
+    assert les == [(9991, "A FIXTURE LESSON")], les
+    # (5)
+    assert rtd.summary({"tickets": [], "lessons": []}) == "none"
+    s = rtd.summary({"tickets": [{"id": "S6-B9343", "named": False},
+                                 {"id": "S6-B9344", "named": True}],
+                     "lessons": [{"L": 9991, "cited": False}]})
+    assert "tickets 2, not named in the runbook 1 (S6-B9343)" in s and "(L9991)" in s, s
+    # (6)
+    def _no_root():
+        raise RuntimeError("no repo root")
+    monkeypatch.setattr(rtd, "find_root", _no_root)
+    assert rtd.main([]) == 0
+    assert "runbook_drift=unreadable (RuntimeError" in capsys.readouterr().out
+    monkeypatch.undo()
+    # (7) the gate computes the line before pytest and footers it (L654)
+    gate = (root / "scripts" / "pyramid_gate.py").read_text(encoding="utf-8")
+    grun = next(n for n in _ast.parse(gate).body
+                if isinstance(n, _ast.FunctionDef) and n.name == "run")
+    gcalls = [n for n in _ast.walk(grun) if isinstance(n, _ast.Call)]
+    dl = [n.lineno for n in gcalls if _ast.unparse(n.func) == "_runbook_drift_line"]
+    pc = [n.lineno for n in gcalls if _ast.unparse(n.func) == "subprocess.call"]
+    assert dl and pc and min(dl) < min(pc), (dl, pc)
+    assert any(isinstance(n, _ast.JoinedStr) and "runbook_drift=" in _ast.unparse(n)
+               for n in _ast.walk(grun)), "the footer must carry runbook_drift="
+    live = pg._runbook_drift_line(root)
+    assert not live.startswith("unreadable"), live

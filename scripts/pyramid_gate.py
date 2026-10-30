@@ -590,6 +590,15 @@ def run(out: Path, root: Path, pytest_args: list[str],
               "tree - %s. scripts/pregate_select.py --run runs the tests that "
               "read what the tree changed, before this gate (S6-B3269, #315)."
               % pregate, flush=True)
+    # S6-B3343 (owner 2026-10-28T22:18:34Z, a PRINTED check): the tickets this
+    # batch adds that the runbook does not name and the lessons it adds that
+    # the runbook does not cite - shown before pytest and footered; nothing
+    # is refused.
+    runbook_drift = _runbook_drift_line(root)
+    if runbook_drift != "none":
+        print("  NOTE (S6-B3343/#67): %s. Does each change the optimisation "
+              "workflow or a report? If so, this batch edits the runbook and "
+              "cites the id; nothing is refused." % runbook_drift, flush=True)
     # S6-B3245: every print before pytest happens BEFORE the output_audit
     # snapshot - the gate's stdout is usually redirected INTO output_audit,
     # and a flushed line after the snapshot reads as a mid-run write (gate
@@ -682,6 +691,7 @@ def run(out: Path, root: Path, pytest_args: list[str],
                   f"readset_suite_writes={rs_writes}\n"
                   f"moved_line_citations={moved_cites}\n"
                   f"pregate={pregate}\n"
+                  f"runbook_drift={runbook_drift}\n"
                   f"stamp_binding={binding}\n")
         with open(out, "a", encoding="utf-8") as fh:
             fh.write("\n" + footer)
@@ -1124,6 +1134,19 @@ def _pregate_line(root) -> str:
     try:
         import pregate_select as _ps
         return _ps.current_verdict(Path(root))
+    except Exception as e:
+        return f"unreadable ({type(e).__name__})"
+
+
+def _runbook_drift_line(root) -> str:
+    """S6-B3343: scripts/runbook_ticket_drift.py's batch summary for this
+    working tree against HEAD - the added tickets the runbook does not name
+    and the added lessons it does not cite, 'none', or 'unreadable (<error>)'.
+    A printed check by owner ruling (2026-10-28T22:18:34Z), never a refusal -
+    and never raises, like the gate's other disclosures."""
+    try:
+        import runbook_ticket_drift as _rtd
+        return _rtd.summary(_rtd.batch_report(Path(root)))
     except Exception as e:
         return f"unreadable ({type(e).__name__})"
 
