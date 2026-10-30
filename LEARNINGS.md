@@ -25668,3 +25668,13 @@ MEASURED: the B3139q-r149 commit a2f7c0550 says of S6-B3352 'seam registered; wi
 **Rule.** No new rule - #196 stands: after any pre-gate failure is fixed, re-read every text drafted before it (the commit message, the rows, the close) against what now ships.
 
 **Mechanism.** Record-of-fact. No gate reads a commit message's claims against the tree, and one instance does not size a gate (the tripwire against building a refusal from one bite); the ledger row, which the turn gate does read, carried the truth.
+
+### L997 - A CAMPAIGN-OPENING ROW CARRIED A TAG FROM THE TEMPLATE IT WAS WRITTEN FROM (B3139q-r153, 2026-10-30)
+
+MEASURED: my first draft of the S6-B3373 opening row for avwap_252_breakout said 'EXPLORATORY-tagged as every campaign subject'. backtest/engine/multiple_testing_correction.EXPLORATORY_STRATEGIES holds williams_r_oversold and none of avwap_252_breakout, camarilla_r4_breakout, squeeze_breakout or cmf_flip; the phrase came from the williams opening row (S6-B3247, 'EXPLORATORY-tagged'), the shape I wrote the new row from, and was widened to 'every campaign subject' with nothing checked. The set was read after the row was appended and before the commit; the row was corrected in place, and the commit message and the turn's close say so.
+
+**Why.** Compliance failure against #166 (the L915 shape: a copied note carries its source's claims into a new subject), with #201 - a classification is a claim, and this one was typed, not read.
+
+**Rule.** No new rule - #166 stands: when a new record is written from an old one, every attribute it carries is re-derived for the new subject.
+
+**Mechanism.** Record-of-fact. A gate keyed on one word in one kind of row would be built from a single bite; the habit the rule names caught it before the commit.
