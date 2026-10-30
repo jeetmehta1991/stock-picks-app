@@ -2908,7 +2908,9 @@ what gets gated, not the primitive.**
 **This is the standing requirement for additions to this file.** Adding a section here, or an item
 to CHECKLIST.md, is not complete until that rule names the function or pin test that enforces it -
 **in the same clause as its number** - or carries an explicit `JUDGMENT-ONLY` / `PROSE-ONLY` waiver
-stating why no mechanism is possible.
+stating why no mechanism is possible. THE RUNBOOK IS A RULE DOCUMENT TOO (S6-B3337): its rules carry
+no number, so a rule INSERTED into STRATEGY_OPTIMISATION_PLAN.md names its mechanism in its own block,
+and scan_ungated_addition and scan_prose_only_rule read it.
 
 **MEASURED, which is why this is a rule and not a preference:** the B1761 section asserts *"every
 gate carries a corpus entry"* and **17 of 25 gates had none, with nothing failing.**

@@ -27,7 +27,7 @@ search. **APPENDIX M** maps every old section to its new home.
 
 **Adding a strategy-specific fact here is the defect this restructure removed.** A measured
 instance, a dated slate or a family's knob values goes in `STRATEGY_CAMPAIGN_LOG.md`; this file
-states the rule it instantiates. Pinned by `test_b3096_runbook_is_class_level_and_numbered_consistently`. **A batch whose ticket changes the optimisation workflow or one of its reports edits this file in the same batch and cites the ticket id where the rule is described** (owner 2026-10-28T22:18:34Z, 'Yes approved'; S6-B3369, L992). Every pyramid gate record prints `runbook_drift=` - the batch's added tickets this file does not name and lessons it does not cite (`scripts/runbook_ticket_drift.py`; `--since YYYY-MM-DD` lists a window) - a printed check by that ruling: nothing is refused (S6-B3343).
+states the rule it instantiates. Pinned by `test_b3096_runbook_is_class_level_and_numbered_consistently`. **A batch whose ticket changes the optimisation workflow or one of its reports edits this file in the same batch and cites the ticket id where the rule is described** (owner 2026-10-28T22:18:34Z, 'Yes approved'; S6-B3369, L992). Every pyramid gate record prints `runbook_drift=` - the batch's added tickets this file does not name and lessons it does not cite (`scripts/runbook_ticket_drift.py`; `--since YYYY-MM-DD` lists a window) - a printed check by that ruling: nothing is refused (S6-B3343). A rule INSERTED into this file names its mechanism in its own block - a code identifier, a scan or test name, a .py file - or a JUDGMENT-ONLY / PROSE-ONLY waiver (`scan_ungated_addition`, S6-B3337).
 
 ---
 
@@ -147,7 +147,7 @@ owner-worded Step-2 read, admissions ruled.
   after the SAME axis is swept on a control family - if the control shows the same lift, the axis
   is general structure, not the family's signal (§3.5). Run or waive-with-reason per campaign.
 - **next_pivot_target BARRED as a selected exit (owner ruling 2026-09-10):** family-agnostic - use
-  the best NON-npt exit that clears the gates (applied B2664 and B2668).
+  the best NON-npt exit that clears the gates (applied B2664 and B2668; the offline level sweep's ranking and null since S6-B3341, `offline_level_sweep.best_exit`).
 - **ADMISSION DE-DUP (from B2666):** every owner-ruled admission set passes the funnel's
   Jaccard-0.70 de-dup before entering the deployable count; canonical = highest holdout Sharpe,
   pruned rows keep an audit trail (§6.3).

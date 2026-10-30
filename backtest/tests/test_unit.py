@@ -26121,6 +26121,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          'S6-B3355 (B3139q-r146): rows dated owner words by their delivery'),
         ("A PRINT PIPED THROUGH CUT, HEAD OR TAIL IS UNREAD, AND ONE AFTER THE WRITE IS TOO LATE",
          'S6-B3356 (B3139q-r146): a history print in the append call passed the gate'),
+        # B3139q-r147: S6-B3337's runbook clause, same call.
+        ("THE RUNBOOK IS A RULE DOCUMENT TOO",
+         'S6-B3337 (B3139q-r147): neither rule-addition gate read the runbook'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26380,7 +26383,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 367 -> 368 at B3139q-r143 (S6-B3342's rule-1 correction; same call).
     # 368 -> 369 at B3139q-r145 (S6-B3367's Step-2 spec clause; same call).
     # 369 -> 371 at B3139q-r146 (S6-B3355's and S6-B3356's clauses; same call).
-    assert len(gutted) == 371, gutted
+    # 371 -> 372 at B3139q-r147 (S6-B3337's runbook clause; same call).
+    assert len(gutted) == 372, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -36226,8 +36230,12 @@ def test_b2638_reproduction_failure_refuses(tmp_path):
     assert rec["reproduction"] == 1.0 and rec["evidence"]["coverage"] == 1.0
     assert rec["cells_graded"] == 15 and rec["cells_total"] == 15
     # the trials count is what a multiplicity correction needs; it must be the
-    # number of (cell, exit) evaluations, never the number of cells
-    assert rec["trials_searched"] == 390
+    # number of (cell, exit) evaluations, never the number of cells.
+    # S6-B3341 (B3139q-r147): 15 cells x 25 exits - next_pivot_target is
+    # barred as the selected exit (owner 2026-09-10) and no longer searched;
+    # this said 390 (x 26) until then
+    assert rec["trials_searched"] == 375
+    assert all(c.get("npt_excluded") for c in rec["ranked"])
     assert rec["holdout_read"].startswith("NOT FIRED")
 
 
@@ -48346,6 +48354,11 @@ _B3121_SEAMS_SOUND = {
     # B3139q-r146 (S6-B3356): ('scan_ticket_history_unread', 'results') left
     # this registry - the live path no longer reads _context_tool_results, so
     # a flat `results` is an alternative input, not a seam over a live helper.
+    # B3139q-r147 (S6-B3337): the rule-addition gate's runbook seam.
+    ("scan_ungated_addition", "runbook_added"):
+        "list seam (list[str] of inserted blocks) for the list runbook_inserted_blocks "
+        "returns from the runbook's diff; both feed runbook_rules_without_mechanism "
+        "unchanged, and the diff parse is driven by test_b3337",
     # B3139q-r146 (S6-B3356 / S6-B3355): the history gate's call list and the
     # owner-time gate's three seams.
     ("scan_ticket_history_unread", "calls"):
@@ -67394,3 +67407,83 @@ def test_b3356_a_history_is_read_before_the_row_is_written_and_whole():
     assert v.scan_ticket_history_unread([], rows=[added], queue_text=qt, results=earlier) == []
     assert v.scan_ticket_history_unread([], rows=[added], queue_text=qt, calls=[
         ("python scripts/ticket_history.py S6-B9358 | head -3", earlier), ("Write " + added, "")])
+
+
+def test_b3341_the_level_sweep_bars_next_pivot_target_as_the_selected_exit():
+    """S6-B3341 (B3139q-r147): scripts/offline_level_sweep.py chose a cell's
+    best exit with no next_pivot_target bar. best_exit now bars it on EVERY
+    cell - the owner's 2026-09-10 ruling (runbook 0.3), as the breadth grid's
+    BARRED_EXIT does - where here it would have won, on a cell spanning its
+    2025-02-06 identity change and on one wholly before it; sweep and the
+    permutation null both score through best_exit (one definition, L593)."""
+    import ast as _ast
+    import sys as _sys
+    from datetime import date, timedelta
+    from pathlib import Path as _P
+    import pandas as pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import offline_level_sweep as ols
+
+    def cell(start, n=30):
+        rows = []
+        for i in range(n):
+            d = start + timedelta(days=7 * i)
+            rows.append({"ticker": f"T{i}", "entry_date": d, "exit_method": "next_pivot_target",
+                         "pnl_pct": 3.0 + (i % 3), "hold_days": 5})
+            rows.append({"ticker": f"T{i}", "entry_date": d, "exit_method": "eA",
+                         "pnl_pct": 0.5 + (i % 4) * 0.4 - 0.5, "hold_days": 5})
+        return pd.DataFrame(rows)
+    spanning = cell(date(2024, 10, 1))        # 30 weeks across 2025-02-06
+    before = cell(date(2023, 1, 2))           # wholly before it
+    sh, ex, npt_x = ols.best_exit(spanning, 10)
+    assert npt_x is True and ex == "eA", (sh, ex, npt_x)
+    sh2, ex2, npt2 = ols.best_exit(before, 10)
+    assert npt2 is True and ex2 == "eA", (sh2, ex2, npt2)
+    only_a = spanning[spanning.exit_method == "eA"]
+    assert ols.best_exit(only_a, 10)[2] is False, "no npt rows, nothing barred"
+    assert ols.best_exit(spanning.iloc[0:0], 10) == (None, None, False)
+    src = (root / "scripts" / "offline_level_sweep.py").read_text(encoding="utf-8")
+    tree = _ast.parse(src)
+    for fn in ("sweep", "permutation_null"):
+        f = next(n for n in tree.body if isinstance(n, _ast.FunctionDef) and n.name == fn)
+        assert any(isinstance(c, _ast.Call) and _ast.unparse(c.func) == "best_exit"
+                   for c in _ast.walk(f)), fn
+
+
+def test_b3337_a_rule_inserted_into_the_runbook_names_its_mechanism():
+    """S6-B3337 (B3139q-r147, census step 1): the two rule-addition gates read
+    the runbook. (1) runbook_inserted_blocks keeps a hunk that only ADDS and
+    drops one that also removes (an edit in place); (2) a rule block - must,
+    never, always, required, refuses - names a mechanism in itself or is
+    flagged, and a block with no rule word is not read; (3) scan_ungated_addition
+    fires on its corpus case and stays quiet on the mechanism and waiver cases;
+    (4) scan_prose_only_rule counts the runbook as a rule document."""
+    import inspect as _insp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gc
+    import verify_turn_compliance as v
+    diff = ("@@ -10,0 +11,2 @@\n+A new leg must name its ruling.\n+Second line of it.\n"
+            "@@ -20 +22 @@\n-Old text must go.\n+New text must go.\n"
+            "@@ -30,0 +33 @@\n+The view lists shapes.\n")
+    blocks = v.runbook_inserted_blocks(diff)
+    assert blocks == ["A new leg must name its ruling. Second line of it.",
+                      "The view lists shapes."], blocks
+    bare = v.runbook_rules_without_mechanism(blocks)
+    assert bare == ["A new leg must name its ruling. Second line of it."], bare
+    for ok in ("A leg must name its ruling (`owner_word.refusals`).",
+               "A leg must name its ruling - scan_owner_decision_taken reads it.",
+               "A leg must name its ruling, pinned by test_b3338.",
+               "Every leg must stay under the cap - PROSE-ONLY: the cap is a judgment."):
+        assert v.runbook_rules_without_mechanism([ok]) == [], ok
+    cases = [c for c in gc.EXTRA_INCIDENTS["scan_ungated_addition"] if c[2].get("runbook_added")]
+    assert [mf for _t, mf, _s in cases] == [True, False, False, False], cases
+    for t, mf, st in cases:
+        assert bool(v.scan_ungated_addition([], text=t, **st)) == mf, st
+    assert "S6-B3337" in v.scan_ungated_addition([], text="", **cases[0][2])[0]
+    assert "_RUNBOOK]" in _insp.getsource(v.scan_prose_only_rule)

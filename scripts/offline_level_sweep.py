@@ -300,6 +300,33 @@ def load(strategy: str, axes: list[dict], direction: str | None = None,
     return m, ev
 
 
+NPT = "next_pivot_target"
+
+
+def best_exit(k: pd.DataFrame, min_n: int) -> tuple:
+    """(best IS sharpe, its exit, npt_excluded) over one cell's exits.
+
+    S6-B3341 (B3139q-r147): next_pivot_target is BARRED as a selected exit -
+    the owner's 2026-09-10 ruling, family-agnostic (runbook section 0.3), which
+    the breadth grid applies through BARRED_EXIT on every cell. The ticket
+    named roster_core.npt_spanning_exclusion (B2014/D7), select_exit's
+    narrower bar for cells spanning the exit's 2025-02-06 identity change; the
+    ruling is wider and is the one applied. MEASURED at B3139q-r137: this
+    module had no bar, and 3 of 12 tracked IS surfaces ranked
+    next_pivot_target cells (0 of 12 first). The permutation null scores
+    through this same helper, so the null prices the search the ranking ran
+    (L593)."""
+    npt_x = bool(len(k)) and NPT in set(k["exit_method"].unique())
+    if npt_x:
+        k = k[k["exit_method"] != NPT]
+    best_sh, best_ex = None, None
+    for ex, sub in k.groupby("exit_method"):
+        r = rc.evaluate(sub["pnl_pct"], sub["hold_days"], min_n=min_n)
+        if r and r.get("sharpe") is not None and (best_sh is None or r["sharpe"] > best_sh):
+            best_sh, best_ex = r["sharpe"], ex
+    return best_sh, best_ex, npt_x
+
+
 def permutation_null(IS, axes, min_n, n_perms, seed):
     """B2676 (S6-B2638a): the grid-stage multiplicity instrument.
 
@@ -327,11 +354,9 @@ def permutation_null(IS, axes, min_n, n_perms, seed):
         mm = base.merge(shuf, on=["ticker", "entry_date"], how="left")
         best = None
         for combo in itertools.product(*[ax["levels"] for ax in axes]):
-            k = keep(mm, axes, combo)
-            for _ex, sub in k.groupby("exit_method"):
-                r = rc.evaluate(sub["pnl_pct"], sub["hold_days"], min_n=min_n)
-                if r and r.get("sharpe") is not None and (best is None or r["sharpe"] > best):
-                    best = r["sharpe"]
+            b, _ex, _npt = best_exit(keep(mm, axes, combo), min_n)
+            if b is not None and (best is None or b > best):
+                best = b
         maxima.append(best)
     return maxima
 
@@ -387,11 +412,7 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
     cells = []
     for combo in itertools.product(*[ax["levels"] for ax in axes]):
         k = keep(IS, axes, combo)
-        best_sh, best_ex = None, None
-        for ex, sub in k.groupby("exit_method"):
-            r = rc.evaluate(sub["pnl_pct"], sub["hold_days"], min_n=min_n)
-            if r and r.get("sharpe") is not None and (best_sh is None or r["sharpe"] > best_sh):
-                best_sh, best_ex = r["sharpe"], ex
+        best_sh, best_ex, npt_x = best_exit(k, min_n)
         # owner directive: report TRADES, never cube rows - a cell's row count
         # is trades x exits and overstates the evidence ~26x.
         # S6-B3315: the best exit's trades, one month at a time - a null over
@@ -407,7 +428,9 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
                       "is_trades": int(len(k.drop_duplicates(["ticker", "entry_date"]))),
                       "is_cube_rows": int(len(k)),
                       "best_exit": best_ex, "is_sharpe": best_sh,
-                      "exits_evaluated": int(k["exit_method"].nunique()),
+                      # S6-B3341: a refused next_pivot_target is not searched
+                      "exits_evaluated": int(k["exit_method"].nunique()) - int(npt_x),
+                      "npt_excluded": npt_x,
                       "episode": ep})
     graded = [c for c in cells if c["is_sharpe"] is not None]
     _family_rows = cell_family_rows(cells)   # S6-B3096f (B3101)

@@ -222,7 +222,7 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
     "scan_ungated_addition": (
         "L516 + L517, CHECKLIST #240 + #241, SKILL section, 8 queue rows.",
         True,
-        {"added_rules": ["240", "241"]},
+        {"added_rules": ["240", "241"], "runbook_added": []},
     ),
     "scan_shell_substitution": (
         "",
@@ -1052,7 +1052,19 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
         # numbers with nothing enforcing them.
         ("L516 + L517, CHECKLIST #240 + #241, pinned by "
          "test_b1762_every_scan_gate_has_a_corpus_entry.", False,
-         {"added_rules": []}),
+         {"added_rules": [], "runbook_added": []}),
+        # S6-B3337 (B3139q-r147): a rule INSERTED into the runbook names its
+        # mechanism in its own block - must-FIRE bare, must-QUIET with a
+        # backticked identifier or a waiver, and a non-rule block is not read.
+        ("", True, {"added_rules": [], "runbook_added": [
+            "A batch whose ticket changes the workflow must edit the runbook in the same batch."]}),
+        ("", False, {"added_rules": [], "runbook_added": [
+            "A batch whose ticket changes the workflow must edit the runbook in the same batch "
+            "(printed by `scripts/runbook_ticket_drift.py`)."]}),
+        ("", False, {"added_rules": [], "runbook_added": [
+            "Every leg must stay under the cap - JUDGMENT-ONLY: no field records it."]}),
+        ("", False, {"added_rules": [], "runbook_added": [
+            "The table below lists the measured shapes."]}),
     ],
     "scan_compliance_is_content": [
         # a compliance block that NAMES items and statuses, which is what #238
@@ -1527,7 +1539,7 @@ NEUTRAL: dict[str, dict] = {
     # be neutralised or the control measures the working tree instead of
     # the text - L517, third time this exact shape has appeared.
     "scan_prose_only_rule": {"docs_touched": False, "code_touched": False},
-    "scan_ungated_addition": {"added_rules": []},
+    "scan_ungated_addition": {"added_rules": [], "runbook_added": []},
     "scan_shell_substitution": {"tool_text": ""},
     # B1794: this gate reads TOOL text for truncation markers, so the
     # control must supply a clean tool call or it measures the gate working.

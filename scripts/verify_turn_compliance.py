@@ -3833,7 +3833,47 @@ def scan_queue_not_updated(entries, *, rows=None, text=None,
             "gate exists to avoid."]
 
 
-def scan_ungated_addition(entries, *, text=None, added_rules=None) -> list[str]:
+_RUNBOOK = "STRATEGY_OPTIMISATION_PLAN.md"
+_RUNBOOK_RULE_WORD = r"\b(?:must|never|always|required|refuse[sd]?)\b"
+_RUNBOOK_MECHANISM = (r"`[^`\n]+`|\bscan_\w+|\btest_b\w+|\b\w+\.py\b|"
+                      r"judgment-only|prose-only|\bpreflight c\d+")
+
+
+def runbook_inserted_blocks(diff_text: str) -> list:
+    """S6-B3337: the runbook text a unified=0 diff INSERTS - each hunk that
+    adds lines and removes none, its added lines joined. A line edited in
+    place (a hunk that also removes) is a rewording, not a new rule, so a
+    line-count-neutral correction is not read here: a LOWER BOUND."""
+    import re
+    blocks, cur, removed = [], [], False
+    for ln in (diff_text or "").splitlines():
+        if ln.startswith("@@"):
+            if cur and not removed:
+                blocks.append(" ".join(cur))
+            cur, removed = [], False
+        elif ln.startswith("+") and not ln.startswith("+++"):
+            cur.append(ln[1:])
+        elif ln.startswith("-") and not ln.startswith("---"):
+            removed = True
+    if cur and not removed:
+        blocks.append(" ".join(cur))
+    return [b for b in blocks if re.search(r"\S", b)]
+
+
+def runbook_rules_without_mechanism(blocks) -> list:
+    """S6-B3337 (#242, #300): each inserted runbook block that states a rule -
+    must, never, always, required, refuses - names its mechanism in the same
+    block: a code identifier in backticks, a scan_ or test_b name, a .py file,
+    a preflight check, or a JUDGMENT-ONLY / PROSE-ONLY waiver. MEASURED by the
+    2026-10-28 census: 293 of 713 runbook rules had no mechanism, and neither
+    rule-addition gate read the runbook."""
+    import re
+    rule, mech = re.compile(_RUNBOOK_RULE_WORD, re.I), re.compile(_RUNBOOK_MECHANISM, re.I)
+    return [b for b in blocks or () if rule.search(b) and not mech.search(b)]
+
+
+def scan_ungated_addition(entries, *, text=None, added_rules=None,
+                          runbook_added=None) -> list[str]:
     """B1762 (#242): EACH new numbered rule names its own mechanism.
 
     Owner: *"If added to skill, have the applicable gates been added as per
@@ -3855,9 +3895,34 @@ def scan_ungated_addition(entries, *, text=None, added_rules=None) -> list[str]:
 
     `added_rules` is injectable so the gate can be exercised on fixed input
     (#241); left None it reads the CHECKLIST/SKILL diff.
+
+    S6-B3337 (B3139q-r147): the RUNBOOK too. Its rules carry no number, so the
+    mechanism must sit in the inserted block itself; `runbook_added` (a list
+    of inserted blocks) is the seam, left None it reads the runbook's diff.
     """
     import re
     import subprocess
+
+    if runbook_added is None:
+        try:
+            _rd = subprocess.run(["git", "diff", "HEAD", "--unified=0",
+                                  "--ignore-cr-at-eol", "--", _RUNBOOK],
+                                 capture_output=True, text=True, encoding="utf-8",
+                                 errors="replace", timeout=20, cwd=REPO_ROOT).stdout
+        except Exception:
+            _rd = ""
+        runbook_added = runbook_inserted_blocks(_rd)
+    _rb_bare = runbook_rules_without_mechanism(runbook_added)
+    if _rb_bare:
+        return require_each(
+            "UNGATED ADDITION (S6-B3337/#242)",
+            {f"runbook block {i + 1} ({b[:60]!r}) names its mechanism": False
+             for i, b in enumerate(_rb_bare)},
+            why=("A rule inserted into the runbook names no mechanism in its own "
+                 "block - a code identifier in backticks, a scan_ or test_b name, a "
+                 ".py file, a preflight check - nor a JUDGMENT-ONLY or PROSE-ONLY "
+                 "waiver with its reason. The 2026-10-28 census found 293 of 713 "
+                 "runbook rules held by nothing."))
 
     if added_rules is None:
         added_rules = []
@@ -3942,7 +4007,9 @@ def scan_prose_only_rule(entries, *, docs_touched=None, code_touched=None,
             return False
         return bool(d.strip()) or any(pp.split("/")[-1] in (c or "") for pp in paths)
 
-    dt = _touched(["CHECKLIST.md", ".claude/skills/execution-discipline/SKILL.md"])         if docs_touched is None else docs_touched
+    # S6-B3337 (B3139q-r147): the runbook is a rule document too
+    dt = _touched(["CHECKLIST.md", ".claude/skills/execution-discipline/SKILL.md",
+                   _RUNBOOK]) if docs_touched is None else docs_touched
     if not dt:
         return []
     ct = _touched(["scripts/verify_turn_compliance.py",
