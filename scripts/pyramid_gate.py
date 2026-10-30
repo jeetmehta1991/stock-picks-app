@@ -28,8 +28,8 @@ file that moved during the run sends EXACTLY the tests that read it back
 through pytest once (readset=RERUN-PASS / RERUN-FAILED), or marks the run
 SUSPECT (exit=6) when the tests cannot be named. A run the gate does not
 pass - exit 4, 6 or a failed re-run - WOULD demote the GREEN stamp it
-wrote; until the owner rules on the demotion (S6-B3130a, B3139 council)
-the gate records stamp_binding=would-demote and writes nothing, because
+wrote; the owner ruled it stays off (S6-B3139k, 2026-09-30, split from
+S6-B3130a), so the gate records stamp_binding=would-demote and writes nothing:
 C6 refuses EVERY commit on a non-green stamp while no launch path checks
 the stamp - a demotion before a wave launched would refuse that wave's
 unattended landing commit (L873). The gate's exit code is the verdict.

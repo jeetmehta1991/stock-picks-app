@@ -206,7 +206,11 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    consults it. **Run it explicitly before any cost-bearing launch and paste the
    exit code.** A capability asserted in the enforcement layer's own description
    and contradicted by grep is the MECHANISM-EXISTENCE RULE failing against
-   itself (L499 / CHECKLIST #224).
+   itself (L499 / CHECKLIST #224). **S6-B3342 (B3139q-r143): THIS PARAGRAPH IS STALE - THE GATE NOW
+   RUNS ON EVERY LEG.** `launch_sweep.py` runs `prelaunch_gate.py --manifest` before each leg and refuses
+   on a non-zero exit (`launch_sweep.gate_passes`), and `run_wave.py` launches only through it; a direct
+   `run_phase1a.py` invocation still bypasses the gate, though the engine's own owner-word check runs
+   (S6-B3358). The B1704 text above is kept as the incident it records.
    *Retroactive:* chunk 1 (isolation undecided, calendar unpinned), chunk 2
    (stale SHA), chunk-9 cross-arm (three enumerable confounds) — all blocked.
 

@@ -25590,3 +25590,25 @@ MEASURED: after L988 the PreToolUse guard refused two more of my commands before
 **Rule.** No new rule - #259 stands: a payload carrying an escape goes through a file.
 
 **Mechanism.** The guard (S6-B3139ae for heredocs, S6-B3144 for double-quoted -c payloads) held, 4 of 4 in this session; no new mechanism.
+
+**Addendum (B3139q-r143).** Two more the same night, both heredocs fed to python carrying an escape - one editing a scratchpad test draft while r142's gate ran, one appending the r143 pins to test_unit.py: 6 in the session, none of which ran, each redone through a file. The guard held 6 of 6; the habit is unchanged, which is why the guard is the mechanism.
+
+### L990 - A RULED DECISION WAS REPEATED AS PENDING: THE SENTENCE NAMED THE TICKET, AND THE LEDGER SAID IT WAS DONE (B3139q-r143, 2026-10-29)
+
+MEASURED: the owner ruled the pyramid gate's stamp demotion on 2026-09-30 (S6-B3139k, EXECUTED at B3139q-r13: it stays off). scripts/pyramid_gate.py's docstring still said the gate waits 'until the owner rules on the demotion (S6-B3130a, B3139 council)', and the B3139q-r131 row of S6-B3330 said the demotion half 'stays with the owner's S6-B3130a ruling' - with S6-B3130a EXECUTED - and its commit (5be43a655) and close repeated it, until the 2026-10-27T22:42:00Z answer retracted it. A check of the live surfaces at B3139q-r143 found exactly those two: the docstring and S6-B3330's last row.
+
+**Why.** Compliance failure against #201 with L583's widening (a claim a comment asserts is still a claim): the docstring was the source, and each later sentence copied it without reading the ticket it named. A pending-decision sentence carries its own disproof - the ticket id - and nothing checked it.
+
+**Rule.** A sentence saying a decision is still owed, naming the ticket that carries it, is checked against the ledger before it is repeated: if the ticket is terminal, the sentence is stale.
+
+**Mechanism.** scripts/stale_pending_claims.py finds the pending forms ('until the owner rules', 'stays with the owner's', 'pending the owner's ... ruling', 'waits on the owner's word', ...) followed by a ticket id in one clause, quoted spans blanked as mentions, and joins each to the ledger; test_b3346 holds the live surfaces - code outside the fixtures, the governing docs and every non-terminal ticket's last row - at zero. Dated records (the queue's earlier rows, LEARNINGS, the campaign log, archive/, output_audit/) are true on their date and are not read. The checker's own first draft read 0 where 1 stood - an apostrophe paired as a quote blanked the claim - and HEAD's docstring, run as a positive control, caught it before any commit (L687).
+
+### L991 - FOUR DRAFT DEFECTS IN ONE NEW CHECKER, EACH CAUGHT BEFORE THE COMMIT (B3139q-r143, 2026-10-29)
+
+MEASURED, all in scripts/stale_pending_claims.py and its pin, all before any commit: (1) a unicode escape typed into a Write or Edit tool call arrives as the CHARACTER - the tool input is JSON - so the typographic-quote pattern landed as literal curly quotes, and preflight C1 refused it; (2) the checker reads tracked code, so its clean run while it was untracked excluded the checker itself, and once staged its own docstring - quoting the defect across a line break - failed test_b3346 inside preflight C16; (3) the mutation probes ran without an unmutated baseline, so a KILLED could have meant a pin already failing; (4) a new test case put its line break inside the phrase it meant to keep whole, which the baseline then caught.
+
+**Why.** Compliance failures against #166 (a zero from a new pattern proves nothing until the pattern - and the population it reads - is validated: a tracked-files reader cannot see an untracked file, the very file being written) and #226 (prove it can fail: a mutation's KILLED means something only beside a passing baseline). Record-of-fact.
+
+**Rule.** No new rule: #166 and #226 stand. Two notes for the next reader: escape characters into code through chr(), never a backslash-u typed into a tool call; and run every mutation probe's unmutated baseline first, in the same script.
+
+**Mechanism.** C1 and C16 held, 2 of 2; the baseline assertion lives in the probe script, and the CHECKLIST #226 instance carries the habit.

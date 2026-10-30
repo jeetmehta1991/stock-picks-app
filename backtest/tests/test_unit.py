@@ -26110,6 +26110,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r142: S6-B3353's both-legs clause in the #299 row, same call.
         ("THE READERS TAKE BOTH LEGS BEFORE THEY READ",
          'S6-B3353 (B3139q-r142): only the breadth read asked for a leg'),
+        # B3139q-r143: S6-B3342's correction of B1335 rule 1, same call.
+        ("THIS PARAGRAPH IS STALE - THE GATE NOW",
+         'S6-B3342 (B3139q-r143): rule 1 said prelaunch_gate had no automatic caller'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26366,7 +26369,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 364 -> 365 at B3139q-r140 (S6-B3358's engine-entry clause; same call).
     # 365 -> 366 at B3139q-r141 (S6-B3339's Table A clause; same call).
     # 366 -> 367 at B3139q-r142 (S6-B3353's both-legs clause; same call).
-    assert len(gutted) == 367, gutted
+    # 367 -> 368 at B3139q-r143 (S6-B3342's rule-1 correction; same call).
+    assert len(gutted) == 368, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -66953,3 +66957,107 @@ def test_b3353_step2_readers_and_closures_name_both_legs(tmp_path, monkeypatch):
     monkeypatch.undo()
     live = bss.load_owner_closures(root)
     assert set(live) >= bss.CLOSURES_BEFORE_LEGS
+
+
+def test_b3346_a_pending_decision_naming_a_terminal_ticket_is_stale(tmp_path, monkeypatch):
+    """S6-B3346 (B3139q-r143): a sentence saying a decision is still owed,
+    naming the ticket that carries it, is stale once the ledger shows that
+    ticket terminal. scripts/stale_pending_claims.py finds the claim (quoted
+    spans are mentions, B1738) and joins it to the ledger; the live surfaces -
+    code outside the fixtures, the governing docs and every non-terminal
+    ticket's last row - hold none. The instance: pyramid_gate.py's docstring
+    and S6-B3330's row kept the S6-B3130a demotion pending after its
+    EXECUTED ruling (S6-B3139k)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import stale_pending_claims as spc
+    states = {"S6-B9346": "EXECUTED", "S6-B9347": "OPEN", "S6-B9348": "DROPPED"}
+    # must fire: each pending form naming a terminal ticket
+    for s in ("the demotion half stays with the owner's S6-B9346 ruling",
+              "False until the owner rules on the demotion (S6-B9346, council)",
+              "this waits on the owner's word (S6-B9348)"):
+        got = spc.stale(s, states)
+        assert len(got) == 1 and got[0][0] in ("S6-B9346", "S6-B9348"), (s, got)
+    # must stay quiet: an open ticket, a quoted mention, a settled citation
+    for s in ("the demotion stays with the owner's S6-B9347 ruling",
+              "the row said 'stays with the owner's S6-B9346 ruling' and was wrong",
+              "the owner ruled S6-B9346 on 2026-09-30",
+              "pending the owner's word on S6-B9347",
+              "it said " + chr(0x201C) + "pending the owner's S6-B9346 ruling" + chr(0x201D)):
+        assert spc.stale(s, states) == [], s
+    # a quotation wrapped over two lines is NOT a mention (a loud false alarm
+    # beats a silently blanked claim, L596)
+    assert spc.stale("x 'the half\nstays with the owner's S6-B9346 ruling' y", states)
+    # a claim's line number survives the quote blanking (L582)
+    assert spc.claims("a\nb 'x'\npending the owner's S6-B9347 ruling")[0][1] == 3
+    # the surfaces read are the live ones - never vacuous (L687): code and a
+    # governing doc and the queue's live rows in, the test fixtures out
+    labels = [lab for lab, _ in spc.live_surfaces(root)]
+    assert "scripts/pyramid_gate.py" in labels and "STRATEGY_OPTIMISATION_PLAN.md" in labels
+    assert sum(lab.startswith("EXECUTION_QUEUE.md last row of ") for lab in labels) >= 10
+    assert not any(lab.startswith("backtest/tests/") for lab in labels)
+    # the live repo holds none (both halves of the instance corrected)
+    found = spc.findings(root)
+    assert found == [], found
+    pg = (root / "scripts" / "pyramid_gate.py").read_text(encoding="utf-8")
+    assert "until the owner rules on the demotion" not in pg
+    assert "S6-B3139k" in pg      # the docstring now names the ruling
+
+
+def test_b3342_runbook_statements_match_the_code_they_describe():
+    """S6-B3342 (B3139q-r143): the runbook statements census step 2 found false
+    against the code, each now read from that code. (1) the status vocabulary's
+    count and members equal build_strategy_status's; (2) battery check M10
+    SKIPs a receipt-less cube (run_postconfig) and the launch-path row says so;
+    (3) an offline trade count for a tighter level is no bound in either
+    direction (occupancy_disclosure) and the runbook says so where it said
+    LOWER BOUND; (4) leverage() divides by no consumer count; (5) the Step-2
+    cost line cites make_spec.step2_sizing's measured ratios, never 10.88x
+    as a runtime; (6) the Step-1 phase-table row points engine depth at
+    coordinate descent (S6-B3351 (a))."""
+    import re as _re
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+    import phase_table
+    rb = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    words = {"nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13}
+    # (1)
+    m = _re.search(r"status -\s+one of ([A-Z]+), mutually exclusive.*?: ([a-z]+) terminal"
+                   r"(.*?)and ([a-z]+) in lanes", rb, _re.S)
+    assert m, "the status paragraph's shape changed - fix this reader"
+    assert words[m.group(1).lower()] == len(bss.ALL_STATUSES), m.group(1)
+    assert words[m.group(2)] == len(bss.TERMINAL_STATUSES), m.group(2)
+    assert m.group(4) in ("three",) and len(bss.LANE_STATUSES) == 3
+    for s in bss.TERMINAL_STATUSES:
+        assert s in m.group(3), s
+    n_inv = _re.search(r"the ([a-z]+) statuses\s+partition", rb)
+    assert n_inv and words[n_inv.group(1)] == len(bss.ALL_STATUSES)
+    # (2)
+    pc = (root / "scripts" / "run_postconfig.py").read_text(encoding="utf-8")
+    i = pc.index("if not rp.exists():")
+    assert '"M10_gate_receipt", "SKIP"' in pc[i:i + 200]
+    row = next(ln for ln in rb.splitlines() if ln.startswith("| Launch path |"))
+    assert "M10 SKIPs a cube without one" in row, row[:300]
+    assert "FAILS a cube without one" not in row
+    # (3)
+    assert "every offline trade count is a LOWER BOUND" not in rb
+    assert "every count is a LOWER BOUND (L812)" not in rb
+    assert rb.count("NOT A BOUND IN EITHER DIRECTION") >= 2
+    # (4)
+    assert "divides engine hours by the open-consumer" not in rb
+    import producer_variant_table as pvt
+    assert set(pvt.leverage({"params": []})) >= {"engine_runs", "free_combos", "ratio", "basis"}
+    # (5)
+    cost = rb[rb.index("**COST - projected PER CONFIG"):][:1200]
+    assert "step2_sizing" in cost and "MEASURED Step-2/Step-1 runtime ratio" in cost, cost[:600]
+    assert "by Step-2 ticker-years over Step-1 ticker-years" not in rb
+    # (6)
+    scope = phase_table.resolve(1)["scope"]
+    assert "coordinate descent" in scope and "4.4" in scope, scope

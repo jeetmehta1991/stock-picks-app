@@ -2778,6 +2778,8 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
 **INSTANCE (B3139q-r90 / L951) - A COPIED DOCSTRING NEGATIVE BECAME NEW CODE'S PREMISE.** S6-B3237's first patch wrote VERDICT_SCOPE from Batch 623's caveat - a trade log 'only observed trades the affinity ALLOWED' - into a module whose every cube runs with the affinity off (Phase 1A-beta auto-enables --no-regime-affinity). My own per-side read contradicted it before commit. A copied absence claim is a claim about the new subject; pinned by test_b3262.
 
+**INSTANCE (B3139q-r143 / L991) - A NEW CHECKER'S CLEAN RUN EXCLUDED ITSELF.** scripts/stale_pending_claims.py reads tracked code, and its first clean run came while it was untracked, so the one file holding a wrapped quotation of the defect was outside the population it read; staged, it failed test_b3346 inside preflight C16. Validate the population a new reader reads, not only its pattern.
+
 **#167 (B1446, owner-surfaced) - REJECTION ON DIRECTION MUST REDIRECT, NEVER DROP.** When a router rejects a candidate because it is the WRONG KIND of change (tighten proposed on a starved strategy, loosen on a high-fire one), the item must be re-routed to the opposite queue, not `continue`d out of the pipeline. **Lineage:** `build_r6_change_list.py:89-92` dropped 10 strategies into no queue at all; owner: "if it's not tightening it's loosening, why skip?" (S6-B1445a). **Retroactive (#136):** same family as the B1410 prose-only routing (#164) and the B984/B975 disable-instead-of-investigate pattern.
 
 **#168 (B1464, from L292) - A BYPASS SHIPS WITH THE CAPABILITY IT EXISTS TO ENABLE.** When a flag DISABLES a safeguard so that something else can be measured or collected, the batch that ships the bypass must ALSO ship that something else, or an EXECUTION_QUEUE ticket for it linked from the bypass's own comment. A bypass whose counterpart never lands silently converts a designed measurement into lost data, and it does so invisibly because the bypass keeps working exactly as written. **Enforcement:** any diff adding a `no_*` / `skip_*` / `bypass_*` / `disable_*` flag must, in the same commit, either implement the enabled capability or cite the ticket ID in the flag's docstring. **Lineage:** `backtest/engine/backtest.py:129` bypassed `STRATEGY_REGIME_AFFINITY` at Batch 384 with the rationale "cube measures per-regime cell verdicts empirically" -- the per-regime verdict is canonical criterion #11, which B1456 found was never implemented anywhere (L289). For ~1,000 batches the cube deliberately traded every strategy in every regime, including regimes each disclaims, and the grading pipeline pooled it all into one Sharpe -- averaging away precisely the signal the bypass was collecting. **Retroactive (#136):** would have caught the B901 `EMIT_RAW_SIGNAL_FIRES` flag (shipped before its consumer), the B1035 `SMC_PHASE` silent-kill, and this.
@@ -3289,6 +3291,8 @@ rate-for-total substitutions above.
 **INSTANCE (B3139q-r138 / L981) - A TIME FROM THE WRONG RECORD.** The owner sent the 2026-10-29 question at 13:14:30Z (the transcript's queue-operation enqueue record); the r137 S6-B3353 row and this batch's drafts dated it 13:20Z, the time it reached me mid-turn (the remove record, 13:20:17Z). Corrected before this batch's commit, the committed row by a correction row on S6-B3353; the batch's other four cited times match the transcript. Mechanism: S6-B3355.
 
 **INSTANCE (B3139q-r139 / L983) - A SUM TYPED BEFORE IT WAS ADDED.** A progress line said 53 status-view rows were terminal beside nine counts that add to 52; a later line retracted it with the sum written out. No gate reads a line between tool calls.
+
+**INSTANCE (B3139q-r143 / L990) - A RULED DECISION REPEATED AS OWED.** A docstring and a ticket row kept the pyramid gate's demotion as a decision still to come while the ticket they named was EXECUTED (the owner ruled it 2026-09-30, S6-B3139k); the later sentences copied the docstring without reading the ledger. scripts/stale_pending_claims.py joins such a sentence to the ledger, and test_b3346 holds the live surfaces at zero.
 
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
 
@@ -4031,6 +4035,8 @@ post-config gate built and left uninvoked.
 **INSTANCE (B3139q-r113 / L962) - A RATCHET'S WINDOW OUTGROWN BY ITS CORPUS.** test_b1945 checked lesson citations numbered 80 to 700 only - headroom when B1945 set it, near L595 - so every lesson above 700 sat outside the ratchet and a citation of an unwritten lesson there passed unseen; latent, 0 such citations measured. The window is now the 3-digit ceiling its pattern can match, and test_b3311 fails once the window stops reaching past the newest lesson (S6-B3311).
 
 **INSTANCE (B3139q-r129 / L970) - A BASELINE'S SIGN, UNPRINTED.** S6-B3248 (2)'s criterion compared each row against production without 2025-04, which is negative at 17 of 26 exits (output_audit/b3139q_r129_squeeze_production_without_2025_04.json), so 788 rows survived while 399 stay positive on 30 or more trades; the looseness was disclosed in the episode artifact's POST-HOC field.
+
+**INSTANCE (B3139q-r143 / L991) - A MUTANT KILLED BESIDE NO BASELINE.** The S6-B3346 mutation probes first ran without the unmutated pins, so each KILLED could have meant a pin already failing; the script now asserts every baseline passes before any mutant, and on its next run that assertion caught a test case that split its own phrase.
 
 ### #227 - COMPARING TWO RANKINGS MEANS COMPUTING THE RANK CORRELATION (B1716 / L502)
 
@@ -4959,6 +4965,8 @@ same defect since B1721b - recorded, never gated.**
 **INSTANCE (B3139q-r141 / L988) - A REGEX IN A HEREDOC, REFUSED.** A scan of the coverage tests was written as a python heredoc carrying regex backslashes; the PreToolUse guard (S6-B3139ae) refused it before it ran, and the scan ran from a file written with the Write tool. The guard held, 1 of 1.
 
 **INSTANCE (B3139q-r142 / L989) - TWO MORE ESCAPES, REFUSED.** A double-quoted python -c payload and a python heredoc, each carrying a newline escape, were refused by the guard before they ran; 4 of my commands in one session, none of which ran.
+
+**INSTANCE (B3139q-r143 / L989 addendum) - TWO MORE.** Two heredocs fed to python, each carrying an escape, refused before they ran - 6 in the session; the guard held 6 of 6.
 
 ### #260 - SHOW EVERY CLASS OR CITE NO TOTAL (B1779 / L534)
 

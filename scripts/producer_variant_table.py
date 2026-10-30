@@ -5841,7 +5841,7 @@ def _level_in_band(value, row: dict) -> bool:
 
 # B2711 (owner-caught 2026-09-12): the RULED Step-1 search shape, from the
 # runbook's step table (STRATEGY_OPTIMISATION_PLAN.md section 1.2, row "1 SEARCH |
-# all fire-adding configs | 1 year, 2024-05..2025-05 | 200"; formerly SS10.1). The
+# all fire-adding configs offline; ... | 1 year, 2024-05..2025-05 | 200"; formerly SS10.1). The
 # window ENDS at the IS/HO boundary 2025-05-05 BY DESIGN: a Step-1 search
 # that reaches past it ranks combinations on holdout data and destroys the
 # pre-registration for the whole family. Step 2 is the 4y/544 shape and is
