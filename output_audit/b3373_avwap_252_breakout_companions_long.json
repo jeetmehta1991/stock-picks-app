@@ -1,0 +1,459 @@
+{
+  "_doc": "runbook 3.6 steps 1-2: consistent-sign BH-FDR survivors under BOTH exits, clustered by the producer module that writes the key (build_table_a module index); representative = max joint effect min(|a|, |b|) (#165). A SCREEN, never a gate - B-row registration happens at the T3 owner band review.",
+  "strategy": "avwap_252_breakout",
+  "direction": "long",
+  "survival_applied": false,
+  "basis": "gross",
+  "cube_dir": "output_r5_merged_1_7 (default)",
+  "exit_a": "time_stop_10d",
+  "exit_b": "breakeven_plus_trail",
+  "screens": {
+    "a": "output_audit/b3373_avwap_252_breakout_screen_long_ts10.json",
+    "b": "output_audit/b3373_avwap_252_breakout_screen_long_bept.json"
+  },
+  "survivors_a": 39,
+  "survivors_b": 53,
+  "n_consistent": 30,
+  "clusters": {
+    "backtest/signals/screener.py": {
+      "representative": "atr",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "atr"
+      ],
+      "rows": [
+        {
+          "key": "atr",
+          "kind": "numeric",
+          "effect_a": -391.072141322314,
+          "effect_b": -44.50681900826447,
+          "joint": 44.50681900826447,
+          "p_a": 0.00017395704797361193,
+          "p_b": 0.0004847940996033935,
+          "sign": "-",
+          "module": "backtest/signals/screener.py"
+        }
+      ]
+    },
+    "backtest/signals/technical.py": {
+      "representative": "pct_from_avwap_50low",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "pct_from_avwap_50low",
+        "atr_pct",
+        "pct_from_avwap_252low",
+        "bb_10_20_bandwidth",
+        "pct_from_avwap_20low",
+        "cmf",
+        "pct_from_avwap_20high",
+        "atr_14",
+        "vix_value",
+        "vix_percentile",
+        "vol_ratio_20d",
+        "squeeze_momentum"
+      ],
+      "rows": [
+        {
+          "key": "pct_from_avwap_50low",
+          "kind": "numeric",
+          "effect_a": 404.6050978902954,
+          "effect_b": 62.575256118143464,
+          "joint": 62.575256118143464,
+          "p_a": 3.9833470184941037e-10,
+          "p_b": 8.214927042548989e-13,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "atr_pct",
+          "kind": "numeric",
+          "effect_a": 395.18772479338844,
+          "effect_b": 62.33787066115702,
+          "joint": 62.33787066115702,
+          "p_a": 5.254314119085528e-07,
+          "p_b": 6.771043740591087e-15,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "pct_from_avwap_252low",
+          "kind": "numeric",
+          "effect_a": 395.86070247933884,
+          "effect_b": 61.32168966942149,
+          "joint": 61.32168966942149,
+          "p_a": 1.5773333504013848e-07,
+          "p_b": 1.0268322396526349e-11,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "bb_10_20_bandwidth",
+          "kind": "numeric",
+          "effect_a": 394.65551157024794,
+          "effect_b": 59.62845289256199,
+          "joint": 59.62845289256199,
+          "p_a": 3.6227970256115034e-07,
+          "p_b": 2.8421529111867774e-15,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "pct_from_avwap_20low",
+          "kind": "numeric",
+          "effect_a": 378.21390152448123,
+          "effect_b": 58.67654260150768,
+          "joint": 58.67654260150768,
+          "p_a": 3.79132285229462e-09,
+          "p_b": 1.3496864211442297e-11,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "cmf",
+          "kind": "numeric",
+          "effect_a": 394.3368933884297,
+          "effect_b": 50.49592685950413,
+          "joint": 50.49592685950413,
+          "p_a": 0.0016755719227694453,
+          "p_b": 0.000268777551742379,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "pct_from_avwap_20high",
+          "kind": "numeric",
+          "effect_a": 354.38969692394494,
+          "effect_b": 44.91093312344844,
+          "joint": 44.91093312344844,
+          "p_a": 0.00014013353304938235,
+          "p_b": 4.899058012228318e-05,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "atr_14",
+          "kind": "numeric",
+          "effect_a": -391.072141322314,
+          "effect_b": -44.50681900826447,
+          "joint": 44.50681900826447,
+          "p_a": 0.00017395704797361193,
+          "p_b": 0.0004847940996033935,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "vix_value",
+          "kind": "numeric",
+          "effect_a": -389.59329429963987,
+          "effect_b": -34.78245095359186,
+          "joint": 34.78245095359186,
+          "p_a": 2.5856463105026164e-09,
+          "p_b": 1.169253681868015e-20,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "vix_percentile",
+          "kind": "numeric",
+          "effect_a": -389.74635495867767,
+          "effect_b": -34.4462938016529,
+          "joint": 34.4462938016529,
+          "p_a": 1.5478640022464983e-07,
+          "p_b": 3.0696768281750533e-16,
+          "sign": "-",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "vol_ratio_20d",
+          "kind": "numeric",
+          "effect_a": 68.78891514784947,
+          "effect_b": 23.50578169354839,
+          "joint": 23.50578169354839,
+          "p_a": 0.0034858478169837535,
+          "p_b": 0.00143096987780609,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        },
+        {
+          "key": "squeeze_momentum",
+          "kind": "numeric",
+          "effect_a": 2.031493388429752,
+          "effect_b": 5.39835785123967,
+          "joint": 2.031493388429752,
+          "p_a": 0.00021793238265910476,
+          "p_b": 0.000398143776994603,
+          "sign": "+",
+          "module": "backtest/signals/technical.py"
+        }
+      ]
+    },
+    "backtest/signals/cot_positioning.py": {
+      "representative": "cot_dxy_mmoney_pctile_3y",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "cot_dxy_mmoney_pctile_3y",
+        "cot_ndx_commercials_net_pct",
+        "cot_ndx_commercials_pctile_3y",
+        "cot_dxy_commercials_net_pct",
+        "cot_sp500_commercials_pctile_3y",
+        "cot_sp500_commercials_net_pct"
+      ],
+      "rows": [
+        {
+          "key": "cot_dxy_mmoney_pctile_3y",
+          "kind": "numeric",
+          "effect_a": 626.6884064719727,
+          "effect_b": 77.22239776422765,
+          "joint": 77.22239776422765,
+          "p_a": 0.00013072912570593484,
+          "p_b": 6.163532261485105e-10,
+          "sign": "+",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_ndx_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -388.3454923780488,
+          "effect_b": -54.13414718350756,
+          "joint": 54.13414718350756,
+          "p_a": 1.7717347199425956e-06,
+          "p_b": 6.787042417111136e-07,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_ndx_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -392.09109513268055,
+          "effect_b": -52.618839205335604,
+          "joint": 52.618839205335604,
+          "p_a": 0.0007708563321945451,
+          "p_b": 0.0017192486302636662,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_dxy_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -372.57877636500757,
+          "effect_b": -44.514175987933626,
+          "joint": 44.514175987933626,
+          "p_a": 0.0009794525416700402,
+          "p_b": 0.001294370175559806,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_sp500_commercials_pctile_3y",
+          "kind": "numeric",
+          "effect_a": -253.7031874786324,
+          "effect_b": -41.545007717049025,
+          "joint": 41.545007717049025,
+          "p_a": 5.820001070517838e-06,
+          "p_b": 1.8403949804126437e-06,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        },
+        {
+          "key": "cot_sp500_commercials_net_pct",
+          "kind": "numeric",
+          "effect_a": -3.93691534292266,
+          "effect_b": -12.765041338336463,
+          "joint": 3.93691534292266,
+          "p_a": 2.2147029989870652e-07,
+          "p_b": 4.5163524483078845e-08,
+          "sign": "-",
+          "module": "backtest/signals/cot_positioning.py"
+        }
+      ]
+    },
+    "backtest/signals/macro_events.py": {
+      "representative": "days_until_fomc",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "days_until_fomc"
+      ],
+      "rows": [
+        {
+          "key": "days_until_fomc",
+          "kind": "numeric",
+          "effect_a": -302.58066039034895,
+          "effect_b": -23.728400869832484,
+          "joint": 23.728400869832484,
+          "p_a": 3.5436084843248224e-06,
+          "p_b": 6.719005880449807e-05,
+          "sign": "-",
+          "module": "backtest/signals/macro_events.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_asset.py": {
+      "representative": "vix_vix3m_ratio",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "vix_vix3m_ratio",
+        "vix_today",
+        "sector_strongest_rs",
+        "dxy_proxy_close"
+      ],
+      "rows": [
+        {
+          "key": "vix_vix3m_ratio",
+          "kind": "numeric",
+          "effect_a": -389.4980009533279,
+          "effect_b": -34.81287239635128,
+          "joint": 34.81287239635128,
+          "p_a": 1.6217358920457121e-07,
+          "p_b": 7.04795388811487e-18,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "vix_today",
+          "kind": "numeric",
+          "effect_a": -389.59329429963987,
+          "effect_b": -34.78245095359186,
+          "joint": 34.78245095359186,
+          "p_a": 2.5856463105026164e-09,
+          "p_b": 1.169253681868015e-20,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "sector_strongest_rs",
+          "kind": "numeric",
+          "effect_a": -2.4921503494623654,
+          "effect_b": -12.121991317204301,
+          "joint": 2.4921503494623654,
+          "p_a": 2.446158145841705e-05,
+          "p_b": 7.675261522347167e-10,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        },
+        {
+          "key": "dxy_proxy_close",
+          "kind": "numeric",
+          "effect_a": -1.1399315494188,
+          "effect_b": -1.461690267419203,
+          "joint": 1.1399315494188,
+          "p_a": 0.0006462094023405959,
+          "p_b": 7.770391657101479e-06,
+          "sign": "-",
+          "module": "backtest/signals/cross_asset.py"
+        }
+      ]
+    },
+    "backtest/signals/ict_producers.py": {
+      "representative": "po3_accum_range_pct",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "po3_accum_range_pct"
+      ],
+      "rows": [
+        {
+          "key": "po3_accum_range_pct",
+          "kind": "numeric",
+          "effect_a": 396.27358760330577,
+          "effect_b": 64.95698099173553,
+          "joint": 64.95698099173553,
+          "p_a": 5.743960818272879e-10,
+          "p_b": 2.5708229811089815e-19,
+          "sign": "+",
+          "module": "backtest/signals/ict_producers.py"
+        }
+      ]
+    },
+    "backtest/signals/multi_timeframe.py": {
+      "representative": "po3_close_position",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "po3_close_position"
+      ],
+      "rows": [
+        {
+          "key": "po3_close_position",
+          "kind": "numeric",
+          "effect_a": 235.66368264462807,
+          "effect_b": 23.019286776859502,
+          "joint": 23.019286776859502,
+          "p_a": 2.805480074132163e-05,
+          "p_b": 3.959827424808223e-05,
+          "sign": "+",
+          "module": "backtest/signals/multi_timeframe.py"
+        }
+      ]
+    },
+    "backtest/signals/short_interest.py": {
+      "representative": "short_interest_observations",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "short_interest_observations"
+      ],
+      "rows": [
+        {
+          "key": "short_interest_observations",
+          "kind": "numeric",
+          "effect_a": 4.295304799516074,
+          "effect_b": 18.26192446768061,
+          "joint": 4.295304799516074,
+          "p_a": 1.2593406864359318e-06,
+          "p_b": 1.1559667600653925e-08,
+          "sign": "+",
+          "module": "backtest/signals/short_interest.py"
+        }
+      ]
+    },
+    "backtest/signals/calendar_effects.py": {
+      "representative": "trading_day_of_month",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "trading_day_of_month",
+        "trading_days_left_in_month"
+      ],
+      "rows": [
+        {
+          "key": "trading_day_of_month",
+          "kind": "numeric",
+          "effect_a": -317.58665948350074,
+          "effect_b": -34.27465996951219,
+          "joint": 34.27465996951219,
+          "p_a": 0.0005231603810264478,
+          "p_b": 1.957578633241313e-05,
+          "sign": "-",
+          "module": "backtest/signals/calendar_effects.py"
+        },
+        {
+          "key": "trading_days_left_in_month",
+          "kind": "numeric",
+          "effect_a": 15.827164079473986,
+          "effect_b": 6.997523913664954,
+          "joint": 6.997523913664954,
+          "p_a": 0.00033178516428085327,
+          "p_b": 8.815431475306392e-06,
+          "sign": "+",
+          "module": "backtest/signals/calendar_effects.py"
+        }
+      ]
+    },
+    "backtest/signals/cross_sectional.py": {
+      "representative": "xs_max_anomaly",
+      "criterion": "max joint effect min(|a|, |b|) (#165)",
+      "members": [
+        "xs_max_anomaly"
+      ],
+      "rows": [
+        {
+          "key": "xs_max_anomaly",
+          "kind": "numeric",
+          "effect_a": 396.4775787020729,
+          "effect_b": 64.47795501625797,
+          "joint": 64.47795501625797,
+          "p_a": 8.983070514372361e-12,
+          "p_b": 3.1596052072718383e-22,
+          "sign": "+",
+          "module": "backtest/signals/cross_sectional.py"
+        }
+      ]
+    }
+  }
+}

@@ -65231,7 +65231,7 @@ def test_b3320_companion_screen_reads_the_surviving_fires(tmp_path, monkeypatch)
     assert sv["by_strategy"] == {S: [3, 2]} and sv["by_direction"] == {"long": [3, 2]}, sv
 
     out = tmp_path / "scr.json"
-    base = ["ics", "--exit", "time_stop_10d", "--strategy", S, "--window", "is", "--out", str(out)]
+    base = ["ics", "--exit", "time_stop_10d", "--strategy", S, "--window", "is", "--basis", "gross", "--out", str(out)]
     monkeypatch.setattr(_s, "argv", base)
     with pytest.raises(SystemExit, match="S6-B3320"):
         ics.main()
@@ -68136,7 +68136,7 @@ def test_b3373_avwap_252_breakout_campaign_opened_on_the_freed_slot():
     (2) the status view reads IN-CAMPAIGN with the ticket live, and the
     rebuilt long shortlist no longer ranks it (it left the open population);
     (3) its Table A is the NONE-lane single render - stamped, lane NONE, the
-    dead rsi_14 read absent (S6-B3374), P1 / P2 marked BANDS-TO-DEFINE;
+    dead rsi_14 read absent (S6-B3374), P1 / P2 BANDS-DEFINED (B3139q-r157);
     (4) the campaign log's part P names it."""
     import json as _j
     import sys as _s
@@ -68159,8 +68159,8 @@ def test_b3373_avwap_252_breakout_campaign_opened_on_the_freed_slot():
     assert t.startswith("# Table A - avwap_252_breakout") and "Build (L803/#309)" in t
     assert "**Lane:** NONE" in t
     rows = [ln for ln in t.splitlines() if ln.startswith("| P")]
-    assert [ln.split(" | ")[0] for ln in rows][:5] == ["| P1", "| P2", "| P3", "| P3.1", "| P4"], rows[:5]
-    assert all("BANDS-TO-DEFINE" in ln for ln in rows[:2]) and "rsi_14" not in "\n".join(rows)
+    assert [ln.split(" | ")[0] for ln in rows][:11] == ["| P1", "| P1.1", "| P1.2", "| P1.3", "| P2", "| P2.1", "| P2.2", "| P2.3", "| P3", "| P3.1", "| P4"], rows[:11]
+    assert all(rows[i].endswith("| BANDS-DEFINED |") for i in (0, 4)) and "BANDS-TO-DEFINE" not in t and "rsi_14" not in "\n".join(rows)
     log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(encoding="utf-8")
     assert "## P. VWAP FAMILY (avwap_252_breakout - IN CAMPAIGN)" in log
 
@@ -68379,7 +68379,7 @@ def test_b3335_companion_screen_reads_a_run_directory(tmp_path, monkeypatch):
         out = tmp_path / "screen.json"
         monkeypatch.setattr(_s, "argv", ["institutional_companion_screen.py", "--exit",
                                          "time_stop_10d", "--strategy", S, "--direction",
-                                         "long", "--out", str(out), *extra])
+                                         "long", "--basis", "gross", "--out", str(out), *extra])
         ics.main()
         return _j.loads(out.read_text(encoding="utf-8"))
 
@@ -68400,3 +68400,278 @@ def test_b3335_companion_screen_reads_a_run_directory(tmp_path, monkeypatch):
     # (4) a missing run directory is refused, not silently replaced by R5
     with pytest.raises(SystemExit, match="file missing"):
         go("--cube-dir", str(tmp_path / "nowhere"))
+
+
+def test_b3382_companion_screen_scores_on_the_grids_basis(tmp_path, monkeypatch):
+    """S6-B3382 (B3139q-r157): the companion screen scored every effect on the
+    raw cube pnl (gross) while the grids its B-rows feed grade on the NET basis
+    (roster_core.net_pnl - winsorized at +/-WINSORIZE, the round-trip cost
+    charged; S6-B3314, S6-B3139ag), so one bogus print could set a companion's
+    sign. --basis net scores through that ONE definition; the artifact and its
+    markdown head record the basis; companions_consistent refuses a pair of
+    screens on two bases or two sources (--cube-dir, S6-B3335), an artifact
+    without the fields predating them (gross, R5). The default stays gross, so
+    no committed screen moves. Fixture: one +74,900 pct print on the k1-False
+    side flips k1's mean effect from negative (gross) to positive (net), while
+    the rank statistic of the numeric key does not move at all."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import institutional_companion_screen as ics
+    import companions_consistent as cc
+    import roster_core as rc
+    S = "x_basis_subject"
+    run = tmp_path / "run"
+    run.mkdir()
+    tl, cube = [], []
+    for i in range(600):
+        d = str((_pd.Timestamp("2022-01-03") + _pd.Timedelta(days=i)).date())
+        k = i % 2 == 0
+        pnl = 74900.0 if i == 1 else (2.0 if k else -1.0) + (i % 5) * 0.1
+        tl.append({"strategy": S, "ticker": f"T{i}", "entry_date": d, "direction": "long",
+                   "signals_at_entry": _j.dumps({"k1": k, "x": float(i % 7)})})
+        cube.append({"strategy": S, "ticker": f"T{i}", "entry_date": d, "direction": "long",
+                     "exit_method": "time_stop_10d", "pnl_pct": pnl})
+    _pd.DataFrame(tl).to_csv(run / "trade_log.csv", index=False)
+    _pd.DataFrame(cube).to_csv(run / "trade_exit_detail.csv", index=False)
+
+    # (1) load_entries scores on the ONE net definition, row for row
+    monkeypatch.setattr(ics, "TRADE_LOG", run / "trade_log.csv")
+    monkeypatch.setattr(ics, "CUBE", run / "trade_exit_detail.csv")
+    monkeypatch.setattr(ics, "FAMILY_PREFIX", ics.FAMILY_PREFIX)
+    g = ics.load_entries("time_stop_10d", "is", names=[S]).sort_values("ticker")
+    n = ics.load_entries("time_stop_10d", "is", names=[S], basis="net").sort_values("ticker")
+    assert len(g) == len(n) == 600 and list(g["ticker"]) == list(n["ticker"])
+    assert g["pnl_pct"].max() == 74900.0, g["pnl_pct"].max()
+    assert list(n["pnl_pct"]) == list(rc.net_pnl(g["pnl_pct"])), "net is not roster_core.net_pnl"
+    assert n["pnl_pct"].max() == float(rc.net_pnl(_pd.Series([74900.0])).iloc[0])
+    with pytest.raises(SystemExit, match="S6-B3382"):
+        ics.load_entries("time_stop_10d", "is", names=[S], basis="netto")
+
+    # (2) main requires the basis (no default - never gross by omission, the
+    # breadth grid's and the depth sweep's rule), records it and scores on it
+    def go(*basis):
+        out = tmp_path / f"screen_{'_'.join(basis) or 'none'}.json"
+        monkeypatch.setattr(_s, "argv", ["institutional_companion_screen.py", "--exit",
+                                         "time_stop_10d", "--strategy", S, "--direction",
+                                         "long", "--cube-dir", str(run), "--out", str(out),
+                                         *basis])
+        assert ics.main() == 0
+        return _j.loads(out.read_text(encoding="utf-8")), out.with_suffix(".md").read_text(
+            encoding="utf-8")
+    with pytest.raises(SystemExit) as no_basis:
+        go()
+    assert no_basis.value.code == 2 and not (tmp_path / "screen_none.json").exists()
+    rg, mg = go("--basis", "gross")
+    rn, mn = go("--basis", "net")
+    assert rg["basis"] == "gross" and rn["basis"] == "net", (rg.get("basis"), rn.get("basis"))
+    assert "; basis gross;" in mg.splitlines()[2] and "; basis net;" in mn.splitlines()[2], mn
+    kg = next(r for r in rg["results"] if r["key"] == "k1")
+    kn = next(r for r in rn["results"] if r["key"] == "k1")
+    assert kg["pnl_lift"] < 0 < kn["pnl_lift"], (kg["pnl_lift"], kn["pnl_lift"])
+    xg = next(r for r in rg["results"] if r["key"] == "x")
+    xn = next(r for r in rn["results"] if r["key"] == "x")
+    assert (xg["spearman_rho"], xg["p"]) == (xn["spearman_rho"], xn["p"]), (xg, xn)
+
+    # (3) the consistent set refuses two bases and two sources
+    base = {"exit": "time_stop_10d", "selection": "exact", "strategies": [S],
+            "direction": "long", "survival": {"applied": False}, "results": [],
+            "survivors": 0}
+    r5 = "output_r5_merged_1_7 (default)"
+
+    def pair(a, b):
+        pa, pb, po = tmp_path / "a.json", tmp_path / "b.json", tmp_path / "o.json"
+        if po.exists():
+            po.unlink()
+        pa.write_text(_j.dumps(a), encoding="utf-8")
+        pb.write_text(_j.dumps(dict(b, exit="breakeven_plus_trail")), encoding="utf-8")
+        monkeypatch.setattr(_s, "argv", ["cc", "--a", str(pa), "--b", str(pb),
+                                         "--strategy", S, "--out", str(po)])
+        return po
+    po = pair(dict(base, basis="gross", cube_dir=r5), dict(base, basis="net", cube_dir=r5))
+    with pytest.raises(SystemExit, match="basis .*one population per consistent set"):
+        cc.main()
+    assert not po.exists()
+    po = pair(dict(base, basis="net", cube_dir=r5), dict(base, basis="net", cube_dir=str(run)))
+    with pytest.raises(SystemExit, match="cube_dir .*one population per consistent set"):
+        cc.main()
+    assert not po.exists()
+    po = pair(dict(base), dict(base, basis="gross", cube_dir=r5))   # a pre-field artifact
+    assert cc.main() == 0
+    o = _j.loads(po.read_text(encoding="utf-8"))
+    assert (o["basis"], o["cube_dir"]) == ("gross", r5), o
+    po = pair(dict(base, basis="net", cube_dir=str(run)), dict(base, basis="net", cube_dir=str(run)))
+    assert cc.main() == 0
+    o = _j.loads(po.read_text(encoding="utf-8"))
+    assert (o["basis"], o["cube_dir"]) == ("net", str(run)), o
+
+    # (4) the committed net re-screens: each records its basis and its source
+    A = root / "output_audit"
+    for stem, legs, src in (("b3373_avwap_252_breakout", ("long", "short"), r5),
+                            ("b3335_pivot_r1_breakout_lv4", ("long",),
+                             "output_b3139q_lv4s2_pivot_r1_breakout_p1_jc1f58f45_p1_jc1f58f45")):
+        for leg in legs:
+            for tag in ("ts10", "bept"):
+                d = _j.loads((A / f"{stem}_screen_{leg}_{tag}_net.json").read_text(encoding="utf-8"))
+                assert (d["basis"], d["cube_dir"], d["direction"]) == ("net", src, leg), (stem, leg, tag)
+            c = _j.loads((A / f"{stem}_companions_{leg}_net.json").read_text(encoding="utf-8"))
+            assert (c["basis"], c["cube_dir"], c["direction"]) == ("net", src, leg), (stem, leg)
+
+
+# S6-B3382 (B3139q-r157): runbook-cited P&L readers that score gross by name,
+# each with its reason - shrink-only
+_B3382_NAMED_GROSS = {
+    "build_strategy_return_correlation.py":
+        "S6-B3383: daily mean pnl_pct per strategy for the return-correlation "
+        "matrix of the portfolio reframe - no basis stated, gross by omission",
+    "family_pregate.py":
+        "named gross in test_b3122's _B3122_RAW_SCORERS: reads the cube with "
+        "pd.read_csv and scores holdout pnl_pct",
+}
+
+
+def _b3382_census(runbook, scripts):
+    """{script: kind} for every scripts/<x>.py the runbook cites that reads
+    pnl_pct. A --basis argument decides first: REQUIRED, or GROSS (an optional
+    basis is gross by omission whatever else the file calls); then
+    BASIS-FROM-ARTIFACT (grades on the basis an input artifact recorded), NET
+    (roster_core.net_pnl / load_cube / COST_BPS), else GROSS."""
+    import re as _re
+    cited = sorted(set(_re.findall(r"scripts/([a-z0-9_]+\.py)",
+                                   runbook.read_text(encoding="utf-8"))))
+    out = {}
+    for n in cited:
+        f = scripts / n
+        if not f.is_file():
+            continue
+        src = f.read_text(encoding="utf-8", errors="replace")
+        if "pnl_pct" not in src:
+            continue
+        flag = _re.search(r"add_argument\(\s*[\"']--basis[\"']([^)]*)\)", src)
+        if flag:
+            out[n] = "BASIS-REQUIRED" if "required=True" in flag.group(1) else "GROSS"
+        elif _re.search(r"\.get\([\"']basis[\"']", src):    # a subscript is a render
+            out[n] = "BASIS-FROM-ARTIFACT"
+        elif any(m in src for m in ("net_pnl", "load_cube", "COST_BPS")):
+            out[n] = "NET"
+        else:
+            out[n] = "GROSS"
+    return out
+
+
+def test_b3382b_every_runbook_pnl_instrument_states_its_basis(tmp_path):
+    """S6-B3382 (B3139q-r157): S6-B3139ag and S6-B3314 made the breadth grid
+    and the depth sweep state their P&L basis, and S6-B3314's row said 'the
+    BREADTH instruments state their basis' - true of 2 of the 3 runbook 3.6
+    instruments: the companion screen, the breadth leg's first step, scored
+    gross by omission, outside test_b3122's census, which selects scorers by
+    their calling evaluate or _sharpe. This census selects by what the RUNBOOK
+    cites: every cited script reading pnl_pct takes --basis REQUIRED, grades
+    on the basis its input artifact recorded, scores NET, or is named GROSS
+    above with its reason (shrink-only). Planted scripts prove it both ways,
+    an optional --basis among them."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    got = _b3382_census(root / "STRATEGY_OPTIMISATION_PLAN.md", root / "scripts")
+    assert len(got) >= 10, sorted(got)            # the population is not vacuous
+    gross = {s for s, k in got.items() if k == "GROSS"}
+    assert gross == set(_B3382_NAMED_GROSS), (sorted(gross), sorted(_B3382_NAMED_GROSS))
+    assert len(_B3382_NAMED_GROSS) <= 2 and all(len(r) >= 30 for r in _B3382_NAMED_GROSS.values())
+    for s in ("institutional_companion_screen.py", "breadth_step1_grid.py", "offline_level_sweep.py"):
+        assert got[s] == "BASIS-REQUIRED", (s, got.get(s))
+    for s in ("breadth_step2_read.py", "offline_holdout_read.py"):
+        assert got[s] == "BASIS-FROM-ARTIFACT", (s, got.get(s))
+    plant = tmp_path / "s"
+    plant.mkdir()
+    for name, body in (
+            ("raw_screen.py", "x = df['pnl_pct'].mean()\n"),
+            ("net_screen.py", "import roster_core as rc\nx = rc.net_pnl(df['pnl_pct'])\n"),
+            ("flag_screen.py", "ap.add_argument('--basis', required=True, choices=BASES)\n"
+                               "x = df['pnl_pct']\n"),
+            ("opt_screen.py", "import roster_core as rc\n"
+                              "ap.add_argument('--basis', default='gross', choices=BASES)\n"
+                              "x = rc.net_pnl(df['pnl_pct'])\n"),
+            ("art_screen.py", "b = art.get('basis', 'gross')\nx = df['pnl_pct']\n"),
+            ("own_render.py", "print(out['basis'])\nx = df['pnl_pct']\n"),
+            ("no_pnl.py", "x = 1\n")):
+        (plant / name).write_text(body, encoding="utf-8")
+    rb = tmp_path / "plan.md"
+    rb.write_text("scripts/raw_screen.py scripts/net_screen.py scripts/flag_screen.py "
+                  "scripts/opt_screen.py scripts/art_screen.py scripts/own_render.py "
+                  "scripts/no_pnl.py scripts/absent.py\n", encoding="utf-8")
+    assert _b3382_census(rb, plant) == {
+        "raw_screen.py": "GROSS", "net_screen.py": "NET", "flag_screen.py": "BASIS-REQUIRED",
+        "opt_screen.py": "GROSS", "art_screen.py": "BASIS-FROM-ARTIFACT",
+        "own_render.py": "GROSS"}, _b3382_census(rb, plant)
+
+
+def test_b3384_an_owner_message_does_not_void_a_running_gate(tmp_path, monkeypatch):
+    """S6-B3384 (B3139q-r157): the UserPromptSubmit hook re-derives
+    build_workflow_state on every owner message and writes
+    output_audit/workflow_state.json. Counted as a moved input, two messages
+    during the r157 gate re-ran the 118 output_audit listers and then voided
+    the re-run - readset=SUSPECT, exit 6, with every test passing. The file
+    joins the detached-log rule (S6-B3330): never a moved INPUT unless a
+    recorded read names it. (1) the filter both ways - dropped when only a
+    listing saw it, kept when a test, the session or a fixture read it by
+    name, an unreadable read-set dropping nothing; (2) readset_decide is CLEAN
+    when it alone moved and a lister re-runs when another input moved too;
+    (3) the premise, swept: no tracked script names the file but its writer
+    and this filter, and the suite points its copy elsewhere."""
+    import ast as _ast
+    import json as _j
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import pyramid_gate as pg
+    WS = "output_audit/workflow_state.json"
+    assert WS in pg.HARNESS_FILES
+    f = pg._minus_run_logs
+    doc = {"tests": {"t.py::test_a": ["output_audit/a.json"], "t.py::test_list": ["output_audit/"]},
+           "session": [], "spawned": []}
+    assert f({WS, "output_audit/a.json"}, doc) == {"output_audit/a.json"}
+    assert f({WS}, {"tests": {"t.py::test_r": [WS]}}) == {WS}
+    assert f({WS}, {"session": [WS]}) == {WS}
+    assert f({WS}, {"fixtures": {"fx": {"scope": "module", "reads": [WS]}}}) == {WS}
+    assert f({"output_audit/workflow_state_x.json"}, doc) == {"output_audit/workflow_state_x.json"}
+    assert f({WS}, None) == {WS}                                  # unreadable read-set
+
+    calls = []
+    monkeypatch.setattr(pg.subprocess, "call", lambda cmd, **k: (calls.append(cmd), 0)[1])
+    rs = tmp_path / "g.out.readset.json"
+    rs.write_text(_j.dumps({"schema": 1, "tests": doc["tests"], "session": [],
+                            "spawned": [], "addr": {}}), encoding="utf-8")
+    before = {"tracked": {"output_audit/a.json": "h1"}, "untracked": {WS: (10, 1)}}
+    msg = {"tracked": {"output_audit/a.json": "h1"}, "untracked": {WS: (12, 2)}}
+    v, line = pg.readset_decide(tmp_path / "g.out", tmp_path, before, msg, rs)
+    assert (v, line, calls) == ("CLEAN", "none", []), (v, line, calls)
+    both = {"tracked": {"output_audit/a.json": "h2"}, "untracked": {WS: (12, 2)}}
+    v, line = pg.readset_decide(tmp_path / "g.out", tmp_path, before, both, rs)
+    assert v.startswith("RERUN-PASS") and len(calls) == 1, (v, line, calls)
+
+    tracked = _sp.run(["git", "ls-files", "-z", "*.py"], cwd=root, capture_output=True,
+                      text=True, check=True).stdout.split("\0")
+    namers = set()
+    for rel in filter(None, tracked):
+        if rel.startswith(("backtest/tests/", "archive/", ".archive/")):
+            continue
+        try:
+            tree = _ast.parse((root / rel).read_text(encoding="utf-8"))
+        except (SyntaxError, UnicodeDecodeError, OSError):
+            continue
+        if any(isinstance(n, _ast.Constant) and isinstance(n.value, str)
+               and "workflow_state.json" in n.value for n in _ast.walk(tree)):
+            namers.add(rel)
+    # the writer (its OUT path and docstring) and this filter (its constant
+    # and a docstring) - a reader would make the filter unsound
+    assert namers == {"scripts/build_workflow_state.py", "scripts/pyramid_gate.py"}, sorted(namers)
+    conf = (root / "backtest" / "tests" / "conftest.py").read_text(encoding="utf-8")
+    assert "WORKFLOW_STATE_OUT" in conf and "workflow_state.json" in conf

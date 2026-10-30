@@ -107,6 +107,13 @@ def main() -> int:
     if sa != sb:
         raise SystemExit(f"REFUSED: screen a survival {sa}, screen b {sb} - "
                          "one population per consistent set")
+    # S6-B3382 / S6-B3335 (B3139q-r157): the same BASIS and the same SOURCE -
+    # a net screen and a gross one score different P&L, and a run directory's
+    # fires are not R5's (an artifact without the field predates it: gross, R5)
+    for field, dflt in (("basis", "gross"), ("cube_dir", "output_r5_merged_1_7 (default)")):
+        if a.get(field, dflt) != b.get(field, dflt):
+            raise SystemExit(f"REFUSED: screen a {field} {a.get(field, dflt)!r}, screen b "
+                             f"{b.get(field, dflt)!r} - one population per consistent set")
     rows = consistent(a, b)
     import build_table_a as bta
     idx = bta._module_index()      # [(module path, text, (written keys, ...))]
@@ -117,6 +124,8 @@ def main() -> int:
                    "never a gate - B-row registration happens at the T3 owner band review.",
            "strategy": args.strategy, "direction": a.get("direction"),
            "survival_applied": sa,
+           "basis": a.get("basis", "gross"),                               # S6-B3382
+           "cube_dir": a.get("cube_dir", "output_r5_merged_1_7 (default)"),
            "exit_a": a["exit"], "exit_b": b["exit"],
            "screens": {"a": str(args.a), "b": str(args.b)},
            "survivors_a": a.get("survivors"), "survivors_b": b.get("survivors"),

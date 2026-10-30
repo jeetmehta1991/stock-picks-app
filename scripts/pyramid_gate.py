@@ -438,11 +438,22 @@ def _minus_own(moved, own: set):
 # moved again inside the re-run: readset=SUSPECT, exit 6, beside every live
 # wave (MEASURED B3139q-r131, 105 tests re-run).
 RUN_LOG_SUFFIX = "_detached.log"
+# S6-B3384 (B3139q-r157): the same rule for the owner-message hook's state
+# file. The UserPromptSubmit hook (scripts/inject_tier3_discipline.py)
+# re-derives scripts/build_workflow_state.py on EVERY owner message and
+# writes this copy; no tracked code reads it (test_b3384 sweeps it) and the
+# suite writes its own copy elsewhere (WORKFLOW_STATE_OUT, S6-B3130a).
+# Counted, a message sent while a gate ran re-ran every output_audit lister,
+# and a second message inside the re-run made the gate SUSPECT, exit 6
+# (MEASURED B3139q-r157: writes at 21:28:56Z and 21:49:05Z; 1929 passed,
+# then 117 passed and 1 skipped in the re-run; exit 6).
+HARNESS_FILES = frozenset({"output_audit/workflow_state.json"})
 
 
 def _minus_run_logs(moved, doc):
-    """`moved` without the detached-launch logs no recorded read names. An
-    unreadable read-set drops nothing: no record can show a log unread (L642)."""
+    """`moved` without the detached-launch logs and the HARNESS_FILES no
+    recorded read names (S6-B3330, S6-B3384). An unreadable read-set drops
+    nothing: no record can show a file unread (L642)."""
     if moved is None or doc is None:
         return moved
     d = doc
@@ -452,7 +463,8 @@ def _minus_run_logs(moved, doc):
         read |= {_fold(p) for p in (fx or {}).get("reads") or []}
     return {m for m in moved
             if not (_fold(m).startswith("output_audit/")
-                    and _fold(m).endswith(RUN_LOG_SUFFIX)
+                    and (_fold(m).endswith(RUN_LOG_SUFFIX)
+                         or _fold(m) in HARNESS_FILES)
                     and _fold(m) not in read)}
 
 

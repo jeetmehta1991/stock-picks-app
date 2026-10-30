@@ -1029,7 +1029,7 @@ meaning.
    as an `unindexed` bucket, a mixed bag that is never a cluster.** **Per leg, on the surviving fires:
    `--direction long|short` screens one leg of a dual (S6-B3247), and `--survival` keeps the fires the
    CURRENT gate keeps - the depth sweep's T1 definition (S6-B3320). The screen refuses a subject whose
-   gate changed since R5 without it, and the consistent set refuses two populations or two legs.**
+   gate changed since R5 without it, and the consistent set refuses two populations or two legs.** **On the basis its grid grades: `--basis` is REQUIRED, as on the grids (S6-B3314, S6-B3139ag) - `net` scores the effects through `roster_core.net_pnl` (winsorized at +/-300, the round-trip cost charged), and `gross` is the raw cube pnl every screen before it scored by omission; one bogus print can set a companion's sign on gross. A run directory's own fires take `--cube-dir` (S6-B3335), and the consistent set refuses two bases or two sources (S6-B3382).**
 2. **CLUSTER -> REPRESENTATIVES** - group consistent survivors by producer family (momentum /
    compression / volume-profile / volatility / candlestick-pattern / gap ...); pick ONE representative per cluster
    with the criterion stated (#165). Collinearity with an existing depth axis is flagged on the row.

@@ -882,6 +882,56 @@ PRODUCER_BANDS.update({
            "one needs the producer re-run",
            "backtest/signals/sec_edgar_extractor.py "
            "eight_k_item_filed_within_days")],
+    # ---- B3139q-r157 NONE-lane campaign avwap_252_breakout (S6-B3373) ------
+    # The S6-B3308 rule - every producer leg carries a defined band - on the
+    # AVWAP-252-low EVENT booleans its gate takes (P2 reclaim, long leg; P1
+    # loss, short leg). Producer source READ this batch (compute_vwap): the
+    # anchor is the lowest low of the last 252 bars; the event window
+    # n_lookback = 3 is SHARED by all four anchors (252low, 50low, 20high,
+    # 20low), so an actuator for it is scoped to the 252low anchor alone; the
+    # today-side distance pct_from_avwap_252low IS persisted. An offline
+    # tighter level grades the RECORDED fires - one that frees a fire the
+    # engine suppressed behind an open position finds it in no cube (L812).
+    "avwap_252low_reclaim_recent_3d": [
+        _K("anchor lookback - the lowest low of the last N bars", 252,
+           [189, 252, 378],
+           "BRACKET production (0.75x / 1.5x, the period brackets' shape)",
+           "none - the AVWAP at another anchor is unpersisted",
+           "the whole band except production",
+           "backtest/signals/technical.py compute_vwap (the anchor list)"),
+        _K("event window - a close below the AVWAP within the last N bars", 3,
+           [1, 3, 5], "BRACKET production",
+           "none - the prior bars' close-versus-AVWAP is unpersisted",
+           "the whole band except production; the window is shared by the "
+           "four anchors, so its actuator is scoped to 252low",
+           "backtest/signals/technical.py compute_vwap (n_lookback)"),
+        dict(_K("reclaim margin - today's close above the AVWAP by at least "
+                "(pct)", 0.0, [0.0, 0.25, 0.5],
+                "BRACKET zero (a clear reclaim, not a touch)",
+                "TIGHTER (0.25, 0.5) - today's side from the persisted "
+                "pct_from_avwap_252low",
+                "none - every non-zero level is tighter",
+                "backtest/signals/technical.py compute_vwap (pct_from_avwap)"),
+             free_band=[0.0, 0.25, 0.5], resim_band=[]),
+    ],
+    "avwap_252low_loss_recent_3d": [
+        _K("anchor lookback - mirror of the reclaim's", 252, [189, 252, 378],
+           "mirror", "none - the AVWAP at another anchor is unpersisted",
+           "the whole band except production",
+           "backtest/signals/technical.py compute_vwap (the anchor list)"),
+        _K("event window - a close above the AVWAP within the last N bars", 3,
+           [1, 3, 5], "mirror",
+           "none - the prior bars' close-versus-AVWAP is unpersisted",
+           "the whole band except production; the window is shared by the "
+           "four anchors, so its actuator is scoped to 252low",
+           "backtest/signals/technical.py compute_vwap (n_lookback)"),
+        dict(_K("loss margin - today's close below the AVWAP by at least (pct)",
+                0.0, [0.0, 0.25, 0.5], "mirror of the reclaim margin",
+                "TIGHTER (0.25, 0.5) - from the persisted pct_from_avwap_252low",
+                "none - every non-zero level is tighter",
+                "backtest/signals/technical.py compute_vwap (pct_from_avwap)"),
+             free_band=[0.0, 0.25, 0.5], resim_band=[]),
+    ],
 })
 
 # S6-B3253 (B3139q-r86): an env knob that only SELECTS which emitted key a

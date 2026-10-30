@@ -1,8 +1,8 @@
 # Table A - avwap_252_breakout
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit ff10274b7 at 2026-10-30 10:37:35 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit 29be837fc at 2026-10-30 16:44:06 - a copy without this line, or with a stale stamp, is NOT the current band set
 
-**Lane:** NONE | **family:** vwap | **status:** NOT-STARTED | **R5 fires:** 2294 (closed fires in the exit cube: 2294 of 2294, S6-B3258) | **surviving fires (T1):** 2294 (unchanged since R5 - filter is identity)
+**Lane:** NONE | **family:** vwap | **status:** IN-CAMPAIGN | **R5 fires:** 2294 (closed fires in the exit cube: 2294 of 2294, S6-B3258) | **surviving fires (T1):** 2294 (unchanged since R5 - filter is identity)
 
 **SPECS entry:** NONE - build at R1 before any engine leg (W-T T0)
 
@@ -12,10 +12,10 @@
 
 P1  avwap_252low_loss_recent_3d  <- backtest/signals/technical.py (f-string template)
        DEFN: read the producer source (evidence column)
-       knobs bands to define
+       knobs P1.1-P1.3 (band rows in Table A)
 P2  avwap_252low_reclaim_recent_3d  <- backtest/signals/technical.py (f-string template)
        DEFN: read the producer source (evidence column)
-       knobs bands to define
+       knobs P2.1-P2.3 (band rows in Table A)
 P3  vol_above_avg  <- backtest/signals/technical.py
        DEFN: volume / 20d average >= 1.0 (technical.py:1600)
        knobs P3.1-P3.1 (band rows in Table A)
@@ -46,8 +46,14 @@ leg runs.
 
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
-| P1 | PRODUCER | avwap_252low_loss_recent_3d - emitted by backtest/signals/technical.py (f-string template); the boolean's UNDERLYING condition is bandable through its producer's internals | see evidence | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs to define | BANDS-TO-DEFINE |
-| P2 | PRODUCER | avwap_252low_reclaim_recent_3d - emitted by backtest/signals/technical.py (f-string template); the boolean's UNDERLYING condition is bandable through its producer's internals | see evidence | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs to define | BANDS-TO-DEFINE |
+| P1 | PRODUCER | avwap_252low_loss_recent_3d - emitted by backtest/signals/technical.py (f-string template); the boolean's UNDERLYING condition is bandable through its producer's internals | see evidence | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P1.x) | BANDS-DEFINED |
+| P1.1 | BAND | anchor lookback - mirror of the reclaim's - backtest/signals/technical.py compute_vwap (the anchor list) | mirror | 252 | 189, 252, 378 | offline 0 of 3 levels - none - the AVWAP at another anchor is unpersisted | the whole band except production; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P1.2 | BAND | event window - a close above the AVWAP within the last N bars - backtest/signals/technical.py compute_vwap (n_lookback) | mirror | 3 | 1, 3, 5 | offline 0 of 3 levels - none - the prior bars' close-versus-AVWAP is unpersisted | the whole band except production; the window is shared by the four anchors, so its actuator is scoped to 252low; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P1.3 | BAND | loss margin - today's close below the AVWAP by at least (pct) - backtest/signals/technical.py compute_vwap (pct_from_avwap) | mirror of the reclaim margin | 0.0 | 0, 0.25, 0.5 | offline 2 of 3 levels - TIGHTER (0.25, 0.5) - from the persisted pct_from_avwap_252low | none - every non-zero level is tighter | T3 review before any grid |
+| P2 | PRODUCER | avwap_252low_reclaim_recent_3d - emitted by backtest/signals/technical.py (f-string template); the boolean's UNDERLYING condition is bandable through its producer's internals | see evidence | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P2.x) | BANDS-DEFINED |
+| P2.1 | BAND | anchor lookback - the lowest low of the last N bars - backtest/signals/technical.py compute_vwap (the anchor list) | BRACKET production (0.75x / 1.5x, the period brackets' shape) | 252 | 189, 252, 378 | offline 0 of 3 levels - none - the AVWAP at another anchor is unpersisted | the whole band except production; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2.2 | BAND | event window - a close below the AVWAP within the last N bars - backtest/signals/technical.py compute_vwap (n_lookback) | BRACKET production | 3 | 1, 3, 5 | offline 0 of 3 levels - none - the prior bars' close-versus-AVWAP is unpersisted | the whole band except production; the window is shared by the four anchors, so its actuator is scoped to 252low; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P2.3 | BAND | reclaim margin - today's close above the AVWAP by at least (pct) - backtest/signals/technical.py compute_vwap (pct_from_avwap) | BRACKET zero (a clear reclaim, not a touch) | 0.0 | 0, 0.25, 0.5 | offline 2 of 3 levels - TIGHTER (0.25, 0.5) - today's side from the persisted pct_from_avwap_252low | none - every non-zero level is tighter | T3 review before any grid |
 | P3 | PRODUCER | vol_above_avg - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | volume / 20d average >= 1.0 (technical.py:1600) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs DEFINED below (P3.x) | BANDS-DEFINED |
 | P3.1 | BAND | volume ratio floor (vol / avg) - backtest/signals/technical.py:1600 | BRACKET production 1.0; avg window is the second knob [10, 20, 50] | 1.0 | [1.0, 1.2, 1.5, 2.0] | offline 3 of 4 levels - TIGHTER floors where the vol ratio key is persisted on the fires; else none | LOOSER, and any window change; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P4 | STRATEGY-HELPER | _short_borrow_trap_active(s) - underlying condition: days_to_cover > 5.0 (blocks the fire) | blocks SHORT fires when days_to_cover > 5.0 (B718a) | cap 5.0 (B718a owner-ruled risk guard) | - (no band ruled) | offline 0 of 1 levels (no band ruled) - tighter = LOWER cap on persisted days_to_cover - OFFLINE subset | raising the cap admits engine-blocked fires - RESIM; shared helper (the short-side borrow gate the B744 lint checks for) so any band is a per-strategy override on the owner's word | BANDABLE-OWNER-GATED |
@@ -794,15 +800,21 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 | axis | parameter | n levels | class | own engine run? | engine | offline | pending |
 |---|---|---|---|---|---|---|---|
+| P1.1 | anchor lookback - mirror of the reclaim' | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P1.2 | event window - a close above the AVWAP w | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P1.3 | loss margin - today's close below the AV | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
+| P2.1 | anchor lookback - the lowest low of the  | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P2.2 | event window - a close below the AVWAP w | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
+| P2.3 | reclaim margin - today's close above the | 3 | subset-safe | no - derives offline | 1 | 2 | 0 |
 | P3.1 | volume ratio floor (vol / avg) | 4 | subset-safe | no - derives offline | 1 | 3 | 0 |
 | P4 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
-FULL FACTORIAL     4 x 1 = 4
-offline gradings   3 level-combinations x 24 exits = 72 (graded from the engine runs' cubes, never run themselves)
+FULL FACTORIAL     3 x 3 x 3 x 3 x 3 x 3 x 4 x 1 = 2916
+offline gradings   35 level-combinations x 24 exits = 840 (graded from the engine runs' cubes, never run themselves)
 ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  0 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 3 + 0 = 4 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+PENDING ACTUATION  2880 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             1 + 35 + 2880 = 2916 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
 STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```

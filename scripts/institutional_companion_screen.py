@@ -61,6 +61,7 @@ TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
 # describe R5 fires only (breadth_step1_grid's S6-B3321 convention)
 R5_TRADE_LOG = TRADE_LOG
 from roster_core import IS_END  # noqa: E402  (the one roster boundary, S6-B3139bc)
+from breadth_step1_grid import BASES  # noqa: E402  (one basis vocabulary, S6-B3314)
 FAMILY_PREFIX = "institutional_"
 
 
@@ -124,7 +125,8 @@ def _surviving(ent: pd.DataFrame) -> tuple:
 
 
 def load_entries(exit_method: str, window: str, names=None,
-                 direction: str | None = None, survival: bool = False) -> pd.DataFrame:
+                 direction: str | None = None, survival: bool = False,
+                 basis: str = "gross") -> pd.DataFrame:
     """S6-B3247 (B3139q-r117): `direction` keeps ONE leg of a dual strategy -
     a pooled screen ranks companions on long and short trades together,
     whose winners and losers have different drivers. None pools, as
@@ -132,9 +134,13 @@ def load_entries(exit_method: str, window: str, names=None,
     S6-B3320 (B3139q-r121): `survival` keeps the fires the CURRENT gate keeps
     (_surviving); without it a strategy whose gate changed since R5 is
     screened on fires the gate now removes, which main() refuses. The
-    disclosure rides the returned frame's attrs['survival']."""
+    disclosure rides the returned frame's attrs['survival'].
+    S6-B3382 (B3139q-r157): `basis` is 'gross' (the raw cube pnl, the
+    default) or 'net' (roster_core.net_pnl, the grids' basis)."""
     if direction not in (None, "long", "short"):
         raise SystemExit(f"REFUSED: direction {direction!r} is not long or short")
+    if basis not in BASES:
+        raise SystemExit(f"REFUSED: basis {basis!r} not in {BASES} (S6-B3382)")
     sel = _selector(names)
     cols = ["strategy", "ticker", "entry_date", "signals_at_entry"]
     fam = _read_selected(TRADE_LOG, cols + (["direction"] if survival else []), sel)
@@ -154,6 +160,13 @@ def load_entries(exit_method: str, window: str, names=None,
         cube = cube[cube["direction"] == direction]
     cc = cube[cube.exit_method == exit_method]
     pnl = cc.drop_duplicates(["ticker", "entry_date"])[["ticker", "entry_date", "pnl_pct"]]
+    # S6-B3382 (B3139q-r157): the P&L the effects are scored on. 'net' is the
+    # grids' basis - winsorized at +/-WINSORIZE, the round-trip cost charged -
+    # through the ONE definition they call (roster_core.net_pnl, S6-B3139ag);
+    # 'gross' is the raw cube pnl every screen before it scored
+    if basis == "net":
+        import roster_core as _rc
+        pnl = pnl.assign(pnl_pct=_rc.net_pnl(pnl["pnl_pct"]))
 
     m = ent.merge(pnl, on=["ticker", "entry_date"], how="inner")
     m["entry_d"] = pd.to_datetime(m["entry_date"], errors="coerce").dt.date
@@ -233,7 +246,7 @@ def render(rows: list, meta: dict, args) -> str:
     fam_label = (", ".join(args.strategy) + " (exact names)" if getattr(args, "strategy", None)
                  else f"{FAMILY_PREFIX}family")
     head = (f"# COMPANION-SIGNAL SCREEN - {fam_label}\n\n"
-            f"exit {args.exit}; window {args.window}"
+            f"exit {args.exit}; basis {getattr(args, 'basis', 'gross')}; window {args.window}"
             f"{' (PEEKED - spent holdout, confirmation only)' if args.window == 'holdout' else ''}; "
             f"{meta['entries']} unique entries; {meta['trials']} signals tested; "
             f"BH-FDR q=0.05 threshold p<={meta['fdr_threshold']:.5g}; "
@@ -274,6 +287,11 @@ def main() -> int:
                          "trade_log.csv and trade_exit_detail.csv) in place of "
                          "R5 - breadth_step1_grid's --cube-dir (S6-B3112c); "
                          "--survival and its guard are R5-only")
+    ap.add_argument("--basis", required=True, choices=BASES,
+                    help="S6-B3382: the pnl basis the effects are scored on, "
+                         "stated on every run and recorded on the artifact - "
+                         "'net' is the grids' basis (roster_core.net_pnl); no "
+                         "default, so a screen is never gross by omission")
     ap.add_argument("--min-side", type=int, default=100)
     ap.add_argument("--min-n", type=int, default=500)
     ap.add_argument("--out", required=True)
@@ -296,7 +314,8 @@ def main() -> int:
                          f"current gate; {args.cube_dir} is a run's own cube, which "
                          "holds the gate it ran under")
     m = load_entries(args.exit, args.window, names=args.strategy,
-                     direction=args.direction, survival=args.survival)
+                     direction=args.direction, survival=args.survival,
+                     basis=args.basis)
     # S6-B3320: fail closed (L642) - a strategy whose current gate keeps fewer
     # than all of its R5 fires is screened on the fires it keeps; the ONE guard
     # every R5 instrument calls (step1_gates, S6-B3321)
@@ -312,6 +331,7 @@ def main() -> int:
            "direction": args.direction,
            "survival": m.attrs.get("survival"),     # S6-B3320
            "cube_dir": args.cube_dir or "output_r5_merged_1_7 (default)",   # S6-B3335
+           "basis": args.basis,                                            # S6-B3382
            "exit": args.exit, "window": args.window,
            "peeked": args.window == "holdout", **meta, "results": rows}
     out = Path(args.out)
