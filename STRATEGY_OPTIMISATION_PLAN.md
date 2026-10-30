@@ -220,9 +220,9 @@ owner's word for that axis; and a launch of a strategy whose status in the per-s
 (closed, pruned, contained, disabled - roster members stay with the admitted-strategy refusal) is refused
 unless the spec carries `owner_override_reopen`, the owner's recorded reopen word, which
 `make_spec.py --reopen-word ... --reopen-word-ticket ...` writes (a `--dry` draft prints the status as a NOTE).
-Still unchecked, each on its ticket: the engine-only producer levels Table A lists (S6-B3339) and the
-breadth leg (S6-B3353). Every route that starts the engine passes the word check now; a hand launch
-cites its ruling through `owner_word.env_value`.
+Table A's engine-only producer levels: `band_coverage_gate.py` counts them untested unless run or waived
+in `output_audit/producer_level_waivers.json` by a recorded word (S6-B3339). Still unchecked: the breadth
+leg (S6-B3353). A hand engine launch cites its ruling through `owner_word.env_value`.
 
 The B2660 admission doctrine (§6.2) sets the CRITERION; it does not waive the per-step APPROVALS
 above. Violation lineage (L779): a campaign ran band design, the Step-2 spend and admission on

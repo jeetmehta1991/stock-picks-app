@@ -48,7 +48,6 @@ GOLDEN_PATH = FIXTURES_DIR / "engine_parity_golden.csv"
 PARITY_TICKERS = ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN"]
 PARITY_START = date(2023, 7, 1)
 PARITY_END = date(2023, 12, 31)
-PARITY_OUTPUT_DIR = REPO / "output_parity_tmp"
 
 # Columns compared by exact equality (string/categorical)
 EXACT_COLS = [
@@ -68,14 +67,21 @@ FLOAT_RTOL = 1e-6
 FLOAT_ATOL = 1e-9
 
 
-def _run_engine_parity():
+def _run_engine_parity(out_dir: Path):
     """Run the engine on the parity scenario via the full CLI pipeline so
     the writer fires (trade_log.csv is written by run_phase1a.py, not by
-    BacktestEngine.run() directly). Returns the trade_log DataFrame."""
+    BacktestEngine.run() directly). Returns the trade_log DataFrame.
+
+    S6-B3363 (B3139q-r141): the run writes under the session's tmp dir with
+    POSTCONFIG_LANDING=0 - it used to write REPO/output_parity_tmp with the
+    landing hook live, where a landed cube fires the supervisor's ledger
+    write, commit and push, and verify_postconfig_complete scans output_*."""
+    import os
     import subprocess
     import sys
 
-    PARITY_OUTPUT_DIR.mkdir(exist_ok=True)
+    PARITY_OUTPUT_DIR = Path(out_dir)
+    PARITY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     tickers_csv = ",".join(PARITY_TICKERS)
     cmd = [
         sys.executable, "-m", "backtest.run_phase1a",
@@ -88,7 +94,8 @@ def _run_engine_parity():
         "--end", PARITY_END.isoformat(),
         "--output-dir", str(PARITY_OUTPUT_DIR),
     ]
-    rc = subprocess.call(cmd, cwd=str(REPO))
+    rc = subprocess.call(cmd, cwd=str(REPO),
+                         env={**os.environ, "POSTCONFIG_LANDING": "0"})
     if rc != 0:
         pytest.fail(f"run_phase1a CLI returned rc={rc}")
 
@@ -183,9 +190,9 @@ def _check_parity(actual: pd.DataFrame, golden: pd.DataFrame) -> list:
 
 
 @pytest.fixture(scope="session")
-def parity_run():
+def parity_run(tmp_path_factory):
     """Run the engine once per pytest session, share result across tests."""
-    return _run_engine_parity()
+    return _run_engine_parity(tmp_path_factory.mktemp("engine_parity"))
 
 
 @pytest.mark.skip(reason="B841 (2026-06-17): 1 mismatch detected; expected "

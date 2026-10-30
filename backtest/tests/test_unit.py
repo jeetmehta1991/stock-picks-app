@@ -26104,6 +26104,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r140: S6-B3358's engine-entry clause in the launch row, same call.
         ("AND THE ENGINE'S OWN ENTRY CHECKS IT TOO",
          'S6-B3358 (B3139q-r140): six engine routes bypassed every launch refusal'),
+        # B3139q-r141: S6-B3339's Table A clause in the #299 row, same call.
+        ("AND THE GATE READS TABLE A'S PENDING PRODUCER LEVELS",
+         'S6-B3339 (B3139q-r141): the coverage gate read the registry, not Table A'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26358,7 +26361,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 363 -> 364 at B3139q-r139 (the L984 pre-gate-footer clause in the #315
     # row; the pre-gate selection caught the missed bump before the gate).
     # 364 -> 365 at B3139q-r140 (S6-B3358's engine-entry clause; same call).
-    assert len(gutted) == 365, gutted
+    # 365 -> 366 at B3139q-r141 (S6-B3339's Table A clause; same call).
+    assert len(gutted) == 366, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -51693,7 +51697,13 @@ def test_b3139_band_gate_reads_every_bollinger_artifact_kind_without_crashing():
     rep2 = bcg.coverage_report("bollinger_lower", arts, resim_evidence={
         "ema span (below_ema_N, SHORT leg)": spans,
         "ema span (price_above_ema_N, LONG leg)": spans})
-    assert rep2["complete"] is True and rep2["untested_total"] == 0
+    # S6-B3339 (B3139q-r141, an approved verdict change): the registered bands
+    # are covered, and the Table A half holds coverage incomplete - this
+    # Table A is a render from before the pending column, so its engine-only
+    # levels cannot be read until it is re-rendered
+    assert not [p for p in rep2["params"] if p["untested"]] and rep2["untested_total"] == 0
+    assert rep2["complete"] is False and any(
+        "no pending column" in b for b in rep2["table_a"]["blocked"]), rep2["table_a"]
 
 
 def test_b3139_band_gate_refuses_an_unknown_kind_by_name_and_exits_2(tmp_path):
@@ -65715,7 +65725,13 @@ def test_b3248c_widened_coverage_b13_b14_and_the_episode_check(tmp_path, monkeyp
     part = bcg.coverage_report("squeeze_breakout", [depth, str(A / "b3248_squeeze_breakout_breadth_net_long_b14.json")])
     assert {x["id"] for x in part["params"] if x["untested"]} == {"B10", "B12"}
     full = bcg.coverage_report("squeeze_breakout", [depth, str(A / "b3248_squeeze_breakout_breadth_net_long_b14.json")] + cov_files)
-    assert full["complete"] is True, [x for x in full["params"] if x["untested"]]
+    assert not [x for x in full["params"] if x["untested"]]
+    # S6-B3339 (B3139q-r141, an approved verdict change): the registered bands
+    # are covered, and the Table A's engine-only producer levels - ruled
+    # 'schedule', not 'waive' (S6-B3248) - hold coverage incomplete
+    ta = full["table_a"]
+    assert ta["unwaived"] == sum(a["pending"] for a in ta["pending"]) > 0, ta
+    assert full["complete"] is False and not ta["blocked"], ta
 
     # (4) the episode check
     ep = _j.loads((A / "b3248_squeeze_breakout_episode_robust_check.json").read_text(encoding="utf-8"))
@@ -66687,3 +66703,107 @@ def test_b3364_queue_state_parses_its_arguments(capsys):
     assert e.value.code == 2
     assert qs.main() == 0 and "distinct tickets" in capsys.readouterr().out
     assert vtc.help_on_parserless_hits("python scripts/queue_state.py --help", root=root) == []
+
+
+def test_b3339_band_coverage_reads_table_a_pending_levels_and_waivers(tmp_path, monkeypatch):
+    """S6-B3339 (B3139q-r141; approved 2026-10-28T16:50:12Z, 'your rec approved'):
+    scripts/band_coverage_gate.py read the registry only, so a Table A's
+    engine-only producer levels - its Factorial's pending column - were
+    invisible and coverage read complete with them unrun (S6-B3349). (1) the
+    Factorial parser, fail-closed on an old render and on a row it cannot
+    split; (2) the Table A section: pending and struck levels count untested
+    unless a waiver whose word a ledger row quotes covers them, an entry
+    waiving no more than its own count; (3) coverage_report: complete needs
+    the Table A half too, an injected spec reports it not evaluated; (4) a
+    legs-declaring numeric level is graded on EACH leg; (5) the refusal names
+    the pending axis; (6) the live record: williams_r_oversold's waiver checks
+    against the real ledger and clears its 11 levels."""
+    import sys as _sys
+    import pytest
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import band_coverage_gate as bcg
+    import owner_word as ow
+    head = ("## Factorial - configs\n\n| axis | parameter | n levels | class | own engine run? "
+            "| engine | offline | pending |\n|---|---|---|---|---|---|---|---|\n")
+    ta = head + ("| P1.1 | ema span | 8 | **FIRE-ADDING** | no | 1 | 0 | 7 |\n"
+                 "| P2.1 | level | 3 | subset-safe | no | 1 | 2 | 0 |\n"
+                 "| P4.1 | ema span | 8 | **FIRE-ADDING** | shares env | - | - | - |\n"
+                 "| P5.1 | rsi span | 3 | **FIRE-ADDING** | no | 1 | 0 | 2 |\n\n```\nFULL\n```\n")
+    # (1)
+    assert bcg.table_a_pending(ta) == [{"axis": "P1.1", "param": "ema span", "pending": 7},
+                                       {"axis": "P5.1", "param": "rsi span", "pending": 2}]
+    assert bcg.table_a_pending("# Table A\n\nno factorial here\n") is None
+    old = ("## Factorial\n\n| axis | parameter | n levels | class | own engine run? |\n"
+           "|---|---|---|---|---|\n| P1.1 | x | 3 | **FIRE-ADDING** | no |\n")
+    with pytest.raises(ValueError, match="no pending column"):
+        bcg.table_a_pending(old)
+    with pytest.raises(ValueError, match="not 8"):
+        bcg.table_a_pending(head + "| P1.1 | a | b | 8 | x | no | 1 | 0 | 7 |\n")
+    # (2) waivers against a fixture ledger
+    q = tmp_path / "queue.md"
+    q.write_text("| **S6-B9339** | **OPEN** | P1 | **RULED: 'waive the fixture spans and the "
+                 "fixture strike' (fixture).** | _reason:_ OPEN - fixture |\n", encoding="utf-8")
+    monkeypatch.setattr(ow, "QUEUE", q)
+    word = {"ticket": "S6-B9339", "verbatim": "waive the fixture spans and the fixture strike"}
+    files = [("fx.md", ta)]
+    s = bcg.table_a_section("fx", files=files, waivers={}, struck={})
+    assert s["unwaived"] == 9 and not s["blocked"] and not any(a["waived"] for a in s["pending"])
+    w = {"fx": [{"axis": "P1.1", "pending": 7, "word": word},
+                {"axis": "P5.1", "pending": 1, "word": word}]}       # waives 1 of 2: not enough
+    s = bcg.table_a_section("fx", files=files, waivers=w, struck={})
+    assert s["unwaived"] == 2 and [a["waived"] for a in s["pending"]] == [True, False], s
+    bad = {"fx": [{"axis": "P1.1", "pending": 7,
+                   "word": {"ticket": "S6-B9339", "verbatim": "a waiver nobody recorded"}}]}
+    s = bcg.table_a_section("fx", files=files, waivers=bad, struck={})
+    assert s["unwaived"] == 9 and any("quotes" in b for b in s["blocked"]), s
+    s = bcg.table_a_section("fx", files=files, waivers={"fx": w["fx"] + [
+        {"param_id": "P3", "struck": [20, 45], "word": word}]}, struck={"P3": [20, 45]})
+    assert s["struck"] == [{"param_id": "P3", "levels": [20, 45], "waived": True}]
+    s = bcg.table_a_section("fx", files=files, waivers={}, struck={"P3": [20, 45]})
+    assert s["unwaived"] == 11 and s["struck"][0]["waived"] is False
+    s = bcg.table_a_section("fx", files=[], waivers={}, struck={})
+    assert any("no Table A file" in b for b in s["blocked"]), s
+    # (3) coverage_report: the Table A half gates complete
+    spec = {"params": [{"id": "P2", "param": "lvl", "band": [1, 2, 3], "production": 1}]}
+    arts = [{"rows": [{"axis": "lvl", "level": 2, "is_sharpe": 0.1},
+                      {"axis": "lvl", "level": 3, "is_sharpe": 0.2}]}]
+    clean = bcg.table_a_section("fx", files=[("fx.md", head + "\n```\n")], waivers={}, struck={})
+    assert bcg.coverage_report("fx", [], spec=spec, arts=arts, table_a=clean)["complete"] is True
+    pend = bcg.table_a_section("fx", files=files, waivers={}, struck={})
+    rep = bcg.coverage_report("fx", [], spec=spec, arts=arts, table_a=pend)
+    assert rep["complete"] is False and rep["untested_total"] == 9, rep
+    assert bcg.coverage_report("fx", [], spec=spec, arts=arts)["table_a"]["evaluated"] is False
+    # (4) a legs-declaring numeric level needs a graded row on EACH leg
+    lspec = {"params": [{"id": "P2", "param": "lvl", "band": [1, 2], "production": 1,
+                         "legs": ["long", "short"]}]}
+    long_only = [{"leg": "long", "rows": [{"axis": "lvl", "level": 2, "is_sharpe": 0.1}]}]
+    both = long_only + [{"leg": "short", "rows": [{"axis": "lvl", "level": 2, "is_sharpe": 0.3}]}]
+    r1 = bcg.coverage_report("fx", [], spec=lspec, arts=long_only, table_a=clean)
+    assert r1["params"][0]["untested"] == [2], r1["params"]
+    assert bcg.coverage_report("fx", [], spec=lspec, arts=both, table_a=clean)["complete"] is True
+    # (5) the refusal names the pending axis and the ticket
+    monkeypatch.setattr(bcg, "coverage_report", lambda *a, **k: rep)
+    with pytest.raises(bcg.BandCoverageError) as ex:
+        bcg.declare_step2_failure("fx", [])
+    assert "S6-B3339" in str(ex.value) and "P1.1 ema span: 7 pending" in str(ex.value)
+    monkeypatch.undo()
+    # (6) the live record against the real ledger
+    live = bcg.table_a_section("williams_r_oversold")
+    assert live["unwaived"] == 0 and not live["blocked"] and live["pending"], live
+    assert all(a["waived"] and a["waiver"]["ticket"] == "S6-B3247" for a in live["pending"])
+    # (7) a holdout read held back by Table A alone names the pending axis and
+    # the waiver record - never '0 of N parameters' with nothing to act on (L820)
+    import offline_holdout_read as ohr
+    art = root / "output_audit" / "b2638_pead_step1_is_surface.json"
+    if art.exists():
+        only_ta = {"evaluable": True, "complete": False, "params": [{"param": "x", "untested": []}],
+                   "table_a": {"pending": [{"axis": "P1.1", "param": "ema span", "pending": 7,
+                                            "waived": False}], "struck": [], "blocked": []}}
+        with pytest.raises(SystemExit) as ex:
+            ohr.read_step2(art, 0.99, 0.99, 10, band_coverage=only_ta)
+        msg = str(ex.value)
+        assert "S6-B3339" in msg and "P1.1 ema span: 7 pending" in msg, msg
+        assert "producer_level_waivers.json" in msg, msg

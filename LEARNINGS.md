@@ -25570,3 +25570,13 @@ MEASURED: looking up a ticket id, I ran `python scripts/queue_state.py --help`; 
 **Rule.** No new rule - #327 stands. Its second half asks a WRITING script to parse its arguments; queue_state.py writes nothing, so its parser is what the third recurrence earns, not a new requirement.
 
 **Mechanism.** queue_state.py parses its arguments (argparse, argv explicit so an in-process main() parses nothing): --help prints usage and an unknown flag exits 2. Pinned by test_b3364_queue_state_parses_its_arguments, its one mutant (no parse_args) killed. The guard remains the mechanism for every other parserless script (S6-B3364).
+
+### L988 - TWO OF MY OWN PROBES: A SIZING THAT SKIPPED WHAT IT COULD NOT PARSE, AND A HEREDOC THE GUARD REFUSED (B3139q-r141, 2026-10-29)
+
+MEASURED: (1) sizing S6-B3339, a scratch probe kept each Table A Factorial's 8-cell rows and skipped every other row, so the 4 renders from before the pending column existed - bollinger_lower, poc_magnet_long, xs_combined_momentum_low_ivol and three_black_crows_short - read as nothing pending, and it read the lane files only, missing output_audit/b3248_squeeze_breakout_table_a.md: '38 of the 43 Table A files with a Factorial carry pending levels'. The gate's own parser, written to refuse an old render and a row it cannot split, measured 39 of 45 (405 levels; 1 with none, 1 with no Factorial, 4 refused), and the wrong figure was corrected in the one place it had reached, an uncommitted code comment. (2) A scan of the coverage tests was written as a python heredoc carrying regex backslashes; the PreToolUse guard (S6-B3139ae) refused it before it ran.
+
+**Why.** (1) Compliance failure against #182 read with L701: a reader of one form of a source skipped the other form, and its population figure was stated over what it could read - the skip ran fail-open, toward fewer pending levels. (2) Compliance failure against #259 (L885), record-of-fact.
+
+**Rule.** No new rule - #182 stands, and L701's 'sample the misses': the rows a reader skips are a class of their own and belong in the figure.
+
+**Mechanism.** (1) The figure is re-measured through band_coverage_gate.table_a_pending, the gate's one definition, which raises on an old render and on an unsplittable row - pinned by test_b3339's (1) arm, mutants N1 and N2 killed. (2) The guard held, 1 of 1.

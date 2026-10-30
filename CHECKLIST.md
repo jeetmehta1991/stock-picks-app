@@ -2832,6 +2832,8 @@ Phase-1 population of 25, a planning number derived from an over-scoped verdict.
 
 **INSTANCE (B3139q-r90 / L952) - AN RCA'S CLASS WAS SIZED BY ITS SYMPTOM.** S6-B2649c counted strategies with ZERO exit-cube rows - 14 strategies, 84 fires on R5 - and concluded no roster outcome was distorted. By fire, the property the drop corrupts, 349 of 189,471 closed fires lack an exit row: 265 more in 62 strategies that kept others, 4 of them Phase 1B members (UNVERIFIED whether any gate moves, S6-B3258). Mechanism: scripts/exit_cube_coverage.py, pinned by test_b3263.
 
+**INSTANCE (B3139q-r141 / L988) - A SIZING THAT SKIPPED WHAT IT COULD NOT PARSE.** Sizing S6-B3339, a scratch probe kept each Table A Factorial's 8-cell rows and skipped the rest, so 4 renders from before the pending column read as nothing pending, and it read the lane files only: '38 of 43 carry pending levels'. The gate's own parser, which refuses an old render and a row it cannot split, measured 39 of 45 (4 refused) before the figure left an uncommitted comment. A population figure's denominator includes what the reader could not read, as a class of its own (L701).
+
 **#183 PRODUCER-OPTIMISATION ARTIFACT STANDARD (B1510, owner-locked).** Every strategy entering
 S6-OPT-196 is reported through `scripts/producer_variant_table.py` in ONE 3-section artifact, so
 results are comparable across strategies and nothing is reported ad hoc:
@@ -4953,6 +4955,8 @@ same defect since B1721b - recorded, never gated.**
 **INSTANCE (B3139q-r123 / L963) - FOUR HOOK REFUSALS ON ONE-LINE PROBES.** In one session the PreToolUse hook refused two double-quoted python -c payloads and one heredoc, each carrying a backslash pair, before they ran; every probe written to a file ran clean.
 
 **INSTANCE (B3139q-r129 / L967) - A DOUBLED BACKSLASH IS HALVED EVEN INSIDE SINGLE QUOTES.** On 2026-10-27 the guard refused three probes before they ran (13:09Z, 16:12Z and 16:17Z - two double-quoted line-ending counts and a newline escape in a python heredoc), and a sed control whose pattern carried doubled backslashes changed nothing (14:12Z). Measured at B3139q-r129: a doubled backslash in a Bash tool command arrives halved inside single quotes and quoted heredoc bodies too, a lone backslash arrives unchanged, and the Write tool keeps both bytes - so the guard's 'a single-quoted -c payload is fine' does not hold for a doubled backslash (S6-B3327).
+
+**INSTANCE (B3139q-r141 / L988) - A REGEX IN A HEREDOC, REFUSED.** A scan of the coverage tests was written as a python heredoc carrying regex backslashes; the PreToolUse guard (S6-B3139ae) refused it before it ran, and the scan ran from a file written with the Write tool. The guard held, 1 of 1.
 
 ### #260 - SHOW EVERY CLASS OR CITE NO TOTAL (B1779 / L534)
 

@@ -5396,7 +5396,10 @@ def validate_spec(spec: dict) -> list[str]:
         if _extra and not _p.get("env"):
             errs.append(f"{_p['id']} {_p['param']}: resim levels {_extra} "
                         "have no env knob - unrunnable by design "
-                        "(S6-B2569a class): strike them or add the knob")
+                        "(S6-B2569a class): add the knob, or strike them with "
+                        "the owner's waiver recorded in output_audit/"
+                        "producer_level_waivers.json (S6-B3339 - band_coverage_gate "
+                        "counts an unwaived strike untested)")
     # B2866 (owner-directed 2026-09-19): THE SECOND HALF OF THE SAME RULE.
     # The check above accepts any env NAME - MEASURED this turn, a spec
     # declaring CANDLE_TOTALLY_FAKE_KNOB_NOBODY_READS validated CLEAN. So the

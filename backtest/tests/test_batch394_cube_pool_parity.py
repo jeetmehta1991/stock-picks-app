@@ -31,8 +31,6 @@ REPO = Path(__file__).resolve().parent.parent.parent
 PARITY_TICKERS = ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN"]
 PARITY_START = date(2023, 9, 1)
 PARITY_END = date(2024, 1, 5)
-SEQ_OUT = REPO / "output_batch394_parity_seq"
-POOL_OUT = REPO / "output_batch394_parity_pool"
 
 # Columns compared by exact equality
 EXACT_COLS = [
@@ -59,7 +57,12 @@ def _run_engine(output_dir: Path, screen_pool_workers: int):
         "--output-dir", str(output_dir),
         "--screen-pool-workers", str(screen_pool_workers),
     ]
-    rc = subprocess.call(cmd, cwd=str(REPO))
+    # S6-B3363 (B3139q-r141): the landing hook stays off and the output dir
+    # is the test's tmp dir - the run used to write REPO/output_batch394_*
+    # with the hook live, where a landed cube fires the supervisor's ledger
+    # write, commit and push, and verify_postconfig_complete scans output_*
+    rc = subprocess.call(cmd, cwd=str(REPO),
+                         env={**os.environ, "POSTCONFIG_LANDING": "0"})
     return rc
 
 
@@ -81,8 +84,9 @@ def _load_cube(out_dir: Path) -> pd.DataFrame:
 
 
 @pytest.mark.slow
-def test_batch394_cube_pool_parity():
+def test_batch394_cube_pool_parity(tmp_path):
     """Sequential cube replay == parallel cube replay (byte-equal cube)."""
+    SEQ_OUT, POOL_OUT = tmp_path / "seq", tmp_path / "pool"
     # Skip if any prefetch missing
     missing = [t for t in PARITY_TICKERS
                if not (REPO / "data_prefetch" / "polygon" / "ohlcv_daily"

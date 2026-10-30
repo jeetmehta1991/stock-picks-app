@@ -138,17 +138,29 @@ def read_step2(sweep_artifact: Path, coverage_min: float, repro_min: float,
         gaps = [(p.get("param"), p.get("untested"))
                 for p in band_coverage.get("params", [])
                 if p.get("untested")]
-        detail = "; ".join(f"{k}={v}" for k, v in gaps[:6])
+        # S6-B3339: the Table A half - pending producer levels, struck
+        # levels and what blocked the read of a Table A - is named too, so
+        # a refusal held by Table A alone never reads '0 of N parameters'
+        ta = band_coverage.get("table_a") or {}
+        pend = [f"{a['axis']} {a['param']}: {a['pending']} pending producer level(s)"
+                for a in ta.get("pending", []) if not a.get("waived")]
+        strk = [f"{s['param_id']}: struck {s['levels']}"
+                for s in ta.get("struck", []) if not s.get("waived")]
+        detail = "; ".join([f"{k}={v}" for k, v in gaps[:6]] + pend[:6] + strk
+                           + list(ta.get("blocked") or [])[:2])
         raise SystemExit(
-            f"REFUSED (S6-B2886): {len(gaps)} of "
+            f"REFUSED (S6-B2886 / S6-B3339): {len(gaps)} of "
             f"{len(band_coverage.get('params', []))} banded parameters "
-            f"carry UNTESTED levels, so this read would spend the "
-            "pre-registration on part of the question: " + detail +
-            ". Each level must be GRADED in the cited Step-1 artifact, "
-            "listed in its `discarded_levels`, or named in its "
-            "`resim_configs` - all three are fields, not prose. B2859 "
-            "spent a 130-trial read on 1 of 5 axes and the owner "
-            "overruled relying on it; that is the outcome this refuses.")
+            f"carry UNTESTED levels and {len(pend) + len(strk)} Table A "
+            "axes carry unwaived engine-only or struck levels, so this read "
+            "would spend the pre-registration on part of the question: "
+            + detail + ". Each registered level must be GRADED in the cited "
+            "Step-1 artifact, listed in its `discarded_levels`, or named in "
+            "its `resim_configs`; each engine-only Table A level run once its "
+            "knob exists, or waived with the owner's recorded word in "
+            "output_audit/producer_level_waivers.json. B2859 spent a "
+            "130-trial read on 1 of 5 axes and the owner overruled relying "
+            "on it; that is the outcome this refuses.")
 
     # S6-B3139g: a CLOSED strategy's holdout is not read offline either -
     # the launch path's refusal, the owner's override register as the

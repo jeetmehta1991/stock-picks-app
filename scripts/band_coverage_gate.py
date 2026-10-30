@@ -112,6 +112,161 @@ ZERO_COVERAGE = {
 }
 
 
+# S6-B3339 (B3139q-r141; approved 2026-10-28T16:50:12Z, 'your rec approved',
+# census step 2): the gate reads each TABLE A's pending producer levels -
+# engine-only levels with no env knob, which the registered band never holds -
+# and a WAIVER RECORD of the owner's words for any it sets aside. MEASURED at
+# B3139q-r141 through table_a_pending: of 45 Table A files, 39 carry pending
+# levels (405 in all - williams_r_oversold 11, squeeze_breakout 9,
+# camarilla_r4_breakout 1), 1 has none, 1 has no Factorial and 4 are renders
+# from before the pending column existed, which refuse until re-rendered;
+# this gate read the registry only and reported complete with them unrun
+# (S6-B3349).
+WAIVERS = ROOT / "output_audit" / "producer_level_waivers.json"
+
+
+def table_a_files(strategy: str, root=ROOT) -> list:
+    """Every Table A rendered for the strategy: its lane file under
+    strategy_optimisation/tighten and any campaign render
+    output_audit/*_<strategy>_table_a.md (build_table_a --out)."""
+    root = Path(root)
+    return (sorted((root / "strategy_optimisation" / "tighten").rglob(f"{strategy}.md"))
+            + sorted((root / "output_audit").glob(f"*_{strategy}_table_a.md")))
+
+
+def table_a_pending(text: str):
+    """[{axis, param, pending}] from a Table A's Factorial table - the axes
+    whose pending column (engine-only levels, no env knob) is above zero.
+    None when the file has no Factorial section (the zero-survivor short
+    form). An axis row that does not parse to the table's 8 cells raises: a
+    row skipped silently would read as nothing pending (L642)."""
+    lines = text.splitlines()
+    start = next((i for i, ln in enumerate(lines) if ln.startswith("## Factorial")), None)
+    if start is None:
+        return None
+    head = next((ln for ln in lines[start + 1:] if ln.strip().startswith("| axis |")), "")
+    if "| pending |" not in head:
+        # a render from before S6-B3189 split engine / offline / pending
+        raise ValueError("the Factorial has no pending column (rendered before "
+                         "S6-B3189) - re-render it with scripts/build_table_a.py")
+    out = []
+    for ln in lines[start + 1:]:
+        if ln.startswith("```"):
+            break
+        s = ln.strip()
+        if not (s.startswith("| P") or s.startswith("| B")) or not s[3:4].isdigit():
+            continue
+        cells = [c.strip() for c in s.strip("|").split("|")]
+        if len(cells) != 8:
+            raise ValueError(f"Factorial row of {len(cells)} cells, not 8: {s[:80]!r}")
+        if cells[7].isdigit() and int(cells[7]) > 0:
+            out.append({"axis": cells[0], "param": cells[1], "pending": int(cells[7])})
+    return out
+
+
+def _waivers(strategy: str, waivers=None) -> tuple:
+    """({axis or param id: entry}, problems) - the owner's waivers recorded for
+    the strategy in WAIVERS, each entry's word checked against the ledger by
+    scripts/owner_word.py. An entry whose word does not check is a PROBLEM,
+    never a waiver (L642). `waivers` is the parsed record (seam, #241)."""
+    if waivers is None:
+        try:
+            waivers = json.loads(WAIVERS.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            waivers = {}
+        except (OSError, ValueError) as exc:
+            return {}, [f"the waiver record {WAIVERS.name} is unreadable "
+                        f"({type(exc).__name__}) - fail closed (L642)"]
+    import owner_word as _ow
+    ok, problems = {}, []
+    for e in (waivers.get(strategy) or []):
+        key = str(e.get("axis") or e.get("param_id") or "")
+        refused = _ow.refusals(e.get("word"), door=f"waive {strategy} {key}")
+        if not key:
+            problems.append("a waiver entry names no axis or param_id")
+        elif refused:
+            problems.append(f"{key}: {refused[0]}")
+        else:
+            ok[key] = e
+    return ok, problems
+
+
+def _struck_levels(strategy: str) -> dict:
+    """{param id: [levels]} in the pre-registration band (SPECS_PHASE0) that
+    the resolved spec no longer holds - a STRIKE (validate_spec offers 'strike
+    them or add the knob'), which needs the owner's waiver like a pending
+    level. MEASURED at B3139q-r141: 1 of 17 PHASE0 strategies,
+    smc_liquidity_sweep_reversal P3 (20 and 45)."""
+    try:
+        from producer_variant_table import SPECS_PHASE0, resolved_spec
+    except ImportError:
+        return {}
+    e0, res = SPECS_PHASE0.get(strategy) or {}, resolved_spec(strategy) or {}
+    now = {p["id"]: p for p in res.get("params") or []}
+    out = {}
+    for p in e0.get("params") or []:
+        q = now.get(p["id"])
+        if q is None or not isinstance(p.get("band"), list):
+            continue
+        cur = [str(x) for x in (q.get("band") if isinstance(q.get("band"), list) else [])]
+        gone = [x for x in p["band"] if str(x) not in cur]
+        if gone:
+            out[p["id"]] = gone
+    return out
+
+
+def table_a_section(strategy: str, *, files=None, waivers=None, struck=None) -> dict:
+    """S6-B3339: the Table A half of coverage - pending producer levels and
+    struck levels, each waived by a recorded owner word or counted untested.
+    `files` ([(name, text)]), `waivers` and `struck` are seams (#241); left
+    None they are read from the repository."""
+    if files is None:
+        files = [(str(p.relative_to(ROOT)), p.read_text(encoding="utf-8"))
+                 for p in table_a_files(strategy)]
+    if struck is None:
+        struck = _struck_levels(strategy)
+    ok, problems = _waivers(strategy, waivers)
+    blocked = list(problems)
+    pending: dict = {}
+    for name, text in files:
+        try:
+            got = table_a_pending(text)
+        except ValueError as exc:
+            blocked.append(f"{name}: {exc}")
+            continue
+        if got is None:
+            blocked.append(f"{name}: no Factorial section - pending levels unknown")
+            continue
+        for row in got:   # several renders: each axis at its largest count
+            cur = pending.get(row["axis"])
+            if cur is None or row["pending"] > cur["pending"]:
+                pending[row["axis"]] = dict(row, source=name)
+    if not files:
+        blocked.append(f"no Table A file for {strategy} (strategy_optimisation/tighten/"
+                       f"**/{strategy}.md or output_audit/*_{strategy}_table_a.md) - "
+                       "pending producer levels cannot be read (S6-B3339)")
+    axes, unwaived = [], 0
+    for aid, row in sorted(pending.items()):
+        w = ok.get(aid)
+        waived = bool(w) and int(w.get("pending") or 0) >= row["pending"]
+        unwaived += 0 if waived else row["pending"]
+        axes.append(dict(row, waived=waived,
+                         waiver=(w or {}).get("word") if waived else None))
+    struck_rows = []
+    for pid, levels in sorted(struck.items()):
+        w = ok.get(pid)
+        cover = {str(x) for x in ((w or {}).get("struck") or [])}
+        waived = bool(w) and {str(x) for x in levels} <= cover
+        unwaived += 0 if waived else len(levels)
+        struck_rows.append({"param_id": pid, "levels": levels, "waived": waived})
+    return {"files": [n for n, _t in files], "pending": axes, "struck": struck_rows,
+            "unwaived": unwaived, "blocked": blocked,
+            "rule": "S6-B3339: every Table A pending producer level and every "
+                    "struck band level is run (the knob added, the table "
+                    "re-rendered) or waived in output_audit/"
+                    "producer_level_waivers.json by a recorded owner word"}
+
+
 def artifact_kind(doc):
     """The declared kind of one artifact, or None when its shape is none of
     the known kinds (the caller REFUSES by name). Order matters: a list of
@@ -245,10 +400,14 @@ def _num_eq(a, b) -> bool:
 
 def coverage_report(strategy: str, artifact_paths: list, *,
                     spec: dict | None = None, arts: list | None = None,
-                    resim_evidence: dict | None = None) -> dict:
+                    resim_evidence: dict | None = None,
+                    table_a: dict | None = None) -> dict:
     """Per-param tested/untested split for every Table A band level.
-    `spec` and `arts` are injection seams (#241); production callers pass
-    paths and let the spec come from producer_variant_table."""
+    `spec`, `arts` and `table_a` (a table_a_section result) are injection
+    seams (#241); production callers pass paths and let the spec come from
+    producer_variant_table and the Table A section from the repository (an
+    injected spec with no table_a reports it not evaluated, as
+    registry_conflicts is)."""
     entry = _load_spec(strategy, spec)
     if "params" not in entry:
         return {"strategy": strategy, "complete": False, "evaluable": False,
@@ -377,8 +536,23 @@ def coverage_report(strategy: str, artifact_paths: list, *,
                     ok = (all(_leg_levels(leg) for leg in legs) if legs
                           else bool(graded.get(name)))
                 else:
-                    ok = (_num_eq(lev, prod)
-                          or any(_num_eq(lev, s) for s in seen))
+                    if legs:
+                        # S6-B3339: a numeric level of a legs-declaring param
+                        # is graded on EACH of its legs, as the quantile and
+                        # boolean branches have been since S6-B3304 - one
+                        # leg's grid used to cover both. Discards, resim and
+                        # structural values name no leg and count for every
+                        # leg; so do the free-level and surface evaluations
+                        # below, which record no leg either.
+                        pooled = (discarded.get(name, set()) | resim.get(name, set())
+                                  | structural.get(name, set()))
+                        ok = (_num_eq(lev, prod)
+                              or all(any(_num_eq(lev, s)
+                                         for s in (_leg_levels(leg) | pooled))
+                                     for leg in legs))
+                    else:
+                        ok = (_num_eq(lev, prod)
+                              or any(_num_eq(lev, s) for s in seen))
                     if not ok and any(_num_eq(lev, s) for s in free_seen):
                         # S6-B3139o: covered by a free-level evaluation -
                         # counted, and LABELLED per level
@@ -405,9 +579,16 @@ def coverage_report(strategy: str, artifact_paths: list, *,
                     "free_level_covered": free_covered,
                     "is_surface_graded": surface_graded,
                     "is_surface_covered": surface_covered})
+    # S6-B3339: the Table A half - pending producer levels and struck levels
+    if table_a is None:
+        table_a = (table_a_section(strategy) if spec is None else
+                   {"evaluated": False, "unwaived": 0, "blocked": [],
+                    "reason": "injected spec - Table A not read (as registry_conflicts)"})
+    untested_total += int(table_a.get("unwaived") or 0)
     return {"strategy": strategy, "evaluable": True,
-            "complete": untested_total == 0,
+            "complete": untested_total == 0 and not table_a.get("blocked"),
             "untested_total": untested_total, "params": out,
+            "table_a": table_a,
             "artifacts": artifacts,
             "free_level_evaluations": free_evals,
             "is_surface_evaluations": surface_evals,
@@ -428,16 +609,23 @@ def declare_step2_failure(strategy: str, artifact_paths: list, **kw) -> dict:
         raise BandCoverageError(
             f"FAILURE DECLARATION REFUSED (#299): {rep['reason']}")
     if not rep["complete"]:
-        missing = "; ".join(
-            f"{p['id']} {p['param']}: untested {p['untested']}"
-            for p in rep["params"] if p["untested"])
+        ta = rep.get("table_a") or {}
+        parts = [f"{p['id']} {p['param']}: untested {p['untested']}"
+                 for p in rep["params"] if p["untested"]]
+        parts += [f"{a['axis']} {a['param']}: {a['pending']} pending producer "
+                  "level(s), not waived" for a in ta.get("pending", [])
+                  if not a.get("waived")]
+        parts += [f"{s['param_id']}: struck {s['levels']}, not waived"
+                  for s in ta.get("struck", []) if not s.get("waived")]
+        parts += list(ta.get("blocked") or [])
         raise BandCoverageError(
-            "FAILURE DECLARATION REFUSED (CHECKLIST #299 / B2704): "
+            "FAILURE DECLARATION REFUSED (CHECKLIST #299 / B2704 / S6-B3339): "
             f"{rep['untested_total']} untested Table A band level(s) remain - "
-            f"{missing}. Test them (engine resim if offline cannot reach "
-            "them) or obtain an explicit owner waiver; until then the "
-            "disposition is 'leg negative; depth leg NOT RUN', never "
-            "'strategy failed'.")
+            f"{'; '.join(parts)}. Test them (engine resim if offline cannot "
+            "reach them) or obtain an explicit owner waiver, recorded in "
+            "output_audit/producer_level_waivers.json with the owner's words; "
+            "until then the disposition is 'leg negative; depth leg NOT RUN', "
+            "never 'strategy failed'.")
     return rep
 
 

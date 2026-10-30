@@ -1,0 +1,17 @@
+{
+ "_doc": "S6-B3339 (B3139q-r141): the owner's waivers of Table A producer levels - engine-only levels with no env knob (a Factorial's pending column, keyed by axis) and band levels struck from the pre-registration (keyed by param_id with the struck levels). scripts/band_coverage_gate.py counts every pending or struck level untested unless an entry here waives it, and each entry's word must be quoted by a row of its ticket in EXECUTION_QUEUE.md (scripts/owner_word.py). An entry waives an axis only up to its own 'pending' count, so a re-render that adds levels is not waived by an older entry.",
+ "williams_r_oversold": [
+  {"axis": "P1.1", "pending": 7, "levels": "the seven non-production EMA spans",
+   "word": {"ticket": "S6-B3247", "verbatim": "Approve your recommendations fable mode proceed"},
+   "ruled_utc": "2026-10-28T11:01:42Z",
+   "ruling": "S6-B3247 (a): WAIVE in words the 11 engine-only producer levels never put to the owner at band review (record S6-B3349)"},
+  {"axis": "P5.1", "pending": 2, "levels": "RSI span 3 and 5",
+   "word": {"ticket": "S6-B3247", "verbatim": "Approve your recommendations fable mode proceed"},
+   "ruled_utc": "2026-10-28T11:01:42Z",
+   "ruling": "S6-B3247 (a): WAIVE in words the 11 engine-only producer levels never put to the owner at band review (record S6-B3349)"},
+  {"axis": "P6.1", "pending": 2, "levels": "Williams period 10 and 20",
+   "word": {"ticket": "S6-B3247", "verbatim": "Approve your recommendations fable mode proceed"},
+   "ruled_utc": "2026-10-28T11:01:42Z",
+   "ruling": "S6-B3247 (a): WAIVE in words the 11 engine-only producer levels never put to the owner at band review (record S6-B3349)"}
+ ]
+}

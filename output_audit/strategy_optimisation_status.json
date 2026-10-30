@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "ff5ddb016",
-    "generated_at": "2026-10-29 17:36:12"
+    "source_commit": "4ddfd9251",
+    "generated_at": "2026-10-29 19:04:34"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -733,6 +733,7 @@
         "S6-B3325",
         "S6-B3332",
         "S6-B3338",
+        "S6-B3339",
         "S6-B3349"
       ],
       "admitted": false,
@@ -1011,6 +1012,7 @@
         "S6-B3325",
         "S6-B3326",
         "S6-B3335",
+        "S6-B3339",
         "S6-B3349"
       ],
       "admitted": false,
@@ -5174,7 +5176,8 @@
         "S6-B3135a",
         "S6-B3189",
         "S6-B3223",
-        "S6-B3258"
+        "S6-B3258",
+        "S6-B3339"
       ],
       "admitted": false,
       "roster_roles": [
@@ -6722,7 +6725,8 @@
         "S6-B3194",
         "S6-B3224",
         "S6-B3257",
-        "S6-B3333"
+        "S6-B3333",
+        "S6-B3339"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -7433,6 +7437,7 @@
         "S6-B3223",
         "S6-B3224",
         "S6-B3258",
+        "S6-B3339",
         "S6-B3349"
       ],
       "admitted": false,
@@ -8334,7 +8339,8 @@
         "S6-B3196",
         "S6-B3221",
         "S6-B3223",
-        "S6-B3258"
+        "S6-B3258",
+        "S6-B3339"
       ],
       "admitted": false,
       "roster_roles": [
