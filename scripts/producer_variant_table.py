@@ -4350,7 +4350,7 @@ SPECS_PHASE0.update({"camarilla_r4_breakout": {
             "legs": [
                 "long"
             ],
-            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); LONG leg op ge (keep HIGH)",
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); LONG leg op ge (keep HIGH); graded on its COVERED fires under the widened-coverage rule (S6-B3304 (a), owner 2026-10-28; the B2698 precedent) - the verdict binds the covered subpopulation only",
             "type": "float>=q",
             "engine_implemented": False,
             "evidence": "long: b3304_camarilla_r4_breakout_long_companions_consistent.json (ts10 +15.669 / bept +24.108, joint 15.669, cluster of 2)",
@@ -4563,7 +4563,7 @@ SPECS_PHASE0.update({"camarilla_r4_breakout": {
             "legs": [
                 "short"
             ],
-            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); SHORT leg op ge (keep HIGH)",
+            "status": "T3-APPROVED 2026-10-27 (owner verbatim 'Approve all recs fable mode' on the r124 close's 'all 15' breadth candidates; S6-B3304); SHORT leg op ge (keep HIGH); graded on its COVERED fires under the widened-coverage rule (S6-B3304 (a), owner 2026-10-28; the B2698 precedent) - the verdict binds the covered subpopulation only",
             "type": "float>=q",
             "engine_implemented": False,
             "evidence": "short: b3304_camarilla_r4_breakout_short_companions_consistent.json (ts10 +4.243 / bept +5.218, joint 4.243, cluster of 12)",

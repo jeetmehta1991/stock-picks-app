@@ -3121,6 +3121,8 @@ end-anchored coverage change altering which tickers any prior run would have ser
 
 **INSTANCE (B3139q-r131 / L971) - A FIX LANDED UNDER ANOTHER TICKET, AND THE TICKET IT FIXED STAYED OPEN.** B3139q-r126 built the legs field S6-B3319 had named as its fix, under S6-B3304; S6-B3319 stayed OPEN and two closes listed it as waiting work until the r130 classification read its row. Closed at B3139q-r131; its validate_spec remainder joined S6-B3325.
 
+**INSTANCE (B3139q-r150 / L996) - THE COMMIT MESSAGE WAS DRAFTED BEFORE THE PRE-GATE.** r149's pre-gate refused a seam registration and the registration was withdrawn; the commit message, written before, still said 'seam registered' and was committed unread. After any pre-gate fix, re-read every text drafted before it.
+
 ### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in

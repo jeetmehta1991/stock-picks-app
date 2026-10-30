@@ -67912,3 +67912,69 @@ def test_b3352_a_chain_monitor_does_not_trip_on_a_planned_leg_end():
         for e in t.elts)]
     assert len(wired) == 1 and wired[0].elts[-1].id == "scan_locked_format_edit_without_source_open", (
         [len(t.elts) for t in wired])
+
+
+def test_b3304c_camarilla_b1_b8_graded_on_their_covered_fires():
+    """S6-B3304 (a) (B3139q-r150; owner 2026-10-28T00:35:55Z, verbatim 'Approve
+    all recs / Fable mode / Proceed / Be extremely thorough and get context for
+    each ticket'): B1 (long, pct_from_avwap_20low) and B8 (short,
+    monthly_momentum_6m), skipped by the 0.98 coverage floor at B3139q-r126,
+    are graded on their covered fires. (1) the committed grids: one axis each,
+    the coverage and gap on the artifact's face, every cell graded, the
+    owner's word for the widening recorded with its ticket, a 100-permutation
+    null, an episode on every row; (2) the registry says the verdict binds the
+    covered subpopulation; (3) with the six campaign artifacts the coverage
+    gate's only untested item is the scheduled engine-only distance level
+    (Table A P1.1, 0.45 - S6-B3349); (4) each per-leg Table D grades its own
+    covered axis and labels the other leg's LEG ONLY."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import band_coverage_gate as bcg
+    from producer_variant_table import SPECS_PHASE0, validate_spec
+    A = root / "output_audit"
+    S = "camarilla_r4_breakout"
+    want = {"long": ("pct_from_avwap_20low", 0.8551, 14.5, "B1"),
+            "short": ("monthly_momentum_6m", 0.9073, 9.3, "B8")}
+    for leg, (key, cov, gap, bid) in want.items():
+        g = _j.loads((A / f"b3304_{S}_breadth_net_{leg}_{bid.lower()}_covered.json")
+                     .read_text(encoding="utf-8"))
+        assert g["strategy"] == S and g["leg"] == leg and g["basis"] == "net" and g["survival"]
+        assert g["axis"] == key and [a["key"] for a in g["axes"]] == [key]
+        assert g["widen_coverage"]["is_fire_coverage"] == cov
+        assert g["widen_coverage"]["excluded_gap_pct"] == gap
+        assert g["skipped_axes"] == [] and g["graded"] == g["trials"] == len(g["rows"]) == 104
+        assert g["widen_owner_word"]["ticket"] == "S6-B3304"
+        assert g["widen_owner_word"]["verbatim"].startswith("Approve all recs / Fable mode")
+        assert g["permutation_null"]["n_perms"] == 100
+        assert all(isinstance(r.get("episode"), dict) for r in g["rows"])
+    e = SPECS_PHASE0[S]
+    assert validate_spec(e) == [], validate_spec(e)
+    for bid in ("B1", "B8"):
+        p = next(x for x in e["params"] if x["id"] == bid)
+        assert "COVERED fires" in p["status"] and "S6-B3304 (a)" in p["status"], p["status"]
+    arts = [str(A / f"b3314_{S}_{leg}_net_step1_is_surface.json") for leg in want] + \
+           [str(A / f"b3304_{S}_breadth_net_{leg}.json") for leg in want] + \
+           [str(A / f"b3304_{S}_breadth_net_{leg}_{want[leg][3].lower()}_covered.json")
+            for leg in want]
+    rep = bcg.coverage_report(S, arts)
+    assert rep["evaluable"] and not rep["complete"] and rep["untested_total"] == 1, (
+        rep["untested_total"])
+    assert [u for p in rep["params"] for u in (p.get("untested") or [])] == []
+    tested = {p["id"]: len(p["tested"]) for p in rep["params"]}
+    assert tested["B1"] == tested["B8"] == 4, tested
+    rep0 = bcg.coverage_report(S, arts[:4])          # without the two covered grids
+    assert {p["id"] for p in rep0["params"] if p["untested"]} == {"B1", "B8"}
+    pend = rep["table_a"]["pending"]
+    assert [(x["axis"], x["pending"], x["waived"]) for x in pend] == [("P1.1", 1, False)], pend
+    for leg, (key, cov, gap, bid) in want.items():
+        md = (A / f"b3304_{S}_{leg}_table_d.md").read_text(encoding="utf-8")
+        inv = {ln.split(" ", 4)[3]: ln for ln in md.splitlines() if ln.startswith("  - ")}
+        other = "B8" if leg == "long" else "B1"
+        assert f"under WIDENED COVERAGE {cov:.3f}" in inv[bid], inv[bid]
+        assert "TESTED at" in inv[bid] and "(4 of 4 band levels)" in inv[bid], inv[bid]
+        assert "LEG ONLY" in inv[other], inv[other]
+        assert f"b3304_{S}_breadth_net_{leg}_{bid.lower()}_covered.json" in md.splitlines()[0]

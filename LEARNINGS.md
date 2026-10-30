@@ -25656,3 +25656,15 @@ MEASURED: the committed output_audit/b3247_williams_r_oversold_short_table_d.md 
 **Rule.** No new rule - #303 stands.
 
 **Mechanism.** One resolver, table_d_render._key_owners, for the depth surface, the offline factorial block and breadth rows (S6-B3372), pinned by test_b3372 on both legs of both strategies, a pooled render and a planted one-leg breadth grid.
+
+**Fourth addendum to L989 (B3139q-r149).** A ninth: a double-quoted python -c recounting test_b2557's proxy carried regex escapes, refused before it ran - the pytest call chained before it in the same command waited too, and both were redone through a file. The guard held 9 of 9.
+
+### L996 - A COMMIT MESSAGE DRAFTED BEFORE THE PRE-GATE KEPT A CLAIM THE PRE-GATE'S FIX WITHDREW (B3139q-r150, 2026-10-30)
+
+MEASURED: the B3139q-r149 commit a2f7c0550 says of S6-B3352 'seam registered; wired.' The pre-gate selection had failed on test_b3121, which refused that registration, and the registration was withdrawn before the gate; the ledger's correction row says so, and the commit message, drafted in the scratchpad before the pre-gate ran, was filled with its gate line and committed without being re-read. The message is pushed; the retraction is in the S6-B3352 row of B3139q-r150 and in that turn's close.
+
+**Why.** Compliance failure against #196 (after a fix, re-check what was already decided), the L935 shape: the fix changed the change, and one description of the change - the message - was written before it and never re-read.
+
+**Rule.** No new rule - #196 stands: after any pre-gate failure is fixed, re-read every text drafted before it (the commit message, the rows, the close) against what now ships.
+
+**Mechanism.** Record-of-fact. No gate reads a commit message's claims against the tree, and one instance does not size a gate (the tripwire against building a refusal from one bite); the ledger row, which the turn gate does read, carried the truth.
