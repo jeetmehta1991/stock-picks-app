@@ -124,6 +124,10 @@ def main(argv=None) -> int:
     ap.add_argument("--preregistered-exit", default=None,
                     help="the Step-1 pre-registered exit - recorded beside the "
                          "selection, never read (owner ruling 2(i))")
+    ap.add_argument("--survival", action="store_true",
+                    help="S6-B3322: read only the R5 fires the CURRENT gate "
+                         "keeps - required on R5 for a changed gate, refused "
+                         "on an engine cube")
     a = ap.parse_args(argv)
     t0 = time.time()
     strat = a.strategy
@@ -150,15 +154,19 @@ def main(argv=None) -> int:
         if lerrs:
             raise SystemExit(f"{lerrs[0]} (S6-B3367: the breadth leg rides the "
                              "spec's arm - make_spec --breadth-leg)")
-    m = _build(None if is_r5 else cube_dir, strat=strat, keys=[])
+    m = _build(None if is_r5 else cube_dir, strat=strat, keys=[],
+               survival=a.survival)
     fires = m.drop_duplicates(["ticker", "entry_date"])
+    n_cube = m.attrs["fires_before_survival"]    # S6-B3322: reproduce, then select
 
     if is_r5:
         want = _baseline_fires(strat)
-        if len(fires) != want:
-            raise SystemExit(f"REFUSED: {len(fires)} unique fires != the "
+        if n_cube != want:
+            raise SystemExit(f"REFUSED: {n_cube} unique fires != the "
                              f"registered R5 baseline {want} (fail closed)")
-        repro = f"R5 BASELINE reproduction OK: {len(fires)} fires == {want}"
+        repro = (f"R5 BASELINE reproduction OK: {n_cube} fires == {want}"
+                 + (f"; the current gate keeps {len(fires)} (S6-B3322 survival)"
+                    if a.survival else ""))
     else:
         repro = (f"VARIANT-CUBE-NO-R5-REPRODUCTION: produced at gate budget "
                  f"{budget if budget is not None else 'none (production)'}; "
@@ -179,7 +187,8 @@ def main(argv=None) -> int:
                       "npt barred; ranked on is_ci_lo; the LEVER4 budget is resim-only (a looser "
                       "gate adds fires no cube holds), so the grid carries no "
                       "offline numeric axis"),
-           "reproduction_fires": int(len(fires)),
+           "reproduction_fires": int(n_cube),
+           "survival": {"applied": bool(a.survival), "fires_graded": int(len(fires))},
            "cells_graded": len(graded),
            # 11.2b2d: mandatory, report-only - no numeric search, so no
            # permutation null exists; the partition says so.

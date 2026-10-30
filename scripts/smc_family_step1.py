@@ -97,6 +97,9 @@ def main() -> int:
     ap.add_argument("--swing-length", type=int, default=None)
     ap.add_argument("--liquidity-range-pct", type=float, default=None)
     ap.add_argument("--event-recency-bars", type=int, default=None)
+    ap.add_argument("--survival", action="store_true",
+                    help="S6-B3322: read only the R5 fires the CURRENT gate "
+                         "keeps - required on R5 for a changed gate")
     a = ap.parse_args()
     t0 = time.time()
     strat = a.strategy
@@ -105,15 +108,19 @@ def main() -> int:
     if cube_dir is not None and cube_dir.is_file():
         cube_dir = cube_dir.parent
     is_r5 = cube_dir is None or cube_dir == R5_DIR.resolve()
-    m = _build(None if is_r5 else cube_dir, strat=strat, keys=[])
+    m = _build(None if is_r5 else cube_dir, strat=strat, keys=[],
+               survival=a.survival)
     fires = m.drop_duplicates(["ticker", "entry_date"])
+    n_cube = m.attrs["fires_before_survival"]    # S6-B3322: reproduce, then select
 
     if is_r5:
         want = _baseline_fires(strat)
-        if len(fires) != want:
-            raise SystemExit(f"REFUSED: {len(fires)} unique fires != R5 "
+        if n_cube != want:
+            raise SystemExit(f"REFUSED: {n_cube} unique fires != R5 "
                              f"baseline {want} (fail closed)")
-        repro = f"R5 BASELINE reproduction OK: {len(fires)} fires == {want}"
+        repro = (f"R5 BASELINE reproduction OK: {n_cube} fires == {want}"
+                 + (f"; the current gate keeps {len(fires)} (S6-B3322 survival)"
+                    if a.survival else ""))
     else:
         repro = ("VARIANT-CUBE-NO-R5-REPRODUCTION: produced at knobs "
                  f"swing_length={a.swing_length} "
@@ -138,7 +145,8 @@ def main() -> int:
                       "npt barred; NO free numeric axis - the gate is all "
                       "persisted booleans, so depth lives in the producer "
                       "knobs (engine) and breadth in 11.2b3"),
-           "reproduction_fires": int(len(fires)),
+           "reproduction_fires": int(n_cube),
+           "survival": {"applied": bool(a.survival), "fires_graded": int(len(fires))},
            "cells_graded": len(graded),
            # 11.2b2d: mandatory, report-only. No numeric search here, so no
            # permutation null exists to hand in - the partition's

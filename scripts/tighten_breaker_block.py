@@ -202,6 +202,10 @@ def main() -> int:
                          "(plan section 10.1: top 10)")
     ap.add_argument("--max-diag-loss", type=float, default=0.02,
                     help="abort if more than this fraction of fires cannot be re-diagnosed")
+    ap.add_argument("--survival", action="store_true",
+                    help="S6-B3322: read only the R5 fires the CURRENT gate "
+                         "keeps - required on R5 for a changed gate, refused "
+                         "on a run's own cube")
     a = ap.parse_args()
     if a.out is None:
         import pathlib as _pl
@@ -213,8 +217,29 @@ def main() -> int:
     # subsample, which is exactly how cfg2 lost 167 of 420 fires and reported
     # metrics on the survivors as though they were the population (L454).
     DROPS: dict = {"no_parquet": [], "no_diag": []}
+    # S6-B3322 (B3139q-r155): the R5 survival guard every Step-1 search runs
+    # (step1_gates). R5 predates the current gate; a run's own cube holds the
+    # gate it ran under, so the filter is refused there.
+    _is_r5 = not a.cube or Path(a.cube).resolve() == R5_CUBE.resolve()
+    if a.survival and not _is_r5:
+        raise SystemExit("REFUSED (S6-B3322): --survival filters R5 fires to the "
+                         "current gate; --cube names a run's own cube, which "
+                         "holds the gate it ran under")
+    if _is_r5:
+        from step1_gates import require_surviving_or_unchanged
+        require_surviving_or_unchanged(STRATEGY, a.survival)
     cube = rc.load_cube(Path(a.cube) if a.cube else R5_CUBE)
     g = cube[cube["strategy"] == STRATEGY].copy()
+    if a.survival:
+        from step1_gates import surviving_fam
+        _tl = pd.read_csv(R5_CUBE.parent / "trade_log.csv", low_memory=False,
+                          usecols=["strategy", "ticker", "entry_date",
+                                   "direction", "signals_at_entry"])
+        _kept = surviving_fam(STRATEGY, _tl[_tl.strategy == STRATEGY]
+                              .drop_duplicates(["ticker", "entry_date"]))
+        _keep = set(zip(_kept["ticker"],
+                        pd.to_datetime(_kept["entry_date"], errors="coerce").dt.date))
+        g = g[[(t, d) in _keep for t, d in zip(g["ticker"], g["entry_date"])]].copy()
     # load_cube yields entry_date as datetime.date; roster_core's window
     # helpers compare against date objects, so do NOT convert to datetime64.
     fires = g[["ticker", "entry_date"]].drop_duplicates()

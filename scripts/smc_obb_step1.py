@@ -158,6 +158,9 @@ def main() -> int:
                     help="cube DIRECTORY to grade; default the R5 baseline")
     ap.add_argument("--swing-length", type=int, default=None)
     ap.add_argument("--ob-close-mitigation", default=None)
+    ap.add_argument("--survival", action="store_true",
+                    help="S6-B3322: read only the R5 fires the CURRENT gate "
+                         "keeps - required on R5 for a changed gate")
     a = ap.parse_args()
     t0 = time.time()
 
@@ -165,8 +168,10 @@ def main() -> int:
     if cube_dir is not None and cube_dir.is_file():
         cube_dir = cube_dir.parent
     is_r5 = cube_dir is None or cube_dir == R5_DIR.resolve()
-    m = _build(None if is_r5 else cube_dir, strat=STRAT, keys=GATE_KEYS)
+    m = _build(None if is_r5 else cube_dir, strat=STRAT, keys=GATE_KEYS,
+               survival=a.survival)
     fires = m.drop_duplicates(["ticker", "entry_date"])
+    n_cube = m.attrs["fires_before_survival"]    # S6-B3322: reproduce, then select
 
     # S6-B2732a contract: the reproduction gate binds the BASELINE only. A
     # variant cube fires a DIFFERENT set by construction - changing a producer
@@ -175,10 +180,12 @@ def main() -> int:
     # either way; never silent.
     if is_r5:
         _want = _r5_baseline_fires()
-        if len(fires) != _want:
-            raise SystemExit(f"REFUSED: {len(fires)} unique fires != R5 "
+        if n_cube != _want:
+            raise SystemExit(f"REFUSED: {n_cube} unique fires != R5 "
                              f"baseline {_want} (fail closed)")
-        repro = f"R5 BASELINE reproduction OK: {len(fires)} fires == {_want}"
+        repro = (f"R5 BASELINE reproduction OK: {n_cube} fires == {_want}"
+                 + (f"; the current gate keeps {len(fires)} (S6-B3322 survival)"
+                    if a.survival else ""))
     else:
         repro = ("VARIANT-CUBE-NO-R5-REPRODUCTION: this cube was produced at "
                  f"knobs swing_length={a.swing_length} "
@@ -229,7 +236,8 @@ def main() -> int:
                            "graded here is one the ENGINE decided tapped an "
                            "order block - this grader cannot re-derive that "
                            "and does not claim to (S6-B2752b)"),
-           "reproduction_fires": int(len(fires)),
+           "reproduction_fires": int(n_cube),
+           "survival": {"applied": bool(a.survival), "fires_graded": int(len(fires))},
            "cells_graded": len(graded),
            "permutation_null": pn,
            # B2768/B2775: grid-stage BH-FDR as a COMPLETE PARTITION,

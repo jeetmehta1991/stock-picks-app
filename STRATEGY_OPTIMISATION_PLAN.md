@@ -1357,6 +1357,13 @@ the six gates via `roster_core` (the identical bar to the Phase 1B roster) and r
 Step-2 cube. Later graders follow the same `roster_core` path, each stating its method in its own
 header - one reads the holdout ONLY on a cube declared Step 2.
 
+**Read from R5, a family grader grades the fires the CURRENT gate keeps (S6-B3322).** Every
+R5-reading family grader runs the shared survival guard (`step1_gates.require_surviving_or_unchanged`)
+when it reads R5 and takes `--survival` - `step1_gates.surviving_fam`, the one T1 filter the sweep,
+the screen and the breadth loader apply; a strategy whose gate changed since R5 is refused without
+the flag, each R5 reproduction binds the fire count before the filter, and a run's own cube needs
+neither. Pinned by test_b3322.
+
 **Verdicts:** `PASS` · `FAIL` · `BELOW_POWER_FLOOR` (holdout n below the grader's `--min-n`, default 10 - NOT `min_trades_holdout`) · `NO_EXIT_SELECTABLE` (too few IS trades to rank the registered exits - a SAMPLE-SIZE verdict, not exit quality) · `ZERO_FIRES`.
 
 **The power floor is not a gate and is not `min_trades_holdout`** (S6-B2353 and its own correction both

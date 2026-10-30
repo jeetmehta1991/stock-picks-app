@@ -99,3 +99,23 @@ def require_surviving_or_unchanged(strategy: str, survival: bool) -> None:
             f"its R5 fires (unmeasured sides: {unmeasured or 'none'}) - grading R5 "
             "without the survival filter reads fires the gate now removes; pass "
             "--survival")
+
+
+def surviving_fam(strategy: str, fam):
+    """S6-B3322 (B3139q-r155): the fires of `strategy` its CURRENT gate keeps -
+    build_table_a.surviving_fires on the status view's inputs, the ONE T1
+    definition the R5 instruments apply (the sweep S6-B3290, the screen
+    S6-B3320, the breadth loader S6-B3321, the Step-1 searches S6-B3322).
+    `fam` holds one row per fire with ticker, entry_date, direction and
+    signals_at_entry; an unmeasured side's fires are dropped, since none can
+    be confirmed a survivor. Refuses when no fire survives (fail closed)."""
+    import build_table_a as _bta
+    from offline_level_sweep import _survival_inputs
+    pct, unmeasured = _survival_inputs(strategy)
+    kept, _sigs, _filtered = _bta.surviving_fires(strategy, fam, pct, unmeasured)
+    if kept.empty:
+        raise SystemExit(
+            f"REFUSED (S6-B3322): no R5 fire of {strategy} survives its current "
+            f"gate (survives {pct}, unmeasured sides: {unmeasured or 'none'}) - "
+            "grade an engine cube, which holds the gate its run used")
+    return kept

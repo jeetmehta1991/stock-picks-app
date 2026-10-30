@@ -56,7 +56,7 @@ B_AXES = [("monthly_momentum_6m", "ge"), ("bb_20_20_bandwidth", "le"),
 
 
 def build(cube_dir: Path | None = None, strat: str = STRAT,
-          keys: list[str] | None = None) -> pd.DataFrame:
+          keys: list[str] | None = None, survival: bool = False) -> pd.DataFrame:
     """The graded frame for `strat` from `cube_dir` (default: the R5 baseline).
 
     S6-B2752a: `strat` and `keys` are PARAMETERS rather than module constants,
@@ -66,7 +66,24 @@ def build(cube_dir: Path | None = None, strat: str = STRAT,
     CODE, and this builder already carries the fail-closed path check, the
     per-fire de-duplication and the bool->float coercion that a fresh copy would
     have had to rediscover. Defaults reproduce hub-1 exactly.
+
+    S6-B3322 (B3139q-r155): read from R5, a strategy whose current gate keeps
+    fewer than all of its R5 fires is graded on the fires it keeps - the
+    shared guard (step1_gates.require_surviving_or_unchanged) refuses
+    otherwise, and survival=True filters through the one definition
+    (step1_gates.surviving_fam). A run's own cube holds the gate it ran under,
+    so the filter is refused there. attrs["fires_before_survival"] is the
+    unique-fire count before the filter, which the R5 reproduction gates
+    bind: reproduce, then select (the S6-B2804 order).
     """
+    reads_r5 = cube_dir is None or Path(cube_dir).resolve() == R5_DIR.resolve()
+    if survival and not reads_r5:
+        raise SystemExit("REFUSED (S6-B3322): survival filters R5 fires to the "
+                         f"current gate; {cube_dir} is not R5 - a run's own cube "
+                         "already holds the gate it ran under")
+    if reads_r5:
+        from step1_gates import require_surviving_or_unchanged
+        require_surviving_or_unchanged(strat, survival)
     trade_log = (cube_dir / "trade_log.csv") if cube_dir else TRADE_LOG
     cube_csv = (cube_dir / "trade_exit_detail.csv") if cube_dir else CUBE
     for _p in (trade_log, cube_csv):
@@ -80,6 +97,12 @@ def build(cube_dir: Path | None = None, strat: str = STRAT,
                      usecols=["strategy", "ticker", "entry_date", "direction",
                               "signals_at_entry"])
     fam = tl[tl.strategy == strat].drop_duplicates(["ticker", "entry_date"]).copy()
+    keep = None
+    if survival:
+        from step1_gates import surviving_fam
+        kept = surviving_fam(strat, fam)
+        keep = set(zip(kept["ticker"],
+                       pd.to_datetime(kept["entry_date"], errors="coerce").dt.date))
     sigs = [_parse(s) for s in fam["signals_at_entry"]]
     for k in keys:
         fam[k] = pd.to_numeric(
@@ -92,6 +115,11 @@ def build(cube_dir: Path | None = None, strat: str = STRAT,
     cube = cube[cube.strategy == strat]
     m = cube.merge(fam, on=["strategy", "ticker", "entry_date"], how="left")
     m["entry_date"] = pd.to_datetime(m["entry_date"], errors="coerce").dt.date
+    before = int(m.drop_duplicates(["ticker", "entry_date"]).shape[0])
+    if keep is not None:
+        # a removed fire's cube rows go too (the breadth loader's rule)
+        m = m[[(t, d) in keep for t, d in zip(m["ticker"], m["entry_date"])]].copy()
+    m.attrs["fires_before_survival"] = before
     return m
 
 
@@ -220,6 +248,10 @@ def main() -> int:
                          "take. The R5 cube predates B2075, so without "
                          "this the grid ranks an OR-gate population "
                          "(S6-B2802)")
+    ap.add_argument("--survival", action="store_true",
+                    help="S6-B3322: read only the R5 fires the CURRENT gate "
+                         "keeps (step1_gates.surviving_fam) - required on R5 "
+                         "for a changed gate, refused on a run's own cube")
     ap.add_argument("--out", required=True)
     # S6-B2732a: the cube to grade, and this config's knob IDENTITY.
     # The knobs are NOT search axes here - they are baked into the cube
@@ -238,8 +270,9 @@ def main() -> int:
     if _cube_dir is not None and _cube_dir.is_file():
         _cube_dir = _cube_dir.parent
     _is_r5 = _cube_dir is None or _cube_dir == R5_DIR.resolve()
-    m = build(None if _is_r5 else _cube_dir)
+    m = build(None if _is_r5 else _cube_dir, survival=a.survival)
     fires = m.drop_duplicates(["ticker", "entry_date"])
+    _n_cube = m.attrs["fires_before_survival"]    # S6-B3322: reproduce, then select
     # S6-B2732a: the R5 reproduction gate binds the BASELINE only. A
     # variant cube fires a DIFFERENT set by construction - changing a
     # producer knob is the whole point of the depth leg - so comparing
@@ -248,9 +281,11 @@ def main() -> int:
     if _is_r5:
         pre = json.loads((ROOT / "output_audit" / "b2690_smc_pregate.json").read_text(encoding="utf-8"))
         want = pre["members"][STRAT]["n_trades"]
-        if len(fires) != want:
-            raise SystemExit(f"REFUSED: {len(fires)} unique fires != pre-gate {want}")
-        _repro = f"R5 BASELINE reproduction OK: {len(fires)} fires == pre-gate {want}"
+        if _n_cube != want:
+            raise SystemExit(f"REFUSED: {_n_cube} unique fires != pre-gate {want}")
+        _repro = (f"R5 BASELINE reproduction OK: {_n_cube} fires == pre-gate {want}"
+                  + (f"; the current gate keeps {len(fires)} (S6-B3322 survival)"
+                     if a.survival else ""))
     else:
         _repro = ("VARIANT-CUBE-NO-R5-REPRODUCTION: this cube was produced at "
                   f"knobs swing_length={a.swing_length} "
@@ -316,7 +351,9 @@ def main() -> int:
            "ruling": "owner band word 'Lets proceed with step 1' 2026-09-12 (S6-B2691a)",
            "design": "9 depth cells (leg x arm) + 6 breadth axes one-at-a-time on the "
                      "production base; IS-only; holdout untouched; npt barred from ranking",
-           "reproduction_fires": int(len(fires)),
+           "reproduction_fires": int(_n_cube),
+           # S6-B3322: whether the R5 fires were read through the current gate
+           "survival": {"applied": bool(a.survival), "fires_graded": int(len(fires))},
            "cells_graded": len(graded),
            "permutation_null": pn,
            # B2768 (owner-approved 2026-09-13): grid-stage BH-FDR,

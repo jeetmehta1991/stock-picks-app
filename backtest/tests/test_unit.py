@@ -68238,3 +68238,99 @@ def test_b3378_a_backgrounded_command_ends_only_on_a_notice_or_a_stop():
         for e in t.elts)]
     assert len(wired) == 1 and wired[0].elts[-1].id == "scan_locked_format_edit_without_source_open", (
         [len(t.elts) for t in wired])
+
+
+def test_b3322_step1_searches_read_the_surviving_r5_fires(tmp_path, monkeypatch):
+    """S6-B3322 (B3139q-r155), the last members of the S6-B3320 class: the
+    R5-reading Step-1 searches load through smc_lsr_step1.build (seven
+    callers) or, in tighten_breaker_block, rc.load_cube - and none had
+    survival handling, so a changed-gate strategy was graded on fires its
+    gate now removes. build now runs the shared guard when it reads R5 and
+    takes survival=, filtering through step1_gates.surviving_fam (the one T1
+    definition) - a removed fire's cube rows go too - while
+    attrs['fires_before_survival'] keeps the count the R5 reproduction gates
+    bind (reproduce, then select). Fixture: test_b3321's three camarilla long
+    fires through the REAL gate, one under the xs_ivol floor."""
+    import ast as _ast
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import offline_level_sweep as ols
+    import smc_lsr_step1 as sl
+    S = "camarilla_r4_breakout"
+
+    def sig(iv):
+        return _j.dumps({"above_cam_r4": True, "vol_above_avg": True, "xs_ivol": iv})
+    fires = [("T1", "2024-06-10", 0.30), ("T2", "2024-07-10", 0.50), ("T3", "2024-08-12", 0.10)]
+    r5 = tmp_path / "r5"
+    r5.mkdir()
+    _pd.DataFrame([{"strategy": S, "ticker": t, "entry_date": d, "direction": "long",
+                    "signals_at_entry": sig(iv)} for t, d, iv in fires]
+                  ).to_csv(r5 / "trade_log.csv", index=False)
+    _pd.DataFrame([{"strategy": S, "ticker": t, "entry_date": d,
+                    "exit_method": ex, "pnl_pct": 1.0, "hold_days": 3.0}
+                   for t, d, iv in fires for ex in ("time_stop_10d", "breakeven_plus_trail")]
+                  ).to_csv(r5 / "trade_exit_detail.csv", index=False)
+    monkeypatch.setattr(sl, "R5_DIR", r5)                          # the fixture plays R5
+    monkeypatch.setattr(sl, "TRADE_LOG", r5 / "trade_log.csv")
+    monkeypatch.setattr(sl, "CUBE", r5 / "trade_exit_detail.csv")
+
+    # (1) a changed gate on R5: refused unfiltered, graded on its survivors
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (0.5, {}))
+    with pytest.raises(SystemExit, match="S6-B3321"):
+        sl.build(None, strat=S, keys=["xs_ivol"])
+    m = sl.build(None, strat=S, keys=["xs_ivol"], survival=True)
+    assert sorted(set(m["ticker"])) == ["T1", "T2"] and len(m) == 4, m   # T3's rows gone
+    assert m.attrs["fires_before_survival"] == 3               # the count reproduction binds
+    assert len(sl.build(r5, strat=S, keys=["xs_ivol"], survival=True)) == 4   # R5 named by path
+    # (2) an unchanged gate: no flag needed, and the filter is the identity
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (1.0, {}))
+    assert len(sl.build(None, strat=S, keys=["xs_ivol"])) == 6
+    m3 = sl.build(None, strat=S, keys=["xs_ivol"], survival=True)
+    assert len(m3) == 6 and m3.attrs["fires_before_survival"] == 3
+    # (3) a run's own cube: no guard, and the filter is refused
+    own = tmp_path / "own"
+    own.mkdir()
+    for f in ("trade_log.csv", "trade_exit_detail.csv"):
+        (own / f).write_bytes((r5 / f).read_bytes())
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (0.5, {}))
+    assert len(sl.build(own, strat=S, keys=["xs_ivol"])) == 6
+    with pytest.raises(SystemExit, match="is not R5"):
+        sl.build(own, strat=S, keys=["xs_ivol"], survival=True)
+    # (4) nothing survives (the only side unmeasured): refused, never an empty grid
+    monkeypatch.setattr(ols, "_survival_inputs", lambda s: (None, {"long": ["k"]}))
+    with pytest.raises(SystemExit, match="S6-B3322"):
+        sl.build(None, strat=S, keys=["xs_ivol"], survival=True)
+
+    # (5) wiring (AST): every active caller passes survival=a.survival and binds
+    # its reproduction to the pre-filter count; tighten_breaker_block runs the
+    # guard and the shared filter; the three hub-1 one-offs pass no survival -
+    # deliberately, so on R5 they fail closed (S6-B2804 re-read hub-1 on its
+    # current gate; no re-run is planned)
+    def tree(p):
+        return _ast.parse((root / "scripts" / p).read_text(encoding="utf-8"))
+
+    def calls(t, *names):
+        return [n for n in _ast.walk(t) if isinstance(n, _ast.Call)
+                and (getattr(n.func, "id", None) in names
+                     or getattr(n.func, "attr", None) in names)]
+
+    for p in ("smc_lsr_step1.py", "smc_family_step1.py", "smc_obb_step1.py", "lever4_step1.py"):
+        t = tree(p)
+        kws = [_ast.unparse(k.value) for c in calls(t, "build", "_build")
+               for k in c.keywords if k.arg == "survival"]
+        assert kws == ["a.survival"], (p, kws)
+        lefts = {_ast.unparse(n.left) for n in _ast.walk(t) if isinstance(n, _ast.Compare)
+                 and any(isinstance(o, _ast.NotEq) for o in n.ops)}
+        assert lefts & {"n_cube", "_n_cube"}, (p, lefts)      # reproduce, then select
+        assert "'--survival'" in _ast.unparse(t), p
+    for p in ("b2698_momentum_resweep.py", "b2701_smc_lsr_step2.py", "smc_lsr_factorial24.py"):
+        cs = calls(tree(p), "build")
+        assert cs and all(not c.keywords and not c.args for c in cs), p
+    tb = tree("tighten_breaker_block.py")
+    assert calls(tb, "require_surviving_or_unchanged") and calls(tb, "surviving_fam")
