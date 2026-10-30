@@ -1,6 +1,6 @@
 # Table A - hull_rsi
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build 884d7e016 | commit 884d7e016 at 2026-10-30 08:42:24 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit ff10274b7 at 2026-10-30 10:39:08 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** momentum | **status:** NOT-STARTED | **R5 fires:** 1270 (closed fires in the exit cube: 1270 of 1270, S6-B3258) | **surviving fires (T1):** 1270 (unchanged since R5 - filter is identity)
 

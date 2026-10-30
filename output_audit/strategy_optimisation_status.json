@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "884d7e016",
-    "generated_at": "2026-10-30 08:50:21"
+    "source_commit": "ff10274b7",
+    "generated_at": "2026-10-30 10:50:25"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -68,6 +68,7 @@
     "cmf_flip"
   ],
   "campaign_opens": [
+    "avwap_252_breakout",
     "camarilla_r4_breakout",
     "cmf_flip",
     "smc_equal_lows_sweep_long",
@@ -511,18 +512,24 @@
       "reopen_candidate": false,
       "stream": "NONE",
       "tightenable_keys": {},
-      "tickets": [],
-      "live_campaign_tickets": [],
+      "tickets": [
+        "S6-B3373"
+      ],
+      "live_campaign_tickets": [
+        "S6-B3373"
+      ],
       "mention_tickets": [
         "S6-B2418",
         "S6-B3078",
         "S6-B3237",
         "S6-B3247",
-        "S6-B3249"
+        "S6-B3249",
+        "S6-B3373",
+        "S6-B3374"
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "NOT-STARTED"
+      "status": "IN-CAMPAIGN"
     },
     {
       "strategy": "avwap_50_reclaim",
@@ -1138,6 +1145,7 @@
         "S6-B3232",
         "S6-B3237",
         "S6-B3246",
+        "S6-B3247",
         "S6-B3249",
         "S6-B3251",
         "S6-B3270",
@@ -7235,7 +7243,8 @@
         "S6-B3189",
         "S6-B3194",
         "S6-B3223",
-        "S6-B3253"
+        "S6-B3253",
+        "S6-B3374"
       ],
       "admitted": false,
       "roster_roles": [],
@@ -8216,6 +8225,7 @@
         "S6-B3235",
         "S6-B3246",
         "S6-B3247",
+        "S6-B3249",
         "S6-B3251",
         "S6-B3253",
         "S6-B3270",
@@ -8232,7 +8242,8 @@
         "S6-B3325",
         "S6-B3335",
         "S6-B3339",
-        "S6-B3349"
+        "S6-B3349",
+        "S6-B3373"
       ],
       "admitted": false,
       "roster_roles": [],

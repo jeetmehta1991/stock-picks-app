@@ -68036,3 +68036,87 @@ def test_b3247d_williams_campaign_closed_with_both_legs_named():
     log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(encoding="utf-8")
     assert "## M. MOMENTUM FAMILY (williams_r_oversold - CLOSED BY THE OWNER)" in log
     assert "### M.3 Campaign closed by the owner (2026-10-28, B3139q-r151; S6-B3247)" in log
+
+
+def test_b3374_table_a_drops_a_gate_read_the_entry_condition_never_uses():
+    """S6-B3374 (B3139q-r152): build_table_a.gate_legs took every s.get key in
+    a gate body, so a read a later batch left behind became a Table A row and
+    a band. MEASURED: 2 of the screener's strat_ functions -
+    avwap_252_breakout's rsi_14 (B1139 dropped rsi_14 < 70) and
+    stochrsi_oversold's rsi_2 (B1429 reverted the B1422 floor); each rendered
+    an RSI span band for a key its entry condition ignores. (1) on the real
+    screener exactly those two keys drop and every other leg stays; (2) a key
+    read dead AND used elsewhere stays, an f-string read is never dropped (the
+    stated lower bound); (3) the committed tables carry no row for either."""
+    import ast as _ast
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import build_table_a as b
+    src = (root / "backtest" / "signals" / "screener.py").read_text(encoding="utf-8")
+    dropped = {}
+    for f in _ast.parse(src).body:
+        if isinstance(f, _ast.FunctionDef) and f.name.startswith("strat_"):
+            d = b._dead_reads(f)
+            if d:
+                dropped[f.name] = d
+    assert dropped == {"strat_avwap_252_breakout": {"rsi_14"},
+                       "strat_stochrsi_oversold": {"rsi_2"}}, dropped
+    legs = b.gate_legs(src)
+    assert legs["avwap_252_breakout"][0] == ["avwap_252low_loss_recent_3d",
+                                             "avwap_252low_reclaim_recent_3d", "vol_above_avg"]
+    assert "rsi_2" not in legs["stochrsi_oversold"][0]
+    assert "stochrsi_oversold" in legs["stochrsi_oversold"][0]
+
+    def fn(code):
+        return _ast.parse(code).body[0]
+    assert b._dead_reads(fn("def strat_x(s):\n    k = s.get('k', 1)\n    return s.get('a')\n")) == {"k"}
+    assert not b._dead_reads(fn(
+        "def strat_x(s):\n    k = s.get('k', 1)\n    return s.get('k') > 2\n"))   # used elsewhere
+    assert not b._dead_reads(fn(
+        "def strat_x(s):\n    k = s.get('k', 1)\n    return k > 2\n"))            # the name is read
+    assert not b._dead_reads(fn(
+        "def strat_x(s):\n    k = s.get(f'k_{1}', 1)\n    return s.get('a')\n"))  # f-string: kept
+    t_av = (root / "output_audit" / "b3373_avwap_252_breakout_table_a.md").read_text(encoding="utf-8")
+    t_st = (root / "strategy_optimisation" / "tighten" / "stochrsi_oversold.md").read_text(encoding="utf-8")
+    assert not [ln for ln in t_av.splitlines() if ln.startswith("| P") and "rsi_14" in ln]
+    assert not [ln for ln in t_st.splitlines() if ln.startswith("| P") and "rsi_2 " in ln]
+    assert "| P3 | PRODUCER | vol_above_avg" in t_av
+
+
+def test_b3373_avwap_252_breakout_campaign_opened_on_the_freed_slot():
+    """S6-B3373 (B3139q-r152): S6-B3249's second member opened on the slot
+    williams_r_oversold's close freed. (1) the opens register holds the
+    record with the owner's words, date and ticket, and its reader loads it;
+    (2) the status view reads IN-CAMPAIGN with the ticket live, and the
+    rebuilt long shortlist no longer ranks it (it left the open population);
+    (3) its Table A is the NONE-lane single render - stamped, lane NONE, the
+    dead rsi_14 read absent (S6-B3374), P1 / P2 marked BANDS-TO-DEFINE;
+    (4) the campaign log's part P names it."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+    A = root / "output_audit"
+    S = "avwap_252_breakout"
+    o = bss.load_campaign_opens()
+    assert o[S]["tickets"] == ["S6-B3373"] and o[S]["ruling_verbatim"] == "Approve all recs execute"
+    assert o[S]["opened"] == "2026-10-30"
+    st = _j.loads((A / "strategy_optimisation_status.json").read_text(encoding="utf-8"))
+    row = next(x for x in st["rows"] if x["strategy"] == S)
+    assert row["status"] == "IN-CAMPAIGN" and row["live_campaign_tickets"] == ["S6-B3373"], row["status"]
+    sl = _j.loads((A / "b3232_long_campaign_shortlist.json").read_text(encoding="utf-8"))
+    assert S not in _j.dumps(sl["ranked"]), "an opened campaign leaves the shortlist"
+    t = (A / "b3373_avwap_252_breakout_table_a.md").read_text(encoding="utf-8")
+    assert t.startswith("# Table A - avwap_252_breakout") and "Build (L803/#309)" in t
+    assert "**Lane:** NONE" in t
+    rows = [ln for ln in t.splitlines() if ln.startswith("| P")]
+    assert [ln.split(" | ")[0] for ln in rows][:5] == ["| P1", "| P2", "| P3", "| P3.1", "| P4"], rows[:5]
+    assert all("BANDS-TO-DEFINE" in ln for ln in rows[:2]) and "rsi_14" not in "\n".join(rows)
+    log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(encoding="utf-8")
+    assert "## P. VWAP FAMILY (avwap_252_breakout - IN CAMPAIGN)" in log

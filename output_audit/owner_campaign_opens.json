@@ -82,6 +82,15 @@
       "tickets": [
         "S6-B3304"
       ]
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "opened": "2026-10-30",
+      "ruling_verbatim": "Approve all recs execute",
+      "role": "S6-B3249, the second open member of the shortlist's remaining 9 offline-and-over-floor long candidates, opened in the shortlist's order as a slot freed (williams_r_oversold's campaign closed on the owner's word, S6-B3247 - the close approved in the message sent 2026-10-28T00:35:55Z, the r127 recommendation (d) that gave its slot to the next open long candidate) under the owner's 2026-10-21 ruling on S6-B3232 (a); a dual strategy whose long leg is the campaign toward the 30-long target (S6-B3220); lane NONE, its Table A rendered alone (S6-B3232)",
+      "tickets": [
+        "S6-B3373"
+      ]
     }
   ]
 }

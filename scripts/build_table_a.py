@@ -140,6 +140,36 @@ def depth_comparisons(src: str) -> dict:
     return out
 
 
+def _dead_reads(fn) -> set:
+    """S6-B3374: keys a gate reads ONLY into local names it never uses - a
+    filter a later batch dropped while keeping the read. MEASURED at
+    B3139q-r152: 2 of the screener's strat_ functions, avwap_252_breakout's
+    rsi_14 (B1139 dropped rsi_14 < 70) and stochrsi_oversold's rsi_2 (B1429
+    reverted the B1422 floor); each rendered a Table A row and an RSI span
+    band for a key the entry condition ignores. A key with any other read
+    stays. Recognises the direct shape `name = s.get("key", ...)` - a read
+    through another shape (an f-string key, a subscript) is never dropped,
+    a lower bound."""
+    read_into = {id(a.value): a.targets[0].id for a in ast.walk(fn)
+                 if isinstance(a, ast.Assign) and len(a.targets) == 1
+                 and isinstance(a.targets[0], ast.Name) and _is_s_get(a.value)}
+    loads = {x.id for x in ast.walk(fn)
+             if isinstance(x, ast.Name) and isinstance(x.ctx, ast.Load)}
+    dead, used = set(), set()
+    for c in ast.walk(fn):
+        if _is_s_get(c):
+            var = read_into.get(id(c))
+            (dead if var is not None and var not in loads else used).add(c.args[0].value)
+    return dead - used
+
+
+def _is_s_get(c) -> bool:
+    return (isinstance(c, ast.Call) and isinstance(c.func, ast.Attribute)
+            and c.func.attr == "get" and isinstance(c.func.value, ast.Name)
+            and c.func.value.id == "s" and bool(c.args)
+            and isinstance(c.args[0], ast.Constant) and isinstance(c.args[0].value, str))
+
+
 def gate_legs(src: str) -> dict:
     """(strategy) -> (boolean_legs, helper_gates): the NON-numeric members of
     the entry condition. B2838, owner-caught: the first render's depth table
@@ -160,7 +190,8 @@ def gate_legs(src: str) -> dict:
             r"s\.get\(f?['\"]([a-zA-Z0-9_{}.]+)['\"]", body)]
         numeric = {_resolve_fstring_key(k)
                    for k, _, _ in re.findall(_NUM_CMP, body)}
-        legs = sorted({k for k in all_keys if k not in numeric})
+        dead = _dead_reads(n)                                  # S6-B3374
+        legs = sorted({k for k in all_keys if k not in numeric and k not in dead})
         # left boundary required: without it the DEF SIGNATURE's own name
         # matched ("...crows_short(s)" yielded a phantom helper _crows_short)
         helpers = sorted(set(re.findall(

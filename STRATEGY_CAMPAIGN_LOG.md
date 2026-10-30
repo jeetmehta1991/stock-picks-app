@@ -2865,3 +2865,27 @@ S6-B3304)
 - **T4 RE-RUN NET (B3139q-r125, S6-B3314 option (a)):** the depth leg re-graded on the roster's net basis with the r120 axes, levels, derive module, survival filter, seed and 100 permutations (output_audit/b3314_camarilla_r4_breakout_<leg>_net_step1_is_surface.json). LONG best 1.25/2/0.4621 r_multiple_2r IS sharpe 1.556 on 34, null q95 2.193, p 0.2574; production 0.723 on 1194. SHORT best 0.55/2/0.4621 r_multiple_2r 0.856 on 34, q95 1.839, p 0.5248; production 0.273 on 1025. 0 of 2 legs beat their own null, as on the gross basis. The long best reads higher net than gross because a +780.0 pct SBNY post-failure trade clips to 299.8 (the S6-B1901a class). The breadth grid runs net (S6-B3304's B-rows next).
 - **T5 BREADTH GRID (B3139q-r126; owner word 2026-10-27, verbatim "Approve all recs fable mode", on 'all 15'):** B1-B13 registered - 15 per-leg candidates on 13 keys, each row's legs field naming its legs (po3_accum_range_pct and short_interest_observations graded on both legs in opposite directions). Per-leg grids, net, on the surviving fires: LONG 520 trials over 5 of 6 axes (B1 coverage-skipped, 0.855), null p 0.0099, but the best cell (short_interest_observations ge 65.0) holds 0.988 of its trades in 2025-04 and 3 without it; SHORT 598 trials over 8 of 9 axes (B8 skipped, 0.907), null p 0.0099, best short_interest_observations le 21.0 (0.529 in 2022-05), and ppo_signal ge 1.1129 at breakeven_plus_trail IS 0.882 on 410 with no month over 0.088. **Waits on:** the owner's word - re-sweep B1/B8 on covered fires, read, or close (S6-B3304).
 - **T5 COVERED-FIRES RE-SWEEP (B3139q-r150; owner word sent 2026-10-28T00:35:55Z, verbatim "Approve all recs / Fable mode / Proceed / Be extremely thorough and get context for each ticket", on (a)):** B1 (long, pct_from_avwap_20low, covered 0.855) and B8 (short, monthly_momentum_6m, covered 0.907) graded on their covered fires, net, 104 of 104 cells each. LONG null p 0.0396; best by IS lower bound ge 3.511 at breakeven_plus_trail IS 0.81 (0.604) on 613, 2025-04 holding 0.235. SHORT null p 0.0099; best ge 0.2354 at breakeven_plus_trail IS 1.025 (0.528) on 186, no month over 0.097. Coverage complete but for the scheduled engine-only distance level 0.45 (Table A P1.1). **Waits on:** the 0.45 engine run, and the owner's word on one pre-registered read covering both (S6-B3304).
+
+## P. VWAP FAMILY (avwap_252_breakout - IN CAMPAIGN)
+
+### P.1 Opened (B3139q-r152; owner word 2026-10-21, verbatim "Approve all recs execute", approving S6-B3232 (a); S6-B3373)
+
+- **Why this strategy, why now:** S6-B3249's list in its own order; williams_r_oversold's campaign
+  closed (S6-B3247, B3139q-r151) on the owner's approval of the r127 recommendation (d), sent
+  2026-10-28T00:35:55Z, which gave its slot to the next open long candidate - the rebuilt shortlist's
+  rank 1. Recorded in output_audit/owner_campaign_opens.json (S6-B3194).
+- **Gate (screener.py strat_avwap_252_breakout, READ):** long avwap_252low_reclaim_recent_3d AND
+  vol_above_avg; short avwap_252low_loss_recent_3d AND vol_above_avg AND NOT the borrow trap. The gate
+  also reads rsi_14 and never uses it (B1139 dropped rsi_14 < 70) - Table A no longer offers it a band
+  (S6-B3374).
+
+### P.2 Campaign state (W-T, runbook 3.2)
+
+- **T0:** family vwap, dual, lane NONE; R5 fires 2294 (1523 long / 771 short), unchanged since R5,
+  exit cube complete 2294 of 2294; shortlist rank 1 at in-sample Sharpe 0.581 with 4 in-sample gates.
+- **T1:** identity - survival 1.0 on both sides.
+- **T2:** output_audit/b3373_avwap_252_breakout_table_a.md (rendered alone, S6-B3232). P1 / P2 the
+  AVWAP-252-low loss / reclaim events - BANDS-TO-DEFINE (the anchor lookback 252 and the 3-day recency
+  window, no env knob); P3.1 the volume-ratio floor 1.0 with tighter offline levels 1.2 / 1.5 / 2.0;
+  P4 the borrow-trap helper. **Waits on:** P1 / P2's bands defined from the producer, then the
+  owner's T3 band words (S6-B3373).

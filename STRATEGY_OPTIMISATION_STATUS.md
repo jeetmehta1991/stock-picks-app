@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit 884d7e016 at 2026-10-30 08:50:21 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit ff10274b7 at 2026-10-30 10:50:25 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -21,9 +21,9 @@
 | IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded beyond R5, terminal (its Step 2 dropped 2026-10-20, S6-B2420) | 8 |
 | DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 5 |
 | CLOSED-NO-READ - a campaign the owner closed without spending its Step-2 read, terminal (S6-B3303) | 1 |
-| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | 2 |
+| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | 3 |
 | STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | 4 |
-| NOT-STARTED | 166 |
+| NOT-STARTED | 165 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
 | PRUNED-DUPLICATE - Jaccard >= 0.70 of an admitted canonical (B2666) | 8 |
 | CONTAINED-IN-REPRESENTATIVE (b2647) | 1 |
@@ -99,7 +99,7 @@
 | stochrsi_oversold | momentum | 2433 | 223.6 |  | 100.0% | TIGHTEN | NOT-STARTED | 2433 of 2433 |
 | dc20_break_retest | breakout | 2414 | 109.7 | YES | 49.4% | TIGHTEN | NOT-STARTED | 2414 of 2414 |
 | institutional_persistence_momentum_long | institutional_persistence | 2324 | 213.6 |  | 100.0% | - | PRUNED-DUPLICATE | 2324 of 2324 |
-| avwap_252_breakout | vwap | 2294 | 210.8 |  | 100.0% | NONE | NOT-STARTED | 2294 of 2294 |
+| avwap_252_breakout | vwap | 2294 | 210.8 |  | 100.0% | NONE | IN-CAMPAIGN | 2294 of 2294 |
 | morning_star | candle | 2280 | 96.8 | YES | 46.2% | BOTH | NOT-STARTED | 2280 of 2280 |
 | institutional_recent_init_momentum_long | institutional_persistence | 2268 | 208.5 |  | 100.0% | - | DONE-ADMITTED | 2268 of 2268 |
 | pead_short_negative_yoy_growth | event_driven | 2215 | 203.6 |  | 100.0% | - | IN-ROSTER-MIRROR | 2215 of 2215 |
