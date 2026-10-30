@@ -1,0 +1,91 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 18%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+..............................................s......................... [ 33%]
+....................s.................................................s. [ 37%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+......................F................................................. [ 89%]
+........................................................................ [ 93%]
+........................................................................ [ 97%]
+.....................................................                    [100%]
+================================== FAILURES ===================================
+_________ test_b3248_table_a_single_render_writes_only_its_named_file _________
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-4449/test_b3248_table_a_single_rend0')
+
+    def test_b3248_table_a_single_render_writes_only_its_named_file(tmp_path):
+        """S6-B3232 (a) (owner 2026-10-21, 'Approve all recs execute'):
+        build_table_a renders ONE named strategy to ONE named file, so a campaign
+        on a NONE-lane strategy - squeeze_breakout's breadth campaign, S6-B3248,
+        the first - gets the Table A its band review needs, without writing the
+        TIGHTEN/BOTH charter. Behaviour through the CLI: the pairing of --strategy
+        and --out is enforced both ways, a lane row is refused (its file is the
+        charter's), an unknown strategy is refused; and the committed campaign
+        file is a full Table A of its strategy."""
+        import subprocess
+        import sys as _sys
+        from pathlib import Path as _P
+        root = _P(__file__).resolve().parents[2]
+        cli = [_sys.executable, str(root / "scripts" / "build_table_a.py")]
+    
+        def run(*args):
+            return subprocess.run(cli + list(args), cwd=str(root), capture_output=True,
+                                  text=True, timeout=600)
+    
+        r = run("--strategy", "squeeze_breakout")
+        assert r.returncode != 0 and "go together" in (r.stdout + r.stderr)
+        r = run("--out", str(tmp_path / "x.md"))
+        assert r.returncode != 0 and "go together" in (r.stdout + r.stderr)
+        r = run("--strategy", "no_such_strategy", "--out", str(tmp_path / "x.md"))
+        assert r.returncode != 0 and "not in the status view" in (r.stdout + r.stderr)
+        r = run("--strategy", "williams_r_oversold", "--out", str(tmp_path / "x.md"))
+>       assert r.returncode != 0 and "lane charter" in (r.stdout + r.stderr)
+E       AssertionError: assert (0 != 0)
+E        +  where 0 = CompletedProcess(args=['C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe', 'C:\\Users\\jeetm\\Git...tInputWarning: An input array is constant; the correlation coefficient is not defined.\n  return spearmanr(a, b)[0]\n').returncode
+
+backtest\tests\test_unit.py:61190: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b3248_table_a_single_render_writes_only_its_named_file
+1 failed, 1921 passed, 3 skipped in 1857.94s (0:30:57)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1894
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=ac
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+moved_line_citations=none
+pregate=PASSED on this tree (146 tests, 2026-10-30T13:14:00Z)
+runbook_drift=tickets 1, not named in the runbook 0; lessons 0, not cited 0
+stamp_binding=already-red

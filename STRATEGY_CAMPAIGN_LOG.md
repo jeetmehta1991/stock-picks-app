@@ -24,7 +24,7 @@
 - **J. PAIRS FAMILY (pairs_mean_reversion_long / pairs_mean_reversion_short - ADMITTED 2026-10-13)** - J.1, J.2
 - **K. VOLUME_PROFILE FAMILY (naked_poc_retest_long - IN CAMPAIGN)** - K.1, K.2, K.3, K.4, K.5, K.6, K.7, K.8, K.9, K.10, K.11, K.12, K.13, K.14, K.15
 - **L. MEAN-REVERSION FAMILY (cmf_flip - IN CAMPAIGN)** - L.1, L.2
-- **M. MOMENTUM FAMILY (williams_r_oversold - IN CAMPAIGN)** - M.1, M.2
+- **M. MOMENTUM FAMILY (williams_r_oversold - CLOSED BY THE OWNER)** - M.1, M.2, M.3
 - **N. SQUEEZE FAMILY (squeeze_breakout - IN CAMPAIGN)** - N.1, N.2
 
 ---
@@ -2717,7 +2717,7 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
   Table A file stays in strategy_optimisation/tighten/ as a departed record, as an outright
   closure's does. Reopening is the owner's word.
 
-## M. MOMENTUM FAMILY (williams_r_oversold - IN CAMPAIGN)
+## M. MOMENTUM FAMILY (williams_r_oversold - CLOSED BY THE OWNER)
 
 ### M.1 Opened (B3139q-r86; owner word 2026-10-21, verbatim "Approve all recs execute", approving S6-B3232 (a); S6-B3247)
 
@@ -2751,6 +2751,25 @@ output_audit/output_bl_step2_p4_NNN_p4_NNN_grid_auto.json step2 block:
 - **BASIS (B3139q-r115):** GROSS - this read graded the cube's raw P&L (offline_level_sweep.load, a named raw scorer, L879), as did the T4 sweep that chose its candidate. The roster's net basis clips at +/-300 pct and subtracts 0.2 a trade, so the FAIL holds net unless a holdout trade in the cell moved more than 300 pct (not checked - the check re-reads the spent holdout). The depth instruments' basis is the owner's decision S6-B3314. RULED 2026-10-27, option (a) (B3139q-r125): the depth sweep now requires and records --basis and the read takes the sweep's recorded basis (absent = gross); this campaign's depth artifacts stay gross, and a unified Table D names each artifact's basis beside a depth surface.
 - **T5 BREADTH SCREENS (B3139q-r118; runbook 3.6 items 1-2, per leg):** long ts10 922 IS entries, 402 signals, 10 FDR survivors; long bept 922 IS entries, 402 signals, 25 FDR survivors; short ts10 911 IS entries, 417 signals, 53 FDR survivors; short bept 911 IS entries, 417 signals, 20 FDR survivors. Consistent sets: long 5 keys in 1 cluster, short 9 in 6. Candidates for the second T3 - LONG: cot_dow_commercials_pctile_3y le q (keep LOW) (cot_positioning.py, 5 members, joint 2.776). SHORT: sector_weakest_rs ge q (keep HIGH) (cross_asset.py, 2 members, joint 3.109); vix_value le q (keep LOW) (technical.py, 2 members, joint 2.700); xs_max_anomaly le q (keep LOW) (cross_sectional.py, 1 member, joint 2.190); days_until_fomc ge q (keep HIGH) (macro_events.py, 1 member, joint 1.896); cot_gold_commercials_net_pct le q (keep LOW) (cot_positioning.py, 2 members, joint 1.525); po3_accum_range_pct le q (keep LOW) (ict_producers.py, 1 member, joint 1.367). **What waits:** the owner's words on the candidates, or the campaign's closure (S6-B3247).
 - **T5 BREADTH GRID (B3139q-r127; owner word 2026-10-27, verbatim "Approve all recs fable mode", on 'all 7'):** B1-B7 registered from the per-leg screens, legs on every B-row and per-side param. Per-leg grids, net: LONG 104 trials, null p 0.0099, best cot_dow_commercials_pctile_3y le 0.0513 at reverse_signal IS 1.171 on 188 - 0.516 of its trades in 2024-01, 0.357 without it; SHORT 624 trials over 6 axes, null p 0.0099, best sector_weakest_rs ge -0.037 at breakeven_plus_trail IS 0.566 on 183, no month over 0.18. **Waits on:** the owner's word - a read of either leg, or close (S6-B3247).
+
+### M.3 Campaign closed by the owner (2026-10-28, B3139q-r151; S6-B3247)
+
+- **Owner, verbatim:** sent 2026-10-28T00:35:55Z, "Approve all recs / Fable mode / Proceed / Be
+  extremely thorough and get context for each ticket", on the recommendation (d) close; the close
+  was held over my misstated legs and released by the message sent 2026-10-28T11:01:42Z, "Approve
+  your recommendations fable mode proceed", which waived in words the 11 engine-only producer
+  levels (S6-B3349; output_audit/producer_level_waivers.json).
+- **Disposition, every leg named (#298/L785, S6-B3353):** DEPTH - the long read FAIL, 3 of 6 live
+  gates (holdout Sharpe 0.639 on 125; output_audit/b3299_williams_r_oversold_long_step2_holdout.json);
+  the short leg had no candidate (best in-sample Sharpe -0.198 across 6 cells); the engine-only
+  levels (seven EMA spans, RSI span 3 and 5, Williams period 10 and 20) waived. BREADTH - B1-B7
+  graded per leg (B3139q-r127): long best in-sample 1.171 holding 0.516 of its trades in 2024-01,
+  short best 0.566; both reads declined by the close. Nothing admitted.
+- **Records:** output_audit/owner_campaign_closures.json gains the williams_r_oversold row with
+  both legs (reader: build_strategy_status::load_owner_closures -> DONE-OWNER-CLOSED); the status
+  view, the long shortlist and the TIGHTEN Table A lane rebuilt in the same batch; both per-leg
+  Table D files re-rendered with the S6-B3372 renderer, which now credits the short depth sweep
+  to P2 and P10. The slot passes to the next long candidate (S6-B3249).
 
 ## N. SQUEEZE FAMILY (squeeze_breakout - IN CAMPAIGN)
 

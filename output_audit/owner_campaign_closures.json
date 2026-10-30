@@ -57,6 +57,28 @@
         "S6-B3183",
         "S6-B3202"
       ]
+    },
+    {
+      "strategy": "williams_r_oversold",
+      "ruled": "2026-10-28",
+      "ruling_verbatim": "Approve all recs / Fable mode / Proceed / Be extremely thorough and get context for each ticket",
+      "owner_question_answered": "S6-B3247 - after the per-leg breadth grids (B3139q-r127): (a) a disclosed re-read of the long leg, (b) a first read of the short leg, (c) both, or (d) close the campaign - the owner approved the recommendation (d) in the message sent 2026-10-28T00:35:55Z; the close was held over my misstated legs and released by the message sent 2026-10-28T11:01:42Z, verbatim 'Approve your recommendations fable mode proceed', which waived in words the 11 engine-only producer levels (S6-B3349, output_audit/producer_level_waivers.json)",
+      "scope": "both legs. DEPTH: long - the one Step-2 read FAIL, 3 of 6 live gates (holdout Sharpe 0.639 on 125 trades; output_audit/b3299_williams_r_oversold_long_step2_holdout.json); short - no candidate (best in-sample Sharpe -0.198 across its 6 cells); the 11 engine-only producer levels (seven EMA spans, RSI span 3 and 5, Williams period 10 and 20) waived by the owner's word. BREADTH: B1-B7 graded per leg (B3139q-r127) - long best in-sample 1.171 holding 0.516 of its trades in 2024-01, short best 0.566 - and both reads declined by the close. Nothing admitted; no further configs, grids or holdout reads",
+      "legs": {
+        "depth": {
+          "state": "ran",
+          "evidence": "output_audit/b3289_williams_r_oversold_long_step1_is_surface.json and _short_step1_is_surface.json; output_audit/b3299_williams_r_oversold_long_step2_holdout.json (FAIL 3 of 6); the engine-only producer levels waived in output_audit/producer_level_waivers.json"
+        },
+        "breadth": {
+          "state": "ran",
+          "evidence": "output_audit/b3247_williams_r_oversold_breadth_net_long.json and output_audit/b3247_williams_r_oversold_breadth_net_short.json (B3139q-r127)"
+        }
+      },
+      "tickets": [
+        "S6-B3247",
+        "S6-B3349",
+        "S6-B3372"
+      ]
     }
   ]
 }

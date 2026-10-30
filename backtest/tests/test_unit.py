@@ -50969,7 +50969,8 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
     reg = bss.load_owner_closures(_REPO_B3135)
     assert sorted(reg) == ["bollinger_lower", "naked_poc_retest_long",
                            "smc_breaker_block_short",
-                           "three_black_crows_short"]   # +npoc B3139q-r72e
+                           "three_black_crows_short",
+                           "williams_r_oversold"]   # +npoc B3139q-r72e, +williams r151
     assert reg["naked_poc_retest_long"]["ruled"] == "2026-10-18"
     # S6-B3139bt: a closure can end a NON-member's campaign (owner "Close",
     # 2026-10-06); the mirror closures below are the members
@@ -50982,7 +50983,8 @@ def test_b3137_owner_closure_register_is_strict_and_matches_the_roster(tmp_path)
     # non-member closures: a closure can end a campaign on a strategy
     # that is not a roster member (bollinger_lower, owner "Close"
     # 2026-10-06; naked_poc_retest_long, owner close 2026-10-18 - L930)
-    _non_members = {"bollinger_lower", "naked_poc_retest_long"}
+    # williams_r_oversold, owner close 2026-10-28 (S6-B3247, B3139q-r151)
+    _non_members = {"bollinger_lower", "naked_poc_retest_long", "williams_r_oversold"}
     assert set(reg) - _non_members <= mirrors
     assert not (_non_members & set(mem))
     pop = bss.closed_populations(_REPO_B3135)
@@ -61184,8 +61186,14 @@ def test_b3248_table_a_single_render_writes_only_its_named_file(tmp_path):
     assert r.returncode != 0 and "go together" in (r.stdout + r.stderr)
     r = run("--strategy", "no_such_strategy", "--out", str(tmp_path / "x.md"))
     assert r.returncode != 0 and "not in the status view" in (r.stdout + r.stderr)
-    r = run("--strategy", "williams_r_oversold", "--out", str(tmp_path / "x.md"))
-    assert r.returncode != 0 and "lane charter" in (r.stdout + r.stderr)
+    # a CURRENT lane row, read from the status view - a named strategy leaves
+    # the lane when its campaign closes (williams_r_oversold, S6-B3247, r151)
+    import json as _j
+    view = _j.loads((root / "output_audit" / "strategy_optimisation_status.json")
+                    .read_text(encoding="utf-8"))
+    lane_row = next(x["strategy"] for x in view["rows"] if x["stream"] == "TIGHTEN")
+    r = run("--strategy", lane_row, "--out", str(tmp_path / "x.md"))
+    assert r.returncode != 0 and "lane charter" in (r.stdout + r.stderr), lane_row
     assert not (tmp_path / "x.md").exists()
     art = root / "output_audit" / "b3248_squeeze_breakout_table_a.md"
     t = art.read_text(encoding="utf-8")
@@ -61331,8 +61339,9 @@ def test_b3258_exit_cube_count_rides_beside_the_trade_log_count(tmp_path):
         assert len(lane) == 1 and want in lane[0], (f.name, lane)
         carried += 1
     # r111: 34 + the six S6-B3305 lane newcomers = 40; r115: minus cmf_flip,
-    # which left the TIGHTEN lane as CLOSED-NO-READ (S6-B3303) - a departed record
-    assert carried == 39, carried
+    # which left the TIGHTEN lane as CLOSED-NO-READ (S6-B3303) - a departed record;
+    # r151: minus williams_r_oversold, DONE-OWNER-CLOSED (S6-B3247), departed the same way
+    assert carried == 38, carried
 
 
 def test_b3237a_regime_entries_are_ruled_at_admission(tmp_path):
@@ -67978,3 +67987,52 @@ def test_b3304c_camarilla_b1_b8_graded_on_their_covered_fires():
         assert "TESTED at" in inv[bid] and "(4 of 4 band levels)" in inv[bid], inv[bid]
         assert "LEG ONLY" in inv[other], inv[other]
         assert f"b3304_{S}_breadth_net_{leg}_{bid.lower()}_covered.json" in md.splitlines()[0]
+
+
+def test_b3247d_williams_campaign_closed_with_both_legs_named():
+    """S6-B3247 (d) (B3139q-r151): the owner's close, approved in the message
+    sent 2026-10-28T00:35:55Z and released 11:01:42Z with the 11 engine-only
+    producer levels waived (S6-B3349). (1) the closures register carries the
+    record with the owner's words, both legs proven (S6-B3353 - the reader
+    raises otherwise) and its tickets; (2) the status view reads
+    DONE-OWNER-CLOSED and the long shortlist no longer ranks it; (3) the
+    committed per-leg Table D files are the S6-B3372 renders - the short
+    table credits the short depth sweep to P2 and P10, the long table is as
+    before; (4) the campaign log's part M names the close."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import build_strategy_status as bss
+    import step2_legs as sl
+    A = root / "output_audit"
+    S = "williams_r_oversold"
+    c = bss.load_owner_closures()
+    r = c[S]
+    assert r["ruled"] == "2026-10-28" and r["ruling_verbatim"].startswith("Approve all recs / Fable mode")
+    assert sl.legs_refusals(r["legs"]) == [] and not sl.not_run(r["legs"])
+    assert {k: v["state"] for k, v in r["legs"].items()} == {"depth": "ran", "breadth": "ran"}
+    assert "b3299_williams_r_oversold_long_step2_holdout.json" in r["legs"]["depth"]["evidence"]
+    assert "producer_level_waivers.json" in r["legs"]["depth"]["evidence"]
+    assert r["tickets"][0] == "S6-B3247" and "S6-B3349" in r["tickets"]
+    bad = dict(r, legs={"depth": r["legs"]["depth"]})          # a closure missing a leg
+    assert bss.closure_leg_refusals(bad), "a one-leg closure must be refused"
+    st = _j.loads((A / "strategy_optimisation_status.json").read_text(encoding="utf-8"))
+    row = next(x for x in st["rows"] if x["strategy"] == S)
+    assert row["status"] == "DONE-OWNER-CLOSED", row["status"]
+    sl_doc = (A / "b3232_long_campaign_shortlist.json").read_text(encoding="utf-8")
+    assert S not in sl_doc
+    inv = {}
+    for leg in ("long", "short"):
+        md = (A / f"b3247_{S}_{leg}_table_d.md").read_text(encoding="utf-8")
+        inv[leg] = {ln.split(" ", 4)[3]: ln for ln in md.splitlines() if ln.startswith("  - ")}
+    assert "TESTED at {-0.02, -0.05, 0.0} (3 of 3 band levels)" in inv["short"]["P2"]
+    assert "TESTED at {95.0, 97.0} (2 of 2 band levels)" in inv["short"]["P10"]
+    assert "LONG LEG ONLY" in inv["short"]["P3"] and "LONG LEG ONLY" in inv["short"]["P9"]
+    assert "TESTED at {0.0, 0.02, 0.05} (3 of 3 band levels)" in inv["long"]["P3"]
+    assert "SHORT LEG ONLY" in inv["long"]["P2"]
+    log = (root / "STRATEGY_CAMPAIGN_LOG.md").read_text(encoding="utf-8")
+    assert "## M. MOMENTUM FAMILY (williams_r_oversold - CLOSED BY THE OWNER)" in log
+    assert "### M.3 Campaign closed by the owner (2026-10-28, B3139q-r151; S6-B3247)" in log

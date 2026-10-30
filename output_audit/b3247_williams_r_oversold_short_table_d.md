@@ -1,4 +1,4 @@
-_Rendered by scripts/table_d_render.py from output_audit/b3289_williams_r_oversold_short_step1_is_surface.json, output_audit/b3247_williams_r_oversold_breadth_net_short.json, all rows - working tree on 9d792c85c, 2026-10-27T14:54Z (L803 build stamp)._
+_Rendered by scripts/table_d_render.py from output_audit/b3289_williams_r_oversold_short_step1_is_surface.json, output_audit/b3247_williams_r_oversold_breadth_net_short.json, all rows - working tree on 884d7e016, 2026-10-30T12:37Z (L803 build stamp)._
 
 # TABLE D (OFFLINE FORM, unified) - williams_r_oversold step UNKNOWN (no readable run manifest recorded)
 
@@ -6,15 +6,15 @@ _Rendered by scripts/table_d_render.py from output_audit/b3289_williams_r_overso
 BASIS (S6-B3314) - b3289_williams_r_oversold_short_step1_is_surface.json: gross (not recorded - pre-S6-B3314 depth sweep, raw cube pnl); b3247_williams_r_oversold_breadth_net_short.json: net - MIXED BASES: a gross row and a net row are not comparable (net winsorizes and subtracts the round-trip cost from every trade, roster_core.net_pnl)
 INVENTORY (one column per Table A row; '-' = breadth axis not applied, production behavior; MIXED design - a factorial row varies several axes at once, a sweep row one axis on the production base):
   - P1 below_ema_200 identity (SHORT trend leg): production span 200, band ['span 200'] - resim-only, UNTESTED-OFFLINE (no env knob; engine re-simulation required)
-  - P2 cmf_negative level (SHORT leg): production 0.0, free band [0.0, -0.02, -0.05] - NOT TESTED in this campaign (offline-gradable; no rows varied it)
-  - P3 cmf_positive level (LONG leg): TESTED at {-0.02, -0.05, 0.0} (3 of 3 band levels)
+  - P2 cmf_negative level (SHORT leg): TESTED at {-0.02, -0.05, 0.0} (3 of 3 band levels)
+  - P3 cmf_positive level (LONG leg): LONG LEG ONLY - outside the short leg this table renders; graded in that leg's table
   - P4 price_above_ema_200 identity (LONG trend leg): LONG LEG ONLY - outside the short leg this table renders; graded in that leg's table
   - P5 rsi_2 span (escape hatch): production 2, band [2] - resim-only, UNTESTED-OFFLINE (no env knob; engine re-simulation required)
   - P6 williams period: production 14, band [14] - resim-only, UNTESTED-OFFLINE (no env knob; engine re-simulation required)
   - P7 williams_r oversold threshold (LONG OR-arm): TESTED at {-20.0} (1 of 3 band levels)
   - P8 williams_r > -20 (SHORT OR-arm): production -20, band [-20] - resim-only, UNTESTED-OFFLINE (no env knob; engine re-simulation required)
-  - P9 rsi_2 escape hatch (LONG OR-arm): TESTED at {95.0, 97.0} (2 of 2 band levels)
-  - P10 rsi_2 escape hatch (SHORT OR-arm): production 95, free band [95, 97] - NOT TESTED in this campaign (offline-gradable; no rows varied it)
+  - P9 rsi_2 escape hatch (LONG OR-arm): LONG LEG ONLY - outside the short leg this table renders; graded in that leg's table
+  - P10 rsi_2 escape hatch (SHORT OR-arm): TESTED at {95.0, 97.0} (2 of 2 band levels)
   - P11 days_to_cover cap (borrow guard, SHORT leg): production 5.0, band ['5.0'] - resim-only, UNTESTED-OFFLINE (no env knob; engine re-simulation required)
   - B1 cot_dow_commercials_pctile_3y: LONG LEG ONLY - outside the short leg this table renders; graded in that leg's table
   - B2 sector_weakest_rs: TESTED at {-0.037, -0.0526, -0.0757, -0.0976} (4 of 4 band levels)
@@ -634,9 +634,9 @@ Showing top 606 of 606 ranked cells.
 | 598 | span 200 | 0.0 | 0.0 | span 200 | 2 | 14 | -80 | -20 | 5 | 95 | 5.0 | - | - | - | <=0.0277 | - | - | - | smc_mitigation_zone | -6.323 | -8.122 | 183 | 253 | DEEP |
 | 599 | span 200 | 0.0 | 0.0 | span 200 | 2 | 14 | -80 | -20 | 5 | 95 | 5.0 | - | - | - | - | - | - | <=0.0438 | smc_mitigation_zone | -6.553 | -8.308 | 183 | 242 | DEEP |
 | 600 | span 200 | 0.0 | 0.0 | span 200 | 2 | 14 | -80 | -20 | 5 | 95 | 5.0 | - | - | - | - | - | <=-0.0744 | - | chandelier_3x | -9.191 | -11.033 | 193 | 193 | DEEP |
-| 601 | span 200 | 0.0 | 0.0 | span 200 | 2 | 14 | -20.0 | -20 | 95.0 | 95 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.198 |  | 911 | - | DEEP |
-| 602 | span 200 | 0.0 | 0.0 | span 200 | 2 | 14 | -20.0 | -20 | 97.0 | 95 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.216 |  | 816 | - | DEEP |
-| 603 | span 200 | 0.0 | -0.02 | span 200 | 2 | 14 | -20.0 | -20 | 95.0 | 95 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.213 |  | 759 | - | DEEP |
-| 604 | span 200 | 0.0 | -0.02 | span 200 | 2 | 14 | -20.0 | -20 | 97.0 | 95 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.236 |  | 674 | - | DEEP |
-| 605 | span 200 | 0.0 | -0.05 | span 200 | 2 | 14 | -20.0 | -20 | 95.0 | 95 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.232 |  | 583 | - | DEEP |
-| 606 | span 200 | 0.0 | -0.05 | span 200 | 2 | 14 | -20.0 | -20 | 97.0 | 95 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.254 |  | 511 | - | DEEP |
+| 601 | span 200 | 0.0 | 0.0 | span 200 | 2 | 14 | -20.0 | -20 | 5 | 95.0 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.198 |  | 911 | - | DEEP |
+| 602 | span 200 | 0.0 | 0.0 | span 200 | 2 | 14 | -20.0 | -20 | 5 | 97.0 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.216 |  | 816 | - | DEEP |
+| 603 | span 200 | -0.02 | 0.0 | span 200 | 2 | 14 | -20.0 | -20 | 5 | 95.0 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.213 |  | 759 | - | DEEP |
+| 604 | span 200 | -0.02 | 0.0 | span 200 | 2 | 14 | -20.0 | -20 | 5 | 97.0 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.236 |  | 674 | - | DEEP |
+| 605 | span 200 | -0.05 | 0.0 | span 200 | 2 | 14 | -20.0 | -20 | 5 | 95.0 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.232 |  | 583 | - | DEEP |
+| 606 | span 200 | -0.05 | 0.0 | span 200 | 2 | 14 | -20.0 | -20 | 5 | 97.0 | 5.0 | - | - | - | - | - | - | - | breakeven_plus_trail | -0.254 |  | 511 | - | DEEP |

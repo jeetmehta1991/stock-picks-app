@@ -1,8 +1,8 @@
 {
   "generator": "scripts/build_strategy_status.py",
   "build": {
-    "source_commit": "a2f7c0550",
-    "generated_at": "2026-10-30 07:37:58"
+    "source_commit": "884d7e016",
+    "generated_at": "2026-10-30 08:50:21"
   },
   "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_r5_merged_1_7",
   "r5_screener_commit": "fee970996",
@@ -61,7 +61,8 @@
     "bollinger_lower",
     "naked_poc_retest_long",
     "smc_breaker_block_short",
-    "three_black_crows_short"
+    "three_black_crows_short",
+    "williams_r_oversold"
   ],
   "no_read_closures": [
     "cmf_flip"
@@ -516,6 +517,7 @@
         "S6-B2418",
         "S6-B3078",
         "S6-B3237",
+        "S6-B3247",
         "S6-B3249"
       ],
       "admitted": false,
@@ -8194,16 +8196,14 @@
       "projected_current_gate": 233.0,
       "isolated_step1_check": null,
       "reopen_candidate": false,
-      "stream": "TIGHTEN",
+      "stream": "-",
       "tightenable_keys": {
         "williams_r": 1.0
       },
       "tickets": [
         "S6-B3247"
       ],
-      "live_campaign_tickets": [
-        "S6-B3247"
-      ],
+      "live_campaign_tickets": [],
       "mention_tickets": [
         "S6-B2383",
         "S6-B3117a",
@@ -8236,7 +8236,7 @@
       ],
       "admitted": false,
       "roster_roles": [],
-      "status": "IN-CAMPAIGN"
+      "status": "DONE-OWNER-CLOSED"
     },
     {
       "strategy": "williams_stoch_dual",

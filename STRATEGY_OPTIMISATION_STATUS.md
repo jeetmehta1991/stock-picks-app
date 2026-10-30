@@ -5,7 +5,7 @@
 
 **Why this file exists (L802).** Answering *has strategy X been optimised, and what stream is it in* previously required joining four sources by hand - the strategy roster (no per-strategy status), the Phase-1B roster (only what PASSED), the admissions JSON, and the queue (keyed by TICKET, so it cannot be asked about a STRATEGY). A ranking built without that join recommended a family that was already finished.
 
-**Build:** commit a2f7c0550 at 2026-10-30 07:37:58 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
+**Build:** commit 884d7e016 at 2026-10-30 08:50:21 (L803: a copy without this line is a STALE VERSION - trust only the build at HEAD)
 
 **Cube:** R5 (output_r5_merged_1_7) | **R5-era screener:** fee970996 | **Step-1 shape:** 200 tickers x 1y | **grid floor:** 100 fires
 
@@ -19,9 +19,9 @@
 | DONE - admitted to Phase 1B | 16 |
 | IN-ROSTER-FUNNEL - a graded 3-cube funnel cell on the Phase 1B roster, terminal (S6-B3135) | 7 |
 | IN-ROSTER-MIRROR - a short mirror on the roster by the mirror policy, ungraded beyond R5, terminal (its Step 2 dropped 2026-10-20, S6-B2420) | 8 |
-| DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 4 |
+| DONE-OWNER-CLOSED - a campaign the owner closed outright, terminal; stays on the roster (S6-B3135a) | 5 |
 | CLOSED-NO-READ - a campaign the owner closed without spending its Step-2 read, terminal (S6-B3303) | 1 |
-| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | 3 |
+| IN-CAMPAIGN - an owner-opened campaign (register), a ticket LIVE | 2 |
 | STALLED-CAMPAIGN - an owner-opened campaign (register), every ticket terminal (B2833) | 4 |
 | NOT-STARTED | 166 |
 | CLOSED-NEGATIVE - family-pass FAIL, never re-admitted (b2628) | 3 |
@@ -34,7 +34,7 @@
 
 | stream | meaning | count |
 |---|---|---|
-| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 10 |
+| TIGHTEN | a persisted magnitude can be tightened - OFFLINE, zero engine hours | 9 |
 | BOTH | tightenable AND fire-starved | 28 |
 | LOOSEN | fire-starved at the current condition - needs a looser producer band, ENGINE | 113 |
 | NONE | no numeric knob and not starved - a BREADTH candidate | 22 |
@@ -44,8 +44,8 @@
 | family | strategies to tighten |
 |---|---|
 | news_sentiment | 6 |
-| momentum | 5 |
 | confluence | 4 |
+| momentum | 4 |
 | breakout | 3 |
 | pivot | 3 |
 | candle | 3 |
@@ -91,7 +91,7 @@
 | institutional_insider_combo_long | smart_money_combo | 2751 | 2.0 | YES | 0.8% | - | PRUNED-DUPLICATE | 2751 of 2751 |
 | institutional_buy_momentum_long | - | 2644 | 243.0 |  | 100.0% | - | PRUNED-DUPLICATE | 2644 of 2644 |
 | po3_bearish | - | 2624 | 241.2 |  | 100.0% | NONE | NOT-STARTED | 2624 of 2624 |
-| williams_r_oversold | momentum | 2535 | 233.0 |  | 100.0% | TIGHTEN | IN-CAMPAIGN | 2535 of 2535 |
+| williams_r_oversold | momentum | 2535 | 233.0 |  | 100.0% | - | DONE-OWNER-CLOSED | 2535 of 2535 |
 | institutional_multi_quarter_persistence_long | institutional_persistence | 2516 | 231.2 |  | 100.0% | - | DONE-ADMITTED | 2516 of 2516 |
 | institutional_high_conviction_long | - | 2473 | 227.3 |  | 100.0% | - | DONE-ADMITTED | 2473 of 2473 |
 | mmsm_short | ict | 2456 | 225.7 |  | 100.0% | NONE | NOT-STARTED | 2456 of 2456 |

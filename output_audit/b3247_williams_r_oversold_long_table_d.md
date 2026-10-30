@@ -1,4 +1,4 @@
-_Rendered by scripts/table_d_render.py from output_audit/b3289_williams_r_oversold_long_step1_is_surface.json, output_audit/b3247_williams_r_oversold_breadth_net_long.json, all rows - working tree on 9d792c85c, 2026-10-27T14:54Z (L803 build stamp)._
+_Rendered by scripts/table_d_render.py from output_audit/b3289_williams_r_oversold_long_step1_is_surface.json, output_audit/b3247_williams_r_oversold_breadth_net_long.json, all rows - commit 884d7e016, 2026-10-30T12:37Z (L803 build stamp)._
 
 # TABLE D (OFFLINE FORM, unified) - williams_r_oversold step UNKNOWN (no readable run manifest recorded)
 
