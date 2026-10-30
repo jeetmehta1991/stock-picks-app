@@ -3294,6 +3294,8 @@ rate-for-total substitutions above.
 
 **INSTANCE (B3139q-r139 / L983) - A SUM TYPED BEFORE IT WAS ADDED.** A progress line said 53 status-view rows were terminal beside nine counts that add to 52; a later line retracted it with the sum written out. No gate reads a line between tool calls.
 
+**INSTANCE (B3139q-r146 / L993) - TWO MORE DELIVERY TIMES GIVEN AS THE OWNER'S.** The new --owner-messages listing showed approvals cited as 2026-10-28T16:50:12Z and 00:39:13Z were sent 16:47:50Z and 00:35:55Z, across 15 tickets' rows; scan_owner_time_is_delivery_time (S6-B3355) now refuses such a time in a row or lesson added that turn.
+
 **INSTANCE (B3139q-r143 / L990) - A RULED DECISION REPEATED AS OWED.** A docstring and a ticket row kept the pyramid gate's demotion as a decision still to come while the ticket they named was EXECUTED (the owner ruled it 2026-09-30, S6-B3139k); the later sentences copied the docstring without reading the ledger. scripts/stale_pending_claims.py joins such a sentence to the ledger, and test_b3346 holds the live surfaces at zero.
 
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
@@ -5830,7 +5832,7 @@ retargeted: test_b2116, test_b2211, test_b2439, test_b2440, test_b2450.
 pin (S6-B2520g). Amends #223 (SKIPPED clause retired) and #284 (enforcement note).
 **INSTANCE (B3139q-r137 / L979) - THE THIRD ASK ON PRODUCER-BAND COVERAGE.** B2702, B2843, and on 2026-10-28 'Why were the producer bands in each strategy not approved by me?' - the class fix is the coverage gate reading Table A's pending levels, with a waiver record for any strike (S6-B3339, approved).
 
-**INSTANCE (B3139q-r138 / L981) - AN APPROVED 'FIRST' LEFT UNSCHEDULED, AND THE ASKS RETURNED.** The owner approved mechanizing the owner-word doors and the producer-band coverage 'first' (2026-10-28T16:50:12Z); the work list scheduled records and runbook text before them, so the owner asked again (2026-10-29T13:14:30Z) why bands were not shown before a run and why the breadth step was not followed - the fourth ask on bands, the third on breadth. Mechanism: scripts/owner_word.py at the engine-launch door's run_wave route (1 of 8 routes that start the engine) and the depth Step-2 read (S6-B3338); the rest scheduled next (S6-B3338's other routes, S6-B3339, S6-B3353).
+**INSTANCE (B3139q-r138 / L981) - AN APPROVED 'FIRST' LEFT UNSCHEDULED, AND THE ASKS RETURNED.** The owner approved mechanizing the owner-word doors and the producer-band coverage 'first' (sent 2026-10-28T16:47:50Z; this said 16:50:12Z, its delivery, until L993); the work list scheduled records and runbook text before them, so the owner asked again (2026-10-29T13:14:30Z) why bands were not shown before a run and why the breadth step was not followed - the fourth ask on bands, the third on breadth. Mechanism: scripts/owner_word.py at the engine-launch door's run_wave route (1 of 8 routes that start the engine) and the depth Step-2 read (S6-B3338); the rest scheduled next (S6-B3338's other routes, S6-B3339, S6-B3353).
 
 ### #289 - A UNIFORM VALUE ACROSS EVERY ROW IS A PARSER HYPOTHESIS (B2520p / L724)
 

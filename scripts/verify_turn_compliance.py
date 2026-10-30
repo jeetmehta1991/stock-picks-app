@@ -6565,8 +6565,69 @@ def ticket_history_gaps(added, queue_text, seen_text) -> dict:
     return gaps
 
 
+_TRUNCATING_PIPE = r"\|\s*(?:cut|head|tail)\b"
+
+
+def _tool_calls_since_compaction(entries) -> list:
+    """S6-B3356: [(input_text, result_text)] for every tool call since the last
+    compaction, in order - the call's input (a command, a written file's
+    content, an edit's new text) beside the output it returned. Paired by
+    tool_use id; reset at each compaction marker, as _context_tool_results is."""
+    calls: list = []
+    at: dict = {}
+    for e in entries or ():
+        if not isinstance(e, dict):
+            continue
+        content = (e.get("message") or {}).get("content")
+        if e.get("type") == "assistant":
+            for c in content if isinstance(content, list) else ():
+                if isinstance(c, dict) and c.get("type") == "tool_use":
+                    inp = c.get("input") or {}
+                    text = (" ".join(str(v) for v in inp.values())
+                            if isinstance(inp, dict) else str(inp))
+                    at[c.get("id")] = len(calls)
+                    calls.append([text, ""])
+        elif e.get("type") == "user":
+            if isinstance(content, str):
+                if _COMPACTION_MARKER in content.lower():
+                    calls, at = [], {}
+                continue
+            for c in content if isinstance(content, list) else ():
+                if not isinstance(c, dict):
+                    continue
+                if c.get("type") == "text" and _COMPACTION_MARKER in str(c.get("text") or "").lower():
+                    calls, at = [], {}
+                elif c.get("type") == "tool_result":
+                    cc = c.get("content")
+                    out = cc if isinstance(cc, str) else " ".join(
+                        str(x.get("text") or "") for x in (cc or ()) if isinstance(x, dict))
+                    i = at.get(c.get("tool_use_id"))
+                    if i is not None:
+                        calls[i][1] = out
+                    else:
+                        # a result whose call is not in the window still sits
+                        # in front of the turn, as _context_tool_results reads it
+                        calls.append(["", out])
+    return [tuple(x) for x in calls]
+
+
+def history_seen_before_write(row: str, calls) -> str:
+    """S6-B3356: the tool output a row's author had read BEFORE writing it -
+    every result of a call that precedes the first call whose input carries
+    the row's opening (the Write, Edit or command that wrote it), leaving out
+    a call piped through cut, head or tail (a truncated print is not a read
+    history). When no call carries the row - a row written by a script whose
+    text was split across literals - every call counts: a LOWER BOUND."""
+    import re
+    frag = _history_fragment(row)
+    w = next((i for i, (inp, _o) in enumerate(calls)
+              if frag and frag in _history_norm(inp)), len(calls))
+    trunc = re.compile(_TRUNCATING_PIPE)
+    return "\n".join(out for inp, out in calls[:w] if not trunc.search(inp))
+
+
 def scan_ticket_history_unread(entries, *, rows=None, queue_text=None,
-                               results=None) -> list[str]:
+                               results=None, calls=None) -> list[str]:
     """S6-B3307 / L960: a row appended to a ticket whose EARLIER rows are not in
     the tool output since the last compaction. A ticket's next line was written
     with the context its author had then; acting on it from a summary of that
@@ -6577,14 +6638,33 @@ def scan_ticket_history_unread(entries, *, rows=None, queue_text=None,
 
     Seams (#241): rows (list[str], what _history_rows_this_turn returns),
     queue_text (str, EXECUTION_QUEUE.md's text), results (str, what
-    _context_tool_results returns)."""
+    _context_tool_results returns), calls (list of (input, output), what
+    _tool_calls_since_compaction returns).
+
+    S6-B3356 (B3139q-r146): the live path reads the history per row, as it
+    stood BEFORE the call that wrote the row, a print piped through cut, head
+    or tail counting as unread. MEASURED: S6-B3338's r138 row was written at
+    2026-10-29T14:34:04Z and its history printed at 14:34:09Z through cut
+    -c1-90 - nothing was read before the row was written. The `results` seam
+    keeps the window-wide reading for a caller that supplies flat text."""
     added = _history_rows_this_turn(entries) if rows is None else list(rows)
     if not added:
         return []
     q = ((REPO_ROOT / "EXECUTION_QUEUE.md").read_text(encoding="utf-8", errors="replace")
          if queue_text is None else queue_text)
-    seen = _context_tool_results(entries) if results is None else results
-    gaps = ticket_history_gaps(added, q, seen)
+    if results is not None:
+        gaps = ticket_history_gaps(added, q, results)
+    else:
+        cl = _tool_calls_since_compaction(entries) if calls is None else list(calls)
+        gaps = {}
+        for r in added:
+            # every row added this turn is excluded from 'earlier' (as the
+            # flat path does); only this row's ticket is judged on this
+            # row's own before-write reading
+            tid = _history_row_id(r)
+            g = ticket_history_gaps(added, q, history_seen_before_write(r, cl)).get(tid)
+            if tid and g and tid not in gaps:
+                gaps[tid] = g
     if not gaps:
         return []
     # B1763 / #244: the rule is universal - EACH ticket that got a row has its
@@ -6663,6 +6743,106 @@ def scan_step2_verdict_without_legs(entries, *, text=None, rows=None) -> list[st
             f"first: {where} ({phrase!r}). Say beside the verdict which legs "
             "ran - the depth leg and the breadth leg, run, waived or not run - "
             "in any programme, a LEVER4 arm included (runbook 0.3)."]
+
+
+# S6-B3355 (B3139q-r146, L981's first addendum): AN OWNER MESSAGE HAS TWO
+# TIMES. The queue records when a message was SENT (enqueue) and when it was
+# DELIVERED (the dequeue that opened a turn, or the remove that handed it over
+# mid-turn). MEASURED: the 2026-10-29 question was sent 13:14:30Z and delivered
+# 13:20:17Z, and rows dated it 13:20Z; scripts/transcript_timeline.py
+# --owner-messages then showed an approval this session's rows cite as
+# 2026-10-28T16:50:12Z was SENT 16:47:50Z, and one cited as 00:39Z was sent
+# 00:35:55Z - both delivery times.
+_OWNER_TIME_HEAD = "AN OWNER'S TIME THAT IS A DELIVERY TIME"
+_OWNER_TIME = r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}(?::\d{2})?)(?:\.\d+)?Z"
+_OWNER_CONTEXT = r"\b(?:owner|asked|ruled|ruling|approv\w*|said|sent|verbatim|words?)\b"
+
+
+def owner_time_mismatches(texts, messages) -> list:
+    """(text index, typed time, the message's sent time) for each time the
+    text gives as the owner's - an owner word within the clause around it -
+    that falls within one unit of its own precision (a minute or a second)
+    of some message's DELIVERED time while no message was SENT within one
+    unit of it. A time matching a send passes; a time matching neither is not
+    read (it may be any event). A LOWER BOUND: a time written another way is
+    not seen."""
+    import re
+    from datetime import datetime, timedelta
+
+    def _dt(s):
+        try:
+            return datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            return None
+    sent = [_dt(m.get("sent")) for m in messages or ()]
+    out = []
+    pat, ctx = re.compile(_OWNER_TIME), re.compile(_OWNER_CONTEXT, re.I)
+    # a QUOTED time is a mention - a correction quotes the value it corrects
+    # (B1738); the quote rule is stale_pending_claims' one definition (L593)
+    from stale_pending_claims import _unquote
+    for i, t in enumerate(_unquote(x or "") for x in texts or ()):
+        for m in pat.finditer(t or ""):
+            if not ctx.search(t[max(0, m.start() - 100): m.end() + 60]):
+                continue
+            unit = timedelta(seconds=1 if len(m.group(2)) == 8 else 60)
+            typed = _dt(f"{m.group(1)}T{m.group(2)}{':00' if unit.seconds == 60 else ''}Z")
+            if typed is None:
+                continue
+            def near(x):
+                return x is not None and typed - unit < x < typed + unit
+            if any(near(s) for s in sent):
+                continue
+            hit = next((mm for mm in messages or ()
+                        if near(_dt(mm.get("delivered")))), None)
+            if hit is not None:
+                out.append((i, m.group(0), str(hit.get("sent") or "")))
+    return out
+
+
+def _lesson_lines_added(entries) -> list:
+    """LEARNINGS.md lines added in the working tree, plus the last commit's
+    when a git commit ran this turn (the _history_rows_this_turn rule)."""
+    import subprocess
+    spans = [["git", "diff", "HEAD", "--unified=0", "--ignore-cr-at-eol", "--",
+              "LEARNINGS.md"]]
+    if "git commit" in _executed_tool_text(entries):
+        spans.append(["git", "diff", "HEAD~1", "HEAD", "--unified=0",
+                      "--ignore-cr-at-eol", "--", "LEARNINGS.md"])
+    out: list = []
+    for cmd in spans:
+        try:
+            d = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
+                               errors="replace", timeout=20, cwd=REPO_ROOT).stdout or ""
+        except Exception:
+            continue
+        out.extend(ln[1:] for ln in d.splitlines()
+                   if ln.startswith("+") and not ln.startswith("+++"))
+    return out
+
+
+def scan_owner_time_is_delivery_time(entries, *, rows=None, lessons=None,
+                                     messages=None) -> list[str]:
+    """S6-B3355: a time a row or an L-entry added this turn gives as the
+    owner's must be when the owner SENT the message, not when it reached me.
+    Seams (#241): rows (list, what _history_rows_this_turn returns), lessons
+    (list, what _lesson_lines_added returns), messages (list of dicts, what
+    transcript_timeline.owner_messages returns)."""
+    added = _history_rows_this_turn(entries) if rows is None else list(rows)
+    les = _lesson_lines_added(entries) if lessons is None else list(lessons)
+    if not added and not les:
+        return []
+    if messages is None:
+        import transcript_timeline as _tt
+        messages = _tt.owner_messages(entries)
+    hits = owner_time_mismatches(added + les, messages)
+    if not hits:
+        return []
+    i, typed, sent = hits[0]
+    where = f"queue row {i + 1}" if i < len(added) else "an L-entry line"
+    return [f"{_OWNER_TIME_HEAD} (S6-B3355 / L981): {len(hits)} owner time(s) added this "
+            f"turn match a message's DELIVERY, not its send - first: {where} gives {typed}, "
+            f"and that message was sent {sent}. Cite the sent time: python "
+            "scripts/transcript_timeline.py --owner-messages N prints both."]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -6768,6 +6948,9 @@ def main(argv: list[str] | None = None) -> int:
                 # S6-B3336 (B3139q-r136, L975): #299 outside the campaign
                 # frame - a failing Step-2 verdict names both legs.
                 scan_step2_verdict_without_legs,
+                # S6-B3355 (B3139q-r146, L981): an owner's time is when
+                # the message was sent, not when it was delivered.
+                scan_owner_time_is_delivery_time,
                 # B2853 (plank 2) - stays tuple-final; its pin anchors on
                 # the closing paren beside its name.
                 scan_locked_format_edit_without_source_open):

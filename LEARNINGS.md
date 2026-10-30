@@ -25624,3 +25624,15 @@ MEASURED on 2026-10-28 (scripts/runbook_ticket_drift.py's draft, its window mode
 **Mechanism.** A PRINTED check by the owner's ruling, never a refusal: scripts/runbook_ticket_drift.py lists the tickets a batch adds that the runbook does not name and the lessons it does not cite, and scripts/pyramid_gate.py prints it as runbook_drift= in every gate record (S6-B3343, test_b3343). A blocking gate was weighed and set aside: a file-level signal ('a commit naming the ticket touched a script the runbook cites') caught the true cases and fired on most of the tickets that owed the runbook nothing, so the check lists and a person decides. The 14 were folded in at S6-B3369.
 
 **Addendum to L989 (B3139q-r144).** A seventh inline escape, a double-quoted python -c counting carriage returns, refused by the guard before it ran - the whole command, a file copy included, waited for its redo through a file. The guard held 7 of 7.
+
+**Third addendum to L989 (B3139q-r146).** An eighth: a grep pattern carrying a doubled backslash, refused before it ran (the tool halves such a run, S6-B3327). The guard held 8 of 8.
+
+### L993 - THE NEW TOOL'S FIRST RUN FOUND TWO MORE DELIVERY TIMES CITED AS THE OWNER'S (B3139q-r146, 2026-10-30)
+
+MEASURED with scripts/transcript_timeline.py --owner-messages (S6-B3355), built for L981's first addendum (a 13:20Z delivery cited as a 13:14:30Z question): the approval cited across this session as '2026-10-28T16:50:12Z, your rec approved' was SENT 2026-10-28T16:47:50Z - 16:50:12Z is when it reached me, the dequeue that opened the next turn - and the approval cited as '2026-10-28T00:39:13Z' ('Approve all recs / Fable mode / Proceed / Be extremely thorough') was SENT 00:35:55Z. 15 tickets' rows cite one or the other (7 of them open), 2 LEARNINGS lines and 1 CHECKLIST line cite 16:50:12Z; the CHECKLIST line is corrected, the dated rows and lessons stay as their record and S6-B3371 names the true times.
+
+**Why.** Compliance failure against #201 (L981's first addendum, the same class, five more weeks of it in this session's rows): the time I typed for the owner's words was the time I first saw them, the only one in front of me; no tool printed the other.
+
+**Rule.** No new rule - L981's addendum and #322 stand: an owner's time is the send time, printed by the tool.
+
+**Mechanism.** scan_owner_time_is_delivery_time (S6-B3355) refuses a time given as the owner's in a row or lesson added that turn when it matches a message's delivery and no send, within one unit of its precision; its first draft paired a dequeue with the OLDEST pending message and misattributed deliveries until the raw queue showed a dequeue follows its own enqueue within milliseconds.

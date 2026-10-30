@@ -130,6 +130,42 @@ def first_after(entries: list, n: int = 5) -> dict:
             if isinstance(entries[b], dict) else "", "calls": calls[:n]}
 
 
+def owner_messages(entries: list) -> list:
+    """S6-B3355 (B3139q-r146): every queued message with its two times - SENT
+    (the queue's enqueue record) and DELIVERED (the dequeue that opened a turn
+    with it, or the remove that handed it over mid-turn). MEASURED: the
+    owner's 2026-10-29 question was sent 13:14:30Z and delivered 13:20:17Z,
+    and rows dated it 13:20Z. A dequeue carries no text; it is matched to the
+    NEWEST pending message - MEASURED on the live transcript, a dequeue follows
+    its own enqueue within milliseconds, while pairing it with the oldest
+    attributed 2026-10-28T11:01:41Z's message to a dequeue two hours later. A
+    remove is matched by its text. The queue does not tell an owner message
+    from a scheduled prompt, so every enqueue but a task notification is
+    listed."""
+    out, pending = [], []
+    for i, e in enumerate(entries):
+        if not isinstance(e, dict) or e.get("type") != "queue-operation":
+            continue
+        op, ts = e.get("operation"), e.get("timestamp") or ""
+        if op == "enqueue":
+            text = str(e.get("content") or "")
+            rec = {"entry": i, "sent": ts, "delivered": None, "how": None, "text": text}
+            pending.append(rec)
+            if not text.startswith("<task-notification>"):
+                out.append(rec)
+        elif op == "dequeue" and pending:
+            r = pending.pop()
+            r["delivered"], r["how"] = ts, "dequeue"
+        elif op == "remove":
+            text = str(e.get("content") or "")
+            for j, r in enumerate(pending):
+                if r["text"] == text:
+                    pending.pop(j)
+                    r["delivered"], r["how"] = ts, "remove"
+                    break
+    return out
+
+
 def timeline(entries: list, substr: str = "") -> dict:
     bnd = boundaries(entries)
     calls = tool_calls(entries)
@@ -161,11 +197,23 @@ def main(argv=None) -> int:
     ap.add_argument("--json", help="write the full result here")
     ap.add_argument("--first-after", type=int, default=0, metavar="N",
                     help="print the first N tool calls after the last compaction")
+    ap.add_argument("--owner-messages", type=int, default=0, metavar="N",
+                    help="print the last N queued messages with their SENT and "
+                         "DELIVERED times (S6-B3355) - a row dating the owner's "
+                         "words cites the sent time")
     a = ap.parse_args(argv)
     if not a.transcript or not os.path.exists(a.transcript):
         print("REFUSED: no transcript (pass --transcript or set TURN_GATE_TRANSCRIPT)")
         return 2
     ents = load(a.transcript)
+    if a.owner_messages:
+        msgs = owner_messages(ents)
+        print("queued messages: %d (the last %d below)" % (len(msgs), min(a.owner_messages, len(msgs))))
+        for m in msgs[-a.owner_messages:]:
+            print("  sent %s  delivered %s (%s)  %s" % (
+                m["sent"], m["delivered"] or "-", m["how"] or "pending",
+                " ".join(m["text"].split())[:80].encode("ascii", "replace").decode()))
+        return 0
     if a.first_after:
         fa = first_after(ents, a.first_after)
         print("last compaction boundary: entry %s %s" % (fa["boundary"],

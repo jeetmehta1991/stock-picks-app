@@ -26116,6 +26116,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B3139q-r145: S6-B3367's Step-2 spec clause in the #299 row, same call.
         ("A STEP-2 SPEC CARRIES ITS BREADTH LEG ON THE ARM",
          'S6-B3367 (B3139q-r145): the battery read a Step-2 cube with no breadth leg'),
+        # B3139q-r146: S6-B3355's and S6-B3356's clauses, same call.
+        ("AN OWNER'S TIME IS WHEN THE MESSAGE WAS SENT, NOT WHEN IT REACHED YOU",
+         'S6-B3355 (B3139q-r146): rows dated owner words by their delivery'),
+        ("A PRINT PIPED THROUGH CUT, HEAD OR TAIL IS UNREAD, AND ONE AFTER THE WRITE IS TOO LATE",
+         'S6-B3356 (B3139q-r146): a history print in the append call passed the gate'),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -26374,7 +26379,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 366 -> 367 at B3139q-r142 (S6-B3353's both-legs clause; same call).
     # 367 -> 368 at B3139q-r143 (S6-B3342's rule-1 correction; same call).
     # 368 -> 369 at B3139q-r145 (S6-B3367's Step-2 spec clause; same call).
-    assert len(gutted) == 369, gutted
+    # 369 -> 371 at B3139q-r146 (S6-B3355's and S6-B3356's clauses; same call).
+    assert len(gutted) == 371, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -48337,11 +48343,26 @@ _B3121_SEAMS_SOUND = {
     ("scan_ticket_history_unread", "queue_text"):
         "str seam for EXECUTION_QUEUE.md's text, which the live branch reads and both paths "
         "split into lines for ticket_history_gaps' _history_row_id parse unchanged",
-    ("scan_ticket_history_unread", "results"):
-        "str seam for the joined text _context_tool_results returns; both pass through "
-        "_history_norm in ticket_history_gaps, and the live branch over constructed "
-        "tool_result entries - a compaction resets it, a task notice does not - is "
-        "driven by test_b3307",
+    # B3139q-r146 (S6-B3356): ('scan_ticket_history_unread', 'results') left
+    # this registry - the live path no longer reads _context_tool_results, so
+    # a flat `results` is an alternative input, not a seam over a live helper.
+    # B3139q-r146 (S6-B3356 / S6-B3355): the history gate's call list and the
+    # owner-time gate's three seams.
+    ("scan_ticket_history_unread", "calls"):
+        "list seam (list of (input, output) tuples) for the list _tool_calls_since_compaction "
+        "returns; both paths feed history_seen_before_write per row unchanged, and the live "
+        "pairing of tool_use and tool_result entries is driven by test_b3356",
+    ("scan_owner_time_is_delivery_time", "rows"):
+        "list seam (list[str] of queue rows) for the list _history_rows_this_turn returns; "
+        "both feed owner_time_mismatches unchanged",
+    ("scan_owner_time_is_delivery_time", "lessons"):
+        "list seam (list[str] of LEARNINGS lines) for the list _lesson_lines_added returns - "
+        "the added lines of the working-tree and last-commit diffs; both feed "
+        "owner_time_mismatches unchanged",
+    ("scan_owner_time_is_delivery_time", "messages"):
+        "list seam (list of dicts with sent and delivered) for the list "
+        "transcript_timeline.owner_messages returns from the transcript's queue records; "
+        "the live pairing is driven by test_b3355",
     ("scan_count_without_members", "rows"):
         "list seam (list(rows)) for the list _queue_rows_added() returns",
     ("scan_ticket_claim_without_pin", "rows"):
@@ -67248,3 +67269,128 @@ def test_b3367_step2_specs_carry_the_breadth_leg_and_the_battery_names_both(monk
     assert any(isinstance(n, _ast.Call) and _ast.unparse(n.func) == "step2_legs.add_cli"
                for n in _ast.walk(mainf))
     assert "step2_legs.ARM_KEY" in _ast.unparse(mainf)
+
+
+def test_b3355_an_owner_time_is_the_send_time_not_the_delivery(tmp_path, capsys):
+    """S6-B3355 (B3139q-r146, L981): an owner message has two times. (1)
+    transcript_timeline.owner_messages pairs each enqueue with its delivery -
+    a dequeue with the NEWEST pending message (it follows its own enqueue by
+    milliseconds), a remove by its text - and leaves out task notifications;
+    (2) owner_time_mismatches fires on a time given as the owner's that is a
+    delivery and no send, within one unit of the typed precision, and is quiet
+    on the send time, a rounded send time, a time with no owner word near it,
+    and a time matching nothing; (3) the scan fires on its verbatim corpus
+    incident and on a lesson line; (4) the CLI prints both times; (5) wired."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gc
+    import transcript_timeline as tt
+    import verify_turn_compliance as v
+
+    def q(op, ts, text=None):
+        d = {"type": "queue-operation", "operation": op, "timestamp": ts}
+        if text is not None:
+            d["content"] = text
+        return d
+    ents = [q("enqueue", "2026-10-29T12:36:53.779Z", "Approve all recommendation"),
+            q("dequeue", "2026-10-29T12:36:53.786Z"),
+            q("enqueue", "2026-10-29T13:00:00.000Z", "<task-notification>x</task-notification>"),
+            q("enqueue", "2026-10-29T13:14:30.931Z", "Why wasnt breath step followed"),
+            q("remove", "2026-10-29T13:20:17.546Z", "Why wasnt breath step followed"),
+            q("enqueue", "2026-10-29T14:00:00.000Z", "an older queued prompt"),
+            q("enqueue", "2026-10-29T17:52:26.634Z", "Fable mode"),
+            q("dequeue", "2026-10-29T17:52:26.644Z")]
+    m = {x["text"]: x for x in tt.owner_messages(ents)}
+    assert "<task-notification>x</task-notification>" not in m
+    assert m["Approve all recommendation"]["delivered"] == "2026-10-29T12:36:53.786Z"
+    assert m["Why wasnt breath step followed"]["delivered"] == "2026-10-29T13:20:17.546Z"
+    assert m["Why wasnt breath step followed"]["how"] == "remove"
+    assert m["Fable mode"]["delivered"] == "2026-10-29T17:52:26.644Z", "the newest pending"
+    assert m["an older queued prompt"]["delivered"] is None
+    # (2)
+    msgs = [m["Why wasnt breath step followed"],
+            {"sent": "2026-10-28T11:01:41.999Z", "delivered": "2026-10-28T11:01:42.001Z"}]
+    fire = v.owner_time_mismatches(["The owner asked 2026-10-29T13:20Z, verbatim 'x'"], msgs)
+    assert fire and fire[0][1] == "2026-10-29T13:20Z" and fire[0][2].startswith("2026-10-29T13:14:30")
+    assert v.owner_time_mismatches(["the owner asked 2026-10-29T13:14:30Z"], msgs) == []
+    assert v.owner_time_mismatches(["owner ruling 2026-10-28T11:01:42Z, verbatim"], msgs) == []
+    assert v.owner_time_mismatches(["the run landed 2026-10-29T13:20:17Z"], msgs) == []
+    assert v.owner_time_mismatches(["the owner ruled 2026-10-01T09:00Z"], msgs) == []
+    assert v.owner_time_mismatches(["owner said 2026-10-29T13:20:17Z"], msgs), "second precision too"
+    assert v.owner_time_mismatches(
+        ["the approval cited as '2026-10-29T13:20Z, the owner asked' was sent earlier"], msgs) == [], \
+        "a quoted time is a mention - a correction quotes the value it corrects"
+    # (3)
+    text, must_fire, state = gc.INCIDENTS["scan_owner_time_is_delivery_time"]
+    assert must_fire and v.scan_owner_time_is_delivery_time([], **state)
+    for _t, mf, st in gc.EXTRA_INCIDENTS["scan_owner_time_is_delivery_time"]:
+        assert bool(v.scan_owner_time_is_delivery_time([], **st)) == mf, st
+    assert v.scan_owner_time_is_delivery_time(
+        [], rows=[], lessons=["the owner asked 2026-10-29T13:20Z"], messages=msgs)
+    # (4) the CLI
+    tp = tmp_path / "t.jsonl"
+    tp.write_text("\n".join(_json.dumps(e) for e in ents), encoding="utf-8")
+    assert tt.main(["--transcript", str(tp), "--owner-messages", "5"]) == 0
+    out = capsys.readouterr().out
+    assert "sent 2026-10-29T13:14:30.931Z  delivered 2026-10-29T13:20:17.546Z (remove)" in out, out
+    # (5) wired into the gate runner
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8")
+    assert src.count("scan_owner_time_is_delivery_time,") == 1
+
+
+def test_b3356_a_history_is_read_before_the_row_is_written_and_whole():
+    """S6-B3356 (B3139q-r146, L981): the history gate reads, per row, the tool
+    output BEFORE the call that wrote the row, and a print piped through cut,
+    head or tail does not count. (1) _tool_calls_since_compaction pairs each
+    tool_use with its result by id and resets at a compaction; (2)
+    history_seen_before_write stops at the writing call, drops a truncated
+    print, and falls back to every call when no call carries the row; (3) the
+    verbatim r138 incident fires and a whole print before the write is
+    quiet (the corpus); (4) the flat results seam keeps its old reading."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import gate_incident_corpus as gc
+    import verify_turn_compliance as v
+
+    def use(i, cmd):
+        return {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "id": i, "name": "Bash", "input": {"command": cmd}}]}}
+
+    def res(i, out):
+        return {"type": "user", "message": {"content": [
+            {"type": "tool_result", "tool_use_id": i, "content": out}]}}
+    ents = [use("a", "echo old"), res("a", "OLD"),
+            {"type": "user", "message": {"content": "This session is being continued from a "
+                                                    "previous conversation that ran out of context."}},
+            use("b", "python scripts/ticket_history.py S6-B9356"), res("b", "HIST"),
+            use("c", "append"), res("c", "done")]
+    calls = v._tool_calls_since_compaction(ents)
+    assert calls == [("python scripts/ticket_history.py S6-B9356", "HIST"), ("append", "done")], calls
+    # (2)
+    row = "| **S6-B9356** | **OPEN** | P2 | **a new row for the fixture ticket** | x |"
+    cl = [("python scripts/ticket_history.py S6-B9356 | cut -c1-90", "CUT"),
+          ("python scripts/ticket_history.py S6-B9356", "WHOLE"),
+          ("Write " + row, "File created"),
+          ("python scripts/ticket_history.py S6-B9356", "AFTER")]
+    seen = v.history_seen_before_write(row, cl)
+    assert "WHOLE" in seen and "CUT" not in seen and "AFTER" not in seen, seen
+    assert "AFTER" in v.history_seen_before_write("| **S6-B9357** | **OPEN** | P2 | **x** | y |", cl)
+    # (3) the corpus, verbatim
+    cases = [c for c in gc.EXTRA_INCIDENTS["scan_ticket_history_unread"] if "calls" in c[2]]
+    assert [mf for _t, mf, _s in cases] == [True, False], cases
+    for _t, mf, st in cases:
+        assert bool(v.scan_ticket_history_unread([], **st)) == mf, mf
+    # (4) the flat seam: a cut print still counts there, as before
+    earlier = "| **S6-B9358** | **OPEN** | P2 | **the earlier row of this fixture** | x |"
+    added = "| **S6-B9358** | **EXECUTED** | P2 | **the new row** | y |"
+    qt = earlier + "\n" + added + "\n"
+    assert v.scan_ticket_history_unread([], rows=[added], queue_text=qt, results=earlier) == []
+    assert v.scan_ticket_history_unread([], rows=[added], queue_text=qt, calls=[
+        ("python scripts/ticket_history.py S6-B9358 | head -3", earlier), ("Write " + added, "")])

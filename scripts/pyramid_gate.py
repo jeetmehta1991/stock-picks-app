@@ -595,7 +595,9 @@ def run(out: Path, root: Path, pytest_args: list[str],
     # the runbook does not cite - shown before pytest and footered; nothing
     # is refused.
     runbook_drift = _runbook_drift_line(root)
-    if runbook_drift != "none":
+    # the summary names ids in parentheses only when something is unnamed or
+    # uncited, and an unreadable line carries its error there too
+    if "(" in runbook_drift:
         print("  NOTE (S6-B3343/#67): %s. Does each change the optimisation "
               "workflow or a report? If so, this batch edits the runbook and "
               "cites the id; nothing is refused." % runbook_drift, flush=True)
