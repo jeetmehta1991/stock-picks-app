@@ -2631,6 +2631,61 @@ _npoc_raw = os.environ.get("NAKED_POC_MAX_DISTANCE_PCT", "").strip()
 NAKED_POC_MAX_DISTANCE_PCT: float = float(_npoc_raw) if _npoc_raw else 0.02
 del _npoc_raw
 
+# S6-B3248 (owner ruled 2026-10-28T11:01:42Z, verbatim "Approve your
+# recommendations fable mode proceed", on option (b): SCHEDULE the squeeze
+# producer's engine-only levels one at a time - Keltner multiplier 1.5,
+# Bollinger std 2.5, momentum window 10 and 30, Keltner period 14 and 30 -
+# plus the prior-squeeze row at N = 1). technical.compute_squeeze reads all
+# five at CALL time (_squeeze_knobs). Defaults ARE production: with no env set
+# the producer equals the pre-change code (test_b3248d runs it beside it).
+# Blank-safe parse per the CANDLE_MAX_WICK_PCT precedent (L900).
+# BLAST RADIUS: a knob moves the WHOLE squeeze producer - squeeze_in,
+# squeeze_momentum, squeeze_positive and both fire flags - so every reader
+# moves with it: squeeze_fire_up (squeeze_breakout, bb_squeeze_volume long,
+# squeeze_breakout_with_smart_money_long), squeeze_fire_dn (bb_squeeze_volume
+# short), squeeze_momentum (morning_star, both legs) and squeeze_positive
+# (count_bullish_signals, which orders the day's candidates). The published
+# bb_* and kc_* keys do NOT move. Set them only in a run whose strategy subset
+# is the subject; a whole-roster run at a non-production level needs the
+# B1619 variant treatment first.
+_sq_raw = os.environ.get("SQUEEZE_KC_MULT", "").strip()
+SQUEEZE_KC_MULT: float = float(_sq_raw) if _sq_raw else 2.0
+_sq_raw = os.environ.get("SQUEEZE_BB_STD", "").strip()
+SQUEEZE_BB_STD: float = float(_sq_raw) if _sq_raw else 2.0
+_sq_raw = os.environ.get("SQUEEZE_MOM_WINDOW", "").strip()
+SQUEEZE_MOM_WINDOW: int = int(_sq_raw) if _sq_raw else 20
+_sq_raw = os.environ.get("SQUEEZE_KC_PERIOD", "").strip()
+SQUEEZE_KC_PERIOD: int = int(_sq_raw) if _sq_raw else 20
+_sq_raw = os.environ.get("SQUEEZE_PRIOR_N", "").strip()
+SQUEEZE_PRIOR_N: int = int(_sq_raw) if _sq_raw else 0
+del _sq_raw
+if not (SQUEEZE_KC_MULT > 0 and SQUEEZE_BB_STD > 0):
+    raise ValueError(f"SQUEEZE_KC_MULT={SQUEEZE_KC_MULT} / SQUEEZE_BB_STD="
+                     f"{SQUEEZE_BB_STD}: both multipliers must be positive")
+if not (2 <= SQUEEZE_MOM_WINDOW <= 250 and 2 <= SQUEEZE_KC_PERIOD <= 250
+        and 0 <= SQUEEZE_PRIOR_N <= 50):
+    raise ValueError(f"SQUEEZE_MOM_WINDOW={SQUEEZE_MOM_WINDOW} / SQUEEZE_KC_PERIOD="
+                     f"{SQUEEZE_KC_PERIOD} / SQUEEZE_PRIOR_N={SQUEEZE_PRIOR_N}: "
+                     "windows must be in [2, 250] and the prior N in [0, 50]")
+
+# S6-B3304 (owner ruled 2026-10-28T11:01:42Z, the same words, on option (b):
+# SCHEDULE the Camarilla R4 / S4 distance multiplier's engine-only level 0.45).
+# technical.compute_pivots places R4 and S4 at the prior close +/- this
+# multiple of the prior range (_cam_r4_s4); production 0.55 is Camarilla's
+# 1.1 / 2, and at 0.55 the helper evaluates the original expression, so an
+# unset env is byte-identical (test_b3304d). ONE knob for both levels - the
+# Camarilla formula derives R4 and S4 from one multiplier, the
+# STRAT_EMA_SPAN one-knob-two-params precedent. Blank-safe parse (L900).
+# BLAST RADIUS: cam_r4, cam_s4, above_cam_r4, below_cam_s4 and near_cam_s4 -
+# read by camarilla_r4_breakout alone (both legs) and by count_bullish_signals;
+# no exit reads a Camarilla level (grep of backtest/: screener.py and
+# technical.py only).
+_cam_raw = os.environ.get("CAM_R4_S4_DIST", "").strip()
+CAM_R4_S4_DIST: float = float(_cam_raw) if _cam_raw else 0.55
+del _cam_raw
+if not (0.0 < CAM_R4_S4_DIST <= 2.0):
+    raise ValueError(f"CAM_R4_S4_DIST={CAM_R4_S4_DIST}: must be in (0, 2]")
+
 # S6-B1248-LEVER4-GATE-BUDGET (owner ruled 2026-10-20, 'Approve all recs fable mode be extremely thorough',
 # recommendation (a)): a k-of-m gate budget for the LONG side of four
 # condition-stacked strategies - fire when at least k of the side's m legs

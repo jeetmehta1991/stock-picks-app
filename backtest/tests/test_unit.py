@@ -68932,3 +68932,317 @@ def test_b3384_an_owner_message_does_not_void_a_running_gate(tmp_path, monkeypat
     assert namers == {"scripts/build_workflow_state.py", "scripts/pyramid_gate.py"}, sorted(namers)
     conf = (root / "backtest" / "tests" / "conftest.py").read_text(encoding="utf-8")
     assert "WORKFLOW_STATE_OUT" in conf and "workflow_state.json" in conf
+
+
+def _b3248d_frame():
+    """SYNTHETIC deterministic bars (no rng, B1801): 120 bars of a swing whose
+    range contracts and expands (the squeeze turns ON and OFF, the momentum
+    crosses zero both ways), then three tight drifting-down consolidations,
+    each ended by one wide bar that closes high - a squeeze RELEASE on the bar
+    the momentum crosses up, which the production swing alone never makes.
+    The STRUCTURE is the claim; no value from this frame is quoted (#201)."""
+    import math
+    import pandas as pd
+    close, high, low = [], [], []
+    for i in range(120):
+        amp = 1.0 + 6.0 * (0.5 + 0.5 * math.sin(i / 23.0)) ** 2
+        c = 100 + 0.04 * i + amp * math.sin(i / 4.0) + 0.3 * math.sin(i / 1.7)
+        w = 0.4 + 0.25 * amp * abs(math.cos(i / 5.0))
+        close.append(c)
+        high.append(c + w)
+        low.append(c - w)
+    for rep in range(3):
+        base = close[-1]
+        for j in range(40):
+            c = base - 0.03 * j + 0.05 * math.sin(j / 1.3)
+            close.append(c)
+            high.append(c + 0.08)
+            low.append(c - 0.08)
+        c = close[-1] + 2.5 + 0.5 * rep
+        close.append(c)
+        high.append(c + 0.3)
+        low.append(close[-2] - 0.1)
+        for j in range(25):
+            c = close[-1] + 0.6 * math.sin(j / 3.0) + 0.05
+            w = 0.5 + 0.2 * abs(math.cos(j / 2.0))
+            close.append(c)
+            high.append(c + w)
+            low.append(c - w)
+    return pd.DataFrame({"open": close, "high": high, "low": low,
+                         "close": close, "volume": [1e6] * len(close)},
+                        index=pd.date_range("2023-01-02", periods=len(close), freq="B"))
+
+
+def test_b3248d_squeeze_knobs_reach_the_producer_and_production_is_unmoved(monkeypatch):
+    """S6-B3248 (owner ruled 2026-10-28T11:01:42Z, verbatim "Approve your
+    recommendations fable mode proceed", on option (b): schedule the squeeze
+    producer's engine-only levels one at a time - Keltner multiplier 1.5,
+    Bollinger std 2.5, momentum window 10 and 30, Keltner period 14 and 30 -
+    plus the prior-squeeze row at N = 1). The five knobs now EXIST in
+    technical.compute_squeeze behind config actuators (B2866: a band whose
+    parameter does not exist is not a band). Pinned both ways (#226):
+    (1) at defaults the producer equals the PRE-CHANGE code, run beside it
+        verbatim, on every prefix of a SYNTHETIC frame - keys, values, types;
+    (2) each knob bites, in the direction its band claims where it has one,
+        and the published bb_* / kc_* keys other consumers read never move;
+    (3) the prior-squeeze state equals the producer's own squeeze_in on the
+        shorter frame, bar by bar (on a flat series too, where the 22-bar
+        Bollinger edge decides it), and the N = 1 fires are a strict subset;
+    (4) the local Bollinger edges at 1.5 equal compute_bollinger's bb_20_15;
+    (5) config carries all five at production, a blank or whitespace value
+        is the default in a real process (L900), a bad value refuses, and
+        the producer kept its 33 lines, so no line citation moved (L943)."""
+    import ast
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    from backtest import config as _cfg
+    from backtest.signals import technical as T
+    root = _P(__file__).resolve().parents[2]
+    df = _b3248d_frame()
+
+    def old_squeeze(d):
+        # the pre-S6-B3248 producer, VERBATIM (its comment dropped)
+        bb = T.compute_bollinger(d)
+        kc = T.compute_keltner(d)
+        if not bb or not kc:
+            return {}
+        bb_l = bb.get("bb_20_20_lower", 0)
+        bb_u = bb.get("bb_20_20_upper", 0)
+        kc_l = kc.get("kc_lower", 0)
+        kc_u = kc.get("kc_upper", 0)
+        in_squeeze = bb_l > kc_l and bb_u < kc_u
+        if len(d) < 20:
+            return {"squeeze_in": in_squeeze}
+        hh = d["high"].rolling(20).max()
+        ll = d["low"].rolling(20).min()
+        delta = d["close"] - (hh + ll) / 2
+        mom = T._safe_float(delta.iloc[-1])
+        pmom = T._safe_float(delta.iloc[-2])
+        return {"squeeze_in": in_squeeze, "squeeze_momentum": round(mom, 4),
+                "squeeze_positive": mom > 0,
+                "squeeze_fire_up": not in_squeeze and mom > 0 and pmom <= 0,
+                "squeeze_fire_dn": not in_squeeze and mom < 0 and pmom >= 0}
+
+    # (1) defaults byte-identical on every prefix, and not vacuously so
+    seen = {"in": 0, "up": 0, "dn": 0}
+    base = []                             # the producer at defaults, every prefix
+    for k in range(1, len(df) + 1):
+        a, b = old_squeeze(df.iloc[:k]), T.compute_squeeze(df.iloc[:k])
+        assert a.keys() == b.keys(), (k, a, b)
+        assert all(a[x] == b[x] and type(a[x]) is type(b[x]) for x in a), (k, a, b)
+        base.append(b)
+        seen["in"] += bool(a.get("squeeze_in"))
+        seen["up"] += bool(a.get("squeeze_fire_up"))
+        seen["dn"] += bool(a.get("squeeze_fire_dn"))
+    assert seen["in"] >= 50 and seen["up"] >= 6 and seen["dn"] >= 3, seen
+
+    def run(ks=None, **kw):
+        # results by prefix LENGTH k (1-based), so a strided run lines up
+        # with base[k - 1]
+        for attr, value in kw.items():
+            monkeypatch.setattr(_cfg, attr, value)
+        ks = range(1, len(df) + 1) if ks is None else ks
+        res = {k: T.compute_squeeze(df.iloc[:k]) for k in ks}
+        monkeypatch.undo()
+        return res
+
+    def n_in(rs):
+        return sum(bool(r.get("squeeze_in")) for r in rs.values())
+
+    def ups(rs):
+        return {k for k, r in rs.items() if r.get("squeeze_fire_up")}
+
+    full = {k: r for k, r in enumerate(base, 1)}
+    # (2) each knob bites - a knob that parses and changes nothing is the
+    # L751 class (accepted, stamped, never applied). A wider Keltner or a
+    # narrower Bollinger puts MORE bars in the squeeze (the band's TIGHTER
+    # side). Every third prefix past the warm-up keeps the run cheap; the
+    # bar-by-bar arms (1) and (3) cover every prefix.
+    ks = range(40, len(df) + 1, 3)
+    b3 = {k: full[k] for k in ks}
+    assert n_in(run(ks, SQUEEZE_KC_MULT=1.5)) < n_in(b3) < n_in(run(ks, SQUEEZE_KC_MULT=2.5))
+    assert n_in(run(ks, SQUEEZE_BB_STD=2.5)) < n_in(b3) < n_in(run(ks, SQUEEZE_BB_STD=1.5))
+    for mw in (10, 30):
+        moved = run(ks, SQUEEZE_MOM_WINDOW=mw)
+        assert any(moved[k].get("squeeze_momentum") != b3[k].get("squeeze_momentum")
+                   for k in ks), mw
+        assert all(moved[k].get("squeeze_in") == b3[k].get("squeeze_in") for k in ks), mw
+    for per in (14, 30):
+        moved = run(ks, SQUEEZE_KC_PERIOD=per)
+        assert any(moved[k].get("squeeze_in") != b3[k].get("squeeze_in") for k in ks), per
+    prod = T.compute_all_signals(df)
+    for attr, value in (("SQUEEZE_KC_MULT", 2.5), ("SQUEEZE_BB_STD", 1.5),
+                        ("SQUEEZE_MOM_WINDOW", 10), ("SQUEEZE_KC_PERIOD", 14),
+                        ("SQUEEZE_PRIOR_N", 1)):
+        monkeypatch.setattr(_cfg, attr, value)
+    knob = T.compute_all_signals(df)
+    monkeypatch.undo()
+    fixed = [k for k in prod if k.startswith(("bb_", "kc_"))]
+    assert len(fixed) > 20 and all(knob[k] == prod[k] for k in fixed), [
+        k for k in fixed if knob[k] != prod[k]]
+    assert any(knob[k] != prod[k] for k in prod if k.startswith("squeeze_")), prod
+    # (3) the prior-squeeze row: N = 1 keeps only the fires whose prior bar
+    # was IN the squeeze - a strict, non-empty subset - and moves nothing else
+    one = run(SQUEEZE_PRIOR_N=1)
+    assert ups(one) and ups(one) < ups(full), (sorted(ups(one)), sorted(ups(full)))
+    assert all(full[k - 1].get("squeeze_in") for k in ups(one)), sorted(ups(one))
+    assert all(not full[k - 1].get("squeeze_in") for k in ups(full) - ups(one))
+    assert all(one[k].get("squeeze_in") == full[k].get("squeeze_in") for k in full)
+    # the helper's state is the producer's own state on the shorter frame,
+    # bar by bar, at three knob vectors and two N - the 12- and 22-bar frame
+    # edges included (the frames start at 2 bars)
+    for kc_m, bb_k, per in ((2.0, 2.0, 20), (1.5, 2.5, 14), (2.5, 1.5, 30)):
+        rs = full if (kc_m, bb_k, per) == (2.0, 2.0, 20) else run(
+            SQUEEZE_KC_MULT=kc_m, SQUEEZE_BB_STD=bb_k, SQUEEZE_KC_PERIOD=per)
+        state = [bool(rs[k].get("squeeze_in")) for k in range(1, len(df) + 1)]
+        hits = 0
+        for k in range(2, len(df) + 1):
+            for n in (1, 5):
+                want = any(state[k - 1 - i] for i in range(1, n + 1) if k - 1 - i >= 0)
+                got = T._squeeze_on_prior(df.iloc[:k], bb_k, per, kc_m, n)
+                assert got == want, (kc_m, bb_k, per, k, n, got, want)
+                hits += got
+        assert hits > 20, (kc_m, bb_k, per, hits)
+    # the 22-bar edge: on a FLAT series the 20-bar Bollinger collapses inside
+    # the Keltner channel as soon as it exists (20 bars), but the producer
+    # reads compute_bollinger's edges, absent below 22 bars (the dict's 0) -
+    # so with a 14-bar Keltner the frames of 20 and 21 bars hold NO squeeze
+    import pandas as _pd
+    flat = _pd.DataFrame({"open": [100.0] * 30, "high": [101.0] * 30,
+                          "low": [99.0] * 30, "close": [100.0] * 30,
+                          "volume": [1e6] * 30},
+                         index=_pd.date_range("2023-01-02", periods=30, freq="B"))
+    monkeypatch.setattr(_cfg, "SQUEEZE_KC_PERIOD", 14)
+    st = [bool(T.compute_squeeze(flat.iloc[:k]).get("squeeze_in")) for k in range(1, 31)]
+    assert st[19:21] == [False, False] and st[21] is True, st   # 20, 21, 22 bars
+    for k in range(2, 31):
+        assert T._squeeze_on_prior(flat.iloc[:k], 2.0, 14, 2.0, 1) == st[k - 2], k
+    monkeypatch.undo()
+    # (4) the local Bollinger edges reproduce compute_bollinger's own method
+    checked = 0
+    for k in range(22, len(df) + 1):
+        bbd = T.compute_bollinger(df.iloc[:k])
+        assert T._squeeze_bb_edges(df.iloc[:k], bbd, 1.5) == (
+            bbd["bb_20_15_lower"], bbd["bb_20_15_upper"]), k
+        checked += 1
+    assert checked > 250, checked
+    # (5) config: all five at production, blank-safe in a real process
+    knobs = ("SQUEEZE_KC_MULT", "SQUEEZE_BB_STD", "SQUEEZE_MOM_WINDOW",
+             "SQUEEZE_KC_PERIOD", "SQUEEZE_PRIOR_N")
+    assert tuple(getattr(_cfg, k) for k in knobs) == (2.0, 2.0, 20, 20, 0)
+    for k in knobs:                       # the helper's fallback is production too
+        monkeypatch.delattr(_cfg, k)
+    assert T._squeeze_knobs() == (2.0, 2.0, 20, 20, 0)
+    monkeypatch.undo()
+    probe = ("from backtest import config as c; print([getattr(c, k) for k in "
+             + repr(list(knobs)) + "])")
+
+    def child(**env_extra):
+        env = dict(os.environ, PYTHONPATH=str(root), **env_extra)
+        return subprocess.run([sys.executable, "-c", probe], cwd=str(root), env=env,
+                              capture_output=True, text=True, timeout=180)
+    for blank in ("", "  "):
+        r = child(**{k: blank for k in knobs})
+        assert r.returncode == 0, r.stderr[-400:]
+        assert r.stdout.strip().splitlines()[-1] == "[2.0, 2.0, 20, 20, 0]", (repr(blank), r.stdout)
+    r = child(SQUEEZE_KC_MULT="1.5", SQUEEZE_PRIOR_N="1")
+    assert r.stdout.strip().splitlines()[-1] == "[1.5, 2.0, 20, 20, 1]", r.stdout
+    r = child(SQUEEZE_KC_MULT="-1")
+    assert r.returncode != 0 and "SQUEEZE_KC_MULT" in r.stderr, r.stderr[-400:]
+    # the producer kept its line count - helpers live at the module's END
+    src = (root / "backtest" / "signals" / "technical.py").read_text(encoding="utf-8")
+    fns = {n.name: n for n in ast.parse(src).body if isinstance(n, ast.FunctionDef)}
+    sq = fns["compute_squeeze"]
+    assert sq.end_lineno - sq.lineno + 1 == 33, (sq.lineno, sq.end_lineno)
+    assert all(fns[h].lineno > fns["count_bullish_signals"].lineno for h in (
+        "_squeeze_knobs", "_squeeze_bb_edges", "_squeeze_on_prior"))
+
+
+def test_b3304d_camarilla_distance_knob_reaches_the_producer_and_production_is_unmoved(monkeypatch):
+    """S6-B3304 (owner ruled 2026-10-28T11:01:42Z, verbatim "Approve your
+    recommendations fable mode proceed", on option (b): schedule the R4 / S4
+    distance multiplier's engine-only level 0.45). compute_pivots places R4 and
+    S4 at the prior close +/- CAM_R4_S4_DIST x the prior range through
+    _cam_r4_s4; at the production 0.55 (Camarilla's 1.1 / 2) the helper
+    evaluates the original expression. Pinned on a SYNTHETIC frame (#226):
+    (1) at defaults cam_r4 / cam_s4 / above_cam_r4 / below_cam_s4 /
+        near_cam_s4 equal the pre-change expression on every prefix;
+    (2) the knob moves exactly those five keys and nothing else, and the
+        breakout flags are monotone in the level - 0.45 fires on at least as
+        many bars as 0.55, 0.75 on at most as many, 0.45 strictly more than 0.75;
+    (3) config carries the knob at 0.55, blank-safe in a real process (L900),
+        a bad value refuses, and compute_pivots kept its line count (L943)."""
+    import ast
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path as _P
+    from backtest import config as _cfg
+    from backtest.signals import technical as T
+    root = _P(__file__).resolve().parents[2]
+    df = _b3248d_frame()
+    dep = {"cam_r4", "cam_s4", "above_cam_r4", "below_cam_s4", "near_cam_s4"}
+
+    def pivots(dist=None):
+        if dist is not None:
+            monkeypatch.setattr(_cfg, "CAM_R4_S4_DIST", dist)
+        res = [T.compute_pivots(df.iloc[:k]) for k in range(2, len(df) + 1)]
+        monkeypatch.undo()
+        return res
+
+    base = pivots()
+    # (1) the original expression, recomputed here from the prior bar
+    up = dn = 0
+    for k, r in zip(range(2, len(df) + 1), base):
+        prev = df.iloc[k - 2]
+        today = df["close"].iloc[k - 1]
+        C, rng = prev["close"], prev["high"] - prev["low"]
+        cr4, cs4 = C + rng*1.1/2, C - rng*1.1/2
+        assert r["cam_r4"] == round(cr4, 4) and r["cam_s4"] == round(cs4, 4), k
+        assert r["above_cam_r4"] == (today > cr4) and r["below_cam_s4"] == (today < cs4), k
+        assert r["near_cam_s4"] == (abs(today - cs4) / max(abs(cs4), 0.01) < 0.003), k
+        up += bool(r["above_cam_r4"])
+        dn += bool(r["below_cam_s4"])
+    assert up >= 5 and dn >= 5, (up, dn)
+
+    # (2) the knob moves the five dependent keys and no other
+    def n_true(rs, key):
+        return sum(bool(r[key]) for r in rs)
+    loose, tight = pivots(0.45), pivots(0.75)
+    for rs in (loose, tight):
+        for a, b in zip(rs, base):
+            assert a.keys() == b.keys()
+            assert all(a[x] == b[x] and type(a[x]) is type(b[x])
+                       for x in a if x not in dep), [x for x in a if x not in dep and a[x] != b[x]]
+        assert any(a["cam_r4"] != b["cam_r4"] for a, b in zip(rs, base))
+    for key in ("above_cam_r4", "below_cam_s4"):
+        # monotone in the level, and the looser level fires strictly more
+        assert (n_true(tight, key) <= n_true(base, key) <= n_true(loose, key)
+                and n_true(tight, key) < n_true(loose, key)), key
+
+    # (3) config at production, blank-safe in a real process; the helper's
+    # fallback is production when config lacks the attribute
+    assert _cfg.CAM_R4_S4_DIST == 0.55
+    monkeypatch.delattr(_cfg, "CAM_R4_S4_DIST")
+    assert T._cam_r4_s4(100.0, 10.0, 1) == 100.0 + 10.0*1.1/2
+    monkeypatch.undo()
+    probe = "from backtest import config as c; print(c.CAM_R4_S4_DIST)"
+
+    def child(value):
+        env = dict(os.environ, PYTHONPATH=str(root), CAM_R4_S4_DIST=value)
+        return subprocess.run([sys.executable, "-c", probe], cwd=str(root), env=env,
+                              capture_output=True, text=True, timeout=180)
+    for blank in ("", "  "):
+        r = child(blank)
+        assert r.returncode == 0 and r.stdout.strip().splitlines()[-1] == "0.55", (repr(blank), r.stdout, r.stderr[-300:])
+    r = child("0.45")
+    assert r.stdout.strip().splitlines()[-1] == "0.45", r.stdout
+    r = child("0")
+    assert r.returncode != 0 and "CAM_R4_S4_DIST" in r.stderr, r.stderr[-400:]
+    src = (root / "backtest" / "signals" / "technical.py").read_text(encoding="utf-8")
+    fns = {n.name: n for n in ast.parse(src).body if isinstance(n, ast.FunctionDef)}
+    pv = fns["compute_pivots"]
+    assert pv.end_lineno - pv.lineno + 1 == 116, (pv.lineno, pv.end_lineno)
+    assert fns["_cam_r4_s4"].lineno > fns["count_bullish_signals"].lineno

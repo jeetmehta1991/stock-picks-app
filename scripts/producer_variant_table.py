@@ -3567,7 +3567,7 @@ SPECS_PHASE0.update({
                 "status": "DEFINED-NO-ACTUATOR (the boolean; its knobs are P2-P5)",
                 "type": "identity",
                 "engine_implemented": False,
-                "evidence": "technical.py compute_squeeze (in_squeeze at :1525-1528); render P1",
+                "evidence": "technical.py compute_squeeze (its in_squeeze line); render P1",
                 "derivation": "held at production"
             },
             {

@@ -103,10 +103,10 @@ def compute_pivots(df: pd.DataFrame) -> dict:
     cpr_narrow_tight = (cpr_width < rng * 0.05) if rng > 0 else False
 
     # -- Camarilla --
-    cr4 = C + rng*1.1/2;  cr3 = C + rng*1.1/4
+    cr4 = _cam_r4_s4(C, rng, 1);  cr3 = C + rng*1.1/4
     cr2 = C + rng*1.1/6;  cr1 = C + rng*1.1/12
     cs1 = C - rng*1.1/12; cs2 = C - rng*1.1/6
-    cs3 = C - rng*1.1/4;  cs4 = C - rng*1.1/2
+    cs3 = C - rng*1.1/4;  cs4 = _cam_r4_s4(C, rng, -1)
 
     # -- Woodie's --
     wp  = (H + L + 2*O) / 4
@@ -1518,16 +1518,15 @@ def compute_atr_levels(df: pd.DataFrame, period: int = 14) -> dict:
 
 
 def compute_squeeze(df: pd.DataFrame) -> dict:
+    kc_m, bb_k, mom_w, kc_p, prior_n = _squeeze_knobs()  # S6-B3248: config.SQUEEZE_*
     bb = compute_bollinger(df)
-    kc = compute_keltner(df)
+    kc = compute_keltner(df, period=kc_p, mult=kc_m)
     if not bb or not kc:
         return {}
-    bb_l = bb.get("bb_20_20_lower", 0)
-    bb_u = bb.get("bb_20_20_upper", 0)
-    kc_l = kc.get("kc_lower", 0)
-    kc_u = kc.get("kc_upper", 0)
+    bb_l, bb_u = _squeeze_bb_edges(df, bb, bb_k)
+    kc_l, kc_u = kc.get("kc_lower", 0), kc.get("kc_upper", 0)
     in_squeeze = bb_l > kc_l and bb_u < kc_u
-    if len(df) < 20:
+    if len(df) < max(20, mom_w):
         return {"squeeze_in": in_squeeze}
     # Batch 390 (owner directive 2026-05-26): producer fix for squeeze_fire_up
     # / squeeze_fire_dn. Prior formula `delta = close - mid20 + ema20`
@@ -1538,17 +1537,18 @@ def compute_squeeze(df: pd.DataFrame) -> dict:
     # close - midpoint20 momentum which gives signed values around zero
     # (37.8% <= 0 on AAPL 500-row sample). Transitions across zero become
     # measurable + squeeze_fire_up fires meaningfully.
-    hh = df["high"].rolling(20).max()
-    ll = df["low"].rolling(20).min()
+    hh = df["high"].rolling(mom_w).max()
+    ll = df["low"].rolling(mom_w).min()
     delta = df["close"] - (hh + ll) / 2  # relative-to-midpoint momentum
     mom   = _safe_float(delta.iloc[-1])
     pmom  = _safe_float(delta.iloc[-2])
+    released = prior_n <= 0 or _squeeze_on_prior(df, bb_k, kc_p, kc_m, prior_n)
     return {
         "squeeze_in":       in_squeeze,
         "squeeze_momentum": round(mom, 4),
         "squeeze_positive": mom > 0,
-        "squeeze_fire_up":  not in_squeeze and mom > 0 and pmom <= 0,
-        "squeeze_fire_dn":  not in_squeeze and mom < 0 and pmom >= 0,
+        "squeeze_fire_up":  not in_squeeze and mom > 0 and pmom <= 0 and released,
+        "squeeze_fire_dn":  not in_squeeze and mom < 0 and pmom >= 0 and released,
     }
 
 
@@ -2753,3 +2753,91 @@ def count_bullish_signals(signals: dict) -> int:
         ])
     ]
     return len(bullish_keys)
+
+
+# -----------------------------------------------------------------------------
+# S6-B3248 (owner ruled 2026-10-28T11:01:42Z, verbatim "Approve your
+# recommendations fable mode proceed": SCHEDULE the squeeze producer's
+# engine-only levels one at a time). compute_squeeze reads its five knobs
+# through _squeeze_knobs; these helpers sit at the END of the module so the
+# producer kept its line count and no line citation of this file moved (L943).
+# -----------------------------------------------------------------------------
+
+def _squeeze_knobs() -> tuple:
+    """(kc_mult, bb_std, mom_window, kc_period, prior_n) from config at CALL
+    time - the CANDLE_* precedent, so a set or monkeypatched value is seen
+    without a re-import. Production is (2.0, 2.0, 20, 20, 0): with no env set
+    the producer reproduces the pre-S6-B3248 code exactly (test_b3248d runs
+    that code beside it)."""
+    return (float(getattr(_cfg, "SQUEEZE_KC_MULT", 2.0)),
+            float(getattr(_cfg, "SQUEEZE_BB_STD", 2.0)),
+            int(getattr(_cfg, "SQUEEZE_MOM_WINDOW", 20)),
+            int(getattr(_cfg, "SQUEEZE_KC_PERIOD", 20)),
+            int(getattr(_cfg, "SQUEEZE_PRIOR_N", 0)))
+
+
+def _squeeze_bb_edges(df: pd.DataFrame, bb: dict, bb_std: float) -> tuple:
+    """The Bollinger (20, bb_std) edges compute_squeeze compares with the
+    Keltner channel. At the production 2.0 they ARE compute_bollinger's
+    bb_20_20 edges, read from its dict as before S6-B3248. Another multiplier
+    is computed by compute_bollinger's own expression - mid +/- bb_std x the
+    20-bar std, the last bar rounded to 4 places, no edges below period + 2
+    bars (the dict's 0 default) - so the bb_* keys every other consumer
+    reads never move. At 1.5 this reproduces the bb_20_15 edges compute_bollinger
+    emits, bar for bar (test_b3248d)."""
+    if bb_std == 2.0:
+        return bb.get("bb_20_20_lower", 0), bb.get("bb_20_20_upper", 0)
+    if len(df) < 22:
+        return 0, 0
+    mid = df["close"].rolling(20).mean()
+    std = df["close"].rolling(20).std()
+    upper = mid + bb_std*std; lower = mid - bb_std*std
+    return (round(_safe_float(lower.iloc[-1]), 4),
+            round(_safe_float(upper.iloc[-1]), 4))
+
+
+def _squeeze_on_prior(df: pd.DataFrame, bb_std: float, kc_period: int,
+                      kc_mult: float, n: int) -> bool:
+    """True when the squeeze was ON on at least one of the n bars BEFORE the
+    last bar - the S6-B3254 NEW-GATE row, ruled at N = 1 only (the canonical
+    first bar out of a squeeze, Carter 2005). Each prior bar's state is the
+    one compute_squeeze reports when that bar is the last: the rolling and
+    EWM series are causal, the edges are rounded to 4 places as the producer
+    rounds them, a frame too short for the Keltner channel (or under 12 bars)
+    holds no state, and one under 22 bars has the dict's 0 Bollinger edges.
+    So the result is True exactly when compute_squeeze(df.iloc[:-i]) reports
+    squeeze_in for some i in 1..n (pinned bar by bar in test_b3248d). The
+    cube persists only the fire bar's state, so this level is engine-only."""
+    close = df["close"]
+    mid = close.rolling(20).mean()
+    std = close.rolling(20).std()
+    ema = close.ewm(span=kc_period, adjust=False).mean()
+    atr = _atr_series(df, kc_period)
+    bu = mid + bb_std*std; bl = mid - bb_std*std
+    ku = ema + kc_mult*atr; kl = ema - kc_mult*atr
+    for i in range(1, n + 1):                  # the frame ending i bars back
+        length = len(df) - i
+        if length < max(12, kc_period + 2):    # no Bollinger or Keltner there
+            break
+        if length < 22:                        # bb_20 edges absent: the 0 default
+            lo_b = up_b = 0
+        else:
+            lo_b = round(_safe_float(bl.iloc[-1 - i]), 4)
+            up_b = round(_safe_float(bu.iloc[-1 - i]), 4)
+        if (lo_b > round(_safe_float(kl.iloc[-1 - i]), 4)
+                and up_b < round(_safe_float(ku.iloc[-1 - i]), 4)):
+            return True
+    return False
+
+
+def _cam_r4_s4(C, rng, side: int):
+    """S6-B3304: the Camarilla R4 (side +1) or S4 (side -1) level at the
+    configured distance multiplier (config.CAM_R4_S4_DIST, read at call time).
+    At the production 0.55 - Camarilla's 1.1 / 2 - it evaluates the original
+    compute_pivots expression, so the levels are byte-identical with no env
+    set (test_b3304d); any other multiplier m places the level at the prior
+    close +/- m x the prior range."""
+    d = float(getattr(_cfg, "CAM_R4_S4_DIST", 0.55))
+    if d == 0.55:
+        return C + rng*1.1/2 if side > 0 else C - rng*1.1/2
+    return C + rng*d if side > 0 else C - rng*d
