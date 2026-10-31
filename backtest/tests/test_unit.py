@@ -69246,3 +69246,487 @@ def test_b3304d_camarilla_distance_knob_reaches_the_producer_and_production_is_u
     pv = fns["compute_pivots"]
     assert pv.end_lineno - pv.lineno + 1 == 116, (pv.lineno, pv.end_lineno)
     assert fns["_cam_r4_s4"].lineno > fns["count_bullish_signals"].lineno
+
+
+_B3248E_KNOBS = (("P2", "kc_mult", "SQUEEZE_KC_MULT", 2.0, [2.0, 1.5]),
+                 ("P3", "bb_std", "SQUEEZE_BB_STD", 2.0, [2.0, 2.5]),
+                 ("P4", "mom_window", "SQUEEZE_MOM_WINDOW", 20, [20, 10]),
+                 ("P5", "kc_period", "SQUEEZE_KC_PERIOD", 20, [20, 14]),
+                 ("P6", "prior_n", "SQUEEZE_PRIOR_N", 0, [0, 1]))
+
+
+def _b3248e_entry(legs=("long",), knobs=_B3248E_KNOBS, spot=None):
+    """A SYNTHETIC engine-knob family, registered in SPECS by the test only:
+    the squeeze actuators under a name no strategy uses."""
+    params = [{"id": "P1", "param": "fire identity", "production": "fire",
+               "band": ["fire"], "env": None}]
+    for pid, key, env, prod, band in knobs:
+        params.append({"id": pid, "param": key, "production": prod, "band": band,
+                       "free_band": band[:1], "resim_band": band[1:], "env": env,
+                       "legs": list(legs)})
+    return {"formula": "fixture", "params": params,
+            "baseline": {"artifact": "fixture", "fires": 0, "tickers": 1,
+                         "holdout_n": 0, "window": "fixture"},
+            "tools": {"keys": {pid: key for pid, key, *_ in knobs},
+                      "spot_check": spot or {}}}
+
+
+def _b3248e_run(root, name, env, fires, holdout=0, breadth=True):
+    """A landed run directory: trade log, exit cube (two exits per fire) and
+    run manifest. `fires` is [(entry_date, direction)]; the first `holdout`
+    of them are moved into the holdout year."""
+    import json as _j
+    import pandas as _pd
+    root.mkdir(parents=True, exist_ok=True)
+    tl, cube = [], []
+    for k, (day, leg) in enumerate(fires):
+        tk = f"T{k}"
+        tl.append({"strategy": name, "ticker": tk, "entry_date": day,
+                   "direction": leg, "signals_at_entry": _j.dumps({"x": 1})})
+        for ex, base in (("time_stop_10d", 1.0), ("breakeven_plus_trail", 0.6)):
+            cube.append({"strategy": name, "ticker": tk, "entry_date": day,
+                         "exit_method": ex,
+                         "pnl_pct": base + (0.5 if k % 3 else -1.2) + 0.01 * (k % 7),
+                         "hold_days": 5.0})
+    _pd.DataFrame(tl).to_csv(root / "trade_log.csv", index=False)
+    _pd.DataFrame(cube).to_csv(root / "trade_exit_detail.csv", index=False)
+    arm = {"tag": "t", "env": dict(env)}
+    if breadth:
+        arm["step2_breadth_leg"] = {"state": "ran", "evidence": "fixture breadth grid"}
+    (root / "run_manifest.json").write_text(_j.dumps({"arms": [arm]}), encoding="utf-8")
+    return root
+
+
+def test_b3248e_knob_grader_verifies_the_arm_and_grades_legs_by_exits(tmp_path, monkeypatch):
+    """S6-B3248 / S6-B3304 (B3139q-r162): grade_knob_config grades ANY SPECS
+    family whose swept axes are producer env knobs - the registry names the
+    knobs (tools.keys) and their actuators, so a family joins by registration
+    (#291). Pinned on a SYNTHETIC family and run (the structure is the claim):
+    (1) the flags must equal the landed arm's env, by value, or it REFUSES -
+        a mismatch, a missing manifest or env block, and a non-production
+        vector claimed for the R5 cube;
+    (2) legs x exits on the run's own fires, every leg's fire count written
+        (a leg that fired nothing reads 0), the cells ranked on is_ci_lo;
+    (3) two params sharing one actuator and arm key give ONE flag, and a key
+        mapped to two actuators refuses;
+    (4) --step2 reads one leg's holdout once and names both legs."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import grade_knob_config as gk
+    name = "x_b3248e_synth"
+    monkeypatch.setitem(pvt.SPECS, name, _b3248e_entry(legs=("long", "short")))
+    days = [f"2023-{m:02d}-{d:02d}" for m in range(1, 13) for d in (3, 10, 17, 24)]
+    fires = [(day, "long" if k % 4 else "short") for k, day in enumerate(days)]
+    env = {"SQUEEZE_KC_MULT": "1.5", "SQUEEZE_BB_STD": "2.0", "SQUEEZE_MOM_WINDOW": "20",
+           "SQUEEZE_KC_PERIOD": "20", "SQUEEZE_PRIOR_N": "0"}
+    run = _b3248e_run(tmp_path / "run", name, env, fires)
+    flags = ["--kc-mult", "1.5", "--bb-std", "2.0", "--mom-window", "20",
+             "--kc-period", "20", "--prior-n", "0"]
+    out = tmp_path / "g.json"
+    assert gk.main(["--strategy", name, "--cube", str(run), "--out", str(out)] + flags) == 0
+    g = _j.loads(out.read_text(encoding="utf-8"))
+    assert g["config"]["P2_kc_mult"] == "1.5" and "flags verified" in g["manifest_check"]
+    assert g["legs"] == ["long", "short"] and g["leg_fires"] == {"long": 36, "short": 12}, g["leg_fires"]
+    cells = {(r["cell"], r["exit"]) for r in g["rows"]}
+    assert cells == {(c, e) for c in ("base:both", "base:long", "base:short")
+                     for e in ("time_stop_10d", "breakeven_plus_trail")}, cells
+    ci = [r["is_ci_lo"] for r in g["step1_ranking"]]
+    assert all(x is not None for x in ci) and len(ci) >= 4, ci
+    assert ci == sorted(ci, reverse=True), ci
+    assert g["holdout_read"].startswith("NOT FIRED") and "step2" not in g
+    # NET by construction: one cell re-scored here through roster_core's own
+    # net_pnl (the one definition, #271) must equal the grid's figure
+    import pandas as _pd
+    import roster_core as rc
+    assert g["basis"].startswith("net"), g["basis"]
+    ted = _pd.read_csv(run / "trade_exit_detail.csv")
+    tlg = _pd.read_csv(run / "trade_log.csv")[["ticker", "direction"]]
+    cell = ted.merge(tlg, on="ticker")
+    cell = cell[(cell.direction == "long") & (cell.exit_method == "time_stop_10d")]
+    want = rc._sharpe(rc.net_pnl(cell["pnl_pct"].astype(float)).values,
+                      cell["hold_days"], min_n=10)["sharpe"]
+    got = next(r["is_sharpe"] for r in g["rows"]
+               if (r["cell"], r["exit"]) == ("base:long", "time_stop_10d"))
+    assert round(got, 9) == round(want, 9), (got, want)
+    # (1) the refusals - each names what is wrong
+    for bad, why in ((["--kc-mult", "2.5"], "SQUEEZE_KC_MULT landed '1.5'"),):
+        argv = ["--strategy", name, "--cube", str(run), "--out", str(out)] + flags[2:] + bad
+        with pytest.raises(SystemExit) as e:
+            gk.main(argv)
+        assert "REFUSED" in str(e.value) and why in str(e.value), str(e.value)
+    bare = _b3248e_run(tmp_path / "bare", name, env, fires)
+    (bare / "run_manifest.json").unlink()
+    with pytest.raises(SystemExit) as e:
+        gk.main(["--strategy", name, "--cube", str(bare), "--out", str(out)] + flags)
+    assert "no run_manifest.json" in str(e.value)
+    noenv = _b3248e_run(tmp_path / "noenv", name, {}, fires)
+    with pytest.raises(SystemExit) as e:
+        gk.main(["--strategy", name, "--cube", str(noenv), "--out", str(out)] + flags)
+    assert "no env block" in str(e.value)
+    part = _b3248e_run(tmp_path / "part", name,
+                       {k: v for k, v in env.items() if k != "SQUEEZE_PRIOR_N"}, fires)
+    with pytest.raises(SystemExit) as e:
+        gk.main(["--strategy", name, "--cube", str(part), "--out", str(out)] + flags)
+    assert "SQUEEZE_PRIOR_N absent from the arm" in str(e.value), str(e.value)
+    # by VALUE, not spelling: a manifest '2' is the flag's '2.0'
+    spelt = _b3248e_run(tmp_path / "spelt", name, dict(env, SQUEEZE_BB_STD="2"), fires)
+    assert gk.main(["--strategy", name, "--cube", str(spelt), "--out", str(out)] + flags) == 0
+    with pytest.raises(SystemExit) as e:                 # refused before any read
+        gk.main(["--strategy", name, "--cube", str(gk.R5_DIR), "--out", str(out)] + flags)
+    assert "R5 cube ran every knob at production" in str(e.value)
+    # a registered leg that fired nothing reads 0, never absence
+    longonly = _b3248e_run(tmp_path / "longonly", name, env,
+                           [(d, "long") for d, _leg in fires])
+    assert gk.main(["--strategy", name, "--cube", str(longonly), "--out", str(out)] + flags) == 0
+    lo = _j.loads(out.read_text(encoding="utf-8"))
+    assert lo["legs"] == ["long", "short"] and lo["leg_fires"] == {"long": 48, "short": 0}
+    with pytest.raises(SystemExit) as e:
+        gk.main(["--strategy", "no_such_family_b3248e", "--cube", str(run), "--out", str(out)])
+    assert "no SPECS entry" in str(e.value)
+    # (3) one actuator shared by two params is one flag; a key on two actuators refuses
+    shared = (("P2", "dist", "CAM_R4_S4_DIST", 0.55, [0.55, 0.45]),
+              ("P4", "dist", "CAM_R4_S4_DIST", 0.55, [0.55, 0.45]))
+    monkeypatch.setitem(pvt.SPECS, name, _b3248e_entry(knobs=shared))
+    assert gk.knob_rows(name) == [("P2", "dist", "CAM_R4_S4_DIST", 0.55)]
+    clash = (("P2", "dist", "CAM_R4_S4_DIST", 0.55, [0.55, 0.45]),
+             ("P4", "dist", "SQUEEZE_KC_MULT", 2.0, [2.0, 1.5]))
+    monkeypatch.setitem(pvt.SPECS, name, _b3248e_entry(knobs=clash))
+    with pytest.raises(SystemExit) as e:
+        gk.knob_rows(name)
+    assert "two actuators" in str(e.value)
+    # (4) Step 2: the long leg's holdout read once, both legs named
+    monkeypatch.setitem(pvt.SPECS, name, _b3248e_entry(legs=("long", "short")))
+    ho_days = [f"2025-{m:02d}-{d:02d}" for m in range(6, 12) for d in (3, 10, 17, 24)]
+    s2run = _b3248e_run(tmp_path / "s2", name, env,
+                        fires + [(day, "long") for day in ho_days]
+                        + [(day, "short") for day in ho_days[:8]])
+    out2 = tmp_path / "g2.json"
+    assert gk.main(["--strategy", name, "--cube", str(s2run), "--out", str(out2),
+                    "--step2"] + flags) == 0
+    s2 = _j.loads(out2.read_text(encoding="utf-8"))["step2"]
+    assert s2["holdout_read"] is True and s2["leg"] == "long", s2
+    assert s2["holdout_n"] == len(ho_days) and s2["verdict"] in ("PASS", "FAIL"), s2
+    assert s2["legs"]["breadth"]["state"] == "ran" and s2["legs"]["depth"]["state"] == "ran"
+    nob = _b3248e_run(tmp_path / "nob", name, env, fires, breadth=False)
+    with pytest.raises(SystemExit) as e:
+        gk.main(["--strategy", name, "--cube", str(nob), "--out", str(out2), "--step2"] + flags)
+    assert "breadth" in str(e.value)
+
+
+def test_b3248f_producer_spot_check_three_legs(tmp_path, monkeypatch):
+    """S6-B3248 / S6-B3304 (B3139q-r162): spot_check_producer re-derives a
+    landed fire three ways - leg A the family's raw-bar arithmetic
+    (producer_legs_a, importing no producer), leg B the registered producer on
+    the PIT slice under the ARM's knobs, leg C the trade log's record. On a
+    SYNTHETIC squeeze family and frame (the structure is the claim):
+    (1) a run recorded at production agrees on every sampled fire (exit 0);
+    (2) checked under an arm the engine did NOT run (Keltner 2.5) leg B parts
+        from the record and the check FAILS (exit 1) - the knob-never-applied
+        class (L751) is what it exists to see;
+    (3) leg A equals the producer bar by bar on every decided bar, for the
+        squeeze long and short fires at two knob vectors and for the
+        Camarilla breaks at 0.55 and 0.45, and leg A's momentum VALUE equals
+        the producer's at windows 10, 20 and 30 (a window one bar off
+        rarely flips a fire, so the fire alone could not tell);
+    (4) the checker ITSELF puts the environment and the config attributes
+        back and rebinds no config object (S6-B3386 - it once reloaded
+        backtest.config in process, the #209 polluter);
+    (5) leg A rounds the band edges as the producer does: a flat series whose
+        edges sit inside one rounding step reads no squeeze in both."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import spot_check_producer as scp
+    import spot_check_trades as sct
+    import producer_legs_a as pla
+    from backtest import config as _cfg
+    from backtest.signals import technical as T
+    df = _b3248d_frame()
+    name = "x_b3248f_synth"
+    spot = {"producer": "backtest.signals.technical:compute_squeeze",
+            "keys_by_leg": {"long": "squeeze_fire_up", "short": "squeeze_fire_dn"},
+            "leg_a": "producer_legs_a:squeeze_fire"}
+    monkeypatch.setitem(pvt.SPECS, name, _b3248e_entry(legs=("long", "short"), spot=spot))
+    res = [T.compute_squeeze(df.iloc[:k]) for k in range(1, len(df) + 1)]
+    ups = [i for i, r in enumerate(res) if r.get("squeeze_fire_up")]
+    dns = [i for i, r in enumerate(res) if r.get("squeeze_fire_dn")]
+    assert len(ups) >= 6 and len(dns) >= 3, (ups, dns)
+    run = tmp_path / "run"
+    run.mkdir()
+    rows = [{"strategy": name, "ticker": "SYN", "entry_date": str(df.index[i].date()),
+             "direction": leg, "signals_at_entry": _j.dumps({key: True})}
+            for idx, leg, key in ((ups, "long", "squeeze_fire_up"),
+                                  (dns, "short", "squeeze_fire_dn")) for i in idx]
+    _pd.DataFrame(rows).to_csv(run / "trade_log.csv", index=False)
+    monkeypatch.setattr(sct, "load_ohlcv", lambda tk: df if tk == "SYN" else None)
+    # the checker sets the arm's knobs for the check and must put them back
+    # itself (config_knobs.applied): the state is read BEFORE the finally's
+    # safety net, so a checker that leaks fails (4) rather than being repaired
+    # by the test - monkeypatch.delenv records nothing for an absent variable
+    import os as _os
+    envs = ("SQUEEZE_KC_MULT", "SQUEEZE_BB_STD", "SQUEEZE_MOM_WINDOW",
+            "SQUEEZE_KC_PERIOD", "SQUEEZE_PRIOR_N")
+    before = {k: _os.environ.get(k) for k in envs}
+    before_cfg = {k: getattr(_cfg, k) for k in envs}
+    breakers = _cfg.CIRCUIT_BREAKERS
+    prod =["--kc-mult", "2.0", "--bb-std", "2.0", "--mom-window", "20",
+            "--kc-period", "20", "--prior-n", "0"]
+    try:
+        out = tmp_path / "s.json"
+        assert scp.main(["--strategy", name, "--cube", str(run), "--out", str(out)] + prod) == 0
+        s = _j.loads(out.read_text(encoding="utf-8"))
+        assert s["agree"] == len(rows) and s["disagree"] == 0 and s["skipped"] == 0, s
+        assert s["leg_a"] == "producer_legs_a:squeeze_fire"
+        wrong = ["--kc-mult", "2.5"] + prod[2:]
+        assert scp.main(["--strategy", name, "--cube", str(run), "--out", str(out)] + wrong) == 1
+        s = _j.loads(out.read_text(encoding="utf-8"))
+        assert s["disagree"] >= 1 and s["detail"][0]["leg_c_record"] is True, s
+        assert s["detail"][0]["leg_b_production"] is False, s["detail"][0]
+        # a record that says False, and a record without the key
+        bad = tmp_path / "bad"
+        bad.mkdir()
+        i0 = ups[0]
+        _pd.DataFrame([
+            {"strategy": name, "ticker": "SYN", "entry_date": str(df.index[i0].date()),
+             "direction": "long", "signals_at_entry": _j.dumps({"squeeze_fire_up": False})},
+            {"strategy": name, "ticker": "SYN", "entry_date": str(df.index[ups[1]].date()),
+             "direction": "long", "signals_at_entry": _j.dumps({"other": 1})},
+        ]).to_csv(bad / "trade_log.csv", index=False)
+        assert scp.main(["--strategy", name, "--cube", str(bad), "--out", str(out)] + prod) == 1
+        s = _j.loads(out.read_text(encoding="utf-8"))
+        assert (s["agree"], s["disagree"], s["skipped"]) == (0, 1, 1), s
+        assert "not persisted" in s["skips"][0]["reason"], s["skips"]
+        # leg A is a vote, not a decoration: an independent leg that says
+        # False fails every sample the producer and the record agree on
+        monkeypatch.setattr(pla, "squeeze_fire", lambda *a, **k: False)
+        assert scp.main(["--strategy", name, "--cube", str(run), "--out", str(out)] + prod) == 1
+        s = _j.loads(out.read_text(encoding="utf-8"))
+        assert s["disagree"] == len(rows) and s["detail"][0]["leg_a_independent"] is False, s
+        after = ({k: _os.environ.get(k) for k in envs}, {k: getattr(_cfg, k) for k in envs})
+    finally:
+        monkeypatch.undo()
+        for k, v in before.items():                 # a safety net, never the proof
+            if v is None:
+                _os.environ.pop(k, None)
+            else:
+                _os.environ[k] = v
+        for k, v in before_cfg.items():
+            setattr(_cfg, k, v)
+    assert after == (before, before_cfg), after                          # (4)
+    assert _cfg.CIRCUIT_BREAKERS is breakers and _cfg.SQUEEZE_PRIOR_N == 0
+    # (3) leg A against the producer, every decided bar
+    for knobs in ({"kc_mult": 2.0, "bb_std": 2.0, "mom_window": 20, "kc_period": 20, "prior_n": 0},
+                  {"kc_mult": 1.5, "bb_std": 2.5, "mom_window": 10, "kc_period": 14, "prior_n": 1}):
+        for attr, key in (("SQUEEZE_KC_MULT", "kc_mult"), ("SQUEEZE_BB_STD", "bb_std"),
+                          ("SQUEEZE_MOM_WINDOW", "mom_window"),
+                          ("SQUEEZE_KC_PERIOD", "kc_period"), ("SQUEEZE_PRIOR_N", "prior_n")):
+            monkeypatch.setattr(_cfg, attr, knobs[key])
+        decided = 0
+        for i in range(len(df)):
+            r = T.compute_squeeze(df.iloc[:i + 1])
+            for leg, key in (("long", "squeeze_fire_up"), ("short", "squeeze_fire_dn")):
+                a = pla.squeeze_fire(df, i, knobs, leg)
+                if a is None:
+                    continue
+                assert a == bool(r.get(key, False)), (knobs, i, leg, a, r)
+                decided += 1
+        monkeypatch.undo()
+        assert decided > 500, decided
+    for dist in (0.55, 0.45):
+        monkeypatch.setattr(_cfg, "CAM_R4_S4_DIST", dist)
+        for i in range(1, len(df)):
+            p = T.compute_pivots(df.iloc[:i + 1])
+            assert pla.camarilla_break(df, i, {"dist": dist}, "long") == bool(p["above_cam_r4"]), (dist, i)
+            assert pla.camarilla_break(df, i, {"dist": dist}, "short") == bool(p["below_cam_s4"]), (dist, i)
+        monkeypatch.undo()
+    # the momentum VALUE, not only the fire it decides: a window one bar off
+    # rarely flips a fire on this frame, so the value is compared bar by bar
+    c = [float(x) for x in df["close"]]
+    h = [float(x) for x in df["high"]]
+    lo = [float(x) for x in df["low"]]
+    for w in (10, 20, 30):
+        monkeypatch.setattr(_cfg, "SQUEEZE_MOM_WINDOW", w)
+        compared = 0
+        for i in range(max(22, w), len(df)):
+            r = T.compute_squeeze(df.iloc[:i + 1])
+            assert round(pla._momentum(c, h, lo, i, w), 4) == r["squeeze_momentum"], (w, i)
+            compared += 1
+        monkeypatch.undo()
+        assert compared > 250, (w, compared)
+    # the ROUNDING: on a flat series whose band edges sit inside one rounding
+    # step (range +/- 0.000004 around 100.00004) the producer reads NO squeeze -
+    # it compares edges rounded to 4 places - and so must leg A; compared
+    # unrounded, the same edges would read one
+    n = 40
+    flat = _pd.DataFrame({"open": [100.00004] * n, "high": [100.000044] * n,
+                          "low": [100.000036] * n, "close": [100.00004] * n,
+                          "volume": [1e6] * n})
+    fc, fh, fl = (list(map(float, flat[k])) for k in ("close", "high", "low"))
+    assert T.compute_squeeze(flat)["squeeze_in"] is False
+    assert pla._in_squeeze(fc, fh, fl, n - 1, 2.0, 20, 2.0) is False
+
+
+def test_b3386_config_knobs_set_parse_and_restore(monkeypatch):
+    """S6-B3386 (B3139q-r162b): scripts/config_knobs.applied sets knobs on
+    backtest.config for a block WITHOUT reloading the module - the
+    replacement for the in-process reload that was the #209 polluter (L1002).
+    (a) inside, each attribute is config.py's OWN parse of the value (an int
+        knob is an int, a padded value is stripped), the environment carries
+        the raw value, the producer reads it, and no module-level container
+        is rebound;
+    (b) after, the attributes and the environment are what they were - an
+        absent variable absent again, a patched attribute its patched value;
+    (c) a blank or None value is the production default (L900);
+    (d) an out-of-range level raises the engine's own ValueError, the block
+        never runs, and nothing moves;
+    (e) a name config.py does not define is refused before anything is set;
+    (f) a block that raises still restores."""
+    import os as _os
+    import sys as _s
+    from pathlib import Path as _P
+    import pytest as _pt
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import config_knobs as ck
+    from backtest import config as _cfg
+    from backtest.signals import technical as T
+    names = ("SQUEEZE_KC_MULT", "SQUEEZE_MOM_WINDOW", "CAM_R4_S4_DIST")
+    for k in names + ("NO_SUCH_KNOB",):
+        monkeypatch.delenv(k, raising=False)
+    env0 = {k: _os.environ.get(k) for k in names}
+    val0 = {k: getattr(_cfg, k) for k in names}
+    assert val0 == {"SQUEEZE_KC_MULT": 2.0, "SQUEEZE_MOM_WINDOW": 20, "CAM_R4_S4_DIST": 0.55}, val0
+    breakers = _cfg.CIRCUIT_BREAKERS
+    arm = {"SQUEEZE_KC_MULT": "1.5", "SQUEEZE_MOM_WINDOW": "10", "CAM_R4_S4_DIST": " 0.45 "}
+    with ck.applied(arm) as got:                                             # (a)
+        assert got == {"SQUEEZE_KC_MULT": 1.5, "SQUEEZE_MOM_WINDOW": 10, "CAM_R4_S4_DIST": 0.45}, got
+        assert type(_cfg.SQUEEZE_MOM_WINDOW) is int and _cfg.SQUEEZE_KC_MULT == 1.5
+        assert _os.environ["SQUEEZE_KC_MULT"] == "1.5" and _os.environ["CAM_R4_S4_DIST"] == " 0.45 "
+        assert T._squeeze_knobs()[0] == 1.5 and T._squeeze_knobs()[2] == 10
+        assert T._cam_r4_s4(100.0, 10.0, 1) == 100.0 + 10.0 * 0.45
+        assert _cfg.CIRCUIT_BREAKERS is breakers
+    assert {k: _os.environ.get(k) for k in names} == env0                    # (b)
+    assert {k: getattr(_cfg, k) for k in names} == val0
+    for blank in ("", None, "   "):                                          # (c)
+        with ck.applied({"SQUEEZE_KC_MULT": blank}) as got:
+            assert got == {"SQUEEZE_KC_MULT": 2.0} and _cfg.SQUEEZE_KC_MULT == 2.0
+    with _pt.raises(ValueError, match="must be positive"):                  # (d)
+        with ck.applied({"SQUEEZE_KC_MULT": "-1"}):
+            raise AssertionError("an out-of-range level must not enter the block")
+    assert _os.environ.get("SQUEEZE_KC_MULT") is None and _cfg.SQUEEZE_KC_MULT == 2.0
+    with _pt.raises(KeyError, match="NO_SUCH_KNOB"):                         # (e)
+        with ck.applied({"NO_SUCH_KNOB": "1", "SQUEEZE_KC_MULT": "1.5"}):
+            raise AssertionError("an undefined knob must not enter the block")
+    assert _os.environ.get("NO_SUCH_KNOB") is None and _os.environ.get("SQUEEZE_KC_MULT") is None
+    with _pt.raises(RuntimeError, match="the block failed"):                 # (f)
+        with ck.applied({"CAM_R4_S4_DIST": "0.45"}):
+            raise RuntimeError("the block failed")
+    assert _cfg.CAM_R4_S4_DIST == 0.55 and _os.environ.get("CAM_R4_S4_DIST") is None
+    monkeypatch.setattr(_cfg, "SQUEEZE_KC_MULT", 1.75)                       # (b)
+    with ck.applied({"SQUEEZE_KC_MULT": "2.5"}):
+        assert _cfg.SQUEEZE_KC_MULT == 2.5
+    assert _cfg.SQUEEZE_KC_MULT == 1.75
+
+
+def test_b3386_detector_names_the_polluter_and_puts_objects_back(tmp_path, monkeypatch):
+    """S6-B3386 (B3139q-r162b, CHECKLIST #209): the conftest's setup and
+    teardown wrappers fail a test that leaves backtest.config's module-level
+    objects rebound - the POLLUTER, by name - and put the objects back, so
+    its victims pass. Three ways:
+    (1) the calls in process: an in-place patch.dict is quiet, a rebinding
+        names the container, a module swapped into sys.modules names
+        '<module>', and the restore undoes each;
+    (2) a REAL reload in a child process - the L330 mechanism, MEASURED:
+        exit_manager's CIRCUIT_BREAKERS stops being config's - is named, and
+        the restore joins them again;
+    (3) the wiring end to end: a child pytest session with this conftest as
+        its plugin, over a polluter and a test_bug_30-shaped victim - the
+        polluter ERRORS at teardown citing S6-B3386 and the victim PASSES."""
+    import json as _j
+    import os as _os
+    import subprocess as _sp
+    import sys as _s
+    import types as _t
+    import unittest.mock as _m
+    from pathlib import Path as _P
+    import pytest as _pt
+    from backtest import config as _cfg
+    from backtest.tests.config_disk import container_snapshot, rebound_names, restore_snapshot
+    root = _P(__file__).resolve().parents[2]
+    snap = container_snapshot()                                              # (1)
+    assert snap["<module>"] is _s.modules["backtest.config"]
+    assert snap["CIRCUIT_BREAKERS"] is _cfg.CIRCUIT_BREAKERS and len(snap) > 10, len(snap)
+    assert rebound_names(snap) == [] and rebound_names(None) == []
+    with _m.patch.dict("backtest.config.CIRCUIT_BREAKERS", {"level_5_tighten_in_crisis": False}):
+        assert rebound_names(snap) == []
+    original = _cfg.CIRCUIT_BREAKERS
+    monkeypatch.setattr(_cfg, "CIRCUIT_BREAKERS", dict(original))
+    assert rebound_names(snap) == ["CIRCUIT_BREAKERS"]
+    restore_snapshot(snap)
+    assert _cfg.CIRCUIT_BREAKERS is original and rebound_names(snap) == []
+    with _pt.MonkeyPatch.context() as mp:
+        mp.setitem(_s.modules, "backtest.config", _t.ModuleType("backtest.config"))
+        assert rebound_names(snap) == ["<module>"]
+        restore_snapshot(snap)
+        assert rebound_names(snap) == []
+    assert _s.modules["backtest.config"] is _cfg
+    child = """
+import importlib, json, sys
+sys.path.insert(0, sys.argv[1])
+import backtest.engine.exit_manager as em
+import backtest.config as c
+from backtest.tests.config_disk import container_snapshot, rebound_names, restore_snapshot
+snap = container_snapshot()
+importlib.reload(c)
+names = rebound_names(snap)
+split = em.CIRCUIT_BREAKERS is not c.CIRCUIT_BREAKERS
+restore_snapshot(snap)
+print(json.dumps({"names": names, "split": split,
+                  "rejoined": em.CIRCUIT_BREAKERS is c.CIRCUIT_BREAKERS,
+                  "after": rebound_names(snap)}))
+"""
+    r = _sp.run([_s.executable, "-c", child, str(root)], cwd=root,       # (2)
+                capture_output=True, text=True, timeout=300)
+    assert r.returncode == 0, r.stderr[-2000:]
+    got = _j.loads(r.stdout.strip().splitlines()[-1])
+    assert {"CIRCUIT_BREAKERS", "TRAILING_STOP"} <= set(got["names"]), got["names"][:10]
+    assert got["split"] is True and got["rejoined"] is True and got["after"] == [], got
+    tfile = tmp_path / "test_b3386_wiring.py"                              # (3)
+    tfile.write_text(
+        "import importlib\n\n\n"
+        "def test_a_polluter():\n"
+        "    import backtest.engine.exit_manager  # binds CIRCUIT_BREAKERS by value\n"
+        "    import backtest.config as cfg\n"
+        "    importlib.reload(cfg)\n\n\n"
+        "def test_b_victim():\n"
+        "    import unittest.mock as mock\n"
+        "    from backtest.engine import exit_manager as em\n"
+        "    with mock.patch.dict('backtest.config.CIRCUIT_BREAKERS',\n"
+        "                         {'level_5_tighten_in_crisis': False}):\n"
+        "        assert em.CIRCUIT_BREAKERS['level_5_tighten_in_crisis'] is False\n",
+        encoding="utf-8")
+    env = dict(_os.environ, PYTHONPATH=str(root))
+    r = _sp.run([_s.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
+                 "-p", "backtest.tests.conftest", str(tfile)],
+                cwd=tmp_path, env=env, capture_output=True, text=True, timeout=600)
+    out = r.stdout + r.stderr
+    summary = [ln for ln in out.splitlines() if " in " in ln
+               and ("passed" in ln or "error" in ln or "failed" in ln)]
+    assert r.returncode == 1 and summary, out[-3000:]
+    # the polluter's CALL passes and its TEARDOWN errors; the victim passes -
+    # 'failed' would mean the objects were not put back
+    assert summary[-1].startswith("2 passed, 1 error in "), summary[-1]
+    assert "ERROR at teardown of test_a_polluter" in out and "S6-B3386" in out, out[-3000:]
+    assert "CIRCUIT_BREAKERS" in out

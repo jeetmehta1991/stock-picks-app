@@ -166,3 +166,46 @@ def _engine_owner_word():
     finally:
         if prev is None:
             os.environ.pop(key, None)
+
+
+_CFG_SNAPSHOT = pytest.StashKey[dict]()
+
+
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_setup(item):
+    """S6-B3386 (B3139q-r162b): before ANY fixture of the test runs, snapshot
+    backtest.config's module object and its module-level containers - the
+    objects a module that imported them by value holds (exit_manager's
+    CIRCUIT_BREAKERS and TRAILING_STOP). A wrapper, not a fixture, so no
+    fixture order can put a monkeypatch outside the bracket."""
+    from backtest.tests.config_disk import container_snapshot
+    item.stash[_CFG_SNAPSHOT] = container_snapshot()
+    return (yield)
+
+
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_teardown(item, nextitem):
+    """S6-B3386 (B3139q-r162b, CHECKLIST #209): after EVERY finalizer -
+    monkeypatch's restore included - the test must leave those objects where
+    it found them. MEASURED three times (L330, L484, L1002): an in-process
+    importlib.reload(backtest.config) rebinds them, the polluter passes, and
+    test_bug_30 / test_bug_232 fail later in the full suite while passing
+    alone. Here the POLLUTER fails, by name, and the objects are put back so
+    no later test inherits the damage."""
+    result = yield
+    from backtest.tests.config_disk import rebound_names, restore_snapshot
+    snap = item.stash.get(_CFG_SNAPSHOT, None)
+    moved = rebound_names(snap)
+    if moved:
+        restore_snapshot(snap)
+        shown = ", ".join(moved[:8]) + (" ..." if len(moved) > 8 else "")
+        raise AssertionError(
+            f"S6-B3386 / #209: {item.nodeid} left backtest.config rebound - "
+            f"{shown} ({len(moved)}) are no longer the objects modules imported "
+            "by value hold, so every later test that patches one fails while "
+            "passing alone (L330, L484). An in-process importlib.reload("
+            "backtest.config) does this: set attributes for the test "
+            "(monkeypatch.setattr; scripts/config_knobs.applied in a script), "
+            "read a committed value with config_disk.disk_value, or reload in a "
+            "child process. The objects were put back - only this test fails.")
+    return result

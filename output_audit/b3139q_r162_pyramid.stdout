@@ -1,0 +1,160 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 18%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+..............................................s......................... [ 33%]
+....................s.................................................s. [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+..................................................................F.F... [ 96%]
+.....................................................................    [100%]
+================================== FAILURES ===================================
+______________ test_bug_30_check_circuit_breakers_gate_on_config ______________
+
+    def test_bug_30_check_circuit_breakers_gate_on_config():
+        """BUG-30 behavior: check_circuit_breakers_all skips Level-5 entry
+        when level_5_tighten_in_crisis = False even if VIX is in crisis.
+        """
+        import unittest.mock as mock
+        from datetime import date
+        from backtest.engine.exit_manager import (
+            OpenTrade, check_circuit_breakers_all,
+        )
+        trade = OpenTrade(
+            ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+            direction="long", strategy="bug30_smoke", category="momentum",
+            sector="Tech", initial_stop=90.0, trailing_stop=95.0,
+            highest_close=98.0, regime_at_entry="neutral",
+        )
+        # Crisis VIX = 50 (above 40 threshold)
+        # Default ON: Level-5 tighten_stop entry must be in results
+        with mock.patch.dict("backtest.config.CIRCUIT_BREAKERS",
+                              {"level_5_tighten_in_crisis": True}):
+            from backtest.engine import exit_manager as _em
+            out_on = _em.check_circuit_breakers_all(
+                trade, today_open=100.0, prev_close=100.0, vix_value=50.0,
+            )
+        assert any(r["level"] == 5 for r in out_on), "Level-5 must fire when toggle ON"
+        # Toggled OFF: Level-5 entry must NOT appear
+        with mock.patch.dict("backtest.config.CIRCUIT_BREAKERS",
+                              {"level_5_tighten_in_crisis": False}):
+            from backtest.engine import exit_manager as _em
+            out_off = _em.check_circuit_breakers_all(
+                trade, today_open=100.0, prev_close=100.0, vix_value=50.0,
+            )
+>       assert not any(r["level"] == 5 for r in out_off), (
+            "Level-5 must be suppressed when toggle OFF"
+        )
+E       AssertionError: Level-5 must be suppressed when toggle OFF
+E       assert not True
+E        +  where True = any(<generator object test_bug_30_check_circuit_breakers_gate_on_config.<locals>.<genexpr> at 0x000001E20EAF3850>)
+
+backtest\tests\test_integration.py:1431: AssertionError
+___________ test_bug_232_intraday_extreme_uses_today_high_for_longs ___________
+
+    def test_bug_232_intraday_extreme_uses_today_high_for_longs():
+        """BUG-232 behavior: when ratchet_from=intraday_extreme, longs ratchet
+        from today_high rather than today_close. Synthetic trade with high=102
+        + close=100 + highest_close=101 advances the stop only under intraday_extreme.
+        """
+        import unittest.mock as mock
+        from datetime import date
+        from backtest.engine.exit_manager import OpenTrade, update_trailing_stop
+        # Build a long trade with prior highest_close 101, current trail at 91 (10% below 101)
+        # Batch 281 updated default trail_pct 0.10 -> 0.15. Fixture must use a
+        # starting trailing_stop that's lower than highest_close * (1 - trail_pct)
+        # so an advance is detectable. With highest=101 + trail=0.15, the
+        # threshold is 85.85; we use trailing_stop=85.0 so any advance is visible.
+        from backtest.config import TRAILING_STOP as _TS
+        _trail_pct = _TS["trail_pct"]
+        _initial_trail = 85.0  # below the post-step expected stop for both modes
+        base_trade = lambda: OpenTrade(
+            ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+            direction="long", strategy="bug232_smoke", category="momentum",
+            sector="Tech", initial_stop=80.0, trailing_stop=_initial_trail,
+            highest_close=101.0, regime_at_entry="neutral",
+        )
+        # Close-mode (default): today_close=100 < highest 101 -> stop unchanged
+        with mock.patch.dict("backtest.config.TRAILING_STOP",
+                              {"ratchet_from": "close"}):
+            t = base_trade()
+            # Reimport to pick up the patched module-level constant
+            from backtest.engine import exit_manager as _em
+            _em.update_trailing_stop(t, today_close=100.0, vix_value=None,
+                                      today_high=102.0, today_low=99.0)
+            assert t.trailing_stop == _initial_trail, (
+                f"close-mode: today_close < highest -> stop should not advance "
+                f"(got {t.trailing_stop}, expected {_initial_trail})"
+            )
+            assert t.highest_close == 101.0
+        # Intraday-extreme mode: today_high=102 > highest 101 -> stop advances
+        with mock.patch.dict("backtest.config.TRAILING_STOP",
+                              {"ratchet_from": "intraday_extreme"}):
+            t = base_trade()
+            from backtest.engine import exit_manager as _em
+            _em.update_trailing_stop(t, today_close=100.0, vix_value=None,
+                                      today_high=102.0, today_low=99.0)
+            # New stop = 102 * (1 - trail_pct); max(85.0, new) should be new.
+            expected_advance = 102.0 * (1 - _trail_pct)
+>           assert t.trailing_stop == expected_advance, (
+                f"intraday_extreme: stop should advance to {expected_advance} "
+                f"(got {t.trailing_stop}; trail_pct={_trail_pct})"
+            )
+E           AssertionError: intraday_extreme: stop should advance to 86.7 (got 85.0; trail_pct=0.15)
+E           assert 85.0 == 86.7
+E            +  where 85.0 = OpenTrade(ticker='TEST', entry_date=datetime.date(2024, 1, 1), entry_price=100.0, direction='long', strategy='bug232_s..._signal='none', aaii_bullish=None, aaii_bearish=None, aaii_signal='neutral', cnn_fg_score=None, cnn_fg_label='Neutral').trailing_stop
+
+backtest\tests\test_integration.py:1490: AssertionError
+============================== warnings summary ===============================
+backtest/tests/test_unit.py::test_b3383_return_correlation_states_its_basis
+backtest/tests/test_unit.py::test_b3383_return_correlation_states_its_basis
+  C:\Users\jeetm\Github\stock-picks-app\scripts\build_strategy_return_correlation.py:116: RuntimeWarning: invalid value encountered in sqrt
+    return s_bar * np.sqrt(n / (1 + (n - 1) * rho))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_integration.py::test_bug_30_check_circuit_breakers_gate_on_config
+FAILED backtest/tests/test_integration.py::test_bug_232_intraday_extreme_uses_today_high_for_longs
+2 failed, 1936 passed, 3 skipped, 2 warnings in 1897.03s (0:31:37)
+
+pytest_exit=1
+tree=SAME
+exit=1
+elapsed_s=1930
+chain_inflight=none
+chain_inflight_start=none
+chain_inflight_end=none
+power_start=ac
+power_end=ac
+engine_inflight=none
+engine_inflight_start=none
+engine_inflight_end=none
+engine_dead_within_window=none
+beside_wave_override=none
+output_audit_created=none
+output_audit_modified_tracked=none
+output_audit_modified_untracked=none
+readset=CLEAN
+readset_rerun=none
+readset_suite_writes=2: output_audit/postconfig_ledger.json<-test_b2116_run_wave_resume_loop_both_ways; output_audit/postconfig_report.md<-test_b2116_run_wave_resume_loop_both_ways
+moved_line_citations=none
+pregate=PASSED on this tree (120 tests, 2026-10-31T03:41:00Z)
+runbook_drift=tickets 3, not named in the runbook 1 (S6-B3385); lessons 0, not cited 0
+stamp_binding=already-red

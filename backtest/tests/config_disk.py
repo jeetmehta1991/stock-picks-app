@@ -64,3 +64,54 @@ def disk_value(name: str, path: Path | None = None):
             f"{name!r} is assigned a non-literal in config.py, so its on-disk value cannot be "
             f"read without executing the module: {ast.dump(found)[:120]}"
         ) from exc
+
+
+# S6-B3386 (B3139q-r162b): THE DETECTOR THE RULE NEVER HAD. CHECKLIST #209 says never reload a
+# config module inside a test, and it stayed prose through three instances - L330 (this file's
+# reason to exist), L484, and L1002, where a spot-check script reloaded backtest.config when a
+# test called it in process. Each was found only by bisecting a full run, because the polluter
+# passes and its victims pass alone. conftest.py wraps every test with the calls below: a
+# snapshot before the test's first fixture, a comparison after its last finalizer - so the
+# POLLUTER fails, by name, in any order, alone or in the suite.
+
+def container_snapshot():
+    """The live backtest.config module and each module-level dict, list and set it holds, by
+    REFERENCE (holding them keeps their ids from being reused). Imports the module first, so a
+    test that imports it, binds it by value and reloads it is seen even when it runs first."""
+    import importlib
+    import sys
+    importlib.import_module("backtest.config")
+    mod = sys.modules["backtest.config"]
+    snap = {k: v for k, v in vars(mod).items()
+            if isinstance(v, (dict, list, set)) and not k.startswith("__")}
+    snap["<module>"] = mod
+    return snap
+
+
+def rebound_names(snap):
+    """The names whose object is no longer the snapshot's - ['<module>'] when the module itself
+    was replaced in sys.modules. [] when there is no snapshot."""
+    import sys
+    if not snap:
+        return []
+    mod = sys.modules.get("backtest.config")
+    if mod is not snap["<module>"]:
+        return ["<module>"]
+    live = vars(mod)
+    return sorted(k for k, v in snap.items() if k != "<module>" and live.get(k) is not v)
+
+
+def restore_snapshot(snap):
+    """Put the snapshot's objects back, so one polluter fails one test rather than every later
+    test that patches an object a by-value importer holds."""
+    import sys
+    if not snap:
+        return
+    mod = snap["<module>"]
+    sys.modules["backtest.config"] = mod
+    pkg = sys.modules.get("backtest")
+    if pkg is not None:
+        setattr(pkg, "config", mod)
+    for k, v in snap.items():
+        if k != "<module>":
+            setattr(mod, k, v)
