@@ -1,0 +1,26 @@
+{
+  "strategy": "squeeze_breakout",
+  "cube": "C:\\Users\\jeetm\\Github\\stock-picks-app\\output_b3248sq_p2_1p5_p2_1p5",
+  "seed": 42,
+  "sampled": 50,
+  "agree": 50,
+  "disagree": 0,
+  "skipped": 0,
+  "execution_failures": 0,
+  "config": {
+    "kc_mult": "1.5",
+    "bb_std": "2.0",
+    "mom_window": "20",
+    "kc_period": "20",
+    "prior_n": "0"
+  },
+  "producer": "backtest.signals.technical:compute_squeeze",
+  "keys_by_leg": {
+    "long": "squeeze_fire_up"
+  },
+  "leg_a": "producer_legs_a:squeeze_fire",
+  "detail": [],
+  "skips": [],
+  "provenance": "RANDOM-SAMPLING-OF-REAL-DATA (the seed picks which landed fires; every value is measured)",
+  "generator": "scripts/spot_check_producer.py"
+}
