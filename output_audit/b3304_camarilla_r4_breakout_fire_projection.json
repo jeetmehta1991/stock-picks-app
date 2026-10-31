@@ -1,0 +1,50 @@
+{
+ "strategy": "camarilla_r4_breakout",
+ "generator": "scripts/project_knob_fires.py",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "universe": "output_audit/_sweep_200.txt",
+ "sample": {
+  "seed": 42,
+  "tickers": 200,
+  "with_bars": 196,
+  "missing": [
+   "ATVI",
+   "FISV",
+   "PXD",
+   "TWTR"
+  ],
+  "window_bars": 48586,
+  "workers": 4
+ },
+ "producer": "backtest.signals.technical:compute_pivots",
+ "keys_by_leg": {
+  "long": "above_cam_r4",
+  "short": "below_cam_s4"
+ },
+ "production_fired_bars": {
+  "long": 11044,
+  "short": 9824
+ },
+ "production_projection": {
+  "projected_current_gate": 282.4,
+  "source": "output_audit/strategy_optimisation_status.json"
+ },
+ "arms": [
+  {
+   "arm": {
+    "CAM_R4_S4_DIST": "0.45"
+   },
+   "fired_bars": {
+    "long": 13077,
+    "short": 11734
+   },
+   "ratio_to_production": 1.1889,
+   "projected_step1_fires": 335.8
+  }
+ ],
+ "assumption": "the strategy's other gate legs fire independently of the knob - not measured; not a bound in either direction (L812, occupancy unsimulated)",
+ "provenance": "RANDOM-SAMPLING-OF-REAL-DATA (the seed picks which tickers; every count is measured on cached OHLCV)"
+}

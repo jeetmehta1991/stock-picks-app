@@ -28,6 +28,16 @@ REFUSES - grading on would file one cube under another config's name. The
 R5 cube ran no arm: it is graded only at the production vector, and its
 fires must reproduce the registered baseline.
 
+THE LEVELS IT RAN ARE WRITTEN AS COVERAGE (S6-B3248, B3139q-r165):
+`resim_configs` names, by param NAME, every knob the verified arm ran away
+from production - the field band_coverage_gate counts as engine resim
+evidence and offline_holdout_read names in its refusal. A grid_auto's
+landed config is left to the operator's judgement because nothing checks it
+against the run; here the value was checked against arms[0].env above, so
+the judgement is the refusal. Two params on one actuator (Camarilla's R4 and
+S4 distance) are both named: one run moves both. The R5 cube and a
+production arm name none.
+
 LEGS: the union of the registry's per-param `legs` fields, else the
 directions the cube's strategy rows carry. Each leg's fire count is written
 beside the cells, so a leg that fired nothing shows as 0, never as absence.
@@ -151,6 +161,27 @@ def _baseline_fires(strat: str) -> int:
     return int(b.get("cube_fires", b["fires"]))
 
 
+def resim_configs(strat: str, knobs: list, flags: dict) -> list:
+    """[{param name: level}] - the knobs this verified arm ran AWAY from
+    production, named as the coverage gate reads them (by param NAME,
+    compared by value); every param on a moved actuator is named. [] at
+    the production vector."""
+    from producer_variant_table import SPECS
+    params = SPECS[strat].get("params") or []
+    cfg = {}
+    for _pid, key, env, prod in knobs:
+        if _norm(flags[key]) in ("", _norm(prod)):
+            continue
+        try:
+            val = float(str(flags[key]).strip())
+        except (TypeError, ValueError):
+            val = str(flags[key]).strip()
+        for p in params:
+            if p.get("env") == env:
+                cfg[p["param"]] = val
+    return [cfg] if cfg else []
+
+
 def main(argv=None) -> int:
     pre = argparse.ArgumentParser(add_help=False)
     pre.add_argument("--strategy", required=True)
@@ -248,6 +279,9 @@ def main(argv=None) -> int:
            "cube": str(cube_dir) if cube_dir else str(R5_DIR),
            "config": {f"{pid}_{key}": flags[key] for pid, key, _e, _x in knobs},
            "manifest_check": check,
+           # S6-B3248 (r165): the engine levels this verified arm ran - the
+           # coverage gate's resim evidence (none on R5 or at production)
+           "resim_configs": [] if is_r5 else resim_configs(strat, knobs, flags),
            "basis": ("net: pnl_pct clipped to +/-WINSORIZE then minus "
                      "COST_BPS/100 - roster_core.net_pnl"),
            "reproduction": repro,

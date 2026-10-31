@@ -128,14 +128,36 @@ def build() -> dict:
         "n_nonterminal": len(open_rows),
         "next_mandated_action": next_action,
     }
-    try:
-        out_path().write_text(json.dumps(state, indent=1) + "\n",
-                       encoding="utf-8", newline="\n")
-    except OSError as e:
-        # #122: a degraded output announces itself - the header is the
-        # deliverable and still returns, but the missing file copy is said.
-        print(f"[workflow_state] state file not written: {e}", file=sys.stderr)
+    # S6-B3390 (B3139q-r165): the hook calls build() on every owner message
+    # AND every system notification, so the copy is rewritten only when the
+    # STATE moved - every field but the derivation stamp. MEASURED at
+    # B3139q-r164 (times from the transcript's hook records): a rewrite at
+    # 09:24:02Z in a full gate's main pass and one at 09:42:21Z inside its
+    # read-set re-run made it SUSPECT, exit 6. The file's stamp is therefore
+    # the time the state last CHANGED; the banner still prints this call's
+    # own stamp.
+    if not _same_state(out_path(), state):
+        try:
+            out_path().write_text(json.dumps(state, indent=1) + "\n",
+                           encoding="utf-8", newline="\n")
+        except OSError as e:
+            # #122: a degraded output announces itself - the header is the
+            # deliverable and still returns, but the missing file copy is said.
+            print(f"[workflow_state] state file not written: {e}", file=sys.stderr)
     return state
+
+
+def _same_state(path: Path, state: dict) -> bool:
+    """True when `path` holds `state` in every field but generated_utc. An
+    unreadable or absent copy is not the same state - it is written."""
+    try:
+        prev = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not isinstance(prev, dict):
+        return False
+    return ({k: v for k, v in prev.items() if k != "generated_utc"}
+            == {k: v for k, v in state.items() if k != "generated_utc"})
 
 
 def banner() -> str:

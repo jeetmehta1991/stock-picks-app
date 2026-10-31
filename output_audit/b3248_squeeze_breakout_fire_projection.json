@@ -1,0 +1,107 @@
+{
+ "strategy": "squeeze_breakout",
+ "generator": "scripts/project_knob_fires.py",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "universe": "output_audit/_sweep_200.txt",
+ "sample": {
+  "seed": 42,
+  "tickers": 200,
+  "with_bars": 196,
+  "missing": [
+   "ATVI",
+   "FISV",
+   "PXD",
+   "TWTR"
+  ],
+  "window_bars": 48586,
+  "workers": 6
+ },
+ "producer": "backtest.signals.technical:compute_squeeze",
+ "keys_by_leg": {
+  "long": "squeeze_fire_up"
+ },
+ "production_fired_bars": {
+  "long": 1406
+ },
+ "production_projection": {
+  "projected_current_gate": 104.9,
+  "source": "output_audit/strategy_optimisation_status.json"
+ },
+ "arms": [
+  {
+   "arm": {
+    "SQUEEZE_KC_MULT": "1.5"
+   },
+   "fired_bars": {
+    "long": 2268
+   },
+   "ratio_to_production": 1.6131,
+   "projected_step1_fires": 169.2
+  },
+  {
+   "arm": {
+    "SQUEEZE_BB_STD": "2.5"
+   },
+   "fired_bars": {
+    "long": 2016
+   },
+   "ratio_to_production": 1.4339,
+   "projected_step1_fires": 150.4
+  },
+  {
+   "arm": {
+    "SQUEEZE_MOM_WINDOW": "10"
+   },
+   "fired_bars": {
+    "long": 2405
+   },
+   "ratio_to_production": 1.7105,
+   "projected_step1_fires": 179.4
+  },
+  {
+   "arm": {
+    "SQUEEZE_MOM_WINDOW": "30"
+   },
+   "fired_bars": {
+    "long": 1180
+   },
+   "ratio_to_production": 0.8393,
+   "projected_step1_fires": 88.0
+  },
+  {
+   "arm": {
+    "SQUEEZE_KC_PERIOD": "14"
+   },
+   "fired_bars": {
+    "long": 1289
+   },
+   "ratio_to_production": 0.9168,
+   "projected_step1_fires": 96.2
+  },
+  {
+   "arm": {
+    "SQUEEZE_KC_PERIOD": "30"
+   },
+   "fired_bars": {
+    "long": 1837
+   },
+   "ratio_to_production": 1.3065,
+   "projected_step1_fires": 137.1
+  },
+  {
+   "arm": {
+    "SQUEEZE_PRIOR_N": "1"
+   },
+   "fired_bars": {
+    "long": 22
+   },
+   "ratio_to_production": 0.0156,
+   "projected_step1_fires": 1.6
+  }
+ ],
+ "assumption": "the strategy's other gate legs fire independently of the knob - not measured; not a bound in either direction (L812, occupancy unsimulated)",
+ "provenance": "RANDOM-SAMPLING-OF-REAL-DATA (the seed picks which tickers; every count is measured on cached OHLCV)"
+}

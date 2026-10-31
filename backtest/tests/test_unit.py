@@ -70072,3 +70072,263 @@ def test_b3385_a_battery_family_with_free_levels_declares_its_grader():
         assert bool(hit) is refused, (s, hit)
         if refused:
             assert hit[0].startswith(f"{s}: ") and "before its next landing" in hit[0], hit
+
+
+def test_b3248i_knob_grader_writes_the_engine_levels_it_ran_as_coverage(tmp_path, monkeypatch):
+    """S6-B3248 / S6-B3304 (B3139q-r165): grade_knob_config names, in
+    `resim_configs`, every knob its VERIFIED arm ran away from production -
+    by param NAME, the field band_coverage_gate counts as engine resim
+    evidence and offline_holdout_read names in its refusal - so a landed
+    engine level reads TESTED at the coverage gate. r164 left the gap: no
+    grader wrote the field, so a landed level would have read untested.
+    Pinned on the synthetic family and run (the structure is the claim):
+    (1) a Keltner 1.5 arm names {kc_mult: 1.5} and nothing else, and the
+        coverage report then counts 1.5 tested while 2.5 stays untested;
+    (2) a production arm names nothing, and 1.5 reads untested again;
+    (3) one actuator on two params (Camarilla's R4 / S4 distance) names BOTH
+        params from one run, each covered on its own leg."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import grade_knob_config as gk
+    import band_coverage_gate as bcg
+    name = "x_b3248i_synth"
+    entry = _b3248e_entry(legs=("long", "short"))
+    monkeypatch.setitem(pvt.SPECS, name, entry)
+    days = [f"2023-{m:02d}-{d:02d}" for m in range(1, 13) for d in (3, 10, 17, 24)]
+    fires = [(day, "long" if k % 4 else "short") for k, day in enumerate(days)]
+    prod_env = {"SQUEEZE_KC_MULT": "2.0", "SQUEEZE_BB_STD": "2.0",
+                "SQUEEZE_MOM_WINDOW": "20", "SQUEEZE_KC_PERIOD": "20",
+                "SQUEEZE_PRIOR_N": "0"}
+    flag_of = {"SQUEEZE_KC_MULT": "--kc-mult", "SQUEEZE_BB_STD": "--bb-std",
+               "SQUEEZE_MOM_WINDOW": "--mom-window",
+               "SQUEEZE_KC_PERIOD": "--kc-period", "SQUEEZE_PRIOR_N": "--prior-n"}
+
+    def grade(tag, env):
+        run = _b3248e_run(tmp_path / tag, name, env, fires)
+        flags = [x for k, v in env.items() for x in (flag_of[k], v)]
+        out = tmp_path / f"{tag}.json"
+        assert gk.main(["--strategy", name, "--cube", str(run), "--out", str(out)]
+                       + flags) == 0
+        return _j.loads(out.read_text(encoding="utf-8"))
+    # (1) the moved knob, by param name, and the coverage it buys
+    g = grade("kc15", dict(prod_env, SQUEEZE_KC_MULT="1.5"))
+    assert g["resim_configs"] == [{"kc_mult": 1.5}], g["resim_configs"]
+    cov = {p["id"]: p for p in
+           bcg.coverage_report(name, [], spec=entry, arts=[g])["params"]}
+    assert 1.5 in cov["P2"]["tested"] and cov["P2"]["untested"] == [], cov["P2"]
+    assert cov["P3"]["untested"] == [2.5] and cov["P6"]["untested"] == [1], cov
+    # (2) the production arm runs no engine level
+    g0 = grade("prod", prod_env)
+    assert g0["resim_configs"] == [], g0["resim_configs"]
+    cov0 = {p["id"]: p for p in
+            bcg.coverage_report(name, [], spec=entry, arts=[g0])["params"]}
+    assert cov0["P2"]["untested"] == [1.5], cov0["P2"]
+    # (3) one actuator, two params, two legs - one run covers both
+    shared = (("P2", "dist", "CAM_R4_S4_DIST", 0.55, [0.55, 0.45]),
+              ("P4", "dist", "CAM_R4_S4_DIST", 0.55, [0.55, 0.45]))
+    cam = _b3248e_entry(knobs=shared)
+    cam["params"][1].update(param="R4 dist", legs=["long"])
+    cam["params"][2].update(param="S4 dist", legs=["short"])
+    monkeypatch.setitem(pvt.SPECS, name, cam)
+    run = _b3248e_run(tmp_path / "cam", name, {"CAM_R4_S4_DIST": "0.45"}, fires)
+    out = tmp_path / "cam.json"
+    assert gk.main(["--strategy", name, "--cube", str(run), "--out", str(out),
+                    "--dist", "0.45"]) == 0
+    gc = _j.loads(out.read_text(encoding="utf-8"))
+    assert gc["resim_configs"] == [{"R4 dist": 0.45, "S4 dist": 0.45}], gc["resim_configs"]
+    covc = bcg.coverage_report(name, [], spec=cam, arts=[gc])
+    assert {p["id"]: p["untested"] for p in covc["params"]} == {
+        "P1": [], "P2": [], "P4": []}, covc["params"]
+
+
+def test_b3248j_fire_projection_scales_the_measured_knob_ratio(tmp_path, monkeypatch, capsys):
+    """S6-B3248 / S6-B3304 (B3139q-r165): project_knob_fires is the FIRE
+    PROJECTION the owner's launch word names (2026-10-28, 'knob, tests, fire
+    projection, leverage line'; L685 asks a run that must generate its own
+    events for an expected count from a measured rate first). It counts the
+    registered producer's fired bars on a seeded sample, at production and
+    under each arm's knobs, and scales the status view's projected Step-1
+    fires at the current gate by the ratio. Pinned on a SYNTHETIC producer
+    that reads backtest.config at call time (the engine's convention, the
+    _squeeze_knobs precedent), run end to end:
+    (1) the arm's knob reaches the producer through config_knobs.applied -
+        the fixture's fired bars move with SQUEEZE_KC_MULT - and
+        backtest.config is the same object afterwards, its value restored
+        (no reload, S6-B3386);
+    (2) ratio = arm bars / production bars and projected = base x ratio,
+        written per arm beside the fired bars, the base's source and the
+        independence assumption;
+    (3) the refusals exit 2: an env that is not the strategy's knob, a level
+        off its band, a family with no producer, no status row."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import project_knob_fires as pkf
+    import phase_table
+    import spot_check_trades
+    import backtest.config as cfg_before
+    mod = tmp_path / "b3248j_prod.py"
+    mod.write_text("from backtest import config as _cfg\n"
+                   "def prod(df):\n"
+                   "    m = float(getattr(_cfg, 'SQUEEZE_KC_MULT', 2.0))\n"
+                   "    return {'squeeze_fire_up': float(df['close'].iloc[-1]) > 50.0 * m}\n",
+                   encoding="utf-8")
+    monkeypatch.syspath_prepend(str(tmp_path))
+    name = "x_b3248j_synth"
+    knobs = (("P2", "kc_mult", "SQUEEZE_KC_MULT", 2.0, [2.0, 1.5]),)
+    entry = _b3248e_entry(knobs=knobs,
+                          spot={"producer": "b3248j_prod:prod",
+                                "keys_by_leg": {"long": "squeeze_fire_up"}})
+    monkeypatch.setitem(pvt.SPECS, name, entry)
+    tickers = tmp_path / "tickers.txt"
+    tickers.write_text("AAA\r\nBBB\r\nCCC\r\n", encoding="utf-8")
+    monkeypatch.setattr(phase_table, "resolve", lambda step: {
+        "window": {"start": "2024-05-06", "end": "2024-08-01"},
+        "tickers_file": str(tickers)})
+    days = _pd.bdate_range("2024-03-01", "2024-09-30")
+    closes = {tk: [40.0 + ((k * 7 + off) % 80) for k in range(len(days))]
+              for tk, off in (("AAA", 0), ("BBB", 13), ("CCC", 29))}
+    monkeypatch.setattr(spot_check_trades, "load_ohlcv", lambda tk: _pd.DataFrame(
+        {"close": closes[tk]}, index=days))
+    status = tmp_path / "status.json"
+    status.write_text(_j.dumps({"rows": [{"strategy": name, "projected_current_gate": 200.0,
+                                          "projected_step1_fires": 999.0}]}), encoding="utf-8")
+    monkeypatch.setattr(pkf, "STATUS", status)
+    win = [(tk, k) for tk in closes for k, d in enumerate(days)
+           if "2024-05-06" <= str(d.date()) < "2024-08-01"]
+    want_prod = sum(closes[tk][k] > 100.0 for tk, k in win)
+    want_arm = sum(closes[tk][k] > 75.0 for tk, k in win)
+    assert 0 < want_prod < want_arm < len(win), (want_prod, want_arm, len(win))
+    out = tmp_path / "p.json"
+    assert pkf.main(["--strategy", name, "--arm", "SQUEEZE_KC_MULT=1.5",
+                     "--sample", "3", "--out", str(out)]) == 0
+    doc = _j.loads(out.read_text(encoding="utf-8"))
+    # (1) the arm's knob reached the producer; config is untouched afterwards
+    assert doc["production_fired_bars"] == {"long": want_prod}, doc
+    arm = doc["arms"][0]
+    assert arm["arm"] == {"SQUEEZE_KC_MULT": "1.5"}, arm
+    assert arm["fired_bars"] == {"long": want_arm}, arm
+    import backtest.config as cfg_after
+    assert cfg_after is cfg_before and cfg_after.SQUEEZE_KC_MULT == 2.0
+    # (2) the ratio and the scaled projection, from the CURRENT-gate base
+    assert arm["ratio_to_production"] == round(want_arm / want_prod, 4), arm
+    assert arm["projected_step1_fires"] == round(200.0 * want_arm / want_prod, 1), arm
+    assert doc["production_projection"]["projected_current_gate"] == 200.0
+    assert doc["sample"]["window_bars"] == len(win) and doc["sample"]["missing"] == []
+    assert "independently" in doc["assumption"] and doc["provenance"].startswith(
+        "RANDOM-SAMPLING-OF-REAL-DATA")
+    # (2b) --workers splits the tickers into chunks and sums them: run in
+    # process through a stand-in executor (a spawned worker would not see
+    # this test's patched loader), the totals equal the one-chunk run
+    import concurrent.futures as _cf
+
+    class _InProcess:
+        def __init__(self, max_workers=None):
+            self.max_workers = max_workers
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def map(self, fn, jobs):
+            return [fn(j) for j in jobs]
+    monkeypatch.setattr(_cf, "ProcessPoolExecutor", _InProcess)
+    out2 = tmp_path / "p2.json"
+    assert pkf.main(["--strategy", name, "--arm", "SQUEEZE_KC_MULT=1.5",
+                     "--sample", "3", "--workers", "2", "--out", str(out2)]) == 0
+    doc2 = _j.loads(out2.read_text(encoding="utf-8"))
+    assert doc2["sample"]["workers"] == 2, doc2["sample"]
+    assert doc2["production_fired_bars"] == doc["production_fired_bars"], doc2
+    assert doc2["arms"][0]["fired_bars"] == arm["fired_bars"], doc2["arms"]
+    assert doc2["sample"]["window_bars"] == len(win), doc2["sample"]
+    # (3) the refusals, each named
+    for argv, why in (
+            (["--arm", "SQUEEZE_BB_STD=2.5"], "is not a knob of this strategy"),
+            (["--arm", "SQUEEZE_KC_MULT=3.0"], "off the registered band")):
+        capsys.readouterr()
+        assert pkf.main(["--strategy", name, "--out", str(out)] + argv) == 2
+        assert why in capsys.readouterr().out
+    status.write_text(_j.dumps({"rows": []}), encoding="utf-8")
+    capsys.readouterr()
+    assert pkf.main(["--strategy", name, "--arm", "SQUEEZE_KC_MULT=1.5",
+                     "--out", str(out)]) == 2
+    assert "no status row" in capsys.readouterr().out
+    monkeypatch.setitem(pvt.SPECS, name, _b3248e_entry(knobs=knobs))
+    capsys.readouterr()
+    assert pkf.main(["--strategy", name, "--arm", "SQUEEZE_KC_MULT=1.5",
+                     "--out", str(out)]) == 2
+    assert "registers no producer" in capsys.readouterr().out
+
+
+def test_b3390_workflow_state_copy_moves_only_with_the_state(tmp_path, monkeypatch):
+    """S6-B3390 (B3139q-r165): build_workflow_state rewrites its file copy only
+    when the STATE moved - every field but generated_utc. The UserPromptSubmit
+    hook runs build() on every owner message and on every system notification
+    (Monitor events, agent hand-backs, task completions); MEASURED at
+    B3139q-r164 from the transcript's hook records, a rewrite at 09:24:02Z in
+    the gate's main pass and one at 09:42:21Z inside its read-set re-run made
+    it SUSPECT, exit 6 (output_audit/b3139q_r164_pyramid.stdout). Pinned on a
+    synthetic ledger:
+    (1) a second build() with nothing changed leaves the copy's bytes alone,
+        and the returned state still carries its own fresh stamp;
+    (2) a ledger change rewrites the copy;
+    (3) an unreadable copy, and a copy that is not an object, are rewritten."""
+    import json as _j
+    bws = _b3139_private("build_workflow_state.py", "bws_b3390")
+    import queue_state as qs
+    import pyramid_gate as pg
+    out = tmp_path / "ws.json"
+    monkeypatch.setenv("WORKFLOW_STATE_OUT", str(out))
+    monkeypatch.setattr(pg, "_engine_inflight", lambda: "none")
+    monkeypatch.setattr(pg, "_power_state", lambda: "ac")
+    stamps = iter(f"2026-01-01T00:00:{s:02d}Z" for s in range(0, 60, 5))
+
+    class _Clock:
+        @staticmethod
+        def gmtime():
+            return None
+
+        @staticmethod
+        def strftime(fmt, t):
+            return next(stamps)
+    monkeypatch.setattr(bws, "time", _Clock)
+
+    def ledger(rows):
+        (tmp_path / "EXECUTION_QUEUE.md").write_text("\n".join(
+            f"| **{t}** | **OPEN** | {p} | **head {t}** | _reason:_ {r} |"
+            for t, p, r in rows) + "\n", encoding="utf-8")
+        monkeypatch.setattr(qs, "tickets", lambda: {t: "OPEN" for t, _, _ in rows})
+        monkeypatch.setattr(bws, "ROOT", tmp_path)
+
+    rows = [("S6-B9001", "P2", "OPEN - test-only fix, next batch")]
+    ledger(rows)
+    st1 = bws.build()
+    first = out.read_bytes()
+    assert _j.loads(first)["generated_utc"] == st1["generated_utc"]
+    # (1) nothing moved but the stamp: the copy is not rewritten
+    st2 = bws.build()
+    assert st2["generated_utc"] != st1["generated_utc"], (st1, st2)
+    assert out.read_bytes() == first, "an unchanged state rewrote the copy"
+    # (2) the ledger moved: the copy follows
+    ledger(rows + [("S6-B9002", "P1", "OPEN - test-only fix, next batch")])
+    st3 = bws.build()
+    doc = _j.loads(out.read_text(encoding="utf-8"))
+    assert doc["n_nonterminal"] == 2 and doc["generated_utc"] == st3["generated_utc"], doc
+    # (3) an unreadable copy, then a non-object copy, are rewritten
+    for junk in ("not json", "[1, 2]"):
+        out.write_text(junk, encoding="utf-8")
+        st4 = bws.build()
+        assert _j.loads(out.read_text(encoding="utf-8"))["generated_utc"] == \
+            st4["generated_utc"], junk
