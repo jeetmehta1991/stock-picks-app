@@ -15,8 +15,10 @@ unions seven rules, each a LOWER bound - the full gate stays the authority:
   R2 named     tests whose source - or the source of a module-level name they
                reach, transitively - names a changed file's path, file name or
                stem as a whole word;
-  R3 scanner   tests that walk the source tree (rglob / os.walk / a *.py
-               glob, reached the same way), selected by ANY changed .py file;
+  R3 scanner   tests that walk the source tree (rglob / os.walk / a glob of
+               .py files by ANY pattern - "*.py" or a census such as
+               "grade_free_levels_*.py", S6-B3387 - reached the same way),
+               selected by ANY changed .py file;
   R4 edited    test functions whose own lines the diff touches;
   R5 self-read tests that read a CHANGED test module's own source - via
                __file__, or by naming the module in a quoted literal -
@@ -56,6 +58,11 @@ ROOT = Path(__file__).resolve().parent.parent
 TEST_FILES = ("backtest/tests/test_unit.py", "backtest/tests/test_integration.py")
 _SCAN_MARKS = (".rglob(", "os.walk(", '.glob("*.py")', ".glob('*.py')",
                '.glob("**/*.py")', ".glob('**/*.py')")
+# S6-B3387 (B3139q-r163b): a glob of .py files by NAME PATTERN is a scan too.
+# The census freezing how many free-level graders exist reads
+# glob("grade_free_levels_*.py"), which no literal above matches - so r163
+# added the sixth grader, the census went unselected, and the gate went RED
+_PY_GLOB = re.compile(r"\.glob\(\s*f?[\"'][^\"']*\.py[\"']")
 # S6-B3283 (R5): a test that opens its own module's source
 _SELF_READ = re.compile(r"\(__file__\)\s*\.\s*read_(?:text|bytes)\(|open\(\s*__file__")
 
@@ -295,7 +302,8 @@ def select(changed, root=ROOT, readset=None, edited=None, repo_readset=None,
                 if any(_names(text, tok) for tok in _tokens(c)):
                     add(nid, "R2")
                     break
-            if py_changed and any(m in text for m in _SCAN_MARKS):
+            if py_changed and (any(m in text for m in _SCAN_MARKS)
+                               or _PY_GLOB.search(text)):
                 add(nid, "R3")
             if lines and any(node.lineno <= ln <= (node.end_lineno or node.lineno)
                              for ln in lines):

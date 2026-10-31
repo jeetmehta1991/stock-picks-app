@@ -49190,7 +49190,8 @@ def test_b3139_every_free_level_adapter_windows_its_occupancy_block():
     legs = sorted(_SCRIPTS_B3135.glob("grade_free_levels_*.py"))
     # B3140: + grade_free_levels_pairs.py (the fourth family's leg)
     # B3139q-r70a: + grade_free_levels_npoc.py (the fifth, S6-B3171a)
-    assert len(legs) == 5, [p.name for p in legs]
+    # B3139q-r163: + grade_free_levels_knob.py (the registry-driven sixth, S6-B3248)
+    assert len(legs) == 6, [p.name for p in legs]
     for leg in legs:
         tree = ast.parse(leg.read_text(encoding="utf-8"))
         calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
@@ -69577,6 +69578,205 @@ def test_b3248f_producer_spot_check_three_legs(tmp_path, monkeypatch):
     assert pla._in_squeeze(fc, fh, fl, n - 1, 2.0, 20, 2.0) is False
 
 
+def test_b3248g_landed_squeeze_rooms_match_the_squeeze_arithmetic():
+    """S6-B3248 (B3139q-r163): squeeze_derived_landed derives the squeeze rooms
+    at a run's LANDED Keltner multiplier and Bollinger std from the persisted
+    production-geometry edges. (1) at production it IS squeeze_derived.derive,
+    to the last bit (that file stays byte-identical: the pre-registered depth
+    sweep recorded its sha256, S6-B3294); (2) at every landed pair of the band
+    the rooms decide membership exactly as the squeeze arithmetic does at the
+    tested level, on a grid of geometries; (3) derivable refuses a Keltner
+    period other than 20 and a prior-squeeze requirement, and accepts a
+    momentum window change; (4) a missing edge or a zero width reads None."""
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import squeeze_derived as sd
+    import squeeze_derived_landed as sdl
+    geoms = []
+    for km in (50.0, 100.0):
+        for atr in (0.5, 1.0, 2.0):
+            for sdv in (0.3, 0.7, 1.1):
+                for off in (-0.9, -0.2, 0.0, 0.35, 1.3):
+                    bmid = km + off * atr
+                    geoms.append({"bb_20_20_lower": bmid - 2.0 * sdv, "bb_20_20_upper": bmid + 2.0 * sdv,
+                                  "kc_lower": km - 2.0 * atr, "kc_upper": km + 2.0 * atr, "kc_mid": km})
+    for g in geoms:
+        a, b = sd.derive(g), sdl.derive(g, {})
+        assert (a["kc_room"], a["bb_room"]) == (b["kc_room"], b["bb_room"]), g
+        assert sdl.derive(g, {"SQUEEZE_KC_MULT": "2.0", "SQUEEZE_BB_STD": "2",
+                              "SQUEEZE_MOM_WINDOW": "10"})["kc_room"] == a["kc_room"]
+    # persisted edges are rounded one by one, so the recorded Keltner channel
+    # is often not exactly symmetric about kc_mid (MEASURED B3139q-r163: 563
+    # of R5's 1141 squeeze fires, the gap up to 0.0001); squeeze_derived reads
+    # kc_lower as recorded while the general form rebuilds it as
+    # 2 kc_mid - kc_upper, so production must DELEGATE. The round-number grid
+    # above cannot tell the two apart; this rounded geometry can (the control:
+    # the general form's bb_room is not squeeze_derived's on it)
+    rnd = {"bb_20_20_lower": 96.3015, "bb_20_20_upper": 101.4489,
+           "kc_lower": 97.6791, "kc_upper": 102.5678, "kc_mid": 100.1234}
+    assert rnd["kc_lower"] != 2 * rnd["kc_mid"] - rnd["kc_upper"]
+    a, b = sd.derive(rnd), sdl.derive(rnd, {})
+    assert (a["kc_room"], a["bb_room"]) == (b["kc_room"], b["bb_room"]), (a, b)
+    r_atr = (rnd["kc_upper"] - rnd["kc_mid"]) / 2.0
+    r_sd = (rnd["bb_20_20_upper"] - rnd["bb_20_20_lower"]) / 4.0
+    r_mid = (rnd["bb_20_20_upper"] + rnd["bb_20_20_lower"]) / 2.0
+    general_bb = min(rnd["kc_mid"] + 2.0 * r_atr - r_mid, r_mid - rnd["kc_mid"] + 2.0 * r_atr) / r_sd
+    assert general_bb != a["bb_room"], (general_bb, a["bb_room"])
+
+    def out_of_squeeze(g, m, k):
+        atr = (g["kc_upper"] - g["kc_mid"]) / 2.0
+        sdv = (g["bb_20_20_upper"] - g["bb_20_20_lower"]) / 4.0
+        bmid = (g["bb_20_20_upper"] + g["bb_20_20_lower"]) / 2.0
+        return not (bmid - k * sdv > g["kc_mid"] - m * atr and bmid + k * sdv < g["kc_mid"] + m * atr)
+    checked = 0
+    for m0, k0 in ((1.5, 2.0), (2.0, 2.5), (2.5, 1.5), (1.5, 2.5)):
+        env = {"SQUEEZE_KC_MULT": str(m0), "SQUEEZE_BB_STD": str(k0)}
+        for g in geoms:
+            d = sdl.derive(g, env)
+            for m in (1.5, 2.0, 2.5, 3.0):
+                if abs(d["kc_room"] - m) > 1e-9:
+                    assert (d["kc_room"] >= m) == out_of_squeeze(g, m, k0), (g, m0, k0, m)
+                    checked += 1
+            for k in (1.0, 1.5, 2.0, 2.5):
+                if abs(d["bb_room"] - k) > 1e-9:
+                    assert (d["bb_room"] <= k) == out_of_squeeze(g, m0, k), (g, m0, k0, k)
+                    checked += 1
+    assert checked > 1000, checked
+    assert sdl.derivable({}) == "" and sdl.derivable({"SQUEEZE_MOM_WINDOW": "30"}) == ""
+    assert "Keltner period" in sdl.derivable({"SQUEEZE_KC_PERIOD": "14"})
+    assert "prior squeeze" in sdl.derivable({"SQUEEZE_PRIOR_N": "1"})
+    assert sdl.derivable({"SQUEEZE_KC_PERIOD": "", "SQUEEZE_PRIOR_N": " "}) == ""
+    assert sdl.derive(geoms[0], {"SQUEEZE_KC_PERIOD": "30"})["kc_room"] is None
+    gap = dict(geoms[0])
+    del gap["kc_mid"]
+    assert sdl.derive(gap, {"SQUEEZE_KC_MULT": "1.5"})["kc_room"] is None
+    flat = dict(geoms[0], kc_upper=geoms[0]["kc_mid"])
+    assert sdl.derive(flat, {"SQUEEZE_KC_MULT": "1.5"})["kc_room"] is None
+
+
+def _b3248h_signals(k, lift=0.0):
+    """SYNTHETIC persisted geometry for fire k: the Keltner channel 98..102
+    around 100 (ATR 1), the Bollinger band outside it on the upper side by a
+    margin that grows with k, so a tighter Keltner level keeps fewer fires;
+    kc_room = upper Bollinger edge - 100 = 2.2 .. 3.65 (+ lift)."""
+    up = 102.2 + lift + 0.05 * (k % 30)
+    return {"bb_20_20_lower": 98.6, "bb_20_20_upper": up, "kc_lower": 98.0,
+            "kc_upper": 102.0, "kc_mid": 100.0, "q": 2.5 + 0.05 * (k % 30)}
+
+
+def test_b3248h_free_level_leg_grades_tighter_levels_off_the_landed_cube(tmp_path, monkeypatch, capsys):
+    """S6-B3248 / S6-B3304 (B3139q-r163): grade_free_levels_knob grades a
+    family's FREE levels off the landed cube - axes from the registry
+    (tools.free_levels.ops on params with signal_keys), each level a filter of
+    the landed fires, NET, in-sample. On a SYNTHETIC family and runs (the
+    structure is the claim): (1) only levels STRICTLY TIGHTER than the landed
+    one are graded, the landed level read from the arm's env; (2) the
+    reproduction gate refuses a run whose fires do not pass their landed
+    level; (3) the landed rows reproduce the family grid grade_knob_config
+    wrote for the same run, and a tampered or missing grid refuses; (4) a
+    derive module's derivable() turns its axes NOT EVALUABLE with the reason
+    (a run at Keltner period 14), written, never graded; (5) a param limited
+    to one leg grades that leg only."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    import grade_knob_config as gk
+    import grade_free_levels_knob as gf
+    name = "x_b3248h_synth"
+    entry = _b3248e_entry(legs=("long", "short"))
+    by = {p["id"]: p for p in entry["params"]}
+    by["P2"].update({"signal_keys": ["kc_room"], "band": [2.0, 2.5, 3.0, 1.5],
+                     "free_band": [2.0, 2.5, 3.0], "resim_band": [1.5]})
+    entry["params"].append({"id": "P7", "param": "q floor", "production": 2.0,
+                            "band": [2.0, 2.6, 3.2], "free_band": [2.0, 2.6, 3.2],
+                            "resim_band": [], "env": None, "signal_keys": ["q"],
+                            "legs": ["long"]})
+    entry["tools"]["free_levels"] = {"script": "grade_free_levels_knob.py",
+                                     "ops": {"P2": "ge", "P7": "ge"},
+                                     "derive": "scripts/squeeze_derived_landed.py"}
+    monkeypatch.setitem(pvt.SPECS, name, entry)
+    days = [f"2023-{m:02d}-{d:02d}" for m in range(1, 13) for d in (3, 10, 17, 24)]
+    fires = [(day, "long" if k % 4 else "short") for k, day in enumerate(days)]
+    # six holdout-year fires: graded by neither leg (in-sample only) - a leg
+    # that read them would no longer reproduce the family grid's counts
+    fires += [(f"2025-{m:02d}-{d:02d}", "long") for m in (6, 7, 8) for d in (12, 16)]
+    prod = {"SQUEEZE_KC_MULT": "2.0", "SQUEEZE_BB_STD": "2.0", "SQUEEZE_MOM_WINDOW": "20",
+            "SQUEEZE_KC_PERIOD": "20", "SQUEEZE_PRIOR_N": "0"}
+
+    def landed(sub, env, lift=0.0):
+        """A run, its signals, and the family grid grade_knob_config writes
+        for it - the battery's two step-2 artifacts, side by side."""
+        run = _b3248e_run(tmp_path / sub, name, env, fires)
+        tl = _pd.read_csv(run / "trade_log.csv")
+        tl["signals_at_entry"] = [_j.dumps(_b3248h_signals(k, lift)) for k in range(len(tl))]
+        tl.to_csv(run / "trade_log.csv", index=False)
+        key = str(tmp_path / sub / "k")
+        flags = []
+        for pid, kk, envname, _prod in gk.knob_rows(name):
+            flags += ["--" + kk.replace("_", "-"), env[envname]]
+        assert gk.main(["--strategy", name, "--cube", str(run),
+                        "--out", key + "_grid_auto.json"] + flags) == 0
+        return run, key
+
+    def free(run, key):
+        rc_ = gf.main(["--cube", str(run), "--out", key + "_free_levels.json",
+                       "--strategy", name])
+        p = _P(key + "_free_levels.json")
+        return rc_, (_j.loads(p.read_text(encoding="utf-8")) if rc_ == 0 else None)
+
+    run, key = landed("prod", prod)
+    rc_, doc = free(run, key)
+    assert rc_ == 0
+    assert doc["levels_searched"] == {"P2": [2.5, 3.0], "P7": [2.6, 3.2]}, doc["levels_searched"]
+    assert doc["reproduction"]["rate"] == 1.0 and doc["score_reproduction"]["mismatches"] == []
+    assert doc["score_reproduction"]["compared"] >= 4, doc["score_reproduction"]
+    assert doc["basis"].startswith("net") and doc["not_evaluable"] == []
+    p7 = [r for r in doc["results"] if r["axis"] == "P7"]
+    assert p7 and {r["leg"] for r in p7} == {"long"}, p7               # (5)
+    p2 = sorted((r for r in doc["results"] if r["axis"] == "P2" and r["leg"] == "long"),
+                key=lambda r: r["level"])
+    assert [r["level"] for r in p2] == [2.5, 3.0] and p2[0]["fires_kept"] > p2[1]["fires_kept"] > 0
+    # (3) a tampered family grid refuses; a missing one refuses
+    gpath = _P(key + "_grid_auto.json")
+    g = _j.loads(gpath.read_text(encoding="utf-8"))
+    row = next(r for r in g["rows"] if r.get("is_sharpe") is not None and r["cell"] != "base:both")
+    row["is_sharpe"] = row["is_sharpe"] + 0.5
+    gpath.write_text(_j.dumps(g), encoding="utf-8")
+    capsys.readouterr()
+    assert free(run, key)[0] == 2
+    said = capsys.readouterr().out
+    assert "score reproduction" in said and "is_sharpe" not in said and "sharpe" in said, said
+    gpath.unlink()
+    assert free(run, key)[0] == 2
+    assert "family grid unreadable" in capsys.readouterr().out
+    # (2) at a landed Keltner 2.5 the fires whose room is 2.2 .. 2.45 should not
+    # exist - the logged signals disagree with the gate the run claims: refused
+    run25, key25 = landed("kc25", dict(prod, SQUEEZE_KC_MULT="2.5"))
+    capsys.readouterr()
+    assert free(run25, key25)[0] == 2
+    said = capsys.readouterr().out
+    assert "[FAIL] reproduction:" in said and "landed level" in said, said
+    # (1) lifted so every fire clears 2.5: only the tighter 3.0 is searched
+    runok, keyok = landed("kc25ok", dict(prod, SQUEEZE_KC_MULT="2.5"), lift=0.4)
+    rc_, dok = free(runok, keyok)
+    assert rc_ == 0 and dok["levels_searched"]["P2"] == [3.0], dok and dok["levels_searched"]
+    # (4) Keltner period 14: the derived axis is not evaluable, with its reason
+    run14, key14 = landed("p14", dict(prod, SQUEEZE_KC_PERIOD="14"))
+    rc_, d14 = free(run14, key14)
+    assert rc_ == 0 and [x["axis"] for x in d14["not_evaluable"]] == ["P2"], d14
+    assert "Keltner period" in d14["not_evaluable"][0]["reason"]
+    assert "P2" not in d14["levels_searched"] and d14["levels_searched"]["P7"] == [2.6, 3.2]
+    assert not [r for r in d14["results"] if r["axis"] == "P2"]
+
+
 def test_b3386_config_knobs_set_parse_and_restore(monkeypatch):
     """S6-B3386 (B3139q-r162b): scripts/config_knobs.applied sets knobs on
     backtest.config for a block WITHOUT reloading the module - the
@@ -69730,3 +69930,50 @@ print(json.dumps({"names": names, "split": split,
     assert summary[-1].startswith("2 passed, 1 error in "), summary[-1]
     assert "ERROR at teardown of test_a_polluter" in out and "S6-B3386" in out, out[-3000:]
     assert "CIRCUIT_BREAKERS" in out
+
+
+def test_b3387_pregate_selects_a_census_that_globs_by_name_pattern(tmp_path, monkeypatch):
+    """S6-B3387 (B3139q-r163b): r163 added scripts/grade_free_levels_knob.py,
+    and the census freezing how many free-level graders exist -
+    test_b3139_every_free_level_adapter_windows_its_occupancy_block, which
+    reads glob("grade_free_levels_*.py") - was not selected by the pre-gate:
+    R7 leaves an added .py to R3, and R3 matched only the literal "*.py"
+    globs. The gate went RED on it (output_audit/b3139q_r163_pyramid.stdout).
+    (1) the incident's shape - a new member no test names: for an added
+        grader under a name nothing mentions, R3 alone selects the census
+        (the real file is named by the census's own freeze comment now, so
+        R2 reaches it too - and R3 still selects it);
+    (2) the control: with the new pattern disabled nothing selects the
+        unnamed member's census, so the widened R3 is its only route;
+    (3) on a SYNTHETIC test module: a .py name-pattern glob is selected by a
+        changed .py, a markdown glob is not, and a non-.py change selects
+        neither by R3."""
+    import sys as _s
+    import re as _re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import pregate_select as ps
+    census = ("backtest/tests/test_unit.py::"
+              "test_b3139_every_free_level_adapter_windows_its_occupancy_block")
+    unnamed = ["scripts/grade_free_levels_zz_unnamed_member.py"]
+
+    def sel(changed, **kw):
+        return ps.select(changed, readset={}, repo_readset={}, listed=[], edited={}, **kw)
+    assert sel(unnamed).get(census) == ["R3"], sel(unnamed).get(census)      # (1)
+    assert "R3" in sel(["scripts/grade_free_levels_knob.py"]).get(census, [])
+    monkeypatch.setattr(ps, "_PY_GLOB", _re.compile(r"(?!x)x"))
+    assert census not in sel(unnamed)                                        # (2)
+    monkeypatch.undo()
+    (tmp_path / "t_mod.py").write_text(                                      # (3)
+        "from pathlib import Path\n\n\n"
+        "def test_census():\n"
+        "    assert len(list(Path('scripts').glob('only_*.py'))) == 1\n\n\n"
+        "def test_markdown():\n"
+        "    assert list(Path('docs').glob('*.md')) == []\n", encoding="utf-8")
+    syn = ps.select(["scripts/only_x.py"], root=tmp_path, readset={}, repo_readset={},
+                    listed=[], edited={}, test_files=("t_mod.py",))
+    assert syn == {"t_mod.py::test_census": ["R3"]}, syn
+    assert ps.select(["docs/only_x.md"], root=tmp_path, readset={}, repo_readset={},
+                     listed=[], edited={}, test_files=("t_mod.py",)) == {}
