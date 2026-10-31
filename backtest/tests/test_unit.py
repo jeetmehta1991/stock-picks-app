@@ -45084,8 +45084,8 @@ def test_b3096_runbook_is_class_level_and_numbered_consistently():
         r"|\bINST_[A-Z_]+|\bPEAD_[A-Z_]+|\bb2399\b|\bb2197\b|\bb2527\b|\bc14\b"
         r"|\bicg\b|\bpead\b|\bsmc\b|\btop_decile\b|\bbreaker\b|\bsoldiers\b"
         r"|\bcrows\b|\bhub-1\b|\binstitutional\b|\bcandle\b|\bswing_length\b", re.I)
-    ALLOW = ("USE_SMC_PANEL_CACHE", "SMC_PHASE", "smc_skip_primitives",
-             "institutional_companion_screen.py")
+    # ONE definition (L561, S6-B3392): shared with test_b3392d at module level
+    ALLOW = _RUNBOOK_ENGINE_ALLOW
 
     registry = re.compile(r"(?<![A-Za-z0-9_])(?:strat_)?(?:%s)(?![A-Za-z0-9_])"
                           % "|".join(re.escape(nm) for nm in names))
@@ -70863,3 +70863,212 @@ def test_b3407_a_free_level_leg_grades_the_landed_fires():
           ("d", {"reproduction": {"covered_fires": 10, "fires_total": 100},
                  "grader": "scripts/grade_free_levels_knob.py"})]
     assert _b3407_low_coverage(ok, KNOWN, FLOOR) == []
+
+
+_RUNBOOK_ENGINE_ALLOW = ("USE_SMC_PANEL_CACHE", "SMC_PHASE", "smc_skip_primitives",
+                         "institutional_companion_screen.py")
+
+
+def _b3392d_registry_tokens(registries, wave_names):
+    """S6-B3392 part 2: the identifiers a class-level runbook must not name,
+    DERIVED from the records that define them rather than typed - every
+    SPECS / SPECS_PHASE0 entry name, param env knob, env actuator and config
+    key, plus the wave name of every committed spec. Left out, each measured
+    before it was left out (2026-10-31, scratchpad r168/denylist_classes.py
+    and wave_tag_probe.py): param LABELS, which are descriptive prose ('leg'
+    and 'span' alone match 108 runbook lines); signal keys, the producers'
+    shared vocabulary (rsi_14, adx); and arm tags, which are level labels
+    ('production', 'p1')."""
+    toks = set(wave_names)
+    for reg in registries:
+        for name, entry in reg.items():
+            toks.add(name)
+            toks.update((entry.get("env_actuators") or {}).keys())
+            for q in entry.get("params") or []:
+                for key in ("env", "cfg_key"):
+                    v = q.get(key)
+                    if isinstance(v, str) and v:
+                        toks.add(v)
+    return toks
+
+
+def _b3392d_named(doc, tokens, allow):
+    """(line, token) for every line of `doc` naming a token whole - not as
+    part of a longer identifier - after the engine identifiers in `allow`
+    are stripped, as test_b3096 strips them."""
+    import re
+    if not tokens:
+        return []
+    pat = re.compile(r"(?<![A-Za-z0-9_])(?:%s)(?![A-Za-z0-9_])" % "|".join(
+        re.escape(t) for t in sorted(tokens, key=len, reverse=True)))
+    out = []
+    for n, line in enumerate(doc.split(chr(10)), 1):
+        for a in allow:
+            line = line.replace(a, "")
+        out += [(n, m.group(0)) for m in pat.finditer(line)]
+    return out
+
+
+def test_b3392d_the_runbook_names_no_registry_identifier():
+    """S6-B3392 part 2 (B3139q-r168), runbook line 11 at the census (S6-B3344's
+    sort, cluster M-REG): the runbook names no strategy, family, config or
+    campaign. test_b3096 holds it with the live strategy registry plus 21
+    TYPED family tokens, and the typed half went stale as families were
+    added: MEASURED 2026-10-31 (scratchpad r168/fixed_token_reach.py), the
+    tokens matched 15 of the 28 registry env knobs and missed 13 - the
+    squeeze, naked-POC, pairs and camarilla knobs and the LEVER4 budget. This
+    pin DERIVES the rest from the records that define them (L697): every
+    SPECS / SPECS_PHASE0 entry, env knob, env actuator and config key, and
+    the wave name of every committed spec, so a new family's knob or a new
+    campaign's wave is denied the day it is registered. test_b3096 keeps its
+    typed tokens for the family words and older campaign tags no registry
+    holds. The derived set flagged one runbook line when first run - runbook
+    line 680 named the LEVER4 budget knob as its JSON example - reworded in
+    place in this batch. Must-fire: one member of each derived class, chosen
+    from the live records at run time, and the reworded line in its old form;
+    must-quiet: the live runbook, and a knob inside a longer identifier."""
+    import json as _j
+    import subprocess as _sp
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in _s.path:
+            _s.path.insert(0, p)
+    import producer_variant_table as pvt
+    regs = [pvt.SPECS, getattr(pvt, "SPECS_PHASE0", {}) or {}]
+    specs = _sp.run(["git", "ls-files", "output_audit/*_spec.json"], cwd=root,
+                    capture_output=True, text=True, check=True).stdout.split()
+    waves = set()
+    for rel in specs:
+        f = root / rel
+        if not f.exists():
+            continue
+        d = _j.loads(f.read_text(encoding="utf-8"))
+        if isinstance(d, dict) and isinstance(d.get("wave"), str) and d["wave"]:
+            waves.add(d["wave"])
+    assert len(waves) >= 100, ("the committed specs' wave names are never vacuously few (#226)",
+                               len(specs), len(waves))
+    knobs = {q["env"] for r in regs for e in r.values() for q in e.get("params") or []
+             if isinstance(q.get("env"), str) and q["env"]}
+    assert len(knobs) >= 20, ("the registry env knobs are never vacuously few", len(knobs))
+    toks = _b3392d_registry_tokens(regs, waves)
+    assert knobs <= toks and waves <= toks
+    text = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    hits = _b3392d_named(text, toks, _RUNBOOK_ENGINE_ALLOW)
+    assert hits == [], ("runbook line 11: the runbook names no family, config or campaign - "
+                        "an open instance is a queue ticket", hits[:5])
+    # must-fire: one member of each derived class, chosen from the live records
+    acts = sorted(k for r in regs for e in r.values() for k in (e.get("env_actuators") or {}))
+    cfgs = sorted(q["cfg_key"] for r in regs for e in r.values() for q in e.get("params") or []
+                  if isinstance(q.get("cfg_key"), str) and q["cfg_key"])
+    picks = {"entry": sorted(regs[0])[0], "knob": sorted(knobs)[0], "actuator": acts[0],
+             "config key": cfgs[0], "wave": sorted(waves)[0]}
+    for cls, tok in picks.items():
+        assert _b3392d_named("set " + tok + " here", toks, _RUNBOOK_ENGINE_ALLOW) == [(1, tok)], (
+            cls, tok)
+    old = "a JSON-valued knob (`type: json` - LEVER4_GATE_BUDGET) carries each level"
+    assert _b3392d_named(old, toks, _RUNBOOK_ENGINE_ALLOW) == [(1, "LEVER4_GATE_BUDGET")]
+    # must-quiet: a knob inside a longer identifier is not the knob
+    assert _b3392d_named("MY_" + picks["knob"] + "_X", toks, _RUNBOOK_ENGINE_ALLOW) == []
+
+
+def _b3392e_path_citations(registries):
+    """S6-B3392 part 2: every repo-path citation anywhere inside the registry
+    entries - entry fields, param fields, nested dicts and lists - under the
+    roots a Table A charter, its evidence or a consumer lives in, as
+    (where, path). `registries` is a list of (name, dict)."""
+    import re
+    roots = ("strategy_optimisation/", "archive/", "output_audit/", "scripts/",
+             "backtest/", "docs/", "data_prefetch/")
+    pat = re.compile(r"(?<![A-Za-z0-9_./-])(?:%s)[A-Za-z0-9_./<>-]*" % "|".join(
+        re.escape(r) for r in roots))
+
+    def walk(obj, where):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                yield from walk(v, where + [str(k)])
+        elif isinstance(obj, (list, tuple)):
+            for i, v in enumerate(obj):
+                yield from walk(v, where + [str(i)])
+        elif isinstance(obj, str):
+            yield where, obj
+
+    out = []
+    for regname, reg in registries:
+        for name, entry in reg.items():
+            for where, s in walk(entry, [regname, name]):
+                out += [("/".join(where), m.group(0).rstrip(".,;:)'"))
+                        for m in pat.finditer(s)]
+    return out
+
+
+def _b3392e_unresolved(citations, tracked):
+    """The citations a reader on a fresh clone cannot follow: a path that is
+    neither a tracked file nor a tracked directory, and a <placeholder>
+    template whose directory holds no tracked file."""
+    dirs = set()
+    for t in tracked:
+        parts = t.split("/")
+        for i in range(1, len(parts)):
+            dirs.add("/".join(parts[:i]) + "/")
+    out = []
+    for where, c in citations:
+        if "<" in c:
+            head = c[:c.index("<")]
+            ok = head[:head.rfind("/") + 1] in dirs
+        else:
+            ok = c in tracked or (c if c.endswith("/") else c + "/") in dirs
+        if not ok:
+            out.append((where, c))
+    return out
+
+
+def test_b3392e_every_registry_path_citation_resolves_for_a_reader():
+    """S6-B3392 part 2 (B3139q-r168), runbook line 2051 at the census (section
+    6.3 step 9(c) today; S6-B3344's sort, cluster M-REG): when an admitted
+    row's Table A charter leaves the TIGHTEN lane for archive/, any live SPECS
+    evidence citation follows it. Nothing checked that - test_b2836 holds the
+    lane's file set and test_b3167 the README count, and a citation left at
+    the old path would still read as evidence while resolving to nothing.
+    Pinned for the CLASS, not the one key: every repo-path citation anywhere
+    inside SPECS and SPECS_PHASE0 - evidence, formula, consumers, producer,
+    admitted_via, derive - resolves to a path git TRACKS (L735: a citation
+    that resolves on the author's disk and not on a fresh clone is not one a
+    reader can follow); a <placeholder> template resolves when its directory
+    holds a tracked file. MEASURED 2026-10-31 (scratchpad
+    r168/specs_path_tracked.py): 38 distinct citations, 37 tracked and 1
+    template whose directory is tracked. Must-fire: the live archived charter
+    citation once its file leaves a copy of the tracked set, a citation of an
+    untracked file, and a template over a directory with no tracked file;
+    must-quiet: the live registries, and every citation fails against an
+    empty tracked set (the resolution reads the set)."""
+    import subprocess as _sp
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for p in (str(root), str(root / "scripts")):
+        if p not in _s.path:
+            _s.path.insert(0, p)
+    import producer_variant_table as pvt
+    regs = [("SPECS", pvt.SPECS), ("SPECS_PHASE0", getattr(pvt, "SPECS_PHASE0", {}) or {})]
+    tracked = set(_sp.run(["git", "ls-files"], cwd=root, capture_output=True, text=True,
+                          check=True).stdout.splitlines())
+    cites = _b3392e_path_citations(regs)
+    assert len({c for _, c in cites}) >= 30, ("never vacuously few (#226)", len(cites))
+    charters = sorted({c for _, c in cites if c.startswith("strategy_optimisation/tighten/")
+                       or (c.startswith("archive/") and "-admission-table-a/" in c)})
+    assert any(c.startswith("archive/") for c in charters), (
+        "the rule's own subject - an archived Table A charter citation - is in the population",
+        charters)
+    bad = _b3392e_unresolved(cites, tracked)
+    assert bad == [], ("section 6.3 step 9(c): a SPECS citation follows the file it cites", bad[:5])
+    # must-fire: the archived charter leaves the tracked set - a move its citation did not follow
+    moved = next(c for c in charters if c.startswith("archive/"))
+    assert {c for _, c in _b3392e_unresolved(cites, tracked - {moved})} == {moved}
+    # must-fire: a citation of an untracked file, and a template over a directory with no file
+    fake = [("x/evidence", "output_audit/zz_untracked_evidence.json"),
+            ("x/formula", "archive/zz_no_such_dir/<T>.md")]
+    assert _b3392e_unresolved(fake, tracked) == fake
+    # must-quiet arm's control: against an empty tracked set every citation fails
+    assert len(_b3392e_unresolved(cites, set())) == len(cites)
