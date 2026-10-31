@@ -81,6 +81,7 @@ P7_PROD, P8_PROD = 3, 5
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from backtest.engine.backtest import REPLAY_ATR_FALLBACK_WARN_RATE  # noqa: E402
+from episode_disclosure import month_concentration  # noqa: E402  (S6-B3318)
 
 COVERAGE_FLOOR = 1.0 - REPLAY_ATR_FALLBACK_WARN_RATE
 
@@ -259,7 +260,14 @@ def grade_levels(cube_csv: Path, flags: pd.DataFrame, *, min_n: int = 10,
                              "is_sharpe": stats.get("sharpe"),
                              "is_ci_lo": stats.get("ci_lo"),
                              "verdict": ("RANKED" if len(g) >= min_n
-                                         else "BELOW_POWER_FLOOR")})
+                                         else "BELOW_POWER_FLOOR"),
+                             # S6-B3318 (B3139q-r159): the one-episode
+                             # disclosure, the rest scored at the floor
+                             # the verdict uses
+                             "episode": month_concentration(
+                                 g, lambda d: (rc.evaluate(
+                                     d["pnl_pct"], d["hold_days"], min_n=min_n)
+                                     or {}).get("sharpe"))})
         per_exit.sort(key=lambda r: (-(r["is_ci_lo"]
                                        if r["is_ci_lo"] is not None else -9e9),
                                      -r["n"]))

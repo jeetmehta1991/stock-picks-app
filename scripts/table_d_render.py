@@ -168,7 +168,8 @@ def _factorial_block_rows(a: dict, params: list,
             out.append({"exit": pe.get("exit"), "is_sharpe": pe.get("sharpe"),
                         "is_ci_lo": pe.get("ci_lo"), "is_n": pe.get("n"),
                         "levels": levels, "cube": a.get("cube"),
-                        "offline_factorial": True})
+                        "offline_factorial": True,
+                        "episode": pe.get("episode")})   # S6-B3318
     return out
 
 
@@ -427,7 +428,8 @@ def _free_level_rows(a: dict, params: list,
             out.append({"exit": pe.get("exit"), "is_sharpe": sh,
                         "is_ci_lo": lo, "is_n": pe.get("n"),
                         "levels": levels, "cube": a.get("cube"),
-                        "offline_free_level": True})
+                        "offline_free_level": True,
+                        "episode": pe.get("episode")})   # S6-B3318
     return out
 
 

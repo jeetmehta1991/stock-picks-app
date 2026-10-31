@@ -78,6 +78,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import roster_core as rc  # noqa: E402
+from episode_disclosure import month_concentration  # noqa: E402  (S6-B3318)
 from occupancy_disclosure import (  # noqa: E402
     occupancy_disclosure)
 import free_level_window as flw  # noqa: E402
@@ -198,7 +199,12 @@ def grade_kept(ted, keep_ids, min_n):
             continue
         per_exit.append({"exit": str(ex), "n": int(len(g)),
                          "sharpe": st.get("sharpe"),
-                         "ci_lo": st.get("ci_lo")})
+                         "ci_lo": st.get("ci_lo"),
+                         # S6-B3318 (B3139q-r159): the one-episode disclosure,
+                         # the rest scored at this row's own floor
+                         "episode": month_concentration(
+                             g, lambda d: (rc.evaluate(d["pnl_pct"], d["hold_days"],
+                                                       min_n=min_n) or {}).get("sharpe"))})
     per_exit.sort(key=lambda r: -(r["ci_lo"] if r["ci_lo"] is not None
                                   else -9e9))
     return per_exit
@@ -452,7 +458,12 @@ def main() -> int:
                 continue
             per_exit.append({"exit": str(ex), "n": int(len(g)),
                              "sharpe": st.get("sharpe"),
-                             "ci_lo": st.get("ci_lo")})
+                             "ci_lo": st.get("ci_lo"),
+                             # S6-B3318 (B3139q-r159): the one-episode disclosure,
+                             # the rest scored at this row's own floor
+                             "episode": month_concentration(
+                                 g, lambda d: (rc.evaluate(d["pnl_pct"], d["hold_days"],
+                                                           min_n=a.min_n) or {}).get("sharpe"))})
         per_exit.sort(key=lambda r: -(r["ci_lo"] if r["ci_lo"] is not None
                                       else -9e9))
         if float(lvl) == PRODUCTION:

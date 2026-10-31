@@ -65100,13 +65100,10 @@ def test_b3318_episode_disclosure_unwired_graders_is_a_shrinking_set():
     assert len(pop) >= 15, sorted(pop)
     for wired in ("breadth_step1_grid.py", "offline_level_sweep.py"):   # S6-B3315
         assert calls_mc(wired), wired
-    # B3139q-r158: the five engine-config graders write it (test_b3318b) and left the set
-    FREE = "S6-B3318: a free-level grader - grades a config's free levels, no episode field"
+    # B3139q-r158 / r159: the engine-config graders (test_b3318b) and the
+    # free-level graders (test_b3318c) write it and left the set
     STEP1 = "S6-B3318: a Step-1 search script - ranks its cells, no episode field"
     UNWIRED_EPISODE = {
-        "grade_free_levels_bollinger.py": FREE, "grade_free_levels_candle.py": FREE,
-        "grade_free_levels_institutional.py": FREE, "grade_free_levels_npoc.py": FREE,
-        "grade_free_levels_pairs.py": FREE,
         "lever4_step1.py": STEP1, "smc_family_step1.py": STEP1, "smc_lsr_step1.py": STEP1,
         "smc_obb_step1.py": STEP1, "tighten_breaker_block.py": STEP1,
     }
@@ -68717,6 +68714,84 @@ def test_b3383_return_correlation_states_its_basis(tmp_path, monkeypatch):
         assert got[basis]["basis"] == basis and f"- basis: {basis} (S6-B3383)" in md.splitlines()
     # the clip moves the streams: strategy a's 900 is 299.8 on net
     assert got["gross"]["sharpe_cross_section"] != got["net"]["sharpe_cross_section"]
+
+
+def test_b3318c_free_level_graders_write_the_episode():
+    """S6-B3318 (B3139q-r159): the five free-level graders - six grading
+    sites - write the one-episode disclosure on every ranked per-exit row,
+    the rest scored at that row's own floor, and Table D's two free-level
+    readers carry it to the EPISODE line. (1) AST over each grader: every
+    per_exit append that builds a ranked row (a dict with 'exit' and 'sharpe'
+    or 'is_sharpe') carries 'episode' = month_concentration(g, <a lambda over
+    rc.evaluate at a NON-literal min_n>) - the score-reproduction loops
+    append to prod_check and are not ranked rows; (2) behaviour through the
+    two module-level graders, bollinger and pairs grade_kept, on 30 trades
+    per exit with 20 in 2023-03, at floors 10 and 11; (3) Table D: a
+    free-levels artifact and a pairs factorial block render the line."""
+    import ast as _ast
+    import sys as _s
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+    import table_d_render as tdr
+    import grade_free_levels_bollinger as gfb
+    import grade_free_levels_pairs as gfp
+    want_sites = {"grade_free_levels_bollinger.py": 2, "grade_free_levels_candle.py": 1,
+                  "grade_free_levels_institutional.py": 1, "grade_free_levels_npoc.py": 1,
+                  "grade_free_levels_pairs.py": 1}
+    for name, n_sites in want_sites.items():
+        tree = _ast.parse((root / "scripts" / name).read_text(encoding="utf-8"))
+        rows = [c.args[0] for c in _ast.walk(tree)
+                if isinstance(c, _ast.Call) and isinstance(c.func, _ast.Attribute)
+                and c.func.attr == "append" and getattr(c.func.value, "id", None) == "per_exit"
+                and c.args and isinstance(c.args[0], _ast.Dict)]
+        ranked = [d for d in rows
+                  if {"exit"} <= {k.value for k in d.keys if isinstance(k, _ast.Constant)}
+                  and {k.value for k in d.keys if isinstance(k, _ast.Constant)}
+                  & {"sharpe", "is_sharpe"}]
+        assert len(ranked) == n_sites, (name, len(ranked))
+        for d in ranked:
+            ep = dict(zip([getattr(k, "value", None) for k in d.keys], d.values)).get("episode")
+            assert isinstance(ep, _ast.Call) and getattr(ep.func, "id", None) == "month_concentration", name
+            assert getattr(ep.args[0], "id", None) == "g" and isinstance(ep.args[1], _ast.Lambda), name
+            ev = [c for c in _ast.walk(ep.args[1]) if isinstance(c, _ast.Call)
+                  and getattr(c.func, "attr", None) == "evaluate"]
+            floors = [kw.value for c in ev for kw in c.keywords if kw.arg == "min_n"]
+            assert len(floors) == 1 and not isinstance(floors[0], _ast.Constant), (name, floors)
+
+    days = ([f"2023-03-{d:02d}" for d in range(1, 21)]
+            + [f"2023-{m:02d}-{d}" for d in (15, 16) for m in range(4, 9)])
+    exits = ("time_stop_10d", "breakeven_plus_trail")
+    ted = _pd.DataFrame([{"ticker": f"T{i}", "entry_date": day, "exit_method": ex,
+                          "pnl_pct": (1.5 if i % 3 else -1.0) + 0.1 * (i % 4) * (1 if ex == exits[0] else -1),
+                          "hold_days": 5.0}
+                         for i, day in enumerate(days) for ex in exits])
+    ids = set(zip(ted["ticker"], ted["entry_date"]))
+    for floor in (10, 11):
+        for per_exit in (gfb.grade_kept(ted, ids, floor), gfp.grade_kept(ted, ids, floor)[1]):
+            assert {r["exit"] for r in per_exit} == set(exits)
+            for r in per_exit:
+                e = r["episode"]
+                assert (e["top_month"], e["top_month_share"], e["n"], e["n_without_top_month"]) == (
+                    "2023-03", 0.667, 30, 10), e
+                rest = ted[(ted["exit_method"] == r["exit"]) & ~ted["entry_date"].str.startswith("2023-03")]
+                want = (None if floor == 11 else
+                        rc.evaluate(rest["pnl_pct"], rest["hold_days"], min_n=10)["sharpe"])
+                assert e["is_sharpe_without_top_month"] == want, (floor, r["exit"], e, want)
+
+    per_exit = gfb.grade_kept(ted, ids, 11)
+    params = [{"id": "P6", "param": "k", "production": 1.0}]
+    fl = {"cube": "c", "levels": {"x": {"p6": 2.0, "per_exit_ranked_by_ci_lo": per_exit}}}
+    fb = {"cube": "c", "factorial": {"results": [{"combo": {"k": 2.0}, "per_exit": [
+        {"exit": r["exit"], "sharpe": r["sharpe"], "ci_lo": r["ci_lo"], "n": r["n"],
+         "episode": r["episode"]} for r in per_exit]}]}}
+    for rows in (tdr._free_level_rows(fl, params), tdr._factorial_block_rows(fb, params)):
+        assert [r["episode"] for r in rows] == [r["episode"] for r in per_exit]
+        line = tdr._episode_lines(rows, 25)
+        assert len(line) == 1 and "2023-03 holds 0.667 of 30" in line[0], line
 
 
 def test_b3384_an_owner_message_does_not_void_a_running_gate(tmp_path, monkeypatch):
