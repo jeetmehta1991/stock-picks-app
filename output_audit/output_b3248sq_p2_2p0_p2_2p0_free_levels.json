@@ -1,0 +1,618 @@
+{
+ "strategy": "squeeze_breakout",
+ "grader": "scripts/grade_free_levels_knob.py",
+ "cube": "C:/Users/jeetm/Github/stock-picks-app/output_b3248sq_p2_2p0_p2_2p0",
+ "basis": "net: pnl_pct clipped to +/-WINSORIZE then minus COST_BPS/100 - roster_core.net_pnl",
+ "window": "in-sample entries only [2022-05-05, 2025-05-05)",
+ "axes": [
+  {
+   "pid": "P2",
+   "key": "kc_room",
+   "op": "ge",
+   "landed": 2.0,
+   "levels": [
+    2.5
+   ],
+   "legs": []
+  },
+  {
+   "pid": "P3",
+   "key": "bb_room",
+   "op": "le",
+   "landed": 2.0,
+   "levels": [
+    1.5
+   ],
+   "legs": []
+  }
+ ],
+ "not_evaluable": [],
+ "derive": {
+  "path": "scripts\\squeeze_derived_landed.py",
+  "sha256": "c5dc1465c9b95c4221229e7cd6252fe935bbc7277890b266c55bb6840c23dd53"
+ },
+ "levels_searched": {
+  "P2": [
+   2.5
+  ],
+  "P3": [
+   1.5
+  ]
+ },
+ "reproduction": {
+  "covered_fires": 83,
+  "fires_total": 580,
+  "uncovered_fires": 497,
+  "pass_at_landed": 83,
+  "rate": 1.0,
+  "landed": {
+   "P2": 2.0,
+   "P3": 2.0
+  },
+  "repro_min": 0.999
+ },
+ "score_reproduction": {
+  "family_grid": "C:/Users/jeetm/Github/stock-picks-app/output_audit/output_b3248sq_p2_2p0_p2_2p0_grid_auto.json",
+  "compared": 24,
+  "mismatches": []
+ },
+ "occupancy": {
+  "artifact": "skipped_trades.csv",
+  "attribution_available": true,
+  "blocked_rows_total": 583,
+  "blocked_rows_attributable": 583,
+  "occupancy_note": "A trade count for a TIGHTER level is NOT A BOUND IN EITHER DIRECTION (S6-B3139r): freeing a slot lets the engine take a fire it had blocked, and that trade can in turn block later fires this count keeps - the count can be too low OR too high, and only the engine produces the true set (L812).",
+  "window": [
+   "2022-05-05",
+   "2025-05-05"
+  ],
+  "window_applied": true,
+  "blocked_rows_outside_window": 1,
+  "blocked_rows_undated_counted_in": 0,
+  "note": "583 of 583 occupancy blocks name squeeze_breakout. A tighter level frees some of them, and what it then takes can block others, so each count below can err either way. A trade count for a TIGHTER level is NOT A BOUND IN EITHER DIRECTION (S6-B3139r): freeing a slot lets the engine take a fire it had blocked, and that trade can in turn block later fires this count keeps - the count can be too low OR too high, and only the engine produces the true set (L812)."
+ },
+ "results": [
+  {
+   "axis": "base",
+   "level": null,
+   "leg": "long",
+   "label": "landed (long)",
+   "fires_kept": 83,
+   "exits_evaluable": 24,
+   "best": {
+    "exit": "hybrid_50pct_target",
+    "n": 83,
+    "sharpe": 0.533,
+    "ci_lo": 0.119,
+    "episode": {
+     "top_month": "2024-05",
+     "top_month_share": 0.723,
+     "months": 2,
+     "n": 83,
+     "n_without_top_month": 23,
+     "is_sharpe_without_top_month": 1.204
+    }
+   },
+   "per_exit": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 83,
+     "sharpe": 0.533,
+     "ci_lo": 0.119,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.723,
+      "months": 2,
+      "n": 83,
+      "n_without_top_month": 23,
+      "is_sharpe_without_top_month": 1.204
+     }
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 83,
+     "sharpe": 0.225,
+     "ci_lo": -0.091,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.723,
+      "months": 2,
+      "n": 83,
+      "n_without_top_month": 23,
+      "is_sharpe_without_top_month": 0.307
+     }
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 83,
+     "sharpe": 0.266,
+     "ci_lo": -0.132,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.723,
+      "months": 2,
+      "n": 83,
+      "n_without_top_month": 23,
+      "is_sharpe_without_top_month": 0.467
+     }
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 83,
+     "sharpe": 0.227,
+     "ci_lo": -0.213,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.723,
+      "months": 2,
+      "n": 83,
+      "n_without_top_month": 23,
+      "is_sharpe_without_top_month": 0.791
+     }
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 83,
+     "sharpe": 0.15,
+     "ci_lo": -0.48,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.723,
+      "months": 2,
+      "n": 83,
+      "n_without_top_month": 23,
+      "is_sharpe_without_top_month": 0.524
+     }
+    },
+    {
+     "exit": "class_time_stop",
+     "n": 83,
+     "sharpe": 0.041,
+     "ci_lo": -0.629,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.723,
+      "months": 2,
+      "n": 83,
+      "n_without_top_month": 23,
+      "is_sharpe_without_top_month": 0.641
+     }
+    }
+   ]
+  },
+  {
+   "axis": "P2",
+   "level": 2.5,
+   "leg": "long",
+   "label": "P2 kc_room ge 2.5",
+   "fires_kept": 30,
+   "exits_evaluable": 24,
+   "best": {
+    "exit": "hybrid_50pct_target",
+    "n": 30,
+    "sharpe": 0.643,
+    "ci_lo": -0.097,
+    "episode": {
+     "top_month": "2024-05",
+     "top_month_share": 0.7,
+     "months": 2,
+     "n": 30,
+     "n_without_top_month": 9,
+     "is_sharpe_without_top_month": null
+    }
+   },
+   "per_exit": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 30,
+     "sharpe": 0.643,
+     "ci_lo": -0.097,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 30,
+     "sharpe": 0.434,
+     "ci_lo": -0.11,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 30,
+     "sharpe": 0.288,
+     "ci_lo": -0.424,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 30,
+     "sharpe": 0.21,
+     "ci_lo": -0.522,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 30,
+     "sharpe": 0.819,
+     "ci_lo": -0.563,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "next_pivot_target",
+     "n": 30,
+     "sharpe": 1.186,
+     "ci_lo": -0.599,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    }
+   ]
+  },
+  {
+   "axis": "P3",
+   "level": 1.5,
+   "leg": "long",
+   "label": "P3 bb_room le 1.5",
+   "fires_kept": 28,
+   "exits_evaluable": 24,
+   "best": {
+    "exit": "hybrid_50pct_target",
+    "n": 28,
+    "sharpe": 0.765,
+    "ci_lo": -0.019,
+    "episode": {
+     "top_month": "2024-05",
+     "top_month_share": 0.679,
+     "months": 2,
+     "n": 28,
+     "n_without_top_month": 9,
+     "is_sharpe_without_top_month": null
+    }
+   },
+   "per_exit": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 28,
+     "sharpe": 0.765,
+     "ci_lo": -0.019,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 28,
+     "sharpe": 0.513,
+     "ci_lo": -0.053,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 28,
+     "sharpe": 0.361,
+     "ci_lo": -0.386,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 28,
+     "sharpe": 0.292,
+     "ci_lo": -0.468,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 28,
+     "sharpe": 0.956,
+     "ci_lo": -0.573,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "class_time_stop",
+     "n": 28,
+     "sharpe": 0.371,
+     "ci_lo": -0.789,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    }
+   ]
+  }
+ ],
+ "levels": {
+  "P2:2.5:long": {
+   "level": 2.5,
+   "axis": "P2",
+   "leg": "long",
+   "is_fires": 30,
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 30,
+     "sharpe": 0.643,
+     "ci_lo": -0.097,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 30,
+     "sharpe": 0.434,
+     "ci_lo": -0.11,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 30,
+     "sharpe": 0.288,
+     "ci_lo": -0.424,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 30,
+     "sharpe": 0.21,
+     "ci_lo": -0.522,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 30,
+     "sharpe": 0.819,
+     "ci_lo": -0.563,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "next_pivot_target",
+     "n": 30,
+     "sharpe": 1.186,
+     "ci_lo": -0.599,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.7,
+      "months": 2,
+      "n": 30,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    }
+   ]
+  },
+  "P3:1.5:long": {
+   "level": 1.5,
+   "axis": "P3",
+   "leg": "long",
+   "is_fires": 28,
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 28,
+     "sharpe": 0.765,
+     "ci_lo": -0.019,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 28,
+     "sharpe": 0.513,
+     "ci_lo": -0.053,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 28,
+     "sharpe": 0.361,
+     "ci_lo": -0.386,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 28,
+     "sharpe": 0.292,
+     "ci_lo": -0.468,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 28,
+     "sharpe": 0.956,
+     "ci_lo": -0.573,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    },
+    {
+     "exit": "class_time_stop",
+     "n": 28,
+     "sharpe": 0.371,
+     "ci_lo": -0.789,
+     "episode": {
+      "top_month": "2024-05",
+      "top_month_share": 0.679,
+      "months": 2,
+      "n": 28,
+      "n_without_top_month": 9,
+      "is_sharpe_without_top_month": null
+     }
+    }
+   ]
+  }
+ },
+ "multiplicity_exposure": "2 free levels across 2 axes, each a max over the evaluable exits, nested in ONE engine run - not independent trials; no correction here (S6-B2444)",
+ "verdict_status": "CANDIDATES, never admissions - no trade count is a bound in either direction while occupancy is unsimulated (L812, S6-B3139r)",
+ "metric_code": {
+  "sha256": "915bb9dec919d5f14fcdf0a176b787153472a50725015d64efc958f214b21aa4",
+  "members": [
+   "roster_core.load_cube",
+   "roster_core.net_pnl",
+   "roster_core.holdout",
+   "roster_core.in_sample",
+   "roster_core.evaluate",
+   "walk_forward_r5_cells._sharpe",
+   "backtest.results.metrics._sortino_ratio",
+   "backtest.results.metrics._deflated_sharpe",
+   "rescore_admissions_net.net",
+   "rescore_admissions_net.score_both"
+  ],
+  "constants": [
+   "roster_core.COST_BPS",
+   "roster_core.CUBE_COLUMNS",
+   "roster_core.CUBE_DTYPES",
+   "roster_core.HO_END",
+   "roster_core.HO_START",
+   "roster_core.IS_END",
+   "roster_core.IS_START",
+   "roster_core.MIN_N",
+   "roster_core.PC",
+   "roster_core.WINSORIZE",
+   "walk_forward_r5_cells.OOS_MIN_N"
+  ],
+  "plus": "backtest.config.PASSING_CRITERIA",
+  "defined_in": "scripts/roster_core.py metric_code_fingerprint"
+ }
+}

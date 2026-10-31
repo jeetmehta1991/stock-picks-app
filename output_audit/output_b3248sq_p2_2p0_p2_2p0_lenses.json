@@ -1,0 +1,64 @@
+{
+ "cube": "output_b3248sq_p2_2p0_p2_2p0",
+ "step": 1,
+ "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
+ "family": "squeeze_breakout",
+ "ts": "2026-10-31T12:08:01",
+ "lenses": [
+  {
+   "lens": "holdout_untouched",
+   "level": "INFO",
+   "evidence": "0 of 580 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class)"
+  },
+  {
+   "lens": "period_concentration",
+   "level": "INFO",
+   "evidence": "max quarter share 0.28 (2025Q2) over 5 quarters of 580 entries; WARN > 0.5"
+  },
+  {
+   "lens": "ticker_concentration",
+   "level": "INFO",
+   "evidence": "top-5 tickers carry 0.06 of 580 entries across 186 tickers; WARN > 0.30"
+  },
+  {
+   "lens": "eligibility_leak",
+   "level": "INFO",
+   "evidence": "0 of 580 entries not screenable under daily_subtract_v1 (carry 0 / daily 0); 0 unclassifiable; cube built under daily_subtract_v1 (stamped)"
+  },
+  {
+   "lens": "selection_margin",
+   "level": "INFO",
+   "evidence": "rank-1 [breakeven_plus_trail] is_ci_lo 0.297 vs rank-2 [hybrid_50pct_target] 0.122: margin 0.175 between outcome classes; WARN < 0.05 (selection at noise level); INFO not WARN - Step-1 admission ranks CONFIGS (exit ties never move a config score); this lens informs only a pre-registered exit choice (S6-B2611a)"
+  },
+  {
+   "lens": "empty_signals_share",
+   "level": "INFO",
+   "evidence": "0 of 580 trade_log rows carry an empty signals_at_entry (S6-B2512 class)"
+  },
+  {
+   "lens": "replay_atr_proxy",
+   "level": "INFO",
+   "evidence": "ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/580 (0.0%) from replay_atr_fallback.json)"
+  },
+  {
+   "lens": "grading_provenance",
+   "level": "INFO",
+   "evidence": "grading surface UNCHANGED since freeze (32 files, digest 448f041d7e90)"
+  },
+  {
+   "lens": "direction_consistency",
+   "level": "INFO",
+   "evidence": "directions ['long'] (single direction)"
+  },
+  {
+   "lens": "spot_check_disagreements",
+   "level": "INFO",
+   "evidence": "50 agree / 0 DISAGREE / 0 skipped in output_b3248sq_p2_2p0_p2_2p0_spot_check.json"
+  },
+  {
+   "lens": "min_trades_floor",
+   "level": "INFO",
+   "evidence": "580 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here)"
+  }
+ ]
+}
