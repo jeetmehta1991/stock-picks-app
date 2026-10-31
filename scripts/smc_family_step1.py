@@ -37,6 +37,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+from episode_disclosure import month_concentration  # noqa: E402  (S6-B3318)
 from breadth_step1_grid import BARRED_EXIT  # noqa: E402
 from smc_lsr_step1 import build as _build, rank  # noqa: E402
 
@@ -77,7 +78,12 @@ def grade_cells(m, strat: str, min_n: int, legs=None) -> list:
             rows.append({"is_sharpe": r["sharpe"], "is_ci_lo": r.get("ci_lo"),
                          "cell": tag, "exit": ex, "is_n": int(len(si)),
                          "full_n_count_only": int(len(cell)),
-                         "npt_barred": ex == BARRED_EXIT})
+                         "npt_barred": ex == BARRED_EXIT,
+                         # S6-B3318 (B3139q-r160): the one-episode disclosure,
+                         # the rest scored at this row's own floor
+                         "episode": month_concentration(
+                             si, lambda d: (rc._sharpe(d["pnl_pct"].values, d["hold_days"],
+                                                       min_n=min_n) or {}).get("sharpe"))})
 
     if len(legs) > 1:
         emit("base:both", m)

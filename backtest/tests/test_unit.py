@@ -65086,11 +65086,21 @@ def test_b3318_episode_disclosure_unwired_graders_is_a_shrinking_set():
                 stack.extend(x)
         return out
 
-    def calls_mc(name):
+    def calls_mc(name, seen=()):
         tree = _ast.parse((root / "scripts" / name).read_text(encoding="utf-8"))
-        return any(isinstance(n, _ast.Call)
-                   and "month_concentration" in (getattr(n.func, "id", None),
-                                                 getattr(n.func, "attr", None))
+        if any(isinstance(n, _ast.Call)
+               and "month_concentration" in (getattr(n.func, "id", None),
+                                             getattr(n.func, "attr", None))
+               for n in _ast.walk(tree)):
+            return True
+        # B3139q-r160: a script whose cells come from another module's
+        # grade_cells (lever4_step1 imports smc_family_step1's) is wired
+        # through that module
+        return any(isinstance(n, _ast.ImportFrom) and n.module
+                   and any(al.name == "grade_cells" for al in n.names)
+                   and n.module + ".py" not in seen
+                   and (root / "scripts" / (n.module + ".py")).exists()
+                   and calls_mc(n.module + ".py", seen + (name,))
                    for n in _ast.walk(tree))
 
     pop = set()
@@ -65100,13 +65110,10 @@ def test_b3318_episode_disclosure_unwired_graders_is_a_shrinking_set():
     assert len(pop) >= 15, sorted(pop)
     for wired in ("breadth_step1_grid.py", "offline_level_sweep.py"):   # S6-B3315
         assert calls_mc(wired), wired
-    # B3139q-r158 / r159: the engine-config graders (test_b3318b) and the
-    # free-level graders (test_b3318c) write it and left the set
-    STEP1 = "S6-B3318: a Step-1 search script - ranks its cells, no episode field"
-    UNWIRED_EPISODE = {
-        "lever4_step1.py": STEP1, "smc_family_step1.py": STEP1, "smc_lsr_step1.py": STEP1,
-        "smc_obb_step1.py": STEP1, "tighten_breaker_block.py": STEP1,
-    }
+    # B3139q-r158..r160: the engine-config graders (test_b3318b), the
+    # free-level graders (test_b3318c) and the Step-1 search scripts
+    # (test_b3318d) write it - the set is EMPTY, and stays so
+    UNWIRED_EPISODE: dict = {}
     unwired = {s for s in pop if not calls_mc(s)}
     assert unwired <= set(UNWIRED_EPISODE), (
         "a registry grader ranks cells without the episode disclosure - call "
@@ -68792,6 +68799,72 @@ def test_b3318c_free_level_graders_write_the_episode():
         assert [r["episode"] for r in rows] == [r["episode"] for r in per_exit]
         line = tdr._episode_lines(rows, 25)
         assert len(line) == 1 and "2023-03 holds 0.667 of 30" in line[0], line
+
+
+def test_b3318d_step1_search_scripts_write_the_episode():
+    """S6-B3318 (B3139q-r160): the five Step-1 search scripts write the
+    one-episode disclosure. smc_family_step1.grade_cells writes it on every
+    graded row (lever4_step1 grades through it - test_b3318 now follows that
+    import); smc_lsr_step1 and smc_obb_step1 share the emit shape, the rest
+    scored by the row's own rc._sharpe at min_n; tighten_breaker_block
+    writes it on the selected exit's IS trades at the selection's floor.
+    (1) behaviour through smc_family_step1.grade_cells on 30 IS trades per
+    exit, 20 in 2023-03, at floors 10 and 11; (2) AST over the four files:
+    every graded-row dict carries 'episode' = month_concentration over a
+    rows frame with a lambda at a NON-literal min_n."""
+    import ast as _ast
+    import sys as _s
+    from datetime import date as _d
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+    import smc_family_step1 as sf
+    days = ([_d(2023, 3, d) for d in range(1, 21)]
+            + [_d(2023, m, d) for d in (15, 16) for m in range(4, 9)])
+    exits = ("time_stop_10d", "breakeven_plus_trail")
+    m = _pd.DataFrame([{"strategy": "x", "direction": "long", "exit_method": ex,
+                        "entry_date": day, "ticker": f"T{i}",
+                        "pnl_pct": (1.5 if i % 3 else -1.0) + 0.1 * (i % 4) * (1 if ex == exits[0] else -1),
+                        "hold_days": 5.0}
+                       for i, day in enumerate(days) for ex in exits])
+    for floor in (10, 11):
+        rows = [r for r in sf.grade_cells(m, "x", floor, legs=("long",)) if r["is_sharpe"] is not None]
+        assert {r["exit"] for r in rows} == set(exits), rows
+        for r in rows:
+            e = r["episode"]
+            assert (e["top_month"], e["top_month_share"], e["n"], e["n_without_top_month"]) == (
+                "2023-03", 0.667, 30, 10), e
+            rest = m[(m["exit_method"] == r["exit"]) & (m["entry_date"] >= _d(2023, 4, 1))]
+            got = rc._sharpe(rest["pnl_pct"].values, rest["hold_days"], min_n=10)
+            want = None if floor == 11 else got["sharpe"]
+            assert e["is_sharpe_without_top_month"] == want, (floor, r["exit"], e, want)
+
+    for name in ("smc_family_step1.py", "smc_lsr_step1.py", "smc_obb_step1.py",
+                 "tighten_breaker_block.py"):
+        tree = _ast.parse((root / "scripts" / name).read_text(encoding="utf-8"))
+        # a graded ROW: is_sharpe beside its cell identity (smc 'cell',
+        # tighten_breaker_block 'close_mitigation'), not a render dict
+        graded = [d for d in _ast.walk(tree) if isinstance(d, _ast.Dict)
+                  and "is_sharpe" in {getattr(k, "value", None) for k in d.keys}
+                  and {"cell", "close_mitigation"} & {getattr(k, "value", None) for k in d.keys}
+                  and not any(isinstance(v, _ast.Constant) and v.value is None
+                              for k, v in zip(d.keys, d.values)
+                              if getattr(k, "value", None) == "is_sharpe")]
+        assert graded, name
+        for d in graded:
+            ep = dict(zip([getattr(k, "value", None) for k in d.keys], d.values)).get("episode")
+            assert isinstance(ep, _ast.Call) and getattr(ep.func, "id", None) == "month_concentration", (
+                name, _ast.unparse(d)[:120])
+            # the row's own trades: the exit's IS rows, or the selected exit's
+            assert _ast.unparse(ep.args[0]) == (
+                "is_m[is_m.exit_method == exit_pick]" if name == "tighten_breaker_block.py"
+                else "si"), (name, _ast.unparse(ep.args[0]))
+            floors = [kw.value for c in _ast.walk(ep.args[1]) if isinstance(c, _ast.Call)
+                      for kw in c.keywords if kw.arg == "min_n"]
+            assert len(floors) == 1 and not isinstance(floors[0], _ast.Constant), (name, floors)
 
 
 def test_b3384_an_owner_message_does_not_void_a_running_gate(tmp_path, monkeypatch):

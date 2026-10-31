@@ -33,6 +33,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+from episode_disclosure import month_concentration  # noqa: E402  (S6-B3318)
 from breadth_step1_grid import QUANTS, BARRED_EXIT, _parse  # noqa: E402
 
 STRAT = "smc_liquidity_sweep_reversal"
@@ -154,7 +155,12 @@ def grade_cells(m: pd.DataFrame, min_n: int) -> list[dict]:
                          "cell": tag, "axis": axis, "level": level, "exit": ex,
                          "is_n": int(len(si)),
                          "full_n_count_only": int(len(cell)),
-                         "npt_barred": ex == BARRED_EXIT})
+                         "npt_barred": ex == BARRED_EXIT,
+                         # S6-B3318 (B3139q-r160): the one-episode disclosure,
+                         # the rest scored at this row's own floor
+                         "episode": month_concentration(
+                             si, lambda d: (rc._sharpe(d["pnl_pct"].values, d["hold_days"],
+                                                       min_n=min_n) or {}).get("sharpe"))})
 
     # DEPTH: leg x arm
     for leg in ("both", "long", "short"):

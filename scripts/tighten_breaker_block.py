@@ -344,6 +344,7 @@ def main() -> int:
                     "raise --max-diag-loss deliberately."
                     .format(loss, a.max_diag_loss, a.swing_length))
 
+    from episode_disclosure import month_concentration  # S6-B3318
     rows = []
     for cm, bmax, amax, tn in itertools.product(
             CLOSE_MITIGATION, BREAK_PCT_MAX, AGE_BARS_MAX, TAIL_N):
@@ -395,7 +396,14 @@ def main() -> int:
                "exits_effective": (_is_stats or {}).get("exits_effective"),
                "exits_collapsed": (_is_stats or {}).get("exits_collapsed"),
                "npt_excluded_identity_boundary":
-                   (_is_stats or {}).get("npt_excluded_identity_boundary")}
+                   (_is_stats or {}).get("npt_excluded_identity_boundary"),
+               # S6-B3318 (B3139q-r160): the one-episode disclosure on the
+               # selected exit's IS trades, the rest scored at the
+               # selection's own floor
+               "episode": month_concentration(
+                   is_m[is_m.exit_method == exit_pick],
+                   lambda d: (rc.evaluate(d["pnl_pct"], d["hold_days"],
+                                          min_n=a.min_n) or {}).get("sharpe"))}
         if res is None:
             row["verdict"] = "BELOW_POWER_FLOOR"
         else:
