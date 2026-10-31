@@ -717,7 +717,7 @@ grep -n "compute_<producer>(" backtest/signals/screener.py     # is the arg PASS
 ```
 A parameter the producer accepts but the caller never passes is **NOT tunable** - plumb it first
 (pattern, B1519: a `backtest/config.py` env var read at the call site, defaults reproducing
-production exactly).
+production exactly; test_b3392 pins each registry knob's default to its production value, S6-B3392).
 
 **0.4** Classify each parameter (§1.5): **SUBSET-SAFE** - can only REMOVE fires, so it derives
 offline from any cube, FREE - or **FIRE-ADDING** - changes WHICH bars fire, so it needs its own
@@ -1220,7 +1220,7 @@ UNIVERSE IS SHARED BY EVERY STRATEGY:** `output_audit/_sweep_200.txt`, the 200 t
 S1-200, built by `scripts/build_sweep_100.py --n 200` from `output_audit/r5_universe_544.txt` (B1830,
 owner ruling 2026-08-21, superseding the 2026-08-14 "fixed at 100"). It is a SUPERSET of
 `_sweep_100.txt` by construction (both are top-N of one ADV-sorted list), so 100-ticker results stay
-interpretable as a subset. Rebuild ONLY if the 544 universe changes.
+interpretable as a subset. Rebuild ONLY if the 544 universe changes (test_b3392b freezes both ticker sets, S6-B3392).
 
 - **CRITERION: top N by average dollar volume (ADV) over the WARMUP window `2021-05-06 -> 2022-05-05`**
   (owner ruling 2026-08-14, re-anchored to the correct universe 2026-08-17, B1618). **Fixed, not
@@ -2088,7 +2088,7 @@ sets the CRITERION - it does not waive the per-step approvals (§0.6).
    with any live SPECS `evidence` citation and the `strategy_optimisation/README.md` count following
    it (B3116; test_b2836 holds file-set == lane-set, test_b3167 the README count).
 10. **Rule the strategy's REGIME-AFFINITY entry at its admission** (S6-B3237 (A), owner
-   2026-10-22): every entry is kept until then. Where the admitted strategy holds a LIMITING entry the
+   2026-10-22): every entry is kept until then (test_b3392c freezes the keys by name, S6-B3392). Where the admitted strategy holds a LIMITING entry the
    S6-B3237 audit measured, put its per-side in-sample table
    (`output_audit/b3237_regime_entry_evidence.md`) beside the strategy's OWN holdout by regime, and
    record the owner's ruling as `regime_entry_ruling` on the admission. Until then
@@ -2153,7 +2153,7 @@ One row per `Pn` (and per `Bn` for breadth axes). Required fields, all test-pinn
 | `id` | `Pn` / `Bn`, matching Section 1 |
 | `producer` | the function or expression that computes it |
 | `param` | parameter name, or `-` if none exists |
-| `production` | the LIVE value today |
+| `production` | the LIVE value today (a knob's unset default equals it, test_b3392) |
 | `band` | every value to be tested |
 | `subset_safe` | `True` = cube-gradable free, `False` = needs engine resim, `None` = no parameter (per level: `free_band` / `resim_band`) |
 | `status` | `TESTED` / `UNTESTED` / `PENDING` (tested but never gradable) / `N/A` |
@@ -2379,8 +2379,8 @@ read from `backtest/config.py` at cite time, not from memory.
 
 **Config flags (not env), live values:** `USE_PRECOMPUTED_SIGNALS=False` (B1563 - the cache is EMPTY;
 re-enabling needs a PIT audit first) · `USE_SMC_PANEL_CACHE=False` (**UNSAFE** - 11.5 pct divergence
-measured, B1542) · `USE_PANEL_TECHNICAL_SIGNALS=True` · `SMC_PHASE='PRODUCTION'` (any other value makes
-that producer return `{}` and every strategy reading it silently dies) · `DATA_LOAD_START=2021-05-06` ·
+measured, B1542; pinned by test_b3392) · `USE_PANEL_TECHNICAL_SIGNALS=True` · `SMC_PHASE='PRODUCTION'` (any other value makes
+that producer return `{}` and every strategy reading it silently dies; pinned by test_b3392) · `DATA_LOAD_START=2021-05-06` ·
 `CUBE_ISOLATION_SIZE_PCT=0.01`.
 
 **Isolation also bypasses TIER SIZING (B1545, owner-approved).** `TIER_POSITION_SIZE_PCT` maps LOW/AVOID

@@ -4179,6 +4179,8 @@ to that shape only.**
 
 **INSTANCE (B3139q-r137 / L977) - TWO CELLS FOR 43.** An option was described as a holdout re-read of two pre-registered cells while scripts/breadth_step2_read.py grades every cell of the Step-1 artifact at every exit - 43 cells in the two squeeze_breakout grids; the owner approved it on the two-cell description, and the scope was disclosed before any read ran.
 
+**INSTANCE (B3139q-r167 / L1009) - AN ARTIFACT I WROTE DID NOT CARRY ITS READER'S SHAPE.** The knob-family free-level grader added at B3139q-r163 writes `window` as a string; postconfig_doc reads it as the dict free_level_window.window_disclosure builds for the two sibling graders, so the first knob-family landing (squeeze config 1, 2026-10-31T16:08:19Z) could not regenerate POSTCONFIG_REPORT.md - 1 of the 71 free-levels artifacts on disk, and every later knob landing until the fix. Compliance failure against this item's (a) with L741's mirror and against #135; test_b3406 fences the artifact type now, and the writer and reader fixes follow the running chain (S6-B3406).
+
 ### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
 
 **INSTANCE (B3139q-r68b / L909), compliance failure against this item:** the L908 Phase-5 commit (f5afa5e5f) was followed by a queue-only commit in the same turn, so the one-commit-deep gate could not see its members; the same close reported a five-config chain as five running when 1 of 5 ran (compliance failure against #122, the L738 level-per-member rule).
@@ -5929,6 +5931,8 @@ JUDGMENT-ONLY; the pin holds the wiring that exists.
 **INSTANCE (B3139q-r72g / L931) - AN EXEMPTION GRANTED FOR ONE QUESTION WAS READ AS COVERING ANOTHER.** The S6-B3204 portfolio builder reproduced 14 of 16 admitted lines through the #290 gate and extracted the 2 ALREADY-NET lines with only a non-empty check; smc took 437 cube rows for its 180-trade admitted line. ALREADY-NET certifies a read's cost basis, never a fresh extraction's trade set. Caught before any figure was reported; ENFORCED BY build_phase1b_portfolio._count_gate, pinned both directions by test_b3204_portfolio_count_gate_and_artifact.
 
 **INSTANCE (B3139q-r123 / L965) - A NEW HELPER SCORED TRADES WITH NO NET MARKER.** S6-B3315's first month_concentration called rc._sharpe itself; test_b3122's census refused it before the commit, and the caller now hands in the scorer that owns the basis.
+
+**INSTANCE (B3139q-r167 / L1010) - A REPRODUCTION GATE MEASURED ITS OWN SUBSET.** The knob-family free-level leg added at B3139q-r163 derives squeeze's rooms from persisted keys demand pruning stops computing after its 25-day warmup, so squeeze config 1's free levels were graded on the warmup's 83 of 580 fires, and the leg's reproduction check passed at 1.0 over those 83 - its denominator was the derivable set, not the landed fires. Compliance failure against this item and #230 (a); test_b3407 fences the knob leg's coverage now, and the fix follows the running chain (S6-B3407).
 
 ### #291 - A SCRIPT WITH A STRAT CONSTANT IS THE FIRST INSTANCE OF A PORTABILITY CLASS; REGISTRATION IS CHECKED AT LAUNCH (B2573 / L754)
 

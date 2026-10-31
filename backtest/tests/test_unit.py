@@ -55816,11 +55816,11 @@ def test_b3161_every_spec_level_round_trips_through_the_engine_parser():
         _s.path.insert(0, str(root / "scripts"))
     import make_spec as ms
     from producer_variant_table import SPECS
-    READ_ELSEWHERE = {   # read at precompute build time, not by the engine
-        "INST_MIN_CONSECUTIVE_QUARTERS": "build_institutional_persistence_precompute.py",
-        "INST_GROWTH_LOOKBACK_QUARTERS": "build_institutional_persistence_precompute.py",
-        "INST_GROWTH_MULTIPLE": "build_institutional_persistence_precompute.py",
-    }
+    # ONE definition (L561, S6-B3392): the map of knobs read at precompute
+    # build time, not by the engine, lives at module level beside the
+    # S6-B3392 pins, which read the same knobs' defaults
+    READ_ELSEWHERE = _KNOBS_READ_ELSEWHERE
+    assert READ_ELSEWHERE, 'the map is never vacuously empty (#226)'
     cases, seen = [], set()
     for entry in SPECS.values():
         for p in entry.get("params", []):
@@ -70464,3 +70464,402 @@ def test_b3388_every_hook_finds_its_script_from_any_directory(tmp_path):
               {"tool_name": "Bash", "tool_input": {"command": "git status"}})
     assert bad.returncode == 2 and "pretooluse_heredoc_guard.py" in bad.stderr, (
         bad.returncode, bad.stderr[:300])
+
+
+_KNOBS_READ_ELSEWHERE = {   # read at precompute build time, not by the engine
+    "INST_MIN_CONSECUTIVE_QUARTERS": "build_institutional_persistence_precompute.py",
+    "INST_GROWTH_LOOKBACK_QUARTERS": "build_institutional_persistence_precompute.py",
+    "INST_GROWTH_MULTIPLE": "build_institutional_persistence_precompute.py",
+}
+
+
+def _b3392_knob_default_mismatches(specs, defaults, read_elsewhere):
+    """S6-B3392: the (strategy, param, knob, production, default) rows where a
+    registry knob's UNSET default is not the param's production value. A
+    string production that holds JSON compares parsed (LEVER4_GATE_BUDGET's
+    '{}' is the dict {} once config reads it); numbers compare as floats; a
+    knob with no default recorded is itself a mismatch - an unread knob is
+    not a passing one (L642)."""
+    import json as _j
+
+    def same(a, b):
+        if a is None or b is None:
+            return a is None and b is None
+        if isinstance(a, bool) or isinstance(b, bool):
+            return isinstance(a, bool) and isinstance(b, bool) and a == b
+        if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+            return float(a) == float(b)
+        return a == b
+
+    bad = []
+    for name, entry in specs.items():
+        for p in entry.get("params") or []:
+            env = p.get("env")
+            if not env:
+                continue
+            prod = p.get("production")
+            if env not in defaults:
+                bad.append((name, p.get("id"), env, prod, "<no default read>"))
+                continue
+            got = defaults[env]
+            if isinstance(prod, str) and not isinstance(got, str):
+                try:
+                    prod_v = _j.loads(prod)
+                except ValueError:
+                    prod_v = prod
+            else:
+                prod_v = prod
+            if not same(prod_v, got):
+                bad.append((name, p.get("id"), env, prod, got))
+    return bad
+
+
+def test_b3392_every_knob_default_is_its_production_value():
+    """S6-B3392 (B3139q-r167), runbook lines 696 and 2119 (S6-B3344's sort,
+    cluster M-REG): an env knob's default must reproduce production - a
+    knob's code default and the registry's production value are the same
+    claim in two places, and the runbook says the LIVE value today is Table
+    A's production value. Pinned for every SPECS param that names a knob:
+    with the knob UNSET, the module that reads it yields the param's
+    production value - backtest.config for the engine's knobs, the file
+    named in _KNOBS_READ_ELSEWHERE for a knob read at precompute time (its
+    literal default, read by AST - the module is a builder script). Read in
+    a CHILD process with every registry knob removed from its environment,
+    because this process's backtest.config may carry another test's knobs.
+    Runbook lines 2344 and 2345 ride along as value pins: USE_SMC_PANEL_CACHE
+    stays False (measured unsafe) and SMC_PHASE stays 'PRODUCTION' (any other
+    phase silently disables the SMC strategies). Must-fire: the comparator
+    flags a production value moved off the default, a knob read nowhere, and
+    a bool against an int; must-quiet: the live registry."""
+    import ast as _ast
+    import json as _j
+    import os as _os
+    import subprocess as _sp
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    from producer_variant_table import SPECS
+    knobs = sorted({p["env"] for e in SPECS.values() for p in e.get("params") or [] if p.get("env")})
+    assert len(knobs) >= 20, knobs                      # never vacuously empty (#226)
+    engine = [k for k in knobs if k not in _KNOBS_READ_ELSEWHERE]
+    child = (
+        "import json, sys\n"
+        "sys.path.insert(0, sys.argv[1])\n"
+        "import backtest.config as c\n"
+        "names = json.loads(sys.argv[2])\n"
+        "out = {n: getattr(c, n) for n in names if hasattr(c, n)}\n"
+        "out['__SMC_PHASE__'] = c.SMC_PHASE\n"
+        "out['__USE_SMC_PANEL_CACHE__'] = c.USE_SMC_PANEL_CACHE\n"
+        "print(json.dumps(out))\n")
+    env = {k: v for k, v in _os.environ.items() if k not in knobs}
+    r = _sp.run([_s.executable, "-c", child, str(root), _j.dumps(engine)], cwd=str(root), env=env,
+                capture_output=True, text=True, encoding="utf-8", timeout=300)
+    assert r.returncode == 0, r.stderr[-800:]
+    vals = _j.loads(r.stdout.strip().splitlines()[-1])
+    assert vals.pop("__SMC_PHASE__") == "PRODUCTION"
+    assert vals.pop("__USE_SMC_PANEL_CACHE__") is False
+    for k, fname in _KNOBS_READ_ELSEWHERE.items():
+        tree = _ast.parse((root / "scripts" / fname).read_text(encoding="utf-8"))
+        lits = [n.args[1].value for n in _ast.walk(tree)
+                if isinstance(n, _ast.Call) and len(n.args) == 2
+                and isinstance(n.args[0], _ast.Constant) and n.args[0].value == k
+                and isinstance(n.args[1], _ast.Constant)]
+        assert len(lits) == 1, (k, fname, lits)
+        vals[k] = float(lits[0]) if "." in lits[0] else int(lits[0])
+    bad = _b3392_knob_default_mismatches(SPECS, vals, _KNOBS_READ_ELSEWHERE)
+    assert bad == [], bad
+    # must-fire: a production moved off the default; a knob with no default; bool vs int
+    fake = {"x": {"params": [{"id": "P1", "env": "K1", "production": 3.0},
+                             {"id": "P2", "env": "K2", "production": 5},
+                             {"id": "P3", "env": "K3", "production": False}]}}
+    got = _b3392_knob_default_mismatches(fake, {"K1": 2.0, "K3": 0}, {})
+    assert [g[2] for g in got] == ["K1", "K2", "K3"], got
+    # must-quiet: equal across encodings (int/float, None, JSON text, bool)
+    fake2 = {"x": {"params": [{"id": "P1", "env": "K1", "production": 2},
+                              {"id": "P2", "env": "K2", "production": None},
+                              {"id": "P3", "env": "K3", "production": "{}"},
+                              {"id": "P4", "env": "K4", "production": False}]}}
+    assert _b3392_knob_default_mismatches(
+        fake2, {"K1": 2.0, "K2": None, "K3": {}, "K4": False}, {}) == []
+
+
+def test_b3392b_the_sweep_universe_moves_only_with_the_544():
+    """S6-B3392 (B3139q-r167), runbook line 1197 (S6-B3344's sort, cluster
+    M-REG): rebuild output_audit/_sweep_200.txt only if the 544 universe
+    changes. The Step-1 universe (phase_table maps 200 to it) is a 200-ticker
+    subset of output_audit/r5_universe_544.txt; nothing pinned either file, so
+    an edit to the 200 alone - a ticker swapped by hand - would have changed
+    every later Step-1 run's population with no reader noticing (test_b1618
+    pins the retired _sweep_100 the same way). Pinned: both files hold
+    distinct tickers - 200 and 544 - and the 200 sit inside the 544; each
+    file's ticker SET is frozen by a content hash over the sorted tickers
+    (line endings and order never move it - a checkout rewrites endings,
+    L850). The 544 moving is the rebuild trigger and says so; the 200 moving
+    while the 544 holds is refused. Must-fire: a swapped ticker moves the
+    hash; must-quiet: a reordered, CRLF copy keeps it."""
+    import hashlib as _h
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+
+    def tickers(text):
+        return sorted({ln.strip() for ln in text.splitlines() if ln.strip()})
+
+    def digest(text):
+        return _h.sha256("\n".join(tickers(text)).encode("utf-8")).hexdigest()
+
+    FROZEN = {"r5_universe_544.txt": "c14f8a455a86e8507ada803f3ec6cc2b0b4e85d2baf5f3d57cabd680c0649b86",
+              "_sweep_200.txt": "393837b39663a49fd3aee11c884fbe46ba11c6cd620f1515a990e55ce18f931a"}
+    t544 = (root / "output_audit" / "r5_universe_544.txt").read_text(encoding="utf-8")
+    t200 = (root / "output_audit" / "_sweep_200.txt").read_text(encoding="utf-8")
+    assert len(tickers(t544)) == 544 and len(tickers(t200)) == 200, (
+        len(tickers(t544)), len(tickers(t200)))
+    assert set(tickers(t200)) <= set(tickers(t544)), sorted(set(tickers(t200)) - set(tickers(t544)))[:5]
+    assert digest(t544) == FROZEN["r5_universe_544.txt"], (
+        "the 544 universe changed - runbook line 1197: rebuild _sweep_200 from it, then "
+        "record both new hashes here")
+    assert digest(t200) == FROZEN["_sweep_200.txt"], (
+        "_sweep_200 changed while the 544 did not - runbook line 1197 rebuilds it only "
+        "when the 544 changes")
+    # must-fire: one ticker swapped moves the digest
+    lines = tickers(t200)
+    swapped = "\n".join(lines[:-1] + ["ZZZZ"])
+    assert digest(swapped) != FROZEN["_sweep_200.txt"]
+    # must-quiet: reordered, with CRLF endings and a blank line, keeps it
+    assert digest("\r\n".join(reversed(lines)) + "\r\n\r\n") == FROZEN["_sweep_200.txt"]
+
+
+def _b3392c_affinity_drift(live, frozen, removed, orphans, registered):
+    """S6-B3392: what moved in the regime-affinity key set against its
+    freeze - a key that left without a REMOVED reason, a key that joined
+    unnamed, an ORPHAN that is registered again (no longer an orphan), and a
+    live key naming no registered strategy that ORPHANS does not name."""
+    live = set(live)
+    out = []
+    out += [("left without a reason", k) for k in sorted(frozen - live - set(removed))]
+    out += [("joined unnamed", k) for k in sorted(live - frozen)]
+    out += [("removed but still live", k) for k in sorted(set(removed) & live)]
+    out += [("orphan is registered", k) for k in sorted(set(orphans) & registered)]
+    out += [("unregistered and not a named orphan", k)
+            for k in sorted(live - registered - set(orphans))]
+    return out
+
+
+def test_b3392c_every_regime_affinity_entry_is_named_until_its_ruling():
+    """S6-B3392 (B3139q-r167), runbook line 2054 (S6-B3344's sort, cluster
+    M-REG): every regime-affinity entry is kept until its strategy's
+    admission ruling. The only guard was a COUNT floor
+    (test_batch417_strategy_regime_affinity_count_floor, at least 78), which
+    cannot say WHICH entry left - one removed and another added both pass it
+    (L747, #280). Pinned: the key set of STRATEGY_REGIME_AFFINITY is frozen
+    BY NAME; a key leaves only by moving into REMOVED with its reason, and
+    joins only by being named here. Six keys name no registered strategy -
+    their strategies were deleted - and are named in ORPHANS with the batch
+    that deleted each; removing them edits backtest/engine/regime_selector.py,
+    which the running chain's engine hash covers, so it waits for the chain
+    (S6-B3405). Must-fire: a dropped key, an added key, a re-registered
+    orphan and an unnamed unregistered key are each reported; must-quiet:
+    the live registry."""
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root) not in _s.path:
+        _s.path.insert(0, str(root))
+    from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY
+    from backtest.signals.screener import ALL_STRATEGIES
+    FROZEN = {
+        '52w_high_breakout', 'adx_initiation', 'avwap_20high_rejection_short',
+        'avwap_252_breakout', 'awesome_oscillator', 'bollinger_tight', 'buyback_8k_recent_long',
+        'camarilla_rsi_obv_short', 'camarilla_s3_bounce', 'cmf_flip', 'cup_and_handle_long',
+        'double_bottom_long', 'dxy_headwind_multinational_short', 'flag_bull_long',
+        'force_index_breakout', 'gold_silver_risk_off_long', 'halloween_seasonal_long',
+        'head_and_shoulders_bottom_long', 'htf_aligned_breakout_long', 'hull_rsi_short',
+        'insider_cluster_long', 'insider_cluster_with_director_long',
+        'institutional_buy_momentum_long', 'institutional_cluster_long',
+        'january_effect_small_cap_long', 'macd_fast_crossover', 'monthly_bias_momentum_long',
+        'naked_poc_retest_long', 'news_sentiment_long', 'news_sentiment_shift_long',
+        'orb_stocks_in_play_long', 'pairs_mean_reversion_long', 'pairs_mean_reversion_short',
+        'parabolic_sar_flip', 'pead_long', 'pead_short', 'pead_with_insider_confirmation_long',
+        'pivot_s3_capitulation', 'po3_bullish', 'po3_htf_aligned_long', 'po3_htf_aligned_short',
+        'poc_magnet_long', 'post_deletion_drift_short', 'post_inclusion_drift_long',
+        'post_inclusion_reversal_short', 'ppo_crossover', 'pre_fomc_long_sleeve',
+        'pre_fomc_quality_momentum_long', 'pre_holiday_long', 'pre_rebalance_long',
+        'prev_day_high_break', 'prev_day_low_bounce', 'risk_off_bond_equity_short',
+        'sector_rotation_defensive_long', 'smc_bos_retest_entry', 'smc_breaker_block_long',
+        'smc_discount_long', 'smc_equal_lows_sweep_long', 'smc_fvg_retest_long',
+        'smc_inverse_fvg', 'smc_mitigation_block_long', 'smc_ote_long', 'supertrend_macd',
+        'tema_dema', 'three_white_soldiers', 'totm_long', 'triangle_ascending_long',
+        'ultimate_oscillator', 'value_area_breakout_long', 'vix_backwardation_long',
+        'weekly_bias_pullback_long', 'williams_stoch_dual', 'xs_combined_momentum_low_ivol',
+        'xs_low_beta_long', 'xs_momentum_bottom_decile_short', 'xs_momentum_quality_combined',
+        'xs_momentum_top_decile', 'xs_quality_top_quintile_long'}
+    REMOVED = {}            # key -> the ruling or batch that removed it
+    ORPHANS = {             # key -> the batch that deleted its strategy (CLAUDE.md banner)
+        "buyback_8k_recent_long": "B682 (EV-7)",
+        "camarilla_rsi_obv_short": "B874",
+        "dxy_headwind_multinational_short": "B1189",
+        "hull_rsi_short": "B722",
+        "po3_htf_aligned_long": "B722",
+        "po3_htf_aligned_short": "B722",
+    }
+    assert len(FROZEN) == 78, len(FROZEN)
+    registered = set()
+    for k in ALL_STRATEGIES:
+        registered.add(k[len("strat_"):] if k.startswith("strat_") else k)
+    live = set(STRATEGY_REGIME_AFFINITY)
+    assert _b3392c_affinity_drift(live, FROZEN, REMOVED, ORPHANS, registered) == []
+    # must-fire: each way the set can move is reported by name
+    moved = (live - {"tema_dema"}) | {"zz_new_entry"}
+    got = _b3392c_affinity_drift(moved, FROZEN, REMOVED, ORPHANS, registered | {"hull_rsi_short"})
+    kinds = sorted(g[0] for g in got)
+    assert kinds == ["joined unnamed", "left without a reason", "orphan is registered",
+                     "unregistered and not a named orphan"], got
+    # must-quiet: a key moved into REMOVED with its reason is a recorded departure
+    assert _b3392c_affinity_drift(live - {"tema_dema"}, FROZEN, {"tema_dema": "ruling X"},
+                                  ORPHANS, registered) == []
+
+
+def _b3406_window_shape_violations(artifacts, known):
+    """S6-B3406: the free-levels artifacts whose `window` is neither absent
+    nor the shared block - {"trade_log": {...}}, as
+    free_level_window.window_disclosure writes it - each named with the
+    grader that wrote it, unless that grader is a registered known violator."""
+    out = []
+    for name, d in artifacts:
+        if not isinstance(d, dict) or d.get("window") is None:
+            continue
+        w = d["window"]
+        if isinstance(w, dict) and isinstance(w.get("trade_log"), dict):
+            continue
+        grader = str(d.get("grader") or "").split(" ")[0]
+        if grader in known:
+            continue
+        out.append((name, grader or "<no grader>", type(w).__name__))
+    return out
+
+
+def test_b3406_every_free_levels_window_has_the_shared_shape():
+    """S6-B3406 (B3139q-r167, L1009, #135, #230): the free-levels artifact is
+    written by one grader per family and read by postconfig_doc, whose
+    _straddle_txt reads window.trade_log as a dict. MEASURED 2026-10-31: the
+    knob-family grader added at B3139q-r163, scripts/grade_free_levels_knob.py,
+    writes `window` as a string, so the first knob-family landing (squeeze
+    config 1, 16:08Z) could not regenerate POSTCONFIG_REPORT.md or run_wave's
+    report card - "'str' object has no attribute 'get'" - while 22 of the 71
+    artifacts then on disk carried the shared block and 48 none. The writer
+    and the reader both sit in the running chain's leg closure, so their
+    fixes wait for the chain; this pin lands first and fences the class:
+    (1) every live artifact's window is absent or the shared block, unless
+        its grader is registered in KNOWN with the open ticket that fixes it;
+    (2) a KNOWN entry names a non-terminal ticket and still has a live
+        violator - a fixed grader leaves the register (L587);
+    (3) the reader renders the window of every artifact outside KNOWN.
+    Must-fire: a string window and a dict without trade_log, from graders
+    not registered; must-quiet: absent, the shared block, a KNOWN string."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import postconfig_doc as _pcd
+    import queue_state as _qs
+    KNOWN = {"scripts/grade_free_levels_knob.py": "S6-B3406"}
+    arts = [(p.name, _j.loads(p.read_text(encoding="utf-8")))
+            for p in sorted((root / "output_audit").glob("*_free_levels.json"))]
+    assert len(arts) >= 20, len(arts)                    # never vacuously empty (#226)
+    assert _b3406_window_shape_violations(arts, KNOWN) == []
+    states = _qs.tickets()
+    for grader, ticket in KNOWN.items():
+        assert states.get(ticket) not in (None,) + tuple(_qs.TERMINAL), (
+            "a KNOWN entry names an open ticket", grader, ticket, states.get(ticket))
+        live = [n for n, d in arts if isinstance(d, dict)
+                and str(d.get("grader") or "").split(" ")[0] == grader
+                and d.get("window") is not None
+                and not (isinstance(d["window"], dict)
+                         and isinstance(d["window"].get("trade_log"), dict))]
+        assert live, ("a fixed grader leaves KNOWN (L587)", grader)
+    for name, d in arts:
+        if not isinstance(d, dict) or str(d.get("grader") or "").split(" ")[0] in KNOWN:
+            continue
+        assert isinstance(_pcd._straddle_txt(d), str), name
+    # must-fire: a string window and a dict without trade_log, unregistered graders
+    bad = [("a", {"window": "in-sample", "grader": "scripts/new_grader.py"}),
+           ("b", {"window": {"is": ["2022-05-05", "2025-05-05"]}, "grader": "scripts/x.py (S6-X)"})]
+    assert [v[0] for v in _b3406_window_shape_violations(bad, KNOWN)] == ["a", "b"]
+    # must-quiet: absent, the shared block, and a registered grader's string
+    ok = [("c", {"grader": "scripts/y.py"}),
+          ("d", {"window": {"trade_log": {"rows_before_window": 1}}, "grader": "scripts/y.py"}),
+          ("e", {"window": "in-sample", "grader": "scripts/grade_free_levels_knob.py"})]
+    assert _b3406_window_shape_violations(ok, KNOWN) == []
+
+
+def _b3407_low_coverage(artifacts, known, floor):
+    """S6-B3407: the free-levels artifacts whose reproduction covered fewer
+    than `floor` of the landed fires (covered_fires / fires_total), each named
+    with its grader, unless that grader is a registered known violator."""
+    out = []
+    for name, d in artifacts:
+        rep = (d.get("reproduction") or {}) if isinstance(d, dict) else {}
+        cov, tot = rep.get("covered_fires"), rep.get("fires_total")
+        if not isinstance(cov, int) or not isinstance(tot, int) or tot <= 0:
+            continue
+        grader = str(d.get("grader") or "").split(" ")[0]
+        if cov / tot < floor and grader not in known:
+            out.append((name, grader, cov, tot))
+    return out
+
+
+def test_b3407_a_free_level_leg_grades_the_landed_fires():
+    """S6-B3407 (B3139q-r167, L1010, #230, #290): the knob-family free-level
+    leg derives squeeze's rooms from five persisted keys, and the engine's
+    demand pruning stops computing keys the strategy does not read once its
+    25-day warmup ends. MEASURED 2026-10-31 on squeeze config 1: 83 of 580
+    trades carry the keys - 60 of 60 entered in 2024-05, 23 of 56 in 2024-06,
+    0 of 464 after - so its free levels describe two months of a twelve-month
+    window, and the leg's reproduction check passed at 1.0 over the 83 it
+    could derive. The derivation and the grader sit in the running chain's
+    leg closure, so the fix waits for the chain; this pin lands first and
+    fences the slice it can see - an artifact recording covered_fires of
+    fires_total:
+    (1) its coverage is at least FLOOR, unless its grader is registered in
+        KNOWN with the open ticket that fixes it;
+    (2) a KNOWN entry names a non-terminal ticket and still has a live
+        violator - a fixed grader leaves the register (L587).
+    FLOOR is CHOSEN, not measured: 0.9 sits below every healthy coverage the
+    free-levels artifacts record (the lowest, 0.938) and far above the
+    defect's 0.143. Must-fire: a low-coverage artifact from a grader not
+    registered; must-quiet: high coverage, no coverage fields, a KNOWN
+    grader's low coverage."""
+    import json as _j
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import queue_state as _qs
+    FLOOR = 0.9
+    KNOWN = {"scripts/grade_free_levels_knob.py": "S6-B3407"}
+    arts = [(p.name, _j.loads(p.read_text(encoding="utf-8")))
+            for p in sorted((root / "output_audit").glob("*_free_levels.json"))]
+    recorded = [n for n, d in arts if isinstance(d, dict)
+                and isinstance((d.get("reproduction") or {}).get("fires_total"), int)]
+    assert recorded, "no artifact records covered_fires of fires_total (#226)"
+    assert _b3407_low_coverage(arts, KNOWN, FLOOR) == []
+    states = _qs.tickets()
+    for grader, ticket in KNOWN.items():
+        assert states.get(ticket) not in (None,) + tuple(_qs.TERMINAL), (
+            "a KNOWN entry names an open ticket", grader, ticket, states.get(ticket))
+        assert any(g == grader for _, g, _, _ in _b3407_low_coverage(arts, {}, FLOOR)), (
+            "a fixed grader leaves KNOWN (L587)", grader)
+    # must-fire: low coverage from a grader not registered
+    bad = [("a", {"reproduction": {"covered_fires": 10, "fires_total": 100},
+                  "grader": "scripts/new_grader.py"})]
+    assert [v[0] for v in _b3407_low_coverage(bad, KNOWN, FLOOR)] == ["a"]
+    # must-quiet: high coverage, no coverage fields, a registered grader's low coverage
+    ok = [("b", {"reproduction": {"covered_fires": 95, "fires_total": 100}, "grader": "scripts/y.py"}),
+          ("c", {"reproduction": {"rate": 1.0}, "grader": "scripts/y.py"}),
+          ("d", {"reproduction": {"covered_fires": 10, "fires_total": 100},
+                 "grader": "scripts/grade_free_levels_knob.py"})]
+    assert _b3407_low_coverage(ok, KNOWN, FLOOR) == []
