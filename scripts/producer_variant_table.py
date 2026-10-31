@@ -4795,6 +4795,228 @@ SPECS["bollinger_lower"] = _bl_spec
 del _bl_spec, _bl_p
 
 
+# S6-B3248 (B3139q-r164): squeeze_breakout PROMOTED into SPECS. The owner's
+# (b) of 2026-10-28T11:01:42Z ("Approve your recommendations fable mode
+# proceed") scheduled the producer's engine-only levels one at a time -
+# Keltner multiplier 1.5, Bollinger std 2.5, momentum window 10 and 30,
+# Keltner period 14 and 30 - plus the prior-squeeze row at N = 1, and the
+# launch word of 16:50:12Z ("approved") lets them run once prepared. The SPECS
+# entry is DERIVED from the PHASE0 dict (the bollinger B3119 pattern): PHASE0
+# stays the pre-registration record and keeps B1-B14, which resolved_spec
+# merges per param; SPECS carries the engine surface - P2-P5 with their
+# SQUEEZE_* actuators (r161) and P6 the ruled prior-squeeze row - and the
+# registry-driven adapter (r162 grader and spot check, r163 free-level leg).
+_sq_spec = json.loads(json.dumps(SPECS_PHASE0["squeeze_breakout"]))
+_sq_spec.pop("tools", None)
+_sq_spec["params"] = [q for q in _sq_spec["params"] if not q["id"].startswith("B")]
+_SQ_RULED = ("ENGINE LEVEL SCHEDULED by the owner's (b) 2026-10-28T11:01:42Z "
+             "(S6-B3248)")
+_SQ_CONSUMERS = ["backtest/config.py", "backtest/signals/technical.py"]
+_sq_rows = {
+    "P2": dict(band=[2.0, 2.5, 1.5], free_band=[2.0, 2.5], resim_band=[1.5],
+               env="SQUEEZE_KC_MULT",
+               status="T3-APPROVED 2026-10-22 (render P1.1 band 1.5/2.0/2.5); "
+                      "2.5 OFFLINE through the derived kc_room (squeeze_derived, "
+                      "and squeeze_derived_landed on a landed cube); 1.5 the "
+                      "Carter 2005 canon - " + _SQ_RULED + " - env SQUEEZE_KC_MULT"),
+    "P3": dict(band=[2.0, 1.5, 2.5], free_band=[2.0, 1.5], resim_band=[2.5],
+               env="SQUEEZE_BB_STD",
+               status="T3-APPROVED 2026-10-22 (render P1.2 band 1.5/2.0/2.5); "
+                      "1.5 OFFLINE through the derived bb_room; 2.5 - "
+                      + _SQ_RULED + " - env SQUEEZE_BB_STD"),
+    "P4": dict(band=[20, 10, 30], free_band=[20], resim_band=[10, 30],
+               env="SQUEEZE_MOM_WINDOW",
+               status="T3-APPROVED 2026-10-22 (render P1.3 band 10/20/30); the "
+                      "midpoint at another window is unpersisted, so 10 and 30 "
+                      "are engine runs - " + _SQ_RULED + " - env SQUEEZE_MOM_WINDOW",
+               derivation="engine-only: compute_squeeze reads the window at call "
+                          "time; the free level is production"),
+    "P5": dict(band=[20, 14, 30], free_band=[20], resim_band=[14, 30],
+               env="SQUEEZE_KC_PERIOD",
+               status="T3-APPROVED 2026-10-22 (render P1.4 band 14/20/30); the "
+                      "channel at another period is unpersisted, so 14 and 30 "
+                      "are engine runs - " + _SQ_RULED + " - env SQUEEZE_KC_PERIOD",
+               derivation="engine-only: compute_keltner is called at this period "
+                          "inside compute_squeeze; the free level is production"),
+}
+for _q in _sq_spec["params"]:
+    _q["engine_implemented"] = True
+    if _q["id"] in _sq_rows:
+        _q.update(_sq_rows[_q["id"]])
+        _q["consumers"] = list(_SQ_CONSUMERS)
+_sq_spec["params"].append({
+    "id": "P6", "producer": "technical.py compute_squeeze (_squeeze_on_prior)",
+    "param": "prior squeeze within N bars (0 = none required)",
+    "production": 0, "band": [0, 1], "free_band": [0], "resim_band": [1],
+    "env": "SQUEEZE_PRIOR_N", "consumers": list(_SQ_CONSUMERS),
+    "sweep_levels": None, "subset_safe": False, "type": "int",
+    "engine_implemented": True,
+    "status": ("RULED at N = 1 only - the S6-B3254 NEW-GATE row (render P1.5, "
+               "offered 0/1/5/10) - " + _SQ_RULED + " - env SQUEEZE_PRIOR_N; "
+               "5 and 10 were not ruled and stay out of the band"),
+    "evidence": "technical.py _squeeze_on_prior (S6-B3248, B3139q-r161)",
+    "derivation": ("engine-only: the prior bars' squeeze state is not persisted "
+                   "(the cube keeps the fire bar's), so N = 1 is an engine run")})
+_sq_spec["formula"] = """
+ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in
+the producer->gate derivation (the render
+output_audit/b3248_squeeze_breakout_table_a.md numbers them P1/P1.1-P1.5 -
+integer ids here; the render's P1.5 is P6). SPECS carries the ENGINE surface
+(S6-B3248, B3139q-r164); the breadth rows B1-B14 stay in SPECS_PHASE0, which
+resolved_spec merges per param.
+
+=============================== PRODUCER LAYER ===============================
+
+P1  squeeze_fire_up  (NOT in a squeeze on the fire bar - BB(20, k) outside
+       KC(p, m x ATR p) - AND the close-minus-w-bar-midpoint momentum crossing
+       above zero; technical.py compute_squeeze; production m 2.0, k 2.0,
+       w 20, p 20 and no prior squeeze)
+P2  Keltner multiplier m  (render P1.1; SQUEEZE_KC_MULT; 2.5 offline through
+       the derived kc_room, 1.5 an engine run)
+P3  Bollinger std k  (render P1.2; SQUEEZE_BB_STD; 1.5 offline through the
+       derived bb_room, 2.5 an engine run)
+P4  momentum window w  (render P1.3; SQUEEZE_MOM_WINDOW; 10 and 30 engine runs)
+P5  Keltner EMA / ATR period p  (render P1.4; SQUEEZE_KC_PERIOD; 14 and 30
+       engine runs)
+P6  prior squeeze within N bars  (render P1.5, the S6-B3254 NEW-GATE row ruled
+       at N = 1; SQUEEZE_PRIOR_N; 1 an engine run)
+
+=============================== STRATEGY LAYER ===============================
+
+(none - the gate is the one producer boolean)
+
+long_fires = P1
+"""
+_SQ_FLAGS = {"P2": "--kc-mult", "P3": "--bb-std", "P4": "--mom-window",
+             "P5": "--kc-period", "P6": "--prior-n"}
+_sq_spec["tools"] = {
+    "keys": {"P2": "kc_mult", "P3": "bb_std", "P4": "mom_window",
+             "P5": "kc_period", "P6": "prior_n"},
+    "grid_keys": ["cell"],
+    # every cube runs ONE knob vector, so it is one combination (step 6b N/A)
+    "single_combination": True,
+    "grade": {"script": "grade_knob_config.py", "cube": "",
+              "flags": dict(_SQ_FLAGS),
+              "extra": ["--strategy", "squeeze_breakout"],
+              "step2_flag": "--step2",
+              "preregistered_flag": "--preregistered-exit",
+              "pythonpath": None,
+              "note": "AUTO (S6-B3248, B3139q-r162); the registry-driven knob "
+                      "grader - NET, legs x exits, the knobs verified against "
+                      "the landed arm"},
+    "spot_check": {"script": "spot_check_producer.py", "cube": "",
+                   "strategy_flag": "--strategy",
+                   "flags": dict(_SQ_FLAGS),
+                   "extra": ["--n", "50"],
+                   "window": False, "precompute_check": False,
+                   "pythonpath": None,
+                   "producer": "backtest.signals.technical:compute_squeeze",
+                   "keys_by_leg": {"long": "squeeze_fire_up"},
+                   "leg_a": "producer_legs_a:squeeze_fire",
+                   "note": "AUTO (S6-B3248, B3139q-r162); three legs - "
+                           "producer_legs_a raw arithmetic, compute_squeeze on "
+                           "the PIT slice under the arm's knobs, the record"},
+    "free_levels": {"script": "grade_free_levels_knob.py",
+                    "ops": {"P2": "ge", "P3": "le"},
+                    "derive": "scripts/squeeze_derived_landed.py",
+                    "note": "AUTO (S6-B3248, B3139q-r163); reproduction- and "
+                            "score-gated; P2 / P3 not evaluable on a cube at "
+                            "another Keltner period or with a prior squeeze"},
+}
+SPECS["squeeze_breakout"] = _sq_spec
+del _sq_spec, _sq_rows, _q
+
+# S6-B3304 (B3139q-r164): camarilla_r4_breakout PROMOTED into SPECS for the
+# owner's (b) of 2026-10-28T11:01:42Z (schedule the distance multiplier's
+# engine-only level 0.45) and the 16:50:12Z launch word. DERIVED from PHASE0
+# as squeeze_breakout above: B1-B13 stay in PHASE0. ONE actuator,
+# CAM_R4_S4_DIST, drives P2 (R4, long) and P4 (S4, short) - tools.keys names
+# P2 and P4 rides the same knob (naming both would double the argv for one
+# env value, the bollinger P3 / P4 precedent).
+_cam_spec = json.loads(json.dumps(SPECS_PHASE0["camarilla_r4_breakout"]))
+_cam_spec.pop("tools", None)
+_cam_spec["params"] = [q for q in _cam_spec["params"] if not q["id"].startswith("B")]
+for _q in _cam_spec["params"]:
+    _q["engine_implemented"] = True
+    if _q["id"] in ("P2", "P4"):
+        _q["band"] = [0.55, 0.75, 1.0, 1.25, 0.45]
+        _q["free_band"] = [0.55, 0.75, 1.0, 1.25]
+        _q["resim_band"] = [0.45]
+        _q["env"] = "CAM_R4_S4_DIST"
+        _q["consumers"] = ["backtest/config.py", "backtest/signals/technical.py"]
+        _q["status"] = (_q["status"].split(" - charter P1.1 band")[0]
+                        .split(" - charter P2.1")[0]
+                        + " - 0.75/1.0/1.25 OFFLINE through camarilla_derived; "
+                        "0.45 ENGINE LEVEL SCHEDULED by the owner's (b) "
+                        "2026-10-28T11:01:42Z (S6-B3304) - env CAM_R4_S4_DIST, "
+                        "one knob for R4 and S4")
+_cam_spec["formula"] = """
+ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in
+the producer->gate derivation (the charter
+strategy_optimisation/tighten/camarilla_r4_breakout.md numbers the same steps
+P1/P1.1/P2/P2.1/P3/P3.1/P4/P5 - integer ids here). SPECS carries the ENGINE
+surface (S6-B3304, B3139q-r164); the breadth rows B1-B13 stay in
+SPECS_PHASE0, which resolved_spec merges per param.
+
+=============================== PRODUCER LAYER ===============================
+
+P1  above_cam_r4  (close > R4 = prev_close + d x prev range; technical.py
+       compute_pivots through _cam_r4_s4; production d = 1.1 / 2 = 0.55)
+P2  R4 distance multiplier d  (charter P1.1; CAM_R4_S4_DIST; 0.75/1.0/1.25
+       offline through camarilla_derived's cam_r4_room - LONG leg; 0.45 an
+       engine run)
+P3  below_cam_s4  (close < S4 = prev_close - d x prev range; charter P2)
+P4  S4 distance multiplier d  (charter P2.1, the mirror - the same knob as P2,
+       cam_s4_room - SHORT leg)
+P5  vol_above_avg  (vol / 20-day average >= 1.0; technical.py; charter P3)
+P6  volume ratio floor  (charter P3.1 on the persisted vol_ratio_20d, both
+       legs; the tighter floors are OFFLINE)
+P7  volume average window 20  (charter P3.1's second knob - DEFINED-NO-ACTUATOR)
+
+=============================== STRATEGY LAYER ===============================
+
+P8  xs_ivol >= 0.2598   [EXISTING-THRESHOLD, B1422 - both legs; charter P4]
+P9  _short_borrow_trap_active(s)  (days_to_cover > 5.0 blocks the SHORT fire;
+       charter P5 - band OWNER-GATED, not in the approved grid)
+
+long_fires  = P1 AND P5 AND P8
+short_fires = P3 AND P5 AND NOT P9 AND P8
+"""
+_CAM_FLAGS = {"P2": "--dist"}
+_cam_spec["tools"] = {
+    "keys": {"P2": "dist"},
+    "grid_keys": ["cell"],
+    "single_combination": True,
+    "grade": {"script": "grade_knob_config.py", "cube": "",
+              "flags": dict(_CAM_FLAGS),
+              "extra": ["--strategy", "camarilla_r4_breakout"],
+              "step2_flag": "--step2",
+              "preregistered_flag": "--preregistered-exit",
+              "pythonpath": None,
+              "note": "AUTO (S6-B3304, B3139q-r162); the registry-driven knob "
+                      "grader - both legs x exits, NET"},
+    "spot_check": {"script": "spot_check_producer.py", "cube": "",
+                   "strategy_flag": "--strategy",
+                   "flags": dict(_CAM_FLAGS),
+                   "extra": ["--n", "50"],
+                   "window": False, "precompute_check": False,
+                   "pythonpath": None,
+                   "producer": "backtest.signals.technical:compute_pivots",
+                   "keys_by_leg": {"long": "above_cam_r4", "short": "below_cam_s4"},
+                   "leg_a": "producer_legs_a:camarilla_break",
+                   "note": "AUTO (S6-B3304, B3139q-r162); three legs per sampled "
+                           "fire, the leg's own key"},
+    "free_levels": {"script": "grade_free_levels_knob.py",
+                    "ops": {"P2": "gt", "P4": "gt", "P6": "ge", "P8": "ge"},
+                    "derive": "scripts/camarilla_derived.py",
+                    "note": "AUTO (S6-B3304, B3139q-r163); the tighter distances "
+                            "through camarilla_derived, the volume and xs_ivol "
+                            "floors on their persisted keys"},
+}
+SPECS["camarilla_r4_breakout"] = _cam_spec
+del _cam_spec, _q
+
+
 SPECS["three_white_soldiers"] = {  # B2897 (owner ruling 2026-09-20 "Candle goes first"): PROMOTED from SPECS_PHASE0 to SPECS. It is no longer pre-engine inventory - the 54-config anatomy campaign runs, so the battery adapter is owed NOW. Moved, never copied: the two names that sit in BOTH registries carry tools={} in PHASE0 and a complete block in SPECS, so duplication is what makes a family droppable.
     "gate": "three_white_soldiers AND rsi_14 < 60",
     "formula": FORMULA_TWS,
@@ -5319,6 +5541,38 @@ long_fires = P2 AND P4 AND P3   (LONG leg only - B2085/F24)
 }
 
 
+# S6-B3385 (B3139q-r164): battery families whose P-params carry a
+# non-production FREE level while their tools block names no free-level
+# grader. SHRINK-ONLY, each with its reason: validate_spec refuses any other,
+# launch_refusals refuses these at launch, and a member leaves the set in the
+# batch it gains a grader (test_b3385).
+FREE_LEVEL_GRADER_GRANDFATHERED = {
+    "smc_order_block_bounce": (
+        "a STALLED campaign, registered before a grader was owed; free levels "
+        "on P3-P6 - its next landing needs tools.free_levels written first"),
+}
+
+
+def free_level_params(spec: dict) -> list:
+    """S6-B3385: the ids of the P-params carrying a free-band level other than
+    production - the levels B2569's free-level leg grades on every landing.
+    A breadth B-row is graded by the breadth grid, never by this leg."""
+    out = []
+    for p in spec.get("params") or []:
+        if not str(p.get("id", "")).startswith("P"):
+            continue
+        prod = p.get("production")
+        for x in p.get("free_band") or []:
+            try:
+                same = float(x) == float(prod)
+            except (TypeError, ValueError):
+                same = x == prod
+            if not same:
+                out.append(p["id"])
+                break
+    return out
+
+
 def validate_spec(spec: dict) -> list[str]:
     """Formula and Table A must not drift apart. Every P-id in the formula needs
     a params row and every params row needs a formula step - a mechanical check,
@@ -5495,6 +5749,27 @@ def validate_spec(spec: dict) -> list[str]:
                         f"carries {len(_eng)} ENGINE-REQUIRING band(s) but its "
                         f"adapter sections lack {_gmiss} - the battery leg "
                         "would fail closed at landing (S6-B2883)")
+    # S6-B3385 (B3139q-r164): A BATTERY FAMILY WITH FREE LEVELS DECLARES ITS
+    # FREE-LEVEL GRADER. B2569 grades a family's free levels on EVERY landing
+    # (step 2's second leg), and verify_postconfig_complete.leg2_gap checks
+    # that leg only where tools.free_levels is DECLARED - so an adapter whose
+    # P-params carry a non-production free level and no grader would land with
+    # the leg graded on nothing and no check saying so. MEASURED at B3139q-r164,
+    # before its two registrations: 7 of the 15 SPECS families carry such a
+    # level (P-params or all params alike) and 6 declare a grader; the seventh
+    # is grandfathered BY IDENTITY (a copy of its entry is refused).
+    _t85 = spec.get("tools")
+    if isinstance(_t85, dict) and _t85.get("grade"):
+        _f85 = free_level_params(spec)
+        _fl85 = _t85.get("free_levels")
+        if _f85 and not (isinstance(_fl85, dict) and _fl85.get("script")):
+            _nm85 = next((k for k, v in SPECS.items() if v is spec), None)
+            if _nm85 not in FREE_LEVEL_GRADER_GRANDFATHERED:
+                errs.append(
+                    f"{', '.join(_f85[:6])} carry non-production free levels "
+                    "but the tools block names no free_levels script - a "
+                    "landing would grade them on no leg and no check would "
+                    "say so (S6-B3385 / B2569: declare tools.free_levels)")
     # S6-B3325: a per-leg Table D labels the other leg's params LEG ONLY
     # only where a param carries `legs`, so a label naming a side - an
     # upper-case LONG or SHORT, the registries' convention - must carry the
@@ -6728,6 +7003,13 @@ def launch_refusals(doc: dict, root: Path | None = None,
         # S6-B3332 (L974): a Step-2 spec needs a grader with a Step-2 leg
         errs += _step2_grader_refusals(doc, s, spec)
         errs += [f"{s}: {e}" for e in validate_spec(spec)]
+        if s in FREE_LEVEL_GRADER_GRANDFATHERED:
+            # S6-B3385: grandfathered in the registry, refused at launch
+            errs.append(f"{s}: its P-params carry free levels and its tools "
+                        "block names no free-level grader - grandfathered in "
+                        "the registry only (" + FREE_LEVEL_GRADER_GRANDFATHERED[s]
+                        + "); write tools.free_levels before its next landing "
+                        "(S6-B3385 / B2569)")
         knobs = {p["env"]: p for p in spec["params"] if p.get("env")}
         for k in knobs:
             if not knob_is_read(k, root):
@@ -7106,6 +7388,28 @@ D_AXIS_FAMILIES = {
         "d1": (("budget", "cfg", "P1_gate_budget"),),
         "d2": (("P0 strategy", "art", "strategy"),
                ("P1 gate_budget", "cfg", "P1_gate_budget")),
+    },
+    # S6-B3248 / S6-B3304 (B3139q-r164): the two families the registry-
+    # driven knob grader serves. Without these their cfgs fall through
+    # _d_family to smc's columns and render dashes (the L833 class the R2
+    # rung exists for). grade_knob_config writes config as {pid}_{key}, so
+    # P2_kc_mult is emitted by the squeeze registration alone and P2_dist by
+    # Camarilla's alone.
+    "squeeze_knobs": {
+        "serves": ("squeeze_breakout",),
+        "detect": "P2_kc_mult",
+        "d1": (("kc", "cfg", "P2_kc_mult"), ("bb", "cfg", "P3_bb_std")),
+        "d2": (("P2 kc_mult", "cfg", "P2_kc_mult"),
+               ("P3 bb_std", "cfg", "P3_bb_std"),
+               ("P4 mom_window", "cfg", "P4_mom_window"),
+               ("P5 kc_period", "cfg", "P5_kc_period"),
+               ("P6 prior_n", "cfg", "P6_prior_n")),
+    },
+    "camarilla_distance": {
+        "serves": ("camarilla_r4_breakout",),
+        "detect": "P2_dist",
+        "d1": (("dist", "cfg", "P2_dist"),),
+        "d2": (("P2 dist", "cfg", "P2_dist"),),
     },
     "smc_breaker_block": {
         # S6-B2941: records the CURRENT fallback for the four non-breaker

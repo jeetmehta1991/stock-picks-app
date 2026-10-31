@@ -1,6 +1,6 @@
 # Table A - camarilla_r4_breakout
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit ff10274b7 at 2026-10-30 10:39:08 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit 26a66f1df at 2026-10-31 03:42:34 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** TIGHTEN | **family:** pivot | **status:** IN-CAMPAIGN | **R5 fires:** 5774 (closed fires in the exit cube: 5774 of 5774, S6-B3258) | **surviving fires (T1):** 3073 (survives_pct 0.5322)
 
@@ -46,7 +46,7 @@ leg runs.
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
 | P1 | PRODUCER | above_cam_r4 - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | today's close above Camarilla R4 = prior close + 1.1/2 x prior range (technical.py compute_pivots) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
-| P1.1 | BAND | R4 distance from the prior close, in prior ranges (R4 = C + 1.1/2 x range) - backtest/signals/technical.py compute_pivots (Camarilla block) | MEASURED - production is the Camarilla 1.1 / 2; the tighter levels sit near the R5 fires' distance quantiles (q20 0.72, q40 0.94, q60 1.24 prior ranges); 0.45 the one looser bracket | 0.55 | 0.45, 0.55, 0.75, 1, 1.25 | offline 3 of 5 levels - TIGHTER (0.75, 1.0, 1.25) - derivable from the persisted prev_close / prev_high / prev_low and a close recovered as vwap x (1 + pct_from_vwap / 100); both legs reproduce on 5774 of 5774 R5 fires (output_audit/b3304_camarilla_distance_derivability.json); the derive module, the S6-B3290b pattern, is not built | LOOSER (0.45) - adds fires the cube never recorded; DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P1.1 | BAND | R4 distance from the prior close, in prior ranges (R4 = C + 1.1/2 x range) - backtest/signals/technical.py compute_pivots (Camarilla block) | MEASURED - production is the Camarilla 1.1 / 2; the tighter levels sit near the R5 fires' distance quantiles (q20 0.72, q40 0.94, q60 1.24 prior ranges); 0.45 the one looser bracket | 0.55 | 0.45, 0.55, 0.75, 1, 1.25 | offline 3 of 5 levels - TIGHTER (0.75, 1.0, 1.25) - derivable from the persisted prev_close / prev_high / prev_low and a close recovered as vwap x (1 + pct_from_vwap / 100); both legs reproduce on 5774 of 5774 R5 fires (output_audit/b3304_camarilla_distance_derivability.json), derived by scripts/camarilla_derived.py (B3139q-r120) | LOOSER (0.45) - adds fires the cube never recorded; env CAM_R4_S4_DIST | T3 review before any grid |
 | P2 | PRODUCER | below_cam_s4 - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | today's close below Camarilla S4 = prior close - 1.1/2 x prior range (technical.py compute_pivots) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
 | P2.1 | BAND | mirror of above_cam_r4 (S4 = C - 1.1/2 x range) - backtest/signals/technical.py compute_pivots (Camarilla block) | mirror | 0.55 | as long, mirrored | counted on the mirrored leg - TIGHTER - mirrored, on the same persisted keys | LOOSER - mirrored; DEFINED-NO-ACTUATOR | T3 review before any grid |
 | P3 | PRODUCER | vol_above_avg - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | volume / 20d average >= 1.0 (technical.py:1600) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
@@ -803,18 +803,18 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 | axis | parameter | n levels | class | own engine run? | engine | offline | pending |
 |---|---|---|---|---|---|---|---|
-| P1.1 | R4 distance from the prior close, in pri | 5 | MIXED - offline AND pending levels | no - production only; 3 offline; 1 pending (DEFINED-NO-ACTUATOR) | 1 | 3 | 1 |
+| P1.1 | R4 distance from the prior close, in pri | 5 | MIXED - offline AND engine levels | **YES**; 3 offline | 2 | 3 | 0 |
 | P3.1 | volume ratio floor (vol / avg) | 4 | subset-safe | no - derives offline | 1 | 3 | 0 |
 | P4 | xs_ivol >= 0.2598 | 5 | subset-safe | no - derives offline | 1 | 4 | 0 |
 | P5 | days_to_cover cap 5.0 | 1 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 0 |
 
 ```
 FULL FACTORIAL     5 x 4 x 5 x 1 = 100
-offline gradings   79 level-combinations x 24 exits = 1896 (graded from the engine runs' cubes, never run themselves)
-ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  20 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 79 + 20 = 100 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
-STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
+offline gradings   98 level-combinations x 24 exits = 2352 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        2 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  0 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             2 + 98 + 0 = 100 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+STEP-1 SERIAL COST 2 x 3.66 h = 7 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 

@@ -671,7 +671,7 @@ PRODUCER_BANDS.update({
     # Keltner or a NARROWER Bollinger puts more bars IN the squeeze, so fewer
     # fire - a SUBSET, derivable from the persisted bb_20_20 / bb_20_15 /
     # kc_* values (1141 of 1141 fires carry them; 578 and 519 survive the
-    # two tighter levels). The looser side and every window: engine, no knob.
+    # two tighter levels). The looser side and every window: engine (SQUEEZE_* knobs).
     "squeeze_fire_up": [
         dict(_K("squeeze definition: Keltner multiplier (BB inside KC = squeeze)",
                 2.0, [1.5, 2.0, 2.5],
@@ -679,37 +679,39 @@ PRODUCER_BANDS.update({
                 "TIGHTER (2.5) - a wider channel holds more bars in the squeeze; "
                 "derived from persisted kc_mid / kc_upper and bb_20_20 bands",
                 "LOOSER (1.5) - the canon value; adds bars the cube never fired",
-                "backtest/signals/technical.py compute_keltner + compute_squeeze"),
-             free_band=[2.0, 2.5], resim_band=[1.5]),
+                "backtest/signals/technical.py compute_keltner + compute_squeeze",
+                env="SQUEEZE_KC_MULT"), free_band=[2.0, 2.5], resim_band=[1.5]),
         dict(_K("squeeze definition: Bollinger std multiplier", 2.0, [1.5, 2.0, 2.5],
                 "BRACKET production; bb_20_15 is already emitted",
                 "TIGHTER (1.5) - a narrower band sits inside the channel more often; "
                 "persisted bb_20_15 bands",
                 "LOOSER (2.5) - adds bars the cube never fired",
-                "backtest/signals/technical.py compute_bollinger + compute_squeeze"),
-             free_band=[1.5, 2.0], resim_band=[2.5]),
+                "backtest/signals/technical.py compute_bollinger + compute_squeeze",
+                env="SQUEEZE_BB_STD"), free_band=[1.5, 2.0], resim_band=[2.5]),
         _K("momentum window (close vs the N-bar high/low midpoint)", 20, [10, 20, 30],
            "BRACKET production",
            "none - the high/low midpoint at other windows is unpersisted",
-           "the whole band", "backtest/signals/technical.py compute_squeeze"),
+           "the whole band", "backtest/signals/technical.py compute_squeeze",
+           env="SQUEEZE_MOM_WINDOW"),
         _K("Keltner EMA / ATR period", 20, [14, 20, 30],
            "BRACKET production (Wilder 14 adjacent)",
            "none - the channel at other periods is unpersisted",
-           "the whole band", "backtest/signals/technical.py compute_keltner"),
+           "the whole band", "backtest/signals/technical.py compute_keltner",
+           env="SQUEEZE_KC_PERIOD"),
         # S6-B3254 (c), owner ruled 2026-10-22: the producer fires with NO
         # prior squeeze, so a squeeze-RELEASE requirement is a NEW gate (the
         # ask-every-time rule) offered at the T3 band review. A subset of the
         # fires, but only the engine can see it - the bars before a fire are
         # not persisted, and squeeze_in is False on every fire by the gate.
         dict(_K("[NEW-GATE] prior squeeze: in a squeeze on at least one of the "
-                "last N bars (0 = none required)", 0, [0, 1, 5, 10],
-                "NEW-GATE offered at T3 (S6-B3254); Carter 2005 fires on the "
-                "first bar OUT of a squeeze, which is N = 1",
+                "last N bars (0 = none required)", 0, [0, 1],
+                "NEW-GATE offered at T3 as 0/1/5/10 (S6-B3254); RULED N = 1 only "
+                "(owner 2026-10-28, S6-B3248) - Carter 2005's first bar OUT",
                 "none - the prior bars' squeeze state is unpersisted",
-                "N = 1, 5, 10 - fewer signals, engine-only; the trades are "
-                "not a subset (a dropped signal stops blocking a later one - L812)",
-                "backtest/signals/technical.py compute_squeeze"),
-             free_band=[0], resim_band=[1, 5, 10]),
+                "N = 1 - fewer signals, engine-only; the trades are not a "
+                "subset (a dropped signal stops blocking a later one - L812)",
+                "backtest/signals/technical.py compute_squeeze",
+                env="SQUEEZE_PRIOR_N"), free_band=[0], resim_band=[1]),
     ],
     "insider_unique_buyers_30d": [
         _K("count window (days)", 30, "[14, 30, 60]",
@@ -763,10 +765,11 @@ PRODUCER_BANDS.update({
                 "prev_close / prev_high / prev_low and a close recovered as "
                 "vwap x (1 + pct_from_vwap / 100); both legs reproduce on 5774 "
                 "of 5774 R5 fires (output_audit/"
-                "b3304_camarilla_distance_derivability.json); the derive "
-                "module, the S6-B3290b pattern, is not built",
+                "b3304_camarilla_distance_derivability.json), derived by "
+                "scripts/camarilla_derived.py (B3139q-r120)",
                 "LOOSER (0.45) - adds fires the cube never recorded",
-                "backtest/signals/technical.py compute_pivots (Camarilla block)"),
+                "backtest/signals/technical.py compute_pivots (Camarilla block)",
+                env="CAM_R4_S4_DIST"),
              free_band=[0.55, 0.75, 1.0, 1.25], resim_band=[0.45])],
     "below_cam_s4": [
         _K("mirror of above_cam_r4 (S4 = C - 1.1/2 x range)", 0.55,

@@ -33945,7 +33945,14 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
                                 # runs (reading R2, 2026-10-21).
                                 "pivot_r1_breakout", "news_momentum_long",
                                 "smc_bos_continuation",
-                                "orb_stocks_in_play_long"}, sorted(rp.FAMILIES)
+                                "orb_stocks_in_play_long",
+                                # B3139q-r164 (S6-B3248 / S6-B3304):
+                                # registered DELIBERATELY with the
+                                # registry-driven adapter for the engine
+                                # levels the owner scheduled (b) and
+                                # approved to launch (2026-10-28)
+                                "squeeze_breakout",
+                                "camarilla_r4_breakout"}, sorted(rp.FAMILIES)
     # B2897: FAMILY_REFUSALS was EMPTY for its whole life - every SPECS
     # member was already a family, so the ledger of "why this is not a
     # family" named nobody. Promoting the candle pair with an incomplete
@@ -61253,13 +61260,17 @@ def test_b3248_table_a_single_render_writes_only_its_named_file(tmp_path):
     # engine-only - and the fire is stated as needing no prior squeeze
     assert "| P1.1 | BAND | squeeze definition: Keltner multiplier" in t
     assert "| P1.2 | BAND | squeeze definition: Bollinger std multiplier" in t
-    # S6-B3254 (c): the prior-squeeze requirement is offered as a NEW-GATE
-    # band row at T3 - engine-only, so the factorial grows by its 4 levels
+    # S6-B3254 (c): the prior-squeeze requirement was offered as a NEW-GATE
+    # band row at T3 (0/1/5/10) and RULED at N = 1 only (S6-B3248, the owner's
+    # (b) 2026-10-28), so its band is 0, 1; since B3139q-r164 every engine
+    # level carries its SQUEEZE_* actuator, so nothing is pending
     p15 = [ln for ln in t.splitlines() if ln.startswith("| P1.5 | BAND |")]
     assert len(p15) == 1 and "[NEW-GATE] prior squeeze" in p15[0], p15
-    assert "| 0 | 0, 1, 5, 10 | offline 0 of 4 levels" in p15[0], p15
-    assert "FULL FACTORIAL     3 x 3 x 3 x 3 x 4 = 324" in t
-    assert "offline gradings   3 level-combinations" in t
+    assert "| 0 | 0, 1 | offline 0 of 2 levels" in p15[0], p15
+    assert "RULED N = 1 only" in p15[0] and "env SQUEEZE_PRIOR_N" in p15[0], p15
+    assert "FULL FACTORIAL     3 x 3 x 3 x 3 x 2 = 162" in t
+    assert "PENDING ACTUATION  0 level-combinations" in t
+    assert "DEFINED-NO-ACTUATOR" not in t
     assert "no prior squeeze is required" in t
 
 
@@ -63928,14 +63939,17 @@ def test_b3294_coverage_gate_reads_the_sweep_surface_and_the_read_takes_its_subj
         # COVERAGE-SKIPPED axes (B10 at 0.912, B12 at 0.928 < the 0.98 floor) stay UNTESTED
         sq_d = bcg.coverage_report("squeeze_breakout", [str(sq)])
         assert sq_d["complete"] is False
-        # S6-B3248 (3), B3139q-r128: B13/B14 registered - 14 B rows
+        # S6-B3248 (3), B3139q-r128: B13/B14 registered - 14 B rows; and since
+        # B3139q-r164 the registered engine levels (P2-P6) until their runs land
+        sq_engine = {"P2", "P3", "P4", "P5", "P6"}
         assert {p["id"] for p in sq_d["params"] if p["untested"]} == {
-            f"B{i}" for i in range(1, 15)}
+            f"B{i}" for i in range(1, 15)} | sq_engine
         sqb = A / "b3248_squeeze_breakout_breadth_net_long.json"
         if sqb.exists():
             sq_db = bcg.coverage_report("squeeze_breakout", [str(sq), str(sqb)])
             # the r116 grid predates B13/B14 and coverage-skipped B10/B12
-            assert {p["id"] for p in sq_db["params"] if p["untested"]} == {"B10", "B12", "B13", "B14"}
+            assert {p["id"] for p in sq_db["params"] if p["untested"]} == {
+                "B10", "B12", "B13", "B14"} | sq_engine
         one = bcg.coverage_report("williams_r_oversold", [str(wl)])
         assert one["complete"] is False                   # the short leg's bands need the short sweep
         assert {p["param"] for p in one["params"]
@@ -64812,8 +64826,10 @@ def test_b3316_table_d_reads_every_null_schema_and_the_depth_surface(tmp_path, m
                           [str(A / "b3289_squeeze_breakout_depth_step1_is_surface.json"),
                            str(A / "b3248_squeeze_breakout_breadth_net_long.json")], top=5)
     inv = {ln.split(" ", 4)[3]: ln for ln in out.splitlines() if ln.startswith("  - ")}
-    assert "TESTED at {2.0, 2.5} (2 of 2 band levels)" in inv["P2"], inv["P2"]
-    assert "TESTED at {1.5, 2.0} (2 of 2 band levels)" in inv["P3"], inv["P3"]
+    # B3139q-r164 (S6-B3248): SPECS registers each band's engine level (P2 1.5,
+    # P3 2.5), so the offline levels are 2 of 3 of the band
+    assert "TESTED at {2.0, 2.5} (2 of 3 band levels)" in inv["P2"], inv["P2"]
+    assert "TESTED at {1.5, 2.0} (2 of 3 band levels)" in inv["P3"], inv["P3"]
     assert "NOT TESTED" in inv["B10"] and "NOT TESTED" in inv["B12"]
     assert "2 in-sample-only artifact(s)" in out and "UNRECORDED" not in out
     assert "MIXED design" in out and "DEPTH SURFACE -" in out
@@ -65839,15 +65855,22 @@ def test_b3248c_widened_coverage_b13_b14_and_the_episode_check(tmp_path, monkeyp
     depth = str(A / "b3289_squeeze_breakout_depth_step1_is_surface.json")
     monkeypatch.setattr(bcg, "COUNT_IS_SURFACE", True)
     part = bcg.coverage_report("squeeze_breakout", [depth, str(A / "b3248_squeeze_breakout_breadth_net_long_b14.json")])
-    assert {x["id"] for x in part["params"] if x["untested"]} == {"B10", "B12"}
+    # the registered engine levels (B3139q-r164) are untested in both reports
+    assert {x["id"] for x in part["params"] if x["untested"]} == {
+        "B10", "B12", "P2", "P3", "P4", "P5", "P6"}
     full = bcg.coverage_report("squeeze_breakout", [depth, str(A / "b3248_squeeze_breakout_breadth_net_long_b14.json")] + cov_files)
-    assert not [x for x in full["params"] if x["untested"]]
-    # S6-B3339 (B3139q-r141, an approved verdict change): the registered bands
-    # are covered, and the Table A's engine-only producer levels - ruled
-    # 'schedule', not 'waive' (S6-B3248) - hold coverage incomplete
+    # S6-B3248 (B3139q-r164): the producer's engine levels - ruled 'schedule',
+    # not 'waive' - are REGISTERED now with their SQUEEZE_* actuators, so they
+    # hold coverage incomplete as registered levels no engine run has graded,
+    # and the Table A has no actuatorless (pending) level left; until r164 the
+    # Table A's pending column held them, 9 levels with prior-squeeze 5 and 10
+    # (unruled, out of the band since)
+    untested = {x["id"]: x["untested"] for x in full["params"] if x["untested"]}
+    assert untested == {"P2": [1.5], "P3": [2.5], "P4": [10, 30], "P5": [14, 30],
+                        "P6": [1]}, untested
     ta = full["table_a"]
-    assert ta["unwaived"] == sum(a["pending"] for a in ta["pending"]) > 0, ta
-    assert full["complete"] is False and not ta["blocked"], ta
+    assert ta["unwaived"] == 0 and ta["pending"] == [] and not ta["blocked"], ta
+    assert full["complete"] is False and full["untested_total"] == 7, full["untested_total"]
 
     # (4) the episode check
     ep = _j.loads((A / "b3248_squeeze_breakout_episode_robust_check.json").read_text(encoding="utf-8"))
@@ -67982,9 +68005,10 @@ def test_b3304c_camarilla_b1_b8_graded_on_their_covered_fires():
     owner's word for the widening recorded with its ticket, a 100-permutation
     null, an episode on every row; (2) the registry says the verdict binds the
     covered subpopulation; (3) with the six campaign artifacts the coverage
-    gate's only untested item is the scheduled engine-only distance level
-    (Table A P1.1, 0.45 - S6-B3349); (4) each per-leg Table D grades its own
-    covered axis and labels the other leg's LEG ONLY."""
+    gate's only untested level is the scheduled engine-only distance 0.45 -
+    Table A P1.1's one pending level until B3139q-r164, registered on P2 and
+    P4 since (S6-B3349); (4) each per-leg Table D grades its own covered axis
+    and labels the other leg's LEG ONLY."""
     import json as _j
     import sys as _s
     from pathlib import Path as _P
@@ -68019,15 +68043,19 @@ def test_b3304c_camarilla_b1_b8_graded_on_their_covered_fires():
            [str(A / f"b3304_{S}_breadth_net_{leg}_{want[leg][3].lower()}_covered.json")
             for leg in want]
     rep = bcg.coverage_report(S, arts)
-    assert rep["evaluable"] and not rep["complete"] and rep["untested_total"] == 1, (
+    # S6-B3304 (B3139q-r164): the distance's engine level 0.45 is REGISTERED on
+    # P2 and P4 with CAM_R4_S4_DIST (one knob, both legs), so it reads untested
+    # on each until the scheduled run lands; until r164 it was Table A P1.1's
+    # one pending level
+    assert rep["evaluable"] and not rep["complete"] and rep["untested_total"] == 2, (
         rep["untested_total"])
-    assert [u for p in rep["params"] for u in (p.get("untested") or [])] == []
+    assert {p["id"]: p["untested"] for p in rep["params"] if p["untested"]} == {
+        "P2": [0.45], "P4": [0.45]}
     tested = {p["id"]: len(p["tested"]) for p in rep["params"]}
     assert tested["B1"] == tested["B8"] == 4, tested
     rep0 = bcg.coverage_report(S, arts[:4])          # without the two covered grids
-    assert {p["id"] for p in rep0["params"] if p["untested"]} == {"B1", "B8"}
-    pend = rep["table_a"]["pending"]
-    assert [(x["axis"], x["pending"], x["waived"]) for x in pend] == [("P1.1", 1, False)], pend
+    assert {p["id"] for p in rep0["params"] if p["untested"]} == {"B1", "B8", "P2", "P4"}
+    assert rep["table_a"]["pending"] == [] and rep["table_a"]["unwaived"] == 0, rep["table_a"]
     for leg, (key, cov, gap, bid) in want.items():
         md = (A / f"b3304_{S}_{leg}_table_d.md").read_text(encoding="utf-8")
         inv = {ln.split(" ", 4)[3]: ln for ln in md.splitlines() if ln.startswith("  - ")}
@@ -69977,3 +70005,70 @@ def test_b3387_pregate_selects_a_census_that_globs_by_name_pattern(tmp_path, mon
     assert syn == {"t_mod.py::test_census": ["R3"]}, syn
     assert ps.select(["docs/only_x.md"], root=tmp_path, readset={}, repo_readset={},
                      listed=[], edited={}, test_files=("t_mod.py",)) == {}
+
+
+def test_b3385_a_battery_family_with_free_levels_declares_its_grader():
+    """S6-B3385 (B3139q-r164): B2569 grades a family's FREE levels on every
+    landing and verify_postconfig_complete.leg2_gap checks that leg only where
+    tools.free_levels is DECLARED, so validate_spec refuses a battery adapter
+    (a tools block with a grader) whose P-params carry a non-production free
+    level and which names no free_levels script.
+    (1) every SPECS entry is clean of it, and the families it would catch
+        are exactly the grandfathered set, each with a reason - a member that
+        gains a grader drops out of the comparison, so the set only shrinks;
+    (2) a copy of a graded family with its grader removed is refused, naming
+        its params and this ticket; grandfathering is by IDENTITY, so a copy
+        of the grandfathered entry is refused too;
+    (3) left alone: a pre-registration with no grader, and free levels that
+        are all production;
+    (4) the predicate reads P-params only and compares levels by value;
+    (5) the grandfathered family's LAUNCH is refused until it gains a grader,
+        a graded family's is not refused for it."""
+    import copy
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _s.path:
+        _s.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+    G, tag = pvt.FREE_LEVEL_GRADER_GRANDFATHERED, "S6-B3385"
+    caught = sorted(k for k, e in pvt.SPECS.items()
+                    if isinstance(e.get("tools"), dict) and e["tools"].get("grade")
+                    and pvt.free_level_params(e)
+                    and not (e["tools"].get("free_levels") or {}).get("script"))
+    assert caught == sorted(G) == ["smc_order_block_bounce"], caught          # (1)
+    assert all(isinstance(v, str) and len(v) > 40 for v in G.values()), G
+    for k, e in pvt.SPECS.items():
+        assert not [x for x in pvt.validate_spec(e) if tag in x], k
+    sq = copy.deepcopy(pvt.SPECS["squeeze_breakout"])                       # (2)
+    assert pvt.free_level_params(sq) == ["P2", "P3"], pvt.free_level_params(sq)
+    assert not [x for x in pvt.validate_spec(sq) if tag in x]
+    sq["tools"]["free_levels"] = None
+    errs = [x for x in pvt.validate_spec(sq) if tag in x]
+    assert len(errs) == 1 and errs[0].startswith("P2, P3 carry"), errs
+    sq["tools"]["free_levels"] = {"note": "a block naming no script"}
+    assert [x for x in pvt.validate_spec(sq) if tag in x], "a scriptless block passed"
+    ob = copy.deepcopy(pvt.SPECS["smc_order_block_bounce"])
+    assert [x for x in pvt.validate_spec(ob) if tag in x], "a copy is not grandfathered"
+    p0 = copy.deepcopy(pvt.SPECS_PHASE0["squeeze_breakout"])                # (3)
+    assert pvt.free_level_params(p0) and not (p0.get("tools") or {}).get("grade")
+    assert not [x for x in pvt.validate_spec(p0) if tag in x]
+    allprod = copy.deepcopy(sq)
+    for p in allprod["params"]:
+        if p.get("free_band"):
+            p["free_band"] = [p["production"]]
+    assert pvt.free_level_params(allprod) == []
+    assert not [x for x in pvt.validate_spec(allprod) if tag in x]
+    syn = {"params": [{"id": "P1", "production": 2, "free_band": [2.0, "2"]},  # (4)
+                      {"id": "P2", "production": "quintile",
+                       "free_band": ["quintile", "decile"]},
+                      {"id": "B1", "production": None, "free_band": ["q20", "q40"]}]}
+    assert pvt.free_level_params(syn) == ["P2"]
+    for s, refused in (("smc_order_block_bounce", True), ("bollinger_lower", False),   # (5)
+                       ("squeeze_breakout", False)):
+        refs = pvt.launch_refusals({"strategy_subset": "x.txt", "arms": []},
+                                   subset_override=[s], draft=True)
+        hit = [x for x in refs if tag in x]
+        assert bool(hit) is refused, (s, hit)
+        if refused:
+            assert hit[0].startswith(f"{s}: ") and "before its next landing" in hit[0], hit

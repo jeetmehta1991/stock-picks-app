@@ -1,6 +1,6 @@
 # Table A - squeeze_breakout
 
-**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build adafdd452 | commit adafdd452 at 2026-10-25 20:32:52 - a copy without this line, or with a stale stamp, is NOT the current band set
+**Build (L803/#309):** generator scripts/build_table_a.py | cube output_r5_merged_1_7 | status build ff10274b7 | commit 26a66f1df at 2026-10-31 03:41:22 - a copy without this line, or with a stale stamp, is NOT the current band set
 
 **Lane:** NONE | **family:** breakout | **status:** IN-CAMPAIGN | **R5 fires:** 1141 (closed fires in the exit cube: 1141 of 1141, S6-B3258) | **surviving fires (T1):** 1141 (unchanged since R5 - filter is identity)
 
@@ -35,11 +35,11 @@ leg runs.
 | id | layer | producer / parameter | what it does | production | band VALUES | free_band (OFFLINE) | resim_band (RESIM) | status |
 |---|---|---|---|---|---|---|---|---|
 | P1 | PRODUCER | squeeze_fire_up - emitted by backtest/signals/technical.py; the boolean's UNDERLYING condition is bandable through its producer's internals | NOT in a squeeze (BB(20, 2.0) not inside KC(20, 2.0 x ATR20)) AND close-minus-20-bar-midpoint momentum crosses above zero (technical.py compute_squeeze) - no prior squeeze is required (S6-B3254) | leg required True | - (knobs below) | only where the condition's input magnitudes are persisted on the fires - else none | variants over unpersisted bars/inputs - RESIM; a shared producer's resim runs the FULL OPEN consumer set and its one cube is graded per consumer (runbook section 4.3 - results reused by construction); knobs in the SPECS entry | SPECS-REGISTERED |
-| P1.1 | BAND | squeeze definition: Keltner multiplier (BB inside KC = squeeze) - backtest/signals/technical.py compute_keltner + compute_squeeze | BRACKET production; canon TTM squeeze (Carter 2005) uses 1.5 | 2.0 | 1.5, 2, 2.5 | offline 1 of 3 levels - TIGHTER (2.5) - a wider channel holds more bars in the squeeze; derived from persisted kc_mid / kc_upper and bb_20_20 bands | LOOSER (1.5) - the canon value; adds bars the cube never fired; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P1.2 | BAND | squeeze definition: Bollinger std multiplier - backtest/signals/technical.py compute_bollinger + compute_squeeze | BRACKET production; bb_20_15 is already emitted | 2.0 | 1.5, 2, 2.5 | offline 1 of 3 levels - TIGHTER (1.5) - a narrower band sits inside the channel more often; persisted bb_20_15 bands | LOOSER (2.5) - adds bars the cube never fired; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P1.3 | BAND | momentum window (close vs the N-bar high/low midpoint) - backtest/signals/technical.py compute_squeeze | BRACKET production | 20 | 10, 20, 30 | offline 0 of 3 levels - none - the high/low midpoint at other windows is unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P1.4 | BAND | Keltner EMA / ATR period - backtest/signals/technical.py compute_keltner | BRACKET production (Wilder 14 adjacent) | 20 | 14, 20, 30 | offline 0 of 3 levels - none - the channel at other periods is unpersisted | the whole band; DEFINED-NO-ACTUATOR | T3 review before any grid |
-| P1.5 | BAND | [NEW-GATE] prior squeeze: in a squeeze on at least one of the last N bars (0 = none required) - backtest/signals/technical.py compute_squeeze | NEW-GATE offered at T3 (S6-B3254); Carter 2005 fires on the first bar OUT of a squeeze, which is N = 1 | 0 | 0, 1, 5, 10 | offline 0 of 4 levels - none - the prior bars' squeeze state is unpersisted | N = 1, 5, 10 - fewer signals, engine-only; the trades are not a subset (a dropped signal stops blocking a later one - L812); DEFINED-NO-ACTUATOR | T3 review before any grid |
+| P1.1 | BAND | squeeze definition: Keltner multiplier (BB inside KC = squeeze) - backtest/signals/technical.py compute_keltner + compute_squeeze | BRACKET production; canon TTM squeeze (Carter 2005) uses 1.5 | 2.0 | 1.5, 2, 2.5 | offline 1 of 3 levels - TIGHTER (2.5) - a wider channel holds more bars in the squeeze; derived from persisted kc_mid / kc_upper and bb_20_20 bands | LOOSER (1.5) - the canon value; adds bars the cube never fired; env SQUEEZE_KC_MULT | T3 review before any grid |
+| P1.2 | BAND | squeeze definition: Bollinger std multiplier - backtest/signals/technical.py compute_bollinger + compute_squeeze | BRACKET production; bb_20_15 is already emitted | 2.0 | 1.5, 2, 2.5 | offline 1 of 3 levels - TIGHTER (1.5) - a narrower band sits inside the channel more often; persisted bb_20_15 bands | LOOSER (2.5) - adds bars the cube never fired; env SQUEEZE_BB_STD | T3 review before any grid |
+| P1.3 | BAND | momentum window (close vs the N-bar high/low midpoint) - backtest/signals/technical.py compute_squeeze | BRACKET production | 20 | 10, 20, 30 | offline 0 of 3 levels - none - the high/low midpoint at other windows is unpersisted | the whole band; env SQUEEZE_MOM_WINDOW | T3 review before any grid |
+| P1.4 | BAND | Keltner EMA / ATR period - backtest/signals/technical.py compute_keltner | BRACKET production (Wilder 14 adjacent) | 20 | 14, 20, 30 | offline 0 of 3 levels - none - the channel at other periods is unpersisted | the whole band; env SQUEEZE_KC_PERIOD | T3 review before any grid |
+| P1.5 | BAND | [NEW-GATE] prior squeeze: in a squeeze on at least one of the last N bars (0 = none required) - backtest/signals/technical.py compute_squeeze | NEW-GATE offered at T3 as 0/1/5/10 (S6-B3254); RULED N = 1 only (owner 2026-10-28, S6-B3248) - Carter 2005's first bar OUT | 0 | 0, 1 | offline 0 of 2 levels - none - the prior bars' squeeze state is unpersisted | N = 1 - fewer signals, engine-only; the trades are not a subset (a dropped signal stops blocking a later one - L812); env SQUEEZE_PRIOR_N | T3 review before any grid |
 | B-rows | BREADTH | every companion in the B-row candidate census below is Table A inventory once REGISTERED at the T3 band review (runbook section 3.6; B-rows are Table A members by owner ruling) | AND-leg companions on persisted keys | - | census levels below | census levels below | sub-floor / unpersisted producers | CANDIDATE |
 
 ### Measured free-band levels - the STRATEGY-layer inputs [EXISTING-THRESHOLD]
@@ -745,19 +745,19 @@ breadth producers are an engine-side design act, never an offline sweep.
 
 | axis | parameter | n levels | class | own engine run? | engine | offline | pending |
 |---|---|---|---|---|---|---|---|
-| P1.1 | squeeze definition: Keltner multiplier ( | 3 | MIXED - offline AND pending levels | no - production only; 1 offline; 1 pending (DEFINED-NO-ACTUATOR) | 1 | 1 | 1 |
-| P1.2 | squeeze definition: Bollinger std multip | 3 | MIXED - offline AND pending levels | no - production only; 1 offline; 1 pending (DEFINED-NO-ACTUATOR) | 1 | 1 | 1 |
-| P1.3 | momentum window (close vs the N-bar high | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
-| P1.4 | Keltner EMA / ATR period | 3 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 2 |
-| P1.5 | [NEW-GATE] prior squeeze: in a squeeze o | 4 | **FIRE-ADDING** | no - production only (DEFINED-NO-ACTUATOR) | 1 | 0 | 3 |
+| P1.1 | squeeze definition: Keltner multiplier ( | 3 | MIXED - offline AND engine levels | **YES**; 1 offline | 2 | 1 | 0 |
+| P1.2 | squeeze definition: Bollinger std multip | 3 | MIXED - offline AND engine levels | **YES**; 1 offline | 2 | 1 | 0 |
+| P1.3 | momentum window (close vs the N-bar high | 3 | **FIRE-ADDING** | **YES** | 3 | 0 | 0 |
+| P1.4 | Keltner EMA / ATR period | 3 | **FIRE-ADDING** | **YES** | 3 | 0 | 0 |
+| P1.5 | [NEW-GATE] prior squeeze: in a squeeze o | 2 | **FIRE-ADDING** | **YES** | 2 | 0 | 0 |
 
 ```
-FULL FACTORIAL     3 x 3 x 3 x 3 x 4 = 324
-offline gradings   3 level-combinations x 24 exits = 72 (graded from the engine runs' cubes, never run themselves)
-ENGINE RUNS        1 (per axis: the production level plus any actuated non-production level)
-PENDING ACTUATION  320 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
-TILING             1 + 3 + 320 = 324 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
-STEP-1 SERIAL COST 1 x 3.66 h = 4 h at the ruled 1y x 200-ticker shape
+FULL FACTORIAL     3 x 3 x 3 x 3 x 2 = 162
+offline gradings   90 level-combinations x 24 exits = 2160 (graded from the engine runs' cubes, never run themselves)
+ENGINE RUNS        72 (per axis: the production level plus any actuated non-production level)
+PENDING ACTUATION  0 level-combinations need an env knob that does not exist - a FEATURE REQUEST, not a runnable band (runbook section 2.3 state 1; B2866)
+TILING             72 + 90 + 0 = 162 (engine + offline + pending: every level of every axis sits in exactly one class - the three count columns above; S6-B3189)
+STEP-1 SERIAL COST 72 x 3.66 h = 264 h at the ruled 1y x 200-ticker shape
                    per-run 3.66 h is within the 5 h local cap (B2107); the TOTAL is not a plan until the owner rules a budget on it
 ```
 
